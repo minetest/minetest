@@ -17,9 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "config.h"
+#ifdef GPGME_EXISTS
+#include "gnupg.h"
+#endif
+
 #include "client.h"
 #include <iostream>
-#include "clientserver.h"
 #include "jmutexautolock.h"
 #include "main.h"
 #include <sstream>
@@ -220,8 +224,19 @@ void * MeshUpdateThread::Thread()
 	return NULL;
 }
 
+static std::string makeWorldPath(const std::string& address, int port) {
+	std::ostringstream out;
+	out << porting::path_user << DIR_DELIM << "mirror";
+	fs::CreateDir(out.str());
+	out << DIR_DELIM << address << ":" << port;
+	fs::CreateDir(out.str());
+	return out.str();
+}
+
 Client::Client(
 		IrrlichtDevice *device,
+		const std::string& address,
+		int port,
 		const char *playername,
 		std::string password,
 		MapDrawControl &control,
@@ -240,11 +255,11 @@ Client::Client(
 	m_env(
 		new ClientMap(this, this, control,
 			device->getSceneManager()->getRootSceneNode(),
-			device->getSceneManager(), 666),
+					  device->getSceneManager(), 666,
+			m_saver),
 		device->getSceneManager(),
 		tsrc, this, device
 	),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_playeritem(0),
@@ -265,7 +280,8 @@ Client::Client(
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
-	m_removed_sounds_check_timer(0)
+	m_removed_sounds_check_timer(0),
+	m_saver(makeWorldPath(address,port),this)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -285,25 +301,40 @@ Client::Client(
 	*/
 	{
 		Player *player = new LocalPlayer(this);
-
-		player->updateName(playername);
+#ifdef GPGME_EXISTS
+                if(gnupg::pgpEnabled) {
+                  player->updateIdentifier(gnupg::mykey);
+                  player->updateNickname(playername);
+                } else
+#endif
+                  // treat the nickname like an identifier if we have no PGP :(
+                  player->updateIdentifier(playername);
 
 		m_env.addPlayer(player);
 	}
+	m_saver.Start();
 }
 
 Client::~Client()
 {
-	{
-		//JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
-		m_con.Disconnect();
-	}
+	m_saver.setRun(false);
+	while(m_saver.IsRunning())
+		sleep(1);
+
+  {
+    //JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
+    m_con.Disconnect();
+  }
 
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
 
 	delete m_inventory_from_server;
+}
+
+void Client::reportModified(MapBlock* block) {
+	m_saver.enqueue(*block);
 }
 
 void Client::connect(Address address)
@@ -483,31 +514,48 @@ void Client::step(float dtime)
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
-	
-			// Send TOSERVER_INIT
-			// [0] u16 TOSERVER_INIT
-			// [2] u8 SER_FMT_VER_HIGHEST
-			// [3] u8[20] player_name
-			// [23] u8[28] password (new in some version)
-			// [51] u16 client network protocol version (new in some version)
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
-			writeU16(&data[0], TOSERVER_INIT);
-			writeU8(&data[2], SER_FMT_VER_HIGHEST);
+#ifdef GPGME_EXISTS	                        
+                        if(gnupg::pgpEnabled) {
+                          // Send TOSERVER_ANNOUNCE
+                          // [0] u16 TOSERVER_ANNOUNCE
+                          // [2] u8 SER_FMT_VER_HIGHEST
+                          // [3] u16 client network protocol version (new in some version)
+                          // [4] u8* fingerprint
+                          
+                          SharedBuffer<u8> data(2+1+2+gnupg::FINGERPRINT_LENGTH);
+                          writeU16(&data[0], TOSERVER_ANNOUNCE);
+                          writeU8(&data[2], SER_FMT_VER_HIGHEST);
+                          writeU16(&data[3], PROTOCOL_VERSION);
+                          memcpy(&data[5],gnupg::mykey.c_str(),gnupg::FINGERPRINT_LENGTH);
+                          // Send as unreliable
+                          Send(0, data, false);
+                          return;
+                        } 
+#endif /* GPGME_EXISTS */
+                        // Send TOSERVER_INIT
+                        // [0] u16 TOSERVER_INIT
+                        // [2] u8 SER_FMT_VER_HIGHEST
+                        // [3] u8[20] player_name
+                        // [23] u8[28] password (new in some version)
+                        // [51] u16 client network protocol version (new in some version)
+                        SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
+                        writeU16(&data[0], TOSERVER_INIT);
+                        writeU8(&data[2], SER_FMT_VER_HIGHEST);
 
-			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
-			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
-
-			/*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
-					<<std::endl;*/
-
-			memset((char*)&data[23], 0, PASSWORD_SIZE);
-			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
-			
-			// This should be incremented in each version
-			writeU16(&data[51], PROTOCOL_VERSION);
-
-			// Send as unreliable
-			Send(0, data, false);
+                        memset((char*)&data[3], 0, PLAYERNAME_SIZE);
+                        strncpy((char*)&data[3],myplayer->getNickname().c_str(),PLAYERNAME_SIZE);
+                        
+                        /*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
+                          <<std::endl;*/
+                        
+                        memset((char*)&data[23], 0, PASSWORD_SIZE);
+                        snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+                        
+                        // This should be incremented in each version
+                        writeU16(&data[51], PROTOCOL_VERSION);
+                        
+                        // Send as unreliable
+                        Send(0, data, false);
 		}
 
 		// Not connected, return
@@ -927,6 +975,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 
 	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
+        if(peerProcessData(command,data,datasize,sender_peer_id)) return;
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
@@ -946,6 +995,33 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	u8 ser_version = m_server_ser_ver;
 
 	//infostream<<"Client received command="<<(int)command<<std::endl;
+
+#ifdef GPGME_EXISTS
+        if(command == TOCLIENT_CHALLENGE) {
+          // [0] u16 TOCLIENT_CHALLENGE
+          // [2] u8* question
+          if(!gnupg::pgpEnabled) {
+            infostream << "Can't respond without pgp at all!" << std::endl;
+            return;
+          }
+          std::cerr << "Got a challenge!" << std::endl;
+          std::string challenge((const char*)&data[2],datasize-2);
+          m_last_peer_id = PEER_ID_SERVER;
+          std::string response = gnupg::makeResponse(challenge,this);
+          if(response.size()==0) {
+            infostream << "We couldn't respond to the server's challenge..." << std::endl;
+            return;
+          }
+
+          u32 replysize = 2 + response.size();
+          SharedBuffer<u8> reply(replysize);
+          writeU16(&reply[0], TOSERVER_CHALLENGE_RESPONSE);
+          memcpy(&reply[2],response.c_str(),response.size());
+          // Send as reliable
+          m_con.Send(PEER_ID_SERVER, 1, reply, true);      
+        }    
+#endif /* GPGME_EXISTS */
+
 
 	if(command == TOCLIENT_INIT)
 	{
@@ -980,6 +1056,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			Player *player = m_env.getLocalPlayer();
 			assert(player != NULL);
 			player->setPosition(playerpos_f);
+
+#ifdef GPGME_EXISTS
+                        if(gnupg::pgpEnabled)
+                          sendNickname(player);                        
+#endif /* GPGME_EXISTS */
+                        
 		}
 		
 		if(datasize >= 2+1+6+8)
@@ -987,9 +1069,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+			m_saver.setSeed(m_map_seed);
 		}
 		
-		// Reply to server
+		// Reply to server for some reason
 		u32 replysize = 2;
 		SharedBuffer<u8> reply(replysize);
 		writeU16(&reply[0], TOSERVER_INIT2);
@@ -1106,7 +1189,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			block->deSerialize(istr, ser_version, false);
 			sector->insertBlock(block);
 		}
-
+		m_saver.enqueue(*block);
 #if 0
 		/*
 			Acknowledge block
@@ -1749,6 +1832,15 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	Send(0, data, true);
 }
 
+void Client::sendNickname(Player* player) {
+  // Send our nickname
+  const std::string& name = player->getNickname();
+  SharedBuffer<u8> reply(name.size()+2);
+  writeU16(&reply[0],TOSERVER_NICKNAME);
+  memcpy(&reply[2],name.c_str(),name.size());
+  m_con.Send(PEER_ID_SERVER, 1, reply, true);
+}
+  
 void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
@@ -1756,6 +1848,29 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 
 	writeU16(os, TOSERVER_NODEMETA_FIELDS);
 	writeV3S16(os, p);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
+void Client::sendInventoryFields(const std::string &formname, 
+		const std::map<std::string, std::string> &fields)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_INVENTORY_FIELDS);
 	os<<serializeString(formname);
 	writeU16(os, fields.size());
 	for(std::map<std::string, std::string>::const_iterator
@@ -1826,7 +1941,7 @@ void Client::sendChangePassword(const std::wstring oldpassword,
 	if(player == NULL)
 		return;
 
-	std::string playername = player->getName();
+	std::string playername = player->getNickname();
 	std::string oldpwd = translatePassword(playername, oldpassword);
 	std::string newpwd = translatePassword(playername, newpassword);
 
@@ -2147,7 +2262,7 @@ core::list<std::wstring> Client::getConnectedPlayerNames()
 			i != players.end(); i++)
 	{
 		Player *player = *i;
-		playerNames.push_back(narrow_to_wide(player->getName()));
+		playerNames.push_back(narrow_to_wide(player->getFullName()));
 	}
 	return playerNames;
 }
@@ -2216,7 +2331,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
+		std::wstring name = narrow_to_wide(player->getNickname());
 		m_chat_queue.push_back(
 				(std::wstring)L"<"+name+L"> "+message);
 	}

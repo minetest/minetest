@@ -1409,7 +1409,11 @@ struct TestConnection
 		assert(hand_client.count == 1);
 		assert(hand_client.last_id == 1);
 		// Server should have the client
-		assert(hand_server.count == 1);
+		if(hand_server.count != 1) {
+                  std::cerr << "Server does not have the client!" << std::endl;
+                  return;
+                }
+                 
 		assert(hand_server.last_id == 2);
 		
 		//sleep_ms(50);

@@ -89,6 +89,25 @@ endif()
 # Use cmake_config.h
 add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
+execute_process(COMMAND gpgme-config --cflags
+                        RESULT_VARIABLE GPGME_EXISTS
+                        OUTPUT_VARIABLE GPGME_CFLAGS)
+
+if(GPGME_EXISTS EQUAL 0)
+        message(STATUS "found gpgme yay")
+        set(GPGME_EXISTS 1)
+        set(gnupg_SRCS gnupg.cpp)
+        set(gnupg_client_SRCS guiPassPhraseGetter.cpp)
+
+        string(STRIP ${GPGME_CFLAGS} GPGME_CFLAGS)
+        string(REPLACE "-I" "" GPGME_INCLUDE_DIR "${GPGME_CFLAGS}")
+        execute_process(COMMAND gpgme-config --libs
+                                OUTPUT_VARIABLE GPGME_LIBS)
+        string(STRIP ${GPGME_LIBS} GPGME_LIBS)
+else()
+        unset(GPGME_EXISTS)
+endif()
+
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
@@ -121,7 +140,7 @@ else()
 		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
-		find_package(PNG REQUIRED)
+		find_package(PNG REQUIRED)                
 		if(APPLE)
 			FIND_LIBRARY(CARBON_LIB Carbon)
 			FIND_LIBRARY(COCOA_LIB Cocoa)
@@ -155,6 +174,9 @@ configure_file(
 )
 
 set(common_SRCS
+        ${gnupg_SRCS}
+        peer.cpp
+        portals.c
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp
@@ -233,8 +255,11 @@ endif()
 set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
+        ${gnupg_client_SRCS}
+	blockSaver.cpp
 	localplayer.cpp
 	sky.cpp
+	client.cpp
 	clientmap.cpp
 	content_cso.cpp
 	content_mapblock.cpp
@@ -251,14 +276,13 @@ set(minetest_SRCS
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
-	guiInventoryMenu.cpp
+	guiFormSpecMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
 	guiConfirmMenu.cpp
-	client.cpp
 	filecache.cpp
 	tile.cpp
 	game.cpp
@@ -282,6 +306,7 @@ include_directories(
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
+        ${GPGME_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
@@ -304,6 +329,7 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
+                ${GPGME_LIBS}
 	)
 endif(BUILD_CLIENT)
 
@@ -316,6 +342,7 @@ if(BUILD_SERVER)
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
+                ${GPGME_LIBS}
 	)
 endif(BUILD_SERVER)
 

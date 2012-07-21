@@ -150,27 +150,8 @@ public:
 	}
 	
 	// m_modified methods
-	void raiseModified(u32 mod, const std::string &reason="unknown")
-	{
-		if(mod > m_modified){
-			m_modified = mod;
-			m_modified_reason = reason;
-			m_modified_reason_too_long = false;
+	void raiseModified(u32 mod, const std::string &reason="unknown");
 
-			if(m_modified >= MOD_STATE_WRITE_AT_UNLOAD){
-				m_disk_timestamp = m_timestamp;
-			}
-		} else if(mod == m_modified){
-			if(!m_modified_reason_too_long){
-				if(m_modified_reason.size() < 40)
-					m_modified_reason += ", " + reason;
-				else{
-					m_modified_reason += "...";
-					m_modified_reason_too_long = true;
-				}
-			}
-		}
-	}
 	u32 getModified()
 	{
 		return m_modified;
@@ -429,6 +410,26 @@ public:
 	u32 getUsageTimer()
 	{
 		return m_usage_timer;
+	}
+	
+	/*
+		Node Timers
+	*/
+	// Get timer
+	NodeTimer getNodeTimer(v3s16 p){ 
+		return m_node_timers.get(p);
+	}
+	// Deletes timer
+	void removeNodeTimer(v3s16 p){
+		m_node_timers.remove(p);
+	}
+	// Deletes old timer and sets a new one
+	void setNodeTimer(v3s16 p, NodeTimer t){
+		m_node_timers.set(p,t);
+	}
+	// Deletes all timers
+	void clearNodeTimers(){
+		m_node_timers.clear();
 	}
 
 	/*

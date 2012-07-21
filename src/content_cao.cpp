@@ -548,7 +548,8 @@ class GenericCAO : public ClientActiveObject
 {
 private:
 	// Only set at initialization
-	std::string m_name;
+	std::string m_identifier;
+  std::string m_nickname; // for players
 	bool m_is_player;
 	bool m_is_local_player; // determined locally
 	// Property-ish things
@@ -623,12 +624,12 @@ public:
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version != 0){
+		if(version > 1){
 			errorstream<<"GenericCAO: Unsupported init data version"
 					<<std::endl;
 			return;
 		}
-		m_name = deSerializeString(is);
+		m_identifier = deSerializeString(is);
 		m_is_player = readU8(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
@@ -640,11 +641,24 @@ public:
 			processMessage(message);
 		}
 
+		if(m_is_player) {
+			try {
+				m_nickname = deSerializeString(is);
+			} catch(SerializationError e) {
+				m_nickname = m_identifier;
+			}
+		} else {
+			m_nickname = "not a player";
+		}
+
 		pos_translator.init(m_position);
 		updateNodePos();
 		
 		if(m_is_player){
-			Player *player = m_env->getPlayer(m_name.c_str());
+			Player *player = m_env->getPlayer(m_identifier);
+			if(!player) 
+				player = m_env->getFirstPlayerByNickname(m_nickname);
+			std::cerr << m_identifier << (player ? " IS LOCAL" : " not local?") << std::endl;
 			if(player && player->isLocal()){
 				m_is_local_player = true;
 			}
@@ -819,7 +833,7 @@ public:
 		if(node && m_is_player && !m_is_local_player){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
-			std::wstring wname = narrow_to_wide(m_name);
+			std::wstring wname = narrow_to_wide(m_nickname);
 			m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
 					wname.c_str(), video::SColor(255,255,255,255), node);
 			m_textnode->setPosition(v3f(0, BS*1.1, 0));

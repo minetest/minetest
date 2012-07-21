@@ -42,7 +42,7 @@ Player::Player(IGameDef *gamedef):
 	m_speed(0,0,0),
 	m_position(0,0,0)
 {
-	updateName("<not set>");
+	updateNickname("<not set>");
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
@@ -50,7 +50,7 @@ Player::Player(IGameDef *gamedef):
 	inventory.addList("craftresult", 1);
 
 	// Can be redefined via Lua
-	inventory_formspec =  "invsize[8,7.5;]"
+	inventory_formspec =  "size[8,7.5]"
 		//"image[1,0.6;1,2;player.png]"
 		"list[current_player;main;0,3.5;8,4;]"
 		"list[current_player;craft;3,0;3,3;]"
@@ -108,6 +108,7 @@ void Player::serialize(std::ostream &os)
 	// Utilize a Settings object for storing values
 	Settings args;
 	args.setS32("version", 1);
+	args.set("identifier", m_identifier);
 	args.set("name", m_name);
 	//args.set("password", m_password);
 	args.setFloat("pitch", m_pitch);
@@ -141,7 +142,15 @@ void Player::deSerialize(std::istream &is)
 
 	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
-	updateName(name.c_str());
+	std::string id;
+        if(args.exists("identifier")) {
+           id = args.get("identifier");
+           updateIdentifier(id);
+        } else {
+          std::cerr << "We sholudn't be deseriaolizing this local arg" << std::endl;
+          updateIdentifier(name);
+        }
+	updateNickname(name);
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));

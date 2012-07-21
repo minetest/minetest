@@ -32,7 +32,7 @@ void cmd_status(std::wostringstream &os,
 void cmd_me(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if(!ctx->server->checkPriv(ctx->player->getName(), "shout"))
+	if(!ctx->server->checkPriv(ctx->player->getIdentifier(), "shout"))
 	{
 		os<<L"-!- You don't have permission to shout.";
 		return;
@@ -52,7 +52,7 @@ void cmd_time(std::wostringstream &os,
 		return;
 	}
 	
-	if(!ctx->server->checkPriv(ctx->player->getName(), "settime"))
+	if(!ctx->server->checkPriv(ctx->player->getIdentifier(), "settime"))
 	{
 		os<<L"-!- You don't have permission to do this.";
 		return;
@@ -62,20 +62,20 @@ void cmd_time(std::wostringstream &os,
 	ctx->server->setTimeOfDay(time);
 	os<<L"-!- Time of day changed.";
 
-	actionstream<<ctx->player->getName()<<" sets time "
+	actionstream<<ctx->player->getFullName()<<" sets time "
 			<<time<<std::endl;
 }
 
 void cmd_shutdown(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
+	if(!ctx->server->checkPriv(ctx->player->getIdentifier(), "server"))
 	{
 		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
-	actionstream<<ctx->player->getName()
+	actionstream<<ctx->player->getFullName()
 			<<" shuts down server"<<std::endl;
 
 	ctx->server->requestShutdown();
@@ -86,7 +86,7 @@ void cmd_shutdown(std::wostringstream &os,
 
 void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
-	if(!ctx->server->checkPriv(ctx->player->getName(), "ban"))
+	if(!ctx->server->checkPriv(ctx->player->getIdentifier(), "ban"))
 	{
 		os<<L"-!- You don't have permission to do this.";
 		return;
@@ -111,12 +111,12 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 		try{
 			Address address = ctx->server->getPeerAddress(player->peer_id);
 			std::string ip_string = address.serializeString();
-			ctx->server->setIpBanned(ip_string, player->getName());
+			ctx->server->setIpBanned(ip_string, player->getIdentifier());
 			os<<L"-!- Banned "<<narrow_to_wide(ip_string)<<L"|"
-					<<narrow_to_wide(player->getName());
+					<<narrow_to_wide(player->getFullName());
 
-			actionstream<<ctx->player->getName()<<" bans "
-					<<player->getName()<<" / "<<ip_string<<std::endl;
+			actionstream<<ctx->player->getFullName()<<" bans "
+					<<player->getFullName()<<" / "<<ip_string<<std::endl;
 		} catch(con::PeerNotFoundException){
 			dstream<<__FUNCTION_NAME<<": peer was not found"<<std::endl;
 		}
@@ -128,7 +128,7 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 		ctx->server->unsetIpBanned(ip_or_name);
 		os<<L"-!- Unbanned "<<narrow_to_wide(desc);
 
-		actionstream<<ctx->player->getName()<<" unbans "
+		actionstream<<ctx->player->getFullName()<<" unbans "
 				<<ip_or_name<<std::endl;
 	}
 }
@@ -136,20 +136,20 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 void cmd_clearobjects(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
+	if(!ctx->server->checkPriv(ctx->player->getIdentifier(), "server"))
 	{
 		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
-	actionstream<<ctx->player->getName()
+	actionstream<<ctx->player->getFullName()
 			<<" clears all objects"<<std::endl;
 	
 	{
 		std::wstring msg;
 		msg += L"Clearing all objects. This may take long.";
 		msg += L" You may experience a timeout. (by ";
-		msg += narrow_to_wide(ctx->player->getName());
+		msg += narrow_to_wide(ctx->player->getFullName());
 		msg += L")";
 		ctx->server->notifyPlayers(msg);
 	}

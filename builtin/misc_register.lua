@@ -57,17 +57,20 @@ local function check_modname_prefix(name)
 		return name:sub(2)
 	else
 		-- Modname prefix enforcement
-		local expected_prefix = minetest.get_current_modname() .. ":"
-		if name:sub(1, #expected_prefix) ~= expected_prefix then
-			error("Name " .. name .. " does not follow naming conventions: " ..
-				"\"modname:\" or \":\" prefix required")
-		end
-		local subname = name:sub(#expected_prefix+1)
-		if subname:find("[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]") then
-			error("Name " .. name .. " does not follow naming conventions: " ..
-				"contains unallowed characters")
-		end
-		return name
+           if minetest.get_current_modname() ~= nil then
+              local expected_prefix = minetest.get_current_modname() .. ":"
+              if name:sub(1, #expected_prefix) ~= expected_prefix then
+                 print("Name " .. name .. " does not follow naming conventions: " ..
+                       "\"modname:\" or \":\" prefix required")
+                 return name
+              end
+              local subname = name:sub(#expected_prefix+1)
+              if subname:find("[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]") then
+                 error("Name " .. name .. " does not follow naming conventions: " ..
+                       "contains unallowed characters")
+              end
+           end           
+           return name
 	end
 end
 

@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
+#include "nodetimer.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -195,6 +196,8 @@ public:
 	virtual MapBlock * emergeBlock(v3s16 p, bool allow_generate=true)
 	{ return getBlockNoCreateNoEx(p); }
 
+	virtual void reportModified(MapBlock* const) {}
+
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
@@ -311,6 +314,15 @@ public:
 	void removeNodeMetadata(v3s16 p);
 
 	/*
+		Node Timers
+		These are basically coordinate wrappers to MapBlock
+	*/
+	
+	NodeTimer getNodeTimer(v3s16 p);
+	void setNodeTimer(v3s16 p, NodeTimer t);
+	void removeNodeTimer(v3s16 p);
+
+	/*
 		Misc.
 	*/
 	core::map<v2s16, MapSector*> *getSectorsPtr(){return &m_sectors;}
@@ -349,8 +361,8 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef);
-	~ServerMap();
+  ServerMap(std::string savedir, IGameDef *gamedef);
+  ~ServerMap();
 
 	s32 mapType() const
 	{
@@ -467,13 +479,21 @@ public:
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
 
 	u64 getSeed(){ return m_seed; }
+	void setSeed(u64 seed) {
+		m_seed = seed;
+		saveMapMeta();
+	}
 
 private:
+
+        void tryPrepareWriteStatement();
+
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
 	
 	std::string m_savedir;
 	bool m_map_saving_enabled;
+        bool m_enable_write;
 
 #if 0
 	// Chunk size in MapSectors

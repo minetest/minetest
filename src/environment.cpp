@@ -73,9 +73,9 @@ void Environment::addPlayer(Player *player)
 	*/
 	// If peer id is non-zero, it has to be unique.
 	if(player->peer_id != 0)
-		assert(getPlayer(player->peer_id) == NULL);
-	// Name has to be unique.
-	assert(getPlayer(player->getName()) == NULL);
+          assert(getPlayer(player->peer_id) == NULL);
+	// Identifier has to be unique.
+	assert(getPlayer(player->getIdentifier()) == NULL);
 	// Add.
 	m_players.push_back(player);
 }
@@ -111,14 +111,28 @@ Player * Environment::getPlayer(u16 peer_id)
 	return NULL;
 }
 
-Player * Environment::getPlayer(const char *name)
+Player * Environment::getPlayer(const std::string& id)
 {
 	for(core::list<Player*>::Iterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
-		if(strcmp(player->getName(), name) == 0)
+                /* std::cerr << "Checking id <" << player->getIdentifier()
+                   << "> == <" << id << '>' << std::endl; */
+		if(player->getIdentifier() == id)
 			return player;
+	}
+	return NULL;
+}
+
+Player * Environment::getFirstPlayerByNickname(const std::string& name)
+{
+	for(core::list<Player*>::Iterator i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		if(player->getNickname()==name)
+                  return player;
 	}
 	return NULL;
 }
@@ -363,7 +377,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 			continue;
 		
 		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
+		std::string path = players_path + DIR_DELIM + player_files[i].name;
 
 		//infostream<<"Checking player file "<<path<<std::endl;
 
@@ -380,11 +394,11 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		//infostream<<"Loaded test player with name "<<testplayer.getNickname()<<std::endl;
 		
 		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
+		std::string id = testplayer.getIdentifier();
+		Player *player = getPlayer(id);
 		if(player == NULL)
 		{
 			infostream<<"Didn't find matching player, ignoring file "<<path<<std::endl;
@@ -413,13 +427,13 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		Player *player = *i;
 		if(saved_players.find(player) != NULL)
 		{
-			/*infostream<<"Player "<<player->getName()
+			/*infostream<<"Player "<<player->getNickname()
 					<<" was already saved."<<std::endl;*/
 			continue;
 		}
-		std::string playername = player->getName();
+		std::string id = player->getIdentifier();
 		// Don't save unnamed player
-		if(playername == "")
+		if(id == "")
 		{
 			//infostream<<"Not saving unnamed player."<<std::endl;
 			continue;
@@ -427,9 +441,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		/*
 			Find a sane filename
 		*/
-		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false)
-			playername = "player";
-		std::string path = players_path + "/" + playername;
+		std::string path = players_path + "/" + id;
 		bool found = false;
 		for(u32 i=0; i<1000; i++)
 		{
@@ -438,7 +450,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				found = true;
 				break;
 			}
-			path = players_path + "/" + playername + itos(i);
+			path = players_path + "/" + id + itos(i);
 		}
 		if(found == false)
 		{
@@ -447,7 +459,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		}
 
 		{
-			/*infostream<<"Saving player "<<player->getName()<<" to "
+			/*infostream<<"Saving player "<<player->getNickname()<<" to "
 					<<path<<std::endl;*/
 			// Open file and serialize
 			std::ofstream os(path.c_str(), std::ios_base::binary);
@@ -494,18 +506,18 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
+		if(!string_allowed(testplayer.getNickname(), PLAYERNAME_ALLOWED_CHARS))
 		{
 			infostream<<"Not loading player with invalid name: "
-					<<testplayer.getName()<<std::endl;
+					<<testplayer.getNickname()<<std::endl;
 		}
 
-		/*infostream<<"Loaded test player with name "<<testplayer.getName()
+		/*infostream<<"Loaded test player with name "<<testplayer.getNickname()
 				<<std::endl;*/
 		
 		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
+		std::string id = testplayer.getIdentifier();
+		Player *player = getPlayer(id);
 		bool newplayer = false;
 		if(player == NULL)
 		{
@@ -516,7 +528,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 
 		// Load player
 		{
-			verbosestream<<"Reading player "<<testplayer.getName()<<" from "
+			verbosestream<<"Reading player "<<testplayer.getIdentifier()<<" from "
 					<<path<<std::endl;
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -774,10 +786,18 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block);
 
 	// Run node timers
-	std::map<v3s16, f32> elapsed_timers =
+	std::map<v3s16, NodeTimer> elapsed_timers =
 		block->m_node_timers.step((float)dtime_s);
-	if(!elapsed_timers.empty())
-		errorstream<<"Node timers don't work yet!"<<std::endl;
+	if(!elapsed_timers.empty()){
+		MapNode n;
+		for(std::map<v3s16, NodeTimer>::iterator
+				i = elapsed_timers.begin();
+				i != elapsed_timers.end(); i++){
+			n = block->getNodeNoEx(i->first);
+			if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+				block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+		}
+	}
 
 	/* Handle ActiveBlockModifiers */
 	ABMHandler abmhandler(m_abms, dtime_s, this, false);
@@ -1058,10 +1078,18 @@ void ServerEnvironment::step(float dtime)
 						"Timestamp older than 60s (step)");
 
 			// Run node timers
-			std::map<v3s16, f32> elapsed_timers =
-				block->m_node_timers.step(dtime);
-			if(!elapsed_timers.empty())
-				errorstream<<"Node timers don't work yet!"<<std::endl;
+			std::map<v3s16, NodeTimer> elapsed_timers =
+				block->m_node_timers.step((float)dtime);
+			if(!elapsed_timers.empty()){
+				MapNode n;
+				for(std::map<v3s16, NodeTimer>::iterator
+						i = elapsed_timers.begin();
+						i != elapsed_timers.end(); i++){
+					n = block->getNodeNoEx(i->first);
+					if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+				}
+			}
 		}
 	}
 	
@@ -2057,6 +2085,7 @@ void ClientEnvironment::step(float dtime)
 		*/
 		if(player->isLocal() == false)
 		{
+                  std::cerr << "PMOVE" << std::endl;
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 
@@ -2234,6 +2263,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 		errorstream<<"ClientEnvironment::addActiveObject():"
 				<<" id="<<id<<" type="<<type
 				<<": SerializationError in initialize(),"
+                           << e.what()
 				<<" init_data="<<serializeJsonString(init_data)
 				<<std::endl;
 	}

@@ -20,6 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER_HEADER
 #define SERVER_HEADER
 
+#include "config.h" 
+#ifdef GPGME_EXISTS
+#include "gnupg.h" // we must include this here because c++ sucks
+#endif
+
+#include "peer.h"
 #include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_bloated.h"
@@ -435,9 +441,9 @@ private:
 	float m_nothing_to_send_pause_timer;
 };
 
-class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef,
-		public IBackgroundBlockEmerger
+class Server : public MapEventReceiver,
+  public IBackgroundBlockEmerger,
+  public Peer
 {
 public:
 	/*
@@ -627,6 +633,11 @@ private:
 	void sendRequestedMedia(u16 peer_id,
 			const core::list<MediaRequest> &tosend);
 
+#ifdef GPGME_EXISTS
+        void SendChallenge(con::Connection &con, u16 peer_id,
+                           gnupg::PendingChallenge* pc);
+#endif
+
 	/*
 		Something random
 	*/
@@ -640,12 +651,12 @@ private:
 	RemoteClient* getClient(u16 peer_id);
 	
 	// When called, environment mutex should be locked
-	std::string getPlayerName(u16 peer_id)
+	std::string getPlayerIdentifier(u16 peer_id)
 	{
 		Player *player = m_env->getPlayer(peer_id);
 		if(player == NULL)
 			return "[id="+itos(peer_id)+"]";
-		return player->getName();
+		return player->getIdentifier();
 	}
 
 	// When called, environment mutex should be locked
@@ -665,6 +676,7 @@ private:
 		Call with env and con locked.
 	*/
 	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
+        void emergePlayerDerp(const std::string& playername, u16 peer_id, bool gnupg, u8 deployed);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;
@@ -703,9 +715,6 @@ private:
 	ServerEnvironment *m_env;
 	JMutex m_env_mutex;
 	
-	// Connection
-	con::Connection m_con;
-	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
 
@@ -827,6 +836,14 @@ private:
 	*/
 	std::map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
+
+ private:
+        /* some common routines for the 2 ways to init */
+        u8 getDeployed(u8 client_max, u16 peer_id);
+        bool checkNetProtoVersion(u16 net_proto_version, u16 peer_id);
+        bool checkSingleModeMultiple(u16 peer_id);
+        bool checkTooManyUsers(const std::string& username, u16 peer_id);
+
 };
 
 /*

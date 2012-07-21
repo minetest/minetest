@@ -68,6 +68,31 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 #endif
 }
 
+void MapBlock::raiseModified(u32 mod, const std::string &reason)
+{
+	if(mod > m_modified){
+		m_modified = mod;
+		m_modified_reason = reason;
+		m_modified_reason_too_long = false;
+
+		if(m_modified >= MOD_STATE_WRITE_AT_UNLOAD){
+			m_disk_timestamp = m_timestamp;
+		}
+	} else if(mod == m_modified){
+		if(!m_modified_reason_too_long){
+			if(m_modified_reason.size() < 40)
+				m_modified_reason += ", " + reason;
+			else{
+				m_modified_reason += "...";
+				m_modified_reason_too_long = true;
+			}
+		}
+	} else 
+		return;
+	m_parent->reportModified(this);
+}
+
+
 MapBlock::~MapBlock()
 {
 #ifndef SERVER
@@ -558,6 +583,9 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		return;
 	}
 
+	assert(m_gamedef);
+	assert(m_gamedef != (void*)0xf); // XXX: "this" was deleted!!
+
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
@@ -582,8 +610,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 			tmp_nodes[i] = data[i];
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
-		u8 content_width = 1;
-		/*u8 content_width = (nimap.size() <= 255) ? 1 : 2;*/
+		u8 content_width = (version < 24) ? 1 : 2;
 		u8 params_width = 2;
 		writeU8(os, content_width);
 		writeU8(os, params_width);
@@ -593,8 +620,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 	else
 	{
-		u8 content_width = 1;
-		/*u8 content_width = 2;*/
+		u8 content_width = 2;
 		u8 params_width = 2;
 		writeU8(os, content_width);
 		writeU8(os, params_width);
@@ -621,9 +647,9 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		// (this field should have not been added)
 		if(version == 23)
 			writeU8(os, 0);
-		// Node timers (uncomment when node timers are taken into use)
-		/*if(version >= 24)
-			m_node_timers.serialize(os);*/
+		// Node timers are in version 24
+		if(version >= 24)
+			m_node_timers.serialize(os);
 
 		// Static objects
 		m_static_objects.serialize(os);
@@ -666,7 +692,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 	u8 content_width = readU8(is);
 	u8 params_width = readU8(is);
-	if(content_width != 1)
+	if(content_width != 1 && content_width != 2)
 		throw SerializationError("MapBlock::deSerialize(): invalid content_width");
 	if(params_width != 2)
 		throw SerializationError("MapBlock::deSerialize(): invalid params_width");
@@ -703,15 +729,15 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	if(disk)
 	{
 		// Node timers
-		if(version == 23)
+		if(version == 23){
 			// Read unused zero
 			readU8(is);
-		// Uncomment when node timers are taken into use
-		/*else if(version >= 24){
+		}
+		else if(version >= 24){
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 					<<": Node timers"<<std::endl);
 			m_node_timers.deSerialize(is);
-		}*/
+		}
 
 		// Static objects
 		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())

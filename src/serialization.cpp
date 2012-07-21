@@ -56,7 +56,7 @@ void zerr(int ret)
 void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 {
 	z_stream z;
-	const s32 bufsize = 16384;
+	const s32 bufsize = 32768;
 	//char input_buffer[bufsize];
 	char output_buffer[bufsize];
 	int input_i = 0;

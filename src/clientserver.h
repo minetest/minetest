@@ -58,6 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 11:
 		TileDef in ContentFeatures
 		Nodebox drawtype
+    PROTOCOL VERSION 11+:
+                Pubkey authentication
 		Added after a release: TOCLIENT_INVENTORY_FORMSPEC
 */
 
@@ -72,7 +74,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum ToClientCommand
 {
-	TOCLIENT_INIT = 0x10,
+  TOCLIENT_CHALLENGE = 0x7,
+  /*
+    Server's reply to TOSERVER_ANNOUNCE
+
+     [0] u16 TOCLIENT_CHALLENGE
+     [2] u8* challenge
+  */
+  TOPEER_IMPORT = 0x8,
+  /* 
+     [0] u16 TOPEER_IMPORT
+     [2] u8[40] fingerprint
+  */
+  TOPEER_EXPORT = 0x9,
+  /*
+    [0] u16 TOPEER_EXPORT
+    [2] u8* public key (binary)
+  */
+  TOCLIENT_INIT = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
 		Sent second after connected.
@@ -320,6 +339,39 @@ enum ToClientCommand
 
 enum ToServerCommand
 {
+  TOSERVER_ANNOUNCE = 0x6,
+  /* 
+     Sent first.
+
+     [0] u16 TOSERVER_ANNOUNCE
+     [2] u8 SER_FMT_VER_HIGHEST
+     [3] u16 client network protocol version
+     [5] u8* (hex) fingerprint
+  */
+  TOSERVER_CHALLENGE_RESPONSE = 0x7,
+
+  /*
+    [0] u16 TOSERVER_CHALLENGE_RESPONSE
+    [2] u8* response
+  */
+
+  _TOPEER_IMPORT = TOPEER_IMPORT,
+  /* 
+     [0] u16 TOPEER_IMPORT
+     [2] u8[40] fingerprint
+  */
+  _TOPEER_EXPORT = TOPEER_EXPORT,
+  /*
+    [0] u16 TOPEER_EXPORT
+    [2] u8* public key (binary)
+  */
+  TOSERVER_NICKNAME = 0xa,
+  /*
+    [0] u16 TOSERVER_NICKNAME
+    [2] u8* nickname
+  */
+
+    
 	TOSERVER_INIT=0x10,
 	/*
 		Sent first after connected.
@@ -501,6 +553,18 @@ enum ToServerCommand
 		u16 command
 		v3s16 p
 		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
+	TOSERVER_INVENTORY_FIELDS = 0x3c,
+	/*
+		u16 command
 		u8[len] form name (reserved for future use)
 		u16 number of fields
 		for each field:

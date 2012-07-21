@@ -786,9 +786,9 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
 	m_prop.weight = 75;
-	m_prop.collisionbox = core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
+	m_prop.collisionbox = core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,0.0,1/3.);
 	m_prop.visual = "upright_sprite";
-	m_prop.visual_size = v2f(1, 2);
+	m_prop.visual_size = v2f(1, 1);
 	m_prop.textures.clear();
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
@@ -806,7 +806,7 @@ PlayerSAO::~PlayerSAO()
 
 std::string PlayerSAO::getDescription()
 {
-	return std::string("player ") + m_player->getName();
+	return std::string("player ") + m_player->getFullName();
 }
 
 // Called after id has been set and has been inserted in environment
@@ -845,7 +845,7 @@ std::string PlayerSAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, 0); // version
-	os<<serializeString(m_player->getName()); // name
+	os<<serializeString(m_player->getIdentifier()); // name
 	writeU8(os, 1); // is_player
 	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 	writeF1000(os, m_player->getYaw());
@@ -853,6 +853,8 @@ std::string PlayerSAO::getClientInitializationData()
 	writeU8(os, 2); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+	os<<serializeString(m_player->getNickname()); // name
+
 	return os.str();
 }
 
@@ -913,17 +915,22 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			float d_vert = diff.Y;
 			diff.Y = 0;
 			float d_horiz = diff.getLength();
-			/*infostream<<m_player->getName()<<"'s horizontal speed is "
+			/*infostream<<m_player->getNickname()<<"'s horizontal speed is "
 					<<(d_horiz/age)<<std::endl;*/
 			if(d_horiz <= age * player_max_speed &&
 					(d_vert < 0 || d_vert < age * player_max_speed_up)){
-				m_last_good_position = m_player->getPosition();
+                          m_last_good_position = m_player->getPosition();
 			} else {
-				actionstream<<"Player "<<m_player->getName()
-						<<" moved too fast; resetting position"
-						<<std::endl;
-				m_player->setPosition(m_last_good_position);
-				m_teleported = true;
+				actionstream<<"Player "<<m_player->getFullName()
+                                            <<" moved too fast: "
+                                            << d_horiz << " / " << age 
+                                            << std::endl;
+                                // this causes stupid crazy amounts of lag teleporting
+                                // that kills more people than moving too fast.
+
+				/* m_player->setPosition(m_last_good_position);
+                                   m_teleported = true; */
+                                m_last_good_position = m_player->getPosition();
 			}
 			m_last_good_position_age = 0;
 		}
@@ -1014,7 +1021,7 @@ int PlayerSAO::punch(v3f dir,
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
 			time_from_last_punch);
 
-	actionstream<<"Player "<<m_player->getName()<<" punched by "
+	actionstream<<"Player "<<m_player->getNickname()<<" punched by "
 			<<puncher->getDescription()<<", damage "<<hitparams.hp
 			<<" HP"<<std::endl;
 
@@ -1100,7 +1107,7 @@ const Inventory* PlayerSAO::getInventory() const
 InventoryLocation PlayerSAO::getInventoryLocation() const
 {
 	InventoryLocation loc;
-	loc.setPlayer(m_player->getName());
+	loc.setPlayer(m_player->getIdentifier());
 	return loc;
 }
 

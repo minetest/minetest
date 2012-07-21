@@ -63,7 +63,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		//meta->setString("infotext","\"${text}\"");
 		meta->setString("infotext",
 				std::string("\"") + meta->getString("text") + "\"");
-		meta->setString("formspec","hack:sign_text_input");
+		meta->setString("formspec","field[text;;${text}]");
 		return false;
 	}
 	else if(id == NODEMETA_CHEST) // ChestNodeMetadata

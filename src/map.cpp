@@ -1881,6 +1881,59 @@ void Map::removeNodeMetadata(v3s16 p)
 	block->m_node_metadata.remove(p_rel);
 }
 
+NodeTimer Map::getNodeTimer(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(!block){
+		infostream<<"Map::getNodeTimer(): Need to emerge "
+				<<PP(blockpos)<<std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if(!block)
+	{
+		infostream<<"WARNING: Map::getNodeTimer(): Block not found"
+				<<std::endl;
+		return NodeTimer();
+	}
+	NodeTimer t = block->m_node_timers.get(p_rel);
+	return t;
+}
+
+void Map::setNodeTimer(v3s16 p, NodeTimer t)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(!block){
+		infostream<<"Map::setNodeTimer(): Need to emerge "
+				<<PP(blockpos)<<std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if(!block)
+	{
+		infostream<<"WARNING: Map::setNodeTimer(): Block not found"
+				<<std::endl;
+		return;
+	}
+	block->m_node_timers.set(p_rel, t);
+}
+
+void Map::removeNodeTimer(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+	{
+		infostream<<"WARNING: Map::removeNodeTimer(): Block not found"
+				<<std::endl;
+		return;
+	}
+	block->m_node_timers.remove(p_rel);
+}
+
 /*
 	ServerMap
 */
@@ -2273,8 +2326,8 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	{
 		v3s16 p(x, y, z);
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		assert(block);
-		block->setGenerated(true);
+                if(block)
+                  block->setGenerated(true);
 	}
 	
 	/*
@@ -2655,9 +2708,24 @@ void ServerMap::createDatabase() {
 		infostream<<"ServerMap: Database structure was created";
 }
 
+void ServerMap::tryPrepareWriteStatement() {
+  int d;
+  if(g_settings->getBool("write")==true) {
+    d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
+    if(d != SQLITE_OK) {
+      infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+      throw FileNotGoodException("Cannot prepare write statement");
+    }
+  }
+}
+  
+
 void ServerMap::verifyDatabase() {
-	if(m_database)
-		return;
+  if(m_database) {
+    if(NULL==m_database_write)
+      tryPrepareWriteStatement();
+    return;
+  }
 	
 	{
 		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
@@ -2687,12 +2755,8 @@ void ServerMap::verifyDatabase() {
 			infostream<<"WARNING: Database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
-		
-		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare write statement");
-		}
+
+                tryPrepareWriteStatement();
 		
 		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
 		if(d != SQLITE_OK) {
@@ -3188,6 +3252,10 @@ void ServerMap::endSave() {
 void ServerMap::saveBlock(MapBlock *block)
 {
 	DSTACK(__FUNCTION_NAME);
+
+        // if the map is read only, we only want to look at part of it.
+        if(m_database_write==NULL) return;
+
 	/*
 		Dummy blocks are not written
 	*/

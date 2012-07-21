@@ -1198,69 +1198,136 @@ bool block_is_underground(u64 seed, v3s16 blockpos)
 
 #define AVERAGE_MUD_AMOUNT 4
 
+//#define FLAT
+
+// plot [x=-1:1] f(b,x) = 1 - g(b,x)*log(b*(x+1)+1),g(b,x)=(1+0)/log(b*(1+1)+1),f(1,x),f(2,x),f(10,x),f(-0.4999999,x),f(1000000,x)
+
+// b>0 = bias toward 0
+// -0.5<b<0 = bias toward 1
+const double biasb = 0x10;
+double biasa;
+
+__attribute__ ((constructor))
+void setupBias() {
+  //a = (1+0)/log(b*(1+1)+1)
+  biasa = 1/log(biasb*2+1);
+}
+
+double bias(double what) {
+  if(what>1) what = 1;
+  if(what<-1) what = -1;
+  double res = 1 - biasa * log(biasb*(what+1)+1);
+  if(res > 1 || res < 0) {
+    std::cerr << "Got res " << what << " => " << res  << std::endl;
+    exit(2);
+  }
+  return res;
+}
+
+float ea;
+float eb;
+
+__attribute__ ((constructor))
+void setupExtremes(void) {
+  eb = 1 / (1 + exp(-double(0x10)/0x11));
+  ea = 1 / (1 + exp(double(0x10)/0x11)) - eb;
+}
+
+double extremes(double what) {
+  // -1..1 -> 0..1 but biased away from 0.5
+  // i.e. yes/no not maybe
+  // i.e. a logistic curve
+  return (1 / (1 + exp(what)) - eb) / ea;
+}
+
+static const char* hex(double n) {
+  static char hextable[] = "0123456789abcdef";
+  double f,i;
+  f = modf(n,&i);
+  if(!isfinite(f)) return "DERP";
+  static char buf[0x100];
+  int pos = 0;
+  if(i<0 or (i==0 && f<0)) {
+    buf[pos++] = '-';
+    if(i==0) f = -f;
+    else i = -i;
+  }
+
+  pos += snprintf(buf+pos,0x100-pos,"%x",(int)i);
+  if(pos==0x100 || f == 0) return buf;
+
+  buf[pos++] = '.';
+  int frac = 0;
+  for(;pos<0x100 && frac<8;++frac) {
+    f = modf(f*0x10,&i);
+    if(f>1.0) {
+      printf("GAOEUH %lf\n",n);
+      exit(2);
+    }
+    buf[pos++] = hextable[(int)fabs(i)];
+    if(f==0) break;
+  }
+  if(frac==8) {
+    int dots = 0;
+    for(;pos<0x100 && dots<3;++pos,++dots) {
+      buf[pos] = '.';
+    }
+  }
+  buf[pos] = '\0';
+  return buf;
+} 
+/*
+__attribute__ ((constructor))
+static void derpderp(void) {
+  float f = float(0x10101) / 0x101;
+  printf("%lf is %s\n",f,hex(f));
+  printf("negaroo %s\n",hex(-f));
+  exit(2);
+}
+__attribute__((constructor)) 
+static void derpfderp(void) {
+  setupExtremes();
+  float n;
+  for(n=-2;n<=2;n+=1.0/0x10) {
+    fputs(hex(n),stdout);
+    fputs(": ",stdout);
+    puts(hex(extremes(n)));
+  }
+  exit(2);
+}
+*/
+
+
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
-	// The base ground level
-	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT
-			+ 20. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+82341, 5, 0.6);
-
-	/*// A bit hillier one
-	double base2 = WATER_LEVEL - 4.0 + 40. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+93413, 6, 0.69);
-	if(base2 > base)
-		base = base2;*/
-#if 1
-	// Higher ground level
-	double higher = (double)WATER_LEVEL + 20. + 16. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed+85039, 5, 0.6);
-	//higher = 30; // For debugging
-
-	// Limit higher to at least base
-	if(higher < base)
-		higher = base;
-
-	// Steepness factor of cliffs
-	double b = 0.85 + 0.5 * noise2d_perlin(
-			0.5+(float)p.X/125., 0.5+(float)p.Y/125.,
-			seed-932, 5, 0.7);
-	b = rangelim(b, 0.0, 1000.0);
-	b = pow(b, 7);
-	b *= 5;
-	b = rangelim(b, 0.5, 1000.0);
-	// Values 1.5...100 give quite horrible looking slopes
-	if(b > 1.5 && b < 100.0){
-		if(b < 10.0)
-			b = 1.5;
-		else
-			b = 100.0;
-	}
-	//dstream<<"b="<<b<<std::endl;
-	//double b = 20;
-	//b = 0.25;
-
-	// Offset to more low
-	double a_off = -0.20;
-	// High/low selector
-	/*double a = 0.5 + b * (a_off + noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed+4213, 6, 0.7));*/
-	double a = (double)0.5 + b * (a_off + noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+4213, 5, 0.69));
-	// Limit
-	a = rangelim(a, 0.0, 1.0);
-
-	//dstream<<"a="<<a<<std::endl;
-
-	double h = base*(1.0-a) + higher*a;
+#ifdef FLAT
+  return WATER_LEVEL+5;
 #else
-	double h = base;
-#endif
+	// Flat ground level
+	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT +
+          5. * 
+          extremes(noise2d_perlin(
+                                  0.5+(float)p.X/0x100, 0.5+(float)p.Y/0x100,
+                                  seed+82341, 5, 0.6)) - 2;
+
+	// Mountainous ground level
+        // note *2-1 changes 0..1 to -1..1
+	double higher = (double)WATER_LEVEL + 
+          (0x80+0x40) * 
+          extremes(noise2d_perlin(
+                                  0.5+(float)p.X/0x100, 0.5+(float)p.Y/0x100,
+                                  seed+85039, 5, 0.6))
+          -0x40;
+
+        // the idea is mostly at 0x100 and -0x40, with a logistic transition in between
+
+	// bias result toward flatlands for BIG plains
+	double a = bias(noise2d_perlin(0.5+(float)p.X/0x200, 
+                                       0.5+(float)p.Y/0x200,
+                                       seed+4213, 5, 0.69));
+	double h = base*(1.0-a) + higher*a;
 	return h;
+#endif
 }
 
 s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
@@ -1783,7 +1850,7 @@ void make_block(BlockMakeData *data)
 	}//timer1
 #endif
 	
-#if 1
+#ifndef FLAT
 	{
 	// 15ms @cs=8
 	TimeTaker timer1("add mud");
@@ -1865,7 +1932,7 @@ void make_block(BlockMakeData *data)
 	}
 
 	}//timer1
-#endif
+#endif /* FLAT */
 
 	/*
 		Add blobs of dirt and gravel underground
@@ -1910,7 +1977,7 @@ void make_block(BlockMakeData *data)
 	}
 	}
 
-#if 1
+#ifndef FLAT
 	{
 	// 340ms @cs=8
 	TimeTaker timer1("flow mud");
@@ -2078,7 +2145,7 @@ void make_block(BlockMakeData *data)
 	}
 
 	}//timer1
-#endif
+#endif /* FLAT */
 
 	} // Aging loop
 	/***********************

@@ -189,6 +189,17 @@ public:
 		m_privs = privs;
 		m_is_singleplayer = is_singleplayer;
 	}
+	void setCallback(std::string name, int id)
+	{
+		m_lua_callbacks[name] = id;
+	}
+	int getCallback(std::string name)
+	{
+		if (m_lua_callbacks.find(name) == m_lua_callbacks.end())
+			return 0;
+		
+		return m_lua_callbacks[name];
+	}
 
 private:
 	std::string getPropertyPacket();
@@ -208,6 +219,7 @@ private:
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
+	std::map<std::string, int> m_lua_callbacks;
 
 public:
 	// Some flags used by Server

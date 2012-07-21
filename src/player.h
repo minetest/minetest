@@ -114,14 +114,31 @@ public:
 		return (m_yaw + 90.) * core::DEGTORAD;
 	}
 
-	void updateName(const char *name)
+	void updateNickname(const std::string& name)
 	{
-		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
+          if(name.size()<PLAYERNAME_SIZE)
+            m_name = name;
 	}
 
-	const char * getName() const
+	void updateIdentifier(const std::string& identifier)
 	{
-		return m_name;
+          m_identifier = identifier;          
+          updateNickname(identifier.c_str());
+	}
+
+        const std::string& getNickname() {
+          return m_name;
+        }
+
+        std::string getFullName() {
+          std::ostringstream os;
+          os << m_name << " <" << m_identifier << '>';
+          return os.str();
+        }
+
+        const std::string& getIdentifier() const
+	{
+		return m_identifier;
 	}
 
 	virtual bool isLocal() const
@@ -162,7 +179,8 @@ public:
 protected:
 	IGameDef *m_gamedef;
 
-	char m_name[PLAYERNAME_SIZE];
+        std::string m_identifier;
+        std::string m_name;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

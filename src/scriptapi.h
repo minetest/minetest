@@ -39,6 +39,7 @@ struct ToolCapabilities;
 void scriptapi_export(lua_State *L, Server *server);
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 		const std::string &modname);
+void scriptapi_postinit(lua_State *L);
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
 
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
@@ -88,6 +89,8 @@ void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
 void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
 // Node post-destructor
 void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node);
+// Node Timer event
+bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime);
 // Called when a metadata form returns values
 void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		const std::string &formname,
@@ -106,6 +109,12 @@ ItemStack scriptapi_node_on_metadata_inventory_offer(lua_State *L, v3s16 p,
 ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
 		const std::string &listname, int index, int count,
 		ServerActiveObject *player);
+
+// Called when a player inventory form returns values
+void scriptapi_player_on_receive_fields(lua_State *L, 
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields,
+		ServerActiveObject *sender);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

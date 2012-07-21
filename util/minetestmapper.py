@@ -8,6 +8,7 @@
 # COPYING for more details.
 
 # Made by Jogge, modified by celeron55
+# 2012-10-21: cy: ends world
 # 2011-05-29: j0gge: initial release
 # 2011-05-30: celeron55: simultaneous support for sectors/sectors2, removed
 # 2011-06-02: j0gge: command line parameters, coordinates, players, ...

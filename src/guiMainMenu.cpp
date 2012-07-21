@@ -36,6 +36,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // For IGameCallback
 #include "guiPauseMenu.h"
 #include "gettext.h"
+#include "config.h"
+#ifdef GPGME_EXISTS
+#include "gnupg.h"
+#endif
 #include "tile.h" // getTexturePath
 #include "filesys.h"
 #include "util/string.h"
@@ -338,7 +342,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
 			rect += m_topleft_client + v2s32(35+30, 50+6);
-			Environment->addStaticText(wgettext("Name/Password"), 
+			const char* message = "Name/Password";
+#ifdef GPGME_EXISTS
+			if(gnupg::pgpEnabled)
+				message = "Name";
+#endif
+			Environment->addStaticText(wgettext(message), 
 				rect, false, true, this, -1);
 		}
 		changeCtype("C");
@@ -350,11 +359,16 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			if(m_data->name == L"")
 				Environment->setFocus(e);
 		}
+
+
+#ifdef GPGME_EXISTS
+		if(!gnupg::pgpEnabled)
+#endif
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 50);
 			gui::IGUIEditBox *e =
-			Environment->addEditBox(L"", rect, true, this, 264);
+                        Environment->addEditBox(m_data->password.c_str(), rect, true, this, 264);
 			e->setPasswordBox(true);
 			if(m_data->name != L"" && m_data->address != L"")
 				Environment->setFocus(e);

@@ -68,7 +68,8 @@ public:
 	virtual void addPlayer(Player *player);
 	void removePlayer(u16 peer_id);
 	Player * getPlayer(u16 peer_id);
-	Player * getPlayer(const char *name);
+	Player * getPlayer(const std::string& id);
+	Player * getFirstPlayerByNickname(const std::string& name);
 	Player * getRandomConnectedPlayer();
 	Player * getNearestConnectedPlayer(v3f pos);
 	core::list<Player*> getPlayers();
