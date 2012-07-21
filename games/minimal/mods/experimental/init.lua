@@ -447,6 +447,9 @@ minetest.register_node("experimental:tester_node_1", {
 	tile_images = {"wieldhand.png"},
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
+	-- This was known to cause a bug in minetest.item_place_node() when used
+	-- via minetest.env:place_node(), causing a placer with no position
+  	paramtype2 = "facedir",
 
 	on_construct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:on_construct("..minetest.pos_to_string(pos)..")")
