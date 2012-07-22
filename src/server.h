@@ -556,6 +556,7 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
+	void getModNames(core::list<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	
 	std::string getWorldPath(){ return m_path_world; }

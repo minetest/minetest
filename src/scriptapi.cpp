@@ -4461,6 +4461,60 @@ static int l_get_modpath(lua_State *L)
 	return 1;
 }
 
+// get_modnames()
+// the returned list is sorted alphabetically for you
+static int l_get_modnames(lua_State *L)
+{
+	// Get a list of mods
+	core::list<std::string> mods_unsorted, mods_sorted;
+	get_server(L)->getModNames(mods_unsorted);
+
+	// Take unsorted items from mods_unsorted and sort them into
+	// mods_sorted; not great performance but the number of mods on a
+	// server will likely be small.
+	for(core::list<std::string>::Iterator i = mods_unsorted.begin();
+	    i != mods_unsorted.end(); i++)
+	{
+		bool added = false;
+		for(core::list<std::string>::Iterator x = mods_sorted.begin();
+		    x != mods_unsorted.end(); x++)
+		{
+			// I doubt anybody using Minetest will be using
+			// anything not ASCII based :)
+			if((*i).compare(*x) <= 0)
+			{
+				mods_sorted.insert_before(x, *i);
+				added = true;
+				break;
+			}
+		}
+		if(!added)
+			mods_sorted.push_back(*i);
+	}
+
+	// Get the table insertion function from Lua.
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int insertion_func = lua_gettop(L);
+
+	// Package them up for Lua
+	lua_newtable(L);
+	int new_table = lua_gettop(L);
+	core::list<std::string>::Iterator i = mods_sorted.begin();
+	while(i != mods_sorted.end())
+	{
+		lua_pushvalue(L, insertion_func);
+		lua_pushvalue(L, new_table);
+		lua_pushstring(L, (*i).c_str());
+		if(lua_pcall(L, 2, 0, 0) != 0)
+		{
+			script_error(L, "error: %s", lua_tostring(L, -1));
+		}
+		i++;
+	}
+	return 1;
+}
+
 // get_worldpath()
 static int l_get_worldpath(lua_State *L)
 {
@@ -4630,6 +4684,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_hit_params", l_get_hit_params},
 	{"get_current_modname", l_get_current_modname},
 	{"get_modpath", l_get_modpath},
+	{"get_modnames", l_get_modnames},
 	{"get_worldpath", l_get_worldpath},
 	{"sound_play", l_sound_play},
 	{"sound_stop", l_sound_stop},
