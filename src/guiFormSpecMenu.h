@@ -130,6 +130,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		{
 			send = false;
 			is_button = false;
+			is_exit = false;
 		}
 		std::wstring fname;
 		std::wstring flabel;
@@ -137,6 +138,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		int fid;
 		bool send;
 		bool is_button;
+		bool is_exit;
 	};
 
 public:

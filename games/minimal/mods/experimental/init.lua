@@ -532,7 +532,7 @@ minetest.register_chatcommand("test1", {
 				"list[current_player;craft;8,0;3,3;]"..
 				"list[current_player;craftpreview;12,1;1,1;]"..
 				"button[0.5,7;2,1;button1;Button 1]"..
-				"button[2.5,7;2,1;button2;Button 2]"
+				"button_exit[2.5,7;2,1;button2;Exit Button]"
 		)
 		minetest.chat_send_player(name, "Done.");
 	end,

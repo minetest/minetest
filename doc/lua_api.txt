@@ -719,6 +719,12 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ image is the filename of an image
 ^ Position and size units are inventory slots
 
+button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
+^ When clicked, fields will be sent and the form will quit.
+
+image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
+^ When clicked, fields will be sent and the form will quit.
+
 Inventory location:
 - "context": Selected node metadata (deprecated: "current_name")
 - "current_player": Player to whom the menu is shown

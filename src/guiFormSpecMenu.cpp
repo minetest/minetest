@@ -149,6 +149,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 
 	delete m_selected_item;
 	delete m_form_src;
+	delete m_text_dst;
 }
 
 void GUIFormSpecMenu::removeChildren()
@@ -398,7 +399,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
 			m_fields.push_back(spec);
 		}
-		else if(type == "button")
+		else if(type == "button" || type == "button_exit")
 		{
 			v2s32 pos;
 			pos.X = stof(f.next(",")) * (float)spacing.X;
@@ -421,10 +422,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				258+m_fields.size()
 			);
 			spec.is_button = true;
+			if(type == "button_exit")
+				spec.is_exit = true;
 			Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
 			m_fields.push_back(spec);
 		}
-		else if(type == "image_button")
+		else if(type == "image_button" || type == "image_button_exit")
 		{
 			v2s32 pos;
 			pos.X = stof(f.next(",")) * (float)spacing.X;
@@ -448,6 +451,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				258+m_fields.size()
 			);
 			spec.is_button = true;
+			if(type == "image_button_exit")
+				spec.is_exit = true;
 			
 			video::ITexture *texture = m_gamedef->tsrc()->getTextureRaw(fimage);
 			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
@@ -813,8 +818,6 @@ void GUIFormSpecMenu::acceptInput()
 			}
 		}
 		m_text_dst->gotText(fields);
-		delete m_text_dst;
-		m_text_dst = NULL;
 	}
 }
 
@@ -1152,8 +1155,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				{
 					s.send = true;
 					acceptInput();
-					quitMenu();
-					return true;
+					if(s.is_exit){
+						quitMenu();
+						return true;
+					}else{
+						s.send = false;
+						return true;
+					}
 				}
 			}
 		}
