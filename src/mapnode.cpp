@@ -39,11 +39,9 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 {
 	content_t id = CONTENT_IGNORE;
 	ndef->getId(name, id);
+	param0 = id;
 	param1 = a_param1;
 	param2 = a_param2;
-	// Set content (param0 and (param2&0xf0)) after other params
-	// because this needs to override part of param2
-	setContent(id);
 }
 
 void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
@@ -250,9 +248,21 @@ void MapNode::serialize(u8 *dest, u8 version)
 		return;
 	}
 
-	writeU8(dest+0, param0);
-	writeU8(dest+1, param1);
-	writeU8(dest+2, param2);
+	if(version >= 24){
+		writeU16(dest+0, param0);
+		writeU8(dest+2, param1);
+		writeU8(dest+3, param2);
+	}
+	else{
+		writeU8(dest+0, (param0&0xFF));
+		writeU8(dest+1, param1);
+		if (param0 > 0x7F){
+			writeU8(dest+2, ((param2&0x0F) | ((param0&0x0F00)>>4)));
+		}
+		else{
+			writeU8(dest+2, param2);
+		}
+	}
 }
 void MapNode::deSerialize(u8 *source, u8 version)
 {
@@ -265,9 +275,20 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		return;
 	}
 
-	param0 = readU8(source+0);
-	param1 = readU8(source+1);
-	param2 = readU8(source+2);
+	if(version >= 24){
+		param0 = readU16(source+0);
+		param1 = readU8(source+2);
+		param2 = readU8(source+3);
+	}
+	else{
+		param0 = readU8(source+0);
+		param1 = readU8(source+1);
+		param2 = readU8(source+2);
+		if(param0 > 0x7F){
+			param0 |= ((param2&0xF0)<<4);
+			param2 &= 0x0F;
+		}
+	}
 }
 void MapNode::serializeBulk(std::ostream &os, int version,
 		const MapNode *nodes, u32 nodecount,
@@ -277,7 +298,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
 	assert(version >= 22);
-	assert(content_width == 1);
+	assert(content_width == 1 || content_width == 2);
 	assert(params_width == 2);
 
 	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
@@ -286,14 +307,12 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	if(content_width == 1)
 	{
 		for(u32 i=0; i<nodecount; i++)
-			writeU8(&databuf[i], nodes[i].param0);
-	}
-	/* If param0 is extended to two bytes, use something like this: */
-	/*else if(content_width == 2)
+			writeU8(&databuf[i], (nodes[i].param0&0x00FF));
+	}else if(content_width == 2)
 	{
 		for(u32 i=0; i<nodecount; i++)
 			writeU16(&databuf[i*2], nodes[i].param0);
-	}*/
+	}
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
@@ -302,8 +321,21 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 
 	// Serialize param2
 	u32 start2 = (content_width + 1) * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		writeU8(&databuf[start2 + i], nodes[i].param2);
+	if(content_width == 1)
+	{
+		for(u32 i=0; i<nodecount; i++) {
+			if(nodes[i].param0 > 0x7F){
+				writeU8(&databuf[start2 + i], ((nodes[i].param2&0x0F) | ((nodes[i].param0&0x0F00)>>4)));
+			}
+			else{
+				writeU8(&databuf[start2 + i], nodes[i].param2);
+			}
+		}
+	}else if(content_width == 2)
+	{
+		for(u32 i=0; i<nodecount; i++)
+			writeU8(&databuf[start2 + i], nodes[i].param2);
+	}
 
 	/*
 		Compress data to output stream
@@ -328,7 +360,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
 	assert(version >= 22);
-	assert(content_width == 1);
+	assert(content_width == 1 || content_width == 2);
 	assert(params_width == 2);
 
 	// Uncompress or read data
@@ -358,12 +390,11 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		for(u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU8(&databuf[i]);
 	}
-	/* If param0 is extended to two bytes, use something like this: */
-	/*else if(content_width == 2)
+	else if(content_width == 2)
 	{
 		for(u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU16(&databuf[i*2]);
-	}*/
+	}
 
 	// Deserialize param1
 	u32 start1 = content_width * nodecount;
@@ -372,8 +403,21 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// Deserialize param2
 	u32 start2 = (content_width + 1) * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		nodes[i].param2 = readU8(&databuf[start2 + i]);
+	if(content_width == 1)
+	{
+		for(u32 i=0; i<nodecount; i++) {
+			nodes[i].param2 = readU8(&databuf[start2 + i]);
+			if(nodes[i].param0 > 0x7F){
+				nodes[i].param0 |= ((nodes[i].param2&0xF0)<<4);
+				nodes[i].param2 &= 0x0F;
+			}
+		}
+	}
+	else if(content_width == 2)
+	{
+		for(u32 i=0; i<nodecount; i++)
+			nodes[i].param2 = readU8(&databuf[start2 + i]);
+	}
 }
 
 /*

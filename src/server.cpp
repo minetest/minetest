@@ -843,7 +843,7 @@ queue_full_break:
 
 	/*timer_result = timer.stop(true);
 	if(timer_result != 0)
-		infostream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
+		infostream<<"GetNextBlocks timeout: "<<timer_result<<" (!=0)"<<std::endl;*/
 }
 
 void RemoteClient::GotBlock(v3s16 p)
@@ -4016,7 +4016,7 @@ void Server::SendBlocks(float dtime)
 
 		RemoteClient *client = getClient(q.peer_id);
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version);
+		SendBlockNoLock(q.peer_id, block, 24);//client->serialization_version);
 
 		client->SentBlock(q.pos);
 
