@@ -20,18 +20,13 @@ minetest.register_on_chat_message(function(name, message)
 	end
 	local cmd_def = minetest.chatcommands[cmd]
 	if cmd_def then
-		if not cmd_def.func then
-			-- This is a C++ command
-			return false
+		local has_privs, missing_privs = minetest.check_player_privs(name, cmd_def.privs)
+		if has_privs then
+			cmd_def.func(name, param)
 		else
-			local has_privs, missing_privs = minetest.check_player_privs(name, cmd_def.privs)
-			if has_privs then
-				cmd_def.func(name, param)
-			else
-				minetest.chat_send_player(name, "You don't have permission to run this command (missing privileges: "..table.concat(missing_privs, ", ")..")")
-			end
-			return true -- handled chat message
+			minetest.chat_send_player(name, "You don't have permission to run this command (missing privileges: "..table.concat(missing_privs, ", ")..")")
 		end
+		return true -- handled chat message
 	end
 	return false
 end)
@@ -39,17 +34,15 @@ end)
 --
 -- Chat commands
 --
+minetest.register_chatcommand("me", {
+	params = "<action>",
+	description = "chat action (eg. /me orders a pizza)",
+	privs = {shout=true},
+	func = function(name, param)
+		minetest.chat_send_all("* " .. name .. " " .. param)
+	end,
+})
 
--- Register C++ commands without functions
-minetest.register_chatcommand("me", {params = nil, description = "chat action (eg. /me orders a pizza)", privs = {shout=true}})
-minetest.register_chatcommand("status", {description = "print server status line"})
-minetest.register_chatcommand("shutdown", {params = "", description = "shutdown server", privs = {server=true}})
-minetest.register_chatcommand("clearobjects", {params = "", description = "clear all objects in world", privs = {server=true}})
-minetest.register_chatcommand("time", {params = "<0...24000>", description = "set time of day", privs = {settime=true}})
-minetest.register_chatcommand("ban", {params = "<name>", description = "ban IP of player", privs = {ban=true}})
-minetest.register_chatcommand("unban", {params = "<name/ip>", description = "remove IP ban", privs = {ban=true}})
-
--- Register other commands
 minetest.register_chatcommand("help", {
 	privs = {},
 	params = "(nothing)/all/privs/<cmd>",
@@ -575,3 +568,92 @@ minetest.register_chatcommand("rollback", {
 	end,
 })
 
+minetest.register_chatcommand("status", {
+	params = "",
+	description = "print server status line",
+	privs = {},
+	func = function(name, param)
+		minetest.chat_send_player(name, minetest.get_server_status())
+	end,
+})
+
+minetest.register_chatcommand("time", {
+	params = "<0...24000>",
+	description = "set time of day",
+	privs = {settime=true},
+	func = function(name, param)
+		if param == "" then
+			minetest.chat_send_player(name, "Missing parameter")
+			return
+		end
+		local newtime = tonumber(param)
+		if newtime == nil then
+			minetest.chat_send_player(name, "Invalid time")
+		else
+			minetest.env:set_timeofday((newtime % 24000) / 24000)
+			minetest.chat_send_player(name, "Time of day changed.")
+			minetest.log("action", name .. " sets time " .. newtime)
+		end
+	end,
+})
+
+minetest.register_chatcommand("shutdown", {
+	params = "",
+	description = "shutdown server",
+	privs = {server=true},
+	func = function(name, param)
+		minetest.log("action", name .. " shuts down server")
+		minetest.request_shutdown()
+		minetest.chat_send_all("*** Server shutting down (operator request).")
+	end,
+})
+
+minetest.register_chatcommand("ban", {
+	params = "<name>",
+	description = "ban IP of player",
+	privs = {ban=true},
+	func = function(name, param)
+		if param == "" then
+			minetest.chat_send_player(name, "Ban list: " .. minetest.get_ban_list())
+			return
+		end
+		if not minetest.env:get_player_by_name(param) then
+			minetest.chat_send_player(name, "No such player")
+			return
+		end
+		if not minetest.ban_player(param) then
+			minetest.chat_send_player(name, "Failed to ban player")
+		else
+			local desc = minetest.get_ban_description(param)
+			minetest.chat_send_player(name, "Banned " .. desc .. ".")
+			minetest.log("action", name .. " bans " .. desc .. ".")
+		end
+	end,
+})
+
+minetest.register_chatcommand("unban", {
+	params = "<name/ip>",
+	description = "remove IP ban",
+	privs = {ban=true},
+	func = function(name, param)
+		if not minetest.unban_player_or_ip(param) then
+			minetest.chat_send_player(name, "Failed to unban player/IP")
+		else
+			minetest.chat_send_player(name, "Unbanned " .. param)
+			minetest.log("action", name .. " unbans " .. param)
+		end
+	end,
+})
+
+minetest.register_chatcommand("clearobjects", {
+	params = "",
+	description = "clear all objects in world",
+	privs = {server=true},
+	func = function(name, param)
+		minetest.log("action", name .. " clears all objects")
+		minetest.chat_send_all("Clearing all objects.  This may take long.  You may experience a timeout.  (by " .. name .. ")")
+		minetest.env:clear_objects()
+		minetest.log("action", "object clearing done")
+		minetest.chat_send_all("*** Cleared all objects.")
+	end,
+})

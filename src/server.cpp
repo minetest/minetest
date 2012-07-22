@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
-#include "servercommand.h"
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -2653,36 +2652,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Whether to send to other players
 		bool send_to_others = false;
 		
-		// Parse commands
+		// Commands are implemented in Lua, so only catch invalid
+		// commands that were not "eaten" and send an error back
 		if(message[0] == L'/')
 		{
-			size_t strip_size = 1;
-			if (message[1] == L'#') // support old-style commans
-				++strip_size;
-			message = message.substr(strip_size);
-
-			WStrfnd f1(message);
-			f1.next(L" "); // Skip over /#whatever
-			std::wstring paramstring = f1.next(L"");
-
-			ServerCommandContext *ctx = new ServerCommandContext(
-				str_split(message, L' '),
-				paramstring,
-				this,
-				m_env,
-				player);
-
-			std::wstring reply(processServerCommand(ctx));
-			send_to_sender = ctx->flags & SEND_TO_SENDER;
-			send_to_others = ctx->flags & SEND_TO_OTHERS;
-
-			if (ctx->flags & SEND_NO_PREFIX)
-				line += reply;
+			message = message.substr(1);
+			send_to_sender = true;
+			if(message.length() == 0)
+				line += L"-!- Empty command";
 			else
-				line += L"Server: " + reply;
-
-			delete ctx;
-
+				line += L"-!- Invalid command: " + str_split(message, L' ')[0];
 		}
 		else
 		{
