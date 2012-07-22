@@ -297,7 +297,7 @@ void initializePaths()
 
 	#elif defined(__FreeBSD__)
 
-	path_share = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
+	path_share = std::string(CMAKE_INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
     
 	#endif
