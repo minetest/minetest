@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
+#include "noise.h" // PseudoRandom used for random data for compression
 
 /*
 	Asserts that the exception occurs
@@ -414,6 +415,39 @@ struct TestCompress: public TestBase
 			UASSERT(str_out2[i] == fromdata[i]);
 		}
 
+		}
+
+		// Test zlib wrapper with large amounts of data (larger than it's
+		// internal buffers)
+		{
+			infostream<<"Test: Testing zlib wrappers with a large amount "
+					<<"of pseudorandom data"<<std::endl;
+			u32 size = 50000;
+			infostream<<"Test: Input size of large compressZlib is "
+					<<size<<std::endl;
+			std::string data_in;
+			data_in.resize(size);
+			PseudoRandom pseudorandom(9420);
+			for(u32 i=0; i<size; i++)
+				data_in[i] = pseudorandom.range(0,255);
+			std::ostringstream os_compressed(std::ios::binary);
+			compressZlib(data_in, os_compressed);
+			infostream<<"Test: Output size of large compressZlib is "
+					<<os_compressed.str().size()<<std::endl;
+			std::istringstream is_compressed(os_compressed.str(), std::ios::binary);
+			std::ostringstream os_decompressed(std::ios::binary);
+			decompressZlib(is_compressed, os_decompressed);
+			infostream<<"Test: Output size of large decompressZlib is "
+					<<os_decompressed.str().size()<<std::endl;
+			std::string str_decompressed = os_decompressed.str();
+			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
+					" equal (output: %i, input: %i)",
+					str_decompressed.size(), data_in.size());
+			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
+				UTEST(str_decompressed[i] == data_in[i],
+						"index out[%i]=%i differs from in[%i]=%i",
+						i, str_decompressed[i], i, data_in[i]);
+			}
 		}
 	}
 };
