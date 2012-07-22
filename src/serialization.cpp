@@ -57,9 +57,7 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 {
 	z_stream z;
 	const s32 bufsize = 16384;
-	//char input_buffer[bufsize];
 	char output_buffer[bufsize];
-	int input_i = 0;
 	int status = 0;
 	int ret;
 
@@ -71,26 +69,16 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 	if(ret != Z_OK)
 		throw SerializationError("compressZlib: deflateInit failed");
 	
-	z.avail_in = 0;
-	
+	// Point zlib to our input buffer
+	z.next_in = (Bytef*)&data[0];
+	z.avail_in = data.getSize();
+	// And get all output
 	for(;;)
 	{
-		int flush = Z_NO_FLUSH;
 		z.next_out = (Bytef*)output_buffer;
 		z.avail_out = bufsize;
-
-		if(z.avail_in == 0)
-		{
-			//z.next_in = (char*)&data[input_i];
-			z.next_in = (Bytef*)&data[input_i];
-			z.avail_in = data.getSize() - input_i;
-			input_i += z.avail_in;
-			if(input_i == (int)data.getSize())
-				flush = Z_FINISH;
-		}
-		if(z.avail_in == 0)
-			break;
-		status = deflate(&z, flush);
+		
+		status = deflate(&z, Z_FINISH);
 		if(status == Z_NEED_DICT || status == Z_DATA_ERROR
 				|| status == Z_MEM_ERROR)
 		{
@@ -100,6 +88,9 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 		int count = bufsize - z.avail_out;
 		if(count)
 			os.write(output_buffer, count);
+		// This determines zlib has given all output
+		if(status == Z_STREAM_END)
+			break;
 	}
 
 	deflateEnd(&z);
