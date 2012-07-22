@@ -517,6 +517,38 @@ minetest.register_craft({
 	end)
 end)]]
 
+minetest.register_chatcommand("test1", {
+	params = "",
+	description = "Test 1: Modify player's inventory view",
+	func = function(name, param)
+		local player = minetest.env:get_player_by_name(name)
+		if not player then
+			return
+		end
+		player:set_inventory_formspec(
+				"size[13,7.5]"..
+				"image[6,0.6;1,2;player.png]"..
+				"list[current_player;main;5,3.5;8,4;]"..
+				"list[current_player;craft;8,0;3,3;]"..
+				"list[current_player;craftpreview;12,1;1,1;]"..
+				"button[0.5,7;2,1;button1;Button 1]"..
+				"button[2.5,7;2,1;button2;Button 2]"
+		)
+		minetest.chat_send_player(name, "Done.");
+	end,
+})
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
+end)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	experimental.print_to_everything("Inventory fields 2: player="..player:get_player_name()..", fields="..dump(fields))
+	return true -- Disable the first callback
+end)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	experimental.print_to_everything("Inventory fields 3: player="..player:get_player_name()..", fields="..dump(fields))
+end)
+
 minetest.log("experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))
 minetest.log("experimental worldpath="..dump(minetest.get_worldpath()))
