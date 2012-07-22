@@ -371,3 +371,20 @@ minetest.register_chatcommand("set", {
 	end,
 })
 
+minetest.register_chatcommand("mods", {
+	params = "",
+	description = "lists mods installed on the server",
+	privs = {},
+	func = function(name, param)
+		local response = ""
+		local modnames = minetest.get_modnames()
+		for i, mod in ipairs(modnames) do
+			response = response .. mod
+			-- Add space if not at the end
+			if i ~= #modnames then
+				response = response .. " "
+			end
+		end
+		minetest.chat_send_player(name, response)
+	end,
+})
