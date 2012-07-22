@@ -417,7 +417,7 @@ struct TestCompress: public TestBase
 
 		}
 
-		// Test zlib wrapper with large amounts of data (larger than it's
+		// Test zlib wrapper with large amounts of data (larger than its
 		// internal buffers)
 		{
 			infostream<<"Test: Testing zlib wrappers with a large amount "
