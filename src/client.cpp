@@ -1773,6 +1773,29 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 	Send(0, data, true);
 }
 	
+void Client::sendInventoryFields(const std::string &formname, 
+		const std::map<std::string, std::string> &fields)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_INVENTORY_FIELDS);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::sendInventoryAction(InventoryAction *a)
 {
 	std::ostringstream os(std::ios_base::binary);

@@ -58,7 +58,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 11:
 		TileDef in ContentFeatures
 		Nodebox drawtype
-		Added after a release: TOCLIENT_INVENTORY_FORMSPEC
+		(some dev snapshot)
+		TOCLIENT_INVENTORY_FORMSPEC
+		(0.4.0, 0.4.1)
+		TOSERVER_INVENTORY_FIELDS
 */
 
 #define PROTOCOL_VERSION 11
@@ -500,6 +503,19 @@ enum ToServerCommand
 	/*
 		u16 command
 		v3s16 p
+		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
+	TOSERVER_INVENTORY_FIELDS = 0x3c,
+	/*
+		u16 command
 		u16 len
 		u8[len] form name (reserved for future use)
 		u16 number of fields

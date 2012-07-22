@@ -5239,6 +5239,40 @@ bool scriptapi_set_password(lua_State *L, const std::string &playername,
 }
 
 /*
+	player
+*/
+
+void scriptapi_on_player_receive_fields(lua_State *L, 
+		ServerActiveObject *player,
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.registered_on_chat_messages
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_player_receive_fields");
+	// Call callbacks
+	// param 1
+	objectref_get_or_create(L, player);
+	// param 2
+	lua_pushstring(L, formname.c_str());
+	// param 3
+	lua_newtable(L);
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		lua_pushstring(L, name.c_str());
+		lua_pushlstring(L, value.c_str(), value.size());
+		lua_settable(L, -3);
+	}
+	scriptapi_run_callbacks(L, 3, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+/*
 	item callbacks and node callbacks
 */
 

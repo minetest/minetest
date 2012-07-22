@@ -299,6 +299,12 @@ local function make_registration()
 	return t, registerfunc
 end
 
+local function make_registration_reverse()
+	local t = {}
+	local registerfunc = function(func) table.insert(t, 1, func) end
+	return t, registerfunc
+end
+
 minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
 minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
 minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
@@ -310,4 +316,5 @@ minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registr
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
+minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
 

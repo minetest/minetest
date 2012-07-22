@@ -69,6 +69,12 @@ void scriptapi_create_auth(lua_State *L, const std::string &playername,
 bool scriptapi_set_password(lua_State *L, const std::string &playername,
 		const std::string &password);
 
+/* player */
+void scriptapi_on_player_receive_fields(lua_State *L, 
+		ServerActiveObject *player,
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields);
+
 /* item callbacks */
 bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
 		ServerActiveObject *dropper, v3f pos);

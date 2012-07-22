@@ -33,7 +33,7 @@ struct TextDest
 {
 	virtual ~TextDest() {};
 	// This is deprecated I guess? -celeron55
-	virtual void gotText(std::wstring text) = 0;
+	virtual void gotText(std::wstring text){}
 	virtual void gotText(std::map<std::string, std::string> fields) = 0;
 };
 

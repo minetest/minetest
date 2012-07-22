@@ -111,6 +111,20 @@ struct TextDestNodeMetadata : public TextDest
 	Client *m_client;
 };
 
+struct TextDestPlayerInventory : public TextDest
+{
+	TextDestPlayerInventory(Client *client)
+	{
+		m_client = client;
+	}
+	void gotText(std::map<std::string, std::string> fields)
+	{
+		m_client->sendInventoryFields("", fields);
+	}
+
+	Client *m_client;
+};
+
 /* Respawn menu callback */
 
 class MainRespawnInitiator: public IRespawnInitiator
@@ -1507,6 +1521,7 @@ void the_game(
 			assert(src);
 			menu->setFormSpec(src->getForm(), inventoryloc);
 			menu->setFormSource(src);
+			menu->setTextDest(new TextDestPlayerInventory(&client));
 			menu->drop();
 		}
 		else if(input->wasKeyDown(EscapeKey))

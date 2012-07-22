@@ -3248,6 +3248,22 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		scriptapi_node_on_receive_fields(m_lua, p, formname, fields,
 				playersao);
 	}
+	else if(command == TOSERVER_INVENTORY_FIELDS)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		std::string formname = deSerializeString(is);
+		int num = readU16(is);
+		std::map<std::string, std::string> fields;
+		for(int k=0; k<num; k++){
+			std::string fieldname = deSerializeString(is);
+			std::string fieldvalue = deSerializeLongString(is);
+			fields[fieldname] = fieldvalue;
+		}
+
+		scriptapi_on_player_receive_fields(m_lua, playersao, formname, fields);
+	}
 	else
 	{
 		infostream<<"Server::ProcessData(): Ignoring "
