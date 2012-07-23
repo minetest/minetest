@@ -774,11 +774,11 @@ minetest.register_craft(recipe)
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
 ^ Called every server step, usually interval of 0.05s
-minetest.register_on_placenode(func(pos, newnode, placer))
+minetest.register_on_placenode(func(pos, newnode, placer, oldnode))
 ^ Called when a node has been placed
 ^ Deprecated: Use on_construct or after_place_node in node definition instead
 minetest.register_on_dignode(func(pos, oldnode, digger))
-^ Called when a node has been dug. digger can be nil.
+^ Called when a node has been dug.
 ^ Deprecated: Use on_destruct or after_dig_node in node definition instead
 minetest.register_on_punchnode(func(pos, node, puncher))
 ^ Called when a node is punched

@@ -152,7 +152,8 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 
 		minetest.log("action", placer:get_player_name() .. " places node "
 			.. def.name .. " at " .. minetest.pos_to_string(place_to))
-
+		
+		local oldnode = minetest.env:get_node(place_to)
 		local newnode = {name = def.name, param1 = 0, param2 = 0}
 
 		-- Calculate direction for wall mounted stuff like torches and signs
@@ -188,7 +189,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		-- Run script hook (deprecated)
 		local _, callback
 		for _, callback in ipairs(minetest.registered_on_placenodes) do
-			callback(place_to, newnode, placer)
+			callback(place_to, newnode, placer, oldnode)
 		end
 
 		itemstack:take_item()
