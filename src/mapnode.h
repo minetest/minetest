@@ -33,10 +33,6 @@ class INodeDefManager;
 	- Material = irrlicht's Material class
 	- Content = (content_t) content of a node
 	- Tile = TileSpec at some side of a node of some content type
-
-	Content ranges:
-	  0x000...0x07f: param2 is fully usable
-	  0x800...0xfff: param2 lower 4 bits are free
 */
 typedef u16 content_t;
 #define MAX_CONTENT 0xfff
@@ -84,8 +80,6 @@ struct MapNode
 {
 	/*
 		Main content
-		0x00-0x7f: Short content type
-		0x80-0xff: Long content type
 	*/
 	u16 param0;
 
@@ -208,7 +202,6 @@ struct MapNode
 
 private:
 	// Deprecated serialization methods
-	void serialize_pre22(u8 *dest, u8 version);
 	void deSerialize_pre22(u8 *source, u8 version);
 };
 

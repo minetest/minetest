@@ -59,7 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	21: dynamic content type allocation
 	22: minerals removed, facedir & wallmounted changed
 	23: new node metadata format
-	24: NodeTimers
+	24: 16-bit node ids and node timers
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255

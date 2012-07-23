@@ -61,10 +61,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		(some dev snapshot)
 		TOCLIENT_INVENTORY_FORMSPEC
 		(0.4.0, 0.4.1)
+	PROTOCOL_VERSION 12:
 		TOSERVER_INVENTORY_FIELDS
+		16-bit node ids
 */
 
-#define PROTOCOL_VERSION 11
+#define PROTOCOL_VERSION 12
 
 #define PROTOCOL_ID 0x4f457403
 

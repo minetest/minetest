@@ -102,23 +102,6 @@ content_t trans_table_19[21][2] = {
 	{CONTENT_BOOKSHELF, 29},
 };
 
-MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
-{
-	MapNode result = n_from;
-	if(version <= 19)
-	{
-		content_t c_from = n_from.getContent();
-		for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
-		{
-			if(trans_table_19[i][0] == c_from)
-			{
-				result.setContent(trans_table_19[i][1]);
-				break;
-			}
-		}
-	}
-	return result;
-}
 MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 {
 	MapNode result = n_from;

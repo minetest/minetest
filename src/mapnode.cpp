@@ -241,28 +241,16 @@ void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-
-	if(version <= 21)
-	{
-		serialize_pre22(dest, version);
-		return;
-	}
-
-	if(version >= 24){
-		writeU16(dest+0, param0);
-		writeU8(dest+2, param1);
-		writeU8(dest+3, param2);
-	}
-	else{
-		writeU8(dest+0, (param0&0xFF));
-		writeU8(dest+1, param1);
-		if (param0 > 0x7F){
-			writeU8(dest+2, ((param2&0x0F) | ((param0&0x0F00)>>4)));
-		}
-		else{
-			writeU8(dest+2, param2);
-		}
-	}
+	
+	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
+	// in memory; conversion just won't work in this direction.
+	if(version < 24)
+		throw SerializationError("MapNode::serialize: serialization to "
+				"version < 24 not possible");
+		
+	writeU16(dest+0, param0);
+	writeU8(dest+2, param1);
+	writeU8(dest+3, param2);
 }
 void MapNode::deSerialize(u8 *source, u8 version)
 {
@@ -297,22 +285,20 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	assert(version >= 22);
-	assert(content_width == 1 || content_width == 2);
+	assert(content_width == 2);
 	assert(params_width == 2);
+
+	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
+	// in memory; conversion just won't work in this direction.
+	if(version < 24)
+		throw SerializationError("MapNode::serializeBulk: serialization to "
+				"version < 24 not possible");
 
 	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
 
 	// Serialize content
-	if(content_width == 1)
-	{
-		for(u32 i=0; i<nodecount; i++)
-			writeU8(&databuf[i], (nodes[i].param0&0x00FF));
-	}else if(content_width == 2)
-	{
-		for(u32 i=0; i<nodecount; i++)
-			writeU16(&databuf[i*2], nodes[i].param0);
-	}
+	for(u32 i=0; i<nodecount; i++)
+		writeU16(&databuf[i*2], nodes[i].param0);
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
@@ -321,21 +307,8 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 
 	// Serialize param2
 	u32 start2 = (content_width + 1) * nodecount;
-	if(content_width == 1)
-	{
-		for(u32 i=0; i<nodecount; i++) {
-			if(nodes[i].param0 > 0x7F){
-				writeU8(&databuf[start2 + i], ((nodes[i].param2&0x0F) | ((nodes[i].param0&0x0F00)>>4)));
-			}
-			else{
-				writeU8(&databuf[start2 + i], nodes[i].param2);
-			}
-		}
-	}else if(content_width == 2)
-	{
-		for(u32 i=0; i<nodecount; i++)
-			writeU8(&databuf[start2 + i], nodes[i].param2);
-	}
+	for(u32 i=0; i<nodecount; i++)
+		writeU8(&databuf[start2 + i], nodes[i].param2);
 
 	/*
 		Compress data to output stream
@@ -408,7 +381,8 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		for(u32 i=0; i<nodecount; i++) {
 			nodes[i].param2 = readU8(&databuf[start2 + i]);
 			if(nodes[i].param0 > 0x7F){
-				nodes[i].param0 |= ((nodes[i].param2&0xF0)<<4);
+				nodes[i].param0 <<= 4;
+				nodes[i].param0 |= (nodes[i].param2&0xF0)>>4;
 				nodes[i].param2 &= 0x0F;
 			}
 		}
@@ -423,40 +397,6 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 /*
 	Legacy serialization
 */
-void MapNode::serialize_pre22(u8 *dest, u8 version)
-{
-	// Translate to wanted version
-	MapNode n_foreign = mapnode_translate_from_internal(*this, version);
-
-	u8 actual_param0 = n_foreign.param0;
-
-	// Convert special values from new version to old
-	if(version <= 18)
-	{
-		// In these versions, CONTENT_IGNORE and CONTENT_AIR
-		// are 255 and 254
-		if(actual_param0 == CONTENT_IGNORE)
-			actual_param0 = 255;
-		else if(actual_param0 == CONTENT_AIR)
-			actual_param0 = 254;
-	}
-
-	if(version == 0)
-	{
-		dest[0] = actual_param0;
-	}
-	else if(version <= 9)
-	{
-		dest[0] = actual_param0;
-		dest[1] = n_foreign.param1;
-	}
-	else
-	{
-		dest[0] = actual_param0;
-		dest[1] = n_foreign.param1;
-		dest[2] = n_foreign.param2;
-	}
-}
 void MapNode::deSerialize_pre22(u8 *source, u8 version)
 {
 	if(version <= 1)
@@ -473,6 +413,11 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 		param0 = source[0];
 		param1 = source[1];
 		param2 = source[2];
+		if(param0 > 0x7f){
+			param0 <<= 4;
+			param0 |= (param2&0xf0)>>4;
+			param2 &= 0x0f;
+		}
 	}
 	
 	// Convert special values from old version to new

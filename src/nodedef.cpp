@@ -377,18 +377,9 @@ public:
 		}
 	}
 	// CONTENT_IGNORE = not found
-	content_t getFreeId(bool require_full_param2)
+	content_t getFreeId()
 	{
-		// If allowed, first search in the large 4-bit-param2 pool
-		if(!require_full_param2){
-			for(u16 i=0x800; i<=0xfff; i++){
-				const ContentFeatures &f = m_content_features[i];
-				if(f.name == "")
-					return i;
-			}
-		}
-		// Then search from the small 8-bit-param2 pool
-		for(u16 i=0; i<=125; i++){
+		for(u32 i=0; i<=0xffff; i++){
 			const ContentFeatures &f = m_content_features[i];
 			if(f.name == "")
 				return i;
@@ -492,16 +483,8 @@ public:
 		u16 id = CONTENT_IGNORE;
 		bool found = m_name_id_mapping.getId(name, id);  // ignore aliases
 		if(!found){
-			// Determine if full param2 is required
-			bool require_full_param2 = (
-				def.param_type_2 == CPT2_FULL
-				||
-				def.param_type_2 == CPT2_FLOWINGLIQUID
-				||
-				def.legacy_wallmounted
-			);
 			// Get some id
-			id = getFreeId(require_full_param2);
+			id = getFreeId();
 			if(id == CONTENT_IGNORE)
 				return CONTENT_IGNORE;
 			if(name != "")
