@@ -2304,6 +2304,13 @@ void the_game(
 								<<playeritem.name<<" is "
 								<<def.node_placement_prediction<<std::endl;
 						v3s16 p = neighbourpos;
+						// Place inside node itself if buildable_to
+						try{
+							MapNode n_under = map.getNode(nodepos);
+							if(nodedef->get(n_under).buildable_to)
+								p = nodepos;
+						}catch(InvalidPositionException &e){}
+						// Find id of predicted node
 						content_t id;
 						bool found =
 							nodedef->getId(def.node_placement_prediction, id);
