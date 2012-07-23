@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
+#include <list>
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"
@@ -154,7 +155,7 @@ bool detectMSVCBuildDir(char *c_path)
 
 void initializePaths()
 {
-#ifdef RUN_IN_PLACE
+#if RUN_IN_PLACE
 	/*
 		Use relative paths if RUN_IN_PLACE
 	*/
@@ -252,19 +253,41 @@ void initializePaths()
 	#elif defined(linux)
 		#include <unistd.h>
 	
-	char buf[BUFSIZ];
-	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
-	
-	pathRemoveFile(buf, '/');
+	std::string bindir = "";
+	{
+		char buf[BUFSIZ];
+		memset(buf, 0, BUFSIZ);
+		assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
+		pathRemoveFile(buf, '/');
+		bindir = buf;
+	}
 
-	path_share = std::string(buf) + "/../share/" + PROJECT_NAME;
-	//path_share = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
-	if (!fs::PathExists(path_share)) {
-		dstream<<"WARNING: system-wide share not found at \""<<path_share<<"\"";
-		path_share = std::string(buf) + "/..";
-		dstream<<"WARNING: Using \""<<path_share<<"\" instead."<<std::endl;
+	// Find share directory from these.
+	// It is identified by containing the subdirectory "builtin".
+	std::list<std::string> trylist;
+	std::string static_sharedir = STATIC_SHAREDIR;
+	if(static_sharedir != "" && static_sharedir != ".")
+		trylist.push_back(static_sharedir);
+	trylist.push_back(bindir + "/../share/" + PROJECT_NAME);
+	trylist.push_back(bindir + "/..");
+	
+	for(std::list<std::string>::const_iterator i = trylist.begin();
+			i != trylist.end(); i++)
+	{
+		const std::string &trypath = *i;
+		if(!fs::PathExists(trypath) || !fs::PathExists(trypath + "/builtin")){
+			dstream<<"WARNING: system-wide share not found at \""
+					<<trypath<<"\""<<std::endl;
+			continue;
+		}
+		// Warn if was not the first alternative
+		if(i != trylist.begin()){
+			dstream<<"WARNING: system-wide share found at \""
+					<<trypath<<"\""<<std::endl;
+		}
+		path_share = trypath;
+		break;
 	}
 	
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
@@ -297,7 +320,7 @@ void initializePaths()
 
 	#elif defined(__FreeBSD__)
 
-	path_share = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
+	path_share = STATIC_SHAREDIR;
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
     
 	#endif

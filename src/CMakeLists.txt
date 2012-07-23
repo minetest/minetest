@@ -1,10 +1,6 @@
 project(minetest)
 cmake_minimum_required( VERSION 2.6 )
 
-if(RUN_IN_PLACE)
-	add_definitions ( -DRUN_IN_PLACE )
-endif(RUN_IN_PLACE)
-
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
@@ -139,13 +135,15 @@ else()
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
+	mark_as_advanced(XXF86VM_LIBRARY)
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 
-# TODO: Create proper find script for Lua
+# Do not use system-wide installation of Lua, because it'll likely be a
+# different version and/or has different build options.
 set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
 set(LUA_LIBRARY "lua")
 

@@ -878,7 +878,7 @@ int main(int argc, char *argv[])
 	
 	// Initialize debug streams
 #define DEBUGFILE "debug.txt"
-#ifdef RUN_IN_PLACE
+#if RUN_IN_PLACE
 	std::string logfile = DEBUGFILE;
 #else
 	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
@@ -962,7 +962,7 @@ int main(int argc, char *argv[])
 		// Legacy configuration file location
 		filenames.push_back(porting::path_user +
 				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
-#ifdef RUN_IN_PLACE
+#if RUN_IN_PLACE
 		// Try also from a lower level (to aid having the same configuration
 		// for many RUN_IN_PLACE installs)
 		filenames.push_back(porting::path_user +

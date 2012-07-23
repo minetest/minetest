@@ -388,3 +388,111 @@ minetest.register_chatcommand("mods", {
 		minetest.chat_send_player(name, response)
 	end,
 })
+
+local function handle_give_command(cmd, giver, receiver, stackstring)
+	minetest.log("action", giver.." invoked "..cmd..', stackstring="'
+			..stackstring..'"')
+	minetest.log(cmd..' invoked, stackstring="'..stackstring..'"')
+	local itemstack = ItemStack(stackstring)
+	if itemstack:is_empty() then
+		minetest.chat_send_player(giver, 'error: cannot give an empty item')
+		return
+	elseif not itemstack:is_known() then
+		minetest.chat_send_player(giver, 'error: cannot give an unknown item')
+		return
+	end
+	local receiverref = minetest.env:get_player_by_name(receiver)
+	if receiverref == nil then
+		minetest.chat_send_player(giver, receiver..' is not a known player')
+		return
+	end
+	local leftover = receiverref:get_inventory():add_item("main", itemstack)
+	if leftover:is_empty() then
+		partiality = ""
+	elseif leftover:get_count() == itemstack:get_count() then
+		partiality = "could not be "
+	else
+		partiality = "partially "
+	end
+	-- The actual item stack string may be different from what the "giver"
+	-- entered (e.g. big numbers are always interpreted as 2^16-1).
+	stackstring = itemstack:to_string()
+	if giver == receiver then
+		minetest.chat_send_player(giver, '"'..stackstring
+			..'" '..partiality..'added to inventory.');
+	else
+		minetest.chat_send_player(giver, '"'..stackstring
+			..'" '..partiality..'added to '..receiver..'\'s inventory.');
+		minetest.chat_send_player(receiver, '"'..stackstring
+			..'" '..partiality..'added to inventory.');
+	end
+end
+
+minetest.register_chatcommand("give", {
+	params = "<name> <itemstring>",
+	description = "give item to player",
+	privs = {give=true},
+	func = function(name, param)
+		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
+		if not toname or not itemstring then
+			minetest.chat_send_player(name, "name and itemstring required")
+			return
+		end
+		handle_give_command("/give", name, toname, itemstring)
+	end,
+})
+minetest.register_chatcommand("giveme", {
+	params = "<itemstring>",
+	description = "give item to yourself",
+	privs = {give=true},
+	func = function(name, param)
+		local itemstring = string.match(param, "(.+)$")
+		if not itemstring then
+			minetest.chat_send_player(name, "itemstring required")
+			return
+		end
+		handle_give_command("/giveme", name, name, itemstring)
+	end,
+})
+minetest.register_chatcommand("spawnentity", {
+	params = "<entityname>",
+	description = "spawn entity at your position",
+	privs = {give=true, interact=true},
+	func = function(name, param)
+		local entityname = string.match(param, "(.+)$")
+		if not entityname then
+			minetest.chat_send_player(name, "entityname required")
+			return
+		end
+		print('/spawnentity invoked, entityname="'..entityname..'"')
+		local player = minetest.env:get_player_by_name(name)
+		if player == nil then
+			print("Unable to spawn entity, player is nil")
+			return true -- Handled chat message
+		end
+		local p = player:getpos()
+		p.y = p.y + 1
+		minetest.env:add_entity(p, entityname)
+		minetest.chat_send_player(name, '"'..entityname
+				..'" spawned.');
+	end,
+})
+minetest.register_chatcommand("pulverize", {
+	params = "",
+	description = "delete item in hand",
+	privs = {},
+	func = function(name, param)
+		local player = minetest.env:get_player_by_name(name)
+		if player == nil then
+			print("Unable to pulverize, player is nil")
+			return true -- Handled chat message
+		end
+		if player:get_wielded_item():is_empty() then
+			minetest.chat_send_player(name, 'Unable to pulverize, no item in hand.')
+		else
+			player:set_wielded_item(nil)
+			minetest.chat_send_player(name, 'An item was pulverized.')
+		end
+	end,
+})
+
