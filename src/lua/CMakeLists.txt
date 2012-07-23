@@ -45,6 +45,7 @@ if(DEFAULT_DLOPEN)
 else()
 	option(LUA_USE_DLOPEN "Enable dlopen support." OFF)
 endif()
+mark_as_advanced(LUA_USE_DLOPEN)
 
 if(DEFAULT_POSIX)
 else()
@@ -55,6 +56,7 @@ if(DEFAULT_ANSI)
 else()
 	option(LUA_ANSI "Disable non-ansi features." OFF)
 endif()
+mark_as_advanced(LUA_ANSI)
 
 #
 # Lua version
