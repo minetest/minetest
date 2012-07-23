@@ -259,7 +259,7 @@ void initializePaths()
 	
 	pathRemoveFile(buf, '/');
 
-	path_share = std::string(buf) + "/../share/" + PROJECT_NAME;
+	path_share = std::string(SHAREDIR);
 	//path_share = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
 	if (!fs::PathExists(path_share)) {
 		dstream<<"WARNING: system-wide share not found at \""<<path_share<<"\"";
