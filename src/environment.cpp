@@ -1740,12 +1740,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				if(block->m_static_objects.m_stored.size() >= 49){
+				if(block->m_static_objects.m_stored.size() >= 300){
 					errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
 							<<" statically but block "<<PP(blockpos)
 							<<" already contains "
 							<<block->m_static_objects.m_stored.size()
-							<<" (over 49) objects."
+							<<" (over 299) objects."
 							<<" Forcing delete."<<std::endl;
 					force_delete = true;
 				} else {
