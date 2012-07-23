@@ -254,9 +254,9 @@ Nodes are passed by value between Lua and the engine.
 They are represented by a table:
   {name="name", param1=num, param2=num}
 
-param1 and param2 are 8 bit and 4 bit integers, respectively. The engine
-uses them for certain automated functions. If you don't use these
-functions, you can use them to store arbitrary values.
+param1 and param2 are 8 bit integers. The engine uses them for certain
+automated functions. If you don't use these functions, you can use them to
+store arbitrary values.
 
 The functions of param1 and param2 are determined by certain fields in the
 node definition:
