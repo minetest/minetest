@@ -1280,30 +1280,29 @@ Node definition (register_node)
     drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
+	^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
     ^ List can be shortened to needed length
-    ^ Old field name: tile_images
     special_tiles = {tile definition 1, Tile definition 2},
+	^ Special textures of node; used rarely (old field name: special_materials)
     ^ List can be shortened to needed length
-    ^ Old field name: special_materials
     alpha = 255,
-    post_effect_color = {a=0, r=0, g=0, b=0},
-    paramtype = "none",
-    paramtype2 = "none",
-    is_ground_content = false,
-    sunlight_propagates = false,
-    walkable = true,
-    pointable = true,
-    diggable = true,
-    climbable = false,
-    buildable_to = false,
-    drop = "",
-    -- alternatively drop = { max_items = ..., items = { ... } }
-    liquidtype = "none",
-    liquid_alternative_flowing = "",
-    liquid_alternative_source = "",
-    liquid_viscosity = 0,
-    light_source = 0,
-    damage_per_second = 0,
+    post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
+    paramtype = "none", -- See "Nodes"
+    paramtype2 = "none", -- See "Nodes"
+    is_ground_content = false, -- Currently not used for anything
+    sunlight_propagates = false, -- If true, sunlight will go infinitely through this
+    walkable = true, -- If true, objects collide with node
+    pointable = true, -- If true, can be pointed at
+    diggable = true, -- If false, can never be dug
+    climbable = false, -- If true, can be climbed on (ladder)
+    buildable_to = false, -- If true, placed nodes can replace this node
+    drop = "", -- alternatively drop = { max_items = ..., items = { ... } }
+    liquidtype = "none", -- "none"/"source"/"flowing"
+    liquid_alternative_flowing = "", -- Flowing version of source liquid
+    liquid_alternative_source = "", -- Source version of flowing liquid
+    liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
+    light_source = 0, -- Amount of light emitted by node
+    damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
     selection_box = {type="regular"}, -- See "Node boxes"
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
