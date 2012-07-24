@@ -215,10 +215,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			}
 			else{
 				invsize.Y = stof(f.next(";"));
-				errorstream<<"WARNING: invsize is deprecated, use size"<<std::endl;
 				f.next("]");
 			}
-			infostream<<"size ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
+			infostream<<"Form size ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
 
 			padding = v2s32(screensize.Y/40, screensize.Y/40);
 			spacing = v2s32(screensize.Y/12, screensize.Y/13);

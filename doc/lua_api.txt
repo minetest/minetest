@@ -851,7 +851,8 @@ minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
                  {type="detached", name="creative"}
-minetest.create_detached_inventory(name) -> InvRef
+minetest.create_detached_inventory(name, callbacks) -> InvRef
+^ callbacks: See "Detached inventory callbacks"
 ^ Creates a detached inventory. If it already exists, it is cleared.
 
 Item handling:
@@ -1361,35 +1362,25 @@ Node definition (register_node)
     ^ Called when an UI form (eg. sign text input) returns data
     ^ default: nil
 
-    on_metadata_inventory_move = func(pos, from_list, from_index,
-                                      to_list, to_index, count, player),
-    ^ Called when a player wants to move items inside the metadata
-    ^ Should move items, or some items, if permitted. If not, should do
-      nothing.
-    ^ The engine ensures the action is valid, i.e. the stack fits at the
-      given position
-    ^ default: minetest.node_metadata_inventory_move_allow_all
+	allow_metadata_inventory_move = func(pos, from_list, from_index,
+			to_list, to_index, count, player),
+	^ Called when a player wants to move items inside the inventory
+	^ Return value: number of items allowed to move
+	
+	allow_metadata_inventory_put = func(pos, listname, index, stack, player),
+	^ Called when a player wants to put something into the inventory
+	^ Return value: number of items allowed to put
+  
+	allow_metadata_inventory_take = func(pos, listname, index, count, player),
+	^ Called when a player wants to take something out of the inventory
+	^ Return value: number of items allowed to take
 
-    on_metadata_inventory_offer = func(pos, listname, index, stack, player),
-    ^ Called when a player wants to put something into the metadata
-      inventory
-    ^ Should check if the action is permitted (the engine ensures the
-      action is valid, i.e. the stack fits at the given position)
-      ^ If permitted, modify the metadata inventory and return the
-        "leftover" stack (normally nil).
-      ^ If not permitted, return itemstack.
-    ^ default: minetest.node_metadata_inventory_offer_allow_all
-
-    on_metadata_inventory_take = func(pos, listname, index, count, player),
-    ^ Called when a player wants to take something out of the metadata
-      inventory
-    ^ Should check if the action is permitted (the engine ensures the
-      action is valid, i.e. there's a stack of at least “count” items at
-      that position)
-      ^ If permitted, modify the metadata inventory and return the
-        stack of items
-      ^ If not permitted, return nil.
-    ^ default: minetest.node_metadata_inventory_take_allow_all
+	on_metadata_inventory_move = func(pos, from_list, from_index,
+			to_list, to_index, count, player),
+	on_metadata_inventory_put = func(pos, listname, index, stack, player),
+	on_metadata_inventory_take = func(pos, listname, index, count, player),
+	^ Called after the actual action has happened, according to what was allowed.
+	^ No return value
 }
 
 Recipe for register_craft: (shaped)
@@ -1444,5 +1435,26 @@ Chatcommand definition (register_chatcommand)
     description = "Remove privilege from player", -- full description
     privs = {privs=true}, -- require the "privs" privilege to run
     func = function(name, param), -- called when command is run
+}
+
+Detached inventory callbacks
+{
+	allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    ^ Called when a player wants to move items inside the inventory
+	^ Return value: number of items allowed to move
+	
+    allow_put = func(inv, listname, index, stack, player),
+    ^ Called when a player wants to put something into the inventory
+	^ Return value: number of items allowed to put
+   
+    allow_take = func(inv, listname, index, count, player),
+    ^ Called when a player wants to take something out of the inventory
+	^ Return value: number of items allowed to take
+	
+	on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    on_put = func(inv, listname, index, stack, player),
+    on_take = func(inv, listname, index, count, player),
+	^ Called after the actual action has happened, according to what was allowed.
+	^ No return value
 }
 

@@ -21,4 +21,5 @@ dofile(minetest.get_modpath("__builtin").."/privileges.lua")
 dofile(minetest.get_modpath("__builtin").."/auth.lua")
 dofile(minetest.get_modpath("__builtin").."/chatcommands.lua")
 dofile(minetest.get_modpath("__builtin").."/static_spawn.lua")
+dofile(minetest.get_modpath("__builtin").."/detached_inventory.lua")
 

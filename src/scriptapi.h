@@ -101,17 +101,66 @@ void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields,
 		ServerActiveObject *sender);
-// Moves items
-void scriptapi_node_on_metadata_inventory_move(lua_State *L, v3s16 p,
+
+/* Node metadata inventory callbacks */
+// Return number of accepted items to be moved
+int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player);
-// Inserts items, returns rejected items
-ItemStack scriptapi_node_on_metadata_inventory_offer(lua_State *L, v3s16 p,
+// Return number of accepted items to be put
+int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player);
-// Takes items, returns taken items
-ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
+// Return number of accepted items to be taken
+int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
+		const std::string &listname, int index, int count,
+		ServerActiveObject *player);
+// Report moved items
+void scriptapi_nodemeta_inventory_on_move(lua_State *L, v3s16 p,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Report put items
+void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Report taken items
+void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
+		const std::string &listname, int index, int count,
+		ServerActiveObject *player);
+
+/* Detached inventory callbacks */
+// Return number of accepted items to be moved
+int scriptapi_detached_inventory_allow_move(lua_State *L,
+		const std::string &name,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Return number of accepted items to be put
+int scriptapi_detached_inventory_allow_put(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Return number of accepted items to be taken
+int scriptapi_detached_inventory_allow_take(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, int count,
+		ServerActiveObject *player);
+// Report moved items
+void scriptapi_detached_inventory_on_move(lua_State *L,
+		const std::string &name,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Report put items
+void scriptapi_detached_inventory_on_put(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Report taken items
+void scriptapi_detached_inventory_on_take(lua_State *L,
+		const std::string &name,
 		const std::string &listname, int index, int count,
 		ServerActiveObject *player);
 
