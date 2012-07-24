@@ -4567,12 +4567,29 @@ static int l_get_inventory(lua_State *L)
 		lua_getfield(L, 1, "pos");
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
+	} else if(type == "detached"){
+		std::string name = checkstringfield(L, 1, "name");
+		loc.setDetached(name);
 	}
 	
 	if(get_server(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L);
+	return 1;
+}
+
+// create_detached_inventory(name)
+static int l_create_detached_inventory(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	if(get_server(L)->createDetachedInventory(name) != NULL){
+		InventoryLocation loc;
+		loc.setDetached(name);
+		InvRef::create(L, loc);
+	}else{
+		lua_pushnil(L);
+	}
 	return 1;
 }
 
@@ -4849,6 +4866,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
 	{"get_inventory", l_get_inventory},
+	{"create_detached_inventory", l_create_detached_inventory},
 	{"get_dig_params", l_get_dig_params},
 	{"get_hit_params", l_get_hit_params},
 	{"get_current_modname", l_get_current_modname},

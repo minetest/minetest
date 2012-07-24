@@ -393,6 +393,10 @@ private:
 
 	// Privileges
 	std::set<std::string> m_privileges;
+
+	// Detached inventories
+	// key = name
+	std::map<std::string, Inventory*> m_detached_inventories;
 };
 
 #endif // !CLIENT_HEADER

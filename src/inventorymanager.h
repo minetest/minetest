@@ -32,9 +32,10 @@ struct InventoryLocation
 		CURRENT_PLAYER,
 		PLAYER,
 		NODEMETA,
+        DETACHED,
 	} type;
 
-	std::string name; // PLAYER
+	std::string name; // PLAYER, DETACHED
 	v3s16 p; // NODEMETA
 
 	InventoryLocation()
@@ -59,6 +60,11 @@ struct InventoryLocation
 		type = NODEMETA;
 		p = p_;
 	}
+	void setDetached(const std::string &name_)
+	{
+		type = DETACHED;
+		name = name_;
+	}
 
 	void applyCurrentPlayer(const std::string &name_)
 	{
@@ -80,13 +86,11 @@ public:
 	InventoryManager(){}
 	virtual ~InventoryManager(){}
 	
-	// Get an inventory or set it modified (so it will be updated over
-	// network or so)
+	// Get an inventory (server and client)
 	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
-	virtual std::string getInventoryOwner(const InventoryLocation &loc){return "";}
+    // Set modified (will be saved and sent over network; only on server)
 	virtual void setInventoryModified(const InventoryLocation &loc){}
-
-	// Used on the client to send an action to the server
+    // Send inventory action to server (only on client)
 	virtual void inventoryAction(InventoryAction *a){}
 };
 

@@ -677,6 +677,7 @@ size[<W>,<H>]
 ^ deprecated: invsize[<W>,<H>;]
 
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
+list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
@@ -726,10 +727,12 @@ image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
 
 Inventory location:
+
 - "context": Selected node metadata (deprecated: "current_name")
 - "current_player": Player to whom the menu is shown
 - "player:<name>": Any player
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
+- "detached:<name>": A detached inventory
 
 Helper functions
 -----------------
@@ -847,6 +850,9 @@ Inventory:
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
+                 {type="detached", name="creative"}
+minetest.create_detached_inventory(name) -> InvRef
+^ Creates a detached inventory. If it already exists, it is cleared.
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)

@@ -1160,6 +1160,15 @@ Server::~Server()
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
 	script_deinit(m_lua);
+
+	// Delete detached inventories
+	{
+		for(std::map<std::string, Inventory*>::iterator
+				i = m_detached_inventories.begin();
+				i != m_detached_inventories.end(); i++){
+			delete i->second;
+		}
+	}
 }
 
 void Server::start(unsigned short port)
@@ -2250,9 +2259,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send inventory
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
-		
+
 		// Send HP
 		SendPlayerHP(peer_id);
+		
+		// Send detached inventories
+		sendDetachedInventories(peer_id);
 		
 		// Show death screen if necessary
 		if(player->hp == 0)
@@ -2532,30 +2544,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				delete a;
 				return;
 			}
-
-			// If player is not an admin, check for ownership of src and dst
-			/*if(!checkPriv(player->getName(), "server"))
-			{
-				std::string owner_from = getInventoryOwner(ma->from_inv);
-				if(owner_from != "" && owner_from != player->getName())
-				{
-					infostream<<"WARNING: "<<player->getName()
-						<<" tried to access an inventory that"
-						<<" belongs to "<<owner_from<<std::endl;
-					delete a;
-					return;
-				}
-
-				std::string owner_to = getInventoryOwner(ma->to_inv);
-				if(owner_to != "" && owner_to != player->getName())
-				{
-					infostream<<"WARNING: "<<player->getName()
-						<<" tried to access an inventory that"
-						<<" belongs to "<<owner_to<<std::endl;
-					delete a;
-					return;
-				}
-			}*/
 		}
 		/*
 			Handle restrictions and special cases of the drop action
@@ -2574,19 +2562,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				delete a;
 				return;
 			}
-			// If player is not an admin, check for ownership
-			/*else if(!checkPriv(player->getName(), "server"))
-			{
-				std::string owner_from = getInventoryOwner(da->from_inv);
-				if(owner_from != "" && owner_from != player->getName())
-				{
-					infostream<<"WARNING: "<<player->getName()
-						<<" tried to access an inventory that"
-						<<" belongs to "<<owner_from<<std::endl;
-					delete a;
-					return;
-				}
-			}*/
 		}
 		/*
 			Handle restrictions and special cases of the craft action
@@ -2611,20 +2586,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				delete a;
 				return;
 			}
-
-			// If player is not an admin, check for ownership of inventory
-			/*if(!checkPriv(player->getName(), "server"))
-			{
-				std::string owner_craft = getInventoryOwner(ca->craft_inv);
-				if(owner_craft != "" && owner_craft != player->getName())
-				{
-					infostream<<"WARNING: "<<player->getName()
-						<<" tried to access an inventory that"
-						<<" belongs to "<<owner_craft<<std::endl;
-					delete a;
-					return;
-				}
-			}*/
 		}
 		
 		// Do the action
@@ -3318,6 +3279,13 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 		return meta->getInventory();
 	}
 	break;
+	case InventoryLocation::DETACHED:
+	{
+		if(m_detached_inventories.count(loc.name) == 0)
+			return NULL;
+		return m_detached_inventories[loc.name];
+	}
+	break;
 	default:
 		assert(0);
 	}
@@ -3350,6 +3318,11 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 			block->raiseModified(MOD_STATE_WRITE_NEEDED);
 		
 		setBlockNotSent(blockpos);
+	}
+	break;
+	case InventoryLocation::DETACHED:
+	{
+		sendDetachedInventoryToAll(loc.name);
 	}
 	break;
 	default:
@@ -4309,6 +4282,51 @@ void Server::sendRequestedMedia(u16 peer_id,
 	}
 }
 
+void Server::sendDetachedInventory(const std::string &name, u16 peer_id)
+{
+	if(m_detached_inventories.count(name) == 0){
+		errorstream<<__FUNCTION_NAME<<": \""<<name<<"\" not found"<<std::endl;
+		return;
+	}
+	Inventory *inv = m_detached_inventories[name];
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_DETACHED_INVENTORY);
+	os<<serializeString(name);
+	inv->serialize(os);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::sendDetachedInventoryToAll(const std::string &name)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++){
+		RemoteClient *client = i.getNode()->getValue();
+		sendDetachedInventory(name, client->peer_id);
+	}
+}
+
+void Server::sendDetachedInventories(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	for(std::map<std::string, Inventory*>::iterator
+			i = m_detached_inventories.begin();
+			i != m_detached_inventories.end(); i++){
+		const std::string &name = i->first;
+		//Inventory *inv = i->second;
+		sendDetachedInventory(name, peer_id);
+	}
+}
+
 /*
 	Something random
 */
@@ -4491,6 +4509,21 @@ void Server::queueBlockEmerge(v3s16 blockpos, bool allow_generate)
 	if(!allow_generate)
 		flags |= BLOCK_EMERGE_FLAG_FROMDISK;
 	m_emerge_queue.addBlock(PEER_ID_INEXISTENT, blockpos, flags);
+}
+
+Inventory* Server::createDetachedInventory(const std::string &name)
+{
+	if(m_detached_inventories.count(name) > 0){
+		infostream<<"Server clearing detached inventory \""<<name<<"\""<<std::endl;
+		delete m_detached_inventories[name];
+	} else {
+		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
+	}
+	Inventory *inv = new Inventory(m_itemdef);
+	assert(inv);
+	m_detached_inventories[name] = inv;
+	sendDetachedInventoryToAll(name);
+	return inv;
 }
 
 // IGameDef interface

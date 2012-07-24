@@ -257,10 +257,13 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
-			f.next("]");
+			std::string start_i_s = f.next("]");
+			s32 start_i = 0;
+			if(start_i_s != "")
+				start_i = stoi(start_i_s);
 			if(bp_set != 2)
-				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
-			m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom));
+				errorstream<<"WARNING: invalid use of list without a size[] element"<<std::endl;
+			m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
 		}
 		else if(type == "image")
 		{
@@ -531,13 +534,14 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 
 		for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 		{
+			s32 item_i = i + s.start_item_i;
 			s32 x = (i%s.geom.X) * spacing.X;
 			s32 y = (i/s.geom.X) * spacing.Y;
 			v2s32 p0(x,y);
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.inventoryloc, s.listname, i);
+				return ItemSpec(s.inventoryloc, s.listname, item_i);
 			}
 		}
 	}
@@ -576,13 +580,16 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 	
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
+		u32 item_i = i + s.start_item_i;
+		if(item_i >= ilist->getSize())
+			break;
 		s32 x = (i%s.geom.X) * spacing.X;
 		s32 y = (i/s.geom.X) * spacing.Y;
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
 		ItemStack item;
 		if(ilist)
-			item = ilist->getItem(i);
+			item = ilist->getItem(item_i);
 
 		bool selected = m_selected_item
 			&& m_invmgr->getInventory(m_selected_item->inventoryloc) == inv

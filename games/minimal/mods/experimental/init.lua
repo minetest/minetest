@@ -524,6 +524,12 @@ minetest.register_craft({
 	end)
 end)]]
 
+-- Create a detached inventory
+local inv = minetest.create_detached_inventory("test_inventory")
+inv:set_size("main", 4*6)
+inv:add_item("main", "experimental:tester_tool_1")
+inv:add_item("main", "experimental:tnt 5")
+
 minetest.register_chatcommand("test1", {
 	params = "",
 	description = "Test 1: Modify player's inventory view",
@@ -538,6 +544,7 @@ minetest.register_chatcommand("test1", {
 				"list[current_player;main;5,3.5;8,4;]"..
 				"list[current_player;craft;8,0;3,3;]"..
 				"list[current_player;craftpreview;12,1;1,1;]"..
+				"list[detached:test_inventory;main;0,0;4,6;0]"..
 				"button[0.5,7;2,1;button1;Button 1]"..
 				"button_exit[2.5,7;2,1;button2;Exit Button]"
 		)
