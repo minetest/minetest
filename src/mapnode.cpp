@@ -234,8 +234,10 @@ u32 MapNode::serializedLength(u8 version)
 		return 1;
 	else if(version <= 9)
 		return 2;
-	else
+	else if(version <= 23)
 		return 3;
+	else
+		return 4;
 }
 void MapNode::serialize(u8 *dest, u8 version)
 {
