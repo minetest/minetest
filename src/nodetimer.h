@@ -57,8 +57,8 @@ public:
 	NodeTimerList() {}
 	~NodeTimerList() {}
 	
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
+	void serialize(std::ostream &os, u8 map_format_version) const;
+	void deSerialize(std::istream &is, u8 map_format_version);
 	
 	// Get timer
 	NodeTimer get(v3s16 p){

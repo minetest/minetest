@@ -612,8 +612,10 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	*/
 	if(disk)
 	{
-		// Node timers
-		m_node_timers.serialize(os);
+		if(version <= 24){
+			// Node timers
+			m_node_timers.serialize(os, version);
+		}
 
 		// Static objects
 		m_static_objects.serialize(os);
@@ -623,6 +625,11 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 
 		// Write block-specific node definition id mapping
 		nimap.serialize(os);
+		
+		if(version >= 25){
+			// Node timers
+			m_node_timers.serialize(os, version);
+		}
 	}
 }
 
@@ -696,10 +703,10 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 			// Read unused zero
 			readU8(is);
 		}
-		else if(version >= 24){
+		if(version == 24){
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
-					<<": Node timers"<<std::endl);
-			m_node_timers.deSerialize(is);
+					<<": Node timers (ver==24)"<<std::endl);
+			m_node_timers.deSerialize(is, version);
 		}
 
 		// Static objects
@@ -719,6 +726,12 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		NameIdMapping nimap;
 		nimap.deSerialize(is);
 		correctBlockNodeIds(&nimap, data, m_gamedef);
+
+		if(version >= 25){
+			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+					<<": Node timers (ver>=25)"<<std::endl);
+			m_node_timers.deSerialize(is, version);
+		}
 	}
 		
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())

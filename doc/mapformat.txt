@@ -1,11 +1,12 @@
 =============================
-Minetest World Format 22...23
+Minetest World Format 22...25
 =============================
 
 This applies to a world format carrying the block serialization version
-22...23, used at least in
-- 0.4.dev-20120322 ... 0.4.dev-20120606
-- 0.4.0.
+22...25, used at least in
+- 0.4.dev-20120322 ... 0.4.dev-20120606 (22...23)
+- 0.4.0 (23)
+- 24 was never released as stable and existed for ~2 days
 
 The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
@@ -262,17 +263,26 @@ u8 flags
 
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes
-- Always 1
+if map format version <= 23:
+    - Always 1
+if map format version >= 24:
+    - Always 2
 
 u8 params_width
 - Number of bytes used for parameters per node
 - Always 2
 
 zlib-compressed node data:
-- content:
-  u8[4096]: param0 fields
-  u8[4096]: param1 fields
-  u8[4096]: param2 fields
+if content_width == 1:
+    - content:
+      u8[4096]: param0 fields
+      u8[4096]: param1 fields
+      u8[4096]: param2 fields
+if content_width == 2:
+    - content:
+      u16[4096]: param0 fields
+      u8[4096]: param1 fields
+      u8[4096]: param2 fields
 - The location of a node in each of those arrays is (z*16*16 + y*16 + x).
 
 zlib-compressed node metadata list
@@ -285,9 +295,19 @@ zlib-compressed node metadata list
     u16 content_size
     u8[content_size] (content of metadata)
 
-- unused node timers (version will be 24 when they are actually used):
-if version == 23:
+- Node timers
+if map format version == 23:
   u8 unused version (always 0)
+if map format version == 24: (NOTE: Not released as stable)
+  u8 nodetimer_version
+  if nodetimer_version == 0:
+    (nothing else)
+  if nodetimer_version == 1:
+    u16 num_of_timers
+    foreach num_of_timers:
+      u16 timer position (z*16*16 + y*16 + x)
+      s32 timeout*1000
+      s32 elapsed*1000
 
 u8 static object version:
 - Always 0
@@ -317,17 +337,29 @@ foreach num_name_id_mappings
   u16 name_len
   u8[name_len] name
 
+- Node timers
+if map format version == 25:
+  u8 length of the data of a single timer (always 2+4+4=10)
+  u16 num_of_timers
+  foreach num_of_timers:
+    u16 timer position (z*16*16 + y*16 + x)
+    s32 timeout*1000
+    s32 elapsed*1000
+
 EOF.
 
 Format of nodes
 ----------------
 A node is composed of the u8 fields param0, param1 and param2.
 
-The content id of a node is determined as so:
-- If param0 < 0x80,
-    content_id = param0
-- Otherwise
-    content_id = (param0<<4) + (param2>>4)
+if map format version <= 23:
+    The content id of a node is determined as so:
+    - If param0 < 0x80,
+        content_id = param0
+    - Otherwise
+        content_id = (param0<<4) + (param2>>4)
+if map format version >= 24:
+    The content id of a node is param0.
 
 The purpose of param1 and param2 depend on the definition of the node.
 
