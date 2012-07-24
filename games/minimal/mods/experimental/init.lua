@@ -443,7 +443,7 @@ minetest.register_abm({
 })--]]
 
 minetest.register_node("experimental:tester_node_1", {
-	description = "Tester Node 1",
+	description = "Tester Node 1 (construct/destruct/timer)",
 	tile_images = {"wieldhand.png"},
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
@@ -455,6 +455,8 @@ minetest.register_node("experimental:tester_node_1", {
 		experimental.print_to_everything("experimental:tester_node_1:on_construct("..minetest.pos_to_string(pos)..")")
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("mine", "test")
+		local timer = minetest.env:get_node_timer(pos)
+		timer:start(4, 3)
 	end,
 
     after_place_node = function(pos, placer)
@@ -477,6 +479,11 @@ minetest.register_node("experimental:tester_node_1", {
  
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
+	end,
+
+	on_timer = function(pos, elapsed)
+		experimental.print_to_everything("on_timer(): elapsed="..dump(elapsed))
+		return true
 	end,
 })
 
