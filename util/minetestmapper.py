@@ -324,7 +324,9 @@ def content_is_air(d):
     return d in [126, 127, 254, "air"]
 
 def read_content(mapdata, version, datapos):
-    if version >= 20:
+    if version >= 24:
+        return (mapdata[datapos*2] << 8) | (mapdata[datapos*2 + 1])
+    elif version >= 20:
         if mapdata[datapos] < 0x80:
             return mapdata[datapos]
         else:
@@ -386,6 +388,7 @@ def read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_na
                             unknown_node_ids.append(content)
                         #print("unknown node: %s/%s/%s x: %d y: %d z: %d block id: %x"
                         #        % (xhex, zhex, yhex, x, y, z, content))
+
 
 # Go through all sectors.
 for n in range(len(xlist)):
@@ -546,6 +549,14 @@ for n in range(len(xlist)):
 
             if version == 23:
                 readU8(f) # Unused node timer version (always 0)
+            if version == 24:
+                ver = readU8(f)
+                if ver == 1:
+                    num = readU16(f)
+                    for i in range(0,num):
+                        readU16(f)
+                        readS32(f)
+                        readS32(f)
 
             static_object_version = readU8(f)
             static_object_count = readU16(f)
@@ -577,6 +588,15 @@ for n in range(len(xlist)):
                     name = f.read(name_len)
                     #print(str(node_id)+" = "+name)
                     id_to_name[node_id] = name
+
+            # Node timers
+            if version >= 25:
+                timer_size = readU8(f)
+                num = readU16(f)
+                for i in range(0,num):
+                    readU16(f)
+                    readS32(f)
+                    readS32(f)
 
             read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_name)
 
