@@ -14,6 +14,14 @@ default = {}
 -- Load other files
 dofile(minetest.get_modpath("default").."/mapgen.lua")
 
+-- Set a noticeable inventory formspec for players
+minetest.register_on_joinplayer(function(player)
+	local cb = function(player)
+		minetest.chat_send_player(player:get_player_name(), "This is the [minimal] \"Minimal Development Test\" game. Use [minetest_game] for the real thing.")
+	end
+	minetest.after(2.0, cb, player)
+end)
+
 --
 -- Tool definition
 --
