@@ -514,19 +514,13 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			return;
 		}
 
-		// Don't remove from inventory in creative mode
-		if(g_settings->getBool("creative_mode") == true
-				&& from_inv.type == InventoryLocation::PLAYER){
-		}
-		else{
-			// Take item from source list
-			ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
+		// Take item from source list
+		ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
 
-			if(item2.count != actually_dropped_count)
-				errorstream<<"Could not take dropped count of items"<<std::endl;
-			
-			mgr->setInventoryModified(from_inv);
-		}
+		if(item2.count != actually_dropped_count)
+			errorstream<<"Could not take dropped count of items"<<std::endl;
+		
+		mgr->setInventoryModified(from_inv);
 	}
 
 	infostream<<"IDropAction::apply(): dropped "

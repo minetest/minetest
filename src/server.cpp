@@ -3131,8 +3131,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Placement was handled in lua
 
 				// Apply returned ItemStack
-				if(g_settings->getBool("creative_mode") == false)
-					playersao->setWieldedItem(item);
+				playersao->setWieldedItem(item);
 			}
 			
 			// If item has node placement prediction, always send the above
@@ -3158,8 +3157,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					item, playersao, pointed))
 			{
 				// Apply returned ItemStack
-				if(g_settings->getBool("creative_mode") == false)
-					playersao->setWieldedItem(item);
+				playersao->setWieldedItem(item);
 			}
 
 		} // action == 4
@@ -4380,9 +4378,7 @@ void Server::UpdateCrafting(u16 peer_id)
 
 	// Get a preview for crafting
 	ItemStack preview;
-	// No crafting in creative mode
-	if(g_settings->getBool("creative_mode") == false)
-		getCraftingResult(&player->inventory, preview, false, this);
+	getCraftingResult(&player->inventory, preview, false, this);
 
 	// Put the new preview in
 	InventoryList *plist = player->inventory.getList("craftpreview");
@@ -4716,10 +4712,6 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		scriptapi_on_newplayer(m_lua, playersao);
 
 	scriptapi_on_joinplayer(m_lua, playersao);
-
-	/* Creative mode */
-	if(g_settings->getBool("creative_mode"))
-		playersao->createCreativeInventory();
 
 	return playersao;
 }

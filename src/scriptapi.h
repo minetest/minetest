@@ -61,7 +61,6 @@ void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player);
 bool scriptapi_get_auth(lua_State *L, const std::string &playername,
 		std::string *dst_password, std::set<std::string> *dst_privs);
 void scriptapi_create_auth(lua_State *L, const std::string &playername,

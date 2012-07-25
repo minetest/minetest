@@ -150,7 +150,6 @@ public:
 	
 	u8 light;
 
-	// In creative mode, this is the invisible backup inventory
 	Inventory inventory;
 
 	u16 hp;

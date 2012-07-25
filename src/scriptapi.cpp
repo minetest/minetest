@@ -5326,21 +5326,6 @@ void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player)
 	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	StackUnroller stack_unroller(L);
-	
-	Inventory *inv = player->getInventory();
-	assert(inv);
-
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "creative_inventory");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	inventory_set_list_from_lua(inv, "main", L, -1, PLAYER_INVENTORY_SIZE);
-}
-
 static void get_auth_handler(lua_State *L)
 {
 	lua_getglobal(L, "minetest");
