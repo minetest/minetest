@@ -382,9 +382,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 		else if(type == "label")
 		{
-			v2s32 pos;
-			pos.X = stof(f.next(",")) * (float)spacing.X;
-			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+			v2s32 pos = padding;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
 
 			rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
 			
@@ -403,9 +403,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 		else if(type == "button" || type == "button_exit")
 		{
-			v2s32 pos;
-			pos.X = stof(f.next(",")) * (float)spacing.X;
-			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+			v2s32 pos = padding;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
 			v2s32 geom;
 			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
 			pos.Y += (stof(f.next(";")) * (float)imgsize.Y)/2;
@@ -431,9 +431,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 		else if(type == "image_button" || type == "image_button_exit")
 		{
-			v2s32 pos;
-			pos.X = stof(f.next(",")) * (float)spacing.X;
-			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+			v2s32 pos = padding;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
 			v2s32 geom;
 			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
 			geom.Y = (stof(f.next(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
@@ -890,14 +890,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			InventoryList *list = inv_s->getList(s.listname);
 			if(list == NULL){
-				errorstream<<"InventoryMenu: The selected inventory list \""
+				verbosestream<<"InventoryMenu: The selected inventory list \""
 						<<s.listname<<"\" does not exist"<<std::endl;
 				s.i = -1;  // make it invalid again
 				break;
 			}
 
 			if((u32)s.i >= list->getSize()){
-				errorstream<<"InventoryMenu: The selected inventory list \""
+				infostream<<"InventoryMenu: The selected inventory list \""
 						<<s.listname<<"\" is too small (i="<<s.i<<", size="
 						<<list->getSize()<<")"<<std::endl;
 				s.i = -1;  // make it invalid again
