@@ -5762,6 +5762,8 @@ int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 7, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_metadata_inventory_move should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
@@ -5799,12 +5801,14 @@ int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_metadata_inventory_put should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
 // Return number of accepted items to be taken
 int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
-		const std::string &listname, int index, int count,
+		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
 	realitycheck(L);
@@ -5821,7 +5825,7 @@ int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
 	// Push callback function on stack
 	if(!get_item_callback(L, ndef->get(node).name.c_str(),
 			"allow_metadata_inventory_take"))
-		return count;
+		return stack.count;
 
 	// Call function(pos, listname, index, count, player)
 	// pos
@@ -5830,12 +5834,14 @@ int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
 	lua_pushstring(L, listname.c_str());
 	// index
 	lua_pushinteger(L, index + 1);
-	// count
-	lua_pushinteger(L, count);
+	// stack
+	LuaItemStack::create(L, stack);
 	// player
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_metadata_inventory_take should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
@@ -5918,7 +5924,7 @@ void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
 
 // Report taken items
 void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
-		const std::string &listname, int index, int count,
+		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
 	realitycheck(L);
@@ -5937,15 +5943,15 @@ void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
 			"on_metadata_inventory_take"))
 		return;
 
-	// Call function(pos, listname, index, count, player)
+	// Call function(pos, listname, index, stack, player)
 	// pos
 	push_v3s16(L, p);
 	// listname
 	lua_pushstring(L, listname.c_str());
 	// index
 	lua_pushinteger(L, index + 1);
-	// count
-	lua_pushinteger(L, count);
+	// stack
+	LuaItemStack::create(L, stack);
 	// player
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 0, 0))
@@ -6031,6 +6037,8 @@ int scriptapi_detached_inventory_allow_move(lua_State *L,
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 7, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_move should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
@@ -6063,13 +6071,15 @@ int scriptapi_detached_inventory_allow_put(lua_State *L,
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_put should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
 // Return number of accepted items to be taken
 int scriptapi_detached_inventory_allow_take(lua_State *L,
 		const std::string &name,
-		const std::string &listname, int index, int count,
+		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
 	realitycheck(L);
@@ -6078,9 +6088,9 @@ int scriptapi_detached_inventory_allow_take(lua_State *L,
 
 	// Push callback function on stack
 	if(!get_detached_inventory_callback(L, name, "allow_take"))
-		return count; // All will be accepted
+		return stack.count; // All will be accepted
 
-	// Call function(inv, listname, index, count, player)
+	// Call function(inv, listname, index, stack, player)
 	// inv
 	InventoryLocation loc;
 	loc.setDetached(name);
@@ -6089,12 +6099,14 @@ int scriptapi_detached_inventory_allow_take(lua_State *L,
 	lua_pushstring(L, listname.c_str());
 	// index
 	lua_pushinteger(L, index + 1);
-	// count
-	lua_pushinteger(L, count);
+	// stack
+	LuaItemStack::create(L, stack);
 	// player
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnumber(L, -1))
+		throw LuaError(L, "allow_take should return a number");
 	return luaL_checkinteger(L, -1);
 }
 
@@ -6168,7 +6180,7 @@ void scriptapi_detached_inventory_on_put(lua_State *L,
 // Report taken items
 void scriptapi_detached_inventory_on_take(lua_State *L,
 		const std::string &name,
-		const std::string &listname, int index, int count,
+		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
 	realitycheck(L);
@@ -6179,7 +6191,7 @@ void scriptapi_detached_inventory_on_take(lua_State *L,
 	if(!get_detached_inventory_callback(L, name, "on_take"))
 		return;
 
-	// Call function(inv, listname, index, count, player)
+	// Call function(inv, listname, index, stack, player)
 	// inv
 	InventoryLocation loc;
 	loc.setDetached(name);
@@ -6188,8 +6200,8 @@ void scriptapi_detached_inventory_on_take(lua_State *L,
 	lua_pushstring(L, listname.c_str());
 	// index
 	lua_pushinteger(L, index + 1);
-	// count
-	lua_pushinteger(L, count);
+	// stack
+	LuaItemStack::create(L, stack);
 	// player
 	objectref_get_or_create(L, player);
 	if(lua_pcall(L, 5, 0, 0))

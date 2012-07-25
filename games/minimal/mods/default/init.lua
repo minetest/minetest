@@ -1223,7 +1223,7 @@ minetest.register_node("default:chest_locked", {
 		end
 		return stack:get_count()
 	end,
-    allow_metadata_inventory_take = function(pos, listname, index, count, player)
+    allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 		local meta = minetest.env:get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
@@ -1232,7 +1232,7 @@ minetest.register_node("default:chest_locked", {
 					minetest.pos_to_string(pos))
 			return 0
 		end
-		return count
+		return stack:get_count()
 	end,
 	on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 		minetest.log("action", player:get_player_name()..
@@ -1242,7 +1242,7 @@ minetest.register_node("default:chest_locked", {
 		minetest.log("action", player:get_player_name()..
 				" moves stuff to locked chest at "..minetest.pos_to_string(pos))
 	end,
-    on_metadata_inventory_take = function(pos, listname, index, count, player)
+    on_metadata_inventory_take = function(pos, listname, index, stack, player)
 		minetest.log("action", player:get_player_name()..
 				" takes stuff from locked chest at "..minetest.pos_to_string(pos))
 	end,

@@ -1371,14 +1371,14 @@ Node definition (register_node)
 	^ Called when a player wants to put something into the inventory
 	^ Return value: number of items allowed to put
   
-	allow_metadata_inventory_take = func(pos, listname, index, count, player),
+	allow_metadata_inventory_take = func(pos, listname, index, stack, player),
 	^ Called when a player wants to take something out of the inventory
 	^ Return value: number of items allowed to take
 
 	on_metadata_inventory_move = func(pos, from_list, from_index,
 			to_list, to_index, count, player),
 	on_metadata_inventory_put = func(pos, listname, index, stack, player),
-	on_metadata_inventory_take = func(pos, listname, index, count, player),
+	on_metadata_inventory_take = func(pos, listname, index, stack, player),
 	^ Called after the actual action has happened, according to what was allowed.
 	^ No return value
 }
@@ -1447,13 +1447,13 @@ Detached inventory callbacks
     ^ Called when a player wants to put something into the inventory
 	^ Return value: number of items allowed to put
    
-    allow_take = func(inv, listname, index, count, player),
+    allow_take = func(inv, listname, index, stack, player),
     ^ Called when a player wants to take something out of the inventory
 	^ Return value: number of items allowed to take
 	
 	on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     on_put = func(inv, listname, index, stack, player),
-    on_take = func(inv, listname, index, count, player),
+    on_take = func(inv, listname, index, stack, player),
 	^ Called after the actual action has happened, according to what was allowed.
 	^ No return value
 }

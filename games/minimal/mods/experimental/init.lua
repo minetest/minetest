@@ -534,7 +534,7 @@ local inv = minetest.create_detached_inventory("test_inventory", {
 		experimental.print_to_everything("allow put asked")
 		return 1 -- Allow only 1
 	end,
-    allow_take = function(inv, listname, index, count, player)
+    allow_take = function(inv, listname, index, stack, player)
 		experimental.print_to_everything("allow take asked")
 		return 4 -- Allow 4 at max
 	end,
@@ -544,7 +544,7 @@ local inv = minetest.create_detached_inventory("test_inventory", {
     on_put = function(inv, listname, index, stack, player)
 		experimental.print_to_everything(player:get_player_name().." put items")
 	end,
-    on_take = function(inv, listname, index, count, player)
+    on_take = function(inv, listname, index, stack, player)
 		experimental.print_to_everything(player:get_player_name().." took items")
 	end,
 })
