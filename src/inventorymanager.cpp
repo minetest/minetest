@@ -280,19 +280,24 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 					L, from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
+
+	int old_count = count;
 	
 	/* Modify count according to collected data */
-	int new_count = try_take_count;
-	if(new_count > src_can_take_count)
-		new_count = src_can_take_count;
-	if(new_count > dst_can_put_count)
-		new_count = dst_can_put_count;
+	count = try_take_count;
+	if(src_can_take_count != -1 && count > src_can_take_count)
+		count = src_can_take_count;
+	if(dst_can_put_count != -1 && count > dst_can_put_count)
+		count = dst_can_put_count;
+	/* Limit according to source item count */
+	if(count > list_from->getItem(from_i).count)
+		count = list_from->getItem(from_i).count;
 	
 	/* If no items will be moved, don't go further */
-	if(new_count == 0)
+	if(count == 0)
 	{
-		infostream<<"IMoveAction::apply(): move was completely disallowed: "
-				<<" count="<<count
+		infostream<<"IMoveAction::apply(): move was completely disallowed:"
+				<<" count="<<old_count
 				<<" from inv=\""<<from_inv.dump()<<"\""
 				<<" list=\""<<from_list<<"\""
 				<<" i="<<from_i
@@ -303,10 +308,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	count = new_count;
-	
 	ItemStack src_item = list_from->getItem(from_i);
 	src_item.count = count;
+	ItemStack from_stack_was = list_from->getItem(from_i);
+	ItemStack to_stack_was = list_to->getItem(to_i);
 
 	/*
 		Perform actual move
@@ -316,7 +321,19 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	list_from->moveItem(from_i, list_to, to_i, count);
 
-	infostream<<"IMoveAction::apply(): moved "
+	// If source is infinite, reset it's stack
+	if(src_can_take_count == -1){
+		list_from->deleteItem(from_i);
+		list_from->addItem(from_i, from_stack_was);
+	}
+	// If destination is infinite, reset it's stack and take count from source
+	if(dst_can_put_count == -1){
+		list_to->deleteItem(to_i);
+		list_to->addItem(to_i, to_stack_was);
+		list_from->takeItem(from_i, count);
+	}
+
+	infostream<<"IMoveAction::apply(): moved"
 			<<" count="<<count
 			<<" from inv=\""<<from_inv.dump()<<"\""
 			<<" list=\""<<from_list<<"\""
@@ -500,7 +517,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				L, from_inv.p, from_list, from_i, src_item, player);
 	}
 
-	if(src_can_take_count < take_count)
+	if(src_can_take_count != -1 && src_can_take_count < take_count)
 		take_count = src_can_take_count;
 	
 	int actually_dropped_count = 0;
@@ -518,14 +535,17 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			infostream<<"Actually dropped no items"<<std::endl;
 			return;
 		}
-
-		// Take item from source list
-		ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
-
-		if(item2.count != actually_dropped_count)
-			errorstream<<"Could not take dropped count of items"<<std::endl;
 		
-		mgr->setInventoryModified(from_inv);
+		// If source isn't infinite
+		if(src_can_take_count != -1){
+			// Take item from source list
+			ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
+
+			if(item2.count != actually_dropped_count)
+				errorstream<<"Could not take dropped count of items"<<std::endl;
+
+			mgr->setInventoryModified(from_inv);
+		}
 	}
 
 	infostream<<"IDropAction::apply(): dropped "
