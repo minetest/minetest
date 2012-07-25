@@ -64,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 12:
 		TOSERVER_INVENTORY_FIELDS
 		16-bit node ids
+		TOCLIENT_DETACHED_INVENTORY
 */
 
 #define PROTOCOL_VERSION 12
@@ -320,6 +321,14 @@ enum ToClientCommand
 		u16 command
 		u32 len
 		u8[len] formspec
+	*/
+
+	TOCLIENT_DETACHED_INVENTORY = 0x43,
+	/*
+		[0] u16 command
+		u16 len
+		u8[len] name
+		[2] serialized inventory
 	*/
 };
 

@@ -304,6 +304,15 @@ Client::~Client()
 		sleep_ms(100);
 
 	delete m_inventory_from_server;
+
+	// Delete detached inventories
+	{
+		for(std::map<std::string, Inventory*>::iterator
+				i = m_detached_inventories.begin();
+				i != m_detached_inventories.end(); i++){
+			delete i->second;
+		}
+	}
 }
 
 void Client::connect(Address address)
@@ -1698,6 +1707,24 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		assert(player != NULL);
 		player->inventory_formspec = deSerializeLongString(is);
 	}
+	else if(command == TOCLIENT_DETACHED_INVENTORY)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string name = deSerializeString(is);
+		
+		infostream<<"Client: Detached inventory update: \""<<name<<"\""<<std::endl;
+
+		Inventory *inv = NULL;
+		if(m_detached_inventories.count(name) > 0)
+			inv = m_detached_inventories[name];
+		else{
+			inv = new Inventory(m_itemdef);
+			m_detached_inventories[name] = inv;
+		}
+		inv->deSerialize(is);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
@@ -2088,6 +2115,13 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		if(!meta)
 			return NULL;
 		return meta->getInventory();
+	}
+	break;
+	case InventoryLocation::DETACHED:
+	{
+		if(m_detached_inventories.count(loc.name) == 0)
+			return NULL;
+		return m_detached_inventories[loc.name];
 	}
 	break;
 	default:

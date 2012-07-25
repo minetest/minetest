@@ -292,13 +292,6 @@ public:
 			ServerActiveObject *puncher,
 			float time_from_last_punch)
 	{
-		// Directly delete item in creative mode
-		if(g_settings->getBool("creative_mode") == true)
-		{
-			m_removed = true;
-			return 0;
-		}
-		
 		// Take item into inventory
 		ItemStack item = createItemStack();
 		Inventory *inv = puncher->getInventory();
@@ -1141,16 +1134,6 @@ void PlayerSAO::disconnected()
 		m_player->setPlayerSAO(NULL);
 		m_player->peer_id = 0;
 	}
-}
-
-void PlayerSAO::createCreativeInventory()
-{
-	if(m_inventory != &m_player->inventory)
-		delete m_inventory;
-
-	m_inventory = new Inventory(m_player->inventory);
-	m_inventory->clearContents();
-	scriptapi_get_creative_inventory(m_env->getLua(), this);
 }
 
 std::string PlayerSAO::getPropertyPacket()

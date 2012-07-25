@@ -14,6 +14,14 @@ default = {}
 -- Load other files
 dofile(minetest.get_modpath("default").."/mapgen.lua")
 
+-- Set a noticeable inventory formspec for players
+minetest.register_on_joinplayer(function(player)
+	local cb = function(player)
+		minetest.chat_send_player(player:get_player_name(), "This is the [minimal] \"Minimal Development Test\" game. Use [minetest_game] for the real thing.")
+	end
+	minetest.after(2.0, cb, player)
+end)
+
 --
 -- Tool definition
 --
@@ -1150,7 +1158,7 @@ minetest.register_node("default:chest", {
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Chest")
@@ -1161,25 +1169,6 @@ minetest.register_node("default:chest", {
 		local meta = minetest.env:get_meta(pos);
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
-	end,
-    on_metadata_inventory_move = function(pos, from_list, from_index,
-			to_list, to_index, count, player)
-		minetest.log("action", player:get_player_name()..
-				" moves stuff in chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_move_allow_all(
-				pos, from_list, from_index, to_list, to_index, count, player)
-	end,
-    on_metadata_inventory_offer = function(pos, listname, index, stack, player)
-		minetest.log("action", player:get_player_name()..
-				" moves stuff to chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_offer_allow_all(
-				pos, listname, index, stack, player)
-	end,
-    on_metadata_inventory_take = function(pos, listname, index, count, player)
-		minetest.log("action", player:get_player_name()..
-				" takes stuff from chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_take_allow_all(
-				pos, listname, index, count, player)
 	end,
 })
 
@@ -1207,7 +1196,7 @@ minetest.register_node("default:chest_locked", {
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Locked Chest")
@@ -1220,53 +1209,55 @@ minetest.register_node("default:chest_locked", {
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
-    on_metadata_inventory_move = function(pos, from_list, from_index,
-			to_list, to_index, count, player)
+	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 		local meta = minetest.env:get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a locked chest belonging to "..
 					meta:get_string("owner").." at "..
 					minetest.pos_to_string(pos))
-			return
+			return 0
 		end
+		return count
+	end,
+    allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+		local meta = minetest.env:get_meta(pos)
+		if not has_locked_chest_privilege(meta, player) then
+			minetest.log("action", player:get_player_name()..
+					" tried to access a locked chest belonging to "..
+					meta:get_string("owner").." at "..
+					minetest.pos_to_string(pos))
+			return 0
+		end
+		return stack:get_count()
+	end,
+    allow_metadata_inventory_take = function(pos, listname, index, stack, player)
+		local meta = minetest.env:get_meta(pos)
+		if not has_locked_chest_privilege(meta, player) then
+			minetest.log("action", player:get_player_name()..
+					" tried to access a locked chest belonging to "..
+					meta:get_string("owner").." at "..
+					minetest.pos_to_string(pos))
+			return 0
+		end
+		return stack:get_count()
+	end,
+	on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 		minetest.log("action", player:get_player_name()..
 				" moves stuff in locked chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_move_allow_all(
-				pos, from_list, from_index, to_list, to_index, count, player)
 	end,
-    on_metadata_inventory_offer = function(pos, listname, index, stack, player)
-		local meta = minetest.env:get_meta(pos)
-		if not has_locked_chest_privilege(meta, player) then
-			minetest.log("action", player:get_player_name()..
-					" tried to access a locked chest belonging to "..
-					meta:get_string("owner").." at "..
-					minetest.pos_to_string(pos))
-			return stack
-		end
+    on_metadata_inventory_put = function(pos, listname, index, stack, player)
 		minetest.log("action", player:get_player_name()..
 				" moves stuff to locked chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_offer_allow_all(
-				pos, listname, index, stack, player)
 	end,
-    on_metadata_inventory_take = function(pos, listname, index, count, player)
-		local meta = minetest.env:get_meta(pos)
-		if not has_locked_chest_privilege(meta, player) then
-			minetest.log("action", player:get_player_name()..
-					" tried to access a locked chest belonging to "..
-					meta:get_string("owner").." at "..
-					minetest.pos_to_string(pos))
-			return
-		end
+    on_metadata_inventory_take = function(pos, listname, index, stack, player)
 		minetest.log("action", player:get_player_name()..
 				" takes stuff from locked chest at "..minetest.pos_to_string(pos))
-		return minetest.node_metadata_inventory_take_allow_all(
-				pos, listname, index, count, player)
 	end,
 })
 
 default.furnace_inactive_formspec =
-	"invsize[8,9;]"..
+	"size[8,9]"..
 	"image[2,2;1,1;default_furnace_fire_bg.png]"..
 	"list[current_name;fuel;2,3;1,1;]"..
 	"list[current_name;src;2,1;1,1;]"..
@@ -1405,7 +1396,7 @@ minetest.register_abm({
 			meta:set_string("infotext","Furnace active: "..percent.."%")
 			hacky_swap_node(pos,"default:furnace_active")
 			meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
 						(100-percent)..":default_furnace_fire_fg.png]"..
 				"list[current_name;fuel;2,3;1,1;]"..
@@ -1571,40 +1562,6 @@ minetest.register_craftitem("default:scorched_stuff", {
 	description = "Scorched stuff",
 	inventory_image = "default_scorched_stuff.png",
 })
-
---
--- Creative inventory
---
-
-minetest.add_to_creative_inventory('default:pick_mese')
-minetest.add_to_creative_inventory('default:pick_steel')
-minetest.add_to_creative_inventory('default:axe_steel')
-minetest.add_to_creative_inventory('default:shovel_steel')
-
-minetest.add_to_creative_inventory('default:torch')
-minetest.add_to_creative_inventory('default:cobble')
-minetest.add_to_creative_inventory('default:dirt')
-minetest.add_to_creative_inventory('default:stone')
-minetest.add_to_creative_inventory('default:sand')
-minetest.add_to_creative_inventory('default:sandstone')
-minetest.add_to_creative_inventory('default:clay')
-minetest.add_to_creative_inventory('default:brick')
-minetest.add_to_creative_inventory('default:tree')
-minetest.add_to_creative_inventory('default:wood')
-minetest.add_to_creative_inventory('default:leaves')
-minetest.add_to_creative_inventory('default:cactus')
-minetest.add_to_creative_inventory('default:papyrus')
-minetest.add_to_creative_inventory('default:bookshelf')
-minetest.add_to_creative_inventory('default:glass')
-minetest.add_to_creative_inventory('default:fence_wood')
-minetest.add_to_creative_inventory('default:rail')
-minetest.add_to_creative_inventory('default:mese')
-minetest.add_to_creative_inventory('default:chest')
-minetest.add_to_creative_inventory('default:furnace')
-minetest.add_to_creative_inventory('default:sign_wall')
-minetest.add_to_creative_inventory('default:water_source')
-minetest.add_to_creative_inventory('default:lava_source')
-minetest.add_to_creative_inventory('default:ladder')
 
 --
 -- Aliases for the current map generator outputs

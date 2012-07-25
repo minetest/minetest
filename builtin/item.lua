@@ -124,55 +124,84 @@ end
 function minetest.item_place_node(itemstack, placer, pointed_thing)
 	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
-	if def.type == "node" and pointed_thing.type == "node" then
-		local pos = pointed_thing.above
-		local oldnode = minetest.env:get_node(pos)
-		local olddef = ItemStack({name=oldnode.name}):get_definition()
-
-		if not olddef.buildable_to then
-			minetest.log("info", placer:get_player_name() .. " tried to place"
-				.. " node in invalid position " .. minetest.pos_to_string(pos)
-				.. ", replacing " .. oldnode.name)
-			return
-		end
-
-		minetest.log("action", placer:get_player_name() .. " places node "
-			.. def.name .. " at " .. minetest.pos_to_string(pos))
-
-		local newnode = {name = def.name, param1 = 0, param2 = 0}
-
-		-- Calculate direction for wall mounted stuff like torches and signs
-		if def.paramtype2 == 'wallmounted' then
-			local under = pointed_thing.under
-			local above = pointed_thing.above
-			local dir = {x = under.x - above.x, y = under.y - above.y, z = under.z - above.z}
-			newnode.param2 = minetest.dir_to_wallmounted(dir)
-		-- Calculate the direction for furnaces and chests and stuff
-		elseif def.paramtype2 == 'facedir' then
-			local placer_pos = placer:getpos()
-			if placer_pos then
-				local dir = {x = pos.x - placer_pos.x, y = pos.y - placer_pos.y, z = pos.z - placer_pos.z}
-				newnode.param2 = minetest.dir_to_facedir(dir)
-				minetest.log("action", "facedir: " .. newnode.param2)
-			end
-		end
-
-		-- Add node and update
-		minetest.env:add_node(pos, newnode)
-
-		-- Run callback
-		if def.after_place_node then
-			def.after_place_node(pos, placer)
-		end
-
-		-- Run script hook (deprecated)
-		local _, callback
-		for _, callback in ipairs(minetest.registered_on_placenodes) do
-			callback(pos, newnode, placer)
-		end
-
-		itemstack:take_item()
+	if def.type ~= "node" or pointed_thing.type ~= "node" then
+		return itemstack
 	end
+
+	local under = pointed_thing.under
+	local oldnode_under = minetest.env:get_node(under)
+	local olddef_under = ItemStack({name=oldnode_under.name}):get_definition()
+	olddef_under = olddef_under or minetest.nodedef_default
+	local above = pointed_thing.above
+	local oldnode_above = minetest.env:get_node(above)
+	local olddef_above = ItemStack({name=oldnode_above.name}):get_definition()
+	olddef_above = olddef_above or minetest.nodedef_default
+
+	if not olddef_above.buildable_to and not olddef_under.buildable_to then
+		minetest.log("info", placer:get_player_name() .. " tried to place"
+			.. " node in invalid position " .. minetest.pos_to_string(above)
+			.. ", replacing " .. oldnode_above.name)
+		return
+	end
+
+	-- Place above pointed node
+	local place_to = {x = above.x, y = above.y, z = above.z}
+
+	-- If node under is buildable_to, place into it instead (eg. snow)
+	if olddef_under.buildable_to then
+		minetest.log("info", "node under is buildable to")
+		place_to = {x = under.x, y = under.y, z = under.z}
+	end
+
+	minetest.log("action", placer:get_player_name() .. " places node "
+		.. def.name .. " at " .. minetest.pos_to_string(place_to))
+	
+	local oldnode = minetest.env:get_node(place_to)
+	local newnode = {name = def.name, param1 = 0, param2 = 0}
+
+	-- Calculate direction for wall mounted stuff like torches and signs
+	if def.paramtype2 == 'wallmounted' then
+		local dir = {
+			x = under.x - above.x,
+			y = under.y - above.y,
+			z = under.z - above.z
+		}
+		newnode.param2 = minetest.dir_to_wallmounted(dir)
+	-- Calculate the direction for furnaces and chests and stuff
+	elseif def.paramtype2 == 'facedir' then
+		local placer_pos = placer:getpos()
+		if placer_pos then
+			local dir = {
+				x = above.x - placer_pos.x,
+				y = above.y - placer_pos.y,
+				z = above.z - placer_pos.z
+			}
+			newnode.param2 = minetest.dir_to_facedir(dir)
+			minetest.log("action", "facedir: " .. newnode.param2)
+		end
+	end
+
+	-- Add node and update
+	minetest.env:add_node(place_to, newnode)
+
+	-- Run callback
+	if def.after_place_node then
+		-- Copy place_to because callback can modify it
+		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
+		def.after_place_node(place_to_copy, placer)
+	end
+
+	-- Run script hook
+	local _, callback
+	for _, callback in ipairs(minetest.registered_on_placenodes) do
+		-- Copy pos and node because callback can modify them
+		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
+		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
+		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
+		callback(place_to_copy, newnode_copy, placer, oldnode_copy)
+	end
+
+	itemstack:take_item()
 	return itemstack
 end
 
@@ -222,9 +251,11 @@ function minetest.node_punch(pos, node, puncher)
 	-- Run script hook
 	local _, callback
 	for _, callback in ipairs(minetest.registered_on_punchnodes) do
-		callback(pos, node, puncher)
+		-- Copy pos and node because callback can modify them
+		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
+		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		callback(pos_copy, node_copy, puncher)
 	end
-
 end
 
 function minetest.node_dig(pos, node, digger)
@@ -242,29 +273,25 @@ function minetest.node_dig(pos, node, digger)
 	minetest.log('action', digger:get_player_name() .. " digs "
 		.. node.name .. " at " .. minetest.pos_to_string(pos))
 
-	if not minetest.setting_getbool("creative_mode") then
-		local wielded = digger:get_wielded_item()
-		local drops = minetest.get_node_drops(node.name, wielded:get_name())
+	local wielded = digger:get_wielded_item()
+	local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
-		-- Wear out tool
-		tp = wielded:get_tool_capabilities()
-		dp = minetest.get_dig_params(def.groups, tp)
-		wielded:add_wear(dp.wear)
-		digger:set_wielded_item(wielded)
+	-- Wear out tool
+	local tp = wielded:get_tool_capabilities()
+	local dp = minetest.get_dig_params(def.groups, tp)
+	wielded:add_wear(dp.wear)
+	digger:set_wielded_item(wielded)
 
-		-- Add dropped items to object's inventory
-		if digger:get_inventory() then
-			local _, dropped_item
-			for _, dropped_item in ipairs(drops) do
-				digger:get_inventory():add_item("main", dropped_item)
-			end
+	-- Add dropped items to object's inventory
+	if digger:get_inventory() then
+		local _, dropped_item
+		for _, dropped_item in ipairs(drops) do
+			digger:get_inventory():add_item("main", dropped_item)
 		end
 	end
-	
-	local oldnode = nil
+
 	local oldmetadata = nil
 	if def.after_dig_node then
-		oldnode = node;
 		oldmetadata = minetest.env:get_meta(pos):to_table()
 	end
 
@@ -273,49 +300,20 @@ function minetest.node_dig(pos, node, digger)
 	
 	-- Run callback
 	if def.after_dig_node then
-		def.after_dig_node(pos, oldnode, oldmetadata, digger)
+		-- Copy pos and node because callback can modify them
+		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
+		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger)
 	end
 
-	-- Run script hook (deprecated)
+	-- Run script hook
 	local _, callback
 	for _, callback in ipairs(minetest.registered_on_dignodes) do
-		callback(pos, node, digger)
+		-- Copy pos and node because callback can modify them
+		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
+		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		callback(pos_copy, node_copy, digger)
 	end
-end
-
-function minetest.node_metadata_inventory_move_allow_all(pos, from_list,
-		from_index, to_list, to_index, count, player)
-	minetest.log("verbose", "node_metadata_inventory_move_allow_all")
-	local meta = minetest.env:get_meta(pos)
-	local inv = meta:get_inventory()
-
-	local from_stack = inv:get_stack(from_list, from_index)
-	local taken_items = from_stack:take_item(count)
-	inv:set_stack(from_list, from_index, from_stack)
-
-	local to_stack = inv:get_stack(to_list, to_index)
-	to_stack:add_item(taken_items)
-	inv:set_stack(to_list, to_index, to_stack)
-end
-
-function minetest.node_metadata_inventory_offer_allow_all(pos, listname, index, stack, player)
-	minetest.log("verbose", "node_metadata_inventory_offer_allow_all")
-	local meta = minetest.env:get_meta(pos)
-	local inv = meta:get_inventory()
-	local the_stack = inv:get_stack(listname, index)
-	the_stack:add_item(stack)
-	inv:set_stack(listname, index, the_stack)
-	return ItemStack("")
-end
-
-function minetest.node_metadata_inventory_take_allow_all(pos, listname, index, count, player)
-	minetest.log("verbose", "node_metadata_inventory_take_allow_all")
-	local meta = minetest.env:get_meta(pos)
-	local inv = meta:get_inventory()
-	local the_stack = inv:get_stack(listname, index)
-	local taken_items = the_stack:take_item(count)
-	inv:set_stack(listname, index, the_stack)
-	return taken_items
 end
 
 -- This is used to allow mods to redefine minetest.item_place and so on

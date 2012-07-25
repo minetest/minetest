@@ -16,4 +16,11 @@ minetest.digprop_woodlike = digprop_err
 minetest.digprop_leaveslike = digprop_err
 minetest.digprop_glasslike = digprop_err
 
+minetest.node_metadata_inventory_move_allow_all = function()
+	minetest.log("info", "WARNING: minetest.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
+end
+
+minetest.add_to_creative_inventory = function(itemstring)
+	minetest.log('info', "WARNING: minetest.add_to_creative_inventory: This function is deprecated and does nothing.")
+end
 

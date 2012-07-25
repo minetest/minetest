@@ -538,6 +538,9 @@ public:
 
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 	
+	// Creates or resets inventory
+	Inventory* createDetachedInventory(const std::string &name);
+	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
 	
@@ -627,6 +630,10 @@ private:
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
 			const core::list<MediaRequest> &tosend);
+	
+	void sendDetachedInventory(const std::string &name, u16 peer_id);
+	void sendDetachedInventoryToAll(const std::string &name);
+	void sendDetachedInventories(u16 peer_id);
 
 	/*
 		Something random
@@ -828,6 +835,12 @@ private:
 	*/
 	std::map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
+
+	/*
+		Detached inventories (behind m_env_mutex)
+	*/
+	// key = name
+	std::map<std::string, Inventory*> m_detached_inventories;
 };
 
 /*

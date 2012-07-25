@@ -677,6 +677,7 @@ size[<W>,<H>]
 ^ deprecated: invsize[<W>,<H>;]
 
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
+list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
@@ -726,10 +727,12 @@ image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
 
 Inventory location:
+
 - "context": Selected node metadata (deprecated: "current_name")
 - "current_player": Player to whom the menu is shown
 - "player:<name>": Any player
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
+- "detached:<name>": A detached inventory
 
 Helper functions
 -----------------
@@ -774,11 +777,11 @@ minetest.register_craft(recipe)
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
 ^ Called every server step, usually interval of 0.05s
-minetest.register_on_placenode(func(pos, newnode, placer))
+minetest.register_on_placenode(func(pos, newnode, placer, oldnode))
 ^ Called when a node has been placed
 ^ Deprecated: Use on_construct or after_place_node in node definition instead
 minetest.register_on_dignode(func(pos, oldnode, digger))
-^ Called when a node has been dug. digger can be nil.
+^ Called when a node has been dug.
 ^ Deprecated: Use on_destruct or after_dig_node in node definition instead
 minetest.register_on_punchnode(func(pos, node, puncher))
 ^ Called when a node is punched
@@ -847,6 +850,10 @@ Inventory:
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
+                 {type="detached", name="creative"}
+minetest.create_detached_inventory(name, callbacks) -> InvRef
+^ callbacks: See "Detached inventory callbacks"
+^ Creates a detached inventory. If it already exists, it is cleared.
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)
@@ -1280,30 +1287,29 @@ Node definition (register_node)
     drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
+	^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
     ^ List can be shortened to needed length
-    ^ Old field name: tile_images
     special_tiles = {tile definition 1, Tile definition 2},
+	^ Special textures of node; used rarely (old field name: special_materials)
     ^ List can be shortened to needed length
-    ^ Old field name: special_materials
     alpha = 255,
-    post_effect_color = {a=0, r=0, g=0, b=0},
-    paramtype = "none",
-    paramtype2 = "none",
-    is_ground_content = false,
-    sunlight_propagates = false,
-    walkable = true,
-    pointable = true,
-    diggable = true,
-    climbable = false,
-    buildable_to = false,
-    drop = "",
-    -- alternatively drop = { max_items = ..., items = { ... } }
-    liquidtype = "none",
-    liquid_alternative_flowing = "",
-    liquid_alternative_source = "",
-    liquid_viscosity = 0,
-    light_source = 0,
-    damage_per_second = 0,
+    post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
+    paramtype = "none", -- See "Nodes"
+    paramtype2 = "none", -- See "Nodes"
+    is_ground_content = false, -- Currently not used for anything
+    sunlight_propagates = false, -- If true, sunlight will go infinitely through this
+    walkable = true, -- If true, objects collide with node
+    pointable = true, -- If true, can be pointed at
+    diggable = true, -- If false, can never be dug
+    climbable = false, -- If true, can be climbed on (ladder)
+    buildable_to = false, -- If true, placed nodes can replace this node
+    drop = "", -- alternatively drop = { max_items = ..., items = { ... } }
+    liquidtype = "none", -- "none"/"source"/"flowing"
+    liquid_alternative_flowing = "", -- Flowing version of source liquid
+    liquid_alternative_source = "", -- Source version of flowing liquid
+    liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
+    light_source = 0, -- Amount of light emitted by node
+    damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
     selection_box = {type="regular"}, -- See "Node boxes"
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
@@ -1356,35 +1362,27 @@ Node definition (register_node)
     ^ Called when an UI form (eg. sign text input) returns data
     ^ default: nil
 
-    on_metadata_inventory_move = func(pos, from_list, from_index,
-                                      to_list, to_index, count, player),
-    ^ Called when a player wants to move items inside the metadata
-    ^ Should move items, or some items, if permitted. If not, should do
-      nothing.
-    ^ The engine ensures the action is valid, i.e. the stack fits at the
-      given position
-    ^ default: minetest.node_metadata_inventory_move_allow_all
+	allow_metadata_inventory_move = func(pos, from_list, from_index,
+			to_list, to_index, count, player),
+	^ Called when a player wants to move items inside the inventory
+	^ Return value: number of items allowed to move
+	
+	allow_metadata_inventory_put = func(pos, listname, index, stack, player),
+	^ Called when a player wants to put something into the inventory
+	^ Return value: number of items allowed to put
+	^ Return value: -1: Allow and don't modify item count in inventory
+  
+	allow_metadata_inventory_take = func(pos, listname, index, stack, player),
+	^ Called when a player wants to take something out of the inventory
+	^ Return value: number of items allowed to take
+	^ Return value: -1: Allow and don't modify item count in inventory
 
-    on_metadata_inventory_offer = func(pos, listname, index, stack, player),
-    ^ Called when a player wants to put something into the metadata
-      inventory
-    ^ Should check if the action is permitted (the engine ensures the
-      action is valid, i.e. the stack fits at the given position)
-      ^ If permitted, modify the metadata inventory and return the
-        "leftover" stack (normally nil).
-      ^ If not permitted, return itemstack.
-    ^ default: minetest.node_metadata_inventory_offer_allow_all
-
-    on_metadata_inventory_take = func(pos, listname, index, count, player),
-    ^ Called when a player wants to take something out of the metadata
-      inventory
-    ^ Should check if the action is permitted (the engine ensures the
-      action is valid, i.e. there's a stack of at least “count” items at
-      that position)
-      ^ If permitted, modify the metadata inventory and return the
-        stack of items
-      ^ If not permitted, return nil.
-    ^ default: minetest.node_metadata_inventory_take_allow_all
+	on_metadata_inventory_move = func(pos, from_list, from_index,
+			to_list, to_index, count, player),
+	on_metadata_inventory_put = func(pos, listname, index, stack, player),
+	on_metadata_inventory_take = func(pos, listname, index, stack, player),
+	^ Called after the actual action has happened, according to what was allowed.
+	^ No return value
 }
 
 Recipe for register_craft: (shaped)
@@ -1439,5 +1437,28 @@ Chatcommand definition (register_chatcommand)
     description = "Remove privilege from player", -- full description
     privs = {privs=true}, -- require the "privs" privilege to run
     func = function(name, param), -- called when command is run
+}
+
+Detached inventory callbacks
+{
+	allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    ^ Called when a player wants to move items inside the inventory
+	^ Return value: number of items allowed to move
+	
+    allow_put = func(inv, listname, index, stack, player),
+    ^ Called when a player wants to put something into the inventory
+	^ Return value: number of items allowed to put
+	^ Return value: -1: Allow and don't modify item count in inventory
+   
+    allow_take = func(inv, listname, index, stack, player),
+    ^ Called when a player wants to take something out of the inventory
+	^ Return value: number of items allowed to take
+	^ Return value: -1: Allow and don't modify item count in inventory
+	
+	on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    on_put = func(inv, listname, index, stack, player),
+    on_take = func(inv, listname, index, stack, player),
+	^ Called after the actual action has happened, according to what was allowed.
+	^ No return value
 }
 

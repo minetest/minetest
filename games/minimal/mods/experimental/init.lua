@@ -443,7 +443,7 @@ minetest.register_abm({
 })--]]
 
 minetest.register_node("experimental:tester_node_1", {
-	description = "Tester Node 1",
+	description = "Tester Node 1 (construct/destruct/timer)",
 	tile_images = {"wieldhand.png"},
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
@@ -455,6 +455,8 @@ minetest.register_node("experimental:tester_node_1", {
 		experimental.print_to_everything("experimental:tester_node_1:on_construct("..minetest.pos_to_string(pos)..")")
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("mine", "test")
+		local timer = minetest.env:get_node_timer(pos)
+		timer:start(4, 3)
 	end,
 
     after_place_node = function(pos, placer)
@@ -477,6 +479,11 @@ minetest.register_node("experimental:tester_node_1", {
  
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
+	end,
+
+	on_timer = function(pos, elapsed)
+		experimental.print_to_everything("on_timer(): elapsed="..dump(elapsed))
+		return true
 	end,
 })
 
@@ -509,13 +516,41 @@ minetest.register_craft({
 
 --[[minetest.register_on_joinplayer(function(player)
 	minetest.after(3, function()
-		player:set_inventory_formspec("invsize[8,7.5;]"..
+		player:set_inventory_formspec("size[8,7.5]"..
 			"image[1,0.6;1,2;player.png]"..
 			"list[current_player;main;0,3.5;8,4;]"..
 			"list[current_player;craft;3,0;3,3;]"..
 			"list[current_player;craftpreview;7,1;1,1;]")
 	end)
 end)]]
+
+-- Create a detached inventory
+local inv = minetest.create_detached_inventory("test_inventory", {
+	allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+		experimental.print_to_everything("allow move asked")
+		return count -- Allow all
+	end,
+    allow_put = function(inv, listname, index, stack, player)
+		experimental.print_to_everything("allow put asked")
+		return 1 -- Allow only 1
+	end,
+    allow_take = function(inv, listname, index, stack, player)
+		experimental.print_to_everything("allow take asked")
+		return 4 -- Allow 4 at max
+	end,
+	on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+		experimental.print_to_everything(player:get_player_name().." moved items")
+	end,
+    on_put = function(inv, listname, index, stack, player)
+		experimental.print_to_everything(player:get_player_name().." put items")
+	end,
+    on_take = function(inv, listname, index, stack, player)
+		experimental.print_to_everything(player:get_player_name().." took items")
+	end,
+})
+inv:set_size("main", 4*6)
+inv:add_item("main", "experimental:tester_tool_1")
+inv:add_item("main", "experimental:tnt 5")
 
 minetest.register_chatcommand("test1", {
 	params = "",
@@ -531,6 +566,7 @@ minetest.register_chatcommand("test1", {
 				"list[current_player;main;5,3.5;8,4;]"..
 				"list[current_player;craft;8,0;3,3;]"..
 				"list[current_player;craftpreview;12,1;1,1;]"..
+				"list[detached:test_inventory;main;0,0;4,6;0]"..
 				"button[0.5,7;2,1;button1;Button 1]"..
 				"button_exit[2.5,7;2,1;button2;Exit Button]"
 		)
