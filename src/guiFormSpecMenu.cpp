@@ -1166,6 +1166,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						return true;
 					}else{
 						s.send = false;
+						// Restore focus to the full form
+						Environment->setFocus(this);
 						return true;
 					}
 				}
