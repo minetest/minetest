@@ -753,6 +753,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				break;
 			}
             this->key_used.erase(std::remove(this->key_used.begin(), this->key_used.end(), this->current_key), this->key_used.end());
+            Environment->setFocus(this);
 			//Buttons
 			changeCtype("C");
 
