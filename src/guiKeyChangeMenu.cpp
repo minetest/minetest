@@ -56,7 +56,7 @@ enum
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
-								   gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
+				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
 GUIModalMenu(env, parent, id, menumgr)
 {
 	activeKey = -1;
@@ -113,7 +113,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	v2s32 offset(25, 60);
 
-	for(int i = 0; i < key_settings.size(); i++) {
+	for(int i = 0; i < key_settings.size(); i++)
+	{
 		key_setting *k = key_settings.at(i);
 		{
 			core::rect < s32 > rect(0, 0, 100, 20);
@@ -215,7 +216,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			core::rect < s32 > rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
 			this->key_used_text = Environment->addStaticText(wgettext("Key already in use"),
-															 rect, false, true, this, -1);
+									rect, false, true, this, -1);
 			infostream << "Key already used" << std::endl;
 			return false;
 		}
@@ -285,8 +286,8 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					activeKey = event.GUIEvent.Caller->getID();
 					k->button->setText(wgettext("press key"));
 					this->key_used.erase(std::remove(
-										this->key_used.begin(), this->key_used.end(),
-										k->key), this->key_used.end());
+								this->key_used.begin(), this->key_used.end(),
+								k->key), this->key_used.end());
 					break;
 			}
 			Environment->setFocus(this);
