@@ -31,11 +31,11 @@
 #include <vector>
 
 typedef struct {
-    int id;
-    wchar_t *button_name;
-    KeyPress key;
-    std::string setting_name;
-    gui::IGUIButton *button;
+	int id;
+	wchar_t *button_name;
+	KeyPress key;
+	std::string setting_name;
+	gui::IGUIButton *button;
 } key_setting;
 
 
@@ -67,7 +67,7 @@ private:
 	void add_key(int id, std::string setting_name, std::string button_name);
 
 	s32 activeKey;
-    
+	
 	std::vector<KeyPress> key_used;
 	gui::IGUIStaticText *key_used_text;
 	std::vector<key_setting *> key_settings;
