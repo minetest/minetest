@@ -2627,6 +2627,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += (wchar_t)readU16(buf);
 		}
 
+		// If something goes wrong, this player is to blame
+		RollbackScopeActor rollback_scope(m_rollback,
+				std::string("player:")+player->getName());
+
 		// Get player name of this client
 		std::wstring name = narrow_to_wide(player->getName());
 		
