@@ -91,6 +91,7 @@ private:
 	KeyPress key_dump;
     
     std::vector<KeyPress> key_used;
+    KeyPress current_key;
     gui::IGUIStaticText *key_used_text;
 };
 

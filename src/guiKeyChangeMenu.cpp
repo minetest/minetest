@@ -58,7 +58,7 @@ GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 	GUIModalMenu(env, parent, id, menumgr)
 {
 	activeKey = -1;
-    key_used_text = NULL;
+    this->key_used_text = NULL;
 	init_keys();
 }
 
@@ -523,16 +523,16 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		changeCtype("");
 		KeyPress kp(event.KeyInput);
         
-        if(key_used_text)
+        if(this->key_used_text)
         {
-            key_used_text->remove();
-            key_used_text = NULL;
+            this->key_used_text->remove();
+            this->key_used_text = NULL;
         }
-        if (std::find(key_used.begin(), key_used.end(), kp) != key_used.end())
+        if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
         {
             core::rect < s32 > rect(0, 0, 600, 40);
             rect += v2s32(0, 0) + v2s32(25, 30);
-            key_used_text = Environment->addStaticText(wgettext("Key already in use"), rect, false, true, this, -1);
+            this->key_used_text = Environment->addStaticText(wgettext("Key already in use"), rect, false, true, this, -1);
             infostream << "Key already used" << std::endl;
             return false;
         }
@@ -541,100 +541,84 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
             if (activeKey == GUI_ID_KEY_FORWARD_BUTTON)
             {
                 this->forward->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_forward), key_used.end());
                 this->key_forward = kp;
             }
             else if (activeKey == GUI_ID_KEY_BACKWARD_BUTTON)
             {
                 this->backward->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_backward), key_used.end());
                 this->key_backward = kp;
             }
             else if (activeKey == GUI_ID_KEY_LEFT_BUTTON)
             {
                 this->left->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_left), key_used.end());
                 this->key_left = kp;
             }
             else if (activeKey == GUI_ID_KEY_RIGHT_BUTTON)
             {
                 this->right->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_right), key_used.end());
                 this->key_right = kp;
             }
             else if (activeKey == GUI_ID_KEY_JUMP_BUTTON)
             {
                 this->jump->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_jump), key_used.end());
                 this->key_jump = kp;
             }
             else if (activeKey == GUI_ID_KEY_SNEAK_BUTTON)
             {
                 this->sneak->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_sneak), key_used.end());
                 this->key_sneak = kp;
             }
             else if (activeKey == GUI_ID_KEY_DROP_BUTTON)
             {
                 this->dropbtn->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_drop), key_used.end());
                 this->key_drop = kp;
             }
             else if (activeKey == GUI_ID_KEY_INVENTORY_BUTTON)
             {
                 this->inventory->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_inventory), key_used.end());
                 this->key_inventory = kp;
             }
             else if (activeKey == GUI_ID_KEY_CHAT_BUTTON)
             {
                 this->chat->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_chat), key_used.end());
                 this->key_chat = kp;
             }
             else if (activeKey == GUI_ID_KEY_CMD_BUTTON)
             {
                 this->cmd->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_cmd), key_used.end());
                 this->key_cmd = kp;
             }
             else if (activeKey == GUI_ID_KEY_CONSOLE_BUTTON)
             {
                 this->console->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_console), key_used.end());
                 this->key_console = kp;
             }
             else if (activeKey == GUI_ID_KEY_RANGE_BUTTON)
             {
                 this->range->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_range), key_used.end());
                 this->key_range = kp;
             }
             else if (activeKey == GUI_ID_KEY_FLY_BUTTON)
             {
                 this->fly->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_fly), key_used.end());
                 this->key_fly = kp;
             }
             else if (activeKey == GUI_ID_KEY_FAST_BUTTON)
             {
                 this->fast->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_fast), key_used.end());
                 this->key_fast = kp;
             }
             else if (activeKey == GUI_ID_KEY_USE_BUTTON)
             {
                 this->use->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_use), key_used.end());
                 this->key_use = kp;
             }
             else if (activeKey == GUI_ID_KEY_DUMP_BUTTON)
             {
                 this->dump->setText(wgettext(kp.name()));
-                key_used.erase(std::remove(key_used.begin(), key_used.end(), this->key_dump), key_used.end());
                 this->key_dump = kp;
             }
-            key_used.push_back(kp);
+            this->key_used.push_back(kp);
 
             changeCtype("C");
             activeKey = -1;
@@ -675,83 +659,100 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->forward->setText(wgettext("press Key"));
+                this->current_key = this->key_forward;
 				break;
 			case GUI_ID_KEY_BACKWARD_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->backward->setText(wgettext("press Key"));
+                this->current_key = this->key_backward;
 				break;
 			case GUI_ID_KEY_LEFT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->left->setText(wgettext("press Key"));
+                this->current_key = this->key_left;
 				break;
 			case GUI_ID_KEY_RIGHT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->right->setText(wgettext("press Key"));
+                this->current_key = this->key_right;
 				break;
 			case GUI_ID_KEY_USE_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->use->setText(wgettext("press Key"));
+                this->current_key = this->key_use;
 				break;
 			case GUI_ID_KEY_FLY_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->fly->setText(wgettext("press Key"));
+                this->current_key = this->key_fly;
 				break;
 			case GUI_ID_KEY_FAST_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->fast->setText(wgettext("press Key"));
+                this->current_key = this->key_fast;
 				break;
 			case GUI_ID_KEY_JUMP_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->jump->setText(wgettext("press Key"));
+                this->current_key = this->key_jump;
 				break;
 			case GUI_ID_KEY_DROP_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->dropbtn->setText(wgettext("press Key"));
+                this->current_key = this->key_drop;
 				break;
 			case GUI_ID_KEY_CHAT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->chat->setText(wgettext("press Key"));
+                this->current_key = this->key_chat;
 				break;
 			case GUI_ID_KEY_CMD_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->cmd->setText(wgettext("press Key"));
+                this->current_key = this->key_cmd;
 				break;
 			case GUI_ID_KEY_CONSOLE_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->console->setText(wgettext("press Key"));
+                this->current_key = this->key_console;
 				break;
 			case GUI_ID_KEY_SNEAK_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->sneak->setText(wgettext("press Key"));
+                this->current_key = this->key_sneak;
 				break;
 			case GUI_ID_KEY_INVENTORY_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->inventory->setText(wgettext("press Key"));
+                this->current_key = this->key_inventory;
 				break;
 			case GUI_ID_KEY_DUMP_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->dump->setText(wgettext("press Key"));
+                this->current_key = this->key_dump;
 				break;
 			case GUI_ID_KEY_RANGE_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->range->setText(wgettext("press Key"));
+                this->current_key = this->key_range;
 				break;
 			}
+            this->key_used.erase(std::remove(this->key_used.begin(), this->key_used.end(), this->current_key), this->key_used.end());
 			//Buttons
 			changeCtype("C");
 
