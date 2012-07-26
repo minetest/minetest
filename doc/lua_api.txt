@@ -423,7 +423,7 @@ effective towards.
 
 Groups in crafting recipes
 ---------------------------
-An example:
+An example: Make meat soup from any meat, any water and any bowl
 {
     output = 'food:meat_soup_raw',
     recipe = {
@@ -431,7 +431,13 @@ An example:
         {'group:water'},
         {'group:bowl'},
     },
-    preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+    -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+}
+An another example: Make red wool from white wool and red dye
+{
+	type = 'shapeless',
+    output = 'wool:red',
+    recipe = {'wool:white', 'group:dye,basecolor_red'},
 }
 
 Special groups

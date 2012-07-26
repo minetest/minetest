@@ -23,9 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <sstream>
 #include <set>
+#include <algorithm>
 #include "gamedef.h"
 #include "inventory.h"
 #include "util/serialize.h"
+#include "strfnd.h"
 
 // Check if input matches recipe
 // Takes recipe groups into account
@@ -38,9 +40,17 @@ static bool inputItemMatchesRecipe(const std::string &inp_name,
 
 	// Group
 	if(rec_name.substr(0,6) == "group:" && idef->isKnown(inp_name)){
-		std::string rec_group = rec_name.substr(6);
 		const struct ItemDefinition &def = idef->get(inp_name);
-		if(itemgroup_get(def.groups, rec_group) != 0)
+		Strfnd f(rec_name.substr(6));
+		bool all_groups_match = true;
+		do{
+			std::string check_group = f.next(",");
+			if(itemgroup_get(def.groups, check_group) == 0){
+				all_groups_match = false;
+				break;
+			}
+		}while(!f.atend());
+		if(all_groups_match)
 			return true;
 	}
 
@@ -140,6 +150,8 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	return success;
 }
 
+#if 0
+// This became useless when group support was added to shapeless recipes
 // Convert a list of item names to a multiset
 static std::multiset<std::string> craftMakeMultiset(const std::vector<std::string> &names)
 {
@@ -153,6 +165,7 @@ static std::multiset<std::string> craftMakeMultiset(const std::vector<std::strin
 	}
 	return set;
 }
+#endif
 
 // Removes 1 from each item stack
 static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
@@ -508,17 +521,48 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 {
 	if(input.method != CRAFT_METHOD_NORMAL)
 		return false;
+	
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != recipe.size()){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size ("<<recipe.size()<<") "
+				<<"of recipe with output="<<output<<std::endl;*/
+		return false;
+	}
 
-	// Get recipe item multiset
-	std::vector<std::string> rec_names = craftGetItemNames(recipe, gamedef);
-	std::multiset<std::string> rec_names_multiset = craftMakeMultiset(rec_names);
+	// Try with all permutations of the recipe
+	std::vector<std::string> recipe_copy = recipe;
+	// Start from the lexicographically first permutation (=sorted)
+	std::sort(recipe_copy.begin(), recipe_copy.end());
+	//while(std::prev_permutation(recipe_copy.begin(), recipe_copy.end())){}
+	do{
+		// If all items match, the recipe matches
+		bool all_match = true;
+		//dstream<<"Testing recipe (output="<<output<<"):";
+		for(size_t i=0; i<recipe.size(); i++){
+			//dstream<<" ("<<input_filtered[i]<<" == "<<recipe_copy[i]<<")";
+			if(!inputItemMatchesRecipe(input_filtered[i], recipe_copy[i],
+					gamedef->idef())){
+				all_match = false;
+				break;
+			}
+		}
+		//dstream<<" -> match="<<all_match<<std::endl;
+		if(all_match)
+			return true;
+	}while(std::next_permutation(recipe_copy.begin(), recipe_copy.end()));
 
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	return false;
 }
 
 CraftOutput CraftDefinitionShapeless::getOutput(const CraftInput &input, IGameDef *gamedef) const
@@ -694,16 +738,26 @@ bool CraftDefinitionCooking::check(const CraftInput &input, IGameDef *gamedef) c
 	if(input.method != CRAFT_METHOD_COOKING)
 		return false;
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get recipe item multiset
-	std::multiset<std::string> rec_names_multiset;
-	rec_names_multiset.insert(craftGetItemName(recipe, gamedef));
-
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 1){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of cooking recipe with output="<<output<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }
 
 CraftOutput CraftDefinitionCooking::getOutput(const CraftInput &input, IGameDef *gamedef) const
@@ -765,16 +819,26 @@ bool CraftDefinitionFuel::check(const CraftInput &input, IGameDef *gamedef) cons
 	if(input.method != CRAFT_METHOD_FUEL)
 		return false;
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get recipe item multiset
-	std::multiset<std::string> rec_names_multiset;
-	rec_names_multiset.insert(craftGetItemName(recipe, gamedef));
-
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 1){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of fuel recipe with burntime="<<burntime<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }
 
 CraftOutput CraftDefinitionFuel::getOutput(const CraftInput &input, IGameDef *gamedef) const
