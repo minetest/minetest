@@ -538,7 +538,7 @@ minetest.register_chatcommand("rollback_check", {
 })
 
 minetest.register_chatcommand("rollback", {
-	params = "<player name> [<seconds>] | :liquid [<seconds>]",
+	params = "<player name> [<seconds>] | :<actor> [<seconds>]",
 	description = "revert actions of a player; default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)

@@ -1623,8 +1623,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	/*
 		If something goes wrong, liquids are to blame
+		NOTE: Do not track liquids; it causes huge amounts of rollback log
 	*/
-	RollbackScopeActor rollback_scope(m_gamedef->rollback(), "liquid");
+	//RollbackScopeActor rollback_scope(m_gamedef->rollback(), "liquid");
 
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
@@ -1831,19 +1832,19 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		n0.setContent(new_node_content);
 
 		// Get old node for rollback
-		RollbackNode rollback_oldnode(this, p0, m_gamedef);
+		//RollbackNode rollback_oldnode(this, p0, m_gamedef);
 
 		// Set node
 		setNode(p0, n0);
 		
 		// Report for rollback
-		if(m_gamedef->rollback())
+		/*if(m_gamedef->rollback())
 		{
 			RollbackNode rollback_newnode(this, p0, m_gamedef);
 			RollbackAction action;
 			action.setSetNode(p0, rollback_oldnode, rollback_newnode);
 			m_gamedef->rollback()->reportAction(action);
-		}
+		}*/
 
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
