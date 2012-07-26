@@ -44,6 +44,7 @@ class ServerMapSector;
 class MapBlock;
 class NodeMetadata;
 class IGameDef;
+class IRollbackReportSink;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -169,7 +170,7 @@ public:
 	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
 	void dispatchEvent(MapEditEvent *event);
-
+	
 	// On failure returns NULL
 	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
 	// Same as the above (there exists no lock anymore)
@@ -336,7 +337,7 @@ protected:
 	IGameDef *m_gamedef;
 
 	core::map<MapEventReceiver*, bool> m_event_receivers;
-	
+
 	core::map<v2s16, MapSector*> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted 

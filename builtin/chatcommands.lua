@@ -496,3 +496,75 @@ minetest.register_chatcommand("pulverize", {
 	end,
 })
 
+-- Key = player name
+minetest.rollback_punch_callbacks = {}
+
+minetest.register_on_punchnode(function(pos, node, puncher)
+	local name = puncher:get_player_name()
+	if minetest.rollback_punch_callbacks[name] then
+		minetest.rollback_punch_callbacks[name](pos, node, puncher)
+		minetest.rollback_punch_callbacks[name] = nil
+	end
+end)
+
+minetest.register_chatcommand("rollback_check", {
+	params = "[<range>] [<seconds>]",
+	description = "check who has last touched a node or near it, "..
+			"max. <seconds> ago (default range=0, seconds=86400=24h)",
+	privs = {rollback=true},
+	func = function(name, param)
+		local range, seconds = string.match(param, "(%d+) *(%d*)")
+		range = tonumber(range) or 0
+		seconds = tonumber(seconds) or 86400
+		minetest.chat_send_player(name, "Punch a node (limits set: range="..
+				dump(range).." seconds="..dump(seconds).."s)")
+		minetest.rollback_punch_callbacks[name] = function(pos, node, puncher)
+			local name = puncher:get_player_name()
+			local actor, act_p, act_seconds =
+					minetest.rollback_get_last_node_actor(pos, range, seconds)
+			if actor == "" then
+				minetest.chat_send_player(name, "Nobody has touched the "..
+						"specified location in "..dump(seconds).." seconds")
+				return
+			end
+			local nodedesc = "this node"
+			if act_p.x ~= pos.x or act_p.y ~= pos.y or act_p.z ~= pos.z then
+				nodedesc = minetest.pos_to_string(act_p)
+			end
+			minetest.chat_send_player(name, "Last actor on "..nodedesc.." was "..
+					actor..", "..dump(act_seconds).."s ago")
+		end
+	end,
+})
+
+minetest.register_chatcommand("rollback", {
+	params = "<player name> [<seconds>] | :liquid [<seconds>]",
+	description = "revert actions of a player; default for <seconds> is 60",
+	privs = {rollback=true},
+	func = function(name, param)
+		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
+		if not target_name then
+			local player_name = nil;
+			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
+			if not player_name then
+				minetest.chat_send_player(name, "Invalid parameters. See /help rollback and /help rollback_check")
+				return
+			end
+			target_name = "player:"..player_name
+		end
+		seconds = tonumber(seconds) or 60
+		minetest.chat_send_player(name, "Reverting actions of "..
+				dump(target_name).." since "..dump(seconds).." seconds.")
+		local success, log = minetest.rollback_revert_actions_by(
+				target_name, seconds)
+		for _,line in ipairs(log) do
+			minetest.chat_send_player(name, line)
+		end
+		if success then
+			minetest.chat_send_player(name, "Reverting actions succeeded.")
+		else
+			minetest.chat_send_player(name, "Reverting actions FAILED.")
+		end
+	end,
+})
+

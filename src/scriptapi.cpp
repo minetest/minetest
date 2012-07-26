@@ -47,6 +47,7 @@ extern "C" {
 #include "daynightratio.h"
 #include "noise.h" // PseudoRandom for LuaPseudoRandom
 #include "util/pointedthing.h"
+#include "rollback.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -2106,6 +2107,7 @@ private:
 
 	static void reportMetadataChange(NodeMetaRef *ref)
 	{
+		// NOTE: This same code is in rollback_interface.cpp
 		// Inform other things that the metadata has changed
 		v3s16 blockpos = getNodeBlockPos(ref->m_p);
 		MapEditEvent event;
@@ -4853,6 +4855,55 @@ static int l_get_craft_recipe(lua_State *L)
 	return 1;
 }
 
+// rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
+static int l_rollback_get_last_node_actor(lua_State *L)
+{
+	v3s16 p = read_v3s16(L, 1);
+	int range = luaL_checknumber(L, 2);
+	int seconds = luaL_checknumber(L, 3);
+	Server *server = get_server(L);
+	IRollbackManager *rollback = server->getRollbackManager();
+	v3s16 act_p;
+	int act_seconds = 0;
+	std::string actor = rollback->getLastNodeActor(p, range, seconds, &act_p, &act_seconds);
+	lua_pushstring(L, actor.c_str());
+	push_v3s16(L, act_p);
+	lua_pushnumber(L, act_seconds);
+	return 3;
+}
+
+// rollback_revert_actions_by(actor, seconds) -> bool, log messages
+static int l_rollback_revert_actions_by(lua_State *L)
+{
+	std::string actor = luaL_checkstring(L, 1);
+	int seconds = luaL_checknumber(L, 2);
+	Server *server = get_server(L);
+	IRollbackManager *rollback = server->getRollbackManager();
+	std::list<RollbackAction> actions = rollback->getRevertActions(actor, seconds);
+	std::list<std::string> log;
+	bool success = server->rollbackRevertActions(actions, &log);
+	// Push boolean result
+	lua_pushboolean(L, success);
+	// Get the table insert function and push the log table
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int table_insert = lua_gettop(L);
+	lua_newtable(L);
+	int table = lua_gettop(L);
+	for(std::list<std::string>::const_iterator i = log.begin();
+			i != log.end(); i++)
+	{
+		lua_pushvalue(L, table_insert);
+		lua_pushvalue(L, table);
+		lua_pushstring(L, i->c_str());
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error: %s", lua_tostring(L, -1));
+	}
+	lua_remove(L, -2); // Remove table
+	lua_remove(L, -2); // Remove insert
+	return 2;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -4880,6 +4931,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"notify_authentication_modified", l_notify_authentication_modified},
 	{"get_craft_result", l_get_craft_result},
 	{"get_craft_recipe", l_get_craft_recipe},
+	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
+	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
 	{NULL, NULL}
 };
 

@@ -29,6 +29,7 @@ class ICraftDefManager;
 class ITextureSource;
 class ISoundManager;
 class MtEventManager;
+class IRollbackReportSink;
 
 /*
 	An interface for fetching game-global definitions like tool and
@@ -54,6 +55,10 @@ public:
 	// Only usable on the client
 	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
+
+	// Only usable on the server, and NOT thread-safe. It is usable from the
+	// environment thread.
+	virtual IRollbackReportSink* getRollbackReportSink(){return NULL;}
 	
 	// Used on the client
 	virtual bool checkLocalPrivilege(const std::string &priv)
@@ -66,6 +71,7 @@ public:
 	ITextureSource* tsrc(){return getTextureSource();}
 	ISoundManager* sound(){return getSoundManager();}
 	MtEventManager* event(){return getEventManager();}
+	IRollbackReportSink* rollback(){return getRollbackReportSink();}
 };
 
 #endif

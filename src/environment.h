@@ -33,11 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include "irrlichttypes_extrabloated.h"
 #include "player.h"
-#include "map.h"
 #include <ostream>
 #include "activeobject.h"
 #include "util/container.h"
 #include "util/numeric.h"
+#include "mapnode.h"
+#include "mapblock.h"
 
 class Server;
 class ServerEnvironment;
@@ -46,6 +47,8 @@ class ServerActiveObject;
 typedef struct lua_State lua_State;
 class ITextureSource;
 class IGameDef;
+class Map;
+class ServerMap;
 class ClientMap;
 
 class Environment
@@ -191,11 +194,9 @@ public:
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
-	Map & getMap()
-		{ return *m_map; }
+	Map & getMap();
 
-	ServerMap & getServerMap()
-		{ return *m_map; }
+	ServerMap & getServerMap();
 
 	lua_State* getLua()
 		{ return m_lua; }

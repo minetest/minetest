@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "util/directiontables.h"
+#include "rollback_interface.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -932,12 +933,12 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		core::map<v3s16, MapBlock*> &modified_blocks)
 {
-	INodeDefManager *nodemgr = m_gamedef->ndef();
+	INodeDefManager *ndef = m_gamedef->ndef();
 
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-
+	
 	/*
 		From this node to nodes underneath:
 		If lighting is sunlight (1.0), unlight neighbours and
@@ -950,6 +951,11 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	bool node_under_sunlight = true;
 	core::map<v3s16, bool> light_sources;
+	
+	/*
+		Collect old node for rollback
+	*/
+	RollbackNode rollback_oldnode(this, p, m_gamedef);
 
 	/*
 		If there is a node at top and it doesn't have sunlight,
@@ -960,7 +966,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	try{
 		MapNode topnode = getNode(toppos);
 
-		if(topnode.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN)
+		if(topnode.getLight(LIGHTBANK_DAY, ndef) != LIGHT_SUN)
 			node_under_sunlight = false;
 	}
 	catch(InvalidPositionException &e)
@@ -980,7 +986,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 		enum LightBank bank = banks[i];
 
-		u8 lightwas = getNode(p).getLight(bank, nodemgr);
+		u8 lightwas = getNode(p).getLight(bank, ndef);
 
 		// Add the block of the added node to modified_blocks
 		v3s16 blockpos = getNodeBlockPos(p);
@@ -997,16 +1003,16 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		// light again into this.
 		unLightNeighbors(bank, p, lightwas, light_sources, modified_blocks);
 
-		n.setLight(bank, 0, nodemgr);
+		n.setLight(bank, 0, ndef);
 	}
 
 	/*
 		If node lets sunlight through and is under sunlight, it has
 		sunlight too.
 	*/
-	if(node_under_sunlight && nodemgr->get(n).sunlight_propagates)
+	if(node_under_sunlight && ndef->get(n).sunlight_propagates)
 	{
-		n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
+		n.setLight(LIGHTBANK_DAY, LIGHT_SUN, ndef);
 	}
 
 	/*
@@ -1028,7 +1034,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		TODO: This could be optimized by mass-unlighting instead
 			  of looping
 	*/
-	if(node_under_sunlight && !nodemgr->get(n).sunlight_propagates)
+	if(node_under_sunlight && !ndef->get(n).sunlight_propagates)
 	{
 		s16 y = p.Y - 1;
 		for(;; y--){
@@ -1044,12 +1050,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 				break;
 			}
 
-			if(n2.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN)
+			if(n2.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
 			{
 				unLightNeighbors(LIGHTBANK_DAY,
-						n2pos, n2.getLight(LIGHTBANK_DAY, nodemgr),
+						n2pos, n2.getLight(LIGHTBANK_DAY, ndef),
 						light_sources, modified_blocks);
-				n2.setLight(LIGHTBANK_DAY, 0, nodemgr);
+				n2.setLight(LIGHTBANK_DAY, 0, ndef);
 				setNode(n2pos, n2);
 			}
 			else
@@ -1079,6 +1085,17 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	/*
+		Report for rollback
+	*/
+	if(m_gamedef->rollback())
+	{
+		RollbackNode rollback_newnode(this, p, m_gamedef);
+		RollbackAction action;
+		action.setSetNode(p, rollback_oldnode, rollback_newnode);
+		m_gamedef->rollback()->reportAction(action);
+	}
+
+	/*
 		Add neighboring liquid nodes and the node itself if it is
 		liquid (=water node was added) to transform queue.
 	*/
@@ -1099,7 +1116,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(nodemgr->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
+		if(ndef->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1115,7 +1132,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 void Map::removeNodeAndUpdate(v3s16 p,
 		core::map<v3s16, MapBlock*> &modified_blocks)
 {
-	INodeDefManager *nodemgr = m_gamedef->ndef();
+	INodeDefManager *ndef = m_gamedef->ndef();
 
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::removeNodeAndUpdate(): p=("
@@ -1129,13 +1146,18 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	content_t replace_material = CONTENT_AIR;
 
 	/*
+		Collect old node for rollback
+	*/
+	RollbackNode rollback_oldnode(this, p, m_gamedef);
+
+	/*
 		If there is a node at top and it doesn't have sunlight,
 		there will be no sunlight going down.
 	*/
 	try{
 		MapNode topnode = getNode(toppos);
 
-		if(topnode.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN)
+		if(topnode.getLight(LIGHTBANK_DAY, ndef) != LIGHT_SUN)
 			node_under_sunlight = false;
 	}
 	catch(InvalidPositionException &e)
@@ -1157,7 +1179,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			Unlight neighbors (in case the node is a light source)
 		*/
 		unLightNeighbors(bank, p,
-				getNode(p).getLight(bank, nodemgr),
+				getNode(p).getLight(bank, ndef),
 				light_sources, modified_blocks);
 	}
 
@@ -1219,7 +1241,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		// TODO: Is this needed? Lighting is cleared up there already.
 		try{
 			MapNode n = getNode(p);
-			n.setLight(LIGHTBANK_DAY, 0, nodemgr);
+			n.setLight(LIGHTBANK_DAY, 0, ndef);
 			setNode(p, n);
 		}
 		catch(InvalidPositionException &e)
@@ -1255,6 +1277,17 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 
 	/*
+		Report for rollback
+	*/
+	if(m_gamedef->rollback())
+	{
+		RollbackNode rollback_newnode(this, p, m_gamedef);
+		RollbackAction action;
+		action.setSetNode(p, rollback_oldnode, rollback_newnode);
+		m_gamedef->rollback()->reportAction(action);
+	}
+
+	/*
 		Add neighboring liquid nodes and this node to transform queue.
 		(it's vital for the node itself to get updated last.)
 	*/
@@ -1275,7 +1308,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(nodemgr->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
+		if(ndef->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1588,6 +1621,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	DSTACK(__FUNCTION_NAME);
 	//TimeTaker timer("transformLiquids()");
 
+	/*
+		If something goes wrong, liquids are to blame
+	*/
+	RollbackScopeActor rollback_scope(m_gamedef->rollback(), "liquid");
+
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
 
@@ -1791,7 +1829,22 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
 		n0.setContent(new_node_content);
+
+		// Get old node for rollback
+		RollbackNode rollback_oldnode(this, p0, m_gamedef);
+
+		// Set node
 		setNode(p0, n0);
+		
+		// Report for rollback
+		if(m_gamedef->rollback())
+		{
+			RollbackNode rollback_newnode(this, p0, m_gamedef);
+			RollbackAction action;
+			action.setSetNode(p0, rollback_oldnode, rollback_newnode);
+			m_gamedef->rollback()->reportAction(action);
+		}
+
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL) {
