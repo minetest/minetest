@@ -64,11 +64,13 @@ private:
 
 	bool resetMenu();
 
+	void add_key(int id, std::string setting_name, std::string button_name);
+
 	s32 activeKey;
     
-    std::vector<KeyPress> key_used;
-    gui::IGUIStaticText *key_used_text;
-    std::vector<key_setting *> key_settings;
+	std::vector<KeyPress> key_used;
+	gui::IGUIStaticText *key_used_text;
+	std::vector<key_setting *> key_settings;
 };
 
 #endif
