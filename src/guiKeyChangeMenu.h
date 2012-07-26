@@ -28,6 +28,16 @@
 #include "gettext.h"
 #include "keycode.h"
 #include <string>
+#include <vector>
+
+typedef struct {
+	int id;
+	wchar_t *button_name;
+	KeyPress key;
+	std::string setting_name;
+	gui::IGUIButton *button;
+} key_setting;
+
 
 class GUIKeyChangeMenu: public GUIModalMenu
 {
@@ -54,40 +64,13 @@ private:
 
 	bool resetMenu();
 
-	gui::IGUIButton *forward;
-	gui::IGUIButton *backward;
-	gui::IGUIButton *left;
-	gui::IGUIButton *right;
-	gui::IGUIButton *use;
-	gui::IGUIButton *sneak;
-	gui::IGUIButton *jump;
-	gui::IGUIButton *dropbtn;
-	gui::IGUIButton *inventory;
-	gui::IGUIButton *fly;
-	gui::IGUIButton *fast;
-	gui::IGUIButton *range;
-	gui::IGUIButton *dump;
-	gui::IGUIButton *chat;
-	gui::IGUIButton *cmd;
-	gui::IGUIButton *console;
+	void add_key(int id, std::string setting_name, std::string button_name);
 
 	s32 activeKey;
-	KeyPress key_forward;
-	KeyPress key_backward;
-	KeyPress key_left;
-	KeyPress key_right;
-	KeyPress key_use;
-	KeyPress key_sneak;
-	KeyPress key_jump;
-	KeyPress key_drop;
-	KeyPress key_inventory;
-	KeyPress key_fly;
-	KeyPress key_fast;
-	KeyPress key_range;
-	KeyPress key_chat;
-	KeyPress key_cmd;
-	KeyPress key_console;
-	KeyPress key_dump;
+	
+	std::vector<KeyPress> key_used;
+	gui::IGUIStaticText *key_used_text;
+	std::vector<key_setting *> key_settings;
 };
 
 #endif
