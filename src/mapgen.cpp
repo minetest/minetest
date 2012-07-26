@@ -1297,7 +1297,9 @@ BiomeType get_biome(u64 seed, v2s16 p2d)
 	double d = noise2d_perlin(
 			0.6+(float)p2d.X/250, 0.2+(float)p2d.Y/250,
 			seed+9130, 3, 0.50);
-	if(d > 0.35)
+	if(d > 0.45) 
+		return BT_DESERT;
+	if(d > 0.35 && (noise2d( p2d.X, p2d.Y, int(seed) ) + 1.0) > ( 0.45 - d ) * 20.0  ) 
 		return BT_DESERT;
 	return BT_NORMAL;
 };
