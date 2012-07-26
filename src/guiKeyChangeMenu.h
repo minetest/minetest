@@ -28,6 +28,7 @@
 #include "gettext.h"
 #include "keycode.h"
 #include <string>
+#include <vector>
 
 class GUIKeyChangeMenu: public GUIModalMenu
 {
@@ -88,6 +89,9 @@ private:
 	KeyPress key_cmd;
 	KeyPress key_console;
 	KeyPress key_dump;
+    
+    std::vector<KeyPress> key_used;
+    gui::IGUIStaticText *key_used_text;
 };
 
 #endif
