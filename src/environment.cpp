@@ -326,6 +326,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
+	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0)
 {
@@ -1095,7 +1096,12 @@ void ServerEnvironment::step(float dtime)
 	
 	const float abm_interval = 1.0;
 	if(m_active_block_modifier_interval.step(dtime, abm_interval))
-	{
+	do{ // breakable
+		if(m_active_block_interval_overload_skip > 0){
+			ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
+			m_active_block_interval_overload_skip--;
+			break;
+		}
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /1s", SPT_AVG);
 		TimeTaker timer("modify in active blocks");
 		
@@ -1128,8 +1134,9 @@ void ServerEnvironment::step(float dtime)
 			infostream<<"WARNING: active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
+			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
 		}
-	}
+	}while(0);
 	
 	/*
 		Step script environment (run global on_step())
