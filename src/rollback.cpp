@@ -33,6 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
+#define POINTS_PER_NODE (16.0)
+
 // Get nearness factor for subject's action for this action
 // Return value: 0 = impossible, >0 = factor
 static float getSuspectNearness(bool is_guess, v3s16 suspect_p, int suspect_t,
@@ -43,10 +45,10 @@ static float getSuspectNearness(bool is_guess, v3s16 suspect_p, int suspect_t,
 		return 0; // 0 = cannot be
 	// Start from 100
 	int f = 100;
-	// Distance (1 node = -1 point)
-	f -= 1.0 * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
-	// Time (1 second = -1 point)
-	f -= 1.0 * (action_t - suspect_t);
+	// Distance (1 node = -x points)
+	f -= POINTS_PER_NODE * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
+	// Time (1 second = -x points)
+	f -= 1 * (action_t - suspect_t);
 	// If is a guess, halve the points
 	if(is_guess)
 		f *= 0.5;
@@ -76,8 +78,7 @@ public:
 			v3s16 p;
 			if(!action.getPosition(&p))
 				return;
-			// 60s default timeframe, 95 points shortcut
-			action.actor = getSuspect(p, 60, 95);
+			action.actor = getSuspect(p, 83, 1);
 			if(action.actor.empty())
 				return;
 			action.actor_is_guess = true;
@@ -103,12 +104,12 @@ public:
 		m_current_actor = actor;
 		m_current_actor_is_guess = is_guess;
 	}
-	std::string getSuspect(v3s16 p, int max_time, float nearness_shortcut)
+	std::string getSuspect(v3s16 p, float nearness_shortcut, float min_nearness)
 	{
 		if(m_current_actor != "")
 			return m_current_actor;
 		int cur_time = time(0);
-		int first_time = cur_time - max_time;
+		int first_time = cur_time - (100-min_nearness);
 		RollbackAction likely_suspect;
 		float likely_suspect_nearness = 0;
 		for(std::list<RollbackAction>::const_reverse_iterator
@@ -125,7 +126,7 @@ public:
 				continue;
 			float f = getSuspectNearness(i->actor_is_guess, suspect_p,
 					i->unix_time, p, cur_time);
-			if(f > likely_suspect_nearness){
+			if(f >= min_nearness && f > likely_suspect_nearness){
 				likely_suspect_nearness = f;
 				likely_suspect = *i;
 				if(likely_suspect_nearness >= nearness_shortcut)

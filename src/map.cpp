@@ -1636,7 +1636,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	while(m_transforming_liquid.size() != 0)
 	{
 		// This should be done here so that it is done when continue is used
-		if(loopcount >= initial_size || loopcount >= 1000)
+		if(loopcount >= initial_size || loopcount >= 10000)
 			break;
 		loopcount++;
 
@@ -1828,8 +1828,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		// Find out whether there is a suspect for this action
 		std::string suspect;
 		if(m_gamedef->rollback()){
-			// Max. 5 seconds ago, shortcut at 98 points
-			suspect = m_gamedef->rollback()->getSuspect(p0, 5, 95);
+			suspect = m_gamedef->rollback()->getSuspect(p0, 83, 1);
 		}
 
 		if(!suspect.empty()){
