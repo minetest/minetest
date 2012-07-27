@@ -520,6 +520,7 @@ minetest.register_chatcommand("rollback_check", {
 				dump(range).." seconds="..dump(seconds).."s)")
 		minetest.rollback_punch_callbacks[name] = function(pos, node, puncher)
 			local name = puncher:get_player_name()
+			minetest.chat_send_player(name, "Checking...")
 			local actor, act_p, act_seconds =
 					minetest.rollback_get_last_node_actor(pos, range, seconds)
 			if actor == "" then
@@ -531,8 +532,10 @@ minetest.register_chatcommand("rollback_check", {
 			if act_p.x ~= pos.x or act_p.y ~= pos.y or act_p.z ~= pos.z then
 				nodedesc = minetest.pos_to_string(act_p)
 			end
-			minetest.chat_send_player(name, "Last actor on "..nodedesc.." was "..
-					actor..", "..dump(act_seconds).."s ago")
+			local nodename = minetest.env:get_node(act_p).name
+			minetest.chat_send_player(name, "Last actor on "..nodedesc..
+					" was "..actor..", "..dump(act_seconds)..
+					"s ago (node is now "..nodename..")")
 		end
 	end,
 })
@@ -557,8 +560,12 @@ minetest.register_chatcommand("rollback", {
 				dump(target_name).." since "..dump(seconds).." seconds.")
 		local success, log = minetest.rollback_revert_actions_by(
 				target_name, seconds)
-		for _,line in ipairs(log) do
-			minetest.chat_send_player(name, line)
+		if #log > 10 then
+			minetest.chat_send_player(name, "(log is too long to show)")
+		else
+			for _,line in ipairs(log) do
+				minetest.chat_send_player(name, line)
+			end
 		end
 		if success then
 			minetest.chat_send_player(name, "Reverting actions succeeded.")

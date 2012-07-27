@@ -28,9 +28,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "strfnd.h"
+#include "util/numeric.h"
 #include "inventorymanager.h" // deserializing InventoryLocations
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
+// Get nearness factor for subject's action for this action
+// Return value: 0 = impossible, >0 = factor
+static float getSuspectNearness(bool is_guess, v3s16 suspect_p, int suspect_t,
+		v3s16 action_p, int action_t)
+{
+	// Suspect cannot cause things in the past
+	if(action_t < suspect_t)
+		return 0; // 0 = cannot be
+	// Start from 100
+	int f = 100;
+	// Distance (1 node = +1 point)
+	f += 1.0 * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
+	// Time (1 second = -1 point)
+	f -= 1.0 * (action_t - suspect_t);
+	// If is a guess, halve the points
+	if(is_guess)
+		f *= 0.5;
+	// Limit to 0
+	if(f < 0)
+		f = 0;
+	return f;
+}
 
 class RollbackManager: public IRollbackManager
 {
@@ -44,10 +68,23 @@ public:
 			return;
 		RollbackAction action = action_;
 		action.unix_time = time(0);
+		// Figure out actor
 		action.actor = m_current_actor;
+		action.actor_is_guess = m_current_actor_is_guess;
+		// If actor is not known, find out suspect or cancel
+		if(action.actor.empty()){
+			v3s16 p;
+			if(!action.getPosition(&p))
+				return;
+			action.actor = getSuspect(p, 5); // 5s timeframe
+			if(action.actor.empty())
+				return;
+			action.actor_is_guess = true;
+		}
 		infostream<<"RollbackManager::reportAction():"
 				<<" time="<<action.unix_time
 				<<" actor=\""<<action.actor<<"\""
+				<<(action.actor_is_guess?" (guess)":"")
 				<<" action="<<action.toString()
 				<<std::endl;
 		addAction(action);
@@ -56,9 +93,45 @@ public:
 	{
 		return m_current_actor;
 	}
-	void setActor(const std::string &actor)
+	bool isActorGuess()
+	{
+		return m_current_actor_is_guess;
+	}
+	void setActor(const std::string &actor, bool is_guess)
 	{
 		m_current_actor = actor;
+		m_current_actor_is_guess = is_guess;
+	}
+	std::string getSuspect(v3s16 p, int max_time)
+	{
+		if(m_current_actor != "")
+			return m_current_actor;
+		int cur_time = time(0);
+		int first_time = cur_time - max_time;
+		RollbackAction likely_suspect;
+		float likely_suspect_nearness = 0;
+		for(std::list<RollbackAction>::const_reverse_iterator
+				i = m_action_latest_buffer.rbegin();
+				i != m_action_latest_buffer.rend(); i++)
+		{
+			if(i->unix_time < first_time)
+				break;
+			// Find position of suspect or continue
+			v3s16 suspect_p;
+			if(!i->getPosition(&suspect_p))
+				continue;
+			float f = getSuspectNearness(i->actor_is_guess, suspect_p,
+					i->unix_time, p, cur_time);
+			if(f > likely_suspect_nearness){
+				likely_suspect_nearness = f;
+				likely_suspect = *i;
+			}
+		}
+		// No likely suspect was found
+		if(likely_suspect_nearness == 0)
+			return "";
+		// Likely suspect was found
+		return likely_suspect.actor;
 	}
 	void flush()
 	{
@@ -80,8 +153,12 @@ public:
 			of<<" ";
 			of<<serializeJsonString(i->actor);
 			of<<" ";
-			std::string action_s = i->toString();
-			of<<action_s<<std::endl;
+			of<<i->toString();
+			if(i->actor_is_guess){
+				of<<" ";
+				of<<"actor_is_guess";
+			}
+			of<<std::endl;
 		}
 		m_action_todisk_buffer.clear();
 	}
@@ -90,7 +167,8 @@ public:
 
 	RollbackManager(const std::string &filepath, IGameDef *gamedef):
 		m_filepath(filepath),
-		m_gamedef(gamedef)
+		m_gamedef(gamedef),
+		m_current_actor_is_guess(false)
 	{
 		infostream<<"RollbackManager::RollbackManager("<<filepath<<")"
 				<<std::endl;
@@ -209,20 +287,7 @@ public:
 
 			// Find position of action or continue
 			v3s16 action_p;
-
-			if(i->type == RollbackAction::TYPE_SET_NODE)
-			{
-				action_p = i->p;
-			}
-			else if(i->type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK)
-			{
-				InventoryLocation loc;
-				loc.deSerialize(i->inventory_location);
-				if(loc.type != InventoryLocation::NODEMETA)
-					continue;
-				action_p = loc.p;
-			}
-			else
+			if(!i->getPosition(&action_p))
 				continue;
 
 			if(range == 0){
@@ -281,6 +346,7 @@ private:
 	std::string m_filepath;
 	IGameDef *m_gamedef;
 	std::string m_current_actor;
+	bool m_current_actor_is_guess;
 	std::list<RollbackAction> m_action_todisk_buffer;
 	std::list<RollbackAction> m_action_latest_buffer;
 };

@@ -289,6 +289,24 @@ bool RollbackAction::isImportant(IGameDef *gamedef) const
 	}
 }
 
+bool RollbackAction::getPosition(v3s16 *dst) const
+{
+	switch(type){
+	case RollbackAction::TYPE_SET_NODE:
+		if(dst) *dst = p;
+		return true;
+	case RollbackAction::TYPE_MODIFY_INVENTORY_STACK: {
+		InventoryLocation loc;
+		loc.deSerialize(inventory_location);
+		if(loc.type != InventoryLocation::NODEMETA)
+			return false;
+		if(dst) *dst = loc.p;
+		return true; }
+	default:
+		return false;
+	}
+}
+
 bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const
 {
 	try{

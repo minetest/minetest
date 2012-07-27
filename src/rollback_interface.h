@@ -65,6 +65,7 @@ struct RollbackAction
 
 	int unix_time;
 	std::string actor;
+	bool actor_is_guess;
 
 	v3s16 p;
 	RollbackNode n_old;
@@ -77,7 +78,9 @@ struct RollbackAction
 	std::string inventory_stack;
 
 	RollbackAction():
-		type(TYPE_NOTHING)
+		type(TYPE_NOTHING),
+		unix_time(0),
+		actor_is_guess(false)
 	{}
 
 	void setSetNode(v3s16 p_, const RollbackNode &n_old_,
@@ -107,6 +110,8 @@ struct RollbackAction
 	
 	// Eg. flowing water level changes are not important
 	bool isImportant(IGameDef *gamedef) const;
+	
+	bool getPosition(v3s16 *dst) const;
 
 	bool applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const;
 };
@@ -117,29 +122,34 @@ public:
 	virtual ~IRollbackReportSink(){}
 	virtual void reportAction(const RollbackAction &action) = 0;
 	virtual std::string getActor() = 0;
-	virtual void setActor(const std::string &actor) = 0;
+	virtual bool isActorGuess() = 0;
+	virtual void setActor(const std::string &actor, bool is_guess) = 0;
+	virtual std::string getSuspect(v3s16 p, int max_time) = 0;
 };
 
 class RollbackScopeActor
 {
 public:
-	RollbackScopeActor(IRollbackReportSink *sink, const std::string &actor):
+	RollbackScopeActor(IRollbackReportSink *sink, const std::string &actor,
+			bool is_guess=false):
 		m_sink(sink)
 	{
 		if(m_sink){
 			m_actor_was = m_sink->getActor();
-			m_sink->setActor(actor);
+			m_actor_was_guess = m_sink->isActorGuess();
+			m_sink->setActor(actor, is_guess);
 		}
 	}
 	~RollbackScopeActor()
 	{
 		if(m_sink){
-			m_sink->setActor(m_actor_was);
+			m_sink->setActor(m_actor_was, m_actor_was_guess);
 		}
 	}
 private:
 	IRollbackReportSink *m_sink;
 	std::string m_actor_was;
+	bool m_actor_was_guess;
 };
 
 #endif

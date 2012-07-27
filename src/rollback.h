@@ -33,7 +33,9 @@ public:
 	// IRollbackReportManager
 	virtual void reportAction(const RollbackAction &action) = 0;
 	virtual std::string getActor() = 0;
-	virtual void setActor(const std::string &actor) = 0;
+	virtual bool isActorGuess() = 0;
+	virtual void setActor(const std::string &actor, bool is_guess) = 0;
+	virtual std::string getSuspect(v3s16 p, int max_time) = 0;
 
 	virtual ~IRollbackManager(){}
 	virtual void flush() = 0;
