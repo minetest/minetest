@@ -76,7 +76,7 @@ public:
 			v3s16 p;
 			if(!action.getPosition(&p))
 				return;
-			action.actor = getSuspect(p, 5); // 5s timeframe
+			action.actor = getSuspect(p, 30); // 30s timeframe
 			if(action.actor.empty())
 				return;
 			action.actor_is_guess = true;
