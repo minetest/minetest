@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"  // for g_settings
 #include "settings.h"
 #include "craftdef.h"
+#include "rollback_interface.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -200,6 +201,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	/*
+		Do not handle rollback if both inventories are that of the same player
+	*/
+	bool ignore_rollback = (
+		from_inv.type == InventoryLocation::PLAYER &&
+		to_inv.type == InventoryLocation::PLAYER &&
+		from_inv.name == to_inv.name);
+
+	/*
 		Collect information of endpoints
 	*/
 
@@ -238,8 +247,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(from_inv.type == InventoryLocation::DETACHED)
 		{
 			lua_State *L = player->getEnv()->getLua();
+			ItemStack src_item = list_from->getItem(from_i);
+			src_item.count = try_take_count;
 			src_can_take_count = scriptapi_detached_inventory_allow_take(
-					L, from_inv.name, from_list, from_i, try_take_count, player);
+					L, from_inv.name, from_list, from_i, src_item, player);
 		}
 	}
 
@@ -272,23 +283,30 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(from_inv.type == InventoryLocation::NODEMETA)
 		{
 			lua_State *L = player->getEnv()->getLua();
+			ItemStack src_item = list_from->getItem(from_i);
+			src_item.count = try_take_count;
 			src_can_take_count = scriptapi_nodemeta_inventory_allow_take(
-					L, from_inv.p, from_list, from_i, try_take_count, player);
+					L, from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
+
+	int old_count = count;
 	
 	/* Modify count according to collected data */
-	int new_count = try_take_count;
-	if(new_count > src_can_take_count)
-		new_count = src_can_take_count;
-	if(new_count > dst_can_put_count)
-		new_count = dst_can_put_count;
+	count = try_take_count;
+	if(src_can_take_count != -1 && count > src_can_take_count)
+		count = src_can_take_count;
+	if(dst_can_put_count != -1 && count > dst_can_put_count)
+		count = dst_can_put_count;
+	/* Limit according to source item count */
+	if(count > list_from->getItem(from_i).count)
+		count = list_from->getItem(from_i).count;
 	
 	/* If no items will be moved, don't go further */
-	if(new_count == 0)
+	if(count == 0)
 	{
-		infostream<<"IMoveAction::apply(): move was completely disallowed: "
-				<<" count="<<count
+		infostream<<"IMoveAction::apply(): move was completely disallowed:"
+				<<" count="<<old_count
 				<<" from inv=\""<<from_inv.dump()<<"\""
 				<<" list=\""<<from_list<<"\""
 				<<" i="<<from_i
@@ -299,7 +317,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	count = new_count;
+	ItemStack src_item = list_from->getItem(from_i);
+	src_item.count = count;
+	ItemStack from_stack_was = list_from->getItem(from_i);
+	ItemStack to_stack_was = list_to->getItem(to_i);
 
 	/*
 		Perform actual move
@@ -309,7 +330,19 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	list_from->moveItem(from_i, list_to, to_i, count);
 
-	infostream<<"IMoveAction::apply(): moved "
+	// If source is infinite, reset it's stack
+	if(src_can_take_count == -1){
+		list_from->deleteItem(from_i);
+		list_from->addItem(from_i, from_stack_was);
+	}
+	// If destination is infinite, reset it's stack and take count from source
+	if(dst_can_put_count == -1){
+		list_to->deleteItem(to_i);
+		list_to->addItem(to_i, to_stack_was);
+		list_from->takeItem(from_i, count);
+	}
+
+	infostream<<"IMoveAction::apply(): moved"
 			<<" count="<<count
 			<<" from inv=\""<<from_inv.dump()<<"\""
 			<<" list=\""<<from_list<<"\""
@@ -318,6 +351,41 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" list=\""<<to_list<<"\""
 			<<" i="<<to_i
 			<<std::endl;
+
+	/*
+		Record rollback information
+	*/
+	if(!ignore_rollback)
+	{
+		IRollbackReportSink *rollback = gamedef->rollback();
+
+		// If source is not infinite, record item take
+		if(!src_can_take_count != -1){
+			RollbackAction action;
+			std::string loc;
+			{
+				std::ostringstream os(std::ios::binary);
+				from_inv.serialize(os);
+				loc = os.str();
+			}
+			action.setModifyInventoryStack(loc, from_list, from_i, false,
+					src_item.getItemString());
+			rollback->reportAction(action);
+		}
+		// If destination is not infinite, record item put
+		if(!dst_can_put_count != -1){
+			RollbackAction action;
+			std::string loc;
+			{
+				std::ostringstream os(std::ios::binary);
+				to_inv.serialize(os);
+				loc = os.str();
+			}
+			action.setModifyInventoryStack(loc, to_list, to_i, true,
+					src_item.getItemString());
+			rollback->reportAction(action);
+		}
+	}
 
 	/*
 		Report move to endpoints
@@ -341,8 +409,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(to_inv.type == InventoryLocation::DETACHED)
 		{
 			lua_State *L = player->getEnv()->getLua();
-			ItemStack src_item = list_from->getItem(from_i);
-			src_item.count = count;
 			scriptapi_detached_inventory_on_put(
 					L, to_inv.name, to_list, to_i, src_item, player);
 		}
@@ -350,10 +416,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(from_inv.type == InventoryLocation::DETACHED)
 		{
 			lua_State *L = player->getEnv()->getLua();
-			ItemStack src_item = list_from->getItem(from_i);
-			src_item.count = count;
 			scriptapi_detached_inventory_on_take(
-					L, from_inv.name, from_list, from_i, src_item.count, player);
+					L, from_inv.name, from_list, from_i, src_item, player);
 		}
 	}
 
@@ -374,8 +438,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(to_inv.type == InventoryLocation::NODEMETA)
 		{
 			lua_State *L = player->getEnv()->getLua();
-			ItemStack src_item = list_from->getItem(from_i);
-			src_item.count = count;
 			scriptapi_nodemeta_inventory_on_put(
 					L, to_inv.p, to_list, to_i, src_item, player);
 		}
@@ -383,13 +445,11 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		else if(from_inv.type == InventoryLocation::NODEMETA)
 		{
 			lua_State *L = player->getEnv()->getLua();
-			ItemStack src_item = list_from->getItem(from_i);
-			src_item.count = count;
 			scriptapi_nodemeta_inventory_on_take(
-					L, from_inv.p, from_list, from_i, src_item.count, player);
+					L, from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
-
+	
 	mgr->setInventoryModified(from_inv);
 	if(inv_from != inv_to)
 		mgr->setInventoryModified(to_inv);
@@ -473,6 +533,11 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	/*
+		Do not handle rollback if inventory is player's
+	*/
+	bool ignore_src_rollback = (from_inv.type == InventoryLocation::PLAYER);
+
+	/*
 		Collect information of endpoints
 	*/
 
@@ -485,22 +550,28 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if(from_inv.type == InventoryLocation::DETACHED)
 	{
 		lua_State *L = player->getEnv()->getLua();
+		ItemStack src_item = list_from->getItem(from_i);
+		src_item.count = take_count;
 		src_can_take_count = scriptapi_detached_inventory_allow_take(
-				L, from_inv.name, from_list, from_i, take_count, player);
+				L, from_inv.name, from_list, from_i, src_item, player);
 	}
 
 	// Source is nodemeta
 	if(from_inv.type == InventoryLocation::NODEMETA)
 	{
 		lua_State *L = player->getEnv()->getLua();
+		ItemStack src_item = list_from->getItem(from_i);
+		src_item.count = take_count;
 		src_can_take_count = scriptapi_nodemeta_inventory_allow_take(
-				L, from_inv.p, from_list, from_i, take_count, player);
+				L, from_inv.p, from_list, from_i, src_item, player);
 	}
 
-	if(src_can_take_count < take_count)
+	if(src_can_take_count != -1 && src_can_take_count < take_count)
 		take_count = src_can_take_count;
 	
 	int actually_dropped_count = 0;
+
+	ItemStack src_item = list_from->getItem(from_i);
 
 	// Drop the item
 	ItemStack item1 = list_from->getItem(from_i);
@@ -513,18 +584,15 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			infostream<<"Actually dropped no items"<<std::endl;
 			return;
 		}
-
-		// Don't remove from inventory in creative mode
-		if(g_settings->getBool("creative_mode") == true
-				&& from_inv.type == InventoryLocation::PLAYER){
-		}
-		else{
+		
+		// If source isn't infinite
+		if(src_can_take_count != -1){
 			// Take item from source list
 			ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
 
 			if(item2.count != actually_dropped_count)
 				errorstream<<"Could not take dropped count of items"<<std::endl;
-			
+
 			mgr->setInventoryModified(from_inv);
 		}
 	}
@@ -534,6 +602,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" list=\""<<from_list<<"\""
 			<<" i="<<from_i
 			<<std::endl;
+	
+	src_item.count = actually_dropped_count;
 
 	/*
 		Report drop to endpoints
@@ -544,7 +614,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	{
 		lua_State *L = player->getEnv()->getLua();
 		scriptapi_detached_inventory_on_take(
-				L, from_inv.name, from_list, from_i, actually_dropped_count, player);
+				L, from_inv.name, from_list, from_i, src_item, player);
 	}
 
 	// Source is nodemeta
@@ -552,7 +622,29 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	{
 		lua_State *L = player->getEnv()->getLua();
 		scriptapi_nodemeta_inventory_on_take(
-				L, from_inv.p, from_list, from_i, actually_dropped_count, player);
+				L, from_inv.p, from_list, from_i, src_item, player);
+	}
+
+	/*
+		Record rollback information
+	*/
+	if(!ignore_src_rollback)
+	{
+		IRollbackReportSink *rollback = gamedef->rollback();
+
+		// If source is not infinite, record item take
+		if(!src_can_take_count != -1){
+			RollbackAction action;
+			std::string loc;
+			{
+				std::ostringstream os(std::ios::binary);
+				from_inv.serialize(os);
+				loc = os.str();
+			}
+			action.setModifyInventoryStack(loc, from_list, from_i,
+					false, src_item.getItemString());
+			rollback->reportAction(action);
+		}
 	}
 }
 

@@ -244,6 +244,7 @@ minetest.register_item(":unknown", {
 	inventory_image = "unknown_item.png",
 	on_place = minetest.item_place,
 	on_drop = minetest.item_drop,
+	groups = {not_in_creative_inventory=1},
 })
 
 minetest.register_node(":air", {
@@ -258,6 +259,7 @@ minetest.register_node(":air", {
 	diggable = false,
 	buildable_to = true,
 	air_equivalent = true,
+	groups = {not_in_creative_inventory=1},
 })
 
 minetest.register_node(":ignore", {
@@ -272,22 +274,14 @@ minetest.register_node(":ignore", {
 	diggable = false,
 	buildable_to = true, -- A way to remove accidentally placed ignores
 	air_equivalent = true,
+	groups = {not_in_creative_inventory=1},
 })
 
 -- The hand (bare definition)
 minetest.register_item(":", {
 	type = "none",
+	groups = {not_in_creative_inventory=1},
 })
-
---
--- Creative inventory
---
-
-minetest.creative_inventory = {}
-
-minetest.add_to_creative_inventory = function(itemstring)
-	table.insert(minetest.creative_inventory, itemstring)
-end
 
 --
 -- Callback registration

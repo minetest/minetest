@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "mapgen.h" // For mapgen::make_tree
+#include "map.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 

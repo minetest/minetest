@@ -273,25 +273,23 @@ function minetest.node_dig(pos, node, digger)
 	minetest.log('action', digger:get_player_name() .. " digs "
 		.. node.name .. " at " .. minetest.pos_to_string(pos))
 
-	if not minetest.setting_getbool("creative_mode") then
-		local wielded = digger:get_wielded_item()
-		local drops = minetest.get_node_drops(node.name, wielded:get_name())
+	local wielded = digger:get_wielded_item()
+	local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
-		-- Wear out tool
-		local tp = wielded:get_tool_capabilities()
-		local dp = minetest.get_dig_params(def.groups, tp)
-		wielded:add_wear(dp.wear)
-		digger:set_wielded_item(wielded)
+	-- Wear out tool
+	local tp = wielded:get_tool_capabilities()
+	local dp = minetest.get_dig_params(def.groups, tp)
+	wielded:add_wear(dp.wear)
+	digger:set_wielded_item(wielded)
 
-		-- Add dropped items to object's inventory
-		if digger:get_inventory() then
-			local _, dropped_item
-			for _, dropped_item in ipairs(drops) do
-				digger:get_inventory():add_item("main", dropped_item)
-			end
+	-- Add dropped items to object's inventory
+	if digger:get_inventory() then
+		local _, dropped_item
+		for _, dropped_item in ipairs(drops) do
+			digger:get_inventory():add_item("main", dropped_item)
 		end
 	end
-	
+
 	local oldmetadata = nil
 	if def.after_dig_node then
 		oldmetadata = minetest.env:get_meta(pos):to_table()

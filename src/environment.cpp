@@ -349,6 +349,17 @@ ServerEnvironment::~ServerEnvironment()
 	}
 }
 
+Map & ServerEnvironment::getMap()
+{
+	return *m_map;
+}
+
+ServerMap & ServerEnvironment::getServerMap()
+{
+	return *m_map;
+}
+
+
 void ServerEnvironment::serializePlayers(const std::string &savedir)
 {
 	std::string players_path = savedir + "/players";

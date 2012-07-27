@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "util/thread.h"
 #include "util/string.h"
+#include "rollback_interface.h" // Needed for rollbackRevertActions()
+#include <list> // Needed for rollbackRevertActions()
 
 struct LuaState;
 typedef struct lua_State lua_State;
@@ -44,6 +46,7 @@ class IWritableNodeDefManager;
 class IWritableCraftDefManager;
 class EventManager;
 class PlayerSAO;
+class IRollbackManager;
 
 class ServerError : public std::exception
 {
@@ -543,6 +546,13 @@ public:
 	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
+
+	// Envlock should be locked when using the rollback manager
+	IRollbackManager *getRollbackManager(){ return m_rollback; }
+	// actions: time-reversed list
+	// Return value: success/failure
+	bool rollbackRevertActions(const std::list<RollbackAction> &actions,
+			std::list<std::string> *log);
 	
 	// IGameDef interface
 	// Under envlock
@@ -553,6 +563,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
+	virtual IRollbackReportSink* getRollbackReportSink();
 	
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
@@ -719,6 +730,10 @@ private:
 
 	// Bann checking
 	BanManager m_banmanager;
+
+	// Rollback manager (behind m_env_mutex)
+	IRollbackManager *m_rollback;
+	bool m_rollback_sink_enabled;
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua

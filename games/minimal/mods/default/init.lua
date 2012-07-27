@@ -14,6 +14,14 @@ default = {}
 -- Load other files
 dofile(minetest.get_modpath("default").."/mapgen.lua")
 
+-- Set a noticeable inventory formspec for players
+minetest.register_on_joinplayer(function(player)
+	local cb = function(player)
+		minetest.chat_send_player(player:get_player_name(), "This is the [minimal] \"Minimal Development Test\" game. Use [minetest_game] for the real thing.")
+	end
+	minetest.after(2.0, cb, player)
+end)
+
 --
 -- Tool definition
 --
@@ -1223,7 +1231,7 @@ minetest.register_node("default:chest_locked", {
 		end
 		return stack:get_count()
 	end,
-    allow_metadata_inventory_take = function(pos, listname, index, count, player)
+    allow_metadata_inventory_take = function(pos, listname, index, stack, player)
 		local meta = minetest.env:get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
@@ -1232,7 +1240,7 @@ minetest.register_node("default:chest_locked", {
 					minetest.pos_to_string(pos))
 			return 0
 		end
-		return count
+		return stack:get_count()
 	end,
 	on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 		minetest.log("action", player:get_player_name()..
@@ -1242,7 +1250,7 @@ minetest.register_node("default:chest_locked", {
 		minetest.log("action", player:get_player_name()..
 				" moves stuff to locked chest at "..minetest.pos_to_string(pos))
 	end,
-    on_metadata_inventory_take = function(pos, listname, index, count, player)
+    on_metadata_inventory_take = function(pos, listname, index, stack, player)
 		minetest.log("action", player:get_player_name()..
 				" takes stuff from locked chest at "..minetest.pos_to_string(pos))
 	end,
@@ -1554,40 +1562,6 @@ minetest.register_craftitem("default:scorched_stuff", {
 	description = "Scorched stuff",
 	inventory_image = "default_scorched_stuff.png",
 })
-
---
--- Creative inventory
---
-
-minetest.add_to_creative_inventory('default:pick_mese')
-minetest.add_to_creative_inventory('default:pick_steel')
-minetest.add_to_creative_inventory('default:axe_steel')
-minetest.add_to_creative_inventory('default:shovel_steel')
-
-minetest.add_to_creative_inventory('default:torch')
-minetest.add_to_creative_inventory('default:cobble')
-minetest.add_to_creative_inventory('default:dirt')
-minetest.add_to_creative_inventory('default:stone')
-minetest.add_to_creative_inventory('default:sand')
-minetest.add_to_creative_inventory('default:sandstone')
-minetest.add_to_creative_inventory('default:clay')
-minetest.add_to_creative_inventory('default:brick')
-minetest.add_to_creative_inventory('default:tree')
-minetest.add_to_creative_inventory('default:wood')
-minetest.add_to_creative_inventory('default:leaves')
-minetest.add_to_creative_inventory('default:cactus')
-minetest.add_to_creative_inventory('default:papyrus')
-minetest.add_to_creative_inventory('default:bookshelf')
-minetest.add_to_creative_inventory('default:glass')
-minetest.add_to_creative_inventory('default:fence_wood')
-minetest.add_to_creative_inventory('default:rail')
-minetest.add_to_creative_inventory('default:mese')
-minetest.add_to_creative_inventory('default:chest')
-minetest.add_to_creative_inventory('default:furnace')
-minetest.add_to_creative_inventory('default:sign_wall')
-minetest.add_to_creative_inventory('default:water_source')
-minetest.add_to_creative_inventory('default:lava_source')
-minetest.add_to_creative_inventory('default:ladder')
 
 --
 -- Aliases for the current map generator outputs

@@ -163,8 +163,6 @@ public:
 
 	void disconnected();
 
-	void createCreativeInventory();
-
 	Player* getPlayer()
 	{
 		return m_player;

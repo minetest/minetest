@@ -153,6 +153,8 @@ configure_file(
 )
 
 set(common_SRCS
+	rollback_interface.cpp
+	rollback.cpp
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp

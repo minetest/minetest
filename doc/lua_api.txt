@@ -423,7 +423,7 @@ effective towards.
 
 Groups in crafting recipes
 ---------------------------
-An example:
+An example: Make meat soup from any meat, any water and any bowl
 {
     output = 'food:meat_soup_raw',
     recipe = {
@@ -431,7 +431,13 @@ An example:
         {'group:water'},
         {'group:bowl'},
     },
-    preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+    -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+}
+An another example: Make red wool from white wool and red dye
+{
+	type = 'shapeless',
+    output = 'wool:red',
+    recipe = {'wool:white', 'group:dye,basecolor_red'},
 }
 
 Special groups
@@ -882,6 +888,14 @@ minetest.get_craft_recipe(output) -> input
 ^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
+
+Rollbacks:
+minetest.rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
+^ Find who has done something to a node, or near a node
+^ actor: "player:<name>", also "liquid".
+minetest.rollback_revert_actions_by(actor, seconds) -> bool, log messages
+^ Revert latest actions of someone
+^ actor: "player:<name>", also "liquid".
 
 Defaults for the on_* item definition functions:
 (These return the leftover itemstack)
@@ -1370,15 +1384,17 @@ Node definition (register_node)
 	allow_metadata_inventory_put = func(pos, listname, index, stack, player),
 	^ Called when a player wants to put something into the inventory
 	^ Return value: number of items allowed to put
+	^ Return value: -1: Allow and don't modify item count in inventory
   
-	allow_metadata_inventory_take = func(pos, listname, index, count, player),
+	allow_metadata_inventory_take = func(pos, listname, index, stack, player),
 	^ Called when a player wants to take something out of the inventory
 	^ Return value: number of items allowed to take
+	^ Return value: -1: Allow and don't modify item count in inventory
 
 	on_metadata_inventory_move = func(pos, from_list, from_index,
 			to_list, to_index, count, player),
 	on_metadata_inventory_put = func(pos, listname, index, stack, player),
-	on_metadata_inventory_take = func(pos, listname, index, count, player),
+	on_metadata_inventory_take = func(pos, listname, index, stack, player),
 	^ Called after the actual action has happened, according to what was allowed.
 	^ No return value
 }
@@ -1446,14 +1462,16 @@ Detached inventory callbacks
     allow_put = func(inv, listname, index, stack, player),
     ^ Called when a player wants to put something into the inventory
 	^ Return value: number of items allowed to put
+	^ Return value: -1: Allow and don't modify item count in inventory
    
-    allow_take = func(inv, listname, index, count, player),
+    allow_take = func(inv, listname, index, stack, player),
     ^ Called when a player wants to take something out of the inventory
 	^ Return value: number of items allowed to take
+	^ Return value: -1: Allow and don't modify item count in inventory
 	
 	on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     on_put = func(inv, listname, index, stack, player),
-    on_take = func(inv, listname, index, count, player),
+    on_take = func(inv, listname, index, stack, player),
 	^ Called after the actual action has happened, according to what was allowed.
 	^ No return value
 }
