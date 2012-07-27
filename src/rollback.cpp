@@ -43,8 +43,8 @@ static float getSuspectNearness(bool is_guess, v3s16 suspect_p, int suspect_t,
 		return 0; // 0 = cannot be
 	// Start from 100
 	int f = 100;
-	// Distance (1 node = +1 point)
-	f += 1.0 * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
+	// Distance (1 node = -1 point)
+	f -= 1.0 * intToFloat(suspect_p, 1).getDistanceFrom(intToFloat(action_p, 1));
 	// Time (1 second = -1 point)
 	f -= 1.0 * (action_t - suspect_t);
 	// If is a guess, halve the points
@@ -76,7 +76,8 @@ public:
 			v3s16 p;
 			if(!action.getPosition(&p))
 				return;
-			action.actor = getSuspect(p, 30); // 30s timeframe
+			// 60s default timeframe, 95 points shortcut
+			action.actor = getSuspect(p, 60, 95);
 			if(action.actor.empty())
 				return;
 			action.actor_is_guess = true;
@@ -102,7 +103,7 @@ public:
 		m_current_actor = actor;
 		m_current_actor_is_guess = is_guess;
 	}
-	std::string getSuspect(v3s16 p, int max_time)
+	std::string getSuspect(v3s16 p, int max_time, float nearness_shortcut)
 	{
 		if(m_current_actor != "")
 			return m_current_actor;
@@ -116,6 +117,8 @@ public:
 		{
 			if(i->unix_time < first_time)
 				break;
+			if(i->actor == "")
+				continue;
 			// Find position of suspect or continue
 			v3s16 suspect_p;
 			if(!i->getPosition(&suspect_p))
@@ -125,6 +128,8 @@ public:
 			if(f > likely_suspect_nearness){
 				likely_suspect_nearness = f;
 				likely_suspect = *i;
+				if(likely_suspect_nearness >= nearness_shortcut)
+					break;
 			}
 		}
 		// No likely suspect was found

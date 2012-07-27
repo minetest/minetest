@@ -124,7 +124,8 @@ public:
 	virtual std::string getActor() = 0;
 	virtual bool isActorGuess() = 0;
 	virtual void setActor(const std::string &actor, bool is_guess) = 0;
-	virtual std::string getSuspect(v3s16 p, int max_time) = 0;
+	// nearness_shortcut: 100 = same second, same node; 90 = 10s or 10 nodes
+	virtual std::string getSuspect(v3s16 p, int max_time, float nearness_shortcut=98) = 0;
 };
 
 class RollbackScopeActor

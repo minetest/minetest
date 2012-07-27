@@ -1828,8 +1828,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		// Find out whether there is a suspect for this action
 		std::string suspect;
 		if(m_gamedef->rollback()){
-			// Max. 5 seconds ago
-			suspect = m_gamedef->rollback()->getSuspect(p0, 5);
+			// Max. 5 seconds ago, shortcut at 98 points
+			suspect = m_gamedef->rollback()->getSuspect(p0, 5, 95);
 		}
 
 		if(!suspect.empty()){
