@@ -3928,6 +3928,10 @@ private:
 			min = luaL_checkinteger(L, 2);
 		if(!lua_isnil(L, 3))
 			max = luaL_checkinteger(L, 3);
+		if(max < min){
+			errorstream<<"PseudoRandom.next(): max="<<max<<" min="<<min<<std::endl;
+			throw LuaError(L, "PseudoRandom.next(): max < min");
+		}
 		if(max - min != 32767 && max - min > 32767/5)
 			throw LuaError(L, "PseudoRandom.next() max-min is not 32767 and is > 32768/5. This is disallowed due to the bad random distribution the implementation would otherwise make.");
 		PseudoRandom &pseudo = o->m_pseudo;
