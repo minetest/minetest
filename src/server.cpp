@@ -937,6 +937,7 @@ Server::Server(
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_rollback(NULL),
 	m_rollback_sink_enabled(true),
+	m_enable_rollback_recording(false),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -1873,6 +1874,10 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 			
 			m_emergethread.trigger();
+
+			// Update m_enable_rollback_recording here too
+			m_enable_rollback_recording =
+					g_settings->getBool("enable_rollback_recording");
 		}
 	}
 
@@ -4658,6 +4663,8 @@ MtEventManager* Server::getEventManager()
 }
 IRollbackReportSink* Server::getRollbackReportSink()
 {
+	if(!m_enable_rollback_recording)
+		return NULL;
 	if(!m_rollback_sink_enabled)
 		return NULL;
 	return m_rollback;

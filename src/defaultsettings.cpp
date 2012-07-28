@@ -122,6 +122,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
+	settings->setDefault("enable_rollback_recording", "false");
 
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");

@@ -160,6 +160,8 @@
 #disallow_empty_password = false
 # If true, disable cheat prevention in multiplayer
 #disable_anticheat = false
+# If true, actions are recorded for rollback
+#enable_rollback_recording = false
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0

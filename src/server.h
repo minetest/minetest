@@ -734,6 +734,7 @@ private:
 	// Rollback manager (behind m_env_mutex)
 	IRollbackManager *m_rollback;
 	bool m_rollback_sink_enabled;
+	bool m_enable_rollback_recording; // Updated once in a while
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
