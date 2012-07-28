@@ -4449,9 +4449,10 @@ std::wstring Server::getStatusString()
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Information about clients
+	core::map<u16, RemoteClient*>::Iterator i;
+	bool first;
 	os<<L", clients={";
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(i = m_clients.getIterator(), first = true;
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
@@ -4466,7 +4467,11 @@ std::wstring Server::getStatusString()
 		if(player != NULL)
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
-		os<<name<<L",";
+		if(!first)
+			os<<L",";
+		else
+			first = false;
+		os<<name;
 	}
 	os<<L"}";
 	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
