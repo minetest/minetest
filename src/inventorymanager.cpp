@@ -355,7 +355,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Record rollback information
 	*/
-	if(!ignore_rollback)
+	if(!ignore_rollback && gamedef->rollback())
 	{
 		IRollbackReportSink *rollback = gamedef->rollback();
 
@@ -628,7 +628,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Record rollback information
 	*/
-	if(!ignore_src_rollback)
+	if(!ignore_src_rollback && gamedef->rollback())
 	{
 		IRollbackReportSink *rollback = gamedef->rollback();
 
