@@ -3810,6 +3810,15 @@ private:
 		return 1;
 	}
 
+	// EnvRef:clear_objects()
+	// clear all objects in the environment
+	static int l_clear_objects(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		o->m_env->clearAllObjects();
+		return 0;
+	}
+
 public:
 	EnvRef(ServerEnvironment *env):
 		m_env(env)
@@ -3891,6 +3900,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_node_near),
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
+	method(EnvRef, clear_objects),
 	{0,0}
 };
 
@@ -4168,6 +4178,20 @@ static int l_log(lua_State *L)
 	}
 	log_printline(level, text);
 	return 0;
+}
+
+// request_shutdown()
+static int l_request_shutdown(lua_State *L)
+{
+	get_server(L)->requestShutdown();
+	return 0;
+}
+
+// get_server_status()
+static int l_get_server_status(lua_State *L)
+{
+	lua_pushstring(L, wide_to_narrow(get_server(L)->getStatusString()).c_str());
+	return 1;
 }
 
 // register_item_raw({lots of stuff})
@@ -4911,6 +4935,8 @@ static int l_rollback_revert_actions_by(lua_State *L)
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
+	{"request_shutdown", l_request_shutdown},
+	{"get_server_status", l_get_server_status},
 	{"register_item_raw", l_register_item_raw},
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},

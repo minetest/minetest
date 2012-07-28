@@ -928,6 +928,10 @@ minetest.after(time, func, param)
 ^ Call function after time seconds
 ^ param is optional; to pass multiple parameters, pass a table.
 
+Server:
+minetest.request_shutdown() -> request for server shutdown
+minetest.get_server_status() -> server status string
+
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
@@ -1017,6 +1021,8 @@ methods:
   ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 - get_perlin(seeddiff, octaves, persistence, scale)
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
+- clear_objects()
+  ^ clear all objects in the environments 
 Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)
