@@ -5510,6 +5510,8 @@ void scriptapi_on_player_receive_fields(lua_State *L,
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the
 // function onto the stack
+// If minetest.registered_items[name] doesn't exist, minetest.nodedef_default
+// is tried instead so unknown items can still be manipulated to some degree
 static bool get_item_callback(lua_State *L,
 		const char *name, const char *callbackname)
 {
@@ -5522,9 +5524,15 @@ static bool get_item_callback(lua_State *L,
 	// Should be a table
 	if(lua_type(L, -1) != LUA_TTABLE)
 	{
+		// Report error and clean up
 		errorstream<<"Item \""<<name<<"\" not defined"<<std::endl;
 		lua_pop(L, 1);
-		return false;
+
+		// Try minetest.nodedef_default instead
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "nodedef_default");
+		lua_remove(L, -2);
+		luaL_checktype(L, -1, LUA_TTABLE);
 	}
 	lua_getfield(L, -1, callbackname);
 	lua_remove(L, -2);
