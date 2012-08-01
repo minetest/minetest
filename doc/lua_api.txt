@@ -932,6 +932,12 @@ Server:
 minetest.request_shutdown() -> request for server shutdown
 minetest.get_server_status() -> server status string
 
+Bans:
+minetest.get_ban_list() -> ban list (same as minetest.get_ban_description(""))
+minetest.get_ban_description(ip_or_name) -> ban description (string)
+minetest.ban_player(name) -> ban a player
+minetest.unban_player_or_ip(name) -> unban player or IP address
+
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
