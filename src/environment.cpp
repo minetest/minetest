@@ -1087,7 +1087,8 @@ void ServerEnvironment::step(float dtime)
 						i = elapsed_timers.begin();
 						i != elapsed_timers.end(); i++){
 					n = block->getNodeNoEx(i->first);
-					if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+					p = i->first + block->getPosRelative();
+					if(scriptapi_node_on_timer(m_lua,p,n,i->second.elapsed))
 						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 				}
 			}
