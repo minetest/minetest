@@ -575,6 +575,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Drop the item
 	ItemStack item1 = list_from->getItem(from_i);
+	item1.count = take_count;
 	if(scriptapi_item_on_drop(player->getEnv()->getLua(), item1, player,
 				player->getBasePosition() + v3f(0,1,0)))
 	{
