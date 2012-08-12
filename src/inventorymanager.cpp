@@ -360,7 +360,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		IRollbackReportSink *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
-		if(!src_can_take_count != -1){
+		if(src_can_take_count != -1){
 			RollbackAction action;
 			std::string loc;
 			{
@@ -373,7 +373,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			rollback->reportAction(action);
 		}
 		// If destination is not infinite, record item put
-		if(!dst_can_put_count != -1){
+		if(dst_can_put_count != -1){
 			RollbackAction action;
 			std::string loc;
 			{
@@ -633,7 +633,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		IRollbackReportSink *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
-		if(!src_can_take_count != -1){
+		if(src_can_take_count != -1){
 			RollbackAction action;
 			std::string loc;
 			{
