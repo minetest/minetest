@@ -1847,6 +1847,20 @@ private:
 		return 1;
 	}
 
+	// get_width(self, listname)
+	static int l_get_width(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		InventoryList *list = getlist(L, ref, listname);
+		if(list){
+			lua_pushinteger(L, list->getWidth());
+		} else {
+			lua_pushinteger(L, 0);
+		}
+		return 1;
+	}
+
 	// set_size(self, listname, size)
 	static int l_set_size(lua_State *L)
 	{
@@ -1864,6 +1878,23 @@ private:
 			list->setSize(newsize);
 		} else {
 			list = inv->addList(listname, newsize);
+		}
+		reportInventoryChange(L, ref);
+		return 0;
+	}
+
+	// set_width(self, listname, size)
+	static int l_set_width(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		int newwidth = luaL_checknumber(L, 3);
+		Inventory *inv = getinv(L, ref);
+		InventoryList *list = inv->getList(listname);
+		if(list){
+			list->setWidth(newwidth);
+		} else {
+			return 0;
 		}
 		reportInventoryChange(L, ref);
 		return 0;
@@ -2062,6 +2093,8 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, is_empty),
 	method(InvRef, get_size),
 	method(InvRef, set_size),
+	method(InvRef, get_width),
+	method(InvRef, set_width),
 	method(InvRef, get_stack),
 	method(InvRef, set_stack),
 	method(InvRef, get_list),

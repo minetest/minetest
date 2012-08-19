@@ -431,6 +431,7 @@ InventoryList::InventoryList(std::string name, u32 size, IItemDefManager *itemde
 {
 	m_name = name;
 	m_size = size;
+	m_width = 0;
 	m_itemdef = itemdef;
 	clearItems();
 	//m_dirty = false;
@@ -457,6 +458,11 @@ void InventoryList::setSize(u32 newsize)
 	if(newsize != m_items.size())
 		m_items.resize(newsize);
 	m_size = newsize;
+}
+
+void InventoryList::setWidth(u32 newwidth)
+{
+	m_width = newwidth;
 }
 
 void InventoryList::setName(const std::string &name)
@@ -543,6 +549,7 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 {
 	m_items = other.m_items;
 	m_size = other.m_size;
+	m_width = other.m_width;
 	m_name = other.m_name;
 	m_itemdef = other.m_itemdef;
 	//setDirty(true);
@@ -558,6 +565,11 @@ const std::string &InventoryList::getName() const
 u32 InventoryList::getSize() const
 {
 	return m_items.size();
+}
+
+u32 InventoryList::getWidth() const
+{
+	return m_width;
 }
 
 u32 InventoryList::getUsedSlots() const

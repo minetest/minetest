@@ -769,18 +769,16 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	
 	result.clear();
 
-	// TODO: Allow different sizes of crafting grids
-
 	// Get the InventoryList in which we will operate
 	InventoryList *clist = inv->getList("craft");
-	if(!clist || clist->getSize() != 9)
+	if(!clist)
 		return false;
 
 	// Mangle crafting grid to an another format
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
-	ci.width = 3;
-	for(u16 i=0; i<9; i++)
+	ci.width = clist->getWidth() ? clist->getWidth() : 3;
+	for(u16 i=0; i<clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
 	// Find out what is crafted and add it to result item slot
@@ -793,7 +791,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	if(found && decrementInput)
 	{
 		// CraftInput has been changed, apply changes in clist
-		for(u16 i=0; i<9; i++)
+		for(u16 i=0; i<clist->getSize(); i++)
 		{
 			clist->changeItem(i, ci.items[i]);
 		}
