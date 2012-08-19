@@ -1118,6 +1118,8 @@ methods:
 - is_empty(listname): return true if list is empty
 - get_size(listname): get size of a list
 - set_size(listname, size): set size of a list
+- get_width(listname): get width of a list
+- set_width(listname, width): set width of list; currently used for crafting
 - get_stack(listname, i): get a copy of stack index i in list
 - set_stack(listname, i, stack): copy stack to index i in list
 - get_list(listname): return full list
