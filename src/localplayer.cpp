@@ -359,31 +359,70 @@ void LocalPlayer::applyControl(float dtime)
 	if(free_move && fast_move)
 		superspeed = true;
 	
-	// Auxiliary button 1 (E)
-	if(control.aux1)
+	// Old descend control
+	if(g_settings->getBool("aux1_descends"))
 	{
-		if(free_move)
+		// Auxiliary button 1 (E)
+		if(control.aux1)
 		{
-			// In free movement mode, aux1 descends
-			v3f speed = getSpeed();
-			if(fast_move)
-				speed.Y = -20*BS;
+			if(free_move)
+			{
+				// In free movement mode, aux1 descends
+				v3f speed = getSpeed();
+				if(fast_move)
+					speed.Y = -20*BS;
+				else
+					speed.Y = -walkspeed_max;
+				setSpeed(speed);
+			}
+			else if(is_climbing)
+			{
+					v3f speed = getSpeed();
+				speed.Y = -3*BS;
+				setSpeed(speed);
+			}
 			else
-				speed.Y = -walkspeed_max;
-			setSpeed(speed);
+			{
+				// If not free movement but fast is allowed, aux1 is
+				// "Turbo button"
+				if(fast_move)
+					superspeed = true;
+			}
 		}
-		else if(is_climbing)
+	}
+	// New minecraft-like descend control
+	else
+	{
+		// Auxiliary button 1 (E)
+		if(control.aux1)
 		{
-		        v3f speed = getSpeed();
-			speed.Y = -3*BS;
-			setSpeed(speed);
+			if(!free_move && !is_climbing)
+			{
+				// If not free movement but fast is allowed, aux1 is
+				// "Turbo button"
+				if(fast_move)
+					superspeed = true;
+			}
 		}
-		else
+
+		if(control.sneak)
 		{
-			// If not free movement but fast is allowed, aux1 is
-			// "Turbo button"
-			if(fast_move)
-				superspeed = true;
+			if(free_move)
+			{
+				// In free movement mode, sneak descends
+				v3f speed = getSpeed();
+				if(fast_move)
+					speed.Y = -20*BS;
+				else
+					speed.Y = -walkspeed_max;
+					setSpeed(speed);
+			}
+			else if(is_climbing)
+			{
+				v3f speed = getSpeed();
+				speed.Y = -3*BS;
+				setSpeed(speed);
+			}
 		}
 	}
 
