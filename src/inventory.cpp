@@ -474,6 +474,8 @@ void InventoryList::serialize(std::ostream &os) const
 {
 	//os.imbue(std::locale("C"));
 	
+	os<<"Width "<<m_width<<"\n";
+
 	for(u32 i=0; i<m_items.size(); i++)
 	{
 		const ItemStack &item = m_items[i];
@@ -498,6 +500,7 @@ void InventoryList::deSerialize(std::istream &is)
 
 	clearItems();
 	u32 item_i = 0;
+	m_width = 0;
 
 	for(;;)
 	{
@@ -518,6 +521,12 @@ void InventoryList::deSerialize(std::istream &is)
 		else if(name == "end")
 		{
 			break;
+		}
+		else if(name == "Width")
+		{
+			iss >> m_width;
+			if (iss.fail())
+				throw SerializationError("incorrect width property");
 		}
 		else if(name == "Item")
 		{

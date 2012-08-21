@@ -698,6 +698,7 @@ struct TestInventory: public TestBase
 	{
 		std::string serialized_inventory =
 		"List 0 32\n"
+		"Width 3\n"
 		"Empty\n"
 		"Empty\n"
 		"Empty\n"
@@ -735,6 +736,7 @@ struct TestInventory: public TestBase
 		
 		std::string serialized_inventory_2 =
 		"List main 32\n"
+		"Width 5\n"
 		"Empty\n"
 		"Empty\n"
 		"Empty\n"
@@ -778,6 +780,8 @@ struct TestInventory: public TestBase
 		inv.getList("0")->setName("main");
 		UASSERT(!inv.getList("0"));
 		UASSERT(inv.getList("main"));
+		UASSERT(inv.getList("main")->getWidth() == 3);
+		inv.getList("main")->setWidth(5);
 		std::ostringstream inv_os(std::ios::binary);
 		inv.serialize(inv_os);
 		UASSERT(inv_os.str() == serialized_inventory_2);
