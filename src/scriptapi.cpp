@@ -3812,6 +3812,15 @@ private:
 		return 1;
 	}
 
+	// EnvRef:clear_objects()
+	// clear all objects in the environment
+	static int l_clear_objects(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		o->m_env->clearAllObjects();
+		return 0;
+	}
+
 public:
 	EnvRef(ServerEnvironment *env):
 		m_env(env)
@@ -3893,6 +3902,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_node_near),
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
+	method(EnvRef, clear_objects),
 	{0,0}
 };
 
@@ -4170,6 +4180,20 @@ static int l_log(lua_State *L)
 	}
 	log_printline(level, text);
 	return 0;
+}
+
+// request_shutdown()
+static int l_request_shutdown(lua_State *L)
+{
+	get_server(L)->requestShutdown();
+	return 0;
+}
+
+// get_server_status()
+static int l_get_server_status(lua_State *L)
+{
+	lua_pushstring(L, wide_to_narrow(get_server(L)->getStatusString()).c_str());
+	return 1;
 }
 
 // register_item_raw({lots of stuff})
@@ -4562,6 +4586,56 @@ static int l_get_player_privs(lua_State *L)
 	return 1;
 }
 
+// get_ban_list()
+static int l_get_ban_list(lua_State *L)
+{
+	lua_pushstring(L, get_server(L)->getBanDescription("").c_str());
+	return 1;
+}
+
+// get_ban_description()
+static int l_get_ban_description(lua_State *L)
+{
+	const char * ip_or_name = luaL_checkstring(L, 1);
+	lua_pushstring(L, get_server(L)->getBanDescription(std::string(ip_or_name)).c_str());
+	return 1;
+}
+
+// ban_player()
+static int l_ban_player(lua_State *L)
+{
+	const char * name = luaL_checkstring(L, 1);
+	Player *player = get_env(L)->getPlayer(name);
+	if(player == NULL)
+	{
+		lua_pushboolean(L, false); // no such player
+		return 1;
+	}
+	try
+	{
+		Address addr = get_server(L)->getPeerAddress(get_env(L)->getPlayer(name)->peer_id);
+		std::string ip_str = addr.serializeString();
+		get_server(L)->setIpBanned(ip_str, name);
+	}
+	catch(con::PeerNotFoundException) // unlikely
+	{
+		dstream << __FUNCTION_NAME << ": peer was not found" << std::endl;
+		lua_pushboolean(L, false); // error
+		return 1;
+	}
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// unban_player_or_ip()
+static int l_unban_player_of_ip(lua_State *L)
+{
+	const char * ip_or_name = luaL_checkstring(L, 1);
+	get_server(L)->unsetIpBanned(ip_or_name);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // get_inventory(location)
 static int l_get_inventory(lua_State *L)
 {
@@ -4913,6 +4987,8 @@ static int l_rollback_revert_actions_by(lua_State *L)
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
+	{"request_shutdown", l_request_shutdown},
+	{"get_server_status", l_get_server_status},
 	{"register_item_raw", l_register_item_raw},
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
@@ -4922,6 +4998,10 @@ static const struct luaL_Reg minetest_f [] = {
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
+	{"get_ban_list", l_get_ban_list},
+	{"get_ban_description", l_get_ban_description},
+	{"ban_player", l_ban_player},
+	{"unban_player_or_ip", l_unban_player_of_ip},
 	{"get_inventory", l_get_inventory},
 	{"create_detached_inventory_raw", l_create_detached_inventory_raw},
 	{"get_dig_params", l_get_dig_params},
@@ -5512,6 +5592,8 @@ void scriptapi_on_player_receive_fields(lua_State *L,
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the
 // function onto the stack
+// If minetest.registered_items[name] doesn't exist, minetest.nodedef_default
+// is tried instead so unknown items can still be manipulated to some degree
 static bool get_item_callback(lua_State *L,
 		const char *name, const char *callbackname)
 {
@@ -5524,9 +5606,15 @@ static bool get_item_callback(lua_State *L,
 	// Should be a table
 	if(lua_type(L, -1) != LUA_TTABLE)
 	{
+		// Report error and clean up
 		errorstream<<"Item \""<<name<<"\" not defined"<<std::endl;
 		lua_pop(L, 1);
-		return false;
+
+		// Try minetest.nodedef_default instead
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "nodedef_default");
+		lua_remove(L, -2);
+		luaL_checktype(L, -1, LUA_TTABLE);
 	}
 	lua_getfield(L, -1, callbackname);
 	lua_remove(L, -2);
