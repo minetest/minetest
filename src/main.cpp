@@ -1293,7 +1293,7 @@ int main(int argc, char *argv[])
 	video::IVideoDriver* driver = device->getVideoDriver();
 
 	// Disable mipmaps (because some of them look ugly)
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
