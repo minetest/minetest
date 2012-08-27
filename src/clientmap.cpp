@@ -471,7 +471,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				//AA + Trilinear
 				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, true);
+				buf->getMaterial().setFlag(video::EMF_ANTI_ALIASING, true);
                                 buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, true);
+				buf->getMaterial().AntiAliasing = video::EAAM_POINT_SMOOTH;
 
 				const video::SMaterial& material = buf->getMaterial();
 				video::IMaterialRenderer* rnd =
