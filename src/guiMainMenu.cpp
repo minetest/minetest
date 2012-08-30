@@ -48,10 +48,23 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 	{}
 	void accepted(std::wstring name, std::string gameid)
 	{
-		if(!string_allowed_blacklist(wide_to_narrow(name), WORLDNAME_BLACKLISTED_CHARS))
+		std::string name_narrow = wide_to_narrow(name);
+		if(!string_allowed_blacklist(name_narrow, WORLDNAME_BLACKLISTED_CHARS))
+		{
 			m_menu->displayMessageMenu(wgettext("Cannot create world: Name contains invalid characters"));
-		else
-			m_menu->createNewWorld(name, gameid);
+			return;
+		}
+		std::vector<WorldSpec> worlds = getAvailableWorlds();
+		for(std::vector<WorldSpec>::iterator i = worlds.begin();
+		    i != worlds.end(); i++)
+		{
+			if((*i).name == name_narrow)
+			{
+				m_menu->displayMessageMenu(wgettext("Cannot create world: A world by this name already exists"));
+				return;
+			}
+		}
+		m_menu->createNewWorld(name, gameid);
 	}
 	GUIMainMenu *m_menu;
 };
