@@ -1344,7 +1344,11 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 h0 = stoi(sf.next(":"));
 			infostream<<"combined w="<<w0<<" h="<<h0<<std::endl;
 			core::dimension2d<u32> dim(w0,h0);
-			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			if(baseimg == NULL)
+			{
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				baseimg->fill(video::SColor(0,0,0,0));
+			}
 			while(sf.atend() == false)
 			{
 				u32 x = stoi(sf.next(","));
