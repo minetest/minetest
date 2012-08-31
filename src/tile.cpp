@@ -1200,10 +1200,11 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			// Position to copy the blitted from in the blitted image
 			core::position2d<s32> pos_from(0,0);
 			// Blit
-			image->copyToWithAlpha(baseimg, pos_to,
+			/*image->copyToWithAlpha(baseimg, pos_to,
 					core::rect<s32>(pos_from, dim),
 					video::SColor(255,255,255,255),
-					NULL);
+					NULL);*/
+			blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
 			// Drop image
 			image->drop();
 		}
@@ -1368,10 +1369,11 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 							driver->createImage(video::ECF_A8R8G8B8, dim);
 					img->copyTo(img2);
 					img->drop();
-					img2->copyToWithAlpha(baseimg, pos_base,
+					/*img2->copyToWithAlpha(baseimg, pos_base,
 							core::rect<s32>(v2s32(0,0), dim),
 							video::SColor(255,255,255,255),
-							NULL);
+							NULL);*/
+					blit_with_alpha(img2, baseimg, v2s32(0,0), pos_base, dim);
 					img2->drop();
 				}
 				else
