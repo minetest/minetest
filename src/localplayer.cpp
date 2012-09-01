@@ -38,7 +38,8 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_sneak_node_exists(false),
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
-	m_need_to_get_new_sneak_node(true)
+	m_need_to_get_new_sneak_node(true),
+	m_can_jump(false)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -314,6 +315,15 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	m_old_node_below = floatToInt(position - v3f(0,BS/2,0), BS);
 	m_old_node_below_type = nodemgr->get(map.getNodeNoEx(m_old_node_below)).name;
+	
+	/*
+		Check properties of the node on which the player is standing
+	*/
+	const ContentFeatures &f = nodemgr->get(map.getNodeNoEx(getStandingNodePos()));
+	// Determine if jumping is possible
+	m_can_jump = touching_ground;
+	if(itemgroup_get(f.groups, "disable_jump"))
+		m_can_jump = false;
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
@@ -459,7 +469,7 @@ void LocalPlayer::applyControl(float dtime)
 				speed.Y = walkspeed_max;
 			setSpeed(speed);
 		}
-		else if(touching_ground)
+		else if(m_can_jump)
 		{
 			/*
 				NOTE: The d value in move() affects jump height by

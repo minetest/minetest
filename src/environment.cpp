@@ -2040,6 +2040,11 @@ void ClientEnvironment::step(float dtime)
 			//f32 tolerance = BS*12; // 3 without damage
 			f32 tolerance = BS*14; // 5 without damage
 			f32 factor = 1;
+			const ContentFeatures &f = m_gamedef->ndef()->
+					get(m_map->getNodeNoEx(lplayer->getStandingNodePos()));
+			// Determine fall damage multiplier
+			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
+			info.speed *= (1.0 + (float)addp/100.0);
 			if(info.speed > tolerance)
 			{
 				f32 damage_f = (info.speed - tolerance)/BS*factor;
