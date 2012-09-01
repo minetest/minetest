@@ -1327,6 +1327,7 @@ Node definition (register_node)
     is_ground_content = false, -- Currently not used for anything
     sunlight_propagates = false, -- If true, sunlight will go infinitely through this
     walkable = true, -- If true, objects collide with node
+    jumpable = true, -- If true, players can jump while on this node
     pointable = true, -- If true, can be pointed at
     diggable = true, -- If false, can never be dug
     climbable = false, -- If true, can be climbed on (ladder)

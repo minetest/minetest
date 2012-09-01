@@ -191,6 +191,8 @@ struct ContentFeatures
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
+	//Player can jump on these
+	bool jumpable;
 	// Player can point to these
 	bool pointable;
 	// Player can dig these

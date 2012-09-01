@@ -1216,6 +1216,8 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	getboolfield(L, index, "walkable", f.walkable);
+	//Player can jump on these
+	getboolfield(L, index, "jumpable", f.jumpable);
 	// Player can point to these
 	getboolfield(L, index, "pointable", f.pointable);
 	// Player can dig these

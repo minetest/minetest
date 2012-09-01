@@ -314,6 +314,12 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	m_old_node_below = floatToInt(position - v3f(0,BS/2,0), BS);
 	m_old_node_below_type = nodemgr->get(map.getNodeNoEx(m_old_node_below)).name;
+	
+	//Check if player is walking on a jumpable node
+	if(!nodemgr->get(map.getNodeNoEx(m_old_node_below)).jumpable || (can_jump == false && !nodemgr->get(map.getNodeNoEx(m_old_node_below)).walkable))
+		can_jump = false;
+	else
+		can_jump = true;
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
@@ -459,7 +465,7 @@ void LocalPlayer::applyControl(float dtime)
 				speed.Y = walkspeed_max;
 			setSpeed(speed);
 		}
-		else if(touching_ground)
+		else if(touching_ground && can_jump)
 		{
 			/*
 				NOTE: The d value in move() affects jump height by

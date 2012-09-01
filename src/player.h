@@ -147,7 +147,8 @@ public:
 	bool is_climbing;
 	bool swimming_up;
 	bool camera_barely_in_ceiling;
-	
+	bool can_jump;
+
 	u8 light;
 
 	Inventory inventory;

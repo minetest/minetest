@@ -379,6 +379,7 @@ minetest.nodedef_default = {
 	is_ground_content = false,
 	sunlight_propagates = false,
 	walkable = true,
+	jumpable = true,
 	pointable = true,
 	diggable = true,
 	climbable = false,

@@ -195,6 +195,7 @@ void ContentFeatures::reset()
 	light_propagates = false;
 	sunlight_propagates = false;
 	walkable = true;
+	jumpable = true;
 	pointable = true;
 	diggable = true;
 	climbable = false;
@@ -244,6 +245,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, light_propagates);
 	writeU8(os, sunlight_propagates);
 	writeU8(os, walkable);
+	writeU8(os, jumpable);
 	writeU8(os, pointable);
 	writeU8(os, diggable);
 	writeU8(os, climbable);
@@ -298,6 +300,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	light_propagates = readU8(is);
 	sunlight_propagates = readU8(is);
 	walkable = readU8(is);
+	jumpable = readU8(is);
 	pointable = readU8(is);
 	diggable = readU8(is);
 	climbable = readU8(is);
