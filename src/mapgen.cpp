@@ -1761,8 +1761,9 @@ void make_block(BlockMakeData *data)
 									vmanip.m_data[i] = airnode;
 								}
 							} else {
-								// Don't replace air or water or lava
-								if(vmanip.m_data[i].getContent() == CONTENT_AIR ||
+								// Don't replace air or water or lava or ignore
+								if(vmanip.m_data[i].getContent() == CONTENT_IGNORE ||
+								vmanip.m_data[i].getContent() == CONTENT_AIR ||
 								vmanip.m_data[i].getContent() == c_water_source ||
 								vmanip.m_data[i].getContent() == c_lava_source)
 									continue;
