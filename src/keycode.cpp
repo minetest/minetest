@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "exceptions.h"
 #include "settings.h"
+#include "log.h"
+#include "hex.h"
 
 class UnknownKeycode : public BaseException
 {
@@ -295,7 +297,10 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 	} else {
 		m_name.resize(MB_CUR_MAX+1, '\0');
 		int written = wctomb(&m_name[0], Char);
-		assert (written >= 0 && "unexpected multibyte character");
+		if(written >= 0){
+			std::string hexstr = hex_encode((const char*)&Char, sizeof(Char));
+			errorstream<<"KeyPress: Unexpected multibyte character "<<hexstr<<std::endl;
+		}
 	}
 }
 
