@@ -66,6 +66,8 @@ private:
 
 	void add_key(int id, std::string setting_name, std::string button_name);
 
+	bool shift_down;
+	
 	s32 activeKey;
 	
 	std::vector<KeyPress> key_used;

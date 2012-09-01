@@ -288,16 +288,27 @@ KeyPress::KeyPress(const char *name)
 	m_name = name[0];
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 {
 	Key = in.Key;
 	Char = in.Char;
+
+	if(prefer_character){
+		m_name.resize(MB_CUR_MAX+1, '\0');
+		int written = wctomb(&m_name[0], Char);
+		if(written > 0){
+			infostream<<"KeyPress: Preferring character for "<<m_name<<std::endl;
+			Key = irr::KEY_KEY_CODES_COUNT;
+			return;
+		}
+	}
+
 	if (valid_kcode(Key)) {
 		m_name = KeyNames[Key];
 	} else {
 		m_name.resize(MB_CUR_MAX+1, '\0');
 		int written = wctomb(&m_name[0], Char);
-		if(written >= 0){
+		if(written < 0){
 			std::string hexstr = hex_encode((const char*)&Char, sizeof(Char));
 			errorstream<<"KeyPress: Unexpected multibyte character "<<hexstr<<std::endl;
 		}

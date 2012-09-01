@@ -60,6 +60,7 @@ GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
 GUIModalMenu(env, parent, id, menumgr)
 {
+	shift_down = false;
 	activeKey = -1;
 	this->key_used_text = NULL;
 	init_keys();
@@ -204,7 +205,15 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		&& event.KeyInput.PressedDown)
 	{
 		changeCtype("");
-		KeyPress kp(event.KeyInput);
+		bool prefer_character = shift_down;
+		KeyPress kp(event.KeyInput, prefer_character);
+		
+		bool shift_went_down = false;
+		if(!shift_down &&
+				(event.KeyInput.Key == irr::KEY_SHIFT ||
+				event.KeyInput.Key == irr::KEY_LSHIFT ||
+				event.KeyInput.Key == irr::KEY_RSHIFT))
+			shift_went_down = true;
 
 		// Remove Key already in use message
 		if(this->key_used_text)
@@ -240,8 +249,14 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			this->key_used.push_back(kp);
 
 			changeCtype("C");
-			activeKey = -1;
-			return true;
+			// Allow characters made with shift
+			if(shift_went_down){
+				shift_down = true;
+				return false;
+			}else{
+				activeKey = -1;
+				return true;
+			}
 		}
 	}
 	if (event.EventType == EET_GUI_EVENT)
@@ -287,6 +302,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					assert(k);
 
 					resetMenu();
+					shift_down = false;
 					activeKey = event.GUIEvent.Caller->getID();
 					k->button->setText(wgettext("press key"));
 					this->key_used.erase(std::remove(this->key_used.begin(),
