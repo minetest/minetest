@@ -486,9 +486,8 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speed = getSpeed();
 			if(speed.Y >= -0.5*BS)
 			{
-				speed.Y += 6.5*BS;
+				speed.Y = 6.5*BS;
 				setSpeed(speed);
-				m_can_jump = false;
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_gamedef->event()->put(e);

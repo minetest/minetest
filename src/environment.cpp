@@ -2033,10 +2033,18 @@ void ClientEnvironment::step(float dtime)
 			i = player_collisions.begin();
 			i != player_collisions.end(); i++)
 	{
+		CollisionInfo &info = *i;
+		v3f speed_diff = info.new_speed - info.old_speed;;
+		// Handle only fall damage
+		// (because otherwise walking against something in fast_move kills you)
+		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+			continue;
+		// Get rid of other components
+		speed_diff.X = 0;
+		speed_diff.Z = 0;
 		f32 pre_factor = 1; // 1 hp per node/s
 		f32 tolerance = BS*14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
-		CollisionInfo &info = *i;
 		if(info.type == COLLISION_NODE)
 		{
 			const ContentFeatures &f = m_gamedef->ndef()->
@@ -2045,8 +2053,7 @@ void ClientEnvironment::step(float dtime)
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
 			pre_factor = 1.0 + (float)addp/100.0;
 		}
-		float speed = (info.new_speed - info.old_speed).getLength();
-		speed *= pre_factor;
+		float speed = pre_factor * speed_diff.getLength();
 		if(speed > tolerance)
 		{
 			f32 damage_f = (speed - tolerance)/BS * post_factor;
