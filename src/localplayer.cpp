@@ -189,7 +189,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	bool touching_ground_was = touching_ground;
 	touching_ground = result.touching_ground;
     
-    bool standing_on_unloaded = result.standing_on_unloaded;
+    //bool standing_on_unloaded = result.standing_on_unloaded;
 
 	/*
 		Check the nodes under the player to see from which node the
@@ -282,16 +282,23 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	/*
 		Report collisions
 	*/
+	bool bouncy_jump = false;
 	if(collision_info)
 	{
-		// Report fall collision
-		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded)
-		{
-			CollisionInfo info;
-			info.t = COLLISION_FALL;
-			info.speed = m_speed.Y - old_speed.Y;
+		for(size_t i=0; i<result.collisions.size(); i++){
+			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
+			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&
+					info.bouncy)
+				bouncy_jump = true;
 		}
+	}
+
+	if(bouncy_jump && control.jump){
+		m_speed.Y += 6.5*BS;
+		touching_ground = false;
+		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
+		m_gamedef->event()->put(e);
 	}
 
 	if(!touching_ground_was && touching_ground){
@@ -479,8 +486,9 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speed = getSpeed();
 			if(speed.Y >= -0.5*BS)
 			{
-				speed.Y = 6.5*BS;
+				speed.Y += 6.5*BS;
 				setSpeed(speed);
+				m_can_jump = false;
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_gamedef->event()->put(e);

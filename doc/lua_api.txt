@@ -455,6 +455,7 @@ Special groups
   - 3: node is removed without tool wear immediately (torch)
 - disable_jump: Player (and possibly other things) cannot jump from node
 - fall_damage_add_percent: damage speed = speed * (1 + value/100)
+- bouncy: value is bounce speed in percent
 
 Known damage and digging time defining groups
 ----------------------------------------------

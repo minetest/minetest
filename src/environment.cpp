@@ -2033,25 +2033,26 @@ void ClientEnvironment::step(float dtime)
 			i = player_collisions.begin();
 			i != player_collisions.end(); i++)
 	{
+		f32 pre_factor = 1; // 1 hp per node/s
+		f32 tolerance = BS*14; // 5 without damage
+		f32 post_factor = 1; // 1 hp per node/s
 		CollisionInfo &info = *i;
-		if(info.t == COLLISION_FALL)
+		if(info.type == COLLISION_NODE)
 		{
-			//f32 tolerance = BS*10; // 2 without damage
-			//f32 tolerance = BS*12; // 3 without damage
-			f32 tolerance = BS*14; // 5 without damage
-			f32 factor = 1;
 			const ContentFeatures &f = m_gamedef->ndef()->
-					get(m_map->getNodeNoEx(lplayer->getStandingNodePos()));
+					get(m_map->getNodeNoEx(info.node_p));
 			// Determine fall damage multiplier
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			info.speed *= (1.0 + (float)addp/100.0);
-			if(info.speed > tolerance)
-			{
-				f32 damage_f = (info.speed - tolerance)/BS*factor;
-				u16 damage = (u16)(damage_f+0.5);
-				if(damage != 0)
-					damageLocalPlayer(damage, true);
-			}
+			pre_factor = 1.0 + (float)addp/100.0;
+		}
+		float speed = (info.new_speed - info.old_speed).getLength();
+		speed *= pre_factor;
+		if(speed > tolerance)
+		{
+			f32 damage_f = (speed - tolerance)/BS * post_factor;
+			u16 damage = (u16)(damage_f+0.5);
+			if(damage != 0)
+				damageLocalPlayer(damage, true);
 		}
 	}
 	

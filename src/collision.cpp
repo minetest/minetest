@@ -211,6 +211,8 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	std::vector<aabb3f> cboxes;
 	std::vector<bool> is_unloaded;
 	std::vector<bool> is_step_up;
+	std::vector<int> bouncy_values;
+	std::vector<v3s16> node_positions;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
     ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
@@ -228,11 +230,14 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	for(s16 y = min_y; y <= max_y; y++)
 	for(s16 z = min_z; z <= max_z; z++)
 	{
+		v3s16 p(x,y,z);
 		try{
 			// Object collides into walkable nodes
-			MapNode n = map->getNode(v3s16(x,y,z));
-			if(gamedef->getNodeDefManager()->get(n).walkable == false)
+			MapNode n = map->getNode(p);
+			const ContentFeatures &f = gamedef->getNodeDefManager()->get(n);
+			if(f.walkable == false)
 				continue;
+			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
 			std::vector<aabb3f> nodeboxes = n.getNodeBoxes(gamedef->ndef());
 			for(std::vector<aabb3f>::iterator
@@ -245,21 +250,27 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				cboxes.push_back(box);
 				is_unloaded.push_back(false);
 				is_step_up.push_back(false);
+				bouncy_values.push_back(n_bouncy_value);
+				node_positions.push_back(p);
 			}
 		}
 		catch(InvalidPositionException &e)
 		{
 			// Collide with unloaded nodes
-			aabb3f box = getNodeBox(v3s16(x,y,z), BS);
+			aabb3f box = getNodeBox(p, BS);
 			cboxes.push_back(box);
 			is_unloaded.push_back(true);
 			is_step_up.push_back(false);
+			bouncy_values.push_back(0);
+			node_positions.push_back(p);
 		}
 	}
 	} // tt2
 
 	assert(cboxes.size() == is_unloaded.size());
 	assert(cboxes.size() == is_step_up.size());
+	assert(cboxes.size() == bouncy_values.size());
+	assert(cboxes.size() == node_positions.size());
 
 	/*
 		Collision detection
@@ -342,6 +353,10 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 							cbox.MaxEdge.Y - movingbox.MinEdge.Y,
 							d));
 
+			// Get bounce multiplier
+			bool bouncy = (bouncy_values[nearest_boxindex] >= 1);
+			float bounce = -(float)bouncy_values[nearest_boxindex] / 100.0;
+
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if(nearest_dtime < 0)
 			{
@@ -361,29 +376,57 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				pos_f += speed_f * nearest_dtime;
 				dtime -= nearest_dtime;
 			}
+			
+			bool is_collision = true;
+			if(is_unloaded[nearest_boxindex])
+				is_collision = false;
+
+			CollisionInfo info;
+			info.type = COLLISION_NODE;
+			info.node_p = node_positions[nearest_boxindex];
+			info.bouncy = bouncy;
+			info.old_speed = speed_f;
 
 			// Set the speed component that caused the collision to zero
 			if(step_up)
 			{
 				// Special case: Handle stairs
 				is_step_up[nearest_boxindex] = true;
+				is_collision = false;
 			}
 			else if(nearest_collided == 0) // X
 			{
-				speed_f.X = 0;
+				if(fabs(speed_f.X) > BS*3)
+					speed_f.X *= bounce;
+				else
+					speed_f.X = 0;
 				result.collides = true;
 				result.collides_xz = true;
 			}
 			else if(nearest_collided == 1) // Y
 			{
-				speed_f.Y = 0;
+				if(fabs(speed_f.Y) > BS*3)
+					speed_f.Y *= bounce;
+				else
+					speed_f.Y = 0;
 				result.collides = true;
 			}
 			else if(nearest_collided == 2) // Z
 			{
-				speed_f.Z = 0;
+				if(fabs(speed_f.Z) > BS*3)
+					speed_f.Z *= bounce;
+				else
+					speed_f.Z = 0;
 				result.collides = true;
 				result.collides_xz = true;
+			}
+
+			info.new_speed = speed_f;
+			if(info.new_speed.getDistanceFrom(info.old_speed) < 0.1*BS)
+				is_collision = false;
+
+			if(is_collision){
+				result.collisions.push_back(info);
 			}
 		}
 	}
