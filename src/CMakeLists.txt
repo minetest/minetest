@@ -153,6 +153,8 @@ configure_file(
 )
 
 set(common_SRCS
+	rollback_interface.cpp
+	rollback.cpp
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp
@@ -191,7 +193,6 @@ set(common_SRCS
 	connection.cpp
 	environment.cpp
 	server.cpp
-	servercommand.cpp
 	socket.cpp
 	mapblock.cpp
 	mapsector.cpp

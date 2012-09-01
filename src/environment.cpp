@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #endif
 #include "daynightratio.h"
+#include "map.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -325,6 +326,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
+	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0)
 {
@@ -348,6 +350,17 @@ ServerEnvironment::~ServerEnvironment()
 		delete i->abm;
 	}
 }
+
+Map & ServerEnvironment::getMap()
+{
+	return *m_map;
+}
+
+ServerMap & ServerEnvironment::getServerMap()
+{
+	return *m_map;
+}
+
 
 void ServerEnvironment::serializePlayers(const std::string &savedir)
 {
@@ -1074,7 +1087,8 @@ void ServerEnvironment::step(float dtime)
 						i = elapsed_timers.begin();
 						i != elapsed_timers.end(); i++){
 					n = block->getNodeNoEx(i->first);
-					if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+					p = i->first + block->getPosRelative();
+					if(scriptapi_node_on_timer(m_lua,p,n,i->second.elapsed))
 						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 				}
 			}
@@ -1083,7 +1097,12 @@ void ServerEnvironment::step(float dtime)
 	
 	const float abm_interval = 1.0;
 	if(m_active_block_modifier_interval.step(dtime, abm_interval))
-	{
+	do{ // breakable
+		if(m_active_block_interval_overload_skip > 0){
+			ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
+			m_active_block_interval_overload_skip--;
+			break;
+		}
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /1s", SPT_AVG);
 		TimeTaker timer("modify in active blocks");
 		
@@ -1116,8 +1135,9 @@ void ServerEnvironment::step(float dtime)
 			infostream<<"WARNING: active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
+			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
 		}
-	}
+	}while(0);
 	
 	/*
 		Step script environment (run global on_step())
@@ -2014,19 +2034,32 @@ void ClientEnvironment::step(float dtime)
 			i != player_collisions.end(); i++)
 	{
 		CollisionInfo &info = *i;
-		if(info.t == COLLISION_FALL)
+		v3f speed_diff = info.new_speed - info.old_speed;;
+		// Handle only fall damage
+		// (because otherwise walking against something in fast_move kills you)
+		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+			continue;
+		// Get rid of other components
+		speed_diff.X = 0;
+		speed_diff.Z = 0;
+		f32 pre_factor = 1; // 1 hp per node/s
+		f32 tolerance = BS*14; // 5 without damage
+		f32 post_factor = 1; // 1 hp per node/s
+		if(info.type == COLLISION_NODE)
 		{
-			//f32 tolerance = BS*10; // 2 without damage
-			//f32 tolerance = BS*12; // 3 without damage
-			f32 tolerance = BS*14; // 5 without damage
-			f32 factor = 1;
-			if(info.speed > tolerance)
-			{
-				f32 damage_f = (info.speed - tolerance)/BS*factor;
-				u16 damage = (u16)(damage_f+0.5);
-				if(damage != 0)
-					damageLocalPlayer(damage, true);
-			}
+			const ContentFeatures &f = m_gamedef->ndef()->
+					get(m_map->getNodeNoEx(info.node_p));
+			// Determine fall damage multiplier
+			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
+			pre_factor = 1.0 + (float)addp/100.0;
+		}
+		float speed = pre_factor * speed_diff.getLength();
+		if(speed > tolerance)
+		{
+			f32 damage_f = (speed - tolerance)/BS * post_factor;
+			u16 damage = (u16)(damage_f+0.5);
+			if(damage != 0)
+				damageLocalPlayer(damage, true);
 		}
 	}
 	

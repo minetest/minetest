@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
-#include "servercommand.h"
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -54,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/pointedthing.h"
 #include "util/mathconstants.h"
+#include "rollback.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -442,9 +442,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	m_nearest_unsent_reset_timer += dtime;
 	
 	if(m_nothing_to_send_pause_timer >= 0)
-	{
 		return;
-	}
+
+	Player *player = server->m_env->getPlayer(peer_id);
+	// This can happen sometimes; clients and players are not in perfect sync.
+	if(player == NULL)
+		return;
 
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings->getU16
@@ -456,10 +459,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 	
-	Player *player = server->m_env->getPlayer(peer_id);
-
-	assert(player != NULL);
-
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
@@ -934,6 +933,9 @@ Server::Server(
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
+	m_rollback(NULL),
+	m_rollback_sink_enabled(true),
+	m_enable_rollback_recording(false),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -972,6 +974,10 @@ Server::Server(
 	infostream<<"- world:  "<<m_path_world<<std::endl;
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
+
+	// Create rollback manager
+	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
+	m_rollback = createRollbackManager(rollback_path, this);
 
 	// Add world mod search path
 	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
@@ -1049,7 +1055,7 @@ Server::Server(
 	
 	m_env = new ServerEnvironment(new ServerMap(path_world, this), m_lua,
 			this, this);
-
+	
 	// Give environment reference to scripting api
 	scriptapi_add_environment(m_lua, m_env);
 	
@@ -1152,6 +1158,7 @@ Server::~Server()
 	
 	// Delete things in the reverse order of creation
 	delete m_env;
+	delete m_rollback;
 	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -1865,6 +1872,10 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 			
 			m_emergethread.trigger();
+
+			// Update m_enable_rollback_recording here too
+			m_enable_rollback_recording =
+					g_settings->getBool("enable_rollback_recording");
 		}
 	}
 
@@ -2481,6 +2492,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
+		// If something goes wrong, this player is to blame
+		RollbackScopeActor rollback_scope(m_rollback,
+				std::string("player:")+player->getName());
+
 		/*
 			Note: Always set inventory not sent, to repair cases
 			where the client made a bad prediction.
@@ -2615,6 +2630,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += (wchar_t)readU16(buf);
 		}
 
+		// If something goes wrong, this player is to blame
+		RollbackScopeActor rollback_scope(m_rollback,
+				std::string("player:")+player->getName());
+
 		// Get player name of this client
 		std::wstring name = narrow_to_wide(player->getName());
 		
@@ -2632,36 +2651,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Whether to send to other players
 		bool send_to_others = false;
 		
-		// Parse commands
+		// Commands are implemented in Lua, so only catch invalid
+		// commands that were not "eaten" and send an error back
 		if(message[0] == L'/')
 		{
-			size_t strip_size = 1;
-			if (message[1] == L'#') // support old-style commans
-				++strip_size;
-			message = message.substr(strip_size);
-
-			WStrfnd f1(message);
-			f1.next(L" "); // Skip over /#whatever
-			std::wstring paramstring = f1.next(L"");
-
-			ServerCommandContext *ctx = new ServerCommandContext(
-				str_split(message, L' '),
-				paramstring,
-				this,
-				m_env,
-				player);
-
-			std::wstring reply(processServerCommand(ctx));
-			send_to_sender = ctx->flags & SEND_TO_SENDER;
-			send_to_others = ctx->flags & SEND_TO_OTHERS;
-
-			if (ctx->flags & SEND_NO_PREFIX)
-				line += reply;
+			message = message.substr(1);
+			send_to_sender = true;
+			if(message.length() == 0)
+				line += L"-!- Empty command";
 			else
-				line += L"Server: " + reply;
-
-			delete ctx;
-
+				line += L"-!- Invalid command: " + str_split(message, L' ')[0];
 		}
 		else
 		{
@@ -2950,6 +2949,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		/*
+			If something goes wrong, this player is to blame
+		*/
+		RollbackScopeActor rollback_scope(m_rollback,
+				std::string("player:")+player->getName());
+
+		/*
 			0: start digging or punch object
 		*/
 		if(action == 0)
@@ -3204,8 +3209,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			fields[fieldname] = fieldvalue;
 		}
 
+		// If something goes wrong, this player is to blame
+		RollbackScopeActor rollback_scope(m_rollback,
+				std::string("player:")+player->getName());
+
+		// Check the target node for rollback data; leave others unnoticed
+		RollbackNode rn_old(&m_env->getMap(), p, this);
+
 		scriptapi_node_on_receive_fields(m_lua, p, formname, fields,
 				playersao);
+
+		// Report rollback data
+		RollbackNode rn_new(&m_env->getMap(), p, this);
+		if(rollback() && rn_new != rn_old){
+			RollbackAction action;
+			action.setSetNode(p, rn_old, rn_new);
+			rollback()->reportAction(action);
+		}
 	}
 	else if(command == TOSERVER_INVENTORY_FIELDS)
 	{
@@ -4407,9 +4427,10 @@ std::wstring Server::getStatusString()
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Information about clients
+	core::map<u16, RemoteClient*>::Iterator i;
+	bool first;
 	os<<L", clients={";
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(i = m_clients.getIterator(), first = true;
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
@@ -4424,7 +4445,11 @@ std::wstring Server::getStatusString()
 		if(player != NULL)
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
-		os<<name<<L",";
+		if(!first)
+			os<<L",";
+		else
+			first = false;
+		os<<name;
 	}
 	os<<L"}";
 	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
@@ -4522,6 +4547,73 @@ Inventory* Server::createDetachedInventory(const std::string &name)
 	return inv;
 }
 
+class BoolScopeSet
+{
+public:
+	BoolScopeSet(bool *dst, bool val):
+		m_dst(dst)
+	{
+		m_orig_state = *m_dst;
+		*m_dst = val;
+	}
+	~BoolScopeSet()
+	{
+		*m_dst = m_orig_state;
+	}
+private:
+	bool *m_dst;
+	bool m_orig_state;
+};
+
+// actions: time-reversed list
+// Return value: success/failure
+bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
+		std::list<std::string> *log)
+{
+	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
+	ServerMap *map = (ServerMap*)(&m_env->getMap());
+	// Disable rollback report sink while reverting
+	BoolScopeSet rollback_scope_disable(&m_rollback_sink_enabled, false);
+	
+	// Fail if no actions to handle
+	if(actions.empty()){
+		log->push_back("Nothing to do.");
+		return false;
+	}
+
+	int num_tried = 0;
+	int num_failed = 0;
+	
+	for(std::list<RollbackAction>::const_iterator
+			i = actions.begin();
+			i != actions.end(); i++)
+	{
+		const RollbackAction &action = *i;
+		num_tried++;
+		bool success = action.applyRevert(map, this, this);
+		if(!success){
+			num_failed++;
+			std::ostringstream os;
+			os<<"Revert of step ("<<num_tried<<") "<<action.toString()<<" failed";
+			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
+			if(log)
+				log->push_back(os.str());
+		}else{
+			std::ostringstream os;
+			os<<"Succesfully reverted step ("<<num_tried<<") "<<action.toString();
+			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
+			if(log)
+				log->push_back(os.str());
+		}
+	}
+	
+	infostream<<"Map::rollbackRevertActions(): "<<num_failed<<"/"<<num_tried
+			<<" failed"<<std::endl;
+
+	// Call it done if less than half failed
+	return num_failed <= num_tried/2;
+}
+
 // IGameDef interface
 // Under envlock
 IItemDefManager* Server::getItemDefManager()
@@ -4551,6 +4643,14 @@ ISoundManager* Server::getSoundManager()
 MtEventManager* Server::getEventManager()
 {
 	return m_event;
+}
+IRollbackReportSink* Server::getRollbackReportSink()
+{
+	if(!m_enable_rollback_recording)
+		return NULL;
+	if(!m_rollback_sink_enabled)
+		return NULL;
+	return m_rollback;
 }
 
 IWritableItemDefManager* Server::getWritableItemDefManager()

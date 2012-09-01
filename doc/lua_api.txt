@@ -423,7 +423,7 @@ effective towards.
 
 Groups in crafting recipes
 ---------------------------
-An example:
+An example: Make meat soup from any meat, any water and any bowl
 {
     output = 'food:meat_soup_raw',
     recipe = {
@@ -431,7 +431,13 @@ An example:
         {'group:water'},
         {'group:bowl'},
     },
-    preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+    -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+}
+An another example: Make red wool from white wool and red dye
+{
+	type = 'shapeless',
+    output = 'wool:red',
+    recipe = {'wool:white', 'group:dye,basecolor_red'},
 }
 
 Special groups
@@ -447,6 +453,9 @@ Special groups
   - 2: node is removed without tool wear after 0.5 seconds or so
        (rail, sign)
   - 3: node is removed without tool wear immediately (torch)
+- disable_jump: Player (and possibly other things) cannot jump from node
+- fall_damage_add_percent: damage speed = speed * (1 + value/100)
+- bouncy: value is bounce speed in percent
 
 Known damage and digging time defining groups
 ----------------------------------------------
@@ -883,6 +892,14 @@ minetest.get_craft_recipe(output) -> input
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
 
+Rollbacks:
+minetest.rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
+^ Find who has done something to a node, or near a node
+^ actor: "player:<name>", also "liquid".
+minetest.rollback_revert_actions_by(actor, seconds) -> bool, log messages
+^ Revert latest actions of someone
+^ actor: "player:<name>", also "liquid".
+
 Defaults for the on_* item definition functions:
 (These return the leftover itemstack)
 minetest.item_place_node(itemstack, placer, pointed_thing)
@@ -913,6 +930,16 @@ Timing:
 minetest.after(time, func, param)
 ^ Call function after time seconds
 ^ param is optional; to pass multiple parameters, pass a table.
+
+Server:
+minetest.request_shutdown() -> request for server shutdown
+minetest.get_server_status() -> server status string
+
+Bans:
+minetest.get_ban_list() -> ban list (same as minetest.get_ban_description(""))
+minetest.get_ban_description(ip_or_name) -> ban description (string)
+minetest.ban_player(name) -> ban a player
+minetest.unban_player_or_ip(name) -> unban player or IP address
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -1003,6 +1030,8 @@ methods:
   ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 - get_perlin(seeddiff, octaves, persistence, scale)
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
+- clear_objects()
+  ^ clear all objects in the environments 
 Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)
@@ -1092,6 +1121,8 @@ methods:
 - is_empty(listname): return true if list is empty
 - get_size(listname): get size of a list
 - set_size(listname, size): set size of a list
+- get_width(listname): get width of a list
+- set_width(listname, width): set width of list; currently used for crafting
 - get_stack(listname, i): get a copy of stack index i in list
 - set_stack(listname, i, stack): copy stack to index i in list
 - get_list(listname): return full list

@@ -227,10 +227,12 @@ function minetest.item_drop(itemstack, dropper, pos)
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
 		local obj = minetest.env:add_item(p, itemstack)
-		v.x = v.x*2
-		v.y = v.y*2 + 1
-		v.z = v.z*2
-		obj:setvelocity(v)
+		if obj then
+			v.x = v.x*2
+			v.y = v.y*2 + 1
+			v.z = v.z*2
+			obj:setvelocity(v)
+		end
 	else
 		minetest.env:add_item(pos, itemstack)
 	end
@@ -262,7 +264,8 @@ function minetest.node_dig(pos, node, digger)
 	minetest.debug("node_dig")
 
 	local def = ItemStack({name=node.name}):get_definition()
-	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
+	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
+	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
 		minetest.debug("not diggable")
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
