@@ -243,6 +243,29 @@ inline bool string_allowed(const std::string &s, const std::string &allowed_char
 }
 
 /*
+	Checks if a string contains no blacklisted characters (opposite
+	function of string_allowed())
+*/
+inline bool string_allowed_blacklist(const std::string & s, const std::string & blacklisted_chars)
+{
+	for(unsigned int i = 0; i < s.length(); i++)
+	{
+		bool invalid = false;
+		for(unsigned int j = 0; j < blacklisted_chars.length(); j++)
+		{
+			if(s[i] == blacklisted_chars[j])
+			{
+				invalid = true;
+				break;
+			}
+		}
+		if(invalid)
+			return false;
+	}
+	return true;
+}
+
+/*
 	Forcefully wraps string into rows using \n
 	(no word wrap, used for showing paths in gui)
 */
