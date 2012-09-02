@@ -351,6 +351,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if(dst_can_put_count == -1){
 		list_to->deleteItem(to_i);
 		list_to->addItem(to_i, to_stack_was);
+		list_from->deleteItem(from_i);
+		list_from->addItem(from_i, from_stack_was);
 		list_from->takeItem(from_i, count);
 	}
 
