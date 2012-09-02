@@ -1057,7 +1057,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if(leftover.count == stack_from.count)
 			{
 				// Swap the stacks
-				m_selected_amount -= stack_to.count;
+				m_selected_amount = stack_to.count;
 			}
 			else if(leftover.empty())
 			{
