@@ -733,6 +733,54 @@ void GUIFormSpecMenu::drawMenu()
 
 void GUIFormSpecMenu::updateSelectedItem()
 {
+	// WARNING: BLACK MAGIC
+	// See if there is a stack suited for our current guess.
+	// If such stack does not exist, clear the guess.
+	if(m_selected_content_guess.name != "")
+	{
+		bool found = false;
+		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
+			const ListDrawSpec &s = m_inventorylists[i];
+			Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
+			if(!inv)
+				continue;
+			InventoryList *list = inv->getList(s.listname);
+			if(!list)
+				continue;
+			for(s32 i=0; i<s.geom.X*s.geom.Y && !found; i++){
+				u32 item_i = i + s.start_item_i;
+				if(item_i >= list->getSize())
+					continue;
+				ItemStack stack = list->getItem(item_i);
+				if(stack.name == m_selected_content_guess.name &&
+						stack.count == m_selected_content_guess.count){
+					found = true;
+					if(m_selected_item){
+						// If guessed stack is already selected, all is fine
+						if(m_selected_item->inventoryloc == s.inventoryloc &&
+								m_selected_item->listname == s.listname &&
+								m_selected_item->i == (s32)item_i &&
+								m_selected_amount == stack.count){
+							break;
+						}
+						delete m_selected_item;
+						m_selected_item = NULL;
+					}
+					infostream<<"Client: Changing selected content guess to "
+							<<s.inventoryloc.dump()<<" "<<s.listname
+							<<" "<<item_i<<std::endl;
+					m_selected_item = new ItemSpec(s.inventoryloc, s.listname, item_i);
+					m_selected_amount = stack.count;
+					break;
+				}
+			}
+		}
+		if(!found){
+			infostream<<"Client: Discarding selected content guess: "
+					<<m_selected_content_guess.getItemString()<<std::endl;
+			m_selected_content_guess.name = "";
+		}
+	}
 	// If the selected stack has become empty for some reason, deselect it.
 	// If the selected stack has become smaller, adjust m_selected_amount.
 	if(m_selected_item)
@@ -1054,21 +1102,28 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Check how many items can be moved
 			move_amount = stack_from.count = MYMIN(move_amount, stack_from.count);
 			ItemStack leftover = stack_to.addItem(stack_from, m_gamedef->idef());
-			if(leftover.count == stack_from.count)
+			// If source stack cannot be added to destination stack at all,
+			// they are swapped
+			if(leftover.count == stack_from.count && leftover.name == stack_from.name)
 			{
-				// Swap the stacks
 				m_selected_amount = stack_to.count;
+				// In case the server doesn't directly swap them but instead
+				// moves stack_to somewhere else, set this
+				m_selected_content_guess = stack_to;
+				m_selected_content_guess_inventory = s.inventoryloc;
 			}
+			// Source stack goes fully into destination stack
 			else if(leftover.empty())
 			{
-				// Item fits
 				m_selected_amount -= move_amount;
+				m_selected_content_guess = ItemStack(); // Clear
 			}
+			// Source stack goes partly into destination stack
 			else
 			{
-				// Item only fits partially
 				move_amount -= leftover.count;
 				m_selected_amount -= move_amount;
+				m_selected_content_guess = ItemStack(); // Clear
 			}
 
 			infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
@@ -1084,6 +1139,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 		else if(drop_amount > 0)
 		{
+			m_selected_content_guess = ItemStack(); // Clear
+
 			// Send IACTION_DROP
 
 			assert(m_selected_item && m_selected_item->isValid());
@@ -1107,6 +1164,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 		else if(craft_amount > 0)
 		{
+			m_selected_content_guess = ItemStack(); // Clear
+
 			// Send IACTION_CRAFT
 
 			assert(s.isValid());
@@ -1126,6 +1185,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_selected_item = NULL;
 			m_selected_amount = 0;
 			m_selected_dragging = false;
+			m_selected_content_guess = ItemStack();
 		}
 	}
 	if(event.EventType==EET_GUI_EVENT)

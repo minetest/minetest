@@ -212,6 +212,12 @@ protected:
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
 	bool m_selected_dragging;
+	
+	// WARNING: BLACK MAGIC
+	// Used to guess and keep up with some special things the server can do.
+	// If name is "", no guess exists.
+	ItemStack m_selected_content_guess;
+	InventoryLocation m_selected_content_guess_inventory;
 
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;

@@ -332,6 +332,18 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// If source is infinite, reset it's stack
 	if(src_can_take_count == -1){
+		// If destination stack is of different type and there are leftover
+		// items, attempt to put the leftover items to a different place in the
+		// destination inventory.
+		// The client-side GUI will try to guess if this happens.
+		if(from_stack_was.name != to_stack_was.name){
+			for(u32 i=0; i<list_to->getSize(); i++){
+				if(list_to->getItem(i).empty()){
+					list_to->changeItem(i, to_stack_was);
+					break;
+				}
+			}
+		}
 		list_from->deleteItem(from_i);
 		list_from->addItem(from_i, from_stack_was);
 	}
