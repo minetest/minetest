@@ -150,13 +150,16 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
 		position.Z = rangelim(position.Z, lwn_f.Z-maxd, lwn_f.Z+maxd);
 		
-		f32 min_y = lwn_f.Y + 0.5*BS;
-		if(position.Y < min_y)
+		if(!is_climbing)
 		{
-			position.Y = min_y;
+			f32 min_y = lwn_f.Y + 0.5*BS;
+			if(position.Y < min_y)
+			{
+				position.Y = min_y;
 
-			if(m_speed.Y < 0)
-				m_speed.Y = 0;
+				if(m_speed.Y < 0)
+					m_speed.Y = 0;
+			}
 		}
 	}
 
