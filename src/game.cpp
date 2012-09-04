@@ -1235,6 +1235,9 @@ void the_game(
 	float object_hit_delay_timer = 0.0;
 	float time_from_last_punch = 10;
 
+	float update_draw_list_timer = 0.0;
+	v3f update_draw_list_last_cam_dir;
+
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	bool respawn_menu_active = false;
@@ -2697,7 +2700,19 @@ void the_game(
 				item = mlist->getItem(client.getPlayerItem());
 			camera.wield(item);
 		}
-		
+
+		/*
+			Update block draw list every 200ms or when camera direction has
+			changed much
+		*/
+		update_draw_list_timer += dtime;
+		if(update_draw_list_timer >= 0.2 ||
+				update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2){
+			update_draw_list_timer = 0;
+			client.getEnv().getClientMap().updateDrawList(driver);
+			update_draw_list_last_cam_dir = camera_direction;
+		}
+
 		/*
 			Drawing begins
 		*/

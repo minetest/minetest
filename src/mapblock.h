@@ -430,6 +430,22 @@ public:
 	{
 		return m_usage_timer;
 	}
+
+	/*
+		See m_refcount
+	*/
+	void refGrab()
+	{
+		m_refcount++;
+	}
+	void refDrop()
+	{
+		m_refcount--;
+	}
+	int refGet()
+	{
+		return m_refcount;
+	}
 	
 	/*
 		Node Timers
@@ -566,6 +582,12 @@ private:
 		Map will unload the block when this reaches a timeout.
 	*/
 	float m_usage_timer;
+
+	/*
+		Reference count; currently used for determining if this block is in
+		the list of blocks to be drawn.
+	*/
+	int m_refcount;
 };
 
 inline bool blockpos_over_limit(v3s16 p)
