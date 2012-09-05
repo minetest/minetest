@@ -121,7 +121,6 @@ public:
 	virtual u32 getTextureId(const std::string &name){return 0;}
 	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
 	virtual std::string getTextureName(u32 id){return "";}
-	virtual v2s32 getTextureSize(u32 id);
 	virtual AtlasPointer getTexture(u32 id){return AtlasPointer(0);}
 	virtual AtlasPointer getTexture(const std::string &name)
 		{return AtlasPointer(0);}
