@@ -1292,7 +1292,7 @@ int main(int argc, char *argv[])
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
-	// Disable mipmaps (because some of them look ugly)
+	// enable mipmaps (because some of them look ugly)
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	/*

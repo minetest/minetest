@@ -732,6 +732,22 @@ std::string TextureSource::getTextureName(u32 id)
 	return m_atlaspointer_cache[id].name;
 }
 
+v2s32 TextureSource::getTextureSize(u32 id)
+{
+	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+	
+	id (id >= m_atlaspointer_cache.size())
+	{
+		errorstream<<"TextureSource::getTextureName(): id="<<id
+				<<" >= m_atlaspointer_cache.size()="
+				<<m_atlaspointer_cache.size()<<std::endl;
+		return "";
+	}
+
+	return v2s32(m_atlaspointer_cache[id].getSize().Height(), 
+			m_atlaspointer_cache[id].getSize().Width());
+}
+
 
 AtlasPointer TextureSource::getTexture(u32 id)
 {
