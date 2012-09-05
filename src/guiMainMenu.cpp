@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h" // getTexturePath
 #include "filesys.h"
 #include "util/string.h"
+#include "subgame.h"
 
 struct CreateWorldDestMainMenu : public CreateWorldDest
 {
@@ -47,6 +48,22 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 	{}
 	void accepted(std::wstring name, std::string gameid)
 	{
+		std::string name_narrow = wide_to_narrow(name);
+		if(!string_allowed_blacklist(name_narrow, WORLDNAME_BLACKLISTED_CHARS))
+		{
+			m_menu->displayMessageMenu(wgettext("Cannot create world: Name contains invalid characters"));
+			return;
+		}
+		std::vector<WorldSpec> worlds = getAvailableWorlds();
+		for(std::vector<WorldSpec>::iterator i = worlds.begin();
+		    i != worlds.end(); i++)
+		{
+			if((*i).name == name_narrow)
+			{
+				m_menu->displayMessageMenu(wgettext("Cannot create world: A world by this name already exists"));
+				return;
+			}
+		}
 		m_menu->createNewWorld(name, gameid);
 	}
 	GUIMainMenu *m_menu;
@@ -934,3 +951,7 @@ int GUIMainMenu::getTab()
 	return TAB_SINGLEPLAYER; // Default
 }
 
+void GUIMainMenu::displayMessageMenu(std::wstring msg)
+{
+	(new GUIMessageMenu(env, parent, -1, menumgr, msg))->drop();
+}

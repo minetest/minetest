@@ -227,10 +227,12 @@ function minetest.item_drop(itemstack, dropper, pos)
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
 		local obj = minetest.env:add_item(p, itemstack)
-		v.x = v.x*2
-		v.y = v.y*2 + 1
-		v.z = v.z*2
-		obj:setvelocity(v)
+		if obj then
+			v.x = v.x*2
+			v.y = v.y*2 + 1
+			v.z = v.z*2
+			obj:setvelocity(v)
+		end
 	else
 		minetest.env:add_item(pos, itemstack)
 	end
@@ -258,6 +260,16 @@ function minetest.node_punch(pos, node, puncher)
 	end
 end
 
+function minetest.handle_node_drops(pos, drops, digger)
+	-- Add dropped items to object's inventory
+	if digger:get_inventory() then
+		local _, dropped_item
+		for _, dropped_item in ipairs(drops) do
+			digger:get_inventory():add_item("main", dropped_item)
+		end
+	end
+end
+
 function minetest.node_dig(pos, node, digger)
 	minetest.debug("node_dig")
 
@@ -282,14 +294,9 @@ function minetest.node_dig(pos, node, digger)
 	local dp = minetest.get_dig_params(def.groups, tp)
 	wielded:add_wear(dp.wear)
 	digger:set_wielded_item(wielded)
-
-	-- Add dropped items to object's inventory
-	if digger:get_inventory() then
-		local _, dropped_item
-		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
-		end
-	end
+	
+	-- Handle drops
+	minetest.handle_node_drops(pos, drops, digger)
 
 	local oldmetadata = nil
 	if def.after_dig_node then

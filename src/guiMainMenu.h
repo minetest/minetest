@@ -92,6 +92,7 @@ public:
 	void createNewWorld(std::wstring name, std::string gameid);
 	void deleteWorld(const std::vector<std::string> &paths);
 	int getTab();
+	void displayMessageMenu(std::wstring msg);
 	
 private:
 	MainMenuData *m_data;

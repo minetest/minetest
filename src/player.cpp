@@ -45,7 +45,8 @@ Player::Player(IGameDef *gamedef):
 	updateName("<not set>");
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
-	inventory.addList("craft", 9);
+	InventoryList *craft = inventory.addList("craft", 9);
+	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
 

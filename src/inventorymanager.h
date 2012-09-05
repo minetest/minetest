@@ -66,6 +66,29 @@ struct InventoryLocation
 		name = name_;
 	}
 
+	bool operator==(const InventoryLocation &other) const
+	{
+		if(type != other.type)
+			return false;
+		switch(type){
+		case UNDEFINED:
+			return false;
+		case CURRENT_PLAYER:
+			return true;
+		case PLAYER:
+			return (name == other.name);
+		case NODEMETA:
+			return (p == other.p);
+		case DETACHED:
+			return (name == other.name);
+		}
+		return false;
+	}
+	bool operator!=(const InventoryLocation &other) const
+	{
+		return !(*this == other);
+	}
+
 	void applyCurrentPlayer(const std::string &name_)
 	{
 		if(type == CURRENT_PLAYER)

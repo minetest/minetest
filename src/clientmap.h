@@ -113,7 +113,8 @@ public:
 	{
 		return m_box;
 	}
-
+	
+	void updateDrawList(video::IVideoDriver* driver);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
@@ -141,6 +142,8 @@ private:
 	v3f m_camera_direction;
 	f32 m_camera_fov;
 	JMutex m_camera_mutex;
+
+	core::map<v3s16, MapBlock*> m_drawlist;
 	
 	core::map<v2s16, bool> m_last_drawn_sectors;
 };

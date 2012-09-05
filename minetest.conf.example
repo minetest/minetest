@@ -15,7 +15,7 @@
 # https://bitbucket.org/celeron55/minetest/src/tip/src/defaultsettings.cpp
 #
 # A vim command to convert most of defaultsettings.cpp to conf file format:
-# :'<,'>s/\tg_settings\.setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
+# :'<,'>s/\tsettings->setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
 # Note: Some of the settings are implemented in Lua
 
 #
@@ -49,8 +49,14 @@
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
 #keymap_screenshot = KEY_F12
+# If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
+#aux1_descends = false
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
+#keymap_quicktune_prev = KEY_HOME
+#keymap_quicktune_next = KEY_END
+#keymap_quicktune_dec = KEY_NEXT
+#keymap_quicktune_inc = KEY_PRIOR
 
 # Minimum FPS
 # The amount of rendered stuff is dynamically set according to this

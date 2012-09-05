@@ -38,7 +38,8 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_sneak_node_exists(false),
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
-	m_need_to_get_new_sneak_node(true)
+	m_need_to_get_new_sneak_node(true),
+	m_can_jump(false)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -149,13 +150,16 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
 		position.Z = rangelim(position.Z, lwn_f.Z-maxd, lwn_f.Z+maxd);
 		
-		f32 min_y = lwn_f.Y + 0.5*BS;
-		if(position.Y < min_y)
+		if(!is_climbing)
 		{
-			position.Y = min_y;
+			f32 min_y = lwn_f.Y + 0.5*BS;
+			if(position.Y < min_y)
+			{
+				position.Y = min_y;
 
-			if(m_speed.Y < 0)
-				m_speed.Y = 0;
+				if(m_speed.Y < 0)
+					m_speed.Y = 0;
+			}
 		}
 	}
 
@@ -188,7 +192,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	bool touching_ground_was = touching_ground;
 	touching_ground = result.touching_ground;
     
-    bool standing_on_unloaded = result.standing_on_unloaded;
+    //bool standing_on_unloaded = result.standing_on_unloaded;
 
 	/*
 		Check the nodes under the player to see from which node the
@@ -281,16 +285,23 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	/*
 		Report collisions
 	*/
+	bool bouncy_jump = false;
 	if(collision_info)
 	{
-		// Report fall collision
-		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded)
-		{
-			CollisionInfo info;
-			info.t = COLLISION_FALL;
-			info.speed = m_speed.Y - old_speed.Y;
+		for(size_t i=0; i<result.collisions.size(); i++){
+			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
+			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&
+					info.bouncy)
+				bouncy_jump = true;
 		}
+	}
+
+	if(bouncy_jump && control.jump){
+		m_speed.Y += 6.5*BS;
+		touching_ground = false;
+		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
+		m_gamedef->event()->put(e);
 	}
 
 	if(!touching_ground_was && touching_ground){
@@ -314,6 +325,15 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	m_old_node_below = floatToInt(position - v3f(0,BS/2,0), BS);
 	m_old_node_below_type = nodemgr->get(map.getNodeNoEx(m_old_node_below)).name;
+	
+	/*
+		Check properties of the node on which the player is standing
+	*/
+	const ContentFeatures &f = nodemgr->get(map.getNodeNoEx(getStandingNodePos()));
+	// Determine if jumping is possible
+	m_can_jump = touching_ground;
+	if(itemgroup_get(f.groups, "disable_jump"))
+		m_can_jump = false;
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
@@ -359,31 +379,70 @@ void LocalPlayer::applyControl(float dtime)
 	if(free_move && fast_move)
 		superspeed = true;
 	
-	// Auxiliary button 1 (E)
-	if(control.aux1)
+	// Old descend control
+	if(g_settings->getBool("aux1_descends"))
 	{
-		if(free_move)
+		// Auxiliary button 1 (E)
+		if(control.aux1)
 		{
-			// In free movement mode, aux1 descends
-			v3f speed = getSpeed();
-			if(fast_move)
-				speed.Y = -20*BS;
+			if(free_move)
+			{
+				// In free movement mode, aux1 descends
+				v3f speed = getSpeed();
+				if(fast_move)
+					speed.Y = -20*BS;
+				else
+					speed.Y = -walkspeed_max;
+				setSpeed(speed);
+			}
+			else if(is_climbing)
+			{
+					v3f speed = getSpeed();
+				speed.Y = -3*BS;
+				setSpeed(speed);
+			}
 			else
-				speed.Y = -walkspeed_max;
-			setSpeed(speed);
+			{
+				// If not free movement but fast is allowed, aux1 is
+				// "Turbo button"
+				if(fast_move)
+					superspeed = true;
+			}
 		}
-		else if(is_climbing)
+	}
+	// New minecraft-like descend control
+	else
+	{
+		// Auxiliary button 1 (E)
+		if(control.aux1)
 		{
-		        v3f speed = getSpeed();
-			speed.Y = -3*BS;
-			setSpeed(speed);
+			if(!free_move && !is_climbing)
+			{
+				// If not free movement but fast is allowed, aux1 is
+				// "Turbo button"
+				if(fast_move)
+					superspeed = true;
+			}
 		}
-		else
+
+		if(control.sneak)
 		{
-			// If not free movement but fast is allowed, aux1 is
-			// "Turbo button"
-			if(fast_move)
-				superspeed = true;
+			if(free_move)
+			{
+				// In free movement mode, sneak descends
+				v3f speed = getSpeed();
+				if(fast_move)
+					speed.Y = -20*BS;
+				else
+					speed.Y = -walkspeed_max;
+					setSpeed(speed);
+			}
+			else if(is_climbing)
+			{
+				v3f speed = getSpeed();
+				speed.Y = -3*BS;
+				setSpeed(speed);
+			}
 		}
 	}
 
@@ -420,7 +479,7 @@ void LocalPlayer::applyControl(float dtime)
 				speed.Y = walkspeed_max;
 			setSpeed(speed);
 		}
-		else if(touching_ground)
+		else if(m_can_jump)
 		{
 			/*
 				NOTE: The d value in move() affects jump height by

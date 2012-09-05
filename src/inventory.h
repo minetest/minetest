@@ -176,6 +176,7 @@ public:
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
+	void setWidth(u32 newWidth);
 	void setName(const std::string &name);
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -185,6 +186,7 @@ public:
 
 	const std::string &getName() const;
 	u32 getSize() const;
+	u32 getWidth() const;
 	// Count used slots
 	u32 getUsedSlots() const;
 	u32 getFreeSlots() const;
@@ -240,7 +242,7 @@ public:
 
 private:
 	std::vector<ItemStack> m_items;
-	u32 m_size;
+	u32 m_size, m_width;
 	std::string m_name;
 	IItemDefManager *m_itemdef;
 };

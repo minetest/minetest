@@ -332,6 +332,18 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// If source is infinite, reset it's stack
 	if(src_can_take_count == -1){
+		// If destination stack is of different type and there are leftover
+		// items, attempt to put the leftover items to a different place in the
+		// destination inventory.
+		// The client-side GUI will try to guess if this happens.
+		if(from_stack_was.name != to_stack_was.name){
+			for(u32 i=0; i<list_to->getSize(); i++){
+				if(list_to->getItem(i).empty()){
+					list_to->changeItem(i, to_stack_was);
+					break;
+				}
+			}
+		}
 		list_from->deleteItem(from_i);
 		list_from->addItem(from_i, from_stack_was);
 	}
@@ -339,6 +351,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if(dst_can_put_count == -1){
 		list_to->deleteItem(to_i);
 		list_to->addItem(to_i, to_stack_was);
+		list_from->deleteItem(from_i);
+		list_from->addItem(from_i, from_stack_was);
 		list_from->takeItem(from_i, count);
 	}
 
@@ -769,18 +783,16 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	
 	result.clear();
 
-	// TODO: Allow different sizes of crafting grids
-
 	// Get the InventoryList in which we will operate
 	InventoryList *clist = inv->getList("craft");
-	if(!clist || clist->getSize() != 9)
+	if(!clist)
 		return false;
 
 	// Mangle crafting grid to an another format
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
-	ci.width = 3;
-	for(u16 i=0; i<9; i++)
+	ci.width = clist->getWidth() ? clist->getWidth() : 3;
+	for(u16 i=0; i<clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
 	// Find out what is crafted and add it to result item slot
@@ -793,7 +805,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	if(found && decrementInput)
 	{
 		// CraftInput has been changed, apply changes in clist
-		for(u16 i=0; i<9; i++)
+		for(u16 i=0; i<clist->getSize(); i++)
 		{
 			clist->changeItem(i, ci.items[i]);
 		}

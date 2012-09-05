@@ -33,7 +33,7 @@ public:
 	KeyPress();
 	KeyPress(const char *name);
 
-	KeyPress(const irr::SEvent::SKeyInput &in);
+	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character=false);
 
 	bool operator==(const KeyPress &o) const
 	{

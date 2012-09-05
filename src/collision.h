@@ -26,12 +26,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Map;
 class IGameDef;
 
+enum CollisionType
+{
+	COLLISION_NODE
+};
+
+struct CollisionInfo
+{
+	enum CollisionType type;
+	v3s16 node_p; // COLLISION_NODE
+	bool bouncy;
+	v3f old_speed;
+	v3f new_speed;
+
+	CollisionInfo():
+		type(COLLISION_NODE),
+		node_p(-32768,-32768,-32768),
+		bouncy(false),
+		old_speed(0,0,0),
+		new_speed(0,0,0)
+	{}
+};
+
 struct collisionMoveResult
 {
 	bool touching_ground;
 	bool collides;
 	bool collides_xz;
 	bool standing_on_unloaded;
+	std::vector<CollisionInfo> collisions;
 
 	collisionMoveResult():
 		touching_ground(false),
@@ -71,17 +94,6 @@ bool wouldCollideWithCeiling(
 		const aabb3f &movingbox,
 		f32 y_increase, f32 d);
 
-
-enum CollisionType
-{
-	COLLISION_FALL
-};
-
-struct CollisionInfo
-{
-	CollisionType t;
-	f32 speed;
-};
 
 #endif
 

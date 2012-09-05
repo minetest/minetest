@@ -101,6 +101,7 @@ private:
 	std::string m_old_node_below_type;
 	// Whether recalculation of the sneak node is needed
 	bool m_need_to_get_new_sneak_node;
+	bool m_can_jump;
 };
 
 #endif

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <vector>
 
+#define WORLDNAME_BLACKLISTED_CHARS "/\\"
+
 struct SubgameSpec
 {
 	std::string id; // "" = game does not exist

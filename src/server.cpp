@@ -442,9 +442,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	m_nearest_unsent_reset_timer += dtime;
 	
 	if(m_nothing_to_send_pause_timer >= 0)
-	{
 		return;
-	}
+
+	Player *player = server->m_env->getPlayer(peer_id);
+	// This can happen sometimes; clients and players are not in perfect sync.
+	if(player == NULL)
+		return;
 
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings->getU16
@@ -456,10 +459,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 	
-	Player *player = server->m_env->getPlayer(peer_id);
-
-	assert(player != NULL);
-
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);

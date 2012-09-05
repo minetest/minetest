@@ -556,8 +556,6 @@ public:
 					f->solidness = 0;
 				} else {
 					f->solidness = 1;
-					if(f->alpha == 255)
-						f->solidness = 2;
 					f->backface_culling = false;
 				}
 				break;
