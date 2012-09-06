@@ -1433,8 +1433,16 @@ int main(int argc, char *argv[])
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
+
 				if(cmd_args.exists("password"))
 					menudata.password = narrow_to_wide(cmd_args.get("password"));
+                                else {
+                                  try {
+                                    menudata.password = narrow_to_wide(g_settings->get("password"));
+                                    // do NOT make password group or world readable!
+                                    chmod(600,configpath.c_str());
+                                  } catch(const SettingNotFoundException& ex) {}
+                                }
 				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
 				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
 				menudata.clouds_3d = g_settings->getBool("enable_3d_clouds");
