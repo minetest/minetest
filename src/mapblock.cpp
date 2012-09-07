@@ -56,7 +56,8 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_generated(false),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
-		m_usage_timer(0)
+		m_usage_timer(0),
+		m_refcount(0)
 {
 	data = NULL;
 	if(dummy == false)

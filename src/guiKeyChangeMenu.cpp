@@ -37,7 +37,7 @@
 enum
 {
 	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
-	//buttons
+	// buttons
 	GUI_ID_KEY_FORWARD_BUTTON,
 	GUI_ID_KEY_BACKWARD_BUTTON,
 	GUI_ID_KEY_LEFT_BUTTON,
@@ -53,7 +53,9 @@ enum
 	GUI_ID_KEY_DROP_BUTTON,
 	GUI_ID_KEY_INVENTORY_BUTTON,
 	GUI_ID_KEY_DUMP_BUTTON,
-	GUI_ID_KEY_RANGE_BUTTON
+	GUI_ID_KEY_RANGE_BUTTON,
+	// other
+	GUI_ID_CB_AUX1_DESCENDS,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -135,6 +137,18 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		else
 			offset += v2s32(0, 25);
 	}
+	
+	{
+		s32 option_x = offset.X + 10;
+		s32 option_y = offset.Y;
+		u32 option_w = 180;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += topleft + v2s32(option_x, option_y);
+			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
+					GUI_ID_CB_AUX1_DESCENDS, wgettext("\"Use\" = climb down"));
+		}
+	}
 
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
@@ -176,6 +190,11 @@ bool GUIKeyChangeMenu::acceptInput()
 	{
 		key_setting *k = key_settings.at(i);
 		g_settings->set(k->setting_name, k->key.sym());
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	clearKeyCache();
 	return true;

@@ -542,10 +542,6 @@ void InventoryList::deSerialize(std::istream &is)
 				throw SerializationError("too many items");
 			m_items[item_i++].clear();
 		}
-		else
-		{
-			throw SerializationError("Unknown inventory identifier");
-		}
 	}
 }
 
@@ -906,10 +902,6 @@ void Inventory::deSerialize(std::istream &is)
 			list->deSerialize(is);
 
 			m_lists.push_back(list);
-		}
-		else
-		{
-			throw SerializationError("Unknown inventory identifier");
 		}
 	}
 }

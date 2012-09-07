@@ -891,6 +891,12 @@ minetest.get_craft_recipe(output) -> input
 ^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
+minetest.handle_node_drops(pos, drops, digger)
+^ drops: list of itemstrings
+^ Handles drops from nodes after digging: Default action is to put them into
+  digger's inventory
+^ Can be overridden to get different functionality (eg. dropping items on
+  ground)
 
 Rollbacks:
 minetest.rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds

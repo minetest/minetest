@@ -1468,8 +1468,8 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 			MapBlock *block = (*i);
 			
 			block->incrementUsageTimer(dtime);
-			
-			if(block->getUsageTimer() > unload_timeout)
+
+			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout)
 			{
 				v3s16 p = block->getPos();
 
