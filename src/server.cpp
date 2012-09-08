@@ -1112,6 +1112,11 @@ Server::~Server()
 			{}
 		}
 	}
+
+	/*
+		Execute script shutdown hooks
+	*/
+	scriptapi_on_shutdown(m_lua);
 	
 	{
 		JMutexAutoLock envlock(m_env_mutex);
