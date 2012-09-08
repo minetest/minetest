@@ -55,6 +55,9 @@ void scriptapi_environment_step(lua_State *L, float dtime);
 void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
 		u32 blockseed);
 
+/* server */
+void scriptapi_on_shutdown(lua_State *L);
+
 /* misc */
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
