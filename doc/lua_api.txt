@@ -1237,7 +1237,7 @@ Entity definition (register_entity)
     
     initial_properties = <initial object properties>,
 
-    on_activate = function(self, staticdata),
+    on_activate = function(self, staticdata, dtime_s),
     on_step = function(self, dtime),
     on_punch = function(self, hitter),
     on_rightclick = function(self, clicker),

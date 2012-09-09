@@ -62,7 +62,7 @@ public:
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment
-	virtual void addedToEnvironment(){};
+	virtual void addedToEnvironment(u32 dtime_s){};
 	// Called before removing from environment
 	virtual void removingFromEnvironment(){};
 	// Returns true if object's deletion is the job of the

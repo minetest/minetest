@@ -6483,7 +6483,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 }
 
 void scriptapi_luaentity_activate(lua_State *L, u16 id,
-		const std::string &staticdata)
+		const std::string &staticdata, u32 dtime_s)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -6501,8 +6501,9 @@ void scriptapi_luaentity_activate(lua_State *L, u16 id,
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 		lua_pushvalue(L, object); // self
 		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
-		// Call with 2 arguments, 0 results
-		if(lua_pcall(L, 2, 0, 0))
+		lua_pushinteger(L, dtime_s);
+		// Call with 3 arguments, 0 results
+		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error running function on_activate: %s\n",
 					lua_tostring(L, -1));
 	}

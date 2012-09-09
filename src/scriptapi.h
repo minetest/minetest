@@ -167,7 +167,7 @@ void scriptapi_detached_inventory_on_take(lua_State *L,
 // Returns true if succesfully added into Lua; false otherwise.
 bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name);
 void scriptapi_luaentity_activate(lua_State *L, u16 id,
-		const std::string &staticdata);
+		const std::string &staticdata, u32 dtime_s);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
 std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id);
 void scriptapi_luaentity_get_properties(lua_State *L, u16 id,

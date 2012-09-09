@@ -790,7 +790,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 			<<dtime_s<<" seconds old."<<std::endl;*/
 	
 	// Activate stored objects
-	activateObjects(block);
+	activateObjects(block, dtime_s);
 
 	// Run node timers
 	std::map<v3s16, NodeTimer> elapsed_timers =
@@ -1249,7 +1249,7 @@ u16 getFreeServerActiveObjectId(
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);
-	u16 id = addActiveObjectRaw(object, true);
+	u16 id = addActiveObjectRaw(object, true, 0);
 	return id;
 }
 
@@ -1408,7 +1408,7 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 */
 
 u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
-		bool set_changed)
+		bool set_changed, u32 dtime_s)
 {
 	assert(object);
 	if(object->getId() == 0){
@@ -1448,7 +1448,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	// Register reference in scripting api (must be done before post-init)
 	scriptapi_add_object_reference(m_lua, object);
 	// Post-initialize object
-	object->addedToEnvironment();
+	object->addedToEnvironment(dtime_s);
 	
 	// Add static data to block
 	if(object->isStaticAllowed())
@@ -1585,7 +1585,7 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 /*
 	Convert stored objects from blocks near the players to active.
 */
-void ServerEnvironment::activateObjects(MapBlock *block)
+void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 {
 	if(block==NULL)
 		return;
@@ -1609,7 +1609,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				"large amount of objects");
 		return;
 	}
-	// A list for objects that couldn't be converted to static for some
+	// A list for objects that couldn't be converted to active for some
 	// reason. They will be stored back.
 	core::list<StaticObject> new_stored;
 	// Loop through stored static objects
@@ -1639,7 +1639,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				<<"activated static object pos="<<PP(s_obj.pos/BS)
 				<<" type="<<(int)s_obj.type<<std::endl;
 		// This will also add the object to the active static list
-		addActiveObjectRaw(obj, false);
+		addActiveObjectRaw(obj, false, dtime_s);
 	}
 	// Clear stored list
 	block->m_static_objects.m_stored.clear();
