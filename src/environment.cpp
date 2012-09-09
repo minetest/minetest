@@ -2129,6 +2129,7 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 	
+	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
 	for(core::map<u16, ClientActiveObject*>::Iterator
 			i = m_active_objects.getIterator();
 			i.atEnd()==false; i++)
@@ -2137,7 +2138,7 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		obj->step(dtime, this);
 
-		if(m_active_object_light_update_interval.step(dtime, 0.21))
+		if(update_lighting)
 		{
 			// Update lighting
 			u8 light = 0;

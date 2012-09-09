@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/mathconstants.h"
 #include "map.h"
+#include <IMeshManipulator.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -797,8 +798,15 @@ public:
 				infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
 				IItemDefManager *idef = m_gamedef->idef();
 				ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-				scene::IMesh *mesh = item.getDefinition(idef).wield_mesh;
+				scene::IMesh *item_mesh = item.getDefinition(idef).wield_mesh;
+				
+				// Copy mesh to be able to set unique vertex colors
+				scene::IMeshManipulator *manip =
+						irr->getVideoDriver()->getMeshManipulator();
+				scene::IMesh *mesh = manip->createMeshUniquePrimitives(item_mesh);
+
 				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+				mesh->drop();
 				
 				m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
 						m_prop.visual_size.Y/2,
@@ -838,15 +846,17 @@ public:
 	{
 		bool is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
-		m_last_light = li;
-		video::SColor color(255,li,li,li);
-		if(m_meshnode){
-			setMeshColor(m_meshnode->getMesh(), color);
-			m_meshnode->setVisible(is_visible);
-		}
-		if(m_spritenode){
-			m_spritenode->setColor(color);
-			m_spritenode->setVisible(is_visible);
+		if(li != m_last_light){
+			m_last_light = li;
+			video::SColor color(255,li,li,li);
+			if(m_meshnode){
+				setMeshColor(m_meshnode->getMesh(), color);
+				m_meshnode->setVisible(is_visible);
+			}
+			if(m_spritenode){
+				m_spritenode->setColor(color);
+				m_spritenode->setVisible(is_visible);
+			}
 		}
 	}
 
