@@ -1087,6 +1087,7 @@ methods:
 - punch(puncher, time_from_last_punch, tool_capabilities, direction)
   ^ puncher = an another ObjectRef,
   ^ time_from_last_punch = time since last punch action of the puncher
+  ^ direction: can be nil
 - right_click(clicker); clicker = an another ObjectRef
 - get_hp(): returns number of hitpoints (2 * number of hearts)
 - set_hp(hp): set number of hitpoints (2 * number of hearts)

@@ -2542,7 +2542,7 @@ private:
 		return 0;
 	}
 
-	// punch(self, puncher, tool_capabilities, direction, time_from_last_punch)
+	// punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 	static int l_punch(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -2551,13 +2551,18 @@ private:
 		ServerActiveObject *puncher = getobject(puncher_ref);
 		if(co == NULL) return 0;
 		if(puncher == NULL) return 0;
-		ToolCapabilities toolcap = read_tool_capabilities(L, 3);
-		v3f dir = read_v3f(L, 4);
+		v3f dir;
+		if(lua_type(L, 5) != LUA_TTABLE)
+			dir = co->getBasePosition() - puncher->getBasePosition();
+		else
+			dir = read_v3f(L, 5);
 		float time_from_last_punch = 1000000;
-		if(lua_isnumber(L, 5))
-			time_from_last_punch = lua_tonumber(L, 5);
+		if(lua_isnumber(L, 3))
+			time_from_last_punch = lua_tonumber(L, 3);
+		ToolCapabilities toolcap = read_tool_capabilities(L, 4);
+		dir.normalize();
 		// Do it
-		puncher->punch(dir, &toolcap, puncher, time_from_last_punch);
+		co->punch(dir, &toolcap, puncher, time_from_last_punch);
 		return 0;
 	}
 
