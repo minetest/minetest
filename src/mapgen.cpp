@@ -2238,7 +2238,7 @@ void make_block(BlockMakeData *data)
 				}
 				p.Y++;
 				// Make a tree
-				make_tree(vmanip, p, false, ndef);
+				make_tree(vmanip, p, myrand_range(), ndef);
 			}
 		}
 	}
