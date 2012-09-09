@@ -1421,6 +1421,11 @@ Node definition (register_node)
 	on_metadata_inventory_take = func(pos, listname, index, stack, player),
 	^ Called after the actual action has happened, according to what was allowed.
 	^ No return value
+    
+	on_blast = func(pos, intensity),
+	^ intensity: 1.0 = mid range of regular TNT
+	^ If defined, called when an explosion touches the node, instead of
+	  removing the node
 }
 
 Recipe for register_craft: (shaped)
