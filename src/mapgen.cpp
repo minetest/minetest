@@ -2238,7 +2238,7 @@ void make_block(BlockMakeData *data)
 				}
 				p.Y++;
 				// Make a tree
-				make_tree(vmanip, p, myrand_range(1,4), ndef);
+				make_tree(vmanip, p, myrand_range(1,512), ndef); //512 still does not control the trees; fix me
 			}
 		}
 	}
