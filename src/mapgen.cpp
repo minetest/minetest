@@ -190,7 +190,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1) {
-			bool is_apple = myrand_range(0,99) < 10;
+			bool is_apple = myrand_range(0,128) < 2;
 			if(is_apple_tree && is_apple) {
 				vmanip.m_data[vi] = applenode;
 			} else {
@@ -2238,7 +2238,7 @@ void make_block(BlockMakeData *data)
 				}
 				p.Y++;
 				// Make a tree
-				make_tree(vmanip, p, myrand_range(1,512), ndef); //512 still does not control the trees; fix me
+				make_tree(vmanip, p, myrand_range(1,32), ndef); //much better
 			}
 		}
 	}
