@@ -57,11 +57,23 @@ minetest.register_entity("__builtin:item", {
 	end,
 
 	get_staticdata = function(self)
-		return self.itemstring
+		--return self.itemstring
+		return minetest.serialize({
+			itemstring = self.itemstring,
+			always_collect = self.always_collect,
+		})
 	end,
 
 	on_activate = function(self, staticdata)
-		self.itemstring = staticdata
+		if string.sub(staticdata, 1, string.len("return")) == "return" then
+			local data = minetest.deserialize(staticdata)
+			if data and type(data) == "table" then
+				self.itemstring = data.itemstring
+				self.always_collect = data.always_collect
+			end
+		else
+			self.itemstring = staticdata
+		end
 		self.object:set_armor_groups({immortal=1})
 		self.object:setvelocity({x=0, y=2, z=0})
 		self.object:setacceleration({x=0, y=-10, z=0})

@@ -43,7 +43,7 @@ public:
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	u8 getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
-	virtual void addedToEnvironment();
+	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
@@ -118,7 +118,7 @@ public:
 		Active object <-> environment interface
 	*/
 
-	void addedToEnvironment();
+	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
 	bool isStaticAllowed() const;
 	bool unlimitedTransferDistance() const;

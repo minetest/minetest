@@ -376,9 +376,9 @@ LuaEntitySAO::~LuaEntitySAO()
 	}
 }
 
-void LuaEntitySAO::addedToEnvironment()
+void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 {
-	ServerActiveObject::addedToEnvironment();
+	ServerActiveObject::addedToEnvironment(dtime_s);
 	
 	// Create entity from name
 	lua_State *L = m_env->getLua();
@@ -390,7 +390,7 @@ void LuaEntitySAO::addedToEnvironment()
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
-		scriptapi_luaentity_activate(L, m_id, m_init_state.c_str());
+		scriptapi_luaentity_activate(L, m_id, m_init_state.c_str(), dtime_s);
 	}
 }
 
@@ -805,9 +805,9 @@ std::string PlayerSAO::getDescription()
 }
 
 // Called after id has been set and has been inserted in environment
-void PlayerSAO::addedToEnvironment()
+void PlayerSAO::addedToEnvironment(u32 dtime_s)
 {
-	ServerActiveObject::addedToEnvironment();
+	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_player->getPosition());
 	m_player->setPlayerSAO(this);
 	m_player->peer_id = m_peer_id;

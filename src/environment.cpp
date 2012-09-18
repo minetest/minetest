@@ -743,19 +743,25 @@ neighbor_found:
 				u32 active_object_count = block->m_static_objects.m_active.size();
 				// Find out how many objects this and all the neighbors contain
 				u32 active_object_count_wider = 0;
+				u32 wider_unknown_count = 0;
 				for(s16 x=-1; x<=1; x++)
 				for(s16 y=-1; y<=1; y++)
 				for(s16 z=-1; z<=1; z++)
 				{
 					MapBlock *block2 = map->getBlockNoCreateNoEx(
 							block->getPos() + v3s16(x,y,z));
-					if(block2==NULL)
+					if(block2==NULL){
+						wider_unknown_count = 0;
 						continue;
+					}
 					active_object_count_wider +=
 							block2->m_static_objects.m_active.size()
 							+ block2->m_static_objects.m_stored.size();
 				}
-
+				// Extrapolate
+				u32 wider_known_count = 3*3*3 - wider_unknown_count;
+				active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
+				
 				// Call all the trigger variations
 				i->abm->trigger(m_env, p, n);
 				i->abm->trigger(m_env, p, n,
@@ -784,7 +790,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 			<<dtime_s<<" seconds old."<<std::endl;*/
 	
 	// Activate stored objects
-	activateObjects(block);
+	activateObjects(block, dtime_s);
 
 	// Run node timers
 	std::map<v3s16, NodeTimer> elapsed_timers =
@@ -1243,7 +1249,7 @@ u16 getFreeServerActiveObjectId(
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);
-	u16 id = addActiveObjectRaw(object, true);
+	u16 id = addActiveObjectRaw(object, true, 0);
 	return id;
 }
 
@@ -1402,7 +1408,7 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 */
 
 u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
-		bool set_changed)
+		bool set_changed, u32 dtime_s)
 {
 	assert(object);
 	if(object->getId() == 0){
@@ -1442,7 +1448,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	// Register reference in scripting api (must be done before post-init)
 	scriptapi_add_object_reference(m_lua, object);
 	// Post-initialize object
-	object->addedToEnvironment();
+	object->addedToEnvironment(dtime_s);
 	
 	// Add static data to block
 	if(object->isStaticAllowed())
@@ -1465,9 +1471,10 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 						"addActiveObjectRaw");
 		}
 		else{
+			v3s16 p = floatToInt(objectpos, BS);
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 					<<"could not find block for storing id="<<object->getId()
-					<<" statically"<<std::endl;
+					<<" statically (pos="<<PP(p)<<")"<<std::endl;
 		}
 	}
 	
@@ -1578,7 +1585,7 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 /*
 	Convert stored objects from blocks near the players to active.
 */
-void ServerEnvironment::activateObjects(MapBlock *block)
+void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 {
 	if(block==NULL)
 		return;
@@ -1602,7 +1609,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				"large amount of objects");
 		return;
 	}
-	// A list for objects that couldn't be converted to static for some
+	// A list for objects that couldn't be converted to active for some
 	// reason. They will be stored back.
 	core::list<StaticObject> new_stored;
 	// Loop through stored static objects
@@ -1632,7 +1639,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				<<"activated static object pos="<<PP(s_obj.pos/BS)
 				<<" type="<<(int)s_obj.type<<std::endl;
 		// This will also add the object to the active static list
-		addActiveObjectRaw(obj, false);
+		addActiveObjectRaw(obj, false, dtime_s);
 	}
 	// Clear stored list
 	block->m_static_objects.m_stored.clear();
@@ -1756,7 +1763,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			// Add to the block where the object is located in
 			v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 			// Get or generate the block
-			MapBlock *block = m_map->emergeBlock(blockpos);
+			MapBlock *block = NULL;
+			try{
+				block = m_map->emergeBlock(blockpos);
+			} catch(InvalidPositionException &e){
+				// Handled via NULL pointer
+			}
 
 			if(block)
 			{
@@ -1793,9 +1805,10 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			}
 			else{
 				if(!force_delete){
+					v3s16 p = floatToInt(objectpos, BS);
 					errorstream<<"ServerEnv: Could not find or generate "
 							<<"a block for storing id="<<obj->getId()
-							<<" statically"<<std::endl;
+							<<" statically (pos="<<PP(p)<<")"<<std::endl;
 					continue;
 				}
 			}
@@ -2129,6 +2142,7 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 	
+	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
 	for(core::map<u16, ClientActiveObject*>::Iterator
 			i = m_active_objects.getIterator();
 			i.atEnd()==false; i++)
@@ -2137,7 +2151,7 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		obj->step(dtime, this);
 
-		if(m_active_object_light_update_interval.step(dtime, 0.21))
+		if(update_lighting)
 		{
 			// Update lighting
 			u8 light = 0;
