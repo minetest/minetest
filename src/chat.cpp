@@ -767,3 +767,5 @@ void ChatBackend::scrollPageUp()
 {
 	m_console_buffer.scroll(-m_console_buffer.getRows());
 }
+
+
