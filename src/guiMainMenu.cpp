@@ -98,6 +98,10 @@ enum
 	GUI_ID_SMOOTH_LIGHTING_CB,
 	GUI_ID_3D_CLOUDS_CB,
 	GUI_ID_OPAQUE_WATER_CB,
+	GUI_ID_MIPMAP_CB,
+	GUI_ID_ANISOTROPIC_CB,
+	GUI_ID_BILINEAR_CB,
+	GUI_ID_TRILINEAR_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -580,6 +584,38 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->opaque_water, rect, this,
 					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
 		}
+
+
+		// Anisotropic/mipmap/bi-/trilinear settings
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175, option_y);
+			Environment->addCheckBox(m_data->mip_map, rect, this,
+				       GUI_ID_MIPMAP_CB, wgettext("Mip-Mapping"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175, option_y+20);
+			Environment->addCheckBox(m_data->anisotropic_filter, rect, this,
+				       GUI_ID_ANISOTROPIC_CB, wgettext("Anisotropic Filtering"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175, option_y+20*2);
+			Environment->addCheckBox(m_data->bilinear_filter, rect, this,
+				       GUI_ID_BILINEAR_CB, wgettext("Bi-Linear Filtering"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175, option_y+20*3);
+			Environment->addCheckBox(m_data->trilinear_filter, rect, this,
+				       GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
+		}
+
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -758,6 +794,30 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_MIPMAP_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->mip_map = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ANISOTROPIC_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->anisotropic_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_BILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->bilinear_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_TRILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->trilinear_filter = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
