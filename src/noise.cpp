@@ -37,7 +37,7 @@ double dotProduct(double vx, double vy, double wx, double wy){
 }
  
 double easeCurve(double t){
-    return 6*pow(t,5)-15*pow(t,4)+10*pow(t,3);
+    return t * t * t * (6. * t * t - 15. * t + 10.);
 }
  
 double linearInterpolation(double x0, double x1, double t){
