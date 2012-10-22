@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "map.h"
 #include <IMeshManipulator.h>
+#include <IAnimatedMeshSceneNode.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -560,6 +561,7 @@ private:
 	IrrlichtDevice *m_irr;
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
+	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
 	scene::IBillboardSceneNode *m_spritenode;
 	scene::ITextSceneNode* m_textnode;
 	v3f m_position;
@@ -594,6 +596,7 @@ public:
 		m_irr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
+		m_animated_meshnode(NULL),
 		m_spritenode(NULL),
 		m_textnode(NULL),
 		m_position(v3f(0,10*BS,0)),
@@ -683,6 +686,10 @@ public:
 			m_meshnode->remove();
 			m_meshnode = NULL;
 		}
+		if(m_animated_meshnode){
+			m_animated_meshnode->remove();
+			m_animated_meshnode = NULL;
+		}
 		if(m_spritenode){
 			m_spritenode->remove();
 			m_spritenode = NULL;
@@ -695,7 +702,7 @@ public:
 		m_smgr = smgr;
 		m_irr = irr;
 
-		if(m_meshnode != NULL || m_spritenode != NULL)
+		if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
 			return;
 		
 		m_visuals_expired = false;
@@ -791,7 +798,20 @@ public:
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
 			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
-		} else if(m_prop.visual == "wielditem"){
+		}
+		else if(m_prop.visual == "mesh"){
+			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
+			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
+			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			mesh->drop();
+			
+			m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
+					m_prop.visual_size.Y,
+					m_prop.visual_size.X));
+			u8 li = m_last_light;
+			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+		}
+		else if(m_prop.visual == "wielditem"){
 			infostream<<"GenericCAO::addToScene(): node"<<std::endl;
 			infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
 			if(m_prop.textures.size() >= 1){
@@ -823,6 +843,8 @@ public:
 		scene::ISceneNode *node = NULL;
 		if(m_spritenode)
 			node = m_spritenode;
+		else if(m_animated_meshnode)
+			node = m_animated_meshnode;
 		else if(m_meshnode)
 			node = m_meshnode;
 		if(node && m_is_player && !m_is_local_player){
@@ -853,6 +875,10 @@ public:
 				setMeshColor(m_meshnode->getMesh(), color);
 				m_meshnode->setVisible(is_visible);
 			}
+			if(m_animated_meshnode){
+				setMeshColor(m_animated_meshnode->getMesh(), color);
+				m_animated_meshnode->setVisible(is_visible);
+			}
 			if(m_spritenode){
 				m_spritenode->setColor(color);
 				m_spritenode->setVisible(is_visible);
@@ -872,6 +898,12 @@ public:
 			v3f rot = m_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_meshnode->setRotation(rot);
+		}
+		if(m_animated_meshnode){
+			m_animated_meshnode->setPosition(pos_translator.vect_show);
+			v3f rot = m_animated_meshnode->getRotation();
+			rot.Y = -m_yaw;
+			m_animated_meshnode->setRotation(rot);
 		}
 		if(m_spritenode){
 			m_spritenode->setPosition(pos_translator.vect_show);
@@ -1018,6 +1050,17 @@ public:
 				texturestring += mod;
 				m_spritenode->setMaterialTexture(0,
 						tsrc->getTextureRaw(texturestring));
+			}
+		}
+		if(m_animated_meshnode)
+		{
+			if(m_prop.visual == "mesh")
+			{
+				// fallback texture
+				if(m_prop.texture == "")
+					m_prop.texture = "unknown_block.png";
+				video::IVideoDriver* driver = m_animated_meshnode->getSceneManager()->getVideoDriver();
+				m_animated_meshnode->setMaterialTexture(0, driver->getTexture(m_prop.texture.c_str()));
 			}
 		}
 		if(m_meshnode)
