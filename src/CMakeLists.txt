@@ -174,6 +174,9 @@ find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
 find_package(OpenGLES2)
 
+SET(LEVELDB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/leveldb/include)
+SET(LEVELDB_LIBRARY leveldb)
+
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
 	set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
@@ -200,6 +203,16 @@ endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 
 mark_as_advanced(LUA_LIBRARY)
 mark_as_advanced(LUA_INCLUDE_DIR)
+
+set(USE_LEVELDB 0)
+
+OPTION(ENABLE_LEVELDB "Enable LevelDB backend")
+
+if(ENABLE_LEVELDB)
+	set(USE_LEVELDB 1)
+	message(STATUS "LevelDB backend enabled")
+	include_directories(${LEVELDB_INCLUDE_DIR})
+endif(ENABLE_LEVELDB)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
@@ -261,6 +274,10 @@ set(common_SRCS
 	mapblock.cpp
 	mapsector.cpp
 	map.cpp
+	database.cpp
+	database-dummy.cpp
+	database-leveldb.cpp
+	database-sqlite3.cpp
 	player.cpp
 	test.cpp
 	sha1.cpp
@@ -414,6 +431,9 @@ if(BUILD_CLIENT)
 			${CGUITTFONT_LIBRARY}
 		)
 	endif(USE_FREETYPE)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -428,6 +448,9 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}server
@@ -612,4 +635,7 @@ else (JSON_FOUND)
 	add_subdirectory(json)
 endif (JSON_FOUND)
 
+if (USE_LEVELDB)
+	add_subdirectory(leveldb)
+endif (USE_LEVELDB)
 #end

@@ -487,6 +487,7 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
+	Map & getMap() { return m_env->getMap(); }
 	
 	u32 hudAdd(Player *player, HudElement *element);
 	bool hudRemove(Player *player, u32 id);
