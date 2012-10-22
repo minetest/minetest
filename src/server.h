@@ -590,6 +590,8 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
+	Map & getMap() { return m_env->getMap(); }
+
 private:
 
 	// con::PeerHandler implementation.
