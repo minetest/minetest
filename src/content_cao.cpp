@@ -1065,6 +1065,11 @@ public:
 					m_prop.texture = "unknown_block.png";
 				video::IVideoDriver* driver = m_animated_meshnode->getSceneManager()->getVideoDriver();
 				m_animated_meshnode->setMaterialTexture(0, driver->getTexture(m_prop.texture.c_str()));
+
+				// Set material flags and texture
+				video::SMaterial& material = m_animated_meshnode->getMaterial(0);
+				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			}
 		}
 		if(m_meshnode)
