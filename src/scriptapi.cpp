@@ -936,6 +936,9 @@ static void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "visual", prop->visual);
+
+	getstringfield(L, -1, "mesh", prop->mesh);
+	getstringfield(L, -1, "texture", prop->texture);
 	
 	lua_getfield(L, -1, "visual_size");
 	if(lua_istable(L, -1))

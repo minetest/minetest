@@ -802,14 +802,18 @@ public:
 		else if(m_prop.visual == "mesh"){
 			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
 			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
-			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
-			mesh->drop();
-			
-			m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
-					m_prop.visual_size.Y,
-					m_prop.visual_size.X));
-			u8 li = m_last_light;
-			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+			if(mesh)
+			{
+				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+				
+				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
+						m_prop.visual_size.Y,
+						m_prop.visual_size.X));
+				u8 li = m_last_light;
+				setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+			}
+			else
+				errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 		}
 		else if(m_prop.visual == "wielditem"){
 			infostream<<"GenericCAO::addToScene(): node"<<std::endl;
