@@ -938,7 +938,6 @@ static void read_object_properties(lua_State *L, int index,
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
-	getstringfield(L, -1, "texture", prop->texture);
 	
 	lua_getfield(L, -1, "visual_size");
 	if(lua_istable(L, -1))
@@ -6591,6 +6590,8 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "visual", prop->visual);
+
+	getstringfield(L, -1, "mesh", prop->mesh);
 	
 	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop);

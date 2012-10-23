@@ -4029,6 +4029,7 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "textures");
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
 		paths.push_back(mod.path + DIR_DELIM + "media");
+		paths.push_back(mod.path + DIR_DELIM + "models");
 	}
 	std::string path_all = "textures";
 	paths.push_back(path_all + DIR_DELIM + "all");
@@ -4054,6 +4055,7 @@ void Server::fillMediaCache()
 				".png", ".jpg", ".bmp", ".tga",
 				".pcx", ".ppm", ".psd", ".wal", ".rgb",
 				".ogg",
+				".b3d", ".md2", ".obj",
 				NULL
 			};
 			if(removeStringEnd(filename, supported_ext) == ""){

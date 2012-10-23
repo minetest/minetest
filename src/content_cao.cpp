@@ -1060,16 +1060,26 @@ public:
 		{
 			if(m_prop.visual == "mesh")
 			{
-				// fallback texture
-				if(m_prop.texture == "")
-					m_prop.texture = "unknown_block.png";
-				video::IVideoDriver* driver = m_animated_meshnode->getSceneManager()->getVideoDriver();
-				m_animated_meshnode->setMaterialTexture(0, driver->getTexture(m_prop.texture.c_str()));
+				for (u32 i = 0; i < m_prop.textures.size(); ++i)
+				{
+					std::string texturestring = m_prop.textures[i];
+					if(texturestring == "")
+						continue; // Empty texture string means don't modify that material
+					texturestring += mod;
+					video::IVideoDriver* driver = m_animated_meshnode->getSceneManager()->getVideoDriver();
+					video::ITexture* texture = driver->getTexture(texturestring.c_str());
+					if(!texture)
+					{
+						errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
+						continue;
+					}
 
-				// Set material flags and texture
-				video::SMaterial& material = m_animated_meshnode->getMaterial(0);
-				material.setFlag(video::EMF_LIGHTING, false);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+					// Set material flags and texture
+					m_animated_meshnode->setMaterialTexture(i, texture);
+					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+					material.setFlag(video::EMF_LIGHTING, false);
+					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				}
 			}
 		}
 		if(m_meshnode)

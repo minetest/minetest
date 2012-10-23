@@ -860,6 +860,25 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		return true;
 	}
 
+	const char *model_ext[] = {
+		".b3d", ".md2", ".obj",
+		NULL
+	};
+	name = removeStringEnd(filename, model_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Storing model into Irrlicht: "
+				<<"file \""<<filename<<"\""<<std::endl;
+
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+
+		// Create an irrlicht memory file
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(*data_rw, data_rw.getSize(), filename.c_str(), true);
+		assert(rfile);
+		//rfile->drop();
+		return true;
+	}
+
 	errorstream<<"Client: Don't know how to load file \""
 			<<filename<<"\""<<std::endl;
 	return false;

@@ -33,7 +33,6 @@ struct ObjectProperties
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
 	std::string mesh;
-	std::string texture;
 	v2f visual_size;
 	core::array<std::string> textures;
 	v2s16 spritediv;
