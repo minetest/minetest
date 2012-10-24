@@ -979,6 +979,8 @@ public:
 
 		updateTexturePos();
 
+		updateAnimations();
+
 		if(m_reset_textures_timer >= 0){
 			m_reset_textures_timer -= dtime;
 			if(m_reset_textures_timer <= 0){
@@ -1066,8 +1068,7 @@ public:
 					if(texturestring == "")
 						continue; // Empty texture string means don't modify that material
 					texturestring += mod;
-					video::IVideoDriver* driver = m_animated_meshnode->getSceneManager()->getVideoDriver();
-					video::ITexture* texture = driver->getTexture(texturestring.c_str());
+					video::ITexture* texture = tsrc->getTextureRaw(texturestring);
 					if(!texture)
 					{
 						errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
@@ -1133,6 +1134,14 @@ public:
 				}
 			}
 		}
+	}
+
+	void updateAnimations()
+	{
+		if(!m_animated_meshnode)
+			return;
+
+		m_animated_meshnode->setFrameLoop(0, 50);
 	}
 
 	void processMessage(const std::string &data)

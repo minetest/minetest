@@ -1227,8 +1227,9 @@ Object Properties
     physical = true,
     weight = 5,
     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-    visual = "cube"/"sprite"/"upright_sprite",
+    visual = "cube"/"sprite"/"upright_sprite"/"mesh",
     visual_size = {x=1, y=1},
+    mesh = "model",
     textures = {}, -- number of required textures depends on visual
     spritediv = {x=1, y=1},
     initial_sprite_basepos = {x=0, y=0},
