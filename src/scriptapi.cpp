@@ -944,6 +944,45 @@ static void read_object_properties(lua_State *L, int index,
 		prop->visual_size = read_v2f(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "animation_frames");
+	if(lua_istable(L, -1))
+	{
+		lua_rawgeti (L, -1, 1);
+		lua_rawgeti (L, -2, 2);
+		prop->animation_frames.X = lua_tonumber(L, -2);
+		prop->animation_frames.Y = lua_tonumber(L, -1);
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+
+	getfloatfield(L, -1, "animation_speed", prop->animation_speed);
+
+	getfloatfield(L, -1, "animation_blend", prop->animation_blend);
+
+	lua_getfield(L, -1, "animation_bone_position");
+	if(lua_istable(L, -1))
+	{
+		lua_rawgeti (L, -1, 1);
+		lua_rawgeti (L, -2, 2);
+		std::string bone_name = lua_tostring(L, -2);
+		v3f bone_pos = read_v3f(L, -1);
+		prop->animation_bone_position[bone_name] = bone_pos;
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "animation_bone_rotation");
+	if(lua_istable(L, -1))
+	{
+		lua_rawgeti (L, -1, 1);
+		lua_rawgeti (L, -2, 2);
+		std::string bone_name = lua_tostring(L, -2);
+		v3f bone_rot = read_v3f(L, -1);
+		prop->animation_bone_rotation[bone_name] = bone_rot;
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+
 	lua_getfield(L, -1, "textures");
 	if(lua_istable(L, -1)){
 		prop->textures.clear();

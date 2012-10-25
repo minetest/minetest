@@ -1230,6 +1230,11 @@ Object Properties
     visual = "cube"/"sprite"/"upright_sprite"/"mesh",
     visual_size = {x=1, y=1},
     mesh = "model",
+    animation_frames = {1, 1},
+    animation_speed = 15,
+    animation_blend = 0,
+    animation_bone_position = {"", {x=0, y=0, z=0}}, -- bone name followed by position vector
+    animation_bone_rotation = {"", {x=0, y=0, z=0}}, -- bone name followed by rotation vector
     textures = {}, -- number of required textures depends on visual
     spritediv = {x=1, y=1},
     initial_sprite_basepos = {x=0, y=0},

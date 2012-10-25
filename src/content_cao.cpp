@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
+#include <IBoneSceneNode.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -805,7 +806,8 @@ public:
 			if(mesh)
 			{
 				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
-				
+				m_animated_meshnode->setMD2Animation(scene::EMAT_STAND);
+				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,
 						m_prop.visual_size.X));
@@ -922,6 +924,7 @@ public:
 			m_visuals_expired = false;
 			removeFromScene();
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
+			updateAnimations();
 		}
 
 		if(m_prop.physical){
@@ -978,8 +981,6 @@ public:
 		}
 
 		updateTexturePos();
-
-		updateAnimations();
 
 		if(m_reset_textures_timer >= 0){
 			m_reset_textures_timer -= dtime;
@@ -1141,7 +1142,18 @@ public:
 		if(!m_animated_meshnode)
 			return;
 
-		m_animated_meshnode->setFrameLoop(0, 50);
+		m_animated_meshnode->setFrameLoop(m_prop.animation_frames.X, m_prop.animation_frames.Y);
+		m_animated_meshnode->setAnimationSpeed(m_prop.animation_speed);
+		m_animated_meshnode->setTransitionTime(m_prop.animation_blend);
+
+		for(std::map<std::string, v3f>::const_iterator ii = m_prop.animation_bone_position.begin(); ii != m_prop.animation_bone_position.end(); ++ii){
+			if((*ii).second.X || (*ii).second.Y || (*ii).second.Z) { }
+			// Bone positioning code will go here
+		}
+		for(std::map<std::string, v3f>::const_iterator ii = m_prop.animation_bone_rotation.begin(); ii != m_prop.animation_bone_rotation.end(); ++ii){
+			if((*ii).second.X || (*ii).second.Y || (*ii).second.Z) { }
+			// Bone rotation code will go here
+		}
 	}
 
 	void processMessage(const std::string &data)
