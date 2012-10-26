@@ -504,6 +504,7 @@ std::string LuaEntitySAO::getClientInitializationData()
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, 0); // version
 	os<<serializeString(""); // name
+	writeS16(os, getId()); //id
 	writeU8(os, 0); // is_player
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
@@ -660,6 +661,19 @@ void LuaEntitySAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
 	m_messages_out.push_back(aom);
 }
 
+// Part of the attachment structure, not used yet!
+void LuaEntitySAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation)
+{
+	// Parent should be translated from a ServerActiveObject into something
+	// the client will recognize (as a ClientActiveObject) then sent in
+	// gob_cmd_set_attachment that way.
+
+	std::string str = gob_cmd_set_attachment(); // <- parameters here
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, str);
+	m_messages_out.push_back(aom);
+}
+
 ObjectProperties* LuaEntitySAO::accessObjectProperties()
 {
 	return &m_prop;
@@ -804,6 +818,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures.clear();
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
+	m_prop.colors.clear();
+	m_prop.colors.push_back(video::SColor(255, 255, 255, 255));
 	m_prop.spritediv = v2s16(1,1);
 	// end of default appearance
 	m_prop.is_visible = (getHP() != 0); // TODO: Use a death animation instead for mesh players
@@ -860,6 +876,7 @@ std::string PlayerSAO::getClientInitializationData()
 	writeU8(os, 0); // version
 	os<<serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
+	writeS16(os, getId()); //id
 	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 	writeF1000(os, m_player->getYaw());
 	writeS16(os, getHP());
@@ -1104,6 +1121,15 @@ void PlayerSAO::setAnimations(v2f frames, float frame_speed, float frame_blend)
 void PlayerSAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
 {
 	std::string str = gob_cmd_set_bone_posrot(bone, position, rotation);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, str);
+	m_messages_out.push_back(aom);
+}
+
+// Part of the attachment structure, not used yet!
+void PlayerSAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation)
+{	
+	std::string str = gob_cmd_set_attachment(); // <- parameters here
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), true, str);
 	m_messages_out.push_back(aom);

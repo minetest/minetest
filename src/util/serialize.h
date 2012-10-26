@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_SERIALIZE_HEADER
 
 #include "../irrlichttypes.h"
+#include "../irrlichttypes_bloated.h"
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include <iostream>
@@ -197,6 +198,24 @@ inline v3s16 readV3S16(u8 *data)
 	return p;
 }
 
+inline void writeARGB8(u8 *data, video::SColor p)
+{
+	writeU8(&data[0], p.getAlpha());
+	writeU8(&data[1], p.getRed());
+	writeU8(&data[2], p.getGreen());
+	writeU8(&data[3], p.getBlue());
+}
+
+inline video::SColor readARGB8(u8 *data)
+{
+	video::SColor p;
+	p.setAlpha(readU8(&data[0]));
+	p.setRed(readU8(&data[1]));
+	p.setGreen(readU8(&data[2]));
+	p.setBlue(readU8(&data[3]));
+	return p;
+}
+
 /*
 	The above stuff directly interfaced to iostream
 */
@@ -342,6 +361,20 @@ inline v3s16 readV3S16(std::istream &is)
 	char buf[6] = {0};
 	is.read(buf, 6);
 	return readV3S16((u8*)buf);
+}
+
+inline void writeARGB8(std::ostream &os, video::SColor p)
+{
+	char buf[4] = {0};
+	writeARGB8((u8*)buf, p);
+	os.write(buf, 4);
+}
+
+inline video::SColor readARGB8(std::istream &is)
+{
+	char buf[4] = {0};
+	is.read(buf, 4);
+	return readARGB8((u8*)buf);
 }
 
 /*

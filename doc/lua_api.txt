@@ -1232,9 +1232,8 @@ Object Properties
     visual = "cube"/"sprite"/"upright_sprite"/"mesh",
     visual_size = {x=1, y=1},
     mesh = "model",
-    animation_bone_position = {"", {x=0, y=0, z=0}}, -- bone name followed by position vector
-    animation_bone_rotation = {"", {x=0, y=0, z=0}}, -- bone name followed by rotation vector
     textures = {}, -- number of required textures depends on visual
+    colors = {}, -- number of required colors depends on visual
     spritediv = {x=1, y=1},
     initial_sprite_basepos = {x=0, y=0},
     is_visible = true,

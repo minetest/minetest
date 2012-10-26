@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "object_properties.h"
+#include "irrlichttypes_bloated.h"
 #include "util/serialize.h"
 #include <sstream>
 #include <map>
@@ -40,6 +41,7 @@ ObjectProperties::ObjectProperties():
 	automatic_rotate(0)
 {
 	textures.push_back("unknown_object.png");
+	colors.push_back(video::SColor(255,255,255,255));
 }
 
 std::string ObjectProperties::dump()
@@ -55,6 +57,11 @@ std::string ObjectProperties::dump()
 	os<<", textures=[";
 	for(u32 i=0; i<textures.size(); i++){
 		os<<"\""<<textures[i]<<"\" ";
+	}
+	os<<"]";
+	os<<", colors=[";
+	for(u32 i=0; i<colors.size(); i++){
+		os<<"\""<<colors[i].getAlpha()<<","<<colors[i].getRed()<<","<<colors[i].getGreen()<<","<<colors[i].getBlue()<<"\" ";
 	}
 	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
@@ -80,6 +87,10 @@ void ObjectProperties::serialize(std::ostream &os) const
 	for(u32 i=0; i<textures.size(); i++){
 		os<<serializeString(textures[i]);
 	}
+	writeU16(os, colors.size());
+	for(u32 i=0; i<colors.size(); i++){
+		writeARGB8(os, colors[i]);
+	}
 	writeV2S16(os, spritediv);
 	writeV2S16(os, initial_sprite_basepos);
 	writeU8(os, is_visible);
@@ -104,6 +115,10 @@ void ObjectProperties::deSerialize(std::istream &is)
 	u32 texture_count = readU16(is);
 	for(u32 i=0; i<texture_count; i++){
 		textures.push_back(deSerializeString(is));
+	}
+	u32 color_count = readU16(is);
+	for(u32 i=0; i<color_count; i++){
+		colors.push_back(readARGB8(is));
 	}
 	spritediv = readV2S16(is);
 	initial_sprite_basepos = readV2S16(is);

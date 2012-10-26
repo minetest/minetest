@@ -104,6 +104,17 @@ std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_bl
 	return os.str();
 }
 
+// Part of the attachment structure, not used yet!
+std::string gob_cmd_set_attachment() // <- parameters here
+{
+	std::ostringstream os(std::ios::binary);
+	// command 
+	writeU8(os, GENERIC_CMD_SET_ATTACHMENT);
+	// parameters
+	// Parameters go here
+	return os.str();
+}
+
 std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation)
 {
 	std::ostringstream os(std::ios::binary);

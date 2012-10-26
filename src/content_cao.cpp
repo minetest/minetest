@@ -555,6 +555,7 @@ private:
 	std::string m_name;
 	bool m_is_player;
 	bool m_is_local_player; // determined locally
+	int m_id;
 	// Property-ish things
 	ObjectProperties m_prop;
 	//
@@ -596,6 +597,7 @@ public:
 		//
 		m_is_player(false),
 		m_is_local_player(false),
+		m_id(0),
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
@@ -640,6 +642,7 @@ public:
 		}
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
+		m_id = readS16(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
@@ -930,6 +933,7 @@ public:
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 			updateAnimations();
 			updateBonePosRot();
+			updateAttachment();
 		}
 
 		if(m_prop.physical){
@@ -1062,6 +1066,10 @@ public:
 				texturestring += mod;
 				m_spritenode->setMaterialTexture(0,
 						tsrc->getTextureRaw(texturestring));
+
+				// Does not work yet with the current lighting settings
+				m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
+				m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
 			}
 		}
 		if(m_animated_meshnode)
@@ -1086,6 +1094,12 @@ public:
 					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 					material.setFlag(video::EMF_LIGHTING, false);
 					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				}
+				for (u32 i = 0; i < m_prop.colors.size(); ++i)
+				{
+					// Does not work yet with the current lighting settings
+					m_animated_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
+					m_animated_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
 				}
 			}
 		}
@@ -1113,6 +1127,10 @@ public:
 					material.setTexture(0, atlas);
 					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
 					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+
+					// Does not work yet with the current lighting settings
+					m_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
+					m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
 				}
 			}
 			else if(m_prop.visual == "upright_sprite")
@@ -1126,6 +1144,10 @@ public:
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
+					
+					// Does not work yet with the current lighting settings
+					m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
+					m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
 				}
 				{
 					std::string tname = "unknown_object.png";
@@ -1137,6 +1159,10 @@ public:
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
+
+					// Does not work yet with the current lighting settings
+					m_meshnode->getMaterial(1).AmbientColor = m_prop.colors[1]; 
+					m_meshnode->getMaterial(1).DiffuseColor = m_prop.colors[1]; 
 				}
 			}
 		}
@@ -1166,6 +1192,11 @@ public:
 				bone->setRotation(bone_rot);
 			}
 		}
+	}
+
+	void updateAttachment()
+	{
+		// Code for attachments goes here
 	}
 
 	void processMessage(const std::string &data)
@@ -1252,6 +1283,15 @@ public:
 			m_bone_posrot[bone] = core::vector2d<v3f>(position, rotation);
 
 			updateBonePosRot();
+			expireVisuals();
+		}
+		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
+		{
+			// Part of the attachment structure, not used yet!
+
+			// Get properties here.
+
+			updateAttachment();
 			expireVisuals();
 		}
 		else if(cmd == GENERIC_CMD_PUNCHED)

@@ -960,6 +960,23 @@ static void read_object_properties(lua_State *L, int index,
 		}
 	}
 	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "colors");
+	if(lua_istable(L, -1)){
+		prop->colors.clear();
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				prop->colors.push_back(readARGB8(L, -1));
+			else
+				prop->colors.push_back(video::SColor(255, 255, 255, 255));
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
 	
 	lua_getfield(L, -1, "spritediv");
 	if(lua_istable(L, -1))
@@ -2741,6 +2758,33 @@ private:
 		return 0;
 	}
 
+// Part of the attachment structure, not used yet!
+	// set_attachment() // <- parameters here
+	static int l_set_attachment(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ObjectRef *parent_ref = checkobject(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		ServerActiveObject *parent = getobject(parent_ref);
+		if(co == NULL) return 0;
+		if(parent == NULL) return 0;
+		std::string bone = "";
+		if(!lua_isnil(L, 3))
+			bone = lua_tostring(L, 3);
+		v3f position = v3f(0, 0, 0);
+		if(!lua_isnil(L, 4))
+			position = read_v3f(L, 4);
+		v3f rotation = v3f(0, 0, 0);
+		if(!lua_isnil(L, 5))
+			rotation = read_v3f(L, 5);
+		// Do it
+	
+//lua_pushnumber(L, cobj->getId()); // Push id
+
+		co->setAttachment(parent, bone, position, rotation);
+		return 0;
+	}
+
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L)
 	{
@@ -3057,6 +3101,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, set_armor_groups),
 	method(ObjectRef, set_animations),
 	method(ObjectRef, set_bone_posrot),
+	method(ObjectRef, set_attachment),
 	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
