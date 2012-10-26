@@ -1103,6 +1103,8 @@ methods:
 - get_wielded_item() -> ItemStack
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
+- set_animations({x=1,y=1}, frame_speed=15, frame_blend=0)
+- set_bone_posrot("", {x=0,y=0,z=0}, {x=0,y=0,z=0})
 - set_properties(object property table)
 LuaEntitySAO-only: (no-op for other objects)
 - setvelocity({x=num, y=num, z=num})
@@ -1116,7 +1118,6 @@ LuaEntitySAO-only: (no-op for other objects)
 -           select_horiz_by_yawpitch=false)
   ^ Select sprite from spritesheet with optional animation and DM-style
     texture selection based on yaw relative to camera
-- setanimations(frame_start, frame_end, frame_speed, frame_blend)
 - get_entity_name() (DEPRECATED: Will be removed in a future version)
 - get_luaentity()
 Player-only: (no-op for other objects)

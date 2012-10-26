@@ -944,30 +944,6 @@ static void read_object_properties(lua_State *L, int index,
 		prop->visual_size = read_v2f(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "animation_bone_position");
-	if(lua_istable(L, -1))
-	{
-		lua_rawgeti (L, -1, 1);
-		lua_rawgeti (L, -2, 2);
-		std::string bone_name = lua_tostring(L, -2);
-		v3f bone_pos = read_v3f(L, -1);
-		prop->animation_bone_position[bone_name] = bone_pos;
-		lua_pop(L, 2);
-	}
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "animation_bone_rotation");
-	if(lua_istable(L, -1))
-	{
-		lua_rawgeti (L, -1, 1);
-		lua_rawgeti (L, -2, 2);
-		std::string bone_name = lua_tostring(L, -2);
-		v3f bone_rot = read_v3f(L, -1);
-		prop->animation_bone_rotation[bone_name] = bone_rot;
-		lua_pop(L, 2);
-	}
-	lua_pop(L, 1);
-
 	lua_getfield(L, -1, "textures");
 	if(lua_istable(L, -1)){
 		prop->textures.clear();
@@ -2723,6 +2699,48 @@ private:
 		return 0;
 	}
 
+	// setanimations(self, frames, frame_speed, frame_blend)
+	static int l_set_animations(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+
+		v2f frames = v2f(1, 1);
+		if(!lua_isnil(L, 2))
+			frames = read_v2f(L, 2);
+		float frame_speed = 15;
+		if(!lua_isnil(L, 3))
+			frame_speed = lua_tonumber(L, 3);
+		float frame_blend = 0;
+		if(!lua_isnil(L, 4))
+			frame_blend = lua_tonumber(L, 4);
+		co->setAnimations(frames, frame_speed, frame_blend);
+		return 0;
+	}
+
+	// setboneposrot(std::string bone, v3f position, v3f rotation)
+	static int l_set_bone_posrot(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+
+		std::string bone = "";
+		if(!lua_isnil(L, 2))
+			bone = lua_tostring(L, 2);
+		v3f position = v3f(0, 0, 0);
+		if(!lua_isnil(L, 3))
+			position = read_v3f(L, 3);
+		v3f rotation = v3f(0, 0, 0);
+		if(!lua_isnil(L, 4))
+			rotation = read_v3f(L, 4);
+		co->setBonePosRot(bone, position, rotation);
+		return 0;
+	}
+
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L)
 	{
@@ -2845,30 +2863,6 @@ private:
 		if(!lua_isnil(L, 5))
 			select_horiz_by_yawpitch = lua_toboolean(L, 5);
 		co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
-		return 0;
-	}
-
-	// setanimations(self, mod)
-	static int l_setanimations(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		LuaEntitySAO *co = getluaobject(ref);
-		if(co == NULL) return 0;
-		// Do it
-		v2s16 p(0,0);
-		int frame_start = 0;
-		if(!lua_isnil(L, 2))
-			frame_start = lua_tonumber(L, 2);
-		int frame_end = 0;
-		if(!lua_isnil(L, 3))
-			frame_end = lua_tonumber(L, 3);
-		float frame_speed = 15;
-		if(!lua_isnil(L, 4))
-			frame_speed = lua_tonumber(L, 4);
-		float frame_blend = 0;
-		if(!lua_isnil(L, 5))
-			frame_blend = lua_tonumber(L, 5);
-		co->setAnimations(frame_start, frame_end, frame_speed, frame_blend);
 		return 0;
 	}
 
@@ -3061,6 +3055,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, set_wielded_item),
 	method(ObjectRef, set_armor_groups),
+	method(ObjectRef, set_animations),
+	method(ObjectRef, set_bone_posrot),
 	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
@@ -3071,7 +3067,6 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getyaw),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
-	method(ObjectRef, setanimations),
 	method(ObjectRef, get_entity_name),
 	method(ObjectRef, get_luaentity),
 	// Player-only

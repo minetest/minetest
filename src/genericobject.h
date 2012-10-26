@@ -29,8 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_SET_TEXTURE_MOD 2
 #define GENERIC_CMD_SET_SPRITE 3
 #define GENERIC_CMD_SET_ANIMATIONS 4
-#define GENERIC_CMD_PUNCHED 5
-#define GENERIC_CMD_UPDATE_ARMOR_GROUPS 6
+#define GENERIC_CMD_SET_BONE_POSROT 5
+#define GENERIC_CMD_PUNCHED 6
+#define GENERIC_CMD_UPDATE_ARMOR_GROUPS 7
 
 #include "object_properties.h"
 std::string gob_cmd_set_properties(const ObjectProperties &prop);
@@ -55,7 +56,9 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_set_animations(int frame_start, int frame_end, float frame_speed, float frame_blend);
+std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_blend);
+
+std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_punched(s16 damage, s16 result_hp);
 
