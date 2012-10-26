@@ -28,8 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_UPDATE_POSITION 1
 #define GENERIC_CMD_SET_TEXTURE_MOD 2
 #define GENERIC_CMD_SET_SPRITE 3
-#define GENERIC_CMD_PUNCHED 4
-#define GENERIC_CMD_UPDATE_ARMOR_GROUPS 5
+#define GENERIC_CMD_SET_ANIMATIONS 4
+#define GENERIC_CMD_PUNCHED 5
+#define GENERIC_CMD_UPDATE_ARMOR_GROUPS 6
 
 #include "object_properties.h"
 std::string gob_cmd_set_properties(const ObjectProperties &prop);
@@ -53,6 +54,8 @@ std::string gob_cmd_set_sprite(
 	f32 framelength,
 	bool select_horiz_by_yawpitch
 );
+
+std::string gob_cmd_set_animations(int frame_start, int frame_end, float frame_speed, float frame_blend);
 
 std::string gob_cmd_punched(s16 damage, s16 result_hp);
 

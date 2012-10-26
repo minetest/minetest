@@ -32,9 +32,6 @@ ObjectProperties::ObjectProperties():
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
 	visual("sprite"),
 	mesh(""),
-	animation_frames(1,1),
-	animation_speed(15),
-	animation_blend(0),
 	visual_size(1,1),
 	spritediv(1,1),
 	initial_sprite_basepos(0,0),
@@ -42,8 +39,8 @@ ObjectProperties::ObjectProperties():
 	makes_footstep_sound(false),
 	automatic_rotate(0)
 {
-	animation_bone_position[""] = v3f(0,0,0);
-	animation_bone_rotation[""] = v3f(0,0,0);
+	// Nothing to do for animation_bone_position
+	// Nothing to do for animation_bone_rotation
 	textures.push_back("unknown_object.png");
 }
 
@@ -56,9 +53,6 @@ std::string ObjectProperties::dump()
 	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
 	os<<", visual="<<visual;
 	os<<", mesh="<<mesh;
-	os<<", animation_frames="<<animation_frames.X<<","<<animation_frames.Y;
-	os<<", animation_speed="<<animation_speed;
-	os<<", animation_blend="<<animation_blend;
 	os<<", visual_size="<<PP2(visual_size);
 
 	os<<", animation_bone_position=[";
@@ -99,10 +93,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeV3F1000(os, collisionbox.MaxEdge);
 	os<<serializeString(visual);
 	os<<serializeString(mesh);
-	writeF1000(os, animation_frames.X);
-	writeF1000(os, animation_frames.Y);
-	writeF1000(os, animation_speed);
-	writeF1000(os, animation_blend);
 
 	writeU16(os, animation_bone_position.size());
 	for(std::map<std::string, v3f>::const_iterator ii = animation_bone_position.begin(); ii != animation_bone_position.end(); ++ii){
@@ -140,10 +130,6 @@ void ObjectProperties::deSerialize(std::istream &is)
 	collisionbox.MaxEdge = readV3F1000(is);
 	visual = deSerializeString(is);
 	mesh = deSerializeString(is);
-	animation_frames.X = readF1000(is);
-	animation_frames.Y = readF1000(is);
-	animation_speed = readF1000(is);
-	animation_blend = readF1000(is);
 
 	u32 animation_bone_position_count = readU16(is);
 	for(u32 i=0; i<animation_bone_position_count; i++){

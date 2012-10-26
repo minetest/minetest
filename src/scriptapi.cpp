@@ -944,21 +944,6 @@ static void read_object_properties(lua_State *L, int index,
 		prop->visual_size = read_v2f(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "animation_frames");
-	if(lua_istable(L, -1))
-	{
-		lua_rawgeti (L, -1, 1);
-		lua_rawgeti (L, -2, 2);
-		prop->animation_frames.X = lua_tonumber(L, -2);
-		prop->animation_frames.Y = lua_tonumber(L, -1);
-		lua_pop(L, 2);
-	}
-	lua_pop(L, 1);
-
-	getfloatfield(L, -1, "animation_speed", prop->animation_speed);
-
-	getfloatfield(L, -1, "animation_blend", prop->animation_blend);
-
 	lua_getfield(L, -1, "animation_bone_position");
 	if(lua_istable(L, -1))
 	{
@@ -2863,6 +2848,30 @@ private:
 		return 0;
 	}
 
+	// setanimations(self, mod)
+	static int l_setanimations(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v2s16 p(0,0);
+		int frame_start = 0;
+		if(!lua_isnil(L, 2))
+			frame_start = lua_tonumber(L, 2);
+		int frame_end = 0;
+		if(!lua_isnil(L, 3))
+			frame_end = lua_tonumber(L, 3);
+		float frame_speed = 15;
+		if(!lua_isnil(L, 4))
+			frame_speed = lua_tonumber(L, 4);
+		float frame_blend = 0;
+		if(!lua_isnil(L, 5))
+			frame_blend = lua_tonumber(L, 5);
+		co->setAnimations(frame_start, frame_end, frame_speed, frame_blend);
+		return 0;
+	}
+
 	// DEPRECATED
 	// get_entity_name(self)
 	static int l_get_entity_name(lua_State *L)
@@ -3062,6 +3071,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getyaw),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
+	method(ObjectRef, setanimations),
 	method(ObjectRef, get_entity_name),
 	method(ObjectRef, get_luaentity),
 	// Player-only

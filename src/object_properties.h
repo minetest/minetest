@@ -34,9 +34,6 @@ struct ObjectProperties
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
 	std::string mesh;
-	core::vector2d<int> animation_frames;
-	float animation_speed;
-	float animation_blend;
 	std::map<std::string, v3f> animation_bone_position;
 	std::map<std::string, v3f> animation_bone_rotation;
 	v2f visual_size;
