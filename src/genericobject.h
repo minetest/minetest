@@ -61,7 +61,7 @@ std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_bl
 
 std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation);
 
-std::string gob_cmd_set_attachment(); // <- parameters here
+std::string gob_cmd_set_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_punched(s16 damage, s16 result_hp);
 

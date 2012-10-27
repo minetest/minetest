@@ -99,6 +99,7 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
+	ServerActiveObject *m_parent;
 };
 
 /*
@@ -235,6 +236,7 @@ private:
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
+	ServerActiveObject *m_parent;
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement

@@ -581,6 +581,10 @@ private:
 	int m_frame_speed;
 	int m_frame_blend;
 	std::map<std::string, core::vector2d<v3f> > m_bone_posrot;
+	ClientActiveObject* m_attachment_parent;
+	std::string m_attachment_bone;
+	v3f m_attacmhent_position;
+	v3f m_attachment_rotation;
 	int m_anim_frame;
 	int m_anim_num_frames;
 	float m_anim_framelength;
@@ -615,6 +619,14 @@ public:
 		m_tx_basepos(0,0),
 		m_initial_tx_basepos_set(false),
 		m_tx_select_horiz_by_yawpitch(false),
+		m_frames(v2f(0,0)),
+		m_frame_speed(15),
+		m_frame_blend(0),
+		// Nothing to do for m_bone_posrot
+		m_attachment_parent(NULL),
+		m_attachment_bone(""),
+		m_attacmhent_position(v3f(0,0,0)),
+		m_attachment_rotation(v3f(0,0,0)),
 		m_anim_frame(0),
 		m_anim_num_frames(1),
 		m_anim_framelength(0.2),
@@ -906,6 +918,9 @@ public:
 
 	void updateNodePos()
 	{
+		if(m_attachment_parent != NULL)
+			return;
+
 		if(m_meshnode){
 			m_meshnode->setPosition(pos_translator.vect_show);
 			v3f rot = m_meshnode->getRotation();
@@ -933,51 +948,53 @@ public:
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 			updateAnimations();
 			updateBonePosRot();
-			updateAttachment();
 		}
 
-		if(m_prop.physical){
-			core::aabbox3d<f32> box = m_prop.collisionbox;
-			box.MinEdge *= BS;
-			box.MaxEdge *= BS;
-			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.125; // Distance per iteration
-			f32 stepheight = 0;
-			v3f p_pos = m_position;
-			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
-			IGameDef *gamedef = env->getGameDef();
-			moveresult = collisionMoveSimple(&env->getMap(), gamedef,
-					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration);
-			// Apply results
-			m_position = p_pos;
-			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
-			
-			bool is_end_position = moveresult.collides;
-			pos_translator.update(m_position, is_end_position, dtime);
-			pos_translator.translate(dtime);
-			updateNodePos();
-		} else {
-			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
-			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
-			pos_translator.translate(dtime);
-			updateNodePos();
-		}
+		if(m_attachment_parent == NULL) // Attachments should be glued to their parent by Irrlicht
+		{
+			if(m_prop.physical){
+				core::aabbox3d<f32> box = m_prop.collisionbox;
+				box.MinEdge *= BS;
+				box.MaxEdge *= BS;
+				collisionMoveResult moveresult;
+				f32 pos_max_d = BS*0.125; // Distance per iteration
+				f32 stepheight = 0;
+				v3f p_pos = m_position;
+				v3f p_velocity = m_velocity;
+				v3f p_acceleration = m_acceleration;
+				IGameDef *gamedef = env->getGameDef();
+				moveresult = collisionMoveSimple(&env->getMap(), gamedef,
+						pos_max_d, box, stepheight, dtime,
+						p_pos, p_velocity, p_acceleration);
+				// Apply results
+				m_position = p_pos;
+				m_velocity = p_velocity;
+				m_acceleration = p_acceleration;
+				
+				bool is_end_position = moveresult.collides;
+				pos_translator.update(m_position, is_end_position, dtime);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			} else {
+				m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+				m_velocity += dtime * m_acceleration;
+				pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			}
 
-		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
-		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS){
-			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound){
-				INodeDefManager *ndef = m_gamedef->ndef();
-				v3s16 p = floatToInt(getPosition() + v3f(0,
-						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
-				MapNode n = m_env->getMap().getNodeNoEx(p);
-				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
-				m_gamedef->sound()->playSoundAt(spec, false, getPosition());
+			float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
+			m_step_distance_counter += moved;
+			if(m_step_distance_counter > 1.5*BS){
+				m_step_distance_counter = 0;
+				if(!m_is_local_player && m_prop.makes_footstep_sound){
+					INodeDefManager *ndef = m_gamedef->ndef();
+					v3s16 p = floatToInt(getPosition() + v3f(0,
+							(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
+					MapNode n = m_env->getMap().getNodeNoEx(p);
+					SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+					m_gamedef->sound()->playSoundAt(spec, false, getPosition());
+				}
 			}
 		}
 
@@ -1193,10 +1210,38 @@ public:
 			}
 		}
 	}
-
-	void updateAttachment()
+	
+	void updateAttachments()
 	{
-		// Code for attachments goes here
+		// REMAINING ATTACHMENT ISSUES:
+		// We get to this function when the object is an attachment that needs to
+		// be attached to its parent. If a bone is set we attach it to that skeletal
+		// bone, otherwise just to the object's origin. Attachments should not copy parent
+		// position as that's laggy... instead the Irrlicht function(s) to attach should
+		// be used. If the parent object is NULL that means this object should be detached.
+		// This function is only called whenever a GENERIC_CMD_SET_ATTACHMENT message is received.
+		
+		// We already attach our entity on the server too (copy position). Reason we attach
+		// to the client as well is first of all lag. The server sends the position
+		// of the child separately than that of the parent, so even on localhost
+		// you'd see the child lagging behind. Models are also client-side, so this is
+		// needed to read bone data and attach to joints.
+		
+		// Functions:
+		// - m_attachment_parent is ClientActiveObject* for the parent entity.
+		// - m_attachment_bone is std::string of the bone, "" means none.
+		// - m_attachment_position is v3f and represents the position offset of the attachment.
+		// - m_attachment_rotation is v3f and represents the rotation offset of the attachment.
+		
+		// Implementation information:
+		// From what I know, we need to get the AnimatedMeshSceneNode of m_attachment_parent then
+		// use parent_node->addChild(m_animated_meshnode) for position attachment. For skeletal
+		// attachment I don't know yet. Same must be used to detach when a NULL parent is received.
+
+		//Useful links:
+		// http://irrlicht.sourceforge.net/forum/viewtopic.php?t=7514
+		// http://www.irrlicht3d.org/wiki/index.php?n=Main.HowToUseTheNewAnimationSystem
+		// Irrlicht documentation: http://irrlicht.sourceforge.net/docu/
 	}
 
 	void processMessage(const std::string &data)
@@ -1225,6 +1270,8 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
 		{
+			// Not sent by the server if the object is an attachment
+			
 			m_position = readV3F1000(is);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
@@ -1238,7 +1285,7 @@ public:
 			// the ground due to sucky collision detection...
 			if(m_prop.physical)
 				m_position += v3f(0,0.002,0);
-			
+				
 			if(do_interpolate){
 				if(!m_prop.physical)
 					pos_translator.update(m_position, is_end_position, update_interval);
@@ -1287,12 +1334,18 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
 		{
-			// Part of the attachment structure, not used yet!
+			ClientActiveObject *obj;
+			int parent_id = readS16(is);
+			if(parent_id > 0)
+				obj = m_env->getActiveObject(parent_id);
+			else
+				obj = NULL;
+			m_attachment_parent = obj;
+			m_attachment_bone = deSerializeString(is);
+			m_attacmhent_position = readV3F1000(is);
+			m_attachment_rotation = readV3F1000(is);
 
-			// Get properties here.
-
-			updateAttachment();
-			expireVisuals();
+			updateAttachments();
 		}
 		else if(cmd == GENERIC_CMD_PUNCHED)
 		{
