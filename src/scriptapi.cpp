@@ -5591,16 +5591,16 @@ static void scriptapi_run_callbacks(lua_State *L, int nargs,
 				lua_replace(L, rv);
 			else if(mode == RUN_CALLBACKS_MODE_AND ||
 					mode == RUN_CALLBACKS_MODE_AND_SC){
-				if(lua_toboolean(L, rv) == true &&
-						lua_toboolean(L, -1) == false)
+				if((bool)lua_toboolean(L, rv) == true &&
+						(bool)lua_toboolean(L, -1) == false)
 					lua_replace(L, rv);
 				else
 					lua_pop(L, 1);
 			}
 			else if(mode == RUN_CALLBACKS_MODE_OR ||
 					mode == RUN_CALLBACKS_MODE_OR_SC){
-				if(lua_toboolean(L, rv) == false &&
-						lua_toboolean(L, -1) == true)
+				if((bool)lua_toboolean(L, rv) == false &&
+						(bool)lua_toboolean(L, -1) == true)
 					lua_replace(L, rv);
 				else
 					lua_pop(L, 1);
@@ -5611,10 +5611,10 @@ static void scriptapi_run_callbacks(lua_State *L, int nargs,
 
 		// Handle short circuit modes
 		if(mode == RUN_CALLBACKS_MODE_AND_SC &&
-				lua_toboolean(L, rv) == false)
+				(bool)lua_toboolean(L, rv) == false)
 			break;
 		else if(mode == RUN_CALLBACKS_MODE_OR_SC &&
-				lua_toboolean(L, rv) == true)
+				(bool)lua_toboolean(L, rv) == true)
 			break;
 
 		// value removed, keep key for next iteration
@@ -6095,7 +6095,7 @@ bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime)
 	lua_pushnumber(L,dtime);
 	if(lua_pcall(L, 2, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
-	if(lua_isboolean(L,-1) && lua_toboolean(L,-1) == true)
+	if((bool)lua_isboolean(L,-1) && (bool)lua_toboolean(L,-1) == true)
 		return true;
 	
 	return false;
