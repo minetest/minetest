@@ -254,6 +254,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	os<<serializeString(liquid_alternative_flowing);
 	os<<serializeString(liquid_alternative_source);
 	writeU8(os, liquid_viscosity);
+	writeU8(os, liquid_renewable);
 	writeU8(os, light_source);
 	writeU32(os, damage_per_second);
 	node_box.serialize(os);
@@ -311,6 +312,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	liquid_alternative_flowing = deSerializeString(is);
 	liquid_alternative_source = deSerializeString(is);
 	liquid_viscosity = readU8(is);
+	liquid_renewable = readU8(is);
 	light_source = readU8(is);
 	damage_per_second = readU32(is);
 	node_box.deSerialize(is);

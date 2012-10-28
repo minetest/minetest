@@ -554,7 +554,7 @@ private:
 	// Only set at initialization
 	std::string m_name;
 	bool m_is_player;
-	bool m_is_local_player; // determined locally
+	bool m_is_local_player;
 	int m_id;
 	// Property-ish things
 	ObjectProperties m_prop;
@@ -594,6 +594,7 @@ private:
 	bool m_visuals_expired;
 	float m_step_distance_counter;
 	u8 m_last_light;
+	bool m_is_visible;
 
 public:
 	GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -634,7 +635,8 @@ public:
 		m_reset_textures_timer(-1),
 		m_visuals_expired(false),
 		m_step_distance_counter(0),
-		m_last_light(255)
+		m_last_light(255),
+		m_is_visible(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -691,13 +693,38 @@ public:
 	}
 	core::aabbox3d<f32>* getSelectionBox()
 	{
-		if(!m_prop.is_visible || m_is_local_player)
+		if(!m_prop.is_visible || !m_is_visible || m_is_local_player)
 			return NULL;
 		return &m_selection_box;
 	}
 	v3f getPosition()
 	{
 		return pos_translator.vect_show;
+	}
+
+	scene::IMeshSceneNode *getMeshSceneNode()
+	{
+		return m_meshnode;
+	}
+
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode()
+	{
+		return m_animated_meshnode;
+	}
+
+	scene::IBillboardSceneNode *getSpriteSceneNode()
+	{
+		return m_spritenode;
+	}
+
+	bool isPlayer()
+	{
+		return m_is_player;
+	}
+
+	bool isLocalPlayer()
+	{
+		return m_is_local_player;
 	}
 
 	void removeFromScene()
@@ -891,22 +918,27 @@ public:
 		
 	void updateLight(u8 light_at_pos)
 	{
-		bool is_visible = (m_hp != 0);
+		// Objects attached to the local player should always be hidden
+		if(m_attachment_parent != NULL && m_attachment_parent->isLocalPlayer())
+			m_is_visible = false;
+		else
+			m_is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
+
 		if(li != m_last_light){
 			m_last_light = li;
 			video::SColor color(255,li,li,li);
 			if(m_meshnode){
 				setMeshColor(m_meshnode->getMesh(), color);
-				m_meshnode->setVisible(is_visible);
+				m_meshnode->setVisible(m_is_visible);
 			}
 			if(m_animated_meshnode){
 				setMeshColor(m_animated_meshnode->getMesh(), color);
-				m_animated_meshnode->setVisible(is_visible);
+				m_animated_meshnode->setVisible(m_is_visible);
 			}
 			if(m_spritenode){
 				m_spritenode->setColor(color);
-				m_spritenode->setVisible(is_visible);
+				m_spritenode->setVisible(m_is_visible);
 			}
 		}
 	}
@@ -948,6 +980,7 @@ public:
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 			updateAnimations();
 			updateBonePosRot();
+			updateAttachments();
 		}
 
 		if(m_attachment_parent == NULL) // Attachments should be glued to their parent by Irrlicht
@@ -1019,6 +1052,9 @@ public:
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
+
+		if(m_animated_meshnode)
+			errorstream<<"Attachment position: "<<m_animated_meshnode->getPosition().X<<","<<m_animated_meshnode->getPosition().Y<<","<<m_animated_meshnode->getPosition().Z<<std::endl;
 	}
 
 	void updateTexturePos()
@@ -1241,7 +1277,120 @@ public:
 		//Useful links:
 		// http://irrlicht.sourceforge.net/forum/viewtopic.php?t=7514
 		// http://www.irrlicht3d.org/wiki/index.php?n=Main.HowToUseTheNewAnimationSystem
+		// http://gamedev.stackexchange.com/questions/27363/finding-the-endpoint-of-a-named-bone-in-irrlicht
 		// Irrlicht documentation: http://irrlicht.sourceforge.net/docu/
+
+		if (m_attachment_parent != NULL && !m_attachment_parent->isLocalPlayer())
+		{
+			// REMAINING ATTACHMENT ISSUES:
+			// The code below should cause the child to get attached, but for some reason it's not working
+			// A debug print confirms both position and absolute position are set accordingly, but the object still shows at origin 0,0,0
+
+			scene::IMeshSceneNode *parent_mesh = NULL;
+			if(m_attachment_parent->getMeshSceneNode())
+				parent_mesh = m_attachment_parent->getMeshSceneNode();
+			scene::IAnimatedMeshSceneNode *parent_animated_mesh = NULL;
+			if(m_attachment_parent->getAnimatedMeshSceneNode())
+				parent_animated_mesh = m_attachment_parent->getAnimatedMeshSceneNode();
+			scene::IBillboardSceneNode *parent_sprite = NULL;
+			if(m_attachment_parent->getSpriteSceneNode())
+				parent_sprite = m_attachment_parent->getSpriteSceneNode();
+
+			scene::IBoneSceneNode *parent_bone = NULL;
+			if(parent_animated_mesh && m_attachment_bone != "")
+				parent_bone = parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
+			if(!parent_bone) // Should be false if the bone doesn't exist on the mesh
+				parent_bone = NULL;
+
+			// TODO: Perhaps use polymorphism here to save code duplication
+			if(m_meshnode){
+				if(parent_bone){
+					m_meshnode->setPosition(parent_bone->getPosition());
+					m_meshnode->setRotation(parent_bone->getRotation());
+					m_meshnode->updateAbsolutePosition();
+					//m_meshnode->setParent(parent_bone);
+				}
+				else
+				{
+					if(parent_mesh){
+						m_meshnode->setPosition(parent_mesh->getPosition());
+						m_meshnode->setRotation(parent_mesh->getRotation());
+						m_meshnode->updateAbsolutePosition();
+						//m_meshnode->setParent(parent_mesh);
+					}
+					else if(parent_animated_mesh){
+						m_meshnode->setPosition(parent_animated_mesh->getPosition());
+						m_meshnode->setRotation(parent_animated_mesh->getRotation());
+						m_meshnode->updateAbsolutePosition();
+						//m_meshnode->setParent(parent_animated_mesh);
+					}
+					else if(parent_sprite){
+						m_meshnode->setPosition(parent_sprite->getPosition());
+						m_meshnode->setRotation(parent_sprite->getRotation());
+						m_meshnode->updateAbsolutePosition();
+						//m_meshnode->setParent(parent_sprite);
+					}
+				}
+			}
+			if(m_animated_meshnode){
+				if(parent_bone){
+					m_animated_meshnode->setPosition(parent_bone->getPosition());
+					m_animated_meshnode->setRotation(parent_bone->getRotation());
+					m_animated_meshnode->updateAbsolutePosition();
+					//m_animated_meshnode->setParent(parent_bone);
+				}
+				else
+				{
+					if(parent_mesh){
+						m_animated_meshnode->setPosition(parent_mesh->getPosition());
+						m_animated_meshnode->setRotation(parent_mesh->getRotation());
+						m_animated_meshnode->updateAbsolutePosition();
+						//m_animated_meshnode->setParent(parent_mesh);
+					}
+					else if(parent_animated_mesh){
+						m_animated_meshnode->setPosition(parent_animated_mesh->getPosition());
+						m_animated_meshnode->setRotation(parent_animated_mesh->getRotation());
+						m_animated_meshnode->updateAbsolutePosition();
+						//m_animated_meshnode->setParent(parent_animated_mesh);
+					}
+					else if(parent_sprite){
+						m_animated_meshnode->setPosition(parent_sprite->getPosition());
+						m_animated_meshnode->setRotation(parent_sprite->getRotation());
+						m_animated_meshnode->updateAbsolutePosition();
+						//m_animated_meshnode->setParent(parent_sprite);
+					}
+				}
+			}
+			if(m_spritenode){
+				if(parent_bone){
+					m_spritenode->setPosition(parent_bone->getPosition());
+					m_spritenode->setRotation(parent_bone->getRotation());
+					m_spritenode->updateAbsolutePosition();
+					//m_spritenode->setParent(parent_bone);
+				}
+				else
+				{
+					if(parent_mesh){
+						m_spritenode->setPosition(parent_mesh->getPosition());
+						m_spritenode->setRotation(parent_mesh->getRotation());
+						m_spritenode->updateAbsolutePosition();
+						//m_spritenode->setParent(parent_mesh);
+					}
+					else if(parent_animated_mesh){
+						m_spritenode->setPosition(parent_animated_mesh->getPosition());
+						m_spritenode->setRotation(parent_animated_mesh->getRotation());
+						m_spritenode->updateAbsolutePosition();
+						//m_spritenode->setParent(parent_animated_mesh);
+					}
+					else if(parent_sprite){
+						m_spritenode->setPosition(parent_sprite->getPosition());
+						m_spritenode->setRotation(parent_sprite->getRotation());
+						m_spritenode->updateAbsolutePosition();
+						//m_spritenode->setParent(parent_sprite);
+					}
+				}
+			}
+		}
 	}
 
 	void processMessage(const std::string &data)
@@ -1334,11 +1483,9 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
 		{
-			ClientActiveObject *obj;
 			int parent_id = readS16(is);
-			if(parent_id > 0)
-				obj = m_env->getActiveObject(parent_id);
-			else
+			ClientActiveObject *obj = m_env->getActiveObject(parent_id);
+			if(!parent_id || !obj)
 				obj = NULL;
 			m_attachment_parent = obj;
 			m_attachment_bone = deSerializeString(is);

@@ -444,11 +444,12 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	m_last_sent_position_timer += dtime;
 	
+	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
+	// If the object gets detached this comes into effect automatically from the last known origin
 	if(m_parent != NULL)
 	{
-		// REMAINING ATTACHMENT ISSUES:
-		// This is causing a segmentation fault, investigate why!
-		//m_base_position = m_parent->getBasePosition();
+		v3f pos = m_parent->getBasePosition();
+		m_base_position = pos;
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
 	}
@@ -486,20 +487,23 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(send_recommended == false)
 		return;
-	
-	// TODO: force send when acceleration changes enough?
-	float minchange = 0.2*BS;
-	if(m_last_sent_position_timer > 1.0){
-		minchange = 0.01*BS;
-	} else if(m_last_sent_position_timer > 0.2){
-		minchange = 0.05*BS;
-	}
-	float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
-	move_d += m_last_sent_move_precision;
-	float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
-	if(move_d > minchange || vel_d > minchange ||
-			fabs(m_yaw - m_last_sent_yaw) > 1.0){
-		sendPosition(true, false);
+
+	if(m_parent != NULL)
+	{
+		// TODO: force send when acceleration changes enough?
+		float minchange = 0.2*BS;
+		if(m_last_sent_position_timer > 1.0){
+			minchange = 0.01*BS;
+		} else if(m_last_sent_position_timer > 0.2){
+			minchange = 0.05*BS;
+		}
+		float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
+		move_d += m_last_sent_move_precision;
+		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
+		if(move_d > minchange || vel_d > minchange ||
+				fabs(m_yaw - m_last_sent_yaw) > 1.0){
+			sendPosition(true, false);
+		}
 	}
 
 	if(m_armor_groups_sent == false){
@@ -686,11 +690,11 @@ void LuaEntitySAO::setAttachment(ServerActiveObject *parent, std::string bone, v
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players would see them following the parent
-	// instead of sticking to it, plus we can't read and attach to skeletal bones.
+	// are still sent to clients at an interval so players might see them lagging, plus we can't
+	// read and attach to skeletal bones.
 	// If we just attach on the client, the server still sees the child at its original location.
-	// This can break some things, so we also give the server the most accurate representation
-	// even if players will only see the client changes since they override server-sent position.
+	// This breaks some things so we also give the server the most accurate representation
+	// even if players only see the client changes.
 
 	// Server attachment:
 	m_parent = parent;
@@ -776,6 +780,7 @@ std::string LuaEntitySAO::getPropertyPacket()
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
+	// If the object is attached client-side, don't waste bandwidth sending its position to clients
 	if(m_parent != NULL)
 		return;
 	
@@ -925,7 +930,7 @@ std::string PlayerSAO::getStaticData()
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)
-{	
+{
 	if(!m_properties_sent)
 	{
 		m_properties_sent = true;
@@ -938,7 +943,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
-	if(m_parent == NULL)
+	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
+	// If the object gets detached this comes into effect automatically from the last known origin
+	if(m_parent != NULL)
+	{
+		v3f pos = m_parent->getBasePosition();
+		m_last_good_position = pos;
+		m_last_good_position_age = 0;
+		m_player->setPosition(pos);
+	}
+	else
 	{
 		if(m_is_singleplayer || g_settings->getBool("disable_anticheat"))
 		{
@@ -999,15 +1013,13 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 
-	// If the object is attached client-side, don't waste bandwidth and send its position to clients
+	// If the object is attached client-side, don't waste bandwidth sending its position to clients
 	if(m_position_not_sent && m_parent == NULL)
 	{
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
-		// REMAINING ATTACHMENT ISSUES:
-		// This is causing a segmentation fault, investigate why!
-		if(m_parent != NULL)
+		if(m_parent != NULL) // Just in case we ever do send attachment position too
 			pos = m_parent->getBasePosition();
 		else
 			pos = m_player->getPosition() + v3f(0,BS*1,0);
@@ -1043,8 +1055,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 void PlayerSAO::setBasePosition(const v3f &position)
 {
-	if(m_parent != NULL)
-		return;
+	// This needs to be ran for attachments too
 	ServerActiveObject::setBasePosition(position);
 	m_position_not_sent = true;
 }
@@ -1183,11 +1194,11 @@ void PlayerSAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f 
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players would see them following the parent
-	// instead of sticking to it, plus we can't read and attach to skeletal bones.
+	// are still sent to clients at an interval so players might see them lagging, plus we can't
+	// read and attach to skeletal bones.
 	// If we just attach on the client, the server still sees the child at its original location.
-	// This can break some things, so we also give the server the most accurate representation
-	// even if players will only see the client changes since they override server-sent position.
+	// This breaks some things so we also give the server the most accurate representation
+	// even if players only see the client changes.
 
 	// Server attachment:
 	m_parent = parent;

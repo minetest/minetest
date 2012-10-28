@@ -56,6 +56,11 @@ public:
 	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
 	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
+	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}
+	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
+	virtual bool isPlayer(){return false;}
+	virtual bool isLocalPlayer(){return false;}
 	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time
