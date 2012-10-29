@@ -4832,6 +4832,8 @@ v3f findSpawnPos(ServerMap &map)
 #endif
 
 #if 1
+	s16 water_level = g_settings->getS16("water_level");
+
 	// Try to find a good place a few times
 	for(s32 i=0; i<1000; i++)
 	{
@@ -4843,13 +4845,13 @@ v3f findSpawnPos(ServerMap &map)
 		// Get ground height at point (fallbacks to heightmap function)
 		s16 groundheight = map.findGroundLevel(nodepos2d);
 		// Don't go underwater
-		if(groundheight < WATER_LEVEL)
+		if(groundheight <= water_level)
 		{
 			//infostream<<"-> Underwater"<<std::endl;
 			continue;
 		}
 		// Don't go to high places
-		if(groundheight > WATER_LEVEL + 4)
+		if(groundheight > water_level + 6)
 		{
 			//infostream<<"-> Underwater"<<std::endl;
 			continue;
