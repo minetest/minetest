@@ -3344,19 +3344,27 @@ void ServerMap::saveBlock(MapBlock *block)
 	std::string tmp = o.str();
 	const char *bytes = tmp.c_str();
 	
-	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
+	bool success = true;
+	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK) {
 		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
+		success = false;
+	}
+	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) { // TODO this mught not be the right length
 		infostream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
+		success = false;
+	}
 	int written = sqlite3_step(m_database_write);
-	if(written != SQLITE_DONE)
-		infostream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
-		<<sqlite3_errmsg(m_database)<<std::endl;
+	if(written != SQLITE_DONE) {
+		errorstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
+				<<sqlite3_errmsg(m_database)<<std::endl;
+		success = false;
+	}
 	// Make ready for later reuse
 	sqlite3_reset(m_database_write);
 	
 	// We just wrote it to the disk so clear modified flag
-	block->resetModified();
+	if (success)
+		block->resetModified();
 }
 
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load)
