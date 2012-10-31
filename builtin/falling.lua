@@ -1,11 +1,6 @@
 -- Minetest: builtin/item.lua
 
 --
--- Falling nodes
--- 
-
-
---
 -- Falling stuff
 --
 
