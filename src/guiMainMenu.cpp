@@ -721,7 +721,12 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		{
 			gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
 			if(e != NULL)
-				dst->address = e->getText();
+				if (e->getText() == std::wstring(L"localhost")) {
+				 	dst->address = std::wstring(L"127.0.0.1");
+				}
+				else {
+					dst->address = e->getText();
+				}
 		}
 		{
 			gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
