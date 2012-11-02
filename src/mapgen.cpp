@@ -1228,7 +1228,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 			0.5+(float)p.X/125., 0.5+(float)p.Y/125.,
 			seed-932, 5, 0.7);
 	b = rangelim(b, 0.0, 1000.0);
-	b = pow(b, 7);
+	b = b*b*b*b*b*b*b;
 	b *= 5;
 	b = rangelim(b, 0.5, 1000.0);
 	// Values 1.5...100 give quite horrible looking slopes
