@@ -1,115 +1,116 @@
-# Italian translations for minetest package.
-# Copyright (C) 2011 THE minetest'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
+# Belarusian translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the minetest-c55 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-04-14 06:39+0000\n"
-"Last-Translator: Giuseppe \"Oblomov\" Bilotta <giuseppe.bilotta@gmail.com>\n"
-"Language-Team: Italian\n"
+"PO-Revision-Date: 2012-06-08 19:05+0000\n"
+"Last-Translator: meequz <meequz@gmail.com>\n"
+"Language-Team: Belarusian <be@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-06 05:00+0000\n"
-"X-Generator: Launchpad (build 15353)\n"
-"Language: it\n"
+"X-Launchpad-Export-Date: 2012-06-16 07:24+0000\n"
+"X-Generator: Launchpad (build 15419)\n"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Так"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Назва свету"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "Гульня"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "Стварыць"
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Скасаваць"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Вы памерлі."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Адраджэнне"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid ""
 "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Камбінацыі клавіш. (Калі з гэтым меню праблемы, выдаліце адпведнае з "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
-msgstr "Avanti"
+msgstr "Наперад"
 
 #: src/guiKeyChangeMenu.cpp:138
 msgid "Backward"
-msgstr "Indietro"
+msgstr "Назад"
 
 #: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
 msgid "Left"
-msgstr "Sinistra"
+msgstr "Улева"
 
 #: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
 msgid "Right"
-msgstr "Destra"
+msgstr "Управа"
 
 #: src/guiKeyChangeMenu.cpp:185
 msgid "Use"
-msgstr "Usa"
+msgstr "Ужыць"
 
 #: src/guiKeyChangeMenu.cpp:200
 msgid "Sneak"
-msgstr ""
+msgstr "Ісці крадком"
 
 #: src/guiKeyChangeMenu.cpp:216
 msgid "Jump"
-msgstr "Salta"
+msgstr "Скокнуць"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
-msgstr ""
+msgstr "Кінуць"
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
-msgstr "Invetario"
+msgstr "Інвентар"
 
 #: src/guiKeyChangeMenu.cpp:262
 msgid "Chat"
-msgstr "Parla"
+msgstr "Размова"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
-msgstr ""
+msgstr "Загад"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Console"
-msgstr ""
+msgstr "Кансоль"
 
 #: src/guiKeyChangeMenu.cpp:306
 msgid "Toggle fly"
-msgstr ""
+msgstr "Пераключыць палёт"
 
 #: src/guiKeyChangeMenu.cpp:321
 msgid "Toggle fast"
-msgstr ""
+msgstr "Пераключыць хуткасць"
 
 #: src/guiKeyChangeMenu.cpp:336
 msgid "Range select"
@@ -121,7 +122,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:368
 msgid "Save"
-msgstr "Salva"
+msgstr "Запісаць"
 
 #: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
 #: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
@@ -132,107 +133,107 @@ msgstr "Salva"
 #: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
 #: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
 msgid "press Key"
-msgstr "premi tasto"
+msgstr "Націсніце клавішу"
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
-msgstr ""
+msgstr "Гуляць аднаму"
 
 #: src/guiMainMenu.cpp:218
 msgid "Multiplayer"
-msgstr ""
+msgstr "Гуляць з іншымі"
 
 #: src/guiMainMenu.cpp:219
 msgid "Advanced"
-msgstr ""
+msgstr "Адмысловае"
 
 #: src/guiMainMenu.cpp:220
 msgid "Settings"
-msgstr ""
+msgstr "Налады"
 
 #: src/guiMainMenu.cpp:221
 msgid "Credits"
-msgstr ""
+msgstr "Стваральнікі"
 
 #: src/guiMainMenu.cpp:252
 msgid "Select World:"
-msgstr ""
+msgstr "Пазначце Свет:"
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
-msgstr "Cancella"
+msgstr "Знішчыць"
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
-msgstr ""
+msgstr "Стварыць"
 
 #: src/guiMainMenu.cpp:289
 msgid "Configure"
-msgstr ""
+msgstr "Наладзіць"
 
 #: src/guiMainMenu.cpp:304 src/keycode.cpp:246
 msgid "Play"
-msgstr ""
+msgstr "Гуляць"
 
 #: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
 msgid "Creative Mode"
-msgstr "Modalità creativa"
+msgstr "Творчы рэжым"
 
 #: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
 msgid "Enable Damage"
-msgstr "Attiva Danno"
+msgstr "Пашкоджанні"
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nome/Password"
+msgstr "Імя/Пароль"
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
-msgstr "Indirizzo/Porta"
+msgstr "Адрас/Порт"
 
 #: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
 msgid "Start Game / Connect"
-msgstr "Avvia Gioco / Connetti"
+msgstr "Пачаць гульню / Злучыцца"
 
 #: src/guiMainMenu.cpp:464
 msgid "Leave address blank to start a local server."
-msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
+msgstr "Пакіньце адрас пустым, каб запусціць лакальны сервер."
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
-msgstr ""
+msgstr "Знішчыць Свет"
 
 #: src/guiMainMenu.cpp:512
 msgid "Create world"
-msgstr ""
+msgstr "Стварыць Свет"
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
-msgstr "Alberi strani"
+msgstr "Празрыстае лісце"
 
 #: src/guiMainMenu.cpp:552
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Мяккае святло"
 
 #: src/guiMainMenu.cpp:558
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D аблокі"
 
 #: src/guiMainMenu.cpp:564
 msgid "Opaque water"
-msgstr ""
+msgstr "Празрыстая вада"
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
-msgstr "Modifica tasti"
+msgstr "Змяніць клавішы"
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
-msgstr ""
+msgstr "Патрэбны адрас."
 
 #: src/guiMainMenu.cpp:822
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Нельга знішчыць Свет: нічога не вылучана"
 
 #: src/guiMainMenu.cpp:837
 msgid "Files to be deleted"
@@ -240,55 +241,55 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:853
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Нельга стварыць Свет: ня знойдзена гульняў"
 
 #: src/guiMainMenu.cpp:866
 msgid "Nothing here"
-msgstr ""
+msgstr "Тут нічога няма"
 
 #: src/guiMainMenu.cpp:915
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Не атрымалася выдаліць усе файлы Свету"
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "Procedi"
+msgstr "Працягнуць"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Vecchia password"
+msgstr "Стары пароль"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Nuova password"
+msgstr "Новы пароль"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Conferma password"
+msgstr "Пацверджанне пароля"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr "Modifica"
+msgstr "Змяніць"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Le password non corrispondono!"
+msgstr "Паролі не супадаюць!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Continua"
+msgstr "Далей"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr "Cambia password"
+msgstr "Змяніць пароль"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Выйсці ў Меню"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Esci al S.O."
+msgstr "Выйсці ў АС"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -304,18 +305,29 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Кіраванне па змоўчванні:\n"
+"- WASD: Ісці\n"
+"- Левая мышыная кнопка: капаць/біць\n"
+"- Правая мышыная кнопка: змясціць/выкарыстаць\n"
+"- Колца: пераключыць рэч\n"
+"- 0...9: пераключыць рэч\n"
+"- Shift: ісці крадком\n"
+"- R: Пераключыць выгляд усіх загружаных кубоў\n"
+"- I: Меню інвентара\n"
+"- ESC: Гэтае меню\n"
+"- T: Размова\n"
 
 #: src/keycode.cpp:221
 msgid "Left Button"
-msgstr "Tasto sinistro"
+msgstr "Левая кнопка"
 
 #: src/keycode.cpp:221
 msgid "Middle Button"
-msgstr "Tasto centrale"
+msgstr "Сярэдняя кнопка"
 
 #: src/keycode.cpp:221
 msgid "Right Button"
-msgstr "Tasto destro"
+msgstr "Правая кнопка"
 
 #: src/keycode.cpp:221
 msgid "X Button 1"
@@ -323,15 +335,15 @@ msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Back"
-msgstr "Indietro"
+msgstr "Назад"
 
 #: src/keycode.cpp:222
 msgid "Clear"
-msgstr ""
+msgstr "Ачысціць"
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr "Invio"
+msgstr "Вярнуцца"
 
 #: src/keycode.cpp:222
 msgid "Tab"
@@ -355,11 +367,11 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
 #: src/keycode.cpp:223
 msgid "Pause"
-msgstr ""
+msgstr "Прыпыніць"
 
 #: src/keycode.cpp:223
 msgid "Shift"
@@ -391,15 +403,15 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Accept"
-msgstr ""
+msgstr "Ухваліць"
 
 #: src/keycode.cpp:225
 msgid "End"
-msgstr ""
+msgstr "Канец"
 
 #: src/keycode.cpp:225
 msgid "Home"
-msgstr ""
+msgstr "Дахаты"
 
 #: src/keycode.cpp:225
 msgid "Mode Change"
@@ -407,7 +419,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Next"
-msgstr ""
+msgstr "Наступны"
 
 #: src/keycode.cpp:225
 msgid "Prior"
@@ -415,39 +427,39 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Space"
-msgstr "Spazio"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Down"
-msgstr "Giù"
+msgstr "Уніз"
 
 #: src/keycode.cpp:226
 msgid "Execute"
-msgstr ""
+msgstr "Выканаць"
 
 #: src/keycode.cpp:226
 msgid "Print"
-msgstr "Stampa"
+msgstr "Друкаваць"
 
 #: src/keycode.cpp:226
 msgid "Select"
-msgstr ""
+msgstr "Выбраць"
 
 #: src/keycode.cpp:226
 msgid "Up"
-msgstr ""
+msgstr "Дагары"
 
 #: src/keycode.cpp:227
 msgid "Help"
-msgstr ""
+msgstr "Даведка"
 
 #: src/keycode.cpp:227
 msgid "Insert"
-msgstr ""
+msgstr "Уставіць"
 
 #: src/keycode.cpp:227
 msgid "Snapshot"
-msgstr ""
+msgstr "Здымак"
 
 #: src/keycode.cpp:230
 msgid "Left Windows"
@@ -455,7 +467,7 @@ msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Apps"
-msgstr ""
+msgstr "Прыкладанні"
 
 #: src/keycode.cpp:231
 msgid "Numpad 0"
@@ -531,15 +543,15 @@ msgstr ""
 
 #: src/keycode.cpp:238
 msgid "Left Shift"
-msgstr ""
+msgstr "Левы Shift"
 
 #: src/keycode.cpp:238
 msgid "Right Shift"
-msgstr ""
+msgstr "Правы Shift"
 
 #: src/keycode.cpp:239
 msgid "Left Control"
-msgstr ""
+msgstr "Левы Control"
 
 #: src/keycode.cpp:239
 msgid "Left Menu"
@@ -547,7 +559,7 @@ msgstr ""
 
 #: src/keycode.cpp:239
 msgid "Right Control"
-msgstr ""
+msgstr "Правы Control"
 
 #: src/keycode.cpp:239
 msgid "Right Menu"
@@ -595,23 +607,23 @@ msgstr ""
 
 #: src/keycode.cpp:246
 msgid "Zoom"
-msgstr ""
+msgstr "Маштаб"
 
 #: src/main.cpp:1379
 msgid "Main Menu"
-msgstr ""
+msgstr "Галоўнае меню"
 
 #: src/main.cpp:1601
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Не атрымалася ініцыялізаваць Свет"
 
 #: src/main.cpp:1613
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Не абраны ніякі Свет і не пазначаны ніякі адрас. Няма што рабіць."
 
 #: src/main.cpp:1621
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Не атрымалася знайсці ці загрузіць Свет \""
 
 #: src/main.cpp:1635
 msgid "Invalid gamespec."
@@ -619,7 +631,7 @@ msgstr ""
 
 #: src/main.cpp:1675
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Памылка злучэння (час выйшаў?)"
 
 #: src/main.cpp:1686
 msgid ""

@@ -1,22 +1,21 @@
-# Italian translations for minetest package.
-# Copyright (C) 2011 THE minetest'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
+# Swedish translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the minetest-c55 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-04-14 06:39+0000\n"
-"Last-Translator: Giuseppe \"Oblomov\" Bilotta <giuseppe.bilotta@gmail.com>\n"
-"Language-Team: Italian\n"
+"PO-Revision-Date: 2012-05-07 04:42+0000\n"
+"Last-Translator: Juhani Numminen <juhaninumminen0@gmail.com>\n"
+"Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-06-06 05:00+0000\n"
 "X-Generator: Launchpad (build 15353)\n"
-"Language: it\n"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -40,7 +39,7 @@ msgstr ""
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Avbryt"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -57,23 +56,23 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
-msgstr "Avanti"
+msgstr "Gå vidare"
 
 #: src/guiKeyChangeMenu.cpp:138
 msgid "Backward"
-msgstr "Indietro"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
 msgid "Left"
-msgstr "Sinistra"
+msgstr "Vänster"
 
 #: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
 msgid "Right"
-msgstr "Destra"
+msgstr "Höger"
 
 #: src/guiKeyChangeMenu.cpp:185
 msgid "Use"
-msgstr "Usa"
+msgstr "Använd"
 
 #: src/guiKeyChangeMenu.cpp:200
 msgid "Sneak"
@@ -81,7 +80,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:216
 msgid "Jump"
-msgstr "Salta"
+msgstr "Hoppa"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
@@ -89,11 +88,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
-msgstr "Invetario"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:262
 msgid "Chat"
-msgstr "Parla"
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
@@ -121,7 +120,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:368
 msgid "Save"
-msgstr "Salva"
+msgstr "Spara"
 
 #: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
 #: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
@@ -132,7 +131,7 @@ msgstr "Salva"
 #: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
 #: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
 msgid "press Key"
-msgstr "premi tasto"
+msgstr ""
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
@@ -160,7 +159,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
-msgstr "Cancella"
+msgstr ""
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
@@ -176,27 +175,27 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
 msgid "Creative Mode"
-msgstr "Modalità creativa"
+msgstr ""
 
 #: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
 msgid "Enable Damage"
-msgstr "Attiva Danno"
+msgstr ""
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nome/Password"
+msgstr ""
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
-msgstr "Indirizzo/Porta"
+msgstr ""
 
 #: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
 msgid "Start Game / Connect"
-msgstr "Avvia Gioco / Connetti"
+msgstr ""
 
 #: src/guiMainMenu.cpp:464
 msgid "Leave address blank to start a local server."
-msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
+msgstr ""
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
@@ -208,7 +207,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
-msgstr "Alberi strani"
+msgstr ""
 
 #: src/guiMainMenu.cpp:552
 msgid "Smooth Lighting"
@@ -224,7 +223,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
-msgstr "Modifica tasti"
+msgstr ""
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
@@ -252,35 +251,35 @@ msgstr ""
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "Procedi"
+msgstr ""
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Vecchia password"
+msgstr ""
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Nuova password"
+msgstr ""
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Conferma password"
+msgstr ""
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr "Modifica"
+msgstr ""
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Le password non corrispondono!"
+msgstr ""
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Continua"
+msgstr ""
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr "Cambia password"
+msgstr ""
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
@@ -288,7 +287,7 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Esci al S.O."
+msgstr ""
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -307,23 +306,23 @@ msgstr ""
 
 #: src/keycode.cpp:221
 msgid "Left Button"
-msgstr "Tasto sinistro"
+msgstr "Vänsterknapp"
 
 #: src/keycode.cpp:221
 msgid "Middle Button"
-msgstr "Tasto centrale"
+msgstr "Mittenknapp"
 
 #: src/keycode.cpp:221
 msgid "Right Button"
-msgstr "Tasto destro"
+msgstr "Högerknapp"
 
 #: src/keycode.cpp:221
 msgid "X Button 1"
-msgstr ""
+msgstr "X knapp 1"
 
 #: src/keycode.cpp:222
 msgid "Back"
-msgstr "Indietro"
+msgstr "Bakåt"
 
 #: src/keycode.cpp:222
 msgid "Clear"
@@ -331,7 +330,7 @@ msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr "Invio"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Tab"
@@ -343,11 +342,11 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Capital"
-msgstr ""
+msgstr "Kapital"
 
 #: src/keycode.cpp:223
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/keycode.cpp:223
 msgid "Kana"
@@ -355,11 +354,11 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/keycode.cpp:223
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: src/keycode.cpp:223
 msgid "Shift"
@@ -371,7 +370,7 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:224
 msgid "Final"
@@ -379,11 +378,11 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:224
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:224
 msgid "Nonconvert"
@@ -415,11 +414,11 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Space"
-msgstr "Spazio"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Down"
-msgstr "Giù"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Execute"
@@ -427,7 +426,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Print"
-msgstr "Stampa"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Select"

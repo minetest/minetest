@@ -1,22 +1,21 @@
-# Italian translations for minetest package.
-# Copyright (C) 2011 THE minetest'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
+# Russian translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the minetest-c55 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-04-14 06:39+0000\n"
-"Last-Translator: Giuseppe \"Oblomov\" Bilotta <giuseppe.bilotta@gmail.com>\n"
-"Language-Team: Italian\n"
+"PO-Revision-Date: 2012-05-06 11:18+0000\n"
+"Last-Translator: Дмитрий <Unknown>\n"
+"Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-06-06 05:00+0000\n"
 "X-Generator: Launchpad (build 15353)\n"
-"Language: it\n"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -40,7 +39,7 @@ msgstr ""
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Отмена"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -57,23 +56,23 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
-msgstr "Avanti"
+msgstr "Вперед"
 
 #: src/guiKeyChangeMenu.cpp:138
 msgid "Backward"
-msgstr "Indietro"
+msgstr "Назад"
 
 #: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
 msgid "Left"
-msgstr "Sinistra"
+msgstr "Влево"
 
 #: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
 msgid "Right"
-msgstr "Destra"
+msgstr "Вправо"
 
 #: src/guiKeyChangeMenu.cpp:185
 msgid "Use"
-msgstr "Usa"
+msgstr "Использовать"
 
 #: src/guiKeyChangeMenu.cpp:200
 msgid "Sneak"
@@ -81,7 +80,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:216
 msgid "Jump"
-msgstr "Salta"
+msgstr "Прыжок"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
@@ -89,11 +88,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
-msgstr "Invetario"
+msgstr "Инвентарь"
 
 #: src/guiKeyChangeMenu.cpp:262
 msgid "Chat"
-msgstr "Parla"
+msgstr "Чат"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
@@ -121,7 +120,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:368
 msgid "Save"
-msgstr "Salva"
+msgstr "Сохранить"
 
 #: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
 #: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
@@ -132,7 +131,7 @@ msgstr "Salva"
 #: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
 #: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
 msgid "press Key"
-msgstr "premi tasto"
+msgstr "нажмите Клавишу"
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
@@ -160,7 +159,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
-msgstr "Cancella"
+msgstr ""
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
@@ -176,27 +175,27 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
 msgid "Creative Mode"
-msgstr "Modalità creativa"
+msgstr "Творческий режим"
 
 #: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
 msgid "Enable Damage"
-msgstr "Attiva Danno"
+msgstr ""
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nome/Password"
+msgstr "Имя/Пароль"
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
-msgstr "Indirizzo/Porta"
+msgstr "Адрес/Порт"
 
 #: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
 msgid "Start Game / Connect"
-msgstr "Avvia Gioco / Connetti"
+msgstr "Начать игру / Подключиться"
 
 #: src/guiMainMenu.cpp:464
 msgid "Leave address blank to start a local server."
-msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
+msgstr "Оставьте поле пустым, чтобы создать локальный сервер"
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
@@ -208,11 +207,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
-msgstr "Alberi strani"
+msgstr "Красивые деревья"
 
 #: src/guiMainMenu.cpp:552
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Сглаженное освещение"
 
 #: src/guiMainMenu.cpp:558
 msgid "3D Clouds"
@@ -224,7 +223,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
-msgstr "Modifica tasti"
+msgstr "Изменить клавиши"
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
@@ -252,35 +251,35 @@ msgstr ""
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "Procedi"
+msgstr "Продолжить"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Vecchia password"
+msgstr "Старый пароль"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Nuova password"
+msgstr "Новый пароль"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Conferma password"
+msgstr "Подтвердите пароль"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr "Modifica"
+msgstr "Изменить"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Le password non corrispondono!"
+msgstr "Пароли не совпадают!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Continua"
+msgstr "Продолжить"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr "Cambia password"
+msgstr "Изменить пароль"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
@@ -288,7 +287,7 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Esci al S.O."
+msgstr "Выход в ОС"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -304,18 +303,29 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Управление по умолчанию:\n"
+"- WASD: Идти\n"
+"- ЛКМ: копать/бить\n"
+"- ПКМ: поставить/использовать\n"
+"- Колесо мыши: выбрать предмет\n"
+"- 0...9: выбрать предмет\n"
+"- Shift: красться\n"
+"- R: Просмотр загруженных чанков\n"
+"- I: Инвентарь\n"
+"- ESC: Меню\n"
+"- T: Чат\n"
 
 #: src/keycode.cpp:221
 msgid "Left Button"
-msgstr "Tasto sinistro"
+msgstr "Левая кнопка"
 
 #: src/keycode.cpp:221
 msgid "Middle Button"
-msgstr "Tasto centrale"
+msgstr "Средняя кнопка"
 
 #: src/keycode.cpp:221
 msgid "Right Button"
-msgstr "Tasto destro"
+msgstr "Правая кнопка"
 
 #: src/keycode.cpp:221
 msgid "X Button 1"
@@ -323,7 +333,7 @@ msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Back"
-msgstr "Indietro"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Clear"
@@ -331,7 +341,7 @@ msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr "Invio"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Tab"
@@ -415,11 +425,11 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Space"
-msgstr "Spazio"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Down"
-msgstr "Giù"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Execute"
@@ -427,7 +437,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Print"
-msgstr "Stampa"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Select"
@@ -447,7 +457,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Snapshot"
-msgstr ""
+msgstr "Сделать сниок"
 
 #: src/keycode.cpp:230
 msgid "Left Windows"
@@ -471,67 +481,67 @@ msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Sleep"
-msgstr ""
+msgstr "Заснуть"
 
 #: src/keycode.cpp:232
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp:232
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp:232
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp:232
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp:232
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp:232
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp:233
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp:233
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp:233
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp:233
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp:233
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp:233
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp:237
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:237
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:238
 msgid "Left Shift"
-msgstr ""
+msgstr "Левый Shift"
 
 #: src/keycode.cpp:238
 msgid "Right Shift"
@@ -539,7 +549,7 @@ msgstr ""
 
 #: src/keycode.cpp:239
 msgid "Left Control"
-msgstr ""
+msgstr "Левый Ctrl"
 
 #: src/keycode.cpp:239
 msgid "Left Menu"
@@ -547,7 +557,7 @@ msgstr ""
 
 #: src/keycode.cpp:239
 msgid "Right Control"
-msgstr ""
+msgstr "Правый Ctrl"
 
 #: src/keycode.cpp:239
 msgid "Right Menu"
@@ -555,19 +565,19 @@ msgstr ""
 
 #: src/keycode.cpp:241
 msgid "Comma"
-msgstr ""
+msgstr "Запятая (,)"
 
 #: src/keycode.cpp:241
 msgid "Minus"
-msgstr ""
+msgstr "Минус (-)"
 
 #: src/keycode.cpp:241
 msgid "Period"
-msgstr ""
+msgstr "Точка (.)"
 
 #: src/keycode.cpp:241
 msgid "Plus"
-msgstr ""
+msgstr "Плюс (+)"
 
 #: src/keycode.cpp:245
 msgid "Attn"
@@ -595,7 +605,7 @@ msgstr ""
 
 #: src/keycode.cpp:246
 msgid "Zoom"
-msgstr ""
+msgstr "Приближение"
 
 #: src/main.cpp:1379
 msgid "Main Menu"

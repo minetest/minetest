@@ -1,127 +1,126 @@
-# Italian translations for minetest package.
-# Copyright (C) 2011 THE minetest'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
+# Dutch translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the minetest-c55 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-04-14 06:39+0000\n"
-"Last-Translator: Giuseppe \"Oblomov\" Bilotta <giuseppe.bilotta@gmail.com>\n"
-"Language-Team: Italian\n"
+"PO-Revision-Date: 2012-06-12 15:08+0000\n"
+"Last-Translator: David <David_Busstra@hotmail.com>\n"
+"Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-06 05:00+0000\n"
-"X-Generator: Launchpad (build 15353)\n"
-"Language: it\n"
+"X-Launchpad-Export-Date: 2012-06-16 07:24+0000\n"
+"X-Generator: Launchpad (build 15419)\n"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Nee"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Wereld Naam"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "Spel"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "Creëeren"
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Annuleren"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Je bent dood."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Terugkeren"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid ""
 "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
+msgstr "Keybindings"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
-msgstr "Avanti"
+msgstr "Vooruit"
 
 #: src/guiKeyChangeMenu.cpp:138
 msgid "Backward"
-msgstr "Indietro"
+msgstr "Terug"
 
 #: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
 msgid "Left"
-msgstr "Sinistra"
+msgstr "Links"
 
 #: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
 msgid "Right"
-msgstr "Destra"
+msgstr "Rechts"
 
 #: src/guiKeyChangeMenu.cpp:185
 msgid "Use"
-msgstr "Usa"
+msgstr "Gebruiken"
 
 #: src/guiKeyChangeMenu.cpp:200
 msgid "Sneak"
-msgstr ""
+msgstr "Sluipen"
 
 #: src/guiKeyChangeMenu.cpp:216
 msgid "Jump"
-msgstr "Salta"
+msgstr "Springen"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
-msgstr ""
+msgstr "Laten vallen"
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
-msgstr "Invetario"
+msgstr "Inventaris"
 
 #: src/guiKeyChangeMenu.cpp:262
 msgid "Chat"
-msgstr "Parla"
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
-msgstr ""
+msgstr "Commando"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Console"
-msgstr ""
+msgstr "Console"
 
 #: src/guiKeyChangeMenu.cpp:306
 msgid "Toggle fly"
-msgstr ""
+msgstr "Vliegen schakelen"
 
 #: src/guiKeyChangeMenu.cpp:321
 msgid "Toggle fast"
-msgstr ""
+msgstr "Snel schakelen"
 
 #: src/guiKeyChangeMenu.cpp:336
 msgid "Range select"
-msgstr ""
+msgstr "Afstand selecteren"
 
 #: src/guiKeyChangeMenu.cpp:353
 msgid "Print stacks"
-msgstr ""
+msgstr "Print stapels"
 
 #: src/guiKeyChangeMenu.cpp:368
 msgid "Save"
-msgstr "Salva"
+msgstr "Opslaan"
 
 #: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
 #: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
@@ -132,163 +131,163 @@ msgstr "Salva"
 #: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
 #: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
 msgid "press Key"
-msgstr "premi tasto"
+msgstr "Druk toets"
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
-msgstr ""
+msgstr "Singleplayer"
 
 #: src/guiMainMenu.cpp:218
 msgid "Multiplayer"
-msgstr ""
+msgstr "Multiplayer"
 
 #: src/guiMainMenu.cpp:219
 msgid "Advanced"
-msgstr ""
+msgstr "Geavanceerd"
 
 #: src/guiMainMenu.cpp:220
 msgid "Settings"
-msgstr ""
+msgstr "Instellingen"
 
 #: src/guiMainMenu.cpp:221
 msgid "Credits"
-msgstr ""
+msgstr "Met dank aan"
 
 #: src/guiMainMenu.cpp:252
 msgid "Select World:"
-msgstr ""
+msgstr "Selecteer Wereld"
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
-msgstr "Cancella"
+msgstr "Delete"
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
-msgstr ""
+msgstr "Nieuw"
 
 #: src/guiMainMenu.cpp:289
 msgid "Configure"
-msgstr ""
+msgstr "Configureren"
 
 #: src/guiMainMenu.cpp:304 src/keycode.cpp:246
 msgid "Play"
-msgstr ""
+msgstr "Play"
 
 #: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
 msgid "Creative Mode"
-msgstr "Modalità creativa"
+msgstr "Creatieve Modus"
 
 #: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
 msgid "Enable Damage"
-msgstr "Attiva Danno"
+msgstr "Schade Inschakelen"
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nome/Password"
+msgstr "Naam/Wachtwoord"
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
-msgstr "Indirizzo/Porta"
+msgstr "Adres/Port"
 
 #: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
 msgid "Start Game / Connect"
-msgstr "Avvia Gioco / Connetti"
+msgstr "Start Spel/Verbinden"
 
 #: src/guiMainMenu.cpp:464
 msgid "Leave address blank to start a local server."
-msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
+msgstr "Laat het adres blanco om een lokale server te starten"
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
-msgstr ""
+msgstr "Wereld verwijderen"
 
 #: src/guiMainMenu.cpp:512
 msgid "Create world"
-msgstr ""
+msgstr "Wereld creëren"
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
-msgstr "Alberi strani"
+msgstr "Uitgebreide bomen"
 
 #: src/guiMainMenu.cpp:552
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Gladde Verlichting"
 
 #: src/guiMainMenu.cpp:558
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D Wolken"
 
 #: src/guiMainMenu.cpp:564
 msgid "Opaque water"
-msgstr ""
+msgstr "Ondoorzichtig water"
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
-msgstr "Modifica tasti"
+msgstr "Toetsen veranderen"
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
-msgstr ""
+msgstr "Adres nodig"
 
 #: src/guiMainMenu.cpp:822
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Kan de wereld niet verwijderen: Niets geselecteerd"
 
 #: src/guiMainMenu.cpp:837
 msgid "Files to be deleted"
-msgstr ""
+msgstr "Bestanden die verwijderd zullen worden"
 
 #: src/guiMainMenu.cpp:853
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Kan wereld niet maken: Geen spellen gevonden"
 
 #: src/guiMainMenu.cpp:866
 msgid "Nothing here"
-msgstr ""
+msgstr "Hier is niets"
 
 #: src/guiMainMenu.cpp:915
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Het verwijderen van alle wereld bestanden is mislukt"
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "Procedi"
+msgstr "Doorgaan"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Vecchia password"
+msgstr "Oud Wachtwoord"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Nuova password"
+msgstr "Nieuw Wachtwoord"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Conferma password"
+msgstr "Bevestig Wachtwoord"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr "Modifica"
+msgstr "Wijzigen"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Le password non corrispondono!"
+msgstr "Wachtwoorden komen niet overeen!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Continua"
+msgstr "Ga verder"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr "Cambia password"
+msgstr "Wachtwoord wijzigen"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Afsluiten naar Menu"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Esci al S.O."
+msgstr "Afsluiten naar OS"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -304,325 +303,338 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Standaard Besturing:\n"
+"- WASD: Lopen\n"
+"- Linker Muisknop: Graven/Slaan\n"
+"- Rechter Muisknop: Plaatsen/Gebruiken\n"
+"- Muiswiel: Selecteer item\n"
+"- 0...9: Selecteer item\n"
+"- Shift: Sluipen\n"
+"- R: Schakel het bekijken van alle geladen stukken\n"
+"- I: Inventaris menu\n"
+"- ESC: Dit menu\n"
+"- T: Chat\n"
 
 #: src/keycode.cpp:221
 msgid "Left Button"
-msgstr "Tasto sinistro"
+msgstr "Linker muisknop"
 
 #: src/keycode.cpp:221
 msgid "Middle Button"
-msgstr "Tasto centrale"
+msgstr "Middelste muisknop"
 
 #: src/keycode.cpp:221
 msgid "Right Button"
-msgstr "Tasto destro"
+msgstr "Rechter muisknop"
 
 #: src/keycode.cpp:221
 msgid "X Button 1"
-msgstr ""
+msgstr "X Knop 1"
 
 #: src/keycode.cpp:222
 msgid "Back"
-msgstr "Indietro"
+msgstr "Terug"
 
 #: src/keycode.cpp:222
 msgid "Clear"
-msgstr ""
+msgstr "Leegmaken"
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr "Invio"
+msgstr "Terug"
 
 #: src/keycode.cpp:222
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:222
 msgid "X Button 2"
-msgstr ""
+msgstr "X Knop 2"
 
 #: src/keycode.cpp:223
 msgid "Capital"
-msgstr ""
+msgstr "Kapitaal"
 
 #: src/keycode.cpp:223
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/keycode.cpp:223
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp:223
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/keycode.cpp:223
 msgid "Pause"
-msgstr ""
+msgstr "Pauze"
 
 #: src/keycode.cpp:223
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:224
 msgid "Convert"
-msgstr ""
+msgstr "Omrekenen"
 
 #: src/keycode.cpp:224
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:224
 msgid "Final"
-msgstr ""
+msgstr "Eindversie"
 
 #: src/keycode.cpp:224
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:224
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:224
 msgid "Nonconvert"
-msgstr ""
+msgstr "Niet omgezet"
 
 #: src/keycode.cpp:225
 msgid "Accept"
-msgstr ""
+msgstr "Accepteren"
 
 #: src/keycode.cpp:225
 msgid "End"
-msgstr ""
+msgstr "Einde"
 
 #: src/keycode.cpp:225
 msgid "Home"
-msgstr ""
+msgstr "Startpagina"
 
 #: src/keycode.cpp:225
 msgid "Mode Change"
-msgstr ""
+msgstr "Verander Modus"
 
 #: src/keycode.cpp:225
 msgid "Next"
-msgstr ""
+msgstr "Volgende"
 
 #: src/keycode.cpp:225
 msgid "Prior"
-msgstr ""
+msgstr "Vorige"
 
 #: src/keycode.cpp:225
 msgid "Space"
-msgstr "Spazio"
+msgstr "Spatie"
 
 #: src/keycode.cpp:226
 msgid "Down"
-msgstr "Giù"
+msgstr "Omlaag"
 
 #: src/keycode.cpp:226
 msgid "Execute"
-msgstr ""
+msgstr "Uitvoeren"
 
 #: src/keycode.cpp:226
 msgid "Print"
-msgstr "Stampa"
+msgstr "Afdrukken"
 
 #: src/keycode.cpp:226
 msgid "Select"
-msgstr ""
+msgstr "Selecteer"
 
 #: src/keycode.cpp:226
 msgid "Up"
-msgstr ""
+msgstr "Omhoog"
 
 #: src/keycode.cpp:227
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 #: src/keycode.cpp:227
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/keycode.cpp:227
 msgid "Snapshot"
-msgstr ""
+msgstr "Snapshot"
 
 #: src/keycode.cpp:230
 msgid "Left Windows"
-msgstr ""
+msgstr "Linker Windows"
 
 #: src/keycode.cpp:231
 msgid "Apps"
-msgstr ""
+msgstr "Applicaties"
 
 #: src/keycode.cpp:231
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/keycode.cpp:231
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp:231
 msgid "Right Windows"
-msgstr ""
+msgstr "Rechter Windows"
 
 #: src/keycode.cpp:231
 msgid "Sleep"
-msgstr ""
+msgstr "Pauzestand"
 
 #: src/keycode.cpp:232
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp:232
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp:232
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp:232
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp:232
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp:232
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp:233
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp:233
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp:233
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp:233
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp:233
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp:233
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp:237
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:237
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:238
 msgid "Left Shift"
-msgstr ""
+msgstr "Linker Shift-toets"
 
 #: src/keycode.cpp:238
 msgid "Right Shift"
-msgstr ""
+msgstr "Rechter Shift-toets"
 
 #: src/keycode.cpp:239
 msgid "Left Control"
-msgstr ""
+msgstr "Linker-Control"
 
 #: src/keycode.cpp:239
 msgid "Left Menu"
-msgstr ""
+msgstr "Linker Menu-toets"
 
 #: src/keycode.cpp:239
 msgid "Right Control"
-msgstr ""
+msgstr "Rechter Control-toets"
 
 #: src/keycode.cpp:239
 msgid "Right Menu"
-msgstr ""
+msgstr "Rechter Menu-toets"
 
 #: src/keycode.cpp:241
 msgid "Comma"
-msgstr ""
+msgstr "Komma"
 
 #: src/keycode.cpp:241
 msgid "Minus"
-msgstr ""
+msgstr "Min"
 
 #: src/keycode.cpp:241
 msgid "Period"
-msgstr ""
+msgstr "Punt"
 
 #: src/keycode.cpp:241
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp:245
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:245
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:246
 msgid "Erase OEF"
-msgstr ""
+msgstr "Wis OEF"
 
 #: src/keycode.cpp:246
 msgid "ExSel"
-msgstr ""
+msgstr "Exsel"
 
 #: src/keycode.cpp:246
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Wissen"
 
 #: src/keycode.cpp:246
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:246
 msgid "Zoom"
-msgstr ""
+msgstr "Zoomen"
 
 #: src/main.cpp:1379
 msgid "Main Menu"
-msgstr ""
+msgstr "Hoofdmenu"
 
 #: src/main.cpp:1601
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Het initialiseren van de wereld is mislukt"
 
 #: src/main.cpp:1613
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Geen wereld geselecteerd en geen adres gegeven. Niets om te doen."
 
 #: src/main.cpp:1621
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Kan het spel niet vinden of laden"
 
 #: src/main.cpp:1635
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Incorrecte gamespec."
 
 #: src/main.cpp:1675
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Verbindingsfout (time out?)"
 
 #: src/main.cpp:1686
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Zie debug.txt voor details"
