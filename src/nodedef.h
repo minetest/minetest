@@ -209,6 +209,8 @@ struct ContentFeatures
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
 	u8 liquid_viscosity;
+	// Is liquid renewable (new liquid source will be created between 2 existing)
+	bool liquid_renewable;
 	// Amount of light the node emits
 	u8 light_source;
 	u32 damage_per_second;
