@@ -259,6 +259,7 @@ minetest.register_node(":air", {
 	diggable = false,
 	buildable_to = true,
 	air_equivalent = true,
+	drop = "",
 	groups = {not_in_creative_inventory=1},
 })
 
@@ -274,6 +275,7 @@ minetest.register_node(":ignore", {
 	diggable = false,
 	buildable_to = true, -- A way to remove accidentally placed ignores
 	air_equivalent = true,
+	drop = "",
 	groups = {not_in_creative_inventory=1},
 })
 
