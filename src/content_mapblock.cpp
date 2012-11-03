@@ -492,15 +492,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// -Z towards +Z, thus the direction is +Z.
 				// Rotate texture to make animation go in flow direction
 				// Positive if liquid moves towards +Z
-				int dz = (corner_levels[side_corners[2][0]] +
-						corner_levels[side_corners[2][1]] <
-						corner_levels[side_corners[3][0]] +
-						corner_levels[side_corners[3][1]]);
+				int dz = (corner_levels[side_corners[3][0]] +
+						corner_levels[side_corners[3][1]]) -
+						(corner_levels[side_corners[2][0]] +
+						corner_levels[side_corners[2][1]]);
 				// Positive if liquid moves towards +X
-				int dx = (corner_levels[side_corners[0][0]] +
-						corner_levels[side_corners[0][1]] <
-						corner_levels[side_corners[1][0]] +
-						corner_levels[side_corners[1][1]]);
+				int dx = (corner_levels[side_corners[1][0]] +
+						corner_levels[side_corners[1][1]]) -
+						(corner_levels[side_corners[0][0]] +
+						corner_levels[side_corners[0][1]]);
 				// -X
 				if(-dx >= abs(dz))
 				{
