@@ -142,5 +142,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.05");
 	settings->setDefault("ignore_world_load_errors", "false");
+	settings->setDefault("mip_map", "false");
+	settings->setDefault("anisotropic_filter", "false");
+	settings->setDefault("bilinear_filter", "false");
+	settings->setDefault("trilinear_filter", "false");
+
 }
 
