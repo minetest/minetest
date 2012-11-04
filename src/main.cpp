@@ -1292,9 +1292,6 @@ int main(int argc, char *argv[])
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
-	// Disable mipmaps (because some of them look ugly)
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.
@@ -1439,6 +1436,11 @@ int main(int argc, char *argv[])
 				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
 				menudata.clouds_3d = g_settings->getBool("enable_3d_clouds");
 				menudata.opaque_water = g_settings->getBool("opaque_water");
+				menudata.mip_map = g_settings->getBool("mip_map");
+				menudata.anisotropic_filter = g_settings->getBool("anisotropic_filter");
+				menudata.bilinear_filter = g_settings->getBool("bilinear_filter");
+				menudata.trilinear_filter = g_settings->getBool("trilinear_filter");
+				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
 				// Default to selecting nothing
@@ -1552,6 +1554,12 @@ int main(int argc, char *argv[])
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
 				g_settings->set("opaque_water", itos(menudata.opaque_water));
+
+				g_settings->set("mip_map", itos(menudata.mip_map));
+				g_settings->set("anisotropic_filter", itos(menudata.anisotropic_filter));
+				g_settings->set("bilinear_filter", itos(menudata.bilinear_filter));
+				g_settings->set("trilinear_filter", itos(menudata.trilinear_filter));
+
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
 				g_settings->set("name", playername);
