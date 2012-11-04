@@ -520,7 +520,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(m_animations_sent == false){
 		m_animations_sent = true;
-		std::string str = gob_cmd_set_animations(m_animation_frames, m_animation_speed, m_animation_blend);
+		std::string str = gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -529,7 +529,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(m_animations_bone_sent == false){
 		m_animations_bone_sent = true;
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			std::string str = gob_cmd_set_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
+			std::string str = gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
@@ -538,7 +538,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(m_attachment_sent == false){
 		m_attachment_sent = true;
-		std::string str = gob_cmd_set_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -555,9 +555,18 @@ std::string LuaEntitySAO::getClientInitializationData()
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
 	writeS16(os, m_hp);
-	writeU8(os, 2); // number of messages stuffed in here
+
+	writeU8(os, 4 + m_animation_bone.size()); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
+	if(m_animation_bone.size()){
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
+			os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
+		}
+	}
+	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+
 	// return result
 	return os.str();
 }
@@ -948,9 +957,19 @@ std::string PlayerSAO::getClientInitializationData()
 	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 	writeF1000(os, m_player->getYaw());
 	writeS16(os, getHP());
-	writeU8(os, 2); // number of messages stuffed in here
+
+	writeU8(os, 4 + m_animation_bone.size()); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
+	if(m_animation_bone.size()){
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
+			os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
+		}
+	}
+	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+
+	// return result
 	return os.str();
 }
 
@@ -1085,7 +1104,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if(m_animations_sent == false){
 		m_animations_sent = true;
-		std::string str = gob_cmd_set_animations(m_animation_frames, m_animation_speed, m_animation_blend);
+		std::string str = gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -1094,7 +1113,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(m_animations_bone_sent == false){
 		m_animations_bone_sent = true;
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			std::string str = gob_cmd_set_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
+			std::string str = gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
@@ -1103,7 +1122,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if(m_attachment_sent == false){
 		m_attachment_sent = true;
-		std::string str = gob_cmd_set_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);

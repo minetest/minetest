@@ -264,7 +264,7 @@ private:
 	float m_animation_blend;
 	bool m_animations_sent;
 
-	std::map<std::string, core::vector2d<v3f> > m_animation_bone;
+	std::map<std::string, core::vector2d<v3f> > m_animation_bone; // stores position and rotation for each bone name
 	bool m_animations_bone_sent;
 	
 	ServerActiveObject *m_parent;

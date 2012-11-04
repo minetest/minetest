@@ -92,7 +92,7 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
-std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_blend)
+std::string gob_cmd_update_animations(v2f frames, float frame_speed, float frame_blend)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -104,7 +104,7 @@ std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_bl
 	return os.str();
 }
 
-std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation)
+std::string gob_cmd_update_bone_posrot(std::string bone, v3f position, v3f rotation)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -116,7 +116,7 @@ std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation
 	return os.str();
 }
 
-std::string gob_cmd_set_attachment(int parent_id, std::string bone, v3f position, v3f rotation)
+std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 

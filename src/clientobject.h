@@ -49,7 +49,7 @@ public:
 
 	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr){}
-	virtual void removeFromScene(){}
+	virtual void removeFromScene(bool permanent){}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
@@ -61,6 +61,7 @@ public:
 	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
 	virtual bool isPlayer(){return false;}
 	virtual bool isLocalPlayer(){return false;}
+	virtual void updateParent(){}
 	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time

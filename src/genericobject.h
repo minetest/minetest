@@ -57,11 +57,11 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_set_animations(v2f frames, float frame_speed, float frame_blend);
+std::string gob_cmd_update_animations(v2f frames, float frame_speed, float frame_blend);
 
-std::string gob_cmd_set_bone_posrot(std::string bone, v3f position, v3f rotation);
+std::string gob_cmd_update_bone_posrot(std::string bone, v3f position, v3f rotation);
 
-std::string gob_cmd_set_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
+std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_punched(s16 damage, s16 result_hp);
 

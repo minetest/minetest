@@ -2315,7 +2315,7 @@ void ClientEnvironment::removeActiveObject(u16 id)
 				<<"id="<<id<<" not found"<<std::endl;
 		return;
 	}
-	obj->removeFromScene();
+	obj->removeFromScene(true);
 	delete obj;
 	m_active_objects.remove(id);
 }

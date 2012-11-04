@@ -51,6 +51,8 @@ struct ToolCapabilities;
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
+std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+
 /*
 	SmoothTranslator
 */
@@ -580,8 +582,7 @@ private:
 	v2f m_frames;
 	int m_frame_speed;
 	int m_frame_blend;
-	std::map<std::string, core::vector2d<v3f> > m_bone_posrot;
-	ClientActiveObject* m_attachment_parent;
+	std::map<std::string, core::vector2d<v3f> > m_bone_posrot; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -624,7 +625,6 @@ public:
 		m_frame_speed(15),
 		m_frame_blend(0),
 		// Nothing to do for m_bone_posrot
-		m_attachment_parent(NULL),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
@@ -693,28 +693,43 @@ public:
 	}
 	core::aabbox3d<f32>* getSelectionBox()
 	{
-		if(!m_prop.is_visible || !m_is_visible || m_is_local_player)
+		if(!m_prop.is_visible || !m_is_visible || m_is_local_player || getParent() != NULL)
 			return NULL;
 		return &m_selection_box;
 	}
 	v3f getPosition()
 	{
+		if(getParent() != NULL){
+			if(m_meshnode)
+				return m_meshnode->getAbsolutePosition();
+			if(m_animated_meshnode)
+				return m_animated_meshnode->getAbsolutePosition();
+			if(m_spritenode)
+				return m_spritenode->getAbsolutePosition();
+			return v3f(0,0,0); // Just in case
+		}
 		return pos_translator.vect_show;
 	}
 
 	scene::IMeshSceneNode *getMeshSceneNode()
 	{
-		return m_meshnode;
+		if(m_meshnode)
+			return m_meshnode;
+		return NULL;
 	}
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode()
 	{
-		return m_animated_meshnode;
+		if(m_animated_meshnode)
+			return m_animated_meshnode;
+		return NULL;
 	}
 
 	scene::IBillboardSceneNode *getSpriteSceneNode()
 	{
-		return m_spritenode;
+		if(m_spritenode)
+			return m_spritenode;
+		return NULL;
 	}
 
 	bool isPlayer()
@@ -727,8 +742,80 @@ public:
 		return m_is_local_player;
 	}
 
-	void removeFromScene()
+	void updateParent()
 	{
+		updateAttachments();
+	}
+
+	ClientActiveObject *getParent()
+	{
+		ClientActiveObject *obj = NULL;
+		for(std::vector<core::vector2d<int> >::const_iterator cii = attachment_list.begin(); cii != attachment_list.end(); cii++)
+		{
+			if(cii->X == this->getId()){ // This ID is our child
+				if(cii->Y > 0){ // A parent ID exists for our child
+					if(cii->X != cii->Y){ // The parent and child ID are not the same
+						obj = m_env->getActiveObject(cii->Y);
+					}
+				}
+				break;
+			}
+		}
+		if(obj)
+			return obj;
+		return NULL;
+	}
+
+	void removeFromScene(bool permanent)
+	{
+		// bool permanent should be true when removing the object permanently and false when it's only refreshed (and comes back in a few frames)
+
+		// If this object is being permanently removed, delete it from the attachments list
+		if(permanent)
+		{
+			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			{
+				if(ii->X == this->getId()) // This is the ID of our object
+				{
+					attachment_list.erase(ii);
+					break;
+				}
+			}
+		}
+
+		// If this object is being removed, either permanently or just to refresh it, then all
+		// objects attached to it must be unparented else Irrlicht causes a segmentation fault.
+		for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+		{
+			if(ii->Y == this->getId()) // This is a child of our parent
+			{
+				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+				if(obj)
+				{
+					if(permanent)
+					{
+						// The parent is being permanently removed, so the child stays detached
+						ii->Y = 0;
+						obj->updateParent();
+					}
+					else
+					{
+						// The parent is being refreshed, detach our child enough to avoid bad memory reads
+						// This only stays into effect for a few frames, as addToScene will parent its children back
+						scene::IMeshSceneNode *m_child_meshnode = obj->getMeshSceneNode();
+						scene::IAnimatedMeshSceneNode *m_child_animated_meshnode = obj->getAnimatedMeshSceneNode();
+						scene::IBillboardSceneNode *m_child_spritenode = obj->getSpriteSceneNode();
+						if(m_child_meshnode)
+							m_child_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_animated_meshnode)
+							m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_spritenode)
+							m_child_spritenode->setParent(m_smgr->getRootSceneNode());
+					}
+				}
+			}
+		}
+
 		if(m_meshnode){
 			m_meshnode->remove();
 			m_meshnode = NULL;
@@ -748,6 +835,18 @@ public:
 	{
 		m_smgr = smgr;
 		m_irr = irr;
+
+		// If this object has attachments and is being re-added after having been refreshed, parent its children back.
+		// The parent ID for this child hasn't been changed in attachment_list, so just update its attachments.
+		for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+		{
+			if(ii->Y == this->getId()) // This is a child of our parent
+			{
+				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+				if(obj)
+					obj->updateParent();
+			}
+		}
 
 		if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
 			return;
@@ -828,7 +927,7 @@ public:
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 			}
-			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
 			mesh->drop();
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
@@ -837,7 +936,7 @@ public:
 		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
 			mesh->drop();
 			
 			m_meshnode->setScale(v3f(m_prop.visual_size.X,
@@ -851,7 +950,7 @@ public:
 			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
 			if(mesh)
 			{
-				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, m_smgr->getRootSceneNode());
 				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,
@@ -876,7 +975,7 @@ public:
 						irr->getVideoDriver()->getMeshManipulator();
 				scene::IMesh *mesh = manip->createMeshUniquePrimitives(item_mesh);
 
-				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+				m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
 				mesh->drop();
 				
 				m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
@@ -918,7 +1017,7 @@ public:
 	void updateLight(u8 light_at_pos)
 	{
 		// Objects attached to the local player should always be hidden
-		if(m_attachment_parent != NULL && m_attachment_parent->isLocalPlayer())
+		if(getParent() != NULL && getParent()->isLocalPlayer())
 			m_is_visible = false;
 		else
 			m_is_visible = (m_hp != 0);
@@ -949,7 +1048,7 @@ public:
 
 	void updateNodePos()
 	{
-		if(m_attachment_parent != NULL)
+		if(getParent() != NULL)
 			return;
 
 		if(m_meshnode){
@@ -975,14 +1074,27 @@ public:
 
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
-			removeFromScene();
+			removeFromScene(false);
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 			updateAnimations();
 			updateBonePosRot();
 			updateAttachments();
+			return;
 		}
 
-		if(m_attachment_parent == NULL) // Attachments should be glued to their parent by Irrlicht
+		if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
+		{
+			// Set these for later
+			if(m_meshnode)
+				m_position = m_meshnode->getAbsolutePosition();
+			if(m_animated_meshnode)
+				m_position = m_animated_meshnode->getAbsolutePosition();
+			if(m_spritenode)
+				m_position = m_spritenode->getAbsolutePosition();
+			m_velocity = v3f(0,0,0);
+			m_acceleration = v3f(0,0,0);
+		}
+		else
 		{
 			if(m_prop.physical){
 				core::aabbox3d<f32> box = m_prop.collisionbox;
@@ -1047,17 +1159,10 @@ public:
 				updateTextures("");
 			}
 		}
-		if(fabs(m_prop.automatic_rotate) > 0.001){
+		if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001){
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
-
-		// REMAINING ATTACHMENT ISSUES:
-		// Absolute Position of attachments is printed differently here than what it's set to in the SetAttachment function.
-		// Apparently here it prints the origin of the parent, but ignores the offset it was actually set to.
-
-		//if(m_animated_meshnode != NULL && m_attachment_parent != NULL)
-		//	errorstream<<"Attachment position, step: "<<m_animated_meshnode->getAbsolutePosition().X<<","<<m_animated_meshnode->getAbsolutePosition().Y<<","<<m_animated_meshnode->getAbsolutePosition().Z<<std::endl;
 	}
 
 	void updateTexturePos()
@@ -1123,9 +1228,15 @@ public:
 				m_spritenode->setMaterialTexture(0,
 						tsrc->getTextureRaw(texturestring));
 
-				// Does not work yet with the current lighting settings
-				m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
-				m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
+				// This allows setting per-material colors. However, until a real lighting
+				// system is added, the code below will have no effect. Once MineTest
+				// has directional lighting, it should work automatically.
+				if(m_prop.colors.size() >= 1)
+				{
+					m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
+					m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
+					m_meshnode->getMaterial(0).SpecularColor = m_prop.colors[0];
+				}
 			}
 		}
 		if(m_animated_meshnode)
@@ -1153,9 +1264,12 @@ public:
 				}
 				for (u32 i = 0; i < m_prop.colors.size(); ++i)
 				{
-					// Does not work yet with the current lighting settings
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
 					m_animated_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
 					m_animated_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
+					m_animated_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
 				}
 			}
 		}
@@ -1184,9 +1298,15 @@ public:
 					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
 					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
 
-					// Does not work yet with the current lighting settings
-					m_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
-					m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() > i)
+					{
+						m_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
+						m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
+						m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
+					}
 				}
 			}
 			else if(m_prop.visual == "upright_sprite")
@@ -1201,9 +1321,15 @@ public:
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
 					
-					// Does not work yet with the current lighting settings
-					m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
-					m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() >= 1)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[0];
+						buf->getMaterial().DiffuseColor = m_prop.colors[0];
+						buf->getMaterial().SpecularColor = m_prop.colors[0];
+					}
 				}
 				{
 					std::string tname = "unknown_object.png";
@@ -1216,9 +1342,21 @@ public:
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
 
-					// Does not work yet with the current lighting settings
-					m_meshnode->getMaterial(1).AmbientColor = m_prop.colors[1]; 
-					m_meshnode->getMaterial(1).DiffuseColor = m_prop.colors[1]; 
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() >= 2)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[1];
+						buf->getMaterial().DiffuseColor = m_prop.colors[1];
+						buf->getMaterial().SpecularColor = m_prop.colors[1];
+					}
+					else if(m_prop.colors.size() >= 1)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[0];
+						buf->getMaterial().DiffuseColor = m_prop.colors[0];
+						buf->getMaterial().SpecularColor = m_prop.colors[0];
+					}
 				}
 			}
 		}
@@ -1226,7 +1364,7 @@ public:
 
 	void updateAnimations()
 	{
-		if(!m_animated_meshnode)
+		if(m_animated_meshnode == NULL)
 			return;
 
 		m_animated_meshnode->setFrameLoop((int)m_frames.X, (int)m_frames.Y);
@@ -1236,14 +1374,17 @@ public:
 
 	void updateBonePosRot()
 	{
-		if(m_bone_posrot.size() > 0)
-		{
-			m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-			for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_posrot.begin(); ii != m_bone_posrot.end(); ++ii){
-				std::string bone_name = (*ii).first;
-				v3f bone_pos = (*ii).second.X;
-				v3f bone_rot = (*ii).second.Y;
-				irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+		if(!m_bone_posrot.size() || m_animated_meshnode == NULL)
+			return;
+
+		m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_posrot.begin(); ii != m_bone_posrot.end(); ++ii){
+			std::string bone_name = (*ii).first;
+			v3f bone_pos = (*ii).second.X;
+			v3f bone_rot = (*ii).second.Y;
+			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+			if(bone)
+			{
 				bone->setPosition(bone_pos);
 				bone->setRotation(bone_rot);
 			}
@@ -1252,38 +1393,7 @@ public:
 	
 	void updateAttachments()
 	{
-		// REMAINING ATTACHMENT ISSUES:
-		// We get to this function when the object is an attachment that needs to
-		// be attached to its parent. If a bone is set we attach it to that skeletal
-		// bone, otherwise just to the object's origin. Attachments should not copy parent
-		// position as that's laggy... instead the Irrlicht function(s) to attach should
-		// be used. If the parent object is NULL that means this object should be detached.
-		// This function is only called whenever a GENERIC_CMD_SET_ATTACHMENT message is received.
-		
-		// We already attach our entity on the server too (copy position). Reason we attach
-		// to the client as well is first of all lag. The server sends the position
-		// of the child separately than that of the parent, so even on localhost
-		// you'd see the child lagging behind. Models are also client-side, so this is
-		// needed to read bone data and attach to joints.
-		
-		// Functions:
-		// - m_attachment_parent is ClientActiveObject* for the parent entity.
-		// - m_attachment_bone is std::string of the bone, "" means none.
-		// - m_attachment_position is v3f and represents the position offset of the attachment.
-		// - m_attachment_rotation is v3f and represents the rotation offset of the attachment.
-		
-		// Implementation information:
-		// From what I know, we need to get the AnimatedMeshSceneNode of m_attachment_parent then
-		// use parent_node->addChild(m_animated_meshnode) for position attachment. For skeletal
-		// attachment I don't know yet. Same must be used to detach when a NULL parent is received.
-
-		//Useful links:
-		// http://irrlicht.sourceforge.net/forum/viewtopic.php?t=7514
-		// http://www.irrlicht3d.org/wiki/index.php?n=Main.HowToUseTheNewAnimationSystem
-		// http://gamedev.stackexchange.com/questions/27363/finding-the-endpoint-of-a-named-bone-in-irrlicht
-		// Irrlicht documentation: http://irrlicht.sourceforge.net/docu/
-
-		if(m_attachment_parent == NULL || m_attachment_parent->isLocalPlayer()) // Detach
+		if(getParent() == NULL || getParent()->isLocalPlayer()) // Detach
 		{
 			if(m_meshnode)
 			{
@@ -1315,25 +1425,21 @@ public:
 		}
 		else // Attach
 		{
-			// REMAINING ATTACHMENT ISSUES:
-			// The code below should cause the child to get attached, but for some reason it's not working
-			// A debug print confirms both position and absolute position are set accordingly, but the object still doesn't show
-			// Position and Absolute Position were tested to be set properly here
-
 			scene::IMeshSceneNode *parent_mesh = NULL;
-			if(m_attachment_parent->getMeshSceneNode())
-				parent_mesh = m_attachment_parent->getMeshSceneNode();
+			if(getParent()->getMeshSceneNode())
+				parent_mesh = getParent()->getMeshSceneNode();
 			scene::IAnimatedMeshSceneNode *parent_animated_mesh = NULL;
-			if(m_attachment_parent->getAnimatedMeshSceneNode())
-				parent_animated_mesh = m_attachment_parent->getAnimatedMeshSceneNode();
+			if(getParent()->getAnimatedMeshSceneNode())
+				parent_animated_mesh = getParent()->getAnimatedMeshSceneNode();
 			scene::IBillboardSceneNode *parent_sprite = NULL;
-			if(m_attachment_parent->getSpriteSceneNode())
-				parent_sprite = m_attachment_parent->getSpriteSceneNode();
+			if(getParent()->getSpriteSceneNode())
+				parent_sprite = getParent()->getSpriteSceneNode();
 
 			scene::IBoneSceneNode *parent_bone = NULL;
 			if(parent_animated_mesh && m_attachment_bone != "")
 				parent_bone = parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
 
+			// The spaghetti code below makes sure attaching works if either the parent or child is a spritenode, meshnode, or animatedmeshnode
 			// TODO: Perhaps use polymorphism here to save code duplication
 			if(m_meshnode){
 				if(parent_bone){
@@ -1452,7 +1558,6 @@ public:
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
 		{
 			// Not sent by the server if the object is an attachment
-			
 			m_position = readV3F1000(is);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
@@ -1461,6 +1566,9 @@ public:
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
+
+			if(getParent() != NULL) // Just in case
+				return;
 
 			// Place us a bit higher if we're physical, to not sink into
 			// the ground due to sucky collision detection...
@@ -1500,7 +1608,7 @@ public:
 			m_frame_speed = readF1000(is);
 			m_frame_blend = readF1000(is);
 
-			expireVisuals(); // Automatically calls the proper function next
+			updateAnimations();
 		}
 		else if(cmd == GENERIC_CMD_SET_BONE_POSROT)
 		{
@@ -1509,20 +1617,25 @@ public:
 			v3f rotation = readV3F1000(is);
 			m_bone_posrot[bone] = core::vector2d<v3f>(position, rotation);
 
-			expireVisuals(); // Automatically calls the proper function next
+			updateBonePosRot();
 		}
 		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
 		{
-			int parent_id = readS16(is);
-			ClientActiveObject *obj = m_env->getActiveObject(parent_id);
-			if(!parent_id || !obj)
-				obj = NULL;
-			m_attachment_parent = obj;
+			// If an entry already exists for this object, delete it first to avoid duplicates
+			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			{
+				if(ii->X == this->getId()) // This is the ID of our object
+				{
+					attachment_list.erase(ii);
+					break;
+				}
+			}
+			attachment_list.push_back(core::vector2d<int>(this->getId(), readS16(is)));
 			m_attachment_bone = deSerializeString(is);
 			m_attachment_position = readV3F1000(is);
 			m_attachment_rotation = readV3F1000(is);
 
-			expireVisuals(); // Automatically calls the proper function next
+			updateAttachments();
 		}
 		else if(cmd == GENERIC_CMD_PUNCHED)
 		{
