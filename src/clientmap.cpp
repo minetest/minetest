@@ -544,6 +544,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			for(u32 i=0; i<c; i++)
 			{
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+
+				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, g_settings->getBool("trilinear_filter"));
+				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, g_settings->getBool("bilinear_filter"));
+				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, g_settings->getBool("anisotropic_filter"));
+
 				const video::SMaterial& material = buf->getMaterial();
 				video::IMaterialRenderer* rnd =
 						driver->getMaterialRenderer(material.MaterialType);
