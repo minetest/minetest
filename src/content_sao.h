@@ -99,7 +99,21 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
+	
+	v2f m_animation_frames;
+	float m_animation_speed;
+	float m_animation_blend;
+	bool m_animations_sent;
+
+	std::map<std::string, core::vector2d<v3f> > m_animation_bone;
+	bool m_animations_bone_sent;
+	
 	ServerActiveObject *m_parent;
+	int m_attachment_parent_id;
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attachment_sent;
 };
 
 /*
@@ -236,12 +250,29 @@ private:
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
-	ServerActiveObject *m_parent;
+
+
+
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
+
+	v2f m_animation_frames;
+	float m_animation_speed;
+	float m_animation_blend;
+	bool m_animations_sent;
+
+	std::map<std::string, core::vector2d<v3f> > m_animation_bone;
+	bool m_animations_bone_sent;
+	
+	ServerActiveObject *m_parent;
+	int m_attachment_parent_id;
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attachment_sent;
 
 public:
 	// Some flags used by Server

@@ -583,7 +583,7 @@ private:
 	std::map<std::string, core::vector2d<v3f> > m_bone_posrot;
 	ClientActiveObject* m_attachment_parent;
 	std::string m_attachment_bone;
-	v3f m_attacmhent_position;
+	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	int m_anim_frame;
 	int m_anim_num_frames;
@@ -626,7 +626,7 @@ public:
 		// Nothing to do for m_bone_posrot
 		m_attachment_parent(NULL),
 		m_attachment_bone(""),
-		m_attacmhent_position(v3f(0,0,0)),
+		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
 		m_anim_frame(0),
 		m_anim_num_frames(1),
@@ -852,7 +852,6 @@ public:
 			if(mesh)
 			{
 				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
-				m_animated_meshnode->setMD2Animation(scene::EMAT_STAND);
 				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,
@@ -1053,8 +1052,12 @@ public:
 			updateNodePos();
 		}
 
-		if(m_animated_meshnode)
-			errorstream<<"Attachment position: "<<m_animated_meshnode->getPosition().X<<","<<m_animated_meshnode->getPosition().Y<<","<<m_animated_meshnode->getPosition().Z<<std::endl;
+		// REMAINING ATTACHMENT ISSUES:
+		// Absolute Position of attachments is printed differently here than what it's set to in the SetAttachment function.
+		// Apparently here it prints the origin of the parent, but ignores the offset it was actually set to.
+
+		//if(m_animated_meshnode != NULL && m_attachment_parent != NULL)
+		//	errorstream<<"Attachment position, step: "<<m_animated_meshnode->getAbsolutePosition().X<<","<<m_animated_meshnode->getAbsolutePosition().Y<<","<<m_animated_meshnode->getAbsolutePosition().Z<<std::endl;
 	}
 
 	void updateTexturePos()
@@ -1280,11 +1283,42 @@ public:
 		// http://gamedev.stackexchange.com/questions/27363/finding-the-endpoint-of-a-named-bone-in-irrlicht
 		// Irrlicht documentation: http://irrlicht.sourceforge.net/docu/
 
-		if (m_attachment_parent != NULL && !m_attachment_parent->isLocalPlayer())
+		if(m_attachment_parent == NULL || m_attachment_parent->isLocalPlayer()) // Detach
+		{
+			if(m_meshnode)
+			{
+				v3f old_position = m_meshnode->getAbsolutePosition();
+				v3f old_rotation = m_meshnode->getRotation();
+				m_meshnode->setParent(m_smgr->getRootSceneNode());
+				m_meshnode->setPosition(old_position);
+				m_meshnode->setRotation(old_rotation);
+				m_meshnode->updateAbsolutePosition();
+			}
+			if(m_animated_meshnode)
+			{
+				v3f old_position = m_animated_meshnode->getAbsolutePosition();
+				v3f old_rotation = m_animated_meshnode->getRotation();
+				m_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+				m_animated_meshnode->setPosition(old_position);
+				m_animated_meshnode->setRotation(old_rotation);
+				m_animated_meshnode->updateAbsolutePosition();
+			}
+			if(m_spritenode)
+			{
+				v3f old_position = m_spritenode->getAbsolutePosition();
+				v3f old_rotation = m_spritenode->getRotation();
+				m_spritenode->setParent(m_smgr->getRootSceneNode());
+				m_spritenode->setPosition(old_position);
+				m_spritenode->setRotation(old_rotation);
+				m_spritenode->updateAbsolutePosition();
+			}
+		}
+		else // Attach
 		{
 			// REMAINING ATTACHMENT ISSUES:
 			// The code below should cause the child to get attached, but for some reason it's not working
-			// A debug print confirms both position and absolute position are set accordingly, but the object still shows at origin 0,0,0
+			// A debug print confirms both position and absolute position are set accordingly, but the object still doesn't show
+			// Position and Absolute Position were tested to be set properly here
 
 			scene::IMeshSceneNode *parent_mesh = NULL;
 			if(m_attachment_parent->getMeshSceneNode())
@@ -1299,94 +1333,92 @@ public:
 			scene::IBoneSceneNode *parent_bone = NULL;
 			if(parent_animated_mesh && m_attachment_bone != "")
 				parent_bone = parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
-			if(!parent_bone) // Should be false if the bone doesn't exist on the mesh
-				parent_bone = NULL;
 
 			// TODO: Perhaps use polymorphism here to save code duplication
 			if(m_meshnode){
 				if(parent_bone){
-					m_meshnode->setPosition(parent_bone->getPosition());
-					m_meshnode->setRotation(parent_bone->getRotation());
+					m_meshnode->setParent(parent_bone);
+					m_meshnode->setPosition(m_attachment_position);
+					m_meshnode->setRotation(m_attachment_rotation);
 					m_meshnode->updateAbsolutePosition();
-					//m_meshnode->setParent(parent_bone);
 				}
 				else
 				{
 					if(parent_mesh){
-						m_meshnode->setPosition(parent_mesh->getPosition());
-						m_meshnode->setRotation(parent_mesh->getRotation());
+						m_meshnode->setParent(parent_mesh);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
 						m_meshnode->updateAbsolutePosition();
-						//m_meshnode->setParent(parent_mesh);
 					}
 					else if(parent_animated_mesh){
-						m_meshnode->setPosition(parent_animated_mesh->getPosition());
-						m_meshnode->setRotation(parent_animated_mesh->getRotation());
+						m_meshnode->setParent(parent_animated_mesh);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
 						m_meshnode->updateAbsolutePosition();
-						//m_meshnode->setParent(parent_animated_mesh);
 					}
 					else if(parent_sprite){
-						m_meshnode->setPosition(parent_sprite->getPosition());
-						m_meshnode->setRotation(parent_sprite->getRotation());
+						m_meshnode->setParent(parent_sprite);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
 						m_meshnode->updateAbsolutePosition();
-						//m_meshnode->setParent(parent_sprite);
 					}
 				}
 			}
 			if(m_animated_meshnode){
 				if(parent_bone){
-					m_animated_meshnode->setPosition(parent_bone->getPosition());
-					m_animated_meshnode->setRotation(parent_bone->getRotation());
+					m_animated_meshnode->setParent(parent_bone);
+					m_animated_meshnode->setPosition(m_attachment_position);
+					m_animated_meshnode->setRotation(m_attachment_rotation);
 					m_animated_meshnode->updateAbsolutePosition();
-					//m_animated_meshnode->setParent(parent_bone);
 				}
 				else
 				{
 					if(parent_mesh){
-						m_animated_meshnode->setPosition(parent_mesh->getPosition());
-						m_animated_meshnode->setRotation(parent_mesh->getRotation());
+						m_animated_meshnode->setParent(parent_mesh);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
 						m_animated_meshnode->updateAbsolutePosition();
-						//m_animated_meshnode->setParent(parent_mesh);
 					}
 					else if(parent_animated_mesh){
-						m_animated_meshnode->setPosition(parent_animated_mesh->getPosition());
-						m_animated_meshnode->setRotation(parent_animated_mesh->getRotation());
+						m_animated_meshnode->setParent(parent_animated_mesh);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
 						m_animated_meshnode->updateAbsolutePosition();
-						//m_animated_meshnode->setParent(parent_animated_mesh);
 					}
 					else if(parent_sprite){
-						m_animated_meshnode->setPosition(parent_sprite->getPosition());
-						m_animated_meshnode->setRotation(parent_sprite->getRotation());
+						m_animated_meshnode->setParent(parent_sprite);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
 						m_animated_meshnode->updateAbsolutePosition();
-						//m_animated_meshnode->setParent(parent_sprite);
 					}
 				}
 			}
 			if(m_spritenode){
 				if(parent_bone){
-					m_spritenode->setPosition(parent_bone->getPosition());
-					m_spritenode->setRotation(parent_bone->getRotation());
+					m_spritenode->setParent(parent_bone);
+					m_spritenode->setPosition(m_attachment_position);
+					m_spritenode->setRotation(m_attachment_rotation);
 					m_spritenode->updateAbsolutePosition();
-					//m_spritenode->setParent(parent_bone);
 				}
 				else
 				{
 					if(parent_mesh){
-						m_spritenode->setPosition(parent_mesh->getPosition());
-						m_spritenode->setRotation(parent_mesh->getRotation());
+						m_spritenode->setParent(parent_mesh);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
 						m_spritenode->updateAbsolutePosition();
-						//m_spritenode->setParent(parent_mesh);
 					}
 					else if(parent_animated_mesh){
-						m_spritenode->setPosition(parent_animated_mesh->getPosition());
-						m_spritenode->setRotation(parent_animated_mesh->getRotation());
+						m_spritenode->setParent(parent_animated_mesh);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
 						m_spritenode->updateAbsolutePosition();
-						//m_spritenode->setParent(parent_animated_mesh);
 					}
 					else if(parent_sprite){
-						m_spritenode->setPosition(parent_sprite->getPosition());
-						m_spritenode->setRotation(parent_sprite->getRotation());
+						m_spritenode->setParent(parent_sprite);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
 						m_spritenode->updateAbsolutePosition();
-						//m_spritenode->setParent(parent_sprite);
 					}
 				}
 			}
@@ -1468,8 +1500,7 @@ public:
 			m_frame_speed = readF1000(is);
 			m_frame_blend = readF1000(is);
 
-			updateAnimations();
-			expireVisuals();
+			expireVisuals(); // Automatically calls the proper function next
 		}
 		else if(cmd == GENERIC_CMD_SET_BONE_POSROT)
 		{
@@ -1478,8 +1509,7 @@ public:
 			v3f rotation = readV3F1000(is);
 			m_bone_posrot[bone] = core::vector2d<v3f>(position, rotation);
 
-			updateBonePosRot();
-			expireVisuals();
+			expireVisuals(); // Automatically calls the proper function next
 		}
 		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
 		{
@@ -1489,10 +1519,10 @@ public:
 				obj = NULL;
 			m_attachment_parent = obj;
 			m_attachment_bone = deSerializeString(is);
-			m_attacmhent_position = readV3F1000(is);
+			m_attachment_position = readV3F1000(is);
 			m_attachment_rotation = readV3F1000(is);
 
-			updateAttachments();
+			expireVisuals(); // Automatically calls the proper function next
 		}
 		else if(cmd == GENERIC_CMD_PUNCHED)
 		{
