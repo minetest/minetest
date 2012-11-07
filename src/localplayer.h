@@ -79,6 +79,10 @@ public:
 	{
 		return true;
 	}
+
+	bool isAttached;
+
+	v3f overridePosition;
 	
 	void move(f32 dtime, Map &map, f32 pos_max_d,
 			core::list<CollisionInfo> *collision_info);

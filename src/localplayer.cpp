@@ -53,6 +53,13 @@ LocalPlayer::~LocalPlayer()
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		core::list<CollisionInfo> *collision_info)
 {
+	// Copy parent position if local player is attached
+	if(isAttached)
+	{
+		setPosition(overridePosition);
+		return;
+	}
+
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	v3f position = getPosition();

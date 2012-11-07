@@ -714,7 +714,6 @@ void GUIFormSpecMenu::drawMenu()
 		Draw backgrounds
 	*/
 	for(u32 i=0; i<m_backgrounds.size(); i++)
-	{
 		const ImageDrawSpec &spec = m_backgrounds[i];
 		video::ITexture *texture =
 				m_gamedef->tsrc()->getTextureRaw(spec.name);
@@ -728,7 +727,6 @@ void GUIFormSpecMenu::drawMenu()
 			core::rect<s32>(core::position2d<s32>(0,0),
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
-	}
 	
 	/*
 		Draw images

@@ -768,50 +768,26 @@ public:
 
 	void removeFromScene(bool permanent)
 	{
-		// bool permanent should be true when removing the object permanently and false when it's only refreshed (and comes back in a few frames)
-
-		// If this object is being permanently removed, delete it from the attachments list
-		if(permanent)
+		if(permanent) // Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 		{
+			// Detach this object's children
 			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
 			{
-				if(ii->X == this->getId()) // This is the ID of our object
+				if(ii->Y == this->getId()) // Is a child of our object
+				{
+					ii->Y = 0;
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+						obj->updateParent();
+				}
+			}
+			// Delete this object from the attachments list
+			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			{
+				if(ii->X == this->getId()) // Is our object
 				{
 					attachment_list.erase(ii);
 					break;
-				}
-			}
-		}
-
-		// If this object is being removed, either permanently or just to refresh it, then all
-		// objects attached to it must be unparented else Irrlicht causes a segmentation fault.
-		for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
-		{
-			if(ii->Y == this->getId()) // This is a child of our parent
-			{
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
-				if(obj)
-				{
-					if(permanent)
-					{
-						// The parent is being permanently removed, so the child stays detached
-						ii->Y = 0;
-						obj->updateParent();
-					}
-					else
-					{
-						// The parent is being refreshed, detach our child enough to avoid bad memory reads
-						// This only stays into effect for a few frames, as addToScene will parent its children back
-						scene::IMeshSceneNode *m_child_meshnode = obj->getMeshSceneNode();
-						scene::IAnimatedMeshSceneNode *m_child_animated_meshnode = obj->getAnimatedMeshSceneNode();
-						scene::IBillboardSceneNode *m_child_spritenode = obj->getSpriteSceneNode();
-						if(m_child_meshnode)
-							m_child_meshnode->setParent(m_smgr->getRootSceneNode());
-						if(m_child_animated_meshnode)
-							m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
-						if(m_child_spritenode)
-							m_child_spritenode->setParent(m_smgr->getRootSceneNode());
-					}
 				}
 			}
 		}
@@ -835,18 +811,6 @@ public:
 	{
 		m_smgr = smgr;
 		m_irr = irr;
-
-		// If this object has attachments and is being re-added after having been refreshed, parent its children back.
-		// The parent ID for this child hasn't been changed in attachment_list, so just update its attachments.
-		for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
-		{
-			if(ii->Y == this->getId()) // This is a child of our parent
-			{
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
-				if(obj)
-					obj->updateParent();
-			}
-		}
 
 		if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
 			return;
@@ -1074,14 +1038,45 @@ public:
 
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
+
+			// Attachments, part 1: All attached objects must be unparented first, or Irrlicht causes a segmentation fault
+			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			{
+				if(ii->Y == this->getId()) // This is a child of our parent
+				{
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+					{
+						scene::IMeshSceneNode *m_child_meshnode = obj->getMeshSceneNode();
+						scene::IAnimatedMeshSceneNode *m_child_animated_meshnode = obj->getAnimatedMeshSceneNode();
+						scene::IBillboardSceneNode *m_child_spritenode = obj->getSpriteSceneNode();
+						if(m_child_meshnode)
+							m_child_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_animated_meshnode)
+							m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_spritenode)
+							m_child_spritenode->setParent(m_smgr->getRootSceneNode());
+					}
+				}
+			}
+
 			removeFromScene(false);
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 			updateAnimations();
 			updateBonePosRot();
 			updateAttachments();
-			return;
-		}
 
+			// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
+			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			{
+				if(ii->Y == this->getId()) // This is a child of our parent
+				{
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+						obj->updateParent();
+				}
+			}
+		}
 		if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
 		{
 			// Set these for later
@@ -1093,6 +1088,12 @@ public:
 				m_position = m_spritenode->getAbsolutePosition();
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
+
+			if(m_is_local_player) // Update local player attachment position
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->overridePosition = getParent()->getPosition();
+			}
 		}
 		else
 		{
@@ -1422,6 +1423,11 @@ public:
 				m_spritenode->setRotation(old_rotation);
 				m_spritenode->updateAbsolutePosition();
 			}
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->isAttached = false;
+			}
 		}
 		else // Attach
 		{
@@ -1528,6 +1534,12 @@ public:
 					}
 				}
 			}
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->isAttached = true;
+				player->overridePosition = m_attachment_position;
+			}
 		}
 	}
 
@@ -1557,7 +1569,8 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
 		{
-			// Not sent by the server if the object is an attachment
+			// Not sent by the server if this object is an attachment.
+			// We might however get here if the server notices the object being detached before the client.
 			m_position = readV3F1000(is);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
@@ -1567,14 +1580,14 @@ public:
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
 
-			if(getParent() != NULL) // Just in case
-				return;
-
 			// Place us a bit higher if we're physical, to not sink into
 			// the ground due to sucky collision detection...
 			if(m_prop.physical)
 				m_position += v3f(0,0.002,0);
-				
+
+			if(getParent() != NULL) // Just in case
+				return;
+
 			if(do_interpolate){
 				if(!m_prop.physical)
 					pos_translator.update(m_position, is_end_position, update_interval);

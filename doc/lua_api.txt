@@ -1104,6 +1104,8 @@ methods:
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
 - set_animations({x=1,y=1}, frame_speed=15, frame_blend=0)
+- set_attachment(parent, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+- set_detachment()
 - set_bone_posrot("", {x=0,y=0,z=0}, {x=0,y=0,z=0})
 - set_properties(object property table)
 LuaEntitySAO-only: (no-op for other objects)

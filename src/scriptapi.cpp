@@ -2723,7 +2723,6 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// Do it
-
 		v2f frames = v2f(1, 1);
 		if(!lua_isnil(L, 2))
 			frames = read_v2f(L, 2);
@@ -2744,7 +2743,6 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// Do it
-
 		std::string bone = "";
 		if(!lua_isnil(L, 2))
 			bone = lua_tostring(L, 2);
@@ -2767,6 +2765,7 @@ private:
 		ServerActiveObject *parent = getobject(parent_ref);
 		if(co == NULL) return 0;
 		if(parent == NULL) return 0;
+		// Do it
 		std::string bone = "";
 		if(!lua_isnil(L, 3))
 			bone = lua_tostring(L, 3);
@@ -2776,9 +2775,18 @@ private:
 		v3f rotation = v3f(0, 0, 0);
 		if(!lua_isnil(L, 5))
 			rotation = read_v3f(L, 5);
-		// Do it
+		co->setAttachment(parent->getId(), bone, position, rotation);
+		return 0;
+	}
 
-		co->setAttachment(parent, bone, position, rotation);
+	// set_detachment(self)
+	static int l_set_detachment(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
 		return 0;
 	}
 
@@ -3099,6 +3107,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, set_animations),
 	method(ObjectRef, set_bone_posrot),
 	method(ObjectRef, set_attachment),
+	method(ObjectRef, set_detachment),
 	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),

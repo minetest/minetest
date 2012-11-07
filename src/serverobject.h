@@ -156,7 +156,7 @@ public:
 	{}
 	virtual void setBonePosRot(std::string bone, v3f position, v3f rotation)
 	{}
-	virtual void setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation)
+	virtual void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
 	{}
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }

@@ -46,6 +46,7 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
+	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
@@ -63,7 +64,7 @@ public:
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimations(v2f frames, float frame_speed, float frame_blend);
 	void setBonePosRot(std::string bone, v3f position, v3f rotation);
-	void setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
@@ -107,8 +108,7 @@ private:
 
 	std::map<std::string, core::vector2d<v3f> > m_animation_bone;
 	bool m_animations_bone_sent;
-	
-	ServerActiveObject *m_parent;
+
 	int m_attachment_parent_id;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
@@ -142,6 +142,7 @@ public:
 	bool unlimitedTransferDistance() const;
 	std::string getClientInitializationData();
 	std::string getStaticData();
+	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
@@ -162,7 +163,7 @@ public:
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimations(v2f frames, float frame_speed, float frame_blend);
 	void setBonePosRot(std::string bone, v3f position, v3f rotation);
-	void setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 
@@ -266,8 +267,7 @@ private:
 
 	std::map<std::string, core::vector2d<v3f> > m_animation_bone; // stores position and rotation for each bone name
 	bool m_animations_bone_sent;
-	
-	ServerActiveObject *m_parent;
+
 	int m_attachment_parent_id;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
@@ -276,7 +276,7 @@ private:
 
 public:
 	// Some flags used by Server
-	bool m_teleported;
+	bool m_moved;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_wielded_item_not_sent;

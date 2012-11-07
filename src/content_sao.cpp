@@ -218,7 +218,6 @@ public:
 
 		if(pos_f.getDistanceFrom(m_last_sent_position) > 0.05*BS)
 		{
-			// TODO: We shouldn't be sending this when the object is attached, but we can't check m_parent here
 			setBasePosition(pos_f);
 			m_last_sent_position = pos_f;
 
@@ -387,7 +386,6 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	// Create entity from name
 	lua_State *L = m_env->getLua();
 	m_registered = scriptapi_luaentity_add(L, m_id, m_init_name.c_str());
-	m_parent = NULL;
 	
 	if(m_registered){
 		// Get properties
@@ -434,6 +432,17 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	return sao;
 }
 
+bool LuaEntitySAO::isAttached()
+{
+	if(!m_attachment_parent_id)
+		return false;
+	// Check if the parent still exists
+	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
+	if(obj)
+		return true;
+	return false;
+}
+
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	if(!m_properties_sent)
@@ -445,13 +454,23 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
+	// If attached, check that our parent is still there. If it isn't, detach.
+	if(m_attachment_parent_id && !isAttached())
+	{
+		m_attachment_parent_id = 0;
+		m_attachment_bone = "";
+		m_attachment_position = v3f(0,0,0);
+		m_attachment_rotation = v3f(0,0,0);
+		sendPosition(false, true);
+	}
+
 	m_last_sent_position_timer += dtime;
-	
+
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
-	if(m_parent != NULL)
+	if(isAttached())
 	{
-		v3f pos = m_parent->getBasePosition();
+		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_base_position = pos;
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
@@ -491,7 +510,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 
-	if(m_parent != NULL)
+	if(!isAttached())
 	{
 		// TODO: force send when acceleration changes enough?
 		float minchange = 0.2*BS;
@@ -608,7 +627,7 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	// It's best that attachments cannot be punched 
-	if(m_parent != NULL)
+	if(isAttached())
 		return 0;
 	
 	ItemStack *punchitem = NULL;
@@ -660,7 +679,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 
 void LuaEntitySAO::setPos(v3f pos)
 {
-	if(m_parent != NULL)
+	if(isAttached())
 		return;
 	m_base_position = pos;
 	sendPosition(false, true);
@@ -668,7 +687,7 @@ void LuaEntitySAO::setPos(v3f pos)
 
 void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 {
-	if(m_parent != NULL)
+	if(isAttached())
 		return;
 	m_base_position = pos;
 	if(!continuous)
@@ -722,7 +741,7 @@ void LuaEntitySAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
 	m_animations_bone_sent = false;
 }
 
-void LuaEntitySAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation)
+void LuaEntitySAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments
@@ -732,11 +751,7 @@ void LuaEntitySAO::setAttachment(ServerActiveObject *parent, std::string bone, v
 	// This breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
-	// Server attachment:
-	m_parent = parent;
-
-	// Client attachment:
-	m_attachment_parent_id = parent->getId();
+	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
@@ -818,7 +833,7 @@ std::string LuaEntitySAO::getPropertyPacket()
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	// If the object is attached client-side, don't waste bandwidth sending its position to clients
-	if(m_parent != NULL)
+	if(isAttached())
 		return;
 	
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(
@@ -872,7 +887,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_animations_bone_sent(false),
 	m_attachment_sent(false),
 	// public
-	m_teleported(false),
+	m_moved(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
 	m_wielded_item_not_sent(false)
@@ -919,7 +934,6 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 {
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_player->getPosition());
-	m_parent = NULL;
 	m_player->setPlayerSAO(this);
 	m_player->peer_id = m_peer_id;
 	m_last_good_position = m_player->getPosition();
@@ -979,6 +993,17 @@ std::string PlayerSAO::getStaticData()
 	return "";
 }
 
+bool PlayerSAO::isAttached()
+{
+	if(!m_attachment_parent_id)
+		return false;
+	// Check if the parent still exists
+	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
+	if(obj)
+		return true;
+	return false;
+}
+
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
 	if(!m_properties_sent)
@@ -990,14 +1015,25 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
+	// If attached, check that our parent is still there. If it isn't, detach.
+	if(m_attachment_parent_id && !isAttached())
+	{
+		m_attachment_parent_id = 0;
+		m_attachment_bone = "";
+		m_attachment_position = v3f(0,0,0);
+		m_attachment_rotation = v3f(0,0,0);
+		m_player->setPosition(m_last_good_position);
+		m_moved = true;
+	}
+
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
-	if(m_parent != NULL)
+	if(isAttached())
 	{
-		v3f pos = m_parent->getBasePosition();
+		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_last_good_position = pos;
 		m_last_good_position_age = 0;
 		m_player->setPosition(pos);
@@ -1053,7 +1089,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 							<<" moved too fast; resetting position"
 							<<std::endl;
 					m_player->setPosition(m_last_good_position);
-					m_teleported = true;
+					m_moved = true;
 				}
 				m_last_good_position_age = 0;
 			}
@@ -1064,13 +1100,13 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		return;
 
 	// If the object is attached client-side, don't waste bandwidth sending its position to clients
-	if(m_position_not_sent && m_parent == NULL)
+	if(m_position_not_sent && !isAttached())
 	{
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
-		if(m_parent != NULL) // Just in case we ever do send attachment position too
-			pos = m_parent->getBasePosition();
+		if(isAttached()) // Just in case we ever do send attachment position too
+			pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		else
 			pos = m_player->getPosition() + v3f(0,BS*1,0);
 		std::string str = gob_cmd_update_position(
@@ -1138,26 +1174,26 @@ void PlayerSAO::setBasePosition(const v3f &position)
 
 void PlayerSAO::setPos(v3f pos)
 {
-	if(m_parent != NULL)
+	if(isAttached())
 		return;
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
 	m_last_good_position_age = 0;
 	// Force position change on client
-	m_teleported = true;
+	m_moved = true;
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
 {
-	if(m_parent != NULL)
+	if(isAttached())
 		return;
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
 	m_last_good_position_age = 0;
 	// Force position change on client
-	m_teleported = true;
+	m_moved = true;
 }
 
 int PlayerSAO::punch(v3f dir,
@@ -1166,7 +1202,7 @@ int PlayerSAO::punch(v3f dir,
 	float time_from_last_punch)
 {
 	// It's best that attachments cannot be punched 
-	if(m_parent != NULL)
+	if(isAttached())
 		return 0;
 
 	if(!toolcap)
@@ -1266,7 +1302,7 @@ void PlayerSAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
 	m_animations_bone_sent = false;
 }
 
-void PlayerSAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f position, v3f rotation)
+void PlayerSAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments
@@ -1276,11 +1312,7 @@ void PlayerSAO::setAttachment(ServerActiveObject *parent, std::string bone, v3f 
 	// This breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
-	// Server attachment:
-	m_parent = parent;
-
-	// Client attachment:
-	m_attachment_parent_id = parent->getId();
+	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;

@@ -1371,9 +1371,9 @@ void Server::AsyncRunStep()
 			/*
 				Send player inventories and HPs if necessary
 			*/
-			if(playersao->m_teleported){
+			if(playersao->m_moved){
 				SendMovePlayer(client->peer_id);
-				playersao->m_teleported = false;
+				playersao->m_moved = false;
 			}
 			if(playersao->m_inventory_not_sent){
 				UpdateCrafting(client->peer_id);
