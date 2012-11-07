@@ -24,8 +24,8 @@ end)
 
 minetest.register_abm({
 	nodenames = {"default:sapling"},
-	interval = 10,
-	chance = 50,
+	interval = 60,
+	chance = 20,
 	action = function(pos, node)
 		if not minetest.env:get_node_light(pos) then
 			return
@@ -33,14 +33,17 @@ minetest.register_abm({
 		if minetest.env:get_node_light(pos) < 8 then
 			return
 		end
-		for dy=1,5 do
-			pos.y = pos.y+dy
-			if not minetest.registered_nodes[minetest.env:get_node(pos).name].buildable_to then
-				return
+		local height = math.random(4,5)
+		for y=1,4 do
+			if not minetest.env:get_node({x=pos.x,y=pos.y+y,z=pos.z}).buildable_to then
+				if y == 4 then
+					height = 4
+				else
+					return
+				end
 			end
-			pos.y = pos.y-dy
 		end
-		make_tree(pos, math.random(1,4)==1)
+		make_tree(pos, math.random(1,4)==1, height)
 	end
 })
 

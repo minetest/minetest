@@ -98,8 +98,12 @@ local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, 
 	end
 end
 
-function make_tree(pos, is_apple_tree)
-	for _=1,math.random(4,5) do
+function make_tree(pos, is_apple_tree, height)
+	if not height then
+		height = math.random(4,5)
+	end
+	
+	for _=1,height do
 		minetest.env:set_node(pos, {name="default:tree"})
 		pos.y = pos.y+1
 	end
