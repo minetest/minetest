@@ -199,6 +199,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	
 	m_inventorylists.clear();
 	m_images.clear();
+	m_backgrounds.clear();
 	m_fields.clear();
 
 	Strfnd f(m_formspec_string);
@@ -278,8 +279,25 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
 			if(bp_set != 2)
-				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
+				errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 			m_images.push_back(ImageDrawSpec(name, pos, geom));
+		}
+		else if(type == "background")
+		{
+			v2s32 pos = basepos;
+			pos.X += stof(f.next(",")) * (float)spacing.X - ((float)spacing.X-(float)imgsize.X)/2;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y - ((float)spacing.Y-(float)imgsize.Y)/2;
+			v2s32 geom;
+			geom.X = stof(f.next(",")) * (float)spacing.X;
+			geom.Y = stof(f.next(";")) * (float)spacing.Y;
+			std::string name = f.next("]");
+			infostream<<"image name="<<name
+					<<", pos=("<<pos.X<<","<<pos.Y<<")"
+					<<", geom=("<<geom.X<<","<<geom.Y<<")"
+					<<std::endl;
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
+			m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
 		}
 		else if(type == "field")
 		{
@@ -692,6 +710,26 @@ void GUIFormSpecMenu::drawMenu()
 	m_tooltip_element->setVisible(false);
 
 	/*
+		Draw backgrounds
+	*/
+	for(u32 i=0; i<m_backgrounds.size(); i++)
+	{
+		const ImageDrawSpec &spec = m_backgrounds[i];
+		video::ITexture *texture =
+				m_gamedef->tsrc()->getTextureRaw(spec.name);
+		// Image size on screen
+		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
+		// Image rectangle on screen
+		core::rect<s32> rect = imgrect + spec.pos;
+		const video::SColor color(255,255,255,255);
+		const video::SColor colors[] = {color,color,color,color};
+		driver->draw2DImage(texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(texture->getOriginalSize())),
+			NULL/*&AbsoluteClippingRect*/, colors, true);
+	}
+	
+	/*
 		Draw images
 	*/
 	for(u32 i=0; i<m_images.size(); i++)
@@ -715,8 +753,11 @@ void GUIFormSpecMenu::drawMenu()
 		Draw items
 		Phase 0: Item slot rectangles
 		Phase 1: Item images; prepare tooltip
+		If backgrounds used, do not draw Item slot rectangles
 	*/
-	for(int phase=0; phase<=1; phase++)
+	int start_phase=0;
+	if (m_backgrounds.size() > 0) start_phase=1;
+	for(int phase=start_phase; phase<=1; phase++)
 	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
 		drawList(m_inventorylists[i], phase);
