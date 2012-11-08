@@ -199,6 +199,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	
 	m_inventorylists.clear();
 	m_images.clear();
+	m_backgrounds.clear();
 	m_fields.clear();
 
 	Strfnd f(m_formspec_string);
@@ -1289,3 +1290,4 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
+

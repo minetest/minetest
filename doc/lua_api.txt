@@ -694,6 +694,10 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
 
+background[<X>,<Y>;<W>,<H>;<texture name>]
+^ Use a background. When its used inventory rectangles are not drawn.
+^ Position and size units are inventory slots
+
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
 ^ x and y position the field relative to the top left of the menu
@@ -1347,8 +1351,6 @@ Node definition (register_node)
     liquid_alternative_flowing = "", -- Flowing version of source liquid
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
-    liquid_renewable = true, -- Can new liquid source be created by placing
-    two or more sources nearly?
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
