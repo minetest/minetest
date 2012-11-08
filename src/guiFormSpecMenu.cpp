@@ -692,17 +692,8 @@ void GUIFormSpecMenu::drawMenu()
 	m_tooltip_element->setVisible(false);
 
 	/*
-		Draw items
-		Phase 0: Item slot rectangles
-		Phase 1: Item images; prepare tooltip
+		Draw images
 	*/
-	
-	for(int phase=0; phase<=1; phase++)
-	for(u32 i=0; i<m_inventorylists.size(); i++)
-	{
-		drawList(m_inventorylists[i], phase);
-	}
-
 	for(u32 i=0; i<m_images.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_images[i];
@@ -718,6 +709,17 @@ void GUIFormSpecMenu::drawMenu()
 			core::rect<s32>(core::position2d<s32>(0,0),
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
+	}
+
+	/*
+		Draw items
+		Phase 0: Item slot rectangles
+		Phase 1: Item images; prepare tooltip
+	*/
+	for(int phase=0; phase<=1; phase++)
+	for(u32 i=0; i<m_inventorylists.size(); i++)
+	{
+		drawList(m_inventorylists[i], phase);
 	}
 
 	/*
