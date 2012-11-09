@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/mathconstants.h"
 #include "map.h"
+#include "main.h" // g_settings
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <IBoneSceneNode.h>
@@ -586,6 +587,7 @@ private:
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
+	bool m_attached_to_local;
 	int m_anim_frame;
 	int m_anim_num_frames;
 	float m_anim_framelength;
@@ -624,10 +626,11 @@ public:
 		m_frames(v2f(0,0)),
 		m_frame_speed(15),
 		m_frame_blend(0),
-		// Nothing to do for m_bone_posrot
+		m_bone_posrot(std::map<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
+		m_attached_to_local(false),
 		m_anim_frame(0),
 		m_anim_num_frames(1),
 		m_anim_framelength(0.2),
@@ -891,7 +894,7 @@ public:
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 			}
-			m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 			mesh->drop();
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
@@ -900,7 +903,7 @@ public:
 		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-			m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 			mesh->drop();
 			
 			m_meshnode->setScale(v3f(m_prop.visual_size.X,
@@ -914,7 +917,7 @@ public:
 			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
 			if(mesh)
 			{
-				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, m_smgr->getRootSceneNode());
+				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
 				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,
@@ -939,7 +942,7 @@ public:
 						irr->getVideoDriver()->getMeshManipulator();
 				scene::IMesh *mesh = manip->createMeshUniquePrimitives(item_mesh);
 
-				m_meshnode = smgr->addMeshSceneNode(mesh, m_smgr->getRootSceneNode());
+				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 				mesh->drop();
 				
 				m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
@@ -981,7 +984,7 @@ public:
 	void updateLight(u8 light_at_pos)
 	{
 		// Objects attached to the local player should always be hidden
-		if(getParent() != NULL && getParent()->isLocalPlayer())
+		if(m_attached_to_local)
 			m_is_visible = false;
 		else
 			m_is_visible = (m_hp != 0);
@@ -1001,6 +1004,9 @@ public:
 			if(m_spritenode){
 				m_spritenode->setColor(color);
 				m_spritenode->setVisible(m_is_visible);
+			}
+			if(m_textnode){
+				m_textnode->setVisible(m_is_visible);
 			}
 		}
 	}
@@ -1034,8 +1040,6 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
-		v3f lastpos = pos_translator.vect_show;
-
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
 
@@ -1077,6 +1081,17 @@ public:
 				}
 			}
 		}
+
+		// Make sure m_is_visible is always applied
+		if(m_meshnode)
+			m_meshnode->setVisible(m_is_visible);
+		if(m_animated_meshnode)
+			m_animated_meshnode->setVisible(m_is_visible);
+		if(m_spritenode)
+			m_spritenode->setVisible(m_is_visible);
+		if(m_textnode)
+			m_textnode->setVisible(m_is_visible);
+
 		if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
 		{
 			// Set these for later
@@ -1088,6 +1103,7 @@ public:
 				m_position = m_spritenode->getAbsolutePosition();
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
+			pos_translator.vect_show = m_position;
 
 			if(m_is_local_player) // Update local player attachment position
 			{
@@ -1097,6 +1113,8 @@ public:
 		}
 		else
 		{
+			v3f lastpos = pos_translator.vect_show;
+
 			if(m_prop.physical){
 				core::aabbox3d<f32> box = m_prop.collisionbox;
 				box.MinEdge *= BS;
@@ -1218,6 +1236,10 @@ public:
 	{
 		ITextureSource *tsrc = m_gamedef->tsrc();
 
+		bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
+		bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
+		bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+
 		if(m_spritenode)
 		{
 			if(m_prop.visual == "sprite")
@@ -1234,10 +1256,14 @@ public:
 				// has directional lighting, it should work automatically.
 				if(m_prop.colors.size() >= 1)
 				{
-					m_meshnode->getMaterial(0).AmbientColor = m_prop.colors[0];
-					m_meshnode->getMaterial(0).DiffuseColor = m_prop.colors[0];
-					m_meshnode->getMaterial(0).SpecularColor = m_prop.colors[0];
+					m_spritenode->getMaterial(0).AmbientColor = m_prop.colors[0];
+					m_spritenode->getMaterial(0).DiffuseColor = m_prop.colors[0];
+					m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
 				}
+
+				m_spritenode->getMaterial(0).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+				m_spritenode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+				m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 		}
 		if(m_animated_meshnode)
@@ -1262,6 +1288,10 @@ public:
 					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 					material.setFlag(video::EMF_LIGHTING, false);
 					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 				for (u32 i = 0; i < m_prop.colors.size(); ++i)
 				{
@@ -1308,6 +1338,10 @@ public:
 						m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
 						m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
 					}
+
+					m_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 			}
 			else if(m_prop.visual == "upright_sprite")
@@ -1331,6 +1365,10 @@ public:
 						buf->getMaterial().DiffuseColor = m_prop.colors[0];
 						buf->getMaterial().SpecularColor = m_prop.colors[0];
 					}
+
+					buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 				{
 					std::string tname = "unknown_object.png";
@@ -1358,6 +1396,10 @@ public:
 						buf->getMaterial().DiffuseColor = m_prop.colors[0];
 						buf->getMaterial().SpecularColor = m_prop.colors[0];
 					}
+
+					buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 			}
 		}
@@ -1394,7 +1436,9 @@ public:
 	
 	void updateAttachments()
 	{
-		if(getParent() == NULL || getParent()->isLocalPlayer()) // Detach
+		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+
+		if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
 		{
 			if(m_meshnode)
 			{

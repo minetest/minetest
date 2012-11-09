@@ -579,10 +579,8 @@ std::string LuaEntitySAO::getClientInitializationData()
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
-	if(m_animation_bone.size()){
-		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
-		}
+	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
+		os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
 	}
 	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 
@@ -672,6 +670,9 @@ int LuaEntitySAO::punch(v3f dir,
 void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 {
 	if(!m_registered)
+		return;
+	// It's best that attachments cannot be clicked
+	if(isAttached())
 		return;
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_rightclick(L, m_id, clicker);
@@ -976,10 +977,8 @@ std::string PlayerSAO::getClientInitializationData()
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
-	if(m_animation_bone.size()){
-		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
-		}
+	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
+		os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
 	}
 	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 
