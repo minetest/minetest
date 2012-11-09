@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -22,23 +22,48 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "connection.h"
 #include "environment.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
-#include "auth.h"
 #include "ban.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
-#include "serverremoteplayer.h"
 #include "mods.h"
 #include "inventorymanager.h"
+#include "subgame.h"
+#include "sound.h"
+#include "util/thread.h"
+#include "util/string.h"
+#include "rollback_interface.h" // Needed for rollbackRevertActions()
+#include <list> // Needed for rollbackRevertActions()
+
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
+class EventManager;
+class PlayerSAO;
+class IRollbackManager;
+
+class ServerError : public std::exception
+{
+public:
+	ServerError(const std::string &s)
+	{
+		m_s = "ServerError: ";
+		m_s += s;
+	}
+	virtual ~ServerError() throw()
+	{}
+	virtual const char * what() const throw()
+	{
+		return m_s.c_str();
+	}
+	std::string m_s;
+};
 
 /*
 	Some random functions
@@ -211,8 +236,6 @@ struct PlayerInfo
 	void PrintLine(std::ostream *s);
 };
 
-u32 PIChecksum(core::list<PlayerInfo> &l);
-
 /*
 	Used for queueing and sorting block transfers in containers
 	
@@ -235,26 +258,59 @@ struct PrioritySortedBlockTransfer
 	u16 peer_id;
 };
 
-struct TextureRequest
+struct MediaRequest
 {
 	std::string name;
 
-	TextureRequest(const std::string &name_=""):
+	MediaRequest(const std::string &name_=""):
 		name(name_)
 	{}
 };
 
-struct TextureInformation
+struct MediaInfo
 {
 	std::string path;
 	std::string sha1_digest;
 
-	TextureInformation(const std::string path_="",
+	MediaInfo(const std::string path_="",
 			const std::string sha1_digest_=""):
 		path(path_),
 		sha1_digest(sha1_digest_)
 	{
 	}
+};
+
+struct ServerSoundParams
+{
+	float gain;
+	std::string to_player;
+	enum Type{
+		SSP_LOCAL=0,
+		SSP_POSITIONAL=1,
+		SSP_OBJECT=2
+	} type;
+	v3f pos;
+	u16 object;
+	float max_hear_distance;
+	bool loop;
+
+	ServerSoundParams():
+		gain(1.0),
+		to_player(""),
+		type(SSP_LOCAL),
+		pos(0,0,0),
+		object(0),
+		max_hear_distance(32*BS),
+		loop(false)
+	{}
+	
+	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
+};
+
+struct ServerPlayingSound
+{
+	ServerSoundParams params;
+	std::set<u16> clients; // peer ids
 };
 
 class RemoteClient
@@ -390,10 +446,12 @@ public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
-
+	
 	Server(
-		std::string mapsavedir,
-		std::string configpath
+		const std::string &path_world,
+		const std::string &path_config,
+		const SubgameSpec &gamespec,
+		bool simple_singleplayer_mode
 	);
 	~Server();
 	void start(unsigned short port);
@@ -408,11 +466,6 @@ public:
 
 	core::list<PlayerInfo> getPlayerInfo();
 
-	/*u32 getDayNightRatio()
-	{
-		return time_to_daynight_ratio(m_time_of_day.get());
-	}*/
-	
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
 	{
@@ -436,7 +489,6 @@ public:
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
-	std::string getInventoryOwner(const InventoryLocation &loc);
 	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
@@ -447,37 +499,17 @@ public:
 		m_shutdown_requested = true;
 	}
 
-
-	// Envlock and conlock should be locked when calling this
-	void SendMovePlayer(Player *player);
+	// Returns -1 if failed, sound handle on success
+	// Envlock + conlock
+	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
+	void stopSound(s32 handle);
 	
-	u64 getPlayerAuthPrivs(const std::string &name)
-	{
-		try{
-			return m_authmanager.getPrivs(name);
-		}
-		catch(AuthNotFoundException &e)
-		{
-			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-			return 0;
-		}
-	}
+	// Envlock + conlock
+	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
+	bool checkPriv(const std::string &name, const std::string &priv);
+	void reportPrivsModified(const std::string &name=""); // ""=all
+	void reportInventoryFormspecModified(const std::string &name);
 
-	void setPlayerAuthPrivs(const std::string &name, u64 privs)
-	{
-		try{
-			return m_authmanager.setPrivs(name, privs);
-		}
-		catch(AuthNotFoundException &e)
-		{
-			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-		}
-	}
-
-	// Changes a player's password, password must be given as plaintext
-	// If the player doesn't exist, a new entry is added to the auth manager
-	void setPlayerPassword(const std::string &name, const std::wstring &password);
-	
 	// Saves g_settings to configpath given at initialization
 	void saveConfig();
 
@@ -509,8 +541,18 @@ public:
 
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 	
+	// Creates or resets inventory
+	Inventory* createDetachedInventory(const std::string &name);
+	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
+
+	// Envlock should be locked when using the rollback manager
+	IRollbackManager *getRollbackManager(){ return m_rollback; }
+	// actions: time-reversed list
+	// Return value: success/failure
+	bool rollbackRevertActions(const std::list<RollbackAction> &actions,
+			std::list<std::string> *log);
 	
 	// IGameDef interface
 	// Under envlock
@@ -519,12 +561,26 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
+	virtual ISoundManager* getSoundManager();
+	virtual MtEventManager* getEventManager();
+	virtual IRollbackReportSink* getRollbackReportSink();
 	
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
+	void getModNames(core::list<std::string> &modlist);
+	std::string getBuiltinLuaPath();
+	
+	std::string getWorldPath(){ return m_path_world; }
+
+	bool isSingleplayer(){ return m_simple_singleplayer_mode; }
+
+	void setAsyncFatalError(const std::string &error)
+	{
+		m_async_fatal_error.set(error);
+	}
 
 private:
 
@@ -557,13 +613,12 @@ private:
 
 	// Envlock and conlock should be locked when calling these
 	void SendInventory(u16 peer_id);
-	// send wielded item info about player to all
-	void SendWieldedItem(const ServerRemotePlayer *srp);
-	// send wielded item info about all players to all players
-	void SendPlayerItems();
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
-	void SendPlayerHP(Player *player);
+	void SendPlayerHP(u16 peer_id);
+	void SendMovePlayer(u16 peer_id);
+	void SendPlayerPrivileges(u16 peer_id);
+	void SendPlayerInventoryFormspec(u16 peer_id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
@@ -582,18 +637,21 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 	
-	void PrepareTextures();
-
-	void SendTextureAnnouncement(u16 peer_id);
-
-	void SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend);
+	void fillMediaCache();
+	void sendMediaAnnouncement(u16 peer_id);
+	void sendRequestedMedia(u16 peer_id,
+			const core::list<MediaRequest> &tosend);
+	
+	void sendDetachedInventory(const std::string &name, u16 peer_id);
+	void sendDetachedInventoryToAll(const std::string &name);
+	void sendDetachedInventories(u16 peer_id);
 
 	/*
 		Something random
 	*/
 	
-	void DiePlayer(Player *player);
-	void RespawnPlayer(Player *player);
+	void DiePlayer(u16 peer_id);
+	void RespawnPlayer(u16 peer_id);
 	
 	void UpdateCrafting(u16 peer_id);
 	
@@ -605,8 +663,17 @@ private:
 	{
 		Player *player = m_env->getPlayer(peer_id);
 		if(player == NULL)
-			return "[id="+itos(peer_id);
+			return "[id="+itos(peer_id)+"]";
 		return player->getName();
+	}
+
+	// When called, environment mutex should be locked
+	PlayerSAO* getPlayerSAO(u16 peer_id)
+	{
+		Player *player = m_env->getPlayer(peer_id);
+		if(player == NULL)
+			return NULL;
+		return player->getPlayerSAO();
 	}
 
 	/*
@@ -616,18 +683,29 @@ private:
 
 		Call with env and con locked.
 	*/
-	ServerRemotePlayer *emergePlayer(const char *name, u16 peer_id);
+	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;
 	void handlePeerChange(PeerChange &c);
 	void handlePeerChanges();
 
-	u64 getPlayerPrivs(Player *player);
-
 	/*
 		Variables
 	*/
+	
+	// World directory
+	std::string m_path_world;
+	// Path to user's configuration file ("" = no configuration file)
+	std::string m_path_config;
+	// Subgame specification
+	SubgameSpec m_gamespec;
+	// If true, do not allow multiple players and hide some multiplayer
+	// functionality
+	bool m_simple_singleplayer_mode;
+
+	// Thread can set; step() will throw as ServerError
+	MutexedVariable<std::string> m_async_fatal_error;
 	
 	// Some timers
 	float m_liquid_transform_timer;
@@ -650,11 +728,13 @@ private:
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
 
-	// User authentication
-	AuthManager m_authmanager;
-
 	// Bann checking
 	BanManager m_banmanager;
+
+	// Rollback manager (behind m_env_mutex)
+	IRollbackManager *m_rollback;
+	bool m_rollback_sink_enabled;
+	bool m_enable_rollback_recording; // Updated once in a while
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
@@ -668,6 +748,9 @@ private:
 	
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
+	
+	// Event manager
+	EventManager *m_event;
 	
 	// Mods
 	core::list<ModSpec> m_mods;
@@ -692,10 +775,6 @@ private:
 		Time related stuff
 	*/
 
-	// 0-23999
-	//MutexedVariable<u32> m_time_of_day;
-	// Used to buffer dtime for adding to m_time_of_day
-	float m_time_counter;
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer;
 	// Uptime of server in seconds
@@ -722,12 +801,6 @@ private:
 	/*
 		Random stuff
 	*/
-
-	// Map directory
-	std::string m_mapsavedir;
-
-	// Configuration path ("" = no configuration file)
-	std::string m_configpath;
 	
 	// Mod parent directory paths
 	core::list<std::string> m_modspaths;
@@ -755,6 +828,13 @@ private:
 	*/
 	bool m_ignore_map_edit_events;
 	/*
+		If a non-empty area, map edit events contained within are left
+		unsent. Done at map generation time to speed up editing of the
+		generated area, as it will be sent anyway.
+		This is behind m_env_mutex
+	*/
+	VoxelArea m_ignore_map_edit_events_area;
+	/*
 		If set to !=0, the incoming MapEditEvents are modified to have
 		this peed id as the disabled recipient
 		This is behind m_env_mutex
@@ -764,7 +844,19 @@ private:
 	friend class EmergeThread;
 	friend class RemoteClient;
 
-	std::map<std::string,TextureInformation> m_Textures;
+	std::map<std::string,MediaInfo> m_media;
+
+	/*
+		Sounds
+	*/
+	std::map<s32, ServerPlayingSound> m_playing_sounds;
+	s32 m_next_sound_id;
+
+	/*
+		Detached inventories (behind m_env_mutex)
+	*/
+	// key = name
+	std::map<std::string, Inventory*> m_detached_inventories;
 };
 
 /*

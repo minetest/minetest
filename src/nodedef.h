@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,15 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODEDEF_HEADER
 #define NODEDEF_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <iostream>
-#include <set>
+#include <map>
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
 #endif
-#include "materials.h" // MaterialProperties
+#include "itemgroup.h"
+#include "sound.h" // SimpleSoundSpec
+#include "constants.h" // BS
+
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
@@ -62,7 +65,7 @@ enum LiquidType
 enum NodeBoxType
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
-	NODEBOX_FIXED, // Static separately defined box
+	NODEBOX_FIXED, // Static separately defined box(es)
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 };
 
@@ -71,22 +74,16 @@ struct NodeBox
 	enum NodeBoxType type;
 	// NODEBOX_REGULAR (no parameters)
 	// NODEBOX_FIXED
-	core::aabbox3d<f32> fixed;
+	std::vector<aabb3f> fixed;
 	// NODEBOX_WALLMOUNTED
-	core::aabbox3d<f32> wall_top;
-	core::aabbox3d<f32> wall_bottom;
-	core::aabbox3d<f32> wall_side; // being at the -X side
+	aabb3f wall_top;
+	aabb3f wall_bottom;
+	aabb3f wall_side; // being at the -X side
 
-	NodeBox():
-		type(NODEBOX_REGULAR),
-		// default is rail-like
-		fixed(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2),
-		// default is sign/ladder-like
-		wall_top(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2),
-		wall_bottom(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2),
-		wall_side(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2)
-	{}
+	NodeBox()
+	{ reset(); }
 
+	void reset();
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
@@ -94,15 +91,33 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-struct MaterialSpec
+/*
+	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
+*/
+enum TileAnimationType{
+	TAT_NONE=0,
+	TAT_VERTICAL_FRAMES=1,
+};
+struct TileDef
 {
-	std::string tname;
-	bool backface_culling;
-	
-	MaterialSpec(const std::string &tname_="", bool backface_culling_=true):
-		tname(tname_),
-		backface_culling(backface_culling_)
-	{}
+	std::string name;
+	bool backface_culling; // Takes effect only in special cases
+	struct{
+		enum TileAnimationType type;
+		int aspect_w; // width for aspect ratio
+		int aspect_h; // height for aspect ratio
+		float length; // seconds
+	} animation;
+
+	TileDef()
+	{
+		name = "";
+		backface_culling = true;
+		animation.type = TAT_NONE;
+		animation.aspect_w = 1;
+		animation.aspect_h = 1;
+		animation.length = 1.0;
+	}
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -122,6 +137,7 @@ enum NodeDrawType
 	NDT_PLANTLIKE,
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
+	NDT_NODEBOX,
 };
 
 #define CF_SPECIAL_COUNT 2
@@ -135,26 +151,31 @@ struct ContentFeatures
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front 
 	TileSpec tiles[6];
-	// Special material/texture
+	// Special tiles
 	// - Currently used for flowing liquids
-	video::SMaterial *special_materials[CF_SPECIAL_COUNT];
-	AtlasPointer *special_aps[CF_SPECIAL_COUNT];
+	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
 	bool backface_culling;
 #endif
+
+	// Server-side cached callback existence for fast skipping
+	bool has_on_construct;
+	bool has_on_destruct;
+	bool has_after_destruct;
 
 	/*
 		Actual data
 	*/
 
 	std::string name; // "" = undefined node
+	ItemGroupList groups; // Same as in itemdef
 
 	// Visual definition
 	enum NodeDrawType drawtype;
 	float visual_scale; // Misc. scale parameter
-	std::string tname_tiles[6];
-	MaterialSpec mspec_special[CF_SPECIAL_COUNT]; // Use setter methods
+	TileDef tiledef[6];
+	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
 	u8 alpha;
 
 	// Post effect color, drawn when the camera is inside the node.
@@ -178,8 +199,6 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// Metadata name of node (eg. "furnace")
-	std::string metadata_name;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
@@ -190,16 +209,23 @@ struct ContentFeatures
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
 	u8 liquid_viscosity;
+	// Is liquid renewable (new liquid source will be created between 2 existing)
+	bool liquid_renewable;
 	// Amount of light the node emits
 	u8 light_source;
 	u32 damage_per_second;
+	NodeBox node_box;
 	NodeBox selection_box;
-	MaterialProperties material;
 	// Compatibility with old maps
 	// Set to true if paramtype used to be 'facedir_simple'
 	bool legacy_facedir_simple;
 	// Set to true if wall_mounted used to be set to true
 	bool legacy_wallmounted;
+
+	// Sound properties
+	SimpleSoundSpec sound_footstep;
+	SimpleSoundSpec sound_dig;
+	SimpleSoundSpec sound_dug;
 
 	/*
 		Methods
@@ -233,6 +259,9 @@ public:
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
+	// Allows "group:name" in addition to regular node names
+	virtual void getIds(const std::string &name, std::set<content_t> &result)
+			const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 	
 	virtual void serialize(std::ostream &os)=0;
@@ -249,6 +278,9 @@ public:
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
+	// Allows "group:name" in addition to regular node names
+	virtual void getIds(const std::string &name, std::set<content_t> &result)
+			const=0;
 	// If not found, returns the features of CONTENT_IGNORE
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 

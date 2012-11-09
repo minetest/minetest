@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "exceptions.h"
 #include "settings.h"
+#include "log.h"
+#include "hex.h"
 
 class UnknownKeycode : public BaseException
 {
@@ -258,9 +260,10 @@ KeyPress::KeyPress(const char *name)
 		try {
 			Key = keyname_to_keycode(name);
 			m_name = name;
-			if (strlen(name) > 8)
-				mbtowc(&Char, name + 8, 1);
-			else
+			if (strlen(name) > 8) {
+				int chars_read = mbtowc(&Char, name + 8, 1);
+				assert (chars_read == 1 && "unexpected multibyte character");
+			} else
 				Char = L'\0';
 			return;
 		} catch (UnknownKeycode &e) {};
@@ -270,7 +273,8 @@ KeyPress::KeyPress(const char *name)
 		m_name += name;
 		try {
 			Key = keyname_to_keycode(m_name.c_str());
-			mbtowc(&Char, name, 1);
+			int chars_read = mbtowc(&Char, name, 1);
+			assert (chars_read == 1 && "unexpected multibyte character");
 			return;
 		} catch (UnknownKeycode &e) {};
 	}
@@ -279,20 +283,35 @@ KeyPress::KeyPress(const char *name)
 
 	Key = irr::KEY_KEY_CODES_COUNT;
 
-	mbtowc(&Char, name, 1);
+	int mbtowc_ret = mbtowc(&Char, name, 1);
+	assert (mbtowc_ret == 1 && "unexpected multibyte character");
 	m_name = name[0];
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 {
 	Key = in.Key;
 	Char = in.Char;
+
+	if(prefer_character){
+		m_name.resize(MB_CUR_MAX+1, '\0');
+		int written = wctomb(&m_name[0], Char);
+		if(written > 0){
+			infostream<<"KeyPress: Preferring character for "<<m_name<<std::endl;
+			Key = irr::KEY_KEY_CODES_COUNT;
+			return;
+		}
+	}
+
 	if (valid_kcode(Key)) {
 		m_name = KeyNames[Key];
 	} else {
-		size_t maxlen = wctomb(NULL, Char);
-		m_name.resize(maxlen+1, '\0');
-		wctomb(&m_name[0], Char);
+		m_name.resize(MB_CUR_MAX+1, '\0');
+		int written = wctomb(&m_name[0], Char);
+		if(written < 0){
+			std::string hexstr = hex_encode((const char*)&Char, sizeof(Char));
+			errorstream<<"KeyPress: Unexpected multibyte character "<<hexstr<<std::endl;
+		}
 	}
 }
 

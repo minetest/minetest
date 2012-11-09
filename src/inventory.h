@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <string>
 #include <vector>
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include "debug.h"
 #include "itemdef.h"
 
-struct ToolDiggingProperties;
+struct ToolCapabilities;
 
 struct ItemStack
 {
@@ -107,15 +107,15 @@ struct ItemStack
 	}
 
 	// Get tool digging properties, or those of the hand if not a tool
-	const ToolDiggingProperties& getToolDiggingProperties(
+	const ToolCapabilities& getToolCapabilities(
 			IItemDefManager *itemdef) const
 	{
-		ToolDiggingProperties *prop;
-		prop = itemdef->get(name).tool_digging_properties;
-		if(prop == NULL)
-			prop = itemdef->get("").tool_digging_properties;
-		assert(prop != NULL);
-		return *prop;
+		ToolCapabilities *cap;
+		cap = itemdef->get(name).tool_capabilities;
+		if(cap == NULL)
+			cap = itemdef->get("").tool_capabilities;
+		assert(cap != NULL);
+		return *cap;
 	}
 
 	// Wear out (only tools)
@@ -176,6 +176,8 @@ public:
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
+	void setWidth(u32 newWidth);
+	void setName(const std::string &name);
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
@@ -184,6 +186,7 @@ public:
 
 	const std::string &getName() const;
 	u32 getSize() const;
+	u32 getWidth() const;
 	// Count used slots
 	u32 getUsedSlots() const;
 	u32 getFreeSlots() const;
@@ -239,7 +242,7 @@ public:
 
 private:
 	std::vector<ItemStack> m_items;
-	u32 m_size;
+	u32 m_size, m_width;
 	std::string m_name;
 	IItemDefManager *m_itemdef;
 };
@@ -250,6 +253,7 @@ public:
 	~Inventory();
 
 	void clear();
+	void clearContents();
 
 	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);
@@ -261,6 +265,7 @@ public:
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
 	const InventoryList * getList(const std::string &name) const;
+	std::vector<const InventoryList*> getLists();
 	bool deleteList(const std::string &name);
 	// A shorthand for adding items. Returns leftover item (possibly empty).
 	ItemStack addItem(const std::string &listname, const ItemStack &newitem)

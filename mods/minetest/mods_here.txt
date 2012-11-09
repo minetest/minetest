@@ -1,0 +1,1 @@
+You can install Minetest mods by copying (and extracting) them into this folder.

@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -25,13 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tile.h"
 #include "gamedef.h"
+#include "util/numeric.h"
+#include "util/serialize.h"
+#include "util/directiontables.h"
 
 // Create a cuboid.
 //  collector - the MeshCollector for the resulting polygons
 //  box       - the position and size of the box
-//  materials - the materials to use (for all 6 faces)
-//  pa        - texture atlas pointers for the materials
-//  matcount  - number of entries in "materials" and "pa", 1<=matcount<=6
+//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tilecount - number of entries in tiles, 1<=tilecount<=6
 //  c         - vertex colour - used for all
 //  txc       - texture coordinates - this is a list of texture coordinates
 //              for the opposite corners of each face - therefore, there
@@ -41,10 +43,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
 void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	const video::SMaterial *materials, const AtlasPointer *pa, int matcount,	
+	const TileSpec *tiles, int tilecount,
 	video::SColor &c, const f32* txc)
 {
-	assert(matcount >= 1);
+	assert(tilecount >= 1 && tilecount <= 6);
 
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
@@ -98,9 +100,9 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 
 	for(s32 j=0; j<24; j++)
 	{
-		int matindex = MYMIN(j/4, matcount-1);
-		vertices[j].TCoords *= pa[matindex].size;
-		vertices[j].TCoords += pa[matindex].pos;
+		int tileindex = MYMIN(j/4, tilecount-1);
+		vertices[j].TCoords *= tiles[tileindex].texture.size;
+		vertices[j].TCoords += tiles[tileindex].texture.pos;
 	}
 
 	u16 indices[] = {0,1,2,2,3,0};
@@ -108,17 +110,16 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 	// Add to mesh collector
 	for(s32 j=0; j<24; j+=4)
 	{
-		int matindex = MYMIN(j/4, matcount-1);
-		collector->append(materials[matindex],
+		int tileindex = MYMIN(j/4, tilecount-1);
+		collector->append(tiles[tileindex],
 				vertices+j, 4, indices, 6);
 	}
 }
 
 void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector, IGameDef *gamedef)
+		MeshCollector &collector)
 {
-	INodeDefManager *nodedef = gamedef->ndef();
-	ITextureSource *tsrc = gamedef->getTextureSource();
+	INodeDefManager *nodedef = data->m_gamedef->ndef();
 
 	// 0ms
 	//TimeTaker timer("mapblock_mesh_generate_special()");
@@ -133,14 +134,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		node_liquid_level = 0.85;
 	
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
-
-	/*// General ground material for special output
-	// Texture is modified just before usage
-	video::SMaterial material_general;
-	material_general.setFlag(video::EMF_LIGHTING, false);
-	material_general.setFlag(video::EMF_BILINEAR_FILTER, false);
-	material_general.setFlag(video::EMF_FOG_ENABLE, true);
-	material_general.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;*/
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -167,16 +160,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			/*
 				Add water sources to mesh if using new style
 			*/
-			assert(nodedef->get(n).special_materials[0]);
-			//assert(nodedef->get(n).special_materials[1]);
-			assert(nodedef->get(n).special_aps[0]);
-
-			video::SMaterial &liquid_material =
-					*nodedef->get(n).special_materials[0];
-			/*video::SMaterial &liquid_material_bfculled =
-					*nodedef->get(n).special_materials[1];*/
-			AtlasPointer &pa_liquid1 =
-					*nodedef->get(n).special_aps[0];
+			TileSpec tile_liquid = f.special_tiles[0];
+			AtlasPointer &pa_liquid = tile_liquid.texture;
 
 			bool top_is_air = false;
 			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
@@ -186,64 +171,63 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if(top_is_air == false)
 				continue;
 
-			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
-			video::SColor c = MapBlock_LightColor(
-					nodedef->get(n).alpha, l);
+			u16 l = getInteriorLight(n, 0, data);
+			video::SColor c = MapBlock_LightColor(f.alpha, l);
 			
 			video::S3DVertex vertices[4] =
 			{
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-						pa_liquid1.x0(), pa_liquid1.y1()),
+						pa_liquid.x0(), pa_liquid.y1()),
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-						pa_liquid1.x1(), pa_liquid1.y1()),
+						pa_liquid.x1(), pa_liquid.y1()),
 				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-						pa_liquid1.x1(), pa_liquid1.y0()),
+						pa_liquid.x1(), pa_liquid.y0()),
 				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-						pa_liquid1.x0(), pa_liquid1.y0()),
+						pa_liquid.x0(), pa_liquid.y0()),
 			};
 
+			v3f offset(p.X, p.Y + (-0.5+node_liquid_level)*BS, p.Z);
 			for(s32 i=0; i<4; i++)
 			{
-				vertices[i].Pos.Y += (-0.5+node_liquid_level)*BS;
-				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				vertices[i].Pos += offset;
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(liquid_material, vertices, 4, indices, 6);
+			collector.append(tile_liquid, vertices, 4, indices, 6);
 		break;}
 		case NDT_FLOWINGLIQUID:
 		{
 			/*
 				Add flowing liquid to mesh
 			*/
-			assert(nodedef->get(n).special_materials[0]);
-			assert(nodedef->get(n).special_materials[1]);
-			assert(nodedef->get(n).special_aps[0]);
-
-			video::SMaterial &liquid_material =
-					*nodedef->get(n).special_materials[0];
-			video::SMaterial &liquid_material_bfculled =
-					*nodedef->get(n).special_materials[1];
-			AtlasPointer &pa_liquid1 =
-					*nodedef->get(n).special_aps[0];
+			TileSpec tile_liquid = f.special_tiles[0];
+			TileSpec tile_liquid_bfculled = f.special_tiles[1];
+			AtlasPointer &pa_liquid = tile_liquid.texture;
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			content_t c_flowing = nodedef->getId(nodedef->get(n).liquid_alternative_flowing);
-			content_t c_source = nodedef->getId(nodedef->get(n).liquid_alternative_source);
+			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(f.liquid_alternative_source);
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 			
-			u8 l = 0;
+			u16 l = 0;
+			// If this liquid emits light and doesn't contain light, draw
+			// it at what it emits, for an increased effect
+			u8 light_source = nodedef->get(n).light_source;
+			if(light_source != 0){
+				//l = decode_light(undiminish_light(light_source));
+				l = decode_light(light_source);
+				l = l | (l<<8);
+			}
 			// Use the light of the node on top if possible
-			if(nodedef->get(ntop).param_type == CPT_LIGHT)
-				l = decode_light(ntop.getLightBlend(data->m_daynight_ratio, nodedef));
+			else if(nodedef->get(ntop).param_type == CPT_LIGHT)
+				l = getInteriorLight(ntop, 0, data);
 			// Otherwise use the light of this node (the liquid)
 			else
-				l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
-			video::SColor c = MapBlock_LightColor(
-					nodedef->get(n).alpha, l);
+				l = getInteriorLight(n, 0, data);
+			video::SColor c = MapBlock_LightColor(f.alpha, l);
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
@@ -393,20 +377,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				// Use backface culled material if neighbor doesn't have a
 				// solidness of 0
-				video::SMaterial *current_material = &liquid_material;
+				const TileSpec *current_tile = &tile_liquid;
 				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
-					current_material = &liquid_material_bfculled;
+					current_tile = &tile_liquid_bfculled;
 				
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x0(), pa_liquid1.y1()),
+							pa_liquid.x0(), pa_liquid.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x1(), pa_liquid1.y1()),
+							pa_liquid.x1(), pa_liquid.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x1(), pa_liquid1.y0()),
+							pa_liquid.x1(), pa_liquid.y0()),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x0(), pa_liquid1.y0()),
+							pa_liquid.x0(), pa_liquid.y0()),
 				};
 				
 				/*
@@ -464,12 +448,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.Z *= 0.98;
 					}*/
 
-					vertices[j].Pos += intToFloat(p + blockpos_nodes, BS);
+					vertices[j].Pos += intToFloat(p, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(*current_material, vertices, 4, indices, 6);
+				collector.append(*current_tile, vertices, 4, indices, 6);
 			}
 			
 			/*
@@ -481,16 +465,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x0(), pa_liquid1.y1()),
+							pa_liquid.x0(), pa_liquid.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_liquid1.x1(), pa_liquid1.y1()),
+							pa_liquid.x1(), pa_liquid.y1()),
 					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-							pa_liquid1.x1(), pa_liquid1.y0()),
+							pa_liquid.x1(), pa_liquid.y0()),
 					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-							pa_liquid1.x0(), pa_liquid1.y0()),
+							pa_liquid.x0(), pa_liquid.y0()),
 				};
 				
-				// This fixes a strange bug
+				// To get backface culling right, the vertices need to go
+				// clockwise around the front of the face. And we happened to
+				// calculate corner levels in exact reverse order.
 				s32 corner_resolve[4] = {3,2,1,0};
 
 				for(s32 i=0; i<4; i++)
@@ -499,27 +485,66 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
-					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+					vertices[i].Pos += intToFloat(p, BS);
+				}
+				
+				// Default downwards-flowing texture animation goes from 
+				// -Z towards +Z, thus the direction is +Z.
+				// Rotate texture to make animation go in flow direction
+				// Positive if liquid moves towards +Z
+				int dz = (corner_levels[side_corners[3][0]] +
+						corner_levels[side_corners[3][1]]) -
+						(corner_levels[side_corners[2][0]] +
+						corner_levels[side_corners[2][1]]);
+				// Positive if liquid moves towards +X
+				int dx = (corner_levels[side_corners[1][0]] +
+						corner_levels[side_corners[1][1]]) -
+						(corner_levels[side_corners[0][0]] +
+						corner_levels[side_corners[0][1]]);
+				// -X
+				if(-dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = t;
+				}
+				// +X
+				if(dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+				}
+				// -Z
+				if(-dz >= abs(dx))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+					t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(liquid_material, vertices, 4, indices, 6);
+				collector.append(tile_liquid, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_GLASSLIKE:
 		{
-			video::SMaterial material_glass;
-			material_glass.setFlag(video::EMF_LIGHTING, false);
-			material_glass.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_glass.setFlag(video::EMF_FOG_ENABLE, true);
-			material_glass.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			TileSpec tile_glass = getNodeTile(n, p, v3s16(0,0,0),
-					&data->m_temp_mods, tsrc, nodedef);
-			AtlasPointer pa_glass = tile_glass.texture;
-			material_glass.setTexture(0, pa_glass.atlas);
+			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
+			AtlasPointer ap = tile.texture;
 
-			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
+			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<6; j++)
@@ -535,13 +560,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
-						pa_glass.x0(), pa_glass.y1()),
+						ap.x0(), ap.y1()),
 					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
-						pa_glass.x1(), pa_glass.y1()),
+						ap.x1(), ap.y1()),
 					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
-						pa_glass.x1(), pa_glass.y0()),
+						ap.x1(), ap.y0()),
 					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
-						pa_glass.x0(), pa_glass.y0()),
+						ap.x0(), ap.y0()),
 				};
 				
 				// Rotations in the g_6dirs format
@@ -565,36 +590,28 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[i].Pos.rotateXZBy(90);
 
 				for(u16 i=0; i<4; i++){
-					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+					vertices[i].Pos += intToFloat(p, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_glass, vertices, 4, indices, 6);
+				collector.append(tile, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_ALLFACES:
 		{
-			video::SMaterial material_leaves1;
-			material_leaves1.setFlag(video::EMF_LIGHTING, false);
-			material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
-			material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			TileSpec tile_leaves1 = getNodeTile(n, p, v3s16(0,0,0),
-					&data->m_temp_mods, tsrc, nodedef);
-			AtlasPointer pa_leaves1 = tile_leaves1.texture;
-			material_leaves1.setTexture(0, pa_leaves1.atlas);
+			TileSpec tile_leaves = getNodeTile(n, p,
+					v3s16(0,0,0), data);
+			AtlasPointer pa_leaves = tile_leaves.texture;
 
-			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
+			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
-			v3f pos = intToFloat(p+blockpos_nodes, BS);
+			v3f pos = intToFloat(p, BS);
 			aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
 			box.MinEdge += pos;
 			box.MaxEdge += pos;
-			makeCuboid(&collector, box,
-					&material_leaves1, &pa_leaves1, 1,
-					c, NULL);
+			makeCuboid(&collector, box, &tile_leaves, 1, c, NULL);
 		break;}
 		case NDT_ALLFACES_OPTIONAL:
 			// This is always pre-converted to something else
@@ -604,28 +621,23 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			v3s16 dir = n.getWallMountedDir(nodedef);
 			
-			AtlasPointer ap(0);
+			u8 tileindex = 0;
 			if(dir == v3s16(0,-1,0)){
-				ap = f.tiles[0].texture; // floor
+				tileindex = 0; // floor
 			} else if(dir == v3s16(0,1,0)){
-				ap = f.tiles[1].texture; // ceiling
+				tileindex = 1; // ceiling
 			// For backwards compatibility
 			} else if(dir == v3s16(0,0,0)){
-				ap = f.tiles[0].texture; // floor
+				tileindex = 0; // floor
 			} else {
-				ap = f.tiles[2].texture; // side
+				tileindex = 2; // side
 			}
 
-			// Set material
-			video::SMaterial material;
-			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_FOG_ENABLE, true);
-			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialType
-					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			material.setTexture(0, ap.atlas);
+			TileSpec tile = getNodeTileN(n, p, tileindex, data);
+			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+
+			AtlasPointer ap = tile.texture;
 
 			video::SColor c(255,255,255,255);
 
@@ -657,27 +669,21 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
-				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				vertices[i].Pos += intToFloat(p, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(material, vertices, 4, indices, 6);
+			collector.append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_SIGNLIKE:
 		{
-			// Set material
-			video::SMaterial material;
-			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_FOG_ENABLE, true);
-			material.MaterialType
-					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			AtlasPointer ap = f.tiles[0].texture;
-			material.setTexture(0, ap.atlas);
+			TileSpec tile = getNodeTileN(n, p, 0, data);
+			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+			AtlasPointer ap = tile.texture;
 
-			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
+			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 				
 			float d = (float)BS/16;
@@ -711,24 +717,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXYBy(90);
 
-				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				vertices[i].Pos += intToFloat(p, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(material, vertices, 4, indices, 6);
+			collector.append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_PLANTLIKE:
 		{
-			video::SMaterial material_papyrus;
-			material_papyrus.setFlag(video::EMF_LIGHTING, false);
-			material_papyrus.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_papyrus.setFlag(video::EMF_FOG_ENABLE, true);
-			material_papyrus.MaterialType=video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			AtlasPointer pa_papyrus = f.tiles[0].texture;
-			material_papyrus.setTexture(0, pa_papyrus.atlas);
+			TileSpec tile = getNodeTileN(n, p, 0, data);
+			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+			AtlasPointer ap = tile.texture;
 			
-			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
+			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<4; j++)
@@ -736,15 +738,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
-						pa_papyrus.x0(), pa_papyrus.y1()),
+						ap.x0(), ap.y1()),
 					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
-						pa_papyrus.x1(), pa_papyrus.y1()),
+						ap.x1(), ap.y1()),
 					video::S3DVertex( BS/2*f.visual_scale,
 						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
-						pa_papyrus.x1(), pa_papyrus.y0()),
+						ap.x1(), ap.y0()),
 					video::S3DVertex(-BS/2*f.visual_scale,
 						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
-						pa_papyrus.x0(), pa_papyrus.y0()),
+						ap.x0(), ap.y0()),
 				};
 
 				if(j == 0)
@@ -771,59 +773,47 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for(u16 i=0; i<4; i++)
 				{
 					vertices[i].Pos *= f.visual_scale;
-					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+					vertices[i].Pos += intToFloat(p, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_papyrus, vertices, 4, indices, 6);
+				collector.append(tile, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_FENCELIKE:
 		{
-			video::SMaterial material_wood;
-			material_wood.setFlag(video::EMF_LIGHTING, false);
-			material_wood.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_wood.setFlag(video::EMF_FOG_ENABLE, true);
-			material_wood.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			TileSpec tile_wood = getNodeTile(n, p, v3s16(0,0,0),
-					&data->m_temp_mods, tsrc, nodedef);
-			AtlasPointer pa_wood = tile_wood.texture;
-			material_wood.setTexture(0, pa_wood.atlas);
-
-			video::SMaterial material_wood_nomod;
-			material_wood_nomod.setFlag(video::EMF_LIGHTING, false);
-			material_wood_nomod.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_wood_nomod.setFlag(video::EMF_FOG_ENABLE, true);
-			material_wood_nomod.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-
-			TileSpec tile_wood_nomod = getNodeTile(n, p, v3s16(0,0,0),
-					NULL, tsrc, nodedef);
-			AtlasPointer pa_wood_nomod = tile_wood_nomod.texture;
-			material_wood_nomod.setTexture(0, pa_wood_nomod.atlas);
-
-			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
+			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
+			TileSpec tile_nocrack = tile;
+			tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
+			
+			// A hack to put wood the right way around in the posts
+			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			TileSpec tile_rot = tile;
+			tile_rot.texture = tsrc->getTexture(tsrc->getTextureName(
+					tile.texture.id) + "^[transformR90");
+					
+			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
-			const f32 post_rad=(f32)BS/10;
-			const f32 bar_rad=(f32)BS/20;
+			const f32 post_rad=(f32)BS/8;
+			const f32 bar_rad=(f32)BS/16;
 			const f32 bar_len=(f32)(BS/2)-post_rad;
 
-			v3f pos = intToFloat(p+blockpos_nodes, BS);
+			v3f pos = intToFloat(p, BS);
 
 			// The post - always present
 			aabb3f post(-post_rad,-BS/2,-post_rad,post_rad,BS/2,post_rad);
 			post.MinEdge += pos;
 			post.MaxEdge += pos;
 			f32 postuv[24]={
-					0.4,0.4,0.6,0.6,
-					0.4,0.4,0.6,0.6,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1};
-			makeCuboid(&collector, post, &material_wood,
-					&pa_wood, 1, c, postuv);
+					6/16.,6/16.,10/16.,10/16.,
+					6/16.,6/16.,10/16.,10/16.,
+					0/16.,0,4/16.,1,
+					4/16.,0,8/16.,1,
+					8/16.,0,12/16.,1,
+					12/16.,0,16/16.,1};
+			makeCuboid(&collector, post, &tile_rot, 1, c, postuv);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -837,18 +827,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				bar.MinEdge += pos;
 				bar.MaxEdge += pos;
 				f32 xrailuv[24]={
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6};
-				makeCuboid(&collector, bar, &material_wood_nomod,
-						&pa_wood_nomod, 1, c, xrailuv);
+					0/16.,2/16.,16/16.,4/16.,
+					0/16.,4/16.,16/16.,6/16.,
+					6/16.,6/16.,8/16.,8/16.,
+					10/16.,10/16.,12/16.,12/16.,
+					0/16.,8/16.,16/16.,10/16.,
+					0/16.,14/16.,16/16.,16/16.};
+				makeCuboid(&collector, bar, &tile_nocrack, 1,
+						c, xrailuv);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeCuboid(&collector, bar, &material_wood_nomod,
-						&pa_wood_nomod, 1, c, xrailuv);
+				makeCuboid(&collector, bar, &tile_nocrack, 1,
+						c, xrailuv);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -863,19 +853,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				bar.MinEdge += pos;
 				bar.MaxEdge += pos;
 				f32 zrailuv[24]={
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6};
-
-				makeCuboid(&collector, bar, &material_wood_nomod,
-						&pa_wood_nomod, 1, c, zrailuv);
+					3/16.,1/16.,5/16.,5/16., // cannot rotate; stretch
+					4/16.,1/16.,6/16.,5/16., // for wood texture instead
+					0/16.,9/16.,16/16.,11/16.,
+					0/16.,6/16.,16/16.,8/16.,
+					6/16.,6/16.,8/16.,8/16.,
+					10/16.,10/16.,12/16.,12/16.};
+				makeCuboid(&collector, bar, &tile_nocrack, 1,
+						c, zrailuv);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeCuboid(&collector, bar, &material_wood_nomod,
-						&pa_wood_nomod, 1, c, zrailuv);
+				makeCuboid(&collector, bar, &tile_nocrack, 1,
+						c, zrailuv);
 			}
 		break;}
 		case NDT_RAILLIKE:
@@ -883,107 +872,217 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
 			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
 
+			bool is_rail_z_minus_y [] = { false, false };  /* z-1, z+1; y-1 */
+			bool is_rail_x_minus_y [] = { false, false };  /* x-1, z+1; y-1 */
+			bool is_rail_z_plus_y [] = { false, false };  /* z-1, z+1; y+1 */
+			bool is_rail_x_plus_y [] = { false, false };  /* x-1, x+1; y+1 */
+
 			MapNode n_minus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1,y,z));
 			MapNode n_plus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1,y,z));
 			MapNode n_minus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z-1));
 			MapNode n_plus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z+1));
+			MapNode n_plus_x_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1, y+1, z));
+			MapNode n_plus_x_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1, y-1, z));
+			MapNode n_minus_x_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1, y+1, z));
+			MapNode n_minus_x_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1, y-1, z));
+			MapNode n_plus_z_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y+1, z+1));
+			MapNode n_minus_z_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y+1, z-1));
+			MapNode n_plus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z+1));
+			MapNode n_minus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z-1));
 			
 			content_t thiscontent = n.getContent();
 			if(n_minus_x.getContent() == thiscontent)
 				is_rail_x[0] = true;
+			if (n_minus_x_minus_y.getContent() == thiscontent)
+				is_rail_x_minus_y[0] = true;
+			if(n_minus_x_plus_y.getContent() == thiscontent)
+				is_rail_x_plus_y[0] = true;
+
 			if(n_plus_x.getContent() == thiscontent)
 				is_rail_x[1] = true;
+			if (n_plus_x_minus_y.getContent() == thiscontent)
+				is_rail_x_minus_y[1] = true;
+			if(n_plus_x_plus_y.getContent() == thiscontent)
+				is_rail_x_plus_y[1] = true;
+
 			if(n_minus_z.getContent() == thiscontent)
 				is_rail_z[0] = true;
+			if (n_minus_z_minus_y.getContent() == thiscontent)
+				is_rail_z_minus_y[0] = true;
+			if(n_minus_z_plus_y.getContent() == thiscontent)
+				is_rail_z_plus_y[0] = true;
+
 			if(n_plus_z.getContent() == thiscontent)
 				is_rail_z[1] = true;
+			if (n_plus_z_minus_y.getContent() == thiscontent)
+				is_rail_z_minus_y[1] = true;
+			if(n_plus_z_plus_y.getContent() == thiscontent)
+				is_rail_z_plus_y[1] = true;
 
-			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
+			bool is_rail_x_all[] = {false, false};
+			bool is_rail_z_all[] = {false, false};
+			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0] || is_rail_x_plus_y[0];
+			is_rail_x_all[1]=is_rail_x[1] || is_rail_x_minus_y[1] || is_rail_x_plus_y[1];
+			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0] || is_rail_z_plus_y[0];
+			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1] || is_rail_z_plus_y[1];
 
-			// Assign textures
-			AtlasPointer ap = f.tiles[0].texture; // straight
-			if(adjacencies < 2)
-				ap = f.tiles[0].texture; // straight
-			else if(adjacencies == 2)
+			// reasonable default, flat straight unrotated rail
+			bool is_straight = true;
+			int adjacencies = 0;
+			int angle = 0;
+			u8 tileindex = 0;
+
+			// check for sloped rail
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
 			{
-				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
-					ap = f.tiles[0].texture; // straight
-				else
-					ap = f.tiles[1].texture; // curved
+				adjacencies = 5; //5 means sloped
+				is_straight = true; // sloped is always straight
 			}
-			else if(adjacencies == 3)
-				ap = f.tiles[2].texture; // t-junction
-			else if(adjacencies == 4)
-				ap = f.tiles[3].texture; // crossing
-			
-			video::SMaterial material_rail;
-			material_rail.setFlag(video::EMF_LIGHTING, false);
-			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material_rail.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_rail.setFlag(video::EMF_FOG_ENABLE, true);
-			material_rail.MaterialType
-					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			material_rail.setTexture(0, ap.atlas);
+			else
+			{
+				// is really straight, rails on both sides
+				is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);
+				adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
+			}
 
-			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
+			switch (adjacencies) {
+			case 1:
+				if(is_rail_x_all[0] || is_rail_x_all[1])
+					angle = 90;
+				break;
+			case 2:
+				if(!is_straight)
+					tileindex = 1; // curved
+				if(is_rail_x_all[0] && is_rail_x_all[1])
+					angle = 90;
+				if(is_rail_z_all[0] && is_rail_z_all[1]){
+					if (n_minus_z_plus_y.getContent() == thiscontent) angle = 180;
+				}
+				else if(is_rail_x_all[0] && is_rail_z_all[0])
+					angle = 270;
+				else if(is_rail_x_all[0] && is_rail_z_all[1])
+					angle = 180;
+				else if(is_rail_x_all[1] && is_rail_z_all[1])
+					angle = 90;
+				break;
+			case 3:
+				// here is where the potential to 'switch' a junction is, but not implemented at present
+				tileindex = 2; // t-junction
+				if(!is_rail_x_all[1])
+					angle=180;
+				if(!is_rail_z_all[0])
+					angle=90;
+				if(!is_rail_z_all[1])
+					angle=270;
+				break;
+			case 4:
+				tileindex = 3; // crossing
+				break;
+			case 5: //sloped
+				if(is_rail_z_plus_y[0])
+					angle = 180;
+				if(is_rail_x_plus_y[0])
+					angle = 90;
+				if(is_rail_x_plus_y[1])
+					angle = -90;
+				break;
+			default:
+				break;
+			}
+
+			TileSpec tile = getNodeTileN(n, p, tileindex, data);
+			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+
+			AtlasPointer ap = tile.texture;
+			
+			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
-			float d = (float)BS/16;
+			float d = (float)BS/64;
+			
+			char g=-1;
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
+				g=1; //Object is at a slope
+
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
-						ap.x0(), ap.y1()),
-				video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
-						ap.x1(), ap.y1()),
-				video::S3DVertex(BS/2,-BS/2+d,BS/2, 0,0,0, c,
-						ap.x1(), ap.y0()),
-				video::S3DVertex(-BS/2,-BS/2+d,BS/2, 0,0,0, c,
-						ap.x0(), ap.y0()),
+					video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+							ap.x0(), ap.y1()),
+					video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+							ap.x1(), ap.y1()),
+					video::S3DVertex(BS/2,g*BS/2+d,BS/2, 0,0,0, c,
+							ap.x1(), ap.y0()),
+					video::S3DVertex(-BS/2,g*BS/2+d,BS/2, 0,0,0, c,
+							ap.x0(), ap.y0()),
 			};
-
-			// Rotate textures
-			int angle = 0;
-
-			if(adjacencies == 1)
-			{
-				if(is_rail_x[0] || is_rail_x[1])
-					angle = 90;
-			}
-			else if(adjacencies == 2)
-			{
-				if(is_rail_x[0] && is_rail_x[1])
-					angle = 90;
-				else if(is_rail_x[0] && is_rail_z[0])
-					angle = 270;
-				else if(is_rail_x[0] && is_rail_z[1])
-					angle = 180;
-				else if(is_rail_x[1] && is_rail_z[1])
-					angle = 90;
-			}
-			else if(adjacencies == 3)
-			{
-				if(!is_rail_x[0])
-					angle=0;
-				if(!is_rail_x[1])
-					angle=180;
-				if(!is_rail_z[0])
-					angle=90;
-				if(!is_rail_z[1])
-					angle=270;
-			}
-
-			if(angle != 0) {
-				for(u16 i=0; i<4; i++)
-					vertices[i].Pos.rotateXZBy(angle);
-			}
 
 			for(s32 i=0; i<4; i++)
 			{
-				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				if(angle != 0)
+					vertices[i].Pos.rotateXZBy(angle);
+				vertices[i].Pos += intToFloat(p, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
-			collector.append(material_rail, vertices, 4, indices, 6);
+			collector.append(tile, vertices, 4, indices, 6);
+		break;}
+		case NDT_NODEBOX:
+		{
+			static const v3s16 tile_dirs[6] = {
+				v3s16(0, 1, 0),
+				v3s16(0, -1, 0),
+				v3s16(1, 0, 0),
+				v3s16(-1, 0, 0),
+				v3s16(0, 0, 1),
+				v3s16(0, 0, -1)
+			};
+
+			TileSpec tiles[6];
+			for(int i = 0; i < 6; i++)
+			{
+				// Handles facedir rotation for textures
+				tiles[i] = getNodeTile(n, p, tile_dirs[i], data);
+			}
+
+			u16 l = getInteriorLight(n, 0, data);
+			video::SColor c = MapBlock_LightColor(255, l);
+
+			v3f pos = intToFloat(p, BS);
+
+			std::vector<aabb3f> boxes = n.getNodeBoxes(nodedef);
+			for(std::vector<aabb3f>::iterator
+					i = boxes.begin();
+					i != boxes.end(); i++)
+			{
+				aabb3f box = *i;
+				box.MinEdge += pos;
+				box.MaxEdge += pos;
+
+				// Compute texture coords
+				f32 tx1 = (i->MinEdge.X/BS)+0.5;
+				f32 ty1 = (i->MinEdge.Y/BS)+0.5;
+				f32 tz1 = (i->MinEdge.Z/BS)+0.5;
+				f32 tx2 = (i->MaxEdge.X/BS)+0.5;
+				f32 ty2 = (i->MaxEdge.Y/BS)+0.5;
+				f32 tz2 = (i->MaxEdge.Z/BS)+0.5;
+				f32 txc[24] = {
+					// up
+					tx1, 1-tz2, tx2, 1-tz1,
+					// down
+					tx1, tz1, tx2, tz2,
+					// right
+					tz1, 1-ty2, tz2, 1-ty1,
+					// left
+					1-tz2, 1-ty2, 1-tz1, 1-ty1,
+					// back
+					1-tx2, 1-ty2, 1-tx1, 1-ty1,
+					// front
+					tx1, 1-ty2, tx2, 1-ty1,
+				};
+
+				makeCuboid(&collector, box, tiles, 6, c, txc);
+			}
 		break;}
 		}
 	}

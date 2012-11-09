@@ -4,16 +4,16 @@ Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2011 Kahrl <kahrl@gmx.net>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -21,12 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef ITEMDEF_HEADER
 #define ITEMDEF_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include <string>
 #include <iostream>
 #include <set>
+#include "itemgroup.h"
 class IGameDef;
-struct ToolDiggingProperties;
+struct ToolCapabilities;
 
 /*
 	Base item definition
@@ -63,7 +64,13 @@ struct ItemDefinition
 	bool usable;
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor
-	ToolDiggingProperties *tool_digging_properties;
+	ToolCapabilities *tool_capabilities;
+	ItemGroupList groups;
+
+	// Client shall immediately place this node when player places the item.
+	// Server will update the precise end result a moment later.
+	// "" = no prediction
+	std::string node_placement_prediction;
 
 	/*
 		Cached stuff

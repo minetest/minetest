@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,11 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PROFILER_HEADER
 #define PROFILER_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
-#include "utility.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
+#include <map>
+#include "util/timetaker.h"
+#include "util/numeric.h" // paging()
 
 /*
 	Time profiler
@@ -146,15 +148,36 @@ public:
 		}
 	}
 
+	typedef std::map<std::string, float> GraphValues;
+
+	void graphAdd(const std::string &id, float value)
+	{
+		JMutexAutoLock lock(m_mutex);
+		std::map<std::string, float>::iterator i =
+				m_graphvalues.find(id);
+		if(i == m_graphvalues.end())
+			m_graphvalues[id] = value;
+		else
+			i->second += value;
+	}
+	void graphGet(GraphValues &result)
+	{
+		JMutexAutoLock lock(m_mutex);
+		result = m_graphvalues;
+		m_graphvalues.clear();
+	}
+
 private:
 	JMutex m_mutex;
 	core::map<std::string, float> m_data;
 	core::map<std::string, int> m_avgcounts;
+	std::map<std::string, float> m_graphvalues;
 };
 
 enum ScopeProfilerType{
 	SPT_ADD,
-	SPT_AVG
+	SPT_AVG,
+	SPT_GRAPH_ADD
 };
 
 class ScopeProfiler
@@ -194,6 +217,9 @@ public:
 					break;
 				case SPT_AVG:
 					m_profiler->avg(m_name, duration);
+					break;
+				case SPT_GRAPH_ADD:
+					m_profiler->graphAdd(m_name, duration);
 					break;
 				}
 			}

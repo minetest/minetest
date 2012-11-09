@@ -1,0 +1,91 @@
+.\" Minetest man page
+.TH minetest 6 "11 March 2012" "" ""
+
+.SH NAME
+minetest \- Multiplayer infinite-world block sandbox
+
+.SH SYNOPSIS
+.B minetest
+[ OPTION ... ]
+
+.SH DESCRIPTION
+.B Minetest
+is one of the first InfiniMiner/Minecraft(/whatever) inspired games (started October 2010), with a goal of taking the survival multiplayer gameplay to a slightly different direction.
+.PP
+The main design philosophy is to keep it technically simple, stable and portable. It will be kept lightweight enough to run on fairly old hardware.
+
+.SH OPTIONS
+.TP
+\-\-address <value>
+Address to connect to
+.TP
+\-\-config <value>
+Load configuration from specified file
+.TP
+\-\-disable\-unittests
+Disable unit tests
+.TP
+\-\-enable\-unittests
+Enable unit tests
+.TP
+\-\-gameid <value>
+Set gameid
+.TP
+\-\-go
+Disable main menu
+.TP
+\-\-help
+Show allowed options
+.TP
+\-\-logfile <value>
+Set logfile path (debug.txt)
+.TP
+\-\-map\-dir <value>
+Same as --world (deprecated)
+.TP
+\-\-name <value>
+Set player name
+.TP
+\-\-password <value>
+Set password
+.TP
+\-\-port <value>
+Set network port (UDP) to use
+.TP
+\-\-random\-input
+Enable random user input, for testing
+.TP
+\-\-server
+Run dedicated server
+.TP
+\-\-speedtests
+Run speed tests
+.TP
+\-\-info
+Print more information to console
+.TP
+\-\-verbose
+Print even more information to console
+.TP
+\-\-trace
+Print enormous amounts of information to console
+.TP
+\-\-world <value>
+Set world path
+
+.SH BUGS
+Please report all bugs to Perttu Ahola <celeron55@gmail.com>.
+
+.SH AUTHOR
+.PP
+Perttu Ahola <celeron55@gmail.com>
+and contributors.
+.PP
+This man page was originally written by
+Juhani Numminen <juhaninumminen0@gmail.com>.
+
+.SH WWW
+http://c55.me/minetest/
+
+.SH "SEE ALSO"
+.BR minetestserver(6)

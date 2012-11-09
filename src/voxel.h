@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef VOXEL_HEADER
 #define VOXEL_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include <irrList.h>
 #include <iostream>
 #include "debug.h"
 #include "mapnode.h"
@@ -333,6 +335,7 @@ enum VoxelPrintMode
 	VOXELPRINT_NOTHING,
 	VOXELPRINT_MATERIAL,
 	VOXELPRINT_WATERPRESSURE,
+	VOXELPRINT_LIGHT_DAY,
 };
 
 class VoxelManipulator /*: public NodeContainer*/
@@ -364,11 +367,11 @@ public:
 
 		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
 		{
-			dstream<<"EXCEPT: VoxelManipulator::getNode(): "
+			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 					<<", index="<<m_area.index(p)
 					<<", flags="<<(int)m_flags[m_area.index(p)]
-					<<" is inexistent"<<std::endl;
+					<<" is inexistent"<<std::endl;*/
 			throw InvalidPositionException
 			("VoxelManipulator: getNode: inexistent");
 		}
@@ -394,24 +397,37 @@ public:
 			return MapNode(CONTENT_IGNORE);
 		return m_data[m_area.index(p)];
 	}
+	// Stuff explodes if non-emerged area is touched with this.
+	// Emerge first, and check VOXELFLAG_INEXISTENT if appropriate.
+	MapNode & getNodeRefUnsafe(v3s16 p)
+	{
+		return m_data[m_area.index(p)];
+	}
+	u8 & getFlagsRefUnsafe(v3s16 p)
+	{
+		return m_flags[m_area.index(p)];
+	}
+	bool exists(v3s16 p)
+	{
+		return m_area.contains(p) &&
+			!(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT);
+	}
 	MapNode & getNodeRef(v3s16 p)
 	{
 		emerge(p);
-
-		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		if(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT)
 		{
-			dstream<<"EXCEPT: VoxelManipulator::getNode(): "
+			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 					<<", index="<<m_area.index(p)
-					<<", flags="<<(int)m_flags[m_area.index(p)]
-					<<" is inexistent"<<std::endl;
+					<<", flags="<<(int)getFlagsRefUnsafe(p)
+					<<" is inexistent"<<std::endl;*/
 			throw InvalidPositionException
 			("VoxelManipulator: getNode: inexistent");
 		}
-
-		return m_data[m_area.index(p)];
+		return getNodeRefUnsafe(p);
 	}
-	void setNode(v3s16 p, MapNode &n)
+	void setNode(v3s16 p, const MapNode &n)
 	{
 		emerge(p);
 		
@@ -419,7 +435,8 @@ public:
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_INEXISTENT;
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_NOT_LOADED;
 	}
-	void setNodeNoRef(v3s16 p, MapNode n)
+	// TODO: Should be removed and replaced with setNode
+	void setNodeNoRef(v3s16 p, const MapNode &n)
 	{
 		setNode(p, n);
 	}
@@ -498,7 +515,9 @@ public:
 	*/
 
 	void clearFlag(u8 flag);
-	
+
+	// TODO: Move to voxelalgorithms.h
+
 	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
 	void unspreadLight(enum LightBank bank,

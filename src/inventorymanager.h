@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -32,9 +32,10 @@ struct InventoryLocation
 		CURRENT_PLAYER,
 		PLAYER,
 		NODEMETA,
+        DETACHED,
 	} type;
 
-	std::string name; // PLAYER
+	std::string name; // PLAYER, DETACHED
 	v3s16 p; // NODEMETA
 
 	InventoryLocation()
@@ -59,6 +60,34 @@ struct InventoryLocation
 		type = NODEMETA;
 		p = p_;
 	}
+	void setDetached(const std::string &name_)
+	{
+		type = DETACHED;
+		name = name_;
+	}
+
+	bool operator==(const InventoryLocation &other) const
+	{
+		if(type != other.type)
+			return false;
+		switch(type){
+		case UNDEFINED:
+			return false;
+		case CURRENT_PLAYER:
+			return true;
+		case PLAYER:
+			return (name == other.name);
+		case NODEMETA:
+			return (p == other.p);
+		case DETACHED:
+			return (name == other.name);
+		}
+		return false;
+	}
+	bool operator!=(const InventoryLocation &other) const
+	{
+		return !(*this == other);
+	}
 
 	void applyCurrentPlayer(const std::string &name_)
 	{
@@ -80,13 +109,11 @@ public:
 	InventoryManager(){}
 	virtual ~InventoryManager(){}
 	
-	// Get an inventory or set it modified (so it will be updated over
-	// network or so)
+	// Get an inventory (server and client)
 	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
-	virtual std::string getInventoryOwner(const InventoryLocation &loc){return "";}
+    // Set modified (will be saved and sent over network; only on server)
 	virtual void setInventoryModified(const InventoryLocation &loc){}
-
-	// Used on the client to send an action to the server
+    // Send inventory action to server (only on client)
 	virtual void inventoryAction(InventoryAction *a){}
 };
 

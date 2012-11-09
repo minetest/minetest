@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -22,175 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "serverobject.h"
 #include "content_object.h"
+#include "itemgroup.h"
+#include "player.h"
+#include "object_properties.h"
 
-class TestSAO : public ServerActiveObject
-{
-public:
-	TestSAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_TEST;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-private:
-	float m_timer1;
-	float m_age;
-};
+ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
+		const std::string itemstring);
 
-class ItemSAO : public ServerActiveObject
-{
-public:
-	ItemSAO(ServerEnvironment *env, v3f pos, const std::string itemstring);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_ITEM;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	ItemStack createItemStack();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	float getMinimumSavedMovement(){ return 0.1*BS; }
-private:
-	std::string m_itemstring;
-	bool m_itemstring_changed;
-	v3f m_speed_f;
-	v3f m_last_sent_position;
-	IntervalLimiter m_move_interval;
-};
-
-class RatSAO : public ServerActiveObject
-{
-public:
-	RatSAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_RAT;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-};
-
-class Oerkki1SAO : public ServerActiveObject
-{
-public:
-	Oerkki1SAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_OERKKI1;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	bool isPeaceful(){return false;}
-private:
-	void doDamage(u16 d);
-
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-	u8 m_hp;
-	float m_after_jump_timer;
-};
-
-class FireflySAO : public ServerActiveObject
-{
-public:
-	FireflySAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_FIREFLY;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-};
-
-class Settings;
-
-class MobV2SAO : public ServerActiveObject
-{
-public:
-	MobV2SAO(ServerEnvironment *env, v3f pos,
-			Settings *init_properties);
-	virtual ~MobV2SAO();
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_MOBV2;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	std::string getStaticData();
-	std::string getClientInitializationData();
-	void step(float dtime, bool send_recommended);
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	bool isPeaceful();
-private:
-	void sendPosition();
-	void setPropertyDefaults();
-	void readProperties();
-	void updateProperties();
-	void doDamage(u16 d);
-	
-	std::string m_move_type;
-	v3f m_speed;
-	v3f m_last_sent_position;
-	v3f m_oldpos;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-	int m_hp;
-	bool m_walk_around;
-	float m_walk_around_timer;
-	bool m_next_pos_exists;
-	v3s16 m_next_pos_i;
-	float m_shoot_reload_timer;
-	bool m_shooting;
-	float m_shooting_timer;
-	float m_die_age;
-	v2f m_size;
-	bool m_falling;
-	float m_disturb_timer;
-	std::string m_disturbing_player;
-	float m_random_disturb_timer;
-	float m_shoot_y;
-	
-	Settings *m_properties;
-};
-
-struct LuaEntityProperties;
+/*
+	LuaEntitySAO needs some internals exposed.
+*/
 
 class LuaEntitySAO : public ServerActiveObject
 {
@@ -199,18 +40,29 @@ public:
 			const std::string &name, const std::string &state);
 	~LuaEntitySAO();
 	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_LUAENTITY;}
-	virtual void addedToEnvironment();
+	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
+	u8 getSendType() const
+	{ return ACTIVEOBJECT_TYPE_GENERIC; }
+	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
+	int punch(v3f dir,
+			const ToolCapabilities *toolcap=NULL,
+			ServerActiveObject *puncher=NULL,
+			float time_from_last_punch=1000000);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
+	std::string getDescription();
+	void setHP(s16 hp);
+	s16 getHP() const;
+	void setArmorGroups(const ItemGroupList &armor_groups);
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -223,21 +75,172 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 private:
+	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered;
-	struct LuaEntityProperties *m_prop;
+	struct ObjectProperties m_prop;
 	
+	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
+	ItemGroupList m_armor_groups;
+	
+	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
+	bool m_armor_groups_sent;
+};
+
+/*
+	PlayerSAO needs some internals exposed.
+*/
+
+class PlayerSAO : public ServerActiveObject
+{
+public:
+	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
+			const std::set<std::string> &privs, bool is_singleplayer);
+	~PlayerSAO();
+	u8 getType() const
+	{ return ACTIVEOBJECT_TYPE_PLAYER; }
+	u8 getSendType() const
+	{ return ACTIVEOBJECT_TYPE_GENERIC; }
+	std::string getDescription();
+
+	/*
+		Active object <-> environment interface
+	*/
+
+	void addedToEnvironment(u32 dtime_s);
+	void removingFromEnvironment();
+	bool isStaticAllowed() const;
+	bool unlimitedTransferDistance() const;
+	std::string getClientInitializationData();
+	std::string getStaticData();
+	void step(float dtime, bool send_recommended);
+	void setBasePosition(const v3f &position);
+	void setPos(v3f pos);
+	void moveTo(v3f pos, bool continuous);
+
+	/*
+		Interaction interface
+	*/
+
+	int punch(v3f dir,
+		const ToolCapabilities *toolcap,
+		ServerActiveObject *puncher,
+		float time_from_last_punch);
+	void rightClick(ServerActiveObject *clicker);
+	s16 getHP() const;
+	void setHP(s16 hp);
+	
+	void setArmorGroups(const ItemGroupList &armor_groups);
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
+
+	/*
+		Inventory interface
+	*/
+
+	Inventory* getInventory();
+	const Inventory* getInventory() const;
+	InventoryLocation getInventoryLocation() const;
+	void setInventoryModified();
+	std::string getWieldList() const;
+	int getWieldIndex() const;
+	void setWieldIndex(int i);
+
+	/*
+		PlayerSAO-specific
+	*/
+
+	void disconnected();
+
+	Player* getPlayer()
+	{
+		return m_player;
+	}
+	u16 getPeerID() const
+	{
+		return m_peer_id;
+	}
+
+	// Cheat prevention
+
+	v3f getLastGoodPosition() const
+	{
+		return m_last_good_position;
+	}
+	float resetTimeFromLastPunch()
+	{
+		float r = m_time_from_last_punch;
+		m_time_from_last_punch = 0.0;
+		return r;
+	}
+	void noCheatDigStart(v3s16 p)
+	{
+		m_nocheat_dig_pos = p;
+		m_nocheat_dig_time = 0;
+	}
+	v3s16 getNoCheatDigPos()
+	{
+		return m_nocheat_dig_pos;
+	}
+	float getNoCheatDigTime()
+	{
+		return m_nocheat_dig_time;
+	}
+	void noCheatDigEnd()
+	{
+		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
+	}
+
+	// Other
+
+	void updatePrivileges(const std::set<std::string> &privs,
+			bool is_singleplayer)
+	{
+		m_privs = privs;
+		m_is_singleplayer = is_singleplayer;
+	}
+
+private:
+	std::string getPropertyPacket();
+	
+	Player *m_player;
+	u16 m_peer_id;
+	Inventory *m_inventory;
+
+	// Cheat prevention
+	v3f m_last_good_position;
+	float m_last_good_position_age;
+	float m_time_from_last_punch;
+	v3s16 m_nocheat_dig_pos;
+	float m_nocheat_dig_time;
+
+	int m_wield_index;
+	bool m_position_not_sent;
+	ItemGroupList m_armor_groups;
+	bool m_armor_groups_sent;
+	bool m_properties_sent;
+	struct ObjectProperties m_prop;
+	// Cached privileges for enforcement
+	std::set<std::string> m_privs;
+	bool m_is_singleplayer;
+
+public:
+	// Some flags used by Server
+	bool m_teleported;
+	bool m_inventory_not_sent;
+	bool m_hp_not_sent;
+	bool m_wielded_item_not_sent;
 };
 
 #endif

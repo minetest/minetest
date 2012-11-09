@@ -3,25 +3,25 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "voxel.h"
 #include "map.h"
-#include "utility.h" // For TimeTaker
 #include "gettime.h"
 #include "nodedef.h"
+#include "util/timetaker.h"
 
 /*
 	Debug stuff
@@ -63,7 +63,7 @@ void VoxelManipulator::clear()
 	m_flags = NULL;
 }
 
-void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
+void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 		VoxelPrintMode mode)
 {
 	v3s16 em = m_area.getExtent();
@@ -94,8 +94,9 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 				else
 				{
 					c = 'X';
-					content_t m = m_data[m_area.index(x,y,z)].getContent();
-					u8 pr = m_data[m_area.index(x,y,z)].param2;
+					MapNode n = m_data[m_area.index(x,y,z)];
+					content_t m = n.getContent();
+					u8 pr = n.param2;
 					if(mode == VOXELPRINT_MATERIAL)
 					{
 						if(m <= 9)
@@ -103,7 +104,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 					}
 					else if(mode == VOXELPRINT_WATERPRESSURE)
 					{
-						if(nodemgr->get(m).isLiquid())
+						if(ndef->get(m).isLiquid())
 						{
 							c = 'w';
 							if(pr <= 9)
@@ -116,6 +117,21 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 						else
 						{
 							c = '#';
+						}
+					}
+					else if(mode == VOXELPRINT_LIGHT_DAY)
+					{
+						if(ndef->get(m).light_source != 0)
+							c = 'S';
+						else if(ndef->get(m).light_propagates == false)
+							c = 'X';
+						else
+						{
+							u8 light = n.getLight(LIGHTBANK_DAY, ndef);
+							if(light < 10)
+								c = '0' + light;
+							else
+								c = 'a' + (light-10);
 						}
 					}
 				}

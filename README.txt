@@ -1,50 +1,75 @@
 Minetest-c55
----------------
-An InfiniMiner/Minecraft inspired game.
-Copyright (c) 2010-2011 Perttu Ahola <celeron55@gmail.com>
-(see source files for other contributors)
+============
 
-Further documentation:
+An InfiniMiner/Minecraft inspired game.
+
+Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
+and ther contributors (see source file comments and the version control log)
+
+In case you downloaded the source code:
+---------------------------------------
+If you downloaded the Minetest Engine source code in which this file is
+contained, you probably want to download the minetest_game project too:
+  https://github.com/celeron55/minetest_game/
+See the README.txt in it.
+
+Further documentation
 ----------------------
-- Website: http://celeron.55.lt/~celeron55/minetest/
-- Wiki: http://celeron.55.lt/~celeron55/minetest/wiki/
-- Forum: http://celeron.55.lt/~celeron55/minetest/forum/
+- Website: http://c55.me/minetest/
+- Wiki: http://c55.me/minetest/wiki/
+- Forum: http://c55.me/minetest/forum/
+- Github: https://github.com/celeron55/minetest/
 - doc/ directory of source distribution
 
-This game is not finished:
+This game is not finished
 --------------------------
 - Don't expect it to work as well as a finished game will.
-- Please report any bugs to me. debug.txt is useful.
+- Please report any bugs. When doing that, debug.txt is useful.
 
-Controls:
----------
-- See the in-game pause menu
+Default Controls
+-----------------
+- WASD: Move
+- Space: Jump
+- E: Go down
+- Shift: Sneak
+- Q: Drop item
+- I: Open inventory
+- Mouse: Turn/look
 - Settable in the configuration file, see the section below.
 
-Map directory:
---------------
-- Map is stored in a directory, which can be removed to generate a new map.
-- There is a command-line option for it: --map-dir
-- For a RUN_IN_PLACE build, it is located in:
-		../world
-- Otherwise something like this:
-	Windows: C:\Documents and Settings\user\Application Data\minetest\world
-	Linux: ~/.minetest/world
-	OS X: ~/Library/Application Support/minetest/world
+Paths
+------
+$bin   - Compiled binaries
+$share - Cistributed read-only data
+$user  - User-created modifiable data
+
+Windows .zip / RUN_IN_PLACE source:
+$bin   = bin
+$share = .
+$user  = .
+
+Linux installed:
+$bin   = /usr/bin
+$share = /usr/share/minetest
+$user  = ~/.minetest
+
+OS X:
+$bin   = ?
+$share = ?
+$user  = ~/Library/Application Support/minetest
+
+World directory
+----------------
+- Worlds can be found as separate folders in:
+    $user/worlds/
 
 Configuration file:
 -------------------
-- An optional configuration file can be used. See minetest.conf.example.
-- Path to file can be passed as a parameter to the executable:
+- Default location:
+    $user/minetest.conf
+- It is created by Minetest when it is ran the first time.
+- A specific file can be specified on the command line:
 	--config <path-to-file>
-- Defaults:
-	- If built with -DRUN_IN_PLACE=1:
-		../minetest.conf
-		../../minetest.conf
-	- Otherwise something like this:
-		Windows: C:\Documents and Settings\user\Application Data\minetest\minetest.conf
-		Linux: ~/.minetest/minetest.conf
-		OS X: ~/Library/Application Support/minetest.conf
 
 Command-line options:
 ---------------------
@@ -54,12 +79,19 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev
+$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
 $ wget https://github.com/celeron55/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd celeron55-minetest-286edd4 (or similar)
+
+Download minetest_game (otherwise only the "Minimal development test" game is available)
+$ cd games/
+$ wget https://github.com/celeron55/minetest_game/tarball/master -O master.tar.gz
+$ tar xf master.tar.gz
+$ mv celeron55-minetest_game-* minetest_game
+$ cd ..
 
 Build a version that runs directly from the source directory:
 $ cmake . -DRUN_IN_PLACE=1
@@ -77,6 +109,9 @@ $ ./minetest
 
 Compiling on Windows:
 ---------------------
+- This section is outdated. In addition to what is described here:
+  - In addition to minetest, you need to download minetest_game.
+  - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 - You need:
 	* CMake:
@@ -94,12 +129,13 @@ Compiling on Windows:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest-c55:
-		http://celeron.55.lt/~celeron55/minetest/download
+		http://c55.me/minetest/download
 - Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
 	- Download all the other stuff to DIR and extract them into there.
 	  ("extract here", not "extract to packagename/")
+	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
 	- You will end up with a directory structure like this (+=dir, -=file):
@@ -176,24 +212,37 @@ Compiling on Windows:
 	If using MinGW:
 		- Using the command line, browse to the build directory and run 'make'
 		  (or mingw32-make or whatever it happens to be)
+		- You may need to copy some of the downloaded DLLs into bin/, see what
+		  running the produced executable tells you it doesn't have.
 		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
 
 Windows releases of minetest are built using a bat script like this:
 --------------------------------------------------------------------
 
+set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
 
-set sourcedir=%CD%
 set builddir=%sourcedir%\bvc10
 mkdir %builddir%
 pushd %builddir%
 cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=1 -DCMAKE_INSTALL_PREFIX=%installpath%
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" INSTALL.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" PACKAGE.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 popd
+echo Finished.
+exit /b 0
+
+:fail
+popd
+echo Failed.
+exit /b 1
 
 License of Minetest-c55 textures and sounds
 -------------------------------------------
@@ -211,8 +260,8 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -220,7 +269,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
@@ -275,5 +324,51 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
+
+Lua
+---------------
+
+Lua is licensed under the terms of the MIT license reproduced below.
+This means that Lua is free software and can be used for both academic
+and commercial purposes at absolutely no cost.
+
+For details and rationale, see http://www.lua.org/license.html .
+
+Copyright (C) 1994-2008 Lua.org, PUC-Rio.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Fonts
+---------------
+
+DejaVu Sans Mono:
+
+  Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+  Glyphs imported from Arev fonts are (c) Tavmjong Bah (see below)
+
+  Bitstream Vera Fonts Copyright:
+
+  Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
+  a trademark of Bitstream, Inc.
+
+  Arev Fonts Copyright:
+
+  Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
 
 

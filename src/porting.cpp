@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -27,6 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "debug.h"
 #include "filesys.h"
+#include "log.h"
+#include "util/string.h"
+#include <list>
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"
@@ -71,7 +74,6 @@ void sigint_handler(int sig)
 
 void signal_handler_init(void)
 {
-	dstream<<"signal_handler_init()"<<std::endl;
 	(void)signal(SIGINT, sigint_handler);
 }
 
@@ -114,7 +116,6 @@ void signal_handler_init(void)
 	
 void signal_handler_init(void)
 {
-	dstream<<"signal_handler_init()"<<std::endl;
 	SetConsoleCtrlHandler( (PHANDLER_ROUTINE)event_handler,TRUE);
 }
 
@@ -124,12 +125,13 @@ void signal_handler_init(void)
 	Path mangler
 */
 
-std::string path_data = ".." DIR_DELIM "data";
-std::string path_userdata = "..";
+// Default to RUN_IN_PLACE style relative paths
+std::string path_share = "..";
+std::string path_user = "..";
 
 std::string getDataPath(const char *subpath)
 {
-	return path_data + DIR_DELIM + subpath;
+	return path_share + DIR_DELIM + subpath;
 }
 
 void pathRemoveFile(char *path, char delim)
@@ -144,14 +146,21 @@ void pathRemoveFile(char *path, char delim)
 	path[i] = 0;
 }
 
+bool detectMSVCBuildDir(char *c_path)
+{
+	std::string path(c_path);
+	const char *ends[] = {"bin\\Release", "bin\\Build", NULL};
+	return (removeStringEnd(path, ends) != "");
+}
+
 void initializePaths()
 {
-#ifdef RUN_IN_PLACE
+#if RUN_IN_PLACE
 	/*
 		Use relative paths if RUN_IN_PLACE
 	*/
 
-	dstream<<"Using relative paths (RUN_IN_PLACE)"<<std::endl;
+	infostream<<"Using relative paths (RUN_IN_PLACE)"<<std::endl;
 
 	/*
 		Windows
@@ -163,16 +172,20 @@ void initializePaths()
 	char buf[buflen];
 	DWORD len;
 	
-	// Find path of executable and set path_data relative to it
+	// Find path of executable and set path_share relative to it
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
-
-	// Use "./bin/../data"
-	path_data = std::string(buf) + DIR_DELIM ".." DIR_DELIM "data";
-		
-	// Use "./bin/.."
-	path_userdata = std::string(buf) + DIR_DELIM "..";
+	
+	if(detectMSVCBuildDir(buf)){
+		infostream<<"MSVC build directory detected"<<std::endl;
+		path_share = std::string(buf) + "\\..\\..";
+		path_user = std::string(buf) + "\\..\\..";
+	}
+	else{
+		path_share = std::string(buf) + "\\..";
+		path_user = std::string(buf) + "\\..";
+	}
 
 	/*
 		Linux
@@ -187,11 +200,8 @@ void initializePaths()
 	
 	pathRemoveFile(buf, '/');
 
-	// Use "./bin/../data"
-	path_data = std::string(buf) + "/../data";
-		
-	// Use "./bin/../"
-	path_userdata = std::string(buf) + "/..";
+	path_share = std::string(buf) + "/..";
+	path_user = std::string(buf) + "/..";
 	
 	/*
 		OS X
@@ -201,8 +211,8 @@ void initializePaths()
 	//TODO: Get path of executable. This assumes working directory is bin/
 	dstream<<"WARNING: Relative path not properly supported on OS X and FreeBSD"
 			<<std::endl;
-	path_data = std::string("../data");
-	path_userdata = std::string("..");
+	path_share = std::string("..");
+	path_user = std::string("..");
 
 	#endif
 
@@ -212,7 +222,7 @@ void initializePaths()
 		Use platform-specific paths otherwise
 	*/
 
-	dstream<<"Using system-wide paths (NOT RUN_IN_PLACE)"<<std::endl;
+	infostream<<"Using system-wide paths (NOT RUN_IN_PLACE)"<<std::endl;
 
 	/*
 		Windows
@@ -224,19 +234,18 @@ void initializePaths()
 	char buf[buflen];
 	DWORD len;
 	
-	// Find path of executable and set path_data relative to it
+	// Find path of executable and set path_share relative to it
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
 	
-	// Use "./bin/../data"
-	path_data = std::string(buf) + DIR_DELIM ".." DIR_DELIM "data";
-	//path_data = std::string(buf) + "/../share/" + PROJECT_NAME;
+	// Use ".\bin\.."
+	path_share = std::string(buf) + "\\..";
 		
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
 	assert(len < buflen);
-	path_userdata = std::string(buf) + DIR_DELIM + PROJECT_NAME;
+	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME;
 
 	/*
 		Linux
@@ -244,22 +253,44 @@ void initializePaths()
 	#elif defined(linux)
 		#include <unistd.h>
 	
-	char buf[BUFSIZ];
-	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
-	
-	pathRemoveFile(buf, '/');
+	std::string bindir = "";
+	{
+		char buf[BUFSIZ];
+		memset(buf, 0, BUFSIZ);
+		assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
+		pathRemoveFile(buf, '/');
+		bindir = buf;
+	}
 
-	path_data = std::string(buf) + "/../share/" + PROJECT_NAME;
-	//path_data = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
-	if (!fs::PathExists(path_data)) {
-		dstream<<"WARNING: data path " << path_data << " not found!";
-		path_data = std::string(buf) + "/../data";
-		dstream<<" Trying " << path_data << std::endl;
+	// Find share directory from these.
+	// It is identified by containing the subdirectory "builtin".
+	std::list<std::string> trylist;
+	std::string static_sharedir = STATIC_SHAREDIR;
+	if(static_sharedir != "" && static_sharedir != ".")
+		trylist.push_back(static_sharedir);
+	trylist.push_back(bindir + "/../share/" + PROJECT_NAME);
+	trylist.push_back(bindir + "/..");
+	
+	for(std::list<std::string>::const_iterator i = trylist.begin();
+			i != trylist.end(); i++)
+	{
+		const std::string &trypath = *i;
+		if(!fs::PathExists(trypath) || !fs::PathExists(trypath + "/builtin")){
+			dstream<<"WARNING: system-wide share not found at \""
+					<<trypath<<"\""<<std::endl;
+			continue;
+		}
+		// Warn if was not the first alternative
+		if(i != trylist.begin()){
+			dstream<<"WARNING: system-wide share found at \""
+					<<trypath<<"\""<<std::endl;
+		}
+		path_share = trypath;
+		break;
 	}
 	
-	path_userdata = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
 
 	/*
 		OS X
@@ -276,7 +307,7 @@ void initializePaths()
 	{
 		dstream<<"Bundle resource path: "<<path<<std::endl;
 		//chdir(path);
-		path_data = std::string(path) + "/data";
+		path_share = std::string(path) + "/share";
 	}
 	else
     {
@@ -285,19 +316,16 @@ void initializePaths()
     }
     CFRelease(resources_url);
 	
-	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
 	#elif defined(__FreeBSD__)
 
-	path_data = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
-	path_userdata = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
+	path_share = STATIC_SHAREDIR;
+	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
     
 	#endif
 
 #endif // RUN_IN_PLACE
-
-	dstream<<"path_data = "<<path_data<<std::endl;
-	dstream<<"path_userdata = "<<path_userdata<<std::endl;
 }
 
 } //namespace porting

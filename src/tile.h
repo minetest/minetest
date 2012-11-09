@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,9 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TILE_HEADER
 #define TILE_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include "irr_v2d.h"
+#include "irr_v3d.h"
+#include <ITexture.h>
+#include <IrrlichtDevice.h>
 #include "threads.h"
-#include "utility.h"
 #include <string>
 
 class IGameDef;
@@ -58,6 +61,14 @@ struct AtlasPointer
 	v2f size; // Size in atlas
 	u16 tiled; // X-wise tiling count. If 0, width of atlas is width of image.
 
+	AtlasPointer():
+		id(0),
+		atlas(NULL),
+		pos(0,0),
+		size(1,1),
+		tiled(1)
+	{}
+
 	AtlasPointer(
 			u16 id_,
 			video::ITexture *atlas_=NULL,
@@ -73,7 +84,7 @@ struct AtlasPointer
 	{
 	}
 
-	bool operator==(const AtlasPointer &other)
+	bool operator==(const AtlasPointer &other) const
 	{
 		return (
 			id == other.id
@@ -85,6 +96,11 @@ struct AtlasPointer
 			size == other.size &&
 			tiled == other.tiled
 		);*/
+	}
+
+	bool operator!=(const AtlasPointer &other) const
+	{
+		return !(*this == other);
 	}
 
 	float x0(){ return pos.X; }
@@ -110,6 +126,8 @@ public:
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
 		{return NULL;}
+	virtual AtlasPointer getTextureRawAP(const AtlasPointer &ap)
+		{return AtlasPointer(0);}
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
@@ -148,7 +166,16 @@ enum MaterialType{
 };
 
 // Material flags
+// Should backface culling be enabled?
 #define MATERIAL_FLAG_BACKFACE_CULLING 0x01
+// Should a crack be drawn?
+#define MATERIAL_FLAG_CRACK 0x02
+// Should the crack be drawn on transparent pixels (unset) or not (set)?
+// Ignored if MATERIAL_FLAG_CRACK is not set.
+#define MATERIAL_FLAG_CRACK_OVERLAY 0x04
+// Animation made up by splitting the texture to vertical frames, as
+// defined by extra parameters
+#define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
 
 /*
 	This fully defines the looks of a tile.
@@ -165,11 +192,13 @@ struct TileSpec
 		material_flags(
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING
-		)
+		),
+		animation_frame_count(1),
+		animation_frame_length_ms(0)
 	{
 	}
 
-	bool operator==(TileSpec &other)
+	bool operator==(const TileSpec &other) const
 	{
 		return (
 			texture == other.texture &&
@@ -178,15 +207,15 @@ struct TileSpec
 			material_flags == other.material_flags
 		);
 	}
+
+	bool operator!=(const TileSpec &other) const
+	{
+		return !(*this == other);
+	}
 	
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
-		if(alpha != 255 && material_type != MATERIAL_ALPHA_VERTEX)
-			dstream<<"WARNING: TileSpec: alpha != 255 "
-					"but not MATERIAL_ALPHA_VERTEX"
-					<<std::endl;
-
 		if(material_type == MATERIAL_ALPHA_NONE)
 			material.MaterialType = video::EMT_SOLID;
 		else if(material_type == MATERIAL_ALPHA_VERTEX)
@@ -207,12 +236,14 @@ struct TileSpec
 	}
 	
 	AtlasPointer texture;
-	// Vertex alpha
+	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
-	// Material type
+	// Material parameters
 	u8 material_type;
-	// Material flags
 	u8 material_flags;
+	// Animation parameters
+	u8 animation_frame_count;
+	u16 animation_frame_length_ms;
 };
 
 #endif

@@ -1,0 +1,1 @@
+If you haven't modified the texture_path setting, you can copy textures of your texture packs into here. Folders are currently not supported.

@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,25 +20,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
-#ifndef SERVER
-
 #include "connection.h"
 #include "environment.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "jmutex.h"
 #include <ostream>
+#include <set>
+#include <vector>
 #include "clientobject.h"
-#include "utility.h" // For IntervalLimiter
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "filesys.h"
+#include "filecache.h"
+#include "localplayer.h"
+#include "util/pointedthing.h"
 
 struct MeshMakeData;
+class MapBlockMesh;
 class IGameDef;
 class IWritableTextureSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
+class ClientEnvironment;
+struct MapDrawControl;
+class MtEventManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -71,7 +77,8 @@ public:
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
-	void addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server);
+	void addBlock(v3s16 p, MeshMakeData *data,
+			bool ack_block_to_server, bool urgent);
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
@@ -84,14 +91,15 @@ public:
 	}
 	
 private:
-	core::list<QueuedMeshUpdate*> m_queue;
+	std::vector<QueuedMeshUpdate*> m_queue;
+	std::set<v3s16> m_urgents;
 	JMutex m_mutex;
 };
 
 struct MeshUpdateResult
 {
 	v3s16 p;
-	scene::SMesh *mesh;
+	MapBlockMesh *mesh;
 	bool ack_block_to_server;
 
 	MeshUpdateResult():
@@ -167,7 +175,9 @@ public:
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef
+			IWritableNodeDefManager *nodedef,
+			ISoundManager *sound,
+			MtEventManager *event
 	);
 	
 	~Client();
@@ -192,45 +202,32 @@ public:
 	*/
 	void step(float dtime);
 
-	// Called from updater thread
-	// Returns dtime
-	//float asyncStep();
-
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
 	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
 
-	// Pops out a packet from the packet queue
-	//IncomingPacket getPacket();
-
 	void interact(u8 action, const PointedThing& pointed);
 
-	void sendSignNodeText(v3s16 p, std::string text);
+	void sendNodemetaFields(v3s16 p, const std::string &formname,
+			const std::map<std::string, std::string> &fields);
+	void sendInventoryFields(const std::string &formname,
+			const std::map<std::string, std::string> &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
 	void sendChangePassword(const std::wstring oldpassword,
-		const std::wstring newpassword);
+			const std::wstring newpassword);
 	void sendDamage(u8 damage);
 	void sendRespawn();
+
+	ClientEnvironment& getEnv()
+	{ return m_env; }
 	
-	// locks envlock
+	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
-	// locks envlock
 	void addNode(v3s16 p, MapNode n);
 	
-	void updateCamera(v3f pos, v3f dir, f32 fov);
-	
-	void renderPostFx();
-	
-	// Returns InvalidPositionException if not found
-	MapNode getNode(v3s16 p);
-	// Wrapper to Map
-	NodeMetadata* getNodeMetadata(v3s16 p);
-
-	LocalPlayer* getLocalPlayer();
-
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);
@@ -258,51 +255,27 @@ public:
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 
-	u32 getDayNightRatio();
+	core::list<std::wstring> getConnectedPlayerNames();
+
+	float getAnimationTime();
+
+	int getCrackLevel();
+	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
 
-	void setTempMod(v3s16 p, NodeMod mod);
-	void clearTempMod(v3s16 p);
+	bool checkPrivilege(const std::string &priv)
+	{ return (m_privileges.count(priv) != 0); }
 
-	float getAvgRtt()
-	{
-		try{
-			return m_con.GetPeerAvgRTT(PEER_ID_SERVER);
-		} catch(con::PeerNotFoundException){
-			return 1337;
-		}
-	}
-
-	bool getChatMessage(std::wstring &message)
-	{
-		if(m_chat_queue.size() == 0)
-			return false;
-		message = m_chat_queue.pop_front();
-		return true;
-	}
-
-	void addChatMessage(const std::wstring &message)
-	{
-		if (message[0] == L'/') {
-			m_chat_queue.push_back(
-				(std::wstring)L"issued command: "+message);
-			return;
-		}
-
-		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push_back(
-				(std::wstring)L"<"+name+L"> "+message);
-	}
+	bool getChatMessage(std::wstring &message);
+	void typeChatMessage(const std::wstring& message);
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	// Including blocks at appropriate edges
-	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
@@ -313,11 +286,11 @@ public:
 	std::wstring accessDeniedReason()
 	{ return m_access_denied_reason; }
 
-	float textureReceiveProgress()
-	{ return m_texture_receive_progress; }
+	float mediaReceiveProgress()
+	{ return m_media_receive_progress; }
 
 	bool texturesReceived()
-	{ return m_textures_received; }
+	{ return m_media_received; }
 	bool itemdefReceived()
 	{ return m_itemdef_received; }
 	bool nodedefReceived()
@@ -333,8 +306,15 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
+	virtual ISoundManager* getSoundManager();
+	virtual MtEventManager* getEventManager();
+	virtual bool checkLocalPrivilege(const std::string &priv)
+	{ return checkPrivilege(priv); }
 
 private:
+	
+	// Insert a media file appropriately into the appropriate manager
+	bool loadMedia(const std::string &data, const std::string &filename);
 	
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
@@ -359,6 +339,9 @@ private:
 	IWritableTextureSource *m_tsrc;
 	IWritableItemDefManager *m_itemdef;
 	IWritableNodeDefManager *m_nodedef;
+	ISoundManager *m_sound;
+	MtEventManager *m_event;
+
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;
@@ -371,8 +354,10 @@ private:
 	float m_inventory_from_server_age;
 	core::map<v3s16, bool> m_active_blocks;
 	PacketCounter m_packetcounter;
-	// Received from the server. 0-23999
-	u32 m_time_of_day;
+	// Block mesh animation parameters
+	float m_animation_time;
+	int m_crack_level;
+	v3s16 m_crack_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
@@ -383,14 +368,36 @@ private:
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
 	Queue<ClientEvent> m_client_event_queue;
-	float m_texture_receive_progress;
-	bool m_textures_received;
+	FileCache m_media_cache;
+	// Mapping from media file name to SHA1 checksum
+	core::map<std::string, std::string> m_media_name_sha1_map;
+	float m_media_receive_progress;
+	bool m_media_received;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	friend class FarMesh;
-};
 
-#endif // !SERVER
+	// time_of_day speed approximation for old protocol
+	bool m_time_of_day_set;
+	float m_last_time_of_day_f;
+	float m_time_of_day_update_timer;
+
+	// Sounds
+	float m_removed_sounds_check_timer;
+	// Mapping from server sound ids to our sound ids
+	std::map<s32, int> m_sounds_server_to_client;
+	// And the other way!
+	std::map<int, s32> m_sounds_client_to_server;
+	// And relations to objects
+	std::map<int, u16> m_sounds_to_objects;
+
+	// Privileges
+	std::set<std::string> m_privileges;
+
+	// Detached inventories
+	// key = name
+	std::map<std::string, Inventory*> m_detached_inventories;
+};
 
 #endif // !CLIENT_HEADER
 

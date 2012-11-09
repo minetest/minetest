@@ -5,16 +5,16 @@
  Copyright (C) 2011 teddydestodes <derkomtur@schattengang.net>
 
  This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
  (at your option) any later version.
 
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License along
+ You should have received a copy of the GNU Lesser General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -22,34 +22,22 @@
 #ifndef GUIKEYCHANGEMENU_HEADER
 #define GUIKEYCHANGEMENU_HEADER
 
-#include "common_irrlicht.h"
-#include "utility.h"
+#include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "client.h"
 #include "gettext.h"
 #include "keycode.h"
 #include <string>
+#include <vector>
 
-enum
-{
-	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
-	//buttons
-	GUI_ID_KEY_FORWARD_BUTTON,
-	GUI_ID_KEY_BACKWARD_BUTTON,
-	GUI_ID_KEY_LEFT_BUTTON,
-	GUI_ID_KEY_RIGHT_BUTTON,
-	GUI_ID_KEY_USE_BUTTON,
-	GUI_ID_KEY_FLY_BUTTON,
-	GUI_ID_KEY_FAST_BUTTON,
-	GUI_ID_KEY_JUMP_BUTTON,
-	GUI_ID_KEY_CHAT_BUTTON,
-	GUI_ID_KEY_CMD_BUTTON,
-	GUI_ID_KEY_SNEAK_BUTTON,
-	GUI_ID_KEY_DROP_BUTTON,
-	GUI_ID_KEY_INVENTORY_BUTTON,
-	GUI_ID_KEY_DUMP_BUTTON,
-	GUI_ID_KEY_RANGE_BUTTON
-};
+typedef struct {
+	int id;
+	wchar_t *button_name;
+	KeyPress key;
+	std::string setting_name;
+	gui::IGUIButton *button;
+} key_setting;
+
 
 class GUIKeyChangeMenu: public GUIModalMenu
 {
@@ -76,38 +64,15 @@ private:
 
 	bool resetMenu();
 
-	gui::IGUIButton *forward;
-	gui::IGUIButton *backward;
-	gui::IGUIButton *left;
-	gui::IGUIButton *right;
-	gui::IGUIButton *use;
-	gui::IGUIButton *sneak;
-	gui::IGUIButton *jump;
-	gui::IGUIButton *dropbtn;
-	gui::IGUIButton *inventory;
-	gui::IGUIButton *fly;
-	gui::IGUIButton *fast;
-	gui::IGUIButton *range;
-	gui::IGUIButton *dump;
-	gui::IGUIButton *chat;
-	gui::IGUIButton *cmd;
+	void add_key(int id, std::string setting_name, std::string button_name);
 
+	bool shift_down;
+	
 	s32 activeKey;
-	KeyPress key_forward;
-	KeyPress key_backward;
-	KeyPress key_left;
-	KeyPress key_right;
-	KeyPress key_use;
-	KeyPress key_sneak;
-	KeyPress key_jump;
-	KeyPress key_drop;
-	KeyPress key_inventory;
-	KeyPress key_fly;
-	KeyPress key_fast;
-	KeyPress key_range;
-	KeyPress key_chat;
-	KeyPress key_cmd;
-	KeyPress key_dump;
+	
+	std::vector<KeyPress> key_used;
+	gui::IGUIStaticText *key_used_text;
+	std::vector<key_setting *> key_settings;
 };
 
 #endif

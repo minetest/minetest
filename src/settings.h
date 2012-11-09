@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SETTINGS_HEADER
 #define SETTINGS_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <jthread.h>
 #include <jmutex.h>
@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <sstream>
 #include "debug.h"
-#include "utility.h"
 #include "log.h"
+#include "util/string.h"
 
 enum ValueType
 {
@@ -145,14 +145,10 @@ public:
 	{
 		std::ifstream is(filename);
 		if(is.good() == false)
-		{
-			errorstream<<"Error opening configuration file \""
-					<<filename<<"\""<<std::endl;
 			return false;
-		}
 
-		infostream<<"Parsing configuration file: \""
-				<<filename<<"\""<<std::endl;
+		/*infostream<<"Parsing configuration file: \""
+				<<filename<<"\""<<std::endl;*/
 				
 		while(parseConfigObject(is));
 		
@@ -172,7 +168,8 @@ public:
 	*/
 	bool getUpdatedConfigObject(std::istream &is,
 			core::list<std::string> &dst,
-			core::map<std::string, bool> &updated)
+			core::map<std::string, bool> &updated,
+			bool &value_changed)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
@@ -219,6 +216,7 @@ public:
 				infostream<<"Changing value of \""<<name<<"\" = \""
 						<<value<<"\" -> \""<<newvalue<<"\""
 						<<std::endl;
+				value_changed = true;
 			}
 
 			dst.push_back(name + " = " + newvalue + line_end);
@@ -241,6 +239,7 @@ public:
 		
 		core::list<std::string> objects;
 		core::map<std::string, bool> updated;
+		bool something_actually_changed = false;
 		
 		// Read and modify stuff
 		{
@@ -254,11 +253,33 @@ public:
 			}
 			else
 			{
-				while(getUpdatedConfigObject(is, objects, updated));
+				while(getUpdatedConfigObject(is, objects, updated,
+						something_actually_changed));
 			}
 		}
 		
 		JMutexAutoLock lock(m_mutex);
+		
+		// If something not yet determined to have been changed, check if
+		// any new stuff was added
+		if(!something_actually_changed){
+			for(core::map<std::string, std::string>::Iterator
+					i = m_settings.getIterator();
+					i.atEnd() == false; i++)
+			{
+				if(updated.find(i.getNode()->getKey()))
+					continue;
+				something_actually_changed = true;
+				break;
+			}
+		}
+		
+		// If nothing was actually changed, skip writing the file
+		if(!something_actually_changed){
+			infostream<<"Skipping writing of "<<filename
+					<<" because content wouldn't be modified"<<std::endl;
+			return true;
+		}
 		
 		// Write stuff back
 		{
@@ -309,6 +330,7 @@ public:
 	bool parseCommandLine(int argc, char *argv[],
 			core::map<std::string, ValueSpec> &allowed_options)
 	{
+		int nonopt_index = 0;
 		int i=1;
 		for(;;)
 		{
@@ -317,6 +339,15 @@ public:
 			std::string argname = argv[i];
 			if(argname.substr(0, 2) != "--")
 			{
+				// If option doesn't start with -, read it in as nonoptX
+				if(argname[0] != '-'){
+					std::string name = "nonopt";
+					name += itos(nonopt_index);
+					set(name, argname);
+					nonopt_index++;
+					i++;
+					continue;
+				}
 				errorstream<<"Invalid command-line parameter \""
 						<<argname<<"\": --<option> expected."<<std::endl;
 				return false;
@@ -404,8 +435,6 @@ public:
 			n = m_defaults.find(name);
 			if(n == NULL)
 			{
-				infostream<<"Settings: Setting not found: \""
-						<<name<<"\""<<std::endl;
 				throw SettingNotFoundException("Setting not found");
 			}
 		}

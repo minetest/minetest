@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -106,6 +106,8 @@ struct CraftReplacements
 		pairs(pairs_)
 	{}
 	std::string dump() const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
 };
 
 /*
@@ -128,6 +130,8 @@ public:
 	// Returns the output structure, meaning depends on crafting method
 	// The implementation can assume that check(input) returns true
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const=0;
+	// the inverse of the above
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const=0;
 	// Decreases count of every input item
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const=0;
 
@@ -162,6 +166,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -203,6 +208,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -240,6 +246,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -270,14 +277,16 @@ public:
 	CraftDefinitionCooking(
 			const std::string &output_,
 			const std::string &recipe_,
-			float cooktime_):
-		output(output_), recipe(recipe_), cooktime(cooktime_)
+			float cooktime_,
+			const CraftReplacements &replacements_):
+		output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionCooking(){}
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -293,6 +302,8 @@ private:
 	std::string recipe;
 	// Time in seconds
 	float cooktime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
 };
 
 /*
@@ -305,14 +316,17 @@ public:
 	CraftDefinitionFuel():
 		recipe(""), burntime()
 	{}
-	CraftDefinitionFuel(std::string recipe_, float burntime_):
-		recipe(recipe_), burntime(burntime_)
+	CraftDefinitionFuel(std::string recipe_,
+			float burntime_,
+			const CraftReplacements &replacements_):
+		recipe(recipe_), burntime(burntime_), replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionFuel(){}
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -326,6 +340,8 @@ private:
 	std::string recipe;
 	// Time in seconds
 	float burntime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
 };
 
 /*
@@ -340,6 +356,8 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const=0;
 	
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
@@ -356,6 +374,8 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const=0;
 
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;

@@ -3,28 +3,30 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "mapnode.h"
 #include "porting.h"
-#include <string>
 #include "main.h" // For g_settings
 #include "nodedef.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
+#include "util/serialize.h"
+#include <string>
+#include <sstream>
 
 /*
 	MapNode
@@ -37,11 +39,9 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 {
 	content_t id = CONTENT_IGNORE;
 	ndef->getId(name, id);
+	param0 = id;
 	param1 = a_param1;
 	param2 = a_param2;
-	// Set content (param0 and (param2&0xf0)) after other params
-	// because this needs to override part of param2
-	setContent(id);
 }
 
 void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
@@ -132,7 +132,98 @@ v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
 	}
 }
 
+static std::vector<aabb3f> transformNodeBox(const MapNode &n,
+		const NodeBox &nodebox, INodeDefManager *nodemgr)
+{
+	std::vector<aabb3f> boxes;
+	if(nodebox.type == NODEBOX_FIXED)
+	{
+		const std::vector<aabb3f> &fixed = nodebox.fixed;
+		int facedir = n.getFaceDir(nodemgr);
+		for(std::vector<aabb3f>::const_iterator
+				i = fixed.begin();
+				i != fixed.end(); i++)
+		{
+			aabb3f box = *i;
+			if(facedir == 1)
+			{
+				box.MinEdge.rotateXZBy(-90);
+				box.MaxEdge.rotateXZBy(-90);
+				box.repair();
+			}
+			else if(facedir == 2)
+			{
+				box.MinEdge.rotateXZBy(180);
+				box.MaxEdge.rotateXZBy(180);
+				box.repair();
+			}
+			else if(facedir == 3)
+			{
+				box.MinEdge.rotateXZBy(90);
+				box.MaxEdge.rotateXZBy(90);
+				box.repair();
+			}
+			boxes.push_back(box);
+		}
+	}
+	else if(nodebox.type == NODEBOX_WALLMOUNTED)
+	{
+		v3s16 dir = n.getWallMountedDir(nodemgr);
 
+		// top
+		if(dir == v3s16(0,1,0))
+		{
+			boxes.push_back(nodebox.wall_top);
+		}
+		// bottom
+		else if(dir == v3s16(0,-1,0))
+		{
+			boxes.push_back(nodebox.wall_bottom);
+		}
+		// side
+		else
+		{
+			v3f vertices[2] =
+			{
+				nodebox.wall_side.MinEdge,
+				nodebox.wall_side.MaxEdge
+			};
+
+			for(s32 i=0; i<2; i++)
+			{
+				if(dir == v3s16(-1,0,0))
+					vertices[i].rotateXZBy(0);
+				if(dir == v3s16(1,0,0))
+					vertices[i].rotateXZBy(180);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].rotateXZBy(90);
+				if(dir == v3s16(0,0,1))
+					vertices[i].rotateXZBy(-90);
+			}
+
+			aabb3f box = aabb3f(vertices[0]);
+			box.addInternalPoint(vertices[1]);
+			boxes.push_back(box);
+		}
+	}
+	else // NODEBOX_REGULAR
+	{
+		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
+	}
+	return boxes;
+}
+
+std::vector<aabb3f> MapNode::getNodeBoxes(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	return transformNodeBox(*this, f.node_box, nodemgr);
+}
+
+std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	return transformNodeBox(*this, f.selection_box, nodemgr);
+}
 
 u32 MapNode::serializedLength(u8 version)
 {
@@ -143,23 +234,25 @@ u32 MapNode::serializedLength(u8 version)
 		return 1;
 	else if(version <= 9)
 		return 2;
-	else
+	else if(version <= 23)
 		return 3;
+	else
+		return 4;
 }
 void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-
-	if(version <= 21)
-	{
-		serialize_pre22(dest, version);
-		return;
-	}
-
-	writeU8(dest+0, param0);
-	writeU8(dest+1, param1);
-	writeU8(dest+2, param2);
+	
+	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
+	// in memory; conversion just won't work in this direction.
+	if(version < 24)
+		throw SerializationError("MapNode::serialize: serialization to "
+				"version < 24 not possible");
+		
+	writeU16(dest+0, param0);
+	writeU8(dest+2, param1);
+	writeU8(dest+3, param2);
 }
 void MapNode::deSerialize(u8 *source, u8 version)
 {
@@ -172,9 +265,20 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		return;
 	}
 
-	param0 = readU8(source+0);
-	param1 = readU8(source+1);
-	param2 = readU8(source+2);
+	if(version >= 24){
+		param0 = readU16(source+0);
+		param1 = readU8(source+2);
+		param2 = readU8(source+3);
+	}
+	else{
+		param0 = readU8(source+0);
+		param1 = readU8(source+1);
+		param2 = readU8(source+2);
+		if(param0 > 0x7F){
+			param0 |= ((param2&0xF0)<<4);
+			param2 &= 0x0F;
+		}
+	}
 }
 void MapNode::serializeBulk(std::ostream &os, int version,
 		const MapNode *nodes, u32 nodecount,
@@ -183,24 +287,20 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	assert(version >= 22);
-	assert(content_width == 1);
+	assert(content_width == 2);
 	assert(params_width == 2);
+
+	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
+	// in memory; conversion just won't work in this direction.
+	if(version < 24)
+		throw SerializationError("MapNode::serializeBulk: serialization to "
+				"version < 24 not possible");
 
 	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
 
 	// Serialize content
-	if(content_width == 1)
-	{
-		for(u32 i=0; i<nodecount; i++)
-			writeU8(&databuf[i], nodes[i].param0);
-	}
-	/* If param0 is extended to two bytes, use something like this: */
-	/*else if(content_width == 2)
-	{
-		for(u32 i=0; i<nodecount; i++)
-			writeU16(&databuf[i*2], nodes[i].param0);
-	}*/
+	for(u32 i=0; i<nodecount; i++)
+		writeU16(&databuf[i*2], nodes[i].param0);
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
@@ -235,7 +335,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
 	assert(version >= 22);
-	assert(content_width == 1);
+	assert(content_width == 1 || content_width == 2);
 	assert(params_width == 2);
 
 	// Uncompress or read data
@@ -265,12 +365,11 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 		for(u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU8(&databuf[i]);
 	}
-	/* If param0 is extended to two bytes, use something like this: */
-	/*else if(content_width == 2)
+	else if(content_width == 2)
 	{
 		for(u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU16(&databuf[i*2]);
-	}*/
+	}
 
 	// Deserialize param1
 	u32 start1 = content_width * nodecount;
@@ -279,47 +378,27 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// Deserialize param2
 	u32 start2 = (content_width + 1) * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		nodes[i].param2 = readU8(&databuf[start2 + i]);
+	if(content_width == 1)
+	{
+		for(u32 i=0; i<nodecount; i++) {
+			nodes[i].param2 = readU8(&databuf[start2 + i]);
+			if(nodes[i].param0 > 0x7F){
+				nodes[i].param0 <<= 4;
+				nodes[i].param0 |= (nodes[i].param2&0xF0)>>4;
+				nodes[i].param2 &= 0x0F;
+			}
+		}
+	}
+	else if(content_width == 2)
+	{
+		for(u32 i=0; i<nodecount; i++)
+			nodes[i].param2 = readU8(&databuf[start2 + i]);
+	}
 }
 
 /*
 	Legacy serialization
 */
-void MapNode::serialize_pre22(u8 *dest, u8 version)
-{
-	// Translate to wanted version
-	MapNode n_foreign = mapnode_translate_from_internal(*this, version);
-
-	u8 actual_param0 = n_foreign.param0;
-
-	// Convert special values from new version to old
-	if(version <= 18)
-	{
-		// In these versions, CONTENT_IGNORE and CONTENT_AIR
-		// are 255 and 254
-		if(actual_param0 == CONTENT_IGNORE)
-			actual_param0 = 255;
-		else if(actual_param0 == CONTENT_AIR)
-			actual_param0 = 254;
-	}
-
-	if(version == 0)
-	{
-		dest[0] = actual_param0;
-	}
-	else if(version <= 9)
-	{
-		dest[0] = actual_param0;
-		dest[1] = n_foreign.param1;
-	}
-	else
-	{
-		dest[0] = actual_param0;
-		dest[1] = n_foreign.param1;
-		dest[2] = n_foreign.param2;
-	}
-}
 void MapNode::deSerialize_pre22(u8 *source, u8 version)
 {
 	if(version <= 1)
@@ -336,6 +415,11 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 		param0 = source[0];
 		param1 = source[1];
 		param2 = source[2];
+		if(param0 > 0x7f){
+			param0 <<= 4;
+			param0 |= (param2&0xf0)>>4;
+			param2 &= 0x0f;
+		}
 	}
 	
 	// Convert special values from old version to new
@@ -353,115 +437,3 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 	// Translate to our known version
 	*this = mapnode_translate_to_internal(*this, version);
 }
-
-
-#ifndef SERVER
-
-/*
-	Nodes make a face if contents differ and solidness differs.
-	Return value:
-		0: No face
-		1: Face uses m1's content
-		2: Face uses m2's content
-	equivalent: Whether the blocks share the same face (eg. water and glass)
-
-	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
-*/
-u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *nodemgr)
-{
-	*equivalent = false;
-
-	if(m1 == CONTENT_IGNORE || m2 == CONTENT_IGNORE)
-		return 0;
-	
-	bool contents_differ = (m1 != m2);
-	
-	const ContentFeatures &f1 = nodemgr->get(m1);
-	const ContentFeatures &f2 = nodemgr->get(m2);
-
-	// Contents don't differ for different forms of same liquid
-	if(f1.sameLiquid(f2))
-		contents_differ = false;
-	
-	u8 c1 = f1.solidness;
-	u8 c2 = f2.solidness;
-
-	bool solidness_differs = (c1 != c2);
-	bool makes_face = contents_differ && solidness_differs;
-
-	if(makes_face == false)
-		return 0;
-	
-	if(c1 == 0)
-		c1 = f1.visual_solidness;
-	if(c2 == 0)
-		c2 = f2.visual_solidness;
-	
-	if(c1 == c2){
-		*equivalent = true;
-		// If same solidness, liquid takes precense
-		if(f1.isLiquid())
-			return 1;
-		if(f2.isLiquid())
-			return 2;
-	}
-	
-	if(c1 > c2)
-		return 1;
-	else
-		return 2;
-}
-
-/*
-	Gets lighting value at face of node
-	
-	Parameters must consist of air and !air.
-	Order doesn't matter.
-
-	If either of the nodes doesn't exist, light is 0.
-	
-	parameters:
-		daynight_ratio: 0...1000
-		n: getNode(p) (uses only the lighting value)
-		n2: getNode(p + face_dir) (uses only the lighting value)
-		face_dir: axis oriented unit vector from p to p2
-	
-	returns encoded light value.
-*/
-u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir, INodeDefManager *nodemgr)
-{
-	try{
-		u8 light;
-		u8 l1 = n.getLightBlend(daynight_ratio, nodemgr);
-		u8 l2 = n2.getLightBlend(daynight_ratio, nodemgr);
-		if(l1 > l2)
-			light = l1;
-		else
-			light = l2;
-
-		// Make some nice difference to different sides
-
-		// This makes light come from a corner
-		/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
-			light = diminish_light(diminish_light(light));
-		else if(face_dir.X == -1 || face_dir.Z == -1)
-			light = diminish_light(light);*/
-		
-		// All neighboring faces have different shade (like in minecraft)
-		if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
-			light = diminish_light(diminish_light(light));
-		else if(face_dir.Z == 1 || face_dir.Z == -1)
-			light = diminish_light(light);
-
-		return light;
-	}
-	catch(InvalidPositionException &e)
-	{
-		return 0;
-	}
-}
-
-#endif
-

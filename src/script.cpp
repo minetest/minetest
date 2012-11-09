@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -89,17 +89,20 @@ int luaErrorHandler(lua_State *L) {
 
 bool script_load(lua_State *L, const char *path)
 {
-	infostream<<"Loading and running script from "<<path<<std::endl;
+	verbosestream<<"Loading and running script from "<<path<<std::endl;
 
 	lua_pushcfunction(L, luaErrorHandler);
 	int errorhandler = lua_gettop(L);
 
 	int ret = luaL_loadfile(L, path) || lua_pcall(L, 0, 0, errorhandler);
 	if(ret){
-		errorstream<<"Failed to load and run script from "<<path<<":"<<std::endl;
-		errorstream<<"[LUA] "<<std::endl;
-		errorstream<<"[LUA] "<<lua_tostring(L, -1)<<std::endl;
-		errorstream<<"[LUA] "<<std::endl;
+		errorstream<<"========== ERROR FROM LUA ==========="<<std::endl;
+		errorstream<<"Failed to load and run script from "<<std::endl;
+		errorstream<<path<<":"<<std::endl;
+		errorstream<<std::endl;
+		errorstream<<lua_tostring(L, -1)<<std::endl;
+		errorstream<<std::endl;
+		errorstream<<"=======END OF ERROR FROM LUA ========"<<std::endl;
 		lua_pop(L, 1); // Pop error message from stack
 		lua_pop(L, 1); // Pop the error handler from stack
 		return false;

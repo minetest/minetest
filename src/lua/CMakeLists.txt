@@ -45,6 +45,7 @@ if(DEFAULT_DLOPEN)
 else()
 	option(LUA_USE_DLOPEN "Enable dlopen support." OFF)
 endif()
+mark_as_advanced(LUA_USE_DLOPEN)
 
 if(DEFAULT_POSIX)
 else()
@@ -55,6 +56,7 @@ if(DEFAULT_ANSI)
 else()
 	option(LUA_ANSI "Disable non-ansi features." OFF)
 endif()
+mark_as_advanced(LUA_ANSI)
 
 #
 # Lua version
@@ -88,6 +90,11 @@ endif(LUA_USE_DLOPEN)
 if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
+
+#
+# COMMON_CFLAGS has no effect without this line
+#
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
 
 #
 # standard flags to use for each build type.

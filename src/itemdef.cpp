@@ -4,16 +4,16 @@ Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2011 Kahrl <kahrl@gmx.net>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gamedef.h"
 #include "nodedef.h"
-#include "materials.h"
+#include "tool.h"
 #include "inventory.h"
 #ifndef SERVER
 #include "mapblock_mesh.h"
@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "log.h"
-#include "utility.h"
+#include "util/serialize.h"
 #include <map>
 #include <set>
 
@@ -64,11 +64,13 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
-	if(def.tool_digging_properties)
+	if(def.tool_capabilities)
 	{
-		tool_digging_properties = new ToolDiggingProperties(
-				*def.tool_digging_properties);
+		tool_capabilities = new ToolCapabilities(
+				*def.tool_capabilities);
 	}
+	groups = def.groups;
+	node_placement_prediction = def.node_placement_prediction;
 #ifndef SERVER
 	inventory_texture = def.inventory_texture;
 	if(def.wield_mesh)
@@ -88,7 +90,7 @@ ItemDefinition::~ItemDefinition()
 void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
-	tool_digging_properties = NULL;
+	tool_capabilities = NULL;
 #ifndef SERVER
 	inventory_texture = NULL;
 	wield_mesh = NULL;
@@ -107,12 +109,15 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	if(tool_digging_properties)
+	if(tool_capabilities)
 	{
-		delete tool_digging_properties;
-		tool_digging_properties = NULL;
+		delete tool_capabilities;
+		tool_capabilities = NULL;
 	}
+	groups.clear();
 
+	node_placement_prediction = "";
+	
 #ifndef SERVER
 	inventory_texture = NULL;
 	if(wield_mesh)
@@ -125,7 +130,7 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os) const
 {
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -135,14 +140,20 @@ void ItemDefinition::serialize(std::ostream &os) const
 	writeS16(os, stack_max);
 	writeU8(os, usable);
 	writeU8(os, liquids_pointable);
-	std::string tool_digging_properties_s = "";
-	if(tool_digging_properties)
-	{
+	std::string tool_capabilities_s = "";
+	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
-		tool_digging_properties->serialize(tmp_os);
-		tool_digging_properties_s = tmp_os.str();
+		tool_capabilities->serialize(tmp_os);
+		tool_capabilities_s = tmp_os.str();
 	}
-	os<<serializeString(tool_digging_properties_s);
+	os<<serializeString(tool_capabilities_s);
+	writeU16(os, groups.size());
+	for(std::map<std::string, int>::const_iterator
+			i = groups.begin(); i != groups.end(); i++){
+		os<<serializeString(i->first);
+		writeS16(os, i->second);
+	}
+	os<<serializeString(node_placement_prediction);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -152,7 +163,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 0)
+	if(version != 1)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -163,13 +174,25 @@ void ItemDefinition::deSerialize(std::istream &is)
 	stack_max = readS16(is);
 	usable = readU8(is);
 	liquids_pointable = readU8(is);
-	std::string tool_digging_properties_s = deSerializeString(is);
-	if(!tool_digging_properties_s.empty())
+	std::string tool_capabilities_s = deSerializeString(is);
+	if(!tool_capabilities_s.empty())
 	{
-		std::istringstream tmp_is(tool_digging_properties_s, std::ios::binary);
-		tool_digging_properties = new ToolDiggingProperties;
-		tool_digging_properties->deSerialize(tmp_is);
+		std::istringstream tmp_is(tool_capabilities_s, std::ios::binary);
+		tool_capabilities = new ToolCapabilities;
+		tool_capabilities->deSerialize(tmp_is);
 	}
+	groups.clear();
+	u32 groups_size = readU16(is);
+	for(u32 i=0; i<groups_size; i++){
+		std::string name = deSerializeString(is);
+		int value = readS16(is);
+		groups[name] = value;
+	}
+	// If you add anything here, insert it primarily inside the try-catch
+	// block to not need to increase the version.
+	try{
+		node_placement_prediction = deSerializeString(is);
+	}catch(SerializationError &e) {};
 }
 
 /*
@@ -253,7 +276,7 @@ public:
 		ItemDefinition* hand_def = new ItemDefinition;
 		hand_def->name = "";
 		hand_def->wield_image = "wieldhand.png";
-		hand_def->tool_digging_properties = new ToolDiggingProperties;
+		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
@@ -272,12 +295,15 @@ public:
 	}
 	virtual void registerItem(const ItemDefinition &def)
 	{
-		infostream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
-		// Ensure that the "" item (the hand) always has ToolDiggingProperties
+		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
+		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
-			assert(def.tool_digging_properties != NULL);
-
-		m_item_definitions[def.name] = new ItemDefinition(def);
+			assert(def.tool_capabilities != NULL);
+		
+		if(m_item_definitions.count(def.name) == 0)
+			m_item_definitions[def.name] = new ItemDefinition(def);
+		else
+			*(m_item_definitions[def.name]) = def;
 
 		// Remove conflicting alias if it exists
 		bool alias_removed = (m_aliases.erase(def.name) != 0);
@@ -290,7 +316,7 @@ public:
 	{
 		if(m_item_definitions.find(name) == m_item_definitions.end())
 		{
-			infostream<<"ItemDefManager: setting alias "<<name
+			verbosestream<<"ItemDefManager: setting alias "<<name
 				<<" -> "<<convert_to<<std::endl;
 			m_aliases[name] = convert_to;
 		}
@@ -367,17 +393,20 @@ public:
 				content_t id = nodedef->getId(def->name);
 				const ContentFeatures &f = nodedef->get(id);
 
+				u8 param1 = 0;
+				if(f.param_type == CPT_LIGHT)
+					param1 = 0xee;
+
 				/*
 				 	Make a mesh from the node
 				*/
-				MeshMakeData mesh_make_data;
-				MapNode mesh_make_node(
-					id,
-					(f.param_type == CPT_LIGHT) ? 0xee : 0,
-					0);
-				mesh_make_data.fillSingleNode(1000, &mesh_make_node);
-				scene::IMesh *node_mesh =
-					makeMapBlockMesh(&mesh_make_data, gamedef);
+				MeshMakeData mesh_make_data(gamedef);
+				MapNode mesh_make_node(id, param1, 0);
+				mesh_make_data.fillSingleNode(&mesh_make_node);
+				MapBlockMesh mapblock_mesh(&mesh_make_data);
+
+				scene::IMesh *node_mesh = mapblock_mesh.getMesh();
+				assert(node_mesh);
 				setMeshColor(node_mesh, video::SColor(255, 255, 255, 255));
 
 				/*
@@ -390,7 +419,7 @@ public:
 				/*
 					Draw node mesh into a render target texture
 				*/
-				if(def->inventory_texture == NULL && node_mesh != NULL)
+				if(def->inventory_texture == NULL)
 				{
 					core::dimension2d<u32> dim(64,64);
 					std::string rtt_texture_name = "INVENTORY_"
@@ -417,13 +446,19 @@ public:
 						light_position,
 						light_color,
 						light_radius);
-					// Note: might have returned NULL
+
+					// render-to-target didn't work
+					if(def->inventory_texture == NULL)
+					{
+						def->inventory_texture =
+							tsrc->getTextureRaw(f.tiledef[0].name);
+					}
 				}
 
 				/*
 					Use the node mesh as the wield mesh
 				*/
-				if(def->wield_mesh == NULL && node_mesh != NULL)
+				if(def->wield_mesh == NULL)
 				{
 					// Scale to proper wield mesh proportions
 					scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
@@ -432,9 +467,7 @@ public:
 					def->wield_mesh->grab();
 				}
 
-
-				if(node_mesh != NULL)
-					node_mesh->drop();
+				// falling outside of here deletes node_mesh
 			}
 		}
 #endif

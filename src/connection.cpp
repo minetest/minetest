@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -22,9 +22,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "log.h"
 #include "porting.h"
+#include "util/serialize.h"
+#include "util/numeric.h"
+#include "util/string.h"
 
 namespace con
 {
+
+static u16 readPeerId(u8 *packetdata)
+{
+	return readU16(&packetdata[4]);
+}
+static u8 readChannel(u8 *packetdata)
+{
+	return readU8(&packetdata[6]);
+}
 
 BufferedPacket makePacket(Address &address, u8 *data, u32 datasize,
 		u32 protocol_id, u16 sender_peer_id, u8 channel)
@@ -353,9 +365,11 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 				<<" != sp->reliable="<<sp->reliable
 				<<std::endl;
 
-	// If chunk already exists, cancel
+	// If chunk already exists, ignore it.
+	// Sometimes two identical packets may arrive when there is network
+	// lag and the server re-sends stuff.
 	if(sp->chunks.find(chunk_num) != NULL)
-		throw AlreadyExistsException("Chunk already in buffer");
+		return SharedBuffer<u8>();
 	
 	// Cut chunk data out of packet
 	u32 chunkdatasize = p.data.getSize() - headersize;
@@ -463,7 +477,7 @@ void Peer::reportRTT(float rtt)
 {
 	if(rtt >= 0.0){
 		if(rtt < 0.01){
-			if(m_max_packets_per_second < 100)
+			if(m_max_packets_per_second < 400)
 				m_max_packets_per_second += 10;
 		} else if(rtt < 0.2){
 			if(m_max_packets_per_second < 100)
@@ -537,6 +551,14 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 Connection::~Connection()
 {
 	stop();
+	// Delete peers
+	for(core::map<u16, Peer*>::Iterator
+			j = m_peers.getIterator();
+			j.atEnd() == false; j++)
+	{
+		Peer *peer = j.getNode()->getValue();
+		delete peer;
+	}
 }
 
 /* Internal stuff */
@@ -986,8 +1008,16 @@ nextpeer:
 void Connection::serve(u16 port)
 {
 	dout_con<<getDesc()<<" serving at port "<<port<<std::endl;
-	m_socket.Bind(port);
-	m_peer_id = PEER_ID_SERVER;
+	try{
+		m_socket.Bind(port);
+		m_peer_id = PEER_ID_SERVER;
+	}
+	catch(SocketException &e){
+		// Create event
+		ConnectionEvent ce;
+		ce.bindFailed();
+		putEvent(ce);
+	}
 }
 
 void Connection::connect(Address address)
@@ -1597,6 +1627,9 @@ u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 			if(m_bc_peerhandler)
 				m_bc_peerhandler->deletingPeer(&tmp, e.timeout);
 			continue; }
+		case CONNEVENT_BIND_FAILED:
+			throw ConnectionBindFailed("Failed to bind socket "
+					"(port already in use?)");
 		}
 	}
 	throw NoIncomingDataException("No incoming data");

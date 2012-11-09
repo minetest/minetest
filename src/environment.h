@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -31,12 +31,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <set>
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "player.h"
-#include "map.h"
 #include <ostream>
-#include "utility.h"
 #include "activeobject.h"
+#include "util/container.h"
+#include "util/numeric.h"
+#include "mapnode.h"
+#include "mapblock.h"
 
 class Server;
 class ServerEnvironment;
@@ -45,6 +47,9 @@ class ServerActiveObject;
 typedef struct lua_State lua_State;
 class ITextureSource;
 class IGameDef;
+class Map;
+class ServerMap;
+class ClientMap;
 
 class Environment
 {
@@ -73,27 +78,39 @@ public:
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 	
-	//void setDayNightRatio(u32 r);
 	u32 getDayNightRatio();
 	
 	// 0-23999
 	virtual void setTimeOfDay(u32 time)
 	{
 		m_time_of_day = time;
+		m_time_of_day_f = (float)time / 24000.0;
 	}
 
 	u32 getTimeOfDay()
-	{
-		return m_time_of_day;
-	}
+	{ return m_time_of_day; }
+
+	float getTimeOfDayF()
+	{ return m_time_of_day_f; }
+
+	void stepTimeOfDay(float dtime);
+
+	void setTimeOfDaySpeed(float speed)
+	{ m_time_of_day_speed = speed; }
+	
+	float getTimeOfDaySpeed()
+	{ return m_time_of_day_speed; }
 
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	core::list<Player*> m_players;
-	// Brightness
-	//u32 m_daynight_ratio;
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
+	// Time of day in 0...1
+	float m_time_of_day_f;
+	float m_time_of_day_speed;
+	// Used to buffer dtime for adding to m_time_of_day
+	float m_time_counter;
 };
 
 /*
@@ -177,11 +194,9 @@ public:
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
-	Map & getMap()
-		{ return *m_map; }
+	Map & getMap();
 
-	ServerMap & getServerMap()
-		{ return *m_map; }
+	ServerMap & getServerMap();
 
 	lua_State* getLua()
 		{ return m_lua; }
@@ -297,7 +312,7 @@ private:
 		Returns the id of the object.
 		Returns 0 if not added and thus deleted.
 	*/
-	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed);
+	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
 	
 	/*
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
@@ -307,7 +322,7 @@ private:
 	/*
 		Convert stored objects from block to active
 	*/
-	void activateObjects(MapBlock *block);
+	void activateObjects(MapBlock *block, u32 dtime_s);
 	
 	/*
 		Convert objects that are not in active blocks to static.
@@ -345,6 +360,7 @@ private:
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
+	int m_active_block_interval_overload_skip;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time;
@@ -356,6 +372,7 @@ private:
 #ifndef SERVER
 
 #include "clientobject.h"
+class ClientSimpleObject;
 
 /*
 	The client-side environment.
@@ -392,11 +409,8 @@ public:
 			IrrlichtDevice *device);
 	~ClientEnvironment();
 
-	Map & getMap()
-	{ return *m_map; }
-
-	ClientMap & getClientMap()
-	{ return *m_map; }
+	Map & getMap();
+	ClientMap & getClientMap();
 
 	IGameDef *getGameDef()
 	{ return m_gamedef; }
@@ -406,23 +420,11 @@ public:
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
 	
-	// Slightly deprecated
-	void updateMeshes(v3s16 blockpos);
-	void expireMeshes(bool only_daynight_diffed);
+	/*
+		ClientSimpleObjects
+	*/
 
-	void setTimeOfDay(u32 time)
-	{
-		u32 old_dr = getDayNightRatio();
-
-		Environment::setTimeOfDay(time);
-
-		if(getDayNightRatio() != old_dr)
-		{
-			/*infostream<<"ClientEnvironment: DayNightRatio changed"
-					<<" -> expiring meshes"<<std::endl;*/
-			expireMeshes(true);
-		}
-	}
+	void addSimpleObject(ClientSimpleObject *simple);
 
 	/*
 		ActiveObjects
@@ -469,6 +471,7 @@ private:
 	IGameDef *m_gamedef;
 	IrrlichtDevice *m_irr;
 	core::map<u16, ClientActiveObject*> m_active_objects;
+	core::list<ClientSimpleObject*> m_simple_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;

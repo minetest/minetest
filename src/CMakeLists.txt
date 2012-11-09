@@ -1,17 +1,22 @@
 project(minetest)
 cmake_minimum_required( VERSION 2.6 )
 
-if(RUN_IN_PLACE)
-	add_definitions ( -DRUN_IN_PLACE )
-endif(RUN_IN_PLACE)
+# Set some random things default to not being visible in the GUI
+mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
+mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
+mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
 
 # user-visible option to enable/disable gettext usage
-OPTION(ENABLE_GETTEXT "Use GetText for internationalization" ON)
+OPTION(ENABLE_GETTEXT "Use GetText for internationalization" 0)
 
 # this is only set to 1 if gettext is enabled _and_ available
 set(USE_GETTEXT 0)
 
-find_package(GettextLib)
+if(ENABLE_GETTEXT)
+	find_package(GettextLib)
+else()
+	MARK_AS_ADVANCED(GETTEXT_ICONV_DLL GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY GETTEXT_MSGFMT)
+endif()
 
 if(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
@@ -28,6 +33,50 @@ elseif(GETTEXT_FOUND AND NOT ENABLE_GETTEXT)
 else(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "GetText disabled")
 endif(GETTEXT_FOUND AND ENABLE_GETTEXT)
+
+# user visible option to enable/disable sound
+OPTION(ENABLE_SOUND "Enable sound" ON)
+
+# this is only set to 1 if sound is enabled _and_ available
+set(USE_SOUND 0)
+set(SOUND_PROBLEM 0)
+
+if(ENABLE_SOUND AND BUILD_CLIENT)
+	# Sound libraries
+	find_package(OpenAL)
+	find_package(Vorbis)
+	if(NOT OPENAL_FOUND)
+		message(STATUS "Sound enabled, but OpenAL not found!")
+		set(SOUND_PROBLEM 1)
+		MARK_AS_ADVANCED(CLEAR OPENAL_LIBRARY OPENAL_INCLUDE_DIR)
+	endif()
+	if(NOT VORBIS_FOUND)
+		message(STATUS "Sound enabled, but Vorbis libraries not found!")
+		set(SOUND_PROBLEM 1)
+		MARK_AS_ADVANCED(CLEAR OGG_INCLUDE_DIR VORBIS_INCLUDE_DIR OGG_LIBRARY VORBIS_LIBRARY VORBISFILE_LIBRARY)
+	endif()
+	if(OPENAL_FOUND AND VORBIS_FOUND)
+		set(USE_SOUND 1)
+		message(STATUS "Sound enabled")
+	endif()
+endif(ENABLE_SOUND AND BUILD_CLIENT)
+
+if(SOUND_PROBLEM)
+	message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
+		"To continue, either fill in the required paths or disable sound. (-DENABLE_SOUND=0)")
+endif()
+if(USE_SOUND)
+	set(sound_SRCS sound_openal.cpp)
+	set(SOUND_INCLUDE_DIRS
+		${OPENAL_INCLUDE_DIR}
+		${VORBIS_INCLUDE_DIR}
+		${OGG_INCLUDE_DIR}
+		)
+	set(SOUND_LIBRARIES
+		${OPENAL_LIBRARY}
+		${VORBIS_LIBRARIES}
+		)
+endif()
 
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
@@ -53,6 +102,14 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
+	set(MINGWM10_DLL ""
+			CACHE FILEPATH "Path to mingwm10.dll (for installation)")
+	if(ENABLE_SOUND)
+		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
+		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
+		set(VORBIS_DLL "" CACHE FILEPATH "Path to libvorbis.dll for installation (optional)")
+		set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
+	endif()
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -78,13 +135,15 @@ else()
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
+	mark_as_advanced(XXF86VM_LIBRARY)
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 
-# TODO: Create proper find script for Lua
+# Do not use system-wide installation of Lua, because it'll likely be a
+# different version and/or has different build options.
 set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
 set(LUA_LIBRARY "lua")
 
@@ -94,15 +153,21 @@ configure_file(
 )
 
 set(common_SRCS
+	rollback_interface.cpp
+	rollback.cpp
+	genericobject.cpp
+	voxelalgorithms.cpp
+	sound.cpp
+	quicktune.cpp
+	subgame.cpp
 	inventorymanager.cpp
 	mods.cpp
-	serverremoteplayer.cpp
 	content_abm.cpp
 	craftdef.cpp
 	nameidmapping.cpp
 	itemdef.cpp
 	nodedef.cpp
-	luaentity_common.cpp
+	object_properties.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
@@ -110,13 +175,13 @@ set(common_SRCS
 	mapgen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
-	auth.cpp
 	collision.cpp
 	nodemetadata.cpp
+	nodetimer.cpp
 	serverobject.cpp
 	noise.cpp
 	porting.cpp
-	materials.cpp
+	tool.cpp
 	defaultsettings.cpp
 	mapnode.cpp
 	voxel.cpp
@@ -128,35 +193,49 @@ set(common_SRCS
 	connection.cpp
 	environment.cpp
 	server.cpp
-	servercommand.cpp
 	socket.cpp
 	mapblock.cpp
 	mapsector.cpp
 	map.cpp
 	player.cpp
-	utility.cpp
 	test.cpp
 	sha1.cpp
 	base64.cpp
 	ban.cpp
+	util/serialize.cpp
+	util/directiontables.cpp
+	util/numeric.cpp
+	util/pointedthing.cpp
+	util/string.cpp
+	util/timetaker.cpp
 )
 
 # This gives us the icon
 if(WIN32)
+	set(WINRESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc)
 	if(MINGW)
+		if(NOT CMAKE_RC_COMPILER)
+			set(CMAKE_RC_COMPILER "windres.exe")
+		endif()
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
-			COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR}
-			-i${CMAKE_CURRENT_SOURCE_DIR}/winresource.rc
-			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+			COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}
+			-i${WINRESOURCE_FILE}
+			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
-		set(common_SRCS ${common_SRCS} winresource.rc)
+		set(common_SRCS ${common_SRCS} ${WINRESOURCE_FILE})
 	endif(MINGW)
 endif()
 
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	${sound_SRCS}
+	localplayer.cpp
+	sky.cpp
+	clientmap.cpp
+	content_cso.cpp
 	content_mapblock.cpp
 	content_cao.cpp
 	mesh.cpp
@@ -166,15 +245,20 @@ set(minetest_SRCS
 	camera.cpp
 	clouds.cpp
 	clientobject.cpp
+	chat.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
-	guiInventoryMenu.cpp
+	guiFormSpecMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
 	guiDeathScreen.cpp
+	guiChatConsole.cpp
+	guiCreateWorld.cpp
+	guiConfirmMenu.cpp
 	client.cpp
+	filecache.cpp
 	tile.cpp
 	game.cpp
 	main.cpp
@@ -183,7 +267,7 @@ set(minetest_SRCS
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
-	servermain.cpp
+	main.cpp
 )
 
 include_directories(
@@ -193,6 +277,7 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
+	${SOUND_INCLUDE_DIRS}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
@@ -212,6 +297,7 @@ if(BUILD_CLIENT)
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
+		${SOUND_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
@@ -274,14 +360,18 @@ else()
 			set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
 		endif(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 	endif()
-	
+
+	if(MINGW)
+		set(OTHER_FLAGS "-mthreads -fexceptions")
+	endif()
+
 	if(APPLE)
 		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
 		set(ARCH i386)
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
@@ -300,19 +390,31 @@ endif()
 #
 # Installation
 #
-
-# Example configuration file
-# NOTE: Install is handled elsewhere
-#install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
+if(WIN32)
+	if(MINGWM10_DLL)
+		install(FILES ${MINGWM10_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(DEFINED ZLIB_DLL)
+		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(USE_SOUND)
+		if(OPENAL_DLL)
+			install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(OGG_DLL)
+			install(FILES ${OGG_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(VORBIS_DLL)
+			install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(VORBISFILE_DLL)
+			install(FILES ${VORBISFILE_DLL} DESTINATION ${BINDIR})
+		endif()
+	endif()
+endif()
 
 if(BUILD_CLIENT)
 	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
-
-	#file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/textures/*.png")
-	#install(FILES ${images} DESTINATION ${DATADIR}/textures)
-	#file(GLOB datasubstuff "${CMAKE_CURRENT_SOURCE_DIR}/../data/*")
-	#install(DIRECTORY "${datasubstuff}" DESTINATION ${DATADIR})
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data/" DESTINATION ${DATADIR})
 
 	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
@@ -325,9 +427,6 @@ if(BUILD_CLIENT)
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
 			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(DEFINED ZLIB_DLL)
-			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(USE_GETTEXT)
 			if(DEFINED GETTEXT_DLL)

@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -21,7 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPNODE_HEADER
 
 #include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include "irr_aabb3d.h"
 #include "light.h"
+#include <vector>
 
 class INodeDefManager;
 
@@ -30,10 +33,6 @@ class INodeDefManager;
 	- Material = irrlicht's Material class
 	- Content = (content_t) content of a node
 	- Tile = TileSpec at some side of a node of some content type
-
-	Content ranges:
-	  0x000...0x07f: param2 is fully usable
-	  0x800...0xfff: param2 lower 4 bits are free
 */
 typedef u16 content_t;
 #define MAX_CONTENT 0xfff
@@ -81,10 +80,8 @@ struct MapNode
 {
 	/*
 		Main content
-		0x00-0x7f: Short content type
-		0x80-0xff: Long content type (param2>>4 makes up low bytes)
 	*/
-	u8 param0;
+	u16 param0;
 
 	/*
 		Misc parameter. Initialized to 0.
@@ -99,7 +96,6 @@ struct MapNode
 	/*
 		The second parameter. Initialized to 0.
 		E.g. direction for torches and flowing water.
-		If param0 >= 0x80, bits 0xf0 of this is extended content type data
 	*/
 	u8 param2;
 
@@ -110,11 +106,9 @@ struct MapNode
 	
 	MapNode(content_t content=CONTENT_AIR, u8 a_param1=0, u8 a_param2=0)
 	{
+		param0 = content;
 		param1 = a_param1;
 		param2 = a_param2;
-		// Set content (param0 and (param2&0xf0)) after other params
-		// because this needs to override part of param2
-		setContent(content);
 	}
 	
 	// Create directly from a nodename
@@ -132,25 +126,11 @@ struct MapNode
 	// To be used everywhere
 	content_t getContent() const
 	{
-		if(param0 < 0x80)
-			return param0;
-		else
-			return (param0<<4) + (param2>>4);
+		return param0;
 	}
 	void setContent(content_t c)
 	{
-		if(c < 0x80)
-		{
-			if(param0 >= 0x80)
-				param2 &= ~(0xf0);
-			param0 = c;
-		}
-		else
-		{
-			param0 = c>>4;
-			param2 &= ~(0xf0);
-			param2 |= (c&0x0f)<<4;
-		}
+		param0 = c;
 	}
 	u8 getParam1() const
 	{
@@ -162,19 +142,11 @@ struct MapNode
 	}
 	u8 getParam2() const
 	{
-		if(param0 < 0x80)
-			return param2;
-		else
-			return param2 & 0x0f;
+		return param2;
 	}
 	void setParam2(u8 p)
 	{
-		if(param0 < 0x80)
-			param2 = p;
-		else{
-			param2 &= 0xf0;
-			param2 |= (p&0x0f);
-		}
+		param2 = p;
 	}
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
@@ -194,6 +166,17 @@ struct MapNode
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
+
+	/*
+		Gets list of node boxes (used for rendering (NDT_NODEBOX)
+		and collision)
+	*/
+	std::vector<aabb3f> getNodeBoxes(INodeDefManager *nodemgr) const;
+
+	/*
+		Gets list of selection boxes
+	*/
+	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
 
 	/*
 		Serialization functions
@@ -219,49 +202,8 @@ struct MapNode
 
 private:
 	// Deprecated serialization methods
-	void serialize_pre22(u8 *dest, u8 version);
 	void deSerialize_pre22(u8 *source, u8 version);
 };
-
-
-/*
-	MapNode helpers for mesh making stuff
-*/
-
-#ifndef SERVER
-
-/*
-	Nodes make a face if contents differ and solidness differs.
-	Return value:
-		0: No face
-		1: Face uses m1's content
-		2: Face uses m2's content
-	equivalent: Whether the blocks share the same face (eg. water and glass)
-*/
-u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *nodemgr);
-
-/*
-	Gets lighting value at face of node
-	
-	Parameters must consist of air and !air.
-	Order doesn't matter.
-
-	If either of the nodes doesn't exist, light is 0.
-	
-	parameters:
-		daynight_ratio: 0...1000
-		n: getNode(p) (uses only the lighting value)
-		n2: getNode(p + face_dir) (uses only the lighting value)
-		face_dir: axis oriented unit vector from p to p2
-	
-	returns encoded light value.
-*/
-u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir, INodeDefManager *nodemgr);
-
-#endif
-
 
 #endif
 

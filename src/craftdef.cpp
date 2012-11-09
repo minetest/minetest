@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -23,10 +23,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <sstream>
 #include <set>
-#include "utility.h"
+#include <algorithm>
 #include "gamedef.h"
 #include "inventory.h"
+#include "util/serialize.h"
+#include "strfnd.h"
 
+// Check if input matches recipe
+// Takes recipe groups into account
+static bool inputItemMatchesRecipe(const std::string &inp_name,
+		const std::string &rec_name, IItemDefManager *idef)
+{
+	// Exact name
+	if(inp_name == rec_name)
+		return true;
+
+	// Group
+	if(rec_name.substr(0,6) == "group:" && idef->isKnown(inp_name)){
+		const struct ItemDefinition &def = idef->get(inp_name);
+		Strfnd f(rec_name.substr(6));
+		bool all_groups_match = true;
+		do{
+			std::string check_group = f.next(",");
+			if(itemgroup_get(def.groups, check_group) == 0){
+				all_groups_match = false;
+				break;
+			}
+		}while(!f.atend());
+		if(all_groups_match)
+			return true;
+	}
+
+	// Didn't match
+	return false;
+}
 
 // Deserialize an itemstring then return the name of the item
 static std::string craftGetItemName(const std::string &itemstring, IGameDef *gamedef)
@@ -60,6 +90,20 @@ static std::vector<std::string> craftGetItemNames(
 			i != items.end(); i++)
 	{
 		result.push_back(i->name);
+	}
+	return result;
+}
+
+// convert a list of item names, to ItemStacks.
+static std::vector<ItemStack> craftGetItems(
+		const std::vector<std::string> &items, IGameDef *gamedef)
+{
+	std::vector<ItemStack> result;
+	for(std::vector<std::string>::const_iterator
+			i = items.begin();
+			i != items.end(); i++)
+	{
+		result.push_back(ItemStack(std::string(*i),(u16)1,(u16)0,"",gamedef->getItemDefManager()));
 	}
 	return result;
 }
@@ -106,6 +150,8 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	return success;
 }
 
+#if 0
+// This became useless when group support was added to shapeless recipes
 // Convert a list of item names to a multiset
 static std::multiset<std::string> craftMakeMultiset(const std::vector<std::string> &names)
 {
@@ -119,6 +165,7 @@ static std::multiset<std::string> craftMakeMultiset(const std::vector<std::strin
 	}
 	return set;
 }
+#endif
 
 // Removes 1 from each item stack
 static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
@@ -260,6 +307,7 @@ std::string CraftOutput::dump() const
 /*
 	CraftReplacements
 */
+
 std::string CraftReplacements::dump() const
 {
 	std::ostringstream os(std::ios::binary);
@@ -276,6 +324,27 @@ std::string CraftReplacements::dump() const
 	return os.str();
 }
 
+void CraftReplacements::serialize(std::ostream &os) const
+{
+	writeU16(os, pairs.size());
+	for(u32 i=0; i<pairs.size(); i++)
+	{
+		os<<serializeString(pairs[i].first);
+		os<<serializeString(pairs[i].second);
+	}
+}
+
+void CraftReplacements::deSerialize(std::istream &is)
+{
+	pairs.clear();
+	u32 count = readU16(is);
+	for(u32 i=0; i<count; i++)
+	{
+		std::string first = deSerializeString(is);
+		std::string second = deSerializeString(is);
+		pairs.push_back(std::make_pair(first, second));
+	}
+}
 
 /*
 	CraftDefinition
@@ -381,9 +450,9 @@ bool CraftDefinitionShaped::check(const CraftInput &input, IGameDef *gamedef) co
 		unsigned int rec_x = rec_min_x + x;
 		unsigned int rec_y = rec_min_y + y;
 
-		if(
-			inp_names[inp_y * inp_width + inp_x] !=
-			rec_names[rec_y * rec_width + rec_x]
+		if(!inputItemMatchesRecipe(
+				inp_names[inp_y * inp_width + inp_x],
+				rec_names[rec_y * rec_width + rec_x], gamedef->idef())
 		){
 			return false;
 		}
@@ -395,6 +464,11 @@ bool CraftDefinitionShaped::check(const CraftInput &input, IGameDef *gamedef) co
 CraftOutput CraftDefinitionShaped::getOutput(const CraftInput &input, IGameDef *gamedef) const
 {
 	return CraftOutput(output, 0);
+}
+
+CraftInput CraftDefinitionShaped::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	return CraftInput(CRAFT_METHOD_NORMAL,width,craftGetItems(recipe,gamedef));
 }
 
 void CraftDefinitionShaped::decrementInput(CraftInput &input, IGameDef *gamedef) const
@@ -418,12 +492,7 @@ void CraftDefinitionShaped::serializeBody(std::ostream &os) const
 	writeU16(os, recipe.size());
 	for(u32 i=0; i<recipe.size(); i++)
 		os<<serializeString(recipe[i]);
-	writeU16(os, replacements.pairs.size());
-	for(u32 i=0; i<replacements.pairs.size(); i++)
-	{
-		os<<serializeString(replacements.pairs[i].first);
-		os<<serializeString(replacements.pairs[i].second);
-	}
+	replacements.serialize(os);
 }
 
 void CraftDefinitionShaped::deSerializeBody(std::istream &is, int version)
@@ -436,14 +505,7 @@ void CraftDefinitionShaped::deSerializeBody(std::istream &is, int version)
 	u32 count = readU16(is);
 	for(u32 i=0; i<count; i++)
 		recipe.push_back(deSerializeString(is));
-	replacements.pairs.clear();
-	count = readU16(is);
-	for(u32 i=0; i<count; i++)
-	{
-		std::string first = deSerializeString(is);
-		std::string second = deSerializeString(is);
-		replacements.pairs.push_back(std::make_pair(first, second));
-	}
+	replacements.deSerialize(is);
 }
 
 /*
@@ -459,22 +521,58 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 {
 	if(input.method != CRAFT_METHOD_NORMAL)
 		return false;
+	
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != recipe.size()){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size ("<<recipe.size()<<") "
+				<<"of recipe with output="<<output<<std::endl;*/
+		return false;
+	}
 
-	// Get recipe item multiset
-	std::vector<std::string> rec_names = craftGetItemNames(recipe, gamedef);
-	std::multiset<std::string> rec_names_multiset = craftMakeMultiset(rec_names);
+	// Try with all permutations of the recipe
+	std::vector<std::string> recipe_copy = recipe;
+	// Start from the lexicographically first permutation (=sorted)
+	std::sort(recipe_copy.begin(), recipe_copy.end());
+	//while(std::prev_permutation(recipe_copy.begin(), recipe_copy.end())){}
+	do{
+		// If all items match, the recipe matches
+		bool all_match = true;
+		//dstream<<"Testing recipe (output="<<output<<"):";
+		for(size_t i=0; i<recipe.size(); i++){
+			//dstream<<" ("<<input_filtered[i]<<" == "<<recipe_copy[i]<<")";
+			if(!inputItemMatchesRecipe(input_filtered[i], recipe_copy[i],
+					gamedef->idef())){
+				all_match = false;
+				break;
+			}
+		}
+		//dstream<<" -> match="<<all_match<<std::endl;
+		if(all_match)
+			return true;
+	}while(std::next_permutation(recipe_copy.begin(), recipe_copy.end()));
 
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	return false;
 }
 
 CraftOutput CraftDefinitionShapeless::getOutput(const CraftInput &input, IGameDef *gamedef) const
 {
 	return CraftOutput(output, 0);
+}
+
+CraftInput CraftDefinitionShapeless::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	return CraftInput(CRAFT_METHOD_NORMAL,0,craftGetItems(recipe,gamedef));
 }
 
 void CraftDefinitionShapeless::decrementInput(CraftInput &input, IGameDef *gamedef) const
@@ -497,12 +595,7 @@ void CraftDefinitionShapeless::serializeBody(std::ostream &os) const
 	writeU16(os, recipe.size());
 	for(u32 i=0; i<recipe.size(); i++)
 		os<<serializeString(recipe[i]);
-	writeU16(os, replacements.pairs.size());
-	for(u32 i=0; i<replacements.pairs.size(); i++)
-	{
-		os<<serializeString(replacements.pairs[i].first);
-		os<<serializeString(replacements.pairs[i].second);
-	}
+	replacements.serialize(os);
 }
 
 void CraftDefinitionShapeless::deSerializeBody(std::istream &is, int version)
@@ -514,14 +607,7 @@ void CraftDefinitionShapeless::deSerializeBody(std::istream &is, int version)
 	u32 count = readU16(is);
 	for(u32 i=0; i<count; i++)
 		recipe.push_back(deSerializeString(is));
-	replacements.pairs.clear();
-	count = readU16(is);
-	for(u32 i=0; i<count; i++)
-	{
-		std::string first = deSerializeString(is);
-		std::string second = deSerializeString(is);
-		replacements.pairs.push_back(std::make_pair(first, second));
-	}
+	replacements.deSerialize(is);
 }
 
 /*
@@ -607,6 +693,13 @@ CraftOutput CraftDefinitionToolRepair::getOutput(const CraftInput &input, IGameD
 	return CraftOutput(repaired.getItemString(), 0);
 }
 
+CraftInput CraftDefinitionToolRepair::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<ItemStack> stack;
+	stack.push_back(ItemStack());
+	return CraftInput(CRAFT_METHOD_COOKING,additional_wear,stack);
+}
+
 void CraftDefinitionToolRepair::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
 	craftDecrementInput(input, gamedef);
@@ -645,16 +738,26 @@ bool CraftDefinitionCooking::check(const CraftInput &input, IGameDef *gamedef) c
 	if(input.method != CRAFT_METHOD_COOKING)
 		return false;
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get recipe item multiset
-	std::multiset<std::string> rec_names_multiset;
-	rec_names_multiset.insert(craftGetItemName(recipe, gamedef));
-
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 1){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of cooking recipe with output="<<output<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }
 
 CraftOutput CraftDefinitionCooking::getOutput(const CraftInput &input, IGameDef *gamedef) const
@@ -662,9 +765,16 @@ CraftOutput CraftDefinitionCooking::getOutput(const CraftInput &input, IGameDef 
 	return CraftOutput(output, cooktime);
 }
 
+CraftInput CraftDefinitionCooking::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_COOKING,cooktime,craftGetItems(rec,gamedef));
+}
+
 void CraftDefinitionCooking::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
-	craftDecrementInput(input, gamedef);
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
 }
 
 std::string CraftDefinitionCooking::dump() const
@@ -672,7 +782,8 @@ std::string CraftDefinitionCooking::dump() const
 	std::ostringstream os(std::ios::binary);
 	os<<"(cooking, output=\""<<output
 		<<"\", recipe=\""<<recipe
-		<<"\", cooktime="<<cooktime<<")";
+		<<"\", cooktime="<<cooktime<<")"
+		<<", replacements="<<replacements.dump()<<")";
 	return os.str();
 }
 
@@ -681,6 +792,7 @@ void CraftDefinitionCooking::serializeBody(std::ostream &os) const
 	os<<serializeString(output);
 	os<<serializeString(recipe);
 	writeF1000(os, cooktime);
+	replacements.serialize(os);
 }
 
 void CraftDefinitionCooking::deSerializeBody(std::istream &is, int version)
@@ -690,6 +802,7 @@ void CraftDefinitionCooking::deSerializeBody(std::istream &is, int version)
 	output = deSerializeString(is);
 	recipe = deSerializeString(is);
 	cooktime = readF1000(is);
+	replacements.deSerialize(is);
 }
 
 /*
@@ -706,16 +819,26 @@ bool CraftDefinitionFuel::check(const CraftInput &input, IGameDef *gamedef) cons
 	if(input.method != CRAFT_METHOD_FUEL)
 		return false;
 
-	// Get input item multiset
-	std::vector<std::string> inp_names = craftGetItemNames(input.items, gamedef);
-	std::multiset<std::string> inp_names_multiset = craftMakeMultiset(inp_names);
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
 
-	// Get recipe item multiset
-	std::multiset<std::string> rec_names_multiset;
-	rec_names_multiset.insert(craftGetItemName(recipe, gamedef));
-
-	// Recipe is matched when the multisets coincide
-	return inp_names_multiset == rec_names_multiset;
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 1){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of fuel recipe with burntime="<<burntime<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }
 
 CraftOutput CraftDefinitionFuel::getOutput(const CraftInput &input, IGameDef *gamedef) const
@@ -723,16 +846,24 @@ CraftOutput CraftDefinitionFuel::getOutput(const CraftInput &input, IGameDef *ga
 	return CraftOutput("", burntime);
 }
 
+CraftInput CraftDefinitionFuel::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_COOKING,(int)burntime,craftGetItems(rec,gamedef));
+}
+
 void CraftDefinitionFuel::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
-	craftDecrementInput(input, gamedef);
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
 }
 
 std::string CraftDefinitionFuel::dump() const
 {
 	std::ostringstream os(std::ios::binary);
 	os<<"(fuel, recipe=\""<<recipe
-		<<"\", burntime="<<burntime<<")";
+		<<"\", burntime="<<burntime<<")"
+		<<", replacements="<<replacements.dump()<<")";
 	return os.str();
 }
 
@@ -740,6 +871,7 @@ void CraftDefinitionFuel::serializeBody(std::ostream &os) const
 {
 	os<<serializeString(recipe);
 	writeF1000(os, burntime);
+	replacements.serialize(os);
 }
 
 void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
@@ -748,6 +880,7 @@ void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
 			"unsupported CraftDefinitionFuel version");
 	recipe = deSerializeString(is);
 	burntime = readF1000(is);
+	replacements.deSerialize(is);
 }
 
 /*
@@ -813,6 +946,47 @@ public:
 		}
 		return false;
 	}
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const
+	{
+		CraftOutput tmpout;
+		tmpout.item = "";
+		tmpout.time = 0;
+
+		// If output item is empty, abort.
+		if(output.item.empty())
+			return false;
+
+		// Walk crafting definitions from back to front, so that later
+		// definitions can override earlier ones.
+		for(std::vector<CraftDefinition*>::const_reverse_iterator
+				i = m_craft_definitions.rbegin();
+				i != m_craft_definitions.rend(); i++)
+		{
+			CraftDefinition *def = *i;
+
+			/*infostream<<"Checking "<<input.dump()<<std::endl
+					<<" against "<<def->dump()<<std::endl;*/
+
+			try {
+				tmpout = def->getOutput(input, gamedef);
+				if(tmpout.item.substr(0,output.item.length()) == output.item)
+				{
+					// Get output, then decrement input (if requested)
+					input = def->getInput(output, gamedef);
+					return true;
+				}
+			}
+			catch(SerializationError &e)
+			{
+				errorstream<<"getCraftResult: ERROR: "
+						<<"Serialization error in recipe "
+						<<def->dump()<<std::endl;
+				// then go on with the next craft definition
+			}
+		}
+		return false;
+	}
 	virtual std::string dump() const
 	{
 		std::ostringstream os(std::ios::binary);
@@ -827,7 +1001,7 @@ public:
 	}
 	virtual void registerCraft(CraftDefinition *def)
 	{
-		infostream<<"registerCraft: registering craft definition: "
+		verbosestream<<"registerCraft: registering craft definition: "
 				<<def->dump()<<std::endl;
 		m_craft_definitions.push_back(def);
 	}

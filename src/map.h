@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -26,24 +26,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include "mapnode.h"
-#include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
-#include "utility.h" // Needed for UniqueQueue, a member of Map
 #include "modifiedstate.h"
+#include "util/container.h"
+#include "nodetimer.h"
 
 extern "C" {
 	#include "sqlite3.h"
 }
 
+class ClientMap;
 class MapSector;
 class ServerMapSector;
-class ClientMapSector;
 class MapBlock;
 class NodeMetadata;
 class IGameDef;
+class IRollbackReportSink;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -99,6 +100,38 @@ struct MapEditEvent
 		}
 		return event;
 	}
+
+	VoxelArea getArea()
+	{
+		switch(type){
+		case MEET_ADDNODE:
+			return VoxelArea(p);
+		case MEET_REMOVENODE:
+			return VoxelArea(p);
+		case MEET_BLOCK_NODE_METADATA_CHANGED:
+		{
+			v3s16 np1 = p*MAP_BLOCKSIZE;
+			v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
+			return VoxelArea(np1, np2);
+		}
+		case MEET_OTHER:
+		{
+			VoxelArea a;
+			for(core::map<v3s16, bool>::Iterator
+					i = modified_blocks.getIterator();
+					i.atEnd()==false; i++)
+			{
+				v3s16 p = i.getNode()->getKey();
+				v3s16 np1 = p*MAP_BLOCKSIZE;
+				v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
+				a.addPoint(np1);
+				a.addPoint(np2);
+			}
+			return a;
+		}
+		}
+		return VoxelArea();
+	}
 };
 
 class MapEventReceiver
@@ -137,7 +170,7 @@ public:
 	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
 	void dispatchEvent(MapEditEvent *event);
-
+	
 	// On failure returns NULL
 	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
 	// Same as the above (there exists no lock anymore)
@@ -227,7 +260,7 @@ public:
 	/*
 		Takes the blocks at the edges into account
 	*/
-	bool dayNightDiffed(v3s16 blockpos);
+	bool getDayNightDiff(v3s16 blockpos);
 
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 
@@ -278,9 +311,16 @@ public:
 	NodeMetadata* getNodeMetadata(v3s16 p);
 	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
-	void nodeMetadataStep(float dtime,
-			core::map<v3s16, MapBlock*> &changed_blocks);
+
+	/*
+		Node Timers
+		These are basically coordinate wrappers to MapBlock
+	*/
 	
+	NodeTimer getNodeTimer(v3s16 p);
+	void setNodeTimer(v3s16 p, NodeTimer t);
+	void removeNodeTimer(v3s16 p);
+
 	/*
 		Misc.
 	*/
@@ -297,7 +337,7 @@ protected:
 	IGameDef *m_gamedef;
 
 	core::map<MapEventReceiver*, bool> m_event_receivers;
-	
+
 	core::map<v2s16, MapSector*> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
@@ -468,164 +508,6 @@ private:
 	sqlite3_stmt *m_database_write;
 	sqlite3_stmt *m_database_list;
 };
-
-/*
-	ClientMap stuff
-*/
-
-#ifndef SERVER
-
-struct MapDrawControl
-{
-	MapDrawControl():
-		range_all(false),
-		wanted_range(50),
-		wanted_max_blocks(0),
-		wanted_min_range(0),
-		blocks_drawn(0),
-		blocks_would_have_drawn(0)
-	{
-	}
-	// Overrides limits by drawing everything
-	bool range_all;
-	// Wanted drawing range
-	float wanted_range;
-	// Maximum number of blocks to draw
-	u32 wanted_max_blocks;
-	// Blocks in this range are drawn regardless of number of blocks drawn
-	float wanted_min_range;
-	// Number of blocks rendered is written here by the renderer
-	u32 blocks_drawn;
-	// Number of blocks that would have been drawn in wanted_range
-	u32 blocks_would_have_drawn;
-};
-
-class Client;
-class ITextureSource;
-
-/*
-	ClientMap
-	
-	This is the only map class that is able to render itself on screen.
-*/
-
-class ClientMap : public Map, public scene::ISceneNode
-{
-public:
-	ClientMap(
-			Client *client,
-			IGameDef *gamedef,
-			MapDrawControl &control,
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
-			s32 id
-	);
-
-	~ClientMap();
-
-	s32 mapType() const
-	{
-		return MAPTYPE_CLIENT;
-	}
-
-	void drop()
-	{
-		ISceneNode::drop();
-	}
-
-	void updateCamera(v3f pos, v3f dir, f32 fov)
-	{
-		JMutexAutoLock lock(m_camera_mutex);
-		m_camera_position = pos;
-		m_camera_direction = dir;
-		m_camera_fov = fov;
-	}
-
-	/*
-		Forcefully get a sector from somewhere
-	*/
-	MapSector * emergeSector(v2s16 p);
-
-	//void deSerializeSector(v2s16 p2d, std::istream &is);
-
-	/*
-		ISceneNode methods
-	*/
-
-	virtual void OnRegisterSceneNode();
-
-	virtual void render()
-	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		renderMap(driver, SceneManager->getSceneNodeRenderPass());
-	}
-	
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
-	{
-		return m_box;
-	}
-
-	void renderMap(video::IVideoDriver* driver, s32 pass);
-
-	void renderPostFx();
-
-	/*
-		Methods for setting temporary modifications to nodes for
-		drawing.
-
-		Returns true if something changed.
-		
-		All blocks whose mesh could have been changed are inserted
-		to affected_blocks.
-	*/
-	bool setTempMod(v3s16 p, NodeMod mod,
-			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
-	bool clearTempMod(v3s16 p,
-			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
-	// Efficient implementation needs a cache of TempMods
-	//void clearTempMods();
-
-	void expireMeshes(bool only_daynight_diffed);
-	
-	/*
-		Update the faces of the given block and blocks on the
-		leading edge, without threading. Rarely used.
-	*/
-	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
-	
-	// Update meshes that touch the node
-	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
-
-	// For debug printing
-	virtual void PrintInfo(std::ostream &out);
-	
-	// Check if sector was drawn on last render()
-	bool sectorWasDrawn(v2s16 p)
-	{
-		return (m_last_drawn_sectors.find(p) != NULL);
-	}
-	
-private:
-	Client *m_client;
-	
-	core::aabbox3d<f32> m_box;
-	
-	// This is the master heightmap mesh
-	//scene::SMesh *mesh;
-	//JMutex mesh_mutex;
-	
-	MapDrawControl &m_control;
-
-	v3f m_camera_position;
-	v3f m_camera_direction;
-	f32 m_camera_fov;
-	JMutex m_camera_mutex;
-	
-	core::map<v2s16, bool> m_last_drawn_sectors;
-};
-
-#endif
 
 class MapVoxelManipulator : public VoxelManipulator
 {

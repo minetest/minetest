@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTOBJECT_HEADER
 #define CLIENTOBJECT_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
 
 /*
@@ -38,6 +38,8 @@ Some planning
 class ClientEnvironment;
 class ITextureSource;
 class IGameDef;
+class LocalPlayer;
+struct ItemStack;
 
 class ClientActiveObject : public ActiveObject
 {
@@ -63,6 +65,7 @@ public:
 	virtual void processMessage(const std::string &data){}
 
 	virtual std::string infoText() {return "";}
+	virtual std::string debugInfoText() {return "";}
 	
 	/*
 		This takes the return value of
@@ -75,7 +78,8 @@ public:
 			ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server
-	virtual bool directReportPunch(const std::string &toolname, v3f dir)
+	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+			float time_from_last_punch=1000000)
 	{ return false; }
 
 protected:

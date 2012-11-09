@@ -3,16 +3,16 @@ Part of Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 #include "tile.h" // ITextureSource
+#include "clientmap.h"
 
 #include "mapgen.h" // Shouldn't really be done this way
 
@@ -124,7 +125,7 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	hp.ma = (4)*BS;
 	/*hp.gh = BS*base_rock_level_2d(seed, p2d);
 	hp.ma = BS*get_mud_add_amount(seed, p2d);*/
-	hp.have_sand = mapgen::get_have_sand(seed, p2d);
+	hp.have_sand = mapgen::get_have_beach(seed, p2d);
 	if(hp.gh > BS*WATER_LEVEL)
 		hp.tree_amount = mapgen::tree_amount_2d(seed, p2d);
 	else

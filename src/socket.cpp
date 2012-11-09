@@ -3,31 +3,58 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "socket.h"
+
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	// Without this some of the network functions are not found on mingw
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0501
+	#endif
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#ifdef _MSC_VER
+		#pragma comment(lib, "ws2_32.lib")
+	#endif
+typedef SOCKET socket_t;
+typedef int socklen_t;
+#else
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <fcntl.h>
+	#include <netdb.h>
+	#include <unistd.h>
+	#include <arpa/inet.h>
+typedef int socket_t;
+#endif
+
+#include "constants.h"
 #include "debug.h"
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
 #include <errno.h>
-#include "utility.h"
+#include "util/string.h"
+#include "util/numeric.h"
 
-// Debug printing options
-// Set to 1 for debug output
-#define DP 0
+bool socket_enable_debug_output = false;
+#define DP socket_enable_debug_output
 // This is prepended to everything printed here
 #define DPS ""
 
@@ -227,7 +254,8 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 		dstream<<", size="<<size<<", data=";
 		for(int i=0; i<size && i<20; i++){
 			if(i%2==0) DEBUGPRINT(" ");
-			DEBUGPRINT("%.2X", ((int)((const char*)data)[i])&0xff);
+			unsigned int a = ((const unsigned char*)data)[i];
+			DEBUGPRINT("%.2X", a);
 		}
 		if(size>20)
 			dstream<<"...";
@@ -289,7 +317,8 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 		dstream<<", size="<<received<<", data=";
 		for(int i=0; i<received && i<20; i++){
 			if(i%2==0) DEBUGPRINT(" ");
-			DEBUGPRINT("%.2X", ((int)((const char*)data)[i])&0xff);
+			unsigned int a = ((const unsigned char*)data)[i];
+			DEBUGPRINT("%.2X", a);
 		}
 		if(received>20)
 			dstream<<"...";
@@ -329,6 +358,9 @@ bool UDPSocket::WaitData(int timeout_ms)
 		// Timeout
 		/*dstream<<"Select timed out (timeout_ms="
 				<<timeout_ms<<")"<<std::endl;*/
+		return false;
+	}
+	else if(result < 0 && errno == EINTR){
 		return false;
 	}
 	else if(result < 0){

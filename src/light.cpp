@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,6 +20,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 
 #if 1
+// Middle-raised variation of a_n+1 = a_n * 0.786
+// Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
+// LIGHT_SUN is read as LIGHT_MAX from here.
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+8,
+11+2,
+14+7,
+18+10,
+22+15,
+29+20,
+37+20,
+47+15,
+60+10,
+76+7,
+97+5,
+123+2,
+157,
+200,
+255,
+};
+#endif
+
+#if 0
 /*
 Made using this and:
 - adding 220 as the second last one

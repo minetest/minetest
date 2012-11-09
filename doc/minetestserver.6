@@ -1,0 +1,70 @@
+.\" Minetestserver man page
+.TH minetestserver 6 "11 March 2012" "" ""
+
+.SH NAME
+minetestserver \- Minetest server
+
+.SH SYNOPSIS
+.B minetestserver
+[ OPTION ... ]
+
+.SH DESCRIPTION
+.B Minetest
+is one of the first InfiniMiner/Minecraft(/whatever) inspired games (started October 2010), with a goal of taking the survival multiplayer gameplay to a slightly different direction.
+.PP
+The main design philosophy is to keep it technically simple, stable and portable. It will be kept lightweight enough to run on fairly old hardware.
+
+.SH OPTIONS
+.TP
+\-\-config <value>
+Load configuration from specified file
+.TP
+\-\-disable\-unittests
+Disable unit tests
+.TP
+\-\-enable\-unittests
+Enable unit tests
+.TP
+\-\-gameid <value>
+Set gameid
+.TP
+\-\-help
+Show allowed options
+.TP
+\-\-logfile <value>
+Set logfile path (debug.txt)
+.TP
+\-\-map\-dir <value>
+Same as --world (deprecated)
+.TP
+\-\-port <value>
+Set network port (UDP) to use
+.TP
+\-\-info
+Print more information to console
+.TP
+\-\-verbose
+Print even more information to console
+.TP
+\-\-trace
+Print enormous amounts of information to console
+.TP
+\-\-world <value>
+Set world path
+
+.SH BUGS
+Please report all bugs to Perttu Ahola <celeron55@gmail.com>.
+
+.SH AUTHOR
+.PP
+Perttu Ahola <celeron55@gmail.com>
+and contributors.
+.PP
+This man page was originally written by
+Juhani Numminen <juhaninumminen0@gmail.com>.
+
+.SH WWW
+http://c55.me/minetest/
+
+.SH "SEE ALSO"
+.BR minetest(6)

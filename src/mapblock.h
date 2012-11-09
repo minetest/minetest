@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -24,20 +24,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutexautolock.h>
 #include <exception>
 #include "debug.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include "irr_aabb3d.h"
 #include "mapnode.h"
 #include "exceptions.h"
 #include "serialization.h"
 #include "constants.h"
 #include "voxel.h"
 #include "staticobject.h"
-#include "mapblock_nodemod.h"
+#include "nodemetadata.h"
+#include "nodetimer.h"
 #include "modifiedstate.h"
+#include "util/numeric.h" // getContainerPos
 
 class Map;
 class NodeMetadataList;
 class IGameDef;
-class IWritableNodeDefManager;
+class MapBlockMesh;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -193,18 +197,6 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, "setIsUnderground");
 	}
 
-#ifndef SERVER
-	void setMeshExpired(bool expired)
-	{
-		m_mesh_expired = expired;
-	}
-	
-	bool getMeshExpired()
-	{
-		return m_mesh_expired;
-	}
-#endif
-
 	void setLightingExpired(bool expired)
 	{
 		if(expired != m_lighting_expired){
@@ -359,33 +351,6 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	/*
-		Graphics-related methods
-	*/
-	
-#ifndef SERVER // Only on client
-
-	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir,
-			INodeDefManager *nodemgr)
-	{
-		return getFaceLight(daynight_ratio,
-				getNodeParentNoEx(p),
-				getNodeParentNoEx(p + face_dir),
-				face_dir, nodemgr);
-	}
-	
-#if 1
-	/*
-		Thread-safely updates the whole mesh of the mapblock.
-		NOTE: Prefer generating the mesh separately and then using
-		replaceMesh().
-	*/
-	void updateMesh(u32 daynight_ratio);
-#endif
-	// Replace the mesh with a new one
-	void replaceMesh(scene::SMesh *mesh_new);
-#endif
-	
 	// See comments in mapblock.cpp
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
 			bool remove_light=false, bool *black_air_left=NULL);
@@ -395,64 +360,22 @@ public:
 	// Copies data from VoxelManipulator getPosRelative()
 	void copyFrom(VoxelManipulator &dst);
 
-#ifndef SERVER // Only on client
-	/*
-		Methods for setting temporary modifications to nodes for
-		drawing
-
-		returns true if the mod was different last time
-	*/
-	bool setTempMod(v3s16 p, const NodeMod &mod)
-	{
-		/*dstream<<"setTempMod called on block"
-				<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-				<<", mod.type="<<mod.type
-				<<", mod.param="<<mod.param
-				<<std::endl;*/
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.set(p, mod);
-	}
-	// Returns true if there was one
-	bool getTempMod(v3s16 p, NodeMod *mod)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.get(p, mod);
-	}
-	bool clearTempMod(v3s16 p)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.clear(p);
-	}
-	bool clearTempMods()
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-		
-		return m_temp_mods.clear();
-	}
-	void copyTempMods(NodeModMap &dst)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-		m_temp_mods.copy(dst);
-	}
-#endif
-
 	/*
 		Update day-night lighting difference flag.
-		
 		Sets m_day_night_differs to appropriate value.
-		
 		These methods don't care about neighboring blocks.
-		It means that to know if a block really doesn't need a mesh
-		update between day and night, the neighboring blocks have
-		to be taken into account. Use Map::dayNightDiffed().
 	*/
-	void updateDayNightDiff();
+	void actuallyUpdateDayNightDiff();
+	/*
+		Call this to schedule what the previous function does to be done
+		when the value is actually needed.
+	*/
+	void expireDayNightDiff();
 
-	bool dayNightDiffed()
+	bool getDayNightDiff()
 	{
+		if(m_day_night_differs_expired)
+			actuallyUpdateDayNightDiff();
 		return m_day_night_differs;
 	}
 
@@ -509,6 +432,42 @@ public:
 	}
 
 	/*
+		See m_refcount
+	*/
+	void refGrab()
+	{
+		m_refcount++;
+	}
+	void refDrop()
+	{
+		m_refcount--;
+	}
+	int refGet()
+	{
+		return m_refcount;
+	}
+	
+	/*
+		Node Timers
+	*/
+	// Get timer
+	NodeTimer getNodeTimer(v3s16 p){ 
+		return m_node_timers.get(p);
+	}
+	// Deletes timer
+	void removeNodeTimer(v3s16 p){
+		m_node_timers.remove(p);
+	}
+	// Deletes old timer and sets a new one
+	void setNodeTimer(v3s16 p, NodeTimer t){
+		m_node_timers.set(p,t);
+	}
+	// Deletes all timers
+	void clearNodeTimers(){
+		m_node_timers.clear();
+	}
+
+	/*
 		Serialization
 	*/
 	
@@ -524,7 +483,6 @@ private:
 		Private methods
 	*/
 
-	void serialize_pre22(std::ostream &os, u8 version, bool disk);
 	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
 
 	/*
@@ -551,11 +509,12 @@ public:
 	*/
 
 #ifndef SERVER // Only on client
-	scene::SMesh *mesh;
-	JMutex mesh_mutex;
+	MapBlockMesh *mesh;
+	//JMutex mesh_mutex;
 #endif
 	
-	NodeMetadataList *m_node_metadata;
+	NodeMetadataList m_node_metadata;
+	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 	
 private:
@@ -606,22 +565,9 @@ private:
 	
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
+	bool m_day_night_differs_expired;
 
 	bool m_generated;
-	
-#ifndef SERVER // Only on client
-	/*
-		Set to true if the mesh has been ordered to be updated
-		sometime in the background.
-		In practice this is set when the day/night lighting switches.
-	*/
-	bool m_mesh_expired;
-	
-	// Temporary modifications to nodes
-	// These are only used when drawing
-	NodeModMap m_temp_mods;
-	JMutex m_temp_mods_mutex;
-#endif
 	
 	/*
 		When block is removed from active blocks, this is set to gametime.
@@ -636,6 +582,12 @@ private:
 		Map will unload the block when this reaches a timeout.
 	*/
 	float m_usage_timer;
+
+	/*
+		Reference count; currently used for determining if this block is in
+		the list of blocks to be drawn.
+	*/
+	int m_refcount;
 };
 
 inline bool blockpos_over_limit(v3s16 p)

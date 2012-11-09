@@ -3,23 +3,22 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "inventory.h"
 #include "serialization.h"
-#include "utility.h"
 #include "debug.h"
 #include <sstream>
 #include "log.h"
@@ -27,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "strfnd.h"
 #include "content_mapnode.h" // For loading legacy MaterialItems
 #include "nameidmapping.h" // For loading legacy MaterialItems
+#include "util/serialize.h"
+#include "util/string.h"
 
 /*
 	ItemStack
@@ -430,6 +431,7 @@ InventoryList::InventoryList(std::string name, u32 size, IItemDefManager *itemde
 {
 	m_name = name;
 	m_size = size;
+	m_width = 0;
 	m_itemdef = itemdef;
 	clearItems();
 	//m_dirty = false;
@@ -458,10 +460,22 @@ void InventoryList::setSize(u32 newsize)
 	m_size = newsize;
 }
 
+void InventoryList::setWidth(u32 newwidth)
+{
+	m_width = newwidth;
+}
+
+void InventoryList::setName(const std::string &name)
+{
+	m_name = name;
+}
+
 void InventoryList::serialize(std::ostream &os) const
 {
 	//os.imbue(std::locale("C"));
 	
+	os<<"Width "<<m_width<<"\n";
+
 	for(u32 i=0; i<m_items.size(); i++)
 	{
 		const ItemStack &item = m_items[i];
@@ -486,6 +500,7 @@ void InventoryList::deSerialize(std::istream &is)
 
 	clearItems();
 	u32 item_i = 0;
+	m_width = 0;
 
 	for(;;)
 	{
@@ -507,6 +522,12 @@ void InventoryList::deSerialize(std::istream &is)
 		{
 			break;
 		}
+		else if(name == "Width")
+		{
+			iss >> m_width;
+			if (iss.fail())
+				throw SerializationError("incorrect width property");
+		}
 		else if(name == "Item")
 		{
 			if(item_i > getSize() - 1)
@@ -521,10 +542,6 @@ void InventoryList::deSerialize(std::istream &is)
 				throw SerializationError("too many items");
 			m_items[item_i++].clear();
 		}
-		else
-		{
-			throw SerializationError("Unknown inventory identifier");
-		}
 	}
 }
 
@@ -537,6 +554,7 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 {
 	m_items = other.m_items;
 	m_size = other.m_size;
+	m_width = other.m_width;
 	m_name = other.m_name;
 	m_itemdef = other.m_itemdef;
 	//setDirty(true);
@@ -552,6 +570,11 @@ const std::string &InventoryList::getName() const
 u32 InventoryList::getSize() const
 {
 	return m_items.size();
+}
+
+u32 InventoryList::getWidth() const
+{
+	return m_width;
 }
 
 u32 InventoryList::getUsedSlots() const
@@ -795,6 +818,18 @@ void Inventory::clear()
 	m_lists.clear();
 }
 
+void Inventory::clearContents()
+{
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		InventoryList *list = m_lists[i];
+		for(u32 j=0; j<list->getSize(); j++)
+		{
+			list->deleteItem(j);
+		}
+	}
+}
+
 Inventory::Inventory(IItemDefManager *itemdef)
 {
 	m_itemdef = itemdef;
@@ -868,10 +903,6 @@ void Inventory::deSerialize(std::istream &is)
 
 			m_lists.push_back(list);
 		}
-		else
-		{
-			throw SerializationError("Unknown inventory identifier");
-		}
 	}
 }
 
@@ -901,6 +932,17 @@ InventoryList * Inventory::getList(const std::string &name)
 	if(i == -1)
 		return NULL;
 	return m_lists[i];
+}
+
+std::vector<const InventoryList*> Inventory::getLists()
+{
+	std::vector<const InventoryList*> lists;
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		InventoryList *list = m_lists[i];
+		lists.push_back(list);
+	}
+	return lists;
 }
 
 bool Inventory::deleteList(const std::string &name)

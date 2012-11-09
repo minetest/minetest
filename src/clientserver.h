@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "utility.h"
+#include "util/serialize.h"
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 3:
 		Base for writing changes here
 	PROTOCOL_VERSION 4:
-		Add TOCLIENT_TEXTURES
+		Add TOCLIENT_MEDIA
 		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_NODEDEF
 		Add TOCLIENT_CRAFTITEMDEF
@@ -44,9 +44,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Obsolete TOCLIENT_TOOLDEF
 		Obsolete TOCLIENT_CRAFTITEMDEF
 		Compress the contents of TOCLIENT_ITEMDEF and TOCLIENT_NODEDEF
+	PROTOCOL_VERSION 8:
+		Digging based on item groups
+		Many things
+	PROTOCOL_VERSION 9:
+		ContentFeatures and NodeDefManager use a different serialization
+		    format; better for future version cross-compatibility
+		Many things
+	PROTOCOL_VERSION 10:
+		TOCLIENT_PRIVILEGES
+		Version raised to force 'fly' and 'fast' privileges into effect.
+		Node metadata change (came in later; somewhat incompatible)
+	PROTOCOL_VERSION 11:
+		TileDef in ContentFeatures
+		Nodebox drawtype
+		(some dev snapshot)
+		TOCLIENT_INVENTORY_FORMSPEC
+		(0.4.0, 0.4.1)
+	PROTOCOL_VERSION 12:
+		TOSERVER_INVENTORY_FIELDS
+		16-bit node ids
+		TOCLIENT_DETACHED_INVENTORY
+	PROTOCOL_VERSION 13:
+		InventoryList field "Width" (deserialization fails with old versions)
 */
 
-#define PROTOCOL_VERSION 7
+#define PROTOCOL_VERSION 13
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -133,6 +156,8 @@ enum ToClientCommand
 	/*
 		u16 command
 		u16 time (0-23999)
+		Added in a later version:
+		f1000 time_speed
 	*/
 
 	// (oops, there is some gap here)
@@ -192,7 +217,7 @@ enum ToClientCommand
 		wstring reason
 	*/
 
-	TOCLIENT_PLAYERITEM = 0x36,
+	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
 	/*
 		u16 command
 		u16 count of player items
@@ -210,13 +235,13 @@ enum ToClientCommand
 		v3f1000 camera point target (to point the death cause or whatever)
 	*/
 
-	TOCLIENT_TEXTURES = 0x38,
+	TOCLIENT_MEDIA = 0x38,
 	/*
 		u16 command
 		u16 total number of texture bunches
 		u16 index of this bunch
-		u32 number of textures in this bunch
-		for each texture {
+		u32 number of files in this bunch
+		for each file {
 			u16 length of name
 			string name
 			u32 length of data
@@ -245,11 +270,11 @@ enum ToClientCommand
 		serialized CraftiItemDefManager
 	*/
 
-	TOCLIENT_ANNOUNCE_TEXTURES = 0x3c,
+	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
 
 	/*
 		u16 command
-		u32 number of textures
+		u32 number of files
 		for each texture {
 			u16 length of name
 			string name
@@ -264,7 +289,49 @@ enum ToClientCommand
 		u32 length of next item
 		serialized ItemDefManager
 	*/
+	
+	TOCLIENT_PLAY_SOUND = 0x3f,
+	/*
+		u16 command
+		s32 sound_id
+		u16 len
+		u8[len] sound name
+		s32 gain*1000
+		u8 type (0=local, 1=positional, 2=object)
+		s32[3] pos_nodes*10000
+		u16 object_id
+		u8 loop (bool)
+	*/
 
+	TOCLIENT_STOP_SOUND = 0x40,
+	/*
+		u16 command
+		s32 sound_id
+	*/
+
+	TOCLIENT_PRIVILEGES = 0x41,
+	/*
+		u16 command
+		u16 number of privileges
+		for each privilege
+			u16 len
+			u8[len] privilege
+	*/
+
+	TOCLIENT_INVENTORY_FORMSPEC = 0x42,
+	/*
+		u16 command
+		u32 len
+		u8[len] formspec
+	*/
+
+	TOCLIENT_DETACHED_INVENTORY = 0x43,
+	/*
+		[0] u16 command
+		u16 len
+		u8[len] name
+		[2] serialized inventory
+	*/
 };
 
 enum ToServerCommand
@@ -376,7 +443,7 @@ enum ToServerCommand
 		wstring message
 	*/
 
-	TOSERVER_SIGNNODETEXT = 0x33,
+	TOSERVER_SIGNNODETEXT = 0x33, // obsolete
 	/*
 		u16 command
 		v3s16 p
@@ -438,24 +505,58 @@ enum ToServerCommand
 		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
 	*/
 	
-	TOSERVER_REQUEST_TEXTURES = 0x40,
-
+	TOSERVER_REMOVED_SOUNDS = 0x3a,
 	/*
-			u16 command
-			u16 number of textures requested
-			for each texture {
-				u16 length of name
-				string name
-			}
+		u16 command
+		u16 len
+		s32[len] sound_id
+	*/
+
+	TOSERVER_NODEMETA_FIELDS = 0x3b,
+	/*
+		u16 command
+		v3s16 p
+		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
+	TOSERVER_INVENTORY_FIELDS = 0x3c,
+	/*
+		u16 command
+		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
+	TOSERVER_REQUEST_MEDIA = 0x40,
+	/*
+		u16 command
+		u16 number of files requested
+		for each file {
+			u16 length of name
+			string name
+		}
 	 */
 
 };
 
-inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)
+inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
 {
-	SharedBuffer<u8> data(2+2);
+	SharedBuffer<u8> data(2+2+4);
 	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
 	writeU16(&data[2], time);
+	writeF1000(&data[4], time_speed);
 	return data;
 }
 

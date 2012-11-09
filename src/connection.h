@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,14 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONNECTION_HEADER
 #define CONNECTION_HEADER
 
-#include <iostream>
-#include <fstream>
-#include "debug.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include "socket.h"
-#include "utility.h"
 #include "exceptions.h"
 #include "constants.h"
+#include "util/pointer.h"
+#include "util/container.h"
+#include "util/thread.h"
+#include <iostream>
+#include <fstream>
 
 namespace con
 {
@@ -55,6 +56,14 @@ class ConnectionException : public BaseException
 {
 public:
 	ConnectionException(const char *s):
+		BaseException(s)
+	{}
+};
+
+class ConnectionBindFailed : public BaseException
+{
+public:
+	ConnectionBindFailed(const char *s):
 		BaseException(s)
 	{}
 };
@@ -98,15 +107,6 @@ public:
 		BaseException(s)
 	{}
 };
-
-inline u16 readPeerId(u8 *packetdata)
-{
-	return readU16(&packetdata[4]);
-}
-inline u8 readChannel(u8 *packetdata)
-{
-	return readU8(&packetdata[6]);
-}
 
 #define SEQNUM_MAX 65535
 inline bool seqnum_higher(u16 higher, u16 lower)
@@ -424,6 +424,7 @@ enum ConnectionEventType{
 	CONNEVENT_DATA_RECEIVED,
 	CONNEVENT_PEER_ADDED,
 	CONNEVENT_PEER_REMOVED,
+	CONNEVENT_BIND_FAILED,
 };
 
 struct ConnectionEvent
@@ -447,6 +448,8 @@ struct ConnectionEvent
 			return "CONNEVENT_PEER_ADDED";
 		case CONNEVENT_PEER_REMOVED: 
 			return "CONNEVENT_PEER_REMOVED";
+		case CONNEVENT_BIND_FAILED: 
+			return "CONNEVENT_BIND_FAILED";
 		}
 		return "Invalid ConnectionEvent";
 	}
@@ -469,6 +472,10 @@ struct ConnectionEvent
 		peer_id = peer_id_;
 		timeout = timeout_;
 		address = address_;
+	}
+	void bindFailed()
+	{
+		type = CONNEVENT_BIND_FAILED;
 	}
 };
 

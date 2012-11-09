@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -24,10 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <iostream>
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include <irrMap.h>
 #include "threads.h"
 #include "gettime.h"
-#include "constants.h"
 #include "exceptions.h"
 
 #ifdef _WIN32
@@ -37,6 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#include <eh.h>
 	#endif
 #else
+#endif
+
+// Whether to catch all std::exceptions.
+// Assert will be called on such an event.
+// In debug mode, leave these for the debugger and don't catch them.
+#ifdef NDEBUG
+	#define CATCH_UNHANDLED_EXCEPTIONS 1
+#else
+	#define CATCH_UNHANDLED_EXCEPTIONS 0
 #endif
 
 /*

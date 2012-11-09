@@ -3,31 +3,31 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "test.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "map.h"
 #include "player.h"
 #include "main.h"
 #include "socket.h"
 #include "connection.h"
-#include "utility.h"
 #include "serialization.h"
 #include "voxel.h"
+#include "collision.h"
 #include <sstream>
 #include "porting.h"
 #include "content_mapnode.h"
@@ -35,6 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "settings.h"
 #include "log.h"
+#include "util/string.h"
+#include "voxelalgorithms.h"
+#include "inventory.h"
+#include "util/numeric.h"
+#include "util/serialize.h"
+#include "noise.h" // PseudoRandom used for random data for compression
 
 /*
 	Asserts that the exception occurs
@@ -44,8 +50,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	bool exception_thrown = false;\
 	try{ code; }\
 	catch(EType &e) { exception_thrown = true; }\
-	assert(exception_thrown);\
+	UASSERT(exception_thrown);\
 }
+
+#define UTEST(x, fmt, ...)\
+{\
+	if(!(x)){\
+		LOGLINEF(LMT_ERROR, "Test (%s) failed: " fmt, #x, ##__VA_ARGS__);\
+		test_failed = true;\
+	}\
+}
+
+#define UASSERT(x) UTEST(x, "UASSERT")
 
 /*
 	A few item and node definitions for those tests that need them
@@ -53,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CONTENT_STONE 0
 #define CONTENT_GRASS 0x800
+#define CONTENT_TORCH 100
 
 void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *ndef)
 {
@@ -68,6 +85,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:stone";
 	itemdef.description = "Stone";
+	itemdef.groups["cracky"] = 3;
 	itemdef.inventory_image = "[inventorycube"
 		"{default_stone.png"
 		"{default_stone.png"
@@ -75,13 +93,8 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	for(int i = 0; i < 6; i++)
-		f.tname_tiles[i] = "default_stone.png";
+		f.tiledef[i].name = "default_stone.png";
 	f.is_ground_content = true;
-	f.material.diggability = DIGGABLE_NORMAL;
-	f.material.weight = 5.0;
-	f.material.crackiness = 1.0;
-	f.material.crumbliness = -0.1;
-	f.material.cuttability = -0.2;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
 
@@ -93,45 +106,70 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:dirt_with_grass";
 	itemdef.description = "Dirt with grass";
+	itemdef.groups["crumbly"] = 3;
 	itemdef.inventory_image = "[inventorycube"
 		"{default_grass.png"
 		"{default_dirt.png&default_grass_side.png"
 		"{default_dirt.png&default_grass_side.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.tname_tiles[0] = "default_grass.png";
-	f.tname_tiles[1] = "default_dirt.png";
+	f.tiledef[0].name = "default_grass.png";
+	f.tiledef[1].name = "default_dirt.png";
 	for(int i = 2; i < 6; i++)
-		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
+		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
-	f.material.diggability = DIGGABLE_NORMAL;
-	f.material.weight = 1.2;
-	f.material.crackiness = 0.0;
-	f.material.crumbliness = 1.2;
-	f.material.cuttability = -0.4;
+	idef->registerItem(itemdef);
+	ndef->set(i, f);
+
+	/*
+		Torch (minimal definition for lighting tests)
+	*/
+	i = CONTENT_TORCH;
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:torch";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	f.param_type = CPT_LIGHT;
+	f.light_propagates = true;
+	f.sunlight_propagates = true;
+	f.light_source = LIGHT_MAX-1;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
 }
 
-struct TestUtilities
+struct TestBase
+{
+	bool test_failed;
+	TestBase():
+		test_failed(false)
+	{}
+};
+
+struct TestUtilities: public TestBase
 {
 	void Run()
 	{
 		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
 		infostream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
 		infostream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
-		assert(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
-		assert(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
-		assert(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
-		assert(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
-		assert(lowercase("Foo bAR") == "foo bar");
-		assert(is_yes("YeS") == true);
-		assert(is_yes("") == false);
-		assert(is_yes("FAlse") == false);
+		UASSERT(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
+		UASSERT(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
+		UASSERT(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
+		UASSERT(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
+		UASSERT(lowercase("Foo bAR") == "foo bar");
+		UASSERT(is_yes("YeS") == true);
+		UASSERT(is_yes("") == false);
+		UASSERT(is_yes("FAlse") == false);
+		const char *ends[] = {"abc", "c", "bc", NULL};
+		UASSERT(removeStringEnd("abc", ends) == "");
+		UASSERT(removeStringEnd("bc", ends) == "b");
+		UASSERT(removeStringEnd("12c", ends) == "12");
+		UASSERT(removeStringEnd("foo", ends) == "");
 	}
 };
 
-struct TestSettings
+struct TestSettings: public TestBase
 {
 	void Run()
 	{
@@ -143,27 +181,27 @@ struct TestSettings
 		s.parseConfigLine("floaty_thing = 1.1");
 		s.parseConfigLine("stringy_thing = asd /( ¤%&(/\" BLÖÄRP");
 		s.parseConfigLine("coord = (1, 2, 4.5)");
-		assert(s.getS32("leet") == 1337);
-		assert(s.getS16("leetleet") == 32767);
-		assert(s.getS16("leetleet_neg") == -32768);
+		UASSERT(s.getS32("leet") == 1337);
+		UASSERT(s.getS16("leetleet") == 32767);
+		UASSERT(s.getS16("leetleet_neg") == -32768);
 		// Not sure if 1.1 is an exact value as a float, but doesn't matter
-		assert(fabs(s.getFloat("floaty_thing") - 1.1) < 0.001);
-		assert(s.get("stringy_thing") == "asd /( ¤%&(/\" BLÖÄRP");
-		assert(fabs(s.getV3F("coord").X - 1.0) < 0.001);
-		assert(fabs(s.getV3F("coord").Y - 2.0) < 0.001);
-		assert(fabs(s.getV3F("coord").Z - 4.5) < 0.001);
+		UASSERT(fabs(s.getFloat("floaty_thing") - 1.1) < 0.001);
+		UASSERT(s.get("stringy_thing") == "asd /( ¤%&(/\" BLÖÄRP");
+		UASSERT(fabs(s.getV3F("coord").X - 1.0) < 0.001);
+		UASSERT(fabs(s.getV3F("coord").Y - 2.0) < 0.001);
+		UASSERT(fabs(s.getV3F("coord").Z - 4.5) < 0.001);
 		// Test the setting of settings too
 		s.setFloat("floaty_thing_2", 1.2);
 		s.setV3F("coord2", v3f(1, 2, 3.3));
-		assert(s.get("floaty_thing_2").substr(0,3) == "1.2");
-		assert(fabs(s.getFloat("floaty_thing_2") - 1.2) < 0.001);
-		assert(fabs(s.getV3F("coord2").X - 1.0) < 0.001);
-		assert(fabs(s.getV3F("coord2").Y - 2.0) < 0.001);
-		assert(fabs(s.getV3F("coord2").Z - 3.3) < 0.001);
+		UASSERT(s.get("floaty_thing_2").substr(0,3) == "1.2");
+		UASSERT(fabs(s.getFloat("floaty_thing_2") - 1.2) < 0.001);
+		UASSERT(fabs(s.getV3F("coord2").X - 1.0) < 0.001);
+		UASSERT(fabs(s.getV3F("coord2").Y - 2.0) < 0.001);
+		UASSERT(fabs(s.getV3F("coord2").Z - 3.3) < 0.001);
 	}
 };
 
-struct TestSerialization
+struct TestSerialization: public TestBase
 {
 	// To be used like this:
 	//   mkstr("Some\0string\0with\0embedded\0nuls")
@@ -177,19 +215,19 @@ struct TestSerialization
 	{
 		// Tests some serialization primitives
 
-		assert(serializeString("") == mkstr("\0\0"));
-		assert(serializeWideString(L"") == mkstr("\0\0"));
-		assert(serializeLongString("") == mkstr("\0\0\0\0"));
-		assert(serializeJsonString("") == "\"\"");
+		UASSERT(serializeString("") == mkstr("\0\0"));
+		UASSERT(serializeWideString(L"") == mkstr("\0\0"));
+		UASSERT(serializeLongString("") == mkstr("\0\0\0\0"));
+		UASSERT(serializeJsonString("") == "\"\"");
 		
 		std::string teststring = "Hello world!";
-		assert(serializeString(teststring) ==
+		UASSERT(serializeString(teststring) ==
 			mkstr("\0\14Hello world!"));
-		assert(serializeWideString(narrow_to_wide(teststring)) ==
+		UASSERT(serializeWideString(narrow_to_wide(teststring)) ==
 			mkstr("\0\14\0H\0e\0l\0l\0o\0 \0w\0o\0r\0l\0d\0!"));
-		assert(serializeLongString(teststring) ==
+		UASSERT(serializeLongString(teststring) ==
 			mkstr("\0\0\0\14Hello world!"));
-		assert(serializeJsonString(teststring) ==
+		UASSERT(serializeJsonString(teststring) ==
 			"\"Hello world!\"");
 
 		std::string teststring2;
@@ -209,15 +247,15 @@ struct TestSerialization
 			teststring2_w = tmp_os_w.str();
 			teststring2_w_encoded = tmp_os_w_encoded.str();
 		}
-		assert(serializeString(teststring2) ==
+		UASSERT(serializeString(teststring2) ==
 			mkstr("\1\0") + teststring2);
-		assert(serializeWideString(teststring2_w) ==
+		UASSERT(serializeWideString(teststring2_w) ==
 			mkstr("\1\0") + teststring2_w_encoded);
-		assert(serializeLongString(teststring2) ==
+		UASSERT(serializeLongString(teststring2) ==
 			mkstr("\0\0\1\0") + teststring2);
 		// MSVC fails when directly using "\\\\"
 		std::string backslash = "\\";
-		assert(serializeJsonString(teststring2) ==
+		UASSERT(serializeJsonString(teststring2) ==
 			mkstr("\"") +
 			"\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007" +
 			"\\b\\t\\n\\u000b\\f\\r\\u000e\\u000f" +
@@ -246,37 +284,37 @@ struct TestSerialization
 
 		{
 			std::istringstream is(serializeString(teststring2), std::ios::binary);
-			assert(deSerializeString(is) == teststring2);
-			assert(!is.eof());
+			UASSERT(deSerializeString(is) == teststring2);
+			UASSERT(!is.eof());
 			is.get();
-			assert(is.eof());
+			UASSERT(is.eof());
 		}
 		{
 			std::istringstream is(serializeWideString(teststring2_w), std::ios::binary);
-			assert(deSerializeWideString(is) == teststring2_w);
-			assert(!is.eof());
+			UASSERT(deSerializeWideString(is) == teststring2_w);
+			UASSERT(!is.eof());
 			is.get();
-			assert(is.eof());
+			UASSERT(is.eof());
 		}
 		{
 			std::istringstream is(serializeLongString(teststring2), std::ios::binary);
-			assert(deSerializeLongString(is) == teststring2);
-			assert(!is.eof());
+			UASSERT(deSerializeLongString(is) == teststring2);
+			UASSERT(!is.eof());
 			is.get();
-			assert(is.eof());
+			UASSERT(is.eof());
 		}
 		{
 			std::istringstream is(serializeJsonString(teststring2), std::ios::binary);
 			//dstream<<serializeJsonString(deSerializeJsonString(is));
-			assert(deSerializeJsonString(is) == teststring2);
-			assert(!is.eof());
+			UASSERT(deSerializeJsonString(is) == teststring2);
+			UASSERT(!is.eof());
 			is.get();
-			assert(is.eof());
+			UASSERT(is.eof());
 		}
 	}
 };
 
-struct TestCompress
+struct TestCompress: public TestBase
 {
 	void Run()
 	{
@@ -301,18 +339,18 @@ struct TestCompress
 		}
 		infostream<<std::endl;
 
-		assert(str_out.size() == 10);
+		UASSERT(str_out.size() == 10);
 
-		assert(str_out[0] == 0);
-		assert(str_out[1] == 0);
-		assert(str_out[2] == 0);
-		assert(str_out[3] == 4);
-		assert(str_out[4] == 0);
-		assert(str_out[5] == 1);
-		assert(str_out[6] == 1);
-		assert(str_out[7] == 5);
-		assert(str_out[8] == 0);
-		assert(str_out[9] == 1);
+		UASSERT(str_out[0] == 0);
+		UASSERT(str_out[1] == 0);
+		UASSERT(str_out[2] == 0);
+		UASSERT(str_out[3] == 4);
+		UASSERT(str_out[4] == 0);
+		UASSERT(str_out[5] == 1);
+		UASSERT(str_out[6] == 1);
+		UASSERT(str_out[7] == 5);
+		UASSERT(str_out[8] == 0);
+		UASSERT(str_out[9] == 1);
 
 		std::istringstream is(str_out, std::ios_base::binary);
 		std::ostringstream os2(std::ios_base::binary);
@@ -327,11 +365,11 @@ struct TestCompress
 		}
 		infostream<<std::endl;
 
-		assert(str_out2.size() == fromdata.getSize());
+		UASSERT(str_out2.size() == fromdata.getSize());
 
 		for(u32 i=0; i<str_out2.size(); i++)
 		{
-			assert(str_out2[i] == fromdata[i]);
+			UASSERT(str_out2[i] == fromdata[i]);
 		}
 
 		}
@@ -357,19 +395,6 @@ struct TestCompress
 		}
 		infostream<<std::endl;
 
-		/*assert(str_out.size() == 10);
-
-		assert(str_out[0] == 0);
-		assert(str_out[1] == 0);
-		assert(str_out[2] == 0);
-		assert(str_out[3] == 4);
-		assert(str_out[4] == 0);
-		assert(str_out[5] == 1);
-		assert(str_out[6] == 1);
-		assert(str_out[7] == 5);
-		assert(str_out[8] == 0);
-		assert(str_out[9] == 1);*/
-
 		std::istringstream is(str_out, std::ios_base::binary);
 		std::ostringstream os2(std::ios_base::binary);
 
@@ -383,37 +408,70 @@ struct TestCompress
 		}
 		infostream<<std::endl;
 
-		assert(str_out2.size() == fromdata.getSize());
+		UASSERT(str_out2.size() == fromdata.getSize());
 
 		for(u32 i=0; i<str_out2.size(); i++)
 		{
-			assert(str_out2[i] == fromdata[i]);
+			UASSERT(str_out2[i] == fromdata[i]);
 		}
 
+		}
+
+		// Test zlib wrapper with large amounts of data (larger than its
+		// internal buffers)
+		{
+			infostream<<"Test: Testing zlib wrappers with a large amount "
+					<<"of pseudorandom data"<<std::endl;
+			u32 size = 50000;
+			infostream<<"Test: Input size of large compressZlib is "
+					<<size<<std::endl;
+			std::string data_in;
+			data_in.resize(size);
+			PseudoRandom pseudorandom(9420);
+			for(u32 i=0; i<size; i++)
+				data_in[i] = pseudorandom.range(0,255);
+			std::ostringstream os_compressed(std::ios::binary);
+			compressZlib(data_in, os_compressed);
+			infostream<<"Test: Output size of large compressZlib is "
+					<<os_compressed.str().size()<<std::endl;
+			std::istringstream is_compressed(os_compressed.str(), std::ios::binary);
+			std::ostringstream os_decompressed(std::ios::binary);
+			decompressZlib(is_compressed, os_decompressed);
+			infostream<<"Test: Output size of large decompressZlib is "
+					<<os_decompressed.str().size()<<std::endl;
+			std::string str_decompressed = os_decompressed.str();
+			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
+					" equal (output: %i, input: %i)",
+					str_decompressed.size(), data_in.size());
+			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
+				UTEST(str_decompressed[i] == data_in[i],
+						"index out[%i]=%i differs from in[%i]=%i",
+						i, str_decompressed[i], i, data_in[i]);
+			}
 		}
 	}
 };
 
-struct TestMapNode
+struct TestMapNode: public TestBase
 {
 	void Run(INodeDefManager *nodedef)
 	{
 		MapNode n;
 
 		// Default values
-		assert(n.getContent() == CONTENT_AIR);
-		assert(n.getLight(LIGHTBANK_DAY, nodedef) == 0);
-		assert(n.getLight(LIGHTBANK_NIGHT, nodedef) == 0);
+		UASSERT(n.getContent() == CONTENT_AIR);
+		UASSERT(n.getLight(LIGHTBANK_DAY, nodedef) == 0);
+		UASSERT(n.getLight(LIGHTBANK_NIGHT, nodedef) == 0);
 		
 		// Transparency
 		n.setContent(CONTENT_AIR);
-		assert(nodedef->get(n).light_propagates == true);
+		UASSERT(nodedef->get(n).light_propagates == true);
 		n.setContent(LEGN(nodedef, "CONTENT_STONE"));
-		assert(nodedef->get(n).light_propagates == false);
+		UASSERT(nodedef->get(n).light_propagates == false);
 	}
 };
 
-struct TestVoxelManipulator
+struct TestVoxelManipulator: public TestBase
 {
 	void Run(INodeDefManager *nodedef)
 	{
@@ -422,8 +480,8 @@ struct TestVoxelManipulator
 		*/
 
 		VoxelArea a(v3s16(-1,-1,-1), v3s16(1,1,1));
-		assert(a.index(0,0,0) == 1*3*3 + 1*3 + 1);
-		assert(a.index(-1,-1,-1) == 0);
+		UASSERT(a.index(0,0,0) == 1*3*3 + 1*3 + 1);
+		UASSERT(a.index(-1,-1,-1) == 0);
 		
 		VoxelArea c(v3s16(-2,-2,-2), v3s16(2,2,2));
 		// An area that is 1 bigger in x+ and z-
@@ -437,7 +495,7 @@ struct TestVoxelManipulator
 		results.push_back(VoxelArea(v3s16(-2,-2,-3),v3s16(3,2,-3)));
 		results.push_back(VoxelArea(v3s16(3,-2,-2),v3s16(3,2,2)));
 
-		assert(aa.size() == results.size());
+		UASSERT(aa.size() == results.size());
 		
 		infostream<<"Result of diff:"<<std::endl;
 		for(core::list<VoxelArea>::Iterator
@@ -447,7 +505,7 @@ struct TestVoxelManipulator
 			infostream<<std::endl;
 			
 			s32 j = results.linear_search(*i);
-			assert(j != -1);
+			UASSERT(j != -1);
 			results.erase(j, 1);
 		}
 
@@ -466,7 +524,7 @@ struct TestVoxelManipulator
 
 		v.print(infostream, nodedef);
 
- 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
+ 		UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
 
 		infostream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
 
@@ -480,8 +538,253 @@ struct TestVoxelManipulator
 		
 		v.print(infostream, nodedef);
 
-		assert(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
+		UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
+	}
+};
+
+struct TestVoxelAlgorithms: public TestBase
+{
+	void Run(INodeDefManager *ndef)
+	{
+		/*
+			voxalgo::propagateSunlight
+		*/
+		{
+			VoxelManipulator v;
+			for(u16 z=0; z<3; z++)
+			for(u16 y=0; y<3; y++)
+			for(u16 x=0; x<3; x++)
+			{
+				v3s16 p(x,y,z);
+				v.setNodeNoRef(p, MapNode(CONTENT_AIR));
+			}
+			VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
+				UASSERT(res.bottom_sunlight_valid == true);
+				UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== LIGHT_SUN);
+			}
+			v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+				UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== LIGHT_SUN);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+				UASSERT(v.getNode(v3s16(2,0,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_STONE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+				UASSERT(v.getNode(v3s16(1,1,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+				UASSERT(v.getNode(v3s16(1,0,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, 10, ndef);
+				v.setNodeNoRef(v3s16(1,-1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+			}
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, LIGHT_SUN, ndef);
+				v.setNodeNoRef(v3s16(1,-1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == false);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == false);
+			}
+			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_IGNORE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				UASSERT(res.bottom_sunlight_valid == true);
+			}
+		}
+		/*
+			voxalgo::clearLightAndCollectSources
+		*/
+		{
+			VoxelManipulator v;
+			for(u16 z=0; z<3; z++)
+			for(u16 y=0; y<3; y++)
+			for(u16 x=0; x<3; x++)
+			{
+				v3s16 p(x,y,z);
+				v.setNode(p, MapNode(CONTENT_AIR));
+			}
+			VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
+			v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
+			v.setNodeNoRef(v3s16(1,1,1), MapNode(CONTENT_TORCH));
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, 1, ndef);
+				v.setNode(v3s16(1,1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				core::map<v3s16, u8> unlight_from;
+				voxalgo::clearLightAndCollectSources(v, a, LIGHTBANK_DAY,
+						ndef, light_sources, unlight_from);
+				//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
+				UASSERT(v.getNode(v3s16(0,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+				UASSERT(light_sources.find(v3s16(1,1,1)) != NULL);
+				UASSERT(light_sources.size() == 1);
+				UASSERT(unlight_from.find(v3s16(1,1,2)) != NULL);
+				UASSERT(unlight_from.size() == 1);
+			}
+		}
+	}
+};
+
+struct TestInventory: public TestBase
+{
+	void Run(IItemDefManager *idef)
+	{
+		std::string serialized_inventory =
+		"List 0 32\n"
+		"Width 3\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:cobble 61\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 71\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 99\n"
+		"Item default:cobble 38\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"EndInventoryList\n"
+		"EndInventory\n";
+		
+		std::string serialized_inventory_2 =
+		"List main 32\n"
+		"Width 5\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:cobble 61\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 71\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 99\n"
+		"Item default:cobble 38\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"EndInventoryList\n"
+		"EndInventory\n";
+		
+		Inventory inv(idef);
+		std::istringstream is(serialized_inventory, std::ios::binary);
+		inv.deSerialize(is);
+		UASSERT(inv.getList("0"));
+		UASSERT(!inv.getList("main"));
+		inv.getList("0")->setName("main");
+		UASSERT(!inv.getList("0"));
+		UASSERT(inv.getList("main"));
+		UASSERT(inv.getList("main")->getWidth() == 3);
+		inv.getList("main")->setWidth(5);
+		std::ostringstream inv_os(std::ios::binary);
+		inv.serialize(inv_os);
+		UASSERT(inv_os.str() == serialized_inventory_2);
 	}
 };
 
@@ -491,7 +794,7 @@ struct TestVoxelManipulator
 		  interface for Map (IMap would be fine).
 */
 #if 0
-struct TestMapBlock
+struct TestMapBlock: public TestBase
 {
 	class TC : public NodeContainer
 	{
@@ -548,33 +851,33 @@ struct TestMapBlock
 		MapBlock b(&parent, v3s16(1,1,1));
 		v3s16 relpos(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 
-		assert(b.getPosRelative() == relpos);
+		UASSERT(b.getPosRelative() == relpos);
 
-		assert(b.getBox().MinEdge.X == MAP_BLOCKSIZE);
-		assert(b.getBox().MaxEdge.X == MAP_BLOCKSIZE*2-1);
-		assert(b.getBox().MinEdge.Y == MAP_BLOCKSIZE);
-		assert(b.getBox().MaxEdge.Y == MAP_BLOCKSIZE*2-1);
-		assert(b.getBox().MinEdge.Z == MAP_BLOCKSIZE);
-		assert(b.getBox().MaxEdge.Z == MAP_BLOCKSIZE*2-1);
+		UASSERT(b.getBox().MinEdge.X == MAP_BLOCKSIZE);
+		UASSERT(b.getBox().MaxEdge.X == MAP_BLOCKSIZE*2-1);
+		UASSERT(b.getBox().MinEdge.Y == MAP_BLOCKSIZE);
+		UASSERT(b.getBox().MaxEdge.Y == MAP_BLOCKSIZE*2-1);
+		UASSERT(b.getBox().MinEdge.Z == MAP_BLOCKSIZE);
+		UASSERT(b.getBox().MaxEdge.Z == MAP_BLOCKSIZE*2-1);
 		
-		assert(b.isValidPosition(v3s16(0,0,0)) == true);
-		assert(b.isValidPosition(v3s16(-1,0,0)) == false);
-		assert(b.isValidPosition(v3s16(-1,-142,-2341)) == false);
-		assert(b.isValidPosition(v3s16(-124,142,2341)) == false);
-		assert(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
-		assert(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE,MAP_BLOCKSIZE-1)) == false);
+		UASSERT(b.isValidPosition(v3s16(0,0,0)) == true);
+		UASSERT(b.isValidPosition(v3s16(-1,0,0)) == false);
+		UASSERT(b.isValidPosition(v3s16(-1,-142,-2341)) == false);
+		UASSERT(b.isValidPosition(v3s16(-124,142,2341)) == false);
+		UASSERT(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
+		UASSERT(b.isValidPosition(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE,MAP_BLOCKSIZE-1)) == false);
 
 		/*
 			TODO: this method should probably be removed
 			if the block size isn't going to be set variable
 		*/
-		/*assert(b.getSizeNodes() == v3s16(MAP_BLOCKSIZE,
+		/*UASSERT(b.getSizeNodes() == v3s16(MAP_BLOCKSIZE,
 				MAP_BLOCKSIZE, MAP_BLOCKSIZE));*/
 		
 		// Changed flag should be initially set
-		assert(b.getModified() == MOD_STATE_WRITE_NEEDED);
+		UASSERT(b.getModified() == MOD_STATE_WRITE_NEEDED);
 		b.resetModified();
-		assert(b.getModified() == MOD_STATE_CLEAN);
+		UASSERT(b.getModified() == MOD_STATE_CLEAN);
 
 		// All nodes should have been set to
 		// .d=CONTENT_IGNORE and .getLight() = 0
@@ -582,10 +885,10 @@ struct TestMapBlock
 		for(u16 y=0; y<MAP_BLOCKSIZE; y++)
 		for(u16 x=0; x<MAP_BLOCKSIZE; x++)
 		{
-			//assert(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_AIR);
-			assert(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_IGNORE);
-			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
-			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
+			//UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_AIR);
+			UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_IGNORE);
+			UASSERT(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
 		}
 		
 		{
@@ -607,15 +910,15 @@ struct TestMapBlock
 		MapNode n;
 		
 		// Positions in the block should still be valid
-		assert(b.isValidPositionParent(v3s16(0,0,0)) == true);
-		assert(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
+		UASSERT(b.isValidPositionParent(v3s16(0,0,0)) == true);
+		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1)) == true);
 		n = b.getNodeParent(v3s16(0,MAP_BLOCKSIZE-1,0));
-		assert(n.getContent() == CONTENT_AIR);
+		UASSERT(n.getContent() == CONTENT_AIR);
 
 		// ...but outside the block they should be invalid
-		assert(b.isValidPositionParent(v3s16(-121,2341,0)) == false);
-		assert(b.isValidPositionParent(v3s16(-1,0,0)) == false);
-		assert(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == false);
+		UASSERT(b.isValidPositionParent(v3s16(-121,2341,0)) == false);
+		UASSERT(b.isValidPositionParent(v3s16(-1,0,0)) == false);
+		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == false);
 		
 		{
 			bool exception_thrown = false;
@@ -627,16 +930,16 @@ struct TestMapBlock
 			{
 				exception_thrown = true;
 			}
-			assert(exception_thrown);
+			UASSERT(exception_thrown);
 		}
 
 		parent.position_valid = true;
 		// Now the positions outside should be valid
-		assert(b.isValidPositionParent(v3s16(-121,2341,0)) == true);
-		assert(b.isValidPositionParent(v3s16(-1,0,0)) == true);
-		assert(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == true);
+		UASSERT(b.isValidPositionParent(v3s16(-121,2341,0)) == true);
+		UASSERT(b.isValidPositionParent(v3s16(-1,0,0)) == true);
+		UASSERT(b.isValidPositionParent(v3s16(MAP_BLOCKSIZE-1,MAP_BLOCKSIZE-1,MAP_BLOCKSIZE)) == true);
 		n = b.getNodeParent(v3s16(0,0,MAP_BLOCKSIZE));
-		assert(n.getContent() == 5);
+		UASSERT(n.getContent() == 5);
 
 		/*
 			Set a node
@@ -644,10 +947,10 @@ struct TestMapBlock
 		v3s16 p(1,2,0);
 		n.setContent(4);
 		b.setNode(p, n);
-		assert(b.getNode(p).getContent() == 4);
+		UASSERT(b.getNode(p).getContent() == 4);
 		//TODO: Update to new system
-		/*assert(b.getNodeTile(p) == 4);
-		assert(b.getNodeTile(v3s16(-1,-1,0)) == 5);*/
+		/*UASSERT(b.getNodeTile(p) == 4);
+		UASSERT(b.getNodeTile(v3s16(-1,-1,0)) == 5);*/
 		
 		/*
 			propagateSunlight()
@@ -674,21 +977,21 @@ struct TestMapBlock
 			parent.node.setLight(LIGHTBANK_NIGHT, 0);
 			core::map<v3s16, bool> light_sources;
 			// The bottom block is invalid, because we have a shadowing node
-			assert(b.propagateSunlight(light_sources) == false);
-			assert(b.getNode(v3s16(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			assert(b.getNode(v3s16(1,3,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			assert(b.getNode(v3s16(1,2,0)).getLight(LIGHTBANK_DAY) == 0);
-			assert(b.getNode(v3s16(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
-			assert(b.getNode(v3s16(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
-			assert(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			assert(b.getFaceLight2(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
-			assert(b.getFaceLight2(1000, p, v3s16(0,-1,0)) == 0);
-			assert(b.getFaceLight2(0, p, v3s16(0,-1,0)) == 0);
+			UASSERT(b.propagateSunlight(light_sources) == false);
+			UASSERT(b.getNode(v3s16(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getNode(v3s16(1,3,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getNode(v3s16(1,2,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3s16(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3s16(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			UASSERT(b.getFaceLight2(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
+			UASSERT(b.getFaceLight2(1000, p, v3s16(0,-1,0)) == 0);
+			UASSERT(b.getFaceLight2(0, p, v3s16(0,-1,0)) == 0);
 			// According to MapBlock::getFaceLight,
 			// The face on the z+ side should have double-diminished light
-			//assert(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
+			//UASSERT(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
 			// The face on the z+ side should have diminished light
-			assert(b.getFaceLight2(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
+			UASSERT(b.getFaceLight2(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
 		}
 		/*
 			Check how the block handles being in between blocks with some non-sunlight
@@ -702,11 +1005,11 @@ struct TestMapBlock
 			core::map<v3s16, bool> light_sources;
 			// The block below should be valid because there shouldn't be
 			// sunlight in there either
-			assert(b.propagateSunlight(light_sources, true) == true);
+			UASSERT(b.propagateSunlight(light_sources, true) == true);
 			// Should not touch nodes that are not affected (that is, all of them)
-			//assert(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
+			//UASSERT(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
 			// Should set light of non-sunlighted blocks to 0.
-			assert(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == 0);
+			UASSERT(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == 0);
 		}
 		/*
 			Set up a situation where:
@@ -742,12 +1045,12 @@ struct TestMapBlock
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
 			core::map<v3s16, bool> light_sources;
 			// Bottom block is not valid
-			assert(b.propagateSunlight(light_sources) == false);
+			UASSERT(b.propagateSunlight(light_sources) == false);
 		}
 	}
 };
 
-struct TestMapSector
+struct TestMapSector: public TestBase
 {
 	class TC : public NodeContainer
 	{
@@ -793,13 +1096,13 @@ struct TestMapSector
 		// Create one with no heightmaps
 		ServerMapSector sector(&parent, v2s16(1,1));
 		
-		assert(sector.getBlockNoCreateNoEx(0) == 0);
-		assert(sector.getBlockNoCreateNoEx(1) == 0);
+		UASSERT(sector.getBlockNoCreateNoEx(0) == 0);
+		UASSERT(sector.getBlockNoCreateNoEx(1) == 0);
 
 		MapBlock * bref = sector.createBlankBlock(-2);
 		
-		assert(sector.getBlockNoCreateNoEx(0) == 0);
-		assert(sector.getBlockNoCreateNoEx(-2) == bref);
+		UASSERT(sector.getBlockNoCreateNoEx(0) == 0);
+		UASSERT(sector.getBlockNoCreateNoEx(-2) == bref);
 		
 		//TODO: Check for AlreadyExistsException
 
@@ -810,13 +1113,160 @@ struct TestMapSector
 		catch(InvalidPositionException &e){
 			exception_thrown = true;
 		}
-		assert(exception_thrown);*/
+		UASSERT(exception_thrown);*/
 
 	}
 };
 #endif
 
-struct TestSocket
+struct TestCollision: public TestBase
+{
+	void Run()
+	{
+		/*
+			axisAlignedCollision
+		*/
+
+		for(s16 bx = -3; bx <= 3; bx++)
+		for(s16 by = -3; by <= 3; by++)
+		for(s16 bz = -3; bz <= 3; bz++)
+		{
+			// X-
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx-2, by, bz, bx-1, by+1, bz+1);
+				v3f v(1, 0, 0);
+				f32 dtime = 0;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 1.000) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx-2, by, bz, bx-1, by+1, bz+1);
+				v3f v(-1, 0, 0);
+				f32 dtime = 0;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx-2, by+1.5, bz, bx-1, by+2.5, bz-1);
+				v3f v(1, 0, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx-2, by-1.5, bz, bx-1.5, by+0.5, bz+1);
+				v3f v(0.5, 0.1, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 3.000) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx-2, by-1.5, bz, bx-1.5, by+0.5, bz+1);
+				v3f v(0.5, 0.1, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 3.000) < 0.001);
+			}
+
+			// X+
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx+2, by, bz, bx+3, by+1, bz+1);
+				v3f v(-1, 0, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 1.000) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx+2, by, bz, bx+3, by+1, bz+1);
+				v3f v(1, 0, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx+2, by, bz+1.5, bx+3, by+1, bz+3.5);
+				v3f v(-1, 0, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx+2, by-1.5, bz, bx+2.5, by-0.5, bz+1);
+				v3f v(-0.5, 0.2, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);  // Y, not X!
+				UASSERT(fabs(dtime - 2.500) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
+				aabb3f m(bx+2, by-1.5, bz, bx+2.5, by-0.5, bz+1);
+				v3f v(-0.5, 0.3, 0);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 2.000) < 0.001);
+			}
+
+			// TODO: Y-, Y+, Z-, Z+
+
+			// misc
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx+2.3, by+2.29, bz+2.29, bx+4.2, by+4.2, bz+4.2);
+				v3f v(-1./3, -1./3, -1./3);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 0.9) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx+2.29, by+2.3, bz+2.29, bx+4.2, by+4.2, bz+4.2);
+				v3f v(-1./3, -1./3, -1./3);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);
+				UASSERT(fabs(dtime - 0.9) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx+2.29, by+2.29, bz+2.3, bx+4.2, by+4.2, bz+4.2);
+				v3f v(-1./3, -1./3, -1./3);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 2);
+				UASSERT(fabs(dtime - 0.9) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx-4.2, by-4.2, bz-4.2, bx-2.3, by-2.29, bz-2.29);
+				v3f v(1./7, 1./7, 1./7);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
+				UASSERT(fabs(dtime - 16.1) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx-4.2, by-4.2, bz-4.2, bx-2.29, by-2.3, bz-2.29);
+				v3f v(1./7, 1./7, 1./7);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);
+				UASSERT(fabs(dtime - 16.1) < 0.001);
+			}
+			{
+				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
+				aabb3f m(bx-4.2, by-4.2, bz-4.2, bx-2.29, by-2.29, bz-2.3);
+				v3f v(1./7, 1./7, 1./7);
+				f32 dtime;
+				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 2);
+				UASSERT(fabs(dtime - 16.1) < 0.001);
+			}
+		}
+	}
+};
+
+struct TestSocket: public TestBase
 {
 	void Run()
 	{
@@ -839,12 +1289,12 @@ struct TestSocket
 				break;
 		}
 		//FIXME: This fails on some systems
-		assert(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
-		assert(sender.getAddress() == Address(127,0,0,1, 0).getAddress());
+		UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
+		UASSERT(sender.getAddress() == Address(127,0,0,1, 0).getAddress());
 	}
 };
 
-struct TestConnection
+struct TestConnection: public TestBase
 {
 	void TestHelpers()
 	{
@@ -872,10 +1322,10 @@ struct TestConnection
 			Data:
 				[7] u8 data1[0]
 		*/
-		assert(readU32(&p1.data[0]) == proto_id);
-		assert(readU16(&p1.data[4]) == peer_id);
-		assert(readU8(&p1.data[6]) == channel);
-		assert(readU8(&p1.data[7]) == data1[0]);
+		UASSERT(readU32(&p1.data[0]) == proto_id);
+		UASSERT(readU16(&p1.data[4]) == peer_id);
+		UASSERT(readU8(&p1.data[6]) == channel);
+		UASSERT(readU8(&p1.data[7]) == data1[0]);
 		
 		//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
 
@@ -887,10 +1337,10 @@ struct TestConnection
 				<<" p2[3]="<<((u32)p2[3]&0xff)<<std::endl;
 		infostream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
 
-		assert(p2.getSize() == 3 + data1.getSize());
-		assert(readU8(&p2[0]) == TYPE_RELIABLE);
-		assert(readU16(&p2[1]) == seqnum);
-		assert(readU8(&p2[3]) == data1[0]);
+		UASSERT(p2.getSize() == 3 + data1.getSize());
+		UASSERT(readU8(&p2[0]) == TYPE_RELIABLE);
+		UASSERT(readU16(&p2[1]) == seqnum);
+		UASSERT(readU8(&p2[3]) == data1[0]);
 	}
 
 	struct Handler : public con::PeerHandler
@@ -946,8 +1396,8 @@ struct TestConnection
 		infostream<<"** Creating client Connection"<<std::endl;
 		con::Connection client(proto_id, 512, 5.0, &hand_client);
 
-		assert(hand_server.count == 0);
-		assert(hand_client.count == 0);
+		UASSERT(hand_server.count == 0);
+		UASSERT(hand_client.count == 0);
 		
 		sleep_ms(50);
 		
@@ -958,7 +1408,7 @@ struct TestConnection
 		sleep_ms(50);
 		
 		// Client should not have added client yet
-		assert(hand_client.count == 0);
+		UASSERT(hand_client.count == 0);
 		
 		try
 		{
@@ -975,10 +1425,10 @@ struct TestConnection
 		}
 
 		// Client should have added server now
-		assert(hand_client.count == 1);
-		assert(hand_client.last_id == 1);
+		UASSERT(hand_client.count == 1);
+		UASSERT(hand_client.last_id == 1);
 		// Server should not have added client yet
-		assert(hand_server.count == 0);
+		UASSERT(hand_server.count == 0);
 		
 		sleep_ms(50);
 
@@ -999,11 +1449,11 @@ struct TestConnection
 		}
 		
 		// Client should be the same
-		assert(hand_client.count == 1);
-		assert(hand_client.last_id == 1);
+		UASSERT(hand_client.count == 1);
+		UASSERT(hand_client.last_id == 1);
 		// Server should have the client
-		assert(hand_server.count == 1);
-		assert(hand_server.last_id == 2);
+		UASSERT(hand_server.count == 1);
+		UASSERT(hand_server.last_id == 2);
 		
 		//sleep_ms(50);
 
@@ -1062,7 +1512,7 @@ struct TestConnection
 					<<", size="<<size
 					<<", data="<<*data
 					<<std::endl;
-			assert(memcmp(*data, *recvdata, data.getSize()) == 0);
+			UASSERT(memcmp(*data, *recvdata, data.getSize()) == 0);
 		}
 #endif
 		u16 peer_id_client = 2;
@@ -1108,9 +1558,9 @@ struct TestConnection
 					<<", size="<<size
 					<<", data="<<*recvdata
 					<<std::endl;
-			assert(size == data1.getSize());
-			assert(memcmp(*data1, *recvdata, data1.getSize()) == 0);
-			assert(peer_id == PEER_ID_SERVER);
+			UASSERT(size == data1.getSize());
+			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
+			UASSERT(peer_id == PEER_ID_SERVER);
 			
 			infostream<<"** running client.Receive()"<<std::endl;
 			peer_id = 132;
@@ -1119,9 +1569,9 @@ struct TestConnection
 					<<", size="<<size
 					<<", data="<<*recvdata
 					<<std::endl;
-			assert(size == data2.getSize());
-			assert(memcmp(*data2, *recvdata, data2.getSize()) == 0);
-			assert(peer_id == PEER_ID_SERVER);
+			UASSERT(size == data2.getSize());
+			UASSERT(memcmp(*data2, *recvdata, data2.getSize()) == 0);
+			UASSERT(peer_id == PEER_ID_SERVER);
 			
 			bool got_exception = false;
 			try
@@ -1139,7 +1589,7 @@ struct TestConnection
 				infostream<<"** No incoming data for client"<<std::endl;
 				got_exception = true;
 			}
-			assert(got_exception);
+			UASSERT(got_exception);
 		}
 #endif
 #if 0
@@ -1192,8 +1642,10 @@ struct TestConnection
 
 			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
-				if(i%2==0) DEBUGPRINT(" ");
-				DEBUGPRINT("%.2X", ((int)((const char*)*data1)[i])&0xff);
+				if(i%2==0) infostream<<" ";
+				char buf[10];
+				snprintf(buf, 10, "%.2X", ((int)((const char*)*data1)[i])&0xff);
+				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
@@ -1219,29 +1671,31 @@ struct TestConnection
 				}
 				sleep_ms(10);
 			}
-			assert(received);
+			UASSERT(received);
 			infostream<<"** Client received: peer_id="<<peer_id
 					<<", size="<<size
 					<<std::endl;
 
-			infostream<<"Received data (size="<<size<<"):";
+			infostream<<"Received data (size="<<size<<"): ";
 			for(int i=0; i<size && i<20; i++){
-				if(i%2==0) DEBUGPRINT(" ");
-				DEBUGPRINT("%.2X", ((int)(recvdata[i]))&0xff);
+				if(i%2==0) infostream<<" ";
+				char buf[10];
+				snprintf(buf, 10, "%.2X", ((int)(recvdata[i]))&0xff);
+				infostream<<buf;
 			}
 			if(size>20)
 				infostream<<"...";
 			infostream<<std::endl;
 
-			assert(memcmp(*data1, *recvdata, data1.getSize()) == 0);
-			assert(peer_id == PEER_ID_SERVER);
+			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
+			UASSERT(peer_id == PEER_ID_SERVER);
 		}
 		
 		// Check peer handlers
-		assert(hand_client.count == 1);
-		assert(hand_client.last_id == 1);
-		assert(hand_server.count == 1);
-		assert(hand_server.last_id == 2);
+		UASSERT(hand_client.count == 1);
+		UASSERT(hand_client.last_id == 1);
+		UASSERT(hand_server.count == 1);
+		UASSERT(hand_server.last_id == 2);
 		
 		//assert(0);
 	}
@@ -1252,6 +1706,8 @@ struct TestConnection
 	X x;\
 	infostream<<"Running " #X <<std::endl;\
 	x.Run();\
+	tests_run++;\
+	tests_failed += x.test_failed ? 1 : 0;\
 }
 
 #define TESTPARAMS(X, ...)\
@@ -1259,11 +1715,16 @@ struct TestConnection
 	X x;\
 	infostream<<"Running " #X <<std::endl;\
 	x.Run(__VA_ARGS__);\
+	tests_run++;\
+	tests_failed += x.test_failed ? 1 : 0;\
 }
 
 void run_tests()
 {
 	DSTACK(__FUNCTION_NAME);
+
+	int tests_run = 0;
+	int tests_failed = 0;
 	
 	// Create item and node definitions
 	IWritableItemDefManager *idef = createItemDefManager();
@@ -1277,14 +1738,25 @@ void run_tests()
 	TEST(TestSerialization);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
+	TESTPARAMS(TestVoxelAlgorithms, ndef);
+	TESTPARAMS(TestInventory, idef);
 	//TEST(TestMapBlock);
 	//TEST(TestMapSector);
+	TEST(TestCollision);
 	if(INTERNET_SIMULATOR == false){
 		TEST(TestSocket);
 		dout_con<<"=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 		TEST(TestConnection);
 		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 	}
-	infostream<<"run_tests() passed"<<std::endl;
+	if(tests_failed == 0){
+		infostream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
+		infostream<<"run_tests() passed."<<std::endl;
+		return;
+	} else {
+		errorstream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
+		errorstream<<"run_tests() aborting."<<std::endl;
+		abort();
+	}
 }
 

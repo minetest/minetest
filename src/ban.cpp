@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <set>
 #include "strfnd.h"
-#include "debug.h"
+#include "log.h"
 
 BanManager::BanManager(const std::string &banfilepath):
 		m_banfilepath(banfilepath),
@@ -35,7 +35,7 @@ BanManager::BanManager(const std::string &banfilepath):
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<"WARNING: BanManager: creating "
+		infostream<<"WARNING: BanManager: creating "
 				<<m_banfilepath<<std::endl;
 	}
 }
@@ -48,11 +48,11 @@ BanManager::~BanManager()
 void BanManager::load()
 {
 	JMutexAutoLock lock(m_mutex);
-	dstream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
+	infostream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
 	std::ifstream is(m_banfilepath.c_str(), std::ios::binary);
 	if(is.good() == false)
 	{
-		dstream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 	
@@ -75,12 +75,12 @@ void BanManager::load()
 void BanManager::save()
 {
 	JMutexAutoLock lock(m_mutex);
-	dstream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
+	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
 	std::ofstream os(m_banfilepath.c_str(), std::ios::binary);
 	
 	if(os.good() == false)
 	{
-		dstream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 

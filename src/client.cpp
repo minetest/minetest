@@ -3,22 +3,21 @@ Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "client.h"
-#include "utility.h"
 #include <iostream>
 #include "clientserver.h"
 #include "jmutexautolock.h"
@@ -37,17 +36,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "sha1.h"
 #include "base64.h"
+#include "clientmap.h"
+#include "filecache.h"
+#include "sound.h"
+#include "util/string.h"
+#include "hex.h"
 
-static std::string getTextureCacheDir()
+static std::string getMediaCacheDir()
 {
-	return porting::path_userdata + DIR_DELIM + "cache" + DIR_DELIM + "texture";
+	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "media";
 }
 
-struct TextureRequest
+struct MediaRequest
 {
 	std::string name;
 
-	TextureRequest(const std::string &name_=""):
+	MediaRequest(const std::string &name_=""):
 		name(name_)
 	{}
 };
@@ -82,8 +86,9 @@ MeshUpdateQueue::~MeshUpdateQueue()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	core::list<QueuedMeshUpdate*>::Iterator i;
-	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
 	{
 		QueuedMeshUpdate *q = *i;
 		delete q;
@@ -93,7 +98,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 /*
 	peer_id=0 adds with nobody to send to
 */
-void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server, bool urgent)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -101,12 +106,16 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 
 	JMutexAutoLock lock(m_mutex);
 
+	if(urgent)
+		m_urgents.insert(p);
+
 	/*
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	core::list<QueuedMeshUpdate*>::Iterator i;
-	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
 	{
 		QueuedMeshUpdate *q = *i;
 		if(q->p == p)
@@ -136,12 +145,19 @@ QueuedMeshUpdate * MeshUpdateQueue::pop()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	core::list<QueuedMeshUpdate*>::Iterator i = m_queue.begin();
-	if(i == m_queue.end())
-		return NULL;
-	QueuedMeshUpdate *q = *i;
-	m_queue.erase(i);
-	return q;
+	bool must_be_urgent = !m_urgents.empty();
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		if(must_be_urgent && m_urgents.count(q->p) == 0)
+			continue;
+		m_queue.erase(i);
+		m_urgents.erase(q->p);
+		return q;
+	}
+	return NULL;
 }
 
 /*
@@ -178,8 +194,12 @@ void * MeshUpdateThread::Thread()
 
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
-		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(q->data, m_gamedef);
+		MapBlockMesh *mesh_new = new MapBlockMesh(q->data);
+		if(mesh_new->getMesh()->getMeshBufferCount() == 0)
+		{
+			delete mesh_new;
+			mesh_new = NULL;
+		}
 
 		MeshUpdateResult r;
 		r.p = q->p;
@@ -207,11 +227,15 @@ Client::Client(
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableItemDefManager *itemdef,
-		IWritableNodeDefManager *nodedef
+		IWritableNodeDefManager *nodedef,
+		ISoundManager *sound,
+		MtEventManager *event
 ):
 	m_tsrc(tsrc),
 	m_itemdef(itemdef),
 	m_nodedef(nodedef),
+	m_sound(sound),
+	m_event(event),
 	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, this, control,
@@ -227,14 +251,21 @@ Client::Client(
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
 	m_inventory_from_server_age(0.0),
-	m_time_of_day(0),
+	m_animation_time(0),
+	m_crack_level(-1),
+	m_crack_pos(0,0,0),
 	m_map_seed(0),
 	m_password(password),
 	m_access_denied(false),
-	m_texture_receive_progress(0),
-	m_textures_received(false),
+	m_media_cache(getMediaCacheDir()),
+	m_media_receive_progress(0),
+	m_media_received(false),
 	m_itemdef_received(false),
-	m_nodedef_received(false)
+	m_nodedef_received(false),
+	m_time_of_day_set(false),
+	m_last_time_of_day_f(-1),
+	m_time_of_day_update_timer(0),
+	m_removed_sounds_check_timer(0)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -273,6 +304,15 @@ Client::~Client()
 		sleep_ms(100);
 
 	delete m_inventory_from_server;
+
+	// Delete detached inventories
+	{
+		for(std::map<std::string, Inventory*>::iterator
+				i = m_detached_inventories.begin();
+				i != m_detached_inventories.end(); i++){
+			delete i->second;
+		}
+	}
 }
 
 void Client::connect(Address address)
@@ -308,6 +348,12 @@ void Client::step(float dtime)
 		m_ignore_damage_timer -= dtime;
 	else
 		m_ignore_damage_timer = 0.0;
+	
+	m_animation_time += dtime;
+	if(m_animation_time > 60.0)
+		m_animation_time -= 60.0;
+
+	m_time_of_day_update_timer += dtime;
 	
 	//infostream<<"Client steps "<<dtime<<std::endl;
 
@@ -628,14 +674,27 @@ void Client::step(float dtime)
 		/*infostream<<"Mesh update result queue size is "
 				<<m_mesh_update_thread.m_queue_out.size()
 				<<std::endl;*/
-
+		
+		int num_processed_meshes = 0;
 		while(m_mesh_update_thread.m_queue_out.size() > 0)
 		{
+			num_processed_meshes++;
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if(block)
 			{
-				block->replaceMesh(r.mesh);
+				//JMutexAutoLock lock(block->mesh_mutex);
+
+				// Delete the old mesh
+				if(block->mesh != NULL)
+				{
+					// TODO: Remove hardware buffers of meshbuffers of block->mesh
+					delete block->mesh;
+					block->mesh = NULL;
+				}
+
+				// Replace with the new mesh
+				block->mesh = r.mesh;
 			}
 			if(r.ack_block_to_server)
 			{
@@ -660,6 +719,8 @@ void Client::step(float dtime)
 				m_con.Send(PEER_ID_SERVER, 1, reply, true);
 			}
 		}
+		if(num_processed_meshes > 0)
+			g_profiler->graphAdd("num_processed_meshes", num_processed_meshes);
 	}
 
 	/*
@@ -685,6 +746,123 @@ void Client::step(float dtime)
 			m_inventory_updated = true;
 		}
 	}
+
+	/*
+		Update positions of sounds attached to objects
+	*/
+	{
+		for(std::map<int, u16>::iterator
+				i = m_sounds_to_objects.begin();
+				i != m_sounds_to_objects.end(); i++)
+		{
+			int client_id = i->first;
+			u16 object_id = i->second;
+			ClientActiveObject *cao = m_env.getActiveObject(object_id);
+			if(!cao)
+				continue;
+			v3f pos = cao->getPosition();
+			m_sound->updateSoundPosition(client_id, pos);
+		}
+	}
+	
+	/*
+		Handle removed remotely initiated sounds
+	*/
+	m_removed_sounds_check_timer += dtime;
+	if(m_removed_sounds_check_timer >= 2.32)
+	{
+		m_removed_sounds_check_timer = 0;
+		// Find removed sounds and clear references to them
+		std::set<s32> removed_server_ids;
+		for(std::map<s32, int>::iterator
+				i = m_sounds_server_to_client.begin();
+				i != m_sounds_server_to_client.end();)
+		{
+			s32 server_id = i->first;
+			int client_id = i->second;
+			i++;
+			if(!m_sound->soundExists(client_id)){
+				m_sounds_server_to_client.erase(server_id);
+				m_sounds_client_to_server.erase(client_id);
+				m_sounds_to_objects.erase(client_id);
+				removed_server_ids.insert(server_id);
+			}
+		}
+		// Sync to server
+		if(removed_server_ids.size() != 0)
+		{
+			std::ostringstream os(std::ios_base::binary);
+			writeU16(os, TOSERVER_REMOVED_SOUNDS);
+			writeU16(os, removed_server_ids.size());
+			for(std::set<s32>::iterator i = removed_server_ids.begin();
+					i != removed_server_ids.end(); i++)
+				writeS32(os, *i);
+			std::string s = os.str();
+			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			// Send as reliable
+			Send(0, data, true);
+		}
+	}
+}
+
+bool Client::loadMedia(const std::string &data, const std::string &filename)
+{
+	// Silly irrlicht's const-incorrectness
+	Buffer<char> data_rw(data.c_str(), data.size());
+	
+	std::string name;
+
+	const char *image_ext[] = {
+		".png", ".jpg", ".bmp", ".tga",
+		".pcx", ".ppm", ".psd", ".wal", ".rgb",
+		NULL
+	};
+	name = removeStringEnd(filename, image_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Attempting to load image "
+				<<"file \""<<filename<<"\""<<std::endl;
+
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+		video::IVideoDriver *vdrv = m_device->getVideoDriver();
+
+		// Create an irrlicht memory file
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+				*data_rw, data_rw.getSize(), "_tempreadfile");
+		assert(rfile);
+		// Read image
+		video::IImage *img = vdrv->createImageFromFile(rfile);
+		if(!img){
+			errorstream<<"Client: Cannot create image from data of "
+					<<"file \""<<filename<<"\""<<std::endl;
+			rfile->drop();
+			return false;
+		}
+		else {
+			m_tsrc->insertSourceImage(filename, img);
+			img->drop();
+			rfile->drop();
+			return true;
+		}
+	}
+
+	const char *sound_ext[] = {
+		".0.ogg", ".1.ogg", ".2.ogg", ".3.ogg", ".4.ogg",
+		".5.ogg", ".6.ogg", ".7.ogg", ".8.ogg", ".9.ogg",
+		".ogg", NULL
+	};
+	name = removeStringEnd(filename, sound_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Attempting to load sound "
+				<<"file \""<<filename<<"\""<<std::endl;
+		m_sound->loadSoundData(name, data);
+		return true;
+	}
+
+	errorstream<<"Client: Don't know how to load file \""
+			<<filename<<"\""<<std::endl;
+	return false;
 }
 
 // Virtual methods from con::PeerHandler
@@ -713,6 +891,7 @@ void Client::ReceiveAll()
 		
 		try{
 			Receive();
+			g_profiler->graphAdd("client_received_packets", 1);
 		}
 		catch(con::NoIncomingDataException &e)
 		{
@@ -868,9 +1047,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		//TimeTaker t1("TOCLIENT_REMOVENODE");
 		
-		// This will clear the cracking animation after digging
-		((ClientMap&)m_env.getMap()).clearTempMod(p);
-
 		removeNode(p);
 	}
 	else if(command == TOCLIENT_ADDNODE)
@@ -961,13 +1137,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 #endif
 
 		/*
-			Update Mesh of this block and blocks at x-, y- and z-.
-			Environment should not be locked as it interlocks with the
-			main thread, from which is will want to retrieve textures.
-		*/
-
-		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
-		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
 		//infostream<<"Adding mesh update task for received block"<<std::endl;
@@ -1019,22 +1188,37 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u16 time_of_day = readU16(&data[2]);
 		time_of_day = time_of_day % 24000;
 		//infostream<<"Client: time_of_day="<<time_of_day<<std::endl;
-		
-		/*
-			time_of_day:
-			0 = midnight
-			12000 = midday
-		*/
-		{
-			m_env.setTimeOfDay(time_of_day);
-
-			u32 dr = m_env.getDayNightRatio();
-
-			infostream<<"Client: time_of_day="<<time_of_day
-					<<", dr="<<dr
-					<<std::endl;
+		float time_speed = 0;
+		if(datasize >= 2 + 2 + 4){
+			time_speed = readF1000(&data[4]);
+		} else {
+			// Old message; try to approximate speed of time by ourselves
+			float time_of_day_f = (float)time_of_day / 24000.0;
+			float tod_diff_f = 0;
+			if(time_of_day_f < 0.2 && m_last_time_of_day_f > 0.8)
+				tod_diff_f = time_of_day_f - m_last_time_of_day_f + 1.0;
+			else
+				tod_diff_f = time_of_day_f - m_last_time_of_day_f;
+			m_last_time_of_day_f = time_of_day_f;
+			float time_diff = m_time_of_day_update_timer;
+			m_time_of_day_update_timer = 0;
+			if(m_time_of_day_set){
+				time_speed = 3600.0*24.0 * tod_diff_f / time_diff;
+				infostream<<"Client: Measured time_of_day speed (old format): "
+						<<time_speed<<" tod_diff_f="<<tod_diff_f
+						<<" time_diff="<<time_diff<<std::endl;
+			}
 		}
+		
+		// Update environment
+		m_env.setTimeOfDay(time_of_day);
+		m_env.setTimeOfDaySpeed(time_speed);
+		m_time_of_day_set = true;
 
+		u32 dr = m_env.getDayNightRatio();
+		verbosestream<<"Client: time_of_day="<<time_of_day
+				<<" time_speed="<<time_speed
+				<<" dr="<<dr<<std::endl;
 	}
 	else if(command == TOCLIENT_CHAT_MESSAGE)
 	{
@@ -1221,45 +1405,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_PLAYERITEM)
 	{
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-
-		u16 count = readU16(is);
-
-		for (u16 i = 0; i < count; ++i) {
-			u16 peer_id = readU16(is);
-			Player *player = m_env.getPlayer(peer_id);
-
-			if (player == NULL)
-			{
-				infostream<<"Client: ignoring player item "
-					<< deSerializeString(is)
-					<< " for non-existing peer id " << peer_id
-					<< std::endl;
-				continue;
-			} else if (player->isLocal()) {
-				infostream<<"Client: ignoring player item "
-					<< deSerializeString(is)
-					<< " for local player" << std::endl;
-				continue;
-			} else {
-				InventoryList *inv = player->inventory.getList("main");
-				std::string itemstring(deSerializeString(is));
-				ItemStack item;
-				item.deSerialize(itemstring, m_itemdef);
-				inv->changeItem(0, item);
-				if(itemstring.empty())
-				{
-					infostream<<"Client: empty player item for peer "
-						<<peer_id<<std::endl;
-				}
-				else
-				{
-					infostream<<"Client: player item for peer "
-						<<peer_id<<": "<<itemstring<<std::endl;
-				}
-			}
-		}
+		infostream<<"Client: WARNING: Ignoring TOCLIENT_PLAYERITEM"<<std::endl;
 	}
 	else if(command == TOCLIENT_DEATHSCREEN)
 	{
@@ -1277,11 +1423,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.deathscreen.camera_point_target_z = camera_point_target.Z;
 		m_client_event_queue.push_back(event);
 	}
-	else if(command == TOCLIENT_ANNOUNCE_TEXTURES)
+	else if(command == TOCLIENT_ANNOUNCE_MEDIA)
 	{
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		video::IVideoDriver *vdrv = m_device->getVideoDriver();
-
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1289,132 +1432,69 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// updating content definitions
 		assert(!m_mesh_update_thread.IsRunning());
 
-		int num_textures = readU16(is);
+		int num_files = readU16(is);
+		
+		verbosestream<<"Client received TOCLIENT_ANNOUNCE_MEDIA ("
+				<<num_files<<" files)"<<std::endl;
 
-		core::list<TextureRequest> texture_requests;
+		core::list<MediaRequest> file_requests;
 
-		for(int i=0; i<num_textures; i++){
-
-			bool texture_found = false;
-
-			//read texture from cache
+		for(int i=0; i<num_files; i++)
+		{
+			//read file from cache
 			std::string name = deSerializeString(is);
-			std::string sha1_texture = deSerializeString(is);
-			
-			// if name contains illegal characters, ignore the texture
+			std::string sha1_base64 = deSerializeString(is);
+
+			// if name contains illegal characters, ignore the file
 			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Client: ignoring illegal texture name "
+				errorstream<<"Client: ignoring illegal file name "
 						<<"sent by server: \""<<name<<"\""<<std::endl;
 				continue;
 			}
 
-			std::string tpath = getTextureCacheDir() + DIR_DELIM + name;
-			// Read data
-			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+			std::string sha1_raw = base64_decode(sha1_base64);
+			std::string sha1_hex = hex_encode(sha1_raw);
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool found_in_cache = m_media_cache.load_sha1(sha1_raw, tmp_os);
+			m_media_name_sha1_map.set(name, sha1_raw);
 
-
-			if(fis.good() == false){
-				infostream<<"Client::Texture not found in cache: "
-						<<name << " expected it at: "<<tpath<<std::endl;
-			}
-			else
+			// If found in cache, try to load it from there
+			if(found_in_cache)
 			{
-				std::ostringstream tmp_os(std::ios_base::binary);
-				bool bad = false;
-				for(;;){
-					char buf[1024];
-					fis.read(buf, 1024);
-					std::streamsize len = fis.gcount();
-					tmp_os.write(buf, len);
-					if(fis.eof())
-						break;
-					if(!fis.good()){
-						bad = true;
-						break;
-					}
-				}
-				if(bad){
-					infostream<<"Client: Failed to read texture from cache\""
-							<<name<<"\""<<std::endl;
-				}
-				else {
-
-					SHA1 sha1;
-					sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-
-					unsigned char *digest = sha1.getDigest();
-
-					std::string digest_string = base64_encode(digest, 20);
-
-					if (digest_string == sha1_texture) {
-						// Silly irrlicht's const-incorrectness
-						Buffer<char> data_rw(tmp_os.str().c_str(), tmp_os.str().size());
-
-						// Create an irrlicht memory file
-						io::IReadFile *rfile = irrfs->createMemoryReadFile(
-								*data_rw,  tmp_os.str().size(), "_tempreadfile");
-						assert(rfile);
-						// Read image
-						video::IImage *img = vdrv->createImageFromFile(rfile);
-						if(!img){
-							infostream<<"Client: Cannot create image from data of "
-									<<"received texture \""<<name<<"\""<<std::endl;
-							rfile->drop();
-						}
-						else {
-							m_tsrc->insertSourceImage(name, img);
-							img->drop();
-							rfile->drop();
-
-							texture_found = true;
-						}
-					}
-					else {
-						infostream<<"Client::Texture cached sha1 hash not matching server hash: "
-								<<name << ": server ->"<<sha1_texture <<" client -> "<<digest_string<<std::endl;
-					}
-
-					free(digest);
+				bool success = loadMedia(tmp_os.str(), name);
+				if(success){
+					verbosestream<<"Client: Loaded cached media: "
+							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
+					continue;
+				} else{
+					infostream<<"Client: Failed to load cached media: "
+							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
 				}
 			}
-
-			//add texture request
-			if (!texture_found) {
-				infostream<<"Client: Adding texture to request list: \""
-						<<name<<"\""<<std::endl;
-				texture_requests.push_back(TextureRequest(name));
-			}
-
+			// Didn't load from cache; queue it to be requested
+			verbosestream<<"Client: Adding file to request list: \""
+					<<sha1_hex<<" \""<<name<<"\""<<std::endl;
+			file_requests.push_back(MediaRequest(name));
 		}
 
 		ClientEvent event;
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
 
-
-		//send Texture request
 		/*
-				u16 command
-				u16 number of textures requested
-				for each texture {
-					u16 length of name
-					string name
-				}
-		 */
+			u16 command
+			u16 number of files requested
+			for each file {
+				u16 length of name
+				string name
+			}
+		*/
 		std::ostringstream os(std::ios_base::binary);
-		u8 buf[12];
+		writeU16(os, TOSERVER_REQUEST_MEDIA);
+		writeU16(os, file_requests.size());
 
-
-		// Write command
-		writeU16(buf, TOSERVER_REQUEST_TEXTURES);
-		os.write((char*)buf, 2);
-
-		writeU16(buf,texture_requests.size());
-		os.write((char*)buf, 2);
-
-
-		for(core::list<TextureRequest>::Iterator i = texture_requests.begin();
-				i != texture_requests.end(); i++) {
+		for(core::list<MediaRequest>::Iterator i = file_requests.begin();
+				i != file_requests.end(); i++) {
 			os<<serializeString(i->name);
 		}
 
@@ -1423,13 +1503,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 		// Send as reliable
 		Send(0, data, true);
-		infostream<<"Client: Sending request list to server " <<std::endl;
+		infostream<<"Client: Sending media request list to server ("
+				<<file_requests.size()<<" files)"<<std::endl;
 	}
-	else if(command == TOCLIENT_TEXTURES)
+	else if(command == TOCLIENT_MEDIA)
 	{
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		video::IVideoDriver *vdrv = m_device->getVideoDriver();
-
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1439,10 +1517,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		/*
 			u16 command
-			u16 total number of texture bunches
+			u16 total number of file bunches
 			u16 index of this bunch
-			u32 number of textures in this bunch
-			for each texture {
+			u32 number of files in this bunch
+			for each file {
 				u16 length of name
 				string name
 				u32 length of data
@@ -1451,55 +1529,52 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		*/
 		int num_bunches = readU16(is);
 		int bunch_i = readU16(is);
-		m_texture_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
+		if(num_bunches >= 2)
+			m_media_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
+		else
+			m_media_receive_progress = 1.0;
 		if(bunch_i == num_bunches - 1)
-			m_textures_received = true;
-		int num_textures = readU32(is);
-		infostream<<"Client: Received textures: bunch "<<bunch_i<<"/"
-				<<num_bunches<<" textures="<<num_textures
+			m_media_received = true;
+		int num_files = readU32(is);
+		infostream<<"Client: Received files: bunch "<<bunch_i<<"/"
+				<<num_bunches<<" files="<<num_files
 				<<" size="<<datasize<<std::endl;
-		for(int i=0; i<num_textures; i++){
+		for(int i=0; i<num_files; i++){
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);
 
-			// if name contains illegal characters, ignore the texture
+			// if name contains illegal characters, ignore the file
 			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Client: ignoring illegal texture name "
+				errorstream<<"Client: ignoring illegal file name "
 						<<"sent by server: \""<<name<<"\""<<std::endl;
 				continue;
 			}
-
-			// Silly irrlicht's const-incorrectness
-			Buffer<char> data_rw(data.c_str(), data.size());
-			// Create an irrlicht memory file
-			io::IReadFile *rfile = irrfs->createMemoryReadFile(
-					*data_rw, data.size(), "_tempreadfile");
-			assert(rfile);
-			// Read image
-			video::IImage *img = vdrv->createImageFromFile(rfile);
-			if(!img){
-				errorstream<<"Client: Cannot create image from data of "
-						<<"received texture \""<<name<<"\""<<std::endl;
-				rfile->drop();
+			
+			bool success = loadMedia(data, name);
+			if(success){
+				verbosestream<<"Client: Loaded received media: "
+						<<"\""<<name<<"\". Caching."<<std::endl;
+			} else{
+				infostream<<"Client: Failed to load received media: "
+						<<"\""<<name<<"\". Not caching."<<std::endl;
 				continue;
 			}
 
-			fs::CreateAllDirs(getTextureCacheDir());
-
-			std::string filename = getTextureCacheDir() + DIR_DELIM + name;
-			std::ofstream outfile(filename.c_str(), std::ios_base::binary | std::ios_base::trunc);
-
-			if (outfile.good()) {
-				outfile.write(data.c_str(),data.length());
-				outfile.close();
-			}
-			else {
-				errorstream<<"Client: Unable to open cached texture file "<< filename <<std::endl;
+			bool did = fs::CreateAllDirs(getMediaCacheDir());
+			if(!did){
+				errorstream<<"Could not create media cache directory"
+						<<std::endl;
 			}
 
-			m_tsrc->insertSourceImage(name, img);
-			img->drop();
-			rfile->drop();
+			{
+				core::map<std::string, std::string>::Node *n;
+				n = m_media_name_sha1_map.find(name);
+				if(n == NULL)
+					errorstream<<"The server sent a file that has not "
+							<<"been announced."<<std::endl;
+				else
+					m_media_cache.update_sha1(data);
+			}
 		}
 
 		ClientEvent event;
@@ -1556,6 +1631,100 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_itemdef->deSerialize(tmp_is2);
 		m_itemdef_received = true;
 	}
+	else if(command == TOCLIENT_PLAY_SOUND)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		s32 server_id = readS32(is);
+		std::string name = deSerializeString(is);
+		float gain = readF1000(is);
+		int type = readU8(is); // 0=local, 1=positional, 2=object
+		v3f pos = readV3F1000(is);
+		u16 object_id = readU16(is);
+		bool loop = readU8(is);
+		// Start playing
+		int client_id = -1;
+		switch(type){
+		case 0: // local
+			client_id = m_sound->playSound(name, loop, gain);
+			break;
+		case 1: // positional
+			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			break;
+		case 2: { // object
+			ClientActiveObject *cao = m_env.getActiveObject(object_id);
+			if(cao)
+				pos = cao->getPosition();
+			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			// TODO: Set up sound to move with object
+			break; }
+		default:
+			break;
+		}
+		if(client_id != -1){
+			m_sounds_server_to_client[server_id] = client_id;
+			m_sounds_client_to_server[client_id] = server_id;
+			if(object_id != 0)
+				m_sounds_to_objects[client_id] = object_id;
+		}
+	}
+	else if(command == TOCLIENT_STOP_SOUND)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		s32 server_id = readS32(is);
+		std::map<s32, int>::iterator i =
+				m_sounds_server_to_client.find(server_id);
+		if(i != m_sounds_server_to_client.end()){
+			int client_id = i->second;
+			m_sound->stopSound(client_id);
+		}
+	}
+	else if(command == TOCLIENT_PRIVILEGES)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		m_privileges.clear();
+		infostream<<"Client: Privileges updated: ";
+		u16 num_privileges = readU16(is);
+		for(u16 i=0; i<num_privileges; i++){
+			std::string priv = deSerializeString(is);
+			m_privileges.insert(priv);
+			infostream<<priv<<" ";
+		}
+		infostream<<std::endl;
+	}
+	else if(command == TOCLIENT_INVENTORY_FORMSPEC)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Store formspec in LocalPlayer
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		player->inventory_formspec = deSerializeLongString(is);
+	}
+	else if(command == TOCLIENT_DETACHED_INVENTORY)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string name = deSerializeString(is);
+		
+		infostream<<"Client: Detached inventory update: \""<<name<<"\""<<std::endl;
+
+		Inventory *inv = NULL;
+		if(m_detached_inventories.count(name) > 0)
+			inv = m_detached_inventories[name];
+		else{
+			inv = new Inventory(m_itemdef);
+			m_detached_inventories[name] = inv;
+		}
+		inv->deSerialize(is);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
@@ -1607,33 +1776,23 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	Send(0, data, true);
 }
 
-void Client::sendSignNodeText(v3s16 p, std::string text)
+void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
+		const std::map<std::string, std::string> &fields)
 {
-	/*
-		u16 command
-		v3s16 p
-		u16 textlen
-		textdata
-	*/
 	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-	
-	// Write command
-	writeU16(buf, TOSERVER_SIGNNODETEXT);
-	os.write((char*)buf, 2);
-	
-	// Write p
-	writeV3S16(buf, p);
-	os.write((char*)buf, 6);
 
-	u16 textlen = text.size();
-	// Write text length
-	writeS16(buf, textlen);
-	os.write((char*)buf, 2);
+	writeU16(os, TOSERVER_NODEMETA_FIELDS);
+	writeV3S16(os, p);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
 
-	// Write text
-	os.write((char*)text.c_str(), textlen);
-	
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -1641,6 +1800,29 @@ void Client::sendSignNodeText(v3s16 p, std::string text)
 	Send(0, data, true);
 }
 	
+void Client::sendInventoryFields(const std::string &formname, 
+		const std::map<std::string, std::string> &fields)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_INVENTORY_FIELDS);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::sendInventoryAction(InventoryAction *a)
 {
 	std::ostringstream os(std::ios_base::binary);
@@ -1824,8 +2006,6 @@ void Client::sendPlayerItem(u16 item)
 
 void Client::removeNode(v3s16 p)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	
 	core::map<v3s16, MapBlock*> modified_blocks;
 
 	try
@@ -1837,20 +2017,20 @@ void Client::removeNode(v3s16 p)
 	{
 	}
 	
+	// add urgent task to update the modified node
+	addUpdateMeshTaskForNode(p, false, true);
+
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		//m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 		addUpdateMeshTaskWithEdge(p);
 	}
 }
 
 void Client::addNode(v3s16 p, MapNode n)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
 	TimeTaker timer1("Client::addNode()");
 
 	core::map<v3s16, MapBlock*> modified_blocks;
@@ -1863,44 +2043,15 @@ void Client::addNode(v3s16 p, MapNode n)
 	catch(InvalidPositionException &e)
 	{}
 	
-	//TimeTaker timer2("Client::addNode(): updateMeshes");
-
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		//m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 		addUpdateMeshTaskWithEdge(p);
 	}
 }
 	
-void Client::updateCamera(v3f pos, v3f dir, f32 fov)
-{
-	m_env.getClientMap().updateCamera(pos, dir, fov);
-}
-
-void Client::renderPostFx()
-{
-	m_env.getClientMap().renderPostFx();
-}
-
-MapNode Client::getNode(v3s16 p)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	return m_env.getMap().getNode(p);
-}
-
-NodeMetadata* Client::getNodeMetadata(v3s16 p)
-{
-	return m_env.getMap().getNodeMetadata(p);
-}
-
-LocalPlayer* Client::getLocalPlayer()
-{
-	return m_env.getLocalPlayer();
-}
-
 void Client::setPlayerControl(PlayerControl &control)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1964,6 +2115,13 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		if(!meta)
 			return NULL;
 		return meta->getInventory();
+	}
+	break;
+	case InventoryLocation::DETACHED:
+	{
+		if(m_detached_inventories.count(loc.name) == 0)
+			return NULL;
+		return m_detached_inventories[loc.name];
 	}
 	break;
 	default:
@@ -2036,11 +2194,49 @@ void Client::printDebugInfo(std::ostream &os)
 		//<<", m_opt_not_found_history.size()="<<m_opt_not_found_history.size()
 		<<std::endl;*/
 }
-	
-u32 Client::getDayNightRatio()
+
+core::list<std::wstring> Client::getConnectedPlayerNames()
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	return m_env.getDayNightRatio();
+	core::list<Player*> players = m_env.getPlayers(true);
+	core::list<std::wstring> playerNames;
+	for(core::list<Player*>::Iterator
+			i = players.begin();
+			i != players.end(); i++)
+	{
+		Player *player = *i;
+		playerNames.push_back(narrow_to_wide(player->getName()));
+	}
+	return playerNames;
+}
+
+float Client::getAnimationTime()
+{
+	return m_animation_time;
+}
+
+int Client::getCrackLevel()
+{
+	return m_crack_level;
+}
+
+void Client::setCrack(int level, v3s16 pos)
+{
+	int old_crack_level = m_crack_level;
+	v3s16 old_crack_pos = m_crack_pos;
+
+	m_crack_level = level;
+	m_crack_pos = pos;
+
+	if(old_crack_level >= 0 && (level < 0 || pos != old_crack_pos))
+	{
+		// remove old crack
+		addUpdateMeshTaskForNode(old_crack_pos, false, true);
+	}
+	if(level >= 0 && (old_crack_level < 0 || pos != old_crack_pos))
+	{
+		// add new crack
+		addUpdateMeshTaskForNode(pos, false, true);
+	}
 }
 
 u16 Client::getHP()
@@ -2050,44 +2246,45 @@ u16 Client::getHP()
 	return player->hp;
 }
 
-void Client::setTempMod(v3s16 p, NodeMod mod)
+bool Client::getChatMessage(std::wstring &message)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+	if(m_chat_queue.size() == 0)
+		return false;
+	message = m_chat_queue.pop_front();
+	return true;
+}
 
-	core::map<v3s16, MapBlock*> affected_blocks;
-	((ClientMap&)m_env.getMap()).setTempMod(p, mod,
-			&affected_blocks);
+void Client::typeChatMessage(const std::wstring &message)
+{
+	// Discard empty line
+	if(message == L"")
+		return;
 
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = affected_blocks.getIterator();
-			i.atEnd() == false; i++)
+	// Send to others
+	sendChatMessage(message);
+
+	// Show locally
+	if (message[0] == L'/')
 	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+		m_chat_queue.push_back(
+				(std::wstring)L"issued command: "+message);
+	}
+	else
+	{
+		LocalPlayer *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		std::wstring name = narrow_to_wide(player->getName());
+		m_chat_queue.push_back(
+				(std::wstring)L"<"+name+L"> "+message);
 	}
 }
 
-void Client::clearTempMod(v3s16 p)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-
-	core::map<v3s16, MapBlock*> affected_blocks;
-	((ClientMap&)m_env.getMap()).clearTempMod(p,
-			&affected_blocks);
-
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = affected_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
-	}
-}
-
-void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
+void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 {
 	/*infostream<<"Client::addUpdateMeshTask(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<" ack_to_server="<<ack_to_server
+			<<" urgent="<<urgent
 			<<std::endl;*/
 
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
@@ -2098,45 +2295,29 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 		Create a task to update the mesh of the block
 	*/
 	
-	MeshMakeData *data = new MeshMakeData;
+	MeshMakeData *data = new MeshMakeData(this);
 	
 	{
 		//TimeTaker timer("data fill");
 		// Release: ~0ms
 		// Debug: 1-6ms, avg=2ms
-		data->fill(getDayNightRatio(), b);
+		data->fill(b);
+		data->setCrack(m_crack_level, m_crack_pos);
+		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
 	}
 
 	// Debug wait
 	//while(m_mesh_update_thread.m_queue_in.size() > 0) sleep_ms(10);
 	
 	// Add task to queue
-	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server);
+	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server, urgent);
 
 	/*infostream<<"Mesh update input queue size is "
 			<<m_mesh_update_thread.m_queue_in.size()
 			<<std::endl;*/
-	
-#if 0
-	// Temporary test: make mesh directly in here
-	{
-		//TimeTaker timer("make mesh");
-		// 10ms
-		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(data);
-		b->replaceMesh(mesh_new);
-		delete data;
-	}
-#endif
-
-	/*
-		Mark mesh as non-expired at this point so that it can already
-		be marked as expired again if the data changes
-	*/
-	b->setMeshExpired(false);
 }
 
-void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
+void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
 	/*{
 		v3s16 p = blockpos;
@@ -2148,25 +2329,66 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		//MapBlock *b = m_env.getMap().getBlockNoCreate(p);
-		addUpdateMeshTask(p, ack_to_server);
+		addUpdateMeshTask(p, ack_to_server, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	// Leading edge
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
+}
+
+void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
+{
+	{
+		v3s16 p = nodepos;
+		infostream<<"Client::addUpdateMeshTaskForNode(): "
+				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+				<<std::endl;
+	}
+
+	v3s16 blockpos = getNodeBlockPos(nodepos);
+	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
+
+	try{
+		v3s16 p = blockpos + v3s16(0,0,0);
+		addUpdateMeshTask(p, ack_to_server, urgent);
+	}
+	catch(InvalidPositionException &e){}
+	// Leading edge
+	if(nodepos.X == blockpos_relative.X){
+		try{
+			v3s16 p = blockpos + v3s16(-1,0,0);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
+	if(nodepos.Y == blockpos_relative.Y){
+		try{
+			v3s16 p = blockpos + v3s16(0,-1,0);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
+	if(nodepos.Z == blockpos_relative.Z){
+		try{
+			v3s16 p = blockpos + v3s16(0,0,-1);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
 }
 
 ClientEvent Client::getClientEvent()
@@ -2182,28 +2404,41 @@ ClientEvent Client::getClientEvent()
 
 void Client::afterContentReceived()
 {
+	verbosestream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
-	assert(m_textures_received);
+	assert(m_media_received);
+	
+	// remove the information about which checksum each texture
+	// ought to have
+	m_media_name_sha1_map.clear();
 
 	// Rebuild inherited images and recreate textures
+	verbosestream<<"Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();
 
 	// Update texture atlas
+	verbosestream<<"Updating texture atlas"<<std::endl;
 	if(g_settings->getBool("enable_texture_atlas"))
 		m_tsrc->buildMainAtlas(this);
 
 	// Update node aliases
+	verbosestream<<"Updating node aliases"<<std::endl;
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Update node textures
+	verbosestream<<"Updating node textures"<<std::endl;
 	m_nodedef->updateTextures(m_tsrc);
 
 	// Update item textures and meshes
+	verbosestream<<"Updating item textures and meshes"<<std::endl;
 	m_itemdef->updateTexturesAndMeshes(this);
 
 	// Start mesh update thread after setting up content definitions
+	verbosestream<<"Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.Start();
+	
+	verbosestream<<"Client::afterContentReceived() done"<<std::endl;
 }
 
 float Client::getRTT(void)
@@ -2240,5 +2475,13 @@ u16 Client::allocateUnknownNodeId(const std::string &name)
 			<<"Client cannot allocate node IDs"<<std::endl;
 	assert(0);
 	return CONTENT_IGNORE;
+}
+ISoundManager* Client::getSoundManager()
+{
+	return m_sound;
+}
+MtEventManager* Client::getEventManager()
+{
+	return m_event;
 }
 

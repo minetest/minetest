@@ -1,6 +1,6 @@
 #ifndef GETTEXT_HEADER
 #include "config.h" // for USE_GETTEXT
-#include <iostream>
+#include "log.h"
 
 #if USE_GETTEXT
 #include <libintl.h>
@@ -41,9 +41,9 @@ inline void changeCtype(const char *l)
 	char *ret = NULL;
 	ret = setlocale(LC_CTYPE, l);
 	if(ret == NULL)
-		std::cout<<"locale could not be set"<<std::endl;
+		infostream<<"locale could not be set"<<std::endl;
 	else
-		std::cout<<"locale has been set to:"<<ret<<std::endl;
+		infostream<<"locale has been set to:"<<ret<<std::endl;
 }
 #define GETTEXT_HEADER
 #endif

@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,10 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVEROBJECT_HEADER
 #define SERVEROBJECT_HEADER
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include "activeobject.h"
-#include "utility.h"
 #include "inventorymanager.h"
+#include "itemgroup.h"
+#include "util/container.h"
 
 /*
 
@@ -44,7 +45,8 @@ Some planning
 class ServerEnvironment;
 struct ItemStack;
 class Player;
-struct ToolDiggingProperties;
+struct ToolCapabilities;
+struct ObjectProperties;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -56,8 +58,11 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
+	virtual u8 getSendType() const
+	{ return getType(); }
+
 	// Called after id has been set and has been inserted in environment
-	virtual void addedToEnvironment(){};
+	virtual void addedToEnvironment(u32 dtime_s){};
 	// Called before removing from environment
 	virtual void removingFromEnvironment(){};
 	// Returns true if object's deletion is the job of the
@@ -91,8 +96,7 @@ public:
 		{ setBasePosition(pos); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
-	virtual float getMinimumSavedMovement()
-		{ return 2.0*BS; }
+	virtual float getMinimumSavedMovement();
 	
 	virtual bool isPeaceful(){return true;}
 
@@ -133,16 +137,25 @@ public:
 	virtual bool isStaticAllowed() const
 	{return true;}
 	
-	// time_from_last_punch is used for lessening damage if punching fast
-	virtual void punch(ServerActiveObject *puncher,
+	// Returns tool wear
+	virtual int punch(v3f dir,
+			const ToolCapabilities *toolcap=NULL,
+			ServerActiveObject *puncher=NULL,
 			float time_from_last_punch=1000000)
-	{}
+	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
 	virtual void setHP(s16 hp)
 	{}
-	virtual s16 getHP()
+	virtual s16 getHP() const
 	{ return 0; }
+
+	virtual void setArmorGroups(const ItemGroupList &armor_groups)
+	{}
+	virtual ObjectProperties* accessObjectProperties()
+	{ return NULL; }
+	virtual void notifyObjectPropertiesModified()
+	{}
 
 	// Inventory and wielded item
 	virtual Inventory* getInventory()

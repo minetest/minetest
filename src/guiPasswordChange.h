@@ -19,9 +19,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef GUIPASSWORDCHANGE_HEADER
 #define GUIPASSWORDCHANGE_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
-#include "utility.h"
 #include "client.h"
 #include <string>
 

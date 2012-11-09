@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GAME_HEADER
 #define GAME_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include <string>
-
 #include "keycode.h"
 
 class KeyList : protected core::list<KeyPress>
@@ -122,6 +121,9 @@ public:
 	virtual void clear() {};
 };
 
+class ChatBackend;  /* to avoid having to include chat.h */
+struct SubgameSpec;
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -131,10 +133,13 @@ void the_game(
 	std::string map_dir,
 	std::string playername,
 	std::string password,
-	std::string address,
+	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath
+	std::string configpath,
+	ChatBackend &chat_backend,
+	const SubgameSpec &gamespec, // Used for local game
+	bool simple_singleplayer_mode
 );
 
 #endif
