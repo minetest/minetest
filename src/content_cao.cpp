@@ -1538,7 +1538,6 @@ public:
 			{
 				LocalPlayer *player = m_env->getLocalPlayer();
 				player->isAttached = true;
-				player->overridePosition = m_attachment_position;
 			}
 		}
 	}
