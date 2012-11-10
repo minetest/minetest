@@ -694,6 +694,11 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
 
+background[<X>,<Y>;<W>,<H>;<texture name>]
+^ Use a background. Inventory rectangles are not drawn then.
+^ Position and size units are inventory slots
+^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
+
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
 ^ x and y position the field relative to the top left of the menu

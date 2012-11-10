@@ -206,6 +206,7 @@ protected:
 	TextDest *m_text_dst;
 
 	core::array<ListDrawSpec> m_inventorylists;
+	core::array<ImageDrawSpec> m_backgrounds;	
 	core::array<ImageDrawSpec> m_images;
 	core::array<FieldSpec> m_fields;
 
