@@ -111,6 +111,11 @@ function nodeupdate_single(p)
 end
 
 function nodeupdate(p)
+	-- Round p to prevent falling entities to get stuck
+	p.x = math.floor(p.x+0.5)
+	p.y = math.floor(p.y+0.5)
+	p.z = math.floor(p.z+0.5)
+	
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do

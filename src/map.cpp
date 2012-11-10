@@ -1746,12 +1746,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		content_t new_node_content;
 		s8 new_node_level = -1;
 		s8 max_node_level = -1;
-		if (num_sources >= 2 || liquid_type == LIQUID_SOURCE) {
+		if ((num_sources >= 2 && nodemgr->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
 			// it's perfectly safe to use liquid_kind here to determine the new node content.
 			new_node_content = nodemgr->getId(nodemgr->get(liquid_kind).liquid_alternative_source);
-		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
+		} else if (num_sources >= 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
 			max_node_level = new_node_level = LIQUID_LEVEL_MAX;

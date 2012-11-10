@@ -203,6 +203,7 @@ void ContentFeatures::reset()
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
 	liquid_viscosity = 0;
+	liquid_renewable = true;
 	light_source = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();
@@ -262,6 +263,9 @@ void ContentFeatures::serialize(std::ostream &os)
 	serializeSimpleSoundSpec(sound_footstep, os);
 	serializeSimpleSoundSpec(sound_dig, os);
 	serializeSimpleSoundSpec(sound_dug, os);
+	// Stuff below should be moved to correct place in a version that otherwise changes
+	// the protocol version
+	writeU8(os, liquid_renewable);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -319,6 +323,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
+		// Stuff below should be moved to correct place in a version that
+		// otherwise changes the protocol version
+		liquid_renewable = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
