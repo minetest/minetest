@@ -356,8 +356,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_last_sent_position_timer(0),
 	m_last_sent_move_precision(0),
 	m_armor_groups_sent(false),
-	m_animations_sent(false),
-	m_animations_bone_sent(false),
+	m_animation_sent(false),
+	m_bone_position_sent(false),
 	m_attachment_sent(false)
 {
 	// Only register type if no environment supplied
@@ -537,18 +537,18 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_animations_sent == false){
-		m_animations_sent = true;
-		std::string str = gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend);
+	if(m_animation_sent == false){
+		m_animation_sent = true;
+		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_animations_bone_sent == false){
-		m_animations_bone_sent = true;
-		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			std::string str = gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
+	if(m_bone_position_sent == false){
+		m_bone_position_sent = true;
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+			std::string str = gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y);
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
@@ -575,12 +575,12 @@ std::string LuaEntitySAO::getClientInitializationData()
 	writeF1000(os, m_yaw);
 	writeS16(os, m_hp);
 
-	writeU8(os, 4 + m_animation_bone.size()); // number of messages stuffed in here
+	writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
-	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-		os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
+	os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
+	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+		os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 	}
 	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 
@@ -728,18 +728,18 @@ void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-void LuaEntitySAO::setAnimations(v2f frames, float frame_speed, float frame_blend)
+void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend)
 {
-	m_animation_frames = frames;
+	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
-	m_animations_sent = false;
+	m_animation_sent = false;
 }
 
-void LuaEntitySAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
+void LuaEntitySAO::setBonePosition(std::string bone, v3f position, v3f rotation)
 {
-	m_animation_bone[bone] = core::vector2d<v3f>(position, rotation);
-	m_animations_bone_sent = false;
+	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+	m_bone_position_sent = false;
 }
 
 void LuaEntitySAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
@@ -884,8 +884,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_properties_sent(true),
 	m_privs(privs),
 	m_is_singleplayer(is_singleplayer),
-	m_animations_sent(false),
-	m_animations_bone_sent(false),
+	m_animation_sent(false),
+	m_bone_position_sent(false),
 	m_attachment_sent(false),
 	// public
 	m_moved(false),
@@ -914,7 +914,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.colors.push_back(video::SColor(255, 255, 255, 255));
 	m_prop.spritediv = v2s16(1,1);
 	// end of default appearance
-	m_prop.is_visible = (getHP() != 0); // TODO: Use a death animation instead for mesh players
+	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
 }
 
@@ -973,12 +973,12 @@ std::string PlayerSAO::getClientInitializationData()
 	writeF1000(os, m_player->getYaw());
 	writeS16(os, getHP());
 
-	writeU8(os, 4 + m_animation_bone.size()); // number of messages stuffed in here
+	writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	os<<serializeLongString(gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend)); // 3
-	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-		os<<serializeLongString(gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_animation_bone.size
+	os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
+	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+		os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 	}
 	os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 
@@ -1137,18 +1137,18 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_animations_sent == false){
-		m_animations_sent = true;
-		std::string str = gob_cmd_update_animations(m_animation_frames, m_animation_speed, m_animation_blend);
+	if(m_animation_sent == false){
+		m_animation_sent = true;
+		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_animations_bone_sent == false){
-		m_animations_bone_sent = true;
-		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_animation_bone.begin(); ii != m_animation_bone.end(); ++ii){
-			std::string str = gob_cmd_update_bone_posrot((*ii).first, (*ii).second.X, (*ii).second.Y);
+	if(m_bone_position_sent == false){
+		m_bone_position_sent = true;
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+			std::string str = gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y);
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
@@ -1285,20 +1285,20 @@ void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-void PlayerSAO::setAnimations(v2f frames, float frame_speed, float frame_blend)
+void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend)
 {
 	// store these so they can be updated to clients
-	m_animation_frames = frames;
+	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
-	m_animations_sent = false;
+	m_animation_sent = false;
 }
 
-void PlayerSAO::setBonePosRot(std::string bone, v3f position, v3f rotation)
+void PlayerSAO::setBonePosition(std::string bone, v3f position, v3f rotation)
 {
 	// store these so they can be updated to clients
-	m_animation_bone[bone] = core::vector2d<v3f>(position, rotation);
-	m_animations_bone_sent = false;
+	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+	m_bone_position_sent = false;
 }
 
 void PlayerSAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
@@ -1381,7 +1381,7 @@ void PlayerSAO::disconnected()
 
 std::string PlayerSAO::getPropertyPacket()
 {
-	m_prop.is_visible = (getHP() != 0);
+	m_prop.is_visible = (true);
 	return gob_cmd_set_properties(m_prop);
 }
 

@@ -92,11 +92,11 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
-std::string gob_cmd_update_animations(v2f frames, float frame_speed, float frame_blend)
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
-	writeU8(os, GENERIC_CMD_SET_ANIMATIONS);
+	writeU8(os, GENERIC_CMD_SET_ANIMATION);
 	// parameters
 	writeV2F1000(os, frames);
 	writeF1000(os, frame_speed);
@@ -104,11 +104,11 @@ std::string gob_cmd_update_animations(v2f frames, float frame_speed, float frame
 	return os.str();
 }
 
-std::string gob_cmd_update_bone_posrot(std::string bone, v3f position, v3f rotation)
+std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rotation)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
-	writeU8(os, GENERIC_CMD_SET_BONE_POSROT);
+	writeU8(os, GENERIC_CMD_SET_BONE_POSITION);
 	// parameters
 	os<<serializeString(bone);
 	writeV3F1000(os, position);

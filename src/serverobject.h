@@ -152,9 +152,9 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
-	virtual void setAnimations(v2f frames, float frame_speed, float frame_blend)
+	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
 	{}
-	virtual void setBonePosRot(std::string bone, v3f position, v3f rotation)
+	virtual void setBonePosition(std::string bone, v3f position, v3f rotation)
 	{}
 	virtual void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
 	{}

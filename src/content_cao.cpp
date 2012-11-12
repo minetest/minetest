@@ -52,8 +52,6 @@ struct ToolCapabilities;
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
-std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
-
 /*
 	SmoothTranslator
 */
@@ -580,10 +578,10 @@ private:
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set;
 	bool m_tx_select_horiz_by_yawpitch;
-	v2f m_frames;
-	int m_frame_speed;
-	int m_frame_blend;
-	std::map<std::string, core::vector2d<v3f> > m_bone_posrot; // stores position and rotation for each bone name
+	v2f m_animation_range;
+	int m_animation_speed;
+	int m_animation_blend;
+	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -623,10 +621,10 @@ public:
 		m_tx_basepos(0,0),
 		m_initial_tx_basepos_set(false),
 		m_tx_select_horiz_by_yawpitch(false),
-		m_frames(v2f(0,0)),
-		m_frame_speed(15),
-		m_frame_blend(0),
-		m_bone_posrot(std::map<std::string, core::vector2d<v3f> >()),
+		m_animation_range(v2f(0,0)),
+		m_animation_speed(15),
+		m_animation_blend(0),
+		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
@@ -709,7 +707,7 @@ public:
 				return m_animated_meshnode->getAbsolutePosition();
 			if(m_spritenode)
 				return m_spritenode->getAbsolutePosition();
-			return v3f(0,0,0); // Just in case
+			return m_position;
 		}
 		return pos_translator.vect_show;
 	}
@@ -745,7 +743,7 @@ public:
 		return m_is_local_player;
 	}
 
-	void updateParent()
+	void setAttachments()
 	{
 		updateAttachments();
 	}
@@ -753,9 +751,9 @@ public:
 	ClientActiveObject *getParent()
 	{
 		ClientActiveObject *obj = NULL;
-		for(std::vector<core::vector2d<int> >::const_iterator cii = attachment_list.begin(); cii != attachment_list.end(); cii++)
+		for(std::vector<core::vector2d<int> >::const_iterator cii = m_env->attachment_list.begin(); cii != m_env->attachment_list.end(); cii++)
 		{
-			if(cii->X == this->getId()){ // This ID is our child
+			if(cii->X == getId()){ // This ID is our child
 				if(cii->Y > 0){ // A parent ID exists for our child
 					if(cii->X != cii->Y){ // The parent and child ID are not the same
 						obj = m_env->getActiveObject(cii->Y);
@@ -774,22 +772,22 @@ public:
 		if(permanent) // Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 		{
 			// Detach this object's children
-			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 			{
-				if(ii->Y == this->getId()) // Is a child of our object
+				if(ii->Y == getId()) // Is a child of our object
 				{
 					ii->Y = 0;
 					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
 					if(obj)
-						obj->updateParent();
+						obj->setAttachments();
 				}
 			}
 			// Delete this object from the attachments list
-			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 			{
-				if(ii->X == this->getId()) // Is our object
+				if(ii->X == getId()) // Is our object
 				{
-					attachment_list.erase(ii);
+					m_env->attachment_list.erase(ii);
 					break;
 				}
 			}
@@ -983,31 +981,16 @@ public:
 		
 	void updateLight(u8 light_at_pos)
 	{
-		// Objects attached to the local player should always be hidden
-		if(m_attached_to_local)
-			m_is_visible = false;
-		else
-			m_is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
-
 		if(li != m_last_light){
 			m_last_light = li;
 			video::SColor color(255,li,li,li);
-			if(m_meshnode){
+			if(m_meshnode)
 				setMeshColor(m_meshnode->getMesh(), color);
-				m_meshnode->setVisible(m_is_visible);
-			}
-			if(m_animated_meshnode){
+			if(m_animated_meshnode)
 				setMeshColor(m_animated_meshnode->getMesh(), color);
-				m_animated_meshnode->setVisible(m_is_visible);
-			}
-			if(m_spritenode){
+			if(m_spritenode)
 				m_spritenode->setColor(color);
-				m_spritenode->setVisible(m_is_visible);
-			}
-			if(m_textnode){
-				m_textnode->setVisible(m_is_visible);
-			}
 		}
 	}
 
@@ -1044,9 +1027,9 @@ public:
 			m_visuals_expired = false;
 
 			// Attachments, part 1: All attached objects must be unparented first, or Irrlicht causes a segmentation fault
-			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 			{
-				if(ii->Y == this->getId()) // This is a child of our parent
+				if(ii->Y == getId()) // This is a child of our parent
 				{
 					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
 					if(obj)
@@ -1066,18 +1049,18 @@ public:
 
 			removeFromScene(false);
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
-			updateAnimations();
-			updateBonePosRot();
+			updateAnimation();
+			updateBonePosition();
 			updateAttachments();
 
 			// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 			{
-				if(ii->Y == this->getId()) // This is a child of our parent
+				if(ii->Y == getId()) // This is a child of our parent
 				{
 					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
 					if(obj)
-						obj->updateParent();
+						obj->setAttachments();
 				}
 			}
 		}
@@ -1095,12 +1078,7 @@ public:
 		if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
 		{
 			// Set these for later
-			if(m_meshnode)
-				m_position = m_meshnode->getAbsolutePosition();
-			if(m_animated_meshnode)
-				m_position = m_animated_meshnode->getAbsolutePosition();
-			if(m_spritenode)
-				m_position = m_spritenode->getAbsolutePosition();
+			m_position = getPosition();
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			pos_translator.vect_show = m_position;
@@ -1405,23 +1383,23 @@ public:
 		}
 	}
 
-	void updateAnimations()
+	void updateAnimation()
 	{
 		if(m_animated_meshnode == NULL)
 			return;
 
-		m_animated_meshnode->setFrameLoop((int)m_frames.X, (int)m_frames.Y);
-		m_animated_meshnode->setAnimationSpeed(m_frame_speed);
-		m_animated_meshnode->setTransitionTime(m_frame_blend);
+		m_animated_meshnode->setFrameLoop((int)m_animation_range.X, (int)m_animation_range.Y);
+		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+		m_animated_meshnode->setTransitionTime(m_animation_blend);
 	}
 
-	void updateBonePosRot()
+	void updateBonePosition()
 	{
-		if(!m_bone_posrot.size() || m_animated_meshnode == NULL)
+		if(!m_bone_position.size() || m_animated_meshnode == NULL)
 			return;
 
 		m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_posrot.begin(); ii != m_bone_posrot.end(); ++ii){
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			std::string bone_name = (*ii).first;
 			v3f bone_pos = (*ii).second.X;
 			v3f bone_rot = (*ii).second.Y;
@@ -1437,6 +1415,7 @@ public:
 	void updateAttachments()
 	{
 		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+		m_is_visible = !m_attached_to_local; // Objects attached to the local player should always be hidden
 
 		if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
 		{
@@ -1658,35 +1637,35 @@ public:
 
 			updateTexturePos();
 		}
-		else if(cmd == GENERIC_CMD_SET_ANIMATIONS)
+		else if(cmd == GENERIC_CMD_SET_ANIMATION)
 		{
-			m_frames = readV2F1000(is);
-			m_frame_speed = readF1000(is);
-			m_frame_blend = readF1000(is);
+			m_animation_range = readV2F1000(is);
+			m_animation_speed = readF1000(is);
+			m_animation_blend = readF1000(is);
 
-			updateAnimations();
+			updateAnimation();
 		}
-		else if(cmd == GENERIC_CMD_SET_BONE_POSROT)
+		else if(cmd == GENERIC_CMD_SET_BONE_POSITION)
 		{
 			std::string bone = deSerializeString(is);
 			v3f position = readV3F1000(is);
 			v3f rotation = readV3F1000(is);
-			m_bone_posrot[bone] = core::vector2d<v3f>(position, rotation);
+			m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
-			updateBonePosRot();
+			updateBonePosition();
 		}
 		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
 		{
 			// If an entry already exists for this object, delete it first to avoid duplicates
-			for(std::vector<core::vector2d<int> >::iterator ii = attachment_list.begin(); ii != attachment_list.end(); ii++)
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 			{
-				if(ii->X == this->getId()) // This is the ID of our object
+				if(ii->X == getId()) // This is the ID of our object
 				{
-					attachment_list.erase(ii);
+					m_env->attachment_list.erase(ii);
 					break;
 				}
 			}
-			attachment_list.push_back(core::vector2d<int>(this->getId(), readS16(is)));
+			m_env->attachment_list.push_back(core::vector2d<int>(getId(), readS16(is)));
 			m_attachment_bone = deSerializeString(is);
 			m_attachment_position = readV3F1000(is);
 			m_attachment_rotation = readV3F1000(is);

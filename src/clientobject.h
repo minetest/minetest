@@ -61,7 +61,7 @@ public:
 	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
 	virtual bool isPlayer(){return false;}
 	virtual bool isLocalPlayer(){return false;}
-	virtual void updateParent(){}
+	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time

@@ -821,8 +821,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	name = removeStringEnd(filename, image_ext);
 	if(name != "")
 	{
-		verbosestream<<"Client: Storing image into Irrlicht: "
-				<<"\""<<filename<<"\""<<std::endl;
+		verbosestream<<"Client: Attempting to load image "
+		<<"file \""<<filename<<"\""<<std::endl;
 
 		io::IFileSystem *irrfs = m_device->getFileSystem();
 		video::IVideoDriver *vdrv = m_device->getVideoDriver();
@@ -855,8 +855,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	name = removeStringEnd(filename, sound_ext);
 	if(name != "")
 	{
-		verbosestream<<"Client: Storing sound into Irrlicht: "
-				<<"\""<<filename<<"\""<<std::endl;
+		verbosestream<<"Client: Attempting to load sound "
+		<<"file \""<<filename<<"\""<<std::endl;
 		m_sound->loadSoundData(name, data);
 		return true;
 	}

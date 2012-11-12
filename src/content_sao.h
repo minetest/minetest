@@ -62,8 +62,8 @@ public:
 	void setHP(s16 hp);
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimations(v2f frames, float frame_speed, float frame_blend);
-	void setBonePosRot(std::string bone, v3f position, v3f rotation);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
@@ -101,13 +101,13 @@ private:
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
 	
-	v2f m_animation_frames;
+	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
-	bool m_animations_sent;
+	bool m_animation_sent;
 
-	std::map<std::string, core::vector2d<v3f> > m_animation_bone;
-	bool m_animations_bone_sent;
+	std::map<std::string, core::vector2d<v3f> > m_bone_position;
+	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
 	std::string m_attachment_bone;
@@ -161,8 +161,8 @@ public:
 	void setHP(s16 hp);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimations(v2f frames, float frame_speed, float frame_blend);
-	void setBonePosRot(std::string bone, v3f position, v3f rotation);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
@@ -260,13 +260,13 @@ private:
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
-	v2f m_animation_frames;
+	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
-	bool m_animations_sent;
+	bool m_animation_sent;
 
-	std::map<std::string, core::vector2d<v3f> > m_animation_bone; // stores position and rotation for each bone name
-	bool m_animations_bone_sent;
+	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
+	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
 	std::string m_attachment_bone;

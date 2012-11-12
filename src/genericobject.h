@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_UPDATE_POSITION 1
 #define GENERIC_CMD_SET_TEXTURE_MOD 2
 #define GENERIC_CMD_SET_SPRITE 3
-#define GENERIC_CMD_SET_ANIMATIONS 4
-#define GENERIC_CMD_SET_BONE_POSROT 5
+#define GENERIC_CMD_SET_ANIMATION 4
+#define GENERIC_CMD_SET_BONE_POSITION 5
 #define GENERIC_CMD_SET_ATTACHMENT 6
 #define GENERIC_CMD_PUNCHED 7
 #define GENERIC_CMD_UPDATE_ARMOR_GROUPS 8
@@ -57,9 +57,9 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_update_animations(v2f frames, float frame_speed, float frame_blend);
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend);
 
-std::string gob_cmd_update_bone_posrot(std::string bone, v3f position, v3f rotation);
+std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
 

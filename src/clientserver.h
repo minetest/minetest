@@ -67,9 +67,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		TOCLIENT_DETACHED_INVENTORY
 	PROTOCOL_VERSION 13:
 		InventoryList field "Width" (deserialization fails with old versions)
+	PROTOCOL_VERSION 14:
+		New messages for mesh and bone animation, as well as attachments
+		GENERIC_CMD_SET_ANIMATION
+		GENERIC_CMD_SET_BONE_POSITION
+		GENERIC_CMD_SET_ATTACHMENT
 */
 
-#define PROTOCOL_VERSION 13
+#define PROTOCOL_VERSION 14
 
 #define PROTOCOL_ID 0x4f457403
 

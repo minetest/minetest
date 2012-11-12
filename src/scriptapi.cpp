@@ -2716,8 +2716,8 @@ private:
 		return 0;
 	}
 
-	// setanimations(self, frames, frame_speed, frame_blend)
-	static int l_set_animations(lua_State *L)
+	// set_animation(self, frame_range, frame_speed, frame_blend)
+	static int l_set_animation(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
@@ -2732,12 +2732,12 @@ private:
 		float frame_blend = 0;
 		if(!lua_isnil(L, 4))
 			frame_blend = lua_tonumber(L, 4);
-		co->setAnimations(frames, frame_speed, frame_blend);
+		co->setAnimation(frames, frame_speed, frame_blend);
 		return 0;
 	}
 
-	// setboneposrot(self, std::string bone, v3f position, v3f rotation)
-	static int l_set_bone_posrot(lua_State *L)
+	// set_bone_position(self, std::string bone, v3f position, v3f rotation)
+	static int l_set_bone_position(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
@@ -2752,12 +2752,12 @@ private:
 		v3f rotation = v3f(0, 0, 0);
 		if(!lua_isnil(L, 4))
 			rotation = read_v3f(L, 4);
-		co->setBonePosRot(bone, position, rotation);
+		co->setBonePosition(bone, position, rotation);
 		return 0;
 	}
 
-	// set_attachment(self, parent, bone, position, rotation)
-	static int l_set_attachment(lua_State *L)
+	// set_attach(self, parent, bone, position, rotation)
+	static int l_set_attach(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ObjectRef *parent_ref = checkobject(L, 2);
@@ -2779,8 +2779,8 @@ private:
 		return 0;
 	}
 
-	// set_detachment(self)
-	static int l_set_detachment(lua_State *L)
+	// set_detach(self)
+	static int l_set_detach(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
@@ -3104,10 +3104,10 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, set_wielded_item),
 	method(ObjectRef, set_armor_groups),
-	method(ObjectRef, set_animations),
-	method(ObjectRef, set_bone_posrot),
-	method(ObjectRef, set_attachment),
-	method(ObjectRef, set_detachment),
+	method(ObjectRef, set_animation),
+	method(ObjectRef, set_bone_position),
+	method(ObjectRef, set_attach),
+	method(ObjectRef, set_detach),
 	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
