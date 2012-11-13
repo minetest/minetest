@@ -120,86 +120,6 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 }
 #endif
 
-void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef)
-{
-	MapNode treenode(ndef->getId("mapgen_tree"));
-	MapNode leavesnode(ndef->getId("mapgen_leaves"));
-	MapNode applenode(ndef->getId("mapgen_apple"));
-	
-	s16 trunk_h = myrand_range(4, 5);
-	v3s16 p1 = p0;
-	for(s16 ii=0; ii<trunk_h; ii++)
-	{
-		if(vmanip.m_area.contains(p1))
-			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
-		p1.Y++;
-	}
-
-	// p1 is now the last piece of the trunk
-	p1.Y -= 1;
-
-	VoxelArea leaves_a(v3s16(-2,-1,-2), v3s16(2,2,2));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
-	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for(s32 i=0; i<leaves_a.getVolume(); i++)
-		leaves_d[i] = 0;
-
-	// Force leaves at near the end of the trunk
-	{
-		s16 d = 1;
-		for(s16 z=-d; z<=d; z++)
-		for(s16 y=-d; y<=d; y++)
-		for(s16 x=-d; x<=d; x++)
-		{
-			leaves_d[leaves_a.index(v3s16(x,y,z))] = 1;
-		}
-	}
-
-	// Add leaves randomly
-	for(u32 iii=0; iii<7; iii++)
-	{
-		s16 d = 1;
-
-		v3s16 p(
-			myrand_range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
-			myrand_range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
-			myrand_range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
-		);
-
-		for(s16 z=0; z<=d; z++)
-		for(s16 y=0; y<=d; y++)
-		for(s16 x=0; x<=d; x++)
-		{
-			leaves_d[leaves_a.index(p+v3s16(x,y,z))] = 1;
-		}
-	}
-
-	// Blit leaves to vmanip
-	for(s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
-	for(s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
-	for(s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
-	{
-		v3s16 p(x,y,z);
-		p += p1;
-		if(vmanip.m_area.contains(p) == false)
-			continue;
-		u32 vi = vmanip.m_area.index(p);
-		if(vmanip.m_data[vi].getContent() != CONTENT_AIR
-				&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
-			continue;
-		u32 i = leaves_a.index(x,y,z);
-		if(leaves_d[i] == 1) {
-			bool is_apple = myrand_range(0,99) < 10;
-			if(is_apple_tree && is_apple) {
-				vmanip.m_data[vi] = applenode;
-			} else {
-				vmanip.m_data[vi] = leavesnode;
-			}
-		}
-	}
-}
-
 #if 0
 static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
@@ -1016,22 +936,6 @@ bool is_ground(u64 seed, v3s16 p)
 	return val_is_ground(val1, p, seed);
 }
 #endif
-
-// Amount of trees per area in nodes
-double tree_amount_2d(u64 seed, v2s16 p)
-{
-	/*double noise = noise2d_perlin(
-			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
-			seed+2, 5, 0.66);*/
-	double noise = noise2d_perlin(
-			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
-			seed+2, 4, 0.66);
-	double zeroval = -0.39;
-	if(noise < zeroval)
-		return 0;
-	else
-		return 0.04 * (noise-zeroval) / (1.0-zeroval);
-}
 
 #if 0
 double surface_humidity_2d(u64 seed, v2s16 p)
@@ -2181,65 +2085,6 @@ void make_block(BlockMakeData *data)
 			if(surface_y < WATER_LEVEL - 20)
 				continue;
 			n->setContent(c_dirt_with_grass);
-		}
-	}
-
-	/*
-		Generate some trees
-	*/
-	assert(central_area_size.X == central_area_size.Z);
-	{
-		// Divide area into parts
-		s16 div = 8;
-		s16 sidelen = central_area_size.X / div;
-		double area = sidelen * sidelen;
-		for(s16 x0=0; x0<div; x0++)
-		for(s16 z0=0; z0<div; z0++)
-		{
-			// Center position of part of division
-			v2s16 p2d_center(
-				node_min.X + sidelen/2 + sidelen*x0,
-				node_min.Z + sidelen/2 + sidelen*z0
-			);
-			// Minimum edge of part of division
-			v2s16 p2d_min(
-				node_min.X + sidelen*x0,
-				node_min.Z + sidelen*z0
-			);
-			// Maximum edge of part of division
-			v2s16 p2d_max(
-				node_min.X + sidelen + sidelen*x0 - 1,
-				node_min.Z + sidelen + sidelen*z0 - 1
-			);
-			// Amount of trees
-			u32 tree_count = area * tree_amount_2d(data->seed, p2d_center);
-			// Put trees in random places on part of division
-			for(u32 i=0; i<tree_count; i++)
-			{
-				s16 x = myrand_range(p2d_min.X, p2d_max.X);
-				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
-				s16 y = find_ground_level(vmanip, v2s16(x,z), ndef);
-				// Don't make a tree under water level
-				if(y < WATER_LEVEL)
-					continue;
-				// Don't make a tree so high that it doesn't fit
-				if(y > node_max.Y - 6)
-					continue;
-				v3s16 p(x,y,z);
-				/*
-					Trees grow only on mud and grass
-				*/
-				{
-					u32 i = vmanip.m_area.index(v3s16(p));
-					MapNode *n = &vmanip.m_data[i];
-					if(n->getContent() != c_dirt
-							&& n->getContent() != c_dirt_with_grass)
-						continue;
-				}
-				p.Y++;
-				// Make a tree
-				make_tree(vmanip, p, false, ndef);
-			}
 		}
 	}
 

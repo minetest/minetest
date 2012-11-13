@@ -66,6 +66,81 @@ local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, 
 		end
 	end
 	--print("generate_ore done")
+	--Generate trees
+	local perlin1 = minetest.env:get_perlin(200, 3, 0.6, 100)
+	-- Assume X and Z lengths are equal
+	local divlen = 16
+	local divs = (maxp.x-minp.x)/divlen+1;
+	for divx=0,divs-1 do
+	for divz=0,divs-1 do
+		local x0 = minp.x + math.floor((divx+0)*divlen)
+		local z0 = minp.z + math.floor((divz+0)*divlen)
+		local x1 = minp.x + math.floor((divx+1)*divlen)
+		local z1 = minp.z + math.floor((divz+1)*divlen)
+		local cobbles_amount = math.floor(perlin1:get2d({x=x0, y=z0}) * 5 + 0)
+		local pr = PseudoRandom(seed+1)
+		for i=0,cobbles_amount do
+			local x = pr:next(x0, x1)
+			local z = pr:next(z0, z1)
+			-- Find ground level (0...15)
+			local ground_y = nil
+			for y=30,0,-1 do
+				if minetest.env:get_node({x=x,y=y,z=z}).name ~= "air" then
+					ground_y = y
+					break
+				end
+			end
+			if ground_y and minetest.env:get_node({x=x,y=ground_y,z=z}).name == "default:dirt_with_grass" then
+				make_tree({x=x,y=ground_y+1,z=z}, false)
+			end
+		end
+	end
+	end
+end
+
+function make_tree(pos, is_apple_tree, height)
+	if not height then
+		height = math.random(4,5)
+	end
+	
+	for _=1,height do
+		minetest.env:set_node(pos, {name="default:tree"})
+		pos.y = pos.y+1
+	end
+
+	pos.y = pos.y-1
+
+	local function set_leaves(pos)
+		if minetest.registered_nodes[minetest.env:get_node(pos).name].buildable_to then
+			if is_apple_tree and math.random(1, 10)==1 then
+				minetest.env:set_node(pos, {name="default:apple"})
+			else
+				minetest.env:set_node(pos, {name="default:leaves"})
+			end
+		end
+	end
+
+	for dx=-1,1 do
+		for dy=-1,1 do
+			for dz=-1,1 do
+				set_leaves({x=pos.x+dx,y=pos.y+dy,z=pos.z+dz})
+			end
+		end
+	end
+
+	for _=1,8 do
+		local p = {x=math.random(-2, 1),y=math.random(-1, 1),z=math.random(-2, 1),}
+		p.x = p.x+pos.x
+		p.y = p.y+pos.y
+		p.z = p.z+pos.z
+		for dx=0,1 do
+			for dy=0,1 do
+				for dz=0,1 do
+					set_leaves({x=p.x+dx,y=p.y+dy,z=p.z+dz})
+				end
+			end
+		end
+	end
 end
 
 minetest.register_on_generated(function(minp, maxp, seed)

@@ -110,7 +110,6 @@ struct HeightPoint
 	float gh; // ground height
 	float ma; // mud amount
 	float have_sand;
-	float tree_amount;
 };
 core::map<v2s16, HeightPoint> g_heights;
 
@@ -126,10 +125,6 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	/*hp.gh = BS*base_rock_level_2d(seed, p2d);
 	hp.ma = BS*get_mud_add_amount(seed, p2d);*/
 	hp.have_sand = mapgen::get_have_beach(seed, p2d);
-	if(hp.gh > BS*WATER_LEVEL)
-		hp.tree_amount = mapgen::tree_amount_2d(seed, p2d);
-	else
-		hp.tree_amount = 0;
 	// No mud has been added if mud amount is less than 1
 	if(hp.ma < 1.0*BS)
 		hp.ma = 0.0;
@@ -244,7 +239,6 @@ void FarMesh::render()
 		float ma_avg = 0;
 		float h_avg = 0;
 		u32 have_sand_count = 0;
-		float tree_amount_avg = 0;
 		for(u32 i=0; i<5; i++)
 		{
 			noise[i] = hps[i].gh + hps[i].ma;
@@ -256,11 +250,9 @@ void FarMesh::render()
 			h_avg += noise[i];
 			if(hps[i].have_sand)
 				have_sand_count++;
-			tree_amount_avg += hps[i].tree_amount;
 		}
 		ma_avg /= 5.0;
 		h_avg /= 5.0;
-		tree_amount_avg /= 5.0;
 
 		float steepness = (h_max - h_min)/grid_size;
 		
@@ -315,11 +307,6 @@ void FarMesh::render()
 				}
 				else
 				{
-					/*// Trees if there are over 0.01 trees per MapNode
-					if(tree_amount_avg > 0.01)
-						c = video::SColor(255,50,128,50);
-					else
-						c = video::SColor(255,107,134,51);*/
 					c = video::SColor(255,107,134,51);
 					ground_is_mud = true;
 				}
@@ -351,51 +338,6 @@ void FarMesh::render()
 		u16 indices[] = {0,1,2,2,3,0};
 		driver->drawVertexPrimitiveList(vertices, 4, indices, 2,
 				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
-
-		// Add some trees if appropriate
-		if(tree_amount_avg >= 0.0065 && steepness < 1.4
-				&& ground_is_mud == true)
-		{
-			driver->setMaterial(m_materials[1]);
-			
-			float b = m_brightness;
-			c = video::SColor(255, b*255, b*255, b*255);
-			
-			{
-				video::S3DVertex vertices[4] =
-				{
-					video::S3DVertex(p0.X,noise[0],p0.Y,
-							0,0,0, c, 0,1),
-					video::S3DVertex(p0.X,noise[0]+BS*MAP_BLOCKSIZE,p0.Y,
-							0,0,0, c, 0,0),
-					video::S3DVertex(p1.X,noise[2]+BS*MAP_BLOCKSIZE,p1.Y,
-							0,0,0, c, 1,0),
-					video::S3DVertex(p1.X,noise[2],p1.Y,
-							0,0,0, c, 1,1),
-				};
-				u16 indices[] = {0,1,2,2,3,0};
-				driver->drawVertexPrimitiveList(vertices, 4, indices, 2,
-						video::EVT_STANDARD, scene::EPT_TRIANGLES,
-						video::EIT_16BIT);
-			}
-			{
-				video::S3DVertex vertices[4] =
-				{
-					video::S3DVertex(p1.X,noise[3],p0.Y,
-							0,0,0, c, 0,1),
-					video::S3DVertex(p1.X,noise[3]+BS*MAP_BLOCKSIZE,p0.Y,
-							0,0,0, c, 0,0),
-					video::S3DVertex(p0.X,noise[1]+BS*MAP_BLOCKSIZE,p1.Y,
-							0,0,0, c, 1,0),
-					video::S3DVertex(p0.X,noise[1],p1.Y,
-							0,0,0, c, 1,1),
-				};
-				u16 indices[] = {0,1,2,2,3,0};
-				driver->drawVertexPrimitiveList(vertices, 4, indices, 2,
-						video::EVT_STANDARD, scene::EPT_TRIANGLES,
-						video::EIT_16BIT);
-			}
-		}
 	}
 
 	//driver->clearZBuffer();

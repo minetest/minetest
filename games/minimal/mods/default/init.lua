@@ -22,6 +22,31 @@ minetest.register_on_joinplayer(function(player)
 	minetest.after(2.0, cb, player)
 end)
 
+minetest.register_abm({
+	nodenames = {"default:sapling"},
+	interval = 60,
+	chance = 20,
+	action = function(pos, node)
+		if not minetest.env:get_node_light(pos) then
+			return
+		end
+		if minetest.env:get_node_light(pos) < 8 then
+			return
+		end
+		local height = math.random(4,5)
+		for y=1,4 do
+			if not minetest.env:get_node({x=pos.x,y=pos.y+y,z=pos.z}).buildable_to then
+				if y == 4 then
+					height = 4
+				else
+					return
+				end
+			end
+		end
+		make_tree(pos, math.random(1,4)==1, height)
+	end
+})
+
 --
 -- Tool definition
 --
