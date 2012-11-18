@@ -215,8 +215,8 @@ minetest.register_chatcommand("clearpassword", {
 	privs = {password=true},
 	func = function(name, param)
 		toname = param
-		if not toname then
-			minetest.chat_send_player(toname, "Name field required")
+		if toname == "" then
+			minetest.chat_send_player(name, "Name field required")
 			return
 		end
 		minetest.set_player_password(toname, '')
