@@ -2369,7 +2369,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	if(command == TOSERVER_PLAYERPOS)
 	{
-		if(datasize < 2+12+12+4+4)
+		if(datasize < 2+12+12+4+4+2)
 			return;
 	
 		u32 start = 0;
@@ -2377,6 +2377,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		v3s32 ss = readV3S32(&data[start+2+12]);
 		f32 pitch = (f32)readS32(&data[2+12+12]) / 100.0;
 		f32 yaw = (f32)readS32(&data[2+12+12+4]) / 100.0;
+		u16 keyPressed = (u16)readU16(&data[2+12+12+4+4]);
 		v3f position((f32)ps.X/100., (f32)ps.Y/100., (f32)ps.Z/100.);
 		v3f speed((f32)ss.X/100., (f32)ss.Y/100., (f32)ss.Z/100.);
 		pitch = wrapDegrees(pitch);
@@ -2386,7 +2387,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->setSpeed(speed);
 		player->setPitch(pitch);
 		player->setYaw(yaw);
-		
+		player->keyPressed=keyPressed;
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
 				<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
@@ -3166,6 +3167,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 		} // action == 4
+		
 
 		/*
 			Catch invalid actions
