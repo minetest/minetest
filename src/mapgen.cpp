@@ -131,7 +131,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
-		if(vmanip.m_area.contains(p1))
+		if(ii == 0 || vmanip.m_area.contains(p1))
  		{
  			// Trunk may replace only air
  			if(vmanip.getNodeNoExNoEmerge(p1).getContent() == CONTENT_AIR)
