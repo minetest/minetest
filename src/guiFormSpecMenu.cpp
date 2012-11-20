@@ -476,6 +476,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			
 			video::ITexture *texture = m_gamedef->tsrc()->getTextureRaw(fimage);
 			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+			e->setUseAlphaChannel(true);
 			e->setImage(texture);
 			e->setPressedImage(texture);
 			e->setScaleImage(true);
