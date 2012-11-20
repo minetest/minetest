@@ -1128,6 +1128,8 @@ Player-only: (no-op for other objects)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
 - get_inventory_formspec() -> formspec string
+- get_player_control(): returns table with player pressed keys
+	{jump=bool, keyPressed=bit packed input, right=bool, left=bool, LMB=bool, RMB=bool, sneak=bool, aux1=bool, down=bool, up=bool}
 
 InvRef: Reference to an inventory
 methods:

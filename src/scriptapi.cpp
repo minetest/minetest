@@ -2932,7 +2932,42 @@ private:
 		lua_pushlstring(L, formspec.c_str(), formspec.size());
 		return 1;
 	}
-
+	
+	// get_player_control(self)
+	static int l_get_player_control(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		// Do it
+		PlayerControl control = player->getPlayerControl();
+		lua_newtable(L);
+		lua_pushboolean(L, control.up);
+		lua_setfield(L, -2, "up");
+		lua_pushboolean(L, control.down);
+		lua_setfield(L, -2, "down");
+		lua_pushboolean(L, control.left);
+		lua_setfield(L, -2, "left");
+		lua_pushboolean(L, control.right);
+		lua_setfield(L, -2, "right");
+		lua_pushboolean(L, control.jump);
+		lua_setfield(L, -2, "jump");
+		lua_pushboolean(L, control.aux1);
+		lua_setfield(L, -2, "aux1");
+		lua_pushboolean(L, control.sneak);
+		lua_setfield(L, -2, "sneak");
+		lua_pushboolean(L, control.LMB);
+		lua_setfield(L, -2, "LMB");
+		lua_pushboolean(L, control.RMB);
+		lua_setfield(L, -2, "RMB");
+		lua_pushnumber(L, player->keyPressed);
+		lua_setfield(L, -2, "keyPressed");
+		return 1;
+	}
+	
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -3031,6 +3066,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_look_yaw),
 	method(ObjectRef, set_inventory_formspec),
 	method(ObjectRef, get_inventory_formspec),
+	method(ObjectRef, get_player_control),
 	{0,0}
 };
 
