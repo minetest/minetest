@@ -2798,8 +2798,12 @@ void the_game(
 			video::ITexture *crosshair_texture = 
 				driver->getTexture(getTexturePath("crosshair.png").c_str());
 			if(crosshair_texture) { 
-				driver->draw2DImage(crosshair_texture, v2s32(displaycenter.X, displaycenter.Y),
-					core::rect<s32>(0,0,15,15), 0, video::SColor(255,255,255,255), true);
+				irr::u32 sizeW = crosshair_texture->getOriginalSize().Width;
+				irr::u32 sizeH = crosshair_texture->getOriginalSize().Height;
+
+				driver->draw2DImage(crosshair_texture, v2s32(displaycenter.X-(sizeW / 2), 
+					displaycenter.Y-(sizeH / 2)), core::rect<s32>(0,0,sizeW,sizeH), 
+					0, video::SColor(255,255,255,255), true);
 			}
 		}
 
