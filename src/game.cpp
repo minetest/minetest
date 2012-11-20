@@ -1881,6 +1881,8 @@ void the_game(
 			bool a_jump,
 			bool a_superspeed,
 			bool a_sneak,
+			bool a_LMB,
+			bool a_RMB,
 			float a_pitch,
 			float a_yaw*/
 			PlayerControl control(
@@ -1891,10 +1893,24 @@ void the_game(
 				input->isKeyDown(getKeySetting("keymap_jump")),
 				input->isKeyDown(getKeySetting("keymap_special1")),
 				input->isKeyDown(getKeySetting("keymap_sneak")),
+				input->getLeftState(),
+				input->getRightState(),
 				camera_pitch,
 				camera_yaw
 			);
 			client.setPlayerControl(control);
+			u32 keyPressed=
+			1*(int)input->isKeyDown(getKeySetting("keymap_forward"))+
+			2*(int)input->isKeyDown(getKeySetting("keymap_backward"))+
+			4*(int)input->isKeyDown(getKeySetting("keymap_left"))+
+			8*(int)input->isKeyDown(getKeySetting("keymap_right"))+
+			16*(int)input->isKeyDown(getKeySetting("keymap_jump"))+
+			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
+			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
+			128*(int)input->getLeftState()+
+			256*(int)input->getRightState();
+			LocalPlayer* player = client.getEnv().getLocalPlayer();
+			player->keyPressed=keyPressed;
 		}
 		
 		/*
