@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.0
+Minetest Lua Modding API Reference 0.4.3
 ==========================================
 More information at http://c55.me/minetest/
 
@@ -1132,7 +1132,11 @@ Player-only: (no-op for other objects)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
 - get_inventory_formspec() -> formspec string
-
+- get_player_control(): returns table with player pressed keys
+	{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
+- get_player_control_bits(): returns integer with bit packed player pressed keys
+	bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+	
 InvRef: Reference to an inventory
 methods:
 - is_empty(listname): return true if list is empty

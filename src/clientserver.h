@@ -68,7 +68,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 13:
 		InventoryList field "Width" (deserialization fails with old versions)
 	PROTOCOL_VERSION 14:
-		New messages for mesh and bone animation, as well as attachments
+		Added transfer of player pressed keys to the server
+		Added new messages for mesh and bone animation, as well as attachments
 		GENERIC_CMD_SET_ANIMATION
 		GENERIC_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
@@ -371,6 +372,7 @@ enum ToServerCommand
 		[2+12] v3s32 speed*100
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
+		[2+12+12+4+4] u32 keyPressed
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,

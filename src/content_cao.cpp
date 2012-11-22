@@ -970,8 +970,11 @@ public:
 					wname.c_str(), video::SColor(255,255,255,255), node);
 			m_textnode->setPosition(v3f(0, BS*1.1, 0));
 		}
-		
+
 		updateNodePos();
+		updateAnimation();
+		updateBonePosition();
+		updateAttachments();
 	}
 
 	void expireVisuals()
@@ -1049,9 +1052,6 @@ public:
 
 			removeFromScene(false);
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
-			updateAnimation();
-			updateBonePosition();
-			updateAttachments();
 
 			// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
@@ -1248,7 +1248,7 @@ public:
 		{
 			if(m_prop.visual == "mesh")
 			{
-				for (u32 i = 0; i < m_prop.textures.size(); ++i)
+				for (u32 i = 0; i < m_prop.textures.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
 				{
 					std::string texturestring = m_prop.textures[i];
 					if(texturestring == "")
@@ -1271,7 +1271,7 @@ public:
 					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
-				for (u32 i = 0; i < m_prop.colors.size(); ++i)
+				for (u32 i = 0; i < m_prop.colors.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
 				{
 					// This allows setting per-material colors. However, until a real lighting
 					// system is added, the code below will have no effect. Once MineTest

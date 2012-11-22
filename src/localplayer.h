@@ -22,53 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 
-struct PlayerControl
-{
-	PlayerControl()
-	{
-		up = false;
-		down = false;
-		left = false;
-		right = false;
-		jump = false;
-		aux1 = false;
-		sneak = false;
-		pitch = 0;
-		yaw = 0;
-	}
-	PlayerControl(
-		bool a_up,
-		bool a_down,
-		bool a_left,
-		bool a_right,
-		bool a_jump,
-		bool a_aux1,
-		bool a_sneak,
-		float a_pitch,
-		float a_yaw
-	)
-	{
-		up = a_up;
-		down = a_down;
-		left = a_left;
-		right = a_right;
-		jump = a_jump;
-		aux1 = a_aux1;
-		sneak = a_sneak;
-		pitch = a_pitch;
-		yaw = a_yaw;
-	}
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	bool jump;
-	bool aux1;
-	bool sneak;
-	float pitch;
-	float yaw;
-};
-
 class LocalPlayer : public Player
 {
 public:
@@ -91,9 +44,6 @@ public:
 	void applyControl(float dtime);
 
 	v3s16 getStandingNodePos();
-	
-	PlayerControl control;
-
 private:
 	// This is used for determining the sneaking range
 	v3s16 m_sneak_node;

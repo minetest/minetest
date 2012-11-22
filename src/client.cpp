@@ -1984,7 +1984,7 @@ void Client::sendPlayerPos()
 	v3s32 speed(sf.X*100, sf.Y*100, sf.Z*100);
 	s32 pitch = myplayer->getPitch() * 100;
 	s32 yaw = myplayer->getYaw() * 100;
-
+	u32 keyPressed=myplayer->keyPressed;
 	/*
 		Format:
 		[0] u16 command
@@ -1992,15 +1992,15 @@ void Client::sendPlayerPos()
 		[2+12] v3s32 speed*100
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
+		[2+12+12+4+4] u32 keyPressed
 	*/
-
-	SharedBuffer<u8> data(2+12+12+4+4);
+	SharedBuffer<u8> data(2+12+12+4+4+4);
 	writeU16(&data[0], TOSERVER_PLAYERPOS);
 	writeV3S32(&data[2], position);
 	writeV3S32(&data[2+12], speed);
 	writeS32(&data[2+12+12], pitch);
-	writeS32(&data[2+12+12+4], yaw);
-
+	writeS32(&data[2+12+12+4], yaw);	
+	writeU32(&data[2+12+12+4+4], keyPressed);
 	// Send as unreliable
 	Send(0, data, false);
 }
