@@ -97,6 +97,7 @@ end
 
 function nodeupdate_single(p)
 	n = minetest.env:get_node(p)
+	-- Check if the node should fall
 	if minetest.get_node_group(n.name, "falling_node") ~= 0 then
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
 		n_bottom = minetest.env:get_node(p_bottom)
@@ -105,6 +106,40 @@ function nodeupdate_single(p)
 				not minetest.registered_nodes[n_bottom.name].walkable then
 			minetest.env:remove_node(p)
 			spawn_falling_node(p, n.name)
+			nodeupdate(p)
+		end
+	end
+	
+	-- Check if a wallmounted node is not wallmounted to a solid block
+	local def = minetest.registered_nodes[n.name]
+	if def.paramtype2 == "wallmounted" then
+		local d = {x=0, y=0, z=0}
+		if n.param2 == 0 then
+			d.y = 1
+		elseif n.param2 == 1 then
+			d.y = -1
+		elseif n.param2 == 2 then
+			d.x = 1
+		elseif n.param2 == 3 then
+			d.x = -1
+		elseif n.param2 == 4 then
+			d.z = 1
+		elseif n.param2 == 5 then
+			d.z = -1
+		end
+		local p2 = {x=p.x+d.x, y=p.y+d.y, z=p.z+d.z}
+		local nn = minetest.env:get_node(p2).name
+		local def2 = minetest.registered_nodes[nn]
+		if def2 and not def2.walkable then
+			minetest.env:remove_node(p)
+			for _,item in ipairs(minetest.get_node_drops(n.name, "")) do
+				local pos = {
+					x=p.x+math.random(80)/80-0.4,
+					y=p.y+math.random(80)/80-0.4,
+					z=p.z+math.random(80)/80-0.4,
+				}
+				minetest.env:add_item(pos, item)
+			end
 			nodeupdate(p)
 		end
 	end
