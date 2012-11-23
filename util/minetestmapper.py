@@ -95,7 +95,7 @@ def unsignedToSigned(i, max_positive):
         return i - 2*max_positive
 
 def getIntegerAsBlock(i):
-    x = unsignedToSigned(i % 4096, 2048)
+    x = int(unsignedToSigned(i % 4096, 2048))
     i = int((i - x) / 4096)
     y = unsignedToSigned(i % 4096, 2048)
     i = int((i - y) / 4096)
@@ -141,7 +141,7 @@ try:
     opts, args = getopt.getopt(sys.argv[1:], "hi:o:", ["help", "input=",
         "output=", "bgcolor=", "scalecolor=", "origincolor=",
         "playercolor=", "draworigin", "drawplayers", "drawscale",
-        "drawunderground"])
+        "drawunderground","xmin=","xmax=","zmin=","zmax="])
 except getopt.GetoptError as err:
     # print help information and exit:
     print(str(err))  # will print something like "option -a not recognized"
@@ -179,6 +179,14 @@ for o, a in opts:
         scalecolor = ImageColor.getrgb(a)
     elif o == "--playercolor":
         playercolor = ImageColor.getrgb(a)
+    elif o == "--xmin":
+        sector_xmin = int(a) 
+    elif o == "--xmax":
+        sector_xmax = int(a) 
+    elif o == "--zmin":
+        sector_zmin = int(a) 
+    elif o == "--zmax":
+        sector_zmax = int(a) 
     elif o == "--origincolor":
         origincolor = ImageColor.getrgb(a)
     elif o == "--drawscale":
@@ -196,7 +204,7 @@ for o, a in opts:
 if path is None:
     print("Please select world path (eg. -i ../worlds/yourworld) (or use --help)")
     sys.exit(1)
-
+print("xmin=" + str(sector_xmin) + " xmax=" + str(sector_xmax) + " zmin=" + str(sector_zmin) + " zmax=" + str(sector_zmax))
 if path[-1:] != "/" and path[-1:] != "\\":
     path = path + "/"
 
@@ -324,7 +332,9 @@ def content_is_air(d):
     return d in [126, 127, 254, "air"]
 
 def read_content(mapdata, version, datapos):
-    if version >= 20:
+    if version >= 24:
+        return (mapdata[datapos*2] << 8) | (mapdata[datapos*2 + 1])
+    elif version >= 20:
         if mapdata[datapos] < 0x80:
             return mapdata[datapos]
         else:
@@ -386,6 +396,7 @@ def read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_na
                             unknown_node_ids.append(content)
                         #print("unknown node: %s/%s/%s x: %d y: %d z: %d block id: %x"
                         #        % (xhex, zhex, yhex, x, y, z, content))
+
 
 # Go through all sectors.
 for n in range(len(xlist)):
@@ -546,6 +557,14 @@ for n in range(len(xlist)):
 
             if version == 23:
                 readU8(f) # Unused node timer version (always 0)
+            if version == 24:
+                ver = readU8(f)
+                if ver == 1:
+                    num = readU16(f)
+                    for i in range(0,num):
+                        readU16(f)
+                        readS32(f)
+                        readS32(f)
 
             static_object_version = readU8(f)
             static_object_count = readU16(f)
@@ -577,6 +596,15 @@ for n in range(len(xlist)):
                     name = f.read(name_len)
                     #print(str(node_id)+" = "+name)
                     id_to_name[node_id] = name
+
+            # Node timers
+            if version >= 25:
+                timer_size = readU8(f)
+                num = readU16(f)
+                for i in range(0,num):
+                    readU16(f)
+                    readS32(f)
+                    readS32(f)
 
             read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_name)
 
@@ -663,8 +691,8 @@ for (x, z) in stuff.iterkeys():
         r = int(r * .15 + colors[2][0] * .85)
         g = int(g * .15 + colors[2][1] * .85)
         b = int(b * .15 + colors[2][2] * .85)
-
-    impix[x - minx * 16 + border, h - 1 - (z - minz * 16) + border] = (r, g, b)
+#    print("x:" + str(x) + " z:" + str(z) + " minx:" + str(minx) + " minz:" + str(minz) + " border:" + str(border) + " h:" + str(h) + " r:" + str(r) + " g:" + str(g) + " b:" + str(b))
+    impix[int(x - minx * 16 + border), int(h - 1 - (z - minz * 16) + border)] = (r, g, b)
 
 
 if draworigin:
@@ -729,4 +757,3 @@ if unknown_node_ids:
     for node_id in unknown_node_ids:
         sys.stdout.write(" "+str(hex(node_id)))
     sys.stdout.write(os.linesep)
-
