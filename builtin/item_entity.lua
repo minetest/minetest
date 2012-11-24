@@ -41,17 +41,17 @@ minetest.register_entity("__builtin:item", {
 		prop = {
 			is_visible = true,
 			visual = "sprite",
-			textures = {"unknown_item.png"}
+			textures = {"unknown_item.png"},
+			visual_size = {x=0.50, y=0.50}
 		}
-		if item_texture and item_texture ~= "" then
-			prop.visual = "sprite"
-			prop.textures = {item_texture}
-			prop.visual_size = {x=0.50, y=0.50}
-		else
+		if item_type == "node" then
 			prop.visual = "wielditem"
 			prop.textures = {itemname}
 			prop.visual_size = {x=0.20, y=0.20}
 			prop.automatic_rotate = math.pi * 0.25
+		elseif item_texture and item_texture ~= "" then
+			prop.visual = "sprite"
+			prop.textures = {item_texture}
 		end
 		self.object:set_properties(prop)
 	end,
