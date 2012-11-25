@@ -433,9 +433,6 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 	}
 
 	// Create render target texture
-	video::ITexture *oldtexture = driver->findTexture(texture_name.c_str());
-	if(oldtexture)
-		driver->removeTexture(oldtexture);
 	video::ITexture *rtt = driver->addRenderTargetTexture(
 			dim, texture_name.c_str(), video::ECF_A8R8G8B8);
 	if(rtt == NULL)

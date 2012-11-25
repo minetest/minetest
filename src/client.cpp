@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "util/string.h"
 #include "hex.h"
+#include "IMeshCache.h"
 
 static std::string getMediaCacheDir()
 {
@@ -821,7 +822,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	if(name != "")
 	{
 		verbosestream<<"Client: Attempting to load image "
-				<<"file \""<<filename<<"\""<<std::endl;
+		<<"file \""<<filename<<"\""<<std::endl;
 
 		io::IFileSystem *irrfs = m_device->getFileSystem();
 		video::IVideoDriver *vdrv = m_device->getVideoDriver();
@@ -855,8 +856,30 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	if(name != "")
 	{
 		verbosestream<<"Client: Attempting to load sound "
-				<<"file \""<<filename<<"\""<<std::endl;
+		<<"file \""<<filename<<"\""<<std::endl;
 		m_sound->loadSoundData(name, data);
+		return true;
+	}
+
+	const char *model_ext[] = {
+		".x", ".b3d", ".md2", ".obj",
+		NULL
+	};
+	name = removeStringEnd(filename, model_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Storing model into Irrlicht: "
+				<<"\""<<filename<<"\""<<std::endl;
+
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+				*data_rw, data_rw.getSize(), filename.c_str());
+		assert(rfile);
+		
+		scene::ISceneManager *smgr = m_device->getSceneManager();
+		scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
+		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
+		
 		return true;
 	}
 
@@ -1961,7 +1984,7 @@ void Client::sendPlayerPos()
 	v3s32 speed(sf.X*100, sf.Y*100, sf.Z*100);
 	s32 pitch = myplayer->getPitch() * 100;
 	s32 yaw = myplayer->getYaw() * 100;
-
+	u32 keyPressed=myplayer->keyPressed;
 	/*
 		Format:
 		[0] u16 command
@@ -1969,15 +1992,15 @@ void Client::sendPlayerPos()
 		[2+12] v3s32 speed*100
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
+		[2+12+12+4+4] u32 keyPressed
 	*/
-
-	SharedBuffer<u8> data(2+12+12+4+4);
+	SharedBuffer<u8> data(2+12+12+4+4+4);
 	writeU16(&data[0], TOSERVER_PLAYERPOS);
 	writeV3S32(&data[2], position);
 	writeV3S32(&data[2+12], speed);
 	writeS32(&data[2+12+12], pitch);
-	writeS32(&data[2+12+12+4], yaw);
-
+	writeS32(&data[2+12+12+4], yaw);	
+	writeU32(&data[2+12+12+4+4], keyPressed);
 	// Send as unreliable
 	Send(0, data, false);
 }

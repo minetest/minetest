@@ -46,6 +46,7 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
+	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
@@ -61,6 +62,9 @@ public:
 	void setHP(s16 hp);
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setBonePosition(std::string bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
@@ -96,6 +100,20 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
+	
+	v2f m_animation_range;
+	float m_animation_speed;
+	float m_animation_blend;
+	bool m_animation_sent;
+
+	std::map<std::string, core::vector2d<v3f> > m_bone_position;
+	bool m_bone_position_sent;
+
+	int m_attachment_parent_id;
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attachment_sent;
 };
 
 /*
@@ -124,6 +142,7 @@ public:
 	bool unlimitedTransferDistance() const;
 	std::string getClientInitializationData();
 	std::string getStaticData();
+	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
@@ -142,6 +161,9 @@ public:
 	void setHP(s16 hp);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setBonePosition(std::string bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 
@@ -229,15 +251,32 @@ private:
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
+
+
+
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
+	v2f m_animation_range;
+	float m_animation_speed;
+	float m_animation_blend;
+	bool m_animation_sent;
+
+	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
+	bool m_bone_position_sent;
+
+	int m_attachment_parent_id;
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attachment_sent;
+
 public:
 	// Some flags used by Server
-	bool m_teleported;
+	bool m_moved;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_wielded_item_not_sent;

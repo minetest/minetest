@@ -18,8 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "object_properties.h"
+#include "irrlichttypes_bloated.h"
 #include "util/serialize.h"
 #include <sstream>
+#include <map>
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 #define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
@@ -30,6 +32,7 @@ ObjectProperties::ObjectProperties():
 	weight(5),
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
 	visual("sprite"),
+	mesh(""),
 	visual_size(1,1),
 	spritediv(1,1),
 	initial_sprite_basepos(0,0),
@@ -38,6 +41,7 @@ ObjectProperties::ObjectProperties():
 	automatic_rotate(0)
 {
 	textures.push_back("unknown_object.png");
+	colors.push_back(video::SColor(255,255,255,255));
 }
 
 std::string ObjectProperties::dump()
@@ -48,10 +52,16 @@ std::string ObjectProperties::dump()
 	os<<", weight="<<weight;
 	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
 	os<<", visual="<<visual;
+	os<<", mesh="<<mesh;
 	os<<", visual_size="<<PP2(visual_size);
 	os<<", textures=[";
 	for(u32 i=0; i<textures.size(); i++){
 		os<<"\""<<textures[i]<<"\" ";
+	}
+	os<<"]";
+	os<<", colors=[";
+	for(u32 i=0; i<colors.size(); i++){
+		os<<"\""<<colors[i].getAlpha()<<","<<colors[i].getRed()<<","<<colors[i].getGreen()<<","<<colors[i].getBlue()<<"\" ";
 	}
 	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
@@ -71,10 +81,15 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeV3F1000(os, collisionbox.MinEdge);
 	writeV3F1000(os, collisionbox.MaxEdge);
 	os<<serializeString(visual);
+	os<<serializeString(mesh);
 	writeV2F1000(os, visual_size);
 	writeU16(os, textures.size());
 	for(u32 i=0; i<textures.size(); i++){
 		os<<serializeString(textures[i]);
+	}
+	writeU16(os, colors.size());
+	for(u32 i=0; i<colors.size(); i++){
+		writeARGB8(os, colors[i]);
 	}
 	writeV2S16(os, spritediv);
 	writeV2S16(os, initial_sprite_basepos);
@@ -94,11 +109,16 @@ void ObjectProperties::deSerialize(std::istream &is)
 	collisionbox.MinEdge = readV3F1000(is);
 	collisionbox.MaxEdge = readV3F1000(is);
 	visual = deSerializeString(is);
+	mesh = deSerializeString(is);
 	visual_size = readV2F1000(is);
 	textures.clear();
 	u32 texture_count = readU16(is);
 	for(u32 i=0; i<texture_count; i++){
 		textures.push_back(deSerializeString(is));
+	}
+	u32 color_count = readU16(is);
+	for(u32 i=0; i<color_count; i++){
+		colors.push_back(readARGB8(is));
 	}
 	spritediv = readV2S16(is);
 	initial_sprite_basepos = readV2S16(is);

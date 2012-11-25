@@ -463,6 +463,8 @@ public:
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
+
+	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
 	
 private:
 	ClientMap *m_map;

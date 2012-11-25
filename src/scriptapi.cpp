@@ -936,6 +936,8 @@ static void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "visual", prop->visual);
+
+	getstringfield(L, -1, "mesh", prop->mesh);
 	
 	lua_getfield(L, -1, "visual_size");
 	if(lua_istable(L, -1))
@@ -953,6 +955,23 @@ static void read_object_properties(lua_State *L, int index,
 				prop->textures.push_back(lua_tostring(L, -1));
 			else
 				prop->textures.push_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "colors");
+	if(lua_istable(L, -1)){
+		prop->colors.clear();
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				prop->colors.push_back(readARGB8(L, -1));
+			else
+				prop->colors.push_back(video::SColor(255, 255, 255, 255));
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
@@ -2697,6 +2716,80 @@ private:
 		return 0;
 	}
 
+	// set_animation(self, frame_range, frame_speed, frame_blend)
+	static int l_set_animation(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v2f frames = v2f(1, 1);
+		if(!lua_isnil(L, 2))
+			frames = read_v2f(L, 2);
+		float frame_speed = 15;
+		if(!lua_isnil(L, 3))
+			frame_speed = lua_tonumber(L, 3);
+		float frame_blend = 0;
+		if(!lua_isnil(L, 4))
+			frame_blend = lua_tonumber(L, 4);
+		co->setAnimation(frames, frame_speed, frame_blend);
+		return 0;
+	}
+
+	// set_bone_position(self, std::string bone, v3f position, v3f rotation)
+	static int l_set_bone_position(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		std::string bone = "";
+		if(!lua_isnil(L, 2))
+			bone = lua_tostring(L, 2);
+		v3f position = v3f(0, 0, 0);
+		if(!lua_isnil(L, 3))
+			position = read_v3f(L, 3);
+		v3f rotation = v3f(0, 0, 0);
+		if(!lua_isnil(L, 4))
+			rotation = read_v3f(L, 4);
+		co->setBonePosition(bone, position, rotation);
+		return 0;
+	}
+
+	// set_attach(self, parent, bone, position, rotation)
+	static int l_set_attach(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ObjectRef *parent_ref = checkobject(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		ServerActiveObject *parent = getobject(parent_ref);
+		if(co == NULL) return 0;
+		if(parent == NULL) return 0;
+		// Do it
+		std::string bone = "";
+		if(!lua_isnil(L, 3))
+			bone = lua_tostring(L, 3);
+		v3f position = v3f(0, 0, 0);
+		if(!lua_isnil(L, 4))
+			position = read_v3f(L, 4);
+		v3f rotation = v3f(0, 0, 0);
+		if(!lua_isnil(L, 5))
+			rotation = read_v3f(L, 5);
+		co->setAttachment(parent->getId(), bone, position, rotation);
+		return 0;
+	}
+
+	// set_detach(self)
+	static int l_set_detach(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
+		return 0;
+	}
+
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L)
 	{
@@ -2932,7 +3025,54 @@ private:
 		lua_pushlstring(L, formspec.c_str(), formspec.size());
 		return 1;
 	}
-
+	
+	// get_player_control(self)
+	static int l_get_player_control(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		// Do it
+		PlayerControl control = player->getPlayerControl();
+		lua_newtable(L);
+		lua_pushboolean(L, control.up);
+		lua_setfield(L, -2, "up");
+		lua_pushboolean(L, control.down);
+		lua_setfield(L, -2, "down");
+		lua_pushboolean(L, control.left);
+		lua_setfield(L, -2, "left");
+		lua_pushboolean(L, control.right);
+		lua_setfield(L, -2, "right");
+		lua_pushboolean(L, control.jump);
+		lua_setfield(L, -2, "jump");
+		lua_pushboolean(L, control.aux1);
+		lua_setfield(L, -2, "aux1");
+		lua_pushboolean(L, control.sneak);
+		lua_setfield(L, -2, "sneak");
+		lua_pushboolean(L, control.LMB);
+		lua_setfield(L, -2, "LMB");
+		lua_pushboolean(L, control.RMB);
+		lua_setfield(L, -2, "RMB");
+		return 1;
+	}
+	
+	// get_player_control_bits(self)
+	static int l_get_player_control_bits(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		// Do it	
+		lua_pushnumber(L, player->keyPressed);
+		return 1;
+	}
+	
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -3011,6 +3151,10 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, set_wielded_item),
 	method(ObjectRef, set_armor_groups),
+	method(ObjectRef, set_animation),
+	method(ObjectRef, set_bone_position),
+	method(ObjectRef, set_attach),
+	method(ObjectRef, set_detach),
 	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
@@ -3031,6 +3175,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_look_yaw),
 	method(ObjectRef, set_inventory_formspec),
 	method(ObjectRef, get_inventory_formspec),
+	method(ObjectRef, get_player_control),
+	method(ObjectRef, get_player_control_bits),
 	{0,0}
 };
 
@@ -6588,6 +6734,8 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "visual", prop->visual);
+
+	getstringfield(L, -1, "mesh", prop->mesh);
 	
 	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop);

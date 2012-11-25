@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include <iostream>
+#include <map>
 
 struct ObjectProperties
 {
@@ -32,13 +33,16 @@ struct ObjectProperties
 	float weight;
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
+	std::string mesh;
 	v2f visual_size;
 	core::array<std::string> textures;
+	core::array<video::SColor> colors;
 	v2s16 spritediv;
 	v2s16 initial_sprite_basepos;
 	bool is_visible;
 	bool makes_footstep_sound;
 	float automatic_rotate;
+
 
 	ObjectProperties();
 	std::string dump();
