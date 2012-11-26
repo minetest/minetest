@@ -75,8 +75,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		GENERIC_CMD_SET_ATTACHMENT
 */
 
-#define PROTOCOL_VERSION 14
+// Server always only supports one version
+#define SERVER_PROTOCOL_VERSION 14
 
+// Client can support older versions too
+#define CLIENT_PROTOCOL_VERSION_MIN 13
+#define CLIENT_PROTOCOL_VERSION_MAX SERVER_PROTOCOL_VERSION
+
+// Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
@@ -350,7 +356,8 @@ enum ToServerCommand
 		[2] u8 SER_FMT_VER_HIGHEST
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)
-		[51] u16 client network protocol version (new in some version)
+		[51] u16 minimum supported network protocol version (added sometime)
+		[53] u16 maximum supported network protocol version (added later than the previous one)
 	*/
 
 	TOSERVER_INIT2 = 0x11,
