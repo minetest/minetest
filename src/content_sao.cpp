@@ -567,10 +567,10 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 std::string LuaEntitySAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	os<<serializeString(""); // name
-	writeS16(os, getId()); //id
 	writeU8(os, 0); // is_player
+	writeS16(os, getId()); //id
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
 	writeS16(os, m_hp);
@@ -965,7 +965,7 @@ bool PlayerSAO::unlimitedTransferDistance() const
 std::string PlayerSAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	os<<serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); //id

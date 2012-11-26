@@ -650,7 +650,7 @@ public:
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version != 0){
+		if(version != 1){
 			errorstream<<"GenericCAO: Unsupported init data version"
 					<<std::endl;
 			return;
