@@ -2069,33 +2069,39 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		getClient(peer_id)->net_proto_version = net_proto_version;
 
-		if(net_proto_version == 0)
+		if(net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
+				net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
 		{
-			actionstream<<"Server: An old tried to connect from "<<addr_s
+			actionstream<<"Server: A mismatched client tried to connect from "<<addr_s
 					<<std::endl;
 			SendAccessDenied(m_con, peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
+					+ narrow_to_wide(VERSION_STRING) + L",\n"
+					+ L"server's PROTOCOL_VERSION is "
+					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
+					+ L"..."
+					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
+					+ L", client's PROTOCOL_VERSION is "
+					+ narrow_to_wide(itos(min_net_proto_version))
+					+ L"..."
+					+ narrow_to_wide(itos(max_net_proto_version))
 			);
 			return;
 		}
 		
 		if(g_settings->getBool("strict_protocol_version_checking"))
 		{
-			if(net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
-					net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
+			if(net_proto_version != LATEST_PROTOCOL_VERSION)
 			{
-				actionstream<<"Server: A mismatched client tried to connect"
-						<<" from "<<addr_s<<std::endl;
+				actionstream<<"Server: A mismatched (strict) client tried to "
+						<<"connect from "<<addr_s<<std::endl;
 				SendAccessDenied(m_con, peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
 						+ narrow_to_wide(VERSION_STRING) + L",\n"
-						+ L"server's PROTOCOL_VERSION is "
-						+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
-						+ L"..."
-						+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
+						+ L"server's PROTOCOL_VERSION (strict) is "
+						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
 						+ L", client's PROTOCOL_VERSION is "
 						+ narrow_to_wide(itos(min_net_proto_version))
 						+ L"..."
@@ -2343,8 +2349,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Warnings about protocol version can be issued here
 		if(getClient(peer_id)->net_proto_version < LATEST_PROTOCOL_VERSION)
 		{
-			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD "
-					L"AND MAY NOT FULLY WORK WITH THIS SERVER!");
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT'S "
+					L"VERSION MAY NOT BE FULLY COMPATIBLE WITH THIS SERVER!");
 		}
 
 		/*
