@@ -427,13 +427,21 @@ public:
 			std::vector<Value> &list = it->second;
 			bool size_written = false;
 			/* Write key */
-			if(key < 127){
+			if(key < 126){
 				u8 v = key;
 				if(list.size() == 1){
 					v |= 0x80;
 					size_written = true;
 				}
 				writeU8(os, v);
+			} else if(key < 65536){
+				u8 v = 126;
+				if(list.size() == 1){
+					v |= 0x80;
+					size_written = true;
+				}
+				writeU8(os, v);
+				writeU16(os, key);
 			} else{
 				u8 v = 127;
 				if(list.size() == 1){
@@ -481,7 +489,9 @@ public:
 			u8 key_v = readU8(is);
 			bool single_value = !!(key_v & 0x80);
 			u32 key = key_v & 0x7f;
-			if(key == 127)
+			if(key == 126)
+				key = readU16(is);
+			else if(key == 127)
 				key = readU32(is);
 			/* Get list to deserialize into */
 			std::map<u32, std::vector<Value> >::iterator it = m_values.find(key);

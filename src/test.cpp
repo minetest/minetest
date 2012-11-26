@@ -342,6 +342,8 @@ struct TestBKVL: public TestBase
 	void Run()
 	{
 		u8 v_u8 = 0;
+		u16 v_u16 = 0;
+		s32 v_s32 = 0;
 		std::string v_string;
 
 		BinaryKeyValueList bkvl;
@@ -393,6 +395,14 @@ struct TestBKVL: public TestBase
 		UASSERT(v_string == "moi");
 		UASSERT(bkvl.get(873205, 0, v_u8) == false);
 
+		for(u32 i=10; i<1010; i++)
+			bkvl.append<u16>(i, i);
+		for(u32 i=10; i<1010; i++){
+			UTEST(bkvl.get<u16>(i, 0, v_u16) == true, "i=%i", i);
+			UTEST(v_u16 == i, "i=%i, v_u16=%i",
+					i, (unsigned int)v_u16&0xffff);
+		}
+
 		std::ostringstream os(std::ios::binary);
 		bkvl.serialize(os);
 		verbosestream<<"Test BVKL size: "<<os.str().size()<<std::endl;
@@ -437,6 +447,31 @@ struct TestBKVL: public TestBase
 		UASSERT(bkvl.get(873205, 0, v_string) == true);
 		UASSERT(v_string == "moi");
 		UASSERT(bkvl.get(873205, 0, v_u8) == false);
+
+		for(u32 i=10; i<1010; i++){
+			UTEST(bkvl.get<u16>(i, 0, v_u16) == true, "i=%i", i);
+			UTEST(v_u16 == i, "i=%i, v_u16=%i",
+					i, (unsigned int)v_u16&0xffff);
+		}
+
+		{
+			BinaryKeyValueList bkvl;
+
+			for(u32 i=0; i<0xffff+10; i++)
+				bkvl.append<s32>(i, i-1);
+
+			std::ostringstream os(std::ios::binary);
+			bkvl.serialize(os);
+			verbosestream<<"Test BVKL size: "<<os.str().size()<<std::endl;
+			bkvl.clear();
+			std::istringstream is(os.str(), std::ios::binary);
+			bkvl.deSerialize(is);
+
+			for(u32 i=0; i<0xffff+10; i++){
+				UTEST(bkvl.get<s32>(i, 0, v_s32) == true, "i=%i", i);
+				UTEST(v_s32 == (s32)i-1, "i=%i, v_s32=%i", i, v_s32);
+			}
+		}
 	}
 };
 
