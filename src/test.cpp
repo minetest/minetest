@@ -314,6 +314,26 @@ struct TestSerialization: public TestBase
 	}
 };
 
+struct TestNodedefSerialization: public TestBase
+{
+	void Run()
+	{
+		ContentFeatures f;
+		f.name = "default:stone";
+		for(int i = 0; i < 6; i++)
+			f.tiledef[i].name = "default_stone.png";
+		f.is_ground_content = true;
+		std::ostringstream os(std::ios::binary);
+		f.serialize(os);
+		verbosestream<<"Test ContentFeatures size: "<<os.str().size()<<std::endl;
+		std::istringstream is(os.str(), std::ios::binary);
+		ContentFeatures f2;
+		f2.deSerialize(is);
+		UASSERT(f.walkable == f2.walkable);
+		UASSERT(f.node_box.type == f2.node_box.type);
+	}
+};
+
 struct TestCompress: public TestBase
 {
 	void Run()
@@ -1736,6 +1756,7 @@ void run_tests()
 	TEST(TestSettings);
 	TEST(TestCompress);
 	TEST(TestSerialization);
+	TEST(TestNodedefSerialization);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
 	TESTPARAMS(TestVoxelAlgorithms, ndef);
