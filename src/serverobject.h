@@ -118,7 +118,7 @@ public:
 		The return value of this is passed to the client-side object
 		when it is created
 	*/
-	virtual std::string getClientInitializationData(){return "";}
+	virtual std::string getClientInitializationData(u16 protocol_version){return "";}
 	
 	/*
 		The return value of this is passed to the server-side object
