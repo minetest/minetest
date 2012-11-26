@@ -602,7 +602,7 @@ private:
 	static void SendItemDef(con::Connection &con, u16 peer_id,
 			IItemDefManager *itemdef);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
-			INodeDefManager *nodedef);
+			INodeDefManager *nodedef, u16 protocol_version);
 	
 	/*
 		Non-static send methods.

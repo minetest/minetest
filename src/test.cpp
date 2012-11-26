@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
+#include "clientserver.h" // LATEST_PROTOCOL_VERSION
 
 /*
 	Asserts that the exception occurs
@@ -324,7 +325,7 @@ struct TestNodedefSerialization: public TestBase
 			f.tiledef[i].name = "default_stone.png";
 		f.is_ground_content = true;
 		std::ostringstream os(std::ios::binary);
-		f.serialize(os);
+		f.serialize(os, LATEST_PROTOCOL_VERSION);
 		verbosestream<<"Test ContentFeatures size: "<<os.str().size()<<std::endl;
 		std::istringstream is(os.str(), std::ios::binary);
 		ContentFeatures f2;

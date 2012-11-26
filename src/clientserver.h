@@ -75,14 +75,19 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		GENERIC_CMD_SET_ANIMATION
 		GENERIC_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
+	PROTOCOL_VERSION 15:
+		Serialization format changes
 */
 
-// Server always only supports one version
-#define SERVER_PROTOCOL_VERSION 14
+#define LATEST_PROTOCOL_VERSION 15
 
-// Client can support older versions too
+// Server's supported network protocol range
+#define SERVER_PROTOCOL_VERSION_MIN 14
+#define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
+
+// Client's supported network protocol range
 #define CLIENT_PROTOCOL_VERSION_MIN 13
-#define CLIENT_PROTOCOL_VERSION_MAX SERVER_PROTOCOL_VERSION
+#define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
