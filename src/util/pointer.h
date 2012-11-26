@@ -222,7 +222,7 @@ public:
 	/*
 		Copies whole buffer
 	*/
-	SharedBuffer(T *t, unsigned int size)
+	SharedBuffer(const T *t, unsigned int size)
 	{
 		m_size = size;
 		if(m_size != 0)
