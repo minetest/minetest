@@ -1301,6 +1301,7 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	return id;
 }
 
+#if 0
 bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 {
 	assert(obj);
@@ -1343,6 +1344,7 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 
 	return succeeded;
 }
+#endif
 
 /*
 	Finds out what new objects have been added to
@@ -1563,13 +1565,15 @@ void ServerEnvironment::removeRemovedObjects()
 		*/
 		if(obj->m_static_exists && obj->m_removed)
 		{
-			MapBlock *block = m_map->emergeBlock(obj->m_static_block);
-			if(block)
-			{
+			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+			if (block) {
 				block->m_static_objects.remove(id);
 				block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						"removeRemovedObjects");
 				obj->m_static_exists = false;
+			} else {
+				infostream << "failed to emerge block from which "
+					"an object to be removed was loaded from. id="<<id<<std::endl;
 			}
 		}
 
@@ -1717,6 +1721,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 
 	If force_delete is set, active object is deleted nevertheless. It
 	shall only be set so in the destructor of the environment.
+
+	If block wasn't generated (not in memory or on disk), 
 */
 void ServerEnvironment::deactivateFarObjects(bool force_delete)
 {

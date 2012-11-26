@@ -241,8 +241,9 @@ public:
 		MapBlock.
 		Caller allocates memory, ServerEnvironment frees memory.
 		Return value: true if succeeded, false if failed.
+		(note:  not used, pending removal from engine)
 	*/
-	bool addActiveObjectAsStatic(ServerActiveObject *object);
+	//bool addActiveObjectAsStatic(ServerActiveObject *object);
 	
 	/*
 		Find out what new objects have been added to

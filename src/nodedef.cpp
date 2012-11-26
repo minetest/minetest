@@ -106,7 +106,7 @@ void NodeBox::deSerialize(std::istream &is)
 /*
 	TileDef
 */
-	
+
 void TileDef::serialize(std::ostream &os) const
 {
 	writeU8(os, 0); // version
@@ -173,7 +173,7 @@ void ContentFeatures::reset()
 	has_after_destruct = false;
 	/*
 		Actual data
-		
+
 		NOTE: Most of this is always overridden by the default values given
 		      in builtin.lua
 	*/
@@ -354,7 +354,7 @@ public:
 			ContentFeatures &f = m_content_features[i];
 			f.reset(); // Reset to defaults
 		}
-		
+
 		// Set CONTENT_AIR
 		{
 			ContentFeatures f;
@@ -541,11 +541,11 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
-		
+
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-			
+
 			// Figure out the actual tiles to use
 			TileDef tiledef[6];
 			for(u32 j=0; j<6; j++)

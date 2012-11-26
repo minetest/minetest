@@ -739,6 +739,9 @@ private:
 	bool m_rollback_sink_enabled;
 	bool m_enable_rollback_recording; // Updated once in a while
 
+	// Emerge manager
+	EmergeManager *m_emerge;
+
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
 	lua_State *m_lua;

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define NOISE_HEADER
 
 #include "debug.h"
+#include "irr_v3d.h"
 
 class PseudoRandom
 {
@@ -59,91 +60,69 @@ private:
 	int m_next;
 };
 
-double easeCurve(double t);
- 
-// Return value: -1 ... 1
-double noise2d(int x, int y, int seed);
-double noise3d(int x, int y, int z, int seed);
-
-double noise2d_gradient(double x, double y, int seed);
-double noise3d_gradient(double x, double y, double z, int seed);
-
-double noise2d_perlin(double x, double y, int seed,
-		int octaves, double persistence);
-
-double noise2d_perlin_abs(double x, double y, int seed,
-		int octaves, double persistence);
-
-double noise3d_perlin(double x, double y, double z, int seed,
-		int octaves, double persistence);
-
-double noise3d_perlin_abs(double x, double y, double z, int seed,
-		int octaves, double persistence);
-
-enum NoiseType
-{
-	NOISE_CONSTANT_ONE,
-	NOISE_PERLIN,
-	NOISE_PERLIN_ABS,
-	NOISE_PERLIN_CONTOUR,
-	NOISE_PERLIN_CONTOUR_FLIP_YZ,
-};
-
-struct NoiseParams
-{
-	NoiseType type;
+struct NoiseParams {
+	float offset;
+	float scale;
+	v3f spread;
 	int seed;
 	int octaves;
-	double persistence;
-	double pos_scale;
-	double noise_scale; // Useful for contour noises
-	
-	NoiseParams(NoiseType type_=NOISE_PERLIN, int seed_=0,
-			int octaves_=3, double persistence_=0.5,
-			double pos_scale_=100.0, double noise_scale_=1.0):
-		type(type_),
-		seed(seed_),
-		octaves(octaves_),
-		persistence(persistence_),
-		pos_scale(pos_scale_),
-		noise_scale(noise_scale_)
-	{
-	}
+	float persist;
 };
 
-double noise3d_param(const NoiseParams &param, double x, double y, double z);
 
-class NoiseBuffer
-{
+class Noise {
 public:
-	NoiseBuffer();
-	~NoiseBuffer();
-	
-	void clear();
-	void create(const NoiseParams &param,
-			double first_x, double first_y, double first_z,
-			double last_x, double last_y, double last_z,
-			double samplelength_x, double samplelength_y, double samplelength_z);
-	void multiply(const NoiseParams &param);
-	// Deprecated
-	void create(int seed, int octaves, double persistence,
-			bool abs,
-			double first_x, double first_y, double first_z,
-			double last_x, double last_y, double last_z,
-			double samplelength_x, double samplelength_y, double samplelength_z);
+	NoiseParams *np;
+	int seed;
+	int sx;
+	int sy;
+	int sz;
+	float *noisebuf;
+	float *buf;
+	float *result;
 
-	void intSet(int x, int y, int z, double d);
-	void intMultiply(int x, int y, int z, double d);
-	double intGet(int x, int y, int z);
-	double get(double x, double y, double z);
-	//bool contains(double x, double y, double z);
+	Noise(NoiseParams *np, int seed, int sx, int sy);
+	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
+	~Noise();
 
-private:
-	double *m_data;
-	double m_start_x, m_start_y, m_start_z;
-	double m_samplelength_x, m_samplelength_y, m_samplelength_z;
-	int m_size_x, m_size_y, m_size_z;
+	void gradientMap2D(
+		float x, float y,
+		float step_x, float step_y,
+		int seed);
+	void gradientMap3D(
+		float x, float y, float z,
+		float step_x, float step_y, float step_z,
+		int seed);
+	float *perlinMap2D(float x, float y);
+	float *perlinMap3D(float x, float y, float z);
 };
+
+// Return value: -1 ... 1
+float noise2d(int x, int y, int seed);
+float noise3d(int x, int y, int z, int seed);
+
+float noise2d_gradient(float x, float y, int seed);
+float noise3d_gradient(float x, float y, float z, int seed);
+
+float noise2d_perlin(float x, float y, int seed,
+		int octaves, float persistence);
+
+float noise2d_perlin_abs(float x, float y, int seed,
+		int octaves, float persistence);
+
+float noise3d_perlin(float x, float y, float z, int seed,
+		int octaves, float persistence);
+
+float noise3d_perlin_abs(float x, float y, float z, int seed,
+		int octaves, float persistence);
+
+inline float easeCurve(float t) {
+	return t * t * t * (t * (6.f * t - 15.f) + 10.f);
+}
+
+#define NoisePerlin2D(np, x, y, s) ((np)->offset + (np)->scale * \
+		noise2d_perlin((float)(x) * (np)->spread.X, (float)(y) * (np)->spread.Y, \
+		(s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #endif
 

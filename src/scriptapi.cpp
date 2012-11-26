@@ -3240,8 +3240,8 @@ class LuaPerlinNoise
 private:
 	int seed;
 	int octaves;
-	double persistence;
-	double scale;
+	float persistence;
+	float scale;
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -3273,8 +3273,8 @@ private:
 	}
 
 public:
-	LuaPerlinNoise(int a_seed, int a_octaves, double a_persistence,
-			double a_scale):
+	LuaPerlinNoise(int a_seed, int a_octaves, float a_persistence,
+			float a_scale):
 		seed(a_seed),
 		octaves(a_octaves),
 		persistence(a_persistence),
@@ -3292,8 +3292,8 @@ public:
 	{
 		int seed = luaL_checkint(L, 1);
 		int octaves = luaL_checkint(L, 2);
-		double persistence = luaL_checknumber(L, 3);
-		double scale = luaL_checknumber(L, 4);
+		float persistence = luaL_checknumber(L, 3);
+		float scale = luaL_checknumber(L, 4);
 		LuaPerlinNoise *o = new LuaPerlinNoise(seed, octaves, persistence, scale);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
@@ -3999,8 +3999,8 @@ private:
 
 		int seeddiff = luaL_checkint(L, 2);
 		int octaves = luaL_checkint(L, 3);
-		double persistence = luaL_checknumber(L, 4);
-		double scale = luaL_checknumber(L, 5);
+		float persistence = luaL_checknumber(L, 4);
+		float scale = luaL_checknumber(L, 5);
 
 		LuaPerlinNoise *n = new LuaPerlinNoise(seeddiff + int(env->getServerMap().getSeed()), octaves, persistence, scale);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = n;

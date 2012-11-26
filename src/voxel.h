@@ -72,7 +72,7 @@ public:
 		MaxEdge(p)
 	{
 	}
-	
+
 	/*
 		Modifying methods
 	*/
@@ -106,14 +106,14 @@ public:
 		if(p.Y > MaxEdge.Y) MaxEdge.Y = p.Y;
 		if(p.Z > MaxEdge.Z) MaxEdge.Z = p.Z;
 	}
-	
+
 	// Pad with d nodes
 	void pad(v3s16 d)
 	{
 		MinEdge -= d;
 		MaxEdge += d;
 	}
-	
+
 	/*void operator+=(v3s16 off)
 	{
 		MinEdge += off;
@@ -202,7 +202,7 @@ public:
 		}
 
 		assert(contains(a));
-		
+
 		// Take back area, XY inclusive
 		{
 			v3s16 min(MinEdge.X, MinEdge.Y, a.MaxEdge.Z+1);
@@ -258,7 +258,7 @@ public:
 		}
 
 	}
-	
+
 	/*
 		Translates position from virtual coordinates to array index
 	*/
@@ -274,7 +274,7 @@ public:
 	{
 		return index(p.X, p.Y, p.Z);
 	}
-	
+
 	// Translate index in the X coordinate
 	void add_x(const v3s16 &extent, u32 &i, s16 a)
 	{
@@ -343,7 +343,7 @@ class VoxelManipulator /*: public NodeContainer*/
 public:
 	VoxelManipulator();
 	virtual ~VoxelManipulator();
-	
+
 	/*
 		Virtuals from NodeContainer
 	*/
@@ -430,7 +430,7 @@ public:
 	void setNode(v3s16 p, const MapNode &n)
 	{
 		emerge(p);
-		
+
 		m_data[m_area.index(p)] = n;
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_INEXISTENT;
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_NOT_LOADED;
@@ -457,10 +457,10 @@ public:
 		//dstream<<"operator[] p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
 		if(isValidPosition(p) == false)
 			emerge(VoxelArea(p));
-		
+
 		return m_data[m_area.index(p)];
 	}*/
-	
+
 	/*
 		Set stuff if available without an emerge.
 		Return false if failed.
@@ -496,7 +496,7 @@ public:
 
 	void print(std::ostream &o, INodeDefManager *nodemgr,
 			VoxelPrintMode mode=VOXELPRINT_MATERIAL);
-	
+
 	void addArea(VoxelArea area);
 
 	/*
@@ -505,7 +505,7 @@ public:
 	*/
 	void copyFrom(MapNode *src, VoxelArea src_area,
 			v3s16 from_pos, v3s16 to_pos, v3s16 size);
-	
+
 	// Copy data
 	void copyTo(MapNode *dst, VoxelArea dst_area,
 			v3s16 dst_pos, v3s16 from_pos, v3s16 size);
@@ -523,15 +523,15 @@ public:
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,
 			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
-	
+
 	void spreadLight(enum LightBank bank, v3s16 p, INodeDefManager *nodemgr);
 	void spreadLight(enum LightBank bank,
 			core::map<v3s16, bool> & from_nodes, INodeDefManager *nodemgr);
-	
+
 	/*
 		Virtual functions
 	*/
-	
+
 	/*
 		Get the contents of the requested area from somewhere.
 		Shall touch only nodes that have VOXELFLAG_NOT_LOADED
@@ -565,7 +565,7 @@ public:
 		MaxEdge is 1 higher than maximum allowed position
 	*/
 	VoxelArea m_area;
-	
+
 	/*
 		NULL if data size is 0 (extent (0,0,0))
 		Data is stored as [z*h*w + y*h + x]
@@ -576,7 +576,7 @@ public:
 		Flags of all nodes
 	*/
 	u8 *m_flags;
-	
+
 	//TODO: Use these or remove them
 	//TODO: Would these make any speed improvement?
 	//bool m_pressure_route_valid;

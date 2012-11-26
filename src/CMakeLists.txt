@@ -218,6 +218,7 @@ set(common_SRCS
 	sha1.cpp
 	base64.cpp
 	ban.cpp
+	biome.cpp
 	clientserver.cpp
 	staticobject.cpp
 	util/serialize.cpp

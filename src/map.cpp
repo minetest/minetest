@@ -1994,7 +1994,7 @@ void Map::removeNodeTimer(v3s16 p)
 	ServerMap
 */
 
-ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
+ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	m_seed(0),
 	m_map_metadata_changed(true),
@@ -2004,6 +2004,8 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
+	m_emerge = emerge;
+
 	//m_chunksize = 8; // Takes a few seconds
 
 	if (g_settings->get("fixed_map_seed").empty())
@@ -2011,12 +2013,15 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 		m_seed = (((u64)(myrand()%0xffff)<<0)
 				+ ((u64)(myrand()%0xffff)<<16)
 				+ ((u64)(myrand()%0xffff)<<32)
-				+ ((u64)(myrand()%0xffff)<<48));
+				+ ((u64)(myrand()&0xffff)<<48));
 	}
 	else
 	{
 		m_seed = g_settings->getU64("fixed_map_seed");
 	}
+	emerge->seed = m_seed;
+	emerge->water_level = g_settings->getS16("default_water_level");
+	//<set noiseparams here>
 
 	/*
 		Experimental and debug stuff
@@ -2136,7 +2141,7 @@ ServerMap::~ServerMap()
 #endif
 }
 
-void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
+void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 {
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	if(enable_mapgen_debug_info)
@@ -2208,7 +2213,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 
 						Refer to the map generator heuristics.
 					*/
-					bool ug = mapgen::block_is_underground(data->seed, p);
+					bool ug = m_emerge->isBlockUnderground(p);
 					block->setIsUnderground(ug);
 				}
 
@@ -2243,7 +2248,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	// Data is ready now.
 }
 
-MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
+MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
 	v3s16 blockpos_min = data->blockpos_min;
@@ -2483,6 +2488,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	return sector;
 }
 
+#if 0
 /*
 	This is a quick-hand function for calling makeBlock().
 */
@@ -2518,7 +2524,7 @@ MapBlock * ServerMap::generateBlock(
 	/*
 		Create block make data
 	*/
-	mapgen::BlockMakeData data;
+	BlockMakeData data;
 	initBlockMake(&data, p);
 
 	/*
@@ -2526,7 +2532,8 @@ MapBlock * ServerMap::generateBlock(
 	*/
 	{
 		TimeTaker t("mapgen::make_block()");
-		mapgen::make_block(&data);
+		mapgen->makeChunk(&data);
+		//mapgen::make_block(&data);
 
 		if(enable_mapgen_debug_info == false)
 			t.stop(true); // Hide output
@@ -2595,6 +2602,7 @@ MapBlock * ServerMap::generateBlock(
 
 	return block;
 }
+#endif
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
@@ -2656,14 +2664,15 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	}
 	// Create blank
 	block = sector->createBlankBlock(block_y);
+
 	return block;
 }
 
-MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
+MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
-	DSTACKF("%s: p=(%d,%d,%d), allow_generate=%d",
+	DSTACKF("%s: p=(%d,%d,%d), create_blank=%d",
 			__FUNCTION_NAME,
-			p.X, p.Y, p.Z, allow_generate);
+			p.X, p.Y, p.Z, create_blank);
 	
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
@@ -2677,7 +2686,13 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 			return block;
 	}
 
-	if(allow_generate)
+	if (create_blank) {
+		ServerMapSector *sector = createSector(v2s16(p.X, p.Z));
+		MapBlock *block = sector->createBlankBlock(p.Y);
+
+		return block;
+	}
+	/*if(allow_generate)
 	{
 		core::map<v3s16, MapBlock*> modified_blocks;
 		MapBlock *block = generateBlock(p, modified_blocks);
@@ -2700,7 +2715,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 								
 			return block;
 		}
-	}
+	}*/
 
 	return NULL;
 }
@@ -2742,7 +2757,7 @@ plan_b:
 		Determine from map generator noise functions
 	*/
 	
-	s16 level = mapgen::find_ground_level_from_noise(m_seed, p2d, 1);
+	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
 	return level;
 
 	//double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
@@ -3062,6 +3077,7 @@ void ServerMap::saveMapMeta()
 	
 	Settings params;
 	params.setU64("seed", m_seed);
+	params.setS16("water_level", m_emerge->water_level);
 
 	params.writeLines(os);
 
@@ -3100,8 +3116,11 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-
+	
 	m_seed = params.getU64("seed");
+	m_emerge->seed        = m_seed;
+	m_emerge->water_level = params.getS16("water_level");
+	//m_emerge->np = ;
 
 	verbosestream<<"ServerMap::loadMapMeta(): "<<"seed="<<m_seed<<std::endl;
 }
