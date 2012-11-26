@@ -267,6 +267,7 @@ Client::Client(
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
+	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0)
 {
 	m_packetcounter_timer = 0.0;
@@ -658,7 +659,7 @@ void Client::step(float dtime)
 	{
 		float &counter = m_playerpos_send_timer;
 		counter += dtime;
-		if(counter >= 0.2)
+		if(counter >= m_recommended_send_interval)
 		{
 			counter = 0.0;
 			sendPlayerPos();
@@ -1021,6 +1022,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+		}
+
+		if(datasize >= 2+1+6+8+4)
+		{
+			// Get map seed
+			m_recommended_send_interval = readF1000(&data[2+1+6+8]);
+			infostream<<"Client: received recommended send interval "
+					<<m_recommended_send_interval<<std::endl;
 		}
 		
 		// Reply to server

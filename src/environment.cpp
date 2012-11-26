@@ -329,7 +329,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
-	m_game_time_fraction_counter(0)
+	m_game_time_fraction_counter(0),
+	m_recommended_send_interval(0.1)
 {
 }
 
@@ -939,6 +940,11 @@ void ServerEnvironment::step(float dtime)
 
 	/* Step time of day */
 	stepTimeOfDay(dtime);
+
+	// Update this one
+	// NOTE: This is kind of funny on a singleplayer game, but doesn't
+	// really matter that much.
+	m_recommended_send_interval = g_settings->getFloat("dedicated_server_step");
 
 	/*
 		Increment game time
