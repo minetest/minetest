@@ -2296,8 +2296,9 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	{
 		errorstream<<"ClientEnvironment::addActiveObject():"
 				<<" id="<<id<<" type="<<type
-				<<": SerializationError in initialize(),"
-				<<" init_data="<<serializeJsonString(init_data)
+				<<": SerializationError in initialize(): "
+				<<e.what()
+				<<": init_data="<<serializeJsonString(init_data)
 				<<std::endl;
 	}
 
