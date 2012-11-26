@@ -658,7 +658,7 @@ void Client::step(float dtime)
 	{
 		float &counter = m_playerpos_send_timer;
 		counter += dtime;
-		if(counter >= 0.2)
+		if(counter >= 0.1)
 		{
 			counter = 0.0;
 			sendPlayerPos();
