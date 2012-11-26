@@ -143,6 +143,10 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 			.. ", replacing " .. oldnode_above.name)
 		return
 	end
+	
+	if def.paramtype2 == "wallmounted" and not olddef_under.walkable then
+		return
+	end
 
 	-- Place above pointed node
 	local place_to = {x = above.x, y = above.y, z = above.z}
