@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "util/serialize.h"
+#include "util/pointer.h"
+
+SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -564,15 +566,6 @@ enum ToServerCommand
 	 */
 
 };
-
-inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
-{
-	SharedBuffer<u8> data(2+2+4);
-	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
-	writeU16(&data[2], time);
-	writeF1000(&data[4], time_speed);
-	return data;
-}
 
 #endif
 
