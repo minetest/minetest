@@ -461,12 +461,21 @@ public:
 				}
 			}
 			for(size_t i=0; i<list.size(); i++){
-				writeU8(os, list[i].t);
-				if(list[i].v.size() < 255){
-					writeU8(os, list[i].v.size());
-				} else{
-					writeU8(os, 255);
-					writeU32(os, list[i].v.size());
+				bool size_written = false;
+				u8 t = list[i].t;
+				assert(t < 0x80);
+				if(list[i].v.size() == 1){
+					t |= 0x80;
+					size_written = true;
+				}
+				writeU8(os, t);
+				if(!size_written){
+					if(list[i].v.size() < 255){
+						writeU8(os, list[i].v.size());
+					} else{
+						writeU8(os, 255);
+						writeU32(os, list[i].v.size());
+					}
 				}
 				os.write((const char*)&list[i].v[0], list[i].v.size());
 			}
@@ -508,10 +517,15 @@ public:
 					num_values = readU32(is);
 			}
 			for(u32 i=0; i<num_values; i++){
-				u8 value_type = readU8(is);
-				u32 value_size = readU8(is);
-				if(value_size == 255)
-					value_size = readU32(is);
+				u8 value_type_v = readU8(is);
+				u8 value_type = value_type_v & 0x7f;
+				bool single_byte = value_type_v & 0x80;
+				u32 value_size = 1;
+				if(!single_byte){
+					value_size = readU8(is);
+					if(value_size == 255)
+						value_size = readU32(is);
+				}
 				Value value(value_type, value_size);
 				is.read((char*)&value.v[0], value_size);
 				list.push_back(value);
