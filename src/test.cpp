@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
+#include "util/template_serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
 #include "clientserver.h" // LATEST_PROTOCOL_VERSION
 
@@ -332,6 +333,40 @@ struct TestNodedefSerialization: public TestBase
 		f2.deSerialize(is);
 		UASSERT(f.walkable == f2.walkable);
 		UASSERT(f.node_box.type == f2.node_box.type);
+	}
+};
+
+struct TestBKVL: public TestBase
+{
+	void Run()
+	{
+		BinaryKeyValueList bkvl;
+		u8 v_u8 = 13;
+		bkvl.append(1, v_u8);
+		u8 v_u8_2 = 9;
+		UASSERT(bkvl.get<u8>(1, 0, v_u8_2) == true);
+		UASSERT(v_u8_2 == 13);
+		bkvl.append<u8>(1, 2);
+		UASSERT(bkvl.get<u8>(1, 1, v_u8_2) == true);
+		UASSERT(v_u8_2 == 2);
+		UASSERT(bkvl.get<u8>(1, 2, v_u8_2) == false);
+		UASSERT(v_u8_2 == 2);
+
+		for(u32 i=0; i<1000; i++)
+			bkvl.append<u8>(54321, i);
+		for(u32 i=0; i<1000; i++){
+			UTEST(bkvl.get<u8>(54321, i, v_u8_2) == true, "i=%i", i);
+			UTEST(v_u8_2 == (i&0xff), "i=%i, v_u8_2=%i",
+					i, (unsigned int)v_u8_2&0xff);
+		}
+		v_u8_2 = 10;
+		UASSERT(bkvl.get<u8>(54321, 1000, v_u8_2) == false);
+		UASSERT(v_u8_2 == 10);
+		
+			
+		v_u8_2 = 11;
+		UASSERT(bkvl.get<u8>(983, 43, v_u8_2) == false);
+		UASSERT(v_u8_2 == 11);
 	}
 };
 
@@ -1758,6 +1793,7 @@ void run_tests()
 	TEST(TestCompress);
 	TEST(TestSerialization);
 	TEST(TestNodedefSerialization);
+	TEST(TestBKVL);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
 	TESTPARAMS(TestVoxelAlgorithms, ndef);
