@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "hex.h"
 #include "IMeshCache.h"
+#include "util/serialize.h"
 
 static std::string getMediaCacheDir()
 {

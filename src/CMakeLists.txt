@@ -203,6 +203,7 @@ set(common_SRCS
 	base64.cpp
 	ban.cpp
 	clientserver.cpp
+	staticobject.cpp
 	util/serialize.cpp
 	util/directiontables.cpp
 	util/numeric.cpp

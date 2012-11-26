@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "daynightratio.h"
 #include "map.h"
+#include "util/serialize.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
