@@ -357,19 +357,19 @@ class BinaryKeyValueList
 			v.insert(v.begin(), data.begin(), data.end());
 		}
 	};
-	std::map<u16, std::vector<Value> > m_values;
+	std::map<u32, std::vector<Value> > m_values;
 
-	u32 priv_valueCount(u16 key) const
+	u32 priv_valueCount(u32 key) const
 	{
-		std::map<u16, std::vector<Value> >::const_iterator it = m_values.find(key);
+		std::map<u32, std::vector<Value> >::const_iterator it = m_values.find(key);
 		if(it == m_values.end())
 			return 0;
 		const std::vector<Value> &list = it->second;
 		return list.size();
 	}
-	const Value* priv_accessRaw(u16 key, u32 i) const
+	const Value* priv_accessRaw(u32 key, u32 i) const
 	{
-		std::map<u16, std::vector<Value> >::const_iterator it = m_values.find(key);
+		std::map<u32, std::vector<Value> >::const_iterator it = m_values.find(key);
 		if(it == m_values.end())
 			return NULL;
 		const std::vector<Value> &list = it->second;
@@ -377,9 +377,9 @@ class BinaryKeyValueList
 			return NULL;
 		return &list[i];
 	}
-	Value* priv_accessRaw(u16 key, u32 i)
+	Value* priv_accessRaw(u32 key, u32 i)
 	{
-		std::map<u16, std::vector<Value> >::iterator it = m_values.find(key);
+		std::map<u32, std::vector<Value> >::iterator it = m_values.find(key);
 		if(it == m_values.end())
 			return NULL;
 		std::vector<Value> &list = it->second;
@@ -391,13 +391,13 @@ class BinaryKeyValueList
 	{
 		m_values.clear();
 	}
-	void priv_clearKey(u16 key)
+	void priv_clearKey(u32 key)
 	{
 		m_values.erase(key);
 	}
-	void priv_appendRaw(u16 key, const Value &data)
+	void priv_appendRaw(u32 key, const Value &data)
 	{
-		std::map<u16, std::vector<Value> >::iterator it = m_values.find(key);
+		std::map<u32, std::vector<Value> >::iterator it = m_values.find(key);
 		if(it == m_values.end()){
 			m_values[key] = std::vector<Value>();
 			it = m_values.find(key);
@@ -417,22 +417,40 @@ public:
 	void serialize(std::ostream &os)
 	{
 		// Write version
-		writeU8(os, 0);
+		writeU8(os, 1);
 		// Write data
 		writeU32(os, m_values.size());
-		for(std::map<u16, std::vector<Value> >::iterator
+		for(std::map<u32, std::vector<Value> >::iterator
 				it = m_values.begin(); it != m_values.end(); ++it)
 		{
-			// Write key
-			u16 key = it->first;
-			writeU16(os, key);
-			// Write values
+			u32 key = it->first;
 			std::vector<Value> &list = it->second;
-			if(list.size() < 255){
-				writeU8(os, list.size());
+			bool size_written = false;
+			/* Write key */
+			if(key < 127){
+				u8 v = key;
+				if(list.size() == 1){
+					v |= 0x80;
+					size_written = true;
+				}
+				writeU8(os, v);
 			} else{
-				writeU8(os, 255);
-				writeU32(os, list.size());
+				u8 v = 127;
+				if(list.size() == 1){
+					v |= 0x80;
+					size_written = true;
+				}
+				writeU8(os, v);
+				writeU32(os, key);
+			}
+			/* Write values */
+			if(!size_written){
+				if(list.size() < 255){
+					writeU8(os, list.size());
+				} else{
+					writeU8(os, 255);
+					writeU32(os, list.size());
+				}
 			}
 			for(size_t i=0; i<list.size(); i++){
 				writeU8(os, list[i].t);
@@ -451,24 +469,34 @@ public:
 		m_values.clear();
 		// Read version
 		u8 version = readU8(is);
-		if(version != 0)
+		if(version != 1)
 			throw SerializationError("Invalid BinaryKeyValueList version");
 		// Read data
 		u32 num_keys = readU32(is);
 		for(u32 i=0; i<num_keys; i++){
-			// Read key
-			u16 key = readU16(is);
-			// Get list
-			std::map<u16, std::vector<Value> >::iterator it = m_values.find(key);
+			if(!is.good())
+				throw SerializationError("BinaryKeyValueList::deSerialize(): "
+						"Truncated input");
+			/* Read key */
+			u8 key_v = readU8(is);
+			bool single_value = !!(key_v & 0x80);
+			u32 key = key_v & 0x7f;
+			if(key == 127)
+				key = readU32(is);
+			/* Get list to deserialize into */
+			std::map<u32, std::vector<Value> >::iterator it = m_values.find(key);
 			if(it == m_values.end()){
 				m_values[key] = std::vector<Value>();
 				it = m_values.find(key);
 			}
 			std::vector<Value> &list = it->second;
-			// Read values
-			u32 num_values = readU8(is);
-			if(num_values == 255)
-				num_values = readU32(is);
+			/* Read values */
+			u32 num_values = 1;
+			if(!single_value){
+				num_values = readU8(is);
+				if(num_values == 255)
+					num_values = readU32(is);
+			}
 			for(u32 i=0; i<num_values; i++){
 				u8 value_type = readU8(is);
 				u32 value_size = readU8(is);
@@ -488,23 +516,23 @@ public:
 		priv_clear();
 	}
 
-	void clearKey(u16 key)
+	void clearKey(u32 key)
 	{
 		priv_clearKey(key);
 	}
 
-	u32 valueCount(u16 key) const
+	u32 valueCount(u32 key) const
 	{
 		return priv_valueCount(key);
 	}
 
 	/* Appenders */
 
-	void appendRaw(u16 key, const Value &data)
+	void appendRaw(u32 key, const Value &data)
 	{
 		priv_appendRaw(key, data);
 	}
-	void append(u16 key, const u8 *data, size_t len)
+	void append(u32 key, const u8 *data, size_t len)
 	{
 		std::vector<u8> a;
 		a.insert(a.end(), data, data+len);
@@ -513,7 +541,7 @@ public:
 
 	// To enable new types, define an STraits<type> for them.
 	template<typename T>
-	void append(u16 key, const T &value)
+	void append(u32 key, const T &value)
 	{
 		std::vector<u8> a;
 		STraits<T>::write(value, a);
@@ -522,7 +550,7 @@ public:
 
 	/* Getters */
 
-	bool getRaw(u16 key, u32 i, Value *result) const
+	bool getRaw(u32 key, u32 i, Value *result) const
 	{
 		BS_GET_OR_RETURN_FALSE(raw, key, i)
 		if(result)
@@ -532,7 +560,7 @@ public:
 
 	// To enable new types, define an STraits<type> for them.
 	template<typename T>
-	bool get(u16 key, u32 i, T *result) const
+	bool get(u32 key, u32 i, T *result) const
 	{
 		BS_GET_OR_RETURN_FALSE(raw, key, i)
 		if(STraits<T>::type() != raw.t)
@@ -540,12 +568,12 @@ public:
 		return STraits<T>::read(raw.v, result);
 	}
 	template<typename T>
-	bool get(u16 key, u32 i, T &result) const
+	bool get(u32 key, u32 i, T &result) const
 	{
 		return get(key, i, &result);
 	}
 	template<typename T>
-	T getDirect(u16 key, u32 i, const T &default_value) const
+	T getDirect(u32 key, u32 i, const T &default_value) const
 	{
 		T result = default_value;
 		get(key, i, result);

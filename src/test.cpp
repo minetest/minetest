@@ -58,7 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTEST(x, fmt, ...)\
 {\
 	if(!(x)){\
-		LOGLINEF(LMT_ERROR, "Test (%s) failed: " fmt, #x, ##__VA_ARGS__);\
+		LOGLINEF(LMT_ERROR, "[%s:%d]: Test (%s) failed: " fmt,\
+				__FILE__, __LINE__, #x, ##__VA_ARGS__);\
 		test_failed = true;\
 	}\
 }
@@ -340,33 +341,102 @@ struct TestBKVL: public TestBase
 {
 	void Run()
 	{
+		u8 v_u8 = 0;
+		std::string v_string;
+
 		BinaryKeyValueList bkvl;
-		u8 v_u8 = 13;
-		bkvl.append(1, v_u8);
-		u8 v_u8_2 = 9;
-		UASSERT(bkvl.get<u8>(1, 0, v_u8_2) == true);
-		UASSERT(v_u8_2 == 13);
+		bkvl.append<u8>(1, 13);
+		v_u8 = 9;
+		UASSERT(bkvl.get<u8>(1, 0, v_u8) == true);
+		UASSERT(v_u8 == 13);
+		v_string = "";
+		UASSERT(bkvl.get(1, 0, v_string) == false);
+
 		bkvl.append<u8>(1, 2);
-		UASSERT(bkvl.get<u8>(1, 1, v_u8_2) == true);
-		UASSERT(v_u8_2 == 2);
-		UASSERT(bkvl.get<u8>(1, 2, v_u8_2) == false);
-		UASSERT(v_u8_2 == 2);
+		UASSERT(bkvl.get<u8>(1, 1, v_u8) == true);
+		UASSERT(v_u8 == 2);
+		UASSERT(bkvl.get<u8>(1, 2, v_u8) == false);
+		UASSERT(v_u8 == 2);
 
 		for(u32 i=0; i<1000; i++)
 			bkvl.append<u8>(54321, i);
 		for(u32 i=0; i<1000; i++){
-			UTEST(bkvl.get<u8>(54321, i, v_u8_2) == true, "i=%i", i);
-			UTEST(v_u8_2 == (i&0xff), "i=%i, v_u8_2=%i",
-					i, (unsigned int)v_u8_2&0xff);
+			UTEST(bkvl.get<u8>(54321, i, v_u8) == true, "i=%i", i);
+			UTEST(v_u8 == (i&0xff), "i=%i, v_u8=%i",
+					i, (unsigned int)v_u8&0xff);
 		}
-		v_u8_2 = 10;
-		UASSERT(bkvl.get<u8>(54321, 1000, v_u8_2) == false);
-		UASSERT(v_u8_2 == 10);
+		v_u8 = 10;
+		UASSERT(bkvl.get<u8>(54321, 1000, v_u8) == false);
+		UASSERT(v_u8 == 10);
+		v_u8 = 10;
+		UASSERT(bkvl.get<u8>(54321, 300, v_u8) == true);
+		UASSERT(v_u8 == (300&0xff));
 		
-			
-		v_u8_2 = 11;
-		UASSERT(bkvl.get<u8>(983, 43, v_u8_2) == false);
-		UASSERT(v_u8_2 == 11);
+		v_u8 = 11;
+		UASSERT(bkvl.get<u8>(983, 43, v_u8) == false);
+		UASSERT(v_u8 == 11);
+		
+		bkvl.append<u8>(987654321, 3);
+		v_u8 = 0;
+		UASSERT(bkvl.get<u8>(987654321, 0, v_u8) == true);
+		UASSERT(v_u8 == 3);
+		v_u8 = 0;
+		bkvl.get<u8>(987654321&0xffff, 0, v_u8);
+		UASSERT(v_u8 != 3);
+		v_u8 = 0;
+		bkvl.get<u8>(987654321&0x7fff, 0, v_u8);
+		UASSERT(v_u8 != 3);
+
+		bkvl.append<std::string>(873205, "moi");
+		v_string = "";
+		UASSERT(bkvl.get(873205, 0, v_string) == true);
+		UASSERT(v_string == "moi");
+		UASSERT(bkvl.get(873205, 0, v_u8) == false);
+
+		std::ostringstream os(std::ios::binary);
+		bkvl.serialize(os);
+		verbosestream<<"Test BVKL size: "<<os.str().size()<<std::endl;
+		bkvl.clear();
+		std::istringstream is(os.str(), std::ios::binary);
+		bkvl.deSerialize(is);
+
+		UASSERT(bkvl.get<u8>(1, 0, v_u8) == true);
+		UASSERT(v_u8 == 13);
+		UASSERT(bkvl.get<u8>(1, 1, v_u8) == true);
+		UASSERT(v_u8 == 2);
+		UASSERT(bkvl.get<u8>(1, 2, v_u8) == false);
+		UASSERT(v_u8 == 2);
+
+		for(u32 i=0; i<1000; i++){
+			UTEST(bkvl.get<u8>(54321, i, v_u8) == true, "i=%i", i);
+			UTEST(v_u8 == (i&0xff), "i=%i, v_u8=%i",
+					i, (unsigned int)v_u8&0xff);
+		}
+		v_u8 = 10;
+		UASSERT(bkvl.get<u8>(54321, 1000, v_u8) == false);
+		UASSERT(v_u8 == 10);
+		v_u8 = 10;
+		UASSERT(bkvl.get<u8>(54321, 300, v_u8) == true);
+		UASSERT(v_u8 == (300&0xff));
+		
+		v_u8 = 11;
+		UASSERT(bkvl.get<u8>(983, 43, v_u8) == false);
+		UASSERT(v_u8 == 11);
+		
+		v_u8 = 0;
+		UASSERT(bkvl.get<u8>(987654321, 0, v_u8) == true);
+		UASSERT(v_u8 == 3);
+		v_u8 = 0;
+		bkvl.get<u8>(987654321&0xffff, 0, v_u8);
+		UASSERT(v_u8 != 3);
+		v_u8 = 0;
+		bkvl.get<u8>(987654321&0x7fff, 0, v_u8);
+		UASSERT(v_u8 != 3);
+
+		v_string = "";
+		UASSERT(bkvl.get(873205, 0, v_string) == true);
+		UASSERT(v_string == "moi");
+		UASSERT(bkvl.get(873205, 0, v_u8) == false);
 	}
 };
 
