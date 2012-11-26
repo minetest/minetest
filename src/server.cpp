@@ -2255,8 +2255,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		getClient(peer_id)->serialization_version
-				= getClient(peer_id)->pending_serialization_version;
+		RemoteClient *client = getClient(peer_id);
+		client->serialization_version =
+				getClient(peer_id)->pending_serialization_version;
 
 		/*
 			Send some initialization data
@@ -2269,7 +2270,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendItemDef(m_con, peer_id, m_itemdef);
 		
 		// Send node definitions
-		SendNodeDef(m_con, peer_id, m_nodedef);
+		SendNodeDef(m_con, peer_id, m_nodedef, client->net_proto_version);
 		
 		// Send media announcement
 		sendMediaAnnouncement(peer_id);
@@ -3521,7 +3522,7 @@ void Server::SendItemDef(con::Connection &con, u16 peer_id,
 }
 
 void Server::SendNodeDef(con::Connection &con, u16 peer_id,
-		INodeDefManager *nodedef)
+		INodeDefManager *nodedef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3533,7 +3534,7 @@ void Server::SendNodeDef(con::Connection &con, u16 peer_id,
 	*/
 	writeU16(os, TOCLIENT_NODEDEF);
 	std::ostringstream tmp_os(std::ios::binary);
-	nodedef->serialize(tmp_os);
+	nodedef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 	os<<serializeLongString(tmp_os2.str());
