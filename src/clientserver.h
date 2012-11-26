@@ -82,7 +82,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 #define LATEST_PROTOCOL_VERSION 15
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 14
+#define SERVER_PROTOCOL_VERSION_MIN 13
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
