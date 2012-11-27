@@ -2224,11 +2224,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Answer with a TOCLIENT_INIT
 		*/
 		{
-			SharedBuffer<u8> reply(2+1+6+8);
+			SharedBuffer<u8> reply(2+1+6+8+4);
 			writeU16(&reply[0], TOCLIENT_INIT);
 			writeU8(&reply[2], deployed);
 			writeV3S16(&reply[2+1], floatToInt(playersao->getPlayer()->getPosition()+v3f(0,BS/2,0), BS));
 			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
+			writeF1000(&reply[2+1+6+8], g_settings->getFloat("dedicated_server_step"));
 			
 			// Send as reliable
 			m_con.Send(peer_id, 0, reply, true);

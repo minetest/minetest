@@ -923,6 +923,11 @@ public:
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
 			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+			m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		}
 		else if(m_prop.visual == "mesh"){
 			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
@@ -936,6 +941,11 @@ public:
 						m_prop.visual_size.X));
 				u8 li = m_last_light;
 				setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+				m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+				m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+				m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			}
 			else
 				errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;

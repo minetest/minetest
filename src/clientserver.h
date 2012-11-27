@@ -103,6 +103,7 @@ enum ToClientCommand
 		[2] u8 deployed version
 		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd 
 		[12] u64 map seed (new as of 2011-02-27)
+		[20] f1000 recommended send interval (in seconds) (new as of 14)
 
 		NOTE: The position in here is deprecated; position is
 		      explicitly sent afterwards
