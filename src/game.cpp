@@ -2810,14 +2810,24 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		if(show_hud)
-		{
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
+		if(show_hud) {
+			bool ch_found = tsrc->isKnownSourceImage("crosshair.png");
+			if(ch_found) {
+				video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+				v2u32 size = crosshair->getOriginalSize();
+
+				driver->draw2DImage(crosshair, v2s32(displaycenter.X-(size.X / 2), 
+					displaycenter.Y-(size.Y / 2)), core::rect<s32>(0,0,size.X,size.Y), 
+					0, video::SColor(255,255,255,255), true);
+			} else {
+				// If crosshair texture isn't found fallback to old style crosshair
+				driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
 					displaycenter + core::vector2d<s32>(10,0),
 					video::SColor(255,255,255,255));
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
+				driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
 					displaycenter + core::vector2d<s32>(0,10),
 					video::SColor(255,255,255,255));
+			}
 		}
 
 		} // timer
