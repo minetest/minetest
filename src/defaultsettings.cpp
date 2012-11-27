@@ -106,6 +106,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 
+	settings->setDefault("mip_map", "false");
+	settings->setDefault("anisotropic_filter", "false");
+	settings->setDefault("bilinear_filter", "false");
+	settings->setDefault("trilinear_filter", "false");
+
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");
@@ -142,10 +147,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");
-	settings->setDefault("mip_map", "false");
-	settings->setDefault("anisotropic_filter", "false");
-	settings->setDefault("bilinear_filter", "false");
-	settings->setDefault("trilinear_filter", "false");
-
+	settings->setDefault("congestion_control_aim_rtt", "0.2");
+	settings->setDefault("congestion_control_max_rate", "400");
+	settings->setDefault("congestion_control_min_rate", "10");
 }
 

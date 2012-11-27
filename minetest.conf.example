@@ -198,3 +198,8 @@
 #dedicated_server_step = 0.1
 # Can be set to true to disable shutting down on invalid world data
 #ignore_world_load_errors = false
+# Congestion control parameters
+# time in seconds, rate in ~500B packets
+#congestion_control_aim_rtt = 0.2
+#congestion_control_max_rate = 400
+#congestion_control_min_rate = 10
