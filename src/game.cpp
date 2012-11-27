@@ -2810,14 +2810,17 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		if(show_hud)
-		{
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-					displaycenter + core::vector2d<s32>(10,0),
-					video::SColor(255,255,255,255));
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-					displaycenter + core::vector2d<s32>(0,10),
-					video::SColor(255,255,255,255));
+		if(show_hud) {
+			video::ITexture *crosshair_texture = 
+				driver->getTexture(getTexturePath("crosshair.png").c_str());
+			if(crosshair_texture) { 
+				irr::u32 sizeW = crosshair_texture->getOriginalSize().Width;
+				irr::u32 sizeH = crosshair_texture->getOriginalSize().Height;
+
+				driver->draw2DImage(crosshair_texture, v2s32(displaycenter.X-(sizeW / 2), 
+					displaycenter.Y-(sizeH / 2)), core::rect<s32>(0,0,sizeW,sizeH), 
+					0, video::SColor(255,255,255,255), true);
+			}
 		}
 
 		} // timer
