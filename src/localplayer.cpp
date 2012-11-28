@@ -323,7 +323,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		v3s16 camera_np = floatToInt(getEyePosition(), BS);
 		MapNode n = map.getNodeNoEx(camera_np);
 		if(n.getContent() != CONTENT_IGNORE){
-			if(nodemgr->get(n).walkable){
+			if(nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2){
 				camera_barely_in_ceiling = true;
 			}
 		}
