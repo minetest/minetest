@@ -205,6 +205,7 @@ set(common_SRCS
 	clientserver.cpp
 	staticobject.cpp
 	util/serialize.cpp
+	util/template_serialize.cpp
 	util/directiontables.cpp
 	util/numeric.cpp
 	util/pointedthing.cpp
