@@ -92,6 +92,31 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
+std::string gob_cmd_punched(s16 damage, s16 result_hp)
+{
+	std::ostringstream os(std::ios::binary);
+	// command 
+	writeU8(os, GENERIC_CMD_PUNCHED);
+	// damage
+	writeS16(os, damage);
+	// result_hp
+	writeS16(os, result_hp);
+	return os.str();
+}
+
+std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
+{
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, GENERIC_CMD_UPDATE_ARMOR_GROUPS);
+	writeU16(os, armor_groups.size());
+	for(ItemGroupList::const_iterator i = armor_groups.begin();
+			i != armor_groups.end(); i++){
+		os<<serializeString(i->first);
+		writeS16(os, i->second);
+	}
+	return os.str();
+}
+
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
 {
 	std::ostringstream os(std::ios::binary);
@@ -128,30 +153,4 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 	writeV3F1000(os, rotation);
 	return os.str();
 }
-
-std::string gob_cmd_punched(s16 damage, s16 result_hp)
-{
-	std::ostringstream os(std::ios::binary);
-	// command 
-	writeU8(os, GENERIC_CMD_PUNCHED);
-	// damage
-	writeS16(os, damage);
-	// result_hp
-	writeS16(os, result_hp);
-	return os.str();
-}
-
-std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
-{
-	std::ostringstream os(std::ios::binary);
-	writeU8(os, GENERIC_CMD_UPDATE_ARMOR_GROUPS);
-	writeU16(os, armor_groups.size());
-	for(ItemGroupList::const_iterator i = armor_groups.begin();
-			i != armor_groups.end(); i++){
-		os<<serializeString(i->first);
-		writeS16(os, i->second);
-	}
-	return os.str();
-}
-
 
