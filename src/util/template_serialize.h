@@ -418,41 +418,52 @@ public:
 	{
 		// Write version
 		writeU8(os, 1);
-		// Write data
+		/* Write data */
+		// Write number of values
 		writeU32(os, m_values.size());
 		for(std::map<u32, std::vector<Value> >::iterator
 				it = m_values.begin(); it != m_values.end(); ++it)
 		{
 			u32 key = it->first;
 			std::vector<Value> &list = it->second;
-			bool size_written = false;
+			bool count_written = false;
 			/* Write key */
 			if(key < 126){
+				// Key is small enough; write in one byte
 				u8 v = key;
+				// If value count is 1, set high bit
 				if(list.size() == 1){
 					v |= 0x80;
-					size_written = true;
+					count_written = true;
 				}
 				writeU8(os, v);
 			} else if(key < 65536){
+				// Key is 16-bit; write 126|highbit
 				u8 v = 126;
+				// If value count is 1, set high bit
 				if(list.size() == 1){
 					v |= 0x80;
-					size_written = true;
+					count_written = true;
 				}
 				writeU8(os, v);
+				// Write 16-bit key
 				writeU16(os, key);
 			} else{
+				// Key is 32-bit; write 127|highbit
 				u8 v = 127;
+				// If value count is 1, set high bit
 				if(list.size() == 1){
 					v |= 0x80;
-					size_written = true;
+					count_written = true;
 				}
 				writeU8(os, v);
+				// Write 32-bit key
 				writeU32(os, key);
 			}
 			/* Write values */
-			if(!size_written){
+			// Write value count if highbit optimization wasn't used
+			if(!count_written){
+				// If size is small, write directly; otherwise 255, size
 				if(list.size() < 255){
 					writeU8(os, list.size());
 				} else{
@@ -462,14 +473,18 @@ public:
 			}
 			for(size_t i=0; i<list.size(); i++){
 				bool size_written = false;
+				/* Write type */
 				u8 t = list[i].t;
 				assert(t < 0x80);
+				// If size of value is 1, set highbit of type
 				if(list[i].v.size() == 1){
 					t |= 0x80;
 					size_written = true;
 				}
 				writeU8(os, t);
+				// Write size of value if highbit optimization wasn't used
 				if(!size_written){
+					// If size is small, write directly; otherwise 255, size
 					if(list[i].v.size() < 255){
 						writeU8(os, list[i].v.size());
 					} else{
@@ -477,6 +492,7 @@ public:
 						writeU32(os, list[i].v.size());
 					}
 				}
+				/* Write value */
 				os.write((const char*)&list[i].v[0], list[i].v.size());
 			}
 		}
