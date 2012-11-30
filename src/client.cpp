@@ -2438,7 +2438,7 @@ ClientEvent Client::getClientEvent()
 
 void Client::afterContentReceived()
 {
-	verbosestream<<"Client::afterContentReceived() started"<<std::endl;
+	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
 	assert(m_media_received);
@@ -2448,31 +2448,31 @@ void Client::afterContentReceived()
 	m_media_name_sha1_map.clear();
 
 	// Rebuild inherited images and recreate textures
-	verbosestream<<"Rebuilding images and textures"<<std::endl;
+	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();
 
 	// Update texture atlas
-	verbosestream<<"Updating texture atlas"<<std::endl;
+	infostream<<"- Updating texture atlas"<<std::endl;
 	if(g_settings->getBool("enable_texture_atlas"))
 		m_tsrc->buildMainAtlas(this);
 
 	// Update node aliases
-	verbosestream<<"Updating node aliases"<<std::endl;
+	infostream<<"- Updating node aliases"<<std::endl;
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Update node textures
-	verbosestream<<"Updating node textures"<<std::endl;
+	infostream<<"- Updating node textures"<<std::endl;
 	m_nodedef->updateTextures(m_tsrc);
 
 	// Update item textures and meshes
-	verbosestream<<"Updating item textures and meshes"<<std::endl;
+	infostream<<"- Updating item textures and meshes"<<std::endl;
 	m_itemdef->updateTexturesAndMeshes(this);
 
 	// Start mesh update thread after setting up content definitions
-	verbosestream<<"Starting mesh update thread"<<std::endl;
+	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.Start();
 	
-	verbosestream<<"Client::afterContentReceived() done"<<std::endl;
+	infostream<<"Client::afterContentReceived() done"<<std::endl;
 }
 
 float Client::getRTT(void)
