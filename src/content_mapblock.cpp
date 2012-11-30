@@ -638,7 +638,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			AtlasPointer ap = tile.texture;
 
-			video::SColor c(255,255,255,255);
+			u16 l = getInteriorLight(n, 1, data);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
