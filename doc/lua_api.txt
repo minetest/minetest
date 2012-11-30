@@ -792,6 +792,11 @@ minetest.register_craft(recipe)
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
 ^ Called every server step, usually interval of 0.05s
+minetest.register_on_shutdown(func())
+^ Called before server shutdown
+^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
+           callbacks WILL LIKELY NOT BE RUN.  Data should be saved at
+           semi-frequent intervals as well as on server shutdown.
 minetest.register_on_placenode(func(pos, newnode, placer, oldnode))
 ^ Called when a node has been placed
 ^ Deprecated: Use on_construct or after_place_node in node definition instead
