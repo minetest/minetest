@@ -1113,11 +1113,16 @@ Server::~Server()
 		}
 	}
 
-	/*
-		Execute script shutdown hooks
-	*/
-	scriptapi_on_shutdown(m_lua);
-	
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		JMutexAutoLock conlock(m_con_mutex);
+
+		/*
+			Execute script shutdown hooks
+		*/
+		scriptapi_on_shutdown(m_lua);
+	}
+
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 
@@ -1149,14 +1154,6 @@ Server::~Server()
 			i = m_clients.getIterator();
 			i.atEnd() == false; i++)
 		{
-			/*// Delete player
-			// NOTE: These are removed by env destructor
-			{
-				u16 peer_id = i.getNode()->getKey();
-				JMutexAutoLock envlock(m_env_mutex);
-				m_env->removePlayer(peer_id);
-			}*/
-			
 			// Delete client
 			delete i.getNode()->getValue();
 		}
