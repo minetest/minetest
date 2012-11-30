@@ -372,6 +372,18 @@ public:
 	// Update new texture pointer and texture coordinates to an
 	// AtlasPointer based on it's texture id
 	void updateAP(AtlasPointer &ap);
+ 
+	bool isKnownSourceImage(const std::string &name)
+	{
+		bool is_known = false;
+		bool cache_found = m_source_image_existence.get(name, &is_known);
+		if(cache_found)
+			return is_known;
+		// Not found in cache; find out if a local file exists
+		is_known = (getTexturePath(name) != "");
+		m_source_image_existence.set(name, is_known);
+		return is_known;
+	}
 
 	// Processes queued texture requests from other threads.
 	// Shall be called from the main thread.
@@ -399,6 +411,9 @@ private:
 	// Cache of source images
 	// This should be only accessed from the main thread
 	SourceImageCache m_sourcecache;
+
+	// Thread-safe cache of what source images are known (true = known)
+	MutexedMap<std::string, bool> m_source_image_existence;
 
 	// A texture id is index in this array.
 	// The first position contains a NULL texture.
@@ -781,6 +796,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	assert(get_current_thread_id() == m_main_thread);
 	
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
+	m_source_image_existence.set(name, true);
 }
 	
 void TextureSource::rebuildImagesAndTextures()

@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <string>
 #include <sstream>
-#include "util/serialize.h"
+#include "debug.h"
 
 struct StaticObject
 {
@@ -43,33 +43,8 @@ struct StaticObject
 	{
 	}
 
-	void serialize(std::ostream &os)
-	{
-		char buf[12];
-		// type
-		buf[0] = type;
-		os.write(buf, 1);
-		// pos
-		writeV3S32((u8*)buf, v3s32(pos.X*1000,pos.Y*1000,pos.Z*1000));
-		os.write(buf, 12);
-		// data
-		os<<serializeString(data);
-	}
-	void deSerialize(std::istream &is, u8 version)
-	{
-		char buf[12];
-		// type
-		is.read(buf, 1);
-		type = buf[0];
-		// pos
-		is.read(buf, 12);
-		v3s32 intp = readV3S32((u8*)buf);
-		pos.X = (f32)intp.X/1000;
-		pos.Y = (f32)intp.Y/1000;
-		pos.Z = (f32)intp.Z/1000;
-		// data
-		data = deSerializeString(is);
-	}
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is, u8 version);
 };
 
 class StaticObjectList
@@ -110,47 +85,8 @@ public:
 		m_active.remove(id);
 	}
 
-	void serialize(std::ostream &os)
-	{
-		char buf[12];
-		// version
-		buf[0] = 0;
-		os.write(buf, 1);
-		// count
-		u16 count = m_stored.size() + m_active.size();
-		writeU16((u8*)buf, count);
-		os.write(buf, 2);
-		for(core::list<StaticObject>::Iterator
-				i = m_stored.begin();
-				i != m_stored.end(); i++)
-		{
-			StaticObject &s_obj = *i;
-			s_obj.serialize(os);
-		}
-		for(core::map<u16, StaticObject>::Iterator
-				i = m_active.getIterator();
-				i.atEnd()==false; i++)
-		{
-			StaticObject s_obj = i.getNode()->getValue();
-			s_obj.serialize(os);
-		}
-	}
-	void deSerialize(std::istream &is)
-	{
-		char buf[12];
-		// version
-		is.read(buf, 1);
-		u8 version = buf[0];
-		// count
-		is.read(buf, 2);
-		u16 count = readU16((u8*)buf);
-		for(u16 i=0; i<count; i++)
-		{
-			StaticObject s_obj;
-			s_obj.deSerialize(is, version);
-			m_stored.push_back(s_obj);
-		}
-	}
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
 	
 	/*
 		NOTE: When an object is transformed to active, it is removed

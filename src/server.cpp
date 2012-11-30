@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/mathconstants.h"
 #include "rollback.h"
+#include "util/serialize.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1111,7 +1112,17 @@ Server::~Server()
 			{}
 		}
 	}
-	
+
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		JMutexAutoLock conlock(m_con_mutex);
+
+		/*
+			Execute script shutdown hooks
+		*/
+		scriptapi_on_shutdown(m_lua);
+	}
+
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 
@@ -1143,14 +1154,6 @@ Server::~Server()
 			i = m_clients.getIterator();
 			i.atEnd() == false; i++)
 		{
-			/*// Delete player
-			// NOTE: These are removed by env destructor
-			{
-				u16 peer_id = i.getNode()->getKey();
-				JMutexAutoLock envlock(m_env_mutex);
-				m_env->removePlayer(peer_id);
-			}*/
-			
 			// Delete client
 			delete i.getNode()->getValue();
 		}
@@ -1567,7 +1570,7 @@ void Server::AsyncRunStep()
 				
 				if(obj)
 					data_buffer.append(serializeLongString(
-							obj->getClientInitializationData()));
+							obj->getClientInitializationData(client->net_proto_version)));
 				else
 					data_buffer.append(serializeLongString(""));
 
@@ -2037,40 +2040,74 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Read and check network protocol version
 		*/
 
-		u16 net_proto_version = 0;
+		u16 min_net_proto_version = 0;
 		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2)
+			min_net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
+
+		// Use same version as minimum and maximum if maximum version field
+		// doesn't exist (backwards compatibility)
+		u16 max_net_proto_version = min_net_proto_version;
+		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2)
+			max_net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2]);
+
+		// Start with client's maximum version
+		u16 net_proto_version = max_net_proto_version;
+
+		// Figure out a working version if it is possible at all
+		if(max_net_proto_version >= SERVER_PROTOCOL_VERSION_MIN ||
+				min_net_proto_version <= SERVER_PROTOCOL_VERSION_MAX)
 		{
-			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
+			// If maximum is larger than our maximum, go with our maximum
+			if(max_net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
+				net_proto_version = SERVER_PROTOCOL_VERSION_MAX;
+			// Else go with client's maximum
+			else
+				net_proto_version = max_net_proto_version;
 		}
+
+		verbosestream<<"Server: "<<peer_id<<" Protocol version: min: "
+				<<min_net_proto_version<<", max: "<<max_net_proto_version
+				<<", chosen: "<<net_proto_version<<std::endl;
 
 		getClient(peer_id)->net_proto_version = net_proto_version;
 
-		if(net_proto_version == 0)
+		if(net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
+				net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
 		{
-			actionstream<<"Server: An old tried to connect from "<<addr_s
+			actionstream<<"Server: A mismatched client tried to connect from "<<addr_s
 					<<std::endl;
 			SendAccessDenied(m_con, peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
+					+ narrow_to_wide(VERSION_STRING) + L",\n"
+					+ L"server's PROTOCOL_VERSION is "
+					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
+					+ L"..."
+					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
+					+ L", client's PROTOCOL_VERSION is "
+					+ narrow_to_wide(itos(min_net_proto_version))
+					+ L"..."
+					+ narrow_to_wide(itos(max_net_proto_version))
 			);
 			return;
 		}
 		
 		if(g_settings->getBool("strict_protocol_version_checking"))
 		{
-			if(net_proto_version != PROTOCOL_VERSION)
+			if(net_proto_version != LATEST_PROTOCOL_VERSION)
 			{
-				actionstream<<"Server: A mismatched client tried to connect"
-						<<" from "<<addr_s<<std::endl;
+				actionstream<<"Server: A mismatched (strict) client tried to "
+						<<"connect from "<<addr_s<<std::endl;
 				SendAccessDenied(m_con, peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
 						+ narrow_to_wide(VERSION_STRING) + L",\n"
-						+ L"server's PROTOCOL_VERSION is "
-						+ narrow_to_wide(itos(PROTOCOL_VERSION))
+						+ L"server's PROTOCOL_VERSION (strict) is "
+						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
 						+ L", client's PROTOCOL_VERSION is "
-						+ narrow_to_wide(itos(net_proto_version))
+						+ narrow_to_wide(itos(min_net_proto_version))
+						+ L"..."
+						+ narrow_to_wide(itos(max_net_proto_version))
 				);
 				return;
 			}
@@ -2212,11 +2249,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Answer with a TOCLIENT_INIT
 		*/
 		{
-			SharedBuffer<u8> reply(2+1+6+8);
+			SharedBuffer<u8> reply(2+1+6+8+4);
 			writeU16(&reply[0], TOCLIENT_INIT);
 			writeU8(&reply[2], deployed);
 			writeV3S16(&reply[2+1], floatToInt(playersao->getPlayer()->getPosition()+v3f(0,BS/2,0), BS));
 			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
+			writeF1000(&reply[2+1+6+8], g_settings->getFloat("dedicated_server_step"));
 			
 			// Send as reliable
 			m_con.Send(peer_id, 0, reply, true);
@@ -2242,8 +2280,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		getClient(peer_id)->serialization_version
-				= getClient(peer_id)->pending_serialization_version;
+		RemoteClient *client = getClient(peer_id);
+		client->serialization_version =
+				getClient(peer_id)->pending_serialization_version;
 
 		/*
 			Send some initialization data
@@ -2256,7 +2295,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendItemDef(m_con, peer_id, m_itemdef);
 		
 		// Send node definitions
-		SendNodeDef(m_con, peer_id, m_nodedef);
+		SendNodeDef(m_con, peer_id, m_nodedef, client->net_proto_version);
 		
 		// Send media announcement
 		sendMediaAnnouncement(peer_id);
@@ -2310,9 +2349,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		// Warnings about protocol version can be issued here
-		if(getClient(peer_id)->net_proto_version < PROTOCOL_VERSION)
+		if(getClient(peer_id)->net_proto_version < LATEST_PROTOCOL_VERSION)
 		{
-			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER!");
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT'S "
+					L"VERSION MAY NOT BE FULLY COMPATIBLE WITH THIS SERVER!");
 		}
 
 		/*
@@ -2369,7 +2409,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	if(command == TOSERVER_PLAYERPOS)
 	{
-		if(datasize < 2+12+12+4+4+4)
+		if(datasize < 2+12+12+4+4)
 			return;
 	
 		u32 start = 0;
@@ -2377,7 +2417,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		v3s32 ss = readV3S32(&data[start+2+12]);
 		f32 pitch = (f32)readS32(&data[2+12+12]) / 100.0;
 		f32 yaw = (f32)readS32(&data[2+12+12+4]) / 100.0;
-		u32 keyPressed = (u32)readU32(&data[2+12+12+4+4]);
+		u32 keyPressed = 0;
+		if(datasize >= 2+12+12+4+4+4)
+			keyPressed = (u32)readU32(&data[2+12+12+4+4]);
 		v3f position((f32)ps.X/100., (f32)ps.Y/100., (f32)ps.Z/100.);
 		v3f speed((f32)ss.X/100., (f32)ss.Y/100., (f32)ss.Z/100.);
 		pitch = wrapDegrees(pitch);
@@ -3508,7 +3550,7 @@ void Server::SendItemDef(con::Connection &con, u16 peer_id,
 }
 
 void Server::SendNodeDef(con::Connection &con, u16 peer_id,
-		INodeDefManager *nodedef)
+		INodeDefManager *nodedef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3520,7 +3562,7 @@ void Server::SendNodeDef(con::Connection &con, u16 peer_id,
 	*/
 	writeU16(os, TOCLIENT_NODEDEF);
 	std::ostringstream tmp_os(std::ios::binary);
-	nodedef->serialize(tmp_os);
+	nodedef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 	os<<serializeLongString(tmp_os2.str());

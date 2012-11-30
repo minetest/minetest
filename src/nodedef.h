@@ -234,8 +234,10 @@ struct ContentFeatures
 	ContentFeatures();
 	~ContentFeatures();
 	void reset();
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os, u16 protocol_version);
 	void deSerialize(std::istream &is);
+	void serializeOld(std::ostream &os, u16 protocol_version);
+	void deSerializeOld(std::istream &is, int version);
 
 	/*
 		Some handy methods
@@ -264,7 +266,7 @@ public:
 			const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 	
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager
@@ -305,7 +307,7 @@ public:
 	*/
 	virtual void updateTextures(ITextureSource *tsrc)=0;
 
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 	virtual void deSerialize(std::istream &is)=0;
 };
 

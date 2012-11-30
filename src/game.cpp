@@ -1513,7 +1513,7 @@ void the_game(
 					<<"Launching inventory"<<std::endl;
 			
 			GUIFormSpecMenu *menu =
-				new GUIFormSpecMenu(guienv, guiroot, -1,
+				new GUIFormSpecMenu(device, guiroot, -1,
 					&g_menumgr,
 					&client, gamedef);
 
@@ -2296,7 +2296,7 @@ void the_game(
 					/* Create menu */
 
 					GUIFormSpecMenu *menu =
-						new GUIFormSpecMenu(guienv, guiroot, -1,
+						new GUIFormSpecMenu(device, guiroot, -1,
 							&g_menumgr,
 							&client, gamedef);
 					menu->setFormSpec(meta->getString("formspec"),

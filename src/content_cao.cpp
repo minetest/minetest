@@ -647,22 +647,36 @@ public:
 	{
 		infostream<<"GenericCAO: Got init data"<<std::endl;
 		std::istringstream is(data, std::ios::binary);
+		int num_messages = 0;
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version != 0){
+		if(version == 1) // In PROTOCOL_VERSION 14
+		{
+			m_name = deSerializeString(is);
+			m_is_player = readU8(is);
+			m_id = readS16(is);
+			m_position = readV3F1000(is);
+			m_yaw = readF1000(is);
+			m_hp = readS16(is);
+			num_messages = readU8(is);
+		}
+		else if(version == 0) // In PROTOCOL_VERSION 13
+		{
+			m_name = deSerializeString(is);
+			m_is_player = readU8(is);
+			m_position = readV3F1000(is);
+			m_yaw = readF1000(is);
+			m_hp = readS16(is);
+			num_messages = readU8(is);
+		}
+		else
+		{
 			errorstream<<"GenericCAO: Unsupported init data version"
 					<<std::endl;
 			return;
 		}
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_id = readS16(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		
-		int num_messages = readU8(is);
+
 		for(int i=0; i<num_messages; i++){
 			std::string message = deSerializeLongString(is);
 			processMessage(message);
@@ -909,6 +923,11 @@ public:
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
 			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+			m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		}
 		else if(m_prop.visual == "mesh"){
 			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
@@ -922,6 +941,11 @@ public:
 						m_prop.visual_size.X));
 				u8 li = m_last_light;
 				setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+				m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+				m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+				m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			}
 			else
 				errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;

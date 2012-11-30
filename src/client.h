@@ -382,6 +382,9 @@ private:
 	float m_last_time_of_day_f;
 	float m_time_of_day_update_timer;
 
+	// An interval for generally sending object positions and stuff
+	float m_recommended_send_interval;
+
 	// Sounds
 	float m_removed_sounds_check_timer;
 	// Mapping from server sound ids to our sound ids

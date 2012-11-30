@@ -39,6 +39,10 @@ static void collectMods(const std::string &modspath,
 		if(!dirlist[j].dir)
 			continue;
 		std::string modname = dirlist[j].name;
+		// Ignore all directories beginning with a ".", especially
+		// VCS directories like ".git" or ".svn"
+		if(modname[0] == '.')
+			continue;
 		std::string modpath = modspath + DIR_DELIM + modname;
 		TRACESTREAM(<<indentation<<"collectMods: "<<modname<<" at \""<<modpath<<"\""<<std::endl);
 		// Handle modpacks (defined by containing modpack.txt)

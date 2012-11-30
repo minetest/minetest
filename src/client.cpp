@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "hex.h"
 #include "IMeshCache.h"
+#include "util/serialize.h"
 
 static std::string getMediaCacheDir()
 {
@@ -266,6 +267,7 @@ Client::Client(
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
+	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0)
 {
 	m_packetcounter_timer = 0.0;
@@ -499,8 +501,9 @@ void Client::step(float dtime)
 			// [2] u8 SER_FMT_VER_HIGHEST
 			// [3] u8[20] player_name
 			// [23] u8[28] password (new in some version)
-			// [51] u16 client network protocol version (new in some version)
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
+			// [51] u16 minimum supported network protocol version (added sometime)
+			// [53] u16 maximum supported network protocol version (added later than the previous one)
+			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2);
 			writeU16(&data[0], TOSERVER_INIT);
 			writeU8(&data[2], SER_FMT_VER_HIGHEST);
 
@@ -513,8 +516,8 @@ void Client::step(float dtime)
 			memset((char*)&data[23], 0, PASSWORD_SIZE);
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 			
-			// This should be incremented in each version
-			writeU16(&data[51], PROTOCOL_VERSION);
+			writeU16(&data[51], CLIENT_PROTOCOL_VERSION_MIN);
+			writeU16(&data[53], CLIENT_PROTOCOL_VERSION_MAX);
 
 			// Send as unreliable
 			Send(0, data, false);
@@ -656,7 +659,7 @@ void Client::step(float dtime)
 	{
 		float &counter = m_playerpos_send_timer;
 		counter += dtime;
-		if(counter >= 0.2)
+		if(counter >= m_recommended_send_interval)
 		{
 			counter = 0.0;
 			sendPlayerPos();
@@ -1019,6 +1022,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+		}
+
+		if(datasize >= 2+1+6+8+4)
+		{
+			// Get map seed
+			m_recommended_send_interval = readF1000(&data[2+1+6+8]);
+			infostream<<"Client: received recommended send interval "
+					<<m_recommended_send_interval<<std::endl;
 		}
 		
 		// Reply to server

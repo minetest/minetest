@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "settings.h"
 
 namespace con
 {
@@ -466,7 +467,10 @@ Peer::Peer(u16 a_id, Address a_address):
 	m_sendtime_accu(0),
 	m_max_packets_per_second(10),
 	m_num_sent(0),
-	m_max_num_sent(0)
+	m_max_num_sent(0),
+	congestion_control_aim_rtt(0.2),
+	congestion_control_max_rate(400),
+	congestion_control_min_rate(10)
 {
 }
 Peer::~Peer()
@@ -477,15 +481,15 @@ void Peer::reportRTT(float rtt)
 {
 	if(rtt >= 0.0){
 		if(rtt < 0.01){
-			if(m_max_packets_per_second < 400)
+			if(m_max_packets_per_second < congestion_control_max_rate)
 				m_max_packets_per_second += 10;
-		} else if(rtt < 0.2){
-			if(m_max_packets_per_second < 100)
+		} else if(rtt < congestion_control_aim_rtt){
+			if(m_max_packets_per_second < congestion_control_max_rate)
 				m_max_packets_per_second += 2;
 		} else {
 			m_max_packets_per_second *= 0.8;
-			if(m_max_packets_per_second < 10)
-				m_max_packets_per_second = 10;
+			if(m_max_packets_per_second < congestion_control_min_rate)
+				m_max_packets_per_second = congestion_control_min_rate;
 		}
 	}
 
@@ -891,12 +895,24 @@ void Connection::receive()
 
 void Connection::runTimeouts(float dtime)
 {
+	float congestion_control_aim_rtt
+			= g_settings->getFloat("congestion_control_aim_rtt");
+	float congestion_control_max_rate
+			= g_settings->getFloat("congestion_control_max_rate");
+	float congestion_control_min_rate
+			= g_settings->getFloat("congestion_control_min_rate");
+
 	core::list<u16> timeouted_peers;
 	core::map<u16, Peer*>::Iterator j;
 	j = m_peers.getIterator();
 	for(; j.atEnd() == false; j++)
 	{
 		Peer *peer = j.getNode()->getValue();
+
+		// Update congestion control values
+		peer->congestion_control_aim_rtt = congestion_control_aim_rtt;
+		peer->congestion_control_max_rate = congestion_control_max_rate;
+		peer->congestion_control_min_rate = congestion_control_min_rate;
 		
 		/*
 			Check peer timeout

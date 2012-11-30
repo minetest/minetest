@@ -125,13 +125,14 @@ void drawItemStack(video::IVideoDriver *driver,
 	GUIFormSpecMenu
 */
 
-GUIFormSpecMenu::GUIFormSpecMenu(gui::IGUIEnvironment* env,
+GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		InventoryManager *invmgr,
 		IGameDef *gamedef
 ):
-	GUIModalMenu(env, parent, id, menumgr),
+	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
+	m_device(dev),
 	m_invmgr(invmgr),
 	m_gamedef(gamedef),
 	m_form_src(NULL),
@@ -698,6 +699,8 @@ void GUIFormSpecMenu::drawMenu()
 		}
 	}
 
+	m_pointer = m_device->getCursorControl()->getPosition();
+
 	updateSelectedItem();
 
 	gui::IGUISkin* skin = Environment->getSkin();
@@ -938,23 +941,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 	}
 	if(event.EventType==EET_MOUSE_INPUT_EVENT
-			&& event.MouseInput.Event == EMIE_MOUSE_MOVED)
-	{
-		// Mouse moved
-		m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
-	}
-	if(event.EventType==EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event != EMIE_MOUSE_MOVED)
 	{
 		// Mouse event other than movement
 
-		v2s32 p(event.MouseInput.X, event.MouseInput.Y);
-		m_pointer = p;
-
 		// Get selected item and hovered/clicked item (s)
 
 		updateSelectedItem();
-		ItemSpec s = getItemAtPos(p);
+		ItemSpec s = getItemAtPos(m_pointer);
 
 		Inventory *inv_selected = NULL;
 		Inventory *inv_s = NULL;

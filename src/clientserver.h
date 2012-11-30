@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "util/serialize.h"
+#include "util/pointer.h"
+
+SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -73,10 +75,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		GENERIC_CMD_SET_ANIMATION
 		GENERIC_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
+	PROTOCOL_VERSION 15:
+		Serialization format changes
 */
 
-#define PROTOCOL_VERSION 14
+#define LATEST_PROTOCOL_VERSION 15
 
+// Server's supported network protocol range
+#define SERVER_PROTOCOL_VERSION_MIN 13
+#define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
+
+// Client's supported network protocol range
+#define CLIENT_PROTOCOL_VERSION_MIN 13
+#define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
+
+// Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
@@ -95,6 +108,7 @@ enum ToClientCommand
 		[2] u8 deployed version
 		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd 
 		[12] u64 map seed (new as of 2011-02-27)
+		[20] f1000 recommended send interval (in seconds) (new as of 14)
 
 		NOTE: The position in here is deprecated; position is
 		      explicitly sent afterwards
@@ -350,7 +364,8 @@ enum ToServerCommand
 		[2] u8 SER_FMT_VER_HIGHEST
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)
-		[51] u16 client network protocol version (new in some version)
+		[51] u16 minimum supported network protocol version (added sometime)
+		[53] u16 maximum supported network protocol version (added later than the previous one)
 	*/
 
 	TOSERVER_INIT2 = 0x11,
@@ -557,15 +572,6 @@ enum ToServerCommand
 	 */
 
 };
-
-inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
-{
-	SharedBuffer<u8> data(2+2+4);
-	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
-	writeU16(&data[2], time);
-	writeF1000(&data[4], time_speed);
-	return data;
-}
 
 #endif
 

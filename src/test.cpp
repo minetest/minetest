@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
+#include "clientserver.h" // LATEST_PROTOCOL_VERSION
 
 /*
 	Asserts that the exception occurs
@@ -311,6 +312,26 @@ struct TestSerialization: public TestBase
 			is.get();
 			UASSERT(is.eof());
 		}
+	}
+};
+
+struct TestNodedefSerialization: public TestBase
+{
+	void Run()
+	{
+		ContentFeatures f;
+		f.name = "default:stone";
+		for(int i = 0; i < 6; i++)
+			f.tiledef[i].name = "default_stone.png";
+		f.is_ground_content = true;
+		std::ostringstream os(std::ios::binary);
+		f.serialize(os, LATEST_PROTOCOL_VERSION);
+		verbosestream<<"Test ContentFeatures size: "<<os.str().size()<<std::endl;
+		std::istringstream is(os.str(), std::ios::binary);
+		ContentFeatures f2;
+		f2.deSerialize(is);
+		UASSERT(f.walkable == f2.walkable);
+		UASSERT(f.node_box.type == f2.node_box.type);
 	}
 };
 
@@ -1736,6 +1757,7 @@ void run_tests()
 	TEST(TestSettings);
 	TEST(TestCompress);
 	TEST(TestSerialization);
+	TEST(TestNodedefSerialization);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
 	TESTPARAMS(TestVoxelAlgorithms, ndef);

@@ -394,7 +394,11 @@ public:
 	float m_max_packets_per_second;
 	int m_num_sent;
 	int m_max_num_sent;
-	
+
+	// Updated from configuration by Connection
+	float congestion_control_aim_rtt;
+	float congestion_control_max_rate;
+	float congestion_control_min_rate;
 private:
 };
 

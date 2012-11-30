@@ -77,9 +77,9 @@ void MeshMakeData::fill(MapBlock *block)
 		// Get map
 		Map *map = block->getParent();
 
-		for(u16 i=0; i<6; i++)
+		for(u16 i=0; i<26; i++)
 		{
-			const v3s16 &dir = g_6dirs[i];
+			const v3s16 &dir = g_26dirs[i];
 			v3s16 bp = m_blockpos + dir;
 			MapBlock *b = map->getBlockNoCreateNoEx(bp);
 			if(b)

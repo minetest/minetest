@@ -205,9 +205,7 @@ public:
 		{ return m_gamedef; }
 
 	float getSendRecommendedInterval()
-	{
-		return 0.10;
-	}
+		{ return m_recommended_send_interval; }
 
 	/*
 		Save players
@@ -367,6 +365,8 @@ private:
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
 	core::list<ABMWithState> m_abms;
+	// An interval for generally sending object positions and stuff
+	float m_recommended_send_interval;
 };
 
 #ifndef SERVER
