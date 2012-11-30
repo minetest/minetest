@@ -131,6 +131,7 @@ public:
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
+	virtual bool isKnownSourceImage(const std::string &name)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -149,6 +150,7 @@ public:
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
+	virtual bool isKnownSourceImage(const std::string &name)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
