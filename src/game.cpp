@@ -1416,10 +1416,11 @@ void the_game(
 			g_gamecallback->changepassword_requested = false;
 		}
 
-		/*
-			Process TextureSource's queue
-		*/
+		/* Process TextureSource's queue */
 		tsrc->processQueue();
+
+		/* Process ItemDefManager's queue */
+		itemdef->processQueue(gamedef);
 
 		/*
 			Random calculations

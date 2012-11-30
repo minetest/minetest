@@ -1468,8 +1468,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		int num_files = readU16(is);
 		
-		verbosestream<<"Client received TOCLIENT_ANNOUNCE_MEDIA ("
-				<<num_files<<" files)"<<std::endl;
+		infostream<<"Client: Received media announcement: packet size: "
+				<<datasize<<std::endl;
 
 		core::list<MediaRequest> file_requests;
 
@@ -2463,10 +2463,6 @@ void Client::afterContentReceived()
 	// Update node textures
 	infostream<<"- Updating node textures"<<std::endl;
 	m_nodedef->updateTextures(m_tsrc);
-
-	// Update item textures and meshes
-	infostream<<"- Updating item textures and meshes"<<std::endl;
-	m_itemdef->updateTexturesAndMeshes(this);
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;

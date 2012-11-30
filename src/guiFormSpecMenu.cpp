@@ -46,7 +46,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		return;
 	
 	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	video::ITexture *texture = def.inventory_texture;
+	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
 
 	// Draw the inventory texture
 	if(texture != NULL)
@@ -519,7 +519,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			IItemDefManager *idef = m_gamedef->idef();
 			ItemStack item;
 			item.deSerialize(fimage, idef);
-			video::ITexture *texture = item.getDefinition(idef).inventory_texture;
+			video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 			std::string tooltip = item.getDefinition(idef).description;
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),

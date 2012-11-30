@@ -73,14 +73,6 @@ struct ItemDefinition
 	std::string node_placement_prediction;
 
 	/*
-		Cached stuff
-	*/
-#ifndef SERVER
-	video::ITexture *inventory_texture;
-	scene::IMesh *wield_mesh;
-#endif
-
-	/*
 		Some helpful methods
 	*/
 	ItemDefinition();
@@ -108,6 +100,14 @@ public:
 	virtual std::set<std::string> getAll() const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
+#ifndef SERVER
+	// Get item inventory texture
+	virtual video::ITexture* getInventoryTexture(const std::string &name,
+			IGameDef *gamedef) const=0;
+	// Get item wield mesh
+	virtual scene::IMesh* getWieldMesh(const std::string &name,
+		IGameDef *gamedef) const=0;
+#endif
 
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -126,6 +126,14 @@ public:
 	virtual std::set<std::string> getAll() const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
+#ifndef SERVER
+	// Get item inventory texture
+	virtual video::ITexture* getInventoryTexture(const std::string &name,
+			IGameDef *gamedef) const=0;
+	// Get item wield mesh
+	virtual scene::IMesh* getWieldMesh(const std::string &name,
+		IGameDef *gamedef) const=0;
+#endif
 
 	// Remove all registered item and node definitions and aliases
 	// Then re-add the builtin item definitions
@@ -138,15 +146,11 @@ public:
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)=0;
 
-	/*
-		Update inventory textures and wield meshes to latest
-		return values of ITextureSource and INodeDefManager.
-		Call after updating the texture atlas of a texture source.
-	*/
-	virtual void updateTexturesAndMeshes(IGameDef *gamedef)=0;
-
 	virtual void serialize(std::ostream &os)=0;
 	virtual void deSerialize(std::istream &is)=0;
+
+	// Do stuff asked by threads that can only be done in the main thread
+	virtual void processQueue(IGameDef *gamedef)=0;
 };
 
 IWritableItemDefManager* createItemDefManager();

@@ -529,7 +529,7 @@ void Camera::setDigging(s32 button)
 void Camera::wield(const ItemStack &item)
 {
 	IItemDefManager *idef = m_gamedef->idef();
-	scene::IMesh *wield_mesh = item.getDefinition(idef).wield_mesh;
+	scene::IMesh *wield_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
 	if(wield_mesh)
 	{
 		m_wieldnode->setMesh(wield_mesh);

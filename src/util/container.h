@@ -107,6 +107,17 @@ public:
 		return true;
 	}
 
+	core::list<Value> getValues()
+	{
+		core::list<Value> result;
+		for(typename core::map<Key, Value>::Iterator
+				i = m_values.getIterator();
+				i.atEnd() == false; i++){
+			result.push_back(i.getNode()->getValue());
+		}
+		return result;
+	}
+
 private:
 	core::map<Key, Value> m_values;
 	JMutex m_mutex;
