@@ -2464,6 +2464,19 @@ void Client::afterContentReceived()
 	infostream<<"- Updating node textures"<<std::endl;
 	m_nodedef->updateTextures(m_tsrc);
 
+	// Preload item textures and meshes if configured to
+	if(g_settings->getBool("preload_item_visuals"))
+	{
+		verbosestream<<"Updating item textures and meshes"<<std::endl;
+		std::set<std::string> names = m_itemdef->getAll();
+		for(std::set<std::string>::const_iterator
+				i = names.begin(); i != names.end(); ++i){
+			// Asking for these caches the result
+			m_itemdef->getInventoryTexture(*i, this);
+			m_itemdef->getWieldMesh(*i, this);
+		}
+	}
+
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.Start();
