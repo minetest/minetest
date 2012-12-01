@@ -40,7 +40,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/mathconstants.h"
 #include "map.h"
+#include "main.h" // g_settings
 #include <IMeshManipulator.h>
+#include <IAnimatedMeshSceneNode.h>
+#include <IBoneSceneNode.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -552,7 +555,8 @@ private:
 	// Only set at initialization
 	std::string m_name;
 	bool m_is_player;
-	bool m_is_local_player; // determined locally
+	bool m_is_local_player;
+	int m_id;
 	// Property-ish things
 	ObjectProperties m_prop;
 	//
@@ -560,6 +564,7 @@ private:
 	IrrlichtDevice *m_irr;
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
+	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
 	scene::IBillboardSceneNode *m_spritenode;
 	scene::ITextSceneNode* m_textnode;
 	v3f m_position;
@@ -573,6 +578,14 @@ private:
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set;
 	bool m_tx_select_horiz_by_yawpitch;
+	v2f m_animation_range;
+	int m_animation_speed;
+	int m_animation_blend;
+	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attached_to_local;
 	int m_anim_frame;
 	int m_anim_num_frames;
 	float m_anim_framelength;
@@ -582,6 +595,7 @@ private:
 	bool m_visuals_expired;
 	float m_step_distance_counter;
 	u8 m_last_light;
+	bool m_is_visible;
 
 public:
 	GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -589,11 +603,13 @@ public:
 		//
 		m_is_player(false),
 		m_is_local_player(false),
+		m_id(0),
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
+		m_animated_meshnode(NULL),
 		m_spritenode(NULL),
 		m_textnode(NULL),
 		m_position(v3f(0,10*BS,0)),
@@ -605,6 +621,14 @@ public:
 		m_tx_basepos(0,0),
 		m_initial_tx_basepos_set(false),
 		m_tx_select_horiz_by_yawpitch(false),
+		m_animation_range(v2f(0,0)),
+		m_animation_speed(15),
+		m_animation_blend(0),
+		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
+		m_attachment_bone(""),
+		m_attachment_position(v3f(0,0,0)),
+		m_attachment_rotation(v3f(0,0,0)),
+		m_attached_to_local(false),
 		m_anim_frame(0),
 		m_anim_num_frames(1),
 		m_anim_framelength(0.2),
@@ -612,7 +636,8 @@ public:
 		m_reset_textures_timer(-1),
 		m_visuals_expired(false),
 		m_step_distance_counter(0),
-		m_last_light(255)
+		m_last_light(255),
+		m_is_visible(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -622,21 +647,36 @@ public:
 	{
 		infostream<<"GenericCAO: Got init data"<<std::endl;
 		std::istringstream is(data, std::ios::binary);
+		int num_messages = 0;
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version != 0){
+		if(version == 1) // In PROTOCOL_VERSION 14
+		{
+			m_name = deSerializeString(is);
+			m_is_player = readU8(is);
+			m_id = readS16(is);
+			m_position = readV3F1000(is);
+			m_yaw = readF1000(is);
+			m_hp = readS16(is);
+			num_messages = readU8(is);
+		}
+		else if(version == 0) // In PROTOCOL_VERSION 13
+		{
+			m_name = deSerializeString(is);
+			m_is_player = readU8(is);
+			m_position = readV3F1000(is);
+			m_yaw = readF1000(is);
+			m_hp = readS16(is);
+			num_messages = readU8(is);
+		}
+		else
+		{
 			errorstream<<"GenericCAO: Unsupported init data version"
 					<<std::endl;
 			return;
 		}
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		
-		int num_messages = readU8(is);
+
 		for(int i=0; i<num_messages; i++){
 			std::string message = deSerializeLongString(is);
 			processMessage(message);
@@ -668,20 +708,112 @@ public:
 	}
 	core::aabbox3d<f32>* getSelectionBox()
 	{
-		if(!m_prop.is_visible || m_is_local_player)
+		if(!m_prop.is_visible || !m_is_visible || m_is_local_player || getParent() != NULL)
 			return NULL;
 		return &m_selection_box;
 	}
 	v3f getPosition()
 	{
+		if(getParent() != NULL){
+			if(m_meshnode)
+				return m_meshnode->getAbsolutePosition();
+			if(m_animated_meshnode)
+				return m_animated_meshnode->getAbsolutePosition();
+			if(m_spritenode)
+				return m_spritenode->getAbsolutePosition();
+			return m_position;
+		}
 		return pos_translator.vect_show;
 	}
 
-	void removeFromScene()
+	scene::IMeshSceneNode *getMeshSceneNode()
 	{
+		if(m_meshnode)
+			return m_meshnode;
+		return NULL;
+	}
+
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode()
+	{
+		if(m_animated_meshnode)
+			return m_animated_meshnode;
+		return NULL;
+	}
+
+	scene::IBillboardSceneNode *getSpriteSceneNode()
+	{
+		if(m_spritenode)
+			return m_spritenode;
+		return NULL;
+	}
+
+	bool isPlayer()
+	{
+		return m_is_player;
+	}
+
+	bool isLocalPlayer()
+	{
+		return m_is_local_player;
+	}
+
+	void setAttachments()
+	{
+		updateAttachments();
+	}
+
+	ClientActiveObject *getParent()
+	{
+		ClientActiveObject *obj = NULL;
+		for(std::vector<core::vector2d<int> >::const_iterator cii = m_env->attachment_list.begin(); cii != m_env->attachment_list.end(); cii++)
+		{
+			if(cii->X == getId()){ // This ID is our child
+				if(cii->Y > 0){ // A parent ID exists for our child
+					if(cii->X != cii->Y){ // The parent and child ID are not the same
+						obj = m_env->getActiveObject(cii->Y);
+					}
+				}
+				break;
+			}
+		}
+		if(obj)
+			return obj;
+		return NULL;
+	}
+
+	void removeFromScene(bool permanent)
+	{
+		if(permanent) // Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
+		{
+			// Detach this object's children
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+			{
+				if(ii->Y == getId()) // Is a child of our object
+				{
+					ii->Y = 0;
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+						obj->setAttachments();
+				}
+			}
+			// Delete this object from the attachments list
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+			{
+				if(ii->X == getId()) // Is our object
+				{
+					m_env->attachment_list.erase(ii);
+					break;
+				}
+			}
+		}
+
 		if(m_meshnode){
 			m_meshnode->remove();
 			m_meshnode = NULL;
+		}
+		if(m_animated_meshnode){
+			m_animated_meshnode->remove();
+			m_animated_meshnode = NULL;
 		}
 		if(m_spritenode){
 			m_spritenode->remove();
@@ -695,7 +827,7 @@ public:
 		m_smgr = smgr;
 		m_irr = irr;
 
-		if(m_meshnode != NULL || m_spritenode != NULL)
+		if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
 			return;
 		
 		m_visuals_expired = false;
@@ -791,7 +923,34 @@ public:
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
 			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
-		} else if(m_prop.visual == "wielditem"){
+
+			m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		}
+		else if(m_prop.visual == "mesh"){
+			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
+			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
+			if(mesh)
+			{
+				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+				m_animated_meshnode->animateJoints(); // Needed for some animations
+				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
+						m_prop.visual_size.Y,
+						m_prop.visual_size.X));
+				u8 li = m_last_light;
+				setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+				m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+				m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+				m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+			}
+			else
+				errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
+		}
+		else if(m_prop.visual == "wielditem"){
 			infostream<<"GenericCAO::addToScene(): node"<<std::endl;
 			infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
 			if(m_prop.textures.size() >= 1){
@@ -823,6 +982,8 @@ public:
 		scene::ISceneNode *node = NULL;
 		if(m_spritenode)
 			node = m_spritenode;
+		else if(m_animated_meshnode)
+			node = m_animated_meshnode;
 		else if(m_meshnode)
 			node = m_meshnode;
 		if(node && m_is_player && !m_is_local_player){
@@ -833,8 +994,11 @@ public:
 					wname.c_str(), video::SColor(255,255,255,255), node);
 			m_textnode->setPosition(v3f(0, BS*1.1, 0));
 		}
-		
+
 		updateNodePos();
+		updateAnimation();
+		updateBonePosition();
+		updateAttachments();
 	}
 
 	void expireVisuals()
@@ -844,19 +1008,16 @@ public:
 		
 	void updateLight(u8 light_at_pos)
 	{
-		bool is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
 		if(li != m_last_light){
 			m_last_light = li;
 			video::SColor color(255,li,li,li);
-			if(m_meshnode){
+			if(m_meshnode)
 				setMeshColor(m_meshnode->getMesh(), color);
-				m_meshnode->setVisible(is_visible);
-			}
-			if(m_spritenode){
+			if(m_animated_meshnode)
+				setMeshColor(m_animated_meshnode->getMesh(), color);
+			if(m_spritenode)
 				m_spritenode->setColor(color);
-				m_spritenode->setVisible(is_visible);
-			}
 		}
 	}
 
@@ -867,11 +1028,20 @@ public:
 
 	void updateNodePos()
 	{
+		if(getParent() != NULL)
+			return;
+
 		if(m_meshnode){
 			m_meshnode->setPosition(pos_translator.vect_show);
 			v3f rot = m_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_meshnode->setRotation(rot);
+		}
+		if(m_animated_meshnode){
+			m_animated_meshnode->setPosition(pos_translator.vect_show);
+			v3f rot = m_animated_meshnode->getRotation();
+			rot.Y = -m_yaw;
+			m_animated_meshnode->setRotation(rot);
 		}
 		if(m_spritenode){
 			m_spritenode->setPosition(pos_translator.vect_show);
@@ -880,56 +1050,116 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
-		v3f lastpos = pos_translator.vect_show;
-
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
-			removeFromScene();
+
+			// Attachments, part 1: All attached objects must be unparented first, or Irrlicht causes a segmentation fault
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+			{
+				if(ii->Y == getId()) // This is a child of our parent
+				{
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+					{
+						scene::IMeshSceneNode *m_child_meshnode = obj->getMeshSceneNode();
+						scene::IAnimatedMeshSceneNode *m_child_animated_meshnode = obj->getAnimatedMeshSceneNode();
+						scene::IBillboardSceneNode *m_child_spritenode = obj->getSpriteSceneNode();
+						if(m_child_meshnode)
+							m_child_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_animated_meshnode)
+							m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+						if(m_child_spritenode)
+							m_child_spritenode->setParent(m_smgr->getRootSceneNode());
+					}
+				}
+			}
+
+			removeFromScene(false);
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
+
+			// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+			{
+				if(ii->Y == getId()) // This is a child of our parent
+				{
+					ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+					if(obj)
+						obj->setAttachments();
+				}
+			}
 		}
 
-		if(m_prop.physical){
-			core::aabbox3d<f32> box = m_prop.collisionbox;
-			box.MinEdge *= BS;
-			box.MaxEdge *= BS;
-			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.125; // Distance per iteration
-			f32 stepheight = 0;
-			v3f p_pos = m_position;
-			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
-			IGameDef *gamedef = env->getGameDef();
-			moveresult = collisionMoveSimple(&env->getMap(), gamedef,
-					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration);
-			// Apply results
-			m_position = p_pos;
-			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
-			
-			bool is_end_position = moveresult.collides;
-			pos_translator.update(m_position, is_end_position, dtime);
-			pos_translator.translate(dtime);
-			updateNodePos();
-		} else {
-			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
-			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
-			pos_translator.translate(dtime);
-			updateNodePos();
-		}
+		// Make sure m_is_visible is always applied
+		if(m_meshnode)
+			m_meshnode->setVisible(m_is_visible);
+		if(m_animated_meshnode)
+			m_animated_meshnode->setVisible(m_is_visible);
+		if(m_spritenode)
+			m_spritenode->setVisible(m_is_visible);
+		if(m_textnode)
+			m_textnode->setVisible(m_is_visible);
 
-		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
-		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS){
-			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound){
-				INodeDefManager *ndef = m_gamedef->ndef();
-				v3s16 p = floatToInt(getPosition() + v3f(0,
-						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
-				MapNode n = m_env->getMap().getNodeNoEx(p);
-				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
-				m_gamedef->sound()->playSoundAt(spec, false, getPosition());
+		if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
+		{
+			// Set these for later
+			m_position = getPosition();
+			m_velocity = v3f(0,0,0);
+			m_acceleration = v3f(0,0,0);
+			pos_translator.vect_show = m_position;
+
+			if(m_is_local_player) // Update local player attachment position
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->overridePosition = getParent()->getPosition();
+			}
+		}
+		else
+		{
+			v3f lastpos = pos_translator.vect_show;
+
+			if(m_prop.physical){
+				core::aabbox3d<f32> box = m_prop.collisionbox;
+				box.MinEdge *= BS;
+				box.MaxEdge *= BS;
+				collisionMoveResult moveresult;
+				f32 pos_max_d = BS*0.125; // Distance per iteration
+				f32 stepheight = 0;
+				v3f p_pos = m_position;
+				v3f p_velocity = m_velocity;
+				v3f p_acceleration = m_acceleration;
+				IGameDef *gamedef = env->getGameDef();
+				moveresult = collisionMoveSimple(&env->getMap(), gamedef,
+						pos_max_d, box, stepheight, dtime,
+						p_pos, p_velocity, p_acceleration);
+				// Apply results
+				m_position = p_pos;
+				m_velocity = p_velocity;
+				m_acceleration = p_acceleration;
+				
+				bool is_end_position = moveresult.collides;
+				pos_translator.update(m_position, is_end_position, dtime);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			} else {
+				m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+				m_velocity += dtime * m_acceleration;
+				pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			}
+
+			float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
+			m_step_distance_counter += moved;
+			if(m_step_distance_counter > 1.5*BS){
+				m_step_distance_counter = 0;
+				if(!m_is_local_player && m_prop.makes_footstep_sound){
+					INodeDefManager *ndef = m_gamedef->ndef();
+					v3s16 p = floatToInt(getPosition() + v3f(0,
+							(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
+					MapNode n = m_env->getMap().getNodeNoEx(p);
+					SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+					m_gamedef->sound()->playSoundAt(spec, false, getPosition());
+				}
 			}
 		}
 
@@ -950,7 +1180,7 @@ public:
 				updateTextures("");
 			}
 		}
-		if(fabs(m_prop.automatic_rotate) > 0.001){
+		if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001){
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
@@ -1008,6 +1238,10 @@ public:
 	{
 		ITextureSource *tsrc = m_gamedef->tsrc();
 
+		bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
+		bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
+		bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+
 		if(m_spritenode)
 		{
 			if(m_prop.visual == "sprite")
@@ -1018,6 +1252,58 @@ public:
 				texturestring += mod;
 				m_spritenode->setMaterialTexture(0,
 						tsrc->getTextureRaw(texturestring));
+
+				// This allows setting per-material colors. However, until a real lighting
+				// system is added, the code below will have no effect. Once MineTest
+				// has directional lighting, it should work automatically.
+				if(m_prop.colors.size() >= 1)
+				{
+					m_spritenode->getMaterial(0).AmbientColor = m_prop.colors[0];
+					m_spritenode->getMaterial(0).DiffuseColor = m_prop.colors[0];
+					m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
+				}
+
+				m_spritenode->getMaterial(0).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+				m_spritenode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+				m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+			}
+		}
+		if(m_animated_meshnode)
+		{
+			if(m_prop.visual == "mesh")
+			{
+				for (u32 i = 0; i < m_prop.textures.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
+				{
+					std::string texturestring = m_prop.textures[i];
+					if(texturestring == "")
+						continue; // Empty texture string means don't modify that material
+					texturestring += mod;
+					video::ITexture* texture = tsrc->getTextureRaw(texturestring);
+					if(!texture)
+					{
+						errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
+						continue;
+					}
+
+					// Set material flags and texture
+					m_animated_meshnode->setMaterialTexture(i, texture);
+					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+					material.setFlag(video::EMF_LIGHTING, false);
+					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					m_animated_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				}
+				for (u32 i = 0; i < m_prop.colors.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
+				{
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					m_animated_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
+					m_animated_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
+					m_animated_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
+				}
 			}
 		}
 		if(m_meshnode)
@@ -1044,6 +1330,20 @@ public:
 					material.setTexture(0, atlas);
 					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
 					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() > i)
+					{
+						m_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
+						m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
+						m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
+					}
+
+					m_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 			}
 			else if(m_prop.visual == "upright_sprite")
@@ -1057,6 +1357,20 @@ public:
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
+					
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() >= 1)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[0];
+						buf->getMaterial().DiffuseColor = m_prop.colors[0];
+						buf->getMaterial().SpecularColor = m_prop.colors[0];
+					}
+
+					buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
 				{
 					std::string tname = "unknown_object.png";
@@ -1068,7 +1382,209 @@ public:
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
+
+					// This allows setting per-material colors. However, until a real lighting
+					// system is added, the code below will have no effect. Once MineTest
+					// has directional lighting, it should work automatically.
+					if(m_prop.colors.size() >= 2)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[1];
+						buf->getMaterial().DiffuseColor = m_prop.colors[1];
+						buf->getMaterial().SpecularColor = m_prop.colors[1];
+					}
+					else if(m_prop.colors.size() >= 1)
+					{
+						buf->getMaterial().AmbientColor = m_prop.colors[0];
+						buf->getMaterial().DiffuseColor = m_prop.colors[0];
+						buf->getMaterial().SpecularColor = m_prop.colors[0];
+					}
+
+					buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+					buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 				}
+			}
+		}
+	}
+
+	void updateAnimation()
+	{
+		if(m_animated_meshnode == NULL)
+			return;
+
+		m_animated_meshnode->setFrameLoop((int)m_animation_range.X, (int)m_animation_range.Y);
+		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+		m_animated_meshnode->setTransitionTime(m_animation_blend);
+	}
+
+	void updateBonePosition()
+	{
+		if(!m_bone_position.size() || m_animated_meshnode == NULL)
+			return;
+
+		m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
+		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+			std::string bone_name = (*ii).first;
+			v3f bone_pos = (*ii).second.X;
+			v3f bone_rot = (*ii).second.Y;
+			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+			if(bone)
+			{
+				bone->setPosition(bone_pos);
+				bone->setRotation(bone_rot);
+			}
+		}
+	}
+	
+	void updateAttachments()
+	{
+		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+		m_is_visible = !m_attached_to_local; // Objects attached to the local player should always be hidden
+
+		if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
+		{
+			if(m_meshnode)
+			{
+				v3f old_position = m_meshnode->getAbsolutePosition();
+				v3f old_rotation = m_meshnode->getRotation();
+				m_meshnode->setParent(m_smgr->getRootSceneNode());
+				m_meshnode->setPosition(old_position);
+				m_meshnode->setRotation(old_rotation);
+				m_meshnode->updateAbsolutePosition();
+			}
+			if(m_animated_meshnode)
+			{
+				v3f old_position = m_animated_meshnode->getAbsolutePosition();
+				v3f old_rotation = m_animated_meshnode->getRotation();
+				m_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+				m_animated_meshnode->setPosition(old_position);
+				m_animated_meshnode->setRotation(old_rotation);
+				m_animated_meshnode->updateAbsolutePosition();
+			}
+			if(m_spritenode)
+			{
+				v3f old_position = m_spritenode->getAbsolutePosition();
+				v3f old_rotation = m_spritenode->getRotation();
+				m_spritenode->setParent(m_smgr->getRootSceneNode());
+				m_spritenode->setPosition(old_position);
+				m_spritenode->setRotation(old_rotation);
+				m_spritenode->updateAbsolutePosition();
+			}
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->isAttached = false;
+			}
+		}
+		else // Attach
+		{
+			scene::IMeshSceneNode *parent_mesh = NULL;
+			if(getParent()->getMeshSceneNode())
+				parent_mesh = getParent()->getMeshSceneNode();
+			scene::IAnimatedMeshSceneNode *parent_animated_mesh = NULL;
+			if(getParent()->getAnimatedMeshSceneNode())
+				parent_animated_mesh = getParent()->getAnimatedMeshSceneNode();
+			scene::IBillboardSceneNode *parent_sprite = NULL;
+			if(getParent()->getSpriteSceneNode())
+				parent_sprite = getParent()->getSpriteSceneNode();
+
+			scene::IBoneSceneNode *parent_bone = NULL;
+			if(parent_animated_mesh && m_attachment_bone != "")
+				parent_bone = parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
+
+			// The spaghetti code below makes sure attaching works if either the parent or child is a spritenode, meshnode, or animatedmeshnode
+			// TODO: Perhaps use polymorphism here to save code duplication
+			if(m_meshnode){
+				if(parent_bone){
+					m_meshnode->setParent(parent_bone);
+					m_meshnode->setPosition(m_attachment_position);
+					m_meshnode->setRotation(m_attachment_rotation);
+					m_meshnode->updateAbsolutePosition();
+				}
+				else
+				{
+					if(parent_mesh){
+						m_meshnode->setParent(parent_mesh);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
+						m_meshnode->updateAbsolutePosition();
+					}
+					else if(parent_animated_mesh){
+						m_meshnode->setParent(parent_animated_mesh);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
+						m_meshnode->updateAbsolutePosition();
+					}
+					else if(parent_sprite){
+						m_meshnode->setParent(parent_sprite);
+						m_meshnode->setPosition(m_attachment_position);
+						m_meshnode->setRotation(m_attachment_rotation);
+						m_meshnode->updateAbsolutePosition();
+					}
+				}
+			}
+			if(m_animated_meshnode){
+				if(parent_bone){
+					m_animated_meshnode->setParent(parent_bone);
+					m_animated_meshnode->setPosition(m_attachment_position);
+					m_animated_meshnode->setRotation(m_attachment_rotation);
+					m_animated_meshnode->updateAbsolutePosition();
+				}
+				else
+				{
+					if(parent_mesh){
+						m_animated_meshnode->setParent(parent_mesh);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
+						m_animated_meshnode->updateAbsolutePosition();
+					}
+					else if(parent_animated_mesh){
+						m_animated_meshnode->setParent(parent_animated_mesh);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
+						m_animated_meshnode->updateAbsolutePosition();
+					}
+					else if(parent_sprite){
+						m_animated_meshnode->setParent(parent_sprite);
+						m_animated_meshnode->setPosition(m_attachment_position);
+						m_animated_meshnode->setRotation(m_attachment_rotation);
+						m_animated_meshnode->updateAbsolutePosition();
+					}
+				}
+			}
+			if(m_spritenode){
+				if(parent_bone){
+					m_spritenode->setParent(parent_bone);
+					m_spritenode->setPosition(m_attachment_position);
+					m_spritenode->setRotation(m_attachment_rotation);
+					m_spritenode->updateAbsolutePosition();
+				}
+				else
+				{
+					if(parent_mesh){
+						m_spritenode->setParent(parent_mesh);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
+						m_spritenode->updateAbsolutePosition();
+					}
+					else if(parent_animated_mesh){
+						m_spritenode->setParent(parent_animated_mesh);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
+						m_spritenode->updateAbsolutePosition();
+					}
+					else if(parent_sprite){
+						m_spritenode->setParent(parent_sprite);
+						m_spritenode->setPosition(m_attachment_position);
+						m_spritenode->setRotation(m_attachment_rotation);
+						m_spritenode->updateAbsolutePosition();
+					}
+				}
+			}
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->isAttached = true;
 			}
 		}
 	}
@@ -1099,6 +1615,8 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
 		{
+			// Not sent by the server if this object is an attachment.
+			// We might however get here if the server notices the object being detached before the client.
 			m_position = readV3F1000(is);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
@@ -1112,7 +1630,10 @@ public:
 			// the ground due to sucky collision detection...
 			if(m_prop.physical)
 				m_position += v3f(0,0.002,0);
-			
+
+			if(getParent() != NULL) // Just in case
+				return;
+
 			if(do_interpolate){
 				if(!m_prop.physical)
 					pos_translator.update(m_position, is_end_position, update_interval);
@@ -1139,6 +1660,41 @@ public:
 			m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
 			updateTexturePos();
+		}
+		else if(cmd == GENERIC_CMD_SET_ANIMATION)
+		{
+			m_animation_range = readV2F1000(is);
+			m_animation_speed = readF1000(is);
+			m_animation_blend = readF1000(is);
+
+			updateAnimation();
+		}
+		else if(cmd == GENERIC_CMD_SET_BONE_POSITION)
+		{
+			std::string bone = deSerializeString(is);
+			v3f position = readV3F1000(is);
+			v3f rotation = readV3F1000(is);
+			m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+
+			updateBonePosition();
+		}
+		else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
+		{
+			// If an entry already exists for this object, delete it first to avoid duplicates
+			for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+			{
+				if(ii->X == getId()) // This is the ID of our object
+				{
+					m_env->attachment_list.erase(ii);
+					break;
+				}
+			}
+			m_env->attachment_list.push_back(core::vector2d<int>(getId(), readS16(is)));
+			m_attachment_bone = deSerializeString(is);
+			m_attachment_position = readV3F1000(is);
+			m_attachment_rotation = readV3F1000(is);
+
+			updateAttachments();
 		}
 		else if(cmd == GENERIC_CMD_PUNCHED)
 		{

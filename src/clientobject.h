@@ -49,13 +49,19 @@ public:
 
 	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr){}
-	virtual void removeFromScene(){}
+	virtual void removeFromScene(bool permanent){}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
 	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
 	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
+	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}
+	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
+	virtual bool isPlayer(){return false;}
+	virtual bool isLocalPlayer(){return false;}
+	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time

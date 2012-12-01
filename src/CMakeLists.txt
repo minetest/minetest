@@ -202,6 +202,8 @@ set(common_SRCS
 	sha1.cpp
 	base64.cpp
 	ban.cpp
+	clientserver.cpp
+	staticobject.cpp
 	util/serialize.cpp
 	util/directiontables.cpp
 	util/numeric.cpp

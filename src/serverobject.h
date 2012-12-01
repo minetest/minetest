@@ -118,7 +118,7 @@ public:
 		The return value of this is passed to the client-side object
 		when it is created
 	*/
-	virtual std::string getClientInitializationData(){return "";}
+	virtual std::string getClientInitializationData(u16 protocol_version){return "";}
 	
 	/*
 		The return value of this is passed to the server-side object
@@ -151,6 +151,12 @@ public:
 	{ return 0; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
+	{}
+	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
+	{}
+	virtual void setBonePosition(std::string bone, v3f position, v3f rotation)
+	{}
+	virtual void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
 	{}
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }

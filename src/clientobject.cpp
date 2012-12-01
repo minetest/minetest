@@ -36,7 +36,7 @@ ClientActiveObject::ClientActiveObject(u16 id, IGameDef *gamedef,
 
 ClientActiveObject::~ClientActiveObject()
 {
-	removeFromScene();
+	removeFromScene(true);
 }
 
 ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,

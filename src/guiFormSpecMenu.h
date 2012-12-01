@@ -144,7 +144,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 public:
-	GUIFormSpecMenu(gui::IGUIEnvironment* env,
+	GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
@@ -197,6 +197,7 @@ protected:
 	v2s32 spacing;
 	v2s32 imgsize;
 	
+	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
 
@@ -206,6 +207,7 @@ protected:
 	TextDest *m_text_dst;
 
 	core::array<ListDrawSpec> m_inventorylists;
+	core::array<ImageDrawSpec> m_backgrounds;	
 	core::array<ImageDrawSpec> m_images;
 	core::array<FieldSpec> m_fields;
 

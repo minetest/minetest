@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,38 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef OBJECT_PROPERTIES_HEADER
-#define OBJECT_PROPERTIES_HEADER
+#include "clientserver.h"
+#include "util/serialize.h"
 
-#include <string>
-#include "irrlichttypes_bloated.h"
-#include <iostream>
-#include <map>
-
-struct ObjectProperties
+SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
 {
-	// Values are BS=1
-	s16 hp_max;
-	bool physical;
-	float weight;
-	core::aabbox3d<f32> collisionbox;
-	std::string visual;
-	std::string mesh;
-	v2f visual_size;
-	core::array<std::string> textures;
-	core::array<video::SColor> colors;
-	v2s16 spritediv;
-	v2s16 initial_sprite_basepos;
-	bool is_visible;
-	bool makes_footstep_sound;
-	float automatic_rotate;
-
-
-	ObjectProperties();
-	std::string dump();
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
-};
-
-#endif
+	SharedBuffer<u8> data(2+2+4);
+	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
+	writeU16(&data[2], time);
+	writeF1000(&data[4], time_speed);
+	return data;
+}
 

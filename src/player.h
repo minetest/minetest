@@ -28,6 +28,61 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 
+struct PlayerControl
+{
+	PlayerControl()
+	{
+		up = false;
+		down = false;
+		left = false;
+		right = false;
+		jump = false;
+		aux1 = false;
+		sneak = false;
+		LMB = false;
+		RMB = false;
+		pitch = 0;
+		yaw = 0;
+	}
+	PlayerControl(
+		bool a_up,
+		bool a_down,
+		bool a_left,
+		bool a_right,
+		bool a_jump,
+		bool a_aux1,
+		bool a_sneak,
+		bool a_LMB,
+		bool a_RMB,
+		float a_pitch,
+		float a_yaw
+	)
+	{
+		up = a_up;
+		down = a_down;
+		left = a_left;
+		right = a_right;
+		jump = a_jump;
+		aux1 = a_aux1;
+		sneak = a_sneak;
+		LMB = a_LMB;
+		RMB = a_RMB;
+		pitch = a_pitch;
+		yaw = a_yaw;
+	}
+	bool up;
+	bool down;
+	bool left;
+	bool right;
+	bool jump;
+	bool aux1;
+	bool sneak;
+	bool LMB;
+	bool RMB;
+	float pitch;
+	float yaw;
+};
+
 class Map;
 class IGameDef;
 struct CollisionInfo;
@@ -155,9 +210,17 @@ public:
 	u16 hp;
 
 	u16 peer_id;
-
+	
 	std::string inventory_formspec;
-
+	
+	PlayerControl control;
+	PlayerControl getPlayerControl()
+	{
+		return control;
+	}
+	
+	u32 keyPressed;
+	
 protected:
 	IGameDef *m_gamedef;
 
@@ -182,7 +245,7 @@ public:
 	void setPlayerSAO(PlayerSAO *sao)
 	{ m_sao = sao; }
 	void setPosition(const v3f &position);
-
+	
 private:
 	PlayerSAO *m_sao;
 };

@@ -372,6 +372,18 @@ public:
 	// Update new texture pointer and texture coordinates to an
 	// AtlasPointer based on it's texture id
 	void updateAP(AtlasPointer &ap);
+ 
+	bool isKnownSourceImage(const std::string &name)
+	{
+		bool is_known = false;
+		bool cache_found = m_source_image_existence.get(name, &is_known);
+		if(cache_found)
+			return is_known;
+		// Not found in cache; find out if a local file exists
+		is_known = (getTexturePath(name) != "");
+		m_source_image_existence.set(name, is_known);
+		return is_known;
+	}
 
 	// Processes queued texture requests from other threads.
 	// Shall be called from the main thread.
@@ -399,6 +411,9 @@ private:
 	// Cache of source images
 	// This should be only accessed from the main thread
 	SourceImageCache m_sourcecache;
+
+	// Thread-safe cache of what source images are known (true = known)
+	MutexedMap<std::string, bool> m_source_image_existence;
 
 	// A texture id is index in this array.
 	// The first position contains a NULL texture.
@@ -517,15 +532,6 @@ u32 parseImageTransform(const std::string& s);
 core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
 // Apply transform to image data
 void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
-
-/*
-	Adds a new texture to the video driver and returns a pointer to it.
-	This pointer should not be dropped. Any texture that was registered
-	with that name before is removed (this may invalidate some ITexture
-	pointers).
-*/
-video::ITexture* register_texture(video::IVideoDriver *driver,
-		std::string name, video::IImage *img);
 
 /*
 	Generate image based on a string like "stone.png" or "[crack0".
@@ -695,9 +701,11 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 				" create texture \""<<name<<"\""<<std::endl;
 	}
 	
-	// Create texture from resulting image
 	if(baseimg != NULL)
-		t = register_texture(driver, name, baseimg);
+	{
+		// Create texture from resulting image
+		t = driver->addTexture(name.c_str(), baseimg);
+	}
 	
 	/*
 		Add texture to caches (add NULL textures too)
@@ -788,6 +796,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	assert(get_current_thread_id() == m_main_thread);
 	
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
+	m_source_image_existence.set(name, true);
 }
 	
 void TextureSource::rebuildImagesAndTextures()
@@ -816,7 +825,7 @@ void TextureSource::rebuildImagesAndTextures()
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
 		if(img)
-			t = register_texture(driver, sap->name, img);
+			t = driver->addTexture(sap->name.c_str(), img);
 		
 		// Replace texture
 		sap->a.atlas = t;
@@ -1051,7 +1060,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	/*
 		Make texture
 	*/
-	video::ITexture *t = register_texture(driver, "__main_atlas__", atlas_img);
+	video::ITexture *t = driver->addTexture("__main_atlas__", atlas_img);
 	assert(t);
 
 	/*
@@ -1140,15 +1149,6 @@ video::IImage* generate_image_from_scratch(std::string name,
 	}
 	
 	return baseimg;
-}
-
-video::ITexture* register_texture(video::IVideoDriver *driver,
-		std::string name, video::IImage *img)
-{
-	video::ITexture *old_texture = driver->findTexture(name.c_str());
-	if(old_texture)
-		driver->removeTexture(old_texture);
-	return driver->addTexture(name.c_str(), img);
 }
 
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
@@ -1557,12 +1557,12 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			assert(img_top && img_left && img_right);
 
 			// Create textures from images
-			video::ITexture *texture_top = register_texture(driver,
-					imagename_top + "__temp1__", img_top);
-			video::ITexture *texture_left = register_texture(driver,
-					imagename_left + "__temp2__", img_left);
-			video::ITexture *texture_right = register_texture(driver,
-					imagename_right + "__temp3__", img_right);
+			video::ITexture *texture_top = driver->addTexture(
+					(imagename_top + "__temp__").c_str(), img_top);
+			video::ITexture *texture_left = driver->addTexture(
+					(imagename_left + "__temp__").c_str(), img_left);
+			video::ITexture *texture_right = driver->addTexture(
+					(imagename_right + "__temp__").c_str(), img_right);
 			assert(texture_top && texture_left && texture_right);
 
 			// Drop images
