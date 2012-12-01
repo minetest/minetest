@@ -697,6 +697,10 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
 
+item_image[<X>,<Y>;<W>,<H>;<item name>]
+^ Show an inventory image of registered item/node
+^ Position and size units are inventory slots
+
 background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Use a background. Inventory rectangles are not drawn then.
 ^ Position and size units are inventory slots
@@ -736,6 +740,12 @@ button[<X>,<Y>;<W>,<H>;<name>;<label>]
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ x, y, w, h, and name work as per button
 ^ image is the filename of an image
+^ Position and size units are inventory slots
+
+item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
+^ x, y, w, h, name and label work as per button
+^ item name is the registered name of an item/node,
+  tooltip will be made out of its descritption
 ^ Position and size units are inventory slots
 
 button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
