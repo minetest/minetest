@@ -45,6 +45,8 @@ struct MainMenuData
 	bool anisotropic_filter;
 	bool bilinear_filter;
 	bool trilinear_filter;
+	int enable_shaders;
+  	bool on_demand_item_images;
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
