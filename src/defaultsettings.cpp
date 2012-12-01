@@ -114,6 +114,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 
+	settings->setDefault("enable_shaders", "0");
+	settings->setDefault("on_demand_item_images", "false");
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");

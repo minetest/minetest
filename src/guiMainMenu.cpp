@@ -102,6 +102,8 @@ enum
 	GUI_ID_ANISOTROPIC_CB,
 	GUI_ID_BILINEAR_CB,
 	GUI_ID_TRILINEAR_CB,
+	GUI_ID_SHADERS_CB,
+	GUI_ID_ON_DEMAND_ITEM_IMAGES_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -616,6 +618,21 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				       GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
 		}
 
+		// shader/on demand image loading settings
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y);
+			Environment->addCheckBox(m_data->enable_shaders, rect, this,
+					GUI_ID_SHADERS_CB, wgettext("Shaders"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20);
+			Environment->addCheckBox(m_data->on_demand_item_images, rect, this,
+					GUI_ID_ON_DEMAND_ITEM_IMAGES_CB, wgettext("On-demand item images"));
+		}
+
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -818,6 +835,18 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_TRILINEAR_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->trilinear_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_BILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		        dst->enable_shaders = ((gui::IGUICheckBox*)e)->isChecked() ? 2 : 0;
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_TRILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		        dst->on_demand_item_images = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
