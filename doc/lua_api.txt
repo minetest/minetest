@@ -694,7 +694,7 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
 
-item_image[<X>,<Y>;<W>,<H>;<titem name>]
+item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Show an inventory image of registered item/node
 ^ Position and size units are inventory slots
 
