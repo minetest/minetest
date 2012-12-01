@@ -117,6 +117,9 @@
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
+# Anaglyph stereo
+#anaglyph = false
+#anaglyph_strength = 0.1
 # In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
