@@ -457,6 +457,9 @@ Special groups
 - fall_damage_add_percent: damage speed = speed * (1 + value/100)
 - bouncy: value is bounce speed in percent
 - falling_node: if there is no walkable block under the node it will fall
+- attached_node: if the node under it is not a walkable block the node will be
+                  dropped as an item. If the node is wallmounted the
+                  wallmounted direction is checked.
 
 Known damage and digging time defining groups
 ----------------------------------------------
