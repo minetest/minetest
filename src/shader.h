@@ -52,6 +52,22 @@ struct ShaderInfo
 };
 
 /*
+	Setter of constants for shaders
+*/
+
+namespace irr { namespace video {
+	class IMaterialRendererServices;
+} }
+
+class IShaderConstantSetter
+{
+public:
+	virtual ~IShaderConstantSetter(){};
+	virtual void onSetConstants(video::IMaterialRendererServices *services,
+			bool is_highlevel) = 0;
+};
+
+/*
 	ShaderSource creates and caches shaders.
 */
 
@@ -82,6 +98,7 @@ public:
 	virtual void insertSourceShader(const std::string &name_of_shader,
 		const std::string &filename, const std::string &program)=0;
 	virtual void rebuildShaders()=0;
+	virtual void addGlobalConstantSetter(IShaderConstantSetter *setter)=0;
 };
 
 IWritableShaderSource* createShaderSource(IrrlichtDevice *device);
