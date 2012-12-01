@@ -126,6 +126,9 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# Anaglyph stereo
+#anaglyph = false
+#anaglyph_strength = 0.1
 
 #
 # Server stuff

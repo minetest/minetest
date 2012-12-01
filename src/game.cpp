@@ -2750,6 +2750,76 @@ void the_game(
 		{
 			TimeTaker timer("smgr");
 			smgr->drawAll();
+			
+			if(g_settings->getBool("anaglyph"))
+			{
+				irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
+				irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
+
+				irr::core::matrix4 startMatrix   = camera.getCameraNode()->getAbsoluteTransformation();
+
+				irr::core::vector3df focusPoint  = (camera.getCameraNode()->getTarget() -
+										 camera.getCameraNode()->getAbsolutePosition()).setLength(1) +
+										 camera.getCameraNode()->getAbsolutePosition() ;
+
+				//Left eye...
+				irr::core::vector3df leftEye;
+				irr::core::matrix4   leftMove;
+
+				leftMove.setTranslation( irr::core::vector3df(-g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
+				leftEye=(startMatrix*leftMove).getTranslation();
+
+				//clear the depth buffer, and color
+				driver->beginScene( true, true, irr::video::SColor(0,200,200,255) );
+
+				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_RED;
+				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
+				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX + 
+															 irr::scene::ESNRP_SOLID +
+															 irr::scene::ESNRP_TRANSPARENT +
+															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
+															 irr::scene::ESNRP_SHADOW;
+
+				camera.getCameraNode()->setPosition( leftEye );
+				camera.getCameraNode()->setTarget( focusPoint );
+
+				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+
+				//Right eye...
+				irr::core::vector3df rightEye;
+				irr::core::matrix4   rightMove;
+
+				rightMove.setTranslation( irr::core::vector3df(g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
+				rightEye=(startMatrix*rightMove).getTranslation();
+
+				//clear the depth buffer
+				driver->clearZBuffer();
+
+				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_GREEN + irr::video::ECP_BLUE;
+				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
+				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
+															 irr::scene::ESNRP_SOLID +
+															 irr::scene::ESNRP_TRANSPARENT +
+															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
+															 irr::scene::ESNRP_SHADOW;
+
+				camera.getCameraNode()->setPosition( rightEye );
+				camera.getCameraNode()->setTarget( focusPoint );
+
+				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+
+				//driver->endScene();
+
+				driver->getOverrideMaterial().Material.ColorMask=irr::video::ECP_ALL;
+				driver->getOverrideMaterial().EnableFlags=0;
+				driver->getOverrideMaterial().EnablePasses=0;
+
+				camera.getCameraNode()->setPosition( oldPosition );
+				camera.getCameraNode()->setTarget( oldTarget );
+			}
+
 			scenetime = timer.stop(true);
 		}
 		
