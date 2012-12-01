@@ -104,7 +104,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("opaque_water", "false");
-	settings->setDefault("enable_shaders", "2");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("enable_sound", "true");
@@ -116,6 +115,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "false");
+	settings->setDefault("enable_shaders", "2");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
