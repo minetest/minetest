@@ -220,7 +220,14 @@ public:
 	}
 	
 	u32 keyPressed;
-	
+
+	// Used to check if anything changed and prevent sending packets if not
+	v3f last_position;
+	v3f last_speed;
+	float last_pitch;
+	float last_yaw;
+	int last_keyPressed;
+
 protected:
 	IGameDef *m_gamedef;
 
