@@ -171,7 +171,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				continue;
 
 			u16 l = getInteriorLight(n, 0, data);
-			video::SColor c = MapBlock_LightColor(f.alpha, l);
+			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 			
 			video::S3DVertex vertices[4] =
 			{
@@ -226,7 +226,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Otherwise use the light of this node (the liquid)
 			else
 				l = getInteriorLight(n, 0, data);
-			video::SColor c = MapBlock_LightColor(f.alpha, l);
+			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
@@ -544,7 +544,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			AtlasPointer ap = tile.texture;
 
 			u16 l = getInteriorLight(n, 1, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			for(u32 j=0; j<6; j++)
 			{
@@ -604,7 +604,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			AtlasPointer pa_leaves = tile_leaves.texture;
 
 			u16 l = getInteriorLight(n, 1, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			v3f pos = intToFloat(p, BS);
 			aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
@@ -638,7 +638,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			AtlasPointer ap = tile.texture;
 
-			video::SColor c(255,255,255,255);
+			u16 l = getInteriorLight(n, 1, data);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
@@ -683,7 +684,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			AtlasPointer ap = tile.texture;
 
 			u16 l = getInteriorLight(n, 0, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 				
 			float d = (float)BS/16;
 			// Wall at X+ of node
@@ -730,7 +731,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			AtlasPointer ap = tile.texture;
 			
 			u16 l = getInteriorLight(n, 1, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			for(u32 j=0; j<4; j++)
 			{
@@ -793,7 +794,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					tile.texture.id) + "^[transformR90");
 					
 			u16 l = getInteriorLight(n, 1, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			const f32 post_rad=(f32)BS/8;
 			const f32 bar_rad=(f32)BS/16;
@@ -996,7 +997,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			AtlasPointer ap = tile.texture;
 			
 			u16 l = getInteriorLight(n, 0, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			float d = (float)BS/64;
 			
@@ -1045,7 +1046,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 
 			u16 l = getInteriorLight(n, 0, data);
-			video::SColor c = MapBlock_LightColor(255, l);
+			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			v3f pos = intToFloat(p, BS);
 

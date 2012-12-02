@@ -841,13 +841,15 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	Sky *m_sky;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
+	Client *m_client;
 
 public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range):
+			f32 *fog_range, Client *client):
 		m_sky(sky),
 		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range)
+		m_fog_range(fog_range),
+		m_client(client)
 	{}
 	~GameGlobalShaderConstantSetter() {}
 
@@ -873,10 +875,12 @@ public:
 		if(*m_force_fog_off)
 			fog_distance = 10000*BS;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
-	}
 
-private:
-	IrrlichtDevice *m_device;
+		// Day-night ratio
+		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
+		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
+	}
 };
 
 void the_game(
@@ -1307,8 +1311,8 @@ void the_game(
 	/*
 		Shader constants
 	*/
-	shsrc->addGlobalConstantSetter(
-			new GameGlobalShaderConstantSetter(sky, &force_fog_off, &fog_range));
+	shsrc->addGlobalConstantSetter(new GameGlobalShaderConstantSetter(
+			sky, &force_fog_off, &fog_range, &client));
 
 	/*
 		Main loop

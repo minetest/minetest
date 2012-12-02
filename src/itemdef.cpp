@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "log.h"
+#include "main.h" // g_settings
+#include "settings.h"
 #include "util/serialize.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -356,7 +358,10 @@ public:
 
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
-			setMeshColor(node_mesh, video::SColor(255, 255, 255, 255));
+			video::SColor c(255, 255, 255, 255);
+			if(g_settings->getS32("enable_shaders") != 0)
+				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
+			setMeshColor(node_mesh, c);
 
 			/*
 				Scale and translate the mesh so it's a unit cube
