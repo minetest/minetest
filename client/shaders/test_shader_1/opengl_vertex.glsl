@@ -43,8 +43,12 @@ void main(void)
 	color.g = rg;
 	color.b = b;
 
+	// Make sides and bottom darker than the top
+	color = color * color; // SRGB -> Linear
 	if(gl_Normal.y <= 0.5)
-		color *= 0.7;
+		color *= 0.6;
+		//color *= 0.7;
+	color = sqrt(color); // Linear -> SRGB
 
 	color.a = gl_Color.a;
 
