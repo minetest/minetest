@@ -1081,14 +1081,10 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.MaterialType
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture.atlas);
-		p.tile.applyMaterialOptions(material);
-
-		if(enable_shaders){
-			if(material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
-				material.MaterialType = shadermat1;
-			if(material.MaterialType == video::EMT_TRANSPARENT_VERTEX_ALPHA)
-				material.MaterialType = shadermat2;
-		}
+		if(enable_shaders)
+			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2);
+		else
+			p.tile.applyMaterialOptions(material);
 
 		// Create meshbuffer
 

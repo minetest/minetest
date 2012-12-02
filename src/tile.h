@@ -161,10 +161,9 @@ public:
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
 
 enum MaterialType{
-	MATERIAL_ALPHA_NONE,
-	MATERIAL_ALPHA_VERTEX,
-	MATERIAL_ALPHA_SIMPLE, // >127 = opaque
-	MATERIAL_ALPHA_BLEND,
+	TILE_MATERIAL_BASIC,
+	TILE_MATERIAL_LIQUID_TRANSPARENT,
+	TILE_MATERIAL_LIQUID_OPAQUE,
 };
 
 // Material flags
@@ -178,6 +177,8 @@ enum MaterialType{
 // Animation made up by splitting the texture to vertical frames, as
 // defined by extra parameters
 #define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
+// Whether liquid shader should be used
+#define MATERIAL_FLAG_
 
 /*
 	This fully defines the looks of a tile.
@@ -188,9 +189,7 @@ struct TileSpec
 	TileSpec():
 		texture(0),
 		alpha(255),
-		//material_type(MATERIAL_ALPHA_NONE),
-		// Use this so that leaves don't need a separate material
-		material_type(MATERIAL_ALPHA_SIMPLE),
+		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING
@@ -218,15 +217,34 @@ struct TileSpec
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
-		if(material_type == MATERIAL_ALPHA_NONE)
-			material.MaterialType = video::EMT_SOLID;
-		else if(material_type == MATERIAL_ALPHA_VERTEX)
-			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		else if(material_type == MATERIAL_ALPHA_SIMPLE)
+		switch(material_type){
+		case TILE_MATERIAL_BASIC:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		else if(material_type == MATERIAL_ALPHA_BLEND)
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-
+			break;
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			break;
+		case TILE_MATERIAL_LIQUID_OPAQUE:
+			material.MaterialType = video::EMT_SOLID;
+			break;
+		}
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
+	}
+	void applyMaterialOptionsWithShaders(video::SMaterial &material,
+			const video::E_MATERIAL_TYPE &basic,
+			const video::E_MATERIAL_TYPE &liquid) const
+	{
+		switch(material_type){
+		case TILE_MATERIAL_BASIC:
+			material.MaterialType = basic;
+			break;
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			material.MaterialType = liquid;
+			break;
+		case TILE_MATERIAL_LIQUID_OPAQUE:
+			material.MaterialType = liquid;
+			break;
+		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
 	

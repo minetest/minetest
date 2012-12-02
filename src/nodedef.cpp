@@ -555,6 +555,7 @@ public:
 					tiledef[j].name = "unknown_block.png";
 			}
 
+			bool is_liquid = false;
 			switch(f->drawtype){
 			default:
 			case NDT_NORMAL:
@@ -573,12 +574,14 @@ public:
 					f->solidness = 1;
 					f->backface_culling = false;
 				}
+				is_liquid = true;
 				break;
 			case NDT_FLOWINGLIQUID:
 				assert(f->liquid_type == LIQUID_FLOWING);
 				f->solidness = 0;
 				if(opaque_water)
 					f->alpha = 255;
+				is_liquid = true;
 				break;
 			case NDT_GLASSLIKE:
 				f->solidness = 0;
@@ -611,16 +614,24 @@ public:
 				break;
 			}
 
+			u8 material_type = 0;
+			if(is_liquid){
+				if(f->alpha == 255)
+					material_type = TILE_MATERIAL_LIQUID_OPAQUE;
+				else
+					material_type = TILE_MATERIAL_LIQUID_TRANSPARENT;
+			} else{
+				material_type = TILE_MATERIAL_BASIC;
+			}
+
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
 				// Texture
 				f->tiles[j].texture = tsrc->getTexture(tiledef[j].name);
 				// Alpha
 				f->tiles[j].alpha = f->alpha;
-				if(f->alpha == 255)
-					f->tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
-				else
-					f->tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				// Material type
+				f->tiles[j].material_type = material_type;
 				// Material flags
 				f->tiles[j].material_flags = 0;
 				if(f->backface_culling)
@@ -661,10 +672,8 @@ public:
 						tsrc->getTexture(f->tiledef_special[j].name);
 				// Alpha
 				f->special_tiles[j].alpha = f->alpha;
-				if(f->alpha == 255)
-					f->special_tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
-				else
-					f->special_tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				// Material type
+				f->special_tiles[j].material_type = material_type;
 				// Material flags
 				f->special_tiles[j].material_flags = 0;
 				if(f->tiledef_special[j].backface_culling)
