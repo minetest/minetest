@@ -133,6 +133,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			send = false;
 			is_button = false;
 			is_exit = false;
+			tooltip="";
 		}
 		std::wstring fname;
 		std::wstring flabel;
@@ -141,6 +142,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 		bool send;
 		bool is_button;
 		bool is_exit;
+		core::rect<s32> rect;
+		std::string tooltip;
 	};
 
 public:
@@ -209,6 +212,7 @@ protected:
 	core::array<ListDrawSpec> m_inventorylists;
 	core::array<ImageDrawSpec> m_backgrounds;	
 	core::array<ImageDrawSpec> m_images;
+	core::array<ImageDrawSpec> m_itemimages;
 	core::array<FieldSpec> m_fields;
 
 	ItemSpec *m_selected_item;

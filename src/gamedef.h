@@ -28,6 +28,7 @@ class INodeDefManager;
 class ICraftDefManager;
 class ITextureSource;
 class ISoundManager;
+class IShaderSource;
 class MtEventManager;
 class IRollbackReportSink;
 
@@ -48,6 +49,8 @@ public:
 	// This is always thread-safe, but referencing the irrlicht texture
 	// pointers in other threads than main thread will make things explode.
 	virtual ITextureSource* getTextureSource()=0;
+
+	virtual IShaderSource* getShaderSource()=0;
 	
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
@@ -70,6 +73,7 @@ public:
 	ICraftDefManager* cdef(){return getCraftDefManager();}
 	ITextureSource* tsrc(){return getTextureSource();}
 	ISoundManager* sound(){return getSoundManager();}
+	IShaderSource* shsrc(){return getShaderSource();}
 	MtEventManager* event(){return getEventManager();}
 	IRollbackReportSink* rollback(){return getRollbackReportSink();}
 };

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "nodedef.h"
 #include "itemdef.h"
+#include "shader.h"
 #include <IFileSystem.h>
 #include "sha1.h"
 #include "base64.h"
@@ -228,12 +229,14 @@ Client::Client(
 		std::string password,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
+		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
 		IWritableNodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event
 ):
 	m_tsrc(tsrc),
+	m_shsrc(shsrc),
 	m_itemdef(itemdef),
 	m_nodedef(nodedef),
 	m_sound(sound),
@@ -1468,8 +1471,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		int num_files = readU16(is);
 		
-		verbosestream<<"Client received TOCLIENT_ANNOUNCE_MEDIA ("
-				<<num_files<<" files)"<<std::endl;
+		infostream<<"Client: Received media announcement: packet size: "
+				<<datasize<<std::endl;
 
 		core::list<MediaRequest> file_requests;
 
@@ -2438,7 +2441,7 @@ ClientEvent Client::getClientEvent()
 
 void Client::afterContentReceived()
 {
-	verbosestream<<"Client::afterContentReceived() started"<<std::endl;
+	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
 	assert(m_media_received);
@@ -2448,31 +2451,43 @@ void Client::afterContentReceived()
 	m_media_name_sha1_map.clear();
 
 	// Rebuild inherited images and recreate textures
-	verbosestream<<"Rebuilding images and textures"<<std::endl;
+	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();
 
 	// Update texture atlas
-	verbosestream<<"Updating texture atlas"<<std::endl;
+	infostream<<"- Updating texture atlas"<<std::endl;
 	if(g_settings->getBool("enable_texture_atlas"))
 		m_tsrc->buildMainAtlas(this);
 
+	// Rebuild shaders
+	m_shsrc->rebuildShaders();
+
 	// Update node aliases
-	verbosestream<<"Updating node aliases"<<std::endl;
+	infostream<<"- Updating node aliases"<<std::endl;
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Update node textures
-	verbosestream<<"Updating node textures"<<std::endl;
+	infostream<<"- Updating node textures"<<std::endl;
 	m_nodedef->updateTextures(m_tsrc);
 
-	// Update item textures and meshes
-	verbosestream<<"Updating item textures and meshes"<<std::endl;
-	m_itemdef->updateTexturesAndMeshes(this);
+	// Preload item textures and meshes if configured to
+	if(g_settings->getBool("preload_item_visuals"))
+	{
+		verbosestream<<"Updating item textures and meshes"<<std::endl;
+		std::set<std::string> names = m_itemdef->getAll();
+		for(std::set<std::string>::const_iterator
+				i = names.begin(); i != names.end(); ++i){
+			// Asking for these caches the result
+			m_itemdef->getInventoryTexture(*i, this);
+			m_itemdef->getWieldMesh(*i, this);
+		}
+	}
 
 	// Start mesh update thread after setting up content definitions
-	verbosestream<<"Starting mesh update thread"<<std::endl;
+	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.Start();
 	
-	verbosestream<<"Client::afterContentReceived() done"<<std::endl;
+	infostream<<"Client::afterContentReceived() done"<<std::endl;
 }
 
 float Client::getRTT(void)
@@ -2502,6 +2517,10 @@ ICraftDefManager* Client::getCraftDefManager()
 ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
+}
+IShaderSource* Client::getShaderSource()
+{
+	return m_shsrc;
 }
 u16 Client::allocateUnknownNodeId(const std::string &name)
 {

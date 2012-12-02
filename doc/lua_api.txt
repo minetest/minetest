@@ -457,6 +457,9 @@ Special groups
 - fall_damage_add_percent: damage speed = speed * (1 + value/100)
 - bouncy: value is bounce speed in percent
 - falling_node: if there is no walkable block under the node it will fall
+- attached_node: if the node under it is not a walkable block the node will be
+                  dropped as an item. If the node is wallmounted the
+                  wallmounted direction is checked.
 
 Known damage and digging time defining groups
 ----------------------------------------------
@@ -694,6 +697,10 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
 
+item_image[<X>,<Y>;<W>,<H>;<item name>]
+^ Show an inventory image of registered item/node
+^ Position and size units are inventory slots
+
 background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Use a background. Inventory rectangles are not drawn then.
 ^ Position and size units are inventory slots
@@ -733,6 +740,12 @@ button[<X>,<Y>;<W>,<H>;<name>;<label>]
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ x, y, w, h, and name work as per button
 ^ image is the filename of an image
+^ Position and size units are inventory slots
+
+item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
+^ x, y, w, h, name and label work as per button
+^ item name is the registered name of an item/node,
+  tooltip will be made out of its descritption
 ^ Position and size units are inventory slots
 
 button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]

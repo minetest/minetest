@@ -46,7 +46,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		return;
 	
 	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	video::ITexture *texture = def.inventory_texture;
+	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
 
 	// Draw the inventory texture
 	if(texture != NULL)
@@ -201,6 +201,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_inventorylists.clear();
 	m_images.clear();
 	m_backgrounds.clear();
+	m_itemimages.clear();
 	m_fields.clear();
 
 	Strfnd f(m_formspec_string);
@@ -282,6 +283,23 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 			m_images.push_back(ImageDrawSpec(name, pos, geom));
+		}
+		else if(type == "item_image")
+		{
+			v2s32 pos = basepos;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			geom.X = stof(f.next(",")) * (float)imgsize.X;
+			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
+			std::string name = f.next("]");
+			errorstream<<"item name="<<name
+					<<", pos=("<<pos.X<<","<<pos.Y<<")"
+					<<", geom=("<<geom.X<<","<<geom.Y<<")"
+					<<std::endl;
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of item_image without a size[] element"<<std::endl;
+			m_itemimages.push_back(ImageDrawSpec(name, pos, geom));
 		}
 		else if(type == "background")
 		{
@@ -482,6 +500,43 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			e->setPressedImage(texture);
 			e->setScaleImage(true);
 			
+			m_fields.push_back(spec);
+		}
+		else if(type == "item_image_button")
+		{
+			v2s32 pos = padding;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			geom.Y = (stof(f.next(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
+			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);		
+			std::string fimage = f.next(";");
+			std::string fname = f.next(";");
+			std::string flabel = f.next("]");
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;		
+			IItemDefManager *idef = m_gamedef->idef();
+			ItemStack item;
+			item.deSerialize(fimage, idef);
+			video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
+			std::string tooltip = item.getDefinition(idef).description;
+			FieldSpec spec = FieldSpec(
+				narrow_to_wide(fname.c_str()),
+				narrow_to_wide(flabel.c_str()),
+				narrow_to_wide(fimage.c_str()),
+				258+m_fields.size()
+			);
+			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+			e->setUseAlphaChannel(true);
+			e->setImage(texture);
+			e->setPressedImage(texture);
+			e->setScaleImage(true);
+			spec.is_button = true;
+			rect+=basepos-padding;
+			spec.rect=rect;		
+			if (tooltip!="")
+				spec.tooltip=tooltip;
 			m_fields.push_back(spec);
 		}
 		else
@@ -768,14 +823,39 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	/*
-		Draw dragged item stack
-	*/
-	drawSelectedItem();
-
-	/*
 		Call base class
 	*/
 	gui::IGUIElement::draw();
+	
+	/*
+		Draw fields/buttons tooltips
+	*/
+	for(u32 i=0; i<m_fields.size(); i++)
+	{
+		const FieldSpec &spec = m_fields[i];
+		if (spec.tooltip != "")
+		{
+			core::rect<s32> rect = spec.rect;
+			if (rect.isPointInside(m_pointer)) 
+			{
+				m_tooltip_element->setVisible(true);
+				this->bringToFront(m_tooltip_element);
+				m_tooltip_element->setText(narrow_to_wide(spec.tooltip).c_str());
+				s32 tooltip_x = m_pointer.X + 15;
+				s32 tooltip_y = m_pointer.Y + 15;
+				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
+				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				m_tooltip_element->setRelativePosition(core::rect<s32>(
+				core::position2d<s32>(tooltip_x, tooltip_y),
+				core::dimension2d<s32>(tooltip_width, tooltip_height)));
+			}
+		}
+	}
+	
+	/*
+		Draw dragged item stack
+	*/
+	drawSelectedItem();
 }
 
 void GUIFormSpecMenu::updateSelectedItem()

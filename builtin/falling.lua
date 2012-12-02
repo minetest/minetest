@@ -91,6 +91,48 @@ function spawn_falling_node(p, nodename)
 	obj:get_luaentity():set_node(nodename)
 end
 
+function drop_attached_node(p)
+	local nn = minetest.env:get_node(p).name
+	minetest.env:remove_node(p)
+	for _,item in ipairs(minetest.get_node_drops(nn, "")) do
+		local pos = {
+			x = p.x + math.random(60)/60-0.3,
+			y = p.y + math.random(60)/60-0.3,
+			z = p.z + math.random(60)/60-0.3,
+		}
+		minetest.env:add_item(pos, item)
+	end
+end
+
+function check_attached_node(p, n)
+	local def = minetest.registered_nodes[n.name]
+	local d = {x=0, y=0, z=0}
+	if def.paramtype2 == "wallmounted" then
+		if n.param2 == 0 then
+			d.y = 1
+		elseif n.param2 == 1 then
+			d.y = -1
+		elseif n.param2 == 2 then
+			d.x = 1
+		elseif n.param2 == 3 then
+			d.x = -1
+		elseif n.param2 == 4 then
+			d.z = 1
+		elseif n.param2 == 5 then
+			d.z = -1
+		end
+	else
+		d.y = -1
+	end
+	local p2 = {x=p.x+d.x, y=p.y+d.y, z=p.z+d.z}
+	local nn = minetest.env:get_node(p2).name
+	local def2 = minetest.registered_nodes[nn]
+	if def2 and not def2.walkable then
+		return false
+	end
+	return true
+end
+
 --
 -- Some common functions
 --
@@ -105,6 +147,13 @@ function nodeupdate_single(p)
 				not minetest.registered_nodes[n_bottom.name].walkable then
 			minetest.env:remove_node(p)
 			spawn_falling_node(p, n.name)
+			nodeupdate(p)
+		end
+	end
+	
+	if minetest.get_node_group(n.name, "attached_node") ~= 0 then
+		if not check_attached_node(p, n) then
+			drop_attached_node(p)
 			nodeupdate(p)
 		end
 	end

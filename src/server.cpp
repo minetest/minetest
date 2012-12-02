@@ -4688,6 +4688,10 @@ ITextureSource* Server::getTextureSource()
 {
 	return NULL;
 }
+IShaderSource* Server::getShaderSource()
+{
+	return NULL;
+}
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);

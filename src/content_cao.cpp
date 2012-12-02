@@ -472,7 +472,7 @@ void ItemCAO::updateTexture()
 		IItemDefManager *idef = m_gamedef->idef();
 		ItemStack item;
 		item.deSerialize(is, idef);
-		texture = item.getDefinition(idef).inventory_texture;
+		texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 	}
 	catch(SerializationError &e)
 	{
@@ -957,7 +957,7 @@ public:
 				infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
 				IItemDefManager *idef = m_gamedef->idef();
 				ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-				scene::IMesh *item_mesh = item.getDefinition(idef).wield_mesh;
+				scene::IMesh *item_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
 				
 				// Copy mesh to be able to set unique vertex colors
 				scene::IMeshManipulator *manip =

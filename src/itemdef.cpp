@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "log.h"
 #include "util/serialize.h"
+#include "util/container.h"
+#include "util/thread.h"
 #include <map>
 #include <set>
 
@@ -71,14 +73,6 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	}
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
-#ifndef SERVER
-	inventory_texture = def.inventory_texture;
-	if(def.wield_mesh)
-	{
-		wield_mesh = def.wield_mesh;
-		wield_mesh->grab();
-	}
-#endif
 	return *this;
 }
 
@@ -91,10 +85,6 @@ void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
 	tool_capabilities = NULL;
-#ifndef SERVER
-	inventory_texture = NULL;
-	wield_mesh = NULL;
-#endif
 	reset();
 }
 
@@ -117,15 +107,6 @@ void ItemDefinition::reset()
 	groups.clear();
 
 	node_placement_prediction = "";
-	
-#ifndef SERVER
-	inventory_texture = NULL;
-	if(wield_mesh)
-	{
-		wield_mesh->drop();
-		wield_mesh = NULL;
-	}
-#endif
 }
 
 void ItemDefinition::serialize(std::ostream &os) const
@@ -203,13 +184,39 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 class CItemDefManager: public IWritableItemDefManager
 {
+#ifndef SERVER
+	struct ClientCached
+	{
+		video::ITexture *inventory_texture;
+		scene::IMesh *wield_mesh;
+
+		ClientCached():
+			inventory_texture(NULL),
+			wield_mesh(NULL)
+		{}
+	};
+#endif
+
 public:
 	CItemDefManager()
 	{
+#ifndef SERVER
+		m_main_thread = get_current_thread_id();
+#endif
+	
 		clear();
 	}
 	virtual ~CItemDefManager()
 	{
+#ifndef SERVER
+		const core::list<ClientCached*> &values = m_clientcached.getValues();
+		for(core::list<ClientCached*>::ConstIterator
+				i = values.begin(); i != values.end(); ++i)
+		{
+			ClientCached *cc = *i;
+			cc->wield_mesh->drop();
+		}
+#endif
 	}
 	virtual const ItemDefinition& get(const std::string &name_) const
 	{
@@ -256,6 +263,220 @@ public:
 		std::map<std::string, ItemDefinition*>::const_iterator i;
 		return m_item_definitions.find(name) != m_item_definitions.end();
 	}
+#ifndef SERVER
+	ClientCached* createClientCachedDirect(const std::string &name,
+			IGameDef *gamedef) const
+	{
+		infostream<<"Lazily creating item texture and mesh for \""
+				<<name<<"\""<<std::endl;
+
+		// This is not thread-safe
+		assert(get_current_thread_id() == m_main_thread);
+
+		// Skip if already in cache
+		ClientCached *cc = NULL;
+		m_clientcached.get(name, &cc);
+		if(cc)
+			return cc;
+
+		ITextureSource *tsrc = gamedef->getTextureSource();
+		INodeDefManager *nodedef = gamedef->getNodeDefManager();
+		IrrlichtDevice *device = tsrc->getDevice();
+		video::IVideoDriver *driver = device->getVideoDriver();
+		const ItemDefinition *def = &get(name);
+
+		// Create new ClientCached
+		cc = new ClientCached();
+
+		bool need_node_mesh = false;
+
+		// Create an inventory texture
+		cc->inventory_texture = NULL;
+		if(def->inventory_image != "")
+		{
+			cc->inventory_texture = tsrc->getTextureRaw(def->inventory_image);
+		}
+		else if(def->type == ITEM_NODE)
+		{
+			need_node_mesh = true;
+		}
+
+		// Create a wield mesh
+		if(cc->wield_mesh != NULL)
+		{
+			cc->wield_mesh->drop();
+			cc->wield_mesh = NULL;
+		}
+		if(def->type == ITEM_NODE && def->wield_image == "")
+		{
+			need_node_mesh = true;
+		}
+		else if(def->wield_image != "" || def->inventory_image != "")
+		{
+			// Extrude the wield image into a mesh
+
+			std::string imagename;
+			if(def->wield_image != "")
+				imagename = def->wield_image;
+			else
+				imagename = def->inventory_image;
+
+			cc->wield_mesh = createExtrudedMesh(
+					tsrc->getTextureRaw(imagename),
+					driver,
+					def->wield_scale * v3f(40.0, 40.0, 4.0));
+			if(cc->wield_mesh == NULL)
+			{
+				infostream<<"ItemDefManager: WARNING: "
+					<<"updateTexturesAndMeshes(): "
+					<<"Unable to create extruded mesh for item "
+					<<def->name<<std::endl;
+			}
+		}
+
+		if(need_node_mesh)
+		{
+			/*
+				Get node properties
+			*/
+			content_t id = nodedef->getId(def->name);
+			const ContentFeatures &f = nodedef->get(id);
+
+			u8 param1 = 0;
+			if(f.param_type == CPT_LIGHT)
+				param1 = 0xee;
+
+			/*
+				Make a mesh from the node
+			*/
+			MeshMakeData mesh_make_data(gamedef);
+			MapNode mesh_make_node(id, param1, 0);
+			mesh_make_data.fillSingleNode(&mesh_make_node);
+			MapBlockMesh mapblock_mesh(&mesh_make_data);
+
+			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
+			assert(node_mesh);
+			setMeshColor(node_mesh, video::SColor(255, 255, 255, 255));
+
+			/*
+				Scale and translate the mesh so it's a unit cube
+				centered on the origin
+			*/
+			scaleMesh(node_mesh, v3f(1.0/BS, 1.0/BS, 1.0/BS));
+			translateMesh(node_mesh, v3f(-1.0, -1.0, -1.0));
+
+			/*
+				Draw node mesh into a render target texture
+			*/
+			if(cc->inventory_texture == NULL)
+			{
+				core::dimension2d<u32> dim(64,64);
+				std::string rtt_texture_name = "INVENTORY_"
+					+ def->name + "_RTT";
+				v3f camera_position(0, 1.0, -1.5);
+				camera_position.rotateXZBy(45);
+				v3f camera_lookat(0, 0, 0);
+				core::CMatrix4<f32> camera_projection_matrix;
+				// Set orthogonal projection
+				camera_projection_matrix.buildProjectionMatrixOrthoLH(
+						1.65, 1.65, 0, 100);
+
+				video::SColorf ambient_light(0.2,0.2,0.2);
+				v3f light_position(10, 100, -50);
+				video::SColorf light_color(0.5,0.5,0.5);
+				f32 light_radius = 1000;
+
+				cc->inventory_texture = generateTextureFromMesh(
+					node_mesh, device, dim, rtt_texture_name,
+					camera_position,
+					camera_lookat,
+					camera_projection_matrix,
+					ambient_light,
+					light_position,
+					light_color,
+					light_radius);
+
+				// render-to-target didn't work
+				if(cc->inventory_texture == NULL)
+				{
+					cc->inventory_texture =
+						tsrc->getTextureRaw(f.tiledef[0].name);
+				}
+			}
+
+			/*
+				Use the node mesh as the wield mesh
+			*/
+			if(cc->wield_mesh == NULL)
+			{
+				// Scale to proper wield mesh proportions
+				scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
+						* def->wield_scale);
+				cc->wield_mesh = node_mesh;
+				cc->wield_mesh->grab();
+			}
+
+			// falling outside of here deletes node_mesh
+		}
+
+		// Put in cache
+		m_clientcached.set(name, cc);
+
+		return cc;
+	}
+	ClientCached* getClientCached(const std::string &name,
+			IGameDef *gamedef) const
+	{
+		ClientCached *cc = NULL;
+		m_clientcached.get(name, &cc);
+		if(cc)
+			return cc;
+
+		if(get_current_thread_id() == m_main_thread)
+		{
+			return createClientCachedDirect(name, gamedef);
+		}
+		else
+		{
+			// We're gonna ask the result to be put into here
+			ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+			// Throw a request in
+			m_get_clientcached_queue.add(name, 0, 0, &result_queue);
+			try{
+				// Wait result for a second
+				GetResult<std::string, ClientCached*, u8, u8>
+						result = result_queue.pop_front(1000);
+				// Check that at least something worked OK
+				assert(result.key == name);
+				// Return it
+				return result.item;
+			}
+			catch(ItemNotFoundException &e)
+			{
+				errorstream<<"Waiting for clientcached timed out."<<std::endl;
+				return &m_dummy_clientcached;
+			}
+		}
+	}
+	// Get item inventory texture
+	virtual video::ITexture* getInventoryTexture(const std::string &name,
+			IGameDef *gamedef) const
+	{
+		ClientCached *cc = getClientCached(name, gamedef);
+		if(!cc)
+			return NULL;
+		return cc->inventory_texture;
+	}
+	// Get item wield mesh
+	virtual scene::IMesh* getWieldMesh(const std::string &name,
+			IGameDef *gamedef) const
+	{
+		ClientCached *cc = getClientCached(name, gamedef);
+		if(!cc)
+			return NULL;
+		return cc->wield_mesh;
+	}
+#endif
 	void clear()
 	{
 		for(std::map<std::string, ItemDefinition*>::const_iterator
@@ -321,157 +542,6 @@ public:
 			m_aliases[name] = convert_to;
 		}
 	}
-
-	virtual void updateTexturesAndMeshes(IGameDef *gamedef)
-	{
-#ifndef SERVER
-		infostream<<"ItemDefManager::updateTexturesAndMeshes(): Updating "
-				<<"textures and meshes in item definitions"<<std::endl;
-
-		ITextureSource *tsrc = gamedef->getTextureSource();
-		INodeDefManager *nodedef = gamedef->getNodeDefManager();
-		IrrlichtDevice *device = tsrc->getDevice();
-		video::IVideoDriver *driver = device->getVideoDriver();
-
-		for(std::map<std::string, ItemDefinition*>::iterator
-				i = m_item_definitions.begin();
-				i != m_item_definitions.end(); i++)
-		{
-			ItemDefinition *def = i->second;
-
-			bool need_node_mesh = false;
-
-			// Create an inventory texture
-			def->inventory_texture = NULL;
-			if(def->inventory_image != "")
-			{
-				def->inventory_texture = tsrc->getTextureRaw(def->inventory_image);
-			}
-			else if(def->type == ITEM_NODE)
-			{
-				need_node_mesh = true;
-			}
-
-			// Create a wield mesh
-			if(def->wield_mesh != NULL)
-			{
-				def->wield_mesh->drop();
-				def->wield_mesh = NULL;
-			}
-			if(def->type == ITEM_NODE && def->wield_image == "")
-			{
-				need_node_mesh = true;
-			}
-			else if(def->wield_image != "" || def->inventory_image != "")
-			{
-				// Extrude the wield image into a mesh
-
-				std::string imagename;
-				if(def->wield_image != "")
-					imagename = def->wield_image;
-				else
-					imagename = def->inventory_image;
-
-				def->wield_mesh = createExtrudedMesh(
-						tsrc->getTextureRaw(imagename),
-						driver,
-						def->wield_scale * v3f(40.0, 40.0, 4.0));
-				if(def->wield_mesh == NULL)
-				{
-					infostream<<"ItemDefManager: WARNING: "
-						<<"updateTexturesAndMeshes(): "
-						<<"Unable to create extruded mesh for item "
-						<<def->name<<std::endl;
-				}
-			}
-
-			if(need_node_mesh)
-			{
-				/*
-					Get node properties
-				*/
-				content_t id = nodedef->getId(def->name);
-				const ContentFeatures &f = nodedef->get(id);
-
-				u8 param1 = 0;
-				if(f.param_type == CPT_LIGHT)
-					param1 = 0xee;
-
-				/*
-				 	Make a mesh from the node
-				*/
-				MeshMakeData mesh_make_data(gamedef);
-				MapNode mesh_make_node(id, param1, 0);
-				mesh_make_data.fillSingleNode(&mesh_make_node);
-				MapBlockMesh mapblock_mesh(&mesh_make_data);
-
-				scene::IMesh *node_mesh = mapblock_mesh.getMesh();
-				assert(node_mesh);
-				setMeshColor(node_mesh, video::SColor(255, 255, 255, 255));
-
-				/*
-					Scale and translate the mesh so it's a unit cube
-					centered on the origin
-				*/
-				scaleMesh(node_mesh, v3f(1.0/BS, 1.0/BS, 1.0/BS));
-				translateMesh(node_mesh, v3f(-1.0, -1.0, -1.0));
-
-				/*
-					Draw node mesh into a render target texture
-				*/
-				if(def->inventory_texture == NULL)
-				{
-					core::dimension2d<u32> dim(64,64);
-					std::string rtt_texture_name = "INVENTORY_"
-						+ def->name + "_RTT";
-					v3f camera_position(0, 1.0, -1.5);
-					camera_position.rotateXZBy(45);
-					v3f camera_lookat(0, 0, 0);
-					core::CMatrix4<f32> camera_projection_matrix;
-					// Set orthogonal projection
-					camera_projection_matrix.buildProjectionMatrixOrthoLH(
-							1.65, 1.65, 0, 100);
-
-					video::SColorf ambient_light(0.2,0.2,0.2);
-					v3f light_position(10, 100, -50);
-					video::SColorf light_color(0.5,0.5,0.5);
-					f32 light_radius = 1000;
-
-					def->inventory_texture = generateTextureFromMesh(
-						node_mesh, device, dim, rtt_texture_name,
-						camera_position,
-						camera_lookat,
-						camera_projection_matrix,
-						ambient_light,
-						light_position,
-						light_color,
-						light_radius);
-
-					// render-to-target didn't work
-					if(def->inventory_texture == NULL)
-					{
-						def->inventory_texture =
-							tsrc->getTextureRaw(f.tiledef[0].name);
-					}
-				}
-
-				/*
-					Use the node mesh as the wield mesh
-				*/
-				if(def->wield_mesh == NULL)
-				{
-					// Scale to proper wield mesh proportions
-					scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
-							* def->wield_scale);
-					def->wield_mesh = node_mesh;
-					def->wield_mesh->grab();
-				}
-
-				// falling outside of here deletes node_mesh
-			}
-		}
-#endif
-	}
 	void serialize(std::ostream &os)
 	{
 		writeU8(os, 0); // version
@@ -521,11 +591,37 @@ public:
 			registerAlias(name, convert_to);
 		}
 	}
+	void processQueue(IGameDef *gamedef)
+	{
+#ifndef SERVER
+		while(m_get_clientcached_queue.size() > 0)
+		{
+			GetRequest<std::string, ClientCached*, u8, u8>
+					request = m_get_clientcached_queue.pop();
+			GetResult<std::string, ClientCached*, u8, u8>
+					result;
+			result.key = request.key;
+			result.callers = request.callers;
+			result.item = createClientCachedDirect(request.key, gamedef);
+			request.dest->push_back(result);
+		}
+#endif
+	}
 private:
 	// Key is name
 	std::map<std::string, ItemDefinition*> m_item_definitions;
 	// Aliases
 	std::map<std::string, std::string> m_aliases;
+#ifndef SERVER
+	// The id of the thread that is allowed to use irrlicht directly
+	threadid_t m_main_thread;
+	// A reference to this can be returned when nothing is found, to avoid NULLs
+	mutable ClientCached m_dummy_clientcached;
+	// Cached textures and meshes
+	mutable MutexedMap<std::string, ClientCached*> m_clientcached;
+	// Queued clientcached fetches (to be processed by the main thread)
+	mutable RequestQueue<std::string, ClientCached*, u8, u8> m_get_clientcached_queue;
+#endif
 };
 
 IWritableItemDefManager* createItemDefManager()

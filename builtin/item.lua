@@ -181,6 +181,14 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		end
 	end
 
+	-- Check if the node is attached and if it can be placed there
+	if minetest.get_item_group(def.name, "attached_node") ~= 0 and
+		not check_attached_node(place_to, newnode) then
+		minetest.log("action", "attached node " .. def.name ..
+			" can not be placed at " .. minetest.pos_to_string(place_to))
+		return
+	end
+
 	-- Add node and update
 	minetest.env:add_node(place_to, newnode)
 
