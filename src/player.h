@@ -220,7 +220,7 @@ public:
 	}
 	
 	u32 keyPressed;
-	
+
 protected:
 	IGameDef *m_gamedef;
 

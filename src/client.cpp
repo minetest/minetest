@@ -1979,7 +1979,23 @@ void Client::sendPlayerPos()
 	Player *myplayer = m_env.getLocalPlayer();
 	if(myplayer == NULL)
 		return;
-	
+
+	// Save bandwidth by only updating position when something changed
+	LocalPlayer *player = m_env.getLocalPlayer();
+
+	if(player->last_position == myplayer->getPosition() &&
+	player->last_speed == myplayer->getSpeed() &&
+	player->last_pitch == myplayer->getPitch() &&
+	player->last_yaw == myplayer->getYaw() &&
+	player->last_keyPressed == myplayer->keyPressed)
+		return;
+
+	player->last_position = myplayer->getPosition();
+	player->last_speed = myplayer->getSpeed();
+	player->last_pitch = myplayer->getPitch();
+	player->last_yaw = myplayer->getYaw();
+	player->last_keyPressed = myplayer->keyPressed;
+
 	u16 our_peer_id;
 	{
 		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
