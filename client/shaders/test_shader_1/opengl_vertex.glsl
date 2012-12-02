@@ -43,8 +43,11 @@ void main(void)
 	color.g = rg;
 	color.b = b;
 
-	if(gl_Normal.y <= 0.5)
+	// Make the top brighter and the bottom darker compared to the sides
+	if(gl_Normal.x >= 0.5 || gl_Normal.x <= -0.5 || gl_Normal.z >= 0.5 || gl_Normal.z <= -0.5)
 		color *= 0.7;
+	else if(gl_Normal.y <= 0.5)
+		color *= 0.4;
 
 	color.a = gl_Color.a;
 
