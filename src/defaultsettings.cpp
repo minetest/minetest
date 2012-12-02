@@ -114,7 +114,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
-	settings->setDefault("preload_item_visuals", "false");
+	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
 
 	// Server stuff
