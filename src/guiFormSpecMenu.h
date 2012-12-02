@@ -133,6 +133,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			send = false;
 			is_button = false;
 			is_exit = false;
+			tooltip="";
 		}
 		std::wstring fname;
 		std::wstring flabel;
@@ -141,10 +142,12 @@ class GUIFormSpecMenu : public GUIModalMenu
 		bool send;
 		bool is_button;
 		bool is_exit;
+		core::rect<s32> rect;
+		std::string tooltip;
 	};
 
 public:
-	GUIFormSpecMenu(gui::IGUIEnvironment* env,
+	GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
@@ -197,6 +200,7 @@ protected:
 	v2s32 spacing;
 	v2s32 imgsize;
 	
+	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
 
@@ -208,6 +212,7 @@ protected:
 	core::array<ListDrawSpec> m_inventorylists;
 	core::array<ImageDrawSpec> m_backgrounds;	
 	core::array<ImageDrawSpec> m_images;
+	core::array<ImageDrawSpec> m_itemimages;
 	core::array<FieldSpec> m_fields;
 
 	ItemSpec *m_selected_item;

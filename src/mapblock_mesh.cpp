@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "content_mapblock.h"
 #include "noise.h"
+#include "shader.h"
 #include "settings.h"
 #include "util/directiontables.h"
 
@@ -1011,6 +1012,11 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		Convert MeshCollector to SMesh
 		Also store animation info
 	*/
+	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
+			getShader("test_shader_1").material;
+	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
+			getShader("test_shader_2").material;
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1075,7 +1081,10 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.MaterialType
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture.atlas);
-		p.tile.applyMaterialOptions(material);
+		if(enable_shaders)
+			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2);
+		else
+			p.tile.applyMaterialOptions(material);
 
 		// Create meshbuffer
 

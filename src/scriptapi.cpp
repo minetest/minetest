@@ -5576,6 +5576,19 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 	return ate;
 }
 
+void scriptapi_on_shutdown(lua_State *L)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_shutdown");
+	// Call callbacks
+	scriptapi_run_callbacks(L, 0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 {
 	realitycheck(L);

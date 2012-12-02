@@ -837,7 +837,7 @@ minetest.register_node("default:junglegrass", {
 	wield_image = "default_junglegrass.png",
 	paramtype = "light",
 	walkable = false,
-	groups = {snappy=3},
+	groups = {snappy=3,attached_node=1},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
@@ -1106,7 +1106,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
-	groups = {choppy=2,dig_immediate=3},
+	groups = {choppy=2,dig_immediate=3,attached_node=1},
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
 })
@@ -1127,7 +1127,7 @@ minetest.register_node("default:sign_wall", {
 		--wall_bottom = <default>
 		--wall_side = <default>
 	},
-	groups = {choppy=2,dig_immediate=2},
+	groups = {choppy=2,dig_immediate=2,attached_node=1},
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
 	on_construct = function(pos)
@@ -1495,7 +1495,7 @@ minetest.register_node("default:sapling", {
 	wield_image = "default_sapling.png",
 	paramtype = "light",
 	walkable = false,
-	groups = {snappy=2,dig_immediate=3},
+	groups = {snappy=2,dig_immediate=3,attached_node=1},
 	sounds = default.node_sound_defaults(),
 })
 

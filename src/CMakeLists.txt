@@ -262,6 +262,7 @@ set(minetest_SRCS
 	client.cpp
 	filecache.cpp
 	tile.cpp
+	shader.cpp
 	game.cpp
 	main.cpp
 )

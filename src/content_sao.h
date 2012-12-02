@@ -48,7 +48,7 @@ public:
 			const std::string &data);
 	bool isAttached();
 	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
+	std::string getClientInitializationData(u16 protocol_version);
 	std::string getStaticData();
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
@@ -140,7 +140,7 @@ public:
 	void removingFromEnvironment();
 	bool isStaticAllowed() const;
 	bool unlimitedTransferDistance() const;
-	std::string getClientInitializationData();
+	std::string getClientInitializationData(u16 protocol_version);
 	std::string getStaticData();
 	bool isAttached();
 	void step(float dtime, bool send_recommended);

@@ -52,7 +52,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
+	settings->setDefault("anaglyph", "false");
+	settings->setDefault("anaglyph_strength", "0.1");
 	settings->setDefault("aux1_descends", "false");
+
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
@@ -89,6 +92,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("enable_texture_atlas", "true");
 	settings->setDefault("texture_path", "");
+	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("continuous_forward", "false");
@@ -106,12 +110,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 
+	settings->setDefault("mip_map", "false");
+	settings->setDefault("anisotropic_filter", "false");
+	settings->setDefault("bilinear_filter", "false");
+	settings->setDefault("trilinear_filter", "false");
+	settings->setDefault("preload_item_visuals", "false");
+	settings->setDefault("enable_shaders", "2");
+
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "100");
-	settings->setDefault("strict_protocol_version_checking", "true");
+	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
 	settings->setDefault("only_peaceful_mobs", "false");
@@ -142,10 +153,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");
-	settings->setDefault("mip_map", "false");
-	settings->setDefault("anisotropic_filter", "false");
-	settings->setDefault("bilinear_filter", "false");
-	settings->setDefault("trilinear_filter", "false");
-
+	settings->setDefault("congestion_control_aim_rtt", "0.2");
+	settings->setDefault("congestion_control_max_rate", "400");
+	settings->setDefault("congestion_control_min_rate", "10");
 }
 

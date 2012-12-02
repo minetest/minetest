@@ -117,6 +117,9 @@
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
+# Anaglyph stereo
+#anaglyph = false
+#anaglyph_strength = 0.1
 # In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
@@ -126,6 +129,17 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# Texture filtering settings
+#mip_map = false
+#anisotropic_filter = false
+#bilinear_filter = false
+#trilinear_filter = false
+# Set to true to pre-generate all item visuals
+#preload_item_visuals = false
+# 0: disable shaders
+# (1: low level shaders; not implemented)
+# 2: enable high level shaders
+#enable_shaders = 2
 
 #
 # Server stuff
@@ -139,8 +153,8 @@
 #motd = Welcome to this awesome Minetest server!
 # Maximum number of players connected simultaneously
 #max_users = 100
-# Set to false to allow old clients to connect
-#strict_protocol_version_checking = true
+# Set to true to disallow old clients from connecting
+#strict_protocol_version_checking = false
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
 # Enable players getting damage and dying
@@ -198,3 +212,8 @@
 #dedicated_server_step = 0.1
 # Can be set to true to disable shutting down on invalid world data
 #ignore_world_load_errors = false
+# Congestion control parameters
+# time in seconds, rate in ~500B packets
+#congestion_control_aim_rtt = 0.2
+#congestion_control_max_rate = 400
+#congestion_control_min_rate = 10
