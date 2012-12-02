@@ -32,6 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
+float srgb_linear_multiply(float f, float m, float max)
+{
+	f = f * f; // SRGB -> Linear
+	f *= m;
+	f = sqrt(f); // Linear -> SRGB
+	if(f > max)
+		f = max;
+	return f;
+}
+
 /*
 	MeshMakeData
 */
@@ -1071,11 +1081,19 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			for(u32 j = 0; j < p.vertices.size(); j++)
 			{
 				video::SColor &vc = p.vertices[j].Color;
+				// Set initial real color and store for later updates
 				u8 day = vc.getRed();
 				u8 night = vc.getGreen();
 				finalColorBlend(vc, day, night, 1000);
 				if(day != night)
 					m_daynight_diffs[i][j] = std::make_pair(day, night);
+				// Brighten topside (no shaders)
+				if(p.vertices[j].Normal.Y > 0.5)
+				{
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
 			}
 		}
 
@@ -1229,6 +1247,14 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
+				// Brighten topside (no shaders)
+				if(vertices[vertexIndex].Normal.Y > 0.5)
+				{
+					video::SColor &vc = vertices[vertexIndex].Color;
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
 			}
 		}
 		m_last_daynight_ratio = daynight_ratio;
