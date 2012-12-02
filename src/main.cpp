@@ -1273,7 +1273,17 @@ int main(int argc, char *argv[])
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType    = driverType;
-	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
+
+	// Detect screen resolution if fullscreen true
+	if (fullscreen == true) {
+		// create a NULL device to detect screen resolution
+		IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+		params.WindowSize = nulldevice->getVideoModeList()->getDesktopResolution();
+		nulldevice -> drop();
+	} else {
+		params.WindowSize = core::dimension2d<u32>(screenW, screenH);
+	}
+
 	params.Bits          = bits;
 	params.AntiAlias     = fsaa;
 	params.Fullscreen    = fullscreen;
