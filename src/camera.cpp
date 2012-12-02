@@ -189,7 +189,7 @@ void Camera::step(f32 dtime)
 
 	if (m_digging_button != -1)
 	{
-		f32 offset = dtime * 4.5;
+		f32 offset = dtime * 3.5;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1)
