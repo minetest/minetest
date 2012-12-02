@@ -2505,8 +2505,7 @@ void the_game(
 			Calculate general brightness
 		*/
 		u32 daynight_ratio = client.getEnv().getDayNightRatio();
-		float time_brightness = (float)decode_light(
-				(daynight_ratio * LIGHT_SUN) / 1000) / 255.0;
+		float time_brightness = decode_light_f((float)daynight_ratio/1000.0);
 		float direct_brightness = 0;
 		bool sunlight_seen = false;
 		if(g_settings->getBool("free_move")){

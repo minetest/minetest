@@ -85,6 +85,24 @@ inline u8 decode_light(u8 light)
 	return light_decode_table[light];
 }
 
+// 0.0 <= light <= 1.0
+// 0.0 <= return value <= 1.0
+inline float decode_light_f(float light_f)
+{
+	s32 i = (u32)(light_f * LIGHT_MAX + 0.5);
+
+	if(i <= 0)
+		return (float)light_decode_table[0] / 255.0;
+	if(i >= LIGHT_MAX)
+		return (float)light_decode_table[LIGHT_MAX] / 255.0;
+
+	float v1 = (float)light_decode_table[i-1] / 255.0;
+	float v2 = (float)light_decode_table[i] / 255.0;
+	float f0 = (float)i - 0.5;
+	float f = light_f * LIGHT_MAX - f0;
+	return f * v2 + (1.0 - f) * v1;
+}
+
 // 0 <= daylight_factor <= 1000
 // 0 <= lightday, lightnight <= LIGHT_SUN
 // 0 <= return value <= LIGHT_SUN
@@ -94,6 +112,16 @@ inline u8 blend_light(u32 daylight_factor, u8 lightday, u8 lightnight)
 	u32 l = ((daylight_factor * lightday + (c-daylight_factor) * lightnight))/c;
 	if(l > LIGHT_SUN)
 		l = LIGHT_SUN;
+	return l;
+}
+
+// 0.0 <= daylight_factor <= 1.0
+// 0 <= lightday, lightnight <= LIGHT_SUN
+// 0 <= return value <= 255
+inline u8 blend_light_f1(float daylight_factor, u8 lightday, u8 lightnight)
+{
+	u8 l = ((daylight_factor * decode_light(lightday) +
+			(1.0-daylight_factor) * decode_light(lightnight)));
 	return l;
 }
 

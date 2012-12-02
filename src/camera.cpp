@@ -544,7 +544,7 @@ void Camera::wield(const ItemStack &item)
 void Camera::drawWieldedTool()
 {
 	// Set vertex colors of wield mesh according to light level
-	u8 li = decode_light(m_wieldlight);
+	u8 li = m_wieldlight;
 	video::SColor color(255,li,li,li);
 	setMeshColor(m_wieldnode->getMesh(), color);
 

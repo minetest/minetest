@@ -163,6 +163,16 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
+	// 0.0 <= daylight_factor <= 1.0
+	// 0 <= return value <= LIGHT_SUN
+	u8 getLightBlendF1(float daylight_factor, INodeDefManager *nodemgr) const
+	{
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		getLightBanks(lightday, lightnight, nodemgr);
+		return blend_light_f1(daylight_factor, lightday, lightnight);
+	}
+
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
