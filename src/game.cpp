@@ -739,7 +739,6 @@ public:
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
-	SimpleSoundSpec m_player_rightpunch_sound;
 
 	SoundMaker(ISoundManager *sound, INodeDefManager *ndef):
 		m_sound(sound),
@@ -779,12 +778,6 @@ public:
 		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
 	}
 
-	static void cameraPunchRight(MtEvent *e, void *data)
-	{
-		SoundMaker *sm = (SoundMaker*)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
-	}
-
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker*)data;
@@ -798,7 +791,6 @@ public:
 		mgr->reg("PlayerRegainGround", SoundMaker::playerRegainGround, this);
 		mgr->reg("PlayerJump", SoundMaker::playerJump, this);
 		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
-		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
 		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
 	}
 
@@ -2215,11 +2207,6 @@ void the_game(
 					infotext += narrow_to_wide(nodedef->get(n).name);
 				}
 			}
-			
-			// We can't actually know, but assume the sound of right-clicking
-			// to be the sound of placing a node
-			soundmaker.m_player_rightpunch_sound.gain = 0.5;
-			soundmaker.m_player_rightpunch_sound.name = "default_place_node";
 			
 			/*
 				Handle digging

@@ -180,6 +180,12 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 			minetest.log("action", "facedir: " .. newnode.param2)
 		end
 	end
+	
+	-- Get the sound
+	local sound = {}
+	if def.sounds and def.sounds.place then
+		sound = def.sounds.place
+	end
 
 	-- Check if the node is attached and if it can be placed there
 	if minetest.get_item_group(def.name, "attached_node") ~= 0 and
@@ -191,6 +197,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 
 	-- Add node and update
 	minetest.env:add_node(place_to, newnode)
+	minetest.sound_play(sound, {pos = place_to})
 
 	-- Run callback
 	if def.after_place_node then
