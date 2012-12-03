@@ -825,6 +825,7 @@ minetest.register_on_newplayer(func(ObjectRef))
 ^ Called after a new player has been created
 minetest.register_on_dieplayer(func(ObjectRef))
 ^ Called when a player dies
+^ Make sure to return true when you use this to change a players position or it will not work
 minetest.register_on_respawnplayer(func(ObjectRef))
 ^ Called when player is to be respawned
 ^ Called _before_ repositioning of player occurs
