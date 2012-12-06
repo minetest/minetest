@@ -443,7 +443,7 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 	}
 
 	// Set render target
-	driver->setRenderTarget(rtt, true, true, video::SColor(0,0,0,0));
+	driver->setRenderTarget(rtt, false, true, video::SColor(0,0,0,0));
 
 	// Get a scene manager
 	scene::ISceneManager *smgr_main = device->getSceneManager();
@@ -478,7 +478,7 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 	smgr->drop();
 
 	// Unset render target
-	driver->setRenderTarget(0, true, true, 0);
+	driver->setRenderTarget(0, false, true, 0);
 
 	return rtt;
 }
