@@ -23,6 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	See comments in porting.h
 */
 
+#if defined(_WIN32)
+	#include <windows.h>
+#elif defined(linux)
+	#include <unistd.h>
+#elif defined(__APPLE__)
+	#include <unistd.h>
+	#include <mach-o/dyld.h>
+#elif defined(__FreeBSD__)
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <sys/sysctl.h>
+#endif
+
 #include "porting.h"
 #include "config.h"
 #include "debug.h"
@@ -58,7 +71,7 @@ void sigint_handler(int sig)
 	{
 		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Ctrl-C pressed, shutting down."<<std::endl;
-		
+
 		// Comment out for less clutter when testing scripts
 		/*dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Printing debug stacks"<<std::endl;
@@ -80,7 +93,7 @@ void signal_handler_init(void)
 #else // _WIN32
 	#include <signal.h>
 	#include <windows.h>
-	
+
 	BOOL WINAPI event_handler(DWORD sig)
 	{
 		switch(sig)
@@ -110,10 +123,10 @@ void signal_handler_init(void)
 		case CTRL_BREAK_EVENT:
 			break;
 		}
-		
+
 		return TRUE;
 	}
-	
+
 void signal_handler_init(void)
 {
 	SetConsoleCtrlHandler( (PHANDLER_ROUTINE)event_handler,TRUE);
@@ -166,17 +179,16 @@ void initializePaths()
 		Windows
 	*/
 	#if defined(_WIN32)
-		#include <windows.h>
 
 	const DWORD buflen = 1000;
 	char buf[buflen];
 	DWORD len;
-	
+
 	// Find path of executable and set path_share relative to it
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
-	
+
 	if(detectMSVCBuildDir(buf)){
 		infostream<<"MSVC build directory detected"<<std::endl;
 		path_share = std::string(buf) + "\\..\\..";
@@ -191,25 +203,57 @@ void initializePaths()
 		Linux
 	*/
 	#elif defined(linux)
-		#include <unistd.h>
-	
+
 	char buf[BUFSIZ];
 	memset(buf, 0, BUFSIZ);
 	// Get path to executable
 	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
-	
+
 	pathRemoveFile(buf, '/');
 
 	path_share = std::string(buf) + "/..";
 	path_user = std::string(buf) + "/..";
-	
+
 	/*
 		OS X
 	*/
-	#elif defined(__APPLE__) || defined(__FreeBSD__)
-	
+	#elif defined(__APPLE__)
+
+	//https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/dyld.3.html
+	//TODO: Test this code
+	char buf[BUFSIZ];
+	uint32_t len = sizeof(buf);
+	assert(_NSGetExecutablePath(buf, &len) != 0);
+
+	pathRemoveFile(buf, '/');
+
+	path_share = std::string(buf) + "/..";
+	path_user = std::string(buf) + "/..";
+
+	/*
+		FreeBSD
+	*/
+	#elif defined(__FreeBSD__)
+
+	int mib[4];
+	char buf[BUFSIZ];
+	size_t len = sizeof(buf);
+
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_PROC;
+	mib[2] = KERN_PROC_PATHNAME;
+	mib[3] = -1;
+	assert(sysctl(mib, 4, buf, &len, NULL, 0) != -1);
+
+	pathRemoveFile(buf, '/');
+
+	path_share = std::string(buf) + "/..";
+	path_user = std::string(buf) + "/..";
+
+	#else
+
 	//TODO: Get path of executable. This assumes working directory is bin/
-	dstream<<"WARNING: Relative path not properly supported on OS X and FreeBSD"
+	dstream<<"WARNING: Relative path not properly supported on this platform"
 			<<std::endl;
 	path_share = std::string("..");
 	path_user = std::string("..");
@@ -228,20 +272,19 @@ void initializePaths()
 		Windows
 	*/
 	#if defined(_WIN32)
-		#include <windows.h>
 
 	const DWORD buflen = 1000;
 	char buf[buflen];
 	DWORD len;
-	
+
 	// Find path of executable and set path_share relative to it
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
-	
+
 	// Use ".\bin\.."
 	path_share = std::string(buf) + "\\..";
-		
+
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
 	assert(len < buflen);
@@ -251,8 +294,7 @@ void initializePaths()
 		Linux
 	*/
 	#elif defined(linux)
-		#include <unistd.h>
-	
+
 	// Get path to executable
 	std::string bindir = "";
 	{
@@ -271,7 +313,7 @@ void initializePaths()
 		trylist.push_back(static_sharedir);
 	trylist.push_back(bindir + "/../share/" + PROJECT_NAME);
 	trylist.push_back(bindir + "/..");
-	
+
 	for(std::list<std::string>::const_iterator i = trylist.begin();
 			i != trylist.end(); i++)
 	{
@@ -289,14 +331,13 @@ void initializePaths()
 		path_share = trypath;
 		break;
 	}
-	
+
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
 
 	/*
 		OS X
 	*/
 	#elif defined(__APPLE__)
-		#include <unistd.h>
 
     // Code based on
     // http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
@@ -315,14 +356,14 @@ void initializePaths()
 		dstream<<"WARNING: Could not determine bundle resource path"<<std::endl;
     }
     CFRelease(resources_url);
-	
+
 	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
 	#elif defined(__FreeBSD__)
 
 	path_share = STATIC_SHAREDIR;
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
-    
+
 	#endif
 
 #endif // RUN_IN_PLACE
