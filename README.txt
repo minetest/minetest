@@ -1,4 +1,4 @@
-Minetest-c55
+Minetest
 ============
 
 An InfiniMiner/Minecraft inspired game.
@@ -15,9 +15,10 @@ See the README.txt in it.
 
 Further documentation
 ----------------------
-- Website: http://c55.me/minetest/
-- Wiki: http://c55.me/minetest/wiki/
-- Forum: http://c55.me/minetest/forum/
+- Website: http://minetest.net/
+- Wiki: http://wiki.minetest.com/
+- Developer wiki: http://minetest.net/wiki/
+- Forum: http://minetest.net/forum/
 - Github: https://github.com/celeron55/minetest/
 - doc/ directory of source distribution
 
@@ -128,8 +129,8 @@ Compiling on Windows:
 	* Optional: gettext bibrary and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
-	* And, of course, Minetest-c55:
-		http://c55.me/minetest/download
+	* And, of course, Minetest:
+		http://minetest.net/download.php
 - Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
@@ -244,19 +245,19 @@ popd
 echo Failed.
 exit /b 1
 
-License of Minetest-c55 textures and sounds
--------------------------------------------
+License of Minetest textures and sounds
+---------------------------------------
 
 This applies to textures and sounds contained in the main Minetest
 distribution.
 
-Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)                                 
+Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
-License of Minetest-c55 source code
------------------------------------
+License of Minetest source code
+-------------------------------
 
-Minetest-c55
+Minetest
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
