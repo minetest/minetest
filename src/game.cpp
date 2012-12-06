@@ -2958,11 +2958,6 @@ void the_game(
 		//timer10.stop();
 		//TimeTaker //timer11("//timer11");
 
-		/*
-			Draw gui
-		*/
-		// 0-1ms
-		guienv->drawAll();
 
 		/*
 			Draw hotbar
@@ -2987,6 +2982,12 @@ void the_game(
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
 		}
+
+		/*
+			Draw gui
+		*/
+		// 0-1ms
+		guienv->drawAll();
 
 		/*
 			End scene
