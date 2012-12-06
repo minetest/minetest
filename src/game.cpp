@@ -1214,7 +1214,7 @@ void the_game(
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
-			L"Minetest-c55",
+			L"Minetest",
 			core::rect<s32>(5, 5, 795, 5+text_height),
 			false, false);
 	// Second line of debug text
@@ -2607,7 +2607,7 @@ void the_game(
 		//TimeTaker guiupdatetimer("Gui updating");
 		
 		const char program_name_and_version[] =
-			"Minetest-c55 " VERSION_STRING;
+			"Minetest " VERSION_STRING;
 
 		if(show_debug)
 		{

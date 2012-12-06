@@ -169,23 +169,8 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 			max_texture_size = driver->getMaxTextureSize();
 		}
 
-		/*wchar_t text[200];
-		swprintf(text, 200,
-				L"Minetest-c55\n"
-				L"by Perttu Ahola\n"
-				L"celeron55@gmail.com\n\n"
-				SWPRINTF_CHARSTRING L"\n"
-				L"userdata path = "
-				SWPRINTF_CHARSTRING
-				,
-				BUILD_INFO,
-				porting::path_user.c_str()
-		);*/
-
 		std::ostringstream os;
 		os<<"Minetest\n";
-		os<<"by Perttu Ahola and contributors\n";
-		os<<"celeron55@gmail.com\n";
 		os<<BUILD_INFO<<"\n";
 		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
