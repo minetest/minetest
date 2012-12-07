@@ -34,6 +34,8 @@ src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
 src/jthread/libjthread.a
+src/sqlite/CMakeFiles/*
+src/sqlite/libsqlite3.a
 src/lua/build/
 src/lua/CMakeFiles/
 CMakeCache.txt
