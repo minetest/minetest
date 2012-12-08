@@ -71,6 +71,26 @@ public:
 			os<<name<<" = "<<value<<"\n";
 		}
 	}
+  
+	// return all keys used 
+	std::vector<std::string> getNames(){
+		std::vector<std::string> names;
+		for(core::map<std::string, std::string>::Iterator
+				i = m_settings.getIterator();
+				i.atEnd() == false; i++)
+		{
+			std::string name = i.getNode()->getKey();
+			names.push_back(name);
+		}
+		return names;  
+	}
+
+	// remove a setting
+	bool remove(const std::string& name)
+	{
+		return m_settings.remove(name);
+	}
+
 
 	bool parseConfigLine(const std::string &line)
 	{

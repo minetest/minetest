@@ -756,7 +756,7 @@ private:
 	EventManager *m_event;
 	
 	// Mods
-	core::list<ModSpec> m_mods;
+	std::vector<ModSpec> m_mods;
 	
 	/*
 		Threads

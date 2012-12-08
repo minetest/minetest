@@ -275,6 +275,7 @@ set(minetest_SRCS
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
+	guiConfigureWorld.cpp
 	guiConfirmMenu.cpp
 	client.cpp
 	filecache.cpp

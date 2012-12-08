@@ -29,17 +29,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct SubgameSpec
 {
 	std::string id; // "" = game does not exist
-	std::string path;
-	std::set<std::string> mods_paths;
+	std::string path; // path to game
+	std::string gamemods_path; //path to mods of the game
+	std::set<std::string> addon_mods_paths; //paths to addon mods for this game
 	std::string name;
 
 	SubgameSpec(const std::string &id_="",
-			const std::string &path_="",
-			const std::set<std::string> &mods_paths_=std::set<std::string>(),
+			const std::string &path_="",	
+			const std::string &gamemods_path_="",
+			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
 			const std::string &name_=""):
 		id(id_),
 		path(path_),
-		mods_paths(mods_paths_),
+		gamemods_path(gamemods_path_),		
+		addon_mods_paths(addon_mods_paths_),
 		name(name_)
 	{}
 
