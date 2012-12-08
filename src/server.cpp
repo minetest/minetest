@@ -980,33 +980,65 @@ Server::Server(
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
 
-	// Add world mod search path
-	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
-	// Add addon mod search path
-	for(std::set<std::string>::const_iterator i = m_gamespec.mods_paths.begin();
-			i != m_gamespec.mods_paths.end(); i++)
-		m_modspaths.push_front((*i));
-
-	// Print out mod search paths
-	for(core::list<std::string>::Iterator i = m_modspaths.begin();
-			i != m_modspaths.end(); i++){
-		std::string modspath = *i;
-		infostream<<"- mods:   "<<modspath<<std::endl;
-	}
-	
-	// Path to builtin.lua
-	std::string builtinpath = getBuiltinLuaPath() + DIR_DELIM + "builtin.lua";
-
 	// Create world if it doesn't exist
 	if(!initializeWorld(m_path_world, m_gamespec.id))
 		throw ServerError("Failed to initialize world");
+
+	ModConfiguration modconf(m_path_world);
+	m_mods = modconf.getMods();
+	// complain about mods with unsatisfied dependencies
+	if(!modconf.isConsistent())	
+	{
+		errorstream << "The following mods have unsatisfied dependencies: ";
+		std::list<ModSpec> modlist = modconf.getUnsatisfiedMods();
+		for(std::list<ModSpec>::iterator it = modlist.begin();
+			it != modlist.end(); ++it)
+		{
+			errorstream << (*it).name << " ";
+		}
+		errorstream << std::endl;
+	}
+
+	Settings worldmt_settings;
+	std::string worldmt = m_path_world + DIR_DELIM + "world.mt";
+	worldmt_settings.readConfigFile(worldmt.c_str());
+	std::vector<std::string> names = worldmt_settings.getNames();
+	std::set<std::string> exclude_mod_names;
+	std::set<std::string> load_mod_names;
+	for(std::vector<std::string>::iterator it = names.begin(); 
+		it != names.end(); ++it)
+	{	
+		std::string name = *it;  
+		if (name.compare(0,9,"load_mod_")==0)
+		{
+			if(worldmt_settings.getBool(name))
+				load_mod_names.insert(name.substr(9));
+			else			
+				exclude_mod_names.insert(name.substr(9));
+		}
+	}
+	// complain about mods declared to be loaded, but not found
+	for(std::vector<ModSpec>::iterator it = m_mods.begin();
+		it != m_mods.end(); ++it)
+		load_mod_names.erase((*it).name);
+	if(!load_mod_names.empty())
+	{		
+		errorstream << "The following mods could not be found: ";
+		for(std::set<std::string>::iterator it = load_mod_names.begin();
+			it != load_mod_names.end(); ++it)
+			errorstream << (*it) << " ";
+		errorstream << std::endl;
+	}
+
+	// Path to builtin.lua
+	std::string builtinpath = getBuiltinLuaPath() + DIR_DELIM + "builtin.lua";
 
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
 	// Initialize scripting
-	
+
 	infostream<<"Server: Initializing Lua"<<std::endl;
 	m_lua = script_init();
 	assert(m_lua);
@@ -1021,18 +1053,16 @@ Server::Server(
 				<<builtinpath<<std::endl;
 		throw ModError("Failed to load and run "+builtinpath);
 	}
-	// Find mods in mod search paths
-	m_mods = getMods(m_modspaths);
 	// Print 'em
 	infostream<<"Server: Loading mods: ";
-	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		infostream<<mod.name<<" ";
 	}
 	infostream<<std::endl;
 	// Load and run "mod" scripts
-	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
@@ -4105,7 +4135,7 @@ void Server::fillMediaCache()
 	
 	// Collect all media file paths
 	std::list<std::string> paths;
-	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
@@ -4770,7 +4800,7 @@ IWritableCraftDefManager* Server::getWritableCraftDefManager()
 
 const ModSpec* Server::getModSpec(const std::string &modname)
 {
-	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		if(mod.name == modname)
@@ -4780,7 +4810,7 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 }
 void Server::getModNames(core::list<std::string> &modlist)
 {
-	for(core::list<ModSpec>::Iterator i = m_mods.begin(); i != m_mods.end(); i++)
+	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
 	{
 		modlist.push_back((*i).name);
 	}
