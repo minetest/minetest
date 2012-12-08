@@ -841,13 +841,15 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	Sky *m_sky;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
+	Client *m_client;
 
 public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range):
+			f32 *fog_range, Client *client):
 		m_sky(sky),
 		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range)
+		m_fog_range(fog_range),
+		m_client(client)
 	{}
 	~GameGlobalShaderConstantSetter() {}
 
@@ -873,10 +875,12 @@ public:
 		if(*m_force_fog_off)
 			fog_distance = 10000*BS;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
-	}
 
-private:
-	IrrlichtDevice *m_device;
+		// Day-night ratio
+		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
+		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
+	}
 };
 
 void the_game(
@@ -1210,7 +1214,7 @@ void the_game(
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
-			L"Minetest-c55",
+			L"Minetest",
 			core::rect<s32>(5, 5, 795, 5+text_height),
 			false, false);
 	// Second line of debug text
@@ -1307,8 +1311,8 @@ void the_game(
 	/*
 		Shader constants
 	*/
-	shsrc->addGlobalConstantSetter(
-			new GameGlobalShaderConstantSetter(sky, &force_fog_off, &fog_range));
+	shsrc->addGlobalConstantSetter(new GameGlobalShaderConstantSetter(
+			sky, &force_fog_off, &fog_range, &client));
 
 	/*
 		Main loop
@@ -2501,8 +2505,7 @@ void the_game(
 			Calculate general brightness
 		*/
 		u32 daynight_ratio = client.getEnv().getDayNightRatio();
-		float time_brightness = (float)decode_light(
-				(daynight_ratio * LIGHT_SUN) / 1000) / 255.0;
+		float time_brightness = decode_light_f((float)daynight_ratio/1000.0);
 		float direct_brightness = 0;
 		bool sunlight_seen = false;
 		if(g_settings->getBool("free_move")){
@@ -2604,7 +2607,7 @@ void the_game(
 		//TimeTaker guiupdatetimer("Gui updating");
 		
 		const char program_name_and_version[] =
-			"Minetest-c55 " VERSION_STRING;
+			"Minetest " VERSION_STRING;
 
 		if(show_debug)
 		{
@@ -2955,11 +2958,6 @@ void the_game(
 		//timer10.stop();
 		//TimeTaker //timer11("//timer11");
 
-		/*
-			Draw gui
-		*/
-		// 0-1ms
-		guienv->drawAll();
 
 		/*
 			Draw hotbar
@@ -2984,6 +2982,12 @@ void the_game(
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
 		}
+
+		/*
+			Draw gui
+		*/
+		// 0-1ms
+		guienv->drawAll();
 
 		/*
 			End scene

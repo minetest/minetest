@@ -44,6 +44,14 @@ public:
 	void applyControl(float dtime);
 
 	v3s16 getStandingNodePos();
+
+	// Used to check if anything changed and prevent sending packets if not
+	v3f last_position;
+	v3f last_speed;
+	float last_pitch;
+	float last_yaw;
+	unsigned int last_keyPressed;
+
 private:
 	// This is used for determining the sneaking range
 	v3s16 m_sneak_node;

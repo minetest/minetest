@@ -73,7 +73,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("wanted_fps", "30");
 	settings->setDefault("fps_max", "60");
 	// A bit more than the server will send around the player, to make fog blend well
-	settings->setDefault("viewing_range_nodes_max", "160");
+	settings->setDefault("viewing_range_nodes_max", "240");
 	settings->setDefault("viewing_range_nodes_min", "35");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
@@ -114,7 +114,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
-	settings->setDefault("preload_item_visuals", "false");
+	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
 
 	// Server stuff

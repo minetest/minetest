@@ -32,6 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
+float srgb_linear_multiply(float f, float m, float max)
+{
+	f = f * f; // SRGB -> Linear
+	f *= m;
+	f = sqrt(f); // Linear -> SRGB
+	if(f > max)
+		f = max;
+	return f;
+}
+
 /*
 	MeshMakeData
 */
@@ -435,7 +445,7 @@ struct FastFace
 };
 
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
-		v3f p, v3s16 dir, v3f scale, core::array<FastFace> &dest)
+		v3f p, v3s16 dir, v3f scale, u8 light_source, core::array<FastFace> &dest)
 {
 	FastFace face;
 	
@@ -477,16 +487,16 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	float h = tile.texture.size.Y;
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], normal,
-			MapBlock_LightColor(alpha, li0),
+			MapBlock_LightColor(alpha, li0, light_source),
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
 	face.vertices[1] = video::S3DVertex(vertex_pos[1], normal,
-			MapBlock_LightColor(alpha, li1),
+			MapBlock_LightColor(alpha, li1, light_source),
 			core::vector2d<f32>(x0, y0+h));
 	face.vertices[2] = video::S3DVertex(vertex_pos[2], normal,
-			MapBlock_LightColor(alpha, li2),
+			MapBlock_LightColor(alpha, li2, light_source),
 			core::vector2d<f32>(x0, y0));
 	face.vertices[3] = video::S3DVertex(vertex_pos[3], normal,
-			MapBlock_LightColor(alpha, li3),
+			MapBlock_LightColor(alpha, li3, light_source),
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
@@ -658,7 +668,8 @@ static void getTileInfo(
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
-		TileSpec &tile
+		TileSpec &tile,
+		u8 &light_source
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
@@ -688,18 +699,20 @@ static void getTileInfo(
 		tile = tile0;
 		p_corrected = p;
 		face_dir_corrected = face_dir;
+		light_source = ndef->get(n0).light_source;
 	}
 	else
 	{
 		tile = tile1;
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
+		light_source = ndef->get(n1).light_source;
 	}
 	
 	// eg. water and glass
 	if(equivalent)
 		tile.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	
+
 	if(data->m_smooth_lighting == false)
 	{
 		lights[0] = lights[1] = lights[2] = lights[3] =
@@ -743,9 +756,10 @@ static void updateFastFaceRow(
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0,0,0,0};
 	TileSpec tile;
+	u8 light_source = 0;
 	getTileInfo(data, p, face_dir, 
 			makes_face, p_corrected, face_dir_corrected,
-			lights, tile);
+			lights, tile, light_source);
 
 	for(u16 j=0; j<MAP_BLOCKSIZE; j++)
 	{
@@ -759,6 +773,7 @@ static void updateFastFaceRow(
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0,0,0,0};
 		TileSpec next_tile;
+		u8 next_light_source = 0;
 		
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
@@ -769,7 +784,7 @@ static void updateFastFaceRow(
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
-					next_tile);
+					next_tile, next_light_source);
 			
 			if(next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
@@ -778,7 +793,8 @@ static void updateFastFaceRow(
 					&& next_lights[1] == lights[1]
 					&& next_lights[2] == lights[2]
 					&& next_lights[3] == lights[3]
-					&& next_tile == tile)
+					&& next_tile == tile
+					&& next_light_source == light_source)
 			{
 				next_is_different = false;
 			}
@@ -854,7 +870,7 @@ static void updateFastFaceRow(
 				}
 				
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
-						sp, face_dir_corrected, scale,
+						sp, face_dir_corrected, scale, light_source,
 						dest);
 				
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
@@ -873,6 +889,7 @@ static void updateFastFaceRow(
 			lights[2] = next_lights[2];
 			lights[3] = next_lights[3];
 			tile = next_tile;
+			light_source = next_light_source;
 		}
 		
 		p = p_next;
@@ -1058,17 +1075,27 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			os<<"^[verticalframe:"<<(int)p.tile.animation_frame_count<<":0";
 			p.tile.texture = tsrc->getTexture(os.str());
 		}
-		// - Lighting
-		for(u32 j = 0; j < p.vertices.size(); j++)
+		// - Classic lighting (shaders handle this by themselves)
+		if(!enable_shaders)
 		{
-			video::SColor &vc = p.vertices[j].Color;
-			u8 day = vc.getRed();
-			u8 night = vc.getGreen();
-			finalColorBlend(vc, day, night, 1000);
-			if(day != night)
-				m_daynight_diffs[i][j] = std::make_pair(day, night);
+			for(u32 j = 0; j < p.vertices.size(); j++)
+			{
+				video::SColor &vc = p.vertices[j].Color;
+				// Set initial real color and store for later updates
+				u8 day = vc.getRed();
+				u8 night = vc.getGreen();
+				finalColorBlend(vc, day, night, 1000);
+				if(day != night)
+					m_daynight_diffs[i][j] = std::make_pair(day, night);
+				// Brighten topside (no shaders)
+				if(p.vertices[j].Normal.Y > 0.5)
+				{
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
+			}
 		}
-
 
 		// Create material
 		video::SMaterial material;
@@ -1220,6 +1247,14 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
+				// Brighten topside (no shaders)
+				if(vertices[vertexIndex].Normal.Y > 0.5)
+				{
+					video::SColor &vc = vertices[vertexIndex].Color;
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
 			}
 		}
 		m_last_daynight_ratio = daynight_ratio;

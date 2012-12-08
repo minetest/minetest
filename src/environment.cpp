@@ -203,7 +203,8 @@ void Environment::printPlayers(std::ostream &o)
 
 u32 Environment::getDayNightRatio()
 {
-	return time_to_daynight_ratio(m_time_of_day);
+	bool smooth = (g_settings->getS32("enable_shaders") != 0);
+	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 
 void Environment::stepTimeOfDay(float dtime)
@@ -2132,15 +2133,15 @@ void ClientEnvironment::step(float dtime)
 		}
 		
 		// Update lighting on all players on client
-		u8 light = LIGHT_MAX;
+		float light = 1.0;
 		try{
 			// Get node at head
 			v3s16 p = player->getLightPosition();
 			MapNode n = m_map->getNode(p);
-			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
+			light = n.getLightBlendF1((float)getDayNightRatio()/1000, m_gamedef->ndef());
 		}
 		catch(InvalidPositionException &e){
-			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+			light = blend_light_f1((float)getDayNightRatio()/1000, LIGHT_SUN, 0);
 		}
 		player->light = light;
 	}
