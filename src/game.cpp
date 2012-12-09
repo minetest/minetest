@@ -1665,6 +1665,23 @@ void the_game(
 					statustext += L" (note: no 'fast' privilege)";
 			}
 		}
+		else if(input->wasKeyDown(getKeySetting("keymap_noclip")))
+		{
+			if(g_settings->getBool("noclip"))
+			{
+				g_settings->set("noclip","false");
+				statustext = L"noclip disabled";
+				statustext_time = 0;
+			}
+			else
+			{
+				g_settings->set("noclip","true");
+				statustext = L"noclip enabled";
+				statustext_time = 0;
+				if(!client.checkPrivilege("noclip"))
+					statustext += L" (note: no 'noclip' privilege)";
+			}
+		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
 			irr::video::IImage* const image = driver->createScreenShot(); 

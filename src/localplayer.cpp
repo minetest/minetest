@@ -73,9 +73,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		return;
 	}
 
-	// Skip collision detection if a special movement mode is used
+	// Skip collision detection if noclip mode is used
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool noclip = m_gamedef->checkLocalPrivilege("noclip") &&
+		g_settings->getBool("noclip");
+	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
 	if(free_move)
 	{
         position += m_speed * dtime;
@@ -300,7 +302,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		Report collisions
 	*/
 	bool bouncy_jump = false;
-	if(collision_info)
+	// Dont report if flying
+	if(collision_info && !g_settings->getBool("free_move"))
 	{
 		for(size_t i=0; i<result.collisions.size(); i++){
 			const CollisionInfo &info = result.collisions[i];

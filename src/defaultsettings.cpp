@@ -43,6 +43,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
+	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -95,6 +96,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
 	settings->setDefault("free_move", "false");
+	settings->setDefault("noclip", "false");
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("invert_mouse", "false");
