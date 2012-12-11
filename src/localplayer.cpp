@@ -159,7 +159,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak && m_sneak_node_exists)
+	if(control.sneak && m_sneak_node_exists && !g_settings->getBool("free_move"))
 	{
 		f32 maxd = 0.5*BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
@@ -540,7 +540,7 @@ void LocalPlayer::applyControl(float dtime)
 	// The speed of the player (Y is ignored)
 	if(superspeed)
 		speed = speed.normalize() * walkspeed_max * 5.0;
-	else if(control.sneak)
+	else if(control.sneak && !free_move)
 		speed = speed.normalize() * walkspeed_max / 3.0;
 	else
 		speed = speed.normalize() * walkspeed_max;
