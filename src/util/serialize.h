@@ -60,7 +60,7 @@ inline void writeU8(u8 *data, u8 i)
 	data[0] = ((i>> 0)&0xff);
 }
 
-inline u64 readU64(u8 *data)
+inline u64 readU64(const u8 *data)
 {
 	return ((u64)data[0]<<56) | ((u64)data[1]<<48)
 		| ((u64)data[2]<<40) | ((u64)data[3]<<32)
@@ -68,17 +68,17 @@ inline u64 readU64(u8 *data)
 		| ((u64)data[6]<<8) | ((u64)data[7]<<0);
 }
 
-inline u32 readU32(u8 *data)
+inline u32 readU32(const u8 *data)
 {
 	return (data[0]<<24) | (data[1]<<16) | (data[2]<<8) | (data[3]<<0);
 }
 
-inline u16 readU16(u8 *data)
+inline u16 readU16(const u8 *data)
 {
 	return (data[0]<<8) | (data[1]<<0);
 }
 
-inline u8 readU8(u8 *data)
+inline u8 readU8(const u8 *data)
 {
 	return (data[0]<<0);
 }
@@ -86,28 +86,28 @@ inline u8 readU8(u8 *data)
 inline void writeS32(u8 *data, s32 i){
 	writeU32(data, (u32)i);
 }
-inline s32 readS32(u8 *data){
+inline s32 readS32(const u8 *data){
 	return (s32)readU32(data);
 }
 
 inline void writeS16(u8 *data, s16 i){
 	writeU16(data, (u16)i);
 }
-inline s16 readS16(u8 *data){
+inline s16 readS16(const u8 *data){
 	return (s16)readU16(data);
 }
 
 inline void writeS8(u8 *data, s8 i){
 	writeU8(data, (u8)i);
 }
-inline s8 readS8(u8 *data){
+inline s8 readS8(const u8 *data){
 	return (s8)readU8(data);
 }
 
 inline void writeF1000(u8 *data, f32 i){
 	writeS32(data, i*1000);
 }
-inline f32 readF1000(u8 *data){
+inline f32 readF1000(const u8 *data){
 	return (f32)readS32(data)/1000.;
 }
 
@@ -117,7 +117,7 @@ inline void writeV3S32(u8 *data, v3s32 p)
 	writeS32(&data[4], p.Y);
 	writeS32(&data[8], p.Z);
 }
-inline v3s32 readV3S32(u8 *data)
+inline v3s32 readV3S32(const u8 *data)
 {
 	v3s32 p;
 	p.X = readS32(&data[0]);
@@ -132,7 +132,7 @@ inline void writeV3F1000(u8 *data, v3f p)
 	writeF1000(&data[4], p.Y);
 	writeF1000(&data[8], p.Z);
 }
-inline v3f readV3F1000(u8 *data)
+inline v3f readV3F1000(const u8 *data)
 {
 	v3f p;
 	p.X = (float)readF1000(&data[0]);
@@ -146,7 +146,7 @@ inline void writeV2F1000(u8 *data, v2f p)
 	writeF1000(&data[0], p.X);
 	writeF1000(&data[4], p.Y);
 }
-inline v2f readV2F1000(u8 *data)
+inline v2f readV2F1000(const u8 *data)
 {
 	v2f p;
 	p.X = (float)readF1000(&data[0]);
@@ -160,7 +160,7 @@ inline void writeV2S16(u8 *data, v2s16 p)
 	writeS16(&data[2], p.Y);
 }
 
-inline v2s16 readV2S16(u8 *data)
+inline v2s16 readV2S16(const u8 *data)
 {
 	v2s16 p;
 	p.X = readS16(&data[0]);
@@ -174,7 +174,7 @@ inline void writeV2S32(u8 *data, v2s32 p)
 	writeS32(&data[2], p.Y);
 }
 
-inline v2s32 readV2S32(u8 *data)
+inline v2s32 readV2S32(const u8 *data)
 {
 	v2s32 p;
 	p.X = readS32(&data[0]);
@@ -189,7 +189,7 @@ inline void writeV3S16(u8 *data, v3s16 p)
 	writeS16(&data[4], p.Z);
 }
 
-inline v3s16 readV3S16(u8 *data)
+inline v3s16 readV3S16(const u8 *data)
 {
 	v3s16 p;
 	p.X = readS16(&data[0]);
@@ -206,7 +206,7 @@ inline void writeARGB8(u8 *data, video::SColor p)
 	writeU8(&data[3], p.getBlue());
 }
 
-inline video::SColor readARGB8(u8 *data)
+inline video::SColor readARGB8(const u8 *data)
 {
 	video::SColor p;
 	p.setAlpha(readU8(&data[0]));

@@ -352,13 +352,17 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 		if(sector_blocks_drawn != 0)
 			m_last_drawn_sectors[sp] = true;
 	}
-	
+
+	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
+	m_control.blocks_drawn = blocks_drawn;
+
 	g_profiler->avg("CM: blocks in range", blocks_in_range);
 	g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
 	if(blocks_in_range != 0)
 		g_profiler->avg("CM: blocks in range without mesh (frac)",
 				(float)blocks_in_range_without_mesh/blocks_in_range);
 	g_profiler->avg("CM: blocks drawn", blocks_drawn);
+	g_profiler->avg("CM: wanted max blocks", m_control.wanted_max_blocks);
 }
 
 struct MeshBufList
@@ -467,9 +471,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	u32 mesh_animate_count = 0;
 	u32 mesh_animate_count_far = 0;
 	
-	// Blocks that had mesh that would have been drawn according to
-	// rendering range (if max blocks limit didn't kick in)
-	u32 blocks_would_have_drawn = 0;
 	// Blocks that were drawn and had a mesh
 	u32 blocks_drawn = 0;
 	// Blocks which had a corresponding meshbuffer for this pass
@@ -664,9 +665,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	if(blocks_drawn != 0)
 		g_profiler->avg(prefix+"empty blocks (frac)",
 				(float)blocks_without_stuff / blocks_drawn);
-
-	m_control.blocks_drawn = blocks_drawn;
-	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
 
 	/*infostream<<"renderMap(): is_transparent_pass="<<is_transparent_pass
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/

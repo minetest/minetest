@@ -135,7 +135,7 @@
 #bilinear_filter = false
 #trilinear_filter = false
 # Set to true to pre-generate all item visuals
-#preload_item_visuals = false
+#preload_item_visuals = true
 # 0: disable shaders
 # (1: low level shaders; not implemented)
 # 2: enable high level shaders

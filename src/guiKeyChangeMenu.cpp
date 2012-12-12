@@ -46,6 +46,7 @@ enum
 	GUI_ID_KEY_FLY_BUTTON,
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
+	GUI_ID_KEY_NOCLIP_BUTTON,
 	GUI_ID_KEY_CHAT_BUTTON,
 	GUI_ID_KEY_CMD_BUTTON,
 	GUI_ID_KEY_CONSOLE_BUTTON,
@@ -362,6 +363,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON, "Console", "keymap_console");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON, "Toggle fly", "keymap_freemove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON, "Toggle fast", "keymap_fastmove");
+	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON, "Toggle noclip", "keymap_noclip");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON, "Range select", "keymap_rangeselect");
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON, "Print stacks", "keymap_print_debug_stacks");
 }

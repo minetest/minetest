@@ -76,10 +76,10 @@ function minetest.get_node_drops(nodename, toolname)
 	local drop = ItemStack({name=nodename}):get_definition().drop
 	if drop == nil then
 		-- default drop
-		return {ItemStack({name=nodename})}
+		return {nodename}
 	elseif type(drop) == "string" then
 		-- itemstring drop
-		return {ItemStack(drop)}
+		return {drop}
 	elseif drop.items == nil then
 		-- drop = {} to disable default drop
 		return {}

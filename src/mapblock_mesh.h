@@ -160,9 +160,10 @@ struct MeshCollector
 //   alpha in the A channel of the returned SColor
 //   day light (0-255) in the R channel of the returned SColor
 //   night light (0-255) in the G channel of the returned SColor
-inline video::SColor MapBlock_LightColor(u8 alpha, u16 light)
+//   light source (0-255) in the B channel of the returned SColor
+inline video::SColor MapBlock_LightColor(u8 alpha, u16 light, u8 light_source=0)
 {
-	return video::SColor(alpha, (light & 0xff), (light >> 8), 0);
+	return video::SColor(alpha, (light & 0xff), (light >> 8), light_source);
 }
 
 // Compute light at node

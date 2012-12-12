@@ -208,7 +208,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
 		Environment->addStaticText(narrow_to_wide(
-				"Minetest-c55 " VERSION_STRING).c_str(),
+				"Minetest " VERSION_STRING).c_str(),
 				rect, false, true, this, -1);
 	}
 
@@ -659,11 +659,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 454, 250);
 			rect += m_topleft_client + v2s32(110, 50+35);
 			Environment->addStaticText(narrow_to_wide(
-			"Minetest-c55 " VERSION_STRING "\n"
+			"Minetest " VERSION_STRING "\n"
 			"http://minetest.net/\n"
 			"\n"
 			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors: tango_, kahrl (kaaaaaahrl?), erlehmann (the hippie), SpeedProg, JacobF (sqlite worlds), teddydestodes, marktraceur, darkrose, Jonathan Neuschäfer (who the hell?), Felix Krausse (broke liquids, IIRC), sfan5... and >10 more random people."
+			"and contributors: PilzAdam, Taoki, tango_, kahrl (kaaaaaahrl?), darkrose, matttpt, erlehmann, SpeedProg, JacobF, teddydestodes, marktraceur, Jonathan Neuschäfer, thexyz, VanessaE, sfan5... and tens of more random people."
 			).c_str(), rect, false, true, this, -1);
 		}
 	}

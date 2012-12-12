@@ -44,5 +44,9 @@ minetest.register_privilege("fast", {
 	description = "Can walk fast using the fast_move mode",
 	give_to_singleplayer = false,
 })
+minetest.register_privilege("noclip", {
+	description = "Can fly through walls",
+	give_to_singleplayer = false,
+})
 minetest.register_privilege("rollback", "Can use the rollback functionality")
 
