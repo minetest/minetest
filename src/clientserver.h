@@ -267,6 +267,8 @@ enum ToClientCommand
 			u32 length of data
 			data
 		}
+		u16 length of remote media server url (if applicable)
+		string url
 	*/
 	
 	TOCLIENT_TOOLDEF = 0x39,
@@ -571,6 +573,10 @@ enum ToServerCommand
 		}
 	 */
 
+	TOSERVER_RECEIVED_MEDIA = 0x41,
+	/*
+		u16 command
+	*/
 };
 
 #endif

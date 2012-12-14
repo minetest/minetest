@@ -119,6 +119,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
 
+	settings->setDefault("media_fetch_threads", "8");
+
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");
@@ -158,5 +160,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_aim_rtt", "0.2");
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
+	settings->setDefault("remote_media", "");
 }
 

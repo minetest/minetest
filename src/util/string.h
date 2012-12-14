@@ -282,6 +282,7 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 }
 
 std::string translatePassword(std::string playername, std::wstring password);
+size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata);
 
 #endif
 

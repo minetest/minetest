@@ -141,6 +141,10 @@
 # 2: enable high level shaders
 #enable_shaders = 2
 
+# will only work for servers which use remote_media setting
+# and only for clients compiled with cURL
+#media_fetch_threads = 8
+
 #
 # Server stuff
 #
@@ -217,3 +221,4 @@
 #congestion_control_aim_rtt = 0.2
 #congestion_control_max_rate = 400
 #congestion_control_min_rate = 10
+#remote_media =

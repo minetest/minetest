@@ -11,6 +11,7 @@
 #define RUN_IN_PLACE 0
 #define USE_GETTEXT 0
 #define USE_SOUND 0
+#define USE_CURL 0
 #define STATIC_SHAREDIR ""
 #define BUILD_INFO "non-cmake"
 
@@ -26,6 +27,8 @@
 	#define USE_GETTEXT CMAKE_USE_GETTEXT
 	#undef USE_SOUND
 	#define USE_SOUND CMAKE_USE_SOUND
+	#undef USE_CURL
+	#define USE_CURL CMAKE_USE_CURL
 	#undef STATIC_SHAREDIR
 	#define STATIC_SHAREDIR CMAKE_STATIC_SHAREDIR
 	#undef BUILD_INFO
