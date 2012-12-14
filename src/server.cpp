@@ -2885,6 +2885,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// (definitions and files)
 		getClient(peer_id)->definitions_sent = true;
 	}
+	else if(command == TOSERVER_RECEIVED_MEDIA) {
+		getClient(peer_id)->definitions_sent = true;
+	}
 	else if(command == TOSERVER_INTERACT)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -4217,6 +4220,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 		os<<serializeString(j->name);
 		os<<serializeString(j->sha1_digest);
 	}
+	os<<serializeString(g_settings->get("remote_media"));
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4224,7 +4228,6 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
-
 }
 
 struct SendableMedia

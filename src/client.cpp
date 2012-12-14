@@ -44,20 +44,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hex.h"
 #include "IMeshCache.h"
 #include "util/serialize.h"
+#include "config.h"
+
+#if USE_CURL
+#include <curl/curl.h>
+#endif
 
 static std::string getMediaCacheDir()
 {
 	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "media";
 }
-
-struct MediaRequest
-{
-	std::string name;
-
-	MediaRequest(const std::string &name_=""):
-		name(name_)
-	{}
-};
 
 /*
 	QueuedMeshUpdate
@@ -223,6 +219,45 @@ void * MeshUpdateThread::Thread()
 	return NULL;
 }
 
+void * MediaFetchThread::Thread()
+{
+	ThreadStarted();
+
+	log_register_thread("MediaFetchThread");
+
+	DSTACK(__FUNCTION_NAME);
+
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
+	#if USE_CURL
+	CURL *curl;
+	CURLcode res;
+	for (core::list<MediaRequest>::Iterator i = m_file_requests.begin();
+			i != m_file_requests.end(); i++) {
+		curl = curl_easy_init();
+		assert(curl);
+		curl_easy_setopt(curl, CURLOPT_URL, (m_remote_url + i->name).c_str());
+		curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
+		std::ostringstream stream;
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream);
+		res = curl_easy_perform(curl);
+		if (res == CURLE_OK) {
+			std::string data = stream.str();
+			m_file_data.push_back(make_pair(i->name, data));
+		} else {
+			m_failed.push_back(*i);
+			infostream << "cURL request failed for " << i->name << std::endl;
+		}
+		curl_easy_cleanup(curl);
+	}
+	#endif
+
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
+
+	return NULL;
+}
+
 Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
@@ -263,8 +298,9 @@ Client::Client(
 	m_password(password),
 	m_access_denied(false),
 	m_media_cache(getMediaCacheDir()),
-	m_media_receive_progress(0),
-	m_media_received(false),
+	m_media_receive_started(false),
+	m_media_count(0),
+	m_media_received_count(0),
 	m_itemdef_received(false),
 	m_nodedef_received(false),
 	m_time_of_day_set(false),
@@ -731,6 +767,63 @@ void Client::step(float dtime)
 	}
 
 	/*
+		Load fetched media
+	*/
+	if (m_media_receive_started) {
+		bool all_stopped = true;
+		for (core::list<MediaFetchThread>::Iterator thread = m_media_fetch_threads.begin();
+				thread != m_media_fetch_threads.end(); thread++) {
+			all_stopped &= !thread->IsRunning();
+			while (thread->m_file_data.size() > 0) {
+				std::pair <std::string, std::string> out = thread->m_file_data.pop_front();
+				++m_media_received_count;
+
+				bool success = loadMedia(out.second, out.first);
+				if(success){
+					verbosestream<<"Client: Loaded received media: "
+							<<"\""<<out.first<<"\". Caching."<<std::endl;
+				} else{
+					infostream<<"Client: Failed to load received media: "
+							<<"\""<<out.first<<"\". Not caching."<<std::endl;
+					continue;
+				}
+
+				bool did = fs::CreateAllDirs(getMediaCacheDir());
+				if(!did){
+					errorstream<<"Could not create media cache directory"
+							<<std::endl;
+				}
+
+				{
+					core::map<std::string, std::string>::Node *n;
+					n = m_media_name_sha1_map.find(out.first);
+					if(n == NULL)
+						errorstream<<"The server sent a file that has not "
+								<<"been announced."<<std::endl;
+					else
+						m_media_cache.update_sha1(out.second);
+				}
+			}
+		}
+		if (all_stopped) {
+			core::list<MediaRequest> fetch_failed;
+			for (core::list<MediaFetchThread>::Iterator thread = m_media_fetch_threads.begin();
+					thread != m_media_fetch_threads.end(); thread++) {
+				for (core::list<MediaRequest>::Iterator request = thread->m_failed.begin();
+						request != thread->m_failed.end(); request++)
+					fetch_failed.push_back(*request);
+				thread->m_failed.clear();
+			}
+			if (fetch_failed.size() > 0) {
+				infostream << "Failed to remote-fetch " << fetch_failed.size() << " files. "
+						<< "Requesting them the usual way." << std::endl;
+				request_media(fetch_failed);
+			}
+			m_media_fetch_threads.clear();
+		}
+	}
+
+	/*
 		If the server didn't update the inventory in a while, revert
 		the local inventory (so the player notices the lag problem
 		and knows something is wrong).
@@ -905,6 +998,34 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 	infostream<<"Client::deletingPeer(): "
 			"Server Peer is getting deleted "
 			<<"(timeout="<<timeout<<")"<<std::endl;
+}
+
+/*
+	u16 command
+	u16 number of files requested
+	for each file {
+		u16 length of name
+		string name
+	}
+*/
+void Client::request_media(const core::list<MediaRequest> &file_requests)
+{
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOSERVER_REQUEST_MEDIA);
+	writeU16(os, file_requests.size());
+
+	for(core::list<MediaRequest>::ConstIterator i = file_requests.begin();
+			i != file_requests.end(); i++) {
+		os<<serializeString(i->name);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+	infostream<<"Client: Sending media request list to server ("
+			<<file_requests.size()<<" files)"<<std::endl;
 }
 
 void Client::ReceiveAll()
@@ -1514,37 +1635,56 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			file_requests.push_back(MediaRequest(name));
 		}
 
+		std::string remote_media = "";
+		try {
+			remote_media = deSerializeString(is);
+		}
+		catch(SerializationError) {
+			// not supported by server or turned off
+		}
+
+		m_media_count = file_requests.size();
+		m_media_receive_started = true;
+
+		if (remote_media == "" || !USE_CURL) {
+			request_media(file_requests);
+		} else {
+			#if USE_CURL
+			for (size_t i = 0; i < g_settings->getU16("media_fetch_threads"); ++i) {
+				m_media_fetch_threads.push_back(MediaFetchThread(this));
+			}
+
+			core::list<MediaFetchThread>::Iterator cur = m_media_fetch_threads.begin();
+			for(core::list<MediaRequest>::Iterator i = file_requests.begin();
+					i != file_requests.end(); i++) {
+				cur->m_file_requests.push_back(*i);
+				cur++;
+				if (cur == m_media_fetch_threads.end())
+					cur = m_media_fetch_threads.begin();
+			}
+			for (core::list<MediaFetchThread>::Iterator i = m_media_fetch_threads.begin();
+					i != m_media_fetch_threads.end(); i++) {
+				i->m_remote_url = remote_media;
+				i->Start();
+			}
+			#endif
+
+			// notify server we received everything
+			std::ostringstream os(std::ios_base::binary);
+			writeU16(os, TOSERVER_RECEIVED_MEDIA);
+			std::string s = os.str();
+			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			// Send as reliable
+			Send(0, data, true);
+		}
 		ClientEvent event;
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
-
-		/*
-			u16 command
-			u16 number of files requested
-			for each file {
-				u16 length of name
-				string name
-			}
-		*/
-		std::ostringstream os(std::ios_base::binary);
-		writeU16(os, TOSERVER_REQUEST_MEDIA);
-		writeU16(os, file_requests.size());
-
-		for(core::list<MediaRequest>::Iterator i = file_requests.begin();
-				i != file_requests.end(); i++) {
-			os<<serializeString(i->name);
-		}
-
-		// Make data buffer
-		std::string s = os.str();
-		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-		// Send as reliable
-		Send(0, data, true);
-		infostream<<"Client: Sending media request list to server ("
-				<<file_requests.size()<<" files)"<<std::endl;
 	}
 	else if(command == TOCLIENT_MEDIA)
 	{
+		if (m_media_count == 0)
+			return;
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1566,17 +1706,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		*/
 		int num_bunches = readU16(is);
 		int bunch_i = readU16(is);
-		if(num_bunches >= 2)
-			m_media_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
-		else
-			m_media_receive_progress = 1.0;
-		if(bunch_i == num_bunches - 1)
-			m_media_received = true;
 		int num_files = readU32(is);
 		infostream<<"Client: Received files: bunch "<<bunch_i<<"/"
 				<<num_bunches<<" files="<<num_files
 				<<" size="<<datasize<<std::endl;
 		for(int i=0; i<num_files; i++){
+			m_media_received_count++;
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);
 
@@ -2458,7 +2593,7 @@ void Client::afterContentReceived()
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
-	assert(m_media_received);
+	assert(texturesReceived());
 	
 	// remove the information about which checksum each texture
 	// ought to have
