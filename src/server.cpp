@@ -4659,7 +4659,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 				log->push_back(os.str());
 		}else{
 			std::ostringstream os;
-			os<<"Succesfully reverted step ("<<num_tried<<") "<<action.toString();
+			os<<"Successfully reverted step ("<<num_tried<<") "<<action.toString();
 			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
 			if(log)
 				log->push_back(os.str());
