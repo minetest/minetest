@@ -5,13 +5,38 @@
 #  CURL_LIBRARY    - List of libraries when using curl.
 #  CURL_FOUND        - True if curl found.
 
-# Look for the header file.
-FIND_PATH(CURL_INCLUDE_DIR NAMES curl/curl.h)
+if( UNIX )
+  FIND_PATH(CURL_INCLUDE_DIR NAMES curl.h
+    PATHS
+    /usr/local/include/curl
+    /usr/include/curl
+  )
 
-# Look for the library.
-FIND_LIBRARY(CURL_LIBRARY NAMES curl)
+  FIND_LIBRARY(CURL_LIBRARY NAMES libcurl.a curl
+    PATHS
+    /usr/local/lib
+    /usr/lib
+  )
+else( UNIX )
+  FIND_PATH(CURL_INCLUDE_DIR NAMES curl/curl.h) # Look for the header file.
+  FIND_LIBRARY(CURL_LIBRARY NAMES curl) # Look for the library.
+  INCLUDE(FindPackageHandleStandardArgs) # handle the QUIETLY and REQUIRED arguments and set CURL_FOUND to TRUE if
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS(CURL DEFAULT_MSG CURL_LIBRARY CURL_INCLUDE_DIR) # all listed variables are TRUE
+endif( UNIX )
 
-# handle the QUIETLY and REQUIRED arguments and set CURL_FOUND to TRUE if
-# all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(CURL DEFAULT_MSG CURL_LIBRARY CURL_INCLUDE_DIR)
+if( WIN32 )
+  if( CURL_LIBRARY AND CURL_INCLUDE_DIR AND CURL_DLL ) # libcurl.dll is required on Windows
+    SET(CURL_FOUND TRUE)
+  else( CURL_LIBRARY AND CURL_INCLUDE_DIR AND CURL_DLL )
+    SET(CURL_FOUND FALSE)
+  endif( CURL_LIBRARY AND CURL_INCLUDE_DIR AND CURL_DLL )
+else ( WIN32 )
+  if( CURL_LIBRARY AND CURL_INCLUDE_DIR )
+    SET(CURL_FOUND TRUE)
+  else( CURL_LIBRARY AND CURL_INCLUDE_DIR )
+    SET(CURL_FOUND FALSE)
+  endif( CURL_LIBRARY AND CURL_INCLUDE_DIR )
+endif ( WIN32 )
+
+MESSAGE(STATUS "CURL_INCLUDE_DIR = ${CURL_INCLUDE_DIR}")
+MESSAGE(STATUS "CURL_LIBRARY = ${CURL_LIBRARY}")
