@@ -332,6 +332,9 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
+
+	for (size_t i = 0; i < g_settings->getU16("media_fetch_threads"); ++i)
+		m_media_fetch_threads.push_back(new MediaFetchThread(this));
 }
 
 Client::~Client()
@@ -355,6 +358,10 @@ Client::~Client()
 			delete i->second;
 		}
 	}
+
+	for (core::list<MediaFetchThread*>::Iterator i = m_media_fetch_threads.begin();
+			i != m_media_fetch_threads.end(); i++)
+		delete *i;
 }
 
 void Client::connect(Address address)
@@ -771,11 +778,11 @@ void Client::step(float dtime)
 	*/
 	if (m_media_receive_started) {
 		bool all_stopped = true;
-		for (core::list<MediaFetchThread>::Iterator thread = m_media_fetch_threads.begin();
+		for (core::list<MediaFetchThread*>::Iterator thread = m_media_fetch_threads.begin();
 				thread != m_media_fetch_threads.end(); thread++) {
-			all_stopped &= !thread->IsRunning();
-			while (thread->m_file_data.size() > 0) {
-				std::pair <std::string, std::string> out = thread->m_file_data.pop_front();
+			all_stopped &= !(*thread)->IsRunning();
+			while ((*thread)->m_file_data.size() > 0) {
+				std::pair <std::string, std::string> out = (*thread)->m_file_data.pop_front();
 				++m_media_received_count;
 
 				bool success = loadMedia(out.second, out.first);
@@ -807,19 +814,18 @@ void Client::step(float dtime)
 		}
 		if (all_stopped) {
 			core::list<MediaRequest> fetch_failed;
-			for (core::list<MediaFetchThread>::Iterator thread = m_media_fetch_threads.begin();
+			for (core::list<MediaFetchThread*>::Iterator thread = m_media_fetch_threads.begin();
 					thread != m_media_fetch_threads.end(); thread++) {
-				for (core::list<MediaRequest>::Iterator request = thread->m_failed.begin();
-						request != thread->m_failed.end(); request++)
+				for (core::list<MediaRequest>::Iterator request = (*thread)->m_failed.begin();
+						request != (*thread)->m_failed.end(); request++)
 					fetch_failed.push_back(*request);
-				thread->m_failed.clear();
+				(*thread)->m_failed.clear();
 			}
 			if (fetch_failed.size() > 0) {
 				infostream << "Failed to remote-fetch " << fetch_failed.size() << " files. "
 						<< "Requesting them the usual way." << std::endl;
 				request_media(fetch_failed);
 			}
-			m_media_fetch_threads.clear();
 		}
 	}
 
@@ -1650,22 +1656,18 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			request_media(file_requests);
 		} else {
 			#if USE_CURL
-			for (size_t i = 0; i < g_settings->getU16("media_fetch_threads"); ++i) {
-				m_media_fetch_threads.push_back(MediaFetchThread(this));
-			}
-
-			core::list<MediaFetchThread>::Iterator cur = m_media_fetch_threads.begin();
+			core::list<MediaFetchThread*>::Iterator cur = m_media_fetch_threads.begin();
 			for(core::list<MediaRequest>::Iterator i = file_requests.begin();
 					i != file_requests.end(); i++) {
-				cur->m_file_requests.push_back(*i);
+				(*cur)->m_file_requests.push_back(*i);
 				cur++;
 				if (cur == m_media_fetch_threads.end())
 					cur = m_media_fetch_threads.begin();
 			}
-			for (core::list<MediaFetchThread>::Iterator i = m_media_fetch_threads.begin();
+			for (core::list<MediaFetchThread*>::Iterator i = m_media_fetch_threads.begin();
 					i != m_media_fetch_threads.end(); i++) {
-				i->m_remote_url = remote_media;
-				i->Start();
+				(*i)->m_remote_url = remote_media;
+				(*i)->Start();
 			}
 			#endif
 

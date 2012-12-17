@@ -371,7 +371,7 @@ private:
 	MtEventManager *m_event;
 
 	MeshUpdateThread m_mesh_update_thread;
-	core::list<MediaFetchThread> m_media_fetch_threads;
+	core::list<MediaFetchThread*> m_media_fetch_threads;
 	ClientEnvironment m_env;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
