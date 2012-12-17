@@ -192,11 +192,15 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	-- Add node and update
 	minetest.env:add_node(place_to, newnode)
 
+	local take_item = true
+
 	-- Run callback
 	if def.after_place_node then
 		-- Copy place_to because callback can modify it
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
-		def.after_place_node(place_to_copy, placer)
+		if def.after_place_node(place_to_copy, placer, itemstack) then
+			take_item = false
+		end
 	end
 
 	-- Run script hook
@@ -206,10 +210,14 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
-		callback(place_to_copy, newnode_copy, placer, oldnode_copy)
+		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack) then
+			take_item = false
+		end
 	end
 
-	itemstack:take_item()
+	if take_item then
+		itemstack:take_item()
+	end
 	return itemstack
 end
 

@@ -810,8 +810,9 @@ minetest.register_on_shutdown(func())
 ^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
            callbacks WILL LIKELY NOT BE RUN.  Data should be saved at
            semi-frequent intervals as well as on server shutdown.
-minetest.register_on_placenode(func(pos, newnode, placer, oldnode))
+minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack))
 ^ Called when a node has been placed
+^ If return true no item is taken from itemstack
 ^ Deprecated: Use on_construct or after_place_node in node definition instead
 minetest.register_on_dignode(func(pos, oldnode, digger))
 ^ Called when a node has been dug.
@@ -1405,9 +1406,10 @@ Node definition (register_node)
     ^ Node destructor; always called after removing node
     ^ default: nil
 
-    after_place_node = func(pos, placer),
+    after_place_node = func(pos, placer, itemstack),
     ^ Called after constructing node when node was placed using
       minetest.item_place_node / minetest.env:place_node
+    ^ If return true no item is taken from itemstack
     ^ default: nil
     after_dig_node = func(pos, oldnode, oldmetadata, digger),
     ^ oldmetadata is in table format
