@@ -41,3 +41,9 @@ std::string translatePassword(std::string playername, std::wstring password)
 	return pwd;
 }
 
+size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
+    std::ostringstream *stream = (std::ostringstream*)userdata;
+    size_t count = size * nmemb;
+    stream->write(ptr, count);
+    return count;
+}

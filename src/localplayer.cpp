@@ -303,7 +303,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	bool bouncy_jump = false;
 	// Dont report if flying
-	if(collision_info && !g_settings->getBool("free_move"))
+	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed))
 	{
 		for(size_t i=0; i<result.collisions.size(); i++){
 			const CollisionInfo &info = result.collisions[i];

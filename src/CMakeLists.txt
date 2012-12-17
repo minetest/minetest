@@ -6,6 +6,19 @@ mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
 mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
 
+option(ENABLE_CURL "Enable cURL support for fetching media" 1)
+
+if (NOT ENABLE_CURL)
+	mark_as_advanced(CLEAR CURL_LIBRARY CURL_INCLUDE_DIR)
+endif(NOT ENABLE_CURL)
+
+find_package(CURL)
+set(USE_CURL 0)
+if (CURL_FOUND AND ENABLE_CURL)
+	message(STATUS "cURL support enabled")
+	set(USE_CURL 1)
+endif(CURL_FOUND AND ENABLE_CURL)
+
 # user-visible option to enable/disable gettext usage
 OPTION(ENABLE_GETTEXT "Use GetText for internationalization" 0)
 
@@ -307,6 +320,16 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
+
+	if(USE_CURL)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${CURL_LIBRARY}
+		)
+		include_directories(
+			${CURL_INCLUDE_DIR}
+		)
+	endif(USE_CURL)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
