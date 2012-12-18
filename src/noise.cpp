@@ -270,7 +270,70 @@ float contour(float v)
 
 
 Noise::Noise(NoiseParams *np, int seed, int sx, int sy) {
-	int nlx, nly;
+	init(np, seed, sx, sy, 1);
+}
+
+
+Noise::Noise(NoiseParams *np, int seed, int sx, int sy, int sz) {
+	init(np, seed, sx, sy, sz);
+}
+
+
+void Noise::init(NoiseParams *np, int seed, int sx, int sy, int sz) {
+	this->np   = np;
+	this->seed = seed;
+	this->sx   = sx;
+	this->sy   = sy;
+	this->sz   = sz;
+
+	this->noisebuf = NULL;
+	resizeNoiseBuf(sz > 1);
+
+	this->buf      = new float[sx * sy * sz];
+	this->result   = new float[sx * sy * sz];
+}
+
+
+Noise::~Noise() {
+	delete[] buf;
+	delete[] result;
+	delete[] noisebuf;
+}
+
+
+void Noise::setSize(int sx, int sy) {
+	setSize(sx, sy, 1);
+}
+
+
+void Noise::setSize(int sx, int sy, int sz) {
+	this->sx = sx;
+	this->sy = sy;
+	this->sz = sz;
+
+	resizeNoiseBuf(sz > 1);
+
+	delete[] buf;
+	delete[] result;
+}
+
+
+void Noise::setSpreadFactor(v3f spread) {
+	this->np->spread = spread;
+
+	resizeNoiseBuf(sz > 1);
+}
+
+
+void Noise::setOctaves(int octaves) {
+	this->np->octaves = octaves;
+
+	resizeNoiseBuf(sz > 1);
+}
+
+
+void Noise::resizeNoiseBuf(bool is3d) {
+	int nlx, nly, nlz;
 	float ofactor;
 
 	//maximum possible spread value factor
@@ -282,42 +345,11 @@ Noise::Noise(NoiseParams *np, int seed, int sx, int sy) {
 	// + 1 for potentially crossing a boundary due to offset
 	nlx = (int)(sx * ofactor / np->spread.X) + 3;
 	nly = (int)(sy * ofactor / np->spread.Y) + 3;
+	nlz = is3d ? (int)(sz * ofactor / np->spread.Z) + 3 : 1;
 
-	this->np   = np;
-	this->seed = seed;
-	this->sx   = sx;
-	this->sy   = sy;
-	this->sz   = 1;
-	this->noisebuf = new float[nlx * nly];
-	this->buf      = new float[sx * sy];
-	this->result   = new float[sx * sy];
-}
-
-
-Noise::Noise(NoiseParams *np, int seed, int sx, int sy, int sz) {
-	int nlx, nly, nlz;
-	float ofactor;
-
-	ofactor = (float)(1 << (np->octaves - 1));
-	nlx = (int)(sx * ofactor / np->spread.X) + 3;
-	nly = (int)(sy * ofactor / np->spread.Y) + 3;
-	nlz = (int)(sz * ofactor / np->spread.Z) + 3;
-
-	this->np   = np;
-	this->seed = seed;
-	this->sx   = sx;
-	this->sy   = sy;
-	this->sz   = sz;
-	this->noisebuf = new float[nlx * nly * nlz];
-	this->buf      = new float[sx * sy * sz];
-	this->result   = new float[sx * sy * sz];
-}
-
-
-Noise::~Noise() {
-	delete[] buf;
-	delete[] result;
-	delete[] noisebuf;
+	if (noisebuf)
+		delete[] noisebuf;
+	noisebuf = new float[nlx * nly * nlz];
 }
 
 
@@ -344,7 +376,6 @@ void Noise::gradientMap2D(float x, float y, float step_x, float step_y, int seed
 	orig_u = u;
 
 	//calculate noise point lattice
-
 	nlx = (int)(u + sx * step_x) + 2;
 	nly = (int)(v + sy * step_y) + 2;
 	index = 0;

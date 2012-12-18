@@ -85,6 +85,13 @@ public:
 	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
 	~Noise();
 
+	void init(NoiseParams *np, int seed, int sx, int sy, int sz);
+	void setSize(int sx, int sy);
+	void setSize(int sx, int sy, int sz);
+	void setSpreadFactor(v3f spread);
+	void setOctaves(int octaves);
+	void resizeNoiseBuf(bool is3d);
+
 	void gradientMap2D(
 		float x, float y,
 		float step_x, float step_y,
