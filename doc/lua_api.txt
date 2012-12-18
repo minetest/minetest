@@ -1245,6 +1245,144 @@ Registered entities
     ^ Should return a string that will be passed to on_activate when
       the object is instantiated the next time.
 
+Special Texture Modifications
+-----------------------------
+When specifying node and entity textures, you can alter the texture in some
+ways by using a special syntax.
+
+To use it, you must first write the texture name, followed by '^' and then
+the transformation.
+
+Please note that these transformations create new textures (i.e. they are
+not applied in real time, but rather create a new texture and modify it).
+This has some implications; first of all, there's no FPS loss, as the new
+textures are handled the same way as the untransformed ones; but then, the
+memory requirements may increase as new textures are created.
+
+[forcesingle
+
+Syntax: [forcesingle
+
+This is the simplest of all; it just adds stuff to the name so that a
+separate texture is created.
+
+It is used to make textures for stuff that doesn't want to implement
+getting the texture from a bigger texture atlas.
+
+[crack
+
+Syntax: [crackN
+
+This creates a "cracked" texture in the same way it looks like when
+digging a node.
+
+You must specify a number after the transform, such as `[crack0'.
+The number specifies the crack "animation" frame to use (0 is barely
+cracked, MAX is almost "dug"). The maximum value for the number depends
+on the "cracking" texture image used (in the `crack_anylength.png' file).
+
+[cracko
+
+Syntax: [crackoN
+
+Like `[crack', but overlay the texture.
+TODO: How does this differ from `[crack'?
+
+[combine
+
+Syntax: [combine:WxH:X,Y=TEXTURE
+
+This allows one to combine several textures into a single texture.
+You can use this to create a texture that is half one material and
+half another material.
+The syntax is:
+    BASETEXTURE^[combine:WxH:X,Y=TEXTURE
+Where BASETEXTURE is your base texture, W and H are the dimensions
+of the new texture, X and Y are the position of the texture to combine
+into your base texture, and TEXTURE is the texture to combine.
+For example:
+    "default_dirt.png^[combine:16x16:8,0=default_stone.png"
+Will create a texture that is half from `default_dirt.png' and half
+from `default_stone.png'.
+You may combine as many textures as you want:
+    "default_dirt.png^[combine:16x16:8,0=default_stone.png:12,7=default_mese.png"
+If the texture to combine contains semi-transparent areas, you can
+make effects such as darkening, coloring, etc.
+
+[brighten
+
+Syntax: [brighten
+
+This makes the texture a lot brighter.
+
+[noalpha
+
+Syntax: [noalpha
+
+This makes the image completely opaque (i.e: ignores the Alpha channel).
+Used for example for the leaves texture when the user activates the old
+leaves option, so that the transparent parts don't look completely black 
+when simple alpha channel is used for rendering.
+
+[makealpha
+
+Syntax: [makealpha:R,G,B
+
+This convert all the pixels whose RGB value are the specified into fully
+transparent pixels.
+
+This can be used for interesting effects, or as a last resort for when
+you don't have an image editor that supports alpha channel handy.
+
+[transform
+
+Syntax: [transformT
+   or : [transformNAME
+
+This can be used to flip or rotate the texture.
+
+T is a number between 0 and 7 (inclusive), or you can specify a transform
+name directly. The table below lists the available transformations this
+transform supports:
+
+0  I      identity
+1  R90    rotate by 90 degrees
+2  R180   rotate by 180 degrees
+3  R270   rotate by 270 degrees
+4  FX     flip X
+5  FXR90  flip X then rotate by 90 degrees
+6  FY     flip Y
+7  FYR90  flip Y then rotate by 90 degrees
+
+Please note that transform names can be concatenated to produce their
+product (applies the first then the second). The resulting transform
+will be equivalent to one of the eight existing ones, though.
+
+[inventorycube
+
+Syntax: [inventorycube{TOP{LEFT{RIGHT
+
+In every subimage, replace ^ with &. Create an "inventory cube".
+NOTE: This should be used only on its own.
+Example (a grass block (not actually used in game):
+"[inventorycube{grass.png{mud.png&grass_side.png{mud.png&grass_side.png"
+
+[lowpart
+
+Syntax: [lowpart:PERCENTAGE:FILENAME
+
+Adds the lower part of a texture to an existing one. for example
+"default_grass.png^[lowpart:50:default_stone.png"
+Creates a texture that is grass in the upper half and stone in the
+lower half.
+
+[verticalframe
+
+Syntax: [verticalframe:N:I
+
+This divides a texture into N parts, and uses part I (counting from the
+top frame which is I=0) as a new texture.
+
 Definition tables
 ------------------
 
