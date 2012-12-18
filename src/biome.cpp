@@ -64,11 +64,14 @@ int bg4_biomes[]  = {BT_HILLS, BT_EXTREMEHILLS, BT_MOUNTAINS, BT_DESERT, BT_DESE
 float bg5_temps[] = {5.0, 40.0};
 int bg5_biomes[]  = {BT_LAKE, BT_PLAINS, BT_DESERT};*/
 
+NoiseParams np_default = {0.0, 20.0, v3f(250., 250., 250.), 82341, 5, 0.6};
+
 
 BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {
 	this->m_gamedef = gamedef;
 	this->ndef      = gamedef->ndef();
 
+	bgroups.push_back(new std::vector<Biome *>); //the initial biome group
 	//addDefaultBiomes(); //can't do this in the ctor, too early
 }
 
@@ -79,18 +82,50 @@ BiomeDefManager::~BiomeDefManager() {
 }
 
 
-void BiomeDefManager::addBiome() {
-
+Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
+	switch (btt) {
+		case BIOME_TERRAIN_NORMAL:
+			return new Biome;
+		case BIOME_TERRAIN_LIQUID:
+			return new BiomeLiquid;
+		case BIOME_TERRAIN_NETHER:
+			return new BiomeHell;
+		case BIOME_TERRAIN_AETHER:
+			return new BiomeAether;
+		case BIOME_TERRAIN_FLAT:
+			return new BiomeSuperflat;
+	}
 }
 
 
-NoiseParams npmtdef = {0.0, 20.0, v3f(250., 250., 250.), 82341, 5, 0.6};
+void BiomeDefManager::addBiomeGroup(float freq) {
+	int size = bgroup_freqs.size();
+	float newfreq = freq;
+
+	if (size)
+		newfreq += bgroup_freqs[size - 1];
+	bgroup_freqs.push_back(newfreq);
+	bgroups.push_back(new std::vector<Biome *>);
+	printf("added biome with freq %f\n", newfreq);
+}
+
+
+void BiomeDefManager::addBiome(int groupid, Biome *b) {
+	std::vector<Biome *> *bgroup;
+
+	if (groupid >= bgroups.size()) {
+		printf("blahblahblah");
+		return;
+	}
+
+	bgroup = bgroups[groupid];
+	bgroup->push_back(b);
+}
+
 
 void BiomeDefManager::addDefaultBiomes() {
 	std::vector<Biome *> *bgroup;
 	Biome *b;
-
-	//bgroup = new std::vector<Biome *>;
 
 	b = new Biome;
 	b->name         = "Default";
@@ -103,30 +138,25 @@ void BiomeDefManager::addDefaultBiomes() {
 	b->heat_max     = FLT_MAX;
 	b->humidity_min = FLT_MIN;
 	b->humidity_max = FLT_MAX;
-	b->np = &npmtdef;
+	b->np = &np_default;
 	biome_default = b;
-
-	//bgroup->push_back(b);
-	//bgroups.push_back(bgroup);
 }
 
 
 Biome *BiomeDefManager::getBiome(float bgfreq, float heat, float humidity) {
-	std::vector<Biome *> bgroup;
+	std::vector<Biome *> *bgroup;
 	Biome *b;
 	int i;
 
 	int ngroups = bgroup_freqs.size();
 	if (!ngroups)
 		return biome_default;
-	for (i = 0; (i != ngroups - 1) && (bgfreq > bgroup_freqs[i]); i++);
-	bgroup = *(bgroups[i]);
+	for (i = 0; (i != ngroups) && (bgfreq > bgroup_freqs[i]); i++);
+	bgroup = bgroups[i];
 
-	int nbiomes = bgroup.size();
-	if (!nbiomes)
-		return biome_default;
-	for (i = 0; i != nbiomes - 1; i++) {
-		b = bgroup[i];
+	int nbiomes = bgroup->size();
+	for (i = 0; i != nbiomes; i++) {
+		b = bgroup->operator[](i);///////////////////////////
 		if (heat >= b->heat_min && heat <= b->heat_max &&
 			humidity >= b->humidity_min && humidity <= b->humidity_max)
 			return b;
@@ -145,13 +175,11 @@ int Biome::getSurfaceHeight(float noise_terrain) {
 
 
 void Biome::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
-	//printf("(%d, %d): %f\n", x, z, mg->map_terrain[z * mg->ystride + x]);
-
-	//int surfaceh = 4;
-	int surfaceh = np->offset + np->scale * mg->map_terrain[(z - mg->node_min.Z) * 80 /*THIS IS TEMPORARY mg->ystride*/ + (x - mg->node_min.X)];
-	//printf("gen column %f\n", );
+	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
+	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
 	int y = y1;
-	int i = mg->vmanip->m_area.index(x, y, z);  //z * mg->zstride + x + (y - mg->vmanip->m_area.MinEdge.Y) * mg->ystride;
+
+	i = mg->vmanip->m_area.index(x, y, z);
 	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
 		mg->vmanip->m_data[i] = n_filler;
 	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
@@ -166,16 +194,18 @@ void Biome::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
 
 
 
-void BiomeOcean::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
-	int y, i = 0;
+void BiomeLiquid::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
+	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
+	int y = y1;
 
-	int surfaceh = np->offset + np->scale * mg->map_terrain[z * mg->ystride + x];
-
-	i = z * mg->zstride + x;
-	for (y = y1; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
+	i = mg->vmanip->m_area.index(x, y, z);
+	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
 		mg->vmanip->m_data[i] = n_filler;
 	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
 		mg->vmanip->m_data[i] = n_top;
+	for (; y <= mg->water_level && y <= y2; y++, i += mg->ystride)
+		mg->vmanip->m_data[i] = mg->n_water;
 	for (; y <= y2; y++, i += mg->ystride)
 		mg->vmanip->m_data[i] = mg->n_air;
 }
@@ -190,21 +220,22 @@ int BiomeHell::getSurfaceHeight(float noise_terrain) {
 
 
 void BiomeHell::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
-	int y, i = 0;
 
-	int surfaceh = np->offset + np->scale * mg->map_terrain[z * mg->ystride + x];
-
-	i = z * mg->zstride + x;
-	for (y = y1; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_filler;
-	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_top;
-	for (; y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_air;
 }
 
 
 ///////////////////////////// [ Aether biome ] ////////////////////////////////
+
+
+int BiomeAether::getSurfaceHeight(float noise_terrain) {
+	return np->offset + np->scale * noise_terrain;
+}
+
+
+void BiomeAether::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+
+}
+
 
 /////////////////////////// [ Superflat biome ] ///////////////////////////////
 
@@ -215,15 +246,5 @@ int BiomeSuperflat::getSurfaceHeight(float noise_terrain) {
 
 
 void BiomeSuperflat::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
-	int y, i = 0;
 
-	int surfaceh = ntopnodes;
-
-	i = z * mg->zstride + x;
-	for (y = y1; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_filler;
-	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_top;
-	for (; y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_air;
 }

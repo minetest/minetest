@@ -95,6 +95,7 @@ public:
 		int seed);
 	float *perlinMap2D(float x, float y);
 	float *perlinMap3D(float x, float y, float z);
+	void transformNoiseMap();
 };
 
 // Return value: -1 ... 1

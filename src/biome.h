@@ -20,11 +20,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef BIOME_HEADER
 #define BIOME_HEADER
 
+#include <string>
 #include "nodedef.h"
 #include "gamedef.h"
 #include "mapnode.h"
 #include "noise.h"
 #include "mapgen.h"
+
+
+enum BiomeTerrainType
+{
+	BIOME_TERRAIN_NORMAL,
+	BIOME_TERRAIN_LIQUID,
+	BIOME_TERRAIN_NETHER,
+	BIOME_TERRAIN_AETHER,
+	BIOME_TERRAIN_FLAT
+};
 
 class Biome {
 public:
@@ -38,18 +49,23 @@ public:
 	float heat_max;
 	float humidity_min;
 	float humidity_max;
-	const char *name;
+	std::string name;
 	NoiseParams *np;
 
 	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
-class BiomeOcean : public Biome {
+class BiomeLiquid : public Biome {
 	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 };
 
 class BiomeHell : public Biome {
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual int getSurfaceHeight(float noise_terrain);
+};
+
+class BiomeAether : public Biome {
 	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
@@ -70,9 +86,11 @@ public:
 	BiomeDefManager(IGameDef *gamedef);
 	~BiomeDefManager();
 
+	Biome *createBiome(BiomeTerrainType btt);
 	Biome *getBiome(float bgfreq, float heat, float humidity);
 
-	void addBiome();
+	void addBiomeGroup(float freq);
+	void addBiome(int groupid, Biome *b);
 	void addDefaultBiomes();
 };
 

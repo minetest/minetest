@@ -287,7 +287,7 @@ Noise::Noise(NoiseParams *np, int seed, int sx, int sy) {
 	this->seed = seed;
 	this->sx   = sx;
 	this->sy   = sy;
-	this->sz   = 0;
+	this->sz   = 1;
 	this->noisebuf = new float[nlx * nly];
 	this->buf      = new float[sx * sy];
 	this->result   = new float[sx * sy];
@@ -537,4 +537,17 @@ float *Noise::perlinMap3D(float x, float y, float z) {
 	}
 
 	return result;
+}
+
+
+void Noise::transformNoiseMap() {
+	int i = 0;
+	for (int z = 0; z != sz; z++) {
+		for (int y = 0; y != sy; y++) {
+			for (int x = 0; x != sx; x++) {
+				result[i] = result[i] * np->scale + np->offset;
+				i++;
+			}
+		}
+	}
 }

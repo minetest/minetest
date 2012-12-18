@@ -35,9 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 
 NoiseParams nparams_mtdefault =
-	{0.0, 20.0, v3f(250., 250., 250.), 82341, 5, 0.6}; //terrain
+	{10.0, 12.0, v3f(350., 350., 350.), 82341, 5, 0.6}; //terrain
 NoiseParams nparams_def_bgroup =
-	{0.5, 1/(2*1.6), v3f(250., 250., 250.), 5923, 2, 0.60}; //0 to 1
+	{0.5, 1/(2*1.6), v3f(350., 350., 350.), 5923, 2, 0.60}; //0 to 1
 NoiseParams nparams_def_heat =
 	{25.0, 50.0, v3f(500., 500., 500.), 35293, 1, 0.00}; //-25 to 75
 NoiseParams nparams_def_humidity =
@@ -139,9 +139,13 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 	map_heat     = noise_heat->perlinMap2D(x, z);
 	map_humidity = noise_humidity->perlinMap2D(x, z);
 
+	noise_bgroup->transformNoiseMap();
+	noise_heat->transformNoiseMap();
+	noise_humidity->transformNoiseMap();
+
 	int i = 0;
-	for (x = node_min.X; x <= node_max.X; x++) {
-		for (z = node_min.Z; z <= node_max.Z; z++) {
+	for (z = node_min.Z; z <= node_max.Z; z++) {
+		for (x = node_min.X; x <= node_max.X; x++) {
 			Biome *biome = biomedef->getBiome(map_bgroup[i], map_heat[i], map_humidity[i]);
 			biome->genColumn(this, x, z, y1, y2);
 			i++;
@@ -153,7 +157,7 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 	//genDungeon();
 	//add blobs of dirt and gravel underground
 	//decorateChunk();
-	//updateLiquid(full_node_min, full_node_max);
+	updateLiquid(full_node_min, full_node_max);
 	updateLighting(node_min, node_max);
 
 	this->generating = false;
@@ -164,7 +168,6 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 void Mapgen::updateLiquid(v3s16 node_min, v3s16 node_max) {
 	bool isliquid, wasliquid;
 	u32 i;
-	content_t c;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 x = node_min.X; x <= node_max.X; x++) {

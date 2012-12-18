@@ -103,14 +103,14 @@ public:
 			delete q;
 		}
 	}
-	
+
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
 	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
 	{
 		DSTACK(__FUNCTION_NAME);
-	
+
 		JMutexAutoLock lock(m_mutex);
 
 		if(peer_id != 0)
@@ -130,7 +130,7 @@ public:
 				}
 			}
 		}
-		
+
 		/*
 			Add the block
 		*/
@@ -160,7 +160,7 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		return m_queue.size();
 	}
-	
+
 	u32 peerItemCount(u16 peer_id)
 	{
 		JMutexAutoLock lock(m_mutex);
@@ -238,7 +238,7 @@ struct PlayerInfo
 
 /*
 	Used for queueing and sorting block transfers in containers
-	
+
 	Lower priority number means higher priority.
 */
 struct PrioritySortedBlockTransfer
@@ -303,7 +303,7 @@ struct ServerSoundParams
 		max_hear_distance(32*BS),
 		loop(false)
 	{}
-	
+
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
 
@@ -347,7 +347,7 @@ public:
 	~RemoteClient()
 	{
 	}
-	
+
 	/*
 		Finds block that should be sent next to the client.
 		Environment should be locked when this is called.
@@ -367,7 +367,7 @@ public:
 	{
 		return m_blocks_sending.size();
 	}
-	
+
 	// Increments timeouts and removes timed-out blocks from list
 	// NOTE: This doesn't fix the server-not-sending-block bug
 	//       because it is related to emerging, not sending.
@@ -386,13 +386,13 @@ public:
 
 	// Time from last placing or removing blocks
 	float m_time_from_building;
-	
+
 	/*JMutex m_dig_mutex;
 	float m_dig_time_remaining;
 	// -1 = not digging
 	s16 m_dig_tool_item;
 	v3s16 m_dig_position;*/
-	
+
 	/*
 		List of active objects that the client knows of.
 		Value is dummy.
@@ -405,7 +405,7 @@ private:
 		- These don't have to be sent again.
 		- A block is cleared from here when client says it has
 		  deleted it from it's memory
-		
+
 		Key is position, value is dummy.
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
@@ -413,7 +413,7 @@ private:
 	s16 m_nearest_unsent_d;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer;
-	
+
 	/*
 		Blocks that are currently on the line.
 		This is used for throttling the sending of blocks.
@@ -432,7 +432,7 @@ private:
 		This is resetted by PrintInfo()
 	*/
 	u32 m_excess_gotblocks;
-	
+
 	// CPU usage optimization
 	u32 m_nothing_to_send_counter;
 	float m_nothing_to_send_pause_timer;
@@ -446,7 +446,7 @@ public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
-	
+
 	Server(
 		const std::string &path_world,
 		const std::string &path_config,
@@ -477,7 +477,7 @@ public:
 	{
 		return m_shutdown_requested;
 	}
-	
+
 	/*
 		Shall be called with the environment locked.
 		This is accessed by the map, which is inside the environment,
@@ -503,7 +503,7 @@ public:
 	// Envlock + conlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
-	
+
 	// Envlock + conlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
 	bool checkPriv(const std::string &name, const std::string &priv);
@@ -534,26 +534,30 @@ public:
 	{
 		return m_con.GetPeerAddress(peer_id);
 	}
-	
+
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
 
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
-	
+
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
-	
+
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
 
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
+
+	//TODO:  determine what should be locked when accessing the emerge manager
+	EmergeManager *getEmergeManager(){ return m_emerge; }
+
 	// actions: time-reversed list
 	// Return value: success/failure
 	bool rollbackRevertActions(const std::list<RollbackAction> &actions,
 			std::list<std::string> *log);
-	
+
 	// IGameDef interface
 	// Under envlock
 	virtual IItemDefManager* getItemDefManager();
@@ -565,7 +569,7 @@ public:
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
 	virtual IRollbackReportSink* getRollbackReportSink();
-	
+
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
@@ -573,7 +577,7 @@ public:
 	const ModSpec* getModSpec(const std::string &modname);
 	void getModNames(core::list<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	
+
 	std::string getWorldPath(){ return m_path_world; }
 
 	bool isSingleplayer(){ return m_simple_singleplayer_mode; }
@@ -591,11 +595,11 @@ private:
 	// As of now, these create and remove clients and players.
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
-	
+
 	/*
 		Static send methods
 	*/
-	
+
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
@@ -605,7 +609,7 @@ private:
 			IItemDefManager *itemdef);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
 			INodeDefManager *nodedef, u16 protocol_version);
-	
+
 	/*
 		Non-static send methods.
 		Conlock should be always used.
@@ -633,18 +637,18 @@ private:
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void setBlockNotSent(v3s16 p);
-	
+
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
-	
+
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
-	
+
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
 			const core::list<MediaRequest> &tosend);
-	
+
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
 	void sendDetachedInventories(u16 peer_id);
@@ -652,15 +656,15 @@ private:
 	/*
 		Something random
 	*/
-	
+
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
-	
+
 	void UpdateCrafting(u16 peer_id);
-	
+
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
-	
+
 	// When called, environment mutex should be locked
 	std::string getPlayerName(u16 peer_id)
 	{
@@ -687,7 +691,7 @@ private:
 		Call with env and con locked.
 	*/
 	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
-	
+
 	// Locks environment and connection by its own
 	struct PeerChange;
 	void handlePeerChange(PeerChange &c);
@@ -696,7 +700,7 @@ private:
 	/*
 		Variables
 	*/
-	
+
 	// World directory
 	std::string m_path_world;
 	// Path to user's configuration file ("" = no configuration file)
@@ -709,7 +713,7 @@ private:
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
-	
+
 	// Some timers
 	float m_liquid_transform_timer;
 	float m_print_info_timer;
@@ -717,14 +721,14 @@ private:
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
 	IntervalLimiter m_map_timer_and_unload_interval;
-	
+
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.
 
 	// Environment
 	ServerEnvironment *m_env;
 	JMutex m_env_mutex;
-	
+
 	// Connection
 	con::Connection m_con;
 	JMutex m_con_mutex;
@@ -748,23 +752,23 @@ private:
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
-	
+
 	// Node definition manager
 	IWritableNodeDefManager *m_nodedef;
-	
+
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
-	
+
 	// Event manager
 	EventManager *m_event;
-	
+
 	// Mods
 	std::vector<ModSpec> m_mods;
-	
+
 	/*
 		Threads
 	*/
-	
+
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime;
@@ -776,7 +780,7 @@ private:
 	EmergeThread m_emergethread;
 	// Queue of block coordinates to be processed by the emerge thread
 	BlockEmergeQueue m_emerge_queue;
-	
+
 	/*
 		Time related stuff
 	*/
@@ -785,7 +789,7 @@ private:
 	float m_time_of_day_send_timer;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
-	
+
 	/*
 		Peer change queue.
 		Queues stuff from peerAdded() and deletingPeer() to
@@ -807,7 +811,7 @@ private:
 	/*
 		Random stuff
 	*/
-	
+
 	// Mod parent directory paths
 	core::list<std::string> m_modspaths;
 
