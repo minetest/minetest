@@ -84,6 +84,7 @@ minetest.register_entity("__builtin:falling_node", {
 			-- Create node and remove entity
 			minetest.env:add_node(np, {name=self.nodename})
 			self.object:remove()
+			nodeupdate(np)
 		else
 			-- Do nothing
 		end
