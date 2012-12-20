@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // assert
 #include "modalMenu.h"
 #include "guiPauseMenu.h" //For IGameCallback
+#include <list>
 
 extern gui::IGUIEnvironment* guienv;
 extern gui::IGUIStaticText *guiroot;
@@ -37,15 +38,15 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(GUIModalMenu *menu)
 	{
-		for(core::list<GUIModalMenu*>::Iterator
+		for(std::list<GUIModalMenu*>::iterator
 				i = m_stack.begin();
-				i != m_stack.end(); i++)
+				i != m_stack.end(); ++i)
 		{
 			assert(*i != menu);
 		}
 
 		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(false);
+			m_stack.back()->setVisible(false);
 		m_stack.push_back(menu);
 	}
 
@@ -55,9 +56,9 @@ public:
 		bool removed_entry;
 		do{
 			removed_entry = false;
-			for(core::list<GUIModalMenu*>::Iterator
+			for(std::list<GUIModalMenu*>::iterator
 					i = m_stack.begin();
-					i != m_stack.end(); i++)
+					i != m_stack.end(); ++i)
 			{
 				if(*i == menu)
 				{
@@ -73,7 +74,7 @@ public:
 		m_stack.erase(i);*/
 		
 		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(true);
+			m_stack.back()->setVisible(true);
 	}
 
 	u32 menuCount()
@@ -81,7 +82,7 @@ public:
 		return m_stack.size();
 	}
 
-	core::list<GUIModalMenu*> m_stack;
+	std::list<GUIModalMenu*> m_stack;
 };
 
 extern MainMenuManager g_menumgr;

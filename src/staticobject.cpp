@@ -58,18 +58,18 @@ void StaticObjectList::serialize(std::ostream &os)
 	u16 count = m_stored.size() + m_active.size();
 	writeU16((u8*)buf, count);
 	os.write(buf, 2);
-	for(core::list<StaticObject>::Iterator
+	for(std::list<StaticObject>::iterator
 			i = m_stored.begin();
-			i != m_stored.end(); i++)
+			i != m_stored.end(); ++i)
 	{
 		StaticObject &s_obj = *i;
 		s_obj.serialize(os);
 	}
-	for(core::map<u16, StaticObject>::Iterator
-			i = m_active.getIterator();
-			i.atEnd()==false; i++)
+	for(std::map<u16, StaticObject>::iterator
+			i = m_active.begin();
+			i != m_active.end(); ++i)
 	{
-		StaticObject s_obj = i.getNode()->getValue();
+		StaticObject s_obj = i->second;
 		s_obj.serialize(os);
 	}
 }

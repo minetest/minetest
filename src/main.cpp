@@ -700,14 +700,14 @@ void SpeedTests()
 	}
 
 	{
-		TimeTaker timer("Testing core::map speed");
+		TimeTaker timer("Testing std::map speed");
 		
-		core::map<v2s16, f32> map1;
+		std::map<v2s16, f32> map1;
 		tempf = -324;
 		const s16 ii=300;
 		for(s16 y=0; y<ii; y++){
 			for(s16 x=0; x<ii; x++){
-				map1.insert(v2s16(x,y), tempf);
+				map1[v2s16(x,y)] =  tempf;
 				tempf += 1;
 			}
 		}
@@ -788,48 +788,48 @@ int main(int argc, char *argv[])
 	*/
 	
 	// List all allowed options
-	core::map<std::string, ValueSpec> allowed_options;
-	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
-			_("Show allowed options")));
-	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
-			_("Load configuration from specified file")));
-	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			_("Set network port (UDP)")));
-	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Disable unit tests")));
-	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Enable unit tests")));
-	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
-			_("Same as --world (deprecated)")));
-	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)")));
-	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)")));
-	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
-			_("Print more information to console")));
-	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
-			_("Print even more information to console")));
-	allowed_options.insert("trace", ValueSpec(VALUETYPE_FLAG,
-			_("Print enormous amounts of information to log and console")));
-	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
-			_("Set logfile path ('' = no logging)")));
-	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
-			_("Set gameid (\"--gameid list\" prints available ones)")));
+	std::map<std::string, ValueSpec> allowed_options;
+	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
+			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
+			_("Load configuration from specified file"))));
+	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
+			_("Set network port (UDP)"))));
+	allowed_options.insert(std::make_pair("disable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Disable unit tests"))));
+	allowed_options.insert(std::make_pair("enable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Enable unit tests"))));
+	allowed_options.insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
+			_("Same as --world (deprecated)"))));
+	allowed_options.insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
+			_("Set world path (implies local game) ('list' lists all)"))));
+	allowed_options.insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
+			_("Set world by name (implies local game)"))));
+	allowed_options.insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
+			_("Print more information to console"))));
+	allowed_options.insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
+			_("Print even more information to console"))));
+	allowed_options.insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
+			_("Print enormous amounts of information to log and console"))));
+	allowed_options.insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
+			_("Set logfile path ('' = no logging)"))));
+	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
+			_("Set gameid (\"--gameid list\" prints available ones)"))));
 #ifndef SERVER
-	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests")));
-	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			_("Address to connect to. ('' = local game)")));
-	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
-			_("Enable random user input, for testing")));
-	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			_("Run dedicated server")));
-	allowed_options.insert("name", ValueSpec(VALUETYPE_STRING,
-			_("Set player name")));
-	allowed_options.insert("password", ValueSpec(VALUETYPE_STRING,
-			_("Set password")));
-	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
-			_("Disable main menu")));
+	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
+			_("Run speed tests"))));
+	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
+			_("Address to connect to. ('' = local game)"))));
+	allowed_options.insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
+			_("Enable random user input, for testing"))));
+	allowed_options.insert(std::make_pair("server", ValueSpec(VALUETYPE_FLAG,
+			_("Run dedicated server"))));
+	allowed_options.insert(std::make_pair("name", ValueSpec(VALUETYPE_STRING,
+			_("Set player name"))));
+	allowed_options.insert(std::make_pair("password", ValueSpec(VALUETYPE_STRING,
+			_("Set password"))));
+	allowed_options.insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
+			_("Disable main menu"))));
 #endif
 
 	Settings cmd_args;
@@ -839,20 +839,20 @@ int main(int argc, char *argv[])
 	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
 	{
 		dstream<<_("Allowed options:")<<std::endl;
-		for(core::map<std::string, ValueSpec>::Iterator
-				i = allowed_options.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, ValueSpec>::iterator
+				i = allowed_options.begin();
+				i != allowed_options.end(); ++i)
 		{
 			std::ostringstream os1(std::ios::binary);
-			os1<<"  --"<<i.getNode()->getKey();
-			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
+			os1<<"  --"<<i->first;
+			if(i->second.type == VALUETYPE_FLAG)
 				{}
 			else
 				os1<<_(" <value>");
 			dstream<<padStringRight(os1.str(), 24);
 
-			if(i.getNode()->getValue().help != NULL)
-				dstream<<i.getNode()->getValue().help;
+			if(i->second.help != NULL)
+				dstream<<i->second.help;
 			dstream<<std::endl;
 		}
 
@@ -953,7 +953,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		core::array<std::string> filenames;
+		std::vector<std::string> filenames;
 		filenames.push_back(porting::path_user +
 				DIR_DELIM + "minetest.conf");
 		// Legacy configuration file location

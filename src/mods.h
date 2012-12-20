@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <exception>
+#include <list>
 
 class ModError : public std::exception
 {
@@ -67,7 +68,6 @@ struct ModSpec
 		modpack_content()	
 	{}
 };
-
 
 std::map<std::string,ModSpec> getModsInPath(std::string path);
 
@@ -140,6 +140,4 @@ private:
 
 };
 
-
 #endif
-

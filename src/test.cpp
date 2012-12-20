@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
 #include "clientserver.h" // LATEST_PROTOCOL_VERSION
+#include <algorithm>
 
 /*
 	Asserts that the exception occurs
@@ -508,26 +509,26 @@ struct TestVoxelManipulator: public TestBase
 		// An area that is 1 bigger in x+ and z-
 		VoxelArea d(v3s16(-2,-2,-3), v3s16(3,2,2));
 		
-		core::list<VoxelArea> aa;
+		std::list<VoxelArea> aa;
 		d.diff(c, aa);
 		
 		// Correct results
-		core::array<VoxelArea> results;
+		std::vector<VoxelArea> results;
 		results.push_back(VoxelArea(v3s16(-2,-2,-3),v3s16(3,2,-3)));
 		results.push_back(VoxelArea(v3s16(3,-2,-2),v3s16(3,2,2)));
 
 		UASSERT(aa.size() == results.size());
 		
 		infostream<<"Result of diff:"<<std::endl;
-		for(core::list<VoxelArea>::Iterator
-				i = aa.begin(); i != aa.end(); i++)
+		for(std::list<VoxelArea>::const_iterator
+				i = aa.begin(); i != aa.end(); ++i)
 		{
 			i->print(infostream);
 			infostream<<std::endl;
 			
-			s32 j = results.linear_search(*i);
-			UASSERT(j != -1);
-			results.erase(j, 1);
+			std::vector<VoxelArea>::iterator j = std::find(results.begin(), results.end(), *i);
+			UASSERT(j != results.end());
+			results.erase(j);
 		}
 
 
@@ -582,7 +583,7 @@ struct TestVoxelAlgorithms: public TestBase
 			}
 			VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
@@ -593,7 +594,7 @@ struct TestVoxelAlgorithms: public TestBase
 			}
 			v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
@@ -602,7 +603,7 @@ struct TestVoxelAlgorithms: public TestBase
 						== LIGHT_SUN);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, false, light_sources, ndef);
@@ -612,7 +613,7 @@ struct TestVoxelAlgorithms: public TestBase
 			}
 			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_STONE));
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
@@ -621,7 +622,7 @@ struct TestVoxelAlgorithms: public TestBase
 						== 0);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, false, light_sources, ndef);
@@ -635,14 +636,14 @@ struct TestVoxelAlgorithms: public TestBase
 				v.setNodeNoRef(v3s16(1,-1,2), n);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
 				UASSERT(res.bottom_sunlight_valid == true);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, false, light_sources, ndef);
@@ -654,14 +655,14 @@ struct TestVoxelAlgorithms: public TestBase
 				v.setNodeNoRef(v3s16(1,-1,2), n);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
 				UASSERT(res.bottom_sunlight_valid == false);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, false, light_sources, ndef);
@@ -669,7 +670,7 @@ struct TestVoxelAlgorithms: public TestBase
 			}
 			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_IGNORE));
 			{
-				core::map<v3s16, bool> light_sources;
+				std::set<v3s16> light_sources;
 				voxalgo::setLight(v, a, 0, ndef);
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
@@ -697,16 +698,16 @@ struct TestVoxelAlgorithms: public TestBase
 				v.setNode(v3s16(1,1,2), n);
 			}
 			{
-				core::map<v3s16, bool> light_sources;
-				core::map<v3s16, u8> unlight_from;
+				std::set<v3s16> light_sources;
+				std::map<v3s16, u8> unlight_from;
 				voxalgo::clearLightAndCollectSources(v, a, LIGHTBANK_DAY,
 						ndef, light_sources, unlight_from);
 				//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
 				UASSERT(v.getNode(v3s16(0,1,1)).getLight(LIGHTBANK_DAY, ndef)
 						== 0);
-				UASSERT(light_sources.find(v3s16(1,1,1)) != NULL);
+				UASSERT(light_sources.find(v3s16(1,1,1)) != light_sources.end());
 				UASSERT(light_sources.size() == 1);
-				UASSERT(unlight_from.find(v3s16(1,1,2)) != NULL);
+				UASSERT(unlight_from.find(v3s16(1,1,2)) != unlight_from.end());
 				UASSERT(unlight_from.size() == 1);
 			}
 		}

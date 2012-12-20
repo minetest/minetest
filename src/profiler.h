@@ -45,21 +45,21 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		{
 			/* No average shall have been used; mark add used as -2 */
-			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
-			if(n == NULL)
+			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+			if(n == m_avgcounts.end())
 				m_avgcounts[name] = -2;
 			else{
-				if(n->getValue() == -1)
-					n->setValue(-2);
-				assert(n->getValue() == -2);
+				if(n->second == -1)
+					n->second = -2;
+				assert(n->second == -2);
 			}
 		}
 		{
-			core::map<std::string, float>::Node *n = m_data.find(name);
-			if(n == NULL)
+			std::map<std::string, float>::iterator n = m_data.find(name);
+			if(n == m_data.end())
 				m_data[name] = value;
 			else
-				n->setValue(n->getValue() + value);
+				n->second += value;
 		}
 	}
 
@@ -67,35 +67,32 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 		{
-			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
-			if(n == NULL)
+			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+			if(n == m_avgcounts.end())
 				m_avgcounts[name] = 1;
 			else{
 				/* No add shall have been used */
-				assert(n->getValue() != -2);
-				if(n->getValue() <= 0)
-					n->setValue(1);
-				else
-					n->setValue(n->getValue() + 1);
+				assert(n->second != -2);
+				n->second = std::max(n->second, 0) + 1;
 			}
 		}
 		{
-			core::map<std::string, float>::Node *n = m_data.find(name);
-			if(n == NULL)
+			std::map<std::string, float>::iterator n = m_data.find(name);
+			if(n == m_data.end())
 				m_data[name] = value;
 			else
-				n->setValue(n->getValue() + value);
+				n->second += value;
 		}
 	}
 
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(core::map<std::string, float>::Iterator
-				i = m_data.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, float>::iterator
+				i = m_data.begin();
+				i != m_data.end(); ++i)
 		{
-			i.getNode()->setValue(0);
+			i->second = 0;
 		}
 		m_avgcounts.clear();
 	}
@@ -112,9 +109,9 @@ public:
 		u32 minindex, maxindex;
 		paging(m_data.size(), page, pagecount, minindex, maxindex);
 
-		for(core::map<std::string, float>::Iterator
-				i = m_data.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, float>::iterator
+				i = m_data.begin();
+				i != m_data.end(); ++i)
 		{
 			if(maxindex == 0)
 				break;
@@ -126,12 +123,12 @@ public:
 				continue;
 			}
 
-			std::string name = i.getNode()->getKey();
+			std::string name = i->first;
 			int avgcount = 1;
-			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
-			if(n){
-				if(n->getValue() >= 1)
-					avgcount = n->getValue();
+			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+			if(n != m_avgcounts.end()){
+				if(n->second >= 1)
+					avgcount = n->second;
 			}
 			o<<"  "<<name<<": ";
 			s32 clampsize = 40;
@@ -143,7 +140,7 @@ public:
 				else
 					o<<" ";
 			}
-			o<<(i.getNode()->getValue() / avgcount);
+			o<<(i->second / avgcount);
 			o<<std::endl;
 		}
 	}
@@ -169,8 +166,8 @@ public:
 
 private:
 	JMutex m_mutex;
-	core::map<std::string, float> m_data;
-	core::map<std::string, int> m_avgcounts;
+	std::map<std::string, float> m_data;
+	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;
 };
 

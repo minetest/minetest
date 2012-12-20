@@ -302,7 +302,7 @@ void VoxelManipulator::clearFlag(u8 flags)
 }
 
 void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
-		core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr)
+		std::set<v3s16> & light_sources, INodeDefManager *nodemgr)
 {
 	v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -360,7 +360,7 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 			}
 		}
 		else{
-			light_sources.insert(n2pos, true);
+			light_sources.insert(n2pos);
 		}
 	}
 }
@@ -384,24 +384,16 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 	values of from_nodes are lighting values.
 */
 void VoxelManipulator::unspreadLight(enum LightBank bank,
-		core::map<v3s16, u8> & from_nodes,
-		core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr)
+		std::map<v3s16, u8> & from_nodes,
+		std::set<v3s16> & light_sources, INodeDefManager *nodemgr)
 {
 	if(from_nodes.size() == 0)
 		return;
 	
-	core::map<v3s16, u8>::Iterator j;
-	j = from_nodes.getIterator();
-
-	for(; j.atEnd() == false; j++)
+	for(std::map<v3s16, u8>::iterator j = from_nodes.begin();
+		j != from_nodes.end(); ++j)
 	{
-		v3s16 pos = j.getNode()->getKey();
-		
-		//MapNode &n = m_data[m_area.index(pos)];
-		
-		u8 oldlight = j.getNode()->getValue();
-
-		unspreadLight(bank, pos, oldlight, light_sources, nodemgr);
+		unspreadLight(bank, j->first, j->second, light_sources, nodemgr);
 	}
 }
 #endif
@@ -609,7 +601,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 	goes on recursively.
 */
 void VoxelManipulator::spreadLight(enum LightBank bank,
-		core::map<v3s16, bool> & from_nodes, INodeDefManager *nodemgr)
+		std::set<v3s16> & from_nodes, INodeDefManager *nodemgr)
 {
 	const v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -623,13 +615,12 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 	if(from_nodes.size() == 0)
 		return;
 	
-	core::map<v3s16, bool> lighted_nodes;
-	core::map<v3s16, bool>::Iterator j;
-	j = from_nodes.getIterator();
+	std::set<v3s16> lighted_nodes;
 
-	for(; j.atEnd() == false; j++)
+	for(std::set<v3s16>::iterator j = from_nodes.begin();
+		j != from_nodes.end(); ++j)
 	{
-		v3s16 pos = j.getNode()->getKey();
+		v3s16 pos = *j;
 
 		emerge(VoxelArea(pos - v3s16(1,1,1), pos + v3s16(1,1,1)));
 
@@ -666,7 +657,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 				*/
 				if(light2 > undiminish_light(oldlight))
 				{
-					lighted_nodes.insert(n2pos, true);
+					lighted_nodes.insert(n2pos);
 				}
 				/*
 					If the neighbor is dimmer than how much light this node
@@ -677,7 +668,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 					if(nodemgr->get(n2).light_propagates)
 					{
 						n2.setLight(bank, newlight, nodemgr);
-						lighted_nodes.insert(n2pos, true);
+						lighted_nodes.insert(n2pos);
 					}
 				}
 			}

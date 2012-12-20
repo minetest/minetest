@@ -345,17 +345,16 @@ const KeyPress NumberKey[] = {
 */
 
 // A simple cache for quicker lookup
-core::map<std::string, KeyPress> g_key_setting_cache;
+std::map<std::string, KeyPress> g_key_setting_cache;
 
 KeyPress getKeySetting(const char *settingname)
 {
-	core::map<std::string, KeyPress>::Node *n;
+	std::map<std::string, KeyPress>::iterator n;
 	n = g_key_setting_cache.find(settingname);
-	if(n)
-		return n->getValue();
-	g_key_setting_cache.insert(settingname,
-			g_settings->get(settingname).c_str());
-	return g_key_setting_cache.find(settingname)->getValue();
+	if(n != g_key_setting_cache.end())
+		return n->second;
+	g_key_setting_cache[settingname] = g_settings->get(settingname).c_str();
+	return g_key_setting_cache.find(settingname)->second;
 }
 
 void clearKeyCache()

@@ -114,7 +114,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
-	core::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock*> modified_blocks;
 	ManualMapVoxelManipulator vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
 	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,3,1));
@@ -122,23 +122,17 @@ void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeD
 	vmanip.blitBackAll(&modified_blocks);
 
 	// update lighting
-	core::map<v3s16, MapBlock*> lighting_modified_blocks;
-	for(core::map<v3s16, MapBlock*>::Iterator
-		i = modified_blocks.getIterator();
-		i.atEnd() == false; i++)
-	{
-		lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
-	}
+	std::map<v3s16, MapBlock*> lighting_modified_blocks;
+	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
 	map->updateLighting(lighting_modified_blocks, modified_blocks);
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for(core::map<v3s16, MapBlock*>::Iterator
-		i = modified_blocks.getIterator();
-		i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+		i = modified_blocks.begin();
+		i != modified_blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
-		event.modified_blocks.insert(p, true);
+		event.modified_blocks.insert(i->first);
 	}
 	map->dispatchEvent(&event);
 }

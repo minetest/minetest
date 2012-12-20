@@ -76,19 +76,20 @@ SharedBuffer<u8> makeOriginalPacket(
 	return b;
 }
 
-core::list<SharedBuffer<u8> > makeSplitPacket(
+std::list<SharedBuffer<u8> > makeSplitPacket(
 		SharedBuffer<u8> data,
 		u32 chunksize_max,
 		u16 seqnum)
 {
 	// Chunk packets, containing the TYPE_SPLIT header
-	core::list<SharedBuffer<u8> > chunks;
+	std::list<SharedBuffer<u8> > chunks;
 	
 	u32 chunk_header_size = 7;
 	u32 maximum_data_size = chunksize_max - chunk_header_size;
 	u32 start = 0;
 	u32 end = 0;
 	u32 chunk_num = 0;
+	u16 chunk_count = 0;
 	do{
 		end = start + maximum_data_size - 1;
 		if(end > data.getSize() - 1)
@@ -106,16 +107,15 @@ core::list<SharedBuffer<u8> > makeSplitPacket(
 		memcpy(&chunk[chunk_header_size], &data[start], payload_size);
 
 		chunks.push_back(chunk);
+		chunk_count++;
 		
 		start = end + 1;
 		chunk_num++;
 	}
 	while(end != data.getSize() - 1);
 
-	u16 chunk_count = chunks.getSize();
-
-	core::list<SharedBuffer<u8> >::Iterator i = chunks.begin();
-	for(; i != chunks.end(); i++)
+	for(std::list<SharedBuffer<u8> >::iterator i = chunks.begin();
+		i != chunks.end(); ++i)
 	{
 		// Write chunk_count
 		writeU16(&((*i)[3]), chunk_count);
@@ -124,13 +124,13 @@ core::list<SharedBuffer<u8> > makeSplitPacket(
 	return chunks;
 }
 
-core::list<SharedBuffer<u8> > makeAutoSplitPacket(
+std::list<SharedBuffer<u8> > makeAutoSplitPacket(
 		SharedBuffer<u8> data,
 		u32 chunksize_max,
 		u16 &split_seqnum)
 {
 	u32 original_header_size = 1;
-	core::list<SharedBuffer<u8> > list;
+	std::list<SharedBuffer<u8> > list;
 	if(data.getSize() + original_header_size > chunksize_max)
 	{
 		list = makeSplitPacket(data, chunksize_max, split_seqnum);
@@ -170,11 +170,13 @@ SharedBuffer<u8> makeReliablePacket(
 	ReliablePacketBuffer
 */
 
+ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0) {}
+
 void ReliablePacketBuffer::print()
 {
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++)
+	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+		i != m_list.end();
+		++i)
 	{
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
 		dout_con<<s<<" ";
@@ -186,13 +188,12 @@ bool ReliablePacketBuffer::empty()
 }
 u32 ReliablePacketBuffer::size()
 {
-	return m_list.getSize();
+	return m_list_size;
 }
 RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 {
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++)
+	std::list<BufferedPacket>::iterator i = m_list.begin();
+	for(; i != m_list.end(); ++i)
 	{
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
 		/*dout_con<<"findPacket(): finding seqnum="<<seqnum
@@ -218,8 +219,8 @@ BufferedPacket ReliablePacketBuffer::popFirst()
 	if(empty())
 		throw NotFoundException("Buffer is empty");
 	BufferedPacket p = *m_list.begin();
-	core::list<BufferedPacket>::Iterator i = m_list.begin();
-	m_list.erase(i);
+	m_list.erase(m_list.begin());
+	--m_list_size;
 	return p;
 }
 BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
@@ -231,6 +232,7 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 	}
 	BufferedPacket p = *r;
 	m_list.erase(r);
+	--m_list_size;
 	return p;
 }
 void ReliablePacketBuffer::insert(BufferedPacket &p)
@@ -240,6 +242,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p)
 	assert(type == TYPE_RELIABLE);
 	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE+1]);
 
+	++m_list_size;
 	// Find the right place for the packet and insert it there
 
 	// If list is empty, just add it
@@ -250,12 +253,12 @@ void ReliablePacketBuffer::insert(BufferedPacket &p)
 		return;
 	}
 	// Otherwise find the right place
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
+	std::list<BufferedPacket>::iterator i = m_list.begin();
 	// Find the first packet in the list which has a higher seqnum
-	for(; i != m_list.end(); i++){
+	for(; i != m_list.end(); ++i){
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
 		if(s == seqnum){
+			--m_list_size;
 			throw AlreadyExistsException("Same seqnum in list");
 		}
 		if(seqnum_higher(s, seqnum)){
@@ -271,14 +274,14 @@ void ReliablePacketBuffer::insert(BufferedPacket &p)
 		return;
 	}
 	// Insert before i
-	m_list.insert_before(i, p);
+	m_list.insert(i, p);
 }
 
 void ReliablePacketBuffer::incrementTimeouts(float dtime)
 {
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++){
+	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+		i != m_list.end(); ++i)
+	{
 		i->time += dtime;
 		i->totaltime += dtime;
 	}
@@ -286,9 +289,9 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 
 void ReliablePacketBuffer::resetTimedOuts(float timeout)
 {
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++){
+	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+		i != m_list.end(); ++i)
+	{
 		if(i->time >= timeout)
 			i->time = 0.0;
 	}
@@ -296,21 +299,20 @@ void ReliablePacketBuffer::resetTimedOuts(float timeout)
 
 bool ReliablePacketBuffer::anyTotaltimeReached(float timeout)
 {
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++){
+	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+		i != m_list.end(); ++i)
+	{
 		if(i->totaltime >= timeout)
 			return true;
 	}
 	return false;
 }
 
-core::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout)
+std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout)
 {
-	core::list<BufferedPacket> timed_outs;
-	core::list<BufferedPacket>::Iterator i;
-	i = m_list.begin();
-	for(; i != m_list.end(); i++)
+	std::list<BufferedPacket> timed_outs;
+	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+		i != m_list.end(); ++i)
 	{
 		if(i->time >= timeout)
 			timed_outs.push_back(*i);
@@ -324,11 +326,10 @@ core::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout)
 
 IncomingSplitBuffer::~IncomingSplitBuffer()
 {
-	core::map<u16, IncomingSplitPacket*>::Iterator i;
-	i = m_buf.getIterator();
-	for(; i.atEnd() == false; i++)
+	for(std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
+		i != m_buf.end(); ++i)
 	{
-		delete i.getNode()->getValue();
+		delete i->second;
 	}
 }
 /*
@@ -346,7 +347,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	u16 chunk_num = readU16(&p.data[BASE_HEADER_SIZE+5]);
 
 	// Add if doesn't exist
-	if(m_buf.find(seqnum) == NULL)
+	if(m_buf.find(seqnum) == m_buf.end())
 	{
 		IncomingSplitPacket *sp = new IncomingSplitPacket();
 		sp->chunk_count = chunk_count;
@@ -369,7 +370,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	// If chunk already exists, ignore it.
 	// Sometimes two identical packets may arrive when there is network
 	// lag and the server re-sends stuff.
-	if(sp->chunks.find(chunk_num) != NULL)
+	if(sp->chunks.find(chunk_num) != sp->chunks.end())
 		return SharedBuffer<u8>();
 	
 	// Cut chunk data out of packet
@@ -386,11 +387,10 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 
 	// Calculate total size
 	u32 totalsize = 0;
-	core::map<u16, SharedBuffer<u8> >::Iterator i;
-	i = sp->chunks.getIterator();
-	for(; i.atEnd() == false; i++)
+	for(std::map<u16, SharedBuffer<u8> >::iterator i = sp->chunks.begin();
+		i != sp->chunks.end(); ++i)
 	{
-		totalsize += i.getNode()->getValue().getSize();
+		totalsize += i->second.getSize();
 	}
 	
 	SharedBuffer<u8> fulldata(totalsize);
@@ -407,34 +407,32 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	}
 
 	// Remove sp from buffer
-	m_buf.remove(seqnum);
+	m_buf.erase(seqnum);
 	delete sp;
 
 	return fulldata;
 }
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
-	core::list<u16> remove_queue;
-	core::map<u16, IncomingSplitPacket*>::Iterator i;
-	i = m_buf.getIterator();
-	for(; i.atEnd() == false; i++)
+	std::list<u16> remove_queue;
+	for(std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
+		i != m_buf.end(); ++i)
 	{
-		IncomingSplitPacket *p = i.getNode()->getValue();
+		IncomingSplitPacket *p = i->second;
 		// Reliable ones are not removed by timeout
 		if(p->reliable == true)
 			continue;
 		p->time += dtime;
 		if(p->time >= timeout)
-			remove_queue.push_back(i.getNode()->getKey());
+			remove_queue.push_back(i->first);
 	}
-	core::list<u16>::Iterator j;
-	j = remove_queue.begin();
-	for(; j != remove_queue.end(); j++)
+	for(std::list<u16>::iterator j = remove_queue.begin();
+		j != remove_queue.end(); ++j)
 	{
 		dout_con<<"NOTE: Removing timed out unreliable split packet"
 				<<std::endl;
 		delete m_buf[*j];
-		m_buf.remove(*j);
+		m_buf.erase(*j);
 	}
 }
 
@@ -556,12 +554,11 @@ Connection::~Connection()
 {
 	stop();
 	// Delete peers
-	for(core::map<u16, Peer*>::Iterator
-			j = m_peers.getIterator();
-			j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator
+			j = m_peers.begin();
+			j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
-		delete peer;
+		delete j->second;
 	}
 }
 
@@ -591,7 +588,7 @@ void * Connection::Thread()
 		
 		runTimeouts(dtime);
 
-		while(m_command_queue.size() != 0){
+		while(!m_command_queue.empty()){
 			ConnectionCommand c = m_command_queue.pop_front();
 			processCommand(c);
 		}
@@ -648,18 +645,18 @@ void Connection::processCommand(ConnectionCommand &c)
 
 void Connection::send(float dtime)
 {
-	for(core::map<u16, Peer*>::Iterator
-			j = m_peers.getIterator();
-			j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator
+			j = m_peers.begin();
+			j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		peer->m_sendtime_accu += dtime;
 		peer->m_num_sent = 0;
 		peer->m_max_num_sent = peer->m_sendtime_accu *
 				peer->m_max_packets_per_second;
 	}
 	Queue<OutgoingPacket> postponed_packets;
-	while(m_outgoing_queue.size() != 0){
+	while(!m_outgoing_queue.empty()){
 		OutgoingPacket packet = m_outgoing_queue.pop_front();
 		Peer *peer = getPeerNoEx(packet.peer_id);
 		if(!peer)
@@ -674,14 +671,14 @@ void Connection::send(float dtime)
 			postponed_packets.push_back(packet);
 		}
 	}
-	while(postponed_packets.size() != 0){
+	while(!postponed_packets.empty()){
 		m_outgoing_queue.push_back(postponed_packets.pop_front());
 	}
-	for(core::map<u16, Peer*>::Iterator
-			j = m_peers.getIterator();
-			j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator
+			j = m_peers.begin();
+			j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		peer->m_sendtime_accu -= (float)peer->m_num_sent /
 				peer->m_max_packets_per_second;
 		if(peer->m_sendtime_accu > 10. / peer->m_max_packets_per_second)
@@ -751,11 +748,11 @@ void Connection::receive()
 				Allow only entries that have has_sent_with_id==false.
 			*/
 
-			core::map<u16, Peer*>::Iterator j;
-			j = m_peers.getIterator();
-			for(; j.atEnd() == false; j++)
+			std::map<u16, Peer*>::iterator j;
+			j = m_peers.begin();
+			for(; j != m_peers.end(); ++j)
 			{
-				Peer *peer = j.getNode()->getValue();
+				Peer *peer = j->second;
 				if(peer->has_sent_with_id)
 					continue;
 				if(peer->address == sender)
@@ -766,14 +763,14 @@ void Connection::receive()
 				If no peer was found with the same address and port,
 				we shall assume it is a new peer and create an entry.
 			*/
-			if(j.atEnd())
+			if(j == m_peers.end())
 			{
 				// Pass on to adding the peer
 			}
 			// Else: A peer was found.
 			else
 			{
-				Peer *peer = j.getNode()->getValue();
+				Peer *peer = j->second;
 				peer_id = peer->id;
 				PrintInfo(derr_con);
 				derr_con<<"WARNING: Assuming unknown peer to be "
@@ -797,7 +794,7 @@ void Connection::receive()
 			for(;;)
 			{
 				// Check if exists
-				if(m_peers.find(peer_id_new) == NULL)
+				if(m_peers.find(peer_id_new) == m_peers.end())
 					break;
 				// Check for overflow
 				if(peer_id_new == 65535){
@@ -817,7 +814,7 @@ void Connection::receive()
 
 			// Create a peer
 			Peer *peer = new Peer(peer_id_new, sender);
-			m_peers.insert(peer->id, peer);
+			m_peers[peer->id] = peer;
 			
 			// Create peer addition event
 			ConnectionEvent e;
@@ -837,9 +834,9 @@ void Connection::receive()
 			// Go on and process whatever it sent
 		}
 
-		core::map<u16, Peer*>::Node *node = m_peers.find(peer_id);
+		std::map<u16, Peer*>::iterator node = m_peers.find(peer_id);
 
-		if(node == NULL)
+		if(node == m_peers.end())
 		{
 			// Peer not found
 			// This means that the peer id of the sender is not PEER_ID_INEXISTENT
@@ -849,7 +846,7 @@ void Connection::receive()
 			throw InvalidIncomingDataException("Peer not found (possible timeout)");
 		}
 
-		Peer *peer = node->getValue();
+		Peer *peer = node->second;
 
 		// Validate peer address
 		if(peer->address != sender)
@@ -902,12 +899,11 @@ void Connection::runTimeouts(float dtime)
 	float congestion_control_min_rate
 			= g_settings->getFloat("congestion_control_min_rate");
 
-	core::list<u16> timeouted_peers;
-	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
-	for(; j.atEnd() == false; j++)
+	std::list<u16> timeouted_peers;
+	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+		j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 
 		// Update congestion control values
 		peer->congestion_control_aim_rtt = congestion_control_aim_rtt;
@@ -934,8 +930,7 @@ void Connection::runTimeouts(float dtime)
 		float resend_timeout = peer->resend_timeout;
 		for(u16 i=0; i<CHANNEL_COUNT; i++)
 		{
-			core::list<BufferedPacket> timed_outs;
-			core::list<BufferedPacket>::Iterator j;
+			std::list<BufferedPacket> timed_outs;
 			
 			Channel *channel = &peer->channels[i];
 
@@ -966,8 +961,8 @@ void Connection::runTimeouts(float dtime)
 
 			channel->outgoing_reliables.resetTimedOuts(resend_timeout);
 
-			j = timed_outs.begin();
-			for(; j != timed_outs.end(); j++)
+			for(std::list<BufferedPacket>::iterator j = timed_outs.begin();
+				j != timed_outs.end(); ++j)
 			{
 				u16 peer_id = readPeerId(*(j->data));
 				u8 channel = readChannel(*(j->data));
@@ -1012,8 +1007,8 @@ nextpeer:
 	}
 
 	// Remove timed out peers
-	core::list<u16>::Iterator i = timeouted_peers.begin();
-	for(; i != timeouted_peers.end(); i++)
+	for(std::list<u16>::iterator i = timeouted_peers.begin();
+		i != timeouted_peers.end(); ++i)
 	{
 		PrintInfo(derr_con);
 		derr_con<<"RunTimeouts(): Removing peer "<<(*i)<<std::endl;
@@ -1041,13 +1036,13 @@ void Connection::connect(Address address)
 	dout_con<<getDesc()<<" connecting to "<<address.serializeString()
 			<<":"<<address.getPort()<<std::endl;
 
-	core::map<u16, Peer*>::Node *node = m_peers.find(PEER_ID_SERVER);
-	if(node != NULL){
+	std::map<u16, Peer*>::iterator node = m_peers.find(PEER_ID_SERVER);
+	if(node != m_peers.end()){
 		throw ConnectionException("Already connected to a server");
 	}
 
 	Peer *peer = new Peer(PEER_ID_SERVER, address);
-	m_peers.insert(peer->id, peer);
+	m_peers[peer->id] = peer;
 
 	// Create event
 	ConnectionEvent e;
@@ -1072,22 +1067,20 @@ void Connection::disconnect()
 	writeU8(&data[1], CONTROLTYPE_DISCO);
 	
 	// Send to all
-	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
-	for(; j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+		j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		rawSendAsPacket(peer->id, 0, data, false);
 	}
 }
 
 void Connection::sendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable)
 {
-	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
-	for(; j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+		j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		send(peer->id, channelnum, data, reliable);
 	}
 }
@@ -1108,13 +1101,12 @@ void Connection::send(u16 peer_id, u8 channelnum,
 	if(reliable)
 		chunksize_max -= RELIABLE_HEADER_SIZE;
 
-	core::list<SharedBuffer<u8> > originals;
+	std::list<SharedBuffer<u8> > originals;
 	originals = makeAutoSplitPacket(data, chunksize_max,
 			channel->next_outgoing_split_seqnum);
 	
-	core::list<SharedBuffer<u8> >::Iterator i;
-	i = originals.begin();
-	for(; i != originals.end(); i++)
+	for(std::list<SharedBuffer<u8> >::iterator i = originals.begin();
+		i != originals.end(); ++i)
 	{
 		SharedBuffer<u8> original = *i;
 		
@@ -1187,40 +1179,39 @@ void Connection::rawSend(const BufferedPacket &packet)
 
 Peer* Connection::getPeer(u16 peer_id)
 {
-	core::map<u16, Peer*>::Node *node = m_peers.find(peer_id);
+	std::map<u16, Peer*>::iterator node = m_peers.find(peer_id);
 
-	if(node == NULL){
+	if(node == m_peers.end()){
 		throw PeerNotFoundException("GetPeer: Peer not found (possible timeout)");
 	}
 
 	// Error checking
-	assert(node->getValue()->id == peer_id);
+	assert(node->second->id == peer_id);
 
-	return node->getValue();
+	return node->second;
 }
 
 Peer* Connection::getPeerNoEx(u16 peer_id)
 {
-	core::map<u16, Peer*>::Node *node = m_peers.find(peer_id);
+	std::map<u16, Peer*>::iterator node = m_peers.find(peer_id);
 
-	if(node == NULL){
+	if(node == m_peers.end()){
 		return NULL;
 	}
 
 	// Error checking
-	assert(node->getValue()->id == peer_id);
+	assert(node->second->id == peer_id);
 
-	return node->getValue();
+	return node->second;
 }
 
-core::list<Peer*> Connection::getPeers()
+std::list<Peer*> Connection::getPeers()
 {
-	core::list<Peer*> list;
-	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
-	for(; j.atEnd() == false; j++)
+	std::list<Peer*> list;
+	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+		j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		list.push_back(peer);
 	}
 	return list;
@@ -1228,11 +1219,10 @@ core::list<Peer*> Connection::getPeers()
 
 bool Connection::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst)
 {
-	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
-	for(; j.atEnd() == false; j++)
+	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+		j != m_peers.end(); ++j)
 	{
-		Peer *peer = j.getNode()->getValue();
+		Peer *peer = j->second;
 		for(u16 i=0; i<CHANNEL_COUNT; i++)
 		{
 			Channel *channel = &peer->channels[i];
@@ -1538,7 +1528,7 @@ SharedBuffer<u8> Connection::processPacket(Channel *channel,
 
 bool Connection::deletePeer(u16 peer_id, bool timeout)
 {
-	if(m_peers.find(peer_id) == NULL)
+	if(m_peers.find(peer_id) == m_peers.end())
 		return false;
 	
 	Peer *peer = m_peers[peer_id];
@@ -1549,7 +1539,7 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 	putEvent(e);
 
 	delete m_peers[peer_id];
-	m_peers.remove(peer_id);
+	m_peers.erase(peer_id);
 	return true;
 }
 
@@ -1557,7 +1547,7 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 
 ConnectionEvent Connection::getEvent()
 {
-	if(m_event_queue.size() == 0){
+	if(m_event_queue.empty()){
 		ConnectionEvent e;
 		e.type = CONNEVENT_NONE;
 		return e;
@@ -1602,8 +1592,8 @@ bool Connection::Connected()
 	if(m_peers.size() != 1)
 		return false;
 		
-	core::map<u16, Peer*>::Node *node = m_peers.find(PEER_ID_SERVER);
-	if(node == NULL)
+	std::map<u16, Peer*>::iterator node = m_peers.find(PEER_ID_SERVER);
+	if(node == m_peers.end())
 		return false;
 	
 	if(m_peer_id == PEER_ID_INEXISTENT)

@@ -43,9 +43,9 @@ ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,
 		ClientEnvironment *env)
 {
 	// Find factory function
-	core::map<u16, Factory>::Node *n;
+	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n == NULL)
+	if(n == m_types.end())
 	{
 		// If factory is not found, just return.
 		dstream<<"WARNING: ClientActiveObject: No factory for type="
@@ -53,18 +53,18 @@ ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,
 		return NULL;
 	}
 
-	Factory f = n->getValue();
+	Factory f = n->second;
 	ClientActiveObject *object = (*f)(gamedef, env);
 	return object;
 }
 
 void ClientActiveObject::registerType(u16 type, Factory f)
 {
-	core::map<u16, Factory>::Node *n;
+	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n)
+	if(n != m_types.end())
 		return;
-	m_types.insert(type, f);
+	m_types[type] = f;
 }
 
 
