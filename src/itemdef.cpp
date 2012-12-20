@@ -211,8 +211,8 @@ public:
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const core::list<ClientCached*> &values = m_clientcached.getValues();
-		for(core::list<ClientCached*>::ConstIterator
+		const std::list<ClientCached*> &values = m_clientcached.getValues();
+		for(std::list<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
@@ -599,7 +599,7 @@ public:
 	void processQueue(IGameDef *gamedef)
 	{
 #ifndef SERVER
-		while(m_get_clientcached_queue.size() > 0)
+		while(!m_get_clientcached_queue.empty())
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>
 					request = m_get_clientcached_queue.pop();

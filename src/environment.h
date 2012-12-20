@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <set>
+#include <list>
 #include "irrlichttypes_extrabloated.h"
 #include "player.h"
 #include <ostream>
@@ -73,8 +74,8 @@ public:
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
 	Player * getNearestConnectedPlayer(v3f pos);
-	core::list<Player*> getPlayers();
-	core::list<Player*> getPlayers(bool ignore_disconnected);
+	std::list<Player*> getPlayers();
+	std::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 	
 	u32 getDayNightRatio();
@@ -102,7 +103,7 @@ public:
 
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
-	core::list<Player*> m_players;
+	std::list<Player*> m_players;
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
@@ -156,20 +157,20 @@ struct ABMWithState
 class ActiveBlockList
 {
 public:
-	void update(core::list<v3s16> &active_positions,
+	void update(std::list<v3s16> &active_positions,
 			s16 radius,
-			core::map<v3s16, bool> &blocks_removed,
-			core::map<v3s16, bool> &blocks_added);
+			std::set<v3s16> &blocks_removed,
+			std::set<v3s16> &blocks_added);
 
 	bool contains(v3s16 p){
-		return (m_list.find(p) != NULL);
+		return (m_list.find(p) != m_list.end());
 	}
 
 	void clear(){
 		m_list.clear();
 	}
 
-	core::map<v3s16, bool> m_list;
+	std::set<v3s16> m_list;
 
 private:
 };
@@ -249,16 +250,16 @@ public:
 		inside a radius around a position
 	*/
 	void getAddedActiveObjects(v3s16 pos, s16 radius,
-			core::map<u16, bool> &current_objects,
-			core::map<u16, bool> &added_objects);
+			std::set<u16> &current_objects,
+			std::set<u16> &added_objects);
 
 	/*
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
 	void getRemovedActiveObjects(v3s16 pos, s16 radius,
-			core::map<u16, bool> &current_objects,
-			core::map<u16, bool> &removed_objects);
+			std::set<u16> &current_objects,
+			std::set<u16> &removed_objects);
 	
 	/*
 		Get the next message emitted by some active object.
@@ -350,7 +351,7 @@ private:
 	// Background block emerger (the server, in practice)
 	IBackgroundBlockEmerger *m_emerger;
 	// Active object list
-	core::map<u16, ServerActiveObject*> m_active_objects;
+	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
 	Queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -368,7 +369,7 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-	core::list<ABMWithState> m_abms;
+	std::list<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
 };
@@ -463,7 +464,7 @@ public:
 	
 	// Get all nearby objects
 	void getActiveObjects(v3f origin, f32 max_d,
-			core::array<DistanceSortedActiveObject> &dest);
+			std::vector<DistanceSortedActiveObject> &dest);
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
@@ -476,8 +477,8 @@ private:
 	ITextureSource *m_texturesource;
 	IGameDef *m_gamedef;
 	IrrlichtDevice *m_irr;
-	core::map<u16, ClientActiveObject*> m_active_objects;
-	core::list<ClientSimpleObject*> m_simple_objects;
+	std::map<u16, ClientActiveObject*> m_active_objects;
+	std::list<ClientSimpleObject*> m_simple_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;

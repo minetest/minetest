@@ -58,7 +58,7 @@ LocalPlayer::~LocalPlayer()
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
-		core::list<CollisionInfo> *collision_info)
+		std::list<CollisionInfo> *collision_info)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 

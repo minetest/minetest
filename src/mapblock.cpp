@@ -168,7 +168,7 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 	if black_air_left!=NULL, it is set to true if non-sunlighted
 	air is left in block.
 */
-bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
+bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 		bool remove_light, bool *black_air_left)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -287,7 +287,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				
 				if(diminish_light(current_light) != 0)
 				{
-					light_sources.insert(pos_relative + pos, true);
+					light_sources.insert(pos_relative + pos);
 				}
 
 				if(current_light == 0 && stopped_to_solid_object)

@@ -235,7 +235,7 @@ protected:
 
 private:
 	// Used for creating objects based on type
-	static core::map<u16, Factory> m_types;
+	static std::map<u16, Factory> m_types;
 };
 
 #endif

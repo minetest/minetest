@@ -120,7 +120,7 @@ class GetResult
 public:
 	Key key;
 	T item;
-	core::list<CallerInfo<Caller, CallerData> > callers;
+	std::list<CallerInfo<Caller, CallerData> > callers;
 };
 
 template<typename Key, typename T, typename Caller, typename CallerData>
@@ -152,16 +152,16 @@ public:
 	
 	Key key;
 	ResultQueue<Key, T, Caller, CallerData> *dest;
-	core::list<CallerInfo<Caller, CallerData> > callers;
+	std::list<CallerInfo<Caller, CallerData> > callers;
 };
 
 template<typename Key, typename T, typename Caller, typename CallerData>
 class RequestQueue
 {
 public:
-	u32 size()
+	bool empty()
 	{
-		return m_queue.size();
+		return m_queue.empty();
 	}
 
 	void add(Key key, Caller caller, CallerData callerdata,
@@ -172,17 +172,17 @@ public:
 		/*
 			If the caller is already on the list, only update CallerData
 		*/
-		for(typename core::list< GetRequest<Key, T, Caller, CallerData> >::Iterator
+		for(typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
 				i = m_queue.getList().begin();
-				i != m_queue.getList().end(); i++)
+				i != m_queue.getList().end(); ++i)
 		{
 			GetRequest<Key, T, Caller, CallerData> &request = *i;
 
 			if(request.key == key)
 			{
-				for(typename core::list< CallerInfo<Caller, CallerData> >::Iterator
+				for(typename std::list< CallerInfo<Caller, CallerData> >::iterator
 						i = request.callers.begin();
-						i != request.callers.end(); i++)
+						i != request.callers.end(); ++i)
 				{
 					CallerInfo<Caller, CallerData> &ca = *i;
 					if(ca.caller == caller)

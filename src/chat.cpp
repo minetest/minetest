@@ -117,8 +117,8 @@ void ChatBuffer::deleteOldest(u32 count)
 		--count;
 	}
 
-	m_unformatted.erase(0, del_unformatted);
-	m_formatted.erase(0, del_formatted);
+	m_unformatted.erase(m_unformatted.begin(), m_unformatted.begin() + del_unformatted);
+	m_formatted.erase(m_formatted.begin(), m_formatted.begin() + del_formatted);
 }
 
 void ChatBuffer::deleteByAge(f32 maxAge)
@@ -232,10 +232,10 @@ void ChatBuffer::scrollTop()
 }
 
 u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
-		core::array<ChatFormattedLine>& destination) const
+		std::vector<ChatFormattedLine>& destination) const
 {
 	u32 num_added = 0;
-	core::array<ChatFormattedFragment> next_frags;
+	std::vector<ChatFormattedFragment> next_frags;
 	ChatFormattedLine next_line;
 	ChatFormattedFragment temp_frag;
 	u32 out_column = 0;
@@ -292,7 +292,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 				frag.column = out_column;
 				next_line.fragments.push_back(frag);
 				out_column += frag.text.size();
-				next_frags.erase(0, 1);
+				next_frags.erase(next_frags.begin());
 			}
 			else
 			{
@@ -414,7 +414,7 @@ std::wstring ChatPrompt::submit()
 	if (!line.empty())
 		m_history.push_back(line);
 	if (m_history.size() > m_history_limit)
-		m_history.erase(0);
+		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
 	m_view = 0;
 	m_cursor = 0;
@@ -464,7 +464,7 @@ void ChatPrompt::historyNext()
 	}
 }
 
-void ChatPrompt::nickCompletion(const core::list<std::wstring>& names, bool backwards)
+void ChatPrompt::nickCompletion(const std::list<std::wstring>& names, bool backwards)
 {
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
@@ -492,10 +492,10 @@ void ChatPrompt::nickCompletion(const core::list<std::wstring>& names, bool back
 	std::wstring prefix = m_line.substr(prefix_start, prefix_end - prefix_start);
 
 	// find all names that start with the selected prefix
-	core::array<std::wstring> completions;
-	for (core::list<std::wstring>::ConstIterator
+	std::vector<std::wstring> completions;
+	for (std::list<std::wstring>::const_iterator
 			i = names.begin();
-			i != names.end(); i++)
+			i != names.end(); ++i)
 	{
 		if (str_starts_with(*i, prefix, true))
 		{

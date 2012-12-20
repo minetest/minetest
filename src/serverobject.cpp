@@ -43,9 +43,9 @@ ServerActiveObject* ServerActiveObject::create(u8 type,
 		const std::string &data)
 {
 	// Find factory function
-	core::map<u16, Factory>::Node *n;
+	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n == NULL)
+	if(n == m_types.end())
 	{
 		// If factory is not found, just return.
 		dstream<<"WARNING: ServerActiveObject: No factory for type="
@@ -53,18 +53,18 @@ ServerActiveObject* ServerActiveObject::create(u8 type,
 		return NULL;
 	}
 
-	Factory f = n->getValue();
+	Factory f = n->second;
 	ServerActiveObject *object = (*f)(env, pos, data);
 	return object;
 }
 
 void ServerActiveObject::registerType(u16 type, Factory f)
 {
-	core::map<u16, Factory>::Node *n;
+	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n)
+	if(n != m_types.end())
 		return;
-	m_types.insert(type, f);
+	m_types[type] = f;
 }
 
 float ServerActiveObject::getMinimumSavedMovement()

@@ -2275,8 +2275,8 @@ void make_block(BlockMakeData *data)
 	{
 		enum LightBank bank = banks[i];
 
-		core::map<v3s16, bool> light_sources;
-		core::map<v3s16, u8> unlight_from;
+		std::set<v3s16> light_sources;
+		std::map<v3s16, u8> unlight_from;
 
 		voxalgo::clearLightAndCollectSources(vmanip, a, bank, ndef,
 				light_sources, unlight_from);
