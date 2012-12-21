@@ -12,7 +12,7 @@ if( UNIX )
     /usr/include/curl
   )
 
-  FIND_LIBRARY(CURL_LIBRARY NAMES libcurl.a curl
+  FIND_LIBRARY(CURL_LIBRARY NAMES curl
     PATHS
     /usr/local/lib
     /usr/lib
