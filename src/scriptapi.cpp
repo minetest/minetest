@@ -5271,6 +5271,25 @@ bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 	return success;
 }
 
+/* stuff that happens after all the modules have loaded (at least once)
+   but before the environment is initialized, and before you can't register
+   any new abms.
+   see builtin/postinit.lua
+*/
+
+void scriptapi_postinit(lua_State *L) {
+  lua_getglobal(L, "minetest");
+  lua_getfield(L, -1, "require");
+  lua_pushstring(L, "__builtin");
+  lua_pushstring(L, "postinit");
+  if(lua_pcall(L, 2, 1, 0))
+    script_error(L, "error: require postinit");
+  lua_getfield(L,-1,"purge");
+  if(lua_pcall(L, 0, 0, 0))
+    script_error(L, "error: postinit purge %s", lua_tostring(L, -1));
+}
+  
+
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 {
 	realitycheck(L);

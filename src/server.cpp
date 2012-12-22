@@ -1045,6 +1045,8 @@ Server::Server(
 			throw ModError("Failed to load and run "+scriptpath);
 		}
 	}
+
+        scriptapi_postinit(m_lua);
 	
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
