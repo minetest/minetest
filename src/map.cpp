@@ -39,13 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	SQLite format specification:
 	- Initially only replaces sectors/ and sectors2/
-	
+
 	If map.sqlite does not exist in the save dir
 	or the block was not found in the database
 	the map will try to load from sectors folder.
 	In either case, map.sqlite will be created
 	and all future saves will save there.
-	
+
 	Structure of map.sqlite:
 	Tables:
 		blocks
@@ -108,14 +108,14 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 		MapSector * sector = m_sector_cache;
 		return sector;
 	}
-	
+
 	core::map<v2s16, MapSector*>::Node *n = m_sectors.find(p);
-	
+
 	if(n == NULL)
 		return NULL;
-	
+
 	MapSector *sector = n->getValue();
-	
+
 	// Cache the last result
 	m_sector_cache_p = p;
 	m_sector_cache = sector;
@@ -133,7 +133,7 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	MapSector *sector = getSectorNoGenerateNoEx(p);
 	if(sector == NULL)
 		throw InvalidPositionException();
-	
+
 	return sector;
 }
 
@@ -148,7 +148,7 @@ MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 }
 
 MapBlock * Map::getBlockNoCreate(v3s16 p3d)
-{	
+{
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
 		throw InvalidPositionException();
@@ -248,10 +248,10 @@ void Map::unspreadLight(enum LightBank bank,
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
 	};
-	
+
 	if(from_nodes.size() == 0)
 		return;
-	
+
 	u32 blockchangecount = 0;
 
 	core::map<v3s16, u8> unlighted_nodes;
@@ -265,12 +265,12 @@ void Map::unspreadLight(enum LightBank bank,
 	MapBlock *block = NULL;
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
-	
+
 	for(; j.atEnd() == false; j++)
 	{
 		v3s16 pos = j.getNode()->getKey();
 		v3s16 blockpos = getNodeBlockPos(pos);
-		
+
 		// Only fetch a new block if the block position has changed
 		try{
 			if(block == NULL || blockpos != blockpos_last){
@@ -693,7 +693,7 @@ void Map::updateLighting(enum LightBank bank,
 	core::map<v3s16, u8> unlight_from;
 
 	int num_bottom_invalid = 0;
-	
+
 	{
 	//TimeTaker t("first stuff");
 
@@ -847,7 +847,7 @@ void Map::updateLighting(enum LightBank bank,
 #if 0
 	{
 		//MapVoxelManipulator vmanip(this);
-		
+
 		// Make a manual voxel manipulator and load all the blocks
 		// that touch the requested blocks
 		ManualMapVoxelManipulator vmanip(this);
@@ -938,7 +938,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-	
+
 	/*
 		From this node to nodes underneath:
 		If lighting is sunlight (1.0), unlight neighbours and
@@ -951,7 +951,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	bool node_under_sunlight = true;
 	core::map<v3s16, bool> light_sources;
-	
+
 	/*
 		Collect old node for rollback
 	*/
@@ -1440,10 +1440,10 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		core::list<v3s16> *unloaded_blocks)
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
-	
+
 	// Profile modified reasons
 	Profiler modprofiler;
-	
+
 	core::list<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
@@ -1461,12 +1461,12 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
-		
+
 		for(core::list<MapBlock*>::Iterator i = blocks.begin();
 				i != blocks.end(); i++)
 		{
 			MapBlock *block = (*i);
-			
+
 			block->incrementUsageTimer(dtime);
 
 			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout)
@@ -1503,10 +1503,10 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		}
 	}
 	endSave();
-	
+
 	// Finally delete the empty sectors
 	deleteSectors(sector_deletion_queue);
-	
+
 	if(deleted_blocks_count != 0)
 	{
 		PrintInfo(infostream); // ServerMap/ClientMap:
@@ -1560,7 +1560,7 @@ void Map::unloadUnusedData(float timeout,
 				i != blocks.end(); i++)
 		{
 			MapBlock *block = (*i);
-			
+
 			if(block->getUsageTimer() > timeout)
 			{
 				// Save if modified
@@ -1629,7 +1629,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	// list of nodes that due to viscosity have not reached their max level height
 	UniqueQueue<v3s16> must_reflow;
-	
+
 	// List of MapBlocks that will require a lighting update (due to lava)
 	core::map<v3s16, MapBlock*> lighting_modified_blocks;
 
@@ -1714,7 +1714,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					}
 					break;
 				case LIQUID_SOURCE:
-					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter 
+					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing);
 					if (nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing) != liquid_kind) {
@@ -1824,7 +1824,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
 		n0.setContent(new_node_content);
-		
+
 		// Find out whether there is a suspect for this action
 		std::string suspect;
 		if(m_gamedef->rollback()){
@@ -2021,7 +2021,9 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	}
 	emerge->seed = m_seed;
 	emerge->water_level = g_settings->getS16("default_water_level");
-	//<set noiseparams here>
+	//mapgen version
+	//chunksize
+	//noiseparams
 
 	/*
 		Experimental and debug stuff
@@ -2149,7 +2151,7 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<") - "
 				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
 				<<std::endl;
-	
+
 	//s16 chunksize = 3;
 	//v3s16 chunk_offset(-1,-1,-1);
 	//s16 chunksize = 4;
@@ -2172,7 +2174,7 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 		data->no_op = true;
 		return;
 	}
-	
+
 	data->no_op = false;
 	data->seed = m_seed;
 	data->blockpos_min = blockpos_min;
@@ -2185,7 +2187,7 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	*/
 	{
 		//TimeTaker timer("initBlockMake() create area");
-		
+
 		for(s16 x=blockpos_min.X-extra_borders.X;
 				x<=blockpos_max.X+extra_borders.X; x++)
 		for(s16 z=blockpos_min.Z-extra_borders.Z;
@@ -2224,18 +2226,18 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 			}
 		}
 	}
-	
+
 	/*
 		Now we have a big empty area.
 
 		Make a ManualMapVoxelManipulator that contains this and the
 		neighboring blocks
 	*/
-	
+
 	// The area that contains this block and it's neighbors
 	v3s16 bigarea_blocks_min = blockpos_min - extra_borders;
 	v3s16 bigarea_blocks_max = blockpos_max + extra_borders;
-	
+
 	data->vmanip = new ManualMapVoxelManipulator(this);
 	//data->vmanip->setMap(this);
 
@@ -2319,7 +2321,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 		TimeTaker t("finishBlockMake lighting update");
 
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
-		
+
 		// Center blocks
 		for(s16 x=blockpos_min.X-extra_borders.X;
 				x<=blockpos_max.X+extra_borders.X; x++)
@@ -2336,7 +2338,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 
 		updateLighting(lighting_update_blocks, changed_blocks);
 #endif
-		
+
 		/*
 			Set lighting to non-expired state in all of them.
 			This is cheating, but it is not fast enough if all of them
@@ -2390,7 +2392,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 		assert(block);
 		block->setGenerated(true);
 	}
-	
+
 	/*
 		Save changed parts of map
 		NOTE: Will be saved later.
@@ -2434,14 +2436,14 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	DSTACKF("%s: p2d=(%d,%d)",
 			__FUNCTION_NAME,
 			p2d.X, p2d.Y);
-	
+
 	/*
 		Check if it exists already in memory
 	*/
 	ServerMapSector *sector = (ServerMapSector*)getSectorNoGenerateNoEx(p2d);
 	if(sector != NULL)
 		return sector;
-	
+
 	/*
 		Try to load it from disk (with blocks)
 	*/
@@ -2474,9 +2476,9 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	/*
 		Generate blank sector
 	*/
-	
+
 	sector = new ServerMapSector(this, p2d, m_gamedef);
-	
+
 	// Sector position on map in nodes
 	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
@@ -2484,7 +2486,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 		Insert to container
 	*/
 	m_sectors.insert(p2d, sector);
-	
+
 	return sector;
 }
 
@@ -2498,20 +2500,20 @@ MapBlock * ServerMap::generateBlock(
 )
 {
 	DSTACKF("%s: p=(%d,%d,%d)", __FUNCTION_NAME, p.X, p.Y, p.Z);
-	
+
 	/*infostream<<"generateBlock(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<std::endl;*/
-	
+
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	TimeTaker timer("generateBlock");
-	
+
 	//MapBlock *block = original_dummy;
-			
+
 	v2s16 p2d(p.X, p.Z);
 	v2s16 p2d_nodes = p2d * MAP_BLOCKSIZE;
-	
+
 	/*
 		Do not generate over-limit
 	*/
@@ -2608,7 +2610,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 {
 	DSTACKF("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME, p.X, p.Y, p.Z);
-	
+
 	/*
 		Do not create over-limit
 	*/
@@ -2619,7 +2621,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
 	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
 		throw InvalidPositionException("createBlock(): pos. over limit");
-	
+
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
 	/*
@@ -2673,7 +2675,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	DSTACKF("%s: p=(%d,%d,%d), create_blank=%d",
 			__FUNCTION_NAME,
 			p.X, p.Y, p.Z, create_blank);
-	
+
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
 		if(block && block->isDummy() == false)
@@ -2712,7 +2714,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 
 			// Queue event
 			dispatchEvent(&event);
-								
+
 			return block;
 		}
 	}*/
@@ -2756,7 +2758,7 @@ plan_b:
 	/*
 		Determine from map generator noise functions
 	*/
-	
+
 	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
 	return level;
 
@@ -2782,48 +2784,48 @@ void ServerMap::createDatabase() {
 void ServerMap::verifyDatabase() {
 	if(m_database)
 		return;
-	
+
 	{
 		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
 		bool needs_create = false;
 		int d;
-		
+
 		/*
 			Open the database connection
 		*/
-	
+
 		createDirs(m_savedir);
-	
+
 		if(!fs::PathExists(dbp))
 			needs_create = true;
-	
+
 		d = sqlite3_open_v2(dbp.c_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: Database failed to open: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot open database file");
 		}
-		
+
 		if(needs_create)
 			createDatabase();
-	
+
 		d = sqlite3_prepare(m_database, "SELECT `data` FROM `blocks` WHERE `pos`=? LIMIT 1", -1, &m_database_read, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: Database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
-		
+
 		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare write statement");
 		}
-		
+
 		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: Database list statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
-		
+
 		infostream<<"ServerMap: Database opened"<<std::endl;
 	}
 }
@@ -2928,11 +2930,11 @@ void ServerMap::save(ModifiedState save_level)
 		infostream<<"WARNING: Not saving map, saving disabled."<<std::endl;
 		return;
 	}
-	
+
 	if(save_level == MOD_STATE_CLEAN)
 		infostream<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
-	
+
 	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN)
 	{
 		saveMapMeta();
@@ -2940,11 +2942,11 @@ void ServerMap::save(ModifiedState save_level)
 
 	// Profile modified reasons
 	Profiler modprofiler;
-	
+
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
-	
+
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
@@ -2953,7 +2955,7 @@ void ServerMap::save(ModifiedState save_level)
 	{
 		ServerMapSector *sector = (ServerMapSector*)i.getNode()->getValue();
 		assert(sector->getId() == MAPSECTOR_SERVER);
-	
+
 		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN)
 		{
 			saveSectorMeta(sector);
@@ -2962,11 +2964,11 @@ void ServerMap::save(ModifiedState save_level)
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 		core::list<MapBlock*>::Iterator j;
-		
+
 		for(j=blocks.begin(); j!=blocks.end(); j++)
 		{
 			MapBlock *block = *j;
-			
+
 			block_count_all++;
 
 			if(block->getModified() >= save_level)
@@ -3042,10 +3044,10 @@ void ServerMap::listAllLoadableBlocks(core::list<v3s16> &dst)
 		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
 				<<"all blocks that are stored in flat files"<<std::endl;
 	}
-	
+
 	{
 		verifyDatabase();
-		
+
 		while(sqlite3_step(m_database_list) == SQLITE_ROW)
 		{
 			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
@@ -3059,13 +3061,13 @@ void ServerMap::listAllLoadableBlocks(core::list<v3s16> &dst)
 void ServerMap::saveMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
-	
+
 	/*infostream<<"ServerMap::saveMapMeta(): "
 			<<"seed="<<m_seed
 			<<std::endl;*/
 
 	createDirs(m_savedir);
-	
+
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
 	if(os.good() == false)
@@ -3074,7 +3076,7 @@ void ServerMap::saveMapMeta()
 				<<"could not open"<<fullpath<<std::endl;
 		throw FileNotGoodException("Cannot open chunk metadata");
 	}
-	
+
 	Settings params;
 	params.setU64("seed", m_seed);
 	params.setS16("water_level", m_emerge->water_level);
@@ -3082,14 +3084,14 @@ void ServerMap::saveMapMeta()
 	params.writeLines(os);
 
 	os<<"[end_of_params]\n";
-	
+
 	m_map_metadata_changed = false;
 }
 
 void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
-	
+
 	/*infostream<<"ServerMap::loadMapMeta(): Loading map metadata"
 			<<std::endl;*/
 
@@ -3116,7 +3118,7 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-	
+
 	m_seed = params.getU64("seed");
 	m_emerge->seed        = m_seed;
 	m_emerge->water_level = params.getS16("water_level");
@@ -3134,14 +3136,14 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	v2s16 pos = sector->getPos();
 	std::string dir = getSectorDir(pos);
 	createDirs(dir);
-	
+
 	std::string fullpath = dir + DIR_DELIM + "meta";
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
 		throw FileNotGoodException("Cannot open sector metafile");
 
 	sector->serialize(o, version);
-	
+
 	sector->differs_from_disk = false;
 }
 
@@ -3180,7 +3182,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 		if(save_after_load)
 			saveSectorMeta(sector);
 	}
-	
+
 	sector->differs_from_disk = false;
 
 	return sector;
@@ -3225,7 +3227,7 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -3269,7 +3271,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	{
 		return false;
 	}
-	
+
 	/*
 		Load blocks
 	*/
@@ -3331,8 +3333,8 @@ void ServerMap::saveBlock(MapBlock *block)
 	u8 version = SER_FMT_VER_HIGHEST;
 	// Get destination
 	v3s16 p3d = block->getPos();
-	
-	
+
+
 #if 0
 	v2s16 p2d(p3d.X, p3d.Z);
 	std::string sectordir = getSectorDir(p2d);
@@ -3348,21 +3350,21 @@ void ServerMap::saveBlock(MapBlock *block)
 		[0] u8 serialization version
 		[1] data
 	*/
-	
+
 	verifyDatabase();
-	
+
 	std::ostringstream o(std::ios_base::binary);
-	
+
 	o.write((char*)&version, 1);
-	
+
 	// Write basic data
 	block->serialize(o, version, true);
-	
+
 	// Write block to database
-	
+
 	std::string tmp = o.str();
 	const char *bytes = tmp.c_str();
-	
+
 	bool success = true;
 	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK) {
 		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
@@ -3380,7 +3382,7 @@ void ServerMap::saveBlock(MapBlock *block)
 	}
 	// Make ready for later reuse
 	sqlite3_reset(m_database_write);
-	
+
 	// We just wrote it to the disk so clear modified flag
 	if (success)
 		block->resetModified();
@@ -3396,12 +3398,12 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 		if(is.good() == false)
 			throw FileNotGoodException("Cannot open block file");
-		
+
 		v3s16 p3d = getBlockPos(sectordir, blockfile);
 		v2s16 p2d(p3d.X, p3d.Z);
-		
+
 		assert(sector->getPos() == p2d);
-		
+
 		u8 version = SER_FMT_VER_INVALID;
 		is.read((char*)&version, 1);
 
@@ -3424,14 +3426,14 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
 		}
-		
+
 		// Read basic data
 		block->deSerialize(is, version, true);
 
 		// If it's a new block, insert it to the map
 		if(created_new)
 			sector->insertBlock(block);
-		
+
 		/*
 			Save blocks loaded in old format in new format
 		*/
@@ -3439,11 +3441,11 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		if(version < SER_FMT_VER_HIGHEST || save_after_load)
 		{
 			saveBlock(block);
-			
+
 			// Should be in database now, so delete the old file
 			fs::RecursiveDelete(fullpath);
 		}
-		
+
 		// We just loaded it from the disk, so it's up-to-date.
 		block->resetModified();
 
@@ -3468,7 +3470,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
-		
+
 		u8 version = SER_FMT_VER_INVALID;
 		is.read((char*)&version, 1);
 
@@ -3491,14 +3493,14 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
 		}
-		
+
 		// Read basic data
 		block->deSerialize(is, version, true);
-		
+
 		// If it's a new block, insert it to the map
 		if(created_new)
 			sector->insertBlock(block);
-		
+
 		/*
 			Save blocks loaded in old format in new format
 		*/
@@ -3507,7 +3509,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		// Only save if asked to; no need to update version
 		if(save_after_load)
 			saveBlock(block);
-		
+
 		// We just loaded it from, so it's up-to-date.
 		block->resetModified();
 
@@ -3517,7 +3519,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		errorstream<<"Invalid block data in database"
 				<<" ("<<p3d.X<<","<<p3d.Y<<","<<p3d.Z<<")"
 				<<" (SerializationError): "<<e.what()<<std::endl;
-		
+
 		// TODO: Block should be marked as invalid in memory so that it is
 		// not touched but the game can run
 
@@ -3539,7 +3541,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	if(!loadFromFolders()) {
 		verifyDatabase();
-		
+
 		if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
 			infostream<<"WARNING: Could not bind block position for load: "
 				<<sqlite3_errmsg(m_database)<<std::endl;
@@ -3548,15 +3550,15 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 				Make sure sector is loaded
 			*/
 			MapSector *sector = createSector(p2d);
-			
+
 			/*
 				Load block
 			*/
 			const char * data = (const char *)sqlite3_column_blob(m_database_read, 0);
 			size_t len = sqlite3_column_bytes(m_database_read, 0);
-			
+
 			std::string datastr(data, len);
-			
+
 			loadBlock(&datastr, blockpos, sector, false);
 
 			sqlite3_step(m_database_read);
@@ -3566,7 +3568,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			return getBlockNoCreateNoEx(blockpos);
 		}
 		sqlite3_reset(m_database_read);
-		
+
 		// Not found in database, try the files
 	}
 
@@ -3587,7 +3589,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		loadlayout = 2;
 		sectordir = getSectorDir(p2d, 2);
 	}
-	
+
 	/*
 		Make sure sector is loaded
 	*/
@@ -3610,7 +3612,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			return NULL;
 		}
 	}
-	
+
 	/*
 		Make sure file exists
 	*/
@@ -3668,7 +3670,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		n = m_loaded_blocks.find(p);
 		if(n != NULL)
 			continue;
-		
+
 		bool block_data_inexistent = false;
 		try
 		{
@@ -3679,7 +3681,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 					<<" wanted area: ";
 			a.print(infostream);
 			infostream<<std::endl;*/
-			
+
 			MapBlock *block = m_map->getBlockNoCreate(p);
 			if(block->isDummy())
 				block_data_inexistent = true;
@@ -3719,12 +3721,12 @@ void MapVoxelManipulator::blitBack
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
-	
+
 	//TimeTaker timer1("blitBack");
 
 	/*infostream<<"blitBack(): m_loaded_blocks.size()="
 			<<m_loaded_blocks.size()<<std::endl;*/
-	
+
 	/*
 		Initialize block cache
 	*/
@@ -3743,9 +3745,9 @@ void MapVoxelManipulator::blitBack
 			continue;
 
 		MapNode &n = m_data[m_area.index(p)];
-			
+
 		v3s16 blockpos = getNodeBlockPos(p);
-		
+
 		try
 		{
 			// Get block
@@ -3754,7 +3756,7 @@ void MapVoxelManipulator::blitBack
 				blockpos_last = blockpos;
 				block_checked_in_modified = false;
 			}
-			
+
 			// Calculate relative position in block
 			v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
 
@@ -3764,7 +3766,7 @@ void MapVoxelManipulator::blitBack
 
 			//m_map->setNode(m_area.MinEdge + p, n);
 			block->setNode(relpos, n);
-			
+
 			/*
 				Make sure block is in modified_blocks
 			*/
@@ -3807,7 +3809,7 @@ void ManualMapVoxelManipulator::initialEmerge(
 
 	VoxelArea block_area_nodes
 			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-	
+
 	u32 size_MB = block_area_nodes.getVolume()*4/1000000;
 	if(size_MB >= 1)
 	{
@@ -3828,7 +3830,7 @@ void ManualMapVoxelManipulator::initialEmerge(
 		n = m_loaded_blocks.find(p);
 		if(n != NULL)
 			continue;
-		
+
 		bool block_data_inexistent = false;
 		try
 		{
@@ -3869,7 +3871,7 @@ void ManualMapVoxelManipulator::blitBackAll(
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
-	
+
 	/*
 		Copy data of all blocks
 	*/

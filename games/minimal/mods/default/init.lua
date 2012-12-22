@@ -1587,7 +1587,7 @@ minetest.register_alias("mapgen_stone_with_iron", "default:stone_with_iron")
 minetest.register_alias("mapgen_mese", "default:mese")
 
 minetest.register_biome_groups({
-0.35, 0.30, 0.20
+0.35, 0.10, 0.30
 })
 
 --
@@ -1619,8 +1619,25 @@ minetest.register_biome({
 	num_top_nodes = 5,
 	height_min = -3000,
 	height_max = 3000,
-	heat_min = 60.0,
+	heat_min = 5.0,
 	heat_max = 100.0,
+	humidity_min = 0.0,
+	humidity_max = 100.0,
+	scale = 5.0,
+	offset = 5.0,
+})
+
+minetest.register_biome({
+	group_id = 1,
+	name = "Gravel Beach",
+	terrain_type = "normal",
+	node_top = "default:gravel",
+	node_filler = "default:cobble",
+	num_top_nodes = 5,
+	height_min = -3000,
+	height_max = 3000,
+	heat_min = -50.0,
+	heat_max = 5.0,
 	humidity_min = 0.0,
 	humidity_max = 100.0,
 	scale = 5.0,
@@ -1641,7 +1658,7 @@ minetest.register_biome({
 	humidity_min = 0.0,
 	humidity_max = 100.0,
 	scale = 12.0,
-	offset = 10.0,
+	offset = 20.0,
 })
 
 minetest.register_biome({
@@ -1657,8 +1674,8 @@ minetest.register_biome({
 	heat_max = 100.0,
 	humidity_min = 0.0,
 	humidity_max = 100.0,
-	scale = 70.0,
-	offset = 30.0,
+	scale = 60.0,
+	offset = 20.0,
 })
 
 

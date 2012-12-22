@@ -289,8 +289,8 @@ void Noise::init(NoiseParams *np, int seed, int sx, int sy, int sz) {
 	this->noisebuf = NULL;
 	resizeNoiseBuf(sz > 1);
 
-	this->buf      = new float[sx * sy * sz];
-	this->result   = new float[sx * sy * sz];
+	this->buf    = new float[sx * sy * sz];
+	this->result = new float[sx * sy * sz];
 }
 
 
@@ -311,10 +311,13 @@ void Noise::setSize(int sx, int sy, int sz) {
 	this->sy = sy;
 	this->sz = sz;
 
+	this->noisebuf = NULL;
 	resizeNoiseBuf(sz > 1);
 
 	delete[] buf;
 	delete[] result;
+	this->buf    = new float[sx * sy * sz];
+	this->result = new float[sx * sy * sz];	
 }
 
 

@@ -4460,10 +4460,8 @@ static int l_register_biome_groups(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int index = 1;
-	if (!lua_istable(L, index)) {
-
-		return 0;
-	}
+	if (!lua_istable(L, index))
+		throw LuaError(L, "register_biome_groups: parameter is not a table");
 
 	BiomeDefManager *bmgr = get_server(L)->getEmergeManager()->biomedef;
 
@@ -4514,15 +4512,16 @@ static int l_register_biome(lua_State *L)
 	b->humidity_min = getfloatfield_default(L, index, "humidity_min", 0.);
 	b->humidity_max = getfloatfield_default(L, index, "humidity_max", 0.);
 
-//////hrm, what to do about the noiseparams...
-	b->np = new NoiseParams; /////just a hacky solution
+	b->np = new NoiseParams; // should read an entire NoiseParams later on...
 	getfloatfield(L, index, "scale", b->np->scale);
 	getfloatfield(L, index, "offset", b->np->offset);
-	//TODO: add configurable spread factor and octaves!?
-	//I'd have to create a Noise for every Biome...
-	bmgr->addBiome(groupid, b);
-	printf(" - added biome '%s'  -  %d %d\n", b->name.c_str(), b->n_top.param0, b->n_filler.param0);
 
+	b->groupid = (s8)groupid;
+	b->flags   = 0; //reserved
+
+	bmgr->addBiome(b);
+
+	verbosestream << "register_biome: " << b->name << std::endl;
 	return 0;
 }
 

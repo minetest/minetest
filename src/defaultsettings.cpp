@@ -153,6 +153,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");
+	settings->setDefault("use_mapgen_version", "6");
 	settings->setDefault("active_object_send_range_blocks", "3");
 	settings->setDefault("active_block_range", "2");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
@@ -169,6 +170,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");
+	settings->setDefault("mgv6_use_smooth_biome_trans", "true"); //temporary
 	settings->setDefault("congestion_control_aim_rtt", "0.2");
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");

@@ -42,7 +42,8 @@ public:
 	MapNode n_top;
 	MapNode n_filler;
 	s16 ntopnodes;
-	s16 flags;
+	s8 groupid;
+	s8 flags;
 	s16 height_min;
 	s16 height_max;
 	float heat_min;
@@ -52,26 +53,26 @@ public:
 	std::string name;
 	NoiseParams *np;
 
-	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeLiquid : public Biome {
-	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
 };
 
 class BiomeHell : public Biome {
-	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeAether : public Biome {
-	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeSuperflat : public Biome {
-	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
@@ -90,7 +91,7 @@ public:
 	Biome *getBiome(float bgfreq, float heat, float humidity);
 
 	void addBiomeGroup(float freq);
-	void addBiome(int groupid, Biome *b);
+	void addBiome(Biome *b);
 	void addDefaultBiomes();
 };
 

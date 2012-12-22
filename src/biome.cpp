@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "biome.h"
 #include "nodedef.h"
 #include "map.h" //for ManualMapVoxelManipulator
+#include "log.h"
 #include "main.h"
 
 #define BT_NONE			0
@@ -64,15 +65,15 @@ int bg4_biomes[]  = {BT_HILLS, BT_EXTREMEHILLS, BT_MOUNTAINS, BT_DESERT, BT_DESE
 float bg5_temps[] = {5.0, 40.0};
 int bg5_biomes[]  = {BT_LAKE, BT_PLAINS, BT_DESERT};*/
 
-NoiseParams np_default = {0.0, 20.0, v3f(250., 250., 250.), 82341, 5, 0.6};
+NoiseParams np_default = {20.0, 15.0, v3f(250., 250., 250.), 82341, 5, 0.6};
 
 
 BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {
 	this->m_gamedef = gamedef;
 	this->ndef      = gamedef->ndef();
 
-	bgroups.push_back(new std::vector<Biome *>); //the initial biome group
-	//addDefaultBiomes(); //can't do this in the ctor, too early
+	//the initial biome group
+	bgroups.push_back(new std::vector<Biome *>);
 }
 
 
@@ -106,20 +107,26 @@ void BiomeDefManager::addBiomeGroup(float freq) {
 		newfreq += bgroup_freqs[size - 1];
 	bgroup_freqs.push_back(newfreq);
 	bgroups.push_back(new std::vector<Biome *>);
-	printf("added biome with freq %f\n", newfreq);
+
+	verbosestream << "BiomeDefManager: added biome group with frequency " <<
+		newfreq << std::endl;
 }
 
 
-void BiomeDefManager::addBiome(int groupid, Biome *b) {
+void BiomeDefManager::addBiome(Biome *b) {
 	std::vector<Biome *> *bgroup;
 
-	if (groupid >= bgroups.size()) {
-		printf("blahblahblah");
+	if (b->groupid >= bgroups.size()) {
+		errorstream << "BiomeDefManager: attempted to add biome '" << b->name
+		 << "' to nonexistent biome group " << b->groupid << std::endl;
 		return;
 	}
 
-	bgroup = bgroups[groupid];
+	bgroup = bgroups[b->groupid];
 	bgroup->push_back(b);
+
+	verbosestream << "BiomeDefManager: added biome '" << b->name <<
+		"' to biome group " << b->groupid << std::endl;
 }
 
 
@@ -156,7 +163,7 @@ Biome *BiomeDefManager::getBiome(float bgfreq, float heat, float humidity) {
 
 	int nbiomes = bgroup->size();
 	for (i = 0; i != nbiomes; i++) {
-		b = bgroup->operator[](i);///////////////////////////
+		b = bgroup->operator[](i);
 		if (heat >= b->heat_min && heat <= b->heat_max &&
 			humidity >= b->humidity_min && humidity <= b->humidity_max)
 			return b;
@@ -174,9 +181,24 @@ int Biome::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void Biome::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+void Biome::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
 	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
 	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
+
+	/*///experimental
+	if (groupid > 0) {
+		float prevfreq = mg->biomedef->bgroup_freqs[groupid - 1];
+		float range    = mg->biomedef->bgroup_freqs[groupid] - prevfreq;
+		float factor   = (mg->map_bgroup[i] - prevfreq) / range;
+
+		std::vector<Biome *> *bg = mg->biomedef->bgroups[groupid - 1];
+		Biome *b = (*bg)[0];
+		int h1 = b->np->offset + b->np->scale * mg->map_terrain[i];
+		surfaceh += (int)round((surfaceh - h1) * factor);
+		//printf("h1: %d, surfaceh: %d, factor %f\n", h1, surfaceh, factor);
+	}*/
+
+
 	int y = y1;
 
 	i = mg->vmanip->m_area.index(x, y, z);
@@ -189,12 +211,10 @@ void Biome::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
 }
 
 
-
 ///////////////////////////// [ Ocean biome ] /////////////////////////////////
 
 
-
-void BiomeLiquid::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+void BiomeLiquid::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
 	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
 	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
 	int y = y1;
@@ -219,7 +239,7 @@ int BiomeHell::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeHell::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+void BiomeHell::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
 
 }
 
@@ -232,7 +252,7 @@ int BiomeAether::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeAether::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+void BiomeAether::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
 
 }
 
@@ -245,6 +265,15 @@ int BiomeSuperflat::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeSuperflat::genColumn(Mapgen *mg, int x, int z, int y1, int y2) {
+void BiomeSuperflat::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
+	int surfaceh = ntopnodes;
+	int y = y1;
 
+	int i = mg->vmanip->m_area.index(x, y, z);
+	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
+		mg->vmanip->m_data[i] = n_filler;
+	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
+		mg->vmanip->m_data[i] = n_top;
+	for (; y <= y2; y++, i += mg->ystride)
+		mg->vmanip->m_data[i] = mg->n_air;
 }

@@ -172,8 +172,12 @@ void * EmergeThread::Thread()
 
 	ServerMap &map = ((ServerMap&)m_server->m_env->getMap());
 	EmergeManager *emerge = m_server->m_emerge;
-	Mapgen *mapgen = new Mapgen( m_server->m_emerge->biomedef,/*mapgenid*/ 0, map.getSeed()); ////////fix this...!
 
+	Mapgen *mapgen;
+	if (g_settings->getS16("use_mapgen_version") == 7)   ////////this is okay for now, fix later
+		mapgen = new MapgenV7( m_server->m_emerge->biomedef,/*mapgenid*/ 0, map.getSeed());
+	else
+		mapgen = new MapgenV6(0, map.getSeed());
 	/*
 		Get block info from queue, emerge them and send them
 		to clients.

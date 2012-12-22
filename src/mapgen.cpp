@@ -52,21 +52,21 @@ Mapgen::Mapgen(BiomeDefManager *biomedef) {
 }*/
 
 
-Mapgen::Mapgen(BiomeDefManager *biomedef, int mapgenid, u64 seed) {
-	initMapgen(biomedef, mapgenid, seed,
+MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, u64 seed) {
+	init(biomedef, mapgenid, seed,
 		&nparams_mtdefault, &nparams_def_bgroup,
 		&nparams_def_heat,  &nparams_def_humidity);
 }
 
 
-Mapgen::Mapgen(BiomeDefManager *biomedef, int mapgenid, u64 seed,
+MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, u64 seed,
 			   NoiseParams *np_terrain, NoiseParams *np_bgroup,
 			   NoiseParams *np_heat,    NoiseParams *np_humidity) {
-	initMapgen(biomedef, mapgenid, seed,
+	init(biomedef, mapgenid, seed,
 		np_terrain, np_bgroup, np_heat, np_humidity);
 }
 
-void Mapgen::initMapgen(BiomeDefManager *biomedef, int mapgenid, u64 seed,
+void MapgenV7::init(BiomeDefManager *biomedef, int mapgenid, u64 seed,
 			   NoiseParams *np_terrain, NoiseParams *np_bgroup,
 			   NoiseParams *np_heat,    NoiseParams *np_humidity) {
 	this->generating  = false;
@@ -75,6 +75,7 @@ void Mapgen::initMapgen(BiomeDefManager *biomedef, int mapgenid, u64 seed,
 	this->biomedef = biomedef;
 	this->csize       = v3s16(5, 5, 5) * MAP_BLOCKSIZE; /////////////////get this from config!
 	this->water_level = g_settings->getS16("default_water_level"); ////fix this!
+	this->ystride = csize.X;
 
 	this->np_terrain  = np_terrain;
 	this->np_bgroup   = np_bgroup;
@@ -92,7 +93,7 @@ void Mapgen::initMapgen(BiomeDefManager *biomedef, int mapgenid, u64 seed,
 }
 
 
-Mapgen::~Mapgen() {
+MapgenV7::~MapgenV7() {
 	delete noise_terrain;
 	delete noise_bgroup;
 	delete noise_heat;
@@ -100,11 +101,9 @@ Mapgen::~Mapgen() {
 }
 
 
-void Mapgen::makeChunk(BlockMakeData *data) {
+void MapgenV7::makeChunk(BlockMakeData *data) {
 	if (data->no_op)
 		return;
-
-	//printf("generating...\n");//////////////
 
 	assert(data->vmanip);
 	assert(data->nodedef);
@@ -123,6 +122,9 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 	this->ystride = em.X;
 	this->zstride = em.Y * em.X;
 
+	if (node_max.X - node_min.X != 80)
+		printf("uhoh, diff = %d, ystride = %d\n", node_max.X - node_min.X, ystride);
+
 	node_min = (data->blockpos_min) * MAP_BLOCKSIZE;
 	node_max = (data->blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 	v3s16 full_node_min = (data->blockpos_min - 1) * MAP_BLOCKSIZE;
@@ -132,7 +134,7 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 	int y2 = node_max.Y;
 	int x  = node_min.X;
 	int z  = node_min.Z;
-	//printf("full_node_min.X: %d  |  full_node_min.Z:  %d   |  MinEdge:  %d   |  MaxEdge:  %d\n", node_min.X, node_min.Z, vmanip->m_area.MinEdge.X, vmanip->m_area.MinEdge.Z);
+
 	TimeTaker timer("Generating terrain");
 	map_terrain  = noise_terrain->perlinMap2D(x, z);
 	map_bgroup   = noise_bgroup->perlinMap2D(x, z);
@@ -161,11 +163,10 @@ void Mapgen::makeChunk(BlockMakeData *data) {
 	updateLighting(node_min, node_max);
 
 	this->generating = false;
-	//printf("generated block (%d, %d) to (%d, %d)\n", node_min.X, node_min.Y, node_max.X, node_max.Y);//////////
 }
 
 
-void Mapgen::updateLiquid(v3s16 node_min, v3s16 node_max) {
+void MapgenV7::updateLiquid(v3s16 node_min, v3s16 node_max) {
 	bool isliquid, wasliquid;
 	u32 i;
 
@@ -190,7 +191,7 @@ void Mapgen::updateLiquid(v3s16 node_min, v3s16 node_max) {
 }
 
 
-void Mapgen::updateLighting(v3s16 node_min, v3s16 node_max) {
+void MapgenV7::updateLighting(v3s16 node_min, v3s16 node_max) {
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
 
 	VoxelArea a(node_min - v3s16(1,0,1) * MAP_BLOCKSIZE,
@@ -207,29 +208,12 @@ void Mapgen::updateLighting(v3s16 node_min, v3s16 node_max) {
 		voxalgo::clearLightAndCollectSources(*vmanip, a, bank, ndef,
                                         light_sources, unlight_from);
 		voxalgo::propagateSunlight(*vmanip, a, sunlight, light_sources, ndef);
-        printf("light_sources: %d\t\tunlight_from: %d\n", light_sources.size(), unlight_from.size());
+        //printf("light_sources: %d\t\tunlight_from: %d\n", light_sources.size(), unlight_from.size());
 		vmanip->unspreadLight(bank, unlight_from, light_sources, ndef);
 		vmanip->spreadLight(bank, light_sources, ndef);
 	}
 }
 
-
-/*class EmergeManager {
-public:
-	int seed;
-	int water_level;
-	BiomeDefManager *biomedef;
-
-	//mapgen objects here
-
-	void addBlockToQueue();
-
-
-	//mapgen helper methods
-	int getGroundLevelAtPoint(u64 mseed, v2s16 p);
-	bool isBlockUnderground(u64 mseed, v3s16 blockpos);
-	u32 getBlockSeed(u64 mseed, v3s16 p);
-};*/
 
 EmergeManager::EmergeManager(IGameDef *gamedef) {
 	this->seed = 0;
@@ -279,7 +263,7 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos) {
 
 	//yuck, but then again, should i bother being accurate?
 	//the height of the nodes in a single block is quite variable
-	return false; //blockpos.Y * (MAP_BLOCKSIZE + 1) <= water_level;
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= water_level;
 }
 
 
