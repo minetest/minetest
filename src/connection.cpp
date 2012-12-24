@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 #include "settings.h"
+#include "config.h"
 
 namespace con
 {
@@ -522,6 +523,39 @@ void Peer::reportRTT(float rtt)
 	Connection
 */
 
+#if USE_IPV6
+Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+		bool ipv6):
+	m_protocol_id(protocol_id),
+	m_max_packet_size(max_packet_size),
+	m_timeout(timeout),
+	m_socket(ipv6),
+	m_peer_id(0),
+	m_bc_peerhandler(NULL),
+	m_bc_receive_timeout(0),
+	m_indentation(0)
+{
+	m_socket.setTimeoutMs(5);
+
+	Start();
+}
+
+Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+		bool ipv6, PeerHandler *peerhandler):
+	m_protocol_id(protocol_id),
+	m_max_packet_size(max_packet_size),
+	m_timeout(timeout),
+	m_socket(ipv6),
+	m_peer_id(0),
+	m_bc_peerhandler(peerhandler),
+	m_bc_receive_timeout(0),
+	m_indentation(0)
+{
+	m_socket.setTimeoutMs(5);
+
+	Start();
+}
+#else
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout):
 	m_protocol_id(protocol_id),
 	m_max_packet_size(max_packet_size),
@@ -550,6 +584,7 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 
 	Start();
 }
+#endif
 
 
 Connection::~Connection()

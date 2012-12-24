@@ -258,6 +258,21 @@ void * MediaFetchThread::Thread()
 	return NULL;
 }
 
+#if USE_IPV6
+Client::Client(
+		IrrlichtDevice *device,
+		const char *playername,
+		std::string password,
+		MapDrawControl &control,
+		IWritableTextureSource *tsrc,
+		IWritableShaderSource *shsrc,
+		IWritableItemDefManager *itemdef,
+		IWritableNodeDefManager *nodedef,
+		ISoundManager *sound,
+		MtEventManager *event,
+		bool ipv6
+):
+#else
 Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
@@ -270,6 +285,7 @@ Client::Client(
 		ISoundManager *sound,
 		MtEventManager *event
 ):
+#endif
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -284,7 +300,11 @@ Client::Client(
 		device->getSceneManager(),
 		tsrc, this, device
 	),
+#if USE_IPV6
+	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+#else
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
+#endif
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_playeritem(0),

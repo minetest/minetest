@@ -932,7 +932,12 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_env(NULL),
+#if USE_IPV6
+	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
+	      g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"), this),
+#else
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
+#endif
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_rollback(NULL),
 	m_rollback_sink_enabled(true),

@@ -93,6 +93,14 @@ if(USE_SOUND)
 		)
 endif()
 
+# user visible option to enable/disable IPv6
+option(ENABLE_IPV6 "Enable IPv6 support" 0)
+set(USE_IPV6 0)
+if(ENABLE_IPV6)
+	message(STATUS "IPv6 support enabled")
+	set(USE_IPV6 1)
+endif()
+
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
 endif()

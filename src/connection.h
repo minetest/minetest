@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointer.h"
 #include "util/container.h"
 #include "util/thread.h"
+#include "config.h"
 #include <iostream>
 #include <fstream>
 
@@ -545,9 +546,15 @@ struct ConnectionCommand
 class Connection: public SimpleThread
 {
 public:
+#if USE_IPV6
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6);
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
+			PeerHandler *peerhandler);
+#else
 	Connection(u32 protocol_id, u32 max_packet_size, float timeout);
 	Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 			PeerHandler *peerhandler);
+#endif
 	~Connection();
 	void * Thread();
 

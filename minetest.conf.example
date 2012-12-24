@@ -222,3 +222,7 @@
 #congestion_control_max_rate = 400
 #congestion_control_min_rate = 10
 #remote_media =
+# Enable/disable IPv6 (if using an IPv6 build)
+#enable_ipv6 = true
+# Enable/disable running an IPv6 server (an IPv6 server is normally restricted to IPv6 clients)
+#ipv6_server = true
