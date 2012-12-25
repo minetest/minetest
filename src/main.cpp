@@ -71,6 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
+#include "serverlist.h"
 
 /*
 	Settings.
@@ -1579,7 +1580,7 @@ int main(int argc, char *argv[])
 				if(menudata.selected_world != -1)
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
-				
+
 				// Break out of menu-game loop to shut down cleanly
 				if(device->run() == false || kill == true)
 					break;
@@ -1595,6 +1596,15 @@ int main(int argc, char *argv[])
 					current_password = "";
 					current_address = "";
 					current_port = 30011;
+				}
+				else if (address != "")
+				{
+					ServerListSpec server;
+					server.name = menudata.servername;
+					server.address = wide_to_narrow(menudata.address);
+					server.port = wide_to_narrow(menudata.port);
+					server.description = menudata.serverdescription;
+					ServerList::insert(server);
 				}
 				
 				// Set world path to selected one

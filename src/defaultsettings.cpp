@@ -121,6 +121,9 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("media_fetch_threads", "8");
 
+	settings->setDefault("serverlist_url", "mesecons.net/server.list");
+	settings->setDefault("serverlist_file", "favoriteservers.txt");
+
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");
