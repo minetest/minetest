@@ -158,6 +158,11 @@
 # and only for clients compiled with cURL
 #media_fetch_threads = 8
 
+# Url to the server list displayed in the Multiplayer Tab
+#serverlist_url = servers.minetest.ru/server.list
+# File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
+#serverlist_file = favoriteservers.txt
+
 #
 # Server stuff
 #
