@@ -108,6 +108,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
+	settings->setDefault("selectionbox_color", "(0,0,0)");
+	settings->setDefault("crosshair_color", "(255,255,255)");
+	settings->setDefault("crosshair_alpha", "255");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
