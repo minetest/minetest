@@ -2019,8 +2019,8 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	{
 		m_seed = g_settings->getU64("fixed_map_seed");
 	}
-	emerge->seed = m_seed;
-	emerge->water_level = g_settings->getS16("default_water_level");
+	//emerge->params.seed = m_seed;
+	//emerge->params.water_level = g_settings->getS16("default_water_level");
 	//mapgen version
 	//chunksize
 	//noiseparams
@@ -3078,8 +3078,31 @@ void ServerMap::saveMapMeta()
 	}
 
 	Settings params;
-	params.setU64("seed", m_seed);
-	params.setS16("water_level", m_emerge->water_level);
+
+	params.setS16("mg_version", m_emerge->mg_version);
+
+	params.setU64("seed", m_emerge->params->seed);
+	params.setS16("water_level", m_emerge->params->water_level);
+	params.setS16("chunksize", m_emerge->params->chunksize);
+	params.setS32("flags", m_emerge->params->flags);
+	switch (m_emerge->mg_version) {
+		case 6:
+		{
+			MapgenV6Params *v6params = m_emerge->params;
+
+			params.setFloat("freq_desert", v6params->freq_desert);
+			params.setFloat("freq_beach", v6params->freq_beach);
+
+			break;
+		}
+		case 7:
+		{
+			MapgenV7Params *v7params = m_emerge->params;
+			break;
+		}
+		default:
+			; //complain here
+	}
 
 	params.writeLines(os);
 
@@ -3119,10 +3142,36 @@ void ServerMap::loadMapMeta()
 		params.parseConfigLine(line);
 	}
 
-	m_seed = params.getU64("seed");
-	m_emerge->seed        = m_seed;
-	m_emerge->water_level = params.getS16("water_level");
-	//m_emerge->np = ;
+	m_emerge->mg_version  = params.getS16("mg_version");
+	m_emerge->setMapgenParams();
+
+	m_emerge->params->seed        = params.getU64("seed");
+	m_emerge->params->water_level = params.getS16("water_level");
+	m_emerge->params->chunksize   = params.getS16("chunksize");
+	m_emerge->params->flags       = params.getS32("flags");
+
+	m_seed = m_emerge->params->seed;
+
+	switch (m_emerge->mg_version) {
+		case 6:
+		{
+			MapgenV6Params *v6params = m_emerge->params;
+
+			v6params->freq_desert = params.getFloat("freq_desert");
+			v6params->freq_beach  = params.getFloat("freq_beach");
+
+			break;
+		}
+		case 7:
+		{
+			MapgenV7Params *v6params = m_emerge->params;
+
+			break;
+		}
+		default:
+			; //complain here
+	}
+
 
 	verbosestream<<"ServerMap::loadMapMeta(): "<<"seed="<<m_seed<<std::endl;
 }

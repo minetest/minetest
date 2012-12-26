@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 
+/*
 #define AVERAGE_MUD_AMOUNT 4
-
 
 NoiseParams nparams_v6_def_terrain_base =
 	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
@@ -51,42 +51,54 @@ NoiseParams nparams_v6_def_beach =
 	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
 NoiseParams nparams_v6_def_biome =
 	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
-//NoiseParams nparams_v6_def_cave =
-//	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
+NoiseParams nparams_v6_def_cave =
+	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
 
 
-NoiseParams *np_terrain_base   = &nparams_v6_def_terrain_base;
-NoiseParams *np_terrain_higher = &nparams_v6_def_terrain_higher;
-NoiseParams *np_steepness      = &nparams_v6_def_steepness;
-NoiseParams *np_height_select  = &nparams_v6_def_height_select;
-NoiseParams *np_trees          = &nparams_v6_def_trees;
-NoiseParams *np_mud            = &nparams_v6_def_mud;
-NoiseParams *np_beach          = &nparams_v6_def_beach;
-NoiseParams *np_biome          = &nparams_v6_def_biome;
-//NoiseParams *np_cave           = &nparams_v6_def_cave;
+MapgenV6Params mg_def_params_v6 = {
+	0,
+	1,
+	5,
+	MG_TREES | MG_CAVES | MGV6_BIOME_BLEND,
+	0.45,
+	0.15,
+	&nparams_v6_def_terrain_base,
+	&nparams_v6_def_terrain_higher,
+	&nparams_v6_def_steepness,
+	&nparams_v6_def_height_select,
+	&nparams_v6_def_trees,
+	&nparams_v6_def_mud,
+	&nparams_v6_def_beach,
+	&nparams_v6_def_biome,
+	&nparams_v6_def_cave
+};
+*/
+
+///////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(int mapgenid, u64 seed) {
+MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params) {
 	this->generating  = false;
 	this->id       = mapgenid;
-	this->seed     = (int)seed;
 
-	this->water_level = 1;
+	this->seed     = params->seed;
+	this->water_level = params->water_level;
+	this->flags   = flags;
+	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 
-	this->csize   = v3s16(5, 5, 5) * MAP_BLOCKSIZE; /////////////////get this from config!
-	this->ystride = csize.X;
+	this->freq_desert = params->freq_desert;
+	this->freq_beach  = params->freq_beach;
 
-	this->use_smooth_biome_trans = g_settings->getBool("mgv6_use_smooth_biome_trans");
+	this->ystride = csize.X; //////fix this
 
-	noise_terrain_base   = new Noise(np_terrain_base,   seed, csize.X, csize.Y);
-	noise_terrain_higher = new Noise(np_terrain_higher, seed, csize.X, csize.Y);
-	noise_steepness      = new Noise(np_steepness,      seed, csize.X, csize.Y);
-	noise_height_select  = new Noise(np_height_select,  seed, csize.X, csize.Y);
-	noise_trees          = new Noise(np_trees,          seed, csize.X, csize.Y);
-	noise_mud            = new Noise(np_mud,            seed, csize.X, csize.Y);
-	noise_beach          = new Noise(np_beach,          seed, csize.X, csize.Y);
-	noise_biome          = new Noise(np_biome,          seed, csize.X, csize.Y);
-	//noise_cave           = new Noise(np_cave,           seed, csize.X, csize.Y);
+	noise_terrain_base   = new Noise(params->np_terrain_base,   seed, csize.X, csize.Y);
+	noise_terrain_higher = new Noise(params->np_terrain_higher, seed, csize.X, csize.Y);
+	noise_steepness      = new Noise(params->np_steepness,      seed, csize.X, csize.Y);
+	noise_height_select  = new Noise(params->np_height_select,  seed, csize.X, csize.Y);
+	noise_trees          = new Noise(params->np_trees,          seed, csize.X, csize.Y);
+	noise_mud            = new Noise(params->np_mud,            seed, csize.X, csize.Y);
+	noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
+	noise_biome          = new Noise(params->np_biome,          seed, csize.X, csize.Y);
 
 	map_terrain_base   = noise_terrain_base->result;
 	map_terrain_higher = noise_terrain_higher->result;
@@ -96,7 +108,6 @@ MapgenV6::MapgenV6(int mapgenid, u64 seed) {
 	map_mud            = noise_mud->result;
 	map_beach          = noise_beach->result;
 	map_biome          = noise_biome->result;
-	//map_cave           = noise_cave->result;
 }
 
 
@@ -294,9 +305,7 @@ double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed+82341, 5, 0.6);*/
 	double base = water_level + map_terrain_base[index];
-	//return base;
-//printf("%f ", base);
-//return base;
+
 	// Higher ground level
 	/*double higher = (double)WATER_LEVEL + 20. + 16. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
@@ -316,6 +325,7 @@ double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 	b = pow(b, 7);
 	b *= 5;
 	b = rangelim(b, 0.5, 1000.0);
+
 	// Values 1.5...100 give quite horrible looking slopes
 	if(b > 1.5 && b < 100.0){
 		if(b < 10.0)
@@ -323,21 +333,18 @@ double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 		else
 			b = 100.0;
 	}
-	//dstream<<"b="<<b<<std::endl;
-	//double b = 20;
-	//b = 0.25;
 
 	// Offset to more low
 	double a_off = -0.20;
+
 	// High/low selector
 	/*double a = (double)0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed+4213, 5, 0.69));*/
 	double a = 0.5 + b * (a_off + map_height_select[index]);
+
 	// Limit
 	a = rangelim(a, 0.0, 1.0);
-
-	//dstream<<"a="<<a<<std::endl;
 
 	double h = base*(1.0-a) + higher*a;
 
@@ -367,7 +374,7 @@ bool MapgenV6::get_have_beach(u64 seed, v2s16 p2d)
 	int index = (p2d.Y - node_min.Z) * ystride + (p2d.X - node_min.X);
 	double sandnoise = map_beach[index];
 
-	return (sandnoise > 0.15);
+	return (sandnoise > freq_beach);
 }
 
 BiomeType MapgenV6::get_biome(u64 seed, v2s16 p2d)
@@ -378,10 +385,11 @@ BiomeType MapgenV6::get_biome(u64 seed, v2s16 p2d)
 			seed+9130, 3, 0.50);*/
 	int index = (p2d.Y - node_min.Z) * ystride + (p2d.X - node_min.X);
 	double d = map_biome[index];
-	if(d > 0.45)
+	if(d > freq_desert)
 		return BT_DESERT;
-	if (use_smooth_biome_trans) {
-		if(d > 0.35 && (noise2d( p2d.X, p2d.Y, int(seed) ) + 1.0) > ( 0.45 - d ) * 20.0  )
+	if (flags & MGV6_BIOME_BLEND) {
+		if(d > freq_desert - 0.10 &&
+			 (noise2d(p2d.X, p2d.Y, seed) + 1.0) > (freq_desert - d) * 20.0)
 			return BT_DESERT;
 	}
 	return BT_NORMAL;
@@ -485,6 +493,10 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			x + 0.5 * noise_height_select->np->spread.X,
 			z + 0.5 * noise_height_select->np->spread.Z);
 
+		noise_trees->perlinMap2D(
+			x + 0.5 * noise_trees->np->spread.X,
+			z + 0.5 * noise_trees->np->spread.Z);
+
 		noise_mud->perlinMap2D(
 			x + 0.5 * noise_mud->np->spread.X,
 			z + 0.5 * noise_mud->np->spread.Z);
@@ -497,11 +509,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		noise_biome->perlinMap2D(
 			x + 0.6 * noise_biome->np->spread.X,
 			z + 0.2 * noise_biome->np->spread.Z);
-
-/*		noise_cave->perlinMap2D(
-			x + 0.5 * noise_cave->np->spread.X,
-			z + 0.5 * noise_cave->np->spread.Z);
-		noise_cave->transformNoiseMap();*/
 	}
 
 
@@ -625,9 +632,14 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		Loop this part, it will make stuff look older and newer nicely
 	*/
 
-	double cave_amount = 6.0 + 6.0 * noise2d_perlin(
+	/*double cave_amount = 6.0 + 6.0 * noise2d_perlin(
 			0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
-			data->seed+34329, 3, 0.50);
+			data->seed+34329, 3, 0.50);*/
+
+	double cave_amount = np_cave->offset + np_cave->scale * noise2d_perlin(
+			0.5 + (double)node_min.X / np_cave->spread.X,
+			0.5 + (double)node_min.Y / np_cave->spread.Y,
+			data->seed + np_cave->seed, np_cave->octaves, np_cave->persist);
 
 	const u32 age_loops = 2;
 	for(u32 i_age=0; i_age<age_loops; i_age++)
@@ -651,12 +663,17 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	PseudoRandom ps2(blockseed+1032);
 	if(ps.range(1, 6) == 1)
 		bruises_count = ps.range(0, ps.range(0, 2));
-	if(get_biome(data->seed, v2s16(node_min.X, node_min.Y)) == BT_DESERT){
+	if(get_biome(data->seed, v2s16(node_min.X, node_min.Z)) == BT_DESERT){
 		caves_count /= 3;
 		bruises_count /= 3;
 	}
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
+		int avg_height = (int)
+			  ((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
+				base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
+		if ((node_max.Y + node_min.Y) / 2 > avg_height)
+			break;
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = ps.range(2,6);
@@ -984,7 +1001,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	/*
 		Add blobs of dirt and gravel underground
 	*/
-	if(get_biome(data->seed, v2s16(node_min.X, node_min.Y)) == BT_NORMAL)
+	if(get_biome(data->seed, v2s16(node_min.X, node_min.Z)) == BT_NORMAL)
 	{
 	PseudoRandom pr(blockseed+983);
 	for(int i=0; i<volume_nodes/10/10/10; i++)

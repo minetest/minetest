@@ -172,12 +172,8 @@ void * EmergeThread::Thread()
 
 	ServerMap &map = ((ServerMap&)m_server->m_env->getMap());
 	EmergeManager *emerge = m_server->m_emerge;
+	Mapgen *mapgen = emerge->getMapgen();
 
-	Mapgen *mapgen;
-	if (g_settings->getS16("use_mapgen_version") == 7)   ////////this is okay for now, fix later
-		mapgen = new MapgenV7( m_server->m_emerge->biomedef,/*mapgenid*/ 0, map.getSeed());
-	else
-		mapgen = new MapgenV6(0, map.getSeed());
 	/*
 		Get block info from queue, emerge them and send them
 		to clients.
@@ -800,6 +796,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				} else {
 					if(nearest_emergefull_d == -1)
 						nearest_emergefull_d = d;
+					goto queue_full_break;
 				}
 
 				// get next one.
@@ -988,7 +985,7 @@ Server::Server(
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
 	// Create emerge manager
-	m_emerge = new EmergeManager(this);
+	m_emerge = new EmergeManager(this, g_settings->getS16("use_mapgen_version"));
 
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
@@ -1097,7 +1094,8 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Add default biomes after nodedef had its aliases added
-	m_emerge->biomedef->addDefaultBiomes();
+	if (m_emerge->biomedef)
+		m_emerge->biomedef->addDefaultBiomes();
 
 	// Initialize Environment
 

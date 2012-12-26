@@ -58,18 +58,110 @@ struct BlockMakeData {
 };
 
 
-class Mapgen {
-public:
+/////////////////// Mapgen flags
+#define MG_TREES         0x01
+#define MG_CAVES         0x02
+#define MG_DUNGEONS      0x04
+#define MGV6_FORESTS     0x08
+#define MGV6_BIOME_BLEND 0x10
 
+#define AVERAGE_MUD_AMOUNT 4
+
+/////////////////// Mapgen V6 perlin noise default values
+NoiseParams nparams_v6_def_terrain_base =
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
+NoiseParams nparams_v6_def_terrain_higher =
+	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85309, 5, 0.6};
+NoiseParams nparams_v6_def_steepness =
+	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
+NoiseParams nparams_v6_def_height_select =
+	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
+NoiseParams nparams_v6_def_trees =
+	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
+NoiseParams nparams_v6_def_mud =
+	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
+NoiseParams nparams_v6_def_beach =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
+NoiseParams nparams_v6_def_biome =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
+NoiseParams nparams_v6_def_cave =
+	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
+
+/////////////////// Mapgen V7 perlin noise default values
+NoiseParams nparams_v7_def_terrain =
+	{10.0, 12.0, v3f(350., 350., 350.), 82341, 5, 0.6}; //terrain
+NoiseParams nparams_v7_def_bgroup =
+	{0.5, 1/(2*1.6), v3f(350., 350., 350.), 5923, 2, 0.60}; //0 to 1
+NoiseParams nparams_v7_def_heat =
+	{25.0, 50.0, v3f(500., 500., 500.), 35293, 1, 0.00}; //-25 to 75
+NoiseParams nparams_v7_def_humidity =
+	{50, 100/(2*1.6), v3f(750., 750., 750.), 12094, 2, 0.60}; //0 to 100
+
+struct MapgenParams {
 	int seed;
 	int water_level;
+	int chunksize;
+	u32 flags;
 
+	MapgenParams() {
+		seed        = 0;
+		water_level = 1;
+		chunksize   = 5;
+		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
+	}
+
+};
+
+struct MapgenV6Params : public MapgenParams {
+	float freq_desert;
+	float freq_beach;
+	NoiseParams *np_terrain_base;
+	NoiseParams *np_terrain_higher;
+	NoiseParams *np_steepness;
+	NoiseParams *np_height_select;
+	NoiseParams *np_trees;
+	NoiseParams *np_mud;
+	NoiseParams *np_beach;
+	NoiseParams *np_biome;
+	NoiseParams *np_cave;
+
+	MapgenV6Params() {
+		freq_desert       = 0.45;
+		freq_beach        = 0.15;
+		np_terrain_base   = &nparams_v6_def_terrain_base;
+		np_terrain_higher = &nparams_v6_def_terrain_higher;
+		np_steepness      = &nparams_v6_def_steepness;
+		np_height_select  = &nparams_v6_def_height_select;
+		np_trees          = &nparams_v6_def_trees;
+		np_mud            = &nparams_v6_def_mud;
+		np_beach          = &nparams_v6_def_beach;
+		np_biome          = &nparams_v6_def_biome;
+		np_cave           = &nparams_v6_def_cave;
+	}
+};
+
+struct MapgenV7Params : public MapgenParams {
+	NoiseParams *np_terrain;
+	NoiseParams *np_bgroup;
+	NoiseParams *np_heat;
+	NoiseParams *np_humidity;
+
+	MapgenV7Params() {
+		np_terrain  = &nparams_v7_def_terrain;
+		np_bgroup   = &nparams_v7_def_bgroup;
+		np_heat     = &nparams_v7_def_heat;
+		np_humidity = &nparams_v7_def_humidity;
+	}
+};
+
+
+class Mapgen {
+public:
+	int seed;
+	int water_level;
 	bool generating;
 	int id;
 
-
-	//virtual Mapgen(BiomeDefManager *biomedef, int mapgenid=0, u64 seed=0);
-	//virtual ~Mapgen();
 	virtual void makeChunk(BlockMakeData *data) {};
 
 	//Legacy functions for Farmesh (pending removal)
@@ -109,9 +201,11 @@ public:
 	float *map_biome;
 	float *map_cave;
 
-	bool use_smooth_biome_trans;
+	u32 flags;
+	float freq_desert;
+	float freq_beach;
 
-	MapgenV6(int mapgenid=0, u64 seed=0);
+	MapgenV6(int mapgenid, MapgenV6Params *params);
 	~MapgenV6();
 
 	void makeChunk(BlockMakeData *data);
@@ -142,8 +236,6 @@ public:
 	int zstride;
 
 	v3s16 csize;
-	//int seed;
-	//int water_level;
 
 	Noise *noise_terrain;
 	Noise *noise_bgroup;
@@ -160,24 +252,20 @@ public:
 
 	bool generating;
 	int id;
+	u32 flags;
 
+/*
 	NoiseParams *np_terrain;
 	NoiseParams *np_bgroup;
 	NoiseParams *np_heat;
-	NoiseParams *np_humidity;
+	NoiseParams *np_humidity;*/
 
 	//should these be broken off into a "commonly used nodes" class?
 	MapNode n_air;
 	MapNode n_water;
 	MapNode n_lava;
 
-	MapgenV7(BiomeDefManager *biomedef, int mapgenid=0, u64 seed=0);
-	MapgenV7(BiomeDefManager *biomedef, int mapgenid, u64 seed,
-		   NoiseParams *np_terrain, NoiseParams *np_bgroup,
-		   NoiseParams *np_heat,    NoiseParams *np_humidity);
-	void init(BiomeDefManager *biomedef, int mapgenid, u64 seed,
-			   NoiseParams *np_terrain, NoiseParams *np_bgroup,
-			   NoiseParams *np_heat,    NoiseParams *np_humidity);
+	MapgenV7(BiomeDefManager *biomedef, int mapgenid, MapgenV7Params *params);
 	~MapgenV7();
 
 	void makeChunk(BlockMakeData *data);
@@ -193,23 +281,21 @@ public:
 class EmergeManager {
 public:
 	//settings
-	u64 seed;
-	int water_level;
-	NoiseParams *np_terrain;
-	NoiseParams *np_bgroup;
-	NoiseParams *np_heat;
-	NoiseParams *np_humidity;
+	int mg_version;
+	MapgenParams *params;
+
+	//mapgen objects here
+	Mapgen *mapgen;
 
 	//biome manager
 	BiomeDefManager *biomedef;
 
-	//mapgen objects here
-
-	EmergeManager(IGameDef *gamedef);
+	EmergeManager(IGameDef *gamedef, int mg_version=6);
 	~EmergeManager();
+
+	Mapgen *getMapgen();
+	void setMapgenParams();
 	void addBlockToQueue();
-
-
 
 	//mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);

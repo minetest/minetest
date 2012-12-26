@@ -34,57 +34,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "treegen.h"
 
-NoiseParams nparams_mtdefault =
-	{10.0, 12.0, v3f(350., 350., 350.), 82341, 5, 0.6}; //terrain
-NoiseParams nparams_def_bgroup =
-	{0.5, 1/(2*1.6), v3f(350., 350., 350.), 5923, 2, 0.60}; //0 to 1
-NoiseParams nparams_def_heat =
-	{25.0, 50.0, v3f(500., 500., 500.), 35293, 1, 0.00}; //-25 to 75
-NoiseParams nparams_def_humidity =
-	{50, 100/(2*1.6), v3f(750., 750., 750.), 12094, 2, 0.60}; //0 to 100
+
+
+/*
+MapgenV7Params mg_def_params_v7 = {
+	0,
+	1,
+	5,
+	MG_TREES | MG_CAVES | MG_DUNGEONS,
+	&nparams_v7_def_terrain,
+	&nparams_v7_def_bgroup,
+	&nparams_v7_def_heat,
+	&nparams_v7_def_humidity
+};*/
 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/*
-Mapgen::Mapgen(BiomeDefManager *biomedef) {
-	Mapgen(0, 0, biomedef);
-}*/
 
-
-MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, u64 seed) {
-	init(biomedef, mapgenid, seed,
-		&nparams_mtdefault, &nparams_def_bgroup,
-		&nparams_def_heat,  &nparams_def_humidity);
-}
-
-
-MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, u64 seed,
-			   NoiseParams *np_terrain, NoiseParams *np_bgroup,
-			   NoiseParams *np_heat,    NoiseParams *np_humidity) {
-	init(biomedef, mapgenid, seed,
-		np_terrain, np_bgroup, np_heat, np_humidity);
-}
-
-void MapgenV7::init(BiomeDefManager *biomedef, int mapgenid, u64 seed,
-			   NoiseParams *np_terrain, NoiseParams *np_bgroup,
-			   NoiseParams *np_heat,    NoiseParams *np_humidity) {
+MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, MapgenV7Params *params) {
 	this->generating  = false;
 	this->id       = mapgenid;
-	this->seed     = (int)seed;
 	this->biomedef = biomedef;
-	this->csize       = v3s16(5, 5, 5) * MAP_BLOCKSIZE; /////////////////get this from config!
-	this->water_level = g_settings->getS16("default_water_level"); ////fix this!
-	this->ystride = csize.X;
 
+	this->seed        = params->seed;
+	this->csize       = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE; /////////////////get this from config!
+	this->water_level = params->water_level;
+
+	//g_settings->getS16("default_water_level");
+
+	/*
 	this->np_terrain  = np_terrain;
 	this->np_bgroup   = np_bgroup;
 	this->np_heat     = np_heat;
 	this->np_humidity = np_humidity;
-	noise_terrain  = new Noise(np_terrain,  seed, csize.X, csize.Y);
-	noise_bgroup   = new Noise(np_bgroup,   seed, csize.X, csize.Y);
-	noise_heat     = new Noise(np_heat,     seed, csize.X, csize.Y);
-	noise_humidity = new Noise(np_humidity, seed, csize.X, csize.Y);
+	*/
+	noise_terrain  = new Noise(params->np_terrain,  seed, csize.X, csize.Y);
+	noise_bgroup   = new Noise(params->np_bgroup,   seed, csize.X, csize.Y);
+	noise_heat     = new Noise(params->np_heat,     seed, csize.X, csize.Y);
+	noise_humidity = new Noise(params->np_humidity, seed, csize.X, csize.Y);
 
 	this->ndef = biomedef->ndef;
 	n_air   = MapNode(ndef->getId("mapgen_air"));
@@ -121,9 +109,6 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	v3s16 em = vmanip->m_area.getExtent();
 	this->ystride = em.X;
 	this->zstride = em.Y * em.X;
-
-	if (node_max.X - node_min.X != 80)
-		printf("uhoh, diff = %d, ystride = %d\n", node_max.X - node_min.X, ystride);
 
 	node_min = (data->blockpos_min) * MAP_BLOCKSIZE;
 	node_max = (data->blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
@@ -166,18 +151,18 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 }
 
 
-void MapgenV7::updateLiquid(v3s16 node_min, v3s16 node_max) {
+void MapgenV7::updateLiquid(v3s16 nmin, v3s16 nmax) {
 	bool isliquid, wasliquid;
 	u32 i;
 
-	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
-		for (s16 x = node_min.X; x <= node_max.X; x++) {
+	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
+		for (s16 x = nmin.X; x <= nmax.X; x++) {
 			v2s16 p2d(x, z);
 			wasliquid = true;
 			v3s16 em  = vmanip->m_area.getExtent();
-			i = vmanip->m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
+			i = vmanip->m_area.index(v3s16(p2d.X, nmax.Y, p2d.Y));
 
-			for (s16 y = node_max.Y; y >= node_min.Y; y--) {
+			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
 				isliquid = ndef->get(vmanip->m_data[i]).isLiquid();
 				//there was a change between liquid and nonliquid, add to queue
 				if (isliquid != wasliquid)
@@ -191,12 +176,12 @@ void MapgenV7::updateLiquid(v3s16 node_min, v3s16 node_max) {
 }
 
 
-void MapgenV7::updateLighting(v3s16 node_min, v3s16 node_max) {
+void MapgenV7::updateLighting(v3s16 nmin, v3s16 nmax) {
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
 
-	VoxelArea a(node_min - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				node_max + v3s16(1,0,1) * MAP_BLOCKSIZE);
-	bool block_is_underground = (water_level > node_max.Y);
+	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
+				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	bool block_is_underground = (water_level > nmax.Y);
 	bool sunlight = !block_is_underground;
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
@@ -215,20 +200,55 @@ void MapgenV7::updateLighting(v3s16 node_min, v3s16 node_max) {
 }
 
 
-EmergeManager::EmergeManager(IGameDef *gamedef) {
-	this->seed = 0;
-	this->water_level = 0;
-	this->np_terrain  = &nparams_mtdefault;
-	this->np_bgroup   = &nparams_def_bgroup;
-	this->np_heat     = &nparams_def_heat;
-	this->np_humidity = &nparams_def_humidity;
+EmergeManager::EmergeManager(IGameDef *gamedef, int mg_version) {
+	this->mg_version = mg_version;
+	this->biomedef   = new BiomeDefManager(gamedef);
 
-	this->biomedef = new BiomeDefManager(gamedef);
+	this->params     = NULL;
+	setMapgenParams();
 }
 
 
 EmergeManager::~EmergeManager() {
 	delete biomedef;
+	delete params;
+}
+
+
+Mapgen *EmergeManager::getMapgen() {
+	if (!mapgen) {
+		switch (mg_version) {
+			case 6:
+				mapgen = new MapgenV6(0, params);
+				break;
+			case 7:
+				mapgen = new MapgenV7(biomedef, 0, params);
+				break;
+			default:
+				errorstream << "EmergeManager: Unsupported mapgen version "
+					<< mg_version << ", falling back to V6" << std::endl;
+				mg_version = 6;
+				mapgen = new MapgenV6(0, mgv6params);
+		}
+	}
+	return mapgen;
+}
+
+
+void EmergeManager::setMapgenParams() {
+	if (params)
+		delete params;
+
+	switch (mg_version) {
+		case 6:
+			params = new MapgenV6Params();
+			break;
+		case 7:
+			params = new MapgenV7Params();
+			break;
+		default: //////do something here!
+			;
+	}
 }
 
 
