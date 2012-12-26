@@ -236,6 +236,7 @@ void * MediaFetchThread::Thread()
 			i != m_file_requests.end(); i++) {
 		curl = curl_easy_init();
 		assert(curl);
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (m_remote_url + i->name).c_str());
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
 		std::ostringstream stream;
