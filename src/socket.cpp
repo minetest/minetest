@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "socket.h"
 
 #ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
 	// Without this some of the network functions are not found on mingw
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
@@ -46,10 +48,15 @@ typedef int socket_t;
 
 #include "constants.h"
 #include "debug.h"
+#include "config.h"
+#include "settings.h"
+#include "main.h" // for g_settings
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+#include <sstream>
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -80,13 +87,20 @@ void sockets_cleanup()
 
 Address::Address()
 {
-	m_address = 0;
+#if USE_IPV6
+	m_addr_family = 0;
+#endif
+	memset(&m_address, 0, sizeof m_address);
 	m_port = 0;
 }
 
 Address::Address(unsigned int address, unsigned short port)
 {
-	m_address = address;
+#if USE_IPV6
+	m_addr_family = AF_INET;
+#endif
+	m_address.ipv4.sin_family = AF_INET;
+	m_address.ipv4.sin_addr.s_addr = htonl(address);
 	m_port = port;
 }
 
@@ -94,14 +108,47 @@ Address::Address(unsigned int a, unsigned int b,
 		unsigned int c, unsigned int d,
 		unsigned short port)
 {
-	m_address = (a<<24) | (b<<16) | ( c<<8) | d;
+#if USE_IPV6
+	m_addr_family = AF_INET;
+#endif
+	m_address.ipv4.sin_family = AF_INET;
+	m_address.ipv4.sin_addr.s_addr = htonl((a << 24) | (b << 16) | (c << 8) | d);
 	m_port = port;
 }
 
+#if USE_IPV6
+Address::Address(const unsigned char * ipv6_bytes, unsigned short port)
+{
+	m_addr_family = AF_INET6;
+	m_address.ipv6.sin6_family = AF_INET6;
+	if(ipv6_bytes)
+		memcpy(m_address.ipv6.sin6_addr.s6_addr, ipv6_bytes, 16);
+	else
+		memset(m_address.ipv6.sin6_addr.s6_addr, 0, 16);
+	m_port = port;
+}
+#endif
+
 bool Address::operator==(Address &address)
 {
-	return (m_address == address.m_address
-			&& m_port == address.m_port);
+#if USE_IPV6
+	if(address.m_addr_family != m_addr_family || address.m_port != m_port)
+		return false;
+	else if(m_addr_family == AF_INET)
+	{
+		return m_address.ipv4.sin_addr.s_addr == address.m_address.ipv4.sin_addr.s_addr;
+	}
+	else if(m_addr_family == AF_INET6)
+	{
+		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
+			      address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
+	}
+	else
+		return false;
+#else
+	return address.m_port == m_port &&
+		m_address.ipv4.sin_addr.s_addr == address.m_address.ipv4.sin_addr.s_addr;
+#endif
 }
 
 bool Address::operator!=(Address &address)
@@ -111,49 +158,151 @@ bool Address::operator!=(Address &address)
 
 void Address::Resolve(const char *name)
 {
-	struct addrinfo *resolved;
+#if USE_IPV6
+	struct addrinfo *resolved, hints;
+	hints.ai_socktype = 0;
+	hints.ai_protocol = 0;
+	hints.ai_flags    = 0;
+	if(g_settings->getBool("enable_ipv6"))
+	{
+		hints.ai_family = AF_UNSPEC;
+	}
+	else
+	{
+		hints.ai_family = AF_INET;
+	}
+	int e = getaddrinfo(name, NULL, &hints, &resolved);
+	if(e != 0)
+		throw ResolveError("");
+
+	if(resolved->ai_family == AF_INET)
+	{
+		struct sockaddr_in *t = (struct sockaddr_in*)resolved->ai_addr;
+		m_addr_family = AF_INET;
+		m_address.ipv4 = *t;
+	}
+	else if(resolved->ai_family == AF_INET6)
+	{
+		struct sockaddr_in6 *t = (struct sockaddr_in6*)resolved->ai_addr;
+		m_addr_family = AF_INET6;
+		m_address.ipv6 = *t;
+	}
+	else
+	{
+		freeaddrinfo(resolved);
+		throw ResolveError("");
+	}
+	freeaddrinfo(resolved);
+#else
+	struct addrinfo * resolved;
 	int e = getaddrinfo(name, NULL, NULL, &resolved);
 	if(e != 0)
 		throw ResolveError("");
-	/*
-		FIXME: This is an ugly hack; change the whole class
-		to store the address as sockaddr
-	*/
-	struct sockaddr_in *t = (struct sockaddr_in*)resolved->ai_addr;
-	m_address = ntohl(t->sin_addr.s_addr);
+	m_address.ipv4 = *((struct sockaddr_in *) resolved->ai_addr);
 	freeaddrinfo(resolved);
+#endif
 }
 
 std::string Address::serializeString() const
 {
-	unsigned int a, b, c, d;
-	a = (m_address & 0xFF000000)>>24;
-	b = (m_address & 0x00FF0000)>>16;
-	c = (m_address & 0x0000FF00)>>8;
-	d = (m_address & 0x000000FF);
+#if USE_IPV6
+	if(m_addr_family == AF_INET)
+	{
+		unsigned int a, b, c, d, addr;
+		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
+		a = (addr & 0xFF000000)>>24;
+		b = (addr & 0x00FF0000)>>16;
+		c = (addr & 0x0000FF00)>>8;
+		d = (addr & 0x000000FF);
+		return itos(a)+"."+itos(b)+"."+itos(c)+"."+itos(d);
+	}
+	else if(m_addr_family == AF_INET6)
+	{
+		std::ostringstream os;
+		for(int i = 0; i < 16; i += 2)
+		{
+			unsigned short section =
+				(m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
+				(m_address.ipv6.sin6_addr.s6_addr[i + 1]);
+			os << std::hex << section;
+			if(i < 14)
+				os << ":";
+		}
+		return os.str();
+	}
+	else
+		return std::string("");
+#else
+	unsigned int a, b, c, d, addr;
+	addr = ntohl(m_address.ipv4.sin_addr.s_addr);
+	a = (addr & 0xFF000000)>>24;
+	b = (addr & 0x00FF0000)>>16;
+	c = (addr & 0x0000FF00)>>8;
+	d = (addr & 0x000000FF);
 	return itos(a)+"."+itos(b)+"."+itos(c)+"."+itos(d);
+#endif
 }
 
-unsigned int Address::getAddress() const
+struct sockaddr_in Address::getAddress() const
 {
-	return m_address;
+	return m_address.ipv4; // NOTE: NO PORT INCLUDED, use getPort()
 }
+
+#if USE_IPV6
+struct sockaddr_in6 Address::getAddress6() const
+{
+	return m_address.ipv6; // NOTE: NO PORT INCLUDED, use getPort()
+}
+#endif
 
 unsigned short Address::getPort() const
 {
 	return m_port;
 }
 
+#if USE_IPV6
+int Address::getFamily() const
+{
+	return m_addr_family;
+}
+
+bool Address::isIPv6() const
+{
+	return m_addr_family == AF_INET6;
+}
+#endif
+
 void Address::setAddress(unsigned int address)
 {
-	m_address = address;
+#if USE_IPV6
+	m_addr_family = AF_INET;
+#endif
+	m_address.ipv4.sin_family = AF_INET;
+	m_address.ipv4.sin_addr.s_addr = htonl(address);
 }
 
 void Address::setAddress(unsigned int a, unsigned int b,
 		unsigned int c, unsigned int d)
 {
-	m_address = (a<<24) | (b<<16) | ( c<<8) | d;
+#if USE_IPV6
+	m_addr_family = AF_INET;
+#endif
+	m_address.ipv4.sin_family = AF_INET;
+	m_address.ipv4.sin_addr.s_addr = htonl((a << 24) | (b << 16) | (c << 8) | d);
+	dstream << m_address.ipv4.sin_addr.s_addr << std::endl;
 }
+
+#if USE_IPV6
+void Address::setAddress(const unsigned char * ipv6_bytes)
+{
+	m_addr_family = AF_INET6;
+	m_address.ipv6.sin6_family = AF_INET6;
+	if(ipv6_bytes)
+		memcpy(m_address.ipv6.sin6_addr.s6_addr, ipv6_bytes, 16);
+	else
+		memset(m_address.ipv6.sin6_addr.s6_addr, 0, 16);
+}
+#endif
 
 void Address::setPort(unsigned short port)
 {
@@ -162,11 +311,18 @@ void Address::setPort(unsigned short port)
 
 void Address::print(std::ostream *s) const
 {
-	(*s)<<((m_address>>24)&0xff)<<"."
-			<<((m_address>>16)&0xff)<<"."
-			<<((m_address>>8)&0xff)<<"."
-			<<((m_address>>0)&0xff)<<":"
-			<<m_port;
+#if USE_IPV6
+	if(m_addr_family == AF_INET6)
+	{
+		(*s) << "[" << serializeString() << "]:" << m_port;
+	}
+	else
+	{
+		(*s) << serializeString() << ":" << m_port;
+	}
+#else
+	(*s) << serializeString() << ":" << m_port;
+#endif
 }
 
 void Address::print() const
@@ -174,20 +330,36 @@ void Address::print() const
 	print(&dstream);
 }
 
+// Yes, this is a preprocessor mess, but whatever . . . .
+#if USE_IPV6
+UDPSocket::UDPSocket(bool ipv6)
+#else
 UDPSocket::UDPSocket()
+#endif
 {
 	if(g_sockets_initialized == false)
 		throw SocketException("Sockets not initialized");
-	
-    m_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	
+
+#if USE_IPV6
+	// Use IPv6 if specified
+	m_addr_family = ipv6 ? AF_INET6 : AF_INET;
+	m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
 	if(DP)
-	dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::UDPSocket()"<<std::endl;
-	
-    if(m_handle <= 0)
-    {
+	{
+		dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::UDPSocket(): ipv6 = "
+			<<(g_settings->getBool("enable_ipv6") ? "true" : "false")<<std::endl;
+	}
+#else
+	// IPv4-only code
+	m_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if(DP)
+		dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::UDPSocket()"<<std::endl;
+#endif
+
+	if(m_handle <= 0)
+	{
 		throw SocketException("Failed to create socket");
-    }
+	}
 
 /*#ifdef _WIN32
 	DWORD nonblocking = 0;
@@ -224,18 +396,48 @@ void UDPSocket::Bind(unsigned short port)
 	dstream<<DPS<<"UDPSocket("<<(int)m_handle
 			<<")::Bind(): port="<<port<<std::endl;
 
-    sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(port);
-
-    if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
-    {
+#if USE_IPV6
+	if(m_addr_family == AF_INET6)
+	{
+		sockaddr_in6 address;
+		address.sin6_family = AF_INET6;
+		address.sin6_addr = in6addr_any;
+		address.sin6_port = htons(port);
+		if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in6)) < 0)
+		{
+#ifndef DISABLE_ERRNO
+			dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
+#endif // !DISABLE_ERRNO
+			throw SocketException("Failed to bind socket");
+		}
+	}
+	else
+	{
+		sockaddr_in address;
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = INADDR_ANY;
+		address.sin_port = htons(port);
+		if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
+		{
+#ifndef DISABLE_ERRNO
+			dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
+#endif // !DISABLE_ERRNO
+			throw SocketException("Failed to bind socket");
+		}
+	}
+#else
+	sockaddr_in address;
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons(port);
+	if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
+	{
 #ifndef DISABLE_ERRNO
 		dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
-#endif
+#endif // !DISABLE_ERRNO
 		throw SocketException("Failed to bind socket");
-    }
+	}
+#endif // USE_IPV6
 }
 
 void UDPSocket::Send(const Address & destination, const void * data, int size)
@@ -274,18 +476,36 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 	if(dumping_packet)
 		return;
 
-	sockaddr_in address;
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = htonl(destination.getAddress());
+#if USE_IPV6
+	if(destination.getFamily() != m_addr_family)
+		throw SendFailedException("Address family mismatch");
+
+	int sent;
+	if(m_addr_family == AF_INET6)
+	{
+		struct sockaddr_in6 address = destination.getAddress6();
+		address.sin6_port = htons(destination.getPort());
+		sent = sendto(m_handle, (const char *) data, size,
+			0, (struct sockaddr *) &address, sizeof(struct sockaddr_in6));
+	}
+	else
+	{
+		struct sockaddr_in address = destination.getAddress();
+		address.sin_port = htons(destination.getPort());
+		sent = sendto(m_handle, (const char *) data, size,
+			0, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
+	}
+#else
+	struct sockaddr_in address = destination.getAddress();
 	address.sin_port = htons(destination.getPort());
+	int sent = sendto(m_handle, (const char *) data, size,
+		      0, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
+#endif
 
-	int sent = sendto(m_handle, (const char*)data, size,
-		0, (sockaddr*)&address, sizeof(sockaddr_in));
-
-    if(sent != size)
-    {
+	if(sent != size)
+	{
 		throw SendFailedException("Failed to send packet");
-    }
+	}
 }
 
 int UDPSocket::Receive(Address & sender, void * data, int size)
@@ -295,19 +515,53 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 		return -1;
 	}
 
+#if USE_IPV6
+	int received;
+	if(m_addr_family == AF_INET6)
+	{
+		sockaddr_in6 address;
+		socklen_t address_len = sizeof(address);
+
+		received = recvfrom(m_handle, (char*) data,
+				size, 0, (sockaddr*)&address, &address_len);
+
+		if(received < 0)
+			return -1;
+
+		unsigned short address_port = ntohs(address.sin6_port);
+		sender = Address(address.sin6_addr.s6_addr, address_port);
+	}
+	else
+	{
+		sockaddr_in address;
+		socklen_t address_len = sizeof(address);
+
+		received = recvfrom(m_handle, (char*)data,
+				size, 0, (sockaddr*)&address, &address_len);
+
+		if(received < 0)
+			return -1;
+
+		unsigned int address_ip = ntohl(address.sin_addr.s_addr);
+		unsigned short address_port = ntohs(address.sin_port);
+
+		sender = Address(address_ip, address_port);
+	}
+#else
 	sockaddr_in address;
 	socklen_t address_len = sizeof(address);
-
+	
 	int received = recvfrom(m_handle, (char*)data,
 			size, 0, (sockaddr*)&address, &address_len);
 
 	if(received < 0)
 		return -1;
-
+	
 	unsigned int address_ip = ntohl(address.sin_addr.s_addr);
-	unsigned int address_port = ntohs(address.sin_port);
-
+	unsigned short address_port = ntohs(address.sin_port);
+	
 	sender = Address(address_ip, address_port);
+#endif
 
 	if(DP){
 		//dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::Receive(): sender=";

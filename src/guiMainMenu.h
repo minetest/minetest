@@ -52,6 +52,8 @@ struct MainMenuData
 	bool enable_damage;
 	int selected_world;
 	bool simple_singleplayer_mode;
+	// Both client and server
+	bool enable_ipv6;
 	// Actions
 	std::wstring create_world_name;
 	std::string create_world_gameid;

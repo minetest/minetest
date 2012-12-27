@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "server.h"
 #include "util/pointedthing.h"
+#include "config.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -188,6 +189,21 @@ public:
 		NOTE: Nothing is thread-safe here.
 	*/
 
+#if USE_IPV6
+	Client(
+			IrrlichtDevice *device,
+			const char *playername,
+			std::string password,
+			MapDrawControl &control,
+			IWritableTextureSource *tsrc,
+			IWritableShaderSource *shsrc,
+			IWritableItemDefManager *itemdef,
+			IWritableNodeDefManager *nodedef,
+			ISoundManager *sound,
+			MtEventManager *event,
+			bool ipv6
+	);
+#else
 	Client(
 			IrrlichtDevice *device,
 			const char *playername,
@@ -200,6 +216,7 @@ public:
 			ISoundManager *sound,
 			MtEventManager *event
 	);
+#endif
 	
 	~Client();
 	/*

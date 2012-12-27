@@ -20,7 +20,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SOCKET_HEADER
 #define SOCKET_HEADER
 
+#ifdef _WIN32
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+#else
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+#endif
+
 #include <ostream>
+#include "config.h"
 #include "exceptions.h"
 
 extern bool socket_enable_debug_output;
@@ -66,24 +79,49 @@ public:
 	bool operator==(Address &address);
 	bool operator!=(Address &address);
 	void Resolve(const char *name);
-	unsigned int getAddress() const;
+	struct sockaddr_in getAddress() const;
 	unsigned short getPort() const;
 	void setAddress(unsigned int address);
 	void setAddress(unsigned int a, unsigned int b,
 			unsigned int c, unsigned int d);
+#if USE_IPV6
+	Address(const unsigned char * ipv6_bytes, unsigned short port);
+	void setAddress(const unsigned char * ipv6_bytes);
+	struct sockaddr_in6 getAddress6() const;
+	int getFamily() const;
+	bool isIPv6() const;
+#endif
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	void print() const;
 	std::string serializeString() const;
 private:
-	unsigned int m_address;
-	unsigned short m_port;
+#if USE_IPV6
+	unsigned int m_addr_family;
+	union
+	{
+		struct sockaddr_in  ipv4;
+		struct sockaddr_in6 ipv6;
+	} m_address;
+#else
+	union
+	{
+		// It only has a single element, but it makes the IPv4-only
+		// code more like the dual-stack code
+		struct sockaddr_in ipv4;
+	} m_address;
+#endif
+	unsigned short m_port; // Port is separate from sockaddr structures
 };
 
 class UDPSocket
 {
 public:
+#if USE_IPV6
+	UDPSocket(bool ipv6);
+#else
 	UDPSocket();
+#endif
 	~UDPSocket();
 	void Bind(unsigned short port);
 	//void Close();
@@ -98,6 +136,9 @@ public:
 private:
 	int m_handle;
 	int m_timeout_ms;
+#if USE_IPV6
+	int m_addr_family;
+#endif
 };
 
 #endif
