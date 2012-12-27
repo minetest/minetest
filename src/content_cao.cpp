@@ -1111,6 +1111,7 @@ public:
 			{
 				LocalPlayer *player = m_env->getLocalPlayer();
 				player->overridePosition = getParent()->getPosition();
+				m_env->getLocalPlayer()->parent = getParent();
 			}
 		}
 		else

@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 
+class ClientActiveObject;
+
 class LocalPlayer : public Player
 {
 public:
@@ -32,6 +34,8 @@ public:
 	{
 		return true;
 	}
+	
+	ClientActiveObject *parent;
 
 	bool isAttached;
 
