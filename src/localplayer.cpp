@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	Player(gamedef),
+	parent(0),
 	isAttached(false),
 	overridePosition(v3f(0,0,0)),
 	last_position(v3f(0,0,0)),
