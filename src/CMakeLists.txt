@@ -188,6 +188,7 @@ set(common_SRCS
 	log.cpp
 	content_sao.cpp
 	mapgen.cpp
+	treegen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
 	collision.cpp
