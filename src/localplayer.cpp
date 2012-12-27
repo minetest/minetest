@@ -399,13 +399,13 @@ void LocalPlayer::applyControl(float dtime)
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
 	
-	// If free movement and fast movement, always move fast
-	if(free_move && fast_move)
-		superspeed = true;
-	
 	// Old descend control
 	if(g_settings->getBool("aux1_descends"))
 	{
+		// If free movement and fast movement, always move fast
+		if(free_move && fast_move)
+			superspeed = true;
+		
 		// Auxiliary button 1 (E)
 		if(control.aux1)
 		{
@@ -440,10 +440,9 @@ void LocalPlayer::applyControl(float dtime)
 		// Auxiliary button 1 (E)
 		if(control.aux1)
 		{
-			if(!free_move && !is_climbing)
+			if(!is_climbing)
 			{
-				// If not free movement but fast is allowed, aux1 is
-				// "Turbo button"
+				// aux1 is "Turbo button"
 				if(fast_move)
 					superspeed = true;
 			}
@@ -455,7 +454,7 @@ void LocalPlayer::applyControl(float dtime)
 			{
 				// In free movement mode, sneak descends
 				v3f speed = getSpeed();
-				if(fast_move)
+				if(fast_move && control.aux1)
 					speed.Y = -20*BS;
 				else
 					speed.Y = -walkspeed_max;
@@ -497,10 +496,20 @@ void LocalPlayer::applyControl(float dtime)
 		if(free_move)
 		{
 			v3f speed = getSpeed();
-			if(fast_move)
-				speed.Y = 20*BS;
-			else
-				speed.Y = walkspeed_max;
+			
+			if(g_settings->getBool("aux1_descends"))
+			{
+				if(fast_move)
+					speed.Y = 20*BS;
+				else
+					speed.Y = walkspeed_max;
+			} else {
+				if(fast_move && control.aux1)
+					speed.Y = 20*BS;
+				else
+					speed.Y = walkspeed_max;
+			}
+			
 			setSpeed(speed);
 		}
 		else if(m_can_jump)
@@ -548,7 +557,7 @@ void LocalPlayer::applyControl(float dtime)
 	f32 inc = walk_acceleration * BS * dtime;
 	
 	// Faster acceleration if fast and free movement
-	if(free_move && fast_move)
+	if(free_move && fast_move && superspeed)
 		inc = walk_acceleration * BS * dtime * 10;
 	
 	// Accelerate to target speed with maximum increment
