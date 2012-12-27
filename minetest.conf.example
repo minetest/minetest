@@ -124,6 +124,12 @@
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
 #console_alpha = 200
+# Selection box border color (R,G,B)
+#selectionbox_color = (0,0,0)
+# Crosshair color (R,G,B)
+#crosshair_color = (255,255,255)
+# Cross alpha (opaqueness, between 0 and 255)
+#crosshair_alpha = 255
 # Sound settings
 #enable_sound = true
 #sound_volume = 0.7
