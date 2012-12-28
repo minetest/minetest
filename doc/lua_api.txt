@@ -725,6 +725,9 @@ field[<name>;<label>;<default>]
 ^ must be used without a size[] element
 ^ a 'Proceed' button will be added automatically
 
+textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
+^ same as fields above, but with multi-line input
+
 label[<X>,<Y>;<label>]
 ^ x and y work as per field
 ^ label is the text on the label
