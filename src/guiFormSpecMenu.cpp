@@ -318,13 +318,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
 			m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
 		}
-		else if(type == "field")
+		else if(type == "field" or type == "textarea")
 		{
 			std::string fname = f.next(";");
 			std::string flabel = f.next(";");
-			
+
 			if(fname.find(",") == std::string::npos && flabel.find(",") == std::string::npos)
 			{
+				if (type == "textarea")
+					errorstream<<"WARNING: Textarea connot be unpositioned"<<std::endl;
+
 				if(!bp_set)
 				{
 					rect = core::rect<s32>(
@@ -339,7 +342,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					bp_set = 1;
 				}
 				else if(bp_set == 2)
-					errorstream<<"WARNING: invalid use of unpositioned field in inventory"<<std::endl;
+					errorstream<<"WARNING: invalid use of unpositioned "<<type<<" in inventory"<<std::endl;
 
 				v2s32 pos = basepos;
 				pos.Y = ((m_fields.size()+2)*60);
@@ -353,20 +356,32 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				pos.Y = stof(fname.substr(fname.find(",")+1)) * (float)spacing.Y;
 				v2s32 geom;
 				geom.X = (stof(flabel.substr(0,flabel.find(","))) * (float)spacing.X)-(spacing.X-imgsize.X);
-				pos.Y += (stof(flabel.substr(flabel.find(",")+1)) * (float)imgsize.Y)/2;
+				if (type == "textarea")
+				{
+					geom.Y = (stof(flabel.substr(flabel.find(",")+1)) * (float)imgsize.Y) - (spacing.Y-imgsize.Y);
+					pos.Y += 15;
+				}
+				else
+				{
+					pos.Y += (stof(flabel.substr(flabel.find(",")+1)) * (float)imgsize.Y)/2;
+					pos.Y -= 15;
+					geom.Y = 30;
+				}
 
-				rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
+				rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+
+
 				
 				fname = f.next(";");
 				flabel = f.next(";");
 				if(bp_set != 2)
-					errorstream<<"WARNING: invalid use of positioned field without a size[] element"<<std::endl;
+					errorstream<<"WARNING: invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
 				
 			}
 
 			std::string odefault = f.next("]");
 			std::string fdefault;
-			
+
 			// fdefault may contain a variable reference, which
 			// needs to be resolved from the node metadata
 			if(m_form_src)
@@ -380,41 +395,40 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				narrow_to_wide(fdefault.c_str()),
 				258+m_fields.size()
 			);
-			
-			// three cases: field and no label, label and no field, label and field
-			if (flabel == "") 
-			{
-				spec.send = true;
-				gui::IGUIElement *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-				Environment->setFocus(e);
 
-				irr::SEvent evt;
-				evt.EventType = EET_KEY_INPUT_EVENT;
-				evt.KeyInput.Key = KEY_END;
-				evt.KeyInput.PressedDown = true;
-				e->OnEvent(evt);
-			}
-			else if (fname == "")
+			// three cases: field name and no label, label and field, label name and no field
+			gui::IGUIEditBox *e;
+			if (fname == "")
 			{
-				// set spec field id to 0, this stops submit searching for a value that isn't there
+				// spec field id to 0, this stops submit searching for a value that isn't there
 				Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
 			}
 			else
 			{
 				spec.send = true;
-				gui::IGUIElement *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+				e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 				Environment->setFocus(e);
-				rect.UpperLeftCorner.Y -= 15;
-				rect.LowerRightCorner.Y -= 15;
-				Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 
-				irr::SEvent evt;
-				evt.EventType = EET_KEY_INPUT_EVENT;
-				evt.KeyInput.Key = KEY_END;
-				evt.KeyInput.PressedDown = true;
-				e->OnEvent(evt);
+				if (type == "textarea")
+				{
+					e->setMultiLine(true);
+					e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+				} else {
+					irr::SEvent evt;
+					evt.KeyInput.Key = KEY_END;
+					evt.EventType = EET_KEY_INPUT_EVENT;
+					evt.KeyInput.PressedDown = true;
+					e->OnEvent(evt);
+				}
+
+				if (flabel != "")
+				{
+					rect.UpperLeftCorner.Y -= 15;
+					rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
+					Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
+				}
 			}
-			
+
 			m_fields.push_back(spec);
 		}
 		else if(type == "label")
