@@ -1063,6 +1063,60 @@ methods:
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 - clear_objects()
   ^ clear all objects in the environments 
+- spawn_tree (pos, {treedef})
+  ^ spawns L-System tree at given pos with definition in treedef table
+  treedef={
+      axiom,        - string    initial tree axiom
+      rules_a,      - string    rules set A
+      rules_b,      - string    rules set B
+      rules_c,      - string    rules set C
+      rules_d,      - string    rules set D
+      trunk,        - string    trunk node name
+      leaves,       - string    leaves node name
+      angle,        - num       angle in deg
+      iterations,   - num       max # of iterations, usually 2 -5
+      random_level, - num       factor to lower nr of iterations, usually 0 - 3
+      thin_trunks,  - boolean   true -> use thin trunks
+      fruit_tree,   - boolean   true -> is a fruit tree
+      fruit         - string    fruit node name
+  }
+
+  Key for Special L-System Symbols used in Axioms
+    G  - move forward one unit with the pin down
+    F  - move forward one unit with the pin up
+    A  - replace with rules set A
+    B  - replace with rules set B
+    C  - replace with rules set C
+    D  - replace with rules set D
+    a  - replace with rules set A, chance 90%
+    b  - replace with rules set B, chance 80%
+    c  - replace with rules set C, chance 70%
+    d  - replace with rules set D, chance 60%
+    +  - yaw the turtle right by angle parameter
+    -  - yaw the turtle left by angle parameter
+    &  - pitch the turtle down by angle parameter
+    ^  - pitch the turtle up by angle parameter
+    /  - roll the turtle to the right by angle parameter
+    *  - roll the turtle to the left by angle parameter
+    [  - save in stack current state info
+    ]  - recover from stack state info
+
+  Example usage: spawn small apple tree
+  apple_tree={
+      axiom="FFFFFAFFBF",
+      rules_a="[&&&FFFFF&&FFFF][&&&++++FFFFF&&FFFF][&&&----FFFFF&&FFFF]",
+      rules_b="[&&&++FFFFF&&FFFF][&&&--FFFFF&&FFFF][&&&------FFFFF&&FFFF]",
+      trunk="default:tree",
+      leaves="default:leaves",
+      angle=30,
+      iterations=2,
+      random_level=0,
+      thin_trunks=true,
+      fruit_tree=true,
+      fruit="default:apple"
+  }
+  minetest.env:spawn_tree(pos,apple_tree)
+
 Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)

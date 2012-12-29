@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
-#include "mapgen.h" // For mapgen::make_tree
+#include "treegen.h" // For treegen::make_tree
 #include "map.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -118,7 +118,7 @@ public:
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
 		vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
 		bool is_apple_tree = myrand()%4 == 0;
-		mapgen::make_tree(vmanip, tree_p, is_apple_tree, ndef);
+		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef);
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
