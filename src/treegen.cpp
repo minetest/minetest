@@ -17,8 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <irr_v3d.h>
+#include "irr_v3d.h"
 #include <stack>
+#include "util/numeric.h"
+#include "util/mathconstants.h"
 #include "noise.h"
 #include "map.h"
 #include "environment.h"
@@ -281,7 +283,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 				for(x=-size; x<size+1; x++)
 					for(y=-size; y<size+1; y++)
 						for(z=-size; z<size+1; z++)
-							if (abs(x) == size and abs(y) == size and abs(z) == size)
+							if (abs(x) == size && abs(y) == size && abs(z) == size)
 							{
 								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x+1,p0.Y+position.Y+y,p0.Z+position.Z+z),tree_definition);
 								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x-1,p0.Y+position.Y+y,p0.Z+position.Z+z),tree_definition);
@@ -343,7 +345,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 void make_tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		MapNode node)
 {
-	v3s16 p1 = v3s16(round(p0.X),round(p0.Y),round(p0.Z));
+	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
 	if(vmanip.m_area.contains(p1) == false)
 		return;
 	u32 vi = vmanip.m_area.index(p1);
@@ -356,7 +358,7 @@ void make_tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition)
 {
-	v3s16 p1 = v3s16(round(p0.X),round(p0.Y),round(p0.Z));
+	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
 	if(vmanip.m_area.contains(p1) == false)
 		return;
 	u32 vi = vmanip.m_area.index(p1);
@@ -369,7 +371,7 @@ void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition)
 {
-	v3s16 p1 = v3s16(round(p0.X),round(p0.Y),round(p0.Z));
+	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
 	if(vmanip.m_area.contains(p1) == false)
 		return;
 	u32 vi = vmanip.m_area.index(p1);
