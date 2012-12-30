@@ -1361,8 +1361,8 @@ void make_block(BlockMakeData *data)
 	{
 		int avg_height = (int)((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
 				base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
-        // Skip if cave is above ground level
-        if ((node_max.Y + node_min.Y) / 2 > avg_height)
+		// Skip if cave is above ground level
+		if ((node_max.Y + node_min.Y) / 2 > avg_height)
 			break;
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
