@@ -1359,12 +1359,11 @@ void make_block(BlockMakeData *data)
 	}
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
-		int avg_height = (int)
-                          ((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
-                                base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
+		int avg_height = (int)((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
+				base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
         // Skip if cave is above ground level
         if ((node_max.Y + node_min.Y) / 2 > avg_height)
-                        break;
+			break;
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = ps.range(2,6);
