@@ -235,12 +235,12 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
     F  - move forward one unit with the pin up 
     A  - replace with rules set A
     B  - replace with rules set B
-    C  - replace with rules set A
-    D  - replace with rules set B
+    C  - replace with rules set C
+    D  - replace with rules set D
     a  - replace with rules set A, chance 90%
     b  - replace with rules set B, chance 80%
-    c  - replace with rules set A, chance 70%
-    d  - replace with rules set B, chance 60%
+    c  - replace with rules set C, chance 70%
+    d  - replace with rules set D, chance 60%
     +  - yaw the turtle right by angle degrees
     -  - yaw the turtle left by angle degrees
     &  - pitch the turtle down by angle degrees
