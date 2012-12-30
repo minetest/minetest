@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace irr;
 
+// Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 #ifdef _MSC_VER
 	// Windows
 	typedef unsigned long long u64;
@@ -32,6 +34,7 @@ using namespace irr;
 	#include <stdint.h>
 	typedef uint64_t u64;
 	//typedef unsigned long long u64;
+#endif
 #endif
 
 #endif

@@ -260,7 +260,7 @@ KeyPress::KeyPress(const char *name)
 		try {
 			Key = keyname_to_keycode(name);
 			m_name = name;
-			if (strlen(name) > 8) {
+			if (strlen(name) > 8 && strncmp(name, "KEY_KEY_", 8) == 0) {
 				int chars_read = mbtowc(&Char, name + 8, 1);
 				assert (chars_read == 1 && "unexpected multibyte character");
 			} else

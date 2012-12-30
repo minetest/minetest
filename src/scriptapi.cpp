@@ -48,6 +48,7 @@ extern "C" {
 #include "noise.h" // PseudoRandom for LuaPseudoRandom
 #include "util/pointedthing.h"
 #include "rollback.h"
+#include "treegen.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -4004,6 +4005,45 @@ private:
 		return 0;
 	}
 
+	static int l_spawn_tree(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		v3s16 p0 = read_v3s16(L, 2);
+
+		treegen::TreeDef tree_def;
+		std::string trunk,leaves,fruit;
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+
+		if(lua_istable(L, 3))
+		{
+			getstringfield(L, 3, "axiom", tree_def.initial_axiom);
+			getstringfield(L, 3, "rules_a", tree_def.rules_a);
+			getstringfield(L, 3, "rules_b", tree_def.rules_b);
+			getstringfield(L, 3, "rules_c", tree_def.rules_a);
+			getstringfield(L, 3, "rules_d", tree_def.rules_b);
+			getstringfield(L, 3, "trunk", trunk);
+			tree_def.trunknode=ndef->getId(trunk);
+			getstringfield(L, 3, "leaves", leaves);
+			tree_def.leavesnode=ndef->getId(leaves);
+			getintfield(L, 3, "angle", tree_def.angle);
+			getintfield(L, 3, "iterations", tree_def.iterations);
+			getintfield(L, 3, "random_level", tree_def.iterations_random_level);
+			getboolfield(L, 3, "thin_trunks", tree_def.thin_trunks);
+			getboolfield(L, 3, "fruit_tree", tree_def.fruit_tree);
+			if (tree_def.fruit_tree)
+			{
+				getstringfield(L, 3, "fruit", fruit);
+				tree_def.fruitnode=ndef->getId(fruit);
+			}
+		}
+		else
+			return 0;
+		treegen::spawn_ltree (env, p0, ndef, tree_def);
+		return 1;
+	}
+
 public:
 	EnvRef(ServerEnvironment *env):
 		m_env(env)
@@ -4086,6 +4126,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
 	method(EnvRef, clear_objects),
+	method(EnvRef, spawn_tree),
 	{0,0}
 };
 

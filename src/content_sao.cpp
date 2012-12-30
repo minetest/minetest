@@ -356,8 +356,11 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_last_sent_position_timer(0),
 	m_last_sent_move_precision(0),
 	m_armor_groups_sent(false),
+	m_animation_speed(0),
+	m_animation_blend(0),
 	m_animation_sent(false),
 	m_bone_position_sent(false),
+	m_attachment_parent_id(0),
 	m_attachment_sent(false)
 {
 	// Only register type if no environment supplied

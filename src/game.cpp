@@ -2920,6 +2920,11 @@ void the_game(
 
 		if(show_hud)
 		{
+			v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
+			u32 selectionbox_color_r = rangelim(myround(selectionbox_color.X), 0, 255);
+			u32 selectionbox_color_g = rangelim(myround(selectionbox_color.Y), 0, 255);
+			u32 selectionbox_color_b = rangelim(myround(selectionbox_color.Z), 0, 255);
+
 			for(std::vector<aabb3f>::const_iterator
 					i = hilightboxes.begin();
  					i != hilightboxes.end(); i++)
@@ -2929,7 +2934,7 @@ void the_game(
 						<<" max="
 						<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
 						<<std::endl;*/
-				driver->draw3DBox(*i, video::SColor(255,0,0,0));
+				driver->draw3DBox(*i, video::SColor(255,selectionbox_color_r,selectionbox_color_g,selectionbox_color_b));
 			}
 		}
 
@@ -2962,12 +2967,18 @@ void the_game(
 		*/
 		if(show_hud)
 		{
+			v3f crosshair_color = g_settings->getV3F("crosshair_color");
+			u32 crosshair_color_r = rangelim(myround(crosshair_color.X), 0, 255);
+			u32 crosshair_color_g = rangelim(myround(crosshair_color.Y), 0, 255);
+			u32 crosshair_color_b = rangelim(myround(crosshair_color.Z), 0, 255);
+			u32 crosshair_alpha = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
+
 			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
 					displaycenter + core::vector2d<s32>(10,0),
-					video::SColor(255,255,255,255));
+					video::SColor(crosshair_alpha,crosshair_color_r,crosshair_color_g,crosshair_color_b));
 			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
 					displaycenter + core::vector2d<s32>(0,10),
-					video::SColor(255,255,255,255));
+					video::SColor(crosshair_alpha,crosshair_color_r,crosshair_color_g,crosshair_color_b));
 		}
 
 		} // timer
