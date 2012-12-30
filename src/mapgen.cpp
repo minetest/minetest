@@ -1359,6 +1359,12 @@ void make_block(BlockMakeData *data)
 	}
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
+		int avg_height = (int)
+                          ((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
+                                base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
+        // Skip if cave is above ground level
+        if ((node_max.Y + node_min.Y) / 2 > avg_height)
+                        break;
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = ps.range(2,6);
@@ -1393,8 +1399,7 @@ void make_block(BlockMakeData *data)
 		of -= v3s16(1,0,1) * more;
 		
 		s16 route_y_min = 0;
-		// Allow half a diameter + 7 over stone surface
-		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2 + 7;
+		s16 route_y_max = -of.Y + stone_surface_max_y;
 
 		/*// If caves, don't go through surface too often
 		if(large_cave == false)
@@ -1615,9 +1620,8 @@ void make_block(BlockMakeData *data)
 
 			orp = rp;
 		}
-	
-	}
 
+	}
 	}//timer1
 #endif
 	
@@ -1734,6 +1738,9 @@ void make_block(BlockMakeData *data)
 		for(int z1=0; z1<size.Z; z1++)
 		{
 			v3s16 p = p0 + v3s16(x1,y1,z1);
+			//Cancel when above water level
+			if (p.Y>WATER_LEVEL)
+				continue;
 			u32 i = vmanip.m_area.index(p);
 			if(!vmanip.m_area.contains(i))
 				continue;
