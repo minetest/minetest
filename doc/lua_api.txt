@@ -1104,16 +1104,14 @@ methods:
 	
 	Example usage: spawn small apple tree
 	apple_tree={
-			axiom="FFFFFFAFAFBFB",
-			rules_a="[&&FFFFB][&&+++FFFFB][&&---FFFFB]",
-			rules_b="[&&FFF][&&+++FFF][&&---FFF]",
-			rules_c="",
-			rules_d="",
+			axiom="FFFFFAFFBF",
+			rules_a="[&&&FFFFF&&FFFF][&&&++++FFFFF&&FFFF][&&&----FFFFF&&FFFF]",
+			rules_b="[&&&++FFFFF&&FFFF][&&&--FFFFF&&FFFF][&&&------FFFFF&&FFFF]",
 			trunk="default:tree",
 			leaves="default:leaves",
-			angle=45,
-			iterations=3,
-			random_level=1,
+			angle=30,
+			iterations=2,
+			random_level=0,
 			thin_trunks=true,
 			fruit_tree=true,
 			fruit="default:apple"
