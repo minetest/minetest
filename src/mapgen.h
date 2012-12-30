@@ -42,10 +42,6 @@ namespace mapgen
 	// Main map generation routine
 	void make_block(BlockMakeData *data);
 	
-	// Add a tree
-	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-			bool is_apple_tree, INodeDefManager *ndef);
-	
 	/*
 		These are used by FarMesh
 	*/
