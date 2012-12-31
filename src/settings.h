@@ -61,7 +61,7 @@ public:
 	void writeLines(std::ostream &os)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		for(core::map<std::string, std::string>::Iterator
 				i = m_settings.getIterator();
 				i.atEnd() == false; i++)
@@ -95,9 +95,9 @@ public:
 	bool parseConfigLine(const std::string &line)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		std::string trimmedline = trim(line);
-		
+
 		// Ignore empty lines and comments
 		if(trimmedline.size() == 0 || trimmedline[0] == '#')
 			return true;
@@ -111,15 +111,15 @@ public:
 
 		if(name == "")
 			return true;
-		
+
 		std::string value = sf.next("\n");
 		value = trim(value);
 
 		/*infostream<<"Config name=\""<<name<<"\" value=\""
 				<<value<<"\""<<std::endl;*/
-		
+
 		m_settings[name] = value;
-		
+
 		return true;
 	}
 
@@ -144,7 +144,7 @@ public:
 	{
 		if(is.eof())
 			return false;
-		
+
 		/*
 			NOTE: This function might be expanded to allow multi-line
 			      settings.
@@ -169,16 +169,16 @@ public:
 
 		/*infostream<<"Parsing configuration file: \""
 				<<filename<<"\""<<std::endl;*/
-				
+
 		while(parseConfigObject(is));
-		
+
 		return true;
 	}
 
 	/*
 		Reads a configuration object from stream (usually a single line)
 		and adds it to dst.
-		
+
 		Preserves comments and empty lines.
 
 		Settings that were added to dst are also added to updated.
@@ -192,10 +192,10 @@ public:
 			bool &value_changed)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		if(is.eof())
 			return false;
-		
+
 		// NOTE: This function will be expanded to allow multi-line settings
 		std::string line;
 		std::getline(is, line);
@@ -205,7 +205,7 @@ public:
 		std::string line_end = "";
 		if(is.eof() == false)
 			line_end = "\n";
-		
+
 		// Ignore empty lines and comments
 		if(trimmedline.size() == 0 || trimmedline[0] == '#')
 		{
@@ -223,14 +223,14 @@ public:
 			dst.push_back(line+line_end);
 			return true;
 		}
-		
+
 		std::string value = sf.next("\n");
 		value = trim(value);
-		
+
 		if(m_settings.find(name))
 		{
 			std::string newvalue = m_settings[name];
-			
+
 			if(newvalue != value)
 			{
 				infostream<<"Changing value of \""<<name<<"\" = \""
@@ -243,7 +243,7 @@ public:
 
 			updated[name] = true;
 		}
-		
+
 		return true;
 	}
 
@@ -256,11 +256,11 @@ public:
 	{
 		infostream<<"Updating configuration file: \""
 				<<filename<<"\""<<std::endl;
-		
+
 		core::list<std::string> objects;
 		core::map<std::string, bool> updated;
 		bool something_actually_changed = false;
-		
+
 		// Read and modify stuff
 		{
 			std::ifstream is(filename);
@@ -277,9 +277,9 @@ public:
 						something_actually_changed));
 			}
 		}
-		
+
 		JMutexAutoLock lock(m_mutex);
-		
+
 		// If something not yet determined to have been changed, check if
 		// any new stuff was added
 		if(!something_actually_changed){
@@ -293,14 +293,14 @@ public:
 				break;
 			}
 		}
-		
+
 		// If nothing was actually changed, skip writing the file
 		if(!something_actually_changed){
 			infostream<<"Skipping writing of "<<filename
 					<<" because content wouldn't be modified"<<std::endl;
 			return true;
 		}
-		
+
 		// Write stuff back
 		{
 			std::ofstream os(filename);
@@ -311,7 +311,7 @@ public:
 						<<filename<<"\""<<std::endl;
 				return false;
 			}
-			
+
 			/*
 				Write updated stuff
 			*/
@@ -338,7 +338,7 @@ public:
 				os<<name<<" = "<<value<<"\n";
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -388,7 +388,7 @@ public:
 			ValueType type = n->getValue().type;
 
 			std::string value = "";
-			
+
 			if(type == VALUETYPE_FLAG)
 			{
 				value = "true";
@@ -404,7 +404,7 @@ public:
 				value = argv[i];
 				i++;
 			}
-			
+
 
 			infostream<<"Valid command-line parameter: \""
 					<<name<<"\" = \""<<value<<"\""
@@ -418,7 +418,7 @@ public:
 	void set(std::string name, std::string value)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		m_settings[name] = value;
 	}
 
@@ -433,21 +433,21 @@ public:
 	void setDefault(std::string name, std::string value)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		m_defaults[name] = value;
 	}
 
 	bool exists(std::string name)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		return (m_settings.find(name) || m_defaults.find(name));
 	}
 
 	std::string get(std::string name)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		core::map<std::string, std::string>::Node *n;
 		n = m_settings.find(name);
 		if(n == NULL)
@@ -466,7 +466,7 @@ public:
 	{
 		return is_yes(get(name));
 	}
-	
+
 	bool getFlag(std::string name)
 	{
 		try
@@ -485,7 +485,7 @@ public:
 		// If it is in settings
 		if(exists(name))
 			return getBool(name);
-		
+
 		std::string s;
 		char templine[10];
 		std::cout<<question<<" [y/N]: ";
@@ -513,7 +513,7 @@ public:
 		// If it is in settings
 		if(exists(name))
 			return getU16(name);
-		
+
 		std::string s;
 		char templine[10];
 		std::cout<<question<<" ["<<def<<"]: ";
@@ -566,6 +566,270 @@ public:
 		return value;
 	}
 
+template<typename T> struct alignment_trick { char c; T member; };
+#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
+#define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
+typedef int64_t s64;
+
+	void *getStruct(std::string &name, std::string format, size_t len)
+	{
+		std::vector<std::string *> strs_alloced;
+		std::string *str;
+		char *s = &(get(name))[0];
+		char *buf = new char[len];
+		char *bufpos = buf;
+		char *f, *snext;
+		size_t pos;
+
+		char *fmt = &format[0];
+		while ((f = strsep(&fmt, ",")) && s) {
+			bool is_unsigned = false;
+			int width = 0;
+			char valtype = *f;
+
+			width = (int)strtol(f + 1, &f, 10);
+			if (width && valtype == 's')
+				valtype = 'i';
+
+			switch (*f) {
+				case 'u':
+					is_unsigned = true;
+					/* FALLTHROUGH */
+				case 'i':
+					if (width == 16) {
+						bufpos += PADDING(bufpos, u16);
+						if ((bufpos - buf) + sizeof(u16) <= len) {
+							if (is_unsigned)
+								*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
+							else
+								*(s16 *)bufpos = (s16)strtol(s, &s, 10);
+						}
+						bufpos += sizeof(u16);
+					} else if (width == 32) {
+						bufpos += PADDING(bufpos, u32);
+						if ((bufpos - buf) + sizeof(u32) <= len) {
+							if (is_unsigned)
+								*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
+							else
+								*(s32 *)bufpos = (s32)strtol(s, &s, 10);
+						}
+						bufpos += sizeof(u32);
+					} else if (width == 64) {
+						bufpos += PADDING(bufpos, u64);
+						if ((bufpos - buf) + sizeof(u64) <= len) {
+							if (is_unsigned)
+								*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
+							else
+								*(s64 *)bufpos = (s64)strtoll(s, &s, 10);
+						}
+						bufpos += sizeof(u64);
+					}
+					s = strchr(s, ',');
+					break;
+				case 'b':
+					snext = strchr(s, ',');
+					if (snext)
+						*snext++ = 0;
+
+					bufpos += PADDING(bufpos, bool);
+					if ((bufpos - buf) + sizeof(bool) <= len)
+						*(bool *)bufpos = is_yes(std::string(s));
+					bufpos += sizeof(bool);
+
+					s = snext;
+					break;
+				case 'f':
+					bufpos += PADDING(bufpos, float);
+					if ((bufpos - buf) + sizeof(float) <= len)
+						*(float *)bufpos = strtof(s, &s);
+					bufpos += sizeof(float);
+
+					s = strchr(s, ',');
+					break;
+				case 's':
+					while (*s == ' ' || *s == '\t')
+						s++;
+					if (*s++ != '"') //error, expected string
+						goto fail;
+					snext = s;
+
+					while (snext[0] && !(snext[-1] != '\\' && snext[0] == '"'))
+						snext++;
+					*snext++ = 0;
+
+					bufpos += PADDING(bufpos, std::string *);
+
+					str = new std::string(s);
+					pos = 0;
+					while ((pos = str->find("\\\"", pos)) != std::string::npos)
+						str->erase(pos, 1);
+
+					if ((bufpos - buf) + sizeof(std::string *) <= len)
+						*(std::string **)bufpos = str;
+					bufpos += sizeof(std::string *);
+					strs_alloced.push_back(str);
+
+					s = *snext ? snext + 1 : NULL;
+					break;
+				case 'v':
+					while (*s == ' ' || *s == '\t')
+						s++;
+					if (*s++ != '(') //error, expected vector
+						goto fail;
+
+					if (width == 2) {
+						bufpos += PADDING(bufpos, v2f);
+
+						if ((bufpos - buf) + sizeof(v2f) <= len) {
+						v2f *v = (v2f *)bufpos;
+							v->X = strtof(s, &s);
+							s++;
+							v->Y = strtof(s, &s);
+						}
+
+						bufpos += sizeof(v2f);
+					} else if (width == 3) {
+						bufpos += PADDING(bufpos, v3f);
+						if ((bufpos - buf) + sizeof(v3f) <= len) {
+							v3f *v = (v3f *)bufpos;
+							v->X = strtof(s, &s);
+							s++;
+							v->Y = strtof(s, &s);
+							s++;
+							v->Z = strtof(s, &s);
+						}
+
+						bufpos += sizeof(v3f);
+					}
+					s = strchr(s, ',');
+					break;
+				default: //error, invalid format specifier
+					goto fail;
+			}
+
+			if (s && *s == ',')
+				s++;
+
+			if ((bufpos - buf) > len) //error, buffer too small
+				goto fail;
+		}
+
+		if (f && *f) { //error, mismatched number of fields and values
+fail:
+			for (int i = 0; i != strs_alloced.size(); i++)
+				delete strs_alloced[i];
+			delete[] buf;
+			buf = NULL;
+		}
+
+		return buf;
+	}
+
+	bool setStruct(std::string name, std::string format, void *value)
+	{
+		char sbuf[2048];
+		int sbuflen = sizeof(sbuf) - 1;
+		sbuf[sbuflen] = 0;
+		std::string str;
+		int pos = 0;
+		size_t fpos;
+		char *f;
+
+		int nprinted;
+		char *bufpos = (char *)value;
+		char *fmt = &format[0];
+
+		while ((f = strsep(&fmt, ","))) {
+			bool is_unsigned = false;
+			int width = 0;
+			char valtype = *f;
+
+			width = (int)strtol(f + 1, &f, 10);
+			if (width && valtype == 's')
+				valtype = 'i';
+
+			switch (valtype) {
+				case 'u':
+					is_unsigned = true;
+					/* FALLTHROUGH */
+				case 'i':
+					if (width == 16) {
+						bufpos += PADDING(bufpos, u16);
+						nprinted = snprintf(sbuf + pos, sbuflen,
+									is_unsigned ? "%u, " : "%d, ",
+									*((u16 *)bufpos));
+						bufpos += sizeof(u16);
+					} else if (width == 32) {
+						bufpos += PADDING(bufpos, u32);
+						nprinted = snprintf(sbuf + pos, sbuflen,
+									is_unsigned ? "%u, " : "%d, ",
+									*((u32 *)bufpos));
+						bufpos += sizeof(u32);
+					} else if (width == 64) {
+						bufpos += PADDING(bufpos, u64);
+						nprinted = snprintf(sbuf + pos, sbuflen,
+									is_unsigned ? "%llu, " : "%lli, ",
+												 *((u64 *)bufpos));
+						bufpos += sizeof(u64);
+					}
+					break;
+				case 'b':
+					bufpos += PADDING(bufpos, bool);
+					nprinted = snprintf(sbuf + pos, sbuflen, "%s, ",
+										*((bool *)bufpos) ? "true" : "false");
+					bufpos += sizeof(bool);
+					break;
+				case 'f':
+					bufpos += PADDING(bufpos, float);
+					nprinted = snprintf(sbuf + pos, sbuflen, "%f, ",
+										*((float *)bufpos));
+					bufpos += sizeof(float);
+					break;
+				case 's':
+					bufpos += PADDING(bufpos, std::string *);
+					str = **((std::string **)bufpos);
+
+					fpos = 0;
+					while ((fpos = str.find('"', fpos)) != std::string::npos) {
+						str.insert(fpos, 1, '\\');
+						fpos += 2;
+					}
+
+					nprinted = snprintf(sbuf + pos, sbuflen, "\"%s\", ",
+										(*((std::string **)bufpos))->c_str());
+					bufpos += sizeof(std::string *);
+					break;
+				case 'v':
+					if (width == 2) {
+						bufpos += PADDING(bufpos, v2f);
+						v2f *v = (v2f *)bufpos;
+						nprinted = snprintf(sbuf + pos, sbuflen,
+											"(%f, %f), ", v->X, v->Y);
+						bufpos += sizeof(v2f);
+					} else {
+						bufpos += PADDING(bufpos, v3f);
+						v3f *v = (v3f *)bufpos;
+						nprinted = snprintf(sbuf + pos, sbuflen,
+											"(%f, %f, %f), ", v->X, v->Y, v->Z);
+						bufpos += sizeof(v3f);
+					}
+					break;
+				default:
+					return false;
+			}
+			if (nprinted < 0) //error, buffer too small
+				return false;
+			pos     += nprinted;
+			sbuflen -= nprinted;
+		}
+
+		if (pos >= 2)
+			sbuf[pos - 2] = 0;
+
+		set(name, std::string(sbuf));
+		return true;
+	}
+
 	void setBool(std::string name, bool value)
 	{
 		if(value)
@@ -573,8 +837,6 @@ public:
 		else
 			set(name, "false");
 	}
-
-
 
 	void setFloat(std::string name, float value)
 	{
@@ -615,7 +877,7 @@ public:
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		m_settings.clear();
 		m_defaults.clear();
 	}
@@ -623,7 +885,7 @@ public:
 	void updateValue(Settings &other, const std::string &name)
 	{
 		JMutexAutoLock lock(m_mutex);
-		
+
 		if(&other == this)
 			return;
 
@@ -640,7 +902,7 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 		JMutexAutoLock lock2(other.m_mutex);
-		
+
 		if(&other == this)
 			return;
 
@@ -650,7 +912,7 @@ public:
 		{
 			m_settings[i.getNode()->getKey()] = i.getNode()->getValue();
 		}
-		
+
 		for(core::map<std::string, std::string>::Iterator
 				i = other.m_defaults.getIterator();
 				i.atEnd() == false; i++)
@@ -665,7 +927,7 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 		JMutexAutoLock lock2(other.m_mutex);
-		
+
 		if(&other == this)
 			return *this;
 
@@ -676,7 +938,7 @@ public:
 			m_settings.insert(i.getNode()->getKey(),
 					i.getNode()->getValue());
 		}
-		
+
 		for(core::map<std::string, std::string>::Iterator
 				i = other.m_defaults.getIterator();
 				i.atEnd() == false; i++)
@@ -693,13 +955,13 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 		JMutexAutoLock lock2(other.m_mutex);
-		
+
 		if(&other == this)
 			return *this;
 
 		clear();
 		(*this) += other;
-		
+
 		return *this;
 	}
 
