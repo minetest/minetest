@@ -293,7 +293,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			geom.X = stof(f.next(",")) * (float)imgsize.X;
 			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
 			std::string name = f.next("]");
-			errorstream<<"item name="<<name
+			infostream<<"item name="<<name
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
@@ -807,7 +807,29 @@ void GUIFormSpecMenu::drawMenu()
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
-
+	
+	/*
+		Draw item images
+	*/
+	for(u32 i=0; i<m_itemimages.size(); i++)
+	{
+		const ImageDrawSpec &spec = m_itemimages[i];
+		IItemDefManager *idef = m_gamedef->idef();
+		ItemStack item;
+		item.deSerialize(spec.name, idef);
+		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);		
+		// Image size on screen
+		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
+		// Image rectangle on screen
+		core::rect<s32> rect = imgrect + spec.pos;
+		const video::SColor color(255,255,255,255);
+		const video::SColor colors[] = {color,color,color,color};
+		driver->draw2DImage(texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(texture->getOriginalSize())),
+			NULL/*&AbsoluteClippingRect*/, colors, true);
+	}
+	
 	/*
 		Draw items
 		Phase 0: Item slot rectangles
