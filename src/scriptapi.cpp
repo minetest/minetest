@@ -3540,20 +3540,7 @@ private:
 		v3s16 pos = read_v3s16(L, 2);
 		MapNode n = readnode(L, 3, ndef);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace node
-		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-			// Call constructor
-			if(ndef->get(n).has_on_construct)
-				scriptapi_node_on_construct(L, pos, n);
-		}
+		bool succeeded = env->setNode(pos, n);
 		lua_pushboolean(L, succeeded);
 		return 1;
 	}
@@ -3574,20 +3561,8 @@ private:
 		// parameters
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace with air
-		// This is slightly optimized compared to addNodeWithEvent(air)
-		bool succeeded = env->getMap().removeNodeWithEvent(pos);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-		}
+		bool succeeded = env->removeNode(pos);
 		lua_pushboolean(L, succeeded);
-		// Air doesn't require constructor
 		return 1;
 	}
 
