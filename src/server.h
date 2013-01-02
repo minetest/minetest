@@ -583,6 +583,7 @@ public:
 		m_async_fatal_error.set(error);
 	}
 
+	bool showFormspec(const char *name, const std::string &formspec);
 private:
 
 	// con::PeerHandler implementation.
@@ -620,6 +621,7 @@ private:
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
+	void SendShowFormspecMessage(u16 peer_id, const std::string formspec);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

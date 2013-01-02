@@ -192,6 +192,26 @@ public:
 	Client *m_client;
 };
 
+class FormspecFormSource: public IFormSource
+{
+public:
+	FormspecFormSource(std::string formspec)
+	{
+		m_formspec = new std::string(formspec);
+	}
+
+	~FormspecFormSource()
+	{
+		delete(m_formspec);
+	}
+
+	std::string getForm()
+	{
+		return *m_formspec;
+	}
+
+	std::string *m_formspec;
+};
 /*
 	Hotbar draw routine
 */
@@ -2066,6 +2086,20 @@ void the_game(
 					/*LocalPlayer* player = client.getLocalPlayer();
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
 					camera.update(player, busytime, screensize);*/
+				}
+				else if (event.type == CE_SHOW_FORMSPEC)
+				{
+					/* Create menu */
+					FormspecFormSource *src = new FormspecFormSource(*(event.show_formspec.formspec));
+
+					GUIFormSpecMenu *menu =
+							new GUIFormSpecMenu(device, guiroot, -1,
+									&g_menumgr,
+									&client, gamedef);
+					menu->setFormSource(src);
+					menu->drop();
+
+					delete(event.show_formspec.formspec);
 				}
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{
