@@ -4899,6 +4899,21 @@ static int l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
+// create_detached_formspec_raw(name)
+static int l_show_formspec(lua_State *L)
+{
+	const char *playername = luaL_checkstring(L, 1);
+	const char *formspec = luaL_checkstring(L, 2);
+
+	if(get_server(L)->showFormspec(playername,formspec))
+	{
+		lua_pushboolean(L, true);
+	}else{
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 static int l_get_dig_params(lua_State *L)
 {
@@ -5228,6 +5243,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"unban_player_or_ip", l_unban_player_of_ip},
 	{"get_inventory", l_get_inventory},
 	{"create_detached_inventory_raw", l_create_detached_inventory_raw},
+	{"show_formspec", l_show_formspec},
 	{"get_dig_params", l_get_dig_params},
 	{"get_hit_params", l_get_hit_params},
 	{"get_current_modname", l_get_current_modname},
