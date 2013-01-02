@@ -543,6 +543,7 @@ public:
 	
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
+	std::string* createDetachedFormspec(const std::string &name,const std::string &formspec);
 	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
@@ -582,6 +583,8 @@ public:
 	{
 		m_async_fatal_error.set(error);
 	}
+
+	bool showDetachedFormspec(const char *name, const std::string &formspecname);
 
 private:
 
@@ -646,6 +649,12 @@ private:
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
 	void sendDetachedInventories(u16 peer_id);
+
+	void sendDetachedFormspec(const std::string &name, u16 peer_id);
+	void sendDetachedFormspecToAll(const std::string &name);
+	void sendDetachedFormspecs(u16 peer_id);
+
+	void SendShowDetachedFormspecMessage(u16 peer_id, const std::string specname);
 
 	/*
 		Something random
@@ -858,6 +867,7 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+	std::map<std::string, std::string*> m_detached_formspecs;
 };
 
 /*

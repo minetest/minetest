@@ -154,7 +154,8 @@ enum ClientEventType
 	CE_PLAYER_DAMAGE,
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
-	CE_TEXTURES_UPDATED
+	CE_TEXTURES_UPDATED,
+	CE_SHOW_DETACHED_FORMSPEC
 };
 
 struct ClientEvent
@@ -176,6 +177,9 @@ struct ClientEvent
 			f32 camera_point_target_y;
 			f32 camera_point_target_z;
 		} deathscreen;
+		struct{
+			std::string* fs_name;
+		} show_detached_inventory;
 		struct{
 		} textures_updated;
 	};
@@ -427,9 +431,11 @@ private:
 	// Privileges
 	std::set<std::string> m_privileges;
 
-	// Detached inventories
+	// Detached inventories and formspecs
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+public:
+	std::map<std::string, std::string*> m_detached_formspecs;
 };
 
 #endif // !CLIENT_HEADER

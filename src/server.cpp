@@ -2316,6 +2316,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send detached inventories
 		sendDetachedInventories(peer_id);
 		
+		// Send detached formspecs
+		sendDetachedFormspecs(peer_id);
+
 		// Show death screen if necessary
 		if(player->hp == 0)
 			SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
@@ -3639,6 +3642,26 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendShowDetachedFormspecMessage(u16 peer_id, const std::string specname)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_SHOW_DETACHED_FORMSPEC);
+	os.write((char*)buf, 2);
+
+	os<<serializeString(specname);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(core::map<u16, RemoteClient*>::Iterator
@@ -4379,6 +4402,26 @@ void Server::sendDetachedInventory(const std::string &name, u16 peer_id)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::sendDetachedFormspec(const std::string &name, u16 peer_id)
+{
+	if(m_detached_formspecs.count(name) == 0){
+		errorstream<<__FUNCTION_NAME<<": \""<<name<<"\" not found"<<std::endl;
+		return;
+	}
+	std::string *fs = m_detached_formspecs[name];
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_DETACHED_FORMSPEC);
+	os<<serializeString(name);
+	os<<serializeLongString(*fs);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::sendDetachedInventoryToAll(const std::string &name)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4388,6 +4431,18 @@ void Server::sendDetachedInventoryToAll(const std::string &name)
 			i.atEnd() == false; i++){
 		RemoteClient *client = i.getNode()->getValue();
 		sendDetachedInventory(name, client->peer_id);
+	}
+}
+
+void Server::sendDetachedFormspecToAll(const std::string &name)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++){
+		RemoteClient *client = i.getNode()->getValue();
+		sendDetachedFormspec(name, client->peer_id);
 	}
 }
 
@@ -4403,6 +4458,20 @@ void Server::sendDetachedInventories(u16 peer_id)
 		sendDetachedInventory(name, peer_id);
 	}
 }
+
+void Server::sendDetachedFormspecs(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	for(std::map<std::string,std::string*>::iterator
+			i = m_detached_formspecs.begin();
+			i != m_detached_formspecs.end(); i++){
+		const std::string &name = i->first;
+		//Inventory *inv = i->second;
+		sendDetachedFormspec(name, peer_id);
+	}
+}
+
 
 /*
 	Something random
@@ -4578,6 +4647,26 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
 }
 
+bool Server::showDetachedFormspec(const char *playername, const std::string &formspecname)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"showDetachedInv: couldn't find player:" << playername<<std::endl;
+		return false;
+	}
+
+	if (m_detached_formspecs.count(formspecname) == 0)
+	{
+		infostream<<"showDetachedInv: couldn't find formspec: "<< formspecname <<std::endl;
+		return false;
+	}
+
+	SendShowDetachedFormspecMessage(player->peer_id,formspecname);
+	return true;
+}
+
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);
@@ -4604,6 +4693,21 @@ Inventory* Server::createDetachedInventory(const std::string &name)
 	m_detached_inventories[name] = inv;
 	sendDetachedInventoryToAll(name);
 	return inv;
+}
+
+std::string* Server::createDetachedFormspec(const std::string &name,const std::string &formspec)
+{
+	if(m_detached_formspecs.count(name) > 0){
+		infostream<<"Server clearing detached formspec \""<<name<<"\""<<std::endl;
+		delete m_detached_formspecs[name];
+	} else {
+		infostream<<"Server creating detached formspec \""<<name<<"\""<<std::endl;
+	}
+	std::string* newspec = new std::string(formspec);
+	assert(newspec);
+	m_detached_formspecs[name] = newspec;
+	sendDetachedFormspecToAll(name);
+	return newspec;
 }
 
 class BoolScopeSet
