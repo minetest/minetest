@@ -37,7 +37,7 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("dirt");
+		s.insert("mapgen_dirt");
 		return s;
 	}
 	virtual float getTriggerInterval()
@@ -67,7 +67,7 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("dirt_with_grass");
+		s.insert("mapgen_dirt_with_grass");
 		return s;
 	}
 	virtual float getTriggerInterval()
