@@ -1900,6 +1900,47 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 		inv->deSerialize(is);
 	}
+	else if(command == TOCLIENT_DETACHED_FORMSPEC)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string name = deSerializeString(is);
+
+		infostream<<"Client: Detached formspec update: \""<<name<<"\""<<std::endl;
+
+		std::string *fspec = NULL;
+		if(m_detached_formspecs.count(name) > 0)
+			fspec = m_detached_formspecs[name];
+		else
+		{
+			fspec = new std::string();
+			m_detached_formspecs[name] = fspec;
+		}
+		*fspec = deSerializeLongString(is);
+	}
+	else if(command == TOCLIENT_SHOW_DETACHED_FORMSPEC)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string name_fs = deSerializeString(is);
+
+		infostream<<"Client: Detached formspec display: \""<<  name_fs << "\"" << std::endl;
+
+		if(m_detached_formspecs.count(name_fs) > 0)
+		{
+			ClientEvent event;
+			event.type = CE_SHOW_DETACHED_FORMSPEC;
+			event.show_detached_inventory.fs_name = new std::string(name_fs);
+			m_client_event_queue.push_back(event);
+		}
+		else
+		{
+			infostream<<"Client: Ignoring show detached formspec name: "
+					<< name_fs << " doesn't exist!"<<std::endl;
+		}
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

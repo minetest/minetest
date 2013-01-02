@@ -192,6 +192,25 @@ public:
 	Client *m_client;
 };
 
+class DetachedFormspecFormSource: public IFormSource
+{
+public:
+	DetachedFormspecFormSource(std::string formspec)
+	{
+		m_formspec = new std::string(formspec);
+	}
+	~DetachedFormspecFormSource()
+	{
+		delete(m_formspec);
+	}
+	std::string getForm()
+	{
+		return *m_formspec;
+	}
+	std::string *m_formspec;
+};
+
+
 /*
 	Hotbar draw routine
 */
@@ -2070,6 +2089,20 @@ void the_game(
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{
 					update_wielded_item_trigger = true;
+				}
+				else if (event.type == CE_SHOW_DETACHED_FORMSPEC)
+				{
+					std::string* fs = client.m_detached_formspecs[*(event.show_detached_inventory.fs_name)];
+
+					/* Create menu */
+					DetachedFormspecFormSource *src = new DetachedFormspecFormSource(*fs);
+
+					GUIFormSpecMenu *menu =
+						new GUIFormSpecMenu(device, guiroot, -1,
+								&g_menumgr,
+								&client, gamedef);
+								menu->setFormSource(src);
+								menu->drop();
 				}
 			}
 		}

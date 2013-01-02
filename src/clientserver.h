@@ -354,6 +354,21 @@ enum ToClientCommand
 		u8[len] name
 		[2] serialized inventory
 	*/
+
+	TOCLIENT_DETACHED_FORMSPEC = 0x44,
+	/*
+	[0] u16 command
+	u16 len
+	u8[len] name
+	[2] serialized formspec
+	*/
+
+	TOCLIENT_SHOW_DETACHED_FORMSPEC = 0x45,
+	/*
+		[0] u16 command
+		u16 len
+		u8[len] name_fs
+	*/
 };
 
 enum ToServerCommand
@@ -577,6 +592,7 @@ enum ToServerCommand
 	/*
 		u16 command
 	*/
+
 };
 
 #endif

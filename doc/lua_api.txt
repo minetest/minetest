@@ -888,6 +888,12 @@ minetest.get_inventory(location) -> InvRef
 minetest.create_detached_inventory(name, callbacks) -> InvRef
 ^ callbacks: See "Detached inventory callbacks"
 ^ Creates a detached inventory. If it already exists, it is cleared.
+minetest.create_detached_formspec(name,formspec)
+^ name: name of formspec
+^ formspec: formspec string
+minetest.show_detached_formspec(playername,formspecname)
+^ playername: name of player to show formspec
+^ formspecname: name of formspec to display
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)
