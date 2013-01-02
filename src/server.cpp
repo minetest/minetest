@@ -3638,6 +3638,24 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
 }
+void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_SHOW_FORMSPEC);
+	os.write((char*)buf, 2);
+	os<<serializeLongString(formspec);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
 
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
@@ -4576,6 +4594,20 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 	if(!player)
 		return;
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
+}
+
+bool Server::showFormspec(const char *playername, const std::string &formspec)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"showFormspec: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendShowFormspecMessage(player->peer_id,formspec);
+	return true;
 }
 
 void Server::notifyPlayers(const std::wstring msg)

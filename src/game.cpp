@@ -192,6 +192,32 @@ public:
 	Client *m_client;
 };
 
+class FormspecFormSource: public IFormSource
+{
+public:
+	FormspecFormSource(std::string formspec,FormspecFormSource** game_formspec)
+	{
+		m_formspec = formspec;
+		m_game_formspec = game_formspec;
+	}
+
+	~FormspecFormSource()
+	{
+		*m_game_formspec = 0;
+	}
+
+	void setForm(std::string formspec) {
+		m_formspec = formspec;
+	}
+
+	std::string getForm()
+	{
+		return m_formspec;
+	}
+
+	std::string m_formspec;
+	FormspecFormSource** m_game_formspec;
+};
 /*
 	Hotbar draw routine
 */
@@ -901,6 +927,7 @@ void the_game(
 	bool simple_singleplayer_mode
 )
 {
+	FormspecFormSource* current_formspec = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -2066,6 +2093,27 @@ void the_game(
 					/*LocalPlayer* player = client.getLocalPlayer();
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
 					camera.update(player, busytime, screensize);*/
+				}
+				else if (event.type == CE_SHOW_FORMSPEC)
+				{
+					if (current_formspec == 0)
+					{
+						/* Create menu */
+						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
+
+						GUIFormSpecMenu *menu =
+								new GUIFormSpecMenu(device, guiroot, -1,
+										&g_menumgr,
+										&client, gamedef);
+						menu->setFormSource(current_formspec);
+						menu->drop();
+					}
+					else
+					{
+						/* update menu */
+						current_formspec->setForm(*(event.show_formspec.formspec));
+					}
+					delete(event.show_formspec.formspec);
 				}
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{
