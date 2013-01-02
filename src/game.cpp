@@ -1307,7 +1307,7 @@ void the_game(
 	bool digging = false;
 	bool ldown_for_dig = false;
 
-	float damage_flash_timer = 0;
+	float damage_flash = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
 	const float object_hit_delay = 0.2;
@@ -2055,10 +2055,8 @@ void the_game(
 				{
 					//u16 damage = event.player_damage.amount;
 					//infostream<<"Player damage: "<<damage<<std::endl;
-					damage_flash_timer = 0.05;
-					if(event.player_damage.amount >= 2){
-						damage_flash_timer += 0.05 * event.player_damage.amount;
-					}
+					damage_flash += 100.0;
+					damage_flash += 8.0 * event.player_damage.amount;
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{
@@ -2088,7 +2086,7 @@ void the_game(
 
 					/* Handle visualization */
 
-					damage_flash_timer = 0;
+					damage_flash = 0;
 
 					/*LocalPlayer* player = client.getLocalPlayer();
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
@@ -3049,14 +3047,14 @@ void the_game(
 		/*
 			Damage flash
 		*/
-		if(damage_flash_timer > 0.0)
+		if(damage_flash > 0.0)
 		{
-			damage_flash_timer -= dtime;
-			
-			video::SColor color(128,255,0,0);
+			video::SColor color(std::min(damage_flash, 220.0f),180,0,0);
 			driver->draw2DRectangle(color,
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
+			
+			damage_flash -= 100.0*dtime;
 		}
 
 		/*
