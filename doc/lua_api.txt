@@ -1231,6 +1231,8 @@ methods:
     can be fully taken from the list
   remove_item(listname, stack): take as many items as specified from the list,
     returns the items that were actually removed (as an ItemStack)
+- get_location() -> location compatible to minetest.get_inventory(location)
+                 -> {type="undefined"} in case location is not known
 
 ItemStack: A stack of items.
 - Can be created via ItemStack(itemstack or itemstring or table or nil)

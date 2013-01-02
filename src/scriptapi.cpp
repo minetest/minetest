@@ -2049,6 +2049,43 @@ private:
 		return 1;
 	}
 
+	// get_location() -> location (like minetest.get_inventory(location))
+	static int l_get_location(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const InventoryLocation &loc = ref->m_loc;
+		switch(loc.type){
+		case InventoryLocation::PLAYER:
+			lua_newtable(L);
+			lua_pushstring(L, "player");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::NODEMETA:
+			lua_newtable(L);
+			lua_pushstring(L, "nodemeta");
+			lua_setfield(L, -2, "type");
+			push_v3s16(L, loc.p);
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::DETACHED:
+			lua_newtable(L);
+			lua_pushstring(L, "detached");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::UNDEFINED:
+		case InventoryLocation::CURRENT_PLAYER:
+			break;
+		}
+		lua_newtable(L);
+		lua_pushstring(L, "undefined");
+		lua_setfield(L, -2, "type");
+		return 1;
+	}
+
 public:
 	InvRef(const InventoryLocation &loc):
 		m_loc(loc)
@@ -2124,6 +2161,7 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, room_for_item),
 	method(InvRef, contains_item),
 	method(InvRef, remove_item),
+	method(InvRef, get_location),
 	{0,0}
 };
 
