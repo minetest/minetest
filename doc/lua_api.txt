@@ -891,8 +891,10 @@ minetest.get_inventory(location) -> InvRef
 minetest.create_detached_inventory(name, callbacks) -> InvRef
 ^ callbacks: See "Detached inventory callbacks"
 ^ Creates a detached inventory. If it already exists, it is cleared.
-minetest.show_formspec(playername, formspec)
+minetest.show_formspec(playername, formname, formspec)
 ^ playername: name of player to show formspec
+^ formname: name passed to on_player_receive_fields callbacks
+^           should follow "modname:<whatever>" naming convention
 ^ formspec: formspec to display
 
 Item handling:

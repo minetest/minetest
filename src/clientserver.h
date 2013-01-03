@@ -359,8 +359,10 @@ enum ToClientCommand
 	TOCLIENT_SHOW_FORMSPEC = 0x44,
 	/*
 		[0] u16 command
-		u16 len
+		u32 len
 		u8[len] formspec
+		u16 len
+		u8[len] formname
 	*/
 };
 

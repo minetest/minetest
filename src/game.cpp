@@ -118,13 +118,20 @@ struct TextDestPlayerInventory : public TextDest
 	TextDestPlayerInventory(Client *client)
 	{
 		m_client = client;
+		m_formname = "";
+	}
+	TextDestPlayerInventory(Client *client, std::string formname)
+	{
+		m_client = client;
+		m_formname = formname;
 	}
 	void gotText(std::map<std::string, std::string> fields)
 	{
-		m_client->sendInventoryFields("", fields);
+		m_client->sendInventoryFields(m_formname, fields);
 	}
 
 	Client *m_client;
+	std::string m_formname;
 };
 
 /* Respawn menu callback */
@@ -2154,6 +2161,7 @@ void the_game(
 										&g_menumgr,
 										&client, gamedef);
 						menu->setFormSource(current_formspec);
+						menu->setTextDest(new TextDestPlayerInventory(&client,*(event.show_formspec.formname)));
 						menu->drop();
 					}
 					else
@@ -2162,6 +2170,7 @@ void the_game(
 						current_formspec->setForm(*(event.show_formspec.formspec));
 					}
 					delete(event.show_formspec.formspec);
+					delete(event.show_formspec.formname);
 				}
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{

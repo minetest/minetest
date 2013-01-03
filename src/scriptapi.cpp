@@ -4921,13 +4921,14 @@ static int l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
-// create_detached_formspec_raw(name)
+// show_formspec(playername,formname,formspec)
 static int l_show_formspec(lua_State *L)
 {
 	const char *playername = luaL_checkstring(L, 1);
-	const char *formspec = luaL_checkstring(L, 2);
+	const char *formname = luaL_checkstring(L, 2);
+	const char *formspec = luaL_checkstring(L, 3);
 
-	if(get_server(L)->showFormspec(playername,formspec))
+	if(get_server(L)->showFormspec(playername,formspec,formname))
 	{
 		lua_pushboolean(L, true);
 	}else{
