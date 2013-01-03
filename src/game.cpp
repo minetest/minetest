@@ -3062,7 +3062,7 @@ void the_game(
 		*/
 		if(damage_flash > 0.0)
 		{
-			video::SColor color(std::min(damage_flash, 220.0f),180,0,0);
+			video::SColor color(std::min(damage_flash, 180.0f),180,0,0);
 			driver->draw2DRectangle(color,
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
