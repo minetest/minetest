@@ -121,6 +121,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
+	settings->setDefault("enable_movement_fov", "true");
 
 	settings->setDefault("media_fetch_threads", "8");
 

@@ -212,6 +212,10 @@ public:
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
+	bool  superspeed;
+	bool  free_move;
+	float movement_fov;
+
 	u16 peer_id;
 	
 	std::string inventory_formspec;
