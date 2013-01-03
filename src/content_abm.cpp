@@ -54,7 +54,7 @@ public:
 				!ndef->get(n_top).isLiquid() &&
 				n_top.getLightBlend(env->getDayNightRatio(), ndef) >= 13)
 		{
-			n.setContent(ndef->getId("dirt_with_grass"));
+			n.setContent(ndef->getId("mapgen_dirt_with_grass"));
 			map->addNodeWithEvent(p, n);
 		}
 	}
@@ -83,7 +83,7 @@ public:
 		if(!ndef->get(n_top).light_propagates ||
 				ndef->get(n_top).isLiquid())
 		{
-			n.setContent(ndef->getId("dirt"));
+			n.setContent(ndef->getId("mapgen_dirt"));
 			map->addNodeWithEvent(p, n);
 		}
 	}
