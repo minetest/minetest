@@ -146,6 +146,8 @@
 # (1: low level shaders; not implemented)
 # 2: enable high level shaders
 #enable_shaders = 2
+# Greater FOV when running or flying
+#enable_movement_fov = true
 
 # will only work for servers which use remote_media setting
 # and only for clients compiled with cURL
