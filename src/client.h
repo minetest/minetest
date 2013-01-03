@@ -179,6 +179,7 @@ struct ClientEvent
 		} deathscreen;
 		struct{
 			std::string* formspec;
+			std::string* formname;
 		} show_formspec;
 		struct{
 		} textures_updated;

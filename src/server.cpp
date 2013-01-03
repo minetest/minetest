@@ -3638,7 +3638,7 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
 }
-void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec)
+void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3649,6 +3649,7 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec)
 	writeU16(buf, TOCLIENT_SHOW_FORMSPEC);
 	os.write((char*)buf, 2);
 	os<<serializeLongString(formspec);
+	os<<serializeString(formname);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4596,7 +4597,7 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
 }
 
-bool Server::showFormspec(const char *playername, const std::string &formspec)
+bool Server::showFormspec(const char *playername, const std::string &formspec, const std::string &formname)
 {
 	Player *player = m_env->getPlayer(playername);
 
@@ -4606,7 +4607,7 @@ bool Server::showFormspec(const char *playername, const std::string &formspec)
 		return false;
 	}
 
-	SendShowFormspecMessage(player->peer_id,formspec);
+	SendShowFormspecMessage(player->peer_id, formspec, formname);
 	return true;
 }
 
