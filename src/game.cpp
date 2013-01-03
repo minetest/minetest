@@ -1310,6 +1310,9 @@ void the_game(
 	float damage_flash = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
+	float jump_timer = 0;
+	bool reset_jump_timer = false;
+
 	const float object_hit_delay = 0.2;
 	float object_hit_delay_timer = 0.0;
 	float time_from_last_punch = 10;
@@ -1592,6 +1595,10 @@ void the_game(
 		// Input handler step() (used by the random input generator)
 		input->step(dtime);
 
+		// Increase timer for doubleclick of "jump"
+		if(g_settings->getBool("doubletab_jump") && jump_timer <= 0.2)
+			jump_timer += dtime;
+
 		/*
 			Launch menus and trigger stuff according to keys
 		*/
@@ -1680,6 +1687,27 @@ void the_game(
 				if(!client.checkPrivilege("fly"))
 					statustext += L" (note: no 'fly' privilege)";
 			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_jump")))
+		{
+			if(g_settings->getBool("doubletab_jump") && jump_timer < 0.2)
+			{
+				if(g_settings->getBool("free_move"))
+				{
+					g_settings->set("free_move","false");
+					statustext = L"free_move disabled";
+					statustext_time = 0;
+				}
+				else
+				{
+					g_settings->set("free_move","true");
+					statustext = L"free_move enabled";
+					statustext_time = 0;
+					if(!client.checkPrivilege("fly"))
+						statustext += L" (note: no 'fly' privilege)";
+				}
+			}
+			reset_jump_timer = true;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
 		{
@@ -1843,6 +1871,13 @@ void the_game(
 			statustext_time = 0;
 		}
 		
+		// Reset jump_timer
+		if(!input->isKeyDown(getKeySetting("keymap_jump")) && reset_jump_timer)
+		{
+			reset_jump_timer = false;
+			jump_timer = 0.0;
+		}
+
 		// Handle QuicktuneShortcutter
 		if(input->wasKeyDown(getKeySetting("keymap_quicktune_next")))
 			quicktune.next();
