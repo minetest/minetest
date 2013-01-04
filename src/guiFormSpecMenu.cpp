@@ -318,7 +318,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
 			m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
 		}
-		else if(type == "field" or type == "textarea")
+		else if(type == "field" || type == "textarea")
 		{
 			std::string fname = f.next(";");
 			std::string flabel = f.next(";");
