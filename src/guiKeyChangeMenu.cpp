@@ -161,7 +161,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
 			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
-					GUI_ID_CB_DOUBLETAP_JUMP, wgettext("Doubltap \"jump\" to toogle fly"));
+					GUI_ID_CB_DOUBLETAP_JUMP, wgettext("Double tap \"jump\" to toggle fly"));
 		}
 		offset += v2s32(0, 25);
 	}
