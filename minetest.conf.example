@@ -51,8 +51,8 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Doubletabing the jump key toogles fly mode
-#doubletab_jump = false
+# Doubletaping the jump key toogles fly mode
+#doubletap_jump = false
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME

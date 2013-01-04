@@ -1596,7 +1596,7 @@ void the_game(
 		input->step(dtime);
 
 		// Increase timer for doubleclick of "jump"
-		if(g_settings->getBool("doubletab_jump") && jump_timer <= 0.2)
+		if(g_settings->getBool("doubletap_jump") && jump_timer <= 0.2)
 			jump_timer += dtime;
 
 		/*
@@ -1690,7 +1690,7 @@ void the_game(
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_jump")))
 		{
-			if(g_settings->getBool("doubletab_jump") && jump_timer < 0.2)
+			if(g_settings->getBool("doubletap_jump") && jump_timer < 0.2)
 			{
 				if(g_settings->getBool("free_move"))
 				{

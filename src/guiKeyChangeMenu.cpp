@@ -57,7 +57,7 @@ enum
 	GUI_ID_KEY_RANGE_BUTTON,
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
-	GUI_ID_CB_DOUBLETAB_JUMP,
+	GUI_ID_CB_DOUBLETAP_JUMP,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -160,8 +160,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
-			Environment->addCheckBox(g_settings->getBool("doubletab_jump"), rect, this,
-					GUI_ID_CB_DOUBLETAB_JUMP, wgettext("Doubltab \"jump\" to toogle fly"));
+			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
+					GUI_ID_CB_DOUBLETAP_JUMP, wgettext("Doubltap \"jump\" to toogle fly"));
 		}
 		offset += v2s32(0, 25);
 	}
@@ -213,9 +213,9 @@ bool GUIKeyChangeMenu::acceptInput()
 			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAB_JUMP);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("doubletab_jump", ((gui::IGUICheckBox*)e)->isChecked());
+			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	clearKeyCache();
 	return true;
