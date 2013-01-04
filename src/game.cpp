@@ -1335,6 +1335,8 @@ void the_game(
 	float time_of_day = 0;
 	float time_of_day_smooth = 0;
 
+	float repeat_rightclick_timer = 0;
+
 	/*
 		Shader constants
 	*/
@@ -2266,6 +2268,9 @@ void the_game(
 		bool left_punch = false;
 		soundmaker.m_player_leftpunch_sound.name = "";
 
+		if(input->getRightState())
+			repeat_rightclick_timer += dtime;
+
 		if(playeritem_usable && input->getLeftState())
 		{
 			if(input->getLeftClicked())
@@ -2406,8 +2411,10 @@ void the_game(
 				camera.setDigging(0);  // left click animation
 			}
 
-			if(input->getRightClicked())
+			if(input->getRightClicked() ||
+					repeat_rightclick_timer >= g_settings->getFloat("repeat_rightclick_time"))
 			{
+				repeat_rightclick_timer = 0;
 				infostream<<"Ground right-clicked"<<std::endl;
 				
 				// Sign special case, at least until formspec is properly implemented.

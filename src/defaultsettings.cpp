@@ -121,6 +121,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
+	settings->setDefault("repeat_rightclick_time", "0.25");
 
 	settings->setDefault("media_fetch_threads", "8");
 

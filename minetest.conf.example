@@ -146,6 +146,9 @@
 # (1: low level shaders; not implemented)
 # 2: enable high level shaders
 #enable_shaders = 2
+# The time in seconds it takes between repeated
+# right clicks when holding the right mouse button
+#repeat_rightclick_time = 0.25
 
 # will only work for servers which use remote_media setting
 # and only for clients compiled with cURL
