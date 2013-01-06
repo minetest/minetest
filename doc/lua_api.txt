@@ -1089,7 +1089,7 @@ treedef={
   trunk_type,    - string  single/double/crossed) type of trunk: 1 node, 2x2 nodes or 3x3 in cross shape
   thin_branches, - boolean true -> use thin (1 node) branches
   fruit,         - string  fruit node name
-  fruit_chance,	 - num     chance (0-100) to replace leaves with fruit node
+  fruit_chance,  - num     chance (0-100) to replace leaves with fruit node
   }
 
 Key for Special L-System Symbols used in Axioms
