@@ -4034,21 +4034,30 @@ private:
 			getstringfield(L, 3, "axiom", tree_def.initial_axiom);
 			getstringfield(L, 3, "rules_a", tree_def.rules_a);
 			getstringfield(L, 3, "rules_b", tree_def.rules_b);
-			getstringfield(L, 3, "rules_c", tree_def.rules_a);
-			getstringfield(L, 3, "rules_d", tree_def.rules_b);
+			getstringfield(L, 3, "rules_c", tree_def.rules_c);
+			getstringfield(L, 3, "rules_d", tree_def.rules_d);
 			getstringfield(L, 3, "trunk", trunk);
 			tree_def.trunknode=ndef->getId(trunk);
 			getstringfield(L, 3, "leaves", leaves);
 			tree_def.leavesnode=ndef->getId(leaves);
+			tree_def.leaves2_chance=0;
+			getstringfield(L, 3, "leaves2", leaves);
+			if (leaves !="")
+			{
+				tree_def.leaves2node=ndef->getId(leaves);
+				getintfield(L, 3, "leaves2_chance", tree_def.leaves2_chance);
+			}
 			getintfield(L, 3, "angle", tree_def.angle);
 			getintfield(L, 3, "iterations", tree_def.iterations);
 			getintfield(L, 3, "random_level", tree_def.iterations_random_level);
-			getboolfield(L, 3, "thin_trunks", tree_def.thin_trunks);
-			getboolfield(L, 3, "fruit_tree", tree_def.fruit_tree);
-			if (tree_def.fruit_tree)
+			getstringfield(L, 3, "trunk_type", tree_def.trunk_type);
+			getboolfield(L, 3, "thin_branches", tree_def.thin_branches);
+			tree_def.fruit_chance=0;
+			getstringfield(L, 3, "fruit", fruit);
+			if (fruit != "")
 			{
-				getstringfield(L, 3, "fruit", fruit);
 				tree_def.fruitnode=ndef->getId(fruit);
+				getintfield(L, 3, "fruit_chance",tree_def.fruit_chance);
 			}
 		}
 		else
