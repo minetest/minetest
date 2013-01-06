@@ -222,18 +222,18 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 
 	//make sure tree is not floating in the air
 	if (tree_definition.trunk_type == "double")
-		{
+	{
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
-		}
+	}
 	if (tree_definition.trunk_type == "crossed")
-		{
+	{
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z-1),dirtnode);
-		}
+	}
 
 	/* build tree out of generated axiom
 
