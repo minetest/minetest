@@ -2099,7 +2099,8 @@ void the_game(
 				{
 					break;
 				}
-				else if(event.type == CE_PLAYER_DAMAGE)
+				else if(event.type == CE_PLAYER_DAMAGE &&
+						client.getHP() != 0)
 				{
 					//u16 damage = event.player_damage.amount;
 					//infostream<<"Player damage: "<<damage<<std::endl;

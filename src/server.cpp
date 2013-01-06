@@ -1368,11 +1368,16 @@ void Server::AsyncRunStep()
 			/*
 				Handle player HPs (die if hp=0)
 			*/
-			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
-				DiePlayer(client->peer_id);
+			if(playersao->m_hp_not_sent && g_settings->getBool("enable_damage"))
+			{
+				if(playersao->getHP() == 0)
+					DiePlayer(client->peer_id);
+				else
+					SendPlayerHP(client->peer_id);
+			}
 
 			/*
-				Send player inventories and HPs if necessary
+				Send player inventories if necessary
 			*/
 			if(playersao->m_moved){
 				SendMovePlayer(client->peer_id);
@@ -1381,9 +1386,6 @@ void Server::AsyncRunStep()
 			if(playersao->m_inventory_not_sent){
 				UpdateCrafting(client->peer_id);
 				SendInventory(client->peer_id);
-			}
-			if(playersao->m_hp_not_sent){
-				SendPlayerHP(client->peer_id);
 			}
 		}
 	}
@@ -2311,7 +2313,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendInventory(peer_id);
 
 		// Send HP
-		SendPlayerHP(peer_id);
+		if(g_settings->getBool("enable_damage"))
+			SendPlayerHP(peer_id);
 		
 		// Send detached inventories
 		sendDetachedInventories(peer_id);
@@ -2764,17 +2767,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		u8 damage = readU8(is);
 
-		actionstream<<player->getName()<<" damaged by "
-				<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
-				<<std::endl;
+		if(g_settings->getBool("enable_damage"))
+		{
+			actionstream<<player->getName()<<" damaged by "
+					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
+					<<std::endl;
 
-		playersao->setHP(playersao->getHP() - damage);
+			playersao->setHP(playersao->getHP() - damage);
 
-		if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
-			DiePlayer(peer_id);
+			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
+				DiePlayer(peer_id);
 
-		if(playersao->m_hp_not_sent)
-			SendPlayerHP(peer_id);
+			if(playersao->m_hp_not_sent)
+				SendPlayerHP(peer_id);
+		}
 	}
 	else if(command == TOSERVER_PASSWORD)
 	{
@@ -2850,7 +2856,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_RESPAWN)
 	{
-		if(player->hp != 0)
+		if(player->hp != 0 || !g_settings->getBool("enable_damage"))
 			return;
 		
 		RespawnPlayer(peer_id);
