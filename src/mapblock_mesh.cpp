@@ -1088,11 +1088,11 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				if(day != night)
 					m_daynight_diffs[i][j] = std::make_pair(day, night);
 				// Brighten topside (no shaders)
-				if(p.vertices[j].Normal.Y > 0.5)
+				if(p.vertices[j].Normal.Y < 0.5)
 				{
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.6, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.6, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.6, 255.0));
 				}
 			}
 		}
@@ -1248,12 +1248,12 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
 				// Brighten topside (no shaders)
-				if(vertices[vertexIndex].Normal.Y > 0.5)
+				if(vertices[vertexIndex].Normal.Y < 0.5)
 				{
 					video::SColor &vc = vertices[vertexIndex].Color;
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.6, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.6, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.6, 255.0));
 				}
 			}
 		}
