@@ -268,7 +268,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 				if(nodemgr->get(map.getNode(p)).walkable == false)
 					continue;
 				// And the two nodes above it have to be non-walkable
-				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable == true || nodemgr->get(map.getNode(p+v3s16(0,2,0))).walkable == true)
+				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable ||
+				nodemgr->get(map.getNode(p+v3s16(0,2,0))).walkable)
 					continue;
 			}
 			catch(InvalidPositionException &e)
@@ -550,7 +551,7 @@ void LocalPlayer::applyControl(float dtime)
 	if(superspeed)
 		speed = speed.normalize() * walkspeed_max * 5.0;
 	else if(control.sneak && !free_move)
-		speed = speed.normalize() * walkspeed_max / 2.0;
+		speed = speed.normalize() * walkspeed_max * 0.5;
 	else
 		speed = speed.normalize() * walkspeed_max;
 	
