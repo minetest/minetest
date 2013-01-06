@@ -38,12 +38,15 @@ std::string rules_c;
 std::string rules_d;
 MapNode trunknode;
 MapNode leavesnode;
+MapNode leaves2node;
+int leaves2_chance;
 int angle;
 int iterations;
 int iterations_random_level;
-bool thin_trunks;
-bool fruit_tree;
+std::string trunk_type;
+bool thin_branches;
 MapNode fruitnode;
+int fruit_chance;
 };
 
 	// Add default tree
