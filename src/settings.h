@@ -566,23 +566,39 @@ public:
 		return value;
 	}
 
-template<typename T> struct alignment_trick { char c; T member; };
-#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
+//template<typename T> struct alignment_trick { char c; T member; };
+//#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
+#ifdef _WIN32
+	#define ALIGNOF(x) __alignof(x)
+#else
+	#define ALIGNOF(x) __alignof__(x)
+#endif
 #define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
-typedef int64_t s64;
+#ifdef _WIN32
+	#define strtok_r(x, y, z) strtok_s(x, y, z)
+	#define strtof(x, y) (float)strtod(x, y)
+	#define strtoll(x, y, z) _strtoi64(x, y, z)
+	#define strtoull(x, y, z) _strtoui64(x, y, z)
+#endif
 
-	void *getStruct(std::string &name, std::string format, size_t len)
+typedef long long int s64; //to be added to src/irrlichttypes.h later
+
+	template <class T> T *getStruct(std::string name, std::string format)
 	{
+		size_t len = sizeof(T);
 		std::vector<std::string *> strs_alloced;
 		std::string *str;
-		char *s = &(get(name))[0];
-		char *buf = new char[len];
-		char *bufpos = buf;
+		std::string valstr = get(name);
+		char *s = &valstr[0];
+		T *buf = new T;
+		char *bufpos = (char *)buf;
 		char *f, *snext;
 		size_t pos;
 
-		char *fmt = &format[0];
-		while ((f = strsep(&fmt, ",")) && s) {
+		char *fmtpos, *fmt = &format[0];
+		while ((f = strtok_r(fmt, ",", &fmtpos)) && s) {
+			fmt = NULL;
+
 			bool is_unsigned = false;
 			int width = 0;
 			char valtype = *f;
@@ -591,14 +607,14 @@ typedef int64_t s64;
 			if (width && valtype == 's')
 				valtype = 'i';
 
-			switch (*f) {
+			switch (valtype) {
 				case 'u':
 					is_unsigned = true;
 					/* FALLTHROUGH */
 				case 'i':
 					if (width == 16) {
 						bufpos += PADDING(bufpos, u16);
-						if ((bufpos - buf) + sizeof(u16) <= len) {
+						if ((bufpos - (char *)buf) + sizeof(u16) <= len) {
 							if (is_unsigned)
 								*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
 							else
@@ -607,7 +623,7 @@ typedef int64_t s64;
 						bufpos += sizeof(u16);
 					} else if (width == 32) {
 						bufpos += PADDING(bufpos, u32);
-						if ((bufpos - buf) + sizeof(u32) <= len) {
+						if ((bufpos - (char *)buf) + sizeof(u32) <= len) {
 							if (is_unsigned)
 								*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
 							else
@@ -616,7 +632,7 @@ typedef int64_t s64;
 						bufpos += sizeof(u32);
 					} else if (width == 64) {
 						bufpos += PADDING(bufpos, u64);
-						if ((bufpos - buf) + sizeof(u64) <= len) {
+						if ((bufpos - (char *)buf) + sizeof(u64) <= len) {
 							if (is_unsigned)
 								*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
 							else
@@ -632,7 +648,7 @@ typedef int64_t s64;
 						*snext++ = 0;
 
 					bufpos += PADDING(bufpos, bool);
-					if ((bufpos - buf) + sizeof(bool) <= len)
+					if ((bufpos - (char *)buf) + sizeof(bool) <= len)
 						*(bool *)bufpos = is_yes(std::string(s));
 					bufpos += sizeof(bool);
 
@@ -640,7 +656,7 @@ typedef int64_t s64;
 					break;
 				case 'f':
 					bufpos += PADDING(bufpos, float);
-					if ((bufpos - buf) + sizeof(float) <= len)
+					if ((bufpos - (char *)buf) + sizeof(float) <= len)
 						*(float *)bufpos = strtof(s, &s);
 					bufpos += sizeof(float);
 
@@ -664,7 +680,7 @@ typedef int64_t s64;
 					while ((pos = str->find("\\\"", pos)) != std::string::npos)
 						str->erase(pos, 1);
 
-					if ((bufpos - buf) + sizeof(std::string *) <= len)
+					if ((bufpos - (char *)buf) + sizeof(std::string *) <= len)
 						*(std::string **)bufpos = str;
 					bufpos += sizeof(std::string *);
 					strs_alloced.push_back(str);
@@ -680,7 +696,7 @@ typedef int64_t s64;
 					if (width == 2) {
 						bufpos += PADDING(bufpos, v2f);
 
-						if ((bufpos - buf) + sizeof(v2f) <= len) {
+						if ((bufpos - (char *)buf) + sizeof(v2f) <= len) {
 						v2f *v = (v2f *)bufpos;
 							v->X = strtof(s, &s);
 							s++;
@@ -690,7 +706,7 @@ typedef int64_t s64;
 						bufpos += sizeof(v2f);
 					} else if (width == 3) {
 						bufpos += PADDING(bufpos, v3f);
-						if ((bufpos - buf) + sizeof(v3f) <= len) {
+						if ((bufpos - (char *)buf) + sizeof(v3f) <= len) {
 							v3f *v = (v3f *)bufpos;
 							v->X = strtof(s, &s);
 							s++;
@@ -710,15 +726,16 @@ typedef int64_t s64;
 			if (s && *s == ',')
 				s++;
 
-			if ((bufpos - buf) > len) //error, buffer too small
+			if ((size_t)(bufpos - (char *)buf) > len) //error, buffer too small
 				goto fail;
 		}
 
 		if (f && *f) { //error, mismatched number of fields and values
 fail:
-			for (int i = 0; i != strs_alloced.size(); i++)
+			for (unsigned int i = 0; i != strs_alloced.size(); i++)
 				delete strs_alloced[i];
-			delete[] buf;
+			delete buf;
+			//delete[] buf;
 			buf = NULL;
 		}
 
@@ -735,13 +752,12 @@ fail:
 		size_t fpos;
 		char *f;
 
-		int nprinted;
 		char *bufpos = (char *)value;
-		char *fmt = &format[0];
-
-		while ((f = strsep(&fmt, ","))) {
+		char *fmtpos, *fmt = &format[0];
+		while ((f = strtok_r(fmt, ",", &fmtpos))) {
+			fmt = NULL;
 			bool is_unsigned = false;
-			int width = 0;
+			int width = 0, nprinted = 0;
 			char valtype = *f;
 
 			width = (int)strtol(f + 1, &f, 10);
@@ -769,7 +785,7 @@ fail:
 						bufpos += PADDING(bufpos, u64);
 						nprinted = snprintf(sbuf + pos, sbuflen,
 									is_unsigned ? "%llu, " : "%lli, ",
-												 *((u64 *)bufpos));
+									(unsigned long long)*((u64 *)bufpos));
 						bufpos += sizeof(u64);
 					}
 					break;

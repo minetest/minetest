@@ -78,7 +78,7 @@ BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {
 
 
 BiomeDefManager::~BiomeDefManager() {
-	for (int i = 0; i != bgroups.size(); i++)
+	for (unsigned int i = 0; i != bgroups.size(); i++)
 		delete bgroups[i];
 }
 
@@ -96,6 +96,7 @@ Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
 		case BIOME_TERRAIN_FLAT:
 			return new BiomeSuperflat;
 	}
+	return NULL;
 }
 
 
@@ -116,7 +117,7 @@ void BiomeDefManager::addBiomeGroup(float freq) {
 void BiomeDefManager::addBiome(Biome *b) {
 	std::vector<Biome *> *bgroup;
 
-	if (b->groupid >= bgroups.size()) {
+	if ((unsigned int)b->groupid >= bgroups.size()) {
 		errorstream << "BiomeDefManager: attempted to add biome '" << b->name
 		 << "' to nonexistent biome group " << b->groupid << std::endl;
 		return;
@@ -131,7 +132,6 @@ void BiomeDefManager::addBiome(Biome *b) {
 
 
 void BiomeDefManager::addDefaultBiomes() {
-	std::vector<Biome *> *bgroup;
 	Biome *b;
 
 	b = new Biome;

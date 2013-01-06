@@ -32,47 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 
-/*
-#define AVERAGE_MUD_AMOUNT 4
-
-NoiseParams nparams_v6_def_terrain_base =
-	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
-NoiseParams nparams_v6_def_terrain_higher =
-	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85309, 5, 0.6};
-NoiseParams nparams_v6_def_steepness =
-	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
-NoiseParams nparams_v6_def_height_select =
-	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
-NoiseParams nparams_v6_def_trees =
-	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
-NoiseParams nparams_v6_def_mud =
-	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
-NoiseParams nparams_v6_def_beach =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
-NoiseParams nparams_v6_def_biome =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
-NoiseParams nparams_v6_def_cave =
-	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
-
-
-MapgenV6Params mg_def_params_v6 = {
-	0,
-	1,
-	5,
-	MG_TREES | MG_CAVES | MGV6_BIOME_BLEND,
-	0.45,
-	0.15,
-	&nparams_v6_def_terrain_base,
-	&nparams_v6_def_terrain_higher,
-	&nparams_v6_def_steepness,
-	&nparams_v6_def_height_select,
-	&nparams_v6_def_trees,
-	&nparams_v6_def_mud,
-	&nparams_v6_def_beach,
-	&nparams_v6_def_biome,
-	&nparams_v6_def_cave
-};
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -81,15 +40,17 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params) {
 	this->generating  = false;
 	this->id       = mapgenid;
 
-	this->seed     = params->seed;
+	this->seed     = (int)params->seed;
 	this->water_level = params->water_level;
-	this->flags   = flags;
+	this->flags   = params->flags;
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 
 	this->freq_desert = params->freq_desert;
 	this->freq_beach  = params->freq_beach;
 
 	this->ystride = csize.X; //////fix this
+
+	np_cave = params->np_cave;
 
 	noise_terrain_base   = new Noise(params->np_terrain_base,   seed, csize.X, csize.Y);
 	noise_terrain_higher = new Noise(params->np_terrain_higher, seed, csize.X, csize.Y);
@@ -120,7 +81,6 @@ MapgenV6::~MapgenV6() {
 	delete noise_mud;
 	delete noise_beach;
 	delete noise_biome;
-	delete noise_cave;
 }
 
 
@@ -401,6 +361,12 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 	return (u32)(seed%0x100000000ULL) + z*38134234 + y*42123 + x*23;
 }
 
+
+int MapgenV6::getGroundLevelAtPoint(v2s16 p) {
+	return base_rock_level_2d(seed, p) + AVERAGE_MUD_AMOUNT;
+}
+
+
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
 void MapgenV6::makeChunk(BlockMakeData *data)
@@ -636,10 +602,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
 			data->seed+34329, 3, 0.50);*/
 
-	double cave_amount = np_cave->offset + np_cave->scale * noise2d_perlin(
-			0.5 + (double)node_min.X / np_cave->spread.X,
-			0.5 + (double)node_min.Y / np_cave->spread.Y,
-			data->seed + np_cave->seed, np_cave->octaves, np_cave->persist);
+	double cave_amount = NoisePerlin2D(np_cave, node_min.X, node_min.Y, data->seed);
 
 	const u32 age_loops = 2;
 	for(u32 i_age=0; i_age<age_loops; i_age++)
@@ -669,11 +632,15 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	}
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
-		int avg_height = (int)
+		if (!(flags & MG_CAVES))
+			continue;
+
+		/*int avg_height = (int)
 			  ((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
 				base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
 		if ((node_max.Y + node_min.Y) / 2 > avg_height)
-			break;
+			break;*/
+
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = ps.range(2,6);
@@ -1316,7 +1283,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		Generate some trees
 	*/
 	assert(central_area_size.X == central_area_size.Z);
-	{
+	if (flags & MG_TREES) {
 		// Divide area into parts
 		s16 div = 8;
 		s16 sidelen = central_area_size.X / div;

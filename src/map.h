@@ -81,7 +81,7 @@ struct MapEditEvent
 		already_known_by_peer(0)
 	{
 	}
-	
+
 	MapEditEvent * clone()
 	{
 		MapEditEvent *event = new MapEditEvent();
@@ -155,7 +155,7 @@ public:
 	{
 		return MAPTYPE_BASE;
 	}
-	
+
 	/*
 		Drop (client) or delete (server) the map.
 	*/
@@ -168,7 +168,7 @@ public:
 	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
 	void dispatchEvent(MapEditEvent *event);
-	
+
 	// On failure returns NULL
 	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
 	// Same as the above (there exists no lock anymore)
@@ -190,22 +190,22 @@ public:
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
-	
+
 	/* Server overrides */
 	virtual MapBlock * emergeBlock(v3s16 p, bool allow_generate=true)
 	{ return getBlockNoCreateNoEx(p); }
 
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
-	
+
 	bool isValidPosition(v3s16 p);
-	
+
 	// throws InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
 
 	// throws InvalidPositionException if not found
 	void setNode(v3s16 p, MapNode & n);
-	
+
 	// Returns a CONTENT_IGNORE node if not found
 	MapNode getNodeNoEx(v3s16 p);
 
@@ -218,11 +218,11 @@ public:
 			v3s16 pos, u8 lightwas,
 			core::map<v3s16, bool> & light_sources,
 			core::map<v3s16, MapBlock*> & modified_blocks);
-	
+
 	void spreadLight(enum LightBank bank,
 			core::map<v3s16, bool> & from_nodes,
 			core::map<v3s16, MapBlock*> & modified_blocks);
-	
+
 	void lightNeighbors(enum LightBank bank,
 			v3s16 pos,
 			core::map<v3s16, MapBlock*> & modified_blocks);
@@ -231,14 +231,14 @@ public:
 
 	s16 propagateSunlight(v3s16 start,
 			core::map<v3s16, MapBlock*> & modified_blocks);
-	
+
 	void updateLighting(enum LightBank bank,
 			core::map<v3s16, MapBlock*>  & a_blocks,
 			core::map<v3s16, MapBlock*> & modified_blocks);
-			
+
 	void updateLighting(core::map<v3s16, MapBlock*>  & a_blocks,
 			core::map<v3s16, MapBlock*> & modified_blocks);
-			
+
 	/*
 		These handle lighting but not faces.
 	*/
@@ -254,7 +254,7 @@ public:
 	*/
 	bool addNodeWithEvent(v3s16 p, MapNode n);
 	bool removeNodeWithEvent(v3s16 p);
-	
+
 	/*
 		Takes the blocks at the edges into account
 	*/
@@ -267,9 +267,9 @@ public:
 	// Call these before and after saving of many blocks
 	virtual void beginSave() {return;};
 	virtual void endSave() {return;};
-	
+
 	virtual void save(ModifiedState save_level){assert(0);};
-	
+
 	// Server implements this.
 	// Client leaves it as no-op.
 	virtual void saveBlock(MapBlock *block){};
@@ -280,7 +280,7 @@ public:
 	*/
 	void timerUpdate(float dtime, float unload_timeout,
 			core::list<v3s16> *unloaded_blocks=NULL);
-		
+
 	// Deletes sectors and their blocks from memory
 	// Takes cache into account
 	// If deleted sector is in sector cache, clears cache
@@ -298,14 +298,14 @@ public:
 
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
-	
+
 	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
 		These are basically coordinate wrappers to MapBlock
 	*/
-	
+
 	NodeMetadata* getNodeMetadata(v3s16 p);
 	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
@@ -314,7 +314,7 @@ public:
 		Node Timers
 		These are basically coordinate wrappers to MapBlock
 	*/
-	
+
 	NodeTimer getNodeTimer(v3s16 p);
 	void setNodeTimer(v3s16 p, NodeTimer t);
 	void removeNodeTimer(v3s16 p);
@@ -327,7 +327,7 @@ public:
 	/*
 		Variables
 	*/
-	
+
 protected:
 
 	std::ostream &m_dout; // A bit deprecated, could be removed
@@ -338,7 +338,7 @@ protected:
 
 	core::map<v2s16, MapSector*> m_sectors;
 
-	// Be sure to set this to NULL when the cached sector is deleted 
+	// Be sure to set this to NULL when the cached sector is deleted
 	MapSector *m_sector_cache;
 	v2s16 m_sector_cache_p;
 
@@ -358,7 +358,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge);
+	ServerMap(std::string savedir, IGameDef *gamedef);
 	~ServerMap();
 
 	s32 mapType() const
@@ -380,13 +380,13 @@ public:
 	void initBlockMake(BlockMakeData *data, v3s16 blockpos);
 	MapBlock* finishBlockMake(BlockMakeData *data,
 			core::map<v3s16, MapBlock*> &changed_blocks);
-	
+
 	// A non-threaded wrapper to the above  - DEFUNCT
 /*	MapBlock * generateBlock(
 			v3s16 p,
 			core::map<v3s16, MapBlock*> &modified_blocks
 	);*/
-	
+
 	/*
 		Get a block from somewhere.
 		- Memory
@@ -399,10 +399,10 @@ public:
 		- Memory
 		- Load from disk
 		- Create blank filled with CONTENT_IGNORE
-		
+
 	*/
 	MapBlock * emergeBlock(v3s16 p, bool create_blank=true);
-	
+
 	// Helper for placing objects on ground level
 	s16 findGroundLevel(v2s16 p2d);
 
@@ -438,32 +438,32 @@ public:
 
 	void save(ModifiedState save_level);
 	//void loadAll();
-	
+
 	void listAllLoadableBlocks(core::list<v3s16> &dst);
-	
+
 	// Saves map seed and possibly other stuff
 	void saveMapMeta();
 	void loadMapMeta();
-	
+
 	/*void saveChunkMeta();
 	void loadChunkMeta();*/
-	
+
 	// The sector mutex should be locked when calling most of these
-	
+
 	// This only saves sector-specific data such as the heightmap
 	// (no MapBlocks)
 	// DEPRECATED? Sectors have no metadata anymore.
 	void saveSectorMeta(ServerMapSector *sector);
 	MapSector* loadSectorMeta(std::string dirname, bool save_after_load);
 	bool loadSectorMeta(v2s16 p2d);
-	
+
 	// Full load of a sector including all blocks.
 	// returns true on success, false on failure.
 	bool loadSectorFull(v2s16 p2d);
 	// If sector is not found in memory, try to load it from disk.
 	// Returns true if sector now resides in memory
 	//bool deFlushSector(v2s16 p2d);
-	
+
 	void saveBlock(MapBlock *block);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
@@ -478,11 +478,21 @@ public:
 
 	u64 getSeed(){ return m_seed; }
 
-	EmergeManager *m_emerge;
+	MapgenParams *getMapgenParams(){ return m_mgparams; }
+
+	void setEmerge(EmergeManager *emerge){ m_emerge = emerge; }
+
+	// Parameters fed to the Mapgen
+	MapgenParams *m_mgparams;
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
-	
+
+
+
+	// Emerge manager
+	EmergeManager *m_emerge;
+
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 
@@ -499,7 +509,7 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed;
-	
+
 	/*
 		SQLite database and statements
 	*/
@@ -514,7 +524,7 @@ class MapVoxelManipulator : public VoxelManipulator
 public:
 	MapVoxelManipulator(Map *map);
 	virtual ~MapVoxelManipulator();
-	
+
 	virtual void clear()
 	{
 		VoxelManipulator::clear();
@@ -542,11 +552,11 @@ public:
 
 	void setMap(Map *map)
 	{m_map = map;}
-	
+
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max);
-	
+
 	// This is much faster with big chunks of generated data
 	void blitBackAll(core::map<v3s16, MapBlock*> * modified_blocks);
 

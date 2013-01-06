@@ -34,19 +34,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "treegen.h"
 
+/////////////////// Mapgen V6 perlin noise default values
+NoiseParams nparams_v6_def_terrain_base =
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
+NoiseParams nparams_v6_def_terrain_higher =
+	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6};
+NoiseParams nparams_v6_def_steepness =
+	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
+NoiseParams nparams_v6_def_height_select =
+	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
+NoiseParams nparams_v6_def_trees =
+	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
+NoiseParams nparams_v6_def_mud =
+	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
+NoiseParams nparams_v6_def_beach =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
+NoiseParams nparams_v6_def_biome =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
+NoiseParams nparams_v6_def_cave =
+	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
 
-
-/*
-MapgenV7Params mg_def_params_v7 = {
-	0,
-	1,
-	5,
-	MG_TREES | MG_CAVES | MG_DUNGEONS,
-	&nparams_v7_def_terrain,
-	&nparams_v7_def_bgroup,
-	&nparams_v7_def_heat,
-	&nparams_v7_def_humidity
-};*/
+/////////////////// Mapgen V7 perlin noise default values
+NoiseParams nparams_v7_def_terrain =
+	{10.0, 12.0, v3f(350., 350., 350.), 82341, 5, 0.6}; //terrain
+NoiseParams nparams_v7_def_bgroup =
+	{0.5, 1/(2*1.6), v3f(350., 350., 350.), 5923, 2, 0.60}; //0 to 1
+NoiseParams nparams_v7_def_heat =
+	{25.0, 50.0, v3f(500., 500., 500.), 35293, 1, 0.00}; //-25 to 75
+NoiseParams nparams_v7_def_humidity =
+	{50, 100/(2*1.6), v3f(750., 750., 750.), 12094, 2, 0.60}; //0 to 100
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,25 +72,18 @@ MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, MapgenV7Params *para
 	this->generating  = false;
 	this->id       = mapgenid;
 	this->biomedef = biomedef;
+	this->ndef     = biomedef->ndef;
 
-	this->seed        = params->seed;
-	this->csize       = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE; /////////////////get this from config!
+	this->seed        = (int)params->seed;
+	this->csize       = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 	this->water_level = params->water_level;
 
-	//g_settings->getS16("default_water_level");
-
-	/*
-	this->np_terrain  = np_terrain;
-	this->np_bgroup   = np_bgroup;
-	this->np_heat     = np_heat;
-	this->np_humidity = np_humidity;
-	*/
 	noise_terrain  = new Noise(params->np_terrain,  seed, csize.X, csize.Y);
 	noise_bgroup   = new Noise(params->np_bgroup,   seed, csize.X, csize.Y);
 	noise_heat     = new Noise(params->np_heat,     seed, csize.X, csize.Y);
 	noise_humidity = new Noise(params->np_humidity, seed, csize.X, csize.Y);
 
-	this->ndef = biomedef->ndef;
+
 	n_air   = MapNode(ndef->getId("mapgen_air"));
 	n_water = MapNode(ndef->getId("mapgen_water_source"));
 	n_lava  = MapNode(ndef->getId("mapgen_lava_source"));
@@ -200,12 +209,33 @@ void MapgenV7::updateLighting(v3s16 nmin, v3s16 nmax) {
 }
 
 
-EmergeManager::EmergeManager(IGameDef *gamedef, int mg_version) {
-	this->mg_version = mg_version;
-	this->biomedef   = new BiomeDefManager(gamedef);
+Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
+	float bgroup   = NoisePerlin2D(noise_bgroup->np,   p.X, p.Y, seed);
+	float heat     = NoisePerlin2D(noise_heat->np,     p.X, p.Y, seed);
+	float humidity = NoisePerlin2D(noise_humidity->np, p.X, p.Y, seed);
+	return biomedef->getBiome(bgroup, heat, humidity);
+}
 
-	this->params     = NULL;
-	setMapgenParams();
+
+//FIXME:  This assumes y == 0, that is, always in a non-hell/non-sky biome
+int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
+	float terrain = NoisePerlin2D(noise_terrain->np, p.X, p.Y, seed);
+	Biome *biome = getBiomeAtPoint(v3s16(p.X, p.Y, 0));
+	return biome->getSurfaceHeight(terrain);
+}
+
+
+/////////////////////////////// Emerge Manager ////////////////////////////////
+
+
+
+EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef,
+							 MapgenParams *mgparams) {
+	//the order of these assignments is pretty important
+	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
+	this->params   = mgparams;
+	this->mapgen   = NULL;
+	this->mapgen   = getMapgen();
 }
 
 
@@ -217,59 +247,33 @@ EmergeManager::~EmergeManager() {
 
 Mapgen *EmergeManager::getMapgen() {
 	if (!mapgen) {
-		switch (mg_version) {
+		switch (params->mg_version) {
 			case 6:
-				mapgen = new MapgenV6(0, params);
+				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
 				break;
 			case 7:
-				mapgen = new MapgenV7(biomedef, 0, params);
+				mapgen = new MapgenV7(biomedef, 0, (MapgenV7Params *)params);
 				break;
 			default:
 				errorstream << "EmergeManager: Unsupported mapgen version "
-					<< mg_version << ", falling back to V6" << std::endl;
-				mg_version = 6;
-				mapgen = new MapgenV6(0, mgv6params);
+					<< params->mg_version << ", falling back to V6" << std::endl;
+				params->mg_version = 6;
+				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
 		}
 	}
 	return mapgen;
 }
 
 
-void EmergeManager::setMapgenParams() {
-	if (params)
-		delete params;
-
-	switch (mg_version) {
-		case 6:
-			params = new MapgenV6Params();
-			break;
-		case 7:
-			params = new MapgenV7Params();
-			break;
-		default: //////do something here!
-			;
-	}
-}
-
-
 void EmergeManager::addBlockToQueue() {
-
+	//STUB
 }
 
 
-Biome *EmergeManager::getBiomeAtPoint(v3s16 p) {
-	float bgroup   = NoisePerlin2D(np_bgroup,   p.X, p.Y, seed);
-	float heat     = NoisePerlin2D(np_heat,     p.X, p.Y, seed);
-	float humidity = NoisePerlin2D(np_humidity, p.X, p.Y, seed);
-	return biomedef->getBiome(bgroup, heat, humidity);
-}
-
-
-//FIXME:  This assumes y == 0, that is, always in a non-hell/non-sky biome
 int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
-	float terrain = NoisePerlin2D(np_terrain, p.X, p.Y, seed);
-	Biome *biome = getBiomeAtPoint(v3s16(p.X, p.Y, 0));
-	return biome->getSurfaceHeight(terrain);
+	if (!mapgen)
+		return 0;
+	return mapgen->getGroundLevelAtPoint(p);
 }
 
 
@@ -283,15 +287,90 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos) {
 
 	//yuck, but then again, should i bother being accurate?
 	//the height of the nodes in a single block is quite variable
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= water_level;
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params->water_level;
 }
 
 
 u32 EmergeManager::getBlockSeed(v3s16 p) {
-	return (u32)(seed & 0xFFFFFFFF) +
+	return (u32)(params->seed & 0xFFFFFFFF) +
 		p.Z * 38134234 +
 		p.Y * 42123 +
 		p.Y * 23;
+}
+
+
+MapgenParams *MapgenParams::createMapgenParams(int mgver) {
+	switch (mgver) {
+		case 6:
+			return new MapgenV6Params();
+		case 7:
+			return new MapgenV7Params();
+		default: //instead of complaining, default to 6
+			return new MapgenV6Params();
+	}
+}
+
+
+MapgenParams *MapgenParams::getParamsFromSettings(Settings *settings) {
+	int mg_version = settings->getS16("mg_version");
+	MapgenParams *mgparams = MapgenParams::createMapgenParams(mg_version);
+	mgparams->mg_version  = mg_version;
+	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
+	mgparams->water_level = settings->getS16("water_level");
+	mgparams->chunksize   = settings->getS16("chunksize");
+	mgparams->flags       = settings->getS32("mg_flags");
+
+	switch (mg_version) {
+		case 6:
+		{
+			MapgenV6Params *v6params = (MapgenV6Params *)mgparams;
+
+			v6params->freq_desert = settings->getFloat("mgv6_freq_desert");
+			v6params->freq_beach  = settings->getFloat("mgv6_freq_beach");
+			v6params->np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
+			v6params->np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
+			v6params->np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
+			v6params->np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
+			v6params->np_trees          = settings->getNoiseParams("mgv6_np_trees");
+			v6params->np_mud            = settings->getNoiseParams("mgv6_np_mud");
+			v6params->np_beach          = settings->getNoiseParams("mgv6_np_beach");
+			v6params->np_biome          = settings->getNoiseParams("mgv6_np_biome");
+			v6params->np_cave           = settings->getNoiseParams("mgv6_np_cave");
+
+			if (!v6params->np_terrain_base || !v6params->np_terrain_higher ||
+				!v6params->np_steepness    || !v6params->np_height_select  ||
+				!v6params->np_trees        || !v6params->np_mud            ||
+				!v6params->np_beach || !v6params->np_biome || !v6params->np_cave) {
+				delete mgparams;
+				return NULL;
+			}
+
+			break;
+		}
+		case 7:
+		{
+			MapgenV7Params *v7params = (MapgenV7Params *)mgparams;
+
+			v7params->np_terrain  = settings->getNoiseParams("mgv7_np_terrain");
+			v7params->np_bgroup   = settings->getNoiseParams("mgv7_np_bgroup");
+			v7params->np_heat     = settings->getNoiseParams("mgv7_np_heat");
+			v7params->np_humidity = settings->getNoiseParams("mgv7_np_humidity");
+			
+			if (!v7params->np_terrain || !v7params->np_bgroup ||
+				!v7params->np_heat    || !v7params->np_humidity) {
+				delete mgparams;
+				return NULL;
+			}
+			
+			break;
+		}
+		default:
+			delete mgparams;
+			return NULL;
+	}
+
+	return mgparams;
+
 }
 
 

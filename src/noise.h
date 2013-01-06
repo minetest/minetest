@@ -70,6 +70,10 @@ struct NoiseParams {
 };
 
 
+// Convenience macros for getting/setting NoiseParams in Settings
+#define getNoiseParams(x) getStruct<NoiseParams>((x), "f,f,v3,s32,s32,f")
+#define setNoiseParams(x, y) setStruct((x), "f,f,v3,s32,s32,f", (y))
+
 class Noise {
 public:
 	NoiseParams *np;
@@ -129,8 +133,12 @@ inline float easeCurve(float t) {
 }
 
 #define NoisePerlin2D(np, x, y, s) ((np)->offset + (np)->scale * \
-		noise2d_perlin((float)(x) * (np)->spread.X, (float)(y) * (np)->spread.Y, \
+		noise2d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
 		(s) + (np)->seed, (np)->octaves, (np)->persist))
+
+#define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \
+		noise2d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
+		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #endif
 

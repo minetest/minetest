@@ -553,6 +553,8 @@ public:
 	//TODO:  determine what should be locked when accessing the emerge manager
 	EmergeManager *getEmergeManager(){ return m_emerge; }
 
+	BiomeDefManager *getBiomeDef(){ return m_biomedef; }
+
 	// actions: time-reversed list
 	// Return value: success/failure
 	bool rollbackRevertActions(const std::list<RollbackAction> &actions,
@@ -745,6 +747,9 @@ private:
 
 	// Emerge manager
 	EmergeManager *m_emerge;
+
+	// Biome Definition Manager
+	BiomeDefManager *m_biomedef;
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua

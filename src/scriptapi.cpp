@@ -4463,7 +4463,7 @@ static int l_register_biome_groups(lua_State *L)
 	if (!lua_istable(L, index))
 		throw LuaError(L, "register_biome_groups: parameter is not a table");
 
-	BiomeDefManager *bmgr = get_server(L)->getEmergeManager()->biomedef;
+	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
 	if (!bmgr) {
 		verbosestream << "register_biome_groups: BiomeDefManager not active" << std::endl;
 		return 0;
@@ -4487,7 +4487,7 @@ static int l_register_biome(lua_State *L)
 	std::string nodename;
 
 	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
-	BiomeDefManager *bmgr = get_server(L)->getEmergeManager()->biomedef;
+	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
 	if (!bmgr) {
 		verbosestream << "register_biome: BiomeDefManager not active" << std::endl;
 		return 0;

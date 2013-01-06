@@ -945,6 +945,7 @@ Server::Server(
 	m_rollback_sink_enabled(true),
 	m_enable_rollback_recording(false),
 	m_emerge(NULL),
+	m_biomedef(NULL),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -984,8 +985,8 @@ Server::Server(
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
-	// Create emerge manager
-	m_emerge = new EmergeManager(this, g_settings->getS16("use_mapgen_version"));
+	// Create biome definition manager
+	m_biomedef = new BiomeDefManager(this);
 
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
@@ -1094,19 +1095,23 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Add default biomes after nodedef had its aliases added
-	if (m_emerge->biomedef)
-		m_emerge->biomedef->addDefaultBiomes();
+	m_biomedef->addDefaultBiomes();
 
 	// Initialize Environment
+	ServerMap *servermap = new ServerMap(path_world, this);
+	m_env = new ServerEnvironment(servermap, m_lua, this, this);
 
-	m_env = new ServerEnvironment(new ServerMap(path_world, this, m_emerge), m_lua,
-			this, this);
+	// Create emerge manager
+	m_emerge = new EmergeManager(this, m_biomedef, servermap->getMapgenParams());
+
+	// Give map pointer to the emerge manager
+	servermap->setEmerge(m_emerge);
 
 	// Give environment reference to scripting api
 	scriptapi_add_environment(m_lua, m_env);
 
 	// Register us to receive map edit events
-	m_env->getMap().addEventReceiver(this);
+	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
 	if(fs::PathExists(m_path_world+DIR_DELIM+"env_meta.txt"))
@@ -4849,7 +4854,7 @@ v3f findSpawnPos(ServerMap &map)
 #endif
 
 #if 1
-	s16 water_level = map.m_emerge->water_level; //g_settings->getS16("default_water_level");
+	s16 water_level = map.m_mgparams->water_level;
 
 	// Try to find a good place a few times
 	for(s32 i=0; i<1000; i++)
@@ -4874,7 +4879,7 @@ v3f findSpawnPos(ServerMap &map)
 			continue;
 		}
 
-		nodepos = v3s16(nodepos2d.X, groundheight-2, nodepos2d.Y);
+		nodepos = v3s16(nodepos2d.X, groundheight+1, nodepos2d.Y);
 		bool is_good = false;
 		s32 air_count = 0;
 		for(s32 i=0; i<10; i++){

@@ -317,7 +317,7 @@ void Noise::setSize(int sx, int sy, int sz) {
 	delete[] buf;
 	delete[] result;
 	this->buf    = new float[sx * sy * sz];
-	this->result = new float[sx * sy * sz];	
+	this->result = new float[sx * sy * sz];
 }
 
 

@@ -1993,10 +1993,10 @@ void Map::removeNodeTimer(v3s16 p)
 /*
 	ServerMap
 */
-
-ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
+ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 	Map(dout_server, gamedef),
 	m_seed(0),
+	m_emerge(NULL),
 	m_map_metadata_changed(true),
 	m_database(NULL),
 	m_database_read(NULL),
@@ -2004,9 +2004,13 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
-	m_emerge = emerge;
-
 	//m_chunksize = 8; // Takes a few seconds
+
+	m_mgparams = MapgenParams::getParamsFromSettings(g_settings);
+	if (!m_mgparams)
+		m_mgparams = new MapgenV6Params();
+		
+	m_seed = m_mgparams->seed;
 
 	if (g_settings->get("fixed_map_seed").empty())
 	{
@@ -2014,16 +2018,8 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 				+ ((u64)(myrand()%0xffff)<<16)
 				+ ((u64)(myrand()%0xffff)<<32)
 				+ ((u64)(myrand()&0xffff)<<48));
+		m_mgparams->seed = m_seed;
 	}
-	else
-	{
-		m_seed = g_settings->getU64("fixed_map_seed");
-	}
-	//emerge->params.seed = m_seed;
-	//emerge->params.water_level = g_settings->getS16("default_water_level");
-	//mapgen version
-	//chunksize
-	//noiseparams
 
 	/*
 		Experimental and debug stuff
@@ -2056,6 +2052,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 				try{
 					// Load map metadata (seed, chunksize)
 					loadMapMeta();
+				}
+				catch(SettingNotFoundException &e){
+					infostream<<"ServerMap:  Some metadata not found."
+							  <<" Using default settings."<<std::endl;
 				}
 				catch(FileNotGoodException &e){
 					infostream<<"WARNING: Could not load map metadata"
@@ -3079,25 +3079,38 @@ void ServerMap::saveMapMeta()
 
 	Settings params;
 
-	params.setS16("mg_version", m_emerge->mg_version);
+	params.setS16("mg_version", m_emerge->params->mg_version);
 
 	params.setU64("seed", m_emerge->params->seed);
 	params.setS16("water_level", m_emerge->params->water_level);
 	params.setS16("chunksize", m_emerge->params->chunksize);
-	params.setS32("flags", m_emerge->params->flags);
-	switch (m_emerge->mg_version) {
+	params.setS32("mg_flags", m_emerge->params->flags);
+	switch (m_emerge->params->mg_version) {
 		case 6:
 		{
-			MapgenV6Params *v6params = m_emerge->params;
+			MapgenV6Params *v6params = (MapgenV6Params *)m_emerge->params;
 
-			params.setFloat("freq_desert", v6params->freq_desert);
-			params.setFloat("freq_beach", v6params->freq_beach);
-
+			params.setFloat("mgv6_freq_desert", v6params->freq_desert);
+			params.setFloat("mgv6_freq_beach", v6params->freq_beach);
+			params.setNoiseParams("mgv6_np_terrain_base",   v6params->np_terrain_base);
+			params.setNoiseParams("mgv6_np_terrain_higher", v6params->np_terrain_higher);
+			params.setNoiseParams("mgv6_np_steepness",      v6params->np_steepness);
+			params.setNoiseParams("mgv6_np_height_select",  v6params->np_height_select);
+			params.setNoiseParams("mgv6_np_trees",          v6params->np_trees);
+			params.setNoiseParams("mgv6_np_mud",            v6params->np_mud);
+			params.setNoiseParams("mgv6_np_beach",          v6params->np_beach);
+			params.setNoiseParams("mgv6_np_biome",          v6params->np_biome);
+			params.setNoiseParams("mgv6_np_cave",           v6params->np_cave);
 			break;
 		}
 		case 7:
 		{
-			MapgenV7Params *v7params = m_emerge->params;
+			MapgenV7Params *v7params = (MapgenV7Params *)m_emerge->params;
+
+			params.setNoiseParams("mgv7_np_terrain",  v7params->np_terrain);
+			params.setNoiseParams("mgv7_np_bgroup",   v7params->np_bgroup);
+			params.setNoiseParams("mgv7_np_heat",     v7params->np_heat);
+			params.setNoiseParams("mgv7_np_humidity", v7params->np_humidity);
 			break;
 		}
 		default:
@@ -3142,36 +3155,18 @@ void ServerMap::loadMapMeta()
 		params.parseConfigLine(line);
 	}
 
-	m_emerge->mg_version  = params.getS16("mg_version");
-	m_emerge->setMapgenParams();
-
-	m_emerge->params->seed        = params.getU64("seed");
-	m_emerge->params->water_level = params.getS16("water_level");
-	m_emerge->params->chunksize   = params.getS16("chunksize");
-	m_emerge->params->flags       = params.getS32("flags");
-
-	m_seed = m_emerge->params->seed;
-
-	switch (m_emerge->mg_version) {
-		case 6:
-		{
-			MapgenV6Params *v6params = m_emerge->params;
-
-			v6params->freq_desert = params.getFloat("freq_desert");
-			v6params->freq_beach  = params.getFloat("freq_beach");
-
-			break;
+	MapgenParams *mgparams = MapgenParams::getParamsFromSettings(&params);
+	if (mgparams) {
+		if (m_mgparams)
+			delete m_mgparams;
+		m_mgparams = mgparams;
+		m_seed = mgparams->seed;
+	} else {
+		if (params.exists("seed")) {
+			m_seed = params.getU64("seed");
+			m_mgparams->seed = m_seed;
 		}
-		case 7:
-		{
-			MapgenV7Params *v6params = m_emerge->params;
-
-			break;
-		}
-		default:
-			; //complain here
 	}
-
 
 	verbosestream<<"ServerMap::loadMapMeta(): "<<"seed="<<m_seed<<std::endl;
 }
