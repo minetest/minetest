@@ -277,15 +277,15 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 			break;
 		case 'F':
 				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
-				if ((stack_orientation.empty() == true && tree_definition.trunk_type == "double") ||
-					(stack_orientation.empty() == false && tree_definition.trunk_type == "double" && tree_definition.thin_branches == false))
+				if ((stack_orientation.empty() && tree_definition.trunk_type == "double") ||
+					(!stack_orientation.empty() && tree_definition.trunk_type == "double" && !tree_definition.thin_branches))
 				{
 					make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
 					make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
 					make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
 				}
-				if ((stack_orientation.empty() == true && tree_definition.trunk_type == "crossed") ||
-					(stack_orientation.empty() == false && tree_definition.trunk_type == "crossed" && tree_definition.thin_branches == false))
+				if ((stack_orientation.empty() && tree_definition.trunk_type == "crossed") ||
+					(!stack_orientation.empty() && tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches))
 				{
 					make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
 					make_tree_trunk_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
