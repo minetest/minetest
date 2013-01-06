@@ -48,6 +48,7 @@ extern "C" {
 #include "noise.h" // PseudoRandom for LuaPseudoRandom
 #include "util/pointedthing.h"
 #include "rollback.h"
+#include "treegen.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -2048,6 +2049,43 @@ private:
 		return 1;
 	}
 
+	// get_location() -> location (like minetest.get_inventory(location))
+	static int l_get_location(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const InventoryLocation &loc = ref->m_loc;
+		switch(loc.type){
+		case InventoryLocation::PLAYER:
+			lua_newtable(L);
+			lua_pushstring(L, "player");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::NODEMETA:
+			lua_newtable(L);
+			lua_pushstring(L, "nodemeta");
+			lua_setfield(L, -2, "type");
+			push_v3s16(L, loc.p);
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::DETACHED:
+			lua_newtable(L);
+			lua_pushstring(L, "detached");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::UNDEFINED:
+		case InventoryLocation::CURRENT_PLAYER:
+			break;
+		}
+		lua_newtable(L);
+		lua_pushstring(L, "undefined");
+		lua_setfield(L, -2, "type");
+		return 1;
+	}
+
 public:
 	InvRef(const InventoryLocation &loc):
 		m_loc(loc)
@@ -2123,6 +2161,7 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, room_for_item),
 	method(InvRef, contains_item),
 	method(InvRef, remove_item),
+	method(InvRef, get_location),
 	{0,0}
 };
 
@@ -3501,20 +3540,7 @@ private:
 		v3s16 pos = read_v3s16(L, 2);
 		MapNode n = readnode(L, 3, ndef);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace node
-		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-			// Call constructor
-			if(ndef->get(n).has_on_construct)
-				scriptapi_node_on_construct(L, pos, n);
-		}
+		bool succeeded = env->setNode(pos, n);
 		lua_pushboolean(L, succeeded);
 		return 1;
 	}
@@ -3535,20 +3561,8 @@ private:
 		// parameters
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace with air
-		// This is slightly optimized compared to addNodeWithEvent(air)
-		bool succeeded = env->getMap().removeNodeWithEvent(pos);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-		}
+		bool succeeded = env->removeNode(pos);
 		lua_pushboolean(L, succeeded);
-		// Air doesn't require constructor
 		return 1;
 	}
 
@@ -4004,6 +4018,45 @@ private:
 		return 0;
 	}
 
+	static int l_spawn_tree(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		v3s16 p0 = read_v3s16(L, 2);
+
+		treegen::TreeDef tree_def;
+		std::string trunk,leaves,fruit;
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+
+		if(lua_istable(L, 3))
+		{
+			getstringfield(L, 3, "axiom", tree_def.initial_axiom);
+			getstringfield(L, 3, "rules_a", tree_def.rules_a);
+			getstringfield(L, 3, "rules_b", tree_def.rules_b);
+			getstringfield(L, 3, "rules_c", tree_def.rules_a);
+			getstringfield(L, 3, "rules_d", tree_def.rules_b);
+			getstringfield(L, 3, "trunk", trunk);
+			tree_def.trunknode=ndef->getId(trunk);
+			getstringfield(L, 3, "leaves", leaves);
+			tree_def.leavesnode=ndef->getId(leaves);
+			getintfield(L, 3, "angle", tree_def.angle);
+			getintfield(L, 3, "iterations", tree_def.iterations);
+			getintfield(L, 3, "random_level", tree_def.iterations_random_level);
+			getboolfield(L, 3, "thin_trunks", tree_def.thin_trunks);
+			getboolfield(L, 3, "fruit_tree", tree_def.fruit_tree);
+			if (tree_def.fruit_tree)
+			{
+				getstringfield(L, 3, "fruit", fruit);
+				tree_def.fruitnode=ndef->getId(fruit);
+			}
+		}
+		else
+			return 0;
+		treegen::spawn_ltree (env, p0, ndef, tree_def);
+		return 1;
+	}
+
 public:
 	EnvRef(ServerEnvironment *env):
 		m_env(env)
@@ -4086,6 +4139,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
 	method(EnvRef, clear_objects),
+	method(EnvRef, spawn_tree),
 	{0,0}
 };
 
@@ -4858,6 +4912,21 @@ static int l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
+// create_detached_formspec_raw(name)
+static int l_show_formspec(lua_State *L)
+{
+	const char *playername = luaL_checkstring(L, 1);
+	const char *formspec = luaL_checkstring(L, 2);
+
+	if(get_server(L)->showFormspec(playername,formspec))
+	{
+		lua_pushboolean(L, true);
+	}else{
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 static int l_get_dig_params(lua_State *L)
 {
@@ -5187,6 +5256,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"unban_player_or_ip", l_unban_player_of_ip},
 	{"get_inventory", l_get_inventory},
 	{"create_detached_inventory_raw", l_create_detached_inventory_raw},
+	{"show_formspec", l_show_formspec},
 	{"get_dig_params", l_get_dig_params},
 	{"get_hit_params", l_get_hit_params},
 	{"get_current_modname", l_get_current_modname},

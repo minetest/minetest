@@ -43,6 +43,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
+	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -55,6 +56,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("anaglyph", "false");
 	settings->setDefault("anaglyph_strength", "0.1");
 	settings->setDefault("aux1_descends", "false");
+	settings->setDefault("doubletap_jump", "false");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
@@ -95,6 +97,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
 	settings->setDefault("free_move", "false");
+	settings->setDefault("noclip", "false");
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("invert_mouse", "false");
@@ -106,6 +109,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
+	settings->setDefault("selectionbox_color", "(0,0,0)");
+	settings->setDefault("crosshair_color", "(255,255,255)");
+	settings->setDefault("crosshair_alpha", "255");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
@@ -116,6 +122,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_shaders", "2");
+	settings->setDefault("repeat_rightclick_time", "0.25");
+
+	settings->setDefault("media_fetch_threads", "8");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
@@ -156,5 +165,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_aim_rtt", "0.2");
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
+	settings->setDefault("remote_media", "");
 }
 

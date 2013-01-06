@@ -2885,6 +2885,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// (definitions and files)
 		getClient(peer_id)->definitions_sent = true;
 	}
+	else if(command == TOSERVER_RECEIVED_MEDIA) {
+		getClient(peer_id)->definitions_sent = true;
+	}
 	else if(command == TOSERVER_INTERACT)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -3635,6 +3638,24 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
 }
+void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_SHOW_FORMSPEC);
+	os.write((char*)buf, 2);
+	os<<serializeLongString(formspec);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
 
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
@@ -4217,6 +4238,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 		os<<serializeString(j->name);
 		os<<serializeString(j->sha1_digest);
 	}
+	os<<serializeString(g_settings->get("remote_media"));
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4224,7 +4246,6 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
-
 }
 
 struct SendableMedia
@@ -4575,6 +4596,20 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
 }
 
+bool Server::showFormspec(const char *playername, const std::string &formspec)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"showFormspec: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendShowFormspecMessage(player->peer_id,formspec);
+	return true;
+}
+
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);
@@ -4656,7 +4691,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 				log->push_back(os.str());
 		}else{
 			std::ostringstream os;
-			os<<"Succesfully reverted step ("<<num_tried<<") "<<action.toString();
+			os<<"Successfully reverted step ("<<num_tried<<") "<<action.toString();
 			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
 			if(log)
 				log->push_back(os.str());

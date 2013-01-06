@@ -819,6 +819,45 @@ void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 	m_abms.push_back(ABMWithState(abm));
 }
 
+bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	MapNode n_old = m_map->getNodeNoEx(p);
+	// Call destructor
+	if(ndef->get(n_old).has_on_destruct)
+		scriptapi_node_on_destruct(m_lua, p, n_old);
+	// Replace node
+	bool succeeded = m_map->addNodeWithEvent(p, n);
+	if(!succeeded)
+		return false;
+	// Call post-destructor
+	if(ndef->get(n_old).has_after_destruct)
+		scriptapi_node_after_destruct(m_lua, p, n_old);
+	// Call constructor
+	if(ndef->get(n).has_on_construct)
+		scriptapi_node_on_construct(m_lua, p, n);
+	return true;
+}
+
+bool ServerEnvironment::removeNode(v3s16 p)
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	MapNode n_old = m_map->getNodeNoEx(p);
+	// Call destructor
+	if(ndef->get(n_old).has_on_destruct)
+		scriptapi_node_on_destruct(m_lua, p, n_old);
+	// Replace with air
+	// This is slightly optimized compared to addNodeWithEvent(air)
+	bool succeeded = m_map->removeNodeWithEvent(p);
+	if(!succeeded)
+		return false;
+	// Call post-destructor
+	if(ndef->get(n_old).has_after_destruct)
+		scriptapi_node_after_destruct(m_lua, p, n_old);
+	// Air doesn't require constructor
+	return true;
+}
+
 std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)
 {
 	std::set<u16> objects;

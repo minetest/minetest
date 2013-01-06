@@ -51,6 +51,8 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
+# Doubletaping the jump key toogles fly mode
+#doubletap_jump = false
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME
@@ -124,6 +126,12 @@
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
 #console_alpha = 200
+# Selection box border color (R,G,B)
+#selectionbox_color = (0,0,0)
+# Crosshair color (R,G,B)
+#crosshair_color = (255,255,255)
+# Cross alpha (opaqueness, between 0 and 255)
+#crosshair_alpha = 255
 # Sound settings
 #enable_sound = true
 #sound_volume = 0.7
@@ -140,6 +148,13 @@
 # (1: low level shaders; not implemented)
 # 2: enable high level shaders
 #enable_shaders = 2
+# The time in seconds it takes between repeated
+# right clicks when holding the right mouse button
+#repeat_rightclick_time = 0.25
+
+# will only work for servers which use remote_media setting
+# and only for clients compiled with cURL
+#media_fetch_threads = 8
 
 #
 # Server stuff
@@ -217,3 +232,4 @@
 #congestion_control_aim_rtt = 0.2
 #congestion_control_max_rate = 400
 #congestion_control_min_rate = 10
+#remote_media =

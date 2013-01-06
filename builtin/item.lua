@@ -192,11 +192,15 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	-- Add node and update
 	minetest.env:add_node(place_to, newnode)
 
+	local take_item = true
+
 	-- Run callback
 	if def.after_place_node then
 		-- Copy place_to because callback can modify it
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
-		def.after_place_node(place_to_copy, placer)
+		if def.after_place_node(place_to_copy, placer, itemstack) then
+			take_item = false
+		end
 	end
 
 	-- Run script hook
@@ -206,10 +210,14 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
-		callback(place_to_copy, newnode_copy, placer, oldnode_copy)
+		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack) then
+			take_item = false
+		end
 	end
 
-	itemstack:take_item()
+	if take_item then
+		itemstack:take_item()
+	end
 	return itemstack
 end
 
@@ -223,9 +231,19 @@ function minetest.item_place_object(itemstack, placer, pointed_thing)
 end
 
 function minetest.item_place(itemstack, placer, pointed_thing)
+	-- Call on_rightclick if the pointed node defines it
+	if pointed_thing.type == "node" then
+		local n = minetest.env:get_node(pointed_thing.under)
+		local nn = n.name
+		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
+			minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer)
+			return
+		end
+	end
+
 	if itemstack:get_definition().type == "node" then
 		return minetest.item_place_node(itemstack, placer, pointed_thing)
-	else
+	elseif itemstack:get_definition().type ~= "none" then
 		return minetest.item_place_object(itemstack, placer, pointed_thing)
 	end
 end
@@ -367,6 +385,7 @@ minetest.nodedef_default = {
 	can_dig = nil,
 
 	on_punch = redef_wrapper(minetest, 'node_punch'), -- minetest.node_punch
+	on_rightclick = nil,
 	on_dig = redef_wrapper(minetest, 'node_dig'), -- minetest.node_dig
 
 	on_receive_fields = nil,
@@ -456,7 +475,7 @@ minetest.noneitemdef_default = {  -- This is used for the hand and unknown items
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = nil,
+	on_place = redef_wrapper(minetest, 'item_place'),
 	on_drop = nil,
 	on_use = nil,
 }

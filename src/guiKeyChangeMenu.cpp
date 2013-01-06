@@ -46,6 +46,7 @@ enum
 	GUI_ID_KEY_FLY_BUTTON,
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
+	GUI_ID_KEY_NOCLIP_BUTTON,
 	GUI_ID_KEY_CHAT_BUTTON,
 	GUI_ID_KEY_CMD_BUTTON,
 	GUI_ID_KEY_CONSOLE_BUTTON,
@@ -56,6 +57,7 @@ enum
 	GUI_ID_KEY_RANGE_BUTTON,
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
+	GUI_ID_CB_DOUBLETAP_JUMP,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -148,6 +150,20 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
 					GUI_ID_CB_AUX1_DESCENDS, wgettext("\"Use\" = climb down"));
 		}
+		offset += v2s32(0, 25);
+	}
+
+	{
+		s32 option_x = offset.X + 10;
+		s32 option_y = offset.Y;
+		u32 option_w = 220;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += topleft + v2s32(option_x, option_y);
+			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
+					GUI_ID_CB_DOUBLETAP_JUMP, wgettext("Doubltap \"jump\" to toogle fly"));
+		}
+		offset += v2s32(0, 25);
 	}
 
 	{
@@ -195,6 +211,11 @@ bool GUIKeyChangeMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	clearKeyCache();
 	return true;
@@ -362,6 +383,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON, "Console", "keymap_console");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON, "Toggle fly", "keymap_freemove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON, "Toggle fast", "keymap_fastmove");
+	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON, "Toggle noclip", "keymap_noclip");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON, "Range select", "keymap_rangeselect");
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON, "Print stacks", "keymap_print_debug_stacks");
 }

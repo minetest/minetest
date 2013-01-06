@@ -77,9 +77,11 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		GENERIC_CMD_SET_ATTACHMENT
 	PROTOCOL_VERSION 15:
 		Serialization format changes
+	PROTOCOL_VERSION 16:
+		TOCLIENT_SHOW_FORMSPEC
 */
 
-#define LATEST_PROTOCOL_VERSION 15
+#define LATEST_PROTOCOL_VERSION 16
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -267,6 +269,8 @@ enum ToClientCommand
 			u32 length of data
 			data
 		}
+		u16 length of remote media server url (if applicable)
+		string url
 	*/
 	
 	TOCLIENT_TOOLDEF = 0x39,
@@ -351,6 +355,12 @@ enum ToClientCommand
 		u16 len
 		u8[len] name
 		[2] serialized inventory
+	*/
+	TOCLIENT_SHOW_FORMSPEC = 0x44,
+	/*
+		[0] u16 command
+		u16 len
+		u8[len] formspec
 	*/
 };
 
@@ -571,6 +581,10 @@ enum ToServerCommand
 		}
 	 */
 
+	TOSERVER_RECEIVED_MEDIA = 0x41,
+	/*
+		u16 command
+	*/
 };
 
 #endif
