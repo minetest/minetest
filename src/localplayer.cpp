@@ -153,7 +153,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	float player_height = BS*1.55;
 	
 	// Maximum distance over border for sneaking
-	f32 sneak_max = BS*0.4;
+	f32 sneak_max = BS*0.3;
 
 	/*
 		If sneaking, keep in range from the last walked node and don't
@@ -267,8 +267,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 				// The node to be sneaked on has to be walkable
 				if(nodemgr->get(map.getNode(p)).walkable == false)
 					continue;
-				// And the node above it has to be nonwalkable
-				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable == true)
+				// And the two nodes above it have to be non-walkable
+				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable ||
+				nodemgr->get(map.getNode(p+v3s16(0,2,0))).walkable)
 					continue;
 			}
 			catch(InvalidPositionException &e)
@@ -284,7 +285,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 		m_sneak_node = new_sneak_node;
 		m_sneak_node_exists = sneak_node_found;
-
+		
 		/*
 			If sneaking, the player's collision box can be in air, so
 			this has to be set explicitly
@@ -302,7 +303,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		Report collisions
 	*/
 	bool bouncy_jump = false;
-	// Dont report if flying
+	// Don't report if flying
 	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed))
 	{
 		for(size_t i=0; i<result.collisions.size(); i++){
@@ -336,7 +337,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 			}
 		}
 	}
-
+	
 	/*
 		Update the node last under the player
 	*/
@@ -369,7 +370,7 @@ void LocalPlayer::applyControl(float dtime)
 	
 	setPitch(control.pitch);
 	setYaw(control.yaw);
-
+		
 	// Nullify speed and don't run positioning code if the player is attached
 	if(isAttached)
 	{
@@ -437,7 +438,7 @@ void LocalPlayer::applyControl(float dtime)
 			}
 		}
 	}
-	// New minecraft-like descend control
+	// New Minecraft-like descend control
 	else
 	{
 		// Auxiliary button 1 (E)
@@ -555,7 +556,7 @@ void LocalPlayer::applyControl(float dtime)
 	if(superspeed)
 		speed = speed.normalize() * walkspeed_max * 5.0;
 	else if(control.sneak && !free_move)
-		speed = speed.normalize() * walkspeed_max / 3.0;
+		speed = speed.normalize() * walkspeed_max * 0.5;
 	else
 		speed = speed.normalize() * walkspeed_max;
 	
