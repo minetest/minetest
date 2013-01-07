@@ -118,7 +118,7 @@ void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeD
 	core::map<v3s16, MapBlock*> modified_blocks;
 	ManualMapVoxelManipulator vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
-	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
+	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,2,1));
 	make_ltree (vmanip, p0, ndef, tree_definition);
 	vmanip.blitBackAll(&modified_blocks);
 
@@ -221,7 +221,13 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 	}
 
 	//make sure tree is not floating in the air
-	if (tree_definition.thin_trunks == false)
+	if (tree_definition.trunk_type == "double")
+	{
+		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
+		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
+		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
+	}
+	if (tree_definition.trunk_type == "crossed")
 	{
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
 		make_tree_node_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
@@ -233,8 +239,9 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 
 	Key for Special L-System Symbols used in Axioms
 
-    G  - move forward one unit with the pin down
-    F  - move forward one unit with the pin up
+    G  - move forward one unit with the pen up
+    F  - move forward one unit with the pen down drawing trunks and branches
+    f  - move forward one unit with the pen down drawing leaves
     A  - replace with rules set A
     B  - replace with rules set B
     C  - replace with rules set C
@@ -264,13 +271,21 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 		switch (axiom_char)
 		{
 		case 'G':
-			dir = v3f(-1,0,0);
+			dir = v3f(1,0,0);
 			dir = transposeMatrix(rotation,dir);
 			position+=dir;
 			break;
 		case 'F':
 			make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
-			if (tree_definition.thin_trunks == false)
+			if ((stack_orientation.empty() && tree_definition.trunk_type == "double") ||
+				(!stack_orientation.empty() && tree_definition.trunk_type == "double" && !tree_definition.thin_branches))
+			{
+				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
+				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
+				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
+			}
+			if ((stack_orientation.empty() && tree_definition.trunk_type == "crossed") ||
+				(!stack_orientation.empty() && tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches))
 			{
 				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
 				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
@@ -291,6 +306,12 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x,p0.Y+position.Y+y,p0.Z+position.Z+z-1),tree_definition);
 							}
 			}
+			dir = v3f(1,0,0);
+			dir = transposeMatrix(rotation,dir);
+			position+=dir;
+			break;
+		case 'f':
+			make_tree_leaves_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
 			dir = v3f(1,0,0);
 			dir = transposeMatrix(rotation,dir);
 			position+=dir;
@@ -371,6 +392,9 @@ void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition)
 {
+	MapNode leavesnode=tree_definition.leavesnode;
+	if (myrand_range(1,100) > 100-tree_definition.leaves2_chance)
+		leavesnode=tree_definition.leaves2node;
 	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
 	if(vmanip.m_area.contains(p1) == false)
 		return;
@@ -378,15 +402,15 @@ void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 	if(vmanip.m_data[vi].getContent() != CONTENT_AIR
 			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
 		return;
-	if (tree_definition.fruit_tree)
+	if (tree_definition.fruit_chance>0)
 	{
-		if (myrand_range(1,100) > 90+tree_definition.iterations)
+		if (myrand_range(1,100) > 100-tree_definition.fruit_chance)
 			vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.fruitnode;
 		else
-			vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.leavesnode;
+			vmanip.m_data[vmanip.m_area.index(p1)] = leavesnode;
 	}
 	else if (myrand_range(1,100) > 20)
-		vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.leavesnode;
+		vmanip.m_data[vmanip.m_area.index(p1)] = leavesnode;
 }
 
 irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis)
