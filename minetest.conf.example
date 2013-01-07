@@ -53,6 +53,8 @@
 #aux1_descends = false
 # Doubletaping the jump key toogles fly mode
 #doubletap_jump = false
+# If false aux1 is used to fly fast
+#always_fly_fast = true
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME

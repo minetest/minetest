@@ -57,6 +57,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("anaglyph_strength", "0.1");
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
+	settings->setDefault("always_fly_fast", "true");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
