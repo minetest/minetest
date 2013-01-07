@@ -132,8 +132,28 @@ inline float easeCurve(float t) {
 	return t * t * t * (t * (6.f * t - 15.f) + 10.f);
 }
 
-#define NoisePerlin2D(np, x, y, s) ((np)->offset + (np)->scale * \
-		noise2d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
+#define NoisePerlin2D(np, x, y, s) \
+		((np)->offset + (np)->scale * noise2d_perlin( \
+		(float)(x) / (np)->spread.X, \
+		(float)(y) / (np)->spread.Y, \
+		(s) + (np)->seed, (np)->octaves, (np)->persist))
+
+#define NoisePerlin2DNoTxfm(np, x, y, s) \
+		(noise2d_perlin( \
+		(float)(x) / (np)->spread.X, \
+		(float)(y) / (np)->spread.Y, \
+		(s) + (np)->seed, (np)->octaves, (np)->persist))
+
+#define NoisePerlin2DPosOffset(np, x, xoff, y, yoff, s) \
+		((np)->offset + (np)->scale * noise2d_perlin( \
+		(float)(xoff) + (float)(x) / (np)->spread.X, \
+		(float)(yoff) + (float)(y) / (np)->spread.Y, \
+		(s) + (np)->seed, (np)->octaves, (np)->persist))
+
+#define NoisePerlin2DNoTxfmPosOffset(np, x, xoff, y, yoff, s) \
+		(noise2d_perlin( \
+		(float)(xoff) + (float)(x) / (np)->spread.X, \
+		(float)(yoff) + (float)(y) / (np)->spread.Y, \
 		(s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \

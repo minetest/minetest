@@ -202,7 +202,7 @@ public:
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 
-
+	double baseRockLevelFromNoise(v2s16 p);
 	static s16 find_ground_level(VoxelManipulator &vmanip, v2s16 p2d, INodeDefManager *ndef);
 	static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d, INodeDefManager *ndef);
 	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree, INodeDefManager *ndef);

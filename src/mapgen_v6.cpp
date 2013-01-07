@@ -311,9 +311,40 @@ double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 	return h;
 }
 
+double MapgenV6::baseRockLevelFromNoise(v2s16 p) {
+	double base = water_level + 
+		NoisePerlin2DPosOffset(noise_terrain_base->np, p.X, 0.5, p.Y, 0.5, seed);
+	double higher = water_level +
+		NoisePerlin2DPosOffset(noise_terrain_higher->np, p.X, 0.5, p.Y, 0.5, seed);
+
+	if (higher < base)
+		higher = base;
+
+	double b = NoisePerlin2DPosOffset(noise_steepness->np, p.X, 0.5, p.Y, 0.5, seed);
+	b = rangelim(b, 0.0, 1000.0);
+	b = b*b*b*b*b*b*b;
+	b *= 5;
+	b = rangelim(b, 0.5, 1000.0);
+
+	if(b > 1.5 && b < 100.0){
+		if(b < 10.0)
+			b = 1.5;
+		else
+			b = 100.0;
+	}
+	
+	double a_off = -0.20;
+	double a = 0.5 + b * (a_off + NoisePerlin2DNoTxfmPosOffset(
+			noise_height_select->np, p.X, 0.5, p.Y, 0.5, seed));
+	a = rangelim(a, 0.0, 1.0);
+
+	return base * (1.0 - a) + higher * a;
+}
+
+
 s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
 {
-	return base_rock_level_2d(seed, p2d) + AVERAGE_MUD_AMOUNT;
+	return baseRockLevelFromNoise(p2d) + AVERAGE_MUD_AMOUNT;
 }
 
 double MapgenV6::get_mud_add_amount(u64 seed, v2s16 p)
@@ -363,7 +394,7 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 
 
 int MapgenV6::getGroundLevelAtPoint(v2s16 p) {
-	return base_rock_level_2d(seed, p) + AVERAGE_MUD_AMOUNT;
+	return baseRockLevelFromNoise(p) + AVERAGE_MUD_AMOUNT;
 }
 
 
