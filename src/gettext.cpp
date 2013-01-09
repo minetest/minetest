@@ -251,15 +251,17 @@ void init_gettext(const char *path,std::string configured_language) {
 	//errorstream << "Gettext debug: domainname = " << tdomain << "; codeset = "<< codeset << std::endl;
 #endif // defined(_WIN32)
 
+#else
+	/* set current system default locale */
+	setlocale(LC_ALL, "");
+#endif // if USE_GETTEXT
+
 	/* no matter what locale is used we need number format to be "C" */
 	/* to ensure formspec parameters are evaluated correct!          */
-
 
 	setlocale(LC_NUMERIC,"C");
 	infostream << "Message locale is now set to: "
 			<< setlocale(LC_ALL,0) << std::endl;
-			
-#endif // if USE_GETTEXT
 }
 
 
