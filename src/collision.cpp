@@ -23,7 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "log.h"
+#include "environment.h"
+#include "serverobject.h"
 #include <vector>
+#include <set>
 #include "util/timetaker.h"
 #include "main.h" // g_profiler
 #include "profiler.h"
@@ -186,11 +189,12 @@ bool wouldCollideWithCeiling(
 }
 
 
-collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
+collisionMoveResult collisionMoveSimple(Environment* env, IGameDef* gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f &pos_f, v3f &speed_f, v3f &accel_f)
 {
+	Map* map = &env->getMap();
 	//TimeTaker tt("collisionMoveSimple");
     ScopeProfiler sp(g_profiler, "collisionMoveSimple avg", SPT_AVG);
 
@@ -211,6 +215,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	std::vector<aabb3f> cboxes;
 	std::vector<bool> is_unloaded;
 	std::vector<bool> is_step_up;
+	std::vector<bool> is_object;
 	std::vector<int> bouncy_values;
 	std::vector<v3s16> node_positions;
 	{
@@ -252,6 +257,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				is_step_up.push_back(false);
 				bouncy_values.push_back(n_bouncy_value);
 				node_positions.push_back(p);
+				is_object.push_back(false);
 			}
 		}
 		catch(InvalidPositionException &e)
@@ -263,14 +269,71 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 			is_step_up.push_back(false);
 			bouncy_values.push_back(0);
 			node_positions.push_back(p);
+			is_object.push_back(false);
 		}
 	}
 	} // tt2
+
+	{
+		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
+		//TimeTaker tt3("collisionMoveSimple collect object boxes");
+
+		/* add object boxes to cboxes */
+
+
+		core::list<ActiveObject*> objects;
+#ifndef SERVER
+		ClientEnvironment* c_env = dynamic_cast<ClientEnvironment*>(env);
+		if (c_env != 0)
+		{
+			f32 distance = speed_f.getLength();
+			core::array<DistanceSortedActiveObject> clientobjects;
+			c_env->getActiveObjects(pos_f,2.00*BS,clientobjects);
+			for (int i=0; i < clientobjects.size(); i++)
+			{
+				objects.push_back(dynamic_cast<ActiveObject*>(clientobjects[i].obj));
+			}
+		}
+		else
+#endif
+		{
+			ServerEnvironment* s_env = dynamic_cast<ServerEnvironment*>(env);
+			if (s_env != 0)
+			{
+				std::set<u16> s_objects = s_env->getObjectsInsideRadius(pos_f,2.00*BS);
+				for (std::set<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); iter++)
+				{
+					ServerActiveObject* current = s_env->getActiveObject(*iter);
+					objects.push_back(dynamic_cast<ActiveObject*>(current));
+				}
+			}
+		}
+
+		for (core::list<ActiveObject*>::Iterator iter = objects.begin();iter != objects.end(); iter++)
+		{
+			ActiveObject* object = *iter;
+
+			if (object != NULL)
+			{
+				aabb3f object_collisionbox;
+				if (object->getCollisionBox(&object_collisionbox))
+				{
+					cboxes.push_back(object_collisionbox);
+					is_unloaded.push_back(false);
+					is_step_up.push_back(false);
+					bouncy_values.push_back(0);
+					node_positions.push_back(v3s16(0,0,0));
+					is_object.push_back(true);
+				}
+			}
+		}
+	} //tt3
 
 	assert(cboxes.size() == is_unloaded.size());
 	assert(cboxes.size() == is_step_up.size());
 	assert(cboxes.size() == bouncy_values.size());
 	assert(cboxes.size() == node_positions.size());
+	assert(cboxes.size() == is_object.size());
 
 	/*
 		Collision detection
@@ -382,7 +445,11 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				is_collision = false;
 
 			CollisionInfo info;
-			info.type = COLLISION_NODE;
+			if (is_object[nearest_boxindex]) {
+				info.type = COLLISION_OBJECT;
+			}
+			else
+				info.type = COLLISION_NODE;
 			info.node_p = node_positions[nearest_boxindex];
 			info.bouncy = bouncy;
 			info.old_speed = speed_f;

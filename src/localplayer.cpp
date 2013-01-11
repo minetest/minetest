@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "nodedef.h"
 #include "settings.h"
+#include "environment.h"
 #include "map.h"
 #include "util/numeric.h"
 
@@ -57,9 +58,10 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, ClientEnvironment* env, f32 pos_max_d,
 		core::list<CollisionInfo> *collision_info)
 {
+	Map *map = &env->getMap();
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	v3f position = getPosition();
@@ -97,13 +99,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		if(in_water)
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0), BS);
-			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			in_water = nodemgr->get(map->getNode(pp).getContent()).isLiquid();
 		}
 		// If not in water, the threshold of going in is at lower y
 		else
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0), BS);
-			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			in_water = nodemgr->get(map->getNode(pp).getContent()).isLiquid();
 		}
 	}
 	catch(InvalidPositionException &e)
@@ -116,7 +118,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	try{
 		v3s16 pp = floatToInt(position + v3f(0,0,0), BS);
-		in_water_stable = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+		in_water_stable = nodemgr->get(map->getNode(pp).getContent()).isLiquid();
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -130,8 +132,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	try {
 		v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
 		v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
-		is_climbing = ((nodemgr->get(map.getNode(pp).getContent()).climbable ||
-		nodemgr->get(map.getNode(pp2).getContent()).climbable) && !free_move);
+		is_climbing = ((nodemgr->get(map->getNode(pp).getContent()).climbable ||
+		nodemgr->get(map->getNode(pp2).getContent()).climbable) && !free_move);
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -195,7 +197,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 	v3f accel_f = v3f(0,0,0);
 
-	collisionMoveResult result = collisionMoveSimple(&map, m_gamedef,
+	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
 			pos_max_d, playerbox, player_stepheight, dtime,
 			position, m_speed, accel_f);
 
@@ -217,7 +219,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	v3s16 current_node = floatToInt(position - v3f(0,BS/2,0), BS);
 	if(m_sneak_node_exists &&
-	   nodemgr->get(map.getNodeNoEx(m_old_node_below)).name == "air" &&
+	   nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
 	   m_old_node_below_type != "air")
 	{
 		// Old node appears to have been removed; that is,
@@ -225,7 +227,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		m_need_to_get_new_sneak_node = false;
 		m_sneak_node_exists = false;
 	}
-	else if(nodemgr->get(map.getNodeNoEx(current_node)).name != "air")
+	else if(nodemgr->get(map->getNodeNoEx(current_node)).name != "air")
 	{
 		// We are on something, so make sure to recalculate the sneak
 		// node.
@@ -265,10 +267,10 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 			try{
 				// The node to be sneaked on has to be walkable
-				if(nodemgr->get(map.getNode(p)).walkable == false)
+				if(nodemgr->get(map->getNode(p)).walkable == false)
 					continue;
 				// And the node above it has to be nonwalkable
-				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable == true)
+				if(nodemgr->get(map->getNode(p+v3s16(0,1,0))).walkable == true)
 					continue;
 			}
 			catch(InvalidPositionException &e)
@@ -329,7 +331,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	{
 		camera_barely_in_ceiling = false;
 		v3s16 camera_np = floatToInt(getEyePosition(), BS);
-		MapNode n = map.getNodeNoEx(camera_np);
+		MapNode n = map->getNodeNoEx(camera_np);
 		if(n.getContent() != CONTENT_IGNORE){
 			if(nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2){
 				camera_barely_in_ceiling = true;
@@ -341,21 +343,21 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		Update the node last under the player
 	*/
 	m_old_node_below = floatToInt(position - v3f(0,BS/2,0), BS);
-	m_old_node_below_type = nodemgr->get(map.getNodeNoEx(m_old_node_below)).name;
+	m_old_node_below_type = nodemgr->get(map->getNodeNoEx(m_old_node_below)).name;
 	
 	/*
 		Check properties of the node on which the player is standing
 	*/
-	const ContentFeatures &f = nodemgr->get(map.getNodeNoEx(getStandingNodePos()));
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
 	m_can_jump = touching_ground;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 }
 
-void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime, ClientEnvironment* env, f32 pos_max_d)
 {
-	move(dtime, map, pos_max_d, NULL);
+	move(dtime, env, pos_max_d, NULL);
 }
 
 void LocalPlayer::applyControl(float dtime)
