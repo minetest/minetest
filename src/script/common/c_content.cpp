@@ -188,6 +188,7 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "is_visible", prop->is_visible);
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
+	getboolfield(L, -1, "automatic_face_movement_dir", prop->automatic_face_movement_dir);
 }
 
 /******************************************************************************/

@@ -44,6 +44,7 @@ struct ObjectProperties
 	bool is_visible;
 	bool makes_footstep_sound;
 	float automatic_rotate;
+	bool automatic_face_movement_dir;
 
 
 	ObjectProperties();
