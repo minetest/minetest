@@ -96,9 +96,9 @@ function drop_attached_node(p)
 	minetest.env:remove_node(p)
 	for _,item in ipairs(minetest.get_node_drops(nn, "")) do
 		local pos = {
-			x = p.x + math.random(60)/60-0.3,
-			y = p.y + math.random(60)/60-0.3,
-			z = p.z + math.random(60)/60-0.3,
+			x = p.x + math.random()/2 - 0.25,
+			y = p.y + math.random()/2 - 0.25,
+			z = p.z + math.random()/2 - 0.25,
 		}
 		minetest.env:add_item(pos, item)
 	end
