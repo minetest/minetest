@@ -290,7 +290,15 @@ function minetest.handle_node_drops(pos, drops, digger)
 	if digger:get_inventory() then
 		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
+			local left = digger:get_inventory():add_item("main", dropped_item)
+			if not left:is_empty() then
+				local p = {
+					x = pos.x + math.random()/2-0.25,
+					y = pos.y + math.random()/2-0.25,
+					z = pos.z + math.random()/2-0.25,
+				}
+				minetest.env:add_item(p, left)
+			end
 		end
 	end
 end
