@@ -109,7 +109,10 @@ minetest.register_entity("__builtin:item", {
 
 	on_punch = function(self, hitter)
 		if self.itemstring ~= '' then
-			hitter:get_inventory():add_item("main", self.itemstring)
+			local left = hitter:get_inventory():add_item("main", self.itemstring)
+			if not left:is_empty() then
+				return
+			end
 		end
 		self.object:remove()
 	end,
