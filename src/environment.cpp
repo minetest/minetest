@@ -2096,7 +2096,7 @@ void ClientEnvironment::step(float dtime)
 				Move the lplayer.
 				This also does collision detection.
 			*/
-			lplayer->move(dtime_part, *m_map, position_max_increment,
+			lplayer->move(dtime_part, this, position_max_increment,
 					&player_collisions);
 		}
 	}

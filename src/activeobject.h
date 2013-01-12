@@ -61,7 +61,7 @@ public:
 	}
 
 	virtual u8 getType() const = 0;
-
+	virtual bool getCollisionBox(aabb3f *toset) = 0;
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };

@@ -78,6 +78,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	bool getCollisionBox(aabb3f *toset);
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -234,6 +235,8 @@ public:
 		m_privs = privs;
 		m_is_singleplayer = is_singleplayer;
 	}
+
+	bool getCollisionBox(aabb3f *toset);
 
 private:
 	std::string getPropertyPacket();
