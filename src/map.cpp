@@ -1651,7 +1651,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			Collect information about current node
 		 */
 		s8 liquid_level = -1;
-		u8 liquid_kind = CONTENT_IGNORE;
+		content_t liquid_kind = CONTENT_IGNORE;
 		LiquidType liquid_type = nodemgr->get(n0).liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
