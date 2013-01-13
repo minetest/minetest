@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_CONTAINER_HEADER
 #define UTIL_CONTAINER_HEADER
 
-#include "../irrlichttypes.h"
+#include "../irrlichttypes_bloated.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include "../porting.h" // For sleep_ms
@@ -68,10 +68,16 @@ public:
 		return m_list.size();
 	}
 
+	void serialize(std::ostream &os) const;
+	void deserialize(std::istream &is);
+
 private:
 	core::map<Value, u8> m_map;
 	core::list<Value> m_list;
 };
+
+template <> void UniqueQueue<v3s16>::serialize(std::ostream &os) const;
+template <> void UniqueQueue<v3s16>::deserialize(std::istream &os);
 
 #if 1
 template<typename Key, typename Value>

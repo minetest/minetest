@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "util/string.h"
 #include "util/serialize.h"
+#include "util/directiontables.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -632,6 +633,11 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 			// Node timers
 			m_node_timers.serialize(os, version);
 		}
+
+		if(version >= 26){
+			m_liquid_update_nodes.serialize(os);
+			m_liquid_update_pending.serialize(os);
+		}
 	}
 }
 
@@ -734,10 +740,33 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 					<<": Node timers (ver>=25)"<<std::endl);
 			m_node_timers.deSerialize(is, version);
 		}
+		if(version >= 26){
+			m_liquid_update_nodes.deserialize(is);
+			m_liquid_update_pending.deserialize(is);
+		}
 	}
-		
+
+	// pending liquid updates for this and all neighboring blocks
+	for(int i = 0; i < 6; i++){
+		v3s16 p = m_pos + g_6dirs[i];
+		MapBlock* block = m_parent->getBlockNoCreateNoEx(p);
+		if(block)
+			block->reschedulePendingLiquidUpdates();
+	}
+	reschedulePendingLiquidUpdates();
+
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 			<<": Done."<<std::endl);
+}
+
+inline
+void MapBlock::reschedulePendingLiquidUpdates(){
+	while(m_liquid_update_pending.size() > 0){
+		m_liquid_update_nodes.push_back(m_liquid_update_pending.pop_front());
+	}
+	if(m_liquid_update_nodes.size() > 0){
+		m_parent->addLiquidUpdateBlock(getPos());
+	}
 }
 
 /*
