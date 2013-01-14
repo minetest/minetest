@@ -3,8 +3,8 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
-and ther contributors (see source file comments and the version control log)
+Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com>
+and their contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
 ---------------------------------------
@@ -18,7 +18,7 @@ Further documentation
 - Website: http://minetest.net/
 - Wiki: http://wiki.minetest.com/
 - Developer wiki: http://minetest.net/wiki/
-- Forum: http://minetest.net/forum/
+- Forum: http://forum.minetest.net/
 - Github: https://github.com/celeron55/minetest/
 - doc/ directory of source distribution
 
@@ -41,7 +41,7 @@ Default Controls
 Paths
 ------
 $bin   - Compiled binaries
-$share - Cistributed read-only data
+$share - Distributed read-only data
 $user  - User-created modifiable data
 
 Windows .zip / RUN_IN_PLACE source:
@@ -126,7 +126,7 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
-	* Optional: gettext bibrary and tools:
+	* Optional: gettext library and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest:
@@ -258,7 +258,7 @@ License of Minetest source code
 -------------------------------
 
 Minetest
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -281,7 +281,7 @@ This program uses the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
  The Irrlicht Engine License
 
-Copyright © 2002-2005 Nikolaus Gebhardt
+Copyright © 2002-2010 Nikolaus Gebhardt
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -306,7 +306,7 @@ JThread
 
 This program uses the JThread library. License for JThread follows:
 
-Copyright (c) 2000-2006  Jori Liesenborgs (jori.liesenborgs@gmail.com)
+Copyright (c) 2000-2011  Jori Liesenborgs (jori.liesenborgs@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
