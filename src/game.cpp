@@ -2316,6 +2316,8 @@ void the_game(
 
 		if(input->getRightState())
 			repeat_rightclick_timer += dtime;
+		else
+			repeat_rightclick_timer = 0;
 
 		if(playeritem_usable && input->getLeftState())
 		{
