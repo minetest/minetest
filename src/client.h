@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filecache.h"
 #include "localplayer.h"
 #include "server.h"
+#include "particles.h"
 #include "util/pointedthing.h"
 
 struct MeshMakeData;

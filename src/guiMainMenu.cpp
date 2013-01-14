@@ -104,6 +104,7 @@ enum
 	GUI_ID_TRILINEAR_CB,
 	GUI_ID_SHADERS_CB,
 	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
+	GUI_ID_ENABLE_PARTICLES_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -618,7 +619,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				       GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
 		}
 
-		// shader/on demand image loading settings
+		// shader/on demand image loading/particles settings
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y);
@@ -631,6 +632,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20);
 			Environment->addCheckBox(m_data->preload_item_visuals, rect, this,
 					GUI_ID_PRELOAD_ITEM_VISUALS_CB, wgettext("Preload item visuals"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*2);
+			Environment->addCheckBox(m_data->enable_particles, rect, this,
+					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
 
 		// Key change button
@@ -847,6 +855,12 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_PRELOAD_ITEM_VISUALS_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 		        dst->preload_item_visuals = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_PARTICLES_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_particles = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{

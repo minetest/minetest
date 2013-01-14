@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiChatConsole.h"
 #include "config.h"
 #include "clouds.h"
+#include "particles.h"
 #include "camera.h"
 #include "farmesh.h"
 #include "mapblock.h"
@@ -2399,6 +2400,13 @@ void the_game(
 				else
 				{
 					dig_time_complete = params.time;
+					if (g_settings->getBool("enable_particles"))
+					{
+						const ContentFeatures &features =
+							client.getNodeDefManager()->get(n);
+						addPunchingParticles
+							(gamedef, smgr, player, nodepos, features.tiles);
+					}
 				}
 
 				if(dig_time_complete >= 0.001)
@@ -2429,6 +2437,14 @@ void the_game(
 					client.setCrack(-1, v3s16(0,0,0));
 					MapNode wasnode = map.getNode(nodepos);
 					client.removeNode(nodepos);
+
+					if (g_settings->getBool("enable_particles"))
+					{
+						const ContentFeatures &features =
+							client.getNodeDefManager()->get(wasnode);
+						addDiggingParticles
+							(gamedef, smgr, player, nodepos, features.tiles);
+					}
 
 					dig_time = 0;
 					digging = false;
@@ -2698,6 +2714,12 @@ void the_game(
 			farmesh->update(v2f(player_position.X, player_position.Z),
 					brightness, farmesh_range);
 		}
+
+		/*
+			Update particles
+		*/
+
+		allparticles_step(dtime, client.getEnv());
 		
 		/*
 			Fog
