@@ -267,11 +267,13 @@ end
 
 function minetest.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
-		if itemstack:take_item() ~= nil then
-			user:set_hp(user:get_hp() + hp_change)
-			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
+		if user:get_hp() < 20 then
+			if itemstack:take_item() ~= nil then
+				user:set_hp(user:get_hp() + hp_change)
+				itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
+			end
+			return itemstack
 		end
-		return itemstack
 	end
 end
 
