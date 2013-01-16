@@ -4768,6 +4768,13 @@ static int l_setting_getbool(lua_State *L)
 	return 1;
 }
 
+// setting_save()
+static int l_setting_save(lua_State *L)
+{
+	get_server(L)->saveConfig();
+	return 0;
+}
+
 // chat_send_all(text)
 static int l_chat_send_all(lua_State *L)
 {
@@ -5219,6 +5226,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
+	{"setting_save",l_setting_save},
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
