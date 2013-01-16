@@ -199,6 +199,10 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	/*
 		Calculate new velocity
 	*/
+	if( dtime > 0.5 ) {
+		infostream<<"collisionMoveSimple: WARNING: maximum step interval exceeded, lost movement details!"<<std::endl;
+		dtime = 0.5;
+	}
 	speed_f += accel_f * dtime;
 
     // If there is no speed, there are no collisions
