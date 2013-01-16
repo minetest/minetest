@@ -860,6 +860,7 @@ minetest.setting_set(name, value)
 minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
+minetest.setting_save() -> nil, save all settings to config file
 minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
