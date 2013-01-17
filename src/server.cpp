@@ -4030,7 +4030,6 @@ void Server::SendBlocks(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
@@ -4059,6 +4058,7 @@ void Server::SendBlocks(float dtime)
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 			
+			JMutexAutoLock envlock(m_env_mutex);
 			client->GetNextBlocks(this, dtime, queue);
 		}
 	}
@@ -4068,6 +4068,7 @@ void Server::SendBlocks(float dtime)
 	// Lowest is most important.
 	queue.sort();
 
+	JMutexAutoLock envlock(m_env_mutex);
 	for(u32 i=0; i<queue.size(); i++)
 	{
 		//TODO: Calculate limit dynamically
