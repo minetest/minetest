@@ -181,7 +181,8 @@ int Biome::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void Biome::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
+void Biome::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
+	MapgenV7 *mg = (MapgenV7 *)mapgen;
 	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
 	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
 
@@ -214,7 +215,8 @@ void Biome::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
 ///////////////////////////// [ Ocean biome ] /////////////////////////////////
 
 
-void BiomeLiquid::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
+void BiomeLiquid::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
+	MapgenV7 *mg = (MapgenV7 *)mapgen;
 	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
 	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
 	int y = y1;
@@ -239,8 +241,9 @@ int BiomeHell::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeHell::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
-
+void BiomeHell::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
+	MapgenV7 *mg = (MapgenV7 *)mapgen;
+	//stub
 }
 
 
@@ -252,8 +255,9 @@ int BiomeAether::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeAether::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
-
+void BiomeAether::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
+	MapgenV7 *mg = (MapgenV7 *)mapgen;
+	//stub
 }
 
 
@@ -265,7 +269,8 @@ int BiomeSuperflat::getSurfaceHeight(float noise_terrain) {
 }
 
 
-void BiomeSuperflat::genColumn(MapgenV7 *mg, int x, int z, int y1, int y2) {
+void BiomeSuperflat::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
+	MapgenV7 *mg = (MapgenV7 *)mapgen;
 	int surfaceh = ntopnodes;
 	int y = y1;
 

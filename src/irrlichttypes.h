@@ -28,12 +28,13 @@ using namespace irr;
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 #ifdef _MSC_VER
 	// Windows
+	typedef long long s64;
 	typedef unsigned long long u64;
 #else
 	// Posix
 	#include <stdint.h>
+	typedef int64_t s64;
 	typedef uint64_t u64;
-	//typedef unsigned long long u64;
 #endif
 #endif
 

@@ -53,26 +53,26 @@ public:
 	std::string name;
 	NoiseParams *np;
 
-	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeLiquid : public Biome {
-	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 };
 
 class BiomeHell : public Biome {
-	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeAether : public Biome {
-	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 
 class BiomeSuperflat : public Biome {
-	virtual void genColumn(MapgenV7 *mg, int x, int z, int y1, int y2);
+	virtual void genColumn(Mapgen *mg, int x, int z, int y1, int y2);
 	virtual int getSurfaceHeight(float noise_terrain);
 };
 

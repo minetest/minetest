@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "log.h"
 #include "util/string.h"
+#include "porting.h"
 
 enum ValueType
 {
@@ -565,23 +566,6 @@ public:
 		ss>>value;
 		return value;
 	}
-
-//template<typename T> struct alignment_trick { char c; T member; };
-//#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
-#ifdef _WIN32
-	#define ALIGNOF(x) __alignof(x)
-#else
-	#define ALIGNOF(x) __alignof__(x)
-#endif
-#define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
-#ifdef _WIN32
-	#define strtok_r(x, y, z) strtok_s(x, y, z)
-	#define strtof(x, y) (float)strtod(x, y)
-	#define strtoll(x, y, z) _strtoi64(x, y, z)
-	#define strtoull(x, y, z) _strtoui64(x, y, z)
-#endif
-
-typedef long long int s64; //to be added to src/irrlichttypes.h later
 
 	template <class T> T *getStruct(std::string name, std::string format)
 	{
