@@ -182,33 +182,7 @@ int Biome::getSurfaceHeight(float noise_terrain) {
 
 
 void Biome::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-	MapgenV7 *mg = (MapgenV7 *)mapgen;
-	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
-	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
 
-	/*///experimental
-	if (groupid > 0) {
-		float prevfreq = mg->biomedef->bgroup_freqs[groupid - 1];
-		float range    = mg->biomedef->bgroup_freqs[groupid] - prevfreq;
-		float factor   = (mg->map_bgroup[i] - prevfreq) / range;
-
-		std::vector<Biome *> *bg = mg->biomedef->bgroups[groupid - 1];
-		Biome *b = (*bg)[0];
-		int h1 = b->np->offset + b->np->scale * mg->map_terrain[i];
-		surfaceh += (int)round((surfaceh - h1) * factor);
-		//printf("h1: %d, surfaceh: %d, factor %f\n", h1, surfaceh, factor);
-	}*/
-
-
-	int y = y1;
-
-	i = mg->vmanip->m_area.index(x, y, z);
-	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_filler;
-	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_top;
-	for (; y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_air;
 }
 
 
@@ -216,20 +190,7 @@ void Biome::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
 
 
 void BiomeLiquid::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-	MapgenV7 *mg = (MapgenV7 *)mapgen;
-	int i = (z - mg->node_min.Z) * mg->csize.Z + (x - mg->node_min.X);
-	int surfaceh = np->offset + np->scale * mg->map_terrain[i];
-	int y = y1;
 
-	i = mg->vmanip->m_area.index(x, y, z);
-	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_filler;
-	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_top;
-	for (; y <= mg->water_level && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_water;
-	for (; y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_air;
 }
 
 
@@ -242,8 +203,7 @@ int BiomeHell::getSurfaceHeight(float noise_terrain) {
 
 
 void BiomeHell::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-	MapgenV7 *mg = (MapgenV7 *)mapgen;
-	//stub
+
 }
 
 
@@ -256,8 +216,7 @@ int BiomeAether::getSurfaceHeight(float noise_terrain) {
 
 
 void BiomeAether::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-	MapgenV7 *mg = (MapgenV7 *)mapgen;
-	//stub
+
 }
 
 
@@ -270,15 +229,5 @@ int BiomeSuperflat::getSurfaceHeight(float noise_terrain) {
 
 
 void BiomeSuperflat::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-	MapgenV7 *mg = (MapgenV7 *)mapgen;
-	int surfaceh = ntopnodes;
-	int y = y1;
 
-	int i = mg->vmanip->m_area.index(x, y, z);
-	for (; y <= surfaceh - ntopnodes && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_filler;
-	for (; y <= surfaceh && y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = n_top;
-	for (; y <= y2; y++, i += mg->ystride)
-		mg->vmanip->m_data[i] = mg->n_air;
 }

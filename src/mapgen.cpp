@@ -54,177 +54,8 @@ NoiseParams nparams_v6_def_biome =
 NoiseParams nparams_v6_def_cave =
 	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
 
-/////////////////// Mapgen V7 perlin noise default values
-NoiseParams nparams_v7_def_terrain =
-	{10.0, 12.0, v3f(350., 350., 350.), 82341, 5, 0.6}; //terrain
-NoiseParams nparams_v7_def_bgroup =
-	{0.5, 1/(2*1.6), v3f(350., 350., 350.), 5923, 2, 0.60}; //0 to 1
-NoiseParams nparams_v7_def_heat =
-	{25.0, 50.0, v3f(500., 500., 500.), 35293, 1, 0.00}; //-25 to 75
-NoiseParams nparams_v7_def_humidity =
-	{50, 100/(2*1.6), v3f(750., 750., 750.), 12094, 2, 0.60}; //0 to 100
-
 
 ///////////////////////////////////////////////////////////////////////////////
-
-
-MapgenV7::MapgenV7(BiomeDefManager *biomedef, int mapgenid, MapgenV7Params *params) {
-	this->generating  = false;
-	this->id       = mapgenid;
-	this->biomedef = biomedef;
-	this->ndef     = biomedef->ndef;
-
-	this->seed        = (int)params->seed;
-	this->csize       = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
-	this->water_level = params->water_level;
-
-	noise_terrain  = new Noise(params->np_terrain,  seed, csize.X, csize.Y);
-	noise_bgroup   = new Noise(params->np_bgroup,   seed, csize.X, csize.Y);
-	noise_heat     = new Noise(params->np_heat,     seed, csize.X, csize.Y);
-	noise_humidity = new Noise(params->np_humidity, seed, csize.X, csize.Y);
-
-
-	n_air   = MapNode(ndef->getId("mapgen_air"));
-	n_water = MapNode(ndef->getId("mapgen_water_source"));
-	n_lava  = MapNode(ndef->getId("mapgen_lava_source"));
-}
-
-
-MapgenV7::~MapgenV7() {
-	delete noise_terrain;
-	delete noise_bgroup;
-	delete noise_heat;
-	delete noise_humidity;
-}
-
-
-void MapgenV7::makeChunk(BlockMakeData *data) {
-	if (data->no_op)
-		return;
-
-	assert(data->vmanip);
-	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		   data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		   data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		   data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		   data->blockpos_requested.Z <= data->blockpos_max.Z);
-
-	this->generating = true;
-
-	this->data    = data;
-	this->vmanip  = data->vmanip;
-	v3s16 em = vmanip->m_area.getExtent();
-	this->ystride = em.X;
-	this->zstride = em.Y * em.X;
-
-	node_min = (data->blockpos_min) * MAP_BLOCKSIZE;
-	node_max = (data->blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	v3s16 full_node_min = (data->blockpos_min - 1) * MAP_BLOCKSIZE;
-	v3s16 full_node_max = (data->blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1,1,1);
-
-	int y1 = node_min.Y;
-	int y2 = node_max.Y;
-	int x  = node_min.X;
-	int z  = node_min.Z;
-
-	TimeTaker timer("Generating terrain");
-	map_terrain  = noise_terrain->perlinMap2D(x, z);
-	map_bgroup   = noise_bgroup->perlinMap2D(x, z);
-	map_heat     = noise_heat->perlinMap2D(x, z);
-	map_humidity = noise_humidity->perlinMap2D(x, z);
-
-	noise_bgroup->transformNoiseMap();
-	noise_heat->transformNoiseMap();
-	noise_humidity->transformNoiseMap();
-
-	int i = 0;
-	for (z = node_min.Z; z <= node_max.Z; z++) {
-		for (x = node_min.X; x <= node_max.X; x++) {
-			Biome *biome = biomedef->getBiome(map_bgroup[i], map_heat[i], map_humidity[i]);
-			biome->genColumn(this, x, z, y1, y2);
-			i++;
-		}
-	}
-	timer.stop();
-
-	//genCave();
-	//genDungeon();
-	//add blobs of dirt and gravel underground
-	//decorateChunk();
-	updateLiquid(full_node_min, full_node_max);
-	updateLighting(node_min, node_max);
-
-	this->generating = false;
-}
-
-
-void MapgenV7::updateLiquid(v3s16 nmin, v3s16 nmax) {
-	bool isliquid, wasliquid;
-	u32 i;
-
-	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 x = nmin.X; x <= nmax.X; x++) {
-			v2s16 p2d(x, z);
-			wasliquid = true;
-			v3s16 em  = vmanip->m_area.getExtent();
-			i = vmanip->m_area.index(v3s16(p2d.X, nmax.Y, p2d.Y));
-
-			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
-				isliquid = ndef->get(vmanip->m_data[i]).isLiquid();
-				//there was a change between liquid and nonliquid, add to queue
-				if (isliquid != wasliquid)
-					data->transforming_liquid.push_back(v3s16(p2d.X, y, p2d.Y));
-
-				wasliquid = isliquid;
-				vmanip->m_area.add_y(em, i, -1);
-			}
-		}
-	}
-}
-
-
-void MapgenV7::updateLighting(v3s16 nmin, v3s16 nmax) {
-	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
-
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
-	bool block_is_underground = (water_level > nmax.Y);
-	bool sunlight = !block_is_underground;
-
-	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	for (int i = 0; i < 2; i++) {
-		enum LightBank bank = banks[i];
-        core::map<v3s16, bool> light_sources;
-        core::map<v3s16, u8> unlight_from;
-
-		voxalgo::clearLightAndCollectSources(*vmanip, a, bank, ndef,
-                                        light_sources, unlight_from);
-		voxalgo::propagateSunlight(*vmanip, a, sunlight, light_sources, ndef);
-        //printf("light_sources: %d\t\tunlight_from: %d\n", light_sources.size(), unlight_from.size());
-		vmanip->unspreadLight(bank, unlight_from, light_sources, ndef);
-		vmanip->spreadLight(bank, light_sources, ndef);
-	}
-}
-
-
-Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
-	float bgroup   = NoisePerlin2D(noise_bgroup->np,   p.X, p.Y, seed);
-	float heat     = NoisePerlin2D(noise_heat->np,     p.X, p.Y, seed);
-	float humidity = NoisePerlin2D(noise_humidity->np, p.X, p.Y, seed);
-	return biomedef->getBiome(bgroup, heat, humidity);
-}
-
-
-//FIXME:  This assumes y == 0, that is, always in a non-hell/non-sky biome
-int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
-	float terrain = NoisePerlin2D(noise_terrain->np, p.X, p.Y, seed);
-	Biome *biome = getBiomeAtPoint(v3s16(p.X, p.Y, 0));
-	return biome->getSurfaceHeight(terrain);
-}
-
-
 /////////////////////////////// Emerge Manager ////////////////////////////////
 
 
@@ -250,9 +81,6 @@ Mapgen *EmergeManager::getMapgen() {
 		switch (params->mg_version) {
 			case 6:
 				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
-				break;
-			case 7:
-				mapgen = new MapgenV7(biomedef, 0, (MapgenV7Params *)params);
 				break;
 			default:
 				errorstream << "EmergeManager: Unsupported mapgen version "
@@ -303,8 +131,6 @@ MapgenParams *MapgenParams::createMapgenParams(int mgver) {
 	switch (mgver) {
 		case 6:
 			return new MapgenV6Params();
-		case 7:
-			return new MapgenV7Params();
 		default: //instead of complaining, default to 6
 			return new MapgenV6Params();
 	}
@@ -345,23 +171,6 @@ MapgenParams *MapgenParams::getParamsFromSettings(Settings *settings) {
 				return NULL;
 			}
 
-			break;
-		}
-		case 7:
-		{
-			MapgenV7Params *v7params = (MapgenV7Params *)mgparams;
-
-			v7params->np_terrain  = settings->getNoiseParams("mgv7_np_terrain");
-			v7params->np_bgroup   = settings->getNoiseParams("mgv7_np_bgroup");
-			v7params->np_heat     = settings->getNoiseParams("mgv7_np_heat");
-			v7params->np_humidity = settings->getNoiseParams("mgv7_np_humidity");
-			
-			if (!v7params->np_terrain || !v7params->np_bgroup ||
-				!v7params->np_heat    || !v7params->np_humidity) {
-				delete mgparams;
-				return NULL;
-			}
-			
 			break;
 		}
 		default:

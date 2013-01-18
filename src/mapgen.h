@@ -130,20 +130,6 @@ struct MapgenV6Params : public MapgenParams {
 	}
 };
 
-struct MapgenV7Params : public MapgenParams {
-	NoiseParams *np_terrain;
-	NoiseParams *np_bgroup;
-	NoiseParams *np_heat;
-	NoiseParams *np_humidity;
-
-	MapgenV7Params() {
-		np_terrain  = &nparams_v7_def_terrain;
-		np_bgroup   = &nparams_v7_def_bgroup;
-		np_heat     = &nparams_v7_def_heat;
-		np_humidity = &nparams_v7_def_humidity;
-	}
-};
-
 
 class Mapgen {
 public:
@@ -216,56 +202,6 @@ public:
 	u32 get_blockseed(u64 seed, v3s16 p);
 };
 
-
-class MapgenV7 : public Mapgen {
-public:
-	BlockMakeData *data;
-	ManualMapVoxelManipulator *vmanip;
-	INodeDefManager *ndef;
-	BiomeDefManager *biomedef;
-
-	int ystride;
-	int zstride;
-
-	v3s16 csize;
-
-	Noise *noise_terrain;
-	Noise *noise_bgroup;
-	Noise *noise_heat;
-	Noise *noise_humidity;
-
-	v3s16 node_min;
-	v3s16 node_max;
-
-	float *map_terrain;
-	float *map_bgroup;
-	float *map_heat;
-	float *map_humidity;
-
-	bool generating;
-	int id;
-	u32 flags;
-
-	//should these be broken off into a "commonly used nodes" class?
-	MapNode n_air;
-	MapNode n_water;
-	MapNode n_lava;
-
-	MapgenV7(BiomeDefManager *biomedef, int mapgenid, MapgenV7Params *params);
-	~MapgenV7();
-
-	void makeChunk(BlockMakeData *data);
-	int getGroundLevelAtPoint(v2s16 p);
-
-	Biome *getBiomeAtPoint(v3s16 p);
-	void updateLiquid(v3s16 node_min, v3s16 node_max);
-	void updateLighting(v3s16 node_min, v3s16 node_max);
-
-	//Legacy functions for Farmesh (pending removal)
-//	static bool get_have_beach(u64 seed, v2s16 p2d);
-//	static double tree_amount_2d(u64 seed, v2s16 p);
-//	static s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
-};
 
 class EmergeManager {
 public:

@@ -3103,16 +3103,6 @@ void ServerMap::saveMapMeta()
 			params.setNoiseParams("mgv6_np_cave",           v6params->np_cave);
 			break;
 		}
-		case 7:
-		{
-			MapgenV7Params *v7params = (MapgenV7Params *)m_emerge->params;
-
-			params.setNoiseParams("mgv7_np_terrain",  v7params->np_terrain);
-			params.setNoiseParams("mgv7_np_bgroup",   v7params->np_bgroup);
-			params.setNoiseParams("mgv7_np_heat",     v7params->np_heat);
-			params.setNoiseParams("mgv7_np_humidity", v7params->np_humidity);
-			break;
-		}
 		default:
 			; //complain here
 	}
