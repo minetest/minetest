@@ -4879,7 +4879,7 @@ v3f findSpawnPos(ServerMap &map)
 			continue;
 		}
 
-		nodepos = v3s16(nodepos2d.X, groundheight+1, nodepos2d.Y);
+		nodepos = v3s16(nodepos2d.X, groundheight-2, nodepos2d.Y);
 		bool is_good = false;
 		s32 air_count = 0;
 		for(s32 i=0; i<10; i++){

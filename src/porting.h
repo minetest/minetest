@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtoull(x, y, z) _strtoui64(x, y, z)
 #else
 	#include <unistd.h>
+	#include <stdint.h> //for uintptr_t
 	
 	#define ALIGNOF(x) __alignof__(x)
 	#define sleep_ms(x) usleep(x*1000)
