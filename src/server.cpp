@@ -155,9 +155,13 @@ void * ServerThread::Thread()
 	return NULL;
 }
 
+#include <pthread.h>
+
 void * EmergeThread::Thread()
 {
 	ThreadStarted();
+
+	SetThreadPriority(PRIO_06);
 
 	log_register_thread("EmergeThread");
 

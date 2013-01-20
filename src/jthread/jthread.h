@@ -37,16 +37,45 @@
 #define ERR_JTHREAD_NOTRUNNING							-4
 #define ERR_JTHREAD_ALREADYRUNNING						-5
 
+
+enum SchedulingPolicy {
+	SCHED_DEFAULT,
+	FIFO,
+	ROUND_ROBIN
+};
+
+enum JThreadPriority {
+	PRIO_DEFAULT,
+	PRIO_00,
+	PRIO_01,
+	PRIO_02,
+	PRIO_03,
+	PRIO_04,
+	PRIO_05,
+	PRIO_06,
+	PRIO_07,
+	PRIO_08,
+	PRIO_09
+};
+
+
 class JThread
 {
 public:
 	JThread();
+	JThread(SchedulingPolicy policy,JThreadPriority);
 	virtual ~JThread();
 	int Start();
 	int Kill();
 	virtual void *Thread() = 0;
 	bool IsRunning();
 	void *GetReturnValue();
+
+	SchedulingPolicy GetSchedulingPolicy();
+	bool SetSchedulingPolicy(SchedulingPolicy policy);
+
+	JThreadPriority GetThreadPriority();
+	bool SetThreadPriority(JThreadPriority prio);
 protected:
 	void ThreadStarted();
 private:
@@ -71,6 +100,10 @@ private:
 	JMutex runningmutex;
 	JMutex continuemutex,continuemutex2;
 	bool mutexinit;
+
+	SchedulingPolicy m_SchedPolicy;
+	JThreadPriority m_ThreadPriority;
+
 };
 
 #endif // JTHREAD_H
