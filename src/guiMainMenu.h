@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <list>
 #include "subgame.h"
+#include "serverlist.h"
+
 class IGameCallback;
 
 struct MainMenuData
@@ -33,6 +35,8 @@ struct MainMenuData
 	// Generic
 	int selected_tab;
 	// Client options
+	std::string servername;
+	std::string serverdescription;
 	std::wstring address;
 	std::wstring port;
 	std::wstring name;
@@ -58,8 +62,11 @@ struct MainMenuData
 	std::string create_world_gameid;
 	bool only_refresh;
 
+	bool serverlist_show_available; // if false show local favorites only
+
 	std::vector<WorldSpec> worlds;
 	std::vector<SubgameSpec> games;
+	std::vector<ServerListSpec> servers;
 
 	MainMenuData():
 		// Generic
@@ -73,7 +80,9 @@ struct MainMenuData
 		selected_world(0),
 		simple_singleplayer_mode(false),
 		// Actions
-		only_refresh(false)
+		only_refresh(false),
+
+		serverlist_show_available(false)
 	{}
 };
 
@@ -110,12 +119,15 @@ private:
 	gui::IGUIElement* parent;
 	s32 id;
 	IMenuManager *menumgr;
-	
+
 	bool m_is_regenerating;
 	v2s32 m_topleft_client;
 	v2s32 m_size_client;
 	v2s32 m_topleft_server;
 	v2s32 m_size_server;
+	void updateGuiServerList();
+	void serverListOnSelected();
+	ServerListSpec getServerListSpec(std::string address, std::string port);
 };
 
 #endif
