@@ -78,16 +78,16 @@ EmergeManager::~EmergeManager() {
 
 Mapgen *EmergeManager::getMapgen() {
 	if (!mapgen) {
-		switch (params->mg_version) {
-			case 6:
+		/*switch (params->mg_version) {
+			case 6:*/
 				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
-				break;
+		/*		break;
 			default:
 				errorstream << "EmergeManager: Unsupported mapgen version "
 					<< params->mg_version << ", falling back to V6" << std::endl;
 				params->mg_version = 6;
 				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
-		}
+		}*/
 	}
 	return mapgen;
 }
@@ -127,28 +127,29 @@ u32 EmergeManager::getBlockSeed(v3s16 p) {
 }
 
 
-MapgenParams *MapgenParams::createMapgenParams(int mgver) {
-	switch (mgver) {
+MapgenParams *MapgenParams::createMapgenParams(std::string &mgstr) {
+	return new MapgenV6Params(); // this will be fixed later
+	/*switch (mgver) {
 		case 6:
 			return new MapgenV6Params();
 		default: //instead of complaining, default to 6
 			return new MapgenV6Params();
-	}
+	}*/
 }
 
 
 MapgenParams *MapgenParams::getParamsFromSettings(Settings *settings) {
-	int mg_version = settings->getS16("mg_version");
-	MapgenParams *mgparams = MapgenParams::createMapgenParams(mg_version);
-	mgparams->mg_version  = mg_version;
+	std::string mg_name = settings->get("mg_name");
+	MapgenParams *mgparams = MapgenParams::createMapgenParams(mg_name);
+	mgparams->mg_name     = mg_name;
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
 	mgparams->flags       = settings->getS32("mg_flags");
 
-	switch (mg_version) {
+/*	switch (mg_version) {
 		case 6:
-		{
+		{*/
 			MapgenV6Params *v6params = (MapgenV6Params *)mgparams;
 
 			v6params->freq_desert = settings->getFloat("mgv6_freq_desert");
@@ -170,13 +171,13 @@ MapgenParams *MapgenParams::getParamsFromSettings(Settings *settings) {
 				delete mgparams;
 				return NULL;
 			}
-
+/*
 			break;
 		}
 		default:
 			delete mgparams;
 			return NULL;
-	}
+	}*/
 
 	return mgparams;
 

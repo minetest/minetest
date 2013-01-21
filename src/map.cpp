@@ -3079,15 +3079,15 @@ void ServerMap::saveMapMeta()
 
 	Settings params;
 
-	params.setS16("mg_version", m_emerge->params->mg_version);
+	params.set("mg_name", m_emerge->params->mg_name);
 
 	params.setU64("seed", m_emerge->params->seed);
 	params.setS16("water_level", m_emerge->params->water_level);
 	params.setS16("chunksize", m_emerge->params->chunksize);
 	params.setS32("mg_flags", m_emerge->params->flags);
-	switch (m_emerge->params->mg_version) {
+/*	switch (m_emerge->params->mg_version) {
 		case 6:
-		{
+		{*/
 			MapgenV6Params *v6params = (MapgenV6Params *)m_emerge->params;
 
 			params.setFloat("mgv6_freq_desert", v6params->freq_desert);
@@ -3101,11 +3101,11 @@ void ServerMap::saveMapMeta()
 			params.setNoiseParams("mgv6_np_beach",          v6params->np_beach);
 			params.setNoiseParams("mgv6_np_biome",          v6params->np_biome);
 			params.setNoiseParams("mgv6_np_cave",           v6params->np_cave);
-			break;
+		/*	break;
 		}
 		default:
 			; //complain here
-	}
+	}*/
 
 	params.writeLines(os);
 

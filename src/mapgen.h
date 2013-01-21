@@ -83,21 +83,21 @@ struct BlockMakeData {
 
 
 struct MapgenParams {
-	int mg_version;
+	std::string mg_name;
 	int chunksize;
 	u64 seed;
 	int water_level;
 	u32 flags;
 
 	MapgenParams() {
-		mg_version  = 6;
+		mg_name     = "v6";
 		seed        = 0;
 		water_level = 1;
 		chunksize   = 5;
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
 
-	static MapgenParams *createMapgenParams(int mgver);
+	static MapgenParams *createMapgenParams(std::string &mgname);
 	static MapgenParams *getParamsFromSettings(Settings *settings);
 
 };

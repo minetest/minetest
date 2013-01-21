@@ -174,7 +174,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("remote_media", "");
 	
 	//mapgen related things
-	settings->setDefault("mg_version", "6");
+	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "19");
