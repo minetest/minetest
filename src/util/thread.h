@@ -72,7 +72,7 @@ class SimpleThread : public JThread
 public:
 
 	SimpleThread():
-		JThread(),
+		JThread(ROUND_ROBIN,PRIO_04),
 		run(true)
 	{
 		run_mutex.Init();

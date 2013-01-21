@@ -27,6 +27,31 @@
 
 #include "jthread.h"
 
+static int JThreadPrioToWin32Prio(JThreadPriority toconvert) {
+	switch (toconvert) {
+		case PRIO_00:
+			return THREAD_PRIORITY_IDLE;
+		case PRIO_01:
+			return THREAD_PRIORITY_IDLE;
+		case PRIO_02:
+			return THREAD_PRIORITY_LOWEST;
+		case PRIO_03:
+			return THREAD_PRIORITY_LOWEST;
+		case PRIO_04:
+			return THREAD_PRIORITY_BELOW_NORMAL;
+		case PRIO_05:
+			return THREAD_PRIORITY_BELOW_NORMAL;
+		case PRIO_06:
+			return THREAD_PRIORITY_NORMAL;
+		case PRIO_07:
+			return THREAD_PRIORITY_NORMAL;
+		case PRIO_08:
+			return THREAD_PRIORITY_ABOVE_NORMAL;
+		default:
+			return THREAD_PRIORITY_NORMAL;
+	}
+}
+
 #ifndef _WIN32_WCE
 	#include <process.h>
 #endif // _WIN32_WCE
@@ -84,9 +109,11 @@ int JThread::Start()
 		return ERR_JTHREAD_CANTSTARTTHREAD;
 	}
 	
+	SetThreadPriority(threadhandle,JThreadPrioToWin32Prio(m_ThreadPriority));
+
 	/* Wait until 'running' is set */
 
-	runningmutex.Lock();			
+	runningmutex.Lock();
 	while (!running)
 	{
 		runningmutex.Unlock();
@@ -105,7 +132,7 @@ int JThread::Start()
 
 int JThread::Kill()
 {
-	runningmutex.Lock();			
+	runningmutex.Lock();
 	if (!running)
 	{
 		runningmutex.Unlock();
@@ -122,7 +149,7 @@ bool JThread::IsRunning()
 {
 	bool r;
 	
-	runningmutex.Lock();			
+	runningmutex.Lock();
 	r = running;
 	runningmutex.Unlock();
 	return r;
@@ -173,5 +200,33 @@ DWORD WINAPI JThread::TheThread(void *param)
 void JThread::ThreadStarted()
 {
 	continuemutex2.Unlock();
+}
+
+SchedulingPolicy JThread::GetSchedulingPolicy() {
+	return m_SchedPolicy;
+}
+
+bool JThread::SetSchedulingPolicy(SchedulingPolicy policy) {
+	//TODO -- not implemented for win32
+	return false;
+}
+
+JThreadPriority JThread::GetThreadPriority() {
+	return m_ThreadPriority;
+}
+
+bool JThread::SetThreadPriority(JThreadPriority prio) {
+	SetThreadPriority(threadhandle,JThreadPrioToWin32Prio(prio));
+
+	m_ThreadPriority = prio;
+	return true;
+}
+
+JThread::JThread(SchedulingPolicy policy,JThreadPriority prio) {
+	retval = NULL;
+	mutexinit = false;
+	running = false;
+	m_SchedPolicy = SCHED_DEFAULT;
+	m_ThreadPriority = prio;
 }
 

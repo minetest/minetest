@@ -30,11 +30,40 @@
 #include <time.h>
 #include <stdlib.h>
 
+static int JThreadPrioToPThreadPrio(JThreadPriority toconvert) {
+	switch (toconvert) {
+		case PRIO_00:
+			return 0;
+		case PRIO_01:
+			return 10;
+		case PRIO_02:
+			return 20;
+		case PRIO_03:
+			return 30;
+		case PRIO_04:
+			return 40;
+		case PRIO_05:
+			return 50;
+		case PRIO_06:
+			return 60;
+		case PRIO_07:
+			return 70;
+		case PRIO_08:
+			return 80;
+		case PRIO_09:
+			return 90;
+		default:
+			return 0;
+	}
+}
+
 JThread::JThread()
 {
 	retval = NULL;
 	mutexinit = false;
 	running = false;
+	m_SchedPolicy = SCHED_DEFAULT;
+	m_ThreadPriority = PRIO_DEFAULT;
 }
 
 JThread::~JThread()
@@ -77,9 +106,22 @@ int JThread::Start()
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+	struct sched_param toset;
 	
+	if (m_SchedPolicy == ROUND_ROBIN) {
+		pthread_attr_setschedpolicy(&attr,SCHED_RR);
+	}
+	else if (m_SchedPolicy == FIFO) {
+		pthread_attr_setschedpolicy(&attr,SCHED_FIFO);
+	}
+
+	if (m_ThreadPriority != PRIO_DEFAULT) {
+		toset.sched_priority = JThreadPrioToPThreadPrio(m_ThreadPriority);
+		pthread_attr_setschedparam(&attr,&toset);
+	}
+
 	continuemutex.Lock();
-	status = pthread_create(&threadid,&attr,TheThread,this);	
+	status = pthread_create(&threadid,&attr,TheThread,this);
 	pthread_attr_destroy(&attr);
 	if (status != 0)
 	{
@@ -89,7 +131,7 @@ int JThread::Start()
 	
 	/* Wait until 'running' is set */
 	
-	runningmutex.Lock();			
+	runningmutex.Lock();
 	while (!running)
 	{
 		runningmutex.Unlock();
@@ -129,7 +171,7 @@ bool JThread::IsRunning()
 {
 	bool r;
 	
-	runningmutex.Lock();			
+	runningmutex.Lock();
 	r = running;
 	runningmutex.Unlock();
 	return r;
@@ -176,5 +218,53 @@ void *JThread::TheThread(void *param)
 void JThread::ThreadStarted()
 {
 	continuemutex2.Unlock();
+}
+
+SchedulingPolicy JThread::GetSchedulingPolicy() {
+	return m_SchedPolicy;
+}
+
+bool JThread::SetSchedulingPolicy(SchedulingPolicy policy) {
+	if (IsRunning()) {
+		int cur_policy;
+		struct sched_param sched_params;
+
+		pthread_getschedparam(threadid,&cur_policy,&sched_params);
+
+		if (policy == ROUND_ROBIN)
+			cur_policy = SCHED_RR;
+		else
+			cur_policy = SCHED_FIFO;
+		pthread_getschedparam(threadid,&cur_policy,&sched_params);
+	}
+	m_SchedPolicy = policy;
+
+	return true;
+}
+
+JThreadPriority JThread::GetThreadPriority() {
+	return m_ThreadPriority;
+}
+
+bool JThread::SetThreadPriority(JThreadPriority prio) {
+	if (IsRunning()) {
+		int policy;
+		struct sched_param sched_params;
+
+		pthread_getschedparam(threadid,&policy,&sched_params);
+		sched_params.sched_priority = JThreadPrioToPThreadPrio(prio);
+		pthread_getschedparam(threadid,&policy,&sched_params);
+		}
+	m_ThreadPriority = prio;
+
+	return true;
+}
+
+JThread::JThread(SchedulingPolicy policy,JThreadPriority prio) {
+	retval = NULL;
+	mutexinit = false;
+	running = false;
+	m_SchedPolicy = policy;
+	m_ThreadPriority = prio;
 }
 
