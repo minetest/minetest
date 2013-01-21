@@ -3836,6 +3836,48 @@ private:
 		return 1;
 	}
 
+	// EnvRef:get_line_of_sight(pos1,pos2,stepsize)
+	static int l_get_line_of_sight(lua_State *L)
+	{
+		float stepsize = 1.0;
+		//infostream<<"EnvRef::l_get_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+
+		// read position 1 from lua
+		v3f pos1 = checkFloatPos(L, 2);
+		// read position 2 from lua
+		v3f pos2 = checkFloatPos(L, 2);
+		//read step size from lua
+		if(lua_isnumber(L, 3))
+			stepsize = lua_tonumber(L, 3);
+
+		float distance = pos1.getDistanceFrom(pos2);
+
+		//calculate normalized direction vector
+		v3f normalized_vector = v3f((pos2.X - pos1.X)/distance,
+									(pos2.Y - pos1.Y)/distance,
+									(pos2.Z - pos1.Z)/distance);
+
+		//find out if there's a node on path between pos1 and pos2
+		for (float i = 1; i < distance; i += stepsize) {
+			v3s16 pos = floatToInt(v3f(normalized_vector.X * i,
+									normalized_vector.Y * i,
+									normalized_vector.Z * i),BS);
+
+			MapNode n = env->getMap().getNodeNoEx(pos);
+			if(env->getGameDef()->ndef()->get(n).param_type == CPT_LIGHT) {
+					// Return false
+					lua_pushboolean(L, false);
+					return 1;
+			}
+		}
+		// Return true
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
 	// EnvRef:get_objects_inside_radius(pos, radius)
 	static int l_get_objects_inside_radius(lua_State *L)
 	{
@@ -4141,6 +4183,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, get_meta),
 	method(EnvRef, get_node_timer),
 	method(EnvRef, get_player_by_name),
+	method(EnvRef, get_line_of_sight),
 	method(EnvRef, get_objects_inside_radius),
 	method(EnvRef, set_timeofday),
 	method(EnvRef, get_timeofday),

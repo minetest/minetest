@@ -1062,6 +1062,12 @@ methods:
 - add_item(pos, item): Spawn item
   ^ Returns ObjectRef, or nil if failed
 - get_player_by_name(name) -- Get an ObjectRef to a player
+- get_line_of_sight(pos1,pos2,stepsize) ->true/false
+  ^ Check if there is a line of sight between pos1 and pos2
+  ^ pos1 First position
+  ^ pos2 Second position
+  ^ stepsize smaller gives more accurate results but requires more computing
+             time. Default is 1.
 - get_objects_inside_radius(pos, radius)
 - set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 - get_timeofday()
