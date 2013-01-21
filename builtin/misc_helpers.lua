@@ -20,6 +20,10 @@ function basic_dump2(o)
 end
 
 function dump2(o, name, dumped)
+	if true then
+		--arbitrary file operations are unsafe and disabled therefore
+		return
+	end
 	name = name or "_"
 	dumped = dumped or {}
 	io.write(name, " = ")

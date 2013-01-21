@@ -33,25 +33,12 @@ minetest.auth_file_path = minetest.get_worldpath().."/auth.txt"
 minetest.auth_table = {}
 
 local function read_auth_file()
-	local newtable = {}
-	local file, errmsg = io.open(minetest.auth_file_path, 'rb')
-	if not file then
-		minetest.log("info", minetest.auth_file_path.." could not be opened for reading ("..errmsg.."); assuming new world")
-		return
+	local new_auth_table = minetest.deserialize(minetest.load_auth_file())
+	
+	if new_auth_table ~= nil then
+		minetest.auth_table = new_auth_table
+		minetest.notify_authentication_modified()
 	end
-	for line in file:lines() do
-		if line ~= "" then
-			local name, password, privilegestring = string.match(line, "([^:]*):([^:]*):([^:]*)")
-			if not name or not password or not privilegestring then
-				error("Invalid line in auth.txt: "..dump(line))
-			end
-			local privileges = minetest.string_to_privs(privilegestring)
-			newtable[name] = {password=password, privileges=privileges}
-		end
-	end
-	io.close(file)
-	minetest.auth_table = newtable
-	minetest.notify_authentication_modified()
 end
 
 local function save_auth_file()
@@ -64,15 +51,8 @@ local function save_auth_file()
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
 	end
-	local file, errmsg = io.open(minetest.auth_file_path, 'w+b')
-	if not file then
-		error(minetest.auth_file_path.." could not be opened for writing: "..errmsg)
-	end
-	for name, stuff in pairs(minetest.auth_table) do
-		local privstring = minetest.privs_to_string(stuff.privileges)
-		file:write(name..":"..stuff.password..":"..privstring..'\n')
-	end
-	io.close(file)
+	
+	minetest.save_auth_file(minetest.serialize(minetest.auth_table))
 end
 
 read_auth_file()

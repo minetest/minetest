@@ -111,10 +111,31 @@ bool script_load(lua_State *L, const char *path)
 	return true;
 }
 
+static const luaL_Reg lualibs[] = {
+  {"", luaopen_base},
+  {LUA_TABLIBNAME, luaopen_table},
+//  {LUA_IOLIBNAME, luaopen_io}, //disabled for security reasons
+//  {LUA_OSLIBNAME, luaopen_os}, //disabled for security reasons
+  {LUA_STRLIBNAME, luaopen_string},
+  {LUA_MATHLIBNAME, luaopen_math},
+  {LUA_DBLIBNAME, luaopen_debug},
+  {LUA_LOADLIBNAME, luaopen_package},
+  {NULL, NULL}
+};
+
+LUALIB_API void safe_luaL_openlibs (lua_State *L) {
+  const luaL_Reg *lib = lualibs;
+  for (; lib->func; lib++) {
+    lua_pushcfunction(L, lib->func);
+    lua_pushstring(L, lib->name);
+    lua_call(L, 1, 0);
+  }
+}
+
 lua_State* script_init()
 {
 	lua_State *L = luaL_newstate();
-	luaL_openlibs(L);
+	safe_luaL_openlibs(L);
 	return L;
 }
 
