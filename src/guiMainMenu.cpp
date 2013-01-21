@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiCreateWorld.h"
+#include "guiConfigureWorld.h"
 #include "guiMessageMenu.h"
 #include "guiConfirmMenu.h"
 #include "debug.h"
@@ -1033,11 +1034,22 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_CONFIGURE_WORLD_BUTTON: {
-				GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
-						-1, menumgr,
-						wgettext("Nothing here"));
-				menu->drop();
-				return true;
+				MainMenuData cur;
+				readInput(&cur);
+				if(cur.selected_world == -1)
+				{
+					(new GUIMessageMenu(env, parent, -1, menumgr,
+							wgettext("Cannot configure world: Nothing selected"))
+							)->drop();
+				} 
+				else 
+				{
+					WorldSpec wspec = m_data->worlds[cur.selected_world];
+					GUIConfigureWorld *menu = new GUIConfigureWorld(env, parent,
+										-1, menumgr, wspec);
+					menu->drop();
+					return true;
+				}
 			}
 			case GUI_ID_SERVERLIST_DELETE: {
 				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
