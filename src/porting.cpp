@@ -23,9 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	See comments in porting.h
 */
 
-#if defined(_WIN32)
-	#include <windows.h>
-#elif defined(linux)
+#if defined(linux)
 	#include <unistd.h>
 #elif defined(__APPLE__)
 	#include <unistd.h>
@@ -92,7 +90,6 @@ void signal_handler_init(void)
 
 #else // _WIN32
 	#include <signal.h>
-	#include <windows.h>
 
 	BOOL WINAPI event_handler(DWORD sig)
 	{
