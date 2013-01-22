@@ -69,15 +69,13 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 	m_worldmods = flattenModTree(getModsInPath(worldmods_path));
 
 	// fill m_addontree with add-on mods
-	ModSpec addons("Add-Ons");
 	std::set<std::string> paths = m_gspec.addon_mods_paths;
 	for(std::set<std::string>::iterator it=paths.begin();
 		it != paths.end(); ++it)
 	{
 		std::map<std::string,ModSpec> mods = getModsInPath(*it);
-		addons.modpack_content.insert(mods.begin(), mods.end());
+		m_addontree.insert(mods.begin(), mods.end());
 	}
-	m_addontree.insert(std::make_pair(addons.name,addons));
 
 	// expand modpacks
 	m_addonmods = flattenModTree(m_addontree);
@@ -116,7 +114,7 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 		ModSpec mod = (*it).second;
 		// a mod is new if it is not a modpack, and does not occur in
 		// mod_names
-		if(mod.modpack_content.empty() &&
+		if(!mod.is_modpack &&
 		   mod_names.count(modname) == 0)
 			m_new_mod_names.insert(modname);
 	}
@@ -253,7 +251,9 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 		rect += v2s32(220, 0) + topleft;
 		m_treeview = Environment->addTreeView(rect, this,
 											  GUI_ID_MOD_TREEVIEW,true);
-		buildTreeView(m_addontree, m_treeview->getRoot());
+		gui::IGUITreeViewNode* node 
+			= m_treeview->getRoot()->addChildBack(L"Add-Ons");
+		buildTreeView(m_addontree, node);
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
@@ -407,8 +407,12 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_ENABLEALL: {
-				if(selected_node != NULL && selected_node->getText() != NULL)
-				{
+				if(selected_node != NULL && selected_node->getParent() == m_treeview->getRoot())
+				{  
+					enableAllMods(m_addonmods,true);
+				} 
+				else if(selected_node != NULL && selected_node->getText() != NULL)
+				{  
 					std::string modname = wide_to_narrow(selected_node->getText());
 					ModSpec mod = m_addonmods[modname];
 					enableAllMods(mod.modpack_content,true);
@@ -416,6 +420,10 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_DISABLEALL: {
+				if(selected_node != NULL && selected_node->getParent() == m_treeview->getRoot())
+				{
+					enableAllMods(m_addonmods,false);
+				} 
 				if(selected_node != NULL && selected_node->getText() != NULL)
 				{
 					std::string modname = wide_to_narrow(selected_node->getText());
@@ -517,7 +525,7 @@ void GUIConfigureWorld::buildTreeView(std::map<std::string, ModSpec> mods,
 		gui::IGUITreeViewNode* new_node = 
 			node->addChildBack(narrow_to_wide(modname).c_str());
 		m_nodes.insert(std::make_pair(modname, new_node));
-		if(!mod.modpack_content.empty())
+		if(mod.is_modpack)
 			buildTreeView(mod.modpack_content, new_node);
 		else
 		{
@@ -552,23 +560,33 @@ void GUIConfigureWorld::adjustSidebar()
 		modname_w = L"N/A";
 	std::string modname = wide_to_narrow(modname_w);
 
-	// if modpack, show enable/disable all buttons. otherwise, show
-	// enabled checkbox
-	if(node->hasChilds())
-	{
-		m_enabled_checkbox->setVisible(false);
-		m_disableall->setVisible(true);
-		m_enableall->setVisible(true);
-		m_modname_text->setText((L"Modpack: "+modname_w).c_str());
-	}	
-	else	
+	// if no mods installed, don't show buttons or checkbox on the sidebar
+	if(node->getParent() == m_treeview->getRoot() && !node->hasChilds())
 	{
 		m_disableall->setVisible(false);
 		m_enableall->setVisible(false);
-		m_enabled_checkbox->setVisible(true);
-		m_modname_text->setText((L"Mod: "+modname_w).c_str());
+		m_enabled_checkbox->setVisible(false);
+	} 
+	else
+	{
+		// if modpack, show enable/disable all buttons. otherwise, show
+		// enabled checkbox
+		if(node->getParent() == m_treeview->getRoot() ||
+		   m_addonmods[modname].is_modpack)
+		{
+			m_enabled_checkbox->setVisible(false);
+			m_disableall->setVisible(true);
+			m_enableall->setVisible(true);
+			m_modname_text->setText((L"Modpack: "+modname_w).c_str());
+		}	
+		else	
+		{
+			m_disableall->setVisible(false);
+			m_enableall->setVisible(false);
+			m_enabled_checkbox->setVisible(true);
+			m_modname_text->setText((L"Mod: "+modname_w).c_str());
+		}
 	}
-
 	// the mod is enabled unless it is disabled in the world.mt settings. 
 	bool mod_enabled = true;
 	if(m_settings.exists("load_mod_"+modname))
@@ -616,7 +634,7 @@ void GUIConfigureWorld::enableAllMods(std::map<std::string, ModSpec> mods,bool e
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) 
+		if(mod.is_modpack) 
 			// a modpack, recursively enable all mods in it
 			enableAllMods(mod.modpack_content,enable);
 		else // not a modpack
