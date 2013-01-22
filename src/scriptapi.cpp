@@ -3561,6 +3561,66 @@ private:
 		return l_set_node(L);
 	}
 
+	// EnvRef:set_nodes({{pos = pos, node = node}, ...})
+	// pos = {x=num, y=num, z=num}
+	static int l_set_nodes(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+
+		lua_pushvalue(L, -1);
+		lua_pushnil(L);
+		while(lua_next(L, -2))
+		{
+			lua_pushstring(L, "node");
+			lua_gettable(L, -2);
+			MapNode node = readnode(L, -1, ndef);
+			lua_pop(L, 1);
+
+			lua_pushstring(L, "minp");
+			lua_gettable(L, -2);
+			if (!lua_isnil(L, -1)) // make a cuboid
+			{
+				v3s16 pos_min = read_v3s16(L, -1);
+				lua_pop(L, 1);
+				lua_pushstring(L, "maxp");
+				lua_gettable(L, -2);
+				if (lua_isnil(L, -1)) return 0;
+				v3s16 pos_max = read_v3s16(L, -1);
+ 				if(pos_min.X > pos_max.X)
+					std::swap(pos_min.X, pos_max.X);
+				if(pos_min.Y > pos_max.Y)
+					std::swap(pos_min.Y, pos_max.Y);
+				if(pos_min.Z > pos_max.Z)
+					std::swap(pos_min.Z, pos_max.Z);
+				for(s16 z=pos_min.Z; z<=pos_max.Z; z++)
+				for(s16 y=pos_min.Y; y<=pos_max.Y; y++)
+				for(s16 x=pos_min.X; x<=pos_max.X; x++)
+				{
+					if(!env->setNode(v3s16(x,y,z), node))
+						return 0;
+				}
+			}
+			lua_pop(L, 1);
+
+			lua_pushstring(L, "pos");
+			lua_gettable(L, -2);
+			if (!lua_isnil(L, -1)) // set node at particular pos
+			{
+				v3s16 pos = read_v3s16(L, -1);
+				if(!env->setNode(pos, node))
+					return 0;
+			}
+			lua_pop(L, 1);
+
+			lua_pop(L, 1);
+		}
+		lua_pop(L, 1);
+		return 1;
+	}
+
 	// EnvRef:remove_node(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_remove_node(lua_State *L)
@@ -4137,6 +4197,7 @@ public:
 const char EnvRef::className[] = "EnvRef";
 const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, set_node),
+	method(EnvRef, set_nodes),
 	method(EnvRef, add_node),
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),

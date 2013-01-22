@@ -1039,6 +1039,11 @@ methods:
 - set_node(pos, node)
 - add_node(pos, node): alias set_node(pos, node)
  ^ Set node at position (node = {name="foo", param1=0, param2=0})
+- set_nodes(list)
+ ^ list: a table that contains {pos, node} and/or {minp, maxp, node}
+   for {pos, node} sets node at pos
+   for {minp, maxp, node} makes a cuboid between these corners
+   Using set_nodes instead of set_node is faster when setting a great amount of nodes
 - remove_node(pos)
   ^ Equivalent to set_node(pos, "air")
 - get_node(pos)
