@@ -7,7 +7,7 @@
 
 -- Initialize some very basic things
 print = minetest.debug
-math.randomseed(os.time())
+math.randomseed(minetest.get_time())
 
 -- Load other files
 dofile(minetest.get_modpath("__builtin").."/serialize.lua")

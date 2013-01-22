@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 
 #include <iostream>
+#include <fstream>
 #include <list>
 extern "C" {
 #include <lua.h>
@@ -5246,6 +5247,56 @@ static int l_rollback_revert_actions_by(lua_State *L)
 	return 2;
 }
 
+// get_time()
+static int l_get_time(lua_State *L)
+{
+	time_t current_secs = time(0);
+	lua_pushinteger(L, current_secs);
+	return 1;
+}
+
+// save_auth_file(serialized_data)
+static int l_save_auth_file(lua_State *L)
+{
+	std::string serialized_authfile = luaL_checkstring(L, 1);
+	std::string authfile_path = get_server(L)->getWorldPath();
+	authfile_path += "/auth.txt";
+
+	std::ofstream authfile(authfile_path.c_str());
+
+	if (authfile.is_open()) {
+		authfile << serialized_authfile;
+		authfile.close();
+		return true;
+	}
+
+	return false;
+}
+
+// read_authfile()
+static int l_load_auth_file(lua_State *L)
+{
+	std::string authfile_path = get_server(L)->getWorldPath();
+	authfile_path += "/auth.txt";
+
+	std::ifstream authfile(authfile_path.c_str());
+
+	if (authfile.is_open()) {
+		std::string retval = "";
+		std::string toappend = "";
+
+		while ( authfile.good() ) {
+			getline (authfile,toappend);
+			retval += toappend;
+		}
+		authfile.close();
+		lua_pushstring(L,retval.c_str());
+		return 0;
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -5282,6 +5333,9 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_craft_recipe", l_get_craft_recipe},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+	{"get_time", l_get_time },
+	{"save_auth_file", l_save_auth_file },
+	{"load_auth_file", l_load_auth_file },
 	{NULL, NULL}
 };
 
