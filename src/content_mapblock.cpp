@@ -204,12 +204,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile_liquid_bfculled = f.special_tiles[1];
 			AtlasPointer &pa_liquid = tile_liquid.texture;
 
-			bool top_is_same_liquid = false;
+
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
+			MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y-1,z));
 			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
 			content_t c_source = nodedef->getId(f.liquid_alternative_source);
-			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
-				top_is_same_liquid = true;
+			bool top_is_same_liquid = f.sameLiquid(nodedef->get(ntop));
+			bool bottom_is_same_liquid = f.sameLiquid(nodedef->get(nbottom));
 			
 			u16 l = 0;
 			// If this liquid emits light and doesn't contain light, draw
@@ -268,8 +269,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//       doesn't exist
 					p2.Y += 1;
 					n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-					if(n2.getContent() == c_source ||
-							n2.getContent() == c_flowing)
+					if (f.sameLiquid(nodedef->get(n2)))
 						flags |= neighborflag_top_is_same_liquid;
 				}
 				
@@ -365,8 +365,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(n_feat.solidness == 2)
 					continue;
 				
-				bool neighbor_is_same_liquid = (neighbor_content == c_source
-						|| neighbor_content == c_flowing);
+				bool neighbor_is_same_liquid = f.sameLiquid(n_feat);
 				
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
@@ -451,14 +450,37 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
-				// Add to mesh collector
 				collector.append(*current_tile, vertices, 4, indices, 6);
 			}
+
+			/*
+				Top and bottom faces
+			 */
+
+			// Calculate direction of water flow
+			// Positive if liquid moves towards +Z
+			int dz = (corner_levels[side_corners[3][0]] +
+					  corner_levels[side_corners[3][1]]) -
+				(corner_levels[side_corners[2][0]] +
+				 corner_levels[side_corners[2][1]]);
+			// Positive if liquid moves towards +X
+			int dx = (corner_levels[side_corners[1][0]] +
+					  corner_levels[side_corners[1][1]]) -
+				(corner_levels[side_corners[0][0]] +
+				 corner_levels[side_corners[0][1]]);
 			
+
+			// if liquid doesn't flow in any direction (it flows
+			// straight down), use texture of liquid source:
+			if (dz == 0 && dx == 0)
+				pa_liquid = nodedef->get(c_source).tiles[0].texture;
+
 			/*
 				Generate top side, if appropriate
 			*/
-			
+
+			ContentFeatures ntop_feat = nodedef->get(ntop);
+
 			if(top_is_same_liquid == false)
 			{
 				video::S3DVertex vertices[4] =
@@ -490,16 +512,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// Default downwards-flowing texture animation goes from 
 				// -Z towards +Z, thus the direction is +Z.
 				// Rotate texture to make animation go in flow direction
-				// Positive if liquid moves towards +Z
-				int dz = (corner_levels[side_corners[3][0]] +
-						corner_levels[side_corners[3][1]]) -
-						(corner_levels[side_corners[2][0]] +
-						corner_levels[side_corners[2][1]]);
-				// Positive if liquid moves towards +X
-				int dx = (corner_levels[side_corners[1][0]] +
-						corner_levels[side_corners[1][1]]) -
-						(corner_levels[side_corners[0][0]] +
-						corner_levels[side_corners[0][1]]);
 				// -X
 				if(-dx >= abs(dz))
 				{
@@ -534,9 +546,74 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
-				// Add to mesh collector
 				collector.append(tile_liquid, vertices, 4, indices, 6);
 			}
+
+			/*
+				Generate bottom side, if appropriate
+			*/
+			
+			ContentFeatures nbottom_feat = nodedef->get(nbottom);
+			if(!bottom_is_same_liquid && nbottom_feat.solidness != 2)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,-BS/2,-BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,-BS/2,-BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
+				};
+				for(s32 i=0; i<4; i++)
+					vertices[i].Pos += intToFloat(p, BS);
+
+				// -X
+				if(-dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = t;
+				}
+				// +X
+				if(dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+				}
+				// -Z
+				if(-dz >= abs(dx))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+					t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+				}
+
+				// Use backface culled material if neighbor doesn't have a
+				// solidness of 0
+				const TileSpec *current_tile = &tile_liquid;
+				if(nbottom_feat.solidness != 0 || nbottom_feat.visual_solidness != 0)
+					current_tile = &tile_liquid_bfculled;
+
+				u16 indices[] = {0,3,2,2,1,0};
+				collector.append(*current_tile, vertices, 4, indices, 6);
+
+			}
+
 		break;}
 		case NDT_GLASSLIKE:
 		{
