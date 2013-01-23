@@ -44,6 +44,7 @@ extern "C" {
 #include "scriptapi_item.h"
 #include "scriptapi_content.h"
 #include "scriptapi_craft.h"
+#include "scriptapi_particles.h"
 
 /*****************************************************************************/
 /* Mod related                                                               */
@@ -1089,6 +1090,9 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_all_craft_recipes", l_get_all_craft_recipes},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+	{"add_particle", l_add_particle},
+	{"add_particlespawner", l_add_particlespawner},
+	{"delete_particlespawner", l_delete_particlespawner},
 	{NULL, NULL}
 };
 
