@@ -1,7 +1,7 @@
 /*
 Minetest-c55
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>,
-				   2012 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
+			  2012-2013 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 2.1 of the License, or
@@ -118,7 +118,7 @@ void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeD
 	core::map<v3s16, MapBlock*> modified_blocks;
 	ManualMapVoxelManipulator vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
-	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,2,1));
+	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,3,1));
 	make_ltree (vmanip, p0, ndef, tree_definition);
 	vmanip.blitBackAll(&modified_blocks);
 
@@ -169,8 +169,11 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 
 	//initialize rotation matrix, position and stacks for branches
 	core::matrix4 rotation;
-	rotation=setRotationAxisRadians(rotation, M_PI/2,v3f(0,0,1));
-	v3f position = v3f(0,0,0);
+	rotation = setRotationAxisRadians(rotation, M_PI/2,v3f(0,0,1));
+	v3f position;
+	position.X = p0.X;
+	position.Y = p0.Y;
+	position.Z = p0.Z;
 	std::stack <core::matrix4> stack_orientation;
 	std::stack <v3f> stack_position;
 
@@ -223,16 +226,16 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 	//make sure tree is not floating in the air
 	if (tree_definition.trunk_type == "double")
 	{
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X+1,position.Y-1,position.Z),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X,position.Y-1,position.Z+1),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X+1,position.Y-1,position.Z+1),dirtnode);
 	}
 	if (tree_definition.trunk_type == "crossed")
 	{
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y-1,p0.Z+position.Z),dirtnode);
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z+1),dirtnode);
-		make_tree_node_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y-1,p0.Z+position.Z-1),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X+1,position.Y-1,position.Z),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X-1,position.Y-1,position.Z),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X,position.Y-1,position.Z+1),dirtnode);
+		tree_node_placement(vmanip,v3f(position.X,position.Y-1,position.Z-1),dirtnode);
 	}
 
 	/* build tree out of generated axiom
@@ -241,7 +244,9 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 
     G  - move forward one unit with the pen up
     F  - move forward one unit with the pen down drawing trunks and branches
-    f  - move forward one unit with the pen down drawing leaves
+    f  - move forward one unit with the pen down drawing leaves (100% chance)
+    T  - move forward one unit with the pen down drawing trunks only
+    R  - move forward one unit with the pen down placing fruit
     A  - replace with rules set A
     B  - replace with rules set B
     C  - replace with rules set C
@@ -275,35 +280,54 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 			dir = transposeMatrix(rotation,dir);
 			position+=dir;
 			break;
+		case 'T':
+			tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z),tree_definition);
+			if (tree_definition.trunk_type == "double" && !tree_definition.thin_branches)
+			{
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z+1),tree_definition);
+			}
+			if (tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches)
+			{
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X-1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z-1),tree_definition);
+			}
+			dir = v3f(1,0,0);
+			dir = transposeMatrix(rotation,dir);
+			position+=dir;
+			break;
 		case 'F':
-			make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
+			tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z),tree_definition);
 			if ((stack_orientation.empty() && tree_definition.trunk_type == "double") ||
 				(!stack_orientation.empty() && tree_definition.trunk_type == "double" && !tree_definition.thin_branches))
 			{
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z+1),tree_definition);
 			}
 			if ((stack_orientation.empty() && tree_definition.trunk_type == "crossed") ||
 				(!stack_orientation.empty() && tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches))
 			{
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X+1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X-1,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z+1),tree_definition);
-				make_tree_trunk_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z-1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X-1,position.Y,position.Z),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
+				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z-1),tree_definition);
 			}
 			if (stack_orientation.empty() == false)
 			{
 				s16 size = 1;
-				for(x=-size; x<size+1; x++)
-					for(y=-size; y<size+1; y++)
-						for(z=-size; z<size+1; z++)
+				for(x=-size; x<=size; x++)
+					for(y=-size; y<=size; y++)
+						for(z=-size; z<=size; z++)
 							if (abs(x) == size && abs(y) == size && abs(z) == size)
 							{
-								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x+1,p0.Y+position.Y+y,p0.Z+position.Z+z),tree_definition);
-								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x-1,p0.Y+position.Y+y,p0.Z+position.Z+z),tree_definition);
-								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x,p0.Y+position.Y+y,p0.Z+position.Z+z+1),tree_definition);
-								make_tree_leaves_placement(vmanip,v3f(p0.X+position.X+x,p0.Y+position.Y+y,p0.Z+position.Z+z-1),tree_definition);
+								tree_leaves_placement(vmanip,v3f(position.X+x+1,position.Y+y,position.Z+z),tree_definition);
+								tree_leaves_placement(vmanip,v3f(position.X+x-1,position.Y+y,position.Z+z),tree_definition);
+								tree_leaves_placement(vmanip,v3f(position.X+x,position.Y+y,position.Z+z+1),tree_definition);
+								tree_leaves_placement(vmanip,v3f(position.X+x,position.Y+y,position.Z+z-1),tree_definition);
 							}
 			}
 			dir = v3f(1,0,0);
@@ -311,12 +335,19 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 			position+=dir;
 			break;
 		case 'f':
-			make_tree_leaves_placement(vmanip,v3f(p0.X+position.X,p0.Y+position.Y,p0.Z+position.Z),tree_definition);
+			tree_single_leaves_placement(vmanip,v3f(position.X,position.Y,position.Z),tree_definition);
 			dir = v3f(1,0,0);
 			dir = transposeMatrix(rotation,dir);
 			position+=dir;
 			break;
-		// turtle commands
+		case 'R':
+			tree_fruit_placement(vmanip,v3f(position.X,position.Y,position.Z),tree_definition);
+			dir = v3f(1,0,0);
+			dir = transposeMatrix(rotation,dir);
+			position+=dir;
+			break;
+
+		// turtle orientation commands
 		case '[':
 			stack_orientation.push(rotation);
 			stack_position.push(position);
@@ -363,7 +394,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 	}
 }
 
-void make_tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+void tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		MapNode node)
 {
 	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
@@ -376,7 +407,7 @@ void make_tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 	vmanip.m_data[vmanip.m_area.index(p1)] = node;
 }
 
-void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+void tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
@@ -389,7 +420,7 @@ void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 	vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.trunknode;
 }
 
-void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+void tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition)
 {
 	MapNode leavesnode=tree_definition.leavesnode;
@@ -401,7 +432,7 @@ void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 	u32 vi = vmanip.m_area.index(p1);
 	if(vmanip.m_data[vi].getContent() != CONTENT_AIR
 			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
-		return;
+		return;	
 	if (tree_definition.fruit_chance>0)
 	{
 		if (myrand_range(1,100) > 100-tree_definition.fruit_chance)
@@ -411,6 +442,35 @@ void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 	}
 	else if (myrand_range(1,100) > 20)
 		vmanip.m_data[vmanip.m_area.index(p1)] = leavesnode;
+}
+
+void tree_single_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+		TreeDef &tree_definition)
+{
+	MapNode leavesnode=tree_definition.leavesnode;
+	if (myrand_range(1,100) > 100-tree_definition.leaves2_chance)
+		leavesnode=tree_definition.leaves2node;
+	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
+	if(vmanip.m_area.contains(p1) == false)
+		return;
+	u32 vi = vmanip.m_area.index(p1);
+	if(vmanip.m_data[vi].getContent() != CONTENT_AIR
+		&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+		return;
+	vmanip.m_data[vmanip.m_area.index(p1)] = leavesnode;
+}
+
+void tree_fruit_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+		TreeDef &tree_definition)
+{
+	v3s16 p1 = v3s16(myround(p0.X),myround(p0.Y),myround(p0.Z));
+	if(vmanip.m_area.contains(p1) == false)
+		return;
+	u32 vi = vmanip.m_area.index(p1);
+	if(vmanip.m_data[vi].getContent() != CONTENT_AIR
+		&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+		return;
+	vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.fruitnode;
 }
 
 irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis)
