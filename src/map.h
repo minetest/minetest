@@ -358,7 +358,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef);
+	ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge);
 	~ServerMap();
 
 	s32 mapType() const
@@ -480,16 +480,12 @@ public:
 
 	MapgenParams *getMapgenParams(){ return m_mgparams; }
 
-	void setEmerge(EmergeManager *emerge){ m_emerge = emerge; }
-
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
-
-
-
+	
 	// Emerge manager
 	EmergeManager *m_emerge;
 

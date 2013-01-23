@@ -33,65 +33,52 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 #include "treegen.h"
-
-/////////////////// Mapgen V6 perlin noise default values
-NoiseParams nparams_v6_def_terrain_base =
-	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
-NoiseParams nparams_v6_def_terrain_higher =
-	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6};
-NoiseParams nparams_v6_def_steepness =
-	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
-NoiseParams nparams_v6_def_height_select =
-	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
-NoiseParams nparams_v6_def_trees =
-	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
-NoiseParams nparams_v6_def_mud =
-	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
-NoiseParams nparams_v6_def_beach =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
-NoiseParams nparams_v6_def_biome =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
-NoiseParams nparams_v6_def_cave =
-	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
+#include "mapgen_v6.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Emerge Manager ////////////////////////////////
 
 
-
-EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef,
-							 MapgenParams *mgparams) {
+EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
+	//register built-in mapgens
+	registerMapgen("v6", new MapgenFactoryV6());
+		
 	//the order of these assignments is pretty important
 	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
-	this->params   = mgparams;
+	this->params   = NULL;
 	this->mapgen   = NULL;
-	this->mapgen   = getMapgen();
 }
 
 
 EmergeManager::~EmergeManager() {
 	delete biomedef;
+	delete mapgen;
 	delete params;
+}
+
+
+void EmergeManager::initMapgens(MapgenParams *mgparams) {
+	if (mapgen)
+		return;
+	
+	this->params = mgparams;
+	this->mapgen = getMapgen(); //only one mapgen for now!
 }
 
 
 Mapgen *EmergeManager::getMapgen() {
 	if (!mapgen) {
-		/*switch (params->mg_version) {
-			case 6:*/
-				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
-		/*		break;
-			default:
-				errorstream << "EmergeManager: Unsupported mapgen version "
-					<< params->mg_version << ", falling back to V6" << std::endl;
-				params->mg_version = 6;
-				mapgen = new MapgenV6(0, (MapgenV6Params *)params);
-		}*/
+		mapgen = createMapgen(params->mg_name, 0, params, this);
+		if (!mapgen) {
+			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
+			delete params;
+			params = createMapgenParams("v6");
+			mapgen = createMapgen("v6", 0, params, this);
+		}
 	}
 	return mapgen;
 }
-
 
 void EmergeManager::addBlockToQueue() {
 	//STUB
@@ -127,60 +114,94 @@ u32 EmergeManager::getBlockSeed(v3s16 p) {
 }
 
 
-MapgenParams *MapgenParams::createMapgenParams(std::string &mgstr) {
-	return new MapgenV6Params(); // this will be fixed later
-	/*switch (mgver) {
-		case 6:
-			return new MapgenV6Params();
-		default: //instead of complaining, default to 6
-			return new MapgenV6Params();
-	}*/
+Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
+									MapgenParams *mgparams, EmergeManager *emerge) {
+	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+	if (iter == mglist.end()) {
+		errorstream << "EmergeManager; mapgen " << mgname <<
+		 " not registered" << std::endl;
+		return NULL;
+	}
+	
+	MapgenFactory *mgfactory = iter->second;
+	return mgfactory->createMapgen(mgid, mgparams, emerge);
 }
 
 
-MapgenParams *MapgenParams::getParamsFromSettings(Settings *settings) {
+MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
+	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+	if (iter == mglist.end()) {
+		errorstream << "EmergeManager: mapgen " << mgname <<
+		 " not registered" << std::endl;
+		return NULL;
+	}
+	
+	MapgenFactory *mgfactory = iter->second;
+	return mgfactory->createMapgenParams();
+}
+
+
+MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	std::string mg_name = settings->get("mg_name");
-	MapgenParams *mgparams = MapgenParams::createMapgenParams(mg_name);
+	MapgenParams *mgparams = createMapgenParams(mg_name);
+	
 	mgparams->mg_name     = mg_name;
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
 	mgparams->flags       = settings->getS32("mg_flags");
 
-/*	switch (mg_version) {
-		case 6:
-		{*/
-			MapgenV6Params *v6params = (MapgenV6Params *)mgparams;
-
-			v6params->freq_desert = settings->getFloat("mgv6_freq_desert");
-			v6params->freq_beach  = settings->getFloat("mgv6_freq_beach");
-			v6params->np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
-			v6params->np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
-			v6params->np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
-			v6params->np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
-			v6params->np_trees          = settings->getNoiseParams("mgv6_np_trees");
-			v6params->np_mud            = settings->getNoiseParams("mgv6_np_mud");
-			v6params->np_beach          = settings->getNoiseParams("mgv6_np_beach");
-			v6params->np_biome          = settings->getNoiseParams("mgv6_np_biome");
-			v6params->np_cave           = settings->getNoiseParams("mgv6_np_cave");
-
-			if (!v6params->np_terrain_base || !v6params->np_terrain_higher ||
-				!v6params->np_steepness    || !v6params->np_height_select  ||
-				!v6params->np_trees        || !v6params->np_mud            ||
-				!v6params->np_beach || !v6params->np_biome || !v6params->np_cave) {
-				delete mgparams;
-				return NULL;
-			}
-/*
-			break;
-		}
-		default:
-			delete mgparams;
-			return NULL;
-	}*/
-
+	if (!mgparams->readParams(settings)) {
+		delete mgparams;
+		return NULL;
+	}
 	return mgparams;
+}
 
+
+bool EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
+	mglist.insert(std::make_pair(mgname, mgfactory));
+	infostream << "EmergeManager: registered mapgen " << mgname << std::endl;
+}
+
+
+/////////////////////
+
+bool MapgenV6Params::readParams(Settings *settings) {
+	freq_desert = settings->getFloat("mgv6_freq_desert");
+	freq_beach  = settings->getFloat("mgv6_freq_beach");
+
+	np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
+	np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
+	np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
+	np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
+	np_trees          = settings->getNoiseParams("mgv6_np_trees");
+	np_mud            = settings->getNoiseParams("mgv6_np_mud");
+	np_beach          = settings->getNoiseParams("mgv6_np_beach");
+	np_biome          = settings->getNoiseParams("mgv6_np_biome");
+	np_cave           = settings->getNoiseParams("mgv6_np_cave");
+
+	bool success =
+		np_terrain_base  && np_terrain_higher && np_steepness &&
+		np_height_select && np_trees          && np_mud       &&
+		np_beach         && np_biome          && np_cave;
+	return success;
+}
+
+
+void MapgenV6Params::writeParams(Settings *settings) {
+	settings->setFloat("mgv6_freq_desert", freq_desert);
+	settings->setFloat("mgv6_freq_beach",  freq_beach);
+	
+	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
+	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
+	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
+	settings->setNoiseParams("mgv6_np_height_select",  np_height_select);
+	settings->setNoiseParams("mgv6_np_trees",          np_trees);
+	settings->setNoiseParams("mgv6_np_mud",            np_mud);
+	settings->setNoiseParams("mgv6_np_beach",          np_beach);
+	settings->setNoiseParams("mgv6_np_biome",          np_biome);
+	settings->setNoiseParams("mgv6_np_cave",           np_cave);
 }
 
 
