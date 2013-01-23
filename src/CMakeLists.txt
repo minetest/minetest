@@ -219,6 +219,7 @@ set(common_SRCS
 	scriptapi_object.cpp
 	scriptapi_nodemeta.cpp
 	scriptapi_inventory.cpp
+	scriptapi_particles.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp

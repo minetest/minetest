@@ -2186,6 +2186,47 @@ void the_game(
 				{
 					update_wielded_item_trigger = true;
 				}
+				else if(event.type == CE_SPAWN_PARTICLE)
+				{
+					LocalPlayer* player = client.getEnv().getLocalPlayer();
+					AtlasPointer ap =
+						gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
+
+					new Particle(gamedef, smgr, player, client.getEnv(),
+						*event.spawn_particle.pos,
+						*event.spawn_particle.vel,
+						*event.spawn_particle.acc,
+						 event.spawn_particle.expirationtime,
+						 event.spawn_particle.size,
+						 event.spawn_particle.collisiondetection, ap);
+				}
+				else if(event.type == CE_ADD_PARTICLESPAWNER)
+				{
+					LocalPlayer* player = client.getEnv().getLocalPlayer();
+					AtlasPointer ap =
+						gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
+
+					new ParticleSpawner(gamedef, smgr, player,
+						 event.add_particlespawner.amount,
+						 event.add_particlespawner.spawntime,
+						*event.add_particlespawner.minpos,
+						*event.add_particlespawner.maxpos,
+						*event.add_particlespawner.minvel,
+						*event.add_particlespawner.maxvel,
+						*event.add_particlespawner.minacc,
+						*event.add_particlespawner.maxacc,
+						 event.add_particlespawner.minexptime,
+						 event.add_particlespawner.maxexptime,
+						 event.add_particlespawner.minsize,
+						 event.add_particlespawner.maxsize,
+						 event.add_particlespawner.collisiondetection,
+						 ap,
+						 event.add_particlespawner.id);
+				}
+				else if(event.type == CE_DELETE_PARTICLESPAWNER)
+				{
+					delete_particlespawner (event.delete_particlespawner.id);
+				}
 			}
 		}
 		
@@ -2415,7 +2456,8 @@ void the_game(
 						const ContentFeatures &features =
 							client.getNodeDefManager()->get(n);
 						addPunchingParticles
-							(gamedef, smgr, player, nodepos, features.tiles);
+							(gamedef, smgr, player, client.getEnv(),
+							 nodepos, features.tiles);
 					}
 				}
 
@@ -2453,7 +2495,8 @@ void the_game(
 						const ContentFeatures &features =
 							client.getNodeDefManager()->get(wasnode);
 						addDiggingParticles
-							(gamedef, smgr, player, nodepos, features.tiles);
+							(gamedef, smgr, player, client.getEnv(),
+							 nodepos, features.tiles);
 					}
 
 					dig_time = 0;
@@ -2734,6 +2777,7 @@ void the_game(
 		*/
 
 		allparticles_step(dtime, client.getEnv());
+		allparticlespawners_step(dtime, client.getEnv());
 		
 		/*
 			Fog
@@ -3220,6 +3264,7 @@ void the_game(
 		clouds->drop();
 	if(gui_chat_console)
 		gui_chat_console->drop();
+	clear_particles ();
 	
 	/*
 		Draw a "shutting down" screen, which will be shown while the map

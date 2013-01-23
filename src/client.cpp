@@ -1936,6 +1936,89 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.show_formspec.formname = new std::string(formname);
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_SPAWN_PARTICLE)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		v3f pos = readV3F1000(is);
+		v3f vel = readV3F1000(is);
+		v3f acc = readV3F1000(is);
+		float expirationtime = readF1000(is);
+		float size = readF1000(is);
+		bool collisiondetection = readU8(is);
+		std::string texture = deSerializeLongString(is);
+
+		ClientEvent event;
+		event.type = CE_SPAWN_PARTICLE;
+		event.spawn_particle.pos = new v3f (pos);
+		event.spawn_particle.vel = new v3f (vel);
+		event.spawn_particle.acc = new v3f (acc);
+
+		event.spawn_particle.expirationtime = expirationtime;
+		event.spawn_particle.size = size;
+		event.add_particlespawner.collisiondetection =
+				collisiondetection;
+		event.spawn_particle.texture = new std::string(texture);
+
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_ADD_PARTICLESPAWNER)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u16 amount = readU16(is);
+		float spawntime = readF1000(is);
+		v3f minpos = readV3F1000(is);
+		v3f maxpos = readV3F1000(is);
+		v3f minvel = readV3F1000(is);
+		v3f maxvel = readV3F1000(is);
+		v3f minacc = readV3F1000(is);
+		v3f maxacc = readV3F1000(is);
+		float minexptime = readF1000(is);
+		float maxexptime = readF1000(is);
+		float minsize = readF1000(is);
+		float maxsize = readF1000(is);
+		bool collisiondetection = readU8(is);
+		std::string texture = deSerializeLongString(is);
+		u32 id = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_ADD_PARTICLESPAWNER;
+		event.add_particlespawner.amount = amount;
+		event.add_particlespawner.spawntime = spawntime;
+
+		event.add_particlespawner.minpos = new v3f (minpos);
+		event.add_particlespawner.maxpos = new v3f (maxpos);
+		event.add_particlespawner.minvel = new v3f (minvel);
+		event.add_particlespawner.maxvel = new v3f (maxvel);
+		event.add_particlespawner.minacc = new v3f (minacc);
+		event.add_particlespawner.maxacc = new v3f (maxacc);
+
+		event.add_particlespawner.minexptime = minexptime;
+		event.add_particlespawner.maxexptime = maxexptime;
+		event.add_particlespawner.minsize = minsize;
+		event.add_particlespawner.maxsize = maxsize;
+		event.add_particlespawner.collisiondetection = collisiondetection;
+		event.add_particlespawner.texture = new std::string(texture);
+		event.add_particlespawner.id = id;
+
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_DELETE_PARTICLESPAWNER)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU16(is);
+
+		ClientEvent event;
+		event.type = CE_DELETE_PARTICLESPAWNER;
+		event.delete_particlespawner.id = id;
+
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
