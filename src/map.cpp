@@ -2013,10 +2013,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 
 	if (g_settings->get("fixed_map_seed").empty())
 	{
-		m_seed = (((u64)(myrand()%0xffff)<<0)
-				+ ((u64)(myrand()%0xffff)<<16)
-				+ ((u64)(myrand()%0xffff)<<32)
-				+ ((u64)(myrand()&0xffff)<<48));
+		m_seed = (((u64)(myrand() & 0xffff) << 0)
+				| ((u64)(myrand() & 0xffff) << 16)
+				| ((u64)(myrand() & 0xffff) << 32)
+				| ((u64)(myrand() & 0xffff) << 48));
 		m_mgparams->seed = m_seed;
 	}
 
