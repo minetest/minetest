@@ -4401,6 +4401,20 @@ static int l_debug(lua_State *L)
 	return 0;
 }
 
+//abort processing show backtrace
+static int l_assert_backtrace(lua_State *L)
+{
+	bool do_assert = lua_toboolean(L, 1);
+
+	if (!do_assert) {
+		std::string trace = script_get_backtrace(L);
+		errorstream << trace << std::endl;
+		luaL_error(L,"Error situation detected by mod:");
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
 // log([level,] text)
 // Writes a line to the logger.
 // The one-argument version logs to infostream.
@@ -5249,6 +5263,7 @@ static int l_rollback_revert_actions_by(lua_State *L)
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
+	{"assert_backtrace", l_assert_backtrace},
 	{"request_shutdown", l_request_shutdown},
 	{"get_server_status", l_get_server_status},
 	{"register_item_raw", l_register_item_raw},
