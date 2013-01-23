@@ -244,7 +244,9 @@ public:
 
 			updated[name] = true;
 		}
-
+		else //file contains a setting which is not in m_settings
+			value_changed=true;
+			
 		return true;
 	}
 
