@@ -1,7 +1,7 @@
 /*
 Minetest-c55
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>,
-				   2012 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
+			  2012-2013 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 2.1 of the License, or
@@ -51,24 +51,29 @@ int fruit_chance;
 
 	// Add default tree
 	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-			bool is_apple_tree, INodeDefManager *ndef);
-	
+		bool is_apple_tree, INodeDefManager *ndef);
+
 	// Add L-Systems tree (used by engine)
 	void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
-	void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition);	
-	
+	void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
+		TreeDef tree_definition);
+
 	// L-System tree gen helper functions
-	void make_tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		MapNode node);
-	void make_tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition);
-	void make_tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
-		TreeDef &tree_definition);	
+	void tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+		TreeDef &tree_definition);
+	void tree_single_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+		TreeDef &tree_definition);
+	void tree_fruit_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+		TreeDef &tree_definition);
 	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle,v3f axis);
-	
+
 	v3f transposeMatrix(irr::core::matrix4 M ,v3f v);
-			
+
 }; // namespace treegen
 #endif
