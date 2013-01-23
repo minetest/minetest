@@ -47,3 +47,33 @@ size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
     stream->write(ptr, count);
     return count;
 }
+
+char *mystrtok_r(char *s, const char *sep, char **lasts) {
+	char *t;
+	int delim_reached;
+
+	if (!s)
+		s = *lasts;
+
+	while (*s && strchr(sep, *s))
+		s++;
+
+	if (!*s)
+		return NULL;
+
+	delim_reached = 0;
+	t = s;
+	while (*t) {
+		if (strchr(sep, *t)) {
+			*t = '\0';
+			delim_reached = 1;
+		} else if (delim_reached) {
+			*lasts = t;
+			return s;
+		}
+		t++;
+	}
+	
+	*lasts = t;
+	return s;
+}
