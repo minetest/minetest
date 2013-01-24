@@ -1048,12 +1048,12 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 					GUIConfigureWorld *menu = new GUIConfigureWorld(env, parent,
 										-1, menumgr, wspec);
 					menu->drop();
-					return true;
 				}
+				return true;
 			}
 			case GUI_ID_SERVERLIST_DELETE: {
 				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
-				u16 selected = ((gui::IGUIListBox*)serverlist)->getSelected();
+				s32 selected = ((gui::IGUIListBox*)serverlist)->getSelected();
 				if (selected == -1) return true;
 				ServerList::deleteEntry(m_data->servers[selected]);
 				m_data->servers = ServerList::getLocal();

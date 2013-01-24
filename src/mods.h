@@ -53,6 +53,8 @@ struct ModSpec
 	//if normal mod:
 	std::set<std::string> depends;
 	std::set<std::string> unsatisfied_depends;
+
+	bool is_modpack;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
 	ModSpec(const std::string name_="", const std::string path_="",
@@ -61,6 +63,7 @@ struct ModSpec
 		path(path_),
 		depends(depends_),
 		unsatisfied_depends(depends_),
+		is_modpack(false),	
 		modpack_content()	
 	{}
 };

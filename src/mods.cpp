@@ -46,6 +46,7 @@ std::map<std::string, ModSpec> getModsInPath(std::string path)
 			modpack_is.close(); // We don't actually need the file
 			ModSpec spec(modname,modpath);
 			spec.modpack_content = getModsInPath(modpath);
+			spec.is_modpack = true;
 			result.insert(std::make_pair(modname,spec));
 		}
 		else // not a modpack, add the modspec
@@ -76,7 +77,7 @@ std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mod
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) //is a modpack
+		if(mod.is_modpack)
 		{
 			std::map<std::string, ModSpec> content = 
 				flattenModTree(mod.modpack_content);
@@ -98,7 +99,7 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) //is a modpack
+		if(mod.is_modpack)
 		{
 			std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 			result.reserve(result.size() + content.size());
