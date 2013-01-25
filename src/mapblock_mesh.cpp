@@ -535,7 +535,10 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	u8 c2 = f2.solidness;
 
 	bool solidness_differs = (c1 != c2);
-	bool makes_face = contents_differ && solidness_differs;
+	bool both_liquids = f1.isLiquid() && f2.isLiquid();
+	bool different_liquids =  both_liquids && !f1.sameLiquid(f2);
+
+	bool makes_face = (contents_differ && solidness_differs) || different_liquids;
 
 	if(makes_face == false)
 		return 0;
@@ -546,8 +549,9 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 		c2 = f2.visual_solidness;
 	
 	if(c1 == c2){
-		*equivalent = true;
-		// If same solidness, liquid takes precense
+		if(!both_liquids) // don't enable backface-culling for face between two liquids
+			*equivalent = true;
+		// If same solidness, liquid takes precedense
 		if(f1.isLiquid())
 			return 1;
 		if(f2.isLiquid())
