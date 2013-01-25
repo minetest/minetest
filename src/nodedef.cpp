@@ -604,9 +604,12 @@ public:
 					}
 				}
 				break;
+			case NDT_PLANTLIKE:
+				f->solidness = 0;
+				f->backface_culling = false;
+				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
-			case NDT_PLANTLIKE:
 			case NDT_FENCELIKE:
 			case NDT_RAILLIKE:
 			case NDT_NODEBOX:
