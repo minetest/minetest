@@ -2482,7 +2482,9 @@ void the_game(
 				
 				// Sign special case, at least until formspec is properly implemented.
 				// Deprecated?
-				if(meta && meta->getString("formspec") == "hack:sign_text_input" && !random_input)
+				if(meta && meta->getString("formspec") == "hack:sign_text_input" 
+						&& !random_input
+						&& !input->isKeyDown(getKeySetting("keymap_sneak")))
 				{
 					infostream<<"Launching metadata text input"<<std::endl;
 					
@@ -2497,7 +2499,8 @@ void the_game(
 							wtext))->drop();
 				}
 				// If metadata provides an inventory view, activate it
-				else if(meta && meta->getString("formspec") != "" && !random_input)
+				else if(meta && meta->getString("formspec") != "" && !random_input
+						&& !input->isKeyDown(getKeySetting("keymap_sneak")))
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;
 
