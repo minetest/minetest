@@ -4428,8 +4428,8 @@ static int l_log(lua_State *L)
 	}
 	else
 	{
-		std::string levelname = lua_tostring(L, 1);
-		text = lua_tostring(L, 2);
+		std::string levelname = luaL_checkstring(L, 1);
+		text = luaL_checkstring(L, 2);
 		if(levelname == "error")
 			level = LMT_ERROR;
 		else if(levelname == "action")
