@@ -219,7 +219,7 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
 		fs::CreateAllDirs(path);
 		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
-		of<<"gameid = "<<gameid<<"\n";
+		of<<"gameid = "<<gameid<<"\nbackend = sqlite3";
 	}
 	return true;
 }

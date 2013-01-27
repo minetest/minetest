@@ -157,10 +157,23 @@ endif()
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 
+SET(LEVELDB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/leveldb/include)
+SET(LEVELDB_LIBRARY leveldb)
+
 # Do not use system-wide installation of Lua, because it'll likely be a
 # different version and/or has different build options.
 set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
 set(LUA_LIBRARY "lua")
+
+set(USE_LEVELDB 0)
+
+OPTION(ENABLE_LEVELDB "Enable LevelDB backend")
+
+if(ENABLE_LEVELDB)
+	set(USE_LEVELDB 1)
+	message(STATUS "LevelDB backend enabled")
+	include_directories(${LEVELDB_INCLUDE_DIR})
+endif(ENABLE_LEVELDB)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
@@ -214,6 +227,10 @@ set(common_SRCS
 	mapblock.cpp
 	mapsector.cpp
 	map.cpp
+	database.cpp
+	database-dummy.cpp
+	database-leveldb.cpp
+	database-sqlite3.cpp
 	player.cpp
 	test.cpp
 	sha1.cpp
@@ -338,6 +355,9 @@ if(BUILD_CLIENT)
 			${CURL_INCLUDE_DIR}
 		)
 	endif(USE_CURL)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -350,6 +370,9 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 endif(BUILD_SERVER)
 
 #
@@ -523,4 +546,7 @@ else (LUA_FOUND)
 	add_subdirectory(lua)
 endif (LUA_FOUND)
 
+if (USE_LEVELDB)
+	add_subdirectory(leveldb)
+endif (USE_LEVELDB)
 #end
