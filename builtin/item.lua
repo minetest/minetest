@@ -232,7 +232,8 @@ end
 
 function minetest.item_place(itemstack, placer, pointed_thing)
 	-- Call on_rightclick if the pointed node defines it
-	if pointed_thing.type == "node" then
+	if pointed_thing.type == "node" and placer and
+			not placer:get_player_control().sneak then
 		local n = minetest.env:get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
