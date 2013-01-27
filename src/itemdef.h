@@ -62,6 +62,8 @@ struct ItemDefinition
 	*/
 	s16 stack_max;
 	bool usable;
+	// If true, don't use node placement prediction
+	bool rightclickable;
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;

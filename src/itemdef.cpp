@@ -100,6 +100,7 @@ void ItemDefinition::reset()
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
 	usable = false;
+	rightclickable = false;
 	liquids_pointable = false;
 	if(tool_capabilities)
 	{

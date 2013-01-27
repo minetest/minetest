@@ -2531,7 +2531,8 @@ void the_game(
 					// make that happen
 					const ItemDefinition &def =
 							playeritem.getDefinition(itemdef);
-					if(def.node_placement_prediction != "")
+					if(def.node_placement_prediction != ""
+							&& !nodedef->get(map.getNode(nodepos)).rightclickable)
 					do{ // breakable
 						verbosestream<<"Node placement prediction for "
 								<<playeritem.name<<" is "
