@@ -199,6 +199,8 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
+	// Player cannot build to these (placement prediction disabled)
+	bool rightclickable;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
