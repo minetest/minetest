@@ -792,6 +792,8 @@ minetest.is_singleplayer()
 
 minetest.debug(line)
 ^ Always printed to stderr and logfile (print() is redirected here)
+minetest.assert_backtrace(expression)
+^ if expression is false show backtrace of current lua call and throw a lua error
 minetest.log(line)
 minetest.log(loglevel, line)
 ^ loglevel one of "error", "action", "info", "verbose"
