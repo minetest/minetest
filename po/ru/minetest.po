@@ -3,18 +3,17 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2011-07-24 18:56+0200\n"
+"Last-Translator: Pavel Elagin <elagin.pasha@gmail.com>\n"
+"Language-Team: Russian\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/guiConfigureWorld.cpp:127
@@ -133,7 +132,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
-msgstr ""
+msgstr "Одиночная игра"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
@@ -145,7 +144,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
-msgstr ""
+msgstr "Nastroyki"
 
 #: src/guiMainMenu.cpp:249
 msgid "Credits"
@@ -157,35 +156,35 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: src/guiMainMenu.cpp:309
 msgid "New"
-msgstr ""
+msgstr "Новый"
 
 #: src/guiMainMenu.cpp:317
 msgid "Configure"
-msgstr ""
+msgstr "Настройка"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Играть"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
-msgstr ""
+msgstr "Творчество"
 
 #: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
 msgid "Enable Damage"
-msgstr ""
+msgstr "Включить повреждения"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
-msgstr ""
+msgstr "Имя/Пароль"
 
 #: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
 msgid "Address/Port"
-msgstr ""
+msgstr "Адрес/Порт"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
 msgid "Show Public"
@@ -197,23 +196,23 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:459
 msgid "Connect"
-msgstr ""
+msgstr "Подключиться"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "Оставить пустым адрес для запуска локального сервера."
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "Начать игру / Подключиться"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
 msgid "Delete world"
-msgstr ""
+msgstr "Удалить мир"
 
 #: src/guiMainMenu.cpp:577
 msgid "Create world"
-msgstr ""
+msgstr "Создать мир"
 
 #: src/guiMainMenu.cpp:611
 msgid "Fancy trees"
@@ -269,19 +268,19 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Не могу удалить мир: ни чего не выбрано."
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
-msgstr ""
+msgstr "Файлы для удаления"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Не могу создать мир: "
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "Не могу настроить мир: ни чего не выбрано"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
@@ -289,11 +288,11 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr ""
+msgstr "Старый пароль"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "Новый пароль"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
@@ -313,15 +312,15 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr ""
+msgstr "Изменить парол"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Выход в меню"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr ""
+msgstr "Выход в реальность"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
