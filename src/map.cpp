@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "util/directiontables.h"
 #include "rollback_interface.h"
+#include "mapgen_v6.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1993,10 +1994,9 @@ void Map::removeNodeTimer(v3s16 p)
 /*
 	ServerMap
 */
-ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
+ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	m_seed(0),
-	m_emerge(NULL),
 	m_map_metadata_changed(true),
 	m_database(NULL),
 	m_database_read(NULL),
@@ -2004,9 +2004,8 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
-	//m_chunksize = 8; // Takes a few seconds
-
-	m_mgparams = MapgenParams::getParamsFromSettings(g_settings);
+	m_emerge = emerge;
+	m_mgparams = m_emerge->getParamsFromSettings(g_settings);
 	if (!m_mgparams)
 		m_mgparams = new MapgenV6Params();
 		
@@ -3080,32 +3079,12 @@ void ServerMap::saveMapMeta()
 	Settings params;
 
 	params.set("mg_name", m_emerge->params->mg_name);
-
 	params.setU64("seed", m_emerge->params->seed);
 	params.setS16("water_level", m_emerge->params->water_level);
 	params.setS16("chunksize", m_emerge->params->chunksize);
 	params.setS32("mg_flags", m_emerge->params->flags);
-/*	switch (m_emerge->params->mg_version) {
-		case 6:
-		{*/
-			MapgenV6Params *v6params = (MapgenV6Params *)m_emerge->params;
 
-			params.setFloat("mgv6_freq_desert", v6params->freq_desert);
-			params.setFloat("mgv6_freq_beach", v6params->freq_beach);
-			params.setNoiseParams("mgv6_np_terrain_base",   v6params->np_terrain_base);
-			params.setNoiseParams("mgv6_np_terrain_higher", v6params->np_terrain_higher);
-			params.setNoiseParams("mgv6_np_steepness",      v6params->np_steepness);
-			params.setNoiseParams("mgv6_np_height_select",  v6params->np_height_select);
-			params.setNoiseParams("mgv6_np_trees",          v6params->np_trees);
-			params.setNoiseParams("mgv6_np_mud",            v6params->np_mud);
-			params.setNoiseParams("mgv6_np_beach",          v6params->np_beach);
-			params.setNoiseParams("mgv6_np_biome",          v6params->np_biome);
-			params.setNoiseParams("mgv6_np_cave",           v6params->np_cave);
-		/*	break;
-		}
-		default:
-			; //complain here
-	}*/
+	m_emerge->params->writeParams(&params);
 
 	params.writeLines(os);
 
@@ -3145,7 +3124,7 @@ void ServerMap::loadMapMeta()
 		params.parseConfigLine(line);
 	}
 
-	MapgenParams *mgparams = MapgenParams::getParamsFromSettings(&params);
+	MapgenParams *mgparams = m_emerge->getParamsFromSettings(&params);
 	if (mgparams) {
 		if (m_mgparams)
 			delete m_mgparams;
