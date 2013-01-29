@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2011-07-24 18:56+0200\n"
-"Last-Translator: Giuseppe Bilotta <giuseppe.bilotta@gmail.com>\n"
+"PO-Revision-Date: 2013-01-29 22:20+0200\n"
+"Last-Translator: Robert Arkenin <rarkenin@gmail.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:127
 msgid ""
@@ -205,7 +206,7 @@ msgstr "Disconnetti"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
+msgstr "Lascia vuoto l'indirizzo per avviare un server locale."
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
