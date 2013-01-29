@@ -1097,15 +1097,14 @@ Server::Server(
 	// Add default biomes after nodedef had its aliases added
 	m_biomedef->addDefaultBiomes();
 
-	// Initialize Environment
-	ServerMap *servermap = new ServerMap(path_world, this);
-	m_env = new ServerEnvironment(servermap, m_lua, this, this);
-
 	// Create emerge manager
-	m_emerge = new EmergeManager(this, m_biomedef, servermap->getMapgenParams());
+	m_emerge = new EmergeManager(this, m_biomedef);
 
-	// Give map pointer to the emerge manager
-	servermap->setEmerge(m_emerge);
+	// Initialize Environment
+	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
+	m_env = new ServerEnvironment(servermap, m_lua, this, this);
+	
+	m_emerge->initMapgens(servermap->getMapgenParams());
 
 	// Give environment reference to scripting api
 	scriptapi_add_environment(m_lua, m_env);
