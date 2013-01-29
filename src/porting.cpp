@@ -220,7 +220,7 @@ void initializePaths()
 	//TODO: Test this code
 	char buf[BUFSIZ];
 	uint32_t len = sizeof(buf);
-	assert(_NSGetExecutablePath(buf, &len) != 0);
+	assert(_NSGetExecutablePath(buf, &len) != -1);
 
 	pathRemoveFile(buf, '/');
 
