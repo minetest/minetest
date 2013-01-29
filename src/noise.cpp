@@ -367,6 +367,7 @@ void Noise::resizeNoiseBuf(bool is3d) {
  * values from the previous noise lattice as midpoints in the new lattice for the
  * next octave.
  */
+#define idx(x, y) ((y) * nlx + (x))
 void Noise::gradientMap2D(float x, float y, float step_x, float step_y, int seed) {
 	float v00, v01, v10, v11, u, v, orig_u;
 	int index, i, j, x0, y0, noisex, noisey;
@@ -387,25 +388,26 @@ void Noise::gradientMap2D(float x, float y, float step_x, float step_y, int seed
 			noisebuf[index++] = noise2d(x0 + i, y0 + j, seed);
 
 	//calculate interpolations
+	index  = 0;
 	noisey = 0;
 	for (j = 0; j != sy; j++) {
-		v00 = noisebuf[noisey * nlx];
-		v10 = noisebuf[noisey * nlx + 1];
-		v01 = noisebuf[(noisey + 1) * nlx];
-		v11 = noisebuf[(noisey + 1) * nlx + 1];
+		v00 = noisebuf[idx(0, noisey)];
+		v10 = noisebuf[idx(1, noisey)];
+		v01 = noisebuf[idx(0, noisey + 1)];
+		v11 = noisebuf[idx(1, noisey + 1)];
 
 		u = orig_u;
 		noisex = 0;
 		for (i = 0; i != sx; i++) {
-			buf[j * sx + i] = biLinearInterpolation(v00, v10, v01, v11, u, v);
+			buf[index++] = biLinearInterpolation(v00, v10, v01, v11, u, v);
 			u += step_x;
 			if (u >= 1.0) {
 				u -= 1.0;
 				noisex++;
 				v00 = v10;
 				v01 = v11;
-				v10 = noisebuf[noisey * nlx + noisex + 1];
-				v11 = noisebuf[(noisey + 1) * nlx + noisex + 1];
+				v10 = noisebuf[idx(noisex + 1, noisey)];
+				v11 = noisebuf[idx(noisex + 1, noisey + 1)];
 			}
 		}
 
@@ -416,14 +418,16 @@ void Noise::gradientMap2D(float x, float y, float step_x, float step_y, int seed
 		}
 	}
 }
+#undef idx
 
 
+#define idx(x, y, z) ((z) * nly * nlx + (y) * nlx + (x))
 void Noise::gradientMap3D(float x, float y, float z,
 						  float step_x, float step_y, float step_z,
 						  int seed) {
 	float v000, v010, v100, v110;
 	float v001, v011, v101, v111;
-	float u, v, w, orig_u, orig_w;
+	float u, v, w, orig_u, orig_v;
 	int index, i, j, k, x0, y0, z0, noisex, noisey, noisez;
 	int nlx, nly, nlz;
 
@@ -434,49 +438,39 @@ void Noise::gradientMap3D(float x, float y, float z,
 	v = y - (float)y0;
 	w = z - (float)z0;
 	orig_u = u;
-	orig_w = w;
+	orig_v = v;
 
 	//calculate noise point lattice
 	nlx = (int)(u + sx * step_x) + 2;
 	nly = (int)(v + sy * step_y) + 2;
-	nlz = (int)(v + sy * step_z) + 2;
+	nlz = (int)(w + sz * step_z) + 2;
 	index = 0;
 	for (k = 0; k != nlz; k++)
 		for (j = 0; j != nly; j++)
 			for (i = 0; i != nlx; i++)
 				noisebuf[index++] = noise3d(x0 + i, y0 + j, z0 + k, seed);
 
-#define index(x, y, z) ((z) * nly * nlx + (y) * nlx + (x))
-
 	//calculate interpolations
+	index  = 0;
 	noisey = 0;
 	noisez = 0;
 	for (k = 0; k != sz; k++) {
-		v000 = noisebuf[index(0, noisey,     noisez)];
-		v100 = noisebuf[index(1, noisey,     noisez)];
-		v010 = noisebuf[index(0, noisey + 1, noisez)];
-		v110 = noisebuf[index(1, noisey + 1, noisez)];
-		v001 = noisebuf[index(0, noisey,     noisez + 1)];
-		v101 = noisebuf[index(1, noisey,     noisez + 1)];
-		v011 = noisebuf[index(0, noisey + 1, noisez + 1)];
-		v111 = noisebuf[index(1, noisey + 1, noisez + 1)];
-
-		w = orig_w;
+		v = orig_v;
 		noisey = 0;
 		for (j = 0; j != sy; j++) {
-			v000 = noisebuf[index(0, noisey,     noisez)];
-			v100 = noisebuf[index(1, noisey,     noisez)];
-			v010 = noisebuf[index(0, noisey + 1, noisez)];
-			v110 = noisebuf[index(1, noisey + 1, noisez)];
-			v001 = noisebuf[index(0, noisey,     noisez + 1)];
-			v101 = noisebuf[index(1, noisey,     noisez + 1)];
-			v011 = noisebuf[index(0, noisey + 1, noisez + 1)];
-			v111 = noisebuf[index(1, noisey + 1, noisez + 1)];
+			v000 = noisebuf[idx(0, noisey,     noisez)];
+			v100 = noisebuf[idx(1, noisey,     noisez)];
+			v010 = noisebuf[idx(0, noisey + 1, noisez)];
+			v110 = noisebuf[idx(1, noisey + 1, noisez)];
+			v001 = noisebuf[idx(0, noisey,     noisez + 1)];
+			v101 = noisebuf[idx(1, noisey,     noisez + 1)];
+			v011 = noisebuf[idx(0, noisey + 1, noisez + 1)];
+			v111 = noisebuf[idx(1, noisey + 1, noisez + 1)];
 
 			u = orig_u;
 			noisex = 0;
 			for (i = 0; i != sx; i++) {
-				buf[j * sx + i] = triLinearInterpolation(
+				buf[index++] = triLinearInterpolation(
 									v000, v100, v010, v110,
 									v001, v101, v011, v111,
 									u, v, w);
@@ -486,12 +480,12 @@ void Noise::gradientMap3D(float x, float y, float z,
 					noisex++;
 					v000 = v100;
 					v010 = v110;
-					v100 = noisebuf[index(noisex + 1, noisey,     noisez)];
-					v110 = noisebuf[index(noisex + 1, noisey + 1, noisez)];
+					v100 = noisebuf[idx(noisex + 1, noisey,     noisez)];
+					v110 = noisebuf[idx(noisex + 1, noisey + 1, noisez)];
 					v001 = v101;
 					v011 = v111;
-					v101 = noisebuf[index(noisex + 1, noisey,     noisez + 1)];
-					v111 = noisebuf[index(noisex + 1, noisey + 1, noisez + 1)];
+					v101 = noisebuf[idx(noisex + 1, noisey,     noisez + 1)];
+					v111 = noisebuf[idx(noisex + 1, noisey + 1, noisez + 1)];
 				}
 			}
 
@@ -509,6 +503,7 @@ void Noise::gradientMap3D(float x, float y, float z,
 		}
 	}
 }
+#undef idx
 
 
 float *Noise::perlinMap2D(float x, float y) {
