@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-29 21:35+0200\n"
-"Last-Translator: Marco gonzalez <socramazibi@gmx.es>\n"
+"PO-Revision-Date: 2013-01-29 21:42+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -101,7 +101,7 @@ msgstr "Respawn"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "Clic izquierdo: Mover todos, Clic derecho: Mover uno solo"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
@@ -116,7 +116,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Usar\" = descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
@@ -244,15 +244,15 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Filtrado Anisotrópico"
 
 #: src/guiMainMenu.cpp:653
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Filtrado Bi-Lineal"
 
 #: src/guiMainMenu.cpp:660
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Filtrado Tri-Lineal"
 
 #: src/guiMainMenu.cpp:668
 msgid "Shaders"
@@ -284,11 +284,11 @@ msgstr "Archivos que se eliminarán"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "No se pudo crear mundo: No se encontraron juegos"
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "No se pudo configurar mundo: No se ha seleccionado nada"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
@@ -378,7 +378,7 @@ msgstr "Atras"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Limpiar"
 
 #: src/keycode.cpp:224
 msgid "Return"
@@ -462,7 +462,7 @@ msgstr "Continuar"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Anterior"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -510,7 +510,7 @@ msgstr "Captura de pantalla"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Win Izquierdo"
 
 #: src/keycode.cpp:233
 msgid "Apps"
@@ -526,7 +526,7 @@ msgstr "1 (Teclado numérico)"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Win Derecho"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
@@ -622,7 +622,7 @@ msgstr "Signos más y menos"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Punto"
 
 #: src/keycode.cpp:243
 msgid "Plus"
@@ -667,6 +667,8 @@ msgstr "Fallo al iniciar el mundo"
 #: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
+"No se seleccionó mundo y no se ha especificado una dirección. Nada que "
+"hacer."
 
 #: src/main.cpp:1653
 msgid "Could not find or load game \""
