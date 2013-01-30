@@ -26,6 +26,11 @@ tags
 minetest.conf
 debug.txt
 
+## Doxygen files
+doc/Doxyfile
+doc/html/
+doc/doxygen_*
+
 ## Build files
 CMakeFiles/*
 src/CMakeFiles/*
@@ -64,7 +69,7 @@ locale/
 *.layout
 *.o
 
-#build variants
+## Build variants
 build/android/assets
 build/android/bin
 build/android/Debug
@@ -74,6 +79,4 @@ build/android/jni/src/*
 build/android/libs
 build/android/obj
 timestamp
-
-
 
