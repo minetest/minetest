@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-30 01:12+0200\n"
+"PO-Revision-Date: 2013-01-30 01:32+0200\n"
 "Last-Translator: Maciej Kasatkin <maciej.kasatkin@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pl\n"
@@ -25,7 +25,7 @@ msgid ""
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
 "Ostrzeżenie: Niektóre z modyfikacji nie zostały jeszcze skonfigurowane.\n"
-"Zostaną domyślnie włączone gdy zapiszesz konfigurację."
+"Zostaną domyślnie włączone gdy zapiszesz konfigurację.  "
 
 #: src/guiConfigureWorld.cpp:146
 msgid ""
@@ -33,7 +33,7 @@ msgid ""
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
 "Ostrzeżenie: Niektóre z modyfikacji nie zostały znalezione.\n"
-"Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację."
+"Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację.  "
 
 #: src/guiConfigureWorld.cpp:210
 msgid "enabled"
@@ -66,11 +66,11 @@ msgstr "Zapisz"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr "Konfiguracja zapisana."
+msgstr "Konfiguracja zapisana.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny. "
+msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny.  "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -361,15 +361,15 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Left Button"
+msgstr "Lewy przycisk myszki"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Middle Button"
+msgstr "Środkowy przycisk myszki"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr "Right Button"
+msgstr "Prawy przycisk myszki"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -377,15 +377,15 @@ msgstr "X Button 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Back"
+msgstr "Backspace"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr "Clear"
+msgstr "Delete"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr "Return"
+msgstr "Enter"
 
 #: src/keycode.cpp:224
 msgid "Tab"
@@ -397,7 +397,7 @@ msgstr "X Button 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Capital"
+msgstr "Caps Lock"
 
 #: src/keycode.cpp:225
 msgid "Control"
@@ -469,11 +469,11 @@ msgstr "Prior"
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr "Space"
+msgstr "Spacja"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr "Down"
+msgstr "Dół"
 
 #: src/keycode.cpp:228
 msgid "Execute"
@@ -481,7 +481,7 @@ msgstr "Execute"
 
 #: src/keycode.cpp:228
 msgid "Left"
-msgstr "Left"
+msgstr "Lewo"
 
 #: src/keycode.cpp:228
 msgid "Print"
@@ -489,7 +489,7 @@ msgstr "Print"
 
 #: src/keycode.cpp:228
 msgid "Right"
-msgstr "Right"
+msgstr "Prawo"
 
 #: src/keycode.cpp:228
 msgid "Select"
@@ -497,7 +497,7 @@ msgstr "Select"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr "Up"
+msgstr "Góra"
 
 #: src/keycode.cpp:229
 msgid "Help"
@@ -513,7 +513,7 @@ msgstr "Snapshot"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr "Left Windows"
+msgstr "Lewy Windows"
 
 #: src/keycode.cpp:233
 msgid "Apps"
@@ -529,7 +529,7 @@ msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr "Right Windows"
+msgstr "Prawy Windows"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
@@ -593,31 +593,31 @@ msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr "Left Shift"
+msgstr "Lewy Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr "Right Shift"
+msgstr "Prawy Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr "Left Control"
+msgstr "Lewy Control"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr "Left Menu"
+msgstr "Lewy Menu"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr "Right Control"
+msgstr "Prawy Control"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr "Right Menu"
+msgstr "Prawy Menu"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr "Comma"
+msgstr "Przecinek"
 
 #: src/keycode.cpp:243
 msgid "Minus"
@@ -625,7 +625,7 @@ msgstr "Minus"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr "Period"
+msgstr "Kropka"
 
 #: src/keycode.cpp:243
 msgid "Plus"
