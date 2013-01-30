@@ -1,0 +1,626 @@
+# Simplified Chinese Translation file.
+# Copyright (C) 2012
+# This file is distributed under the same license as the minetest-c55 package.
+# yunfan <jyf1987@gmail.com>, 2012.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: minetest\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-04 23:25+0300\n"
+"PO-Revision-Date: 2012-10-10 22:54+0800\n"
+"Last-Translator: yunfan <jyf1987@gmail.com>\n"
+"Language-Team: Simplified Chinese<>\n"
+"Language: zh-cn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/guiConfirmMenu.cpp:120
+msgid "Yes"
+msgstr "确定"
+
+#: src/guiConfirmMenu.cpp:126
+msgid "No"
+msgstr "取消"
+
+#: src/guiCreateWorld.cpp:116
+msgid "World name"
+msgstr "世界名字"
+
+#: src/guiCreateWorld.cpp:135
+msgid "Game"
+msgstr "游戏类型"
+
+#: src/guiCreateWorld.cpp:159
+msgid "Create"
+msgstr "创建"
+
+#: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
+msgid "Cancel"
+msgstr "取消"
+
+#: src/guiDeathScreen.cpp:96
+msgid "You died."
+msgstr "你挂啦"
+
+#: src/guiDeathScreen.cpp:104
+msgid "Respawn"
+msgstr "重生"
+
+#: src/guiKeyChangeMenu.cpp:111
+msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+msgstr "按键绑定 (若菜单被搞挂，则应考虑从minetest.conf中移除一些配置项)"
+
+#: src/guiKeyChangeMenu.cpp:121
+msgid "Forward"
+msgstr "前进"
+
+#: src/guiKeyChangeMenu.cpp:138
+msgid "Backward"
+msgstr "后退"
+
+#: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
+msgid "Left"
+msgstr "左移"
+
+#: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
+msgid "Right"
+msgstr "右移"
+
+#: src/guiKeyChangeMenu.cpp:185
+msgid "Use"
+msgstr "使用"
+
+#: src/guiKeyChangeMenu.cpp:200
+msgid "Sneak"
+msgstr "潜行"
+
+#: src/guiKeyChangeMenu.cpp:216
+msgid "Jump"
+msgstr "跳跃"
+
+#: src/guiKeyChangeMenu.cpp:231
+msgid "Drop"
+msgstr "丢弃"
+
+#: src/guiKeyChangeMenu.cpp:246
+msgid "Inventory"
+msgstr "背包"
+
+#: src/guiKeyChangeMenu.cpp:262
+msgid "Chat"
+msgstr "聊天"
+
+#: src/guiKeyChangeMenu.cpp:276
+msgid "Command"
+msgstr "指令"
+
+#: src/guiKeyChangeMenu.cpp:290
+msgid "Console"
+msgstr "控制台"
+
+#: src/guiKeyChangeMenu.cpp:306
+msgid "Toggle fly"
+msgstr "切换飞行状态"
+
+#: src/guiKeyChangeMenu.cpp:321
+msgid "Toggle fast"
+msgstr "切换快速状态"
+
+#: src/guiKeyChangeMenu.cpp:336
+msgid "Range select"
+msgstr "范围选择"
+
+#: src/guiKeyChangeMenu.cpp:353
+msgid "Print stacks"
+msgstr "打印堆栈"
+
+#: src/guiKeyChangeMenu.cpp:368
+msgid "Save"
+msgstr "保存"
+
+#: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
+#: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
+#: src/guiKeyChangeMenu.cpp:646 src/guiKeyChangeMenu.cpp:651
+#: src/guiKeyChangeMenu.cpp:656 src/guiKeyChangeMenu.cpp:661
+#: src/guiKeyChangeMenu.cpp:666 src/guiKeyChangeMenu.cpp:671
+#: src/guiKeyChangeMenu.cpp:676 src/guiKeyChangeMenu.cpp:681
+#: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
+#: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
+msgid "press Key"
+msgstr "按键"
+
+#: src/guiMainMenu.cpp:217
+msgid "Singleplayer"
+msgstr "单人"
+
+#: src/guiMainMenu.cpp:218
+msgid "Multiplayer"
+msgstr "多人"
+
+#: src/guiMainMenu.cpp:219
+msgid "Advanced"
+msgstr "高级选项"
+
+#: src/guiMainMenu.cpp:220
+msgid "Settings"
+msgstr "设置"
+
+#: src/guiMainMenu.cpp:221
+msgid "Credits"
+msgstr "创作人员名单"
+
+#: src/guiMainMenu.cpp:252
+msgid "Select World:"
+msgstr "选择世界："
+
+#: src/guiMainMenu.cpp:274 src/keycode.cpp:227
+msgid "Delete"
+msgstr "删除"
+
+#: src/guiMainMenu.cpp:281
+msgid "New"
+msgstr "新建"
+
+#: src/guiMainMenu.cpp:289
+msgid "Configure"
+msgstr "配置"
+
+#: src/guiMainMenu.cpp:304 src/keycode.cpp:246
+msgid "Play"
+msgstr "进入"
+
+#: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
+msgid "Creative Mode"
+msgstr "创造模式"
+
+#: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
+msgid "Enable Damage"
+msgstr "开启伤害"
+
+#: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
+msgid "Name/Password"
+msgstr "用户名/密码"
+
+#: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
+msgid "Address/Port"
+msgstr "地址/端口"
+
+#: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
+msgid "Start Game / Connect"
+msgstr "开始游戏 / 连接"
+
+#: src/guiMainMenu.cpp:464
+msgid "Leave address blank to start a local server."
+msgstr "地址栏留空则进入本地服务器"
+
+#: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
+msgid "Delete world"
+msgstr "删除世界"
+
+#: src/guiMainMenu.cpp:512
+msgid "Create world"
+msgstr "创建世界"
+
+#: src/guiMainMenu.cpp:546
+msgid "Fancy trees"
+msgstr "更华丽的树"
+
+#: src/guiMainMenu.cpp:552
+msgid "Smooth Lighting"
+msgstr "平滑光照"
+
+#: src/guiMainMenu.cpp:558
+msgid "3D Clouds"
+msgstr "3D云彩"
+
+#: src/guiMainMenu.cpp:564
+msgid "Opaque water"
+msgstr "不透明的水"
+
+#: src/guiMainMenu.cpp:573
+msgid "Change keys"
+msgstr "修改按键"
+
+#: src/guiMainMenu.cpp:804
+msgid "Address required."
+msgstr "地址是必须的"
+
+#: src/guiMainMenu.cpp:822
+msgid "Cannot delete world: Nothing selected"
+msgstr "无法删除世界：你丫根本没选嘛"
+
+#: src/guiMainMenu.cpp:837
+msgid "Files to be deleted"
+msgstr "将要删除的文件"
+
+#: src/guiMainMenu.cpp:853
+msgid "Cannot create world: No games found"
+msgstr "无法创建世界：无可用的游戏类型"
+
+#: src/guiMainMenu.cpp:866
+msgid "Nothing here"
+msgstr "神马也没有"
+
+#: src/guiMainMenu.cpp:915
+msgid "Failed to delete all world files"
+msgstr "删除世界所有文件出错"
+
+#: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
+msgid "Proceed"
+msgstr "开始"
+
+#: src/guiPasswordChange.cpp:108
+msgid "Old Password"
+msgstr "旧密码"
+
+#: src/guiPasswordChange.cpp:125
+msgid "New Password"
+msgstr "新密码"
+
+#: src/guiPasswordChange.cpp:141
+msgid "Confirm Password"
+msgstr "确认密码"
+
+#: src/guiPasswordChange.cpp:158
+msgid "Change"
+msgstr "修改"
+
+#: src/guiPasswordChange.cpp:167
+msgid "Passwords do not match!"
+msgstr "密码不匹配！"
+
+#: src/guiPauseMenu.cpp:118
+msgid "Continue"
+msgstr "继续"
+
+#: src/guiPauseMenu.cpp:127
+msgid "Change Password"
+msgstr "修改密码"
+
+#: src/guiPauseMenu.cpp:135
+msgid "Exit to Menu"
+msgstr "退到主菜单"
+
+#: src/guiPauseMenu.cpp:142
+msgid "Exit to OS"
+msgstr "完全退出"
+
+#: src/guiPauseMenu.cpp:149
+msgid ""
+"默认控制:\n"
+"- WASD: 走路\n"
+"- 鼠标左键: 挖掘/击打\n"
+"- 鼠标右键: 置放/使用\n"
+"- 鼠标滚轮: 选择物品\n"
+"- 0...9: 选择物品\n"
+"- Shift: 潜行\n"
+"- R: 切换是否查看所有已加载区域\n"
+"- I: 背包\n"
+"- ESC: 本菜单\n"
+"- T: 聊天\n"
+msgstr ""
+
+#: src/keycode.cpp:221
+msgid "Left Button"
+msgstr "左键"
+
+#: src/keycode.cpp:221
+msgid "Middle Button"
+msgstr "中键"
+
+#: src/keycode.cpp:221
+msgid "Right Button"
+msgstr "右键"
+
+#: src/keycode.cpp:221
+msgid "X Button 1"
+msgstr "X 按键 1"
+
+#: src/keycode.cpp:222
+msgid "Back"
+msgstr "后退"
+
+#: src/keycode.cpp:222
+msgid "Clear"
+msgstr "清除"
+
+#: src/keycode.cpp:222
+msgid "Return"
+msgstr "回车"
+
+#: src/keycode.cpp:222
+msgid "Tab"
+msgstr ""
+
+#: src/keycode.cpp:222
+msgid "X Button 2"
+msgstr "X 按键 2"
+
+#: src/keycode.cpp:223
+msgid "Capital"
+msgstr "大小写切换"
+
+#: src/keycode.cpp:223
+msgid "Control"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Kana"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Menu"
+msgstr "菜单"
+
+#: src/keycode.cpp:223
+msgid "Pause"
+msgstr "暂停"
+
+#: src/keycode.cpp:223
+msgid "Shift"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Convert"
+msgstr "转换"
+
+#: src/keycode.cpp:224
+msgid "Escape"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Final"
+msgstr "最终"
+
+#: src/keycode.cpp:224
+msgid "Junja"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Kanji"
+msgstr "日文"
+
+#: src/keycode.cpp:224
+msgid "Nonconvert"
+msgstr "未转换"
+
+#: src/keycode.cpp:225
+msgid "Accept"
+msgstr "接受"
+
+#: src/keycode.cpp:225
+msgid "End"
+msgstr "结束"
+
+#: src/keycode.cpp:225
+msgid "Home"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "Mode Change"
+msgstr "模式修改"
+
+#: src/keycode.cpp:225
+msgid "Next"
+msgstr "下一步"
+
+#: src/keycode.cpp:225
+msgid "Prior"
+msgstr "优先"
+
+#: src/keycode.cpp:225
+msgid "Space"
+msgstr "空格"
+
+#: src/keycode.cpp:226
+msgid "Down"
+msgstr "下"
+
+#: src/keycode.cpp:226
+msgid "Execute"
+msgstr "执行"
+
+#: src/keycode.cpp:226
+msgid "Print"
+msgstr "打印"
+
+#: src/keycode.cpp:226
+msgid "Select"
+msgstr "选择"
+
+#: src/keycode.cpp:226
+msgid "Up"
+msgstr "上"
+
+#: src/keycode.cpp:227
+msgid "Help"
+msgstr "帮助"
+
+#: src/keycode.cpp:227
+msgid "Insert"
+msgstr "插入"
+
+#: src/keycode.cpp:227
+msgid "Snapshot"
+msgstr "快照"
+
+#: src/keycode.cpp:230
+msgid "Left Windows"
+msgstr "左边窗口"
+
+#: src/keycode.cpp:231
+msgid "Apps"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Numpad 0"
+msgstr "小键盘 0"
+
+#: src/keycode.cpp:231
+msgid "Numpad 1"
+msgstr "小键盘 1"
+
+#: src/keycode.cpp:231
+msgid "Right Windows"
+msgstr "右边窗口"
+
+#: src/keycode.cpp:231
+msgid "Sleep"
+msgstr "休眠"
+
+#: src/keycode.cpp:232
+msgid "Numpad 2"
+msgstr "小键盘 2"
+
+#: src/keycode.cpp:232
+msgid "Numpad 3"
+msgstr "小键盘 3"
+
+#: src/keycode.cpp:232
+msgid "Numpad 4"
+msgstr "小键盘 4"
+
+#: src/keycode.cpp:232
+msgid "Numpad 5"
+msgstr "小键盘 5"
+
+#: src/keycode.cpp:232
+msgid "Numpad 6"
+msgstr "小键盘 6"
+
+#: src/keycode.cpp:232
+msgid "Numpad 7"
+msgstr "小键盘 7"
+
+#: src/keycode.cpp:233
+msgid "Numpad *"
+msgstr "小键盘 *"
+
+#: src/keycode.cpp:233
+msgid "Numpad +"
+msgstr "小键盘 +"
+
+#: src/keycode.cpp:233
+msgid "Numpad -"
+msgstr "小键盘 -"
+
+#: src/keycode.cpp:233
+msgid "Numpad /"
+msgstr "小键盘 /"
+
+#: src/keycode.cpp:233
+msgid "Numpad 8"
+msgstr "小键盘 8"
+
+#: src/keycode.cpp:233
+msgid "Numpad 9"
+msgstr "小键盘 9"
+
+#: src/keycode.cpp:237
+msgid "Num Lock"
+msgstr ""
+
+#: src/keycode.cpp:237
+msgid "Scroll Lock"
+msgstr ""
+
+#: src/keycode.cpp:238
+msgid "Left Shift"
+msgstr "左Shift键"
+
+#: src/keycode.cpp:238
+msgid "Right Shift"
+msgstr "右Shift键"
+
+#: src/keycode.cpp:239
+msgid "Left Control"
+msgstr "左Ctrl键"
+
+#: src/keycode.cpp:239
+msgid "Left Menu"
+msgstr "左边菜单"
+
+#: src/keycode.cpp:239
+msgid "Right Control"
+msgstr "右Ctrl键"
+
+#: src/keycode.cpp:239
+msgid "Right Menu"
+msgstr "右边菜单"
+
+#: src/keycode.cpp:241
+msgid "Comma"
+msgstr "逗号"
+
+#: src/keycode.cpp:241
+msgid "Minus"
+msgstr "减号"
+
+#: src/keycode.cpp:241
+msgid "Period"
+msgstr "句号"
+
+#: src/keycode.cpp:241
+msgid "Plus"
+msgstr "加号"
+
+#: src/keycode.cpp:245
+msgid "Attn"
+msgstr "注意"
+
+#: src/keycode.cpp:245
+msgid "CrSel"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "Erase OEF"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "ExSel"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "OEM Clear"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "PA1"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "Zoom"
+msgstr ""
+
+#: src/main.cpp:1379
+msgid "Main Menu"
+msgstr "主菜单"
+
+#: src/main.cpp:1601
+msgid "Failed to initialize world"
+msgstr "初始化世界失败"
+
+#: src/main.cpp:1613
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "没有选择世界并且没有提供地址。你到底要搞毛。"
+
+#: src/main.cpp:1621
+msgid "Could not find or load game \""
+msgstr "无法找到或载入游戏"
+
+#: src/main.cpp:1635
+msgid "Invalid gamespec."
+msgstr "非法的游戏规格"
+
+#: src/main.cpp:1675
+msgid "Connection error (timed out?)"
+msgstr "连接错误 (超时?)"
+
+#: src/main.cpp:1686
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr "\n欲知详情，请看 debug.txt"
