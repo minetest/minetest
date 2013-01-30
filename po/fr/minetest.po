@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-23 18:24+0200\n"
+"POT-Creation-Date: 2013-01-30 20:25+0100\n"
 "PO-Revision-Date: 2011-07-21 15:48+0200\n"
 "Last-Translator: Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>\n"
 "Language-Team: Français <>\n"
@@ -17,36 +17,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
-#: src/guiConfigureWorld.cpp:127
+#: src/guiConfigureWorld.cpp:125
 msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
 
-#: src/guiConfigureWorld.cpp:146
+#: src/guiConfigureWorld.cpp:144
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
 
-#: src/guiConfigureWorld.cpp:210
+#: src/guiConfigureWorld.cpp:208
 msgid "enabled"
 msgstr ""
 
-#: src/guiConfigureWorld.cpp:217
+#: src/guiConfigureWorld.cpp:215
 #, fuzzy
 msgid "Enable All"
 msgstr "Activer blessures"
 
-#: src/guiConfigureWorld.cpp:224
+#: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
 msgstr ""
 
-#: src/guiConfigureWorld.cpp:230
+#: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
 msgstr ""
 
-#: src/guiConfigureWorld.cpp:242
+#: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
 msgstr ""
 
@@ -123,6 +123,74 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:372
+msgid "Forward"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:373
+msgid "Backward"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
+msgid "Left"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
+msgid "Right"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:376
+msgid "Use"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:377
+msgid "Jump"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:378
+msgid "Sneak"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:379
+msgid "Drop"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:380
+msgid "Inventory"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:381
+msgid "Chat"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:382
+msgid "Command"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:383
+msgid "Console"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:384
+msgid "Toggle fly"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:385
+msgid "Toggle fast"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:386
+msgid "Toggle noclip"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:387
+msgid "Range select"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:388
+msgid "Print stacks"
 msgstr ""
 
 #: src/guiMainMenu.cpp:55
@@ -479,15 +547,7 @@ msgid "Execute"
 msgstr ""
 
 #: src/keycode.cpp:228
-msgid "Left"
-msgstr ""
-
-#: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
-
-#: src/keycode.cpp:228
-msgid "Right"
 msgstr ""
 
 #: src/keycode.cpp:228
