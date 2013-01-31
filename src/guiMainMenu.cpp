@@ -298,8 +298,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x, world_sel_y+world_sel_h+0);
-			Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
+			gui::IGUIButton* tmp = Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
 				  wgettext("Delete"));
+			enableCtrl(tmp);
 		}
 		// Create world button
 		{
@@ -313,8 +314,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+(world_button_w+bs)*2,
 					world_sel_y+world_sel_h+0);
-			Environment->addButton(rect, this, GUI_ID_CONFIGURE_WORLD_BUTTON,
+			gui::IGUIButton* tmp = Environment->addButton(rect, this, GUI_ID_CONFIGURE_WORLD_BUTTON,
 				  wgettext("Configure"));
+			enableCtrl(tmp);
 		}
 		// Start game button
 		{
@@ -328,8 +330,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, bw, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+world_sel_w-bw,
 					world_sel_y+world_sel_h+30+bs);
-			Environment->addButton(rect, this,
+			gui::IGUIButton* tmp = Environment->addButton(rect, this,
 					GUI_ID_JOIN_GAME_BUTTON, wgettext("Play"));
+			enableCtrl(tmp);
 		}
 		// Options
 		s32 option_x = 50;
@@ -1036,19 +1039,10 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			case GUI_ID_CONFIGURE_WORLD_BUTTON: {
 				MainMenuData cur;
 				readInput(&cur);
-				if(cur.selected_world == -1)
-				{
-					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Cannot configure world: Nothing selected"))
-							)->drop();
-				} 
-				else 
-				{
-					WorldSpec wspec = m_data->worlds[cur.selected_world];
-					GUIConfigureWorld *menu = new GUIConfigureWorld(env, parent,
-										-1, menumgr, wspec);
-					menu->drop();
-				}
+				WorldSpec wspec = m_data->worlds[cur.selected_world];
+				GUIConfigureWorld *menu = new GUIConfigureWorld(env, parent,
+									-1, menumgr, wspec);
+				menu->drop();
 				return true;
 			}
 			case GUI_ID_SERVERLIST_DELETE: {
@@ -1197,6 +1191,18 @@ void GUIMainMenu::serverListOnSelected()
 		((gui::IGUIEditBox*)getElementFromId(GUI_ID_PORT_INPUT))
 		->setText(narrow_to_wide(m_data->servers[id].port).c_str());
 	}
+}
+
+void GUIMainMenu::enableCtrl(gui::IGUIButton* pButton)
+{
+	if(pButton != NULL)
+	{
+		MainMenuData cur;
+		readInput(&cur);
+		pButton->setEnabled(cur.selected_world != -1);
+	}
+	else
+		assert(pButton);
 }
 
 ServerListSpec GUIMainMenu::getServerListSpec(std::string address, std::string port)
