@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-29 22:05+0200\n"
-"Last-Translator: Marco gonzalez <socramazibi@gmx.es>\n"
+"PO-Revision-Date: 2013-01-31 06:59+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -150,7 +150,7 @@ msgstr "Multijugador"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
-msgstr "Avanzar"
+msgstr "Avanzado"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
@@ -258,7 +258,7 @@ msgstr "Filtrado Tri-Lineal"
 
 #: src/guiMainMenu.cpp:668
 msgid "Shaders"
-msgstr "Shader"
+msgstr "Habilitar Shaders"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
