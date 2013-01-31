@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-29 22:25+0200\n"
-"Last-Translator: Robert Arkenin <rarkenin@gmail.com>\n"
+"PO-Revision-Date: 2013-01-31 07:32+0200\n"
+"Last-Translator: Pavel Elagin <elagin.pasha@gmail.com>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:230
 msgid "depends on:"
-msgstr ""
+msgstr "зависит от:"
 
 #: src/guiConfigureWorld.cpp:242
 msgid "is required by:"
@@ -58,11 +58,11 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "Настройки сохранены."
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
@@ -70,15 +70,15 @@ msgstr ""
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Название мира"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
@@ -86,15 +86,15 @@ msgstr ""
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "Создать"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Вы умерли."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Воскреснуть"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
@@ -103,7 +103,7 @@ msgstr ""
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr ""
+msgstr "В работе"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -119,19 +119,19 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
-msgstr ""
+msgstr "Клавиша уже используется"
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
-msgstr ""
+msgstr "нажмите клавишу"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr ""
+msgstr "Не могу создать мир: имя содержит недопустимые символы"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
-msgstr ""
+msgstr "Не могу создать мир: Такое имя уже используется"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
@@ -139,7 +139,7 @@ msgstr "Одиночная игра"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
-msgstr ""
+msgstr "Сетевая игра"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
@@ -155,7 +155,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
-msgstr ""
+msgstr "Выбрать мир:"
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
@@ -287,7 +287,7 @@ msgstr "Не могу настроить мир: ни чего не выбран
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Ошибка при удалении файлов мира"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
@@ -342,15 +342,15 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Левая клавиша"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Средняя клавиша"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Правая клавиша"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -390,11 +390,11 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Пауза"
 
 #: src/keycode.cpp:225
 msgid "Shift"
@@ -642,7 +642,7 @@ msgstr ""
 
 #: src/main.cpp:1384
 msgid "Main Menu"
-msgstr ""
+msgstr "Главное меню"
 
 #: src/main.cpp:1633
 msgid "Failed to initialize world"
