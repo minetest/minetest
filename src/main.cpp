@@ -1543,9 +1543,10 @@ int main(int argc, char *argv[])
 						// automatically limited
 						sleep_ms(25);
 					}
+					// Save controls status
+					menu->readInput(&menudata);
 					
 					infostream<<"Dropping main menu"<<std::endl;
-
 					menu->drop();
 				}
 
