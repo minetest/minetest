@@ -1942,6 +1942,9 @@ int main(int argc, char *argv[])
 						sound = NULL;
 					}
 
+					// Save controls status
+					menu->readInput(&menudata);
+
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
