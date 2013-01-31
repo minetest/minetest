@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-23 20:27+0200\n"
-"Last-Translator: Sfan5 . <sfan5@live.de>\n"
+"PO-Revision-Date: 2013-01-31 14:22+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -40,11 +40,11 @@ msgstr "Aktiviert"
 
 #: src/guiConfigureWorld.cpp:217
 msgid "Enable All"
-msgstr "Alle einschalten"
+msgstr "Alle an"
 
 #: src/guiConfigureWorld.cpp:224
 msgid "Disable All"
-msgstr "Alle ausschalten"
+msgstr "Alle aus"
 
 #: src/guiConfigureWorld.cpp:230
 msgid "depends on:"
@@ -118,7 +118,7 @@ msgstr "\"Benutzen\" = herunterklettern"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Doppelt \"springen\" drücken, um fliegen umzuschalten"
+msgstr "Doppelt \"springen\" zum fliegen"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
@@ -234,7 +234,7 @@ msgstr "3D Wolken"
 
 #: src/guiMainMenu.cpp:629
 msgid "Opaque water"
-msgstr "Undurchsichtiges Wasser"
+msgstr "Undurchs. Wasser"
 
 #: src/guiMainMenu.cpp:639
 msgid "Mip-Mapping"
@@ -258,7 +258,7 @@ msgstr "Shader"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
-msgstr "Lade Miniaturansichten vor"
+msgstr "Lade Inventarbilder vor"
 
 #: src/guiMainMenu.cpp:682
 msgid "Enable Particles"
