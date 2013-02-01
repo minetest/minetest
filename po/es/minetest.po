@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-01 13:05+0200\n"
-"Last-Translator: Marco gonzalez <socramazibi@gmx.es>\n"
+"PO-Revision-Date: 2013-02-01 23:37+0200\n"
+"Last-Translator: Lord James <neftali_dtctv@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -102,8 +102,7 @@ msgstr "Reaparecer"
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
-"Clic izquierdo: mover todos los elementos, haga clic en: elemento único de "
-"desplazamiento"
+"Click izquierdo: Mover todos los objetos. Click derecho: Mover un objeto."
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
@@ -118,7 +117,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr "\"Usar\"=Descender"
+msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
@@ -142,7 +141,7 @@ msgstr "No se puede crear el mundo:hay un mundo con este nombre"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
-msgstr "Un solo jugador"
+msgstr "Un jugador"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
@@ -198,7 +197,7 @@ msgstr "Dirección/Puerto"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
 msgid "Show Public"
-msgstr "Servidores Publicos"
+msgstr "Servidores Públicos"
 
 #: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
 msgid "Show Favorites"
@@ -230,7 +229,7 @@ msgstr "Árboles Bonitos"
 
 #: src/guiMainMenu.cpp:617
 msgid "Smooth Lighting"
-msgstr "Iluminación suave"
+msgstr "Iluminación Suave"
 
 #: src/guiMainMenu.cpp:623
 msgid "3D Clouds"
@@ -238,7 +237,7 @@ msgstr "Nubes 3D"
 
 #: src/guiMainMenu.cpp:629
 msgid "Opaque water"
-msgstr "Agua opaca"
+msgstr "Agua Opaca"
 
 #: src/guiMainMenu.cpp:639
 msgid "Mip-Mapping"
@@ -278,7 +277,7 @@ msgstr "Requiere una dirección."
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr "No se puede eliminar el mundo: no ha seleccionado"
+msgstr "No se puede eliminar el mundo: ninguno ha sido seleccionado"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
@@ -360,7 +359,7 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Boton izquierdo"
+msgstr "Botón izquierdo"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
@@ -396,7 +395,7 @@ msgstr "X Button 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Capital"
+msgstr "Bloq mayús"
 
 #: src/keycode.cpp:225
 msgid "Control"
@@ -592,11 +591,11 @@ msgstr "Bloq Despl"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr "Desplazamiento a la izquierda"
+msgstr "Mayúscula Izquierda"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr "Desplazamiento a la derecha"
+msgstr "Mayúscula Derecha"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
