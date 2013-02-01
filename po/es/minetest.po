@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-31 06:59+0200\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2013-02-01 13:05+0200\n"
+"Last-Translator: Marco gonzalez <socramazibi@gmx.es>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -44,15 +44,15 @@ msgstr "Activar todos"
 
 #: src/guiConfigureWorld.cpp:224
 msgid "Disable All"
-msgstr "deshabilitar"
+msgstr "Deshabilitar"
 
 #: src/guiConfigureWorld.cpp:230
 msgid "depends on:"
-msgstr "depende de:"
+msgstr "Dependencia:"
 
 #: src/guiConfigureWorld.cpp:242
 msgid "is required by:"
-msgstr "requiere:"
+msgstr "Requiere:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -97,7 +97,7 @@ msgstr "Estas Muerto."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Respawn"
+msgstr "Reaparecer"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
@@ -113,12 +113,12 @@ msgstr "Continuar"
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Combinaciones de teclas. (Si este menú da error, cambiar configuración en "
+"Combinaciones de teclas.(Si este menú da error, cambiar configuración en "
 "minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr "\"Usar\" = descender"
+msgstr "\"Usar\"=Descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
@@ -130,7 +130,7 @@ msgstr "La tecla se esta utilizando"
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
-msgstr "Pulsar la tecla"
+msgstr "Pulsa la tecla"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
@@ -138,7 +138,7 @@ msgstr "No se puede crear el mundo: nombre contiene caracteres no válidos"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
-msgstr "No se puede crear el mundo: un mundo con este nombre ya existe"
+msgstr "No se puede crear el mundo:hay un mundo con este nombre"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
@@ -150,7 +150,7 @@ msgstr "Multijugador"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
-msgstr "Avanzado"
+msgstr "Server"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
@@ -162,7 +162,7 @@ msgstr "Créditos"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
-msgstr "Seleccione un mundo:"
+msgstr "Selecciona un mundo:"
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
@@ -178,7 +178,7 @@ msgstr "Configurar"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
-msgstr "Play"
+msgstr "Jugar"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
@@ -190,15 +190,15 @@ msgstr "Permitir daños"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
-msgstr "Nombre y contraseña"
+msgstr "Nombre/Clave"
 
 #: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
 msgid "Address/Port"
-msgstr "Dirección y puerto"
+msgstr "Dirección/Puerto"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
 msgid "Show Public"
-msgstr "Mostrar en público"
+msgstr "Servidores Publicos"
 
 #: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
 msgid "Show Favorites"
@@ -214,15 +214,15 @@ msgstr "Dejar la dirección en blanco para iniciar un servidor local."
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr "Iniciar juego / conectar"
+msgstr "Iniciar juego/Conectar"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
 msgid "Delete world"
-msgstr "Eliminar el mundo"
+msgstr "Eliminar Mundo"
 
 #: src/guiMainMenu.cpp:577
 msgid "Create world"
-msgstr "Crear mundo"
+msgstr "Crear Mundo"
 
 #: src/guiMainMenu.cpp:611
 msgid "Fancy trees"
@@ -278,7 +278,7 @@ msgstr "Requiere una dirección."
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr "No se puede eliminar el mundo: nada seleccionado"
+msgstr "No se puede eliminar el mundo: no ha seleccionado"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
@@ -286,11 +286,11 @@ msgstr "Archivos que se eliminarán"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
-msgstr "No se puede crear el mundo: no hay juegos que se encuentran"
+msgstr "No se puede crear el mundo: No se encontraron juegos"
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr "No se puede configurar el mundo: nada seleccionado"
+msgstr "No se puede configurar el mundo: No ha seleccionado"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
@@ -330,7 +330,7 @@ msgstr "Salir al menú"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Salir al sistema operatio"
+msgstr "Salir al S.O."
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
