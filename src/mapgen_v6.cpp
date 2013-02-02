@@ -31,6 +31,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
+#include "mapgen_v6.h"
+
+/////////////////// Mapgen V6 perlin noise default values
+NoiseParams nparams_v6_def_terrain_base =
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
+NoiseParams nparams_v6_def_terrain_higher =
+	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6};
+NoiseParams nparams_v6_def_steepness =
+	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
+NoiseParams nparams_v6_def_height_select =
+	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
+NoiseParams nparams_v6_def_trees =
+	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
+NoiseParams nparams_v6_def_mud =
+	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
+NoiseParams nparams_v6_def_beach =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
+NoiseParams nparams_v6_def_biome =
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
+NoiseParams nparams_v6_def_cave =
+	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -396,7 +417,6 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 int MapgenV6::getGroundLevelAtPoint(v2s16 p) {
 	return baseRockLevelFromNoise(p) + AVERAGE_MUD_AMOUNT;
 }
-
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
