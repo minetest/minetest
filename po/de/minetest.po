@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-31 14:22+0200\n"
+"PO-Revision-Date: 2013-02-02 18:39+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -158,7 +158,7 @@ msgstr "Kriechen"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Wegwerfen"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
@@ -169,13 +169,12 @@ msgid "Chat"
 msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:382
-#, fuzzy
 msgid "Command"
-msgstr "Komma"
+msgstr "Befehl"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "Konsole"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
@@ -186,9 +185,8 @@ msgid "Toggle fast"
 msgstr "Speed umsch."
 
 #: src/guiKeyChangeMenu.cpp:386
-#, fuzzy
 msgid "Toggle noclip"
-msgstr "Fliegen umsch."
+msgstr "Noclip umsch."
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
