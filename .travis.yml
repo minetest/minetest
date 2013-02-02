@@ -1,0 +1,10 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+before_install:
+  - if [ $CC = "clang" ]; then export PATH="/usr/bin/:$PATH"; sudo sh -c 'echo "deb http://ppa.launchpad.net/eudoxos/llvm-3.1/ubuntu precise main" >> /etc/apt/sources.list'; sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 92DE8183; sudo apt-get update; sudo apt-get install llvm-3.1; sudo apt-get install clang; fi
+  - sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
+script: cmake . && make
+notifications:
+  email: false

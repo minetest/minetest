@@ -241,8 +241,9 @@ public:
 		MapBlock.
 		Caller allocates memory, ServerEnvironment frees memory.
 		Return value: true if succeeded, false if failed.
+		(note:  not used, pending removal from engine)
 	*/
-	bool addActiveObjectAsStatic(ServerActiveObject *object);
+	//bool addActiveObjectAsStatic(ServerActiveObject *object);
 	
 	/*
 		Find out what new objects have been added to
@@ -283,6 +284,10 @@ public:
 		Other stuff
 		-------------------------------------------
 	*/
+
+	// Script-aware node setters
+	bool setNode(v3s16 p, const MapNode &n);
+	bool removeNode(v3s16 p);
 	
 	// Find all active objects inside a radius around a point
 	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);

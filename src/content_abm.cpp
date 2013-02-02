@@ -37,7 +37,7 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("dirt");
+		s.insert("mapgen_dirt");
 		return s;
 	}
 	virtual float getTriggerInterval()
@@ -54,7 +54,7 @@ public:
 				!ndef->get(n_top).isLiquid() &&
 				n_top.getLightBlend(env->getDayNightRatio(), ndef) >= 13)
 		{
-			n.setContent(ndef->getId("dirt_with_grass"));
+			n.setContent(ndef->getId("mapgen_dirt_with_grass"));
 			map->addNodeWithEvent(p, n);
 		}
 	}
@@ -67,7 +67,7 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("dirt_with_grass");
+		s.insert("mapgen_dirt_with_grass");
 		return s;
 	}
 	virtual float getTriggerInterval()
@@ -83,7 +83,7 @@ public:
 		if(!ndef->get(n_top).light_propagates ||
 				ndef->get(n_top).isLiquid())
 		{
-			n.setContent(ndef->getId("dirt"));
+			n.setContent(ndef->getId("mapgen_dirt"));
 			map->addNodeWithEvent(p, n);
 		}
 	}

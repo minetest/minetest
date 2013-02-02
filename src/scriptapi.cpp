@@ -37,6 +37,7 @@ extern "C" {
 #include "content_sao.h" // For LuaEntitySAO and PlayerSAO
 #include "itemdef.h"
 #include "nodedef.h"
+#include "biome.h"
 #include "craftdef.h"
 #include "main.h" // For g_settings
 #include "settings.h" // For accessing g_settings
@@ -433,6 +434,16 @@ struct EnumString es_TileAnimationType[] =
 {
 	{TAT_NONE, "none"},
 	{TAT_VERTICAL_FRAMES, "vertical_frames"},
+	{0, NULL},
+};
+
+struct EnumString es_BiomeTerrainType[] =
+{
+	{BIOME_TERRAIN_NORMAL, "normal"},
+	{BIOME_TERRAIN_LIQUID, "liquid"},
+	{BIOME_TERRAIN_NETHER, "nether"},
+	{BIOME_TERRAIN_AETHER, "aether"},
+	{BIOME_TERRAIN_FLAT,   "flat"},
 	{0, NULL},
 };
 
@@ -988,7 +999,7 @@ static void read_object_properties(lua_State *L, int index,
 	if(lua_istable(L, -1))
 		prop->initial_sprite_basepos = read_v2s16(L, -1);
 	lua_pop(L, 1);
-	
+
 	getboolfield(L, -1, "is_visible", prop->is_visible);
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
@@ -1032,7 +1043,7 @@ static ItemDefinition read_item_definition(lua_State *L, int index,
 
 	warn_if_field_exists(L, index, "tool_digging_properties",
 			"deprecated: use tool_capabilities");
-	
+
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
 		def.tool_capabilities = new ToolCapabilities(
@@ -1067,7 +1078,7 @@ static TileDef read_tiledef(lua_State *L, int index)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	
+
 	TileDef tiledef;
 
 	// key at index -2 and value at index
@@ -1113,7 +1124,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 		index = lua_gettop(L) + 1 + index;
 
 	ContentFeatures f;
-	
+
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
 	if(!lua_isnil(L, -1)) f.has_on_construct = true;
@@ -1138,7 +1149,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype", es_DrawType,
 			NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
-	
+
 	// tiles = {}
 	lua_getfield(L, index, "tiles");
 	// If nil, try the deprecated name "tile_images" instead
@@ -1173,7 +1184,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 		}
 	}
 	lua_pop(L, 1);
-	
+
 	// special_tiles = {}
 	lua_getfield(L, index, "special_tiles");
 	// If nil, try the deprecated name "special_materials" instead
@@ -1204,7 +1215,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	f.alpha = getintfield_default(L, index, "alpha", 255);
 
 	/* Other stuff */
-	
+
 	lua_getfield(L, index, "post_effect_color");
 	if(!lua_isnil(L, -1))
 		f.post_effect_color = readARGB8(L, -1);
@@ -1228,7 +1239,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 			"deprecated: use 'drop' field");
 	warn_if_field_exists(L, index, "metadata_name",
 			"deprecated: use on_add and metadata callbacks");
-	
+
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
 	f.light_propagates = (f.param_type == CPT_LIGHT);
@@ -1264,7 +1275,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 			"light_source", f.light_source);
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
-	
+
 	lua_getfield(L, index, "node_box");
 	if(lua_istable(L, -1))
 		f.node_box = read_nodebox(L, -1);
@@ -1279,7 +1290,7 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
 	// Set to true if wall_mounted used to be set to true
 	getboolfield(L, index, "legacy_wallmounted", f.legacy_wallmounted);
-	
+
 	// Sound table
 	lua_getfield(L, index, "sounds");
 	if(lua_istable(L, -1)){
@@ -1368,7 +1379,7 @@ private:
 	static const luaL_reg methods[];
 
 	// Exported functions
-	
+
 	// garbage collector
 	static int gc_object(lua_State *L)
 	{
@@ -1621,7 +1632,7 @@ public:
 	{
 		return m_stack;
 	}
-	
+
 	// LuaItemStack(itemstack or itemstring or table or nil)
 	// Creates an LuaItemStack and leaves it on top of stack
 	static int create_object(lua_State *L)
@@ -1810,7 +1821,7 @@ private:
 		if(!ud) luaL_typerror(L, narg, className);
 		return *(InvRef**)ud;  // unbox pointer
 	}
-	
+
 	static Inventory* getinv(lua_State *L, InvRef *ref)
 	{
 		return get_server(L)->getInventory(ref->m_loc);
@@ -1830,9 +1841,9 @@ private:
 		// Inform other things that the inventory has changed
 		get_server(L)->setInventoryModified(ref->m_loc);
 	}
-	
+
 	// Exported functions
-	
+
 	// garbage collector
 	static int gc_object(lua_State *L) {
 		InvRef *o = *(InvRef **)(lua_touserdata(L, 1));
@@ -2049,6 +2060,43 @@ private:
 		return 1;
 	}
 
+	// get_location() -> location (like minetest.get_inventory(location))
+	static int l_get_location(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const InventoryLocation &loc = ref->m_loc;
+		switch(loc.type){
+		case InventoryLocation::PLAYER:
+			lua_newtable(L);
+			lua_pushstring(L, "player");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::NODEMETA:
+			lua_newtable(L);
+			lua_pushstring(L, "nodemeta");
+			lua_setfield(L, -2, "type");
+			push_v3s16(L, loc.p);
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::DETACHED:
+			lua_newtable(L);
+			lua_pushstring(L, "detached");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, loc.name.c_str());
+			lua_setfield(L, -2, "name");
+			return 1;
+		case InventoryLocation::UNDEFINED:
+		case InventoryLocation::CURRENT_PLAYER:
+			break;
+		}
+		lua_newtable(L);
+		lua_pushstring(L, "undefined");
+		lua_setfield(L, -2, "type");
+		return 1;
+	}
+
 public:
 	InvRef(const InventoryLocation &loc):
 		m_loc(loc)
@@ -2124,6 +2172,7 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, room_for_item),
 	method(InvRef, contains_item),
 	method(InvRef, remove_item),
+	method(InvRef, get_location),
 	{0,0}
 };
 
@@ -2147,7 +2196,7 @@ private:
 		if(!ud) luaL_typerror(L, narg, className);
 		return *(NodeMetaRef**)ud;  // unbox pointer
 	}
-	
+
 	static NodeMetadata* getmeta(NodeMetaRef *ref, bool auto_create)
 	{
 		NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
@@ -2174,9 +2223,9 @@ private:
 			block->raiseModified(MOD_STATE_WRITE_NEEDED,
 					"NodeMetaRef::reportMetadataChange");
 	}
-	
+
 	// Exported functions
-	
+
 	// garbage collector
 	static int gc_object(lua_State *L) {
 		NodeMetaRef *o = *(NodeMetaRef **)(lua_touserdata(L, 1));
@@ -2289,7 +2338,7 @@ private:
 		InvRef::createNodeMeta(L, ref->m_p);
 		return 1;
 	}
-	
+
 	// to_table(self)
 	static int l_to_table(lua_State *L)
 	{
@@ -2335,7 +2384,7 @@ private:
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
 		int base = 2;
-		
+
 		if(lua_isnil(L, base)){
 			// No metadata
 			ref->m_env->getMap().removeNodeMetadata(ref->m_p);
@@ -2459,7 +2508,7 @@ public:
 		if(!ud) luaL_typerror(L, narg, className);
 		return *(ObjectRef**)ud;  // unbox pointer
 	}
-	
+
 	static ServerActiveObject* getobject(ObjectRef *ref)
 	{
 		ServerActiveObject *co = ref->m_object;
@@ -2475,7 +2524,7 @@ private:
 			return NULL;
 		return (LuaEntitySAO*)obj;
 	}
-	
+
 	static PlayerSAO* getplayersao(ObjectRef *ref)
 	{
 		ServerActiveObject *obj = getobject(ref);
@@ -2485,7 +2534,7 @@ private:
 			return NULL;
 		return (PlayerSAO*)obj;
 	}
-	
+
 	static Player* getplayer(ObjectRef *ref)
 	{
 		PlayerSAO *playersao = getplayersao(ref);
@@ -2493,9 +2542,9 @@ private:
 			return NULL;
 		return playersao->getPlayer();
 	}
-	
+
 	// Exported functions
-	
+
 	// garbage collector
 	static int gc_object(lua_State *L) {
 		ObjectRef *o = *(ObjectRef **)(lua_touserdata(L, 1));
@@ -2514,7 +2563,7 @@ private:
 		co->m_removed = true;
 		return 0;
 	}
-	
+
 	// getpos(self)
 	// returns: {x=num, y=num, z=num}
 	static int l_getpos(lua_State *L)
@@ -2532,7 +2581,7 @@ private:
 		lua_setfield(L, -2, "z");
 		return 1;
 	}
-	
+
 	// setpos(self, pos)
 	static int l_setpos(lua_State *L)
 	{
@@ -2546,7 +2595,7 @@ private:
 		co->setPos(pos);
 		return 0;
 	}
-	
+
 	// moveto(self, pos, continuous=false)
 	static int l_moveto(lua_State *L)
 	{
@@ -2818,7 +2867,7 @@ private:
 		co->setVelocity(pos);
 		return 0;
 	}
-	
+
 	// getvelocity(self)
 	static int l_getvelocity(lua_State *L)
 	{
@@ -2830,7 +2879,7 @@ private:
 		pushFloatPos(L, v);
 		return 1;
 	}
-	
+
 	// setacceleration(self, {x=num, y=num, z=num})
 	static int l_setacceleration(lua_State *L)
 	{
@@ -2843,7 +2892,7 @@ private:
 		co->setAcceleration(pos);
 		return 0;
 	}
-	
+
 	// getacceleration(self)
 	static int l_getacceleration(lua_State *L)
 	{
@@ -2855,7 +2904,7 @@ private:
 		pushFloatPos(L, v);
 		return 1;
 	}
-	
+
 	// setyaw(self, radians)
 	static int l_setyaw(lua_State *L)
 	{
@@ -2867,7 +2916,7 @@ private:
 		co->setYaw(yaw);
 		return 0;
 	}
-	
+
 	// getyaw(self)
 	static int l_getyaw(lua_State *L)
 	{
@@ -2879,7 +2928,7 @@ private:
 		lua_pushnumber(L, yaw);
 		return 1;
 	}
-	
+
 	// settexturemod(self, mod)
 	static int l_settexturemod(lua_State *L)
 	{
@@ -2891,7 +2940,7 @@ private:
 		co->setTextureMod(mod);
 		return 0;
 	}
-	
+
 	// setsprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
 	//           select_horiz_by_yawpitch=false)
 	static int l_setsprite(lua_State *L)
@@ -2928,7 +2977,7 @@ private:
 		lua_pushstring(L, name.c_str());
 		return 1;
 	}
-	
+
 	// get_luaentity(self)
 	static int l_get_luaentity(lua_State *L)
 	{
@@ -2939,7 +2988,7 @@ private:
 		luaentity_get(L, co->getId());
 		return 1;
 	}
-	
+
 	/* Player-only */
 
 	// is_player(self)
@@ -2950,7 +2999,7 @@ private:
 		lua_pushboolean(L, (player != NULL));
 		return 1;
 	}
-	
+
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L)
 	{
@@ -2964,7 +3013,7 @@ private:
 		lua_pushstring(L, player->getName());
 		return 1;
 	}
-	
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L)
 	{
@@ -3106,7 +3155,7 @@ public:
 		ObjectRef *o = checkobject(L, -1);
 		o->m_object = NULL;
 	}
-	
+
 	static void Register(lua_State *L)
 	{
 		lua_newtable(L);
@@ -3202,8 +3251,8 @@ class LuaPerlinNoise
 private:
 	int seed;
 	int octaves;
-	double persistence;
-	double scale;
+	float persistence;
+	float scale;
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -3235,8 +3284,8 @@ private:
 	}
 
 public:
-	LuaPerlinNoise(int a_seed, int a_octaves, double a_persistence,
-			double a_scale):
+	LuaPerlinNoise(int a_seed, int a_octaves, float a_persistence,
+			float a_scale):
 		seed(a_seed),
 		octaves(a_octaves),
 		persistence(a_persistence),
@@ -3254,8 +3303,8 @@ public:
 	{
 		int seed = luaL_checkint(L, 1);
 		int octaves = luaL_checkint(L, 2);
-		double persistence = luaL_checknumber(L, 3);
-		double scale = luaL_checknumber(L, 4);
+		float persistence = luaL_checknumber(L, 3);
+		float scale = luaL_checknumber(L, 4);
 		LuaPerlinNoise *o = new LuaPerlinNoise(seed, octaves, persistence, scale);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
@@ -3332,7 +3381,7 @@ private:
 		if(!ud) luaL_typerror(L, narg, className);
 		return *(NodeTimerRef**)ud;  // unbox pointer
 	}
-	
+
 	static int l_set(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3343,7 +3392,7 @@ private:
 		env->getMap().setNodeTimer(o->m_p,NodeTimer(t,e));
 		return 0;
 	}
-	
+
 	static int l_start(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3353,7 +3402,7 @@ private:
 		env->getMap().setNodeTimer(o->m_p,NodeTimer(t,0));
 		return 0;
 	}
-	
+
 	static int l_stop(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3362,7 +3411,7 @@ private:
 		env->getMap().removeNodeTimer(o->m_p);
 		return 0;
 	}
-	
+
 	static int l_is_started(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3373,7 +3422,7 @@ private:
 		lua_pushboolean(L,(t.timeout != 0));
 		return 1;
 	}
-	
+
 	static int l_get_timeout(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3384,7 +3433,7 @@ private:
 		lua_pushnumber(L,t.timeout);
 		return 1;
 	}
-	
+
 	static int l_get_elapsed(lua_State *L)
 	{
 		NodeTimerRef *o = checkobject(L, 1);
@@ -3422,7 +3471,7 @@ public:
 		NodeTimerRef *o = checkobject(L, -1);
 		o->m_env = NULL;
 	}
-	
+
 	static void Register(lua_State *L)
 	{
 		lua_newtable(L);
@@ -3487,7 +3536,7 @@ private:
 		if(!ud) luaL_typerror(L, narg, className);
 		return *(EnvRef**)ud;  // unbox pointer
 	}
-	
+
 	// Exported functions
 
 	// EnvRef:set_node(pos, node)
@@ -3502,20 +3551,7 @@ private:
 		v3s16 pos = read_v3s16(L, 2);
 		MapNode n = readnode(L, 3, ndef);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace node
-		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-			// Call constructor
-			if(ndef->get(n).has_on_construct)
-				scriptapi_node_on_construct(L, pos, n);
-		}
+		bool succeeded = env->setNode(pos, n);
 		lua_pushboolean(L, succeeded);
 		return 1;
 	}
@@ -3536,20 +3572,8 @@ private:
 		// parameters
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
-		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		// Call destructor
-		if(ndef->get(n_old).has_on_destruct)
-			scriptapi_node_on_destruct(L, pos, n_old);
-		// Replace with air
-		// This is slightly optimized compared to addNodeWithEvent(air)
-		bool succeeded = env->getMap().removeNodeWithEvent(pos);
-		if(succeeded){
-			// Call post-destructor
-			if(ndef->get(n_old).has_after_destruct)
-				scriptapi_node_after_destruct(L, pos, n_old);
-		}
+		bool succeeded = env->removeNode(pos);
 		lua_pushboolean(L, succeeded);
-		// Air doesn't require constructor
 		return 1;
 	}
 
@@ -3956,7 +3980,7 @@ private:
 		lua_getglobal(L, "table");
 		lua_getfield(L, -1, "insert");
 		int table_insert = lua_gettop(L);
-		
+
 		lua_newtable(L);
 		int table = lua_gettop(L);
 		for(s16 x=minp.X; x<=maxp.X; x++)
@@ -3986,8 +4010,8 @@ private:
 
 		int seeddiff = luaL_checkint(L, 2);
 		int octaves = luaL_checkint(L, 3);
-		double persistence = luaL_checknumber(L, 4);
-		double scale = luaL_checknumber(L, 5);
+		float persistence = luaL_checknumber(L, 4);
+		float scale = luaL_checknumber(L, 5);
 
 		LuaPerlinNoise *n = new LuaPerlinNoise(seeddiff + int(env->getServerMap().getSeed()), octaves, persistence, scale);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
@@ -4021,21 +4045,30 @@ private:
 			getstringfield(L, 3, "axiom", tree_def.initial_axiom);
 			getstringfield(L, 3, "rules_a", tree_def.rules_a);
 			getstringfield(L, 3, "rules_b", tree_def.rules_b);
-			getstringfield(L, 3, "rules_c", tree_def.rules_a);
-			getstringfield(L, 3, "rules_d", tree_def.rules_b);
+			getstringfield(L, 3, "rules_c", tree_def.rules_c);
+			getstringfield(L, 3, "rules_d", tree_def.rules_d);
 			getstringfield(L, 3, "trunk", trunk);
 			tree_def.trunknode=ndef->getId(trunk);
 			getstringfield(L, 3, "leaves", leaves);
 			tree_def.leavesnode=ndef->getId(leaves);
+			tree_def.leaves2_chance=0;
+			getstringfield(L, 3, "leaves2", leaves);
+			if (leaves !="")
+			{
+				tree_def.leaves2node=ndef->getId(leaves);
+				getintfield(L, 3, "leaves2_chance", tree_def.leaves2_chance);
+			}
 			getintfield(L, 3, "angle", tree_def.angle);
 			getintfield(L, 3, "iterations", tree_def.iterations);
 			getintfield(L, 3, "random_level", tree_def.iterations_random_level);
-			getboolfield(L, 3, "thin_trunks", tree_def.thin_trunks);
-			getboolfield(L, 3, "fruit_tree", tree_def.fruit_tree);
-			if (tree_def.fruit_tree)
+			getstringfield(L, 3, "trunk_type", tree_def.trunk_type);
+			getboolfield(L, 3, "thin_branches", tree_def.thin_branches);
+			tree_def.fruit_chance=0;
+			getstringfield(L, 3, "fruit", fruit);
+			if (fruit != "")
 			{
-				getstringfield(L, 3, "fruit", fruit);
 				tree_def.fruitnode=ndef->getId(fruit);
+				getintfield(L, 3, "fruit_chance",tree_def.fruit_chance);
 			}
 		}
 		else
@@ -4072,7 +4105,7 @@ public:
 		EnvRef *o = checkobject(L, -1);
 		o->m_env = NULL;
 	}
-	
+
 	static void Register(lua_State *L)
 	{
 		lua_newtable(L);
@@ -4125,6 +4158,8 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_node_near),
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
+	//method{EnvRef, get_perlin_map_2d},
+	//method{EnvRef, get_perlin_map_3d},
 	method(EnvRef, clear_objects),
 	method(EnvRef, spawn_tree),
 	{0,0}
@@ -4144,7 +4179,7 @@ private:
 	static const luaL_reg methods[];
 
 	// Exported functions
-	
+
 	// garbage collector
 	static int gc_object(lua_State *L)
 	{
@@ -4195,7 +4230,7 @@ public:
 	{
 		return m_pseudo;
 	}
-	
+
 	// LuaPseudoRandom(seed)
 	// Creates an LuaPseudoRandom and leaves it on top of stack
 	static int create_object(lua_State *L)
@@ -4299,7 +4334,7 @@ public:
 			u32 active_object_count, u32 active_object_count_wider)
 	{
 		lua_State *L = m_lua;
-	
+
 		realitycheck(L);
 		assert(lua_checkstack(L, 20));
 		StackUnroller stack_unroller(L);
@@ -4315,7 +4350,7 @@ public:
 		lua_gettable(L, registered_abms);
 		if(lua_isnil(L, -1))
 			assert(0);
-		
+
 		// Call action
 		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "action");
@@ -4393,8 +4428,8 @@ static int l_log(lua_State *L)
 	}
 	else
 	{
-		std::string levelname = lua_tostring(L, 1);
-		text = lua_tostring(L, 2);
+		std::string levelname = luaL_checkstring(L, 1);
+		text = luaL_checkstring(L, 2);
 		if(levelname == "error")
 			level = LMT_ERROR;
 		else if(levelname == "action")
@@ -4418,6 +4453,84 @@ static int l_get_server_status(lua_State *L)
 {
 	lua_pushstring(L, wide_to_narrow(get_server(L)->getStatusString()).c_str());
 	return 1;
+}
+
+// register_biome_groups({frequencies})
+static int l_register_biome_groups(lua_State *L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+	int index = 1;
+	if (!lua_istable(L, index))
+		throw LuaError(L, "register_biome_groups: parameter is not a table");
+
+	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
+	if (!bmgr) {
+		verbosestream << "register_biome_groups: BiomeDefManager not active" << std::endl;
+		return 0;
+	}
+
+	lua_pushnil(L);
+	for (int i = 1; lua_next(L, index) != 0; i++) {
+		bmgr->addBiomeGroup(lua_tonumber(L, -1));
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	return 0;
+}
+
+// register_biome({lots of stuff})
+static int l_register_biome(lua_State *L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+	int index = 1, groupid;
+	std::string nodename;
+
+	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
+	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
+	if (!bmgr) {
+		verbosestream << "register_biome: BiomeDefManager not active" << std::endl;
+		return 0;
+	}
+
+	groupid = getintfield_default(L, index, "group_id", 0);
+
+	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
+					"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
+	Biome *b = bmgr->createBiome(terrain);
+
+	b->name = getstringfield_default(L, index, "name", "");
+
+	if (getstringfield(L, index, "node_top", nodename))
+		b->n_top = MapNode(ndef->getId(nodename));
+	else
+		b->n_top = MapNode(CONTENT_IGNORE);
+
+	if (getstringfield(L, index, "node_filler", nodename))
+		b->n_filler = MapNode(ndef->getId(nodename));
+	else
+		b->n_filler = b->n_top;
+
+	b->ntopnodes = getintfield_default(L, index, "num_top_nodes", 0);
+
+	b->height_min   = getintfield_default(L, index, "height_min", 0);
+	b->height_max   = getintfield_default(L, index, "height_max", 0);
+	b->heat_min     = getfloatfield_default(L, index, "heat_min", 0.);
+	b->heat_max     = getfloatfield_default(L, index, "heat_max", 0.);
+	b->humidity_min = getfloatfield_default(L, index, "humidity_min", 0.);
+	b->humidity_max = getfloatfield_default(L, index, "humidity_max", 0.);
+
+	b->np = new NoiseParams; // should read an entire NoiseParams later on...
+	getfloatfield(L, index, "scale", b->np->scale);
+	getfloatfield(L, index, "offset", b->np->offset);
+
+	b->groupid = (s8)groupid;
+	b->flags   = 0; //reserved
+
+	bmgr->addBiome(b);
+
+	verbosestream << "register_biome: " << b->name << std::endl;
+	return 0;
 }
 
 // register_item_raw({lots of stuff})
@@ -4459,7 +4572,7 @@ static int l_register_item_raw(lua_State *L)
 		else
 			def.node_placement_prediction = "";
 	}
-	
+
 	// Register item definition
 	idef->registerItem(def);
 
@@ -4482,9 +4595,9 @@ static int l_register_alias_raw(lua_State *L)
 	// Get the writable item definition manager from the server
 	IWritableItemDefManager *idef =
 			get_server(L)->getWritableItemDefManager();
-	
+
 	idef->registerAlias(name, convert_to);
-	
+
 	return 0; /* number of results */
 }
 
@@ -4593,7 +4706,7 @@ static int l_register_craft(lua_State *L)
 	// Get the writable craft definition manager from the server
 	IWritableCraftDefManager *craftdef =
 			get_server(L)->getWritableCraftDefManager();
-	
+
 	std::string type = getstringfield_default(L, table, "type", "shaped");
 
 	/*
@@ -4768,6 +4881,13 @@ static int l_setting_getbool(lua_State *L)
 	return 1;
 }
 
+// setting_save()
+static int l_setting_save(lua_State *L)
+{
+	get_server(L)->saveConfig();
+	return 0;
+}
+
 // chat_send_all(text)
 static int l_chat_send_all(lua_State *L)
 {
@@ -4877,7 +4997,7 @@ static int l_get_inventory(lua_State *L)
 		std::string name = checkstringfield(L, 1, "name");
 		loc.setDetached(name);
 	}
-	
+
 	if(get_server(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
@@ -4895,6 +5015,22 @@ static int l_create_detached_inventory_raw(lua_State *L)
 		InvRef::create(L, loc);
 	}else{
 		lua_pushnil(L);
+	}
+	return 1;
+}
+
+// show_formspec(playername,formname,formspec)
+static int l_show_formspec(lua_State *L)
+{
+	const char *playername = luaL_checkstring(L, 1);
+	const char *formname = luaL_checkstring(L, 2);
+	const char *formspec = luaL_checkstring(L, 3);
+
+	if(get_server(L)->showFormspec(playername,formspec,formname))
+	{
+		lua_pushboolean(L, true);
+	}else{
+		lua_pushboolean(L, false);
 	}
 	return 1;
 }
@@ -5078,7 +5214,7 @@ static int l_get_craft_result(lua_State *L)
 	lua_getfield(L, input_i, "items");
 	std::vector<ItemStack> items = read_items(L, -1);
 	lua_pop(L, 1); // items
-	
+
 	IGameDef *gdef = get_server(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input(method, width, items);
@@ -5113,7 +5249,7 @@ static int l_get_craft_recipe(lua_State *L)
 	char tmp[20];
 	int input_i = 1;
 	std::string o_item = luaL_checkstring(L,input_i);
-	
+
 	IGameDef *gdef = get_server(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input;
@@ -5216,9 +5352,12 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_item_raw", l_register_item_raw},
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
+	{"register_biome", l_register_biome},
+	{"register_biome_groups", l_register_biome_groups},
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
+	{"setting_save",l_setting_save},
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
@@ -5228,6 +5367,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"unban_player_or_ip", l_unban_player_of_ip},
 	{"get_inventory", l_get_inventory},
 	{"create_detached_inventory_raw", l_create_detached_inventory_raw},
+	{"show_formspec", l_show_formspec},
 	{"get_dig_params", l_get_dig_params},
 	{"get_hit_params", l_get_hit_params},
 	{"get_current_modname", l_get_current_modname},
@@ -5265,7 +5405,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_newtable(L);
 	luaL_register(L, NULL, minetest_f);
 	lua_setglobal(L, "minetest");
-	
+
 	// Get the main minetest table
 	lua_getglobal(L, "minetest");
 
@@ -5298,7 +5438,7 @@ bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
 		return false;
 	}
-	
+
 	bool success = false;
 
 	try{
@@ -5342,7 +5482,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	lua_getfield(L, -1, "registered_abms");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int registered_abms = lua_gettop(L);
-	
+
 	if(lua_istable(L, registered_abms)){
 		int table = lua_gettop(L);
 		lua_pushnil(L);
@@ -5393,7 +5533,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 
 			LuaABM *abm = new LuaABM(L, id, trigger_contents,
 					required_neighbors, trigger_interval, trigger_chance);
-			
+
 			env->addActiveBlockModifier(abm);
 
 			// removes value, keeps key for next iteration
@@ -5437,7 +5577,7 @@ void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
-	
+
 	// object_refs[id] = object
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
@@ -5456,7 +5596,7 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
-	
+
 	// Get object_refs[id]
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_gettable(L, objectstable);
@@ -5552,16 +5692,16 @@ static void scriptapi_run_callbacks(lua_State *L, int nargs,
 				lua_replace(L, rv);
 			else if(mode == RUN_CALLBACKS_MODE_AND ||
 					mode == RUN_CALLBACKS_MODE_AND_SC){
-				if(lua_toboolean(L, rv) == true &&
-						lua_toboolean(L, -1) == false)
+				if((bool)lua_toboolean(L, rv) == true &&
+						(bool)lua_toboolean(L, -1) == false)
 					lua_replace(L, rv);
 				else
 					lua_pop(L, 1);
 			}
 			else if(mode == RUN_CALLBACKS_MODE_OR ||
 					mode == RUN_CALLBACKS_MODE_OR_SC){
-				if(lua_toboolean(L, rv) == false &&
-						lua_toboolean(L, -1) == true)
+				if((bool)lua_toboolean(L, rv) == false &&
+						(bool)lua_toboolean(L, -1) == true)
 					lua_replace(L, rv);
 				else
 					lua_pop(L, 1);
@@ -5572,10 +5712,10 @@ static void scriptapi_run_callbacks(lua_State *L, int nargs,
 
 		// Handle short circuit modes
 		if(mode == RUN_CALLBACKS_MODE_AND_SC &&
-				lua_toboolean(L, rv) == false)
+				(bool)lua_toboolean(L, rv) == false)
 			break;
 		else if(mode == RUN_CALLBACKS_MODE_OR_SC &&
-				lua_toboolean(L, rv) == true)
+				(bool)lua_toboolean(L, rv) == true)
 			break;
 
 		// value removed, keep key for next iteration
@@ -5720,7 +5860,7 @@ bool scriptapi_get_auth(lua_State *L, const std::string &playername,
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
-	
+
 	get_auth_handler(L);
 	lua_getfield(L, -1, "get_auth");
 	if(lua_type(L, -1) != LUA_TFUNCTION)
@@ -5728,12 +5868,12 @@ bool scriptapi_get_auth(lua_State *L, const std::string &playername,
 	lua_pushstring(L, playername.c_str());
 	if(lua_pcall(L, 1, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
-	
+
 	// nil = login not allowed
 	if(lua_isnil(L, -1))
 		return false;
 	luaL_checktype(L, -1, LUA_TTABLE);
-	
+
 	std::string password;
 	bool found = getstringfield(L, -1, "password", password);
 	if(!found)
@@ -5748,7 +5888,7 @@ bool scriptapi_get_auth(lua_State *L, const std::string &playername,
 	if(dst_privs)
 		read_privileges(L, -1, *dst_privs);
 	lua_pop(L, 1);
-	
+
 	return true;
 }
 
@@ -5758,7 +5898,7 @@ void scriptapi_create_auth(lua_State *L, const std::string &playername,
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
-	
+
 	get_auth_handler(L);
 	lua_getfield(L, -1, "create_auth");
 	if(lua_type(L, -1) != LUA_TFUNCTION)
@@ -5775,7 +5915,7 @@ bool scriptapi_set_password(lua_State *L, const std::string &playername,
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
-	
+
 	get_auth_handler(L);
 	lua_getfield(L, -1, "set_password");
 	if(lua_type(L, -1) != LUA_TFUNCTION)
@@ -5791,7 +5931,7 @@ bool scriptapi_set_password(lua_State *L, const std::string &playername,
 	player
 */
 
-void scriptapi_on_player_receive_fields(lua_State *L, 
+void scriptapi_on_player_receive_fields(lua_State *L,
 		ServerActiveObject *player,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields)
@@ -6056,9 +6196,9 @@ bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime)
 	lua_pushnumber(L,dtime);
 	if(lua_pcall(L, 2, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
-	if(lua_isboolean(L,-1) && lua_toboolean(L,-1) == true)
+	if((bool)lua_isboolean(L,-1) && (bool)lua_toboolean(L,-1) == true)
 		return true;
-	
+
 	return false;
 }
 
@@ -6072,7 +6212,7 @@ void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 	StackUnroller stack_unroller(L);
 
 	INodeDefManager *ndef = get_server(L)->ndef();
-	
+
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = get_env(L)->getMap().getNodeNoEx(p);
 	if(node.getContent() == CONTENT_IGNORE)
@@ -6640,7 +6780,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
 			<<name<<"\""<<std::endl;
 	StackUnroller stack_unroller(L);
-	
+
 	// Get minetest.registered_entities[name]
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_entities");
@@ -6655,7 +6795,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	}
 	int prototype_table = lua_gettop(L);
 	//dump2(L, "prototype_table");
-	
+
 	// Create entity object
 	lua_newtable(L);
 	int object = lua_gettop(L);
@@ -6663,7 +6803,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	// Set object metatable
 	lua_pushvalue(L, prototype_table);
 	lua_setmetatable(L, -2);
-	
+
 	// Add object reference
 	// This should be userdata with metatable ObjectRef
 	objectref_get(L, id);
@@ -6679,7 +6819,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	lua_pushnumber(L, id); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
 	lua_settable(L, -3);
-	
+
 	return true;
 }
 
@@ -6690,11 +6830,11 @@ void scriptapi_luaentity_activate(lua_State *L, u16 id,
 	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
-	
+
 	// Get minetest.luaentities[id]
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
-	
+
 	// Get on_activate function
 	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "on_activate");
@@ -6721,12 +6861,12 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
-	
+
 	// Set luaentities[id] = nil
 	lua_pushnumber(L, id); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
-	
+
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
@@ -6740,20 +6880,20 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 	// Get minetest.luaentities[id]
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
-	
+
 	// Get get_staticdata function
 	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "get_staticdata");
 	if(lua_isnil(L, -1))
 		return "";
-	
+
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	// Call with 1 arguments, 1 results
 	if(lua_pcall(L, 1, 1, 0))
 		script_error(L, "error running function get_staticdata: %s\n",
 				lua_tostring(L, -1));
-	
+
 	size_t len=0;
 	const char *s = lua_tolstring(L, -1, &len);
 	return std::string(s, len);
@@ -6773,9 +6913,9 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 
 	// Set default values that differ from ObjectProperties defaults
 	prop->hp_max = 10;
-	
+
 	/* Read stuff */
-	
+
 	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
 
 	getboolfield(L, -1, "physical", prop->physical);
@@ -6790,10 +6930,10 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
-	
+
 	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop);
-	
+
 	// Read initial_properties
 	lua_getfield(L, -1, "initial_properties");
 	read_object_properties(L, -1, prop);

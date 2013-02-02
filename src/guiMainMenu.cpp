@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiCreateWorld.h"
+#include "guiConfigureWorld.h"
 #include "guiMessageMenu.h"
 #include "guiConfirmMenu.h"
 #include "debug.h"
@@ -104,6 +105,7 @@ enum
 	GUI_ID_TRILINEAR_CB,
 	GUI_ID_SHADERS_CB,
 	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
+	GUI_ID_ENABLE_PARTICLES_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -113,6 +115,9 @@ enum
 	GUI_ID_CONFIGURE_WORLD_BUTTON,
 	GUI_ID_WORLD_LISTBOX,
 	GUI_ID_TAB_CONTROL,
+	GUI_ID_SERVERLIST,
+	GUI_ID_SERVERLIST_TOGGLE,
+	GUI_ID_SERVERLIST_DELETE,
 };
 
 enum
@@ -360,14 +365,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		// Nickname + password
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
-			rect += m_topleft_client + v2s32(35+30, 50+6);
+			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 10+6);
 			Environment->addStaticText(wgettext("Name/Password"), 
 				rect, false, true, this, -1);
 		}
 		changeCtype("C");
 		{
-			core::rect<s32> rect(0, 0, 230, 30);
-			rect += m_topleft_client + v2s32(160+30, 50);
+			core::rect<s32> rect(0, 0, 120, 30);
+			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 50);
 			gui::IGUIElement *e = 
 			Environment->addEditBox(m_data->name.c_str(), rect, true, this, GUI_ID_NAME_INPUT);
 			if(m_data->name == L"")
@@ -375,7 +380,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 50);
+			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 90);
 			gui::IGUIEditBox *e =
 			Environment->addEditBox(L"", rect, true, this, 264);
 			e->setPasswordBox(true);
@@ -384,17 +389,29 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 
 		}
 		changeCtype("");
+		// Server List
+		{
+			core::rect<s32> rect(0, 0, 390, 160);
+			rect += m_topleft_client + v2s32(50, 10);
+			gui::IGUIListBox *e = Environment->addListBox(rect, this,
+					GUI_ID_SERVERLIST);
+			e->setDrawBackground(true);
+			if (m_data->serverlist_show_available == false)
+				m_data->servers = ServerList::getLocal();
+			updateGuiServerList();
+			e->setSelected(0);
+		}
 		// Address + port
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
-			rect += m_topleft_client + v2s32(35+30, 100+6);
+			rect += m_topleft_client + v2s32(50, m_size_client.Y-50-15+6);
 			Environment->addStaticText(wgettext("Address/Port"),
 				rect, false, true, this, -1);
 		}
 		changeCtype("C");
 		{
-			core::rect<s32> rect(0, 0, 230, 30);
-			rect += m_topleft_client + v2s32(160+30, 100);
+			core::rect<s32> rect(0, 0, 260, 30);
+			rect += m_topleft_client + v2s32(50, m_size_client.Y-25-15);
 			gui::IGUIElement *e = 
 			Environment->addEditBox(m_data->address.c_str(), rect, true,
 					this, GUI_ID_ADDRESS_INPUT);
@@ -403,18 +420,43 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 100);
+			rect += m_topleft_client + v2s32(50+260+10, m_size_client.Y-25-15);
 			Environment->addEditBox(m_data->port.c_str(), rect, true,
 					this, GUI_ID_PORT_INPUT);
 		}
 		changeCtype("");
+		#if USE_CURL
+		// Toggle Serverlist (Favorites/Online)
+		{
+			core::rect<s32> rect(0, 0, 260, 30);
+			rect += m_topleft_client + v2s32(50,
+					180);
+			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_TOGGLE,
+				wgettext("Show Public"));
+			e->setIsPushButton(true);
+			if (m_data->serverlist_show_available)
+			{
+				e->setText(wgettext("Show Favorites"));
+				e->setPressed();
+			}
+		}
+		#endif
+		// Delete Local Favorite
+		{
+			core::rect<s32> rect(0, 0, 120, 30);
+			rect += m_topleft_client + v2s32(50+260+10, 180);
+			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_DELETE,
+				wgettext("Delete"));
+			if (m_data->serverlist_show_available) // Hidden on Show-Online mode
+				e->setVisible(false);
+		}
 		// Start game button
 		{
-			core::rect<s32> rect(0, 0, 180, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-180-30,
-					m_size_client.Y-30-15);
+			core::rect<s32> rect(0, 0, 120, 30);
+			rect += m_topleft_client + v2s32(m_size_client.X-130-30,
+					m_size_client.Y-25-15);
 			Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
-				wgettext("Start Game / Connect"));
+				wgettext("Connect"));
 		}
 		changeCtype("C");
 	}
@@ -618,7 +660,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				       GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
 		}
 
-		// shader/on demand image loading settings
+		// shader/on demand image loading/particles settings
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y);
@@ -631,6 +673,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20);
 			Environment->addCheckBox(m_data->preload_item_visuals, rect, this,
 					GUI_ID_PRELOAD_ITEM_VISUALS_CB, wgettext("Preload item visuals"));
+		}
+
+		{
+			core::rect<s32> rect(0, 0, option_w+20+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*2);
+			Environment->addCheckBox(m_data->enable_particles, rect, this,
+					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
 
 		// Key change button
@@ -850,9 +899,21 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 	}
 
 	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_PARTICLES_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_particles = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
 		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
 			dst->selected_world = ((gui::IGUIListBox*)e)->getSelected();
+	}
+	{
+		ServerListSpec server =
+		getServerListSpec(wide_to_narrow(dst->address), wide_to_narrow(dst->port));
+		dst->servername = server.name;
+		dst->serverdescription = server.description;
 	}
 }
 
@@ -898,6 +959,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				regenerateGui(m_screensize_old);
 			return true;
 		}
+		if(event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED && event.GUIEvent.Caller->getID() == GUI_ID_SERVERLIST)
+		{
+			serverListOnSelected();
+			return true;
+		}
 		if(event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED)
 		{
 			switch(event.GUIEvent.Caller->getID())
@@ -905,7 +971,8 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			case GUI_ID_JOIN_GAME_BUTTON: {
 				MainMenuData cur;
 				readInput(&cur);
-				if(cur.address == L"" && getTab() == TAB_MULTIPLAYER){
+				if (getTab() == TAB_MULTIPLAYER && cur.address == L"")
+				{
 					(new GUIMessageMenu(env, parent, -1, menumgr,
 							wgettext("Address required."))
 							)->drop();
@@ -967,12 +1034,62 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_CONFIGURE_WORLD_BUTTON: {
-				GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
-						-1, menumgr,
-						wgettext("Nothing here"));
-				menu->drop();
+				MainMenuData cur;
+				readInput(&cur);
+				if(cur.selected_world == -1)
+				{
+					(new GUIMessageMenu(env, parent, -1, menumgr,
+							wgettext("Cannot configure world: Nothing selected"))
+							)->drop();
+				} 
+				else 
+				{
+					WorldSpec wspec = m_data->worlds[cur.selected_world];
+					GUIConfigureWorld *menu = new GUIConfigureWorld(env, parent,
+										-1, menumgr, wspec);
+					menu->drop();
+				}
 				return true;
 			}
+			case GUI_ID_SERVERLIST_DELETE: {
+				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
+				s32 selected = ((gui::IGUIListBox*)serverlist)->getSelected();
+				if (selected == -1) return true;
+				ServerList::deleteEntry(m_data->servers[selected]);
+				m_data->servers = ServerList::getLocal();
+				updateGuiServerList();
+				if (selected > 0)
+					selected -= 1;
+				serverlist->setSelected(selected);
+				serverListOnSelected();
+				return true;
+			}
+			#if USE_CURL
+			case GUI_ID_SERVERLIST_TOGGLE: {
+				gui::IGUIElement *togglebutton = getElementFromId(GUI_ID_SERVERLIST_TOGGLE);
+				gui::IGUIElement *deletebutton = getElementFromId(GUI_ID_SERVERLIST_DELETE);
+				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
+				if (m_data->serverlist_show_available) // switch to favorite list
+				{
+					m_data->servers = ServerList::getLocal();
+					togglebutton->setText(wgettext("Show Public"));
+					deletebutton->setVisible(true);
+					updateGuiServerList();
+					serverlist->setSelected(0);
+				}
+				else // switch to online list
+				{
+					m_data->servers = ServerList::getOnline();
+					togglebutton->setText(wgettext("Show Favorites"));
+					deletebutton->setVisible(false);
+					updateGuiServerList();
+					serverlist->setSelected(0);
+				}
+				serverListOnSelected();
+
+				m_data->serverlist_show_available = !m_data->serverlist_show_available;
+			}
+			#endif
 			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
@@ -995,6 +1112,14 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 					m_data->address = L""; // Force local game
 				quitMenu();
 				return true;
+			case GUI_ID_SERVERLIST:
+				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
+				if (serverlist->getSelected() > -1)
+				{
+					acceptInput();
+					quitMenu();
+					return true;
+				}
 			}
 		}
 	}
@@ -1038,4 +1163,56 @@ int GUIMainMenu::getTab()
 void GUIMainMenu::displayMessageMenu(std::wstring msg)
 {
 	(new GUIMessageMenu(env, parent, -1, menumgr, msg))->drop();
+}
+
+void GUIMainMenu::updateGuiServerList()
+{
+	gui::IGUIListBox *serverlist = (gui::IGUIListBox *)getElementFromId(GUI_ID_SERVERLIST);
+	serverlist->clear();
+
+	for(std::vector<ServerListSpec>::iterator i = m_data->servers.begin();
+		i != m_data->servers.end(); i++)
+	{
+		std::string text;
+		if (i->name != "" && i->description != "")
+			text = i->name + " (" + i->description + ")";
+		else if (i->name !="")
+			text = i->name;
+		else
+			text = i->address + ":" + i->port;
+
+		serverlist->addItem(narrow_to_wide(text).c_str());
+	}
+}
+
+void GUIMainMenu::serverListOnSelected()
+{
+	if (!m_data->servers.empty())
+	{
+		gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
+		u16 id = serverlist->getSelected();
+		if (id < 0) return;
+		((gui::IGUIEditBox*)getElementFromId(GUI_ID_ADDRESS_INPUT))
+		->setText(narrow_to_wide(m_data->servers[id].address).c_str());
+		((gui::IGUIEditBox*)getElementFromId(GUI_ID_PORT_INPUT))
+		->setText(narrow_to_wide(m_data->servers[id].port).c_str());
+	}
+}
+
+ServerListSpec GUIMainMenu::getServerListSpec(std::string address, std::string port)
+{
+	ServerListSpec server;
+	server.address = address;
+	server.port = port;
+	for(std::vector<ServerListSpec>::iterator i = m_data->servers.begin();
+		i != m_data->servers.end(); i++)
+	{
+		if (i->address == address && i->port == port)
+		{
+			server.description = i->description;
+			server.name = i->name;
+			break;
+		}
+	}
+	return server;
 }

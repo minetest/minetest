@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filecache.h"
 #include "localplayer.h"
 #include "server.h"
+#include "particles.h"
 #include "util/pointedthing.h"
 
 struct MeshMakeData;
@@ -154,7 +155,8 @@ enum ClientEventType
 	CE_PLAYER_DAMAGE,
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
-	CE_TEXTURES_UPDATED
+	CE_TEXTURES_UPDATED,
+	CE_SHOW_FORMSPEC
 };
 
 struct ClientEvent
@@ -176,6 +178,10 @@ struct ClientEvent
 			f32 camera_point_target_y;
 			f32 camera_point_target_z;
 		} deathscreen;
+		struct{
+			std::string* formspec;
+			std::string* formname;
+		} show_formspec;
 		struct{
 		} textures_updated;
 	};

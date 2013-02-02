@@ -45,8 +45,7 @@ Clouds::Clouds(
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
-	m_cloud_y = BS*100;
-	//m_cloud_y = BS*50;
+	m_cloud_y = BS * g_settings->getS16("cloud_height");
 
 	m_box = core::aabbox3d<f32>(-BS*1000000,m_cloud_y-BS,-BS*1000000,
 			BS*1000000,m_cloud_y+BS,BS*1000000);

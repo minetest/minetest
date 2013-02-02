@@ -35,13 +35,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define SWPRINTF_CHARSTRING L"%s"
 #endif
 
+//currently not needed
+//template<typename T> struct alignment_trick { char c; T member; };
+//#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
+
 #ifdef _WIN32
 	#include <windows.h>
+	
 	#define sleep_ms(x) Sleep(x)
 #else
 	#include <unistd.h>
+	#include <stdint.h> //for uintptr_t
+	
 	#define sleep_ms(x) usleep(x*1000)
 #endif
+
+#ifdef _MSC_VER
+	#define ALIGNOF(x) __alignof(x)
+	#define strtok_r(x, y, z) strtok_s(x, y, z)
+	#define strtof(x, y) (float)strtod(x, y)
+	#define strtoll(x, y, z) _strtoi64(x, y, z)
+	#define strtoull(x, y, z) _strtoui64(x, y, z)
+#else
+	#define ALIGNOF(x) __alignof__(x)
+#endif
+
+#ifdef __MINGW32__
+	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
+#endif
+
+#define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
 
 namespace porting
 {

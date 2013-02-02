@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,26 +17,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef IRRLICHTTYPES_HEADER
-#define IRRLICHTTYPES_HEADER
+#include <iostream>
+#include "config.h"
 
-#include <irrTypes.h>
+#ifndef SERVERLIST_HEADER
+#define SERVERLIST_HEADER
 
-using namespace irr;
+struct ServerListSpec
+{
+	std::string name;
+	std::string address;
+	std::string port;
+	std::string description;
+};
 
-// Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-#ifdef _MSC_VER
-	// Windows
-	typedef long long s64;
-	typedef unsigned long long u64;
-#else
-	// Posix
-	#include <stdint.h>
-	typedef int64_t s64;
-	typedef uint64_t u64;
+namespace ServerList
+{
+	std::vector<ServerListSpec> getLocal();
+	#if USE_CURL
+	std::vector<ServerListSpec> getOnline();
+	#endif
+	bool deleteEntry(ServerListSpec server);
+	bool insert(ServerListSpec server);
+	std::vector<ServerListSpec> deSerialize(std::string liststring);
+	std::string serialize(std::vector<ServerListSpec>);
+} //ServerList namespace
+
 #endif
-#endif
-
-#endif
-

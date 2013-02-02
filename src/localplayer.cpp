@@ -399,6 +399,9 @@ void LocalPlayer::applyControl(float dtime)
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
 	
+	if(g_settings->getBool("always_fly_fast") && free_move && fast_move)
+		superspeed = true;
+
 	// Old descend control
 	if(g_settings->getBool("aux1_descends"))
 	{
@@ -454,7 +457,8 @@ void LocalPlayer::applyControl(float dtime)
 			{
 				// In free movement mode, sneak descends
 				v3f speed = getSpeed();
-				if(fast_move && control.aux1)
+				if(fast_move && (control.aux1 ||
+						g_settings->getBool("always_fly_fast")))
 					speed.Y = -20*BS;
 				else
 					speed.Y = -walkspeed_max;
@@ -497,7 +501,8 @@ void LocalPlayer::applyControl(float dtime)
 		{
 			v3f speed = getSpeed();
 			
-			if(g_settings->getBool("aux1_descends"))
+			if(g_settings->getBool("aux1_descends") ||
+					g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)
 					speed.Y = 20*BS;

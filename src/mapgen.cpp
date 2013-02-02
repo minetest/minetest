@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "voxel.h"
 #include "noise.h"
+#include "biome.h"
 #include "mapblock.h"
+#include "mapnode.h"
 #include "map.h"
 //#include "serverobject.h"
 #include "content_sao.h"
@@ -28,9 +30,213 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h" // For content_mapnode_get_new_name
 #include "voxelalgorithms.h"
 #include "profiler.h"
+#include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 #include "treegen.h"
+#include "mapgen_v6.h"
 
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Emerge Manager ////////////////////////////////
+
+
+EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
+	//register built-in mapgens
+	registerMapgen("v6", new MapgenFactoryV6());
+		
+	//the order of these assignments is pretty important
+	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
+	this->params   = NULL;
+	this->mapgen   = NULL;
+}
+
+
+EmergeManager::~EmergeManager() {
+	delete biomedef;
+	delete mapgen;
+	delete params;
+}
+
+
+void EmergeManager::initMapgens(MapgenParams *mgparams) {
+	if (mapgen)
+		return;
+	
+	this->params = mgparams;
+	this->mapgen = getMapgen(); //only one mapgen for now!
+}
+
+
+Mapgen *EmergeManager::getMapgen() {
+	if (!mapgen) {
+		mapgen = createMapgen(params->mg_name, 0, params, this);
+		if (!mapgen) {
+			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
+			delete params;
+			params = createMapgenParams("v6");
+			mapgen = createMapgen("v6", 0, params, this);
+		}
+	}
+	return mapgen;
+}
+
+void EmergeManager::addBlockToQueue() {
+	//STUB
+}
+
+
+int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
+	if (!mapgen)
+		return 0;
+	return mapgen->getGroundLevelAtPoint(p);
+}
+
+
+bool EmergeManager::isBlockUnderground(v3s16 blockpos) {
+	/*
+	v2s16 p = v2s16((blockpos.X * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2,
+					(blockpos.Y * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2);
+	int ground_level = getGroundLevelAtPoint(p);
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= min(water_level, ground_level);
+	*/
+
+	//yuck, but then again, should i bother being accurate?
+	//the height of the nodes in a single block is quite variable
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params->water_level;
+}
+
+
+u32 EmergeManager::getBlockSeed(v3s16 p) {
+	return (u32)(params->seed & 0xFFFFFFFF) +
+		p.Z * 38134234 +
+		p.Y * 42123 +
+		p.Y * 23;
+}
+
+
+Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
+									MapgenParams *mgparams, EmergeManager *emerge) {
+	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+	if (iter == mglist.end()) {
+		errorstream << "EmergeManager; mapgen " << mgname <<
+		 " not registered" << std::endl;
+		return NULL;
+	}
+	
+	MapgenFactory *mgfactory = iter->second;
+	return mgfactory->createMapgen(mgid, mgparams, emerge);
+}
+
+
+MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
+	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+	if (iter == mglist.end()) {
+		errorstream << "EmergeManager: mapgen " << mgname <<
+		 " not registered" << std::endl;
+		return NULL;
+	}
+	
+	MapgenFactory *mgfactory = iter->second;
+	return mgfactory->createMapgenParams();
+}
+
+
+MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
+	std::string mg_name = settings->get("mg_name");
+	MapgenParams *mgparams = createMapgenParams(mg_name);
+	
+	mgparams->mg_name     = mg_name;
+	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
+	mgparams->water_level = settings->getS16("water_level");
+	mgparams->chunksize   = settings->getS16("chunksize");
+	mgparams->flags       = settings->getS32("mg_flags");
+
+	if (!mgparams->readParams(settings)) {
+		delete mgparams;
+		return NULL;
+	}
+	return mgparams;
+}
+
+
+bool EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
+	mglist.insert(std::make_pair(mgname, mgfactory));
+	infostream << "EmergeManager: registered mapgen " << mgname << std::endl;
+}
+
+
+/////////////////////
+
+bool MapgenV6Params::readParams(Settings *settings) {
+	freq_desert = settings->getFloat("mgv6_freq_desert");
+	freq_beach  = settings->getFloat("mgv6_freq_beach");
+
+	np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
+	np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
+	np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
+	np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
+	np_trees          = settings->getNoiseParams("mgv6_np_trees");
+	np_mud            = settings->getNoiseParams("mgv6_np_mud");
+	np_beach          = settings->getNoiseParams("mgv6_np_beach");
+	np_biome          = settings->getNoiseParams("mgv6_np_biome");
+	np_cave           = settings->getNoiseParams("mgv6_np_cave");
+
+	bool success =
+		np_terrain_base  && np_terrain_higher && np_steepness &&
+		np_height_select && np_trees          && np_mud       &&
+		np_beach         && np_biome          && np_cave;
+	return success;
+}
+
+
+void MapgenV6Params::writeParams(Settings *settings) {
+	settings->setFloat("mgv6_freq_desert", freq_desert);
+	settings->setFloat("mgv6_freq_beach",  freq_beach);
+	
+	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
+	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
+	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
+	settings->setNoiseParams("mgv6_np_height_select",  np_height_select);
+	settings->setNoiseParams("mgv6_np_trees",          np_trees);
+	settings->setNoiseParams("mgv6_np_mud",            np_mud);
+	settings->setNoiseParams("mgv6_np_beach",          np_beach);
+	settings->setNoiseParams("mgv6_np_biome",          np_biome);
+	settings->setNoiseParams("mgv6_np_cave",           np_cave);
+}
+
+
+/////////////////////////////////// legacy static functions for farmesh
+
+
+s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
+	//just need to return something
+	s16 level = 5;
+	return level;
+}
+
+
+bool Mapgen::get_have_beach(u64 seed, v2s16 p2d) {
+	double sandnoise = noise2d_perlin(
+			0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
+			seed+59420, 3, 0.50);
+
+	return (sandnoise > 0.15);
+}
+
+
+double Mapgen::tree_amount_2d(u64 seed, v2s16 p) {
+	double noise = noise2d_perlin(
+			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
+			seed+2, 4, 0.66);
+	double zeroval = -0.39;
+	if(noise < zeroval)
+		return 0;
+	else
+		return 0.04 * (noise-zeroval) / (1.0-zeroval);
+}
+
+
+#if 0 /// BIG COMMENT
 namespace mapgen
 {
 
@@ -121,6 +327,7 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 }
 #endif
 
+
 #if 0
 
 static void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
@@ -190,7 +397,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
-	
+
 	// Make +-Z walls
 	for(s16 x=0; x<roomsize.X; x++)
 	for(s16 y=0; y<roomsize.Y; y++)
@@ -214,7 +421,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
-	
+
 	// Make +-Y walls (floor and ceiling)
 	for(s16 z=0; z<roomsize.Z; z++)
 	for(s16 x=0; x<roomsize.X; x++)
@@ -238,7 +445,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
-	
+
 	// Fill with air
 	for(s16 z=1; z<roomsize.Z-1; z++)
 	for(s16 y=1; y<roomsize.Y-1; y++)
@@ -401,9 +608,9 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 		if(partcount >= partlength)
 		{
 			partcount = 0;
-			
+
 			dir = random_turn(random, dir);
-			
+
 			partlength = random.range(1,length);
 
 			make_stairs = 0;
@@ -443,7 +650,7 @@ public:
 	{
 		m_dir = dir;
 	}
-	
+
 	bool findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 	{
 		for(u32 i=0; i<100; i++)
@@ -540,7 +747,7 @@ public:
 			if(doordir == v3s16(0,0,-1)) // Z-
 				roomplace = doorplace + v3s16(-roomsize.X/2,-1,-roomsize.Z+1);
 #endif
-			
+
 			// Check fit
 			bool fits = true;
 			for(s16 z=1; z<roomsize.Z-1; z++)
@@ -587,7 +794,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 	v3s16 areasize = vmanip.m_area.getExtent();
 	v3s16 roomsize;
 	v3s16 roomplace;
-	
+
 	/*
 		Find place for first room
 	*/
@@ -627,20 +834,20 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 	// No place found
 	if(fits == false)
 		return;
-	
+
 	/*
 		Stores the center position of the last room made, so that
 		a new corridor can be started from the last room instead of
 		the new room, if chosen so.
 	*/
 	v3s16 last_room_center = roomplace+v3s16(roomsize.X/2,1,roomsize.Z/2);
-	
+
 	u32 room_count = random.range(2,7);
 	for(u32 i=0; i<room_count; i++)
 	{
 		// Make a room to the determined place
 		make_room1(vmanip, roomsize, roomplace, ndef);
-		
+
 		v3s16 room_center = roomplace + v3s16(roomsize.X/2,1,roomsize.Z/2);
 
 		// Place torch at room center (for testing)
@@ -649,7 +856,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 		// Quit if last room
 		if(i == room_count-1)
 			break;
-		
+
 		// Determine walker start position
 
 		bool start_in_last_room = (random.range(0,2)!=0);
@@ -667,7 +874,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 			// Store center of current room as the last one
 			last_room_center = room_center;
 		}
-		
+
 		// Create walker and find a place for a door
 		RoomWalker walker(vmanip, walker_start_place, random, ndef);
 		v3s16 doorplace;
@@ -675,20 +882,20 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 		bool r = walker.findPlaceForDoor(doorplace, doordir);
 		if(r == false)
 			return;
-		
+
 		if(random.range(0,1)==0)
 			// Make the door
 			make_door1(vmanip, doorplace, doordir, ndef);
 		else
 			// Don't actually make a door
 			doorplace -= doordir;
-		
+
 		// Make a random corridor starting from the door
 		v3s16 corridor_end;
 		v3s16 corridor_end_dir;
 		make_corridor(vmanip, doorplace, doordir, corridor_end,
 				corridor_end_dir, random, ndef);
-		
+
 		// Find a place for a random sized room
 		roomsize = v3s16(random.range(4,8),random.range(4,6),random.range(4,8));
 		walker.setPos(corridor_end);
@@ -703,7 +910,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 		else
 			// Don't actually make a door
 			roomplace -= doordir;
-		
+
 	}
 }
 #endif
@@ -926,7 +1133,7 @@ s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
 			}
 		}
 	}
-	
+
 	// This is more like the actual ground level
 	level += dec[i-1]/2;
 
@@ -1024,7 +1231,7 @@ bool block_is_underground(u64 seed, v3s16 blockpos)
 			seed, v2s16(blockpos.X, blockpos.Z));*/
 	// Nah, this is just a heuristic, just return something
 	s16 minimum_groundlevel = WATER_LEVEL;
-	
+
 	if(blockpos.Y*MAP_BLOCKSIZE + MAP_BLOCKSIZE <= minimum_groundlevel)
 		return true;
 	else
@@ -1132,9 +1339,9 @@ BiomeType get_biome(u64 seed, v2s16 p2d)
 	double d = noise2d_perlin(
 			0.6+(float)p2d.X/250, 0.2+(float)p2d.Y/250,
 			seed+9130, 3, 0.50);
-	if(d > 0.45) 
+	if(d > 0.45)
 		return BT_DESERT;
-	if(d > 0.35 && (noise2d( p2d.X, p2d.Y, int(seed) ) + 1.0) > ( 0.45 - d ) * 20.0  ) 
+	if(d > 0.35 && (noise2d( p2d.X, p2d.Y, int(seed) ) + 1.0) > ( 0.45 - d ) * 20.0  )
 		return BT_DESERT;
 	return BT_NORMAL;
 };
@@ -1169,7 +1376,7 @@ void make_block(BlockMakeData *data)
 	// Hack: use minimum block coordinates for old code that assumes
 	// a single block
 	v3s16 blockpos = data->blockpos_requested;
-	
+
 	/*dstream<<"makeBlock(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
 
@@ -1177,7 +1384,7 @@ void make_block(BlockMakeData *data)
 	v3s16 blockpos_max = data->blockpos_max;
 	v3s16 blockpos_full_min = blockpos_min - v3s16(1,1,1);
 	v3s16 blockpos_full_max = blockpos_max + v3s16(1,1,1);
-	
+
 	ManualMapVoxelManipulator &vmanip = *(data->vmanip);
 	// Area of central chunk
 	v3s16 node_min = blockpos_min*MAP_BLOCKSIZE;
@@ -1193,10 +1400,10 @@ void make_block(BlockMakeData *data)
 	int volume_blocks = (blockpos_max.X - blockpos_min.X + 1)
 			* (blockpos_max.Y - blockpos_min.Y + 1)
 			* (blockpos_max.Z - blockpos_max.Z + 1);
-	
+
 	int volume_nodes = volume_blocks *
 			MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
-	
+
 	// Generated surface area
 	//double gen_area_nodes = MAP_BLOCKSIZE*MAP_BLOCKSIZE * rel_volume;
 
@@ -1207,7 +1414,7 @@ void make_block(BlockMakeData *data)
 		Create a block-specific seed
 	*/
 	u32 blockseed = get_blockseed(data->seed, full_node_min);
-	
+
 	/*
 		Cache some ground type values for speed
 	*/
@@ -1253,13 +1460,13 @@ void make_block(BlockMakeData *data)
 	{
 #if 1
 	TimeTaker timer1("Generating ground level");
-	
+
 	for(s16 x=node_min.X; x<=node_max.X; x++)
 	for(s16 z=node_min.Z; z<=node_max.Z; z++)
 	{
 		// Node position
 		v2s16 p2d = v2s16(x,z);
-		
+
 		/*
 			Skip of already generated
 		*/
@@ -1274,7 +1481,7 @@ void make_block(BlockMakeData *data)
 
 		// Use perlin noise for ground height
 		surface_y_f = base_rock_level_2d(data->seed, p2d);
-		
+
 		/*// Experimental stuff
 		{
 			float a = highlands_level_2d(data->seed, p2d);
@@ -1284,7 +1491,7 @@ void make_block(BlockMakeData *data)
 
 		// Convert to integer
 		s16 surface_y = (s16)surface_y_f;
-		
+
 		// Log it
 		if(surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
@@ -1316,9 +1523,9 @@ void make_block(BlockMakeData *data)
 		}
 	}
 #endif
-	
+
 	}//timer1
-	
+
 	// Limit dirt flow area by 1 because mud is flown into neighbors.
 	assert(central_area_size.X == central_area_size.Z);
 	s16 mudflow_minpos = 0-max_spread_amount+1;
@@ -1375,7 +1582,7 @@ void make_block(BlockMakeData *data)
 			tunnel_routepoints = ps.range(10, ps.range(15,30));
 		}
 		bool large_cave_is_flat = (ps.range(0,1) == 0);
-		
+
 		v3f main_direction(0,0,0);
 
 		// Allowed route area size in nodes
@@ -1391,7 +1598,7 @@ void make_block(BlockMakeData *data)
 		s16 more = max_spread_amount - max_tunnel_diameter/2 - insure;
 		ar += v3s16(1,0,1) * more * 2;
 		of -= v3s16(1,0,1) * more;
-		
+
 		s16 route_y_min = 0;
 		// Allow half a diameter + 7 over stone surface
 		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2 + 7;
@@ -1434,7 +1641,7 @@ void make_block(BlockMakeData *data)
 			if(coming_from_surface)
 				route_start_y_min = -of.Y + stone_surface_max_y + 10;
 		}*/
-		
+
 		route_start_y_min = rangelim(route_start_y_min, 0, ar.Y-1);
 		route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y-1);
 
@@ -1451,11 +1658,11 @@ void make_block(BlockMakeData *data)
 		MapNode airnode(CONTENT_AIR);
 		MapNode waternode(c_water_source);
 		MapNode lavanode(c_lava_source);
-		
+
 		/*
 			Generate some tunnel starting from orp
 		*/
-		
+
 		for(u16 j=0; j<tunnel_routepoints; j++)
 		{
 			if(j%dswitchint==0 && large_cave == false)
@@ -1467,12 +1674,12 @@ void make_block(BlockMakeData *data)
 				);
 				main_direction *= (float)ps.range(0, 10)/10;
 			}
-			
+
 			// Randomize size
 			s16 min_d = min_tunnel_diameter;
 			s16 max_d = max_tunnel_diameter;
 			s16 rs = ps.range(min_d, max_d);
-			
+
 			// Every second section is rough
 			bool randomize_xz = (ps2.range(1,2) == 1);
 
@@ -1495,13 +1702,13 @@ void make_block(BlockMakeData *data)
 			}
 
 			v3f vec;
-			
+
 			vec = v3f(
 				(float)(ps.next()%(maxlen.X*1))-(float)maxlen.X/2,
 				(float)(ps.next()%(maxlen.Y*1))-(float)maxlen.Y/2,
 				(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
 			);
-		
+
 			// Jump downward sometimes
 			if(!large_cave && ps.range(0,12) == 0)
 			{
@@ -1511,7 +1718,7 @@ void make_block(BlockMakeData *data)
 					(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
 				);
 			}
-			
+
 			/*if(large_cave){
 				v3f p = orp + vec;
 				s16 h = find_ground_level_clever(vmanip,
@@ -1573,12 +1780,12 @@ void make_block(BlockMakeData *data)
 							s16 x = cp.X + x0;
 							v3s16 p(x,y,z);
 							p += of;
-							
+
 							if(vmanip.m_area.contains(p) == false)
 								continue;
-							
+
 							u32 i = vmanip.m_area.index(p);
-							
+
 							if(large_cave)
 							{
 								if(full_node_min.Y < WATER_LEVEL &&
@@ -1602,7 +1809,7 @@ void make_block(BlockMakeData *data)
 								vmanip.m_data[i].getContent() == c_water_source ||
 								vmanip.m_data[i].getContent() == c_lava_source)
 									continue;
-								
+
 								vmanip.m_data[i] = airnode;
 
 								// Set tunnel flag
@@ -1615,12 +1822,12 @@ void make_block(BlockMakeData *data)
 
 			orp = rp;
 		}
-	
+
 	}
 
 	}//timer1
 #endif
-	
+
 #if 1
 	{
 	// 15ms @cs=8
@@ -1629,13 +1836,13 @@ void make_block(BlockMakeData *data)
 	/*
 		Add mud to the central chunk
 	*/
-	
+
 	for(s16 x=node_min.X; x<=node_max.X; x++)
 	for(s16 z=node_min.Z; z<=node_max.Z; z++)
 	{
 		// Node position in 2d
 		v2s16 p2d = v2s16(x,z);
-		
+
 		// Randomize mud amount
 		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0 + 0.5;
 
@@ -1660,7 +1867,7 @@ void make_block(BlockMakeData *data)
 				surface_y + mud_add_amount <= WATER_LEVEL+2){
 			addnode = MapNode(c_sand);
 		}
-		
+
 		if(bt == BT_DESERT){
 			if(surface_y > 20){
 				mud_add_amount = MYMAX(0, mud_add_amount - (surface_y - 20)/5);
@@ -1691,7 +1898,7 @@ void make_block(BlockMakeData *data)
 			{
 				if(mudcount >= mud_add_amount)
 					break;
-					
+
 				MapNode &n = vmanip.m_data[i];
 				n = addnode;
 				mudcount++;
@@ -1756,7 +1963,7 @@ void make_block(BlockMakeData *data)
 	/*
 		Flow mud away from steep edges
 	*/
-	
+
 	// Iterate a few times
 	for(s16 k=0; k<3; k++)
 	{
@@ -1773,7 +1980,7 @@ void make_block(BlockMakeData *data)
 
 		// Node position in 2d
 		v2s16 p2d = v2s16(node_min.X, node_min.Z) + v2s16(x,z);
-		
+
 		v3s16 em = vmanip.m_area.getExtent();
 		u32 i = vmanip.m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
 		s16 y=node_max.Y;
@@ -1794,7 +2001,7 @@ void make_block(BlockMakeData *data)
 						n->getContent() == c_dirt_with_grass ||
 						n->getContent() == c_gravel)
 					break;
-					
+
 				vmanip.m_area.add_y(em, i, -1);
 			}
 
@@ -1813,7 +2020,7 @@ void make_block(BlockMakeData *data)
 			{
 				// Make it exactly mud
 				n->setContent(c_dirt);
-				
+
 				/*
 					Don't flow it if the stuff under it is not mud
 				*/
@@ -1851,7 +2058,7 @@ void make_block(BlockMakeData *data)
 			}
 
 			// Drop mud on side
-			
+
 			for(u32 di=0; di<4; di++)
 			{
 				v3s16 dirp = dirs4[di];
@@ -1894,7 +2101,7 @@ void make_block(BlockMakeData *data)
 				// Loop one up so that we're in air
 				vmanip.m_area.add_y(em, i2, 1);
 				n2 = &vmanip.m_data[i2];
-				
+
 				bool old_is_water = (n->getContent() == c_water_source);
 				// Move mud to new place
 				if(!dropped_to_unknown) {
@@ -1912,7 +2119,7 @@ void make_block(BlockMakeData *data)
 		}
 		}
 	}
-	
+
 	}
 
 	}//timer1
@@ -1940,7 +2147,7 @@ void make_block(BlockMakeData *data)
 			for(s16 y=full_node_max.Y; y>=full_node_min.Y; y--)
 			{
 				if(y == full_node_max.Y){
-					water_found = 
+					water_found =
 						(vmanip.m_data[i].getContent() == c_water_source ||
 						vmanip.m_data[i].getContent() == c_lava_source);
 				}
@@ -1982,7 +2189,7 @@ void make_block(BlockMakeData *data)
 	{
 		// Node position in 2d
 		v2s16 p2d = v2s16(x,z);
-		
+
 		/*
 			Find the lowest surface to which enough light ends up
 			to make grass grow.
@@ -2008,7 +2215,7 @@ void make_block(BlockMakeData *data)
 			else
 				surface_y = full_node_min.Y;
 		}
-		
+
 		u32 i = vmanip.m_area.index(p2d.X, surface_y, p2d.Y);
 		MapNode *n = &vmanip.m_data[i];
 		if(n->getContent() == c_dirt){
@@ -2113,7 +2320,7 @@ void make_block(BlockMakeData *data)
 					else
 						vmanip.m_data[i] = n_stone;
 				}
-			
+
 				vmanip->m_area.add_y(em, i, 1);
 			}
 		}
@@ -2168,7 +2375,7 @@ void make_block(BlockMakeData *data)
 	/*
 		Add dungeons
 	*/
-	
+
 	//if(node_min.Y < approx_groundlevel)
 	//if(myrand() % 3 == 0)
 	//if(myrand() % 3 == 0 && node_min.Y < approx_groundlevel)
@@ -2182,7 +2389,7 @@ void make_block(BlockMakeData *data)
 		// Dungeon generator doesn't modify places which have this set
 		vmanip->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE
 				| VMANIP_FLAG_DUNGEON_PRESERVE);
-		
+
 		// Set all air and water to be untouchable to make dungeons open
 		// to caves and open air
 		for(s16 x=full_node_min.X; x<=full_node_max.X; x++)
@@ -2204,12 +2411,12 @@ void make_block(BlockMakeData *data)
 				}
 			}
 		}
-		
+
 		PseudoRandom random(blockseed+2);
 
 		// Add it
 		make_dungeon1(vmanip, random, ndef);
-		
+
 		// Convert some cobble to mossy cobble
 		for(s16 x=full_node_min.X; x<=full_node_max.X; x++)
 		for(s16 z=full_node_min.Z; z<=full_node_max.Z; z++)
@@ -2257,7 +2464,7 @@ void make_block(BlockMakeData *data)
 			make_nc(vmanip, ncrandom, ndef);
 		}
 	}
-	
+
 	/*
 		Add top and bottom side of water to transforming_liquid queue
 	*/
@@ -2346,7 +2553,7 @@ void make_block(BlockMakeData *data)
 						if(current_depth == 0 && y <= WATER_LEVEL+2
 								&& possibly_have_sand)
 							have_sand = true;
-						
+
 						if(current_depth < 4)
 						{
 							if(have_sand)
@@ -2384,7 +2591,7 @@ void make_block(BlockMakeData *data)
 		/*
 			Calculate some stuff
 		*/
-		
+
 		float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
 		bool is_jungle = surface_humidity > 0.75;
 		// Amount of trees
@@ -2521,7 +2728,7 @@ void make_block(BlockMakeData *data)
 		/*
 			Add some kind of random stones
 		*/
-		
+
 		u32 random_stone_count = gen_area_nodes *
 				randomstone_amount_2d(data->seed, p2d_center);
 		// Put in random places on part of division
@@ -2555,7 +2762,7 @@ void make_block(BlockMakeData *data)
 		/*
 			Add larger stones
 		*/
-		
+
 		u32 large_stone_count = gen_area_nodes *
 				largestone_amount_2d(data->seed, p2d_center);
 		//u32 large_stone_count = 1;
@@ -2612,7 +2819,7 @@ void make_block(BlockMakeData *data)
 						if(mineralrandom.next()%8 == 0)
 							vmanip.m_data[vi] = MapNode(c_mese);
 				}
-					
+
 			}
 		}
 		/*
@@ -2742,7 +2949,7 @@ void make_block(BlockMakeData *data)
 
 		voxalgo::clearLightAndCollectSources(vmanip, a, bank, ndef,
 				light_sources, unlight_from);
-		
+
 		bool inexistent_top_provides_sunlight = !block_is_underground;
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				vmanip, a, inexistent_top_provides_sunlight,
@@ -2756,6 +2963,8 @@ void make_block(BlockMakeData *data)
 	}
 }
 
+#endif ///BIG COMMENT
+
 BlockMakeData::BlockMakeData():
 	no_op(false),
 	vmanip(NULL),
@@ -2768,6 +2977,6 @@ BlockMakeData::~BlockMakeData()
 	delete vmanip;
 }
 
-}; // namespace mapgen
+//}; // namespace mapgen
 
 

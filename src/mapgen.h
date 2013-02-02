@@ -22,48 +22,114 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "util/container.h" // UniqueQueue
+#include "gamedef.h"
+#include "mapnode.h"
+#include "noise.h"
+#include "settings.h"
+#include <map>
 
-struct BlockMakeData;
+/////////////////// Mapgen flags
+#define MG_TREES         0x01
+#define MG_CAVES         0x02
+#define MG_DUNGEONS      0x04
+#define MGV6_FORESTS     0x08
+#define MGV6_BIOME_BLEND 0x10
+
+class BiomeDefManager;
+class Biome;
+class EmergeManager;
 class MapBlock;
 class ManualMapVoxelManipulator;
+class VoxelManipulator;
 class INodeDefManager;
 
-namespace mapgen
-{
-	// Finds precise ground level at any position
-	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
+struct BlockMakeData {
+	bool no_op;
+	ManualMapVoxelManipulator *vmanip;
+	u64 seed;
+	v3s16 blockpos_min;
+	v3s16 blockpos_max;
+	v3s16 blockpos_requested;
+	UniqueQueue<v3s16> transforming_liquid;
+	INodeDefManager *nodedef;
 
-	// Find out if block is completely underground
-	bool block_is_underground(u64 seed, v3s16 blockpos);
+	BlockMakeData();
+	~BlockMakeData();
+};
 
-	// Get a pseudorandom seed for a position on the map
-	u32 get_blockseed(u64 seed, v3s16 p);
+struct MapgenParams {
+	std::string mg_name;
+	int chunksize;
+	u64 seed;
+	int water_level;
+	u32 flags;
 
-	// Main map generation routine
-	void make_block(BlockMakeData *data);
+	MapgenParams() {
+		mg_name     = "v6";
+		seed        = 0;
+		water_level = 1;
+		chunksize   = 5;
+		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
+	}
 	
-	/*
-		These are used by FarMesh
-	*/
-	bool get_have_beach(u64 seed, v2s16 p2d);
-	double tree_amount_2d(u64 seed, v2s16 p);
+	virtual bool readParams(Settings *settings) = 0;
+	virtual void writeParams(Settings *settings) {};
+};
 
-	struct BlockMakeData
-	{
-		bool no_op;
-		ManualMapVoxelManipulator *vmanip; // Destructor deletes
-		u64 seed;
-		v3s16 blockpos_min;
-		v3s16 blockpos_max;
-		v3s16 blockpos_requested;
-		UniqueQueue<v3s16> transforming_liquid;
-		INodeDefManager *nodedef;
+class Mapgen {
+public:
+	int seed;
+	int water_level;
+	bool generating;
+	int id;
 
-		BlockMakeData();
-		~BlockMakeData();
-	};
+	virtual void makeChunk(BlockMakeData *data) {};
+	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
 
-}; // namespace mapgen
+	//Legacy functions for Farmesh (pending removal)
+	static bool get_have_beach(u64 seed, v2s16 p2d);
+	static double tree_amount_2d(u64 seed, v2s16 p);
+	static s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
+};
+
+struct MapgenFactory {
+	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
+								 EmergeManager *emerge) = 0;
+	virtual MapgenParams *createMapgenParams() = 0;
+};
+
+class EmergeManager {
+public:
+	std::map<std::string, MapgenFactory *> mglist;
+
+	//settings
+	MapgenParams *params;
+
+	//mapgen objects here
+	Mapgen *mapgen;
+
+	//biome manager
+	BiomeDefManager *biomedef;
+
+	EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef);
+	~EmergeManager();
+
+	void initMapgens(MapgenParams *mgparams);
+	Mapgen *createMapgen(std::string mgname, int mgid,
+						MapgenParams *mgparams, EmergeManager *emerge);
+	MapgenParams *createMapgenParams(std::string mgname);
+	Mapgen *getMapgen();
+	void addBlockToQueue();
+	
+	bool registerMapgen(std::string name, MapgenFactory *mgfactory);
+	MapgenParams *getParamsFromSettings(Settings *settings);
+	
+	//mapgen helper methods
+	Biome *getBiomeAtPoint(v3s16 p);
+	int getGroundLevelAtPoint(v2s16 p);
+	bool isBlockUnderground(v3s16 blockpos);
+	u32 getBlockSeed(v3s16 p);
+};
 
 #endif
 

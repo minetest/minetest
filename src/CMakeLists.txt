@@ -188,6 +188,7 @@ set(common_SRCS
 	log.cpp
 	content_sao.cpp
 	mapgen.cpp
+	mapgen_v6.cpp
 	treegen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
@@ -218,6 +219,7 @@ set(common_SRCS
 	sha1.cpp
 	base64.cpp
 	ban.cpp
+	biome.cpp
 	clientserver.cpp
 	staticobject.cpp
 	util/serialize.cpp
@@ -262,6 +264,7 @@ set(minetest_SRCS
 	keycode.cpp
 	camera.cpp
 	clouds.cpp
+	particles.cpp
 	clientobject.cpp
 	chat.cpp
 	guiMainMenu.cpp
@@ -274,11 +277,13 @@ set(minetest_SRCS
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
+	guiConfigureWorld.cpp
 	guiConfirmMenu.cpp
 	client.cpp
 	filecache.cpp
 	tile.cpp
 	shader.cpp
+	serverlist.cpp
 	game.cpp
 	main.cpp
 )

@@ -120,6 +120,7 @@ inline s16 rangelim(s16 i, s16 max)
 }
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
+#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
 
 inline v3s16 arealim(v3s16 p, s16 d)
 {

@@ -86,10 +86,10 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 	required_a.pad(v3s16(0,1,0));
 	// Make sure we have access to it
 	v.emerge(a);
-	
+
 	s16 max_y = a.MaxEdge.Y;
 	s16 min_y = a.MinEdge.Y;
-	
+
 	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
 	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 	{
@@ -125,11 +125,11 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 
 			if(incoming_light > old_light)
 				n.setLight(LIGHTBANK_DAY, incoming_light, ndef);
-			
+
 			if(diminish_light(incoming_light) != 0)
 				light_sources.insert(p, true);
 		}
-		
+
 		// Check validity of sunlight at top of block below if it
 		// hasn't already been proven invalid
 		if(bottom_sunlight_valid)
