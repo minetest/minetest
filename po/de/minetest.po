@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-02 18:39+0200\n"
+"PO-Revision-Date: 2013-02-02 18:51+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -154,7 +154,7 @@ msgstr "Springen"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr "Kriechen"
+msgstr "Schleichen"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
