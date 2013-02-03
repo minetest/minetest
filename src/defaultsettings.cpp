@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "settings.h"
+#include "filesys.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -131,6 +132,8 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("serverlist_url", "servers.minetest.ru/server.list");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
+
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "font.ttf"));
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
