@@ -3,395 +3,413 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-02-03 09:11+0200\n"
+"Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
+"警告：一些MOD仍未设定。\n"
+"它们会在你保存配置的时候自动启用。  "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
+"警告：缺少一些设定了的MOD。\n"
+"它们的设置会在你保存配置的时候被移除。  "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
-msgstr ""
+msgstr "启用"
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr ""
+msgstr "全部启用"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr ""
+msgstr "全部禁用"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr ""
+msgstr "依赖于:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr ""
+msgstr "需要："
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "配置已保存。  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "警告：配置不一致。  "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "世界名称"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "游戏"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "创建"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "你死了。"
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "重生"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "左键：移动所有物品，右键：移动单个物品"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
+#, fuzzy
 msgid "Proceed"
-msgstr ""
+msgstr "进行"
 
 #: src/guiKeyChangeMenu.cpp:114
+#, fuzzy
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
+msgstr "键位配置。（如果这个菜单被弄乱，从minetest.conf中删掉点东西）"
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "“使用” = 向下爬"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "连按两次“跳”切换飞行状态"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
-msgstr ""
+msgstr "按键已被占用"
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
-msgstr ""
+msgstr "按键"
 
 #: src/guiKeyChangeMenu.cpp:372
+#, fuzzy
 msgid "Forward"
-msgstr ""
+msgstr "向前"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "向后"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "向左"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "向右"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "使用"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
-msgstr ""
+msgstr "跳"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr ""
+msgstr "潜行"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "丢出"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr ""
+msgstr "物品栏"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr ""
+msgstr "聊天"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "命令"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "控制台"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr ""
+msgstr "切换飞行状态"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr ""
+msgstr "切换快速移动状态"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
-msgstr ""
+msgstr "切换穿墙模式"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr ""
+msgstr "选择范围"
 
 #: src/guiKeyChangeMenu.cpp:388
+#, fuzzy
 msgid "Print stacks"
-msgstr ""
+msgstr "打印堆"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr ""
+msgstr "无法创建世界：名字包含非法字符"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
-msgstr ""
+msgstr "无法创建世界：同名世界已经存在"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
-msgstr ""
+msgstr "单人游戏"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
-msgstr ""
+msgstr "多人游戏"
 
 #: src/guiMainMenu.cpp:247
+#, fuzzy
 msgid "Advanced"
-msgstr ""
+msgstr "高级"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
-msgstr ""
+msgstr "设置"
 
 #: src/guiMainMenu.cpp:249
+#, fuzzy
 msgid "Credits"
-msgstr ""
+msgstr "制作人员名单"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
-msgstr ""
+msgstr "选择世界："
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: src/guiMainMenu.cpp:309
 msgid "New"
-msgstr ""
+msgstr "新建"
 
 #: src/guiMainMenu.cpp:317
 msgid "Configure"
-msgstr ""
+msgstr "配置"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
+#, fuzzy
 msgid "Play"
-msgstr ""
+msgstr "玩"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
-msgstr ""
+msgstr "创造模式"
 
 #: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
 msgid "Enable Damage"
-msgstr ""
+msgstr "开启伤害"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
-msgstr ""
+msgstr "名字/密码"
 
 #: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
 msgid "Address/Port"
-msgstr ""
+msgstr "地址/端口"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
+#, fuzzy
 msgid "Show Public"
-msgstr ""
+msgstr "显示公共"
 
 #: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
+#, fuzzy
 msgid "Show Favorites"
-msgstr ""
+msgstr "显示最爱"
 
 #: src/guiMainMenu.cpp:459
 msgid "Connect"
-msgstr ""
+msgstr "连接"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "地址栏留空可启动本地服务器。"
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "启动游戏/连接"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
 msgid "Delete world"
-msgstr ""
+msgstr "删除世界"
 
 #: src/guiMainMenu.cpp:577
 msgid "Create world"
-msgstr ""
+msgstr "创造世界"
 
 #: src/guiMainMenu.cpp:611
+#, fuzzy
 msgid "Fancy trees"
-msgstr ""
+msgstr "更好看的树"
 
 #: src/guiMainMenu.cpp:617
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "平滑光照"
 
 #: src/guiMainMenu.cpp:623
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D云彩"
 
 #: src/guiMainMenu.cpp:629
+#, fuzzy
 msgid "Opaque water"
-msgstr ""
+msgstr "不透明的水"
 
 #: src/guiMainMenu.cpp:639
+#, fuzzy
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip-Mapping"
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "各向异性过滤"
 
 #: src/guiMainMenu.cpp:653
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "双线性过滤"
 
 #: src/guiMainMenu.cpp:660
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "三线性过滤"
 
 #: src/guiMainMenu.cpp:668
 msgid "Shaders"
-msgstr ""
+msgstr "着色器"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
-msgstr ""
+msgstr "预先加载物品图像"
 
 #: src/guiMainMenu.cpp:682
 msgid "Enable Particles"
-msgstr ""
+msgstr "启用粒子效果"
 
 #: src/guiMainMenu.cpp:692
 msgid "Change keys"
-msgstr ""
+msgstr "改变键位设置"
 
 #: src/guiMainMenu.cpp:977
 msgid "Address required."
-msgstr ""
+msgstr "需要地址。"
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "无法删除世界：没有选择世界"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
-msgstr ""
+msgstr "将被删除的文件"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "无法创造世界：未找到游戏模式"
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "无法配置世界：没有选择世界"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "无法删除所有该世界的文件"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr ""
+msgstr "旧密码"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "新密码"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr ""
+msgstr "确认密码"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr ""
+msgstr "更改"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "密码不匹配！"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr ""
+msgstr "继续"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr ""
+msgstr "更改密码"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr ""
+msgstr "退出至菜单"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr ""
+msgstr "退出至操作系统"
 
 #: src/guiPauseMenu.cpp:149
+#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -405,22 +423,37 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"默认控制：\n"
+"W/A/S/D: 走\n"
+"空格: 跳\n"
+"鼠标左键: 挖方块/攻击\n"
+"鼠标右键: 放置/使用\n"
+"鼠标滚轮: 选择物品\n"
+"0-9: 选择物品\n"
+"R：切换查看所有已载入区块\n"
+"I：物品栏\n"
+"ESC：菜单\n"
+"T：聊天\n"
 
 #: src/keycode.cpp:223
+#, fuzzy
 msgid "Left Button"
-msgstr ""
+msgstr "左键"
 
 #: src/keycode.cpp:223
+#, fuzzy
 msgid "Middle Button"
-msgstr ""
+msgstr "中键"
 
 #: src/keycode.cpp:223
+#, fuzzy
 msgid "Right Button"
-msgstr ""
+msgstr "右键"
 
 #: src/keycode.cpp:223
+#, fuzzy
 msgid "X Button 1"
-msgstr ""
+msgstr "X键1"
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -428,302 +461,334 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "清除"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Return"
-msgstr ""
+msgstr "返回"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Tab"
-msgstr ""
+msgstr "制表符"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "X Button 2"
-msgstr ""
+msgstr "X键2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr ""
+msgstr "大写"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Control"
-msgstr ""
+msgstr "控制"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Kana"
-msgstr ""
+msgstr "假名"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "菜单"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "暂停"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Shift"
-msgstr ""
+msgstr "上档"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "转换"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Final"
-msgstr ""
+msgstr "最终"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Kanji"
-msgstr ""
+msgstr "汉字"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Nonconvert"
-msgstr ""
+msgstr "无变换"
 
 #: src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "接受"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Mode Change"
-msgstr ""
+msgstr "改变模式"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "下一个"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Prior"
-msgstr ""
+msgstr "前一个"
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "空格"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "向下"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "执行"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "打印"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr ""
+msgstr "选择"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "向上"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "帮助"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "插入"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "快照"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "左窗口"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "应用"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "小键盘0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "小键盘1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "右窗口"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "睡眠"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "小键盘2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "小键盘3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "小键盘4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "小键盘5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "小键盘6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "小键盘7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "小键盘*"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "小键盘+"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "小键盘-"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "小键盘/"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "小键盘8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "小键盘9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "小键盘锁"
 
 #: src/keycode.cpp:239
+#, fuzzy
 msgid "Scroll Lock"
-msgstr ""
+msgstr "滚动锁"
 
 #: src/keycode.cpp:240
+#, fuzzy
 msgid "Left Shift"
-msgstr ""
+msgstr "左上档"
 
 #: src/keycode.cpp:240
+#, fuzzy
 msgid "Right Shift"
-msgstr ""
+msgstr "右上档"
 
 #: src/keycode.cpp:241
+#, fuzzy
 msgid "Left Control"
-msgstr ""
+msgstr "左控制"
 
 #: src/keycode.cpp:241
+#, fuzzy
 msgid "Left Menu"
-msgstr ""
+msgstr "左菜单"
 
 #: src/keycode.cpp:241
+#, fuzzy
 msgid "Right Control"
-msgstr ""
+msgstr "右控制"
 
 #: src/keycode.cpp:241
+#, fuzzy
 msgid "Right Menu"
-msgstr ""
+msgstr "右菜单"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "逗号"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "减号"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "句号"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "加号"
 
 #: src/keycode.cpp:247
 msgid "Attn"
 msgstr ""
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "Erase OEF"
-msgstr ""
+msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clear"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "缩放"
 
 #: src/main.cpp:1384
 msgid "Main Menu"
-msgstr ""
+msgstr "主菜单"
 
 #: src/main.cpp:1633
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "无法初始化世界"
 
 #: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "没有选择世界或提供地址。未执行操作。"
 
 #: src/main.cpp:1653
+#, fuzzy
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "无法找到或载入游戏模式“"
 
 #: src/main.cpp:1667
+#, fuzzy
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "非法游戏模式规格。"
 
 #: src/main.cpp:1707
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "连接出错（超时？）"
 
 #: src/main.cpp:1718
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"查看 debug.txt 以获得详细信息。"
