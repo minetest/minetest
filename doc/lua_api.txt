@@ -790,6 +790,8 @@ minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 minetest.is_singleplayer()
 
+minetest.get_locale()
+^ Returns LC_MESSAGES locale, returns "C" if Gettext disabled
 minetest.debug(line)
 ^ Always printed to stderr and logfile (print() is redirected here)
 minetest.log(line)
