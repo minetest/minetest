@@ -5151,6 +5151,14 @@ static int l_get_worldpath(lua_State *L)
 	return 1;
 }
 
+// get_locale()
+static int l_get_locale(lua_State *L)
+{
+	char* l = setlocale(LC_MESSAGES, NULL);
+	lua_pushstring(L, l);
+	return 1;
+}
+
 // sound_play(spec, parameters)
 static int l_sound_play(lua_State *L)
 {
@@ -5374,6 +5382,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_modpath", l_get_modpath},
 	{"get_modnames", l_get_modnames},
 	{"get_worldpath", l_get_worldpath},
+	{"get_locale", l_get_locale},
 	{"sound_play", l_sound_play},
 	{"sound_stop", l_sound_stop},
 	{"is_singleplayer", l_is_singleplayer},
