@@ -68,6 +68,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
+#if USE_FREETYPE
+#include "xCGUITTFont.h"
+#endif
 #include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
@@ -767,11 +770,19 @@ int main(int argc, char *argv[])
 
 	log_register_thread("main");
 
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
+	// This enables internatonal characters input
+	if( setlocale(LC_ALL, "") == NULL )
+	{
+		fprintf( stderr, "%s: warning: could not set default locale\n", argv[0] );
+	}
 
+	// Set locale. This is for forcing '.' as the decimal point.
+	try {
+		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
+		setlocale(LC_NUMERIC, "C");
+	} catch (const std::exception& ex) {
+		errorstream<<"Could not set numeric locale to C"<<std::endl;
+	}
 	/*
 		Parse command line
 	*/
@@ -875,7 +886,7 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
 
-	init_gettext((porting::path_share+DIR_DELIM+".."+DIR_DELIM+"locale").c_str());
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
 	
 	// Initialize debug streams
 #define DEBUGFILE "debug.txt"
@@ -1329,7 +1340,13 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
+	#if USE_FREETYPE
+	std::string font_path = g_settings->get("font_path");
+	u16 font_size = g_settings->getU16("font_size");
+	gui::IGUIFont *font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	#else
 	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
+	#endif
 	if(font)
 		skin->setFont(font);
 	else

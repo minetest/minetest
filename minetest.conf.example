@@ -163,6 +163,11 @@
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
+#font_path = fonts/liberationsans.ttf
+#font_size = 13
+#mono_font_path = fonts/liberationmono.ttf
+#mono_font_size = 13
+
 #
 # Server stuff
 #

@@ -93,6 +93,12 @@ if(USE_SOUND)
 		)
 endif()
 
+option(ENABLE_FREETYPE "Enable freetype2 (truetype fonts and basic unicode support)" OFF)
+set(USE_FREETYPE 0)
+if(ENABLE_FREETYPE)
+	set(USE_FREETYPE 1)
+endif(ENABLE_FREETYPE)
+
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
 endif()
@@ -117,6 +123,14 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
+	if(USE_FREETYPE)
+		set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
+				CACHE PATH "freetype include dir")
+		set(FREETYPE_INCLUDE_DIR_freetype2 "${PROJECT_SOURCE_DIR}/../../freetype2/include/freetype"
+				CACHE PATH "freetype include dir")
+		set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
+				CACHE FILEPATH "Path to freetype247.lib")
+	endif(USE_FREETYPE)
 	set(MINGWM10_DLL ""
 			CACHE FILEPATH "Path to mingwm10.dll (for installation)")
 	if(ENABLE_SOUND)
@@ -156,6 +170,12 @@ endif()
 
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
+
+if(USE_FREETYPE)
+	find_package(Freetype REQUIRED)
+	set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
+	set(CGUITTFONT_LIBRARY cguittfont)
+endif(USE_FREETYPE)
 
 # Do not use system-wide installation of Lua, because it'll likely be a
 # different version and/or has different build options.
@@ -288,6 +308,13 @@ set(minetest_SRCS
 	main.cpp
 )
 
+if(USE_FREETYPE)
+	set(minetest_SRCS
+		${minetest_SRCS}
+		intlGUIEditBox.cpp
+	)
+endif(USE_FREETYPE)
+
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
@@ -306,6 +333,13 @@ include_directories(
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 )
+
+if(USE_FREETYPE)
+	include_directories(
+		${FREETYPE_INCLUDE_DIRS}
+		${CGUITTFONT_INCLUDE_DIR}
+	)
+endif(USE_FREETYPE)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
@@ -338,6 +372,13 @@ if(BUILD_CLIENT)
 			${CURL_INCLUDE_DIR}
 		)
 	endif(USE_CURL)
+	if(USE_FREETYPE)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${FREETYPE_LIBRARY}
+			${CGUITTFONT_LIBRARY}
+		)
+	endif(USE_FREETYPE)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -518,6 +559,10 @@ if (SQLITE3_FOUND)
 else (SQLITE3_FOUND)
 	add_subdirectory(sqlite)
 endif (SQLITE3_FOUND)
+
+if (BUILD_CLIENT AND USE_FREETYPE)
+	add_subdirectory(cguittfont)
+endif (BUILD_CLIENT AND USE_FREETYPE)
 
 if (LUA_FOUND)
 else (LUA_FOUND)

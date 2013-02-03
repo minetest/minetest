@@ -372,4 +372,8 @@ DejaVu Sans Mono:
 
   Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
 
+  Liberation Fonts Copyright:
+
+  Copyright (c) 2007 Red Hat, Inc. All rights reserved. LIBERATION is a trademark of Red Hat, Inc.
+
 
