@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-01 23:37+0200\n"
+"PO-Revision-Date: 2013-02-03 21:30+0200\n"
 "Last-Translator: Lord James <neftali_dtctv@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -23,8 +23,8 @@ msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
-"ADVERTENCIA: Algunos mods no están configurados todavía.\n"
-"Se habilitará de forma predeterminada al guardar la configuración.  "
+"ADVERTENCIA: Algunos mods no están aún configurados.\n"
+"Se habilitarán de forma predeterminada al guardar la configuración.  "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
@@ -32,7 +32,7 @@ msgid ""
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
 "ADVERTENCIA: Algunos mods configurados faltan.\n"
-"Su ajuste se quitará cuando se guarda la configuración.  "
+"Su ajuste se quitará al guardar la configuración.  "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
@@ -44,7 +44,7 @@ msgstr "Activar todos"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr "Deshabilitar"
+msgstr "Desactivar todos"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
@@ -97,7 +97,7 @@ msgstr "Estas Muerto."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Reaparecer"
+msgstr "Respawn"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
@@ -121,39 +121,39 @@ msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Pulsar dos veces \"saltar\" para volar"
+msgstr "Pulsar dos veces \"saltar\" para activar volar"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
-msgstr "La tecla se esta utilizando"
+msgstr "La tecla se está utilizando"
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
-msgstr "Pulsa la tecla"
+msgstr "Pulsa una tecla"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr ""
+msgstr "Adelante"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "Atras"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Izquierda"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Derecha"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "Usar"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
-msgstr ""
+msgstr "Saltar"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
@@ -161,31 +161,31 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Tirar"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr ""
+msgstr "Inventario"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "Comando"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "Consola"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr ""
+msgstr "Activar Volar"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr ""
+msgstr "Activar Modo Rápido"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
@@ -201,11 +201,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "No se puede crear el mundo: nombre contiene caracteres no válidos"
+msgstr "No se puede crear el mundo: El nombre contiene caracteres no válidos"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
-msgstr "No se puede crear el mundo:hay un mundo con este nombre"
+msgstr "No se puede crear el mundo: Hay un mundo con este nombre"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
@@ -381,7 +381,7 @@ msgstr "Cambiar"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Las contraseñas no coinciden!"
+msgstr "¡Las contraseñas no coinciden!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
@@ -427,15 +427,15 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Botón izquierdo"
+msgstr "Click Izquierdo"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Botón central"
+msgstr "Click Centro"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr "Botón derecho"
+msgstr "Click Derecho"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -483,7 +483,7 @@ msgstr "Pausa"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr "Shift"
+msgstr "Mayús"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -491,7 +491,7 @@ msgstr "Convertir"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr "Escape"
+msgstr "Esc"
 
 #: src/keycode.cpp:226
 msgid "Final"
@@ -547,7 +547,7 @@ msgstr "Ejecutar"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr "Captura"
+msgstr "Imprimir"
 
 #: src/keycode.cpp:228
 msgid "Select"
@@ -583,7 +583,7 @@ msgstr "Teclado numérico 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr "1 (Teclado numérico)"
+msgstr "Teclado Numérico 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
@@ -591,55 +591,55 @@ msgstr "Win Derecho"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr "Sueño"
+msgstr "Suspender"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr "2 (Teclado numérico)"
+msgstr "Teclado numérico 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr "3 (Teclado numérico)"
+msgstr "Teclado Numérico 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr "4 (Teclado numérico)"
+msgstr "Teclado numérico 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr "5 (Teclado numérico)"
+msgstr "Teclado Numérico 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr "6 (Teclado numérico)"
+msgstr "Teclado Numérico 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr "7 (Teclado numérico)"
+msgstr "Teclado numérico 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr "*  (Teclado numérico)"
+msgstr "Teclado numérico *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr "+  (Teclado numérico)"
+msgstr "Teclado Numérico +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr "- (Teclado numérico)"
+msgstr "Teclado Numérico -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr "/  (Teclado numérico)"
+msgstr "Teclado Numérico /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr "8 (Teclado numérico)"
+msgstr "Teclado Numérico 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr "9 (Teclado numérico)"
+msgstr "Teclado Numérico 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
@@ -659,19 +659,19 @@ msgstr "Mayúscula Derecha"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr "Control izquierdo"
+msgstr "Control Izquierdo"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr "Menú de la izquierda"
+msgstr "Menú Izquierda"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr "Control derecho"
+msgstr "Control Derecho"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr "Menú de la derecha"
+msgstr "Menú Derecha"
 
 #: src/keycode.cpp:243
 msgid "Comma"
@@ -679,7 +679,7 @@ msgstr "Coma"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr "Signos más y menos"
+msgstr "Menos"
 
 #: src/keycode.cpp:243
 msgid "Period"
@@ -733,7 +733,7 @@ msgstr ""
 
 #: src/main.cpp:1653
 msgid "Could not find or load game \""
-msgstr "No se puede encontrar o cargar el juego\""
+msgstr "No se puede encontrar o cargar el juego \""
 
 #: src/main.cpp:1667
 msgid "Invalid gamespec."
@@ -741,7 +741,7 @@ msgstr "Juego especificado no válido."
 
 #: src/main.cpp:1707
 msgid "Connection error (timed out?)"
-msgstr "¿Error de conexión (agotado tiempo)?"
+msgstr "Error de conexión (¿tiempo agotado?)"
 
 #: src/main.cpp:1718
 msgid ""
