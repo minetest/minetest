@@ -242,6 +242,7 @@
 #remote_media =
 
 # Mapgen stuff
+# v6,flat
 #mg_name = v6
 #water_level = 1
 #chunksize = 5
@@ -261,4 +262,5 @@
 #mgv7_np_bgroup = 0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6
 #mgv7_np_heat = 25, 50, (500, 500, 500), 35293, 1, 0
 #mgv7_np_humidity = 50, 31.25, (750, 750, 750), 12094, 2, 0.6
+#mgflat_generate_trees = true
 

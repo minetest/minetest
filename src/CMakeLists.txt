@@ -189,6 +189,7 @@ set(common_SRCS
 	content_sao.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
+	mapgen_flat.cpp
 	treegen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
