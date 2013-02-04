@@ -159,7 +159,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak && m_sneak_node_exists && !g_settings->getBool("free_move"))
+	if(control.sneak && m_sneak_node_exists && !(fly_allowed && g_settings->getBool("free_move")))
 	{
 		f32 maxd = 0.5*BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
