@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-03 21:30+0200\n"
-"Last-Translator: Lord James <neftali_dtctv@hotmail.com>\n"
+"PO-Revision-Date: 2013-02-04 12:46+0200\n"
+"Last-Translator: Marco gonzalez <socramazibi@gmx.es>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr ""
+msgstr "Seleccionar rango"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
@@ -293,7 +293,7 @@ msgstr "Crear Mundo"
 
 #: src/guiMainMenu.cpp:611
 msgid "Fancy trees"
-msgstr "Árboles Bonitos"
+msgstr "Árboles detallados"
 
 #: src/guiMainMenu.cpp:617
 msgid "Smooth Lighting"
@@ -333,7 +333,7 @@ msgstr "Precarga elementos visuales"
 
 #: src/guiMainMenu.cpp:682
 msgid "Enable Particles"
-msgstr "Permitir las partículas"
+msgstr "Partículas"
 
 #: src/guiMainMenu.cpp:692
 msgid "Change keys"
@@ -357,7 +357,7 @@ msgstr "No se puede crear el mundo: No se encontraron juegos"
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr "No se puede configurar el mundo: No ha seleccionado"
+msgstr "No se puede configurar el mundo: Ninguno seleccionado"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
@@ -415,14 +415,14 @@ msgid ""
 msgstr ""
 "Controles predeterminados:\n"
 "- WASD: Caminar \n"
-"- ratón izquierda: Cavar/Golpear\n"
-"- ratón derecho: lugar o usar\n"
-"- rueda de ratón: seleccionar cuadro menu objectos\n"
-"- 0... 9: seleccionar cuadro menu  objectos\n"
-"- Shift: caminar despacio\n"
-"- R: Visibilidad mayor o menor distancia\n"
-"- menú I: inventario \n"
-"- ESC: Ir al Menu\n"
+"- Ratón, izquierdo: Cavar/Golpear\n"
+"- Ratón, derecho: Poner bloque/Usar\n"
+"- Ratón, rueda: seleccionar objecto\n"
+"- 0... 9: Seleccionar objecto\n"
+"- Mayúscula: caminar despacio\n"
+"- R: Ajustar distancia de los chunks cargados\n"
+"- I: Inventario \n"
+"- ESC: Este Menu\n"
 "- T: Chat\n"
 
 #: src/keycode.cpp:223
@@ -527,7 +527,7 @@ msgstr "Cambio de modo"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr "Continuar"
+msgstr "Siguiente"
 
 #: src/keycode.cpp:227
 msgid "Prior"
@@ -547,7 +547,7 @@ msgstr "Ejecutar"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr "Imprimir"
+msgstr "Captura"
 
 #: src/keycode.cpp:228
 msgid "Select"
