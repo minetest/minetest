@@ -8,13 +8,15 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2011-08-02 00:31+0100\n"
-"Last-Translator: Frederik Helth <Guides@live.dk>\n"
+"PO-Revision-Date: 2013-02-05 20:38+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: \n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
@@ -274,7 +276,7 @@ msgstr "Logud"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr "Lad black for at spille localt"
+msgstr "Lad black for at spille localt."
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
