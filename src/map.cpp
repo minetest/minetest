@@ -3078,14 +3078,7 @@ void ServerMap::saveMapMeta()
 
 	Settings params;
 
-	params.set("mg_name", m_emerge->params->mg_name);
-	params.setU64("seed", m_emerge->params->seed);
-	params.setS16("water_level", m_emerge->params->water_level);
-	params.setS16("chunksize", m_emerge->params->chunksize);
-	params.setS32("mg_flags", m_emerge->params->flags);
-
-	m_emerge->params->writeParams(&params);
-
+	m_emerge->setParamsToSettings(&params);
 	params.writeLines(os);
 
 	os<<"[end_of_params]\n";

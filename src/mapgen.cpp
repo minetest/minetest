@@ -35,6 +35,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "mapgen_v6.h"
 
+FlagDesc flagdesc_mapgen[] = {
+	{"trees",          MG_TREES},
+	{"caves",          MG_CAVES},
+	{"dungeons",       MG_DUNGEONS},
+	{"v6_forests",     MGV6_FORESTS},
+	{"v6_biome_blend", MGV6_BIOME_BLEND},
+	{"flat",           MG_FLAT},
+	{NULL,			   0}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Emerge Manager ////////////////////////////////
@@ -149,13 +158,24 @@ MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
-	mgparams->flags       = settings->getS32("mg_flags");
+	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
 
 	if (!mgparams->readParams(settings)) {
 		delete mgparams;
 		return NULL;
 	}
 	return mgparams;
+}
+
+
+void EmergeManager::setParamsToSettings(Settings *settings) {
+	settings->set("mg_name",         params->mg_name);
+	settings->setU64("seed",         params->seed);
+	settings->setS16("water_level",  params->water_level);
+	settings->setS16("chunksize",    params->chunksize);
+	settings->setFlagStr("mg_flags", params->flags, flagdesc_mapgen);
+
+	params->writeParams(settings);
 }
 
 

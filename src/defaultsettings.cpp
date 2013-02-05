@@ -177,7 +177,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "19");
+	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
 	settings->setDefault("mgv6_freq_desert", "0.45");
 	settings->setDefault("mgv6_freq_beach", "0.15");
 
