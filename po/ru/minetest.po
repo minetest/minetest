@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-02 19:11+0200\n"
-"Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
+"PO-Revision-Date: 2013-02-05 20:36+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,8 @@ msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
+"Предупреждение: Некоторые моды еще не настроены.\n"
+"Они будут включены когда вы сохраните конфигурацию. "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
@@ -169,7 +171,7 @@ msgstr "Чат"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "Комманда"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
@@ -184,13 +186,12 @@ msgid "Toggle fast"
 msgstr "Ускорение"
 
 #: src/guiKeyChangeMenu.cpp:386
-#, fuzzy
 msgid "Toggle noclip"
-msgstr "NoClip"
+msgstr "Включить прохождение сквозь стены"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr ""
+msgstr "Выбор видимой области"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
@@ -214,7 +215,7 @@ msgstr "Сетевая игра"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
-msgstr ""
+msgstr "Дополнительно"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
@@ -326,7 +327,7 @@ msgstr "Шейдеры"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
-msgstr ""
+msgstr "Кэшировать предметы"
 
 #: src/guiMainMenu.cpp:682
 msgid "Enable Particles"
@@ -440,11 +441,11 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "Назад"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Очистить"
 
 #: src/keycode.cpp:224
 msgid "Return"
@@ -452,7 +453,7 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Вкладка"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -468,7 +469,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Кана"
 
 #: src/keycode.cpp:225
 msgid "Menu"
@@ -500,7 +501,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Иероглифы"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
@@ -508,7 +509,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Принять"
 
 #: src/keycode.cpp:227
 msgid "End"
