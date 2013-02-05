@@ -777,8 +777,12 @@ int main(int argc, char *argv[])
 	}
 
 	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
-	setlocale(LC_NUMERIC, "C");
+	try {
+		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
+		setlocale(LC_NUMERIC, "C");
+	} catch (const std::exception& ex) {
+		errorstream<<"Could not set numeric locale to C"<<std::endl;
+	}
 	/*
 		Parse command line
 	*/
