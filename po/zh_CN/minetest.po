@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-03 09:11+0200\n"
-"Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
+"PO-Revision-Date: 2013-02-05 14:49+0200\n"
+"Last-Translator: L JJ <986869429@qq.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -105,9 +105,8 @@ msgstr "左键：移动所有物品，右键：移动单个物品"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
-#, fuzzy
 msgid "Proceed"
-msgstr "进行"
+msgstr "继续游戏"
 
 #: src/guiKeyChangeMenu.cpp:114
 #, fuzzy
@@ -131,7 +130,6 @@ msgid "press key"
 msgstr "按键"
 
 #: src/guiKeyChangeMenu.cpp:372
-#, fuzzy
 msgid "Forward"
 msgstr "向前"
 
@@ -247,9 +245,8 @@ msgid "Configure"
 msgstr "配置"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
-#, fuzzy
 msgid "Play"
-msgstr "玩"
+msgstr "开始游戏"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
@@ -311,14 +308,12 @@ msgid "3D Clouds"
 msgstr "3D云彩"
 
 #: src/guiMainMenu.cpp:629
-#, fuzzy
 msgid "Opaque water"
-msgstr "不透明的水"
+msgstr "不反光的水"
 
 #: src/guiMainMenu.cpp:639
-#, fuzzy
 msgid "Mip-Mapping"
-msgstr "Mip-Mapping"
+msgstr "贴图处理"
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
@@ -409,7 +404,6 @@ msgid "Exit to OS"
 msgstr "退出至操作系统"
 
 #: src/guiPauseMenu.cpp:149
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -436,28 +430,24 @@ msgstr ""
 "T：聊天\n"
 
 #: src/keycode.cpp:223
-#, fuzzy
 msgid "Left Button"
 msgstr "左键"
 
 #: src/keycode.cpp:223
-#, fuzzy
 msgid "Middle Button"
 msgstr "中键"
 
 #: src/keycode.cpp:223
-#, fuzzy
 msgid "Right Button"
 msgstr "右键"
 
 #: src/keycode.cpp:223
-#, fuzzy
 msgid "X Button 1"
 msgstr "X键1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "返回"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -469,12 +459,10 @@ msgid "Return"
 msgstr "返回"
 
 #: src/keycode.cpp:224
-#, fuzzy
 msgid "Tab"
 msgstr "制表符"
 
 #: src/keycode.cpp:224
-#, fuzzy
 msgid "X Button 2"
 msgstr "X键2"
 
@@ -483,9 +471,8 @@ msgid "Capital"
 msgstr "大写"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Control"
-msgstr "控制"
+msgstr "Ctrl"
 
 #: src/keycode.cpp:225
 #, fuzzy
@@ -503,7 +490,7 @@ msgstr "暂停"
 #: src/keycode.cpp:225
 #, fuzzy
 msgid "Shift"
-msgstr "上档"
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -544,17 +531,14 @@ msgid "End"
 msgstr "End"
 
 #: src/keycode.cpp:227
-#, fuzzy
 msgid "Home"
-msgstr "Home"
+msgstr "主页"
 
 #: src/keycode.cpp:227
-#, fuzzy
 msgid "Mode Change"
 msgstr "改变模式"
 
 #: src/keycode.cpp:227
-#, fuzzy
 msgid "Next"
 msgstr "下一个"
 
@@ -728,7 +712,7 @@ msgstr "加号"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "注意"
 
 #: src/keycode.cpp:247
 #, fuzzy
@@ -741,14 +725,12 @@ msgid "Erase OEF"
 msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "ExSel"
-msgstr "ExSel"
+msgstr "不选"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "默认设置"
 
 #: src/keycode.cpp:248
 #, fuzzy
