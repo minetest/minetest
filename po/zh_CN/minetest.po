@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-06 03:27+0200\n"
-"Last-Translator: L JJ <986869429@qq.com>\n"
+"PO-Revision-Date: 2013-02-06 15:03+0200\n"
+"Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -423,6 +423,7 @@ msgstr ""
 "鼠标右键: 放置/使用\n"
 "鼠标滚轮: 选择物品\n"
 "0-9: 选择物品\n"
+"Shift: 潜行\n"
 "R：切换查看所有已载入区块\n"
 "I：物品栏\n"
 "ESC：菜单\n"
@@ -441,14 +442,17 @@ msgid "Right Button"
 msgstr "右键"
 
 #: src/keycode.cpp:223
+#, fuzzy
 msgid "X Button 1"
 msgstr "X键1"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Back"
 msgstr "返回"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Clear"
 msgstr "清除"
 
@@ -458,8 +462,9 @@ msgid "Return"
 msgstr "返回"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Tab"
-msgstr "制表符"
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -530,8 +535,9 @@ msgid "End"
 msgstr "End"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Home"
-msgstr "主页"
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
@@ -710,6 +716,7 @@ msgid "Plus"
 msgstr "加号"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "Attn"
 msgstr "注意"
 
@@ -724,10 +731,12 @@ msgid "Erase OEF"
 msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
 msgstr "不选"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "OEM Clear"
 msgstr "默认设置"
 
