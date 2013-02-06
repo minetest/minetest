@@ -584,6 +584,8 @@ Special groups
                   dropped as an item. If the node is wallmounted the
                   wallmounted direction is checked.
 - soil: saplings will grow on nodes in this group
+- connect_to_raillike: makes nodes of raillike drawtype connect to
+                       other group members with same drawtype
 
 Known damage and digging time defining groups
 ----------------------------------------------
