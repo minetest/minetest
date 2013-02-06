@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-05 14:49+0200\n"
+"PO-Revision-Date: 2013-02-06 03:27+0200\n"
 "Last-Translator: L JJ <986869429@qq.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -109,7 +109,6 @@ msgid "Proceed"
 msgstr "继续游戏"
 
 #: src/guiKeyChangeMenu.cpp:114
-#, fuzzy
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr "键位配置。（如果这个菜单被弄乱，从minetest.conf中删掉点东西）"
 
