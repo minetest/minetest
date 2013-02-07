@@ -122,7 +122,7 @@ public:
 	Mapgen *getMapgen();
 	void addBlockToQueue();
 	
-	bool registerMapgen(std::string name, MapgenFactory *mgfactory);
+	void registerMapgen(std::string name, MapgenFactory *mgfactory);
 	MapgenParams *getParamsFromSettings(Settings *settings);
 	void setParamsToSettings(Settings *settings);
 	

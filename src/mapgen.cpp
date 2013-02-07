@@ -179,7 +179,7 @@ void EmergeManager::setParamsToSettings(Settings *settings) {
 }
 
 
-bool EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
+void EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
 	mglist.insert(std::make_pair(mgname, mgfactory));
 	infostream << "EmergeManager: registered mapgen " << mgname << std::endl;
 }
