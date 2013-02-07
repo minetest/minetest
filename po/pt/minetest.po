@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-07 22:12+0200\n"
+"PO-Revision-Date: 2013-02-07 22:21+0200\n"
 "Last-Translator: Francizca Rodriguez <joaoadriano3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
@@ -52,7 +52,7 @@ msgstr "depende de:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr "é necessitado pelo:"
+msgstr "é necessário pelo:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -93,7 +93,7 @@ msgstr "Criar"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "Tu morreste."
+msgstr "Estás morto."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
@@ -101,7 +101,7 @@ msgstr "Renascer"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr "Botão esquerdo: Mover todos os items, Botão direito: Mover um item"
+msgstr "Botão esq.: Mover todos os items, Botão dir.: Mover um item"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
@@ -138,11 +138,11 @@ msgstr "Para trás"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr "Para Esquerda"
+msgstr "Esquerda"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr "Para Direita"
+msgstr "Direita"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
@@ -326,7 +326,7 @@ msgstr "Sombras"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
-msgstr "Visualização Pre-Carregada dos Items"
+msgstr "Precarregamento dos items"
 
 #: src/guiMainMenu.cpp:682
 msgid "Enable Particles"
@@ -568,7 +568,7 @@ msgstr "Screenshot"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr "WINDOWS Esquerdo"
+msgstr "WINDOWS Esq."
 
 #: src/keycode.cpp:233
 msgid "Apps"
@@ -584,7 +584,7 @@ msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr "WINDOWS Direito"
+msgstr "WINDOWS Dir."
 
 #: src/keycode.cpp:233
 msgid "Sleep"
