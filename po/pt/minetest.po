@@ -69,7 +69,7 @@ msgstr "Configuração gravada.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr "Alerta: Configuração não compativel."
+msgstr "Alerta: Configuração não compativel.  "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -81,7 +81,7 @@ msgstr "Não"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Nome do Mundo"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
