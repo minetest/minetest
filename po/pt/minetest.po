@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-07 21:33+0200\n"
-"Last-Translator: Francizca Rodriguez <joaoadriano3@gmail.com>\n"
+"PO-Revision-Date: 2013-02-07 21:34+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -65,7 +65,7 @@ msgstr "Guardar"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr "Configuração gravada."
+msgstr "Configuração gravada.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
