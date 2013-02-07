@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
 "PO-Revision-Date: 2013-02-07 21:34+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"Last-Translator: Francizca Rodriguez <joaoadriano3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -73,11 +73,11 @@ msgstr "Alerta: Configuração não compativel."
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
