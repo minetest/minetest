@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
 "PO-Revision-Date: 2013-02-07 21:33+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"Last-Translator: Francizca Rodriguez <joaoadriano3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr "Configuração gravada."
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "Alerta: Configuração não compativel."
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
