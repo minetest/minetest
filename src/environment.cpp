@@ -1992,8 +1992,8 @@ void ClientEnvironment::step(float dtime)
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 
-	f32 water_friction_horizontal = g_settings->getFloat("movement_water_friction_horizontal") * BS;
-	f32 water_friction_vertical = g_settings->getFloat("movement_water_friction_vertical") * BS;
+	f32 water_friction = g_settings->getFloat("movement_water_friction") * BS;
+	f32 water_friction_smooth = g_settings->getFloat("movement_water_friction_smooth");
 	f32 gravity = g_settings->getFloat("movement_gravity") * BS;
 
 	// Get local player
@@ -2075,16 +2075,13 @@ void ClientEnvironment::step(float dtime)
 				// Water resistance
 				if(lplayer->in_water_stable || lplayer->in_water)
 				{
-					f32 max_down = water_friction_vertical;
-					if(speed.Y < -max_down) speed.Y = -max_down;
-
-					f32 max = water_friction_horizontal;
-					if(speed.getLength() > max)
-					{
-						speed = speed / speed.getLength() * max;
-					}
+					if(speed.X >= water_friction + water_friction_smooth)	speed.X -= water_friction_smooth;
+					if(speed.X <= -water_friction - water_friction_smooth)	speed.X += water_friction_smooth;
+					if(speed.Y >= water_friction + water_friction_smooth)	speed.Y -= water_friction_smooth;
+					if(speed.Y <= -water_friction - water_friction_smooth)	speed.Y += water_friction_smooth;
+					if(speed.Z >= water_friction + water_friction_smooth)	speed.Z -= water_friction_smooth;
+					if(speed.Z <= -water_friction - water_friction_smooth)	speed.Z += water_friction_smooth;
 				}
-
 				lplayer->setSpeed(speed);
 			}
 

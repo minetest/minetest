@@ -387,6 +387,7 @@ void LocalPlayer::applyControl(float dtime)
 
 	f32 acceleration_walk = g_settings->getFloat("movement_acceleration_walk")* BS * dtime;
 	f32 acceleration_air = g_settings->getFloat("movement_acceleration_air") * BS * dtime;
+	f32 acceleration_water = g_settings->getFloat("movement_acceleration_water") * BS * dtime;
 	f32 speed_walk = g_settings->getFloat("movement_speed_walk") * BS;
 	f32 speed_crouch = g_settings->getFloat("movement_speed_crouch") * BS;
 	f32 speed_fast = g_settings->getFloat("movement_speed_fast") * BS;
@@ -566,6 +567,8 @@ void LocalPlayer::applyControl(float dtime)
 	f32 inc = acceleration_walk * BS;
 	if(free_move && fast_move && superspeed)
 		inc = acceleration_walk * BS * 10; // Faster acceleration if fast and free movement
+	else if (in_water)
+		inc = acceleration_water * BS;
 	else if (!touching_ground && !free_move)
 		inc = acceleration_air * BS;
 	
