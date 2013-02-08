@@ -245,6 +245,17 @@
 # Files that are not present would be fetched the usual way
 #remote_media =
 
+# Physics stuff
+#movement_acceleration = 2
+#movement_speed_walk = 4
+#movement_speed_crouch = 1.35
+#movement_speed_fast = 20
+#movement_speed_jump = 6.5
+#movement_speed_descend = 6
+#movement_water_friction_vertical = 2
+#movement_water_friction_horizontal = 2.5
+#movement_gravity = 9.81
+
 # Mapgen stuff
 #mg_name = v6
 #water_level = 1

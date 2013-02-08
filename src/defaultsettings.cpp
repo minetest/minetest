@@ -118,6 +118,16 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 
+	settings->setDefault("movement_acceleration", "2");
+	settings->setDefault("movement_speed_walk", "4");
+	settings->setDefault("movement_speed_crouch", "1.35");
+	settings->setDefault("movement_speed_fast", "20");
+	settings->setDefault("movement_speed_jump", "6.5");
+	settings->setDefault("movement_speed_descend", "6");
+	settings->setDefault("movement_water_friction_vertical", "2");
+	settings->setDefault("movement_water_friction_horizontal", "2.5");
+	settings->setDefault("movement_gravity", "9.81");
+
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
