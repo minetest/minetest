@@ -2344,6 +2344,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		infostream<<"Server: Sending content to "
 				<<getPlayerName(peer_id)<<std::endl;
 
+		// Send player movement settings
+		SendMovement(m_con, peer_id);
+
 		// Send item definitions
 		SendItemDef(m_con, peer_id, m_itemdef);
 
@@ -3533,6 +3536,32 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 /*
 	Static send methods
 */
+
+void Server::SendMovement(con::Connection &con, u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_MOVEMENT);
+	writeF1000(os, g_settings->getFloat("movement_acceleration_default"));
+	writeF1000(os, g_settings->getFloat("movement_acceleration_air"));
+	writeF1000(os, g_settings->getFloat("movement_acceleration_fast"));
+	writeF1000(os, g_settings->getFloat("movement_speed_walk"));
+	writeF1000(os, g_settings->getFloat("movement_speed_crouch"));
+	writeF1000(os, g_settings->getFloat("movement_speed_fast"));
+	writeF1000(os, g_settings->getFloat("movement_speed_climb"));
+	writeF1000(os, g_settings->getFloat("movement_speed_jump"));
+	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity"));
+	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity_smooth"));
+	writeF1000(os, g_settings->getFloat("movement_liquid_sink"));
+	writeF1000(os, g_settings->getFloat("movement_gravity"));
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
 
 void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 {
