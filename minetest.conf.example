@@ -246,7 +246,8 @@
 #remote_media =
 
 # Physics stuff
-#movement_acceleration = 2
+#movement_acceleration_walk = 2
+#movement_acceleration_air = 0.5
 #movement_speed_walk = 4
 #movement_speed_crouch = 1.35
 #movement_speed_fast = 20

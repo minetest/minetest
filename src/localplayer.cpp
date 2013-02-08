@@ -385,7 +385,8 @@ void LocalPlayer::applyControl(float dtime)
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
 
-	f32 acceleration = g_settings->getFloat("movement_acceleration") * BS;
+	f32 acceleration_walk = g_settings->getFloat("movement_acceleration_walk")* BS * dtime;
+	f32 acceleration_air = g_settings->getFloat("movement_acceleration_air") * BS * dtime;
 	f32 speed_walk = g_settings->getFloat("movement_speed_walk") * BS;
 	f32 speed_crouch = g_settings->getFloat("movement_speed_crouch") * BS;
 	f32 speed_fast = g_settings->getFloat("movement_speed_fast") * BS;
@@ -562,11 +563,11 @@ void LocalPlayer::applyControl(float dtime)
 	else
 		speed = speed.normalize() * speed_walk;
 	
-	f32 inc = acceleration * BS * dtime;
-	
-	// Faster acceleration if fast and free movement
+	f32 inc = acceleration_walk * BS;
 	if(free_move && fast_move && superspeed)
-		inc = acceleration * BS * dtime * 10;
+		inc = acceleration_walk * BS * 10; // Faster acceleration if fast and free movement
+	else if (!touching_ground && !free_move)
+		inc = acceleration_air * BS;
 	
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);

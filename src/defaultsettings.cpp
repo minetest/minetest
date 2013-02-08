@@ -118,7 +118,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 
-	settings->setDefault("movement_acceleration", "2");
+	settings->setDefault("movement_acceleration_walk", "2");
+	settings->setDefault("movement_acceleration_air", "0.5");
 	settings->setDefault("movement_speed_walk", "4");
 	settings->setDefault("movement_speed_crouch", "1.35");
 	settings->setDefault("movement_speed_fast", "20");
