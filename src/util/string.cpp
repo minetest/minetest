@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../sha1.h"
 #include "../base64.h"
+#include "../porting.h"
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as
@@ -46,6 +47,45 @@ size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
     size_t count = size * nmemb;
     stream->write(ptr, count);
     return count;
+}
+
+u32 readFlagString(std::string str, FlagDesc *flagdesc) {
+	u32 result = 0;
+	char *s = &str[0];
+	char *flagstr, *strpos = NULL;
+	
+	while ((flagstr = strtok_r(s, ",", &strpos))) {
+		s = NULL;
+		
+		while (*flagstr == ' ' || *flagstr == '\t')
+			flagstr++;
+		
+		for (int i = 0; flagdesc[i].name; i++) {
+			if (!strcasecmp(flagstr, flagdesc[i].name)) {
+				result |= flagdesc[i].flag;
+				break;
+			}
+		}
+	}
+	
+	return result;
+}
+
+std::string writeFlagString(u32 flags, FlagDesc *flagdesc) {
+	std::string result;
+	
+	for (int i = 0; flagdesc[i].name; i++) {
+		if (flags & flagdesc[i].flag) {
+			result += flagdesc[i].name;
+			result += ", ";
+		}
+	}
+	
+	size_t len = result.length();
+	if (len >= 2)
+		result.erase(len - 2, 2);
+	
+	return result;
 }
 
 char *mystrtok_r(char *s, const char *sep, char **lasts) {

@@ -127,7 +127,7 @@ void BiomeDefManager::addBiome(Biome *b) {
 	bgroup->push_back(b);
 
 	verbosestream << "BiomeDefManager: added biome '" << b->name <<
-		"' to biome group " << b->groupid << std::endl;
+		"' to biome group " << (int)b->groupid << std::endl;
 }
 
 

@@ -278,6 +278,9 @@ bool MapgenV6::block_is_underground(u64 seed, v3s16 blockpos)
 
 double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 {
+	if (flags & MG_FLAT)
+		return water_level;
+	
 	int index = (p.Y - node_min.Z) * ystride + (p.X - node_min.X);
 
 	// The base ground level
@@ -333,6 +336,9 @@ double MapgenV6::base_rock_level_2d(u64 seed, v2s16 p)
 }
 
 double MapgenV6::baseRockLevelFromNoise(v2s16 p) {
+	if (flags & MG_FLAT)
+		return water_level;
+	
 	double base = water_level + 
 		NoisePerlin2DPosOffset(noise_terrain_base->np, p.X, 0.5, p.Y, 0.5, seed);
 	double higher = water_level +
@@ -370,6 +376,9 @@ s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
 
 double MapgenV6::get_mud_add_amount(u64 seed, v2s16 p)
 {
+	if (flags & MG_FLAT)
+		return AVERAGE_MUD_AMOUNT;
+		
 	/*return ((float)AVERAGE_MUD_AMOUNT + 2.0 * noise2d_perlin(
 			0.5+(float)p.X/200, 0.5+(float)p.Y/200,
 			seed+91013, 3, 0.55));*/
@@ -491,34 +500,37 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		int z = node_min.Z;
 
 		// Need to adjust for the original implementation's +.5 offset...
-		noise_terrain_base->perlinMap2D(
-			x + 0.5 * noise_terrain_base->np->spread.X,
-			z + 0.5 * noise_terrain_base->np->spread.Z);
-		noise_terrain_base->transformNoiseMap();
+		if (!(flags & MG_FLAT)) {
+			noise_terrain_base->perlinMap2D(
+				x + 0.5 * noise_terrain_base->np->spread.X,
+				z + 0.5 * noise_terrain_base->np->spread.Z);
+			noise_terrain_base->transformNoiseMap();
 
-		noise_terrain_higher->perlinMap2D(
-			x + 0.5 * noise_terrain_higher->np->spread.X,
-			z + 0.5 * noise_terrain_higher->np->spread.Z);
-		noise_terrain_higher->transformNoiseMap();
+			noise_terrain_higher->perlinMap2D(
+				x + 0.5 * noise_terrain_higher->np->spread.X,
+				z + 0.5 * noise_terrain_higher->np->spread.Z);
+			noise_terrain_higher->transformNoiseMap();
 
-		noise_steepness->perlinMap2D(
-			x + 0.5 * noise_steepness->np->spread.X,
-			z + 0.5 * noise_steepness->np->spread.Z);
-		noise_steepness->transformNoiseMap();
+			noise_steepness->perlinMap2D(
+				x + 0.5 * noise_steepness->np->spread.X,
+				z + 0.5 * noise_steepness->np->spread.Z);
+			noise_steepness->transformNoiseMap();
 
-		noise_height_select->perlinMap2D(
-			x + 0.5 * noise_height_select->np->spread.X,
-			z + 0.5 * noise_height_select->np->spread.Z);
-
+			noise_height_select->perlinMap2D(
+				x + 0.5 * noise_height_select->np->spread.X,
+				z + 0.5 * noise_height_select->np->spread.Z);
+		}
+		
 		noise_trees->perlinMap2D(
 			x + 0.5 * noise_trees->np->spread.X,
 			z + 0.5 * noise_trees->np->spread.Z);
-
-		noise_mud->perlinMap2D(
-			x + 0.5 * noise_mud->np->spread.X,
-			z + 0.5 * noise_mud->np->spread.Z);
-		noise_mud->transformNoiseMap();
-
+			
+		if (!(flags & MG_FLAT)) {
+			noise_mud->perlinMap2D(
+				x + 0.5 * noise_mud->np->spread.X,
+				z + 0.5 * noise_mud->np->spread.Z);
+			noise_mud->transformNoiseMap();
+		}
 		noise_beach->perlinMap2D(
 			x + 0.2 * noise_beach->np->spread.X,
 			z + 0.7 * noise_beach->np->spread.Z);

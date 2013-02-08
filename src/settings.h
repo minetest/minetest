@@ -569,6 +569,12 @@ public:
 		return value;
 	}
 
+	u32 getFlagStr(std::string name, FlagDesc *flagdesc)
+	{
+		std::string val = get(name);
+		return (isdigit(val[0])) ? stoi(val) : readFlagString(val, flagdesc);
+	}
+
 	template <class T> T *getStruct(std::string name, std::string format)
 	{
 		size_t len = sizeof(T);
@@ -830,6 +836,11 @@ fail:
 
 		set(name, std::string(sbuf));
 		return true;
+	}
+	
+	void setFlagStr(std::string name, u32 flags, FlagDesc *flagdesc)
+	{
+		set(name, writeFlagString(flags, flagdesc));
 	}
 
 	void setBool(std::string name, bool value)

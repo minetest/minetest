@@ -694,6 +694,30 @@ static NodeBox read_nodebox(lua_State *L, int index)
 }
 
 /*
+	NoiseParams
+*/
+static NoiseParams *read_noiseparams(lua_State *L, int index)
+{
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+		
+	if (!lua_istable(L, index))
+		return NULL;
+
+	NoiseParams *np = new NoiseParams;
+		
+	np->offset  = getfloatfield_default(L, index, "offset", 0.0);
+	np->scale   = getfloatfield_default(L, index, "scale", 0.0);
+	lua_getfield(L, index, "spread");
+	np->spread  = read_v3f(L, -1);
+	np->seed    = getintfield_default(L, index, "seed", 0);
+	np->octaves = getintfield_default(L, index, "octaves", 0);
+	np->persist = getfloatfield_default(L, index, "persist", 0.0);
+	
+	return np;
+}
+
+/*
 	Groups
 */
 static void read_groups(lua_State *L, int index,
@@ -3241,11 +3265,6 @@ static void objectref_get_or_create(lua_State *L,
 	}
 }
 
-
-/*
-  PerlinNoise
- */
-
 class LuaPerlinNoise
 {
 private:
@@ -3352,6 +3371,145 @@ const char LuaPerlinNoise::className[] = "PerlinNoise";
 const luaL_reg LuaPerlinNoise::methods[] = {
 	method(LuaPerlinNoise, get2d),
 	method(LuaPerlinNoise, get3d),
+	{0,0}
+};
+
+/*
+  PerlinNoiseMap
+ */
+class LuaPerlinNoiseMap
+{
+private:
+	Noise *noise;
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static int gc_object(lua_State *L)
+	{
+		LuaPerlinNoiseMap *o = *(LuaPerlinNoiseMap **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	static int l_get2dMap(lua_State *L)
+	{
+		int i = 0;
+
+		LuaPerlinNoiseMap *o = checkobject(L, 1);
+		v2f p = read_v2f(L, 2);
+		
+		Noise *n = o->noise;
+		n->perlinMap2D(p.X, p.Y);
+		
+		lua_newtable(L);
+		for (int y = 0; y != n->sy; y++) {
+			lua_newtable(L);
+			for (int x = 0; x != n->sx; x++) {
+				float noiseval = n->np->offset + n->np->scale * n->result[i++];
+				lua_pushnumber(L, noiseval);
+				lua_rawseti(L, -2, x + 1);
+			}
+			lua_rawseti(L, -2, y + 1);
+		}
+		return 1;
+	}
+	
+	static int l_get3dMap(lua_State *L)
+	{
+		int i = 0;
+		
+		LuaPerlinNoiseMap *o = checkobject(L, 1);
+		v3f p = read_v3f(L, 2);
+		
+		Noise *n = o->noise;
+		n->perlinMap3D(p.X, p.Y, p.Z);
+
+		lua_newtable(L);
+		for (int z = 0; z != n->sz; z++) {
+			lua_newtable(L);
+			for (int y = 0; y != n->sy; y++) {
+				lua_newtable(L);
+				for (int x = 0; x != n->sx; x++) {
+					lua_pushnumber(L, n->np->offset + n->np->scale * n->result[i++]);
+					lua_rawseti(L, -2, x + 1);
+				}
+				lua_rawseti(L, -2, y + 1);
+			}
+			lua_rawseti(L, -2, z + 1);
+		}
+		return 1;
+	}
+
+public:
+	LuaPerlinNoiseMap(NoiseParams *np, int seed, v3s16 size) {
+		noise = new Noise(np, seed, size.X, size.Y, size.Z);
+	}
+
+	~LuaPerlinNoiseMap()
+	{
+		delete noise->np;
+		delete noise;
+	}
+
+	// LuaPerlinNoiseMap(np, size)
+	// Creates an LuaPerlinNoiseMap and leaves it on top of stack
+	static int create_object(lua_State *L)
+	{
+		NoiseParams *np = read_noiseparams(L, 1);
+		if (!np)
+			return 0;
+		v3s16 size = read_v3s16(L, 2);
+
+		LuaPerlinNoiseMap *o = new LuaPerlinNoiseMap(np, 0, size);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static LuaPerlinNoiseMap *checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		
+		void *ud = luaL_checkudata(L, narg, className);
+		if (!ud)
+			luaL_typerror(L, narg, className);
+		
+		return *(LuaPerlinNoiseMap **)ud;  // unbox pointer
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Can be created from Lua (PerlinNoiseMap(np, size)
+		lua_register(L, className, create_object);
+	}
+};
+const char LuaPerlinNoiseMap::className[] = "PerlinNoiseMap";
+const luaL_reg LuaPerlinNoiseMap::methods[] = {
+	method(LuaPerlinNoiseMap, get2dMap),
+	method(LuaPerlinNoiseMap, get3dMap),
 	{0,0}
 };
 
@@ -4019,6 +4177,28 @@ private:
 		lua_setmetatable(L, -2);
 		return 1;
 	}
+    
+	//  EnvRef:get_perlin_map(noiseparams, size)
+	//  returns world-specific PerlinNoiseMap
+	static int l_get_perlin_map(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if (env == NULL)
+			return 0;
+		
+		NoiseParams *np = read_noiseparams(L, 2);
+		if (!np)
+			return 0;
+		v3s16 size = read_v3s16(L, 3);
+		
+		int seed = (int)(env->getServerMap().getSeed());
+		LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(np, seed, size);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
+		luaL_getmetatable(L, "PerlinNoiseMap");
+		lua_setmetatable(L, -2);
+		return 1;
+	}
 
 	// EnvRef:clear_objects()
 	// clear all objects in the environment
@@ -4158,8 +4338,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, find_node_near),
 	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
-	//method{EnvRef, get_perlin_map_2d},
-	//method{EnvRef, get_perlin_map_3d},
+	method(EnvRef, get_perlin_map),
 	method(EnvRef, clear_objects),
 	method(EnvRef, spawn_tree),
 	{0,0}
@@ -5424,6 +5603,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
 	LuaPerlinNoise::Register(L);
+	LuaPerlinNoiseMap::Register(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,

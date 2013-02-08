@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_DUNGEONS      0x04
 #define MGV6_FORESTS     0x08
 #define MGV6_BIOME_BLEND 0x10
+#define MG_FLAT          0x20
 
 class BiomeDefManager;
 class Biome;
@@ -121,8 +122,9 @@ public:
 	Mapgen *getMapgen();
 	void addBlockToQueue();
 	
-	bool registerMapgen(std::string name, MapgenFactory *mgfactory);
+	void registerMapgen(std::string name, MapgenFactory *mgfactory);
 	MapgenParams *getParamsFromSettings(Settings *settings);
+	void setParamsToSettings(Settings *settings);
 	
 	//mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);

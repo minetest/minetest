@@ -56,6 +56,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtof(x, y) (float)strtod(x, y)
 	#define strtoll(x, y, z) _strtoi64(x, y, z)
 	#define strtoull(x, y, z) _strtoui64(x, y, z)
+	#define strcasecmp(x, y) stricmp(x, y)
 #else
 	#define ALIGNOF(x) __alignof__(x)
 #endif
