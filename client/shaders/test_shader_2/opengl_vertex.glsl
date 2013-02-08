@@ -8,9 +8,7 @@ varying vec3 vPosition;
 
 void main(void)
 {
-	vec4 pos = gl_Vertex;
-	pos.y -= 2.0;
-	gl_Position = mWorldViewProj * pos;
+	gl_Position = mWorldViewProj * gl_Vertex;
 
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 
