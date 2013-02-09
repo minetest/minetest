@@ -887,22 +887,7 @@ int main(int argc, char *argv[])
 	fs::CreateDir(porting::path_user);
 
 	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
-	
-	// Initialize debug streams
-#define DEBUGFILE "debug.txt"
-#if RUN_IN_PLACE
-	std::string logfile = DEBUGFILE;
-#else
-	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
-#endif
-	if(cmd_args.exists("logfile"))
-		logfile = cmd_args.get("logfile");
-	if(logfile != "")
-		debugstreams_init(false, logfile.c_str());
-	else
-		debugstreams_init(false, NULL);
 
-	infostream<<"logfile    = "<<logfile<<std::endl;
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
 
@@ -995,6 +980,31 @@ int main(int argc, char *argv[])
 		if(configpath == "")
 			configpath = filenames[0];
 	}
+	
+	// Initialize debug streams
+#define DEBUGFILE "debug.txt"
+#if RUN_IN_PLACE
+	std::string logfile = DEBUGFILE;
+#else
+	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
+#endif
+	if(cmd_args.exists("logfile"))
+		logfile = cmd_args.get("logfile");
+	
+	log_remove_output(&main_dstream_no_stderr_log_out);
+	int loglevel = g_settings->getS32("debug_log_level");
+
+	if (loglevel == 0) //no logging
+		logfile = "";
+	else if (loglevel > 0 && loglevel <= LMT_NUM_VALUES)
+		log_add_output_maxlev(&main_dstream_no_stderr_log_out, (LogMessageLevel)(loglevel - 1));
+
+	if(logfile != "")
+		debugstreams_init(false, logfile.c_str());
+	else
+		debugstreams_init(false, NULL);
+		
+	infostream<<"logfile    = "<<logfile<<std::endl;
 
 	// Initialize random seed
 	srand(time(0));
