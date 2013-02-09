@@ -972,13 +972,25 @@ Server::Server(
 		infostream<<" in simple singleplayer mode"<<std::endl;
 	else
 		infostream<<std::endl;
-	infostream<<"- world:  "<<m_path_world<<std::endl;
-	infostream<<"- config: "<<m_path_config<<std::endl;
-	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
+
+	std::string world_conf_file = m_path_world+DIR_DELIM+"settings.conf";
+	infostream<<"- world:       "<<m_path_world<<std::endl;
+	infostream<<"- config:      "<<m_path_config<<std::endl;
+	infostream<<"- game:        "<<m_gamespec.path<<std::endl;
+	infostream<<"- worldconfig: "<<world_conf_file<<std::endl;
 
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
+
+	// open world specific settings
+	if (g_world_settings != 0) {
+		errorstream << "Worldconfig already exists trying to close" << std::endl;
+		delete g_world_settings;
+	}
+	g_world_settings = new Settings();
+	assert(g_world_settings != 0);
+	g_world_settings->readConfigFile(world_conf_file.c_str());
 
 	// Add world mod search path
 	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
@@ -1179,6 +1191,11 @@ Server::~Server()
 			delete i->second;
 		}
 	}
+
+	std::string world_conf_file = m_path_world+DIR_DELIM+"settings.conf";
+	g_world_settings->updateConfigFile(world_conf_file.c_str());
+	delete g_world_settings;
+	g_world_settings = 0;
 }
 
 void Server::start(unsigned short port)

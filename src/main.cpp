@@ -79,6 +79,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Settings main_settings;
 Settings *g_settings = &main_settings;
 
+// World specific settings
+Settings *g_world_settings = 0;
+
 // Global profiler
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;

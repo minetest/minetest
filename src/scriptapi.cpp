@@ -4755,6 +4755,29 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
+// world_setting_set(name, value)
+static int l_world_setting_set(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	const char *value = luaL_checkstring(L, 2);
+
+	g_world_settings->set(name, value);
+	return 0;
+}
+
+// world_setting_get(name)
+static int l_world_setting_get(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	try{
+		std::string value = g_world_settings->get(name);
+		lua_pushstring(L, value.c_str());
+	} catch(SettingNotFoundException &e){
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 // setting_set(name, value)
 static int l_setting_set(lua_State *L)
 {
@@ -5254,6 +5277,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_item_raw", l_register_item_raw},
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
+	{"world_setting_set", l_world_setting_set},
+	{"world_setting_get", l_world_setting_get},
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},

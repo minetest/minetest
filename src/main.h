@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Settings
 class Settings;
 extern Settings *g_settings;
+extern Settings *g_world_settings;
 
 // Global profiler
 class Profiler;
