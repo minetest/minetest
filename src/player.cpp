@@ -67,8 +67,7 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 {
 	v3f d_wanted = target_speed - m_speed;
 	d_wanted.Y = 0;
-	f32 dl_wanted = d_wanted.getLength();
-	f32 dl = dl_wanted;
+	f32 dl = d_wanted.getLength();
 	if(dl > max_increase)
 		dl = max_increase;
 	
@@ -76,7 +75,6 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 
 	m_speed.X += d.X;
 	m_speed.Z += d.Z;
-	//m_speed += d;
 
 #if 0 // old code
 	if(m_speed.X < target_speed.X - max_increase)

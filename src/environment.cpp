@@ -2071,17 +2071,28 @@ void ClientEnvironment::step(float dtime)
 				v3f speed = lplayer->getSpeed();
 				if(lplayer->swimming_up == false)
 					speed.Y -= gravity * dtime_part * 2;
-
+				
 				// Water resistance
 				if(lplayer->in_water_stable || lplayer->in_water)
-				{
-					if(speed.X >= water_friction + water_friction_smooth)	speed.X -= water_friction_smooth;
-					if(speed.X <= -water_friction - water_friction_smooth)	speed.X += water_friction_smooth;
-					if(speed.Y >= water_friction + water_friction_smooth)	speed.Y -= water_friction_smooth;
-					if(speed.Y <= -water_friction - water_friction_smooth)	speed.Y += water_friction_smooth;
-					if(speed.Z >= water_friction + water_friction_smooth)	speed.Z -= water_friction_smooth;
-					if(speed.Z <= -water_friction - water_friction_smooth)	speed.Z += water_friction_smooth;
+				{					
+					v3f d_wanted = -speed / water_friction;
+					f32 dl = d_wanted.getLength();
+					if(dl > water_friction_smooth)
+						dl = water_friction_smooth;
+					
+					v3f d = d_wanted.normalize() * dl;
+					speed += d;
+					
+#if 0 // old code
+					if(speed.X > water_friction + water_friction_smooth)	speed.X -= water_friction_smooth;
+					if(speed.X < -water_friction - water_friction_smooth)	speed.X += water_friction_smooth;
+					if(speed.Y > water_friction + water_friction_smooth)	speed.Y -= water_friction_smooth;
+					if(speed.Y < -water_friction - water_friction_smooth)	speed.Y += water_friction_smooth;
+					if(speed.Z > water_friction + water_friction_smooth)	speed.Z -= water_friction_smooth;
+					if(speed.Z < -water_friction - water_friction_smooth)	speed.Z += water_friction_smooth;
+#endif
 				}
+
 				lplayer->setSpeed(speed);
 			}
 

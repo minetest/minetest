@@ -255,7 +255,7 @@
 #movement_speed_fast = 20
 #movement_speed_jump = 6.5
 #movement_speed_descend = 6
-#movement_water_friction = 1.5
+#movement_water_friction = 1
 #movement_water_friction_smooth = 5
 #movement_gravity = 9.81
 

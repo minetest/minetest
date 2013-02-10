@@ -127,7 +127,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_speed_fast", "20");
 	settings->setDefault("movement_speed_jump", "6.5");
 	settings->setDefault("movement_speed_descend", "6");
-	settings->setDefault("movement_water_friction", "1.5");
+	settings->setDefault("movement_water_friction", "1");
 	settings->setDefault("movement_water_friction_smooth", "5");
 	settings->setDefault("movement_gravity", "9.81");
 
