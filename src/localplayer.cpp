@@ -399,7 +399,7 @@ void LocalPlayer::applyControl(float dtime)
 		superspeed = true;
 
 	f32 inc = movement_acceleration_walk * BS * dtime;
-	if(fast_move || superspeed)
+	if(superspeed || (fast_move && control.aux1))
 		inc = movement_acceleration_fast * BS * dtime;
 	else if (in_water)
 		inc = movement_acceleration_water * BS * dtime;
