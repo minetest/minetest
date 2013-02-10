@@ -184,6 +184,7 @@ set(common_SRCS
 	nodedef.cpp
 	object_properties.cpp
 	scriptapi.cpp
+	lua_fileapi.cpp
 	script.cpp
 	log.cpp
 	content_sao.cpp

@@ -49,6 +49,7 @@ extern "C" {
 #include "util/pointedthing.h"
 #include "rollback.h"
 #include "treegen.h"
+#include "lua_fileapi.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -134,7 +135,7 @@ public:
 	Getters for stuff in main tables
 */
 
-static Server* get_server(lua_State *L)
+Server* get_server(lua_State *L)
 {
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
@@ -5282,6 +5283,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_craft_recipe", l_get_craft_recipe},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+	{"open_file",FileRef::l_open},
 	{NULL, NULL}
 };
 
@@ -5323,6 +5325,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
 	LuaPerlinNoise::Register(L);
+	FileRef::Register(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
