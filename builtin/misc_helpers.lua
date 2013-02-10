@@ -20,6 +20,11 @@ function basic_dump2(o)
 end
 
 function dump2(o, name, dumped)
+
+	--check if minetest is in secure mode
+	if not minetest.setting_getbool("mod_full_system_access") then
+		return nil
+	end
 	name = name or "_"
 	dumped = dumped or {}
 	io.write(name, " = ")

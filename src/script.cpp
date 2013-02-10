@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdlib>
 #include "log.h"
 #include <iostream>
+#include "settings.h"
+#include "main.h" //for g_settings
 
 extern "C" {
 #include <lua.h>
@@ -111,10 +113,36 @@ bool script_load(lua_State *L, const char *path)
 	return true;
 }
 
+static const luaL_Reg lualibs[] = {
+	{"", luaopen_base},
+	{LUA_TABLIBNAME, luaopen_table},
+	//{LUA_IOLIBNAME, luaopen_io}, //disabled for security reasons
+	//{LUA_OSLIBNAME, luaopen_os}, //disabled for security reasons
+	//{LUA_LOADLIBNAME, luaopen_package},
+	{LUA_STRLIBNAME, luaopen_string},
+	{LUA_MATHLIBNAME, luaopen_math},
+	{LUA_DBLIBNAME, luaopen_debug},
+	{NULL, NULL}
+};
+
+LUALIB_API void safe_luaL_openlibs (lua_State *L) {
+  const luaL_Reg *lib = lualibs;
+  for (; lib->func; lib++) {
+    lua_pushcfunction(L, lib->func);
+    lua_pushstring(L, lib->name);
+    lua_call(L, 1, 0);
+  }
+}
+
 lua_State* script_init()
 {
 	lua_State *L = luaL_newstate();
-	luaL_openlibs(L);
+	if (g_settings->getBool("mod_full_system_access")) {
+		luaL_openlibs(L);
+	}
+	else {
+		safe_luaL_openlibs(L);
+	}
 	return L;
 }
 
