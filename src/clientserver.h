@@ -364,6 +364,23 @@ enum ToClientCommand
 		u16 len
 		u8[len] formname
 	*/
+
+	TOCLIENT_MOVEMENT = 0x45,
+	/*
+		u16 command
+		f1000 movement_acceleration_walk
+		f1000 movement_acceleration_air
+		f1000 movement_acceleration_water
+		f1000 movement_acceleration_fast
+		f1000 movement_speed_walk
+		f1000 movement_speed_crouch
+		f1000 movement_speed_fast
+		f1000 movement_speed_jump
+		f1000 movement_speed_descend
+		f1000 movement_water_friction
+		f1000 movement_water_friction_smooth
+		f1000 movement_gravity
+	*/
 };
 
 enum ToServerCommand

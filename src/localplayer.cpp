@@ -385,16 +385,6 @@ void LocalPlayer::applyControl(float dtime)
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
 
-	f32 acceleration_walk = g_settings->getFloat("movement_acceleration_walk")* BS * dtime;
-	f32 acceleration_air = g_settings->getFloat("movement_acceleration_air") * BS * dtime;
-	f32 acceleration_water = g_settings->getFloat("movement_acceleration_water") * BS * dtime;
-	f32 acceleration_fast = g_settings->getFloat("movement_acceleration_fast") * BS * dtime;
-	f32 speed_walk = g_settings->getFloat("movement_speed_walk") * BS;
-	f32 speed_crouch = g_settings->getFloat("movement_speed_crouch") * BS;
-	f32 speed_fast = g_settings->getFloat("movement_speed_fast") * BS;
-	f32 speed_descend = g_settings->getFloat("movement_speed_descend") * BS;
-	f32 speed_jump = g_settings->getFloat("movement_speed_jump") * BS;
-
 	if(free_move || is_climbing)
 	{
 		v3f speed = getSpeed();
@@ -408,13 +398,13 @@ void LocalPlayer::applyControl(float dtime)
 	if(g_settings->getBool("always_fly_fast") && free_move && fast_move)
 		superspeed = true;
 
-	f32 inc = acceleration_walk * BS;
+	f32 inc = movement_acceleration_walk * BS * dtime;
 	if(fast_move || superspeed)
-		inc = acceleration_fast * BS;
+		inc = movement_acceleration_fast * BS * dtime;
 	else if (in_water)
-		inc = acceleration_water * BS;
+		inc = movement_acceleration_water * BS * dtime;
 	else if (!touching_ground && !free_move)
-		inc = acceleration_air * BS;
+		inc = movement_acceleration_air * BS * dtime;
 
 	// Old descend control
 	if(g_settings->getBool("aux1_descends"))
@@ -431,15 +421,15 @@ void LocalPlayer::applyControl(float dtime)
 				// In free movement mode, aux1 descends
 				v3f speed = getSpeed();
 				if(fast_move)
-					speed.Y = -speed_fast;
+					speed.Y = -movement_speed_fast;
 				else
-					speed.Y = -speed_walk;
+					speed.Y = -movement_speed_walk;
 				accelerateY(speed.Y, inc * BS);
 			}
 			else if(is_climbing)
 			{
 				v3f speed = getSpeed();
-				speed.Y = -speed_descend;
+				speed.Y = -movement_speed_descend;
 				accelerateY(speed.Y, inc * BS);
 			}
 			else
@@ -473,15 +463,15 @@ void LocalPlayer::applyControl(float dtime)
 				v3f speed = getSpeed();
 				if(fast_move && (control.aux1 ||
 						g_settings->getBool("always_fly_fast")))
-					speed.Y = -speed_fast;
+					speed.Y = -movement_speed_fast;
 				else
-					speed.Y = -speed_walk;
+					speed.Y = -movement_speed_walk;
 					accelerateY(speed.Y, inc * BS);
 			}
 			else if(is_climbing)
 			{
 				v3f speed = getSpeed();
-				speed.Y = -speed_descend;
+				speed.Y = -movement_speed_descend;
 				accelerateY(speed.Y, inc * BS);
 			}
 		}
@@ -519,14 +509,14 @@ void LocalPlayer::applyControl(float dtime)
 					g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)
-					speed.Y = speed_fast;
+					speed.Y = movement_speed_fast;
 				else
-					speed.Y = speed_walk;
+					speed.Y = movement_speed_walk;
 			} else {
 				if(fast_move && control.aux1)
-					speed.Y = speed_fast;
+					speed.Y = movement_speed_fast;
 				else
-					speed.Y = speed_walk;
+					speed.Y = movement_speed_walk;
 			}
 			
 			accelerateY(speed.Y, inc * BS);
@@ -541,7 +531,7 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speed = getSpeed();
 			if(speed.Y >= -0.5*BS)
 			{
-				speed.Y = speed_jump;
+				speed.Y = movement_speed_jump;
 				setSpeed(speed);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
@@ -567,11 +557,11 @@ void LocalPlayer::applyControl(float dtime)
 
 	// The speed of the player (Y is ignored)
 	if(superspeed)
-		speed = speed.normalize() * speed_fast;
+		speed = speed.normalize() * movement_speed_fast;
 	else if(control.sneak && !free_move)
-		speed = speed.normalize() * speed_crouch;
+		speed = speed.normalize() * movement_speed_crouch;
 	else
-		speed = speed.normalize() * speed_walk;
+		speed = speed.normalize() * movement_speed_walk;
 	
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);

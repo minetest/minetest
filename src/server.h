@@ -602,6 +602,7 @@ private:
 		Static send methods
 	*/
 
+	static void SendMovement(con::Connection &con, u16 peer_id);
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
