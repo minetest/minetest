@@ -401,6 +401,9 @@ void LocalPlayer::applyControl(float dtime)
 	f32 inc = movement_acceleration_walk * BS * dtime;
 	if(superspeed || (fast_move && control.aux1))
 		inc = movement_acceleration_fast * BS * dtime;
+	else if ((in_water || in_water_stable) && (fast_move && g_settings->getBool("aux1_descends")))
+		// Always use fast when aux1_descends & fast_move are enabled in water, since the aux1 button would mean both turbo and "swim down" causing a conflict
+		inc = movement_acceleration_fast * BS * dtime;
 	else if (!touching_ground && !free_move && !in_water && !in_water_stable)
 		inc = movement_acceleration_air * BS * dtime;
 
@@ -423,6 +426,12 @@ void LocalPlayer::applyControl(float dtime)
 				else
 					speed.Y = -movement_speed_walk;
 				accelerateVertical(speed, inc * BS);
+			}
+			else if(in_water || in_water_stable)
+			{
+				v3f speed = getSpeed();
+				speed.Y = -movement_speed_fast;
+				accelerateVertical(speed, inc);
 			}
 			else if(is_climbing)
 			{
@@ -550,7 +559,8 @@ void LocalPlayer::applyControl(float dtime)
 		else if(in_water)
 		{
 			v3f speed = getSpeed();
-			if(fast_move && control.aux1)
+			if((fast_move && control.aux1) || (fast_move && g_settings->getBool("aux1_descends")))
+				// Always use fast when aux1_descends & fast_move are enabled in water, since the aux1 button would mean both turbo and "swim down" causing a conflict
 				speed.Y = movement_speed_fast;
 			else
 				speed.Y = movement_speed_walk;
@@ -568,7 +578,7 @@ void LocalPlayer::applyControl(float dtime)
 	// The speed of the player (Y is ignored)
 	if(superspeed)
 		speed = speed.normalize() * movement_speed_fast;
-	else if(control.sneak && !free_move)
+	else if(control.sneak && !free_move && !in_water && !in_water_stable)
 		speed = speed.normalize() * movement_speed_crouch;
 	else
 		speed = speed.normalize() * movement_speed_walk;
