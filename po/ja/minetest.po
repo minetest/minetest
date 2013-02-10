@@ -3,19 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-02-07 17:38+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
@@ -31,15 +32,15 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
-msgstr ""
+msgstr "有効しました"
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr ""
+msgstr "全部を有効する"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr ""
+msgstr "全部を無効する"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
@@ -52,11 +53,11 @@ msgstr ""
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
@@ -68,31 +69,31 @@ msgstr ""
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "ワールド名"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "ゲーム"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "設ける"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "死んでしまいました。"
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "生まれて帰る"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"

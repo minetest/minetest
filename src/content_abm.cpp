@@ -80,7 +80,8 @@ public:
 		ServerMap *map = &env->getServerMap();
 		
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
-		if(!ndef->get(n_top).light_propagates ||
+		if((!ndef->get(n_top).light_propagates &&
+				n_top.getContent() != CONTENT_IGNORE) ||
 				ndef->get(n_top).isLiquid())
 		{
 			n.setContent(ndef->getId("mapgen_dirt"));
