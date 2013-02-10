@@ -401,9 +401,7 @@ void LocalPlayer::applyControl(float dtime)
 	f32 inc = movement_acceleration_walk * BS * dtime;
 	if(superspeed || (fast_move && control.aux1))
 		inc = movement_acceleration_fast * BS * dtime;
-	else if (in_water)
-		inc = movement_acceleration_water * BS * dtime;
-	else if (!touching_ground && !free_move)
+	else if (!touching_ground && !free_move && !in_water)
 		inc = movement_acceleration_air * BS * dtime;
 
 	// Old descend control
@@ -468,6 +466,15 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = -movement_speed_walk;
 					accelerateY(speed.Y, inc * BS);
 			}
+			else if(in_water)
+			{
+				v3f speed = getSpeed();
+				if(fast_move && control.aux1)
+					speed.Y = -movement_speed_fast;
+				else
+					speed.Y = -movement_speed_walk;
+				accelerateY(speed.Y, inc);
+			}
 			else if(is_climbing)
 			{
 				v3f speed = getSpeed();
@@ -529,7 +536,7 @@ void LocalPlayer::applyControl(float dtime)
 				at its starting value
 			*/
 			v3f speed = getSpeed();
-			if(speed.Y >= -0.5*BS)
+			if(speed.Y >= -0.5 * BS)
 			{
 				speed.Y = movement_speed_jump;
 				setSpeed(speed);
@@ -543,14 +550,17 @@ void LocalPlayer::applyControl(float dtime)
 		else if(in_water)
 		{
 			v3f speed = getSpeed();
-			speed.Y = 1.5 * BS;
-			accelerateY(speed.Y, inc * BS);
+			if(fast_move && control.aux1)
+				speed.Y = movement_speed_fast;
+			else
+				speed.Y = movement_speed_walk;
+			accelerateY(speed.Y, inc);
 			swimming_up = true;
 		}
 		else if(is_climbing)
 		{
 			v3f speed = getSpeed();
-			speed.Y = 3 * BS;
+			speed.Y = movement_speed_walk;
 			accelerateY(speed.Y, inc * BS);
 		}
 	}

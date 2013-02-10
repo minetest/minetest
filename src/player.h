@@ -209,15 +209,15 @@ public:
 
 	f32 movement_acceleration_walk;
 	f32 movement_acceleration_air;
-	f32 movement_acceleration_water;
 	f32 movement_acceleration_fast;
 	f32 movement_speed_walk;
 	f32 movement_speed_crouch;
 	f32 movement_speed_fast;
 	f32 movement_speed_jump;
 	f32 movement_speed_descend;
-	f32 movement_water_friction;
-	f32 movement_water_friction_smooth;
+	f32 movement_liquid_fluidity;
+	f32 movement_liquid_fluidity_smooth;
+	f32 movement_liquid_drag;
 	f32 movement_gravity;
 
 	u16 hp;

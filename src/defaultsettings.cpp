@@ -176,15 +176,15 @@ void set_default_settings(Settings *settings)
 	// physics stuff
 	settings->setDefault("movement_acceleration_walk", "2");
 	settings->setDefault("movement_acceleration_air", "0.5");
-	settings->setDefault("movement_acceleration_water", "1");
 	settings->setDefault("movement_acceleration_fast", "8");
 	settings->setDefault("movement_speed_walk", "4");
 	settings->setDefault("movement_speed_crouch", "1.35");
 	settings->setDefault("movement_speed_fast", "20");
 	settings->setDefault("movement_speed_jump", "6.5");
 	settings->setDefault("movement_speed_descend", "6");
-	settings->setDefault("movement_water_friction", "1");
-	settings->setDefault("movement_water_friction_smooth", "5");
+	settings->setDefault("movement_liquid_fluidity", "1");
+	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
+	settings->setDefault("movement_liquid_drag", "-1");
 	settings->setDefault("movement_gravity", "9.81");
 	
 	//mapgen related things

@@ -1992,10 +1992,6 @@ void ClientEnvironment::step(float dtime)
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 
-	f32 water_friction = g_settings->getFloat("movement_water_friction") * BS;
-	f32 water_friction_smooth = g_settings->getFloat("movement_water_friction_smooth");
-	f32 gravity = g_settings->getFloat("movement_gravity") * BS;
-
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
@@ -2069,27 +2065,31 @@ void ClientEnvironment::step(float dtime)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->swimming_up == false)
-					speed.Y -= gravity * dtime_part * 2;
-				
+				if(lplayer->in_water == false)
+					speed.Y -= lplayer->movement_gravity * dtime_part * 2;
+
+				// Water floating / sinking
+				if(lplayer -> in_water)
+					speed.Y += lplayer->movement_liquid_drag * dtime_part * 2;
+
 				// Water resistance
 				if(lplayer->in_water_stable || lplayer->in_water)
-				{					
-					v3f d_wanted = -speed / water_friction;
+				{
+					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
 					f32 dl = d_wanted.getLength();
-					if(dl > water_friction_smooth)
-						dl = water_friction_smooth;
+					if(dl > lplayer->movement_liquid_fluidity_smooth)
+						dl = lplayer->movement_liquid_fluidity_smooth;
 					
 					v3f d = d_wanted.normalize() * dl;
 					speed += d;
 					
 #if 0 // old code
-					if(speed.X > water_friction + water_friction_smooth)	speed.X -= water_friction_smooth;
-					if(speed.X < -water_friction - water_friction_smooth)	speed.X += water_friction_smooth;
-					if(speed.Y > water_friction + water_friction_smooth)	speed.Y -= water_friction_smooth;
-					if(speed.Y < -water_friction - water_friction_smooth)	speed.Y += water_friction_smooth;
-					if(speed.Z > water_friction + water_friction_smooth)	speed.Z -= water_friction_smooth;
-					if(speed.Z < -water_friction - water_friction_smooth)	speed.Z += water_friction_smooth;
+					if(speed.X > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.X -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.X < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.X += lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Y > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Y -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Y < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Y += lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Z > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Z -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Z < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Z += lplayer->movement_liquid_fluidity_smooth;
 #endif
 				}
 

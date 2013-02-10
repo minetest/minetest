@@ -1523,15 +1523,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		player->movement_acceleration_walk = readF1000(is) * BS;
 		player->movement_acceleration_air = readF1000(is) * BS;
-		player->movement_acceleration_water = readF1000(is) * BS;
 		player->movement_acceleration_fast = readF1000(is) * BS;
 		player->movement_speed_walk = readF1000(is) * BS;
 		player->movement_speed_crouch = readF1000(is) * BS;
 		player->movement_speed_fast = readF1000(is) * BS;
 		player->movement_speed_jump = readF1000(is) * BS;
 		player->movement_speed_descend = readF1000(is) * BS;
-		player->movement_water_friction = readF1000(is) * BS;
-		player->movement_water_friction_smooth = readF1000(is) * BS;
+		player->movement_liquid_fluidity = readF1000(is) * BS;
+		player->movement_liquid_fluidity_smooth = readF1000(is) * BS;
+		player->movement_liquid_drag = readF1000(is) * BS;
 		player->movement_gravity = readF1000(is) * BS;
 	}
 	else if(command == TOCLIENT_HP)
