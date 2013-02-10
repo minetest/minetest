@@ -401,7 +401,7 @@ void LocalPlayer::applyControl(float dtime)
 	f32 inc = movement_acceleration_walk * BS * dtime;
 	if(superspeed || (fast_move && control.aux1))
 		inc = movement_acceleration_fast * BS * dtime;
-	else if (!touching_ground && !free_move && !in_water)
+	else if (!touching_ground && !free_move && !in_water && !in_water_stable)
 		inc = movement_acceleration_air * BS * dtime;
 
 	// Old descend control
@@ -466,7 +466,7 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = -movement_speed_walk;
 					accelerateVertical(speed, inc * BS);
 			}
-			else if(in_water)
+			else if(in_water || in_water_stable)
 			{
 				v3f speed = getSpeed();
 				if(fast_move && control.aux1)
