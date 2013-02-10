@@ -121,6 +121,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_acceleration_walk", "2");
 	settings->setDefault("movement_acceleration_air", "0.5");
 	settings->setDefault("movement_acceleration_water", "1");
+	settings->setDefault("movement_acceleration_fast", "8");
 	settings->setDefault("movement_speed_walk", "4");
 	settings->setDefault("movement_speed_crouch", "1.35");
 	settings->setDefault("movement_speed_fast", "20");
