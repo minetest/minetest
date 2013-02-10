@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "treegen.h"
 #include "mapgen_v6.h"
+#include "mapgen_flat.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -52,6 +53,7 @@ FlagDesc flagdesc_mapgen[] = {
 EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	//register built-in mapgens
 	registerMapgen("v6", new MapgenFactoryV6());
+	registerMapgen("flat", new MapgenFactoryFlat());
 		
 	//the order of these assignments is pretty important
 	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
