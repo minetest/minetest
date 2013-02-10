@@ -108,8 +108,8 @@ public:
 		m_speed = speed;
 	}
 	
-	void accelerate(v3f target_speed, f32 max_increase); // Y direction is ignored
-	void accelerateY(f32 target_speed, f32 max_increase);
+	void accelerateHorizontal(v3f target_speed, f32 max_increase);
+	void accelerateVertical(v3f target_speed, f32 max_increase);
 
 	v3f getPosition()
 	{

@@ -315,7 +315,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	}
 
 	if(bouncy_jump && control.jump){
-		m_speed.Y += 6.5*BS;
+		m_speed.Y += movement_speed_jump*BS;
 		touching_ground = false;
 		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 		m_gamedef->event()->put(e);
@@ -422,13 +422,13 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = -movement_speed_fast;
 				else
 					speed.Y = -movement_speed_walk;
-				accelerateY(speed.Y, inc * BS);
+				accelerateVertical(speed, inc * BS);
 			}
 			else if(is_climbing)
 			{
 				v3f speed = getSpeed();
 				speed.Y = -movement_speed_descend;
-				accelerateY(speed.Y, inc * BS);
+				accelerateVertical(speed, inc * BS);
 			}
 			else
 			{
@@ -464,7 +464,7 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = -movement_speed_fast;
 				else
 					speed.Y = -movement_speed_walk;
-					accelerateY(speed.Y, inc * BS);
+					accelerateVertical(speed, inc * BS);
 			}
 			else if(in_water)
 			{
@@ -473,13 +473,13 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = -movement_speed_fast;
 				else
 					speed.Y = -movement_speed_walk;
-				accelerateY(speed.Y, inc);
+				accelerateVertical(speed, inc);
 			}
 			else if(is_climbing)
 			{
 				v3f speed = getSpeed();
 				speed.Y = -movement_speed_descend;
-				accelerateY(speed.Y, inc * BS);
+				accelerateVertical(speed, inc * BS);
 			}
 		}
 	}
@@ -526,7 +526,7 @@ void LocalPlayer::applyControl(float dtime)
 					speed.Y = movement_speed_walk;
 			}
 			
-			accelerateY(speed.Y, inc * BS);
+			accelerateVertical(speed, inc * BS);
 		}
 		else if(m_can_jump)
 		{
@@ -554,14 +554,14 @@ void LocalPlayer::applyControl(float dtime)
 				speed.Y = movement_speed_fast;
 			else
 				speed.Y = movement_speed_walk;
-			accelerateY(speed.Y, inc);
+			accelerateVertical(speed, inc);
 			swimming_up = true;
 		}
 		else if(is_climbing)
 		{
 			v3f speed = getSpeed();
 			speed.Y = movement_speed_walk;
-			accelerateY(speed.Y, inc * BS);
+			accelerateVertical(speed, inc * BS);
 		}
 	}
 
@@ -574,7 +574,7 @@ void LocalPlayer::applyControl(float dtime)
 		speed = speed.normalize() * movement_speed_walk;
 	
 	// Accelerate to target speed with maximum increment
-	accelerate(speed, inc);
+	accelerateHorizontal(speed, inc);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()

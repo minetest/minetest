@@ -62,8 +62,8 @@ Player::~Player()
 {
 }
 
-// Y direction is ignored
-void Player::accelerate(v3f target_speed, f32 max_increase)
+// Horizontal acceleration (X and Z), Y direction is ignored
+void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 {
 	v3f d_wanted = target_speed - m_speed;
 	d_wanted.Y = 0;
@@ -97,9 +97,11 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 #endif
 }
 
-void Player::accelerateY(f32 target_speed, f32 max_increase)
+// Vertical acceleration (Y), X and Z directions are ignored
+void Player::accelerateVertical(v3f target_speed, f32 max_increase)
 {
-	f32 d_wanted = target_speed - m_speed.Y;
+	// TODO: Acceleration doesn't work the same way as accelerateHorizontal when given the same values, should be fixed!
+	f32 d_wanted = target_speed.Y - m_speed.Y;
 	if(d_wanted > max_increase)
 		d_wanted = max_increase;
 	else if(d_wanted < -max_increase)
