@@ -32,6 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gettext.h"
 
+#if USE_FREETYPE
+#include "xCGUITTFont.h"
+#endif
+
 inline u32 clamp_u8(s32 value)
 {
 	return (u32) MYMIN(MYMAX(value, 0), 255);
@@ -90,8 +94,13 @@ GUIChatConsole::GUIChatConsole(
 
 	// load the font
 	// FIXME should a custom texture_path be searched too?
+	#if USE_FREETYPE
+	std::string font_name = g_settings->get("font_path");
+	m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), 13);
+	#else
 	std::string font_name = "fontdejavusansmono.png";
 	m_font = env->getFont(getTexturePath(font_name).c_str());
+	#endif
 	if (m_font == NULL)
 	{
 		dstream << "Unable to load font: " << font_name << std::endl;

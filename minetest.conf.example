@@ -163,6 +163,8 @@
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
+#font_path = fonts/font.ttf
+
 #
 # Server stuff
 #
