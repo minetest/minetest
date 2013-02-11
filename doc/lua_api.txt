@@ -966,13 +966,17 @@ minetest.sound_play(spec, parameters) -> handle
 ^ spec = SimpleSoundSpec
 ^ parameters = sound parameter table
 minetest.sound_stop(handle)
-minetest.open_file(filename,filetype,openmode)
+minetest.open_file(filename,filetype,openmode) -> handle
 ^ filename = plain name of file (no paths allowed)
 ^ filetype = "user"  -> stored in user folder
              "world" -> stored in current world folder
 ^ openmode = "t" truncate file
              "w" append to end of file
              "r" read only
+minetest.delete_file(filename,filetype) -> true/false
+^ filename = plain name of file (no paths allowed)
+^ filetype = "user"  -> stored in user folder
+             "world" -> stored in current world folder
              
 FileRef:Reference to a file
 - can be created by minetest.open_file
@@ -981,6 +985,7 @@ methods:
 - getline(): get a single line from file -> line or nil
 - write(data): write some text to file -> true/false
 - read(): read whole file -> string or nil
+- seek(pos): set position in file to pos -> true/false
 
 Timing:
 minetest.after(time, func, param)

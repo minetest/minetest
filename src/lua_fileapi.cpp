@@ -73,6 +73,21 @@ bool FileRef::open(std::string path, std::string mode) {
 	return false;
 }
 
+int FileRef::l_delete(lua_State *L) {
+	std::string filename = luaL_checkstring(L, 1);
+	std::string type = luaL_checkstring(L, 2);
+
+	if (checkFilename(filename,type)) {
+		std::string complete_path = getFilename(filename,type,L);
+		if (fs::DeleteSingleFileOrEmptyDirectory(complete_path)) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+	lua_pushboolean(L, false);
+	return 1;
+}
+
 //open file
 int FileRef::l_open(lua_State *L) {
 
@@ -81,17 +96,10 @@ int FileRef::l_open(lua_State *L) {
 	std::string mode = luaL_checkstring(L, 3);
 
 	if (checkFilename(filename,type)) {
-		std::string complete_path = "";
 
-		if (type == "world") {
-			complete_path = get_server(L)->getWorldPath();
-			complete_path += DIR_DELIM;
-			complete_path += filename;
-		} else if (type == "user") {
-			complete_path = porting::path_user;
-			complete_path += DIR_DELIM;
-			complete_path += filename;
-		} else {
+		std::string complete_path = getFilename(filename,type,L);
+
+		if (complete_path == "" ) {
 			errorstream << "Invalid file type specified on opening file" << std::endl;
 			lua_pushnil(L);
 			return 1;
@@ -139,6 +147,24 @@ int FileRef::l_getline(lua_State *L) {
 	return 1;
 }
 
+int FileRef::l_seek(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	int seekto = luaL_checkint(L,2);
+
+	if ((file != 0) &&
+		(file->m_file->is_open())){
+		file->m_file->seekg(seekto);
+
+		if (file->m_file->tellg() == seekto) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
 int FileRef::l_write(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
 	std::string data = luaL_checkstring(L, 2);
@@ -176,6 +202,21 @@ int FileRef::l_read(lua_State *L) {
 
 	lua_pushnil(L);
 	return 1;
+}
+
+std::string FileRef::getFilename(std::string filename,std::string type,lua_State *L) {
+	std::string complete_path = "";
+	if (type == "world") {
+		complete_path = get_server(L)->getWorldPath();
+		complete_path += DIR_DELIM;
+		complete_path += filename;
+	} else if (type == "user") {
+		complete_path = porting::path_user;
+		complete_path += DIR_DELIM;
+		complete_path += filename;
+	}
+
+	return complete_path;
 }
 
 bool FileRef::checkFilename(std::string filename,std::string type) {
@@ -238,5 +279,6 @@ const luaL_reg FileRef::methods[] = {
 	method(FileRef, getline),
 	method(FileRef, write),
 	method(FileRef, read),
+	method(FileRef, seek),
 	{0,0}
 };

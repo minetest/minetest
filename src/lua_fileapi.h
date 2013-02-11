@@ -44,6 +44,7 @@ public:
 	// Not callable from Lua; all references are created on the C side.
 	bool open(std::string path, std::string mode);
 	static bool checkFilename(std::string filename,std::string type);
+	static std::string getFilename(std::string filename,std::string type,lua_State *L);
 	static void Register(lua_State *L);
 
 	std::fstream* m_file;
@@ -51,10 +52,12 @@ public:
 
 	//lua functions
 	static int l_open(lua_State *L);
+	static int l_delete(lua_State *L);
 	static int l_close(lua_State *L);
 	static int l_getline(lua_State *L);
 	static int l_write(lua_State *L);
 	static int l_read(lua_State *L);
+	static int l_seek(lua_State *L);
 
 	static const char className[];
 	static const luaL_reg methods[];
