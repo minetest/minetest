@@ -56,6 +56,20 @@ Player::Player(IGameDef *gamedef):
 		"list[current_player;main;0,3.5;8,4;]"
 		"list[current_player;craft;3,0;3,3;]"
 		"list[current_player;craftpreview;7,1;1,1;]";
+
+	// Initialize movement settings at default values, so movement can work if the server fails to send them
+	movement_acceleration_walk = 2 * BS;
+	movement_acceleration_air = 0.5 * BS;
+	movement_acceleration_fast = 8 * BS;
+	movement_speed_walk = 4 * BS;
+	movement_speed_crouch = 1.35 * BS;
+	movement_speed_fast = 20 * BS;
+	movement_speed_jump = 6.5 * BS;
+	movement_speed_descend = 6 * BS;
+	movement_liquid_fluidity = 1 * BS;
+	movement_liquid_fluidity_smooth = 0.5 * BS;
+	movement_liquid_drag = -1 * BS;
+	movement_gravity = 9.81 * BS;
 }
 
 Player::~Player()
