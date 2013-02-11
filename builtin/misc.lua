@@ -14,14 +14,14 @@ minetest.register_globalstep(function(dtime)
 	for index, timer in ipairs(minetest.timers) do
 		timer.time = timer.time - dtime
 		if timer.time <= 0 then
-			timer.func(timer.param)
+			timer.func(unpack(timer.args))
 			table.remove(minetest.timers,index)
 		end
 	end
 end)
 
-function minetest.after(time, func, param)
-	table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
+function minetest.after(time, func, ...)
+	table.insert(minetest.timers_to_add, {time=time, func=func, args=arg})
 end
 
 function minetest.check_player_privs(name, privs)

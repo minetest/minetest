@@ -977,9 +977,9 @@ minetest.sound_play(spec, parameters) -> handle
 minetest.sound_stop(handle)
 
 Timing:
-minetest.after(time, func, param)
+minetest.after(time, func, ...)
 ^ Call function after time seconds
-^ param is optional; to pass multiple parameters, pass a table.
+^ Optional: Variable number of arguments that are passed to func
 
 Server:
 minetest.request_shutdown() -> request for server shutdown
