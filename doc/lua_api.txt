@@ -460,6 +460,8 @@ Special groups
 - attached_node: if the node under it is not a walkable block the node will be
                   dropped as an item. If the node is wallmounted the
                   wallmounted direction is checked.
+- connect_to_raillike: makes nodes of raillike drawtype connect to
+                       other group members with same drawtype
 
 Known damage and digging time defining groups
 ----------------------------------------------
