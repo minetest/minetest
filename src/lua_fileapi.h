@@ -29,6 +29,7 @@ extern "C" {
 }
 
 #include "server.h"
+#include "settings.h"
 
 class FileRef {
 public:
@@ -43,12 +44,15 @@ public:
 	// Creates an FileRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
 	bool open(std::string path, std::string mode);
+	bool open_settings(std::string path);
 	static bool checkFilename(std::string filename,std::string type);
 	static std::string getFilename(std::string filename,std::string type,lua_State *L);
 	static void Register(lua_State *L);
 
 	std::fstream* m_file;
 	bool          m_writable;
+	Settings*     m_settings;
+	std::string   m_filename;
 
 	//lua functions
 	static int l_listfiles(lua_State *L);
@@ -59,6 +63,12 @@ public:
 	static int l_write(lua_State *L);
 	static int l_read(lua_State *L);
 	static int l_seek(lua_State *L);
+
+	static int l_setting_set(lua_State *L);
+	static int l_setting_setbool(lua_State *L);
+	static int l_setting_get(lua_State *L);
+	static int l_setting_getbool(lua_State *L);
+	static int l_setting_save(lua_State *L);
 
 	static const char className[];
 	static const luaL_reg methods[];

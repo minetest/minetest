@@ -33,17 +33,27 @@ const luaL_reg FileRef::methods[] = {
 	method(FileRef, write),
 	method(FileRef, read),
 	method(FileRef, seek),
+	method(FileRef, setting_set),
+	method(FileRef, setting_setbool),
+	method(FileRef, setting_get),
+	method(FileRef, setting_getbool),
+	method(FileRef, setting_save),
 	{0,0}
 };
 
 /******************************************************************************/
 FileRef::FileRef() {
 	m_file = 0;
+	m_settings = 0;
 	m_writable = false;
 }
 
 /******************************************************************************/
 FileRef::~FileRef() {
+	if (m_file != 0)
+		delete m_file;
+	if (m_settings != 0)
+		delete m_settings;
 }
 
 /******************************************************************************/
@@ -89,16 +99,22 @@ bool FileRef::open(std::string path, std::string mode) {
 	return false;
 }
 
+bool FileRef::open_settings(std::string path) {
+	m_settings = new Settings();
+
+	return m_settings->readConfigFile(path.c_str());
+}
+
 /******************************************************************************/
 std::string FileRef::getFilename(std::string filename,
 									std::string type,
 									lua_State *L) {
 	std::string complete_path = "";
-	if (type == "world") {
+	if ((type == "world") || (type == "world_settings")) {
 		complete_path = get_server(L)->getWorldPath();
 		complete_path += DIR_DELIM;
 		complete_path += filename;
-	} else if (type == "user") {
+	} else if ((type == "user") || (type == "user_settings")) {
 		complete_path = porting::path_user;
 		complete_path += DIR_DELIM;
 		complete_path += filename;
@@ -115,7 +131,7 @@ bool FileRef::checkFilename(std::string filename,std::string type) {
 		return false;
 
 	//check for special files
-	if (type == "world") {
+	if ((type == "world") || (type == "world_settings")) {
 		if (filename == "auth.txt") return false;
 		if (filename == "env_meta.txt") return false;
 		if (filename == "ipban.txt") return false;
@@ -124,10 +140,9 @@ bool FileRef::checkFilename(std::string filename,std::string type) {
 		if (filename == "players") return false;
 		if (filename == "rollback.txt") return false;
 		if (filename == "world.mt") return false;
-		if (filename == "settings.conf") return false;
 	}
 
-	if (type == "user") {
+	if ((type == "user") || (type == "user_settings")) {
 		if (filename == "minetest.conf") return false;
 	}
 
@@ -189,7 +204,7 @@ int FileRef::l_listfiles(lua_State *L) {
 
 		if ((!iter->dir) &&
 			(checkFilename(iter->name,type)) &&
-			(iter->name.compare(0,7,"hidden_") == 0)) {
+			(iter->name.compare(0,7,"hidden_") != 0)) {
 			lua_pushnumber( L, index );
 			lua_pushstring( L, iter->name.c_str());
 			lua_settable ( L, -3);
@@ -221,7 +236,10 @@ int FileRef::l_open(lua_State *L) {
 
 	std::string filename = luaL_checkstring(L, 1);
 	std::string type = luaL_checkstring(L, 2);
-	std::string mode = luaL_checkstring(L, 3);
+	std::string mode = "";
+
+	if ((type == "user") || (type == "world"))
+		mode = luaL_checkstring(L, 3);
 
 	if (checkFilename(filename,type)) {
 
@@ -233,14 +251,25 @@ int FileRef::l_open(lua_State *L) {
 			lua_pushnil(L);
 			return 1;
 		}
+
 		FileRef* ref = new FileRef();
 		*(void **)(lua_newuserdata(L,sizeof(void *))) = ref;
 		luaL_getmetatable(L,className);
 		lua_setmetatable(L,-2);
 
-		if (!ref->open(complete_path,mode)) {
-			//TODO add error message
-			errorstream << "unable to open file" << std::endl;
+		ref->m_filename = complete_path;
+
+		if ((type == "user") || (type == "world")) {
+			if (!ref->open(complete_path,mode)) {
+				//TODO add error message
+				errorstream << "unable to open file" << std::endl;
+			}
+		}
+		else if ((type == "user_settings") || (type == "world_settings")) {
+			if (!ref->open_settings(complete_path)) {
+				//TODO add error message
+				errorstream << "unable to open file" << std::endl;
+			}
 		}
 	}
 	else {
@@ -255,9 +284,16 @@ int FileRef::l_close(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
 
 	if (file != 0) {
-		file->m_file->close();
-		delete file->m_file;
-		file->m_file = 0;
+		if (file->m_file != 0) {
+			file->m_file->close();
+			delete file->m_file;
+			file->m_file = 0;
+		}
+		if (file->m_settings != 0) {
+			file->m_settings->updateConfigFile(file->m_filename.c_str());
+			delete file->m_settings;
+			file->m_settings = 0;
+		}
 	}
 	return 0;
 }
@@ -267,6 +303,7 @@ int FileRef::l_getline(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
 
 	if ((file != 0) &&
+		(file->m_file != 0) &&
 		(file->m_file->is_open())){
 		std::string line;
 		getline(*(file->m_file),line);
@@ -284,6 +321,7 @@ int FileRef::l_seek(lua_State *L) {
 	int seekto = luaL_checkint(L,2);
 
 	if ((file != 0) &&
+		(file->m_file != 0) &&
 		(file->m_file->is_open())){
 		file->m_file->seekg(seekto);
 
@@ -301,6 +339,11 @@ int FileRef::l_seek(lua_State *L) {
 int FileRef::l_write(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
 	std::string data = luaL_checkstring(L, 2);
+
+	if ((file == 0) || (file->m_file == 0)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	if ((file->m_writable) &&
 		(file->m_file->is_open()) &&
@@ -320,6 +363,7 @@ int FileRef::l_read(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
 
 	if ((file != 0) &&
+		(file->m_file != 0) &&
 		(file->m_file->is_open())){
 		std::string retval = "";
 		std::string toappend = "";
@@ -337,5 +381,87 @@ int FileRef::l_read(lua_State *L) {
 	lua_pushnil(L);
 	return 1;
 }
+/******************************************************************************/
+int FileRef::l_setting_getbool(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	std::string key = luaL_checkstring(L, 2);
+	try{
+		bool value = file->m_settings->getBool(key.c_str());
+		lua_pushboolean(L, value);
+	} catch(SettingNotFoundException &e){
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_setting_get(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	std::string key = luaL_checkstring(L, 2);
+
+	if ((file != 0) &&
+		(file->m_settings != 0)) {
+		lua_pushstring(L,file->m_settings->get(key).c_str());
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+/******************************************************************************/
+int FileRef::l_setting_setbool(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	std::string key = luaL_checkstring(L, 2);
+	bool value = lua_toboolean(L,3);
 
 
+	if ((file != 0) &&
+		(file->m_settings != 0)) {
+		file->m_settings->setBool(key,value);
+		lua_pushboolean(L, true);
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_setting_set(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	std::string key = luaL_checkstring(L, 2);
+
+	//allow resetting setting by passing nil to set function
+	std::string value = "";
+	const char* text = lua_tostring(L, 3);
+	if (text != 0) {
+		value = std::string(text);
+	}
+
+	if ((file != 0) &&
+		(file->m_settings != 0)) {
+		file->m_settings->set(key,value);
+		lua_pushboolean(L, true);
+	}
+	else {
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_setting_save(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+
+	if ((file != 0) &&
+		(file->m_settings != 0)) {
+		lua_pushboolean(L,
+				file->m_settings->updateConfigFile(file->m_filename.c_str()));
+	}
+	else {
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
