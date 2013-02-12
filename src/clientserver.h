@@ -375,10 +375,9 @@ enum ToClientCommand
 		f1000 movement_speed_crouch
 		f1000 movement_speed_fast
 		f1000 movement_speed_jump
-		f1000 movement_speed_descend
 		f1000 movement_liquid_fluidity
 		f1000 movement_liquid_fluidity_smooth
-		f1000 movement_liquid_drag
+		f1000 movement_liquid_sink
 		f1000 movement_gravity
 	*/
 };

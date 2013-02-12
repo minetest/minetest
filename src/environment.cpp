@@ -2069,8 +2069,8 @@ void ClientEnvironment::step(float dtime)
 					speed.Y -= lplayer->movement_gravity * dtime_part * 2;
 
 				// Water floating / sinking
-				if(lplayer -> in_water)
-					speed.Y += lplayer->movement_liquid_drag * dtime_part * 2;
+				if(lplayer->in_water && !lplayer->swimming_vertical)
+					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
 
 				// Water resistance
 				if(lplayer->in_water_stable || lplayer->in_water)

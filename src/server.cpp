@@ -3550,10 +3550,9 @@ void Server::SendMovement(con::Connection &con, u16 peer_id)
 	writeF1000(os, g_settings->getFloat("movement_speed_crouch"));
 	writeF1000(os, g_settings->getFloat("movement_speed_fast"));
 	writeF1000(os, g_settings->getFloat("movement_speed_jump"));
-	writeF1000(os, g_settings->getFloat("movement_speed_descend"));
 	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity"));
 	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity_smooth"));
-	writeF1000(os, g_settings->getFloat("movement_liquid_drag"));
+	writeF1000(os, g_settings->getFloat("movement_liquid_sink"));
 	writeF1000(os, g_settings->getFloat("movement_gravity"));
 
 	// Make data buffer

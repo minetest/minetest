@@ -361,7 +361,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 void LocalPlayer::applyControl(float dtime)
 {
 	// Clear stuff
-	swimming_up = false;
+	swimming_vertical = false;
 
 	setPitch(control.pitch);
 	setYaw(control.yaw);
@@ -376,7 +376,8 @@ void LocalPlayer::applyControl(float dtime)
 	v3f move_direction = v3f(0,0,1);
 	move_direction.rotateXZBy(getYaw());
 	
-	v3f speed = v3f(0,0,0);
+	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
+	v3f speedV = v3f(0,0,0); // Vertical (Y)
 	
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
@@ -385,27 +386,11 @@ void LocalPlayer::applyControl(float dtime)
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
 
-	if(free_move || is_climbing)
-	{
-		v3f speed = getSpeed();
-		speed.Y = 0;
-		setSpeed(speed);
-	}
-
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
 	
 	if(g_settings->getBool("always_fly_fast") && free_move && fast_move)
 		superspeed = true;
-
-	f32 inc = movement_acceleration_walk * BS * dtime;
-	if(superspeed || (fast_move && control.aux1))
-		inc = movement_acceleration_fast * BS * dtime;
-	else if ((in_water || in_water_stable) && (fast_move && g_settings->getBool("aux1_descends")))
-		// Always use fast when aux1_descends & fast_move are enabled in water, since the aux1 button would mean both turbo and "swim down" causing a conflict
-		inc = movement_acceleration_fast * BS * dtime;
-	else if (!touching_ground && !free_move && !in_water && !in_water_stable)
-		inc = movement_acceleration_air * BS * dtime;
 
 	// Old descend control
 	if(g_settings->getBool("aux1_descends"))
@@ -420,24 +405,19 @@ void LocalPlayer::applyControl(float dtime)
 			if(free_move)
 			{
 				// In free movement mode, aux1 descends
-				v3f speed = getSpeed();
 				if(fast_move)
-					speed.Y = -movement_speed_fast;
+					speedV.Y = -movement_speed_fast;
 				else
-					speed.Y = -movement_speed_walk;
-				accelerateVertical(speed, inc * BS);
+					speedV.Y = -movement_speed_walk;
 			}
 			else if(in_water || in_water_stable)
 			{
-				v3f speed = getSpeed();
-				speed.Y = -movement_speed_fast;
-				accelerateVertical(speed, inc);
+				speedV.Y = -movement_speed_fast;
+				swimming_vertical = true;
 			}
 			else if(is_climbing)
 			{
-				v3f speed = getSpeed();
-				speed.Y = -movement_speed_descend;
-				accelerateVertical(speed, inc * BS);
+				speedV.Y = -movement_speed_walk;
 			}
 			else
 			{
@@ -467,75 +447,65 @@ void LocalPlayer::applyControl(float dtime)
 			if(free_move)
 			{
 				// In free movement mode, sneak descends
-				v3f speed = getSpeed();
-				if(fast_move && (control.aux1 ||
-						g_settings->getBool("always_fly_fast")))
-					speed.Y = -movement_speed_fast;
+				if(fast_move && (control.aux1 || g_settings->getBool("always_fly_fast")))
+					speedV.Y = -movement_speed_fast;
 				else
-					speed.Y = -movement_speed_walk;
-					accelerateVertical(speed, inc * BS);
+					speedV.Y = -movement_speed_walk;
 			}
 			else if(in_water || in_water_stable)
 			{
-				v3f speed = getSpeed();
 				if(fast_move && control.aux1)
-					speed.Y = -movement_speed_fast;
+					speedV.Y = -movement_speed_fast;
 				else
-					speed.Y = -movement_speed_walk;
-				accelerateVertical(speed, inc);
+					speedV.Y = -movement_speed_walk;
+				swimming_vertical = true;
 			}
 			else if(is_climbing)
 			{
-				v3f speed = getSpeed();
-				speed.Y = -movement_speed_descend;
-				accelerateVertical(speed, inc * BS);
+				speedV.Y = -movement_speed_walk;
 			}
 		}
 	}
 
 	if(continuous_forward)
-		speed += move_direction;
+		speedH += move_direction;
 
 	if(control.up)
 	{
 		if(continuous_forward)
 			superspeed = true;
 		else
-			speed += move_direction;
+			speedH += move_direction;
 	}
 	if(control.down)
 	{
-		speed -= move_direction;
+		speedH -= move_direction;
 	}
 	if(control.left)
 	{
-		speed += move_direction.crossProduct(v3f(0,1,0));
+		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
 	if(control.right)
 	{
-		speed += move_direction.crossProduct(v3f(0,-1,0));
+		speedH += move_direction.crossProduct(v3f(0,-1,0));
 	}
 	if(control.jump)
 	{
 		if(free_move)
-		{
-			v3f speed = getSpeed();
-			
+		{			
 			if(g_settings->getBool("aux1_descends") ||
 					g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)
-					speed.Y = movement_speed_fast;
+					speedV.Y = movement_speed_fast;
 				else
-					speed.Y = movement_speed_walk;
+					speedV.Y = movement_speed_walk;
 			} else {
 				if(fast_move && control.aux1)
-					speed.Y = movement_speed_fast;
+					speedV.Y = movement_speed_fast;
 				else
-					speed.Y = movement_speed_walk;
+					speedV.Y = movement_speed_walk;
 			}
-			
-			accelerateVertical(speed, inc * BS);
 		}
 		else if(m_can_jump)
 		{
@@ -544,11 +514,11 @@ void LocalPlayer::applyControl(float dtime)
 				raising the height at which the jump speed is kept
 				at its starting value
 			*/
-			v3f speed = getSpeed();
-			if(speed.Y >= -0.5 * BS)
+			v3f speedJ = getSpeed();
+			if(speedJ.Y >= -0.5 * BS)
 			{
-				speed.Y = movement_speed_jump;
-				setSpeed(speed);
+				speedJ.Y = movement_speed_jump;
+				setSpeed(speedJ);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_gamedef->event()->put(e);
@@ -558,33 +528,50 @@ void LocalPlayer::applyControl(float dtime)
 		// (so that the player doesn't fly on the surface)
 		else if(in_water)
 		{
-			v3f speed = getSpeed();
 			if((fast_move && control.aux1) || (fast_move && g_settings->getBool("aux1_descends")))
 				// Always use fast when aux1_descends & fast_move are enabled in water, since the aux1 button would mean both turbo and "swim down" causing a conflict
-				speed.Y = movement_speed_fast;
+				speedV.Y = movement_speed_fast;
 			else
-				speed.Y = movement_speed_walk;
-			accelerateVertical(speed, inc);
-			swimming_up = true;
+				speedV.Y = movement_speed_walk;
+			swimming_vertical = true;
 		}
 		else if(is_climbing)
 		{
-			v3f speed = getSpeed();
-			speed.Y = movement_speed_walk;
-			accelerateVertical(speed, inc * BS);
+			speedV.Y = movement_speed_walk;
 		}
 	}
 
 	// The speed of the player (Y is ignored)
 	if(superspeed)
-		speed = speed.normalize() * movement_speed_fast;
+		speedH = speedH.normalize() * movement_speed_fast;
 	else if(control.sneak && !free_move && !in_water && !in_water_stable)
-		speed = speed.normalize() * movement_speed_crouch;
+		speedH = speedH.normalize() * movement_speed_crouch;
 	else
-		speed = speed.normalize() * movement_speed_walk;
-	
+		speedH = speedH.normalize() * movement_speed_walk;
+
+	// Acceleration increase
+	f32 incH = 0; // Horizontal (X, Z)
+	f32 incV = 0; // Vertical (Y)
+	if((!touching_ground && !free_move && !is_climbing && !in_water && !in_water_stable) || (m_can_jump && control.jump))
+	{
+		// Jumping and falling
+		if(superspeed || (fast_move && control.aux1))
+			incH = movement_acceleration_fast * BS * dtime;
+		else
+			incH = movement_acceleration_air * BS * dtime;
+		incV = 0; // No vertical acceleration in air
+	}
+	else if(superspeed || (fast_move && control.aux1))
+		incH = incV = movement_acceleration_fast * BS * dtime;
+	else if ((in_water || in_water_stable) && (fast_move && g_settings->getBool("aux1_descends")))
+		// Always use fast when aux1_descends & fast_move are enabled in water, since the aux1 button would mean both turbo and "swim down" causing a conflict
+		incH = incV = movement_acceleration_fast * BS * dtime;
+	else
+		incH = incV = movement_acceleration_walk * BS * dtime;
+
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speed, inc);
+	accelerateHorizontal(speedH, incH);
+	accelerateVertical(speedV, incV);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()

@@ -181,10 +181,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_speed_crouch", "1.35");
 	settings->setDefault("movement_speed_fast", "20");
 	settings->setDefault("movement_speed_jump", "6.5");
-	settings->setDefault("movement_speed_descend", "6");
 	settings->setDefault("movement_liquid_fluidity", "1");
 	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
-	settings->setDefault("movement_liquid_drag", "-1");
+	settings->setDefault("movement_liquid_sink", "5");
 	settings->setDefault("movement_gravity", "9.81");
 	
 	//mapgen related things

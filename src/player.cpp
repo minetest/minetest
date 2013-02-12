@@ -30,7 +30,7 @@ Player::Player(IGameDef *gamedef):
 	in_water(false),
 	in_water_stable(false),
 	is_climbing(false),
-	swimming_up(false),
+	swimming_vertical(false),
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
@@ -65,10 +65,9 @@ Player::Player(IGameDef *gamedef):
 	movement_speed_crouch = 1.35 * BS;
 	movement_speed_fast = 20 * BS;
 	movement_speed_jump = 6.5 * BS;
-	movement_speed_descend = 6 * BS;
 	movement_liquid_fluidity = 1 * BS;
 	movement_liquid_fluidity_smooth = 0.5 * BS;
-	movement_liquid_drag = -1 * BS;
+	movement_liquid_sink = 5 * BS;
 	movement_gravity = 9.81 * BS;
 }
 
@@ -79,6 +78,9 @@ Player::~Player()
 // Horizontal acceleration (X and Z), Y direction is ignored
 void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 {
+	if(max_increase == 0)
+		return;
+
 	v3f d_wanted = target_speed - m_speed;
 	d_wanted.Y = 0;
 	f32 dl = d_wanted.getLength();
@@ -114,7 +116,9 @@ void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 // Vertical acceleration (Y), X and Z directions are ignored
 void Player::accelerateVertical(v3f target_speed, f32 max_increase)
 {
-	// TODO: Acceleration doesn't work the same way as accelerateHorizontal when given the same values, should be fixed!
+	if(max_increase == 0)
+		return;
+
 	f32 d_wanted = target_speed.Y - m_speed.Y;
 	if(d_wanted > max_increase)
 		d_wanted = max_increase;
@@ -124,14 +128,14 @@ void Player::accelerateVertical(v3f target_speed, f32 max_increase)
 	m_speed.Y += d_wanted;
 
 #if 0 // old code
-	if(m_speed.Y < target_speed - max_increase)
+	if(m_speed.Y < target_speed.Y - max_increase)
 		m_speed.Y += max_increase;
-	else if(m_speed.Y > target_speed + max_increase)
+	else if(m_speed.Y > target_speed.Y + max_increase)
 		m_speed.Y -= max_increase;
-	else if(m_speed.Y < target_speed)
-		m_speed.Y = target_speed;
-	else if(m_speed.Y > target_speed)
-		m_speed.Y = target_speed;
+	else if(m_speed.Y < target_speed.Y)
+		m_speed.Y = target_speed.Y;
+	else if(m_speed.Y > target_speed.Y)
+		m_speed.Y = target_speed.Y;
 #endif
 }
 
