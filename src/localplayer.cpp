@@ -350,7 +350,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	const ContentFeatures &f = nodemgr->get(map.getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
-	m_can_jump = touching_ground && !in_liquid;
+	m_can_jump = touching_ground && !in_liquid && !free_move;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 }
