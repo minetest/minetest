@@ -563,7 +563,7 @@ void LocalPlayer::applyControl(float dtime)
 	// Acceleration increase
 	f32 incH = 0; // Horizontal (X, Z)
 	f32 incV = 0; // Vertical (Y)
-	if((!touching_ground && !free_move && !is_climbing && !in_liquid && !in_liquid_stable) || (m_can_jump && control.jump))
+	if((!touching_ground && !free_move && !is_climbing && !in_liquid) || (!free_move && m_can_jump && control.jump))
 	{
 		// Jumping and falling
 		if(superspeed || (fast_move && control.aux1))
