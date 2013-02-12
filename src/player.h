@@ -196,9 +196,11 @@ public:
 
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
-	bool in_water;
+	bool in_liquid;
 	// This is more stable and defines the maximum speed of the player
-	bool in_water_stable;
+	bool in_liquid_stable;
+	// Gets the viscosity of water to calculate friction
+	u8 liquid_viscosity;
 	bool is_climbing;
 	bool swimming_vertical;
 	bool camera_barely_in_ceiling;
@@ -207,12 +209,13 @@ public:
 
 	Inventory inventory;
 
-	f32 movement_acceleration_walk;
+	f32 movement_acceleration_default;
 	f32 movement_acceleration_air;
 	f32 movement_acceleration_fast;
 	f32 movement_speed_walk;
 	f32 movement_speed_crouch;
 	f32 movement_speed_fast;
+	f32 movement_speed_climb;
 	f32 movement_speed_jump;
 	f32 movement_liquid_fluidity;
 	f32 movement_liquid_fluidity_smooth;

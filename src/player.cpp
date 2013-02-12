@@ -27,8 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
-	in_water(false),
-	in_water_stable(false),
+	in_liquid(false),
+	in_liquid_stable(false),
+	liquid_viscosity(0),
 	is_climbing(false),
 	swimming_vertical(false),
 	camera_barely_in_ceiling(false),
@@ -58,16 +59,17 @@ Player::Player(IGameDef *gamedef):
 		"list[current_player;craftpreview;7,1;1,1;]";
 
 	// Initialize movement settings at default values, so movement can work if the server fails to send them
-	movement_acceleration_walk = 2 * BS;
+	movement_acceleration_default = 2 * BS;
 	movement_acceleration_air = 0.5 * BS;
 	movement_acceleration_fast = 8 * BS;
 	movement_speed_walk = 4 * BS;
 	movement_speed_crouch = 1.35 * BS;
 	movement_speed_fast = 20 * BS;
+	movement_speed_climb = 2 * BS;
 	movement_speed_jump = 6.5 * BS;
 	movement_liquid_fluidity = 1 * BS;
 	movement_liquid_fluidity_smooth = 0.5 * BS;
-	movement_liquid_sink = 5 * BS;
+	movement_liquid_sink = 10 * BS;
 	movement_gravity = 9.81 * BS;
 }
 

@@ -1521,12 +1521,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		Player *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 
-		player->movement_acceleration_walk = readF1000(is) * BS;
+		player->movement_acceleration_default = readF1000(is) * BS;
 		player->movement_acceleration_air = readF1000(is) * BS;
 		player->movement_acceleration_fast = readF1000(is) * BS;
 		player->movement_speed_walk = readF1000(is) * BS;
 		player->movement_speed_crouch = readF1000(is) * BS;
 		player->movement_speed_fast = readF1000(is) * BS;
+		player->movement_speed_climb = readF1000(is) * BS;
 		player->movement_speed_jump = readF1000(is) * BS;
 		player->movement_liquid_fluidity = readF1000(is) * BS;
 		player->movement_liquid_fluidity_smooth = readF1000(is) * BS;

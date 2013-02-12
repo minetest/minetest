@@ -2065,17 +2065,17 @@ void ClientEnvironment::step(float dtime)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->in_water == false)
+				if(lplayer->in_liquid == false)
 					speed.Y -= lplayer->movement_gravity * dtime_part * 2;
 
-				// Water floating / sinking
-				if(lplayer->in_water && !lplayer->swimming_vertical)
+				// Liquid floating / sinking
+				if(lplayer->in_liquid && !lplayer->swimming_vertical)
 					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
 
-				// Water resistance
-				if(lplayer->in_water_stable || lplayer->in_water)
+				// Liquid resistance
+				if(lplayer->in_liquid_stable || lplayer->in_liquid)
 				{
-					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+					v3f d_wanted = -speed / (lplayer->movement_liquid_fluidity / lplayer->liquid_viscosity);
 					f32 dl = d_wanted.getLength();
 					if(dl > lplayer->movement_liquid_fluidity_smooth)
 						dl = lplayer->movement_liquid_fluidity_smooth;

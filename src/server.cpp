@@ -3543,12 +3543,13 @@ void Server::SendMovement(con::Connection &con, u16 peer_id)
 	std::ostringstream os(std::ios_base::binary);
 
 	writeU16(os, TOCLIENT_MOVEMENT);
-	writeF1000(os, g_settings->getFloat("movement_acceleration_walk"));
+	writeF1000(os, g_settings->getFloat("movement_acceleration_default"));
 	writeF1000(os, g_settings->getFloat("movement_acceleration_air"));
 	writeF1000(os, g_settings->getFloat("movement_acceleration_fast"));
 	writeF1000(os, g_settings->getFloat("movement_speed_walk"));
 	writeF1000(os, g_settings->getFloat("movement_speed_crouch"));
 	writeF1000(os, g_settings->getFloat("movement_speed_fast"));
+	writeF1000(os, g_settings->getFloat("movement_speed_climb"));
 	writeF1000(os, g_settings->getFloat("movement_speed_jump"));
 	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity"));
 	writeF1000(os, g_settings->getFloat("movement_liquid_fluidity_smooth"));
