@@ -119,7 +119,7 @@ u32 EmergeManager::getBlockSeed(v3s16 p) {
 	return (u32)(params->seed & 0xFFFFFFFF) +
 		p.Z * 38134234 +
 		p.Y * 42123 +
-		p.Y * 23;
+		p.X * 23;
 }
 
 
