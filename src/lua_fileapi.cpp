@@ -26,14 +26,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define method(class, name) {#name, class::l_##name}
 
+const char FileRef::className[] = "FileRef";
+const luaL_reg FileRef::methods[] = {
+	method(FileRef, close),
+	method(FileRef, getline),
+	method(FileRef, write),
+	method(FileRef, read),
+	method(FileRef, seek),
+	{0,0}
+};
+
+/******************************************************************************/
 FileRef::FileRef() {
 	m_file = 0;
 	m_writable = false;
 }
 
+/******************************************************************************/
 FileRef::~FileRef() {
 }
 
+/******************************************************************************/
 FileRef* FileRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
@@ -42,22 +55,25 @@ FileRef* FileRef::checkobject(lua_State *L, int narg)
 	return *(FileRef**)ud;  // unbox pointer
 }
 
-// garbage collector
+
+/******************************************************************************/
 int FileRef::gc_object(lua_State *L) {
 	FileRef *o = *(FileRef **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
 
-// Creates an FileRef and leaves it on top of stack
-// Not callable from Lua; all references are created on the C side.
+
+/******************************************************************************/
 bool FileRef::open(std::string path, std::string mode) {
 	if (mode == "t") {
-		m_file = new std::fstream(path.c_str(), std::ios_base::trunc | std::ios::out | std::ios::in);
+		m_file = new std::fstream(path.c_str(),
+				std::ios_base::trunc | std::ios::out | std::ios::in);
 		m_writable = true;
 	}
 	else if (mode == "w") {
-		m_file = new std::fstream(path.c_str(), std::ios_base::ate | std::ios::out | std::ios::in);
+		m_file = new std::fstream(path.c_str(),
+				std::ios_base::ate | std::ios::out | std::ios::in);
 		m_writable = true;
 	}
 	else {
@@ -73,138 +89,10 @@ bool FileRef::open(std::string path, std::string mode) {
 	return false;
 }
 
-int FileRef::l_delete(lua_State *L) {
-	std::string filename = luaL_checkstring(L, 1);
-	std::string type = luaL_checkstring(L, 2);
-
-	if (checkFilename(filename,type)) {
-		std::string complete_path = getFilename(filename,type,L);
-		if (fs::DeleteSingleFileOrEmptyDirectory(complete_path)) {
-			lua_pushboolean(L, true);
-			return 1;
-		}
-	}
-	lua_pushboolean(L, false);
-	return 1;
-}
-
-//open file
-int FileRef::l_open(lua_State *L) {
-
-	std::string filename = luaL_checkstring(L, 1);
-	std::string type = luaL_checkstring(L, 2);
-	std::string mode = luaL_checkstring(L, 3);
-
-	if (checkFilename(filename,type)) {
-
-		std::string complete_path = getFilename(filename,type,L);
-
-		if (complete_path == "" ) {
-			errorstream << "Invalid file type specified on opening file" << std::endl;
-			lua_pushnil(L);
-			return 1;
-		}
-		FileRef* ref = new FileRef();
-		*(void **)(lua_newuserdata(L,sizeof(void *))) = ref;
-		luaL_getmetatable(L,className);
-		lua_setmetatable(L,-2);
-
-		if (!ref->open(complete_path,mode)) {
-			//TODO add error message
-			errorstream << "unable to open file" << std::endl;
-		}
-	}
-	else {
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
-int FileRef::l_close(lua_State *L) {
-	FileRef* file = checkobject(L, 1);
-
-	if (file != 0) {
-		file->m_file->close();
-		delete file->m_file;
-		file->m_file = 0;
-	}
-	return 0;
-}
-
-int FileRef::l_getline(lua_State *L) {
-	FileRef* file = checkobject(L, 1);
-
-	if ((file != 0) &&
-		(file->m_file->is_open())){
-		std::string line;
-		getline(*(file->m_file),line);
-		lua_pushstring(L, line.c_str());
-		return 1;
-	}
-
-	lua_pushnil(L);
-	return 1;
-}
-
-int FileRef::l_seek(lua_State *L) {
-	FileRef* file = checkobject(L, 1);
-	int seekto = luaL_checkint(L,2);
-
-	if ((file != 0) &&
-		(file->m_file->is_open())){
-		file->m_file->seekg(seekto);
-
-		if (file->m_file->tellg() == seekto) {
-			lua_pushboolean(L, true);
-			return 1;
-		}
-	}
-
-	lua_pushboolean(L, false);
-	return 1;
-}
-
-int FileRef::l_write(lua_State *L) {
-	FileRef* file = checkobject(L, 1);
-	std::string data = luaL_checkstring(L, 2);
-
-	if ((file->m_writable) &&
-		(file->m_file->is_open()) &&
-		(data != "")){
-		file->m_file->write(data.c_str(),data.size());
-		lua_pushboolean(L, true);
-	}
-	else {
-		errorstream << "file not writable or no data:" << data << std::endl;
-		lua_pushboolean(L, false);
-	}
-	return 1;
-}
-
-int FileRef::l_read(lua_State *L) {
-	FileRef* file = checkobject(L, 1);
-
-	if ((file != 0) &&
-		(file->m_file->is_open())){
-		std::string retval = "";
-		std::string toappend = "";
-
-		while ( file->m_file->good() ) {
-			getline (*(file->m_file),toappend);
-			retval += toappend;
-			retval += "\n";
-		}
-
-		lua_pushstring(L, retval.c_str());
-		return 1;
-	}
-
-	lua_pushnil(L);
-	return 1;
-}
-
-std::string FileRef::getFilename(std::string filename,std::string type,lua_State *L) {
+/******************************************************************************/
+std::string FileRef::getFilename(std::string filename,
+									std::string type,
+									lua_State *L) {
 	std::string complete_path = "";
 	if (type == "world") {
 		complete_path = get_server(L)->getWorldPath();
@@ -219,6 +107,7 @@ std::string FileRef::getFilename(std::string filename,std::string type,lua_State
 	return complete_path;
 }
 
+/******************************************************************************/
 bool FileRef::checkFilename(std::string filename,std::string type) {
 
 	//dir delim is not allowed in filenames at all
@@ -245,6 +134,7 @@ bool FileRef::checkFilename(std::string filename,std::string type) {
 	return true;
 }
 
+/******************************************************************************/
 void FileRef::Register(lua_State *L)
 	{
 		lua_newtable(L);
@@ -273,12 +163,178 @@ void FileRef::Register(lua_State *L)
 		//lua_register(L, className, create_object);
 	}
 
-const char FileRef::className[] = "FileRef";
-const luaL_reg FileRef::methods[] = {
-	method(FileRef, close),
-	method(FileRef, getline),
-	method(FileRef, write),
-	method(FileRef, read),
-	method(FileRef, seek),
-	{0,0}
-};
+/******************************************************************************/
+int FileRef::l_listfiles(lua_State *L) {
+	std::string type = luaL_checkstring(L, 1);
+
+	std::string path = "";
+	if (type == "world") {
+		path = get_server(L)->getWorldPath();
+	} else if (type == "user") {
+		path = porting::path_user;
+	} else {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	std::vector<fs::DirListNode> content = fs::GetDirListing(path);
+	int index = 1;
+
+	//create table
+	lua_newtable( L );
+
+	for (std::vector<fs::DirListNode>::iterator iter= content.begin();
+			iter != content.end();
+			iter ++) {
+
+		if ((!iter->dir) &&
+			(checkFilename(iter->name,type))) {
+			lua_pushnumber( L, index );
+			lua_pushstring( L, iter->name.c_str());
+			lua_settable ( L, -3);
+			index ++;
+		}
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_delete(lua_State *L) {
+	std::string filename = luaL_checkstring(L, 1);
+	std::string type = luaL_checkstring(L, 2);
+
+	if (checkFilename(filename,type)) {
+		std::string complete_path = getFilename(filename,type,L);
+		if (fs::DeleteSingleFileOrEmptyDirectory(complete_path)) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_open(lua_State *L) {
+
+	std::string filename = luaL_checkstring(L, 1);
+	std::string type = luaL_checkstring(L, 2);
+	std::string mode = luaL_checkstring(L, 3);
+
+	if (checkFilename(filename,type)) {
+
+		std::string complete_path = getFilename(filename,type,L);
+
+		if (complete_path == "" ) {
+			errorstream <<
+					"Invalid file type specified on opening file" << std::endl;
+			lua_pushnil(L);
+			return 1;
+		}
+		FileRef* ref = new FileRef();
+		*(void **)(lua_newuserdata(L,sizeof(void *))) = ref;
+		luaL_getmetatable(L,className);
+		lua_setmetatable(L,-2);
+
+		if (!ref->open(complete_path,mode)) {
+			//TODO add error message
+			errorstream << "unable to open file" << std::endl;
+		}
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_close(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+
+	if (file != 0) {
+		file->m_file->close();
+		delete file->m_file;
+		file->m_file = 0;
+	}
+	return 0;
+}
+
+/******************************************************************************/
+int FileRef::l_getline(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+
+	if ((file != 0) &&
+		(file->m_file->is_open())){
+		std::string line;
+		getline(*(file->m_file),line);
+		lua_pushstring(L, line.c_str());
+		return 1;
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_seek(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	int seekto = luaL_checkint(L,2);
+
+	if ((file != 0) &&
+		(file->m_file->is_open())){
+		file->m_file->seekg(seekto);
+
+		if (file->m_file->tellg() == seekto) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_write(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+	std::string data = luaL_checkstring(L, 2);
+
+	if ((file->m_writable) &&
+		(file->m_file->is_open()) &&
+		(data != "")){
+		file->m_file->write(data.c_str(),data.size());
+		lua_pushboolean(L, true);
+	}
+	else {
+		errorstream << "file not writable or no data:" << data << std::endl;
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
+/******************************************************************************/
+int FileRef::l_read(lua_State *L) {
+	FileRef* file = checkobject(L, 1);
+
+	if ((file != 0) &&
+		(file->m_file->is_open())){
+		std::string retval = "";
+		std::string toappend = "";
+
+		while ( file->m_file->good() ) {
+			getline (*(file->m_file),toappend);
+			retval += toappend;
+			retval += "\n";
+		}
+
+		lua_pushstring(L, retval.c_str());
+		return 1;
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
+

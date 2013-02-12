@@ -5285,6 +5285,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
 	{"open_file",FileRef::l_open},
 	{"delete_file",FileRef::l_delete},
+	{"list_files",FileRef::l_listfiles},
 	{NULL, NULL}
 };
 

@@ -51,6 +51,7 @@ public:
 	bool          m_writable;
 
 	//lua functions
+	static int l_listfiles(lua_State *L);
 	static int l_open(lua_State *L);
 	static int l_delete(lua_State *L);
 	static int l_close(lua_State *L);
