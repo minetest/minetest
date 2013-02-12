@@ -1262,7 +1262,7 @@ void the_game(
 	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0,0,400,text_height*5+5) + v2s32(100,200),
-			false, false);
+			false, true);
 	
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	gui::IGUIStaticText *guitext_status = guienv->addStaticText(
