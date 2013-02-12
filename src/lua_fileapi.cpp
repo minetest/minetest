@@ -188,7 +188,8 @@ int FileRef::l_listfiles(lua_State *L) {
 			iter ++) {
 
 		if ((!iter->dir) &&
-			(checkFilename(iter->name,type))) {
+			(checkFilename(iter->name,type)) &&
+			(iter->name.compare(0,7,"hidden_") == 0)) {
 			lua_pushnumber( L, index );
 			lua_pushstring( L, iter->name.c_str());
 			lua_settable ( L, -3);
