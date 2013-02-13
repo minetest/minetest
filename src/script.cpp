@@ -137,7 +137,7 @@ LUALIB_API void safe_luaL_openlibs (lua_State *L) {
 lua_State* script_init()
 {
 	lua_State *L = luaL_newstate();
-	if (g_settings->getBool("mod_full_system_access")) {
+	if (g_settings->getBool("security_disable_mod_containment")) {
 		luaL_openlibs(L);
 	}
 	else {

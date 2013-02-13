@@ -26,6 +26,7 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <string.h>
 }
 
 #include "log.h"
@@ -4761,7 +4762,11 @@ static int l_setting_set(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
 	const char *value = luaL_checkstring(L, 2);
-	g_settings->set(name, value);
+
+	if (!(strncmp(name,"security_",9) == 0))
+	{
+		g_settings->set(name, value);
+	}
 	return 0;
 }
 
