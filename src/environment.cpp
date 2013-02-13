@@ -1648,7 +1648,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > 49);
+	bool large_amount = (block->m_static_objects.m_stored.size() > 300);
 	if(large_amount){
 		errorstream<<"suspiciously large amount of objects detected: "
 				<<block->m_static_objects.m_stored.size()<<" in "
@@ -1826,12 +1826,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				if(block->m_static_objects.m_stored.size() >= 49){
+				if(block->m_static_objects.m_stored.size() >= 300){
 					errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
 							<<" statically but block "<<PP(blockpos)
 							<<" already contains "
 							<<block->m_static_objects.m_stored.size()
-							<<" (over 49) objects."
+							<<" (over 299) objects."
 							<<" Forcing delete."<<std::endl;
 					force_delete = true;
 				} else {
