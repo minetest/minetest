@@ -168,5 +168,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
+	settings->setDefault("security_mod_allow_file_listing","false");
 }
 

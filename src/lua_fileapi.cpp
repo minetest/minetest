@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "log.h"
+#include "main.h"
 #include <vector>
 
 #define method(class, name) {#name, class::l_##name}
@@ -181,35 +182,39 @@ void FileRef::Register(lua_State *L)
 /******************************************************************************/
 int FileRef::l_listfiles(lua_State *L) {
 	std::string type = luaL_checkstring(L, 1);
-
-	std::string path = "";
-	if (type == "world") {
-		path = get_server(L)->getWorldPath();
-	} else if (type == "user") {
-		path = porting::path_user;
-	} else {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	std::vector<fs::DirListNode> content = fs::GetDirListing(path);
-	int index = 1;
-
-	//create table
-	lua_newtable( L );
-
-	for (std::vector<fs::DirListNode>::iterator iter= content.begin();
-			iter != content.end();
-			iter ++) {
-
-		if ((!iter->dir) &&
-			(checkFilename(iter->name,type)) &&
-			(iter->name.compare(0,7,"hidden_") != 0)) {
-			lua_pushnumber( L, index );
-			lua_pushstring( L, iter->name.c_str());
-			lua_settable ( L, -3);
-			index ++;
+	if (g_settings->getBool("security_mod_allow_file_listing")) {
+		std::string path = "";
+		if (type == "world") {
+			path = get_server(L)->getWorldPath();
+		} else if (type == "user") {
+			path = porting::path_user;
+		} else {
+			lua_pushnil(L);
+			return 1;
 		}
+
+		std::vector<fs::DirListNode> content = fs::GetDirListing(path);
+		int index = 1;
+
+		//create table
+		lua_newtable( L );
+
+		for (std::vector<fs::DirListNode>::iterator iter= content.begin();
+				iter != content.end();
+				iter ++) {
+
+			if ((!iter->dir) &&
+				(checkFilename(iter->name,type)) &&
+				(iter->name.compare(0,7,"hidden_") != 0)) {
+				lua_pushnumber( L, index );
+				lua_pushstring( L, iter->name.c_str());
+				lua_settable ( L, -3);
+				index ++;
+			}
+		}
+	}
+	else {
+		lua_pushnil(L);
 	}
 
 	return 1;
