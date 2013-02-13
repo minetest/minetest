@@ -4763,7 +4763,8 @@ static int l_setting_set(lua_State *L)
 	const char *name = luaL_checkstring(L, 1);
 	const char *value = luaL_checkstring(L, 2);
 
-	if (!(strncmp(name,"security_",9) == 0))
+	if ((g_settings->getBool("security_disable_mod_containment")) ||
+			(!(strncmp(name,"security_",9) == 0)))
 	{
 		g_settings->set(name, value);
 	}
