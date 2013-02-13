@@ -172,6 +172,20 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
+
+	// physics stuff
+	settings->setDefault("movement_acceleration_default", "2");
+	settings->setDefault("movement_acceleration_air", "0.5");
+	settings->setDefault("movement_acceleration_fast", "8");
+	settings->setDefault("movement_speed_walk", "4");
+	settings->setDefault("movement_speed_crouch", "1.35");
+	settings->setDefault("movement_speed_fast", "20");
+	settings->setDefault("movement_speed_climb", "2");
+	settings->setDefault("movement_speed_jump", "6.5");
+	settings->setDefault("movement_liquid_fluidity", "1");
+	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
+	settings->setDefault("movement_liquid_sink", "10");
+	settings->setDefault("movement_gravity", "9.81");
 	
 	//mapgen related things
 	settings->setDefault("mg_name", "v6");
