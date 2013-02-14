@@ -1002,6 +1002,11 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
+minetest.download_http(url, timeout, function (data, curlcode))
+^ Call url with timeout of timeout seconds
+^ When download is finished, calls function with data from the website and
+^ the CURLcode (0 is success)
+^ Only available if server was built with cURL
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.

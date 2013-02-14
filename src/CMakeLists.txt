@@ -328,16 +328,6 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-
-	if(USE_CURL)
-		target_link_libraries(
-			${PROJECT_NAME}
-			${CURL_LIBRARY}
-		)
-		include_directories(
-			${CURL_INCLUDE_DIR}
-		)
-	endif(USE_CURL)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -351,6 +341,20 @@ if(BUILD_SERVER)
 		${PLATFORM_LIBS}
 	)
 endif(BUILD_SERVER)
+
+if(USE_CURL)
+	target_link_libraries(
+		${PROJECT_NAME}
+		${CURL_LIBRARY}
+	)
+	target_link_libraries(
+		${PROJECT_NAME}server
+		${CURL_LIBRARY}
+	)
+	include_directories(
+		${CURL_INCLUDE_DIR}
+	)
+endif(USE_CURL)
 
 #
 # Set some optimizations and tweaks

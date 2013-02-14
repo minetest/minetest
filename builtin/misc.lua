@@ -24,6 +24,25 @@ function minetest.after(time, func, param)
 	table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
 end
 
+if minetest.curl_fetch then --cURL enabled
+	minetest.downloads = {}
+	function minetest.download_http(url, timeout, callback)
+		table.insert(minetest.downloads, {
+			callback = callback,
+			handle = minetest.curl_fetch(url, timeout)
+		})
+	end
+
+	minetest.register_globalstep(function(dtime)
+		for _, download in ipairs(minetest.downloads) do
+			local result, code = minetest.get_curl_fetch_result(download.handle)
+			if code ~= nil then
+				download.callback(result, code)
+			end
+		end
+	end)
+end
+
 function minetest.check_player_privs(name, privs)
 	local player_privs = minetest.get_player_privs(name)
 	local missing_privileges = {}

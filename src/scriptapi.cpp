@@ -50,6 +50,10 @@ extern "C" {
 #include "util/pointedthing.h"
 #include "rollback.h"
 #include "treegen.h"
+#include "config.h"
+#if USE_CURL
+#include <curl/curl.h>
+#endif
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -5523,6 +5527,39 @@ static int l_rollback_revert_actions_by(lua_State *L)
 	return 2;
 }
 
+#if USE_CURL
+// curl_fetch(url, timeout) -> curlhandle
+static int l_curl_fetch(lua_State *L)
+{
+	std::string url = luaL_checkstring(L, 1);
+	float timeout = luaL_checknumber(L, 2);
+	Server *server = get_server(L);
+	actionstream<<"WARNING: A mod accesses URL '"<<url<<"'. Remove it if you don't trust that site."<<std::endl;
+	u32 handle = server->curlFetch(url, timeout);
+	lua_pushnumber(L, handle);
+	return 1;
+}
+
+// get_curl_fetch_result(curlhandle) -> data, curlcode
+static int l_get_curl_fetch_result(lua_State *L)
+{
+	u32 handle = luaL_checknumber(L, 1);
+	Server *server = get_server(L);
+	CurlFetchResult *result = server->getCurlFinished(handle);
+	if (result == NULL)
+	{
+		lua_pushnil(L);
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua_pushstring(L, result->data.c_str());
+		lua_pushnumber(L, result->curlcode);
+	}
+	return 2;
+}
+#endif
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -5562,6 +5599,10 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_craft_recipe", l_get_craft_recipe},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+#if USE_CURL
+	{"curl_fetch", l_curl_fetch},
+	{"get_curl_fetch_result", l_get_curl_fetch_result},
+#endif
 	{NULL, NULL}
 };
 

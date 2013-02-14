@@ -56,6 +56,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
+#if USE_CURL
+#include <curl/curl.h>
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -414,6 +417,50 @@ void * EmergeThread::Thread()
 
 	return NULL;
 }
+
+#if USE_CURL
+static size_t curlWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+void *CurlFetchThread::Thread()
+{
+	ThreadStarted();
+
+	log_register_thread("CurlFetchThread");
+
+	DSTACK(__FUNCTION_NAME);
+	
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
+	CURL *curl;
+
+	curl = curl_easy_init();
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_URL, m_url.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &m_result);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, m_timeout * 1000);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, m_timeout * 1000);
+
+		m_cc = curl_easy_perform(curl);
+		if (m_cc != CURLE_OK)
+			errorstream<<"Curl: request of "<<m_url<<" failed"<<std::endl;
+		curl_easy_cleanup(curl);
+	}
+
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
+
+	log_deregister_thread();
+
+	this->setRun(false);
+
+	return NULL;
+}
+#endif
 
 v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 {
@@ -958,6 +1005,9 @@ Server::Server(
 	m_shutdown_requested(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0)
+#if USE_CURL
+	, m_curlthread_id(0)
+#endif
 {
 	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
@@ -4695,6 +4745,42 @@ Inventory* Server::createDetachedInventory(const std::string &name)
 	sendDetachedInventoryToAll(name);
 	return inv;
 }
+
+#if USE_CURL
+int Server::curlFetch(std::string url, float timeout)
+{
+	CurlFetchThread *thread = new CurlFetchThread(url, timeout);
+	thread->Start();
+	m_curlthread_id++;
+	m_curlthreads.insert(std::pair<u32, CurlFetchThread*>(m_curlthread_id, thread));
+	return m_curlthread_id;
+}
+
+CurlFetchResult *Server::getCurlFinished(u32 id)
+{
+	// Get Result of a CurlFetchThread
+	for(std::map<u32,CurlFetchThread*>::iterator thread = m_curlthreads.begin();
+			thread != m_curlthreads.end();)
+	{
+		if (thread->first == id && !thread->second->getRun()) // Search for handle and make sure the thread is finished
+		{
+			static CurlFetchResult result;
+			result.data = thread->second->getData();
+			result.curlcode = thread->second->getCurlCode();
+			delete thread->second;
+			m_curlthreads.erase(thread);
+
+			return &result;
+		}
+		else
+		{
+			thread++;
+		}
+	}
+
+	return NULL;
+}
+#endif
 
 class BoolScopeSet
 {
