@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "util/directiontables.h"
 #include "rollback_interface.h"
+#include "emerge.h"
 #include "mapgen_v6.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"

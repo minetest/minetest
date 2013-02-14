@@ -39,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
 #include <list> // Needed for rollbackRevertActions()
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;
@@ -47,6 +49,7 @@ class IWritableCraftDefManager;
 class EventManager;
 class PlayerSAO;
 class IRollbackManager;
+class EmergeManager;
 
 class ServerError : public std::exception
 {
@@ -120,11 +123,9 @@ public:
 				If it is, update the peer to it and quit.
 			*/
 			core::list<QueuedBlockEmerge*>::Iterator i;
-			for(i=m_queue.begin(); i!=m_queue.end(); i++)
-			{
+			for(i=m_queue.begin(); i!=m_queue.end(); i++) {
 				QueuedBlockEmerge *q = *i;
-				if(q->pos == pos)
-				{
+				if (q->pos == pos) {
 					q->peer_ids[peer_id] = flags;
 					return;
 				}
@@ -136,7 +137,7 @@ public:
 		*/
 		QueuedBlockEmerge *q = new QueuedBlockEmerge;
 		q->pos = pos;
-		if(peer_id != 0)
+		if (peer_id != 0)
 			q->peer_ids[peer_id] = flags;
 		m_queue.push_back(q);
 	}
@@ -198,30 +199,6 @@ public:
 	}
 
 	void * Thread();
-};
-
-class EmergeThread : public SimpleThread
-{
-	Server *m_server;
-
-public:
-
-	EmergeThread(Server *server):
-		SimpleThread(),
-		m_server(server)
-	{
-	}
-
-	void * Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
 };
 
 struct PlayerInfo
@@ -785,9 +762,9 @@ private:
 	// The server mainly operates in this thread
 	ServerThread m_thread;
 	// This thread fetches and generates map
-	EmergeThread m_emergethread;
+	//EmergeThread m_emergethread;
 	// Queue of block coordinates to be processed by the emerge thread
-	BlockEmergeQueue m_emerge_queue;
+	//BlockEmergeQueue m_emerge_queue;
 
 	/*
 		Time related stuff

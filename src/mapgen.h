@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "noise.h"
 #include "settings.h"
+//#include "emerge.h"
 #include <map>
 
 /////////////////// Mapgen flags
@@ -36,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 
+extern FlagDesc flagdesc_mapgen[];
+
 class BiomeDefManager;
 class Biome;
 class EmergeManager;
@@ -43,20 +46,7 @@ class MapBlock;
 class ManualMapVoxelManipulator;
 class VoxelManipulator;
 class INodeDefManager;
-
-struct BlockMakeData {
-	bool no_op;
-	ManualMapVoxelManipulator *vmanip;
-	u64 seed;
-	v3s16 blockpos_min;
-	v3s16 blockpos_max;
-	v3s16 blockpos_requested;
-	UniqueQueue<v3s16> transforming_liquid;
-	INodeDefManager *nodedef;
-
-	BlockMakeData();
-	~BlockMakeData();
-};
+class BlockMakeData;
 
 struct MapgenParams {
 	std::string mg_name;
@@ -97,40 +87,6 @@ struct MapgenFactory {
 	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
-};
-
-class EmergeManager {
-public:
-	std::map<std::string, MapgenFactory *> mglist;
-
-	//settings
-	MapgenParams *params;
-
-	//mapgen objects here
-	Mapgen *mapgen;
-
-	//biome manager
-	BiomeDefManager *biomedef;
-
-	EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef);
-	~EmergeManager();
-
-	void initMapgens(MapgenParams *mgparams);
-	Mapgen *createMapgen(std::string mgname, int mgid,
-						MapgenParams *mgparams, EmergeManager *emerge);
-	MapgenParams *createMapgenParams(std::string mgname);
-	Mapgen *getMapgen();
-	void addBlockToQueue();
-	
-	void registerMapgen(std::string name, MapgenFactory *mgfactory);
-	MapgenParams *getParamsFromSettings(Settings *settings);
-	void setParamsToSettings(Settings *settings);
-	
-	//mapgen helper methods
-	Biome *getBiomeAtPoint(v3s16 p);
-	int getGroundLevelAtPoint(v2s16 p);
-	bool isBlockUnderground(v3s16 blockpos);
-	u32 getBlockSeed(v3s16 p);
 };
 
 #endif

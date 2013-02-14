@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "mapblock.h"
 
-class Server;
 class ServerEnvironment;
 class ActiveBlockModifier;
 class ServerActiveObject;

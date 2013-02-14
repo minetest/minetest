@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "craftdef.h"
+#include "emerge.h"
 #include "mapgen.h"
 #include "biome.h"
 #include "content_mapnode.h"
@@ -57,60 +58,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
-
-#define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
-
-class MapEditEventIgnorer
-{
-public:
-	MapEditEventIgnorer(bool *flag):
-		m_flag(flag)
-	{
-		if(*m_flag == false)
-			*m_flag = true;
-		else
-			m_flag = NULL;
-	}
-
-	~MapEditEventIgnorer()
-	{
-		if(m_flag)
-		{
-			assert(*m_flag);
-			*m_flag = false;
-		}
-	}
-
-private:
-	bool *m_flag;
-};
-
-class MapEditEventAreaIgnorer
-{
-public:
-	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
-		m_ignorevariable(ignorevariable)
-	{
-		if(m_ignorevariable->getVolume() == 0)
-			*m_ignorevariable = a;
-		else
-			m_ignorevariable = NULL;
-	}
-
-	~MapEditEventAreaIgnorer()
-	{
-		if(m_ignorevariable)
-		{
-			assert(m_ignorevariable->getVolume() != 0);
-			*m_ignorevariable = VoxelArea();
-		}
-	}
-
-private:
-	VoxelArea *m_ignorevariable;
-};
 
 void * ServerThread::Thread()
 {
@@ -153,265 +100,6 @@ void * ServerThread::Thread()
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-
-	return NULL;
-}
-
-void * EmergeThread::Thread()
-{
-	ThreadStarted();
-
-	log_register_thread("EmergeThread");
-
-	DSTACK(__FUNCTION_NAME);
-
-	BEGIN_DEBUG_EXCEPTION_HANDLER
-
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
-
-	v3s16 last_tried_pos(-32768,-32768,-32768); // For error output
-
-	ServerMap &map = ((ServerMap&)m_server->m_env->getMap());
-	EmergeManager *emerge = m_server->m_emerge;
-	Mapgen *mapgen = emerge->getMapgen();
-
-	/*
-		Get block info from queue, emerge them and send them
-		to clients.
-
-		After queue is empty, exit.
-	*/
-	while(getRun())
-	try{
-		QueuedBlockEmerge *qptr = m_server->m_emerge_queue.pop();
-		if(qptr == NULL)
-			break;
-
-		SharedPtr<QueuedBlockEmerge> q(qptr);
-
-		v3s16 &p = q->pos;
-		v2s16 p2d(p.X,p.Z);
-
-		last_tried_pos = p;
-
-		/*
-			Do not generate over-limit
-		*/
-		if(blockpos_over_limit(p))
-			continue;
-
-		//infostream<<"EmergeThread::Thread(): running"<<std::endl;
-
-		//TimeTaker timer("block emerge");
-
-		/*
-			Try to emerge it from somewhere.
-
-			If it is only wanted as optional, only loading from disk
-			will be allowed.
-		*/
-
-		/*
-			Check if any peer wants it as non-optional. In that case it
-			will be generated.
-
-			Also decrement the emerge queue count in clients.
-		*/
-
-		bool only_from_disk = true;
-
-		{
-			core::map<u16, u8>::Iterator i;
-			for(i=q->peer_ids.getIterator(); i.atEnd()==false; i++)
-			{
-				//u16 peer_id = i.getNode()->getKey();
-
-				// Check flags
-				u8 flags = i.getNode()->getValue();
-				if((flags & BLOCK_EMERGE_FLAG_FROMDISK) == false)
-					only_from_disk = false;
-
-			}
-		}
-
-		if(enable_mapgen_debug_info)
-			infostream<<"EmergeThread: p="
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-					<<"only_from_disk="<<only_from_disk<<std::endl;
-
-
-
-		MapBlock *block = NULL;
-		bool got_block = true;
-		core::map<v3s16, MapBlock*> modified_blocks;
-
-		/*
-			Try to fetch block from memory or disk.
-			If not found and asked to generate, initialize generator.
-		*/
-
-		bool started_generate = false;
-		BlockMakeData data;
-
-		{
-			JMutexAutoLock envlock(m_server->m_env_mutex);
-
-			// Load sector if it isn't loaded
-			if(map.getSectorNoGenerateNoEx(p2d) == NULL)
-				map.loadSectorMeta(p2d);
-
-			// Attempt to load block
-			block = map.getBlockNoCreateNoEx(p);
-			if(!block || block->isDummy() || !block->isGenerated())
-			{
-				if(enable_mapgen_debug_info)
-					infostream<<"EmergeThread: not in memory, "
-							<<"attempting to load from disk"<<std::endl;
-
-				block = map.loadBlock(p);
-			}
-
-			// If could not load and allowed to generate, start generation
-			// inside this same envlock
-			if(only_from_disk == false &&
-					(block == NULL || block->isGenerated() == false)){
-				if(enable_mapgen_debug_info)
-					infostream<<"EmergeThread: generating"<<std::endl;
-				started_generate = true;
-
-				map.initBlockMake(&data, p);
-			}
-		}
-
-		/*
-			If generator was initialized, generate now when envlock is free.
-		*/
-		if(started_generate)
-		{
-			{
-				ScopeProfiler sp(g_profiler, "EmergeThread: mapgen::make_block",
-						SPT_AVG);
-				TimeTaker t("mapgen::make_block()");
-
-				mapgen->makeChunk(&data);
-				//mapgen::make_block(&data);
-
-				if(enable_mapgen_debug_info == false)
-					t.stop(true); // Hide output
-			}
-
-			do{ // enable break
-				// Lock environment again to access the map
-				JMutexAutoLock envlock(m_server->m_env_mutex);
-
-				ScopeProfiler sp(g_profiler, "EmergeThread: after "
-						"mapgen::make_block (envlock)", SPT_AVG);
-
-				// Blit data back on map, update lighting, add mobs and
-				// whatever this does
-				map.finishBlockMake(&data, modified_blocks);
-
-				// Get central block
-				block = map.getBlockNoCreateNoEx(p);
-
-				// If block doesn't exist, don't try doing anything with it
-				// This happens if the block is not in generation boundaries
-				if(!block)
-					break;
-
-				/*
-					Do some post-generate stuff
-				*/
-
-				v3s16 minp = data.blockpos_min*MAP_BLOCKSIZE;
-				v3s16 maxp = data.blockpos_max*MAP_BLOCKSIZE +
-						v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
-
-				/*
-					Ignore map edit events, they will not need to be
-					sent to anybody because the block hasn't been sent
-					to anybody
-				*/
-				//MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
-				MapEditEventAreaIgnorer ign(
-						&m_server->m_ignore_map_edit_events_area,
-						VoxelArea(minp, maxp));
-				{
-					TimeTaker timer("on_generated");
-					scriptapi_environment_on_generated(m_server->m_lua,
-							minp, maxp, emerge->getBlockSeed(minp));
-					/*int t = timer.stop(true);
-					dstream<<"on_generated took "<<t<<"ms"<<std::endl;*/
-				}
-
-				if(enable_mapgen_debug_info)
-					infostream<<"EmergeThread: ended up with: "
-							<<analyze_block(block)<<std::endl;
-
-				// Activate objects and stuff
-				m_server->m_env->activateBlock(block, 0);
-			}while(false);
-		}
-
-		if(block == NULL)
-			got_block = false;
-
-		/*
-			Set sent status of modified blocks on clients
-		*/
-
-		// NOTE: Server's clients are also behind the connection mutex
-		JMutexAutoLock lock(m_server->m_con_mutex);
-
-		/*
-			Add the originally fetched block to the modified list
-		*/
-		if(got_block)
-		{
-			modified_blocks.insert(p, block);
-		}
-
-		/*
-			Set the modified blocks unsent for all the clients
-		*/
-
-		for(core::map<u16, RemoteClient*>::Iterator
-				i = m_server->m_clients.getIterator();
-				i.atEnd() == false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-
-			if(modified_blocks.size() > 0)
-			{
-				// Remove block from sent history
-				client->SetBlocksNotSent(modified_blocks);
-			}
-		}
-	}
-	catch(VersionMismatchException &e)
-	{
-		std::ostringstream err;
-		err<<"World data version mismatch in MapBlock "<<PP(last_tried_pos)<<std::endl;
-		err<<"----"<<std::endl;
-		err<<"\""<<e.what()<<"\""<<std::endl;
-		err<<"See debug.txt."<<std::endl;
-		err<<"World probably saved by a newer version of Minetest."<<std::endl;
-		m_server->setAsyncFatalError(err.str());
-	}
-	catch(SerializationError &e)
-	{
-		std::ostringstream err;
-		err<<"Invalid data in MapBlock "<<PP(last_tried_pos)<<std::endl;
-		err<<"----"<<std::endl;
-		err<<"\""<<e.what()<<"\""<<std::endl;
-		err<<"See debug.txt."<<std::endl;
-		err<<"You can ignore this using [ignore_world_load_errors = true]."<<std::endl;
-		m_server->setAsyncFatalError(err.str());
-	}
-
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-
-	log_deregister_thread();
 
 	return NULL;
 }
@@ -770,7 +458,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			if(block == NULL || surely_not_found_on_disk || block_is_invalid)
 			{
-				//TODO: Get value from somewhere
+			/*	//TODO: Get value from somewhere
 				// Allow only one block in emerge queue
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
 				// Allow two blocks in queue per client
@@ -799,7 +487,17 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 						nearest_emergefull_d = d;
 					goto queue_full_break;
 				}
+			*/
 
+				if (server->m_emerge->enqueueBlockEmerge(peer_id, p, generate)) {
+					if (nearest_emerged_d == -1)
+						nearest_emerged_d = d;
+				} else {
+					if (nearest_emergefull_d == -1)
+						nearest_emergefull_d = d;
+					goto queue_full_break;
+				}
+				
 				// get next one.
 				continue;
 			}
@@ -953,7 +651,7 @@ Server::Server(
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_thread(this),
-	m_emergethread(this),
+	//m_emergethread(this),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_shutdown_requested(false),
@@ -1278,9 +976,9 @@ void Server::stop()
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread.setRun(false);
-	m_emergethread.setRun(false);
+	//m_emergethread.setRun(false);
 	m_thread.stop();
-	m_emergethread.stop();
+	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
@@ -1951,7 +1649,7 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
-			m_emergethread.trigger();
+			m_emerge->emergethread->trigger();
 
 			// Update m_enable_rollback_recording here too
 			m_enable_rollback_recording =
@@ -3115,8 +2813,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					infostream<<"Server: Not punching: Node not found."
 							<<" Adding block to emerge queue."
 							<<std::endl;
-					m_emerge_queue.addBlock(peer_id,
-							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
+					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
 					scriptapi_node_on_punch(m_lua, p_under, n, playersao);
@@ -3172,8 +2869,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					infostream<<"Server: Not finishing digging: Node not found."
 							<<" Adding block to emerge queue."
 							<<std::endl;
-					m_emerge_queue.addBlock(peer_id,
-							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
+					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
 
 				/* Cheat prevention */
@@ -4728,10 +4424,7 @@ void Server::notifyPlayers(const std::wstring msg)
 
 void Server::queueBlockEmerge(v3s16 blockpos, bool allow_generate)
 {
-	u8 flags = 0;
-	if(!allow_generate)
-		flags |= BLOCK_EMERGE_FLAG_FROMDISK;
-	m_emerge_queue.addBlock(PEER_ID_INEXISTENT, blockpos, flags);
+	m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, blockpos, allow_generate);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)

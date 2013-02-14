@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
+#include "emerge.h"
 #include "mapgen_v6.h"
 
 /////////////////// Mapgen V6 perlin noise default values

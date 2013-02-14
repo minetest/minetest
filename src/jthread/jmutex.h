@@ -67,4 +67,54 @@ private:
 	bool initialized;
 };
 
+#ifdef _WIN32
+
+class Event {
+	HANDLE hEvent;
+
+public:
+	Event() {
+		hEvent = CreateEvent(NULL, 0, 0, NULL);
+	}
+	
+	~Event() {
+		CloseHandle(hEvent);
+	}
+	
+	void wait() {
+		WaitForSingleObject(hEvent, INFINITE); 
+	}
+	
+	void signal() {
+		SetEvent(hEvent);
+	}
+}
+
+#else
+
+#include <semaphore.h>
+
+class Event {
+	sem_t sem;
+
+public:
+	Event() {
+		sem_init(&sem, 0, 0);
+	}
+	
+	~Event() {
+		sem_destroy(&sem);
+	}
+	
+	void wait() {
+		sem_wait(&sem);
+	}
+	
+	void signal() {
+		sem_post(&sem);
+	}
+};
+
+#endif
+
 #endif // JMUTEX_H

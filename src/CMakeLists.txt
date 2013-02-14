@@ -209,6 +209,7 @@ set(common_SRCS
 	script.cpp
 	log.cpp
 	content_sao.cpp
+	emerge.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
 	treegen.cpp
