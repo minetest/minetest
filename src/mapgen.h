@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "noise.h"
 #include "settings.h"
-//#include "emerge.h"
 #include <map>
 
 /////////////////// Mapgen flags

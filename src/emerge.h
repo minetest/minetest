@@ -14,8 +14,6 @@ class Biome;
 class BiomeDefManager;
 class EmergeThread;
 class ManualMapVoxelManipulator;
-//class ServerMap;
-//class MapBlock;
 
 #include "server.h"
 
@@ -29,20 +27,19 @@ struct BlockMakeData {
 	UniqueQueue<v3s16> transforming_liquid;
 	INodeDefManager *nodedef;
 
-//	BlockMakeData();
-//	~BlockMakeData();
-	
-BlockMakeData():
-	no_op(false),
-	vmanip(NULL),
-	seed(0),
-	nodedef(NULL)
-{}
+	BlockMakeData():
+		no_op(false),
+		vmanip(NULL),
+		seed(0),
+		nodedef(NULL)
+	{}
 
-~BlockMakeData()
-{
-	delete vmanip;
-}
+	~BlockMakeData() { delete vmanip; }
+};
+
+struct BlockEmergeData {
+	u16 peer_requested;
+	u8 flags;
 };
 
 class EmergeManager {
@@ -53,7 +50,8 @@ public:
 	MapgenParams *params;
 
 	JMutex queuemutex;
-	std::map<v3s16, u8> blocks_enqueued; //change to a hashtable later
+	std::map<v3s16, BlockEmergeData *> blocks_enqueued;
+	std::map<u16, u16> peer_queue_count;
 	Mapgen *mapgen;
 	EmergeThread *emergethread;
 

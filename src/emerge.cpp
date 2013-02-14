@@ -88,7 +88,10 @@ Mapgen *EmergeManager::getMapgen() {
 }
 
 
-bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate) { ///return false if adding failed, or queue full!
+bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate) {
+	std::map<v3s16, BlockEmergeData *>::const_iterator iter;
+	BlockEmergeData *bedata;
+	u16 count;
 	u8 flags = 0;
 	
 	if (allow_generate)
@@ -103,14 +106,30 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	{
 		JMutexAutoLock queuelock(queuemutex);
 		
-		std::map<v3s16, u8>::const_iterator iter = blocks_enqueued.find(p);
+		count = blocks_enqueued.size();
+		u16 queuelimit_total = 256;
+		if (count >= queuelimit_total)
+			return false;
+
+		count = peer_queue_count[peer_id];
+		u16 queuelimit_peer = allow_generate ? 1 : 5;
+		if (count >= queuelimit_peer)
+			return false;
+		
+		iter = blocks_enqueued.find(p);
 		if (iter != blocks_enqueued.end()) {
-			flags |= iter->second;
-			blocks_enqueued[p] = flags;
+			bedata = iter->second;
+			bedata->flags |= flags;
 			return true;
 		}
+
+		bedata = new BlockEmergeData;
+		bedata->flags = flags;
+		bedata->peer_requested = peer_id;
+		blocks_enqueued.insert(std::make_pair(p, bedata));
 		
-		blocks_enqueued.insert(std::make_pair(p, flags));
+		peer_queue_count[peer_id] = count + 1;
+		
 		emergethread->blockqueue.push(p);
 	}
 	emergethread->qevent.signal();
@@ -120,6 +139,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 
 
 bool EmergeManager::popBlockEmerge(v3s16 *pos, u8 *flags) {
+	std::map<v3s16, BlockEmergeData *>::iterator iter;
 	JMutexAutoLock queuelock(queuemutex);
 
 	if (emergethread->blockqueue.empty())
@@ -128,12 +148,17 @@ bool EmergeManager::popBlockEmerge(v3s16 *pos, u8 *flags) {
 	emergethread->blockqueue.pop();
 	
 	*pos = p;
+	
+	iter = blocks_enqueued.find(p);
+	if (iter == blocks_enqueued.end()) 
+		return false; //uh oh, queue and map out of sync!!
 
-	std::map<v3s16, u8>::iterator iter = blocks_enqueued.find(p);
-	if (iter == blocks_enqueued.end()) //uh oh, this isn't right!!!!!!!!!!!!!!!!!!
-		return false;
+	BlockEmergeData *bedata = iter->second;
+	*flags = bedata->flags;
+	
+	peer_queue_count[bedata->peer_requested]--;
 
-	*flags = iter->second;
+	delete bedata;
 	blocks_enqueued.erase(iter);
 	
 	return true;
