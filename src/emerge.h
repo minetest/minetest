@@ -45,15 +45,20 @@ struct BlockEmergeData {
 class EmergeManager {
 public:
 	std::map<std::string, MapgenFactory *> mglist;
-
+	
+	Mapgen *mapgen;
+	EmergeThread *emergethread;
+	
 	//settings
 	MapgenParams *params;
-
+	u16 qlimit_total;
+	u16 qlimit_diskonly;
+	u16 qlimit_generate;
+	
+	//block emerge queue data structures
 	JMutex queuemutex;
 	std::map<v3s16, BlockEmergeData *> blocks_enqueued;
 	std::map<u16, u16> peer_queue_count;
-	Mapgen *mapgen;
-	EmergeThread *emergethread;
 
 	//biome manager
 	BiomeDefManager *biomedef;

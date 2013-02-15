@@ -49,6 +49,10 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	this->params   = NULL;
 	this->mapgen   = NULL;
 	
+	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
+	qlimit_diskonly = g_settings->getU16("emergequeue_limit_diskonly");
+	qlimit_generate = g_settings->getU16("emergequeue_limit_generate");
+
 	queuemutex.Init();
 	emergethread = new EmergeThread((Server *)gamedef);
 }
@@ -98,23 +102,16 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	if (allow_generate)
 		flags |= BLOCK_EMERGE_ALLOWGEN;
 
-	//TODO:
-	// add logic to select which emergethread to add it to
-	//  - one with the least queue contents?
-	//  - if a queue is too full, move onto another one
-	//  - use the peer id sometime
-
 	{
 		JMutexAutoLock queuelock(queuemutex);
 		
 		count = blocks_enqueued.size();
-		u16 queuelimit_total = 256;
-		if (count >= queuelimit_total)
+		if (count >= qlimit_total)
 			return false;
 
 		count = peer_queue_count[peer_id];
-		u16 queuelimit_peer = allow_generate ? 1 : 5;
-		if (count >= queuelimit_peer)
+		u16 qlimit_peer = allow_generate ? qlimit_generate : qlimit_diskonly;
+		if (count >= qlimit_peer)
 			return false;
 		
 		iter = blocks_enqueued.find(p);
