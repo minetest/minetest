@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-02 18:51+0200\n"
+"PO-Revision-Date: 2013-02-15 21:36+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -347,7 +347,7 @@ msgstr "Kann Welt nicht löschen: Nichts ausgewählt"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
-msgstr "Zi löschende Dateien"
+msgstr "Zu löschende Dateien"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
