@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-06 15:03+0200\n"
-"Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
+"PO-Revision-Date: 2013-02-15 15:22+0200\n"
+"Last-Translator: yuqian wang <dreamofnudt@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -195,7 +195,7 @@ msgstr "选择范围"
 #: src/guiKeyChangeMenu.cpp:388
 #, fuzzy
 msgid "Print stacks"
-msgstr "打印堆"
+msgstr "打印栈"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
@@ -214,18 +214,16 @@ msgid "Multiplayer"
 msgstr "多人游戏"
 
 #: src/guiMainMenu.cpp:247
-#, fuzzy
 msgid "Advanced"
-msgstr "高级"
+msgstr "高级联机设置"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
 msgstr "设置"
 
 #: src/guiMainMenu.cpp:249
-#, fuzzy
 msgid "Credits"
-msgstr "制作人员名单"
+msgstr "关于"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
