@@ -251,9 +251,9 @@
 #remote_media =
 
 # Physics stuff
-#movement_acceleration_default = 2
-#movement_acceleration_air = 0.5
-#movement_acceleration_fast = 4
+#movement_acceleration_default = 3
+#movement_acceleration_air = 2
+#movement_acceleration_fast = 10
 #movement_speed_walk = 4
 #movement_speed_crouch = 1.35
 #movement_speed_fast = 20
