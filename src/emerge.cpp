@@ -56,6 +56,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 
 EmergeManager::~EmergeManager() {
 	emergethread->setRun(false);
+	emergethread->qevent.signal();
 	emergethread->stop();
 	
 	delete emergethread;
@@ -360,8 +361,11 @@ void *EmergeThread::Thread() {
 	
 	while (getRun())
 	try {
-		while (!emerge->popBlockEmerge(&p, &flags))
+		while (!emerge->popBlockEmerge(&p, &flags)) {
 			qevent.wait();
+			if (!getRun())
+				goto exit_emerge_loop;
+		}
 
 		last_tried_pos = p;
 		if (blockpos_over_limit(p))
@@ -393,7 +397,7 @@ void *EmergeThread::Thread() {
 				//envlock: usually 0ms, but can take either 30 or 400ms to acquire
 				JMutexAutoLock envlock(m_server->m_env_mutex); 
 				ScopeProfiler sp(g_profiler, "EmergeThread: after "
-						"mapgen::make_block (envlock)", SPT_AVG);
+						"Mapgen::makeChunk (envlock)", SPT_AVG);
 
 				map->finishBlockMake(&data, modified_blocks);
 				
@@ -465,6 +469,7 @@ void *EmergeThread::Thread() {
 	}
 	
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
+exit_emerge_loop:
 	log_deregister_thread();
 	return NULL;
 }
