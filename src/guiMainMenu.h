@@ -130,6 +130,8 @@ private:
 	s32 id;
 	IMenuManager *menumgr;
 
+	std::vector<int> m_world_indices;
+
 	bool m_is_regenerating;
 	v2s32 m_topleft_client;
 	v2s32 m_size_client;

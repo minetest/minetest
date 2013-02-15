@@ -348,11 +348,17 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			gui::IGUIListBox *e = Environment->addListBox(rect, this,
 					GUI_ID_WORLD_LISTBOX);
 			e->setDrawBackground(true);
-			for(std::vector<WorldSpec>::const_iterator i = m_data->worlds.begin();
-					i != m_data->worlds.end(); i++){
-				e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
+			m_world_indices.clear();
+			for(size_t wi = 0; wi < m_data->worlds.size(); wi++){
+				const WorldSpec &spec = m_data->worlds[wi];
+				if(spec.gameid == m_data->selected_game){
+					//e->addItem(narrow_to_wide(spec.name+" ["+spec.gameid+"]").c_str());
+					e->addItem(narrow_to_wide(spec.name).c_str());
+					m_world_indices.push_back(wi);
+					if(m_data->selected_world == (int)wi)
+						e->setSelected(m_world_indices.size()-1);
+				}
 			}
-			e->setSelected(m_data->selected_world);
 			Environment->setFocus(e);
 		}
 		// Delete world button
@@ -1131,8 +1137,13 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
-		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
-			dst->selected_world = ((gui::IGUIListBox*)e)->getSelected();
+		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX){
+			int list_i = ((gui::IGUIListBox*)e)->getSelected();
+			if(list_i == -1)
+				dst->selected_world = -1;
+			else
+				dst->selected_world = m_world_indices[list_i];
+		}
 	}
 	{
 		ServerListSpec server =
