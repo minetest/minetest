@@ -35,17 +35,26 @@ struct SubgameSpec
 	std::string gamemods_path; //path to mods of the game
 	std::set<std::string> addon_mods_paths; //paths to addon mods for this game
 	std::string name;
+	std::string menubackground_path;
+	std::string menuoverlay_path;
+	std::string menuicon_path;
 
 	SubgameSpec(const std::string &id_="",
 			const std::string &path_="",	
 			const std::string &gamemods_path_="",
 			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
-			const std::string &name_=""):
+			const std::string &name_="",
+			const std::string &menubackground_path_="",
+			const std::string &menuoverlay_path_="",
+			const std::string &menuicon_path_=""):
 		id(id_),
 		path(path_),
 		gamemods_path(gamemods_path_),		
 		addon_mods_paths(addon_mods_paths_),
-		name(name_)
+		name(name_),
+		menubackground_path(menubackground_path_),
+		menuoverlay_path(menuoverlay_path_),
+		menuicon_path(menuicon_path_)
 	{}
 
 	bool isValid() const
