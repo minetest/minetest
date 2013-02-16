@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-05 20:38+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"PO-Revision-Date: 2013-02-17 00:41+0200\n"
+"Last-Translator: Rune Biskopstö Christensen <lakersforce@gmail.com>\n"
 "Language-Team: \n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -23,38 +23,41 @@ msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
+"Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
+"De vil blive aktiveret som standard når du gemmer konfigurationen.  "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
+"Advarsel: nogle konfigurerede modifikationer mangler.\n"
+"Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
-msgstr ""
+msgstr "aktiveret"
 
 #: src/guiConfigureWorld.cpp:215
-#, fuzzy
 msgid "Enable All"
-msgstr "Tag imod skade"
+msgstr "Aktivér alle"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr ""
+msgstr "Deaktivér alle"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr ""
+msgstr "afhænger af:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr ""
+msgstr "er påkrævet af:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
 msgid "Cancel"
-msgstr "Afslut"
+msgstr "Anuller"
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
@@ -62,44 +65,43 @@ msgstr "Gem"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "Konfiguration gemt.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Verdens navn"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "Spil"
 
 #: src/guiCreateWorld.cpp:159
-#, fuzzy
 msgid "Create"
-msgstr "Kreativ mode"
+msgstr "Skab"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Du døde."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Genopstå"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
@@ -109,31 +111,34 @@ msgstr "Fortsæt"
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Tastebindinger. (Hvis denne menu fucker op, fjern elementer fra "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Brug\" = klatre ned"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
 msgstr ""
+"Tryk på \"hop\" hurtigt to gange for at skifte frem og tilbage mellem flyve-"
+"tilstand"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
-msgstr ""
+msgstr "Tast allerede i brug"
 
 #: src/guiKeyChangeMenu.cpp:347
-#, fuzzy
 msgid "press key"
-msgstr "Tryk knap"
+msgstr "Tryk på en tast"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr "Frem"
+msgstr "Fremad"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr "Tilbage"
+msgstr "Baglæns"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
@@ -153,81 +158,79 @@ msgstr "Hop"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr "Snig"
+msgstr "Snige"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Slip"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr "Ting"
+msgstr "Beholdning"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr "Chat"
+msgstr "Snak"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "Kommando"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "Konsol"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr "Flyvning"
+msgstr "Omstil flyvning"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr "Hurtig flyvning"
+msgstr "Omstil hurtig"
 
 #: src/guiKeyChangeMenu.cpp:386
-#, fuzzy
 msgid "Toggle noclip"
-msgstr "Flyvning"
+msgstr "Omstil fylde"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr "Afstands load"
+msgstr "Afstands vælg"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
-msgstr "Print stykker"
+msgstr "Udskriv stakke"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr ""
+msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
-msgstr ""
+msgstr "Kan ikke skabe verden: en verden med dette navn eksisterer allerede"
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
-msgstr ""
+msgstr "Enligspiller"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
-msgstr ""
+msgstr "Flerspiller"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
-msgstr ""
+msgstr "Avanceret"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
-msgstr ""
+msgstr "Indstillinger"
 
 #: src/guiMainMenu.cpp:249
 msgid "Credits"
-msgstr ""
+msgstr "Skabt af"
 
 #: src/guiMainMenu.cpp:280
-#, fuzzy
 msgid "Select World:"
-msgstr "Vælge"
+msgstr "Vælg verden:"
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
@@ -235,23 +238,23 @@ msgstr "Slet"
 
 #: src/guiMainMenu.cpp:309
 msgid "New"
-msgstr ""
+msgstr "Ny"
 
 #: src/guiMainMenu.cpp:317
 msgid "Configure"
-msgstr ""
+msgstr "Konfigurér"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
-msgstr "Spil"
+msgstr "Afspil"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
-msgstr "Kreativ mode"
+msgstr "Kreativ tilstand"
 
 #: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
 msgid "Enable Damage"
-msgstr "Tag imod skade"
+msgstr "Aktivér skade"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
@@ -263,119 +266,115 @@ msgstr "Adresse/port"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
 msgid "Show Public"
-msgstr ""
+msgstr "Vis offentlig"
 
 #: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
 msgid "Show Favorites"
-msgstr ""
+msgstr "Vis favoritter"
 
 #: src/guiMainMenu.cpp:459
-#, fuzzy
 msgid "Connect"
-msgstr "Logud"
+msgstr "Forbind"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr "Lad black for at spille localt."
+msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr "Start spil"
+msgstr "Start spil / Forbind"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
-#, fuzzy
 msgid "Delete world"
-msgstr "Slet"
+msgstr "Slet verden"
 
 #: src/guiMainMenu.cpp:577
-#, fuzzy
 msgid "Create world"
-msgstr "Kreativ mode"
+msgstr "Skab verden"
 
 #: src/guiMainMenu.cpp:611
 msgid "Fancy trees"
-msgstr "Fancy trær"
+msgstr "\"Smarte\" træer"
 
 #: src/guiMainMenu.cpp:617
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Glat belysning"
 
 #: src/guiMainMenu.cpp:623
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D skyer"
 
 #: src/guiMainMenu.cpp:629
 msgid "Opaque water"
-msgstr ""
+msgstr "Opakt (uigennemsigtigt) vand"
 
 #: src/guiMainMenu.cpp:639
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip-mapping"
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Anisotropisk filtréring"
 
 #: src/guiMainMenu.cpp:653
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Bi-lineær filtréring"
 
 #: src/guiMainMenu.cpp:660
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Tri-lineær filtréring"
 
 #: src/guiMainMenu.cpp:668
 msgid "Shaders"
-msgstr ""
+msgstr "Shadere"
 
 #: src/guiMainMenu.cpp:675
 msgid "Preload item visuals"
-msgstr ""
+msgstr "For-indlæs elementernes grafik"
 
 #: src/guiMainMenu.cpp:682
-#, fuzzy
 msgid "Enable Particles"
-msgstr "Tag imod skade"
+msgstr "Aktivér partikler"
 
 #: src/guiMainMenu.cpp:692
 msgid "Change keys"
-msgstr "Indstillinger"
+msgstr "Skift bindinger"
 
 #: src/guiMainMenu.cpp:977
 msgid "Address required."
-msgstr ""
+msgstr "Adresse påkrævet."
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Kan ikke slette verden: ingenting valgt"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
-msgstr ""
+msgstr "Filer som slettes"
 
 #: src/guiMainMenu.cpp:1026
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Kan ikke skabe verden: ingen spil fundet"
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "Kan ikke konfigurere verden: ingenting valgt"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Mislykkedes i at slette alle verdenens filer"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Gamle kodeord"
+msgstr "Gammelt kodeord"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Nye kodeord"
+msgstr "Nyt kodeord"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Gentag kodeord"
+msgstr "Bekræft kodeord"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
@@ -383,7 +382,7 @@ msgstr "Skift"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Kodeordne matcher ikke hinanden!"
+msgstr "Kodeordene er ikke ens!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
@@ -394,13 +393,12 @@ msgid "Change Password"
 msgstr "Skift kodeord"
 
 #: src/guiPauseMenu.cpp:135
-#, fuzzy
 msgid "Exit to Menu"
-msgstr "Afslut til OS"
+msgstr "Afslut til menu"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Afslut til OS"
+msgstr "Afslut til operativsystemet"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -416,22 +414,33 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Standard bindinger:\n"
+"- WASD: bevægelse\n"
+"- Venstre musetast: grav/slå\n"
+"- Højre musetast: anbring/brug\n"
+"- Musehjul: vælg genstand\n"
+"- 0...9: vælg genstand\n"
+"- Shift: snige\n"
+"- R: omstil se alle indlæste klumper\n"
+"- I: beholdning\n"
+"- ESC: denne menu\n"
+"- T: snak\n"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Venstre Knap"
+msgstr "Venstre knap"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Midt Knap"
+msgstr "Midterste knap"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr "Højre Knap"
+msgstr "Højre knap"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "X knap 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -439,67 +448,68 @@ msgstr "Tilbage"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr "Rens"
+msgstr "Ryd"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr "Tilbage"
+msgstr "Enter"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tabulator"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "X knap 2"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Capital"
-msgstr ""
+msgstr "Store bogstaver"
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr "Kontrol"
+msgstr "Control"
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "Konvertér"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Endelig"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nonconvert"
 
 #: src/keycode.cpp:227
 msgid "Accept"
@@ -507,15 +517,15 @@ msgstr "Accepter"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr "Slut"
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr "Hjem"
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr "Mode skift"
+msgstr "Tilstandsskift"
 
 #: src/keycode.cpp:227
 msgid "Next"
@@ -523,7 +533,7 @@ msgstr "Næste"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Foregående"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -535,15 +545,15 @@ msgstr "Ned"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Eksekvér"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "Udskriv"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr "Vælge"
+msgstr "Vælg"
 
 #: src/keycode.cpp:228
 msgid "Up"
@@ -555,190 +565,193 @@ msgstr "Hjælp"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr "Indset"
+msgstr "Insert"
 
 #: src/keycode.cpp:229
+#, fuzzy
 msgid "Snapshot"
-msgstr "Screenshot"
+msgstr "Tilstandsbillede"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr "Venstre windows"
+msgstr "Venstre meta"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Apps"
-msgstr ""
+msgstr "Applikationer"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Højre meta"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "Sov"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Venstre Skift"
 
 #: src/keycode.cpp:240
-#, fuzzy
 msgid "Right Shift"
-msgstr "Højre"
+msgstr "Højre Skift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Venstre Control"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Venstre Menu"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Højre Control"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Højre Menu"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Komma"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Minus"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Punktum"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "Giv agt"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Udvisk Slut-På-Fil"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Ryd"
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: src/main.cpp:1384
 msgid "Main Menu"
-msgstr ""
+msgstr "Hovedmenu"
 
 #: src/main.cpp:1633
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Mislykkedes i at initialisere verden"
 
 #: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Ingen verden valgt og ingen adresse angivet. Ingen opgave at lave."
 
 #: src/main.cpp:1653
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Kunne ikke finde eller indlæse spil \""
 
 #: src/main.cpp:1667
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Ugyldig spilspecifikationer."
 
 #: src/main.cpp:1707
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Forbindelses fejl (udløbelse af tidsfrist?)"
 
 #: src/main.cpp:1718
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Tjek debug.txt for detaljer."
 
 #~ msgid "Delete map"
 #~ msgstr "Slet mappen"
