@@ -26,6 +26,7 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include "sqlite3.h"
 }
 
 #include "server.h"
@@ -36,44 +37,73 @@ public:
 	FileRef();
 	~FileRef();
 
+	typedef enum {
+		FR_Plain,
+		FR_Settings,
+		FR_SQLite,
+		FR_Invalid
+	} FileType;
 
+	typedef enum {
+		FR_World,
+		FR_User,
+		FR_Unknown
+	} StorageLoc;
 
-	static FileRef *checkobject(lua_State *L, int narg);
-	// garbage collector
-	static int gc_object(lua_State *L);
-	// Creates an FileRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
-	bool open(std::string path, std::string mode);
-	bool open_settings(std::string path);
-	static bool checkFilename(std::string filename,std::string type);
-	static std::string getFilename(std::string filename,std::string type,lua_State *L);
-	static void Register(lua_State *L);
-
-	std::fstream* m_file;
+	//file information
 	bool          m_writable;
-	Settings*     m_settings;
-	std::string   m_filename;
+	FileType      m_type;
+	StorageLoc    m_storage;
+
+	//static functions
+	static FileRef*     checkobject         (lua_State *L, int narg);
+	static int          gc_object           (lua_State *L);
+	static bool         checkFilename       (std::string filename,StorageLoc type);
+	static void         Register            (lua_State *L);
+	static void         create_lua_object   (lua_State *L,FileRef* ref);
 
 	//lua functions
-	static int l_listfiles(lua_State *L);
-	static int l_open(lua_State *L);
-	static int l_delete(lua_State *L);
-	static int l_close(lua_State *L);
-	static int l_getline(lua_State *L);
-	static int l_write(lua_State *L);
-	static int l_read(lua_State *L);
-	static int l_seek(lua_State *L);
+	static int l_listfiles                  (lua_State *L);
+	static int l_open                       (lua_State *L);
+	static int l_delete                     (lua_State *L);
+	static int l_close                      (lua_State *L);
+	static int l_save                       (lua_State *L);
+	static int l_getline                    (lua_State *L);
+	static int l_write                      (lua_State *L);
+	static int l_read                       (lua_State *L);
+	static int l_seek                       (lua_State *L);
 
-	static int l_setting_set(lua_State *L);
-	static int l_setting_setbool(lua_State *L);
-	static int l_setting_get(lua_State *L);
-	static int l_setting_getbool(lua_State *L);
-	static int l_setting_save(lua_State *L);
+	static int l_setting_set                (lua_State *L);
+	static int l_setting_setbool            (lua_State *L);
+	static int l_setting_get                (lua_State *L);
+	static int l_setting_getbool            (lua_State *L);
 
 	static const char className[];
 	static const luaL_reg methods[];
+
+private:
+	bool open                               (std::string mode);
+	bool open_settings                      ();
+	bool open_settings_sqlite               (std::string mode);
+	void cleanup_sqlite                     ();
+	bool validateFilePermissinons           (std::string name,
+												std::string type,
+												std::string location);
+	bool getFilename                        (std::string filename, lua_State *L);
+	bool sql_db_initialize                  ();
+
+	std::fstream* m_file;
+	Settings*     m_settings;
+	std::string   m_filename;
+	sqlite3*      m_database;
+
+	sqlite3_stmt* m_stmt_create_table_int;
+	sqlite3_stmt* m_stmt_create_table_string;
+	sqlite3_stmt* m_stmt_set_string;
+	sqlite3_stmt* m_stmt_set_bool;
+	sqlite3_stmt* m_stmt_get_string;
+	sqlite3_stmt* m_stmt_get_bool;
+	sqlite3_stmt* m_stmt_del_string;
+	sqlite3_stmt* m_stmt_del_bool;
 };
-
-Server* get_server(lua_State *L);
-
 #endif /* LUA_FILEAPI_H_ */

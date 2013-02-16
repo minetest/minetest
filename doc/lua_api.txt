@@ -966,15 +966,17 @@ minetest.sound_play(spec, parameters) -> handle
 ^ spec = SimpleSoundSpec
 ^ parameters = sound parameter table
 minetest.sound_stop(handle)
-minetest.open_file(filename,filetype,openmode) -> handle
+minetest.open_file(filename,fileloc,filetype,openmode) -> handle
 ^ filename = plain name of file (no paths allowed)
-^ filetype = "user"  -> stored in user folder
-             "world" -> stored in current world folder
-             "user_settings"  -> create a settings file in user folder
-             "world_settings" -> create a settings file in world folder
+^ fileloc  = "user"     -> stored in user folder
+             "world"    -> stored in current world folder
+^filetype  = "plain"    -> open plain file
+             "settings" -> provide settings api uppon plain file
+             "sqlite"   -> provide settings api uppon sqlite file
 ^ openmode = "t" truncate file
              "w" append to end of file
              "r" read only
+             nil -> default for filetype
 minetest.delete_file(filename,filetype) -> true/false
 ^ filename = plain name of file (no paths allowed)
 ^ filetype = "user"           -> stored in user folder
@@ -988,17 +990,17 @@ FileRef:Reference to a file
 - can be created by minetest.open_file
 methods:
 - close(): save and close this file -> nil
-methods: (available for filetype "user" and "world" only)
+- save():  make sure file is stored to disk -> true/false
+methods: (available for filetype "plain" only)
 - getline(): get a single line from file -> line or nil
 - write(data): write some text to file -> true/false
 - read(): read whole file -> string or nil
 - seek(pos): set position in file to pos -> true/false
-methods: (available for filetype "user_settings" and "world_settings" only)
+methods: (available for filetype "settings" and "sqlite" only)
 - settings_set(key,value): set key in settings file to value -> true/false
 - settings_setbool(key,boolvalue): set key to bool value return -> true/false
 - settings_get(key): -> value/nil
 - settings_getbool(key): -> bool value/nil
-- settings_save(): -> make sure settings are stored to file
 
 Timing:
 minetest.after(time, func, param)
