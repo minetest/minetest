@@ -977,13 +977,13 @@ minetest.open_file(filename,fileloc,filetype,openmode) -> handle
              "w" append to end of file
              "r" read only
              nil -> default for filetype
-minetest.delete_file(filename,filetype) -> true/false
+minetest.delete_file(filename,fileloc) -> true/false
 ^ filename = plain name of file (no paths allowed)
-^ filetype = "user"           -> stored in user folder
+^ fileloc  = "user"           -> stored in user folder
              "world"          -> stored in current world folder
-minetest.list_files(filetype) -> list of files at specified location
+minetest.list_files(fileloc)  -> list of files at specified location
 -special files and files starting with "hidden_" can't be listed
-^ filetype = "user"           -> stored in user folder
+^ fileloc  = "user"           -> stored in user folder
              "world"          -> stored in current world folder
 
 FileRef:Reference to a file
@@ -995,10 +995,10 @@ methods: (available for filetype "plain" only)
 - getline(): get a single line from file -> line or nil
 - write(data): write some text to file -> true/false
 - read(): read whole file -> string or nil
-- seek(pos): set position in file to pos -> true/false
+- seekline(num): set position in file to line num -> true/false
 methods: (available for filetype "settings" and "sqlite" only)
 - settings_set(key,value): set key in settings file to value -> true/false
-- settings_setbool(key,boolvalue): set key to bool value return -> true/false
+- settings_setbool(key,boolvalue): set key to bool value -> true/false
 - settings_get(key): -> value/nil
 - settings_getbool(key): -> bool value/nil
 

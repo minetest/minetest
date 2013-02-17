@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
@@ -71,7 +72,7 @@ public:
 	static int l_getline                    (lua_State *L);
 	static int l_write                      (lua_State *L);
 	static int l_read                       (lua_State *L);
-	static int l_seek                       (lua_State *L);
+	static int l_seekline                   (lua_State *L);
 
 	static int l_setting_set                (lua_State *L);
 	static int l_setting_setbool            (lua_State *L);
@@ -96,6 +97,7 @@ private:
 	Settings*     m_settings;
 	std::string   m_filename;
 	sqlite3*      m_database;
+	std::vector<unsigned int>   m_linepos;
 
 	sqlite3_stmt* m_stmt_create_table_int;
 	sqlite3_stmt* m_stmt_create_table_string;

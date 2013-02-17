@@ -36,7 +36,7 @@ const luaL_reg FileRef::methods[] = {
 	method(FileRef, getline),
 	method(FileRef, write),
 	method(FileRef, read),
-	method(FileRef, seek),
+	method(FileRef, seekline),
 	method(FileRef, setting_set),
 	method(FileRef, setting_setbool),
 	method(FileRef, setting_get),
@@ -533,15 +533,38 @@ int FileRef::l_getline(lua_State *L) {
 }
 
 /******************************************************************************/
-int FileRef::l_seek(lua_State *L) {
+int FileRef::l_seekline(lua_State *L) {
 	FileRef* file = checkobject(L, 1);
-	int seekto = luaL_checkint(L,2);
+	unsigned int seekto = luaL_checkint(L,2);
 
 	if ((file->m_type == FR_Plain) &&
 		(file->m_file->is_open())){
-		file->m_file->seekg(seekto);
 
-		if (file->m_file->tellg() == seekto) {
+		//do we already know position?
+		if (file->m_linepos.size() > seekto) {
+			file->m_file->seekg(file->m_linepos[seekto]);
+			lua_pushboolean(L, true);
+			return 1;
+		}
+
+		unsigned int current_line = 0;
+		file->m_file->seekg(0);
+		if (!file->m_linepos.empty()) {
+			current_line = file->m_linepos.size() - 1;
+			file->m_file->seekg(file->m_linepos[current_line]);
+		}
+		else {
+			file->m_linepos.push_back(0);
+		}
+
+		while( ( current_line < seekto ) && (!file->m_file->eof())) {
+			std::string throwaway;
+			getline(*(file->m_file),throwaway);
+			file->m_linepos.push_back(file->m_file->tellg());
+			current_line++;
+		}
+
+		if (current_line == seekto) {
 			lua_pushboolean(L, true);
 			return 1;
 		}
@@ -564,6 +587,9 @@ int FileRef::l_write(lua_State *L) {
 
 	if ((file->m_file->is_open()) &&
 		(data != "")){
+		if (!file->m_file->eof()) {
+			file->m_linepos.clear();
+		}
 		file->m_file->write(data.c_str(),data.size());
 		lua_pushboolean(L, true);
 	}
