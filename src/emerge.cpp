@@ -48,6 +48,8 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
 	this->params   = NULL;
 	
+	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	
 	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
 	qlimit_diskonly = g_settings->getU16("emergequeue_limit_diskonly");
 	qlimit_generate = g_settings->getU16("emergequeue_limit_generate");
@@ -209,7 +211,7 @@ u32 EmergeManager::getBlockSeed(v3s16 p) {
 	return (u32)(params->seed & 0xFFFFFFFF) +
 		p.Z * 38134234 +
 		p.Y * 42123 +
-		p.Y * 23;
+		p.X * 23;
 }
 
 
@@ -331,10 +333,6 @@ private:
 
 #if 1
 
-#define EMERGE_DBG_OUT(x) \
-	{ if (enable_mapgen_debug_info) \
-	infostream << "EmergeThread: " x << std::endl; }
-
 bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b, 
 									BlockMakeData *data, bool allow_gen) {
 	v2s16 p2d(p.X, p.Z);
@@ -356,8 +354,8 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	// start generation inside this same envlock
 	if (allow_gen && (block == NULL || !block->isGenerated())) {
 		EMERGE_DBG_OUT("generating");
-		map->initBlockMake(data, p);
-		return true;
+		*b = block;
+		return map->initBlockMake(data, p);
 	}
 	
 	*b = block;
@@ -377,14 +375,14 @@ void *EmergeThread::Thread() {
 	
 	map    = (ServerMap *)&(m_server->m_env->getMap());
 	emerge = m_server->m_emerge;
-	mapgen = emerge->mapgen[id]; //emerge->getMapgen();
+	mapgen = emerge->mapgen[id];
+	enable_mapgen_debug_info = emerge->mapgen_debug_info;
 	
 	while (getRun())
 	try {
-		while (!popBlockEmerge(&p, &flags)) {
+		if (!popBlockEmerge(&p, &flags)) {
 			qevent.wait();
-			if (!getRun())
-				goto exit_emerge_loop;
+			continue;
 		}
 
 		last_tried_pos = p;
@@ -489,7 +487,6 @@ void *EmergeThread::Thread() {
 	}
 	
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-exit_emerge_loop:
 	log_deregister_thread();
 	return NULL;
 }

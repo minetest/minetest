@@ -2143,14 +2143,10 @@ ServerMap::~ServerMap()
 #endif
 }
 
-void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
+bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 {
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
-	if(enable_mapgen_debug_info)
-		infostream<<"initBlockMake(): "
-				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<") - "
-				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
-				<<std::endl;
+	bool enable_mapgen_debug_info = m_emerge->mapgen_debug_info;
+	EMERGE_DBG_OUT("initBlockMake(): " PP(blockpos) " - " PP(blockpos));
 
 	//s16 chunksize = 3;
 	//v3s16 chunk_offset(-1,-1,-1);
@@ -2170,12 +2166,8 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	// Do nothing if not inside limits (+-1 because of neighbors)
 	if(blockpos_over_limit(blockpos_min - extra_borders) ||
 		blockpos_over_limit(blockpos_max + extra_borders))
-	{
-		data->no_op = true;
-		return;
-	}
+		return false;
 
-	data->no_op = false;
 	data->seed = m_seed;
 	data->blockpos_min = blockpos_min;
 	data->blockpos_max = blockpos_max;
@@ -2263,6 +2255,7 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	}
 
 	// Data is ready now.
+	return true;
 }
 
 MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
@@ -2277,13 +2270,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 
 	v3s16 extra_borders(1,1,1);
 
-	if(data->no_op)
-	{
-		//infostream<<"finishBlockMake(): no-op"<<std::endl;
-		return NULL;
-	}
-
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = m_emerge->mapgen_debug_info;
 
 	/*infostream<<"Resulting vmanip:"<<std::endl;
 	data->vmanip.print(infostream);*/
@@ -2311,9 +2298,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 		data->vmanip->blitBackAll(&changed_blocks);
 	}
 
-	if(enable_mapgen_debug_info)
-		infostream<<"finishBlockMake: changed_blocks.size()="
-				<<changed_blocks.size()<<std::endl;
+	EMERGE_DBG_OUT("finishBlockMake: changed_blocks.size()=" << changed_blocks.size());
 
 	/*
 		Copy transforming liquid information

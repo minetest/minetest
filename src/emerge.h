@@ -7,6 +7,10 @@
 
 #define BLOCK_EMERGE_ALLOWGEN (1<<0)
 
+#define EMERGE_DBG_OUT(x) \
+	{ if (enable_mapgen_debug_info) \
+	infostream << "EmergeThread: " x << std::endl; }
+
 class Mapgen;
 class MapgenParams;
 class MapgenFactory;
@@ -18,7 +22,6 @@ class ManualMapVoxelManipulator;
 #include "server.h"
 
 struct BlockMakeData {
-	bool no_op;
 	ManualMapVoxelManipulator *vmanip;
 	u64 seed;
 	v3s16 blockpos_min;
@@ -28,7 +31,6 @@ struct BlockMakeData {
 	INodeDefManager *nodedef;
 
 	BlockMakeData():
-		no_op(false),
 		vmanip(NULL),
 		seed(0),
 		nodedef(NULL)
@@ -51,6 +53,7 @@ public:
 	
 	//settings
 	MapgenParams *params;
+	bool mapgen_debug_info;
 	u16 qlimit_total;
 	u16 qlimit_diskonly;
 	u16 qlimit_generate;
@@ -104,7 +107,6 @@ public:
 		mapgen(NULL),
 		id(ethreadid)
 	{
-		enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	}
 
 	void *Thread();

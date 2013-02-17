@@ -432,12 +432,6 @@ int MapgenV6::getGroundLevelAtPoint(v2s16 p) {
 
 void MapgenV6::makeChunk(BlockMakeData *data)
 {
-	if(data->no_op)
-	{
-		//dstream<<"makeBlock: no-op"<<std::endl;
-		return;
-	}
-
 	this->generating = true;
 
 	assert(data->vmanip);
@@ -1436,4 +1430,5 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		vmanip.spreadLight(bank, light_sources, ndef);
 	}
 	}
+	this->generating = false;
 }
