@@ -517,6 +517,9 @@ private:
 	sqlite3_stmt *m_database_list;
 };
 
+#define VMANIP_BLOCK_DATA_INEXIST     1
+#define VMANIP_BLOCK_CONTAINS_CIGNORE 2
+
 class MapVoxelManipulator : public VoxelManipulator
 {
 public:
@@ -532,14 +535,14 @@ public:
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
 	void blitBack(core::map<v3s16, MapBlock*> & modified_blocks);
-
-protected:
-	Map *m_map;
+	
 	/*
 		key = blockpos
-		value = block existed when loaded
+		value = flags describing the block
 	*/
-	core::map<v3s16, bool> m_loaded_blocks;
+	core::map<v3s16, u8> m_loaded_blocks;
+protected:
+	Map *m_map;
 };
 
 class ManualMapVoxelManipulator : public MapVoxelManipulator

@@ -47,49 +47,56 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 
 	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
 	this->params   = NULL;
-	this->mapgen   = NULL;
 	
 	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
 	qlimit_diskonly = g_settings->getU16("emergequeue_limit_diskonly");
 	qlimit_generate = g_settings->getU16("emergequeue_limit_generate");
 
 	queuemutex.Init();
-	emergethread = new EmergeThread((Server *)gamedef);
+	int nthreads = g_settings->get("num_emerge_threads").empty() ?
+					porting::getNumberOfProcessors() :
+					g_settings->getU16("num_emerge_threads");
+	if (nthreads < 1)
+		nthreads = 1;
+	
+	for (int i = 0; i != nthreads; i++)
+		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
+		
+	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }
 
 
 EmergeManager::~EmergeManager() {
-	emergethread->setRun(false);
-	emergethread->qevent.signal();
-	emergethread->stop();
+	for (int i = 0; i != emergethread.size(); i++) {
+		emergethread[i]->setRun(false);
+		emergethread[i]->qevent.signal();
+		emergethread[i]->stop();
+		delete emergethread[i];
+		delete mapgen[i];
+	}
 	
-	delete emergethread;
 	delete biomedef;
-	delete mapgen;
 	delete params;
 }
 
 
 void EmergeManager::initMapgens(MapgenParams *mgparams) {
-	if (mapgen)
+	Mapgen *mg;
+	
+	if (mapgen.size())
 		return;
 	
 	this->params = mgparams;
-	this->mapgen = getMapgen(); //only one mapgen for now!
-}
-
-
-Mapgen *EmergeManager::getMapgen() {
-	if (!mapgen) {
-		mapgen = createMapgen(params->mg_name, 0, params, this);
-		if (!mapgen) {
+	for (int i = 0; i != emergethread.size(); i++) {
+		mg = createMapgen(params->mg_name, 0, params);
+		if (!mg) {
 			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
 			delete params;
 			params = createMapgenParams("v6");
-			mapgen = createMapgen("v6", 0, params, this);
+			mg = createMapgen("v6", 0, params);
 		}
+		mapgen.push_back(mg);
 	}
-	return mapgen;
 }
 
 
@@ -98,6 +105,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	BlockEmergeData *bedata;
 	u16 count;
 	u8 flags = 0;
+	int idx = 0;
 	
 	if (allow_generate)
 		flags |= BLOCK_EMERGE_ALLOWGEN;
@@ -128,45 +136,58 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		
 		peer_queue_count[peer_id] = count + 1;
 		
-		emergethread->blockqueue.push(p);
+		int lowestitems = emergethread[0]->blockqueue.size();
+		for (int i = 1; i != emergethread.size(); i++) {
+			int nitems = emergethread[i]->blockqueue.size();
+			if (nitems < lowestitems) {
+				idx = i;
+				lowestitems = nitems;
+			}
+		}
+		
+		emergethread[idx]->blockqueue.push(p);
 	}
-	emergethread->qevent.signal();
+	emergethread[idx]->qevent.signal();
 	
 	return true;
 }
 
 
-bool EmergeManager::popBlockEmerge(v3s16 *pos, u8 *flags) {
+bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 	std::map<v3s16, BlockEmergeData *>::iterator iter;
-	JMutexAutoLock queuelock(queuemutex);
+	JMutexAutoLock queuelock(emerge->queuemutex);
 
-	if (emergethread->blockqueue.empty())
+	if (blockqueue.empty())
 		return false;
-	v3s16 p = emergethread->blockqueue.front();
-	emergethread->blockqueue.pop();
+	v3s16 p = blockqueue.front();
+	blockqueue.pop();
 	
 	*pos = p;
 	
-	iter = blocks_enqueued.find(p);
-	if (iter == blocks_enqueued.end()) 
+	iter = emerge->blocks_enqueued.find(p);
+	if (iter == emerge->blocks_enqueued.end()) 
 		return false; //uh oh, queue and map out of sync!!
 
 	BlockEmergeData *bedata = iter->second;
 	*flags = bedata->flags;
 	
-	peer_queue_count[bedata->peer_requested]--;
+	emerge->peer_queue_count[bedata->peer_requested]--;
 
 	delete bedata;
-	blocks_enqueued.erase(iter);
+	emerge->blocks_enqueued.erase(iter);
 	
 	return true;
 }
 
 
 int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
-	if (!mapgen)
+	if (!mapgen[0]) {
+		errorstream << "EmergeManager: getGroundLevelAtPoint() called"
+		" before mapgen initialized" << std::endl;
 		return 0;
-	return mapgen->getGroundLevelAtPoint(p);
+	}
+	
+	return mapgen[0]->getGroundLevelAtPoint(p);
 }
 
 
@@ -193,8 +214,9 @@ u32 EmergeManager::getBlockSeed(v3s16 p) {
 
 
 Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
-									MapgenParams *mgparams, EmergeManager *emerge) {
-	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+									 MapgenParams *mgparams) {
+	std::map<std::string, MapgenFactory *>::const_iterator iter;
+	iter = mglist.find(mgname);
 	if (iter == mglist.end()) {
 		errorstream << "EmergeManager; mapgen " << mgname <<
 		 " not registered" << std::endl;
@@ -202,12 +224,13 @@ Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
 	}
 	
 	MapgenFactory *mgfactory = iter->second;
-	return mgfactory->createMapgen(mgid, mgparams, emerge);
+	return mgfactory->createMapgen(mgid, mgparams, this);
 }
 
 
 MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
-	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
+	std::map<std::string, MapgenFactory *>::const_iterator iter;
+	iter = mglist.find(mgname);
 	if (iter == mglist.end()) {
 		errorstream << "EmergeManager: mapgen " << mgname <<
 		 " not registered" << std::endl;
@@ -227,7 +250,7 @@ MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
-	mgparams->flags       = settings->getS32("mg_flags");
+	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
 
 	if (!mgparams->readParams(settings)) {
 		delete mgparams;
@@ -354,11 +377,11 @@ void *EmergeThread::Thread() {
 	
 	map    = (ServerMap *)&(m_server->m_env->getMap());
 	emerge = m_server->m_emerge;
-	mapgen = emerge->getMapgen();
+	mapgen = emerge->mapgen[id]; //emerge->getMapgen();
 	
 	while (getRun())
 	try {
-		while (!emerge->popBlockEmerge(&p, &flags)) {
+		while (!popBlockEmerge(&p, &flags)) {
 			qevent.wait();
 			if (!getRun())
 				goto exit_emerge_loop;

@@ -187,6 +187,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("emergequeue_limit_total", "256");
 	settings->setDefault("emergequeue_limit_diskonly", "5");
 	settings->setDefault("emergequeue_limit_generate", "1");
+	settings->setDefault("num_emerge_threads", "");
 	
 	// physics stuff
 	settings->setDefault("movement_acceleration_default", "3");

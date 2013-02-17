@@ -46,8 +46,8 @@ class EmergeManager {
 public:
 	std::map<std::string, MapgenFactory *> mglist;
 	
-	Mapgen *mapgen;
-	EmergeThread *emergethread;
+	std::vector<Mapgen *> mapgen;
+	std::vector<EmergeThread *> emergethread;
 	
 	//settings
 	MapgenParams *params;
@@ -68,11 +68,9 @@ public:
 
 	void initMapgens(MapgenParams *mgparams);
 	Mapgen *createMapgen(std::string mgname, int mgid,
-						MapgenParams *mgparams, EmergeManager *emerge);
+						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
-	Mapgen *getMapgen();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
-	bool popBlockEmerge(v3s16 *pos, u8 *flags);
 	
 	bool registerMapgen(std::string name, MapgenFactory *mgfactory);
 	MapgenParams *getParamsFromSettings(Settings *settings);
@@ -92,17 +90,19 @@ class EmergeThread : public SimpleThread
 	EmergeManager *emerge;
 	Mapgen *mapgen;
 	bool enable_mapgen_debug_info;
+	int id;
 	
 public:
 	Event qevent;
 	std::queue<v3s16> blockqueue;
 	
-	EmergeThread(Server *server):
+	EmergeThread(Server *server, int ethreadid):
 		SimpleThread(),
 		m_server(server),
 		map(NULL),
 		emerge(NULL),
-		mapgen(NULL)
+		mapgen(NULL),
+		id(ethreadid)
 	{
 		enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	}
@@ -118,6 +118,7 @@ public:
 		}
 	}
 
+	bool popBlockEmerge(v3s16 *pos, u8 *flags);
 	bool getBlockOrStartGen(v3s16 p, MapBlock **b, 
 							BlockMakeData *data, bool allow_generate);
 };

@@ -132,6 +132,29 @@ void signal_handler_init(void)
 #endif
 
 /*
+	Multithreading support
+*/
+int getNumberOfProcessors() {
+	#if defined(_SC_NPROCESSORS_ONLN)
+		return sysconf(_SC_NPROCESSORS_ONLN);
+	#elif defined(__FreeBSD__) || defined(__APPLE__)
+		unsigned int len, count;
+		len = sizeof(count);
+		return sysctlbyname("hw.ncpu", &count, &len, NULL, 0);
+	#elif defined(_GNU_SOURCE)
+		return get_nprocs();
+	#elif defined(_WIN32)
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		return sysinfo.dwNumberOfProcessors;
+	#elif defined(PTW32_VERSION) || defined(__hpux)
+		return pthread_num_processors_np();
+	#else
+		return 1;
+	#endif
+}
+
+/*
 	Path mangler
 */
 

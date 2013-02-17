@@ -104,6 +104,11 @@ std::string getDataPath(const char *subpath);
 void initializePaths();
 
 /*
+	Get number of online processors in the system.
+*/
+int getNumberOfProcessors();
+
+/*
 	Resolution is 10-20ms.
 	Remember to check for overflows.
 	Overflow can occur at any value higher than 10000000.

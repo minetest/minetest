@@ -2009,7 +2009,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	m_mgparams = m_emerge->getParamsFromSettings(g_settings);
 	if (!m_mgparams)
 		m_mgparams = new MapgenV6Params();
-		
+
 	m_seed = m_mgparams->seed;
 
 	if (g_settings->get("fixed_map_seed").empty())
@@ -2245,6 +2245,21 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	{
 		//TimeTaker timer("initBlockMake() initialEmerge");
 		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
+	}
+	
+	// Ensure none of the blocks to be generated were marked as containing CONTENT_IGNORE
+	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
+		for (s16 y = blockpos_min.Y; y <= blockpos_max.Y; y++) {
+			for (s16 x = blockpos_min.X; x <= blockpos_max.X; x++) {
+				core::map<v3s16, u8>::Node *n;
+				n = data->vmanip->m_loaded_blocks.find(v3s16(x, y, z));
+				if (n == NULL)
+					continue;
+				u8 flags = n->getValue();
+				flags &= ~VMANIP_BLOCK_CONTAINS_CIGNORE;
+				n->setValue(flags);
+			}
+		}
 	}
 
 	// Data is ready now.
@@ -3672,8 +3687,10 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 	for(s32 y=p_min.Y; y<=p_max.Y; y++)
 	for(s32 x=p_min.X; x<=p_max.X; x++)
 	{
+		u8 flags = 0;
+		MapBlock *block;
 		v3s16 p(x,y,z);
-		core::map<v3s16, bool>::Node *n;
+		core::map<v3s16, u8>::Node *n;
 		n = m_loaded_blocks.find(p);
 		if(n != NULL)
 			continue;
@@ -3689,7 +3706,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 			a.print(infostream);
 			infostream<<std::endl;*/
 
-			MapBlock *block = m_map->getBlockNoCreate(p);
+			block = m_map->getBlockNoCreate(p);
 			if(block->isDummy())
 				block_data_inexistent = true;
 			else
@@ -3702,6 +3719,8 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 
 		if(block_data_inexistent)
 		{
+			flags |= VMANIP_BLOCK_DATA_INEXIST;
+			
 			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
 			// Fill with VOXELFLAG_INEXISTENT
 			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
@@ -3711,8 +3730,13 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
 			}
 		}
+		else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
+		{
+			// Mark that block was loaded as blank
+			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
+		}
 
-		m_loaded_blocks.insert(p, !block_data_inexistent);
+		m_loaded_blocks.insert(p, flags);
 	}
 
 	//infostream<<"emerge done"<<std::endl;
@@ -3832,8 +3856,10 @@ void ManualMapVoxelManipulator::initialEmerge(
 	for(s32 y=p_min.Y; y<=p_max.Y; y++)
 	for(s32 x=p_min.X; x<=p_max.X; x++)
 	{
+		u8 flags = 0;
+		MapBlock *block;
 		v3s16 p(x,y,z);
-		core::map<v3s16, bool>::Node *n;
+		core::map<v3s16, u8>::Node *n;
 		n = m_loaded_blocks.find(p);
 		if(n != NULL)
 			continue;
@@ -3843,7 +3869,7 @@ void ManualMapVoxelManipulator::initialEmerge(
 		{
 			TimeTaker timer1("emerge load", &emerge_load_time);
 
-			MapBlock *block = m_map->getBlockNoCreate(p);
+			block = m_map->getBlockNoCreate(p);
 			if(block->isDummy())
 				block_data_inexistent = true;
 			else
@@ -3856,6 +3882,8 @@ void ManualMapVoxelManipulator::initialEmerge(
 
 		if(block_data_inexistent)
 		{
+			flags |= VMANIP_BLOCK_DATA_INEXIST;
+			
 			/*
 				Mark area inexistent
 			*/
@@ -3868,8 +3896,13 @@ void ManualMapVoxelManipulator::initialEmerge(
 				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
 			}
 		}
+		else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
+		{
+			// Mark that block was loaded as blank
+			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
+		}
 
-		m_loaded_blocks.insert(p, !block_data_inexistent);
+		m_loaded_blocks.insert(p, flags);
 	}
 }
 
@@ -3882,12 +3915,14 @@ void ManualMapVoxelManipulator::blitBackAll(
 	/*
 		Copy data of all blocks
 	*/
-	for(core::map<v3s16, bool>::Iterator
+	for(core::map<v3s16, u8>::Iterator
 			i = m_loaded_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		bool existed = i.getNode()->getValue();
+		u8 flags = i.getNode()->getValue();
+		
+		bool existed = !(flags & VMANIP_BLOCK_DATA_INEXIST);
 		if(existed == false)
 		{
 			// The Great Bug was found using this
@@ -3896,6 +3931,7 @@ void ManualMapVoxelManipulator::blitBackAll(
 					<<std::endl;*/
 			continue;
 		}
+		
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		if(block == NULL)
 		{
@@ -3906,10 +3942,13 @@ void ManualMapVoxelManipulator::blitBackAll(
 			continue;
 		}
 
-		block->copyFrom(*this);
-
-		if(modified_blocks)
-			modified_blocks->insert(p, block);
+		bool no_content_ignore = !(flags & VMANIP_BLOCK_CONTAINS_CIGNORE);
+		if (no_content_ignore)
+		{
+			block->copyFrom(*this);
+			if(modified_blocks)
+				modified_blocks->insert(p, block);
+		}
 	}
 }
 
