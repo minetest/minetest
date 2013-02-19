@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-07 17:38+0200\n"
-"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
+"PO-Revision-Date: 2013-02-19 13:37+0200\n"
+"Last-Translator: Tomona Nanase <alpha.sohoh@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -126,19 +126,19 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr ""
+msgstr "前進"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "後退"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "左へ進む"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "右へ進む"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
-msgstr ""
+msgstr "ジャンプ"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
@@ -154,23 +154,23 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "落とす"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr ""
+msgstr "インベントリ"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr ""
+msgstr "チャット"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "コマンド"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "コンソール"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
@@ -202,11 +202,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:245
 msgid "Singleplayer"
-msgstr ""
+msgstr "シングルプレイヤー"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
-msgstr ""
+msgstr "マルチプレイヤー"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
@@ -214,11 +214,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #: src/guiMainMenu.cpp:249
 msgid "Credits"
-msgstr ""
+msgstr "クレジット"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
