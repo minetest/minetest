@@ -243,9 +243,8 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 
 	if itemstack:get_definition().type == "node" then
 		return minetest.item_place_node(itemstack, placer, pointed_thing)
-	elseif itemstack:get_definition().type ~= "none" then
-		return minetest.item_place_object(itemstack, placer, pointed_thing)
 	end
+	return itemstack
 end
 
 function minetest.item_drop(itemstack, dropper, pos)
