@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-19 13:37+0200\n"
-"Last-Translator: Tomona Nanase <alpha.sohoh@gmail.com>\n"
+"PO-Revision-Date: 2013-02-19 21:55+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -44,11 +44,11 @@ msgstr "全部を無効する"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr ""
+msgstr "結合度は:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr ""
+msgstr "必要される:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -61,7 +61,7 @@ msgstr "保存"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "設定が保存しました."
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
@@ -97,12 +97,12 @@ msgstr "生まれて帰る"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "左クリックは全部のアイテムを動かす,右クリックは一つのアイテムを動かす"
 
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr ""
+msgstr "続く"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
