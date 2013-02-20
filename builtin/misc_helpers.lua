@@ -20,6 +20,11 @@ function basic_dump2(o)
 end
 
 function dump2(o, name, dumped)
+
+	--disable this fct if secure mod api is enabled
+	if minetest.setting_getbool("security_safe_mod_api") then
+		return nil
+	end
 	name = name or "_"
 	dumped = dumped or {}
 	io.write(name, " = ")

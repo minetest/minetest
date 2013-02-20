@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 
 #include <iostream>
+#include <fstream>
 #include <list>
 extern "C" {
 #include <lua.h>
@@ -49,6 +50,7 @@ extern "C" {
 #include "util/pointedthing.h"
 #include "rollback.h"
 #include "treegen.h"
+#include "lua_security.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -134,7 +136,7 @@ public:
 	Getters for stuff in main tables
 */
 
-static Server* get_server(lua_State *L)
+Server* get_server(lua_State *L)
 {
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
@@ -180,7 +182,7 @@ static void luaentity_get(lua_State *L, u16 id)
 	Table field getters
 */
 
-static bool getstringfield(lua_State *L, int table,
+bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
 	lua_getfield(L, table, fieldname);
@@ -4760,6 +4762,11 @@ static int l_setting_set(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
 	const char *value = luaL_checkstring(L, 2);
+
+	if ((!g_settings->getBool("security_safe_mod_api")) &&
+		(std::string(name).compare(0,9,"security_") == 0))	{
+		return 0;
+	}
 	g_settings->set(name, value);
 	return 0;
 }
@@ -5246,6 +5253,53 @@ static int l_rollback_revert_actions_by(lua_State *L)
 	return 2;
 }
 
+// save_auth_file(serialized_data)
+static int l_save_auth_file(lua_State *L)
+{
+	std::string serialized_authfile = luaL_checkstring(L, 1);
+	std::string authfile_path = get_server(L)->getWorldPath();
+	authfile_path += "/auth.txt";
+
+	std::ofstream authfile(authfile_path.c_str());
+
+	if (authfile.is_open()) {
+		authfile << serialized_authfile;
+		authfile.close();
+		return true;
+	}
+
+	return false;
+}
+
+// read_authfile()
+static int l_load_auth_file(lua_State *L)
+{
+	std::string authfile_path = get_server(L)->getWorldPath();
+	authfile_path += "/auth.txt";
+
+	std::ifstream authfile(authfile_path.c_str());
+
+	if (authfile.is_open()) {
+		std::string retval = "";
+		std::string toappend = "";
+
+		while ( authfile.good() ) {
+			getline (authfile,toappend);
+			retval += toappend;
+			retval += "\n";
+		}
+		authfile.close();
+		lua_pushstring(L,retval.c_str());
+		return 1;
+	}
+	else {
+		errorstream << "Authfile open failed" << std::endl;
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -5282,6 +5336,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_craft_recipe", l_get_craft_recipe},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+	{"save_auth_file", l_save_auth_file },
+	{"load_auth_file", l_load_auth_file },
 	{NULL, NULL}
 };
 
@@ -5323,6 +5379,8 @@ void scriptapi_export(lua_State *L, Server *server)
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
 	LuaPerlinNoise::Register(L);
+
+	InitSecurity(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,

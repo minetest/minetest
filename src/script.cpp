@@ -31,6 +31,9 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "settings.h"
+#include "main.h" //for g_settings
+
 LuaError::LuaError(lua_State *L, const std::string &s)
 {
 	m_s = "LuaError: ";
@@ -111,10 +114,40 @@ bool script_load(lua_State *L, const char *path)
 	return true;
 }
 
+static const luaL_Reg safe_lualibs[] = {
+	{"", luaopen_base},
+	{LUA_TABLIBNAME, luaopen_table},
+	//unsafe functions will be removed later
+	{LUA_IOLIBNAME, luaopen_io},
+	//unsafe functions will be removed later
+	{LUA_OSLIBNAME, luaopen_os},
+	//disabled for security reasons (no safe functions at all)
+	//{LUA_LOADLIBNAME, luaopen_package},
+	{LUA_STRLIBNAME, luaopen_string},
+	{LUA_MATHLIBNAME, luaopen_math},
+	//unsafe functions will be removed later
+	{LUA_DBLIBNAME, luaopen_debug},
+	{NULL, NULL}
+};
+
+LUALIB_API void safe_luaL_openlibs (lua_State *L) {
+	const luaL_Reg *lib = safe_lualibs;
+	for (; lib->func; lib++) {
+		lua_pushcfunction(L, lib->func);
+		lua_pushstring(L, lib->name);
+		lua_call(L, 1, 0);
+	}
+}
+
 lua_State* script_init()
 {
 	lua_State *L = luaL_newstate();
-	luaL_openlibs(L);
+	if (g_settings->getBool("security_safe_mod_api")) {
+			luaL_openlibs(L);
+		}
+		else {
+			safe_luaL_openlibs(L);
+		}
 	return L;
 }
 

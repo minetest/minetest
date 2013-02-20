@@ -207,6 +207,19 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 	}
 }
 
+std::string AbsolutePath(std::string path) {
+	char* retval;
+	char resoved_path[_MAX_PATH];
+	retval = _fullpath(resolved_path,path.c_str(),_MAX_PATH)
+	if (retval != 0) {
+		std::string return_val = resolved_path;
+		return return_val;
+	}
+	else {
+		return "";
+	}
+}
+
 #else // POSIX
 
 #include <sys/types.h>
@@ -215,6 +228,13 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdlib.h>
+
+#ifndef linux
+#include <limits.h>
+#else
+#include <linux/limits.h>
+#endif
 
 std::vector<DirListNode> GetDirListing(std::string pathstring)
 {
@@ -429,6 +449,19 @@ bool CreateAllDirs(std::string path)
 		if(!CreateDir(tocreate[i]))
 			return false;
 	return true;
+}
+
+std::string AbsolutePath(std::string path) {
+	char* retval;
+	char resolved_path[PATH_MAX];
+	retval = realpath(path.c_str(),resolved_path);
+	if (retval != 0) {
+		std::string return_val = resolved_path;
+		return return_val;
+	}
+	else {
+		return "";
+	}
 }
 
 } // namespace fs

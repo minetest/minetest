@@ -69,6 +69,10 @@ bool RecursiveDeleteContent(std::string path);
 // Create all directories on the given path that don't already exist.
 bool CreateAllDirs(std::string path);
 
+
+//get absolute path from a relative one
+std::string AbsolutePath(std::string path);
+
 }//fs
 
 #endif

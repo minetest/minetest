@@ -235,3 +235,4 @@
 #congestion_control_max_rate = 400
 #congestion_control_min_rate = 10
 #remote_media =
+#security_safe_mod_api = false
