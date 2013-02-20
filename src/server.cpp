@@ -998,17 +998,20 @@ Server::Server(
 
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
+	std::list<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if(!modconf.isConsistent())	
 	{
-		errorstream << "The following mods have unsatisfied dependencies: ";
-		std::list<ModSpec> modlist = modconf.getUnsatisfiedMods();
-		for(std::list<ModSpec>::iterator it = modlist.begin();
-			it != modlist.end(); ++it)
+		for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+			it != unsatisfied_mods.end(); ++it)
 		{
-			errorstream << (*it).name << " ";
+			ModSpec mod = *it;
+			errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
+			for(std::set<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
+				dep_it != mod.unsatisfied_depends.end(); ++dep_it)
+				errorstream << " \"" << *dep_it << "\"";
+			errorstream << std::endl;
 		}
-		errorstream << std::endl;
 	}
 
 	Settings worldmt_settings;
@@ -1033,12 +1036,15 @@ Server::Server(
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
 		it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
+	for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+		it != unsatisfied_mods.end(); ++it)
+		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
 	{		
-		errorstream << "The following mods could not be found: ";
+		errorstream << "The following mods could not be found:";
 		for(std::set<std::string>::iterator it = load_mod_names.begin();
 			it != load_mod_names.end(); ++it)
-			errorstream << (*it) << " ";
+			errorstream << " \"" << (*it) << "\"";
 		errorstream << std::endl;
 	}
 
