@@ -1046,7 +1046,9 @@ methods:
 - get_node_or_nil(pos)
   ^ Returns nil for unloaded area
 - get_node_light(pos, timeofday) -> 0...15 or nil
+- get_node_propagated_light(pos, timeofday) -> 0...15 or nil
   ^ timeofday: nil = current time, 0 = night, 0.5 = day
+    'propagated' variant ignores light emitted by the node at pos
 
 - place_node(pos, node)
   ^ Place node with the same effects that a player would cause
