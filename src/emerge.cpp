@@ -49,17 +49,28 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	this->params   = NULL;
 	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
-	
-	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
-	qlimit_diskonly = g_settings->getU16("emergequeue_limit_diskonly");
-	qlimit_generate = g_settings->getU16("emergequeue_limit_generate");
 
 	queuemutex.Init();
-	int nthreads = g_settings->get("num_emerge_threads").empty() ?
-					porting::getNumberOfProcessors() :
-					g_settings->getU16("num_emerge_threads");
+	
+	int nthreads;
+	if (g_settings->get("num_emerge_threads").empty()) {
+		int nprocs = porting::getNumberOfProcessors();
+		// leave a proc for the main thread and one for some other misc threads
+		if (nprocs > 2)
+			nthreads = nprocs - 2;
+	} else {
+		nthreads = g_settings->getU16("num_emerge_threads");
+	}
 	if (nthreads < 1)
 		nthreads = 1;
+	
+	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
+	qlimit_diskonly = g_settings->get("emergequeue_limit_diskonly").empty() ?
+		nthreads * 5 + 1 :
+		g_settings->getU16("emergequeue_limit_diskonly");
+	qlimit_generate = g_settings->get("emergequeue_limit_generate").empty() ?
+		nthreads + 1 :
+		g_settings->getU16("emergequeue_limit_generate");
 	
 	for (int i = 0; i != nthreads; i++)
 		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
@@ -138,6 +149,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		
 		peer_queue_count[peer_id] = count + 1;
 		
+		// insert into the EmergeThread queue with the least items
 		int lowestitems = emergethread[0]->blockqueue.size();
 		for (int i = 1; i != emergethread.size(); i++) {
 			int nitems = emergethread[i]->blockqueue.size();
@@ -183,7 +195,7 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 
 
 int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
-	if (!mapgen[0]) {
+	if (mapgen.size() == 0 || !mapgen[0]) {
 		errorstream << "EmergeManager: getGroundLevelAtPoint() called"
 		" before mapgen initialized" << std::endl;
 		return 0;
@@ -365,7 +377,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 
 void *EmergeThread::Thread() {
 	ThreadStarted();
-	log_register_thread("EmergeThread");
+	log_register_thread("EmergeThread" + id);
 	DSTACK(__FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
