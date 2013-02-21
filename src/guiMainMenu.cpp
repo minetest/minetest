@@ -108,6 +108,7 @@ enum
 	GUI_ID_ENABLE_PARTICLES_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
+	GUI_ID_PUBLIC_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
 	GUI_ID_CHANGE_KEYS_BUTTON,
 	GUI_ID_DELETE_WORLD_BUTTON,
@@ -562,6 +563,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->enable_damage, rect, this, GUI_ID_DAMAGE_CB,
 				wgettext("Enable Damage"));
 		}
+		#if USE_CURL
+		{
+			core::rect<s32> rect(0, 0, 250, 30);
+			rect += m_topleft_server + v2s32(30+20+250+20, 60);
+			Environment->addCheckBox(m_data->enable_public, rect, this, GUI_ID_PUBLIC_CB,
+				wgettext("Public"));
+		}
+		#endif
 		// Delete world button
 		{
 			core::rect<s32> rect(0, 0, 130, 30);
@@ -842,6 +851,11 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 			dst->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_PUBLIC_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_public = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
@@ -912,8 +926,8 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 	{
 		ServerListSpec server =
 		getServerListSpec(wide_to_narrow(dst->address), wide_to_narrow(dst->port));
-		dst->servername = server.name;
-		dst->serverdescription = server.description;
+		dst->servername = server["name"].asString();
+		dst->serverdescription = server["description"].asString();
 	}
 }
 
@@ -1174,13 +1188,31 @@ void GUIMainMenu::updateGuiServerList()
 		i != m_data->servers.end(); i++)
 	{
 		std::string text;
-		if (i->name != "" && i->description != "")
-			text = i->name + " (" + i->description + ")";
-		else if (i->name !="")
-			text = i->name;
-		else
-			text = i->address + ":" + i->port;
 
+		if ((*i)["clients"].asString().size())
+			text += (*i)["clients"].asString();
+		if ((*i)["clients_max"].asString().size())
+			text += "/" + (*i)["clients_max"].asString();
+		text += " ";
+		if ((*i)["version"].asString().size())
+			text += (*i)["version"].asString() + " ";
+		if ((*i)["password"].asString().size())
+			text += "*";
+		if ((*i)["creative"].asString().size())
+			text += "C";
+		if ((*i)["damage"].asString().size())
+			text += "D";
+		if ((*i)["pvp"].asString().size())
+			text += "P";
+		text += " ";
+
+		if ((*i)["name"] != "" && (*i)["description"] != "")
+			text += (*i)["name"].asString() + " (" +  (*i)["description"].asString() + ")";
+		else if ((*i)["name"] !="")
+			text += (*i)["name"].asString();
+		else
+			text += (*i)["address"].asString() + ":" + (*i)["port"].asString();
+		
 		serverlist->addItem(narrow_to_wide(text).c_str());
 	}
 }
@@ -1191,26 +1223,26 @@ void GUIMainMenu::serverListOnSelected()
 	{
 		gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
 		u16 id = serverlist->getSelected();
-		if (id < 0) return;
+		//if (id < 0) return; // u16>0!
 		((gui::IGUIEditBox*)getElementFromId(GUI_ID_ADDRESS_INPUT))
-		->setText(narrow_to_wide(m_data->servers[id].address).c_str());
+		->setText(narrow_to_wide(m_data->servers[id]["address"].asString()).c_str());
 		((gui::IGUIEditBox*)getElementFromId(GUI_ID_PORT_INPUT))
-		->setText(narrow_to_wide(m_data->servers[id].port).c_str());
+		->setText(narrow_to_wide(m_data->servers[id]["port"].asString()).c_str());
 	}
 }
 
 ServerListSpec GUIMainMenu::getServerListSpec(std::string address, std::string port)
 {
 	ServerListSpec server;
-	server.address = address;
-	server.port = port;
+	server["address"] = address;
+	server["port"] = port;
 	for(std::vector<ServerListSpec>::iterator i = m_data->servers.begin();
 		i != m_data->servers.end(); i++)
 	{
-		if (i->address == address && i->port == port)
+		if ((*i)["address"] == address && (*i)["port"] == port)
 		{
-			server.description = i->description;
-			server.name = i->name;
+			server["description"] = (*i)["description"];
+			server["name"] = (*i)["name"];
 			break;
 		}
 	}

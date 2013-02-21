@@ -159,7 +159,7 @@
 #media_fetch_threads = 8
 
 # Url to the server list displayed in the Multiplayer Tab
-#serverlist_url = servers.minetest.ru/server.list
+#serverlist_url = servers.minetest.net
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
@@ -172,6 +172,16 @@
 # Server stuff
 #
 
+# Name of server
+#server_name = Minetest server
+# Description of server
+#server_description = mine here
+# Domain name of server
+#server_address = game.minetest.net
+# Homepage of server
+#server_url = http://minetest.net
+# Automaticaly report to masterserver
+#server_announce = 0
 # Default game (default when creating a new world)
 #default_game = minetest
 # World directory (everything in the world is stored here)

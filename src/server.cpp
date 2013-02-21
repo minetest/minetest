@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
 #include "hex.h"
+#include "serverlist.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
 #include "util/mathconstants.h"
@@ -961,9 +962,11 @@ Server::Server(
 {
 	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
+	m_masterserver_timer = 0.0;
 	m_objectdata_timer = 0.0;
 	m_emergethread_trigger_timer = 0.0;
 	m_savemap_timer = 0.0;
+	m_clients_number = 0;
 
 	m_env_mutex.Init();
 	m_con_mutex.Init();
@@ -1505,7 +1508,7 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 
 			JMutexAutoLock lock2(m_con_mutex);
-
+			m_clients_number = 0;
 			if(m_clients.size() != 0)
 				infostream<<"Players:"<<std::endl;
 			for(core::map<u16, RemoteClient*>::Iterator
@@ -1519,9 +1522,24 @@ void Server::AsyncRunStep()
 					continue;
 				infostream<<"* "<<player->getName()<<"\t";
 				client->PrintInfo(infostream);
+				++m_clients_number;
 			}
 		}
 	}
+
+
+#if USE_CURL
+	// send masterserver announce
+	{
+		float &counter = m_masterserver_timer;
+		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
+		{
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number);
+			counter = 0.01;
+		}
+		counter += dtime;
+	}
+#endif
 
 	//if(g_settings->getBool("enable_experimental"))
 	{
@@ -5186,6 +5204,10 @@ void dedicated_server_loop(Server &server, bool &kill)
 		if(server.getShutdownRequested() || kill)
 		{
 			infostream<<"Dedicated server quitting"<<std::endl;
+#if USE_CURL
+			if(g_settings->getBool("server_announce") == true)
+				ServerList::sendAnnounce("delete");
+#endif
 			break;
 		}
 
