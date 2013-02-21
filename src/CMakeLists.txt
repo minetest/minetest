@@ -5,6 +5,7 @@ cmake_minimum_required( VERSION 2.6 )
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
 mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
+mark_as_advanced(JSON_INCLUDE_DIR JSON_LIBRARY)
 
 option(ENABLE_CURL "Enable cURL support for fetching media" 1)
 
@@ -170,6 +171,7 @@ endif()
 
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
+find_package(Json REQUIRED)
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
@@ -242,6 +244,7 @@ set(common_SRCS
 	biome.cpp
 	clientserver.cpp
 	staticobject.cpp
+	serverlist.cpp
 	util/serialize.cpp
 	util/directiontables.cpp
 	util/numeric.cpp
@@ -303,7 +306,6 @@ set(minetest_SRCS
 	filecache.cpp
 	tile.cpp
 	shader.cpp
-	serverlist.cpp
 	game.cpp
 	main.cpp
 )
@@ -332,6 +334,7 @@ include_directories(
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
+	${JSON_INCLUDE_DIR}
 )
 
 if(USE_FREETYPE)
@@ -340,6 +343,12 @@ if(USE_FREETYPE)
 		${CGUITTFONT_INCLUDE_DIR}
 	)
 endif(USE_FREETYPE)
+
+if(USE_CURL)
+	include_directories(
+		${CURL_INCLUDE_DIR}
+	)
+endif(USE_CURL)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
@@ -359,17 +368,14 @@ if(BUILD_CLIENT)
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
+		${JSON_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}
 			${CURL_LIBRARY}
-		)
-		include_directories(
-			${CURL_INCLUDE_DIR}
 		)
 	endif(USE_CURL)
 	if(USE_FREETYPE)
@@ -388,11 +394,19 @@ if(BUILD_SERVER)
 		${ZLIB_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
+		${JSON_LIBRARY}
 		${GETTEXT_LIBRARY}
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if(USE_CURL)
+		target_link_libraries(
+			${PROJECT_NAME}server
+			${CURL_LIBRARY}
+		)
+	endif(USE_CURL)
 endif(BUILD_SERVER)
+
 
 #
 # Set some optimizations and tweaks
@@ -568,5 +582,10 @@ if (LUA_FOUND)
 else (LUA_FOUND)
 	add_subdirectory(lua)
 endif (LUA_FOUND)
+
+if (JSON_FOUND)
+else (JSON_FOUND)
+	add_subdirectory(json)
+endif (JSON_FOUND)
 
 #end

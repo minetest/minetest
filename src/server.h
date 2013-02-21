@@ -720,6 +720,7 @@ private:
 	// Some timers
 	float m_liquid_transform_timer;
 	float m_print_info_timer;
+	float m_masterserver_timer;
 	float m_objectdata_timer;
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
@@ -737,6 +738,7 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
+	u16 m_clients_number; //for announcing masterserver
 
 	// Bann checking
 	BanManager m_banmanager;

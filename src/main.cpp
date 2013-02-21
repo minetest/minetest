@@ -1095,6 +1095,7 @@ int main(int argc, char *argv[])
 #else
 	bool run_dedicated_server = cmd_args.getFlag("server");
 #endif
+	g_settings->set("server_dedicated", run_dedicated_server ? "true" : "false");
 	if(run_dedicated_server)
 	{
 		DSTACK("Dedicated server branch");
@@ -1593,6 +1594,7 @@ int main(int argc, char *argv[])
 
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("server_announce", itos(menudata.enable_public));
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
@@ -1619,10 +1621,10 @@ int main(int argc, char *argv[])
 				else if (address != "")
 				{
 					ServerListSpec server;
-					server.name = menudata.servername;
-					server.address = wide_to_narrow(menudata.address);
-					server.port = wide_to_narrow(menudata.port);
-					server.description = menudata.serverdescription;
+					server["name"] = menudata.servername;
+					server["address"] = wide_to_narrow(menudata.address);
+					server["port"] = wide_to_narrow(menudata.port);
+					server["description"] = menudata.serverdescription;
 					ServerList::insert(server);
 				}
 				

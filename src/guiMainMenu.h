@@ -55,6 +55,7 @@ struct MainMenuData
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
+	bool enable_public;
 	int selected_world;
 	bool simple_singleplayer_mode;
 	// Actions
@@ -77,6 +78,7 @@ struct MainMenuData
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
+		enable_public(false),
 		selected_world(0),
 		simple_singleplayer_mode(false),
 		// Actions

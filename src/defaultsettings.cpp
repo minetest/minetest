@@ -130,8 +130,13 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("media_fetch_threads", "8");
 
-	settings->setDefault("serverlist_url", "servers.minetest.ru/server.list");
+	settings->setDefault("serverlist_url", "servers.minetest.net");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
+	settings->setDefault("server_announce", "false");
+	settings->setDefault("server_url", "");
+	settings->setDefault("server_address", "");
+	settings->setDefault("server_name", "");
+	settings->setDefault("server_description", "");
 
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
 	settings->setDefault("font_size", "13");

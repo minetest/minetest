@@ -19,17 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include "config.h"
+#include "json/json.h"
 
 #ifndef SERVERLIST_HEADER
 #define SERVERLIST_HEADER
 
-struct ServerListSpec
-{
-	std::string name;
-	std::string address;
-	std::string port;
-	std::string description;
-};
+typedef Json::Value ServerListSpec;
 
 namespace ServerList
 {
@@ -41,6 +36,11 @@ namespace ServerList
 	bool insert(ServerListSpec server);
 	std::vector<ServerListSpec> deSerialize(std::string liststring);
 	std::string serialize(std::vector<ServerListSpec>);
+	std::vector<ServerListSpec> deSerializeJson(std::string liststring);
+	std::string serializeJson(std::vector<ServerListSpec>);
+	#if USE_CURL
+	void sendAnnounce(std::string action = "", u16 clients = 0);
+	#endif
 } //ServerList namespace
 
 #endif
