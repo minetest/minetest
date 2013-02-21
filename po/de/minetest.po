@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-15 21:36+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"PO-Revision-Date: 2013-02-21 17:34+0200\n"
+"Last-Translator: Sfan5 . <sfan5@live.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -716,7 +716,7 @@ msgstr "Zoom"
 
 #: src/main.cpp:1384
 msgid "Main Menu"
-msgstr "Hauptemnü"
+msgstr "Hauptmenü"
 
 #: src/main.cpp:1633
 msgid "Failed to initialize world"
