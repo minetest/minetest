@@ -72,7 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define THREAD_PRIORITY_BELOW_NORMAL 1
 	#define THREAD_PRIORITY_NORMAL       2
 	#define THREAD_PRIORITY_ABOVE_NORMAL 3
-	#define THREAD_PRIORITY_HIGHEST	     4
+	#define THREAD_PRIORITY_HIGHEST      4
 #endif
 
 #ifdef _MSC_VER

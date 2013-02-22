@@ -2240,7 +2240,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	}
 	
 	// Ensure none of the blocks to be generated were marked as containing CONTENT_IGNORE
-	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
+/*	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
 		for (s16 y = blockpos_min.Y; y <= blockpos_max.Y; y++) {
 			for (s16 x = blockpos_min.X; x <= blockpos_max.X; x++) {
 				core::map<v3s16, u8>::Node *n;
@@ -2252,7 +2252,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 				n->setValue(flags);
 			}
 		}
-	}
+	}*/
 
 	// Data is ready now.
 	return true;
@@ -3715,11 +3715,11 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
 			}
 		}
-		else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
+		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
 		{
 			// Mark that block was loaded as blank
 			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
-		}
+		}*/
 
 		m_loaded_blocks.insert(p, flags);
 	}
@@ -3881,11 +3881,11 @@ void ManualMapVoxelManipulator::initialEmerge(
 				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
 			}
 		}
-		else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
+		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
 		{
 			// Mark that block was loaded as blank
 			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
-		}
+		}*/
 
 		m_loaded_blocks.insert(p, flags);
 	}
@@ -3927,13 +3927,10 @@ void ManualMapVoxelManipulator::blitBackAll(
 			continue;
 		}
 
-		bool no_content_ignore = !(flags & VMANIP_BLOCK_CONTAINS_CIGNORE);
-		if (no_content_ignore)
-		{
-			block->copyFrom(*this);
-			if(modified_blocks)
-				modified_blocks->insert(p, block);
-		}
+		block->copyFrom(*this);
+		
+		if(modified_blocks)
+			modified_blocks->insert(p, block);
 	}
 }
 

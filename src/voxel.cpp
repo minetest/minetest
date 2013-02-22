@@ -244,7 +244,13 @@ void VoxelManipulator::copyTo(MapNode *dst, VoxelArea dst_area,
 	{
 		s32 i_dst = dst_area.index(dst_pos.X, dst_pos.Y+y, dst_pos.Z+z);
 		s32 i_local = m_area.index(from_pos.X, from_pos.Y+y, from_pos.Z+z);
-		memcpy(&dst[i_dst], &m_data[i_local], size.X*sizeof(MapNode));
+		for (s16 x = 0; x < size.X; x++) {
+			if (m_data[i_local].getContent() != CONTENT_IGNORE)
+				dst[i_dst] = m_data[i_local];
+			i_dst++;
+			i_local++;
+		}
+		//memcpy(&dst[i_dst], &m_data[i_local], size.X*sizeof(MapNode));
 	}
 }
 
