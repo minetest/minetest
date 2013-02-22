@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-01-30 01:32+0200\n"
+"PO-Revision-Date: 2013-02-22 16:59+0200\n"
 "Last-Translator: Maciej Kasatkin <maciej.kasatkin@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pl\n"
@@ -135,71 +135,71 @@ msgstr "naciśnij klawisz"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr ""
+msgstr "Do przodu"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "Do tyłu"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Lewo"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Prawo"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "Użyj"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
-msgstr ""
+msgstr "Skok"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr ""
+msgstr "Skradanie"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Upuść"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr ""
+msgstr "Inwentarz"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr ""
+msgstr "Czat"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "Komenda"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "Konsola"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr ""
+msgstr "Przełącz tryb latania"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr ""
+msgstr "Przełącz tryb szybki"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Przełącz tryb noclip"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr ""
+msgstr "Zasięg widzenia"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
-msgstr ""
+msgstr "Print stacks"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
