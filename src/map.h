@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "mapblock.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -318,6 +319,23 @@ public:
 	NodeTimer getNodeTimer(v3s16 p);
 	void setNodeTimer(v3s16 p, NodeTimer t);
 	void removeNodeTimer(v3s16 p);
+	
+	// schedule the given block for liquid updates.
+	void addLiquidUpdateBlock(v3s16 p)
+	{
+		m_liquid_update_blocks.push_back(p);
+	}
+
+	// schdule the given node (and its block) for liquid updates.
+	void addLiquidUpdateNode(v3s16 p)
+	{
+		v3s16 blockP = getNodeBlockPos(p);
+		MapBlock* block = getBlockNoCreateNoEx(blockP);
+		if(block){
+			m_liquid_update_blocks.push_back(blockP);
+			block->m_liquid_update_nodes.push_back(p);
+		}
+	}
 
 	/*
 		Misc.
@@ -342,8 +360,8 @@ protected:
 	MapSector *m_sector_cache;
 	v2s16 m_sector_cache_p;
 
-	// Queued transforming water nodes
-	UniqueQueue<v3s16> m_transforming_liquid;
+	// Queued blocks with transforming liquid nodes
+	UniqueQueue<v3s16> m_liquid_update_blocks;
 };
 
 /*

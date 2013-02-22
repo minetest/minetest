@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodetimer.h"
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
+#include "util/container.h"
 
 class Map;
 class NodeMetadataList;
@@ -482,6 +483,7 @@ private:
 	/*
 		Private methods
 	*/
+	void reschedulePendingLiquidUpdates();
 
 	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
 
@@ -516,7 +518,12 @@ public:
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
-	
+	// liquid nodes in this block which have to be updated
+	UniqueQueue<v3s16> m_liquid_update_nodes;
+	// liquid nodes which have to be checked when a neighbouring
+	// block is loaded.
+	UniqueQueue<v3s16> m_liquid_update_pending;
+
 private:
 	/*
 		Private member variables
