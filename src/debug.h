@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
 	#include <windows.h>
 	#ifdef _MSC_VER
 		#include <eh.h>

@@ -40,14 +40,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
 
 #ifdef _WIN32
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
 	#include <windows.h>
 	
 	#define sleep_ms(x) Sleep(x)
 #else
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
-
-	#if defined(linux) || defined(__linux)
+	
+	#if (defined(linux) || defined(__linux)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
 
