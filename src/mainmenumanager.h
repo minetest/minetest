@@ -94,6 +94,7 @@ public:
 	MainGameCallback(IrrlichtDevice *a_device):
 		disconnect_requested(false),
 		changepassword_requested(false),
+		changevolume_requested(false),
 		device(a_device)
 	{
 	}
@@ -113,8 +114,14 @@ public:
 		changepassword_requested = true;
 	}
 
+	virtual void changeVolume()
+	{
+		changevolume_requested = true;
+	}
+	
 	bool disconnect_requested;
 	bool changepassword_requested;
+	bool changevolume_requested;
 	IrrlichtDevice *device;
 };
 
