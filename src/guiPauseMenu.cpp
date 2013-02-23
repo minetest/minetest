@@ -113,7 +113,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	*/
 	const s32 btn_height = 30;
 	const s32 btn_gap = 20;
-	const s32 btn_num = m_simple_singleplayer_mode ? 3 : 4;
+	const s32 btn_num = m_simple_singleplayer_mode ? 4 : 5;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	changeCtype("");
 	{
