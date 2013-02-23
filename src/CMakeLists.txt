@@ -205,6 +205,19 @@ set(common_SRCS
 	itemdef.cpp
 	nodedef.cpp
 	object_properties.cpp
+	scriptapi_types.cpp
+	scriptapi_common.cpp
+	scriptapi_content.cpp
+	scriptapi_craft.cpp
+	scriptapi_node.cpp
+	scriptapi_item.cpp
+	scriptapi_env.cpp
+	scriptapi_nodetimer.cpp
+	scriptapi_noise.cpp
+	scriptapi_entity.cpp
+	scriptapi_object.cpp
+	scriptapi_nodemeta.cpp
+	scriptapi_inventory.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
