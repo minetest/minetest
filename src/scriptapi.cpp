@@ -36,13 +36,10 @@ extern "C" {
 #include "lua_types.h"
 #include "lua_environment.h"
 #include "lua_nodetimer.h"
-#include "lua_itemstack.h"
 #include "lua_inventory.h"
 #include "lua_nodemeta.h"
 #include "lua_object.h"
 #include "lua_perlin.h"
-#include "lua_pseudorandom.h"
-#include "lua_enum.h"
 #include "lua_common.h"
 #include "lua_item.h"
 #include "lua_content.h"
@@ -233,6 +230,16 @@ void read_groups(lua_State *L, int index,
 		lua_pop(L, 1);
 	}
 }
+
+struct EnumString es_BiomeTerrainType[] =
+{
+	{BIOME_TERRAIN_NORMAL, "normal"},
+	{BIOME_TERRAIN_LIQUID, "liquid"},
+	{BIOME_TERRAIN_NETHER, "nether"},
+	{BIOME_TERRAIN_AETHER, "aether"},
+	{BIOME_TERRAIN_FLAT,   "flat"},
+	{0, NULL},
+};
 
 /*****************************************************************************/
 /* Parameters                                                                */

@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_inventory.h"
 #include "lua_common.h"
 #include "lua_item.h"
-#include "lua_itemstack.h"
 #include "lua_object.h"
 
 //TODO move this macro to a more generic place

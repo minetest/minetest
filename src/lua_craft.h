@@ -45,4 +45,6 @@ bool read_craft_recipe_shapeless(lua_State *L, int index,
 bool read_craft_recipe_shaped(lua_State *L, int index,
 		int &width, std::vector<std::string> &recipe);
 
+extern struct EnumString es_CraftMethod[];
+
 #endif /* LUA_CRAFT_H_ */

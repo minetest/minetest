@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #include <lua.h>
 }
-#include "lua_detached_inv.h"
+#include "lua_inventory.h"
 #include "lua_nodemeta.h"
 #include "lua_entity.h"
 #include "lua_object.h"

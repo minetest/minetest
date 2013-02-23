@@ -29,7 +29,8 @@ extern "C" {
 
 #include "inventorymanager.h"
 #include "player.h"
-
+#include "serverobject.h"
+#include "inventory.h"
 
 /*
 	InvRef
@@ -120,6 +121,47 @@ void inventory_get_list_to_lua(Inventory *inv, const char *name,lua_State *L);
 void inventory_set_list_from_lua(Inventory *inv, const char *name,
 								lua_State *L, int tableindex, int forcesize=-1);
 
+/*****************************************************************************/
+/* Minetest interface                                                        */
+/*****************************************************************************/
+/* Detached inventory callbacks */
+// Return number of accepted items to be moved
+int scriptapi_detached_inventory_allow_move(lua_State *L,
+		const std::string &name,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Return number of accepted items to be put
+int scriptapi_detached_inventory_allow_put(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Return number of accepted items to be taken
+int scriptapi_detached_inventory_allow_take(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Report moved items
+void scriptapi_detached_inventory_on_move(lua_State *L,
+		const std::string &name,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Report put items
+void scriptapi_detached_inventory_on_put(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Report taken items
+void scriptapi_detached_inventory_on_take(lua_State *L,
+		const std::string &name,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+
+/*****************************************************************************/
+/* Mod API                                                                   */
+/*****************************************************************************/
+int l_create_detached_inventory_raw(lua_State *L);
 int l_get_inventory(lua_State *L);
 
 #endif /* LUA_INVENTORY_H_ */

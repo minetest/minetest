@@ -47,6 +47,10 @@ void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		const std::map<std::string, std::string> &fields,
 		ServerActiveObject *sender);
 
-
+extern struct EnumString es_DrawType[];
+extern struct EnumString es_ContentParamType[];
+extern struct EnumString es_ContentParamType2[];
+extern struct EnumString es_LiquidType[];
+extern struct EnumString es_NodeBoxType[];
 
 #endif /* LUA_NODE_H_ */

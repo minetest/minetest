@@ -189,7 +189,56 @@ void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
+struct EnumString es_DrawType[] =
+{
+	{NDT_NORMAL, "normal"},
+	{NDT_AIRLIKE, "airlike"},
+	{NDT_LIQUID, "liquid"},
+	{NDT_FLOWINGLIQUID, "flowingliquid"},
+	{NDT_GLASSLIKE, "glasslike"},
+	{NDT_ALLFACES, "allfaces"},
+	{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
+	{NDT_TORCHLIKE, "torchlike"},
+	{NDT_SIGNLIKE, "signlike"},
+	{NDT_PLANTLIKE, "plantlike"},
+	{NDT_FENCELIKE, "fencelike"},
+	{NDT_RAILLIKE, "raillike"},
+	{NDT_NODEBOX, "nodebox"},
+	{0, NULL},
+};
 
+struct EnumString es_ContentParamType[] =
+{
+	{CPT_NONE, "none"},
+	{CPT_LIGHT, "light"},
+	{0, NULL},
+};
+
+struct EnumString es_ContentParamType2[] =
+{
+	{CPT2_NONE, "none"},
+	{CPT2_FULL, "full"},
+	{CPT2_FLOWINGLIQUID, "flowingliquid"},
+	{CPT2_FACEDIR, "facedir"},
+	{CPT2_WALLMOUNTED, "wallmounted"},
+	{0, NULL},
+};
+
+struct EnumString es_LiquidType[] =
+{
+	{LIQUID_NONE, "none"},
+	{LIQUID_FLOWING, "flowing"},
+	{LIQUID_SOURCE, "source"},
+	{0, NULL},
+};
+
+struct EnumString es_NodeBoxType[] =
+{
+	{NODEBOX_REGULAR, "regular"},
+	{NODEBOX_FIXED, "fixed"},
+	{NODEBOX_WALLMOUNTED, "wallmounted"},
+	{0, NULL},
+};
 
 
 

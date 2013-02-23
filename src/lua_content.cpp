@@ -18,9 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_content.h"
-#include "lua_enum.h"
 #include "lua_types.h"
 #include "lua_common.h"
+#include "lua_node.h"
 
 NodeBox read_nodebox(lua_State *L, int index)
 {
@@ -68,6 +68,13 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 		spec.name = lua_tostring(L, index);
 	}
 }
+
+struct EnumString es_TileAnimationType[] =
+{
+	{TAT_NONE, "none"},
+	{TAT_VERTICAL_FRAMES, "vertical_frames"},
+	{0, NULL},
+};
 
 /*
 	TileDef

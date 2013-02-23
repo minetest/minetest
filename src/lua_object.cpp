@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "lua_types.h"
 #include "lua_inventory.h"
-#include "lua_itemstack.h"
+#include "lua_item.h"
 #include "lua_entity.h"
 #include "lua_common.h"
 

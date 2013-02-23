@@ -32,5 +32,6 @@ void               read_soundspec                (lua_State *L, int index,
 		SimpleSoundSpec &spec);
 NodeBox            read_nodebox                  (lua_State *L, int index);
 
+extern struct EnumString es_TileAnimationType[];
 
 #endif /* LUA_CONTENT_H_ */

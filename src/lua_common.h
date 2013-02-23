@@ -97,4 +97,16 @@ enum RunCallbacksMode
 	// Note: "a true value" and "a false value" refer to values that
 	// are converted by lua_toboolean to true or false, respectively.
 };
+
+struct EnumString
+{
+	int num;
+	const char *str;
+};
+
+bool string_to_enum(const EnumString *spec, int &result,
+		const std::string &str);
+
+int getenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int default_);
 #endif /* LUA_COMMON_H_ */

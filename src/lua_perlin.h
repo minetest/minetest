@@ -90,6 +90,44 @@ public:
 	static void Register(lua_State *L);
 };
 
+/*
+	LuaPseudoRandom
+*/
+
+
+class LuaPseudoRandom
+{
+private:
+	PseudoRandom m_pseudo;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	// next(self, min=0, max=32767) -> get next value
+	static int l_next(lua_State *L);
+
+public:
+	LuaPseudoRandom(int seed);
+
+	~LuaPseudoRandom();
+
+	const PseudoRandom& getItem() const;
+	PseudoRandom& getItem();
+
+	// LuaPseudoRandom(seed)
+	// Creates an LuaPseudoRandom and leaves it on top of stack
+	static int create_object(lua_State *L);
+
+	static LuaPseudoRandom* checkobject(lua_State *L, int narg);
+
+	static void Register(lua_State *L);
+};
+
 NoiseParams *read_noiseparams(lua_State *L, int index);
 
 #endif /* LUA_PERLIN_H_ */

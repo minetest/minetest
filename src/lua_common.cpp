@@ -25,7 +25,6 @@ extern "C" {
 
 #include "script.h"
 #include "lua_types.h"
-#include "lua_enum.h"
 #include "lua_object.h"
 
 Server* get_server(lua_State *L)
@@ -247,3 +246,40 @@ static void dump2(lua_State *L, const char *name)
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 #endif
+
+bool string_to_enum(const EnumString *spec, int &result,
+		const std::string &str)
+{
+	const EnumString *esp = spec;
+	while(esp->str){
+		if(str == std::string(esp->str)){
+			result = esp->num;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}
+
+/*bool enum_to_string(const EnumString *spec, std::string &result,
+		int num)
+{
+	const EnumString *esp = spec;
+	while(esp){
+		if(num == esp->num){
+			result = esp->str;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}*/
+
+int getenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int default_)
+{
+	int result = default_;
+	string_to_enum(spec, result,
+			getstringfield_default(L, table, fieldname, ""));
+	return result;
+}

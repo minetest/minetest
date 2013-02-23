@@ -26,8 +26,7 @@ extern "C" {
 #include "script.h"
 #include "lua_types.h"
 #include "lua_common.h"
-#include "lua_enum.h"
-#include "lua_itemstack.h"
+#include "lua_item.h"
 
 // helper for register_craft
 bool read_craft_recipe_shaped(lua_State *L, int index,
@@ -370,7 +369,13 @@ int l_get_craft_recipe(lua_State *L)
 	return 1;
 }
 
-
+struct EnumString es_CraftMethod[] =
+{
+	{CRAFT_METHOD_NORMAL, "normal"},
+	{CRAFT_METHOD_COOKING, "cooking"},
+	{CRAFT_METHOD_FUEL, "fuel"},
+	{0, NULL},
+};
 
 
 
