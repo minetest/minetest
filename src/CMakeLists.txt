@@ -205,6 +205,19 @@ set(common_SRCS
 	itemdef.cpp
 	nodedef.cpp
 	object_properties.cpp
+	lua_types.cpp
+	lua_common.cpp
+	lua_content.cpp
+	lua_craft.cpp
+	lua_node.cpp
+	lua_item.cpp
+	lua_environment.cpp
+	lua_nodetimer.cpp
+	lua_perlin.cpp
+	lua_entity.cpp
+	lua_object.cpp
+	lua_nodemeta.cpp
+	lua_inventory.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
