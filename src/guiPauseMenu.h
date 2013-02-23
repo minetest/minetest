@@ -29,6 +29,7 @@ public:
 	virtual void exitToOS() = 0;
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
+	virtual void changeVolume() = 0;
 };
 
 class GUIPauseMenu : public GUIModalMenu

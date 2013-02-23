@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
+#include "guiVolumeChange.h"
 #include "guiFormSpecMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
@@ -1517,6 +1518,13 @@ void the_game(
 			(new GUIPasswordChange(guienv, guiroot, -1,
 				&g_menumgr, &client))->drop();
 			g_gamecallback->changepassword_requested = false;
+		}
+
+		if(g_gamecallback->changevolume_requested)
+		{
+			(new GUIVolumeChange(guienv, guiroot, -1,
+				&g_menumgr, &client))->drop();
+			g_gamecallback->changevolume_requested = false;
 		}
 
 		/* Process TextureSource's queue */
