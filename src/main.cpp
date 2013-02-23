@@ -1481,6 +1481,7 @@ int main(int argc, char *argv[])
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
+				menudata.enable_public = g_settings->getBool("server_announce");
 				// Default to selecting nothing
 				menudata.selected_world = -1;
 				// Get world listing for the menu
