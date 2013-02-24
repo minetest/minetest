@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2011 Kahrl <kahrl@gmx.net>
 

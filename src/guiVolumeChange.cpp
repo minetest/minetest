@@ -1,5 +1,5 @@
 /*
-Part of Minetest-c55
+Part of Minetest
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2011 Ciaran Gultnieks <ciaran@ciarang.com>
 Copyright (C) 2013 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>

@@ -1,5 +1,5 @@
 /*
-Part of Minetest-c55
+Part of Minetest
 Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
