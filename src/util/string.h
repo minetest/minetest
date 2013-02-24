@@ -286,6 +286,22 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 	return to;
 }
 
+/*
+	Removes all \\ from a string that had been escaped (FormSpec strings)
+*/
+inline std::string unescape_string(std::string &s)
+{
+	std::string res;
+	
+	for (size_t i = 0; i <= s.length(); i++) {
+		if (s[i] == '\\')
+			i++;
+		res += s[i];
+	}
+	
+	return res;
+}
+
 std::string translatePassword(std::string playername, std::wstring password);
 size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata);
 u32 readFlagString(std::string str, FlagDesc *flagdesc);

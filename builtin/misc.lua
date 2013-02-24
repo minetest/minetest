@@ -99,3 +99,10 @@ function minetest.setting_get_pos(name)
 	return minetest.string_to_pos(value)
 end
 
+function minetest.formspec_escape(str)
+	str = string.gsub(str, "\\", "\\\\")
+	str = string.gsub(str, "%[", "\\[")
+	str = string.gsub(str, "%]", "\\]")
+	return str
+end
+

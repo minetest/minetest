@@ -778,6 +778,9 @@ string:trim()
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
+^ Same but in reverse
+minetest.formspec_escape(string) -> string
+^ escapes characters like [, ], and \ that can not be used in formspecs
 
 minetest namespace reference
 -----------------------------
