@@ -155,6 +155,8 @@ public:
 			);
 	~GUIFormSpecMenu();
 
+	std::string unescapeString(std::string* s);
+
 	void setFormSpec(const std::string &formspec_string,
 			InventoryLocation current_inventory_location)
 	{

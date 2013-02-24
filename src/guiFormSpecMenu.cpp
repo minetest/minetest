@@ -153,6 +153,33 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	delete m_text_dst;
 }
 
+std::string GUIFormSpecMenu::unescapeString(std::string* s)
+{
+	/* Replaces \( with [, \) with ] and \\ with \
+	 * If a \ is found and it is not followed by (,),or \ it will not be replaced
+	 */
+	std::string res;
+	for (size_t i = 0; i < s->length(); i++) {
+		if ((*s)[i] == '\\') {
+			if ((*s)[i+1] == '\\') {
+				res += '\\';
+				i++;
+			} else if ((*s)[i+1] == '(') {
+				res += '[';
+				i++;
+			} else if ((*s)[i+1] == ')') {
+				res += ']';
+				i++;
+			} else {
+				res += (*s)[i];
+			}
+		} else {
+			res += (*s)[i];
+		}
+	}
+	return res;
+}
+
 void GUIFormSpecMenu::removeChildren()
 {
 	const core::list<gui::IGUIElement*> &children = getChildren();
@@ -389,6 +416,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			else
 				fdefault = odefault;
 
+			fdefault = this->unescapeString(&fdefault);
+			flabel = this->unescapeString(&flabel);
+
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
 				narrow_to_wide(flabel.c_str()),
@@ -443,6 +473,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
+			flabel = this->unescapeString(&flabel);
+
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(""),
 				narrow_to_wide(flabel.c_str()),
@@ -467,6 +499,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			std::string flabel = f.next("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
+
+			flabel = this->unescapeString(&flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
@@ -496,6 +530,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			std::string flabel = f.next("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
+
+			flabel = this->unescapeString(&flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
@@ -535,6 +571,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			item.deSerialize(fimage, idef);
 			video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 			std::string tooltip = item.getDefinition(idef).description;
+			flabel = this->unescapeString(&flabel);
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
 				narrow_to_wide(flabel.c_str()),
