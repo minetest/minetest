@@ -56,8 +56,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	if (g_settings->get("num_emerge_threads").empty()) {
 		int nprocs = porting::getNumberOfProcessors();
 		// leave a proc for the main thread and one for some other misc threads
-		if (nprocs > 2)
-			nthreads = nprocs - 2;
+		nthreads =  (nprocs > 2) ? nthreads = nprocs - 2 : 1;
 	} else {
 		nthreads = g_settings->getU16("num_emerge_threads");
 	}
