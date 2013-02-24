@@ -4254,6 +4254,7 @@ private:
 				tree_def.fruitnode=ndef->getId(fruit);
 				getintfield(L, 3, "fruit_chance",tree_def.fruit_chance);
 			}
+			getintfield(L, 3, "seed", tree_def.seed);
 		}
 		else
 			return 0;

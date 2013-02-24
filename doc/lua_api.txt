@@ -1093,6 +1093,7 @@ treedef={
   thin_branches, - boolean true -> use thin (1 node) branches
   fruit,         - string  fruit node name
   fruit_chance,  - num     chance (0-100) to replace leaves with fruit node
+  seed,          - num     random seed
   }
 
 Key for Special L-System Symbols used in Axioms

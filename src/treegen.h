@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TREEGEN_HEADER
 
 #include <matrix4.h>
+#include "noise.h"
 
 class ManualMapVoxelManipulator;
 class INodeDefManager;
@@ -47,11 +48,12 @@ std::string trunk_type;
 bool thin_branches;
 MapNode fruitnode;
 int fruit_chance;
+int seed;
 };
 
 	// Add default tree
 	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef);
+		bool is_apple_tree, INodeDefManager *ndef,int seed);
 
 	// Add L-Systems tree (used by engine)
 	void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
@@ -66,9 +68,9 @@ int fruit_chance;
 	void tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition);
 	void tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
-		TreeDef &tree_definition);
+		PseudoRandom ps, TreeDef &tree_definition);
 	void tree_single_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
-		TreeDef &tree_definition);
+		PseudoRandom ps, TreeDef &tree_definition);
 	void tree_fruit_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition);
 	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle,v3f axis);
