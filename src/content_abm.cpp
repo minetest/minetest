@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "treegen.h" // For treegen::make_tree
+#include "main.h" // for g_settings
 #include "map.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -146,11 +147,42 @@ public:
 	}
 };
 
+class LiquidFlowABM : public ActiveBlockModifier
+{
+private:
+	std::set<std::string> contents;
+
+public:
+	LiquidFlowABM(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+		std::set<content_t> liquids;
+		nodemgr->getIds("group:liquid", liquids);
+		for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
+			contents.insert(nodemgr->get(*k).liquid_alternative_flowing);
+		
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		return contents;
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 10; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		if (map->transforming_liquid_size() < 500)
+			map->transforming_liquid_add(p);
+		//if ((*map).m_transforming_liquid.size() < 500) (*map).m_transforming_liquid.push_back(p);
+	}
+};
+
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
 	env->addActiveBlockModifier(new GrowGrassABM());
 	env->addActiveBlockModifier(new RemoveGrassABM());
 	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM());
+	if (g_settings->getBool("liquid_finite"))
+		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 }
-
-

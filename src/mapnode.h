@@ -67,9 +67,14 @@ enum LightBank
 #define LIQUID_LEVEL_MASK 0x07
 #define LIQUID_FLOW_DOWN_MASK 0x08
 
+//#define LIQUID_LEVEL_MASK 0x3f // better finite water
+//#define LIQUID_FLOW_DOWN_MASK 0x40 // not used when finite water
+
 /* maximum amount of liquid in a block */
 #define LIQUID_LEVEL_MAX LIQUID_LEVEL_MASK
 #define LIQUID_LEVEL_SOURCE (LIQUID_LEVEL_MAX+1)
+
+#define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
 /*
 	This is the stuff what the whole world consists of.

@@ -719,6 +719,7 @@ private:
 
 	// Some timers
 	float m_liquid_transform_timer;
+	float m_liquid_transform_every;
 	float m_print_info_timer;
 	float m_masterserver_timer;
 	float m_objectdata_timer;

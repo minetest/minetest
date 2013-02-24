@@ -90,6 +90,14 @@
 #enable_fog = true
 # Enable a bit lower water surface; disable for speed (not quite optimized)
 #new_style_water = false
+# Constant volume liquids
+#liquid_finite = false
+# Update liquids every .. recommend for finite: 0.2
+#liquid_update = 1.0
+# When finite liquid: relax flowing blocks to source if level near max and N nearby source blocks, more realistic, but not true constant. values: 0,1,2,3,4 : 0 - disable, 1 - most aggresive
+#liquid_relax = 1
+# optimization: faster cave flood (and not true constant)
+#liquid_fast_flood = 1
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;

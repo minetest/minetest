@@ -261,7 +261,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing)
 						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
-								+ 0.5) / 8.0 * node_liquid_level) * BS;
+								+ 0.5) / (float)LIQUID_LEVEL_SOURCE * node_liquid_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -324,7 +324,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 				}
 				if(air_count >= 2)
-					cornerlevel = -0.5*BS;
+					cornerlevel = -0.5*BS+0.1;
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
