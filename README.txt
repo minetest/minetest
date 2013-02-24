@@ -4,22 +4,22 @@ Minetest
 An InfiniMiner/Minecraft inspired game.
 
 Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
-and ther contributors (see source file comments and the version control log)
+and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
 ---------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
 contained, you probably want to download the minetest_game project too:
-  https://github.com/celeron55/minetest_game/
+  https://github.com/minetest/minetest_game/
 See the README.txt in it.
 
 Further documentation
 ----------------------
 - Website: http://minetest.net/
 - Wiki: http://wiki.minetest.com/
-- Developer wiki: http://minetest.net/wiki/
-- Forum: http://minetest.net/forum/
-- Github: https://github.com/celeron55/minetest/
+- Developer wiki: http://dev.minetest.net/
+- Forum: http://forum.minetest.net/
+- Github: https://github.com/minetest/minetest/
 - doc/ directory of source distribution
 
 This game is not finished
@@ -41,7 +41,7 @@ Default Controls
 Paths
 ------
 $bin   - Compiled binaries
-$share - Cistributed read-only data
+$share - Distributed read-only data
 $user  - User-created modifiable data
 
 Windows .zip / RUN_IN_PLACE source:
@@ -83,15 +83,15 @@ Install dependencies. Here's an example for Debian/Ubuntu:
 $ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
-$ wget https://github.com/celeron55/minetest/tarball/master -O master.tar.gz
+$ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
-$ cd celeron55-minetest-286edd4 (or similar)
+$ cd minetest-minetest-286edd4 (or similar)
 
 Download minetest_game (otherwise only the "Minimal development test" game is available)
 $ cd games/
-$ wget https://github.com/celeron55/minetest_game/tarball/master -O master.tar.gz
+$ wget https://github.com/minetest/minetest_game/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
-$ mv celeron55-minetest_game-* minetest_game
+$ mv minetest-minetest_game-* minetest_game
 $ cd ..
 
 Build a version that runs directly from the source directory:
@@ -126,7 +126,7 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
-	* Optional: gettext bibrary and tools:
+	* Optional: gettext library and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest:
