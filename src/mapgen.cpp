@@ -2251,6 +2251,7 @@ void make_block(BlockMakeData *data)
 	*/
 	assert(central_area_size.X == central_area_size.Z);
 	{
+		PseudoRandom ps (blockseed);
 		// Divide area into parts
 		s16 div = 8;
 		s16 sidelen = central_area_size.X / div;
@@ -2278,8 +2279,8 @@ void make_block(BlockMakeData *data)
 			// Put trees in random places on part of division
 			for(u32 i=0; i<tree_count; i++)
 			{
-				s16 x = myrand_range(p2d_min.X, p2d_max.X);
-				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
+				s16 x = ps.range(p2d_min.X, p2d_max.X);
+				s16 z = ps.range(p2d_min.Y, p2d_max.Y);
 				s16 y = find_ground_level(vmanip, v2s16(x,z), ndef);
 				// Don't make a tree under water level
 				if(y < WATER_LEVEL)
@@ -2300,7 +2301,7 @@ void make_block(BlockMakeData *data)
 				}
 				p.Y++;
 				// Make a tree
-				treegen::make_tree(vmanip, p, false, ndef);
+				treegen::make_tree(vmanip, p, false, ndef, ps.next());
 			}
 		}
 	}

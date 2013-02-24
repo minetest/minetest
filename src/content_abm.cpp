@@ -119,7 +119,7 @@ public:
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
 		vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
 		bool is_apple_tree = myrand()%4 == 0;
-		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef);
+		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef, myrand());
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
