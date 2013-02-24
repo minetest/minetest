@@ -73,115 +73,55 @@ public:
 */
 v3f findSpawnPos(ServerMap &map);
 
-/*
-	A structure containing the data needed for queueing the fetching
-	of blocks.
-*/
-struct QueuedBlockEmerge
-{
-	v3s16 pos;
-	// key = peer_id, value = flags
-	core::map<u16, u8> peer_ids;
-};
 
-/*
-	This is a thread-safe class.
-*/
-class BlockEmergeQueue
+class MapEditEventIgnorer
 {
 public:
-	BlockEmergeQueue()
+	MapEditEventIgnorer(bool *flag):
+		m_flag(flag)
 	{
-		m_mutex.Init();
+		if(*m_flag == false)
+			*m_flag = true;
+		else
+			m_flag = NULL;
 	}
 
-	~BlockEmergeQueue()
+	~MapEditEventIgnorer()
 	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		if(m_flag)
 		{
-			QueuedBlockEmerge *q = *i;
-			delete q;
+			assert(*m_flag);
+			*m_flag = false;
 		}
-	}
-
-	/*
-		peer_id=0 adds with nobody to send to
-	*/
-	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
-	{
-		DSTACK(__FUNCTION_NAME);
-
-		JMutexAutoLock lock(m_mutex);
-
-		if(peer_id != 0)
-		{
-			/*
-				Find if block is already in queue.
-				If it is, update the peer to it and quit.
-			*/
-			core::list<QueuedBlockEmerge*>::Iterator i;
-			for(i=m_queue.begin(); i!=m_queue.end(); i++) {
-				QueuedBlockEmerge *q = *i;
-				if (q->pos == pos) {
-					q->peer_ids[peer_id] = flags;
-					return;
-				}
-			}
-		}
-
-		/*
-			Add the block
-		*/
-		QueuedBlockEmerge *q = new QueuedBlockEmerge;
-		q->pos = pos;
-		if (peer_id != 0)
-			q->peer_ids[peer_id] = flags;
-		m_queue.push_back(q);
-	}
-
-	// Returned pointer must be deleted
-	// Returns NULL if queue is empty
-	QueuedBlockEmerge * pop()
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i = m_queue.begin();
-		if(i == m_queue.end())
-			return NULL;
-		QueuedBlockEmerge *q = *i;
-		m_queue.erase(i);
-		return q;
-	}
-
-	u32 size()
-	{
-		JMutexAutoLock lock(m_mutex);
-		return m_queue.size();
-	}
-
-	u32 peerItemCount(u16 peer_id)
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		u32 count = 0;
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
-		{
-			QueuedBlockEmerge *q = *i;
-			if(q->peer_ids.find(peer_id) != NULL)
-				count++;
-		}
-
-		return count;
 	}
 
 private:
-	core::list<QueuedBlockEmerge*> m_queue;
-	JMutex m_mutex;
+	bool *m_flag;
+};
+
+class MapEditEventAreaIgnorer
+{
+public:
+	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
+		m_ignorevariable(ignorevariable)
+	{
+		if(m_ignorevariable->getVolume() == 0)
+			*m_ignorevariable = a;
+		else
+			m_ignorevariable = NULL;
+	}
+
+	~MapEditEventAreaIgnorer()
+	{
+		if(m_ignorevariable)
+		{
+			assert(m_ignorevariable->getVolume() != 0);
+			*m_ignorevariable = VoxelArea();
+		}
+	}
+
+private:
+	VoxelArea *m_ignorevariable;
 };
 
 class Server;
@@ -761,10 +701,6 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread m_thread;
-	// This thread fetches and generates map
-	//EmergeThread m_emergethread;
-	// Queue of block coordinates to be processed by the emerge thread
-	//BlockEmergeQueue m_emerge_queue;
 
 	/*
 		Time related stuff
