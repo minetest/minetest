@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2012 Kahrl <kahrl@gmx.net>
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013 Kahrl <kahrl@gmx.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 OpenAL support based on work by:
 Copyright (C) 2011 Sebastian 'Bahamada' Rühl
 Copyright (C) 2011 Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>
