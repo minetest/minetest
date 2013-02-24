@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2011 kwolekr, Ryan Kwolek <kwolekr2@cs.scranton.edu>
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr2@cs.scranton.edu>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
