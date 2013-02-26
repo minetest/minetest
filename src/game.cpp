@@ -2816,12 +2816,12 @@ void the_game(
 			char temptext[300];
 			snprintf(temptext, 300,
 					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %lli)",
+					" (yaw = %.1f) (seed = %llu)",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
 					wrapDegrees_0_360(camera_yaw),
-					client.getMapSeed());
+					(unsigned long long)client.getMapSeed());
 
 			guitext2->setText(narrow_to_wide(temptext).c_str());
 			guitext2->setVisible(true);

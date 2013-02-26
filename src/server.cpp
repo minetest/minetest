@@ -1652,7 +1652,7 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
-			for (int i = 0; i != m_emerge->emergethread.size(); i++)
+			for (unsigned int i = 0; i != m_emerge->emergethread.size(); i++)
 				m_emerge->emergethread[i]->trigger();
 
 			// Update m_enable_rollback_recording here too

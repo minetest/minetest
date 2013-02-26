@@ -208,11 +208,12 @@ inline void writeARGB8(u8 *data, video::SColor p)
 
 inline video::SColor readARGB8(const u8 *data)
 {
-	video::SColor p;
-	p.setAlpha(readU8(&data[0]));
-	p.setRed(readU8(&data[1]));
-	p.setGreen(readU8(&data[2]));
-	p.setBlue(readU8(&data[3]));
+	video::SColor p(
+		readU8(&data[0]),
+		readU8(&data[1]),
+		readU8(&data[2]),
+		readU8(&data[3])
+	);
 	return p;
 }
 

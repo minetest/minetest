@@ -75,7 +75,7 @@ public:
 	MapgenParams *createMapgenParams(std::string mgname);
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
 	
-	bool registerMapgen(std::string name, MapgenFactory *mgfactory);
+	void registerMapgen(std::string name, MapgenFactory *mgfactory);
 	MapgenParams *getParamsFromSettings(Settings *settings);
 	void setParamsToSettings(Settings *settings);
 	

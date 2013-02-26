@@ -3283,7 +3283,7 @@ void ServerMap::save(ModifiedState save_level)
 
 			block_count_all++;
 
-			if(block->getModified() >= save_level)
+			if(block->getModified() >= (u32)save_level)
 			{
 				// Lazy beginSave()
 				if(!save_started){

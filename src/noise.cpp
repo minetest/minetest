@@ -507,7 +507,7 @@ void Noise::gradientMap3D(float x, float y, float z,
 
 
 float *Noise::perlinMap2D(float x, float y) {
-	float a = 0.0, f = 1.0, g = 1.0;
+	float f = 1.0, g = 1.0;
 	int i, j, index, oct;
 
 	x /= np->spread.X;
@@ -537,7 +537,7 @@ float *Noise::perlinMap2D(float x, float y) {
 
 
 float *Noise::perlinMap3D(float x, float y, float z) {
-	float a = 0.0, f = 1.0, g = 1.0;
+	float f = 1.0, g = 1.0;
 	int i, j, k, index, oct;
 
 	x /= np->spread.X;

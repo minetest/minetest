@@ -58,7 +58,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	if (g_settings->get("num_emerge_threads").empty()) {
 		int nprocs = porting::getNumberOfProcessors();
 		// leave a proc for the main thread and one for some other misc threads
-		nthreads =  (nprocs > 2) ? nthreads = nprocs - 2 : 1;
+		nthreads = (nprocs > 2) ? nprocs - 2 : 1;
 	} else {
 		nthreads = g_settings->getU16("num_emerge_threads");
 	}
@@ -81,7 +81,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 
 
 EmergeManager::~EmergeManager() {
-	for (int i = 0; i != emergethread.size(); i++) {
+	for (unsigned int i = 0; i != emergethread.size(); i++) {
 		emergethread[i]->setRun(false);
 		emergethread[i]->qevent.signal();
 		emergethread[i]->stop();
@@ -101,7 +101,7 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 		return;
 	
 	this->params = mgparams;
-	for (int i = 0; i != emergethread.size(); i++) {
+	for (unsigned int i = 0; i != emergethread.size(); i++) {
 		mg = createMapgen(params->mg_name, 0, params);
 		if (!mg) {
 			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
@@ -152,7 +152,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		
 		// insert into the EmergeThread queue with the least items
 		int lowestitems = emergethread[0]->blockqueue.size();
-		for (int i = 1; i != emergethread.size(); i++) {
+		for (unsigned int i = 1; i != emergethread.size(); i++) {
 			int nitems = emergethread[i]->blockqueue.size();
 			if (nitems < lowestitems) {
 				idx = i;
@@ -259,7 +259,7 @@ void EmergeManager::setParamsToSettings(Settings *settings) {
 }
 
 
-bool EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
+void EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
 	mglist.insert(std::make_pair(mgname, mgfactory));
 	infostream << "EmergeManager: registered mapgen " << mgname << std::endl;
 }
