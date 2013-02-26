@@ -868,6 +868,11 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 					d0 += ps.range(-1,1);
 					d1 += ps.range(-1,1);
 				}
+				bool got_water = false;
+				v2s16 p2d(cp.X, cp.Z);
+				if(cp.Y < find_ground_level_from_noise(24,p2d,42)+50){
+					got_water = true;
+				}
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
 					s16 si = rs/2 - MYMAX(0, abs(z0)-rs/7-1);
@@ -908,6 +913,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 								} else if(full_node_max.Y < water_level){
 									if(p.Y < startp.Y - 2)
 										vmanip.m_data[i] = lavanode;
+									else if(got_water && p.Y <= WATER_LEVEL)
+										vmanip.m_data[i] = waternode;
 									else
 										vmanip.m_data[i] = airnode;
 								} else {
@@ -921,7 +928,10 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 								vmanip.m_data[i].getContent() == c_lava_source)
 									continue;
 
-								vmanip.m_data[i] = airnode;
+								if(got_water && p.Y <= WATER_LEVEL)
+									vmanip.m_data[i] = waternode;
+								else
+									vmanip.m_data[i] = airnode;
 
 								// Set tunnel flag
 								vmanip.m_flags[i] |= VMANIP_FLAG_CAVE;
