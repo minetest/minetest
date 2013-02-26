@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "map.h"
 
+/*
+// Currently not in use
+
 static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 		float txs, float tys, int col, int row)
 {
@@ -33,6 +36,7 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureTranslate(txs*col, tys*row);
 	matrix.setTextureScale(txs, tys);
 }
+*/
 
 class SmokePuffCSO: public ClientSimpleObject
 {
