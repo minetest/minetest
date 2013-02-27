@@ -3777,10 +3777,8 @@ private:
 		}
 	}
 
-	// EnvRef:get_node_light(pos, timeofday)
-	// pos = {x=num, y=num, z=num}
-	// timeofday: nil = current time, 0 = night, 0.5 = day
-	static int l_get_node_light(lua_State *L)
+	// Internal light level code
+	static int l_get_node_light_internal(lua_State *L, bool propagated_only)
 	{
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
@@ -3796,13 +3794,30 @@ private:
 		try{
 			MapNode n = env->getMap().getNode(pos);
 			INodeDefManager *ndef = env->getGameDef()->ndef();
-			lua_pushinteger(L, n.getLightBlend(dnr, ndef));
+			int level = propagated_only ? n.getPropagatedLightBlend(dnr, ndef) : n.getLightBlend(dnr, ndef);
+			lua_pushinteger(L, level);
 			return 1;
 		} catch(InvalidPositionException &e)
 		{
 			lua_pushnil(L);
 			return 1;
 		}
+	}
+
+	// EnvRef:get_node_propagated_light(pos, timeofday)
+	// pos = {x=num, y=num, z=num}
+	// timeofday: nil = current time, 0 = night, 0.5 = day
+	static int l_get_node_propagated_light(lua_State *L)
+	{
+		return l_get_node_light_internal(L, true);
+	}
+
+	// EnvRef:get_node_light(pos, timeofday)
+	// pos = {x=num, y=num, z=num}
+	// timeofday: nil = current time, 0 = night, 0.5 = day
+	static int l_get_node_light(lua_State *L)
+	{
+		return l_get_node_light_internal(L, false);
 	}
 
 	// EnvRef:place_node(pos, node)
@@ -4326,6 +4341,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),
 	method(EnvRef, get_node_or_nil),
+	method(EnvRef, get_node_propagated_light),
 	method(EnvRef, get_node_light),
 	method(EnvRef, place_node),
 	method(EnvRef, dig_node),

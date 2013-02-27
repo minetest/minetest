@@ -155,9 +155,31 @@ struct MapNode
 	}
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
+	u8 getPropagatedLight(enum LightBank bank, INodeDefManager *nodemgr) const;
+	bool getPropagatedLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 	
+	// 0 <= daylight_factor <= 1000
+	// 0 <= return value <= LIGHT_SUN
+	u8 getPropagatedLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
+	{
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		getPropagatedLightBanks(lightday, lightnight, nodemgr);
+		return blend_light(daylight_factor, lightday, lightnight);
+	}
+
+	// 0.0 <= daylight_factor <= 1.0
+	// 0 <= return value <= LIGHT_SUN
+	u8 getPropagatedLightBlendF1(float daylight_factor, INodeDefManager *nodemgr) const
+	{
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		getPropagatedLightBanks(lightday, lightnight, nodemgr);
+		return blend_light_f1(daylight_factor, lightday, lightnight);
+	}
+
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
