@@ -94,7 +94,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "true");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("enable_texture_atlas", "true");
+	settings->setDefault("enable_texture_atlas", "false");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
@@ -183,7 +183,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
-	settings->setDefault("debug_log_level", "0");
+	settings->setDefault("debug_log_level", "2");
 	settings->setDefault("emergequeue_limit_total", "256");
 	settings->setDefault("emergequeue_limit_diskonly", "");
 	settings->setDefault("emergequeue_limit_generate", "");
@@ -203,14 +203,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_liquid_sink", "10");
 	settings->setDefault("movement_gravity", "9.81");
 	
-	//mapgen related things
-	settings->setDefault("mg_name", "v6");
-	settings->setDefault("water_level", "1");
+	//liquid stuff
 	settings->setDefault("liquid_finite", "false");
 	settings->setDefault("liquid_update", "1.0");
 	settings->setDefault("liquid_relax", "1");
 	settings->setDefault("liquid_fast_flood", "1");
-	
+
+	//mapgen stuff
+	settings->setDefault("mg_name", "v6");
+	settings->setDefault("water_level", "1");	
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
 	settings->setDefault("mgv6_freq_desert", "0.45");

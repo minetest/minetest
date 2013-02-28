@@ -1063,10 +1063,6 @@ static ItemDefinition read_item_definition(lua_State *L, int index,
 	def.usable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "on_rightclick");
-	def.rightclickable = lua_isfunction(L, -1);
-	lua_pop(L, 1);
-
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
 	warn_if_field_exists(L, index, "tool_digging_properties",
@@ -1162,6 +1158,10 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	lua_pop(L, 1);
 	lua_getfield(L, index, "after_destruct");
 	if(!lua_isnil(L, -1)) f.has_after_destruct = true;
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "on_rightclick");
+	f.rightclickable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
 
 	/* Name */
@@ -4751,7 +4751,7 @@ static int l_register_item_raw(lua_State *L)
 	// Default to having client-side placement prediction for nodes
 	// ("" in item definition sets it off)
 	if(def.node_placement_prediction == "__default"){
-		if(def.type == ITEM_NODE && !def.rightclickable)
+		if(def.type == ITEM_NODE)
 			def.node_placement_prediction = name;
 		else
 			def.node_placement_prediction = "";
