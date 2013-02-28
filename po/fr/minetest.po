@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-05 18:25+0200\n"
+"PO-Revision-Date: 2013-02-28 17:44+0200\n"
 "Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
@@ -286,7 +286,7 @@ msgstr "Supprimer monde"
 
 #: src/guiMainMenu.cpp:577
 msgid "Create world"
-msgstr "Mode créatif"
+msgstr "Créer un monde"
 
 #: src/guiMainMenu.cpp:611
 msgid "Fancy trees"
