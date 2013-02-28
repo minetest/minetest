@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -1513,6 +1513,26 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				}
 			}
 		}
+	}
+	else if(command == TOCLIENT_MOVEMENT)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		player->movement_acceleration_default = readF1000(is) * BS;
+		player->movement_acceleration_air = readF1000(is) * BS;
+		player->movement_acceleration_fast = readF1000(is) * BS;
+		player->movement_speed_walk = readF1000(is) * BS;
+		player->movement_speed_crouch = readF1000(is) * BS;
+		player->movement_speed_fast = readF1000(is) * BS;
+		player->movement_speed_climb = readF1000(is) * BS;
+		player->movement_speed_jump = readF1000(is) * BS;
+		player->movement_liquid_fluidity = readF1000(is) * BS;
+		player->movement_liquid_fluidity_smooth = readF1000(is) * BS;
+		player->movement_liquid_sink = readF1000(is) * BS;
+		player->movement_gravity = readF1000(is) * BS;
 	}
 	else if(command == TOCLIENT_HP)
 	{

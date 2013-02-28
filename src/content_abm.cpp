@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "treegen.h" // For treegen::make_tree
+#include "main.h" // for g_settings
 #include "map.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -80,7 +81,8 @@ public:
 		ServerMap *map = &env->getServerMap();
 		
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
-		if(!ndef->get(n_top).light_propagates ||
+		if((!ndef->get(n_top).light_propagates &&
+				n_top.getContent() != CONTENT_IGNORE) ||
 				ndef->get(n_top).isLiquid())
 		{
 			n.setContent(ndef->getId("mapgen_dirt"));
@@ -118,7 +120,7 @@ public:
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
 		vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
 		bool is_apple_tree = myrand()%4 == 0;
-		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef);
+		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef, myrand());
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
@@ -145,11 +147,42 @@ public:
 	}
 };
 
+class LiquidFlowABM : public ActiveBlockModifier
+{
+private:
+	std::set<std::string> contents;
+
+public:
+	LiquidFlowABM(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+		std::set<content_t> liquids;
+		nodemgr->getIds("group:liquid", liquids);
+		for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
+			contents.insert(nodemgr->get(*k).liquid_alternative_flowing);
+		
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		return contents;
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 10; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		if (map->transforming_liquid_size() < 500)
+			map->transforming_liquid_add(p);
+		//if ((*map).m_transforming_liquid.size() < 500) (*map).m_transforming_liquid.push_back(p);
+	}
+};
+
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
 	env->addActiveBlockModifier(new GrowGrassABM());
 	env->addActiveBlockModifier(new RemoveGrassABM());
 	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM());
+	if (g_settings->getBool("liquid_finite"))
+		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 }
-
-

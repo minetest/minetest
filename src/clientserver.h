@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -363,6 +363,23 @@ enum ToClientCommand
 		u8[len] formspec
 		u16 len
 		u8[len] formname
+	*/
+
+	TOCLIENT_MOVEMENT = 0x45,
+	/*
+		u16 command
+		f1000 movement_acceleration_default
+		f1000 movement_acceleration_air
+		f1000 movement_acceleration_fast
+		f1000 movement_speed_walk
+		f1000 movement_speed_crouch
+		f1000 movement_speed_fast
+		f1000 movement_speed_climb
+		f1000 movement_speed_jump
+		f1000 movement_liquid_fluidity
+		f1000 movement_liquid_fluidity_smooth
+		f1000 movement_liquid_sink
+		f1000 movement_gravity
 	*/
 };
 

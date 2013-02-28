@@ -1,4 +1,4 @@
-Minetest-c55 changelog
+Minetest changelog
 ----------------------
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.

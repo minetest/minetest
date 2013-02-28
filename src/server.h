@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -39,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
 #include <list> // Needed for rollbackRevertActions()
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;
@@ -47,6 +49,7 @@ class IWritableCraftDefManager;
 class EventManager;
 class PlayerSAO;
 class IRollbackManager;
+class EmergeManager;
 
 class ServerError : public std::exception
 {
@@ -70,117 +73,55 @@ public:
 */
 v3f findSpawnPos(ServerMap &map);
 
-/*
-	A structure containing the data needed for queueing the fetching
-	of blocks.
-*/
-struct QueuedBlockEmerge
-{
-	v3s16 pos;
-	// key = peer_id, value = flags
-	core::map<u16, u8> peer_ids;
-};
 
-/*
-	This is a thread-safe class.
-*/
-class BlockEmergeQueue
+class MapEditEventIgnorer
 {
 public:
-	BlockEmergeQueue()
+	MapEditEventIgnorer(bool *flag):
+		m_flag(flag)
 	{
-		m_mutex.Init();
+		if(*m_flag == false)
+			*m_flag = true;
+		else
+			m_flag = NULL;
 	}
 
-	~BlockEmergeQueue()
+	~MapEditEventIgnorer()
 	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		if(m_flag)
 		{
-			QueuedBlockEmerge *q = *i;
-			delete q;
+			assert(*m_flag);
+			*m_flag = false;
 		}
-	}
-
-	/*
-		peer_id=0 adds with nobody to send to
-	*/
-	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
-	{
-		DSTACK(__FUNCTION_NAME);
-
-		JMutexAutoLock lock(m_mutex);
-
-		if(peer_id != 0)
-		{
-			/*
-				Find if block is already in queue.
-				If it is, update the peer to it and quit.
-			*/
-			core::list<QueuedBlockEmerge*>::Iterator i;
-			for(i=m_queue.begin(); i!=m_queue.end(); i++)
-			{
-				QueuedBlockEmerge *q = *i;
-				if(q->pos == pos)
-				{
-					q->peer_ids[peer_id] = flags;
-					return;
-				}
-			}
-		}
-
-		/*
-			Add the block
-		*/
-		QueuedBlockEmerge *q = new QueuedBlockEmerge;
-		q->pos = pos;
-		if(peer_id != 0)
-			q->peer_ids[peer_id] = flags;
-		m_queue.push_back(q);
-	}
-
-	// Returned pointer must be deleted
-	// Returns NULL if queue is empty
-	QueuedBlockEmerge * pop()
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i = m_queue.begin();
-		if(i == m_queue.end())
-			return NULL;
-		QueuedBlockEmerge *q = *i;
-		m_queue.erase(i);
-		return q;
-	}
-
-	u32 size()
-	{
-		JMutexAutoLock lock(m_mutex);
-		return m_queue.size();
-	}
-
-	u32 peerItemCount(u16 peer_id)
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		u32 count = 0;
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
-		{
-			QueuedBlockEmerge *q = *i;
-			if(q->peer_ids.find(peer_id) != NULL)
-				count++;
-		}
-
-		return count;
 	}
 
 private:
-	core::list<QueuedBlockEmerge*> m_queue;
-	JMutex m_mutex;
+	bool *m_flag;
+};
+
+class MapEditEventAreaIgnorer
+{
+public:
+	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
+		m_ignorevariable(ignorevariable)
+	{
+		if(m_ignorevariable->getVolume() == 0)
+			*m_ignorevariable = a;
+		else
+			m_ignorevariable = NULL;
+	}
+
+	~MapEditEventAreaIgnorer()
+	{
+		if(m_ignorevariable)
+		{
+			assert(m_ignorevariable->getVolume() != 0);
+			*m_ignorevariable = VoxelArea();
+		}
+	}
+
+private:
+	VoxelArea *m_ignorevariable;
 };
 
 class Server;
@@ -198,30 +139,6 @@ public:
 	}
 
 	void * Thread();
-};
-
-class EmergeThread : public SimpleThread
-{
-	Server *m_server;
-
-public:
-
-	EmergeThread(Server *server):
-		SimpleThread(),
-		m_server(server)
-	{
-	}
-
-	void * Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
 };
 
 struct PlayerInfo
@@ -602,6 +519,7 @@ private:
 		Static send methods
 	*/
 
+	static void SendMovement(con::Connection &con, u16 peer_id);
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
@@ -718,7 +636,9 @@ private:
 
 	// Some timers
 	float m_liquid_transform_timer;
+	float m_liquid_transform_every;
 	float m_print_info_timer;
+	float m_masterserver_timer;
 	float m_objectdata_timer;
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
@@ -736,6 +656,7 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
+	u16 m_clients_number; //for announcing masterserver
 
 	// Bann checking
 	BanManager m_banmanager;
@@ -781,10 +702,6 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread m_thread;
-	// This thread fetches and generates map
-	EmergeThread m_emergethread;
-	// Queue of block coordinates to be processed by the emerge thread
-	BlockEmergeQueue m_emerge_queue;
 
 	/*
 		Time related stuff

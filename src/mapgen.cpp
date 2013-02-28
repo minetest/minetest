@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -46,144 +46,6 @@ FlagDesc flagdesc_mapgen[] = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/////////////////////////////// Emerge Manager ////////////////////////////////
-
-
-EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
-	//register built-in mapgens
-	registerMapgen("v6", new MapgenFactoryV6());
-		
-	//the order of these assignments is pretty important
-	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
-	this->params   = NULL;
-	this->mapgen   = NULL;
-}
-
-
-EmergeManager::~EmergeManager() {
-	delete biomedef;
-	delete mapgen;
-	delete params;
-}
-
-
-void EmergeManager::initMapgens(MapgenParams *mgparams) {
-	if (mapgen)
-		return;
-	
-	this->params = mgparams;
-	this->mapgen = getMapgen(); //only one mapgen for now!
-}
-
-
-Mapgen *EmergeManager::getMapgen() {
-	if (!mapgen) {
-		mapgen = createMapgen(params->mg_name, 0, params, this);
-		if (!mapgen) {
-			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
-			delete params;
-			params = createMapgenParams("v6");
-			mapgen = createMapgen("v6", 0, params, this);
-		}
-	}
-	return mapgen;
-}
-
-void EmergeManager::addBlockToQueue() {
-	//STUB
-}
-
-
-int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
-	if (!mapgen)
-		return 0;
-	return mapgen->getGroundLevelAtPoint(p);
-}
-
-
-bool EmergeManager::isBlockUnderground(v3s16 blockpos) {
-	/*
-	v2s16 p = v2s16((blockpos.X * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2,
-					(blockpos.Y * MAP_BLOCKSIZE) + MAP_BLOCKSIZE / 2);
-	int ground_level = getGroundLevelAtPoint(p);
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= min(water_level, ground_level);
-	*/
-
-	//yuck, but then again, should i bother being accurate?
-	//the height of the nodes in a single block is quite variable
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params->water_level;
-}
-
-
-u32 EmergeManager::getBlockSeed(v3s16 p) {
-	return (u32)(params->seed & 0xFFFFFFFF) +
-		p.Z * 38134234 +
-		p.Y * 42123 +
-		p.Y * 23;
-}
-
-
-Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
-									MapgenParams *mgparams, EmergeManager *emerge) {
-	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
-	if (iter == mglist.end()) {
-		errorstream << "EmergeManager; mapgen " << mgname <<
-		 " not registered" << std::endl;
-		return NULL;
-	}
-	
-	MapgenFactory *mgfactory = iter->second;
-	return mgfactory->createMapgen(mgid, mgparams, emerge);
-}
-
-
-MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
-	std::map<std::string, MapgenFactory *>::const_iterator iter = mglist.find(mgname);
-	if (iter == mglist.end()) {
-		errorstream << "EmergeManager: mapgen " << mgname <<
-		 " not registered" << std::endl;
-		return NULL;
-	}
-	
-	MapgenFactory *mgfactory = iter->second;
-	return mgfactory->createMapgenParams();
-}
-
-
-MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
-	std::string mg_name = settings->get("mg_name");
-	MapgenParams *mgparams = createMapgenParams(mg_name);
-	
-	mgparams->mg_name     = mg_name;
-	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
-	mgparams->water_level = settings->getS16("water_level");
-	mgparams->chunksize   = settings->getS16("chunksize");
-	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
-
-	if (!mgparams->readParams(settings)) {
-		delete mgparams;
-		return NULL;
-	}
-	return mgparams;
-}
-
-
-void EmergeManager::setParamsToSettings(Settings *settings) {
-	settings->set("mg_name",         params->mg_name);
-	settings->setU64("seed",         params->seed);
-	settings->setS16("water_level",  params->water_level);
-	settings->setS16("chunksize",    params->chunksize);
-	settings->setFlagStr("mg_flags", params->flags, flagdesc_mapgen);
-
-	params->writeParams(settings);
-}
-
-
-void EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory) {
-	mglist.insert(std::make_pair(mgname, mgfactory));
-	infostream << "EmergeManager: registered mapgen " << mgname << std::endl;
-}
-
 
 /////////////////////
 
@@ -2251,6 +2113,7 @@ void make_block(BlockMakeData *data)
 	*/
 	assert(central_area_size.X == central_area_size.Z);
 	{
+		PseudoRandom ps (blockseed);
 		// Divide area into parts
 		s16 div = 8;
 		s16 sidelen = central_area_size.X / div;
@@ -2278,8 +2141,8 @@ void make_block(BlockMakeData *data)
 			// Put trees in random places on part of division
 			for(u32 i=0; i<tree_count; i++)
 			{
-				s16 x = myrand_range(p2d_min.X, p2d_max.X);
-				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
+				s16 x = ps.range(p2d_min.X, p2d_max.X);
+				s16 z = ps.range(p2d_min.Y, p2d_max.Y);
 				s16 y = find_ground_level(vmanip, v2s16(x,z), ndef);
 				// Don't make a tree under water level
 				if(y < WATER_LEVEL)
@@ -2300,7 +2163,7 @@ void make_block(BlockMakeData *data)
 				}
 				p.Y++;
 				// Make a tree
-				treegen::make_tree(vmanip, p, false, ndef);
+				treegen::make_tree(vmanip, p, false, ndef, ps.next());
 			}
 		}
 	}
@@ -2984,19 +2847,4 @@ void make_block(BlockMakeData *data)
 }
 
 #endif ///BIG COMMENT
-
-BlockMakeData::BlockMakeData():
-	no_op(false),
-	vmanip(NULL),
-	seed(0),
-	nodedef(NULL)
-{}
-
-BlockMakeData::~BlockMakeData()
-{
-	delete vmanip;
-}
-
-//}; // namespace mapgen
-
 

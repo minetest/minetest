@@ -141,7 +141,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		minetest.log("info", placer:get_player_name() .. " tried to place"
 			.. " node in invalid position " .. minetest.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
-		return
+		return itemstack
 	end
 
 	-- Place above pointed node
@@ -186,7 +186,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		not check_attached_node(place_to, newnode) then
 		minetest.log("action", "attached node " .. def.name ..
 			" can not be placed at " .. minetest.pos_to_string(place_to))
-		return
+		return itemstack
 	end
 
 	-- Add node and update
@@ -237,16 +237,14 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 		local n = minetest.env:get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
-			minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer)
-			return
+			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack)
 		end
 	end
 
 	if itemstack:get_definition().type == "node" then
 		return minetest.item_place_node(itemstack, placer, pointed_thing)
-	elseif itemstack:get_definition().type ~= "none" then
-		return minetest.item_place_object(itemstack, placer, pointed_thing)
 	end
+	return itemstack
 end
 
 function minetest.item_drop(itemstack, dropper, pos)
@@ -263,7 +261,7 @@ function minetest.item_drop(itemstack, dropper, pos)
 	else
 		minetest.env:add_item(pos, itemstack)
 	end
-	return ""
+	return ItemStack("")
 end
 
 function minetest.item_eat(hp_change, replace_with_item)
@@ -292,7 +290,15 @@ function minetest.handle_node_drops(pos, drops, digger)
 	if digger:get_inventory() then
 		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
+			local left = digger:get_inventory():add_item("main", dropped_item)
+			if not left:is_empty() then
+				local p = {
+					x = pos.x + math.random()/2-0.25,
+					y = pos.y + math.random()/2-0.25,
+					z = pos.z + math.random()/2-0.25,
+				}
+				minetest.env:add_item(p, left)
+			end
 		end
 	end
 end

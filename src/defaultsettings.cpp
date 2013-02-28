@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "settings.h"
+#include "filesys.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -129,8 +130,18 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("media_fetch_threads", "8");
 
-	settings->setDefault("serverlist_url", "servers.minetest.ru/server.list");
+	settings->setDefault("serverlist_url", "servers.minetest.net");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
+	settings->setDefault("server_announce", "false");
+	settings->setDefault("server_url", "");
+	settings->setDefault("server_address", "");
+	settings->setDefault("server_name", "");
+	settings->setDefault("server_description", "");
+
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
+	settings->setDefault("font_size", "13");
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
+	settings->setDefault("mono_font_size", "13");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
@@ -172,10 +183,34 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
+	settings->setDefault("debug_log_level", "0");
+	settings->setDefault("emergequeue_limit_total", "256");
+	settings->setDefault("emergequeue_limit_diskonly", "");
+	settings->setDefault("emergequeue_limit_generate", "");
+	settings->setDefault("num_emerge_threads", "1");
+	
+	// physics stuff
+	settings->setDefault("movement_acceleration_default", "3");
+	settings->setDefault("movement_acceleration_air", "2");
+	settings->setDefault("movement_acceleration_fast", "10");
+	settings->setDefault("movement_speed_walk", "4");
+	settings->setDefault("movement_speed_crouch", "1.35");
+	settings->setDefault("movement_speed_fast", "20");
+	settings->setDefault("movement_speed_climb", "2");
+	settings->setDefault("movement_speed_jump", "6.5");
+	settings->setDefault("movement_liquid_fluidity", "1");
+	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
+	settings->setDefault("movement_liquid_sink", "10");
+	settings->setDefault("movement_gravity", "9.81");
 	
 	//mapgen related things
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
+	settings->setDefault("liquid_finite", "false");
+	settings->setDefault("liquid_update", "1.0");
+	settings->setDefault("liquid_relax", "1");
+	settings->setDefault("liquid_fast_flood", "1");
+	
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
 	settings->setDefault("mgv6_freq_desert", "0.45");

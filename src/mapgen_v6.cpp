@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
+#include "emerge.h"
 #include "mapgen_v6.h"
 
 /////////////////// Mapgen V6 perlin noise default values
@@ -431,12 +432,6 @@ int MapgenV6::getGroundLevelAtPoint(v2s16 p) {
 
 void MapgenV6::makeChunk(BlockMakeData *data)
 {
-	if(data->no_op)
-	{
-		//dstream<<"makeBlock: no-op"<<std::endl;
-		return;
-	}
-
 	this->generating = true;
 
 	assert(data->vmanip);
@@ -1435,4 +1430,5 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		vmanip.spreadLight(bank, light_sources, ndef);
 	}
 	}
+	this->generating = false;
 }

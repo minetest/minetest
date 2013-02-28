@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -1061,6 +1061,10 @@ static ItemDefinition read_item_definition(lua_State *L, int index,
 
 	lua_getfield(L, index, "on_use");
 	def.usable = lua_isfunction(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "on_rightclick");
+	def.rightclickable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
@@ -4250,6 +4254,7 @@ private:
 				tree_def.fruitnode=ndef->getId(fruit);
 				getintfield(L, 3, "fruit_chance",tree_def.fruit_chance);
 			}
+			getintfield(L, 3, "seed", tree_def.seed);
 		}
 		else
 			return 0;
@@ -4746,7 +4751,7 @@ static int l_register_item_raw(lua_State *L)
 	// Default to having client-side placement prediction for nodes
 	// ("" in item definition sets it off)
 	if(def.node_placement_prediction == "__default"){
-		if(def.type == ITEM_NODE)
+		if(def.type == ITEM_NODE && !def.rightclickable)
 			def.node_placement_prediction = name;
 		else
 			def.node_placement_prediction = "";

@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #include "gettext.h"
+
+#if USE_FREETYPE
+#include "xCGUITTFont.h"
+#endif
 
 inline u32 clamp_u8(s32 value)
 {
@@ -90,8 +94,14 @@ GUIChatConsole::GUIChatConsole(
 
 	// load the font
 	// FIXME should a custom texture_path be searched too?
+	#if USE_FREETYPE
+	std::string font_name = g_settings->get("mono_font_path");
+	u16 font_size = g_settings->getU16("mono_font_size");
+	m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
+	#else
 	std::string font_name = "fontdejavusansmono.png";
 	m_font = env->getFont(getTexturePath(font_name).c_str());
+	#endif
 	if (m_font == NULL)
 	{
 		dstream << "Unable to load font: " << font_name << std::endl;

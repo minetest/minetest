@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -90,37 +90,39 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	
 	/*
-		Check if player is in water (the oscillating value)
+		Check if player is in liquid (the oscillating value)
 	*/
 	try{
-		// If in water, the threshold of coming out is at higher y
-		if(in_water)
+		// If in liquid, the threshold of coming out is at higher y
+		if(in_liquid)
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0), BS);
-			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			in_liquid = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			liquid_viscosity = nodemgr->get(map.getNode(pp).getContent()).liquid_viscosity;
 		}
-		// If not in water, the threshold of going in is at lower y
+		// If not in liquid, the threshold of going in is at lower y
 		else
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0), BS);
-			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			in_liquid = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+			liquid_viscosity = nodemgr->get(map.getNode(pp).getContent()).liquid_viscosity;
 		}
 	}
 	catch(InvalidPositionException &e)
 	{
-		in_water = false;
+		in_liquid = false;
 	}
 
 	/*
-		Check if player is in water (the stable value)
+		Check if player is in liquid (the stable value)
 	*/
 	try{
 		v3s16 pp = floatToInt(position + v3f(0,0,0), BS);
-		in_water_stable = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
+		in_liquid_stable = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
 	}
 	catch(InvalidPositionException &e)
 	{
-		in_water_stable = false;
+		in_liquid_stable = false;
 	}
 
 	/*
@@ -159,7 +161,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak && m_sneak_node_exists && !g_settings->getBool("free_move"))
+	if(control.sneak && m_sneak_node_exists && !(fly_allowed && g_settings->getBool("free_move")) && !in_liquid)
 	{
 		f32 maxd = 0.5*BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
@@ -315,7 +317,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	}
 
 	if(bouncy_jump && control.jump){
-		m_speed.Y += 6.5*BS;
+		m_speed.Y += movement_speed_jump*BS;
 		touching_ground = false;
 		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 		m_gamedef->event()->put(e);
@@ -348,7 +350,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	const ContentFeatures &f = nodemgr->get(map.getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
-	m_can_jump = touching_ground;
+	m_can_jump = touching_ground && !in_liquid;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 }
@@ -361,12 +363,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 void LocalPlayer::applyControl(float dtime)
 {
 	// Clear stuff
-	swimming_up = false;
+	swimming_vertical = false;
 
-	// Random constants
-	f32 walk_acceleration = 4.0 * BS;
-	f32 walkspeed_max = 4.0 * BS;
-	
 	setPitch(control.pitch);
 	setYaw(control.yaw);
 
@@ -380,21 +378,16 @@ void LocalPlayer::applyControl(float dtime)
 	v3f move_direction = v3f(0,0,1);
 	move_direction.rotateXZBy(getYaw());
 	
-	v3f speed = v3f(0,0,0);
+	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
+	v3f speedV = v3f(0,0,0); // Vertical (Y)
 	
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
 
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
+	bool fast_or_aux1_descends = (fast_move && control.aux1) || (fast_move && g_settings->getBool("aux1_descends"));
 	bool continuous_forward = g_settings->getBool("continuous_forward");
-
-	if(free_move || is_climbing)
-	{
-		v3f speed = getSpeed();
-		speed.Y = 0;
-		setSpeed(speed);
-	}
 
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
@@ -415,18 +408,21 @@ void LocalPlayer::applyControl(float dtime)
 			if(free_move)
 			{
 				// In free movement mode, aux1 descends
-				v3f speed = getSpeed();
 				if(fast_move)
-					speed.Y = -20*BS;
+					speedV.Y = -movement_speed_fast;
 				else
-					speed.Y = -walkspeed_max;
-				setSpeed(speed);
+					speedV.Y = -movement_speed_walk;
+			}
+			else if(in_liquid || in_liquid_stable)
+			{
+				// Always use fast when aux1_descends & fast_move are enabled in liquid, since the aux1 button would mean both turbo and "swim down" causing a conflict
+				speedV.Y = -movement_speed_fast;
+				swimming_vertical = true;
 			}
 			else if(is_climbing)
 			{
-					v3f speed = getSpeed();
-				speed.Y = -3*BS;
-				setSpeed(speed);
+				// Always use fast when aux1_descends & fast_move are enabled when climbing, since the aux1 button would mean both turbo and "descend" causing a conflict
+				speedV.Y = -movement_speed_fast;
 			}
 			else
 			{
@@ -456,66 +452,69 @@ void LocalPlayer::applyControl(float dtime)
 			if(free_move)
 			{
 				// In free movement mode, sneak descends
-				v3f speed = getSpeed();
-				if(fast_move && (control.aux1 ||
-						g_settings->getBool("always_fly_fast")))
-					speed.Y = -20*BS;
+				if(fast_move && (control.aux1 || g_settings->getBool("always_fly_fast")))
+					speedV.Y = -movement_speed_fast;
 				else
-					speed.Y = -walkspeed_max;
-					setSpeed(speed);
+					speedV.Y = -movement_speed_walk;
+			}
+			else if(in_liquid || in_liquid_stable)
+			{
+				if(fast_or_aux1_descends)
+					// Always use fast when aux1_descends & fast_move are enabled in liquid, since the aux1 button would mean both turbo and "swim down" causing a conflict
+					speedV.Y = -movement_speed_fast;
+				else
+					speedV.Y = -movement_speed_walk;
+				swimming_vertical = true;
 			}
 			else if(is_climbing)
 			{
-				v3f speed = getSpeed();
-				speed.Y = -3*BS;
-				setSpeed(speed);
+				if(fast_or_aux1_descends)
+					// Always use fast when aux1_descends & fast_move are enabled when climbing, since the aux1 button would mean both turbo and "descend" causing a conflict
+					speedV.Y = -movement_speed_fast;
+				else
+					speedV.Y = -movement_speed_climb;
 			}
 		}
 	}
 
 	if(continuous_forward)
-		speed += move_direction;
+		speedH += move_direction;
 
 	if(control.up)
 	{
 		if(continuous_forward)
 			superspeed = true;
 		else
-			speed += move_direction;
+			speedH += move_direction;
 	}
 	if(control.down)
 	{
-		speed -= move_direction;
+		speedH -= move_direction;
 	}
 	if(control.left)
 	{
-		speed += move_direction.crossProduct(v3f(0,1,0));
+		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
 	if(control.right)
 	{
-		speed += move_direction.crossProduct(v3f(0,-1,0));
+		speedH += move_direction.crossProduct(v3f(0,-1,0));
 	}
 	if(control.jump)
 	{
 		if(free_move)
-		{
-			v3f speed = getSpeed();
-			
-			if(g_settings->getBool("aux1_descends") ||
-					g_settings->getBool("always_fly_fast"))
+		{			
+			if(g_settings->getBool("aux1_descends") || g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)
-					speed.Y = 20*BS;
+					speedV.Y = movement_speed_fast;
 				else
-					speed.Y = walkspeed_max;
+					speedV.Y = movement_speed_walk;
 			} else {
 				if(fast_move && control.aux1)
-					speed.Y = 20*BS;
+					speedV.Y = movement_speed_fast;
 				else
-					speed.Y = walkspeed_max;
+					speedV.Y = movement_speed_walk;
 			}
-			
-			setSpeed(speed);
 		}
 		else if(m_can_jump)
 		{
@@ -524,49 +523,66 @@ void LocalPlayer::applyControl(float dtime)
 				raising the height at which the jump speed is kept
 				at its starting value
 			*/
-			v3f speed = getSpeed();
-			if(speed.Y >= -0.5*BS)
+			v3f speedJ = getSpeed();
+			if(speedJ.Y >= -0.5 * BS)
 			{
-				speed.Y = 6.5*BS;
-				setSpeed(speed);
+				speedJ.Y = movement_speed_jump;
+				setSpeed(speedJ);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_gamedef->event()->put(e);
 			}
 		}
-		// Use the oscillating value for getting out of water
-		// (so that the player doesn't fly on the surface)
-		else if(in_water)
+		else if(in_liquid)
 		{
-			v3f speed = getSpeed();
-			speed.Y = 1.5*BS;
-			setSpeed(speed);
-			swimming_up = true;
+			if(fast_or_aux1_descends)
+				// Always use fast when aux1_descends & fast_move are enabled in liquid, since the aux1 button would mean both turbo and "swim down" causing a conflict
+				speedV.Y = movement_speed_fast;
+			else
+				speedV.Y = movement_speed_walk;
+			swimming_vertical = true;
 		}
 		else if(is_climbing)
 		{
-	                v3f speed = getSpeed();
-			speed.Y = 3*BS;
-			setSpeed(speed);
+			if(fast_or_aux1_descends)
+				// Always use fast when aux1_descends & fast_move are enabled when climbing, since the aux1 button would mean both turbo and "descend" causing a conflict
+				speedV.Y = movement_speed_fast;
+			else
+				speedV.Y = movement_speed_climb;
 		}
 	}
 
 	// The speed of the player (Y is ignored)
-	if(superspeed)
-		speed = speed.normalize() * walkspeed_max * 5.0;
-	else if(control.sneak && !free_move)
-		speed = speed.normalize() * walkspeed_max / 3.0;
+	if(superspeed || (is_climbing && fast_or_aux1_descends) || ((in_liquid || in_liquid_stable) && fast_or_aux1_descends))
+		speedH = speedH.normalize() * movement_speed_fast;
+	else if(control.sneak && !free_move && !in_liquid && !in_liquid_stable)
+		speedH = speedH.normalize() * movement_speed_crouch;
 	else
-		speed = speed.normalize() * walkspeed_max;
-	
-	f32 inc = walk_acceleration * BS * dtime;
-	
-	// Faster acceleration if fast and free movement
-	if(free_move && fast_move && superspeed)
-		inc = walk_acceleration * BS * dtime * 10;
-	
+		speedH = speedH.normalize() * movement_speed_walk;
+
+	// Acceleration increase
+	f32 incH = 0; // Horizontal (X, Z)
+	f32 incV = 0; // Vertical (Y)
+	if((!touching_ground && !free_move && !is_climbing && !in_liquid) || (!free_move && m_can_jump && control.jump))
+	{
+		// Jumping and falling
+		if(superspeed || (fast_move && control.aux1))
+			incH = movement_acceleration_fast * BS * dtime;
+		else
+			incH = movement_acceleration_air * BS * dtime;
+		incV = 0; // No vertical acceleration in air
+	}
+	else if(superspeed || (fast_move && control.aux1))
+		incH = incV = movement_acceleration_fast * BS * dtime;
+	else if ((in_liquid || in_liquid_stable) && fast_or_aux1_descends)
+		// Always use fast when aux1_descends & fast_move are enabled in liquid, since the aux1 button would mean both turbo and "swim down" causing a conflict
+		incH = incV = movement_acceleration_fast * BS * dtime;
+	else
+		incH = incV = movement_acceleration_default * BS * dtime;
+
 	// Accelerate to target speed with maximum increment
-	accelerate(speed, inc);
+	accelerateHorizontal(speedH, incH);
+	accelerateVertical(speedV, incV);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()

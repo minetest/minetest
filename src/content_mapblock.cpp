@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -261,7 +261,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing)
 						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
-								+ 0.5) / 8.0 * node_liquid_level) * BS;
+								+ 0.5) / (float)LIQUID_LEVEL_SOURCE * node_liquid_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -324,7 +324,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 				}
 				if(air_count >= 2)
-					cornerlevel = -0.5*BS;
+					cornerlevel = -0.5*BS+0.1;
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
@@ -733,7 +733,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
-			for(u32 j=0; j<4; j++)
+			for(u32 j=0; j<2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
@@ -758,16 +758,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				{
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(-45);
-				}
-				else if(j == 2)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(135);
-				}
-				else if(j == 3)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-135);
 				}
 
 				for(u16 i=0; i<4; i++)

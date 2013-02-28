@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -208,11 +208,12 @@ inline void writeARGB8(u8 *data, video::SColor p)
 
 inline video::SColor readARGB8(const u8 *data)
 {
-	video::SColor p;
-	p.setAlpha(readU8(&data[0]));
-	p.setRed(readU8(&data[1]));
-	p.setGreen(readU8(&data[2]));
-	p.setBlue(readU8(&data[3]));
+	video::SColor p(
+		readU8(&data[0]),
+		readU8(&data[1]),
+		readU8(&data[2]),
+		readU8(&data[3])
+	);
 	return p;
 }
 

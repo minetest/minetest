@@ -27,7 +27,7 @@ minetest.register_alias("mapgen_mese", "default:mese")
 -- Ore generation
 --
 
-local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, ore_per_chunk, height_min, height_max)
+local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, ore_per_chunk, height_min, height_max, param2)
 	if maxp.y < height_min or minp.y > height_max then
 		return
 	end
@@ -57,7 +57,7 @@ local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, 
 					local z2 = z0+z1
 					local p2 = {x=x2, y=y2, z=z2}
 					if minetest.env:get_node(p2).name == wherein then
-						minetest.env:set_node(p2, {name=name})
+						minetest.env:set_node(p2, {name=name, param2=param2})
 					end
 				end
 			end
@@ -109,6 +109,12 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			end
 		end
 		end
+	end
+	if minetest.setting_get("liquid_finite") then
+		generate_ore("default:water_source", "default:stone", minp, maxp, seed+42, 1/24/24/24, 4,  -100,   -10,  128)
+		generate_ore("default:water_source", "default:stone", minp, maxp, seed+42, 1/28/28/28, 3,  -10000, -101, 128)
+		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+43, 1/38/38/38, 2,  -500,   -100, 128)
+		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+43, 1/30/30/30, 4,  -31000, -501, 128)
 	end
 end)
 

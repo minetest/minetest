@@ -1093,6 +1093,7 @@ treedef={
   thin_branches, - boolean true -> use thin (1 node) branches
   fruit,         - string  fruit node name
   fruit_chance,  - num     chance (0-100) to replace leaves with fruit node
+  seed,          - num     random seed
   }
 
 Key for Special L-System Symbols used in Axioms
@@ -1497,8 +1498,10 @@ Node definition (register_node)
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
-    on_rightclick = func(pos, node, clicker),
+    on_rightclick = func(pos, node, clicker, itemstack),
     ^ default: nil
+    ^ if defined, itemstack will hold clicker's wielded item
+      Shall return the leftover itemstack
     on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node

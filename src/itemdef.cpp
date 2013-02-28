@@ -1,7 +1,7 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2011 Kahrl <kahrl@gmx.net>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013 Kahrl <kahrl@gmx.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -100,6 +100,7 @@ void ItemDefinition::reset()
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
 	usable = false;
+	rightclickable = false;
 	liquids_pointable = false;
 	if(tool_capabilities)
 	{

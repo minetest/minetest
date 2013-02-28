@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -2065,20 +2065,37 @@ void ClientEnvironment::step(float dtime)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->swimming_up == false)
-					speed.Y -= 9.81 * BS * dtime_part * 2;
+				if(lplayer->in_liquid == false)
+					speed.Y -= lplayer->movement_gravity * dtime_part * 2;
 
-				// Water resistance
-				if(lplayer->in_water_stable || lplayer->in_water)
+				// Liquid floating / sinking
+				if(lplayer->in_liquid && !lplayer->swimming_vertical)
+					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
+
+				// Liquid resistance
+				if(lplayer->in_liquid_stable || lplayer->in_liquid)
 				{
-					f32 max_down = 2.0*BS;
-					if(speed.Y < -max_down) speed.Y = -max_down;
+					// How much the node's viscosity blocks movement, ranges between 0 and 1
+					// Should match the scale at which viscosity increase affects other liquid attributes
+					const f32 viscosity_factor = 0.3;
 
-					f32 max = 2.5*BS;
-					if(speed.getLength() > max)
-					{
-						speed = speed / speed.getLength() * max;
-					}
+					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+					f32 dl = d_wanted.getLength();
+					if(dl > lplayer->movement_liquid_fluidity_smooth)
+						dl = lplayer->movement_liquid_fluidity_smooth;
+					dl *= (lplayer->liquid_viscosity * viscosity_factor) + (1 - viscosity_factor);
+					
+					v3f d = d_wanted.normalize() * dl;
+					speed += d;
+					
+#if 0 // old code
+					if(speed.X > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.X -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.X < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.X += lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Y > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Y -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Y < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Y += lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Z > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Z -= lplayer->movement_liquid_fluidity_smooth;
+					if(speed.Z < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Z += lplayer->movement_liquid_fluidity_smooth;
+#endif
 				}
 
 				lplayer->setSpeed(speed);

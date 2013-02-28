@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -55,6 +55,7 @@ struct MainMenuData
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
+	bool enable_public;
 	int selected_world;
 	bool simple_singleplayer_mode;
 	// Actions
@@ -77,6 +78,7 @@ struct MainMenuData
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
+		enable_public(false),
 		selected_world(0),
 		simple_singleplayer_mode(false),
 		// Actions

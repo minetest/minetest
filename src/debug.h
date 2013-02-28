@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
 	#include <windows.h>
 	#ifdef _MSC_VER
 		#include <eh.h>

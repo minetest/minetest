@@ -36,6 +36,12 @@ src/jthread/cmake_install.cmake
 src/jthread/libjthread.a
 src/lua/build/
 src/lua/CMakeFiles/
+src/cguittfont/CMakeFiles/
+src/cguittfont/libcguittfont.a
+src/cguittfont/cmake_install.cmake
+src/cguittfont/Makefile
+src/json/CMakeFiles/
+src/json/libjson.a
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake

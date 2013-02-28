@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
+#include "guiVolumeChange.h"
 #include "guiFormSpecMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
@@ -1262,7 +1263,7 @@ void the_game(
 	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0,0,400,text_height*5+5) + v2s32(100,200),
-			false, false);
+			false, true);
 	
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	gui::IGUIStaticText *guitext_status = guienv->addStaticText(
@@ -1517,6 +1518,13 @@ void the_game(
 			(new GUIPasswordChange(guienv, guiroot, -1,
 				&g_menumgr, &client))->drop();
 			g_gamecallback->changepassword_requested = false;
+		}
+
+		if(g_gamecallback->changevolume_requested)
+		{
+			(new GUIVolumeChange(guienv, guiroot, -1,
+				&g_menumgr, &client))->drop();
+			g_gamecallback->changevolume_requested = false;
 		}
 
 		/* Process TextureSource's queue */
@@ -2531,7 +2539,8 @@ void the_game(
 					// make that happen
 					const ItemDefinition &def =
 							playeritem.getDefinition(itemdef);
-					if(def.node_placement_prediction != "")
+					if(def.node_placement_prediction != ""
+							&& !nodedef->get(map.getNode(nodepos)).rightclickable)
 					do{ // breakable
 						verbosestream<<"Node placement prediction for "
 								<<playeritem.name<<" is "
@@ -2807,12 +2816,12 @@ void the_game(
 			char temptext[300];
 			snprintf(temptext, 300,
 					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %lli)",
+					" (yaw = %.1f) (seed = %llu)",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
 					wrapDegrees_0_360(camera_yaw),
-					client.getMapSeed());
+					(unsigned long long)client.getMapSeed());
 
 			guitext2->setText(narrow_to_wide(temptext).c_str());
 			guitext2->setVisible(true);

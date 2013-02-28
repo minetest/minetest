@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -68,6 +68,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
+#if USE_FREETYPE
+#include "xCGUITTFont.h"
+#endif
 #include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
@@ -767,11 +770,19 @@ int main(int argc, char *argv[])
 
 	log_register_thread("main");
 
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
+	// This enables internatonal characters input
+	if( setlocale(LC_ALL, "") == NULL )
+	{
+		fprintf( stderr, "%s: warning: could not set default locale\n", argv[0] );
+	}
 
+	// Set locale. This is for forcing '.' as the decimal point.
+	try {
+		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
+		setlocale(LC_NUMERIC, "C");
+	} catch (const std::exception& ex) {
+		errorstream<<"Could not set numeric locale to C"<<std::endl;
+	}
 	/*
 		Parse command line
 	*/
@@ -875,23 +886,8 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
 
-	init_gettext((porting::path_share+DIR_DELIM+".."+DIR_DELIM+"locale").c_str());
-	
-	// Initialize debug streams
-#define DEBUGFILE "debug.txt"
-#if RUN_IN_PLACE
-	std::string logfile = DEBUGFILE;
-#else
-	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
-#endif
-	if(cmd_args.exists("logfile"))
-		logfile = cmd_args.get("logfile");
-	if(logfile != "")
-		debugstreams_init(false, logfile.c_str());
-	else
-		debugstreams_init(false, NULL);
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
 
-	infostream<<"logfile    = "<<logfile<<std::endl;
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
 
@@ -984,6 +980,31 @@ int main(int argc, char *argv[])
 		if(configpath == "")
 			configpath = filenames[0];
 	}
+	
+	// Initialize debug streams
+#define DEBUGFILE "debug.txt"
+#if RUN_IN_PLACE
+	std::string logfile = DEBUGFILE;
+#else
+	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
+#endif
+	if(cmd_args.exists("logfile"))
+		logfile = cmd_args.get("logfile");
+	
+	log_remove_output(&main_dstream_no_stderr_log_out);
+	int loglevel = g_settings->getS32("debug_log_level");
+
+	if (loglevel == 0) //no logging
+		logfile = "";
+	else if (loglevel > 0 && loglevel <= LMT_NUM_VALUES)
+		log_add_output_maxlev(&main_dstream_no_stderr_log_out, (LogMessageLevel)(loglevel - 1));
+
+	if(logfile != "")
+		debugstreams_init(false, logfile.c_str());
+	else
+		debugstreams_init(false, NULL);
+		
+	infostream<<"logfile    = "<<logfile<<std::endl;
 
 	// Initialize random seed
 	srand(time(0));
@@ -1084,6 +1105,7 @@ int main(int argc, char *argv[])
 #else
 	bool run_dedicated_server = cmd_args.getFlag("server");
 #endif
+	g_settings->set("server_dedicated", run_dedicated_server ? "true" : "false");
 	if(run_dedicated_server)
 	{
 		DSTACK("Dedicated server branch");
@@ -1329,7 +1351,13 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
+	#if USE_FREETYPE
+	std::string font_path = g_settings->get("font_path");
+	u16 font_size = g_settings->getU16("font_size");
+	gui::IGUIFont *font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	#else
 	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
+	#endif
 	if(font)
 		skin->setFont(font);
 	else
@@ -1453,6 +1481,7 @@ int main(int argc, char *argv[])
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
+				menudata.enable_public = g_settings->getBool("server_announce");
 				// Default to selecting nothing
 				menudata.selected_world = -1;
 				// Get world listing for the menu
@@ -1576,6 +1605,7 @@ int main(int argc, char *argv[])
 
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("server_announce", itos(menudata.enable_public));
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
@@ -1602,10 +1632,10 @@ int main(int argc, char *argv[])
 				else if (address != "")
 				{
 					ServerListSpec server;
-					server.name = menudata.servername;
-					server.address = wide_to_narrow(menudata.address);
-					server.port = wide_to_narrow(menudata.port);
-					server.description = menudata.serverdescription;
+					server["name"] = menudata.servername;
+					server["address"] = wide_to_narrow(menudata.address);
+					server["port"] = wide_to_narrow(menudata.port);
+					server["description"] = menudata.serverdescription;
 					ServerList::insert(server);
 				}
 				

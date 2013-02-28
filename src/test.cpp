@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -462,7 +462,7 @@ struct TestCompress: public TestBase
 					<<os_decompressed.str().size()<<std::endl;
 			std::string str_decompressed = os_decompressed.str();
 			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
-					" equal (output: %i, input: %i)",
+					" equal (output: %u, input: %u)",
 					str_decompressed.size(), data_in.size());
 			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
 				UTEST(str_decompressed[i] == data_in[i],
