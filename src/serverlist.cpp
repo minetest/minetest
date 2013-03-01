@@ -84,6 +84,7 @@ std::vector<ServerListSpec> getOnline()
 	{
 		CURLcode res;
 
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+"/list").c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::WriteCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
