@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-22 03:27+0200\n"
-"Last-Translator: Tomona Nanase <alpha.sohoh@gmail.com>\n"
+"PO-Revision-Date: 2013-03-01 04:34+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -146,7 +146,7 @@ msgstr "右へ進む"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "使う"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
@@ -651,7 +651,7 @@ msgstr "左Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "左メニュー"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
@@ -659,7 +659,7 @@ msgstr "右Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "右メニュー"
 
 #: src/keycode.cpp:243
 msgid "Comma"
@@ -703,7 +703,7 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "ズーム"
 
 #: src/main.cpp:1384
 msgid "Main Menu"
@@ -719,7 +719,7 @@ msgstr ""
 
 #: src/main.cpp:1653
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "ゲームをロードか見つかるのに失敗"
 
 #: src/main.cpp:1667
 msgid "Invalid gamespec."
@@ -727,7 +727,7 @@ msgstr ""
 
 #: src/main.cpp:1707
 msgid "Connection error (timed out?)"
-msgstr "接続エラー (タイムアウト?)"
+msgstr "接続エラー (タイムアウトか?)"
 
 #: src/main.cpp:1718
 msgid ""
