@@ -12,7 +12,7 @@
 #
 # NOTE: This file might not be up-to-date, refer to the
 #       defaultsettings.cpp file for an up-to-date list:
-# https://bitbucket.org/celeron55/minetest/src/tip/src/defaultsettings.cpp
+# https://github.com/minetest/minetest/blob/master/src/defaultsettings.cpp
 #
 # A vim command to convert most of defaultsettings.cpp to conf file format:
 # :'<,'>s/\tsettings->setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
