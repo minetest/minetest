@@ -1350,6 +1350,14 @@ int main(int argc, char *argv[])
 		driverType = video::EDT_DIRECT3D9;
 	else if(driverstring == "opengl")
 		driverType = video::EDT_OPENGL;
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	else if(driverstring == "ogles1")
+		driverType = video::EDT_OGLES1;
+#endif
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+	else if(driverstring == "ogles2")
+		driverType = video::EDT_OGLES2;
+#endif
 	else
 	{
 		errorstream<<"WARNING: Invalid video_driver specified; defaulting "
