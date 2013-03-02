@@ -172,6 +172,7 @@ endif()
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
+find_package(OpenGLES2)
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
@@ -386,6 +387,7 @@ if(BUILD_CLIENT)
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${JSON_LIBRARY}
+		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
