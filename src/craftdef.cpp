@@ -987,6 +987,43 @@ public:
 		}
 		return false;
 	}
+	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
+			IGameDef *gamedef) const
+	{
+		std::vector<CraftDefinition*> recipes_list;
+		CraftInput input;
+		CraftOutput tmpout;
+		tmpout.item = "";
+		tmpout.time = 0;
+
+		for(std::vector<CraftDefinition*>::const_reverse_iterator
+				i = m_craft_definitions.rbegin();
+				i != m_craft_definitions.rend(); i++)
+		{
+			CraftDefinition *def = *i;
+
+			/*infostream<<"Checking "<<input.dump()<<std::endl
+					<<" against "<<def->dump()<<std::endl;*/
+
+			try {
+				tmpout = def->getOutput(input, gamedef);
+				if(tmpout.item.substr(0,output.item.length()) == output.item)
+				{
+					// Get output, then decrement input (if requested)
+					input = def->getInput(output, gamedef);
+					recipes_list.push_back(*i);
+				}
+			}
+			catch(SerializationError &e)
+			{
+				errorstream<<"getCraftResult: ERROR: "
+						<<"Serialization error in recipe "
+						<<def->dump()<<std::endl;
+				// then go on with the next craft definition
+			}
+		}
+		return recipes_list;
+	}
 	virtual std::string dump() const
 	{
 		std::ostringstream os(std::ios::binary);
