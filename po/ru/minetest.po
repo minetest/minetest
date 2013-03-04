@@ -107,7 +107,7 @@ msgstr "ЛКМ: Переместить все предметы, ПКМ: Пере
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "В работе"
+msgstr "Продолжить"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -201,7 +201,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "Невозможно создать мир: имя содержит недопустимые символы"
+msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
@@ -241,7 +241,7 @@ msgstr "Новый"
 
 #: src/guiMainMenu.cpp:317
 msgid "Configure"
-msgstr "Настройка"
+msgstr "Настроить"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
@@ -281,7 +281,7 @@ msgstr "Оставьте адрес пустым для запуска лока�
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr "Начать игру / Подключиться"
+msgstr "Начать игру"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
 msgid "Delete world"
@@ -309,11 +309,11 @@ msgstr "Непрозрачная вода"
 
 #: src/guiMainMenu.cpp:639
 msgid "Mip-Mapping"
-msgstr "Mip-Mapping"
+msgstr "MIP-текстурирование"
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
-msgstr "Анизотропная фильтрация"
+msgstr "Анизотропный фильтрация"
 
 #: src/guiMainMenu.cpp:653
 msgid "Bi-Linear Filtering"
@@ -345,7 +345,7 @@ msgstr "Введите адрес."
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr "Не могу удалить мир: ничего не выбрано"
+msgstr "Не могу удалить мир: Ничего не выбрано"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
@@ -357,7 +357,7 @@ msgstr "Не могу создать мир: Ни одной игры не на�
 
 #: src/guiMainMenu.cpp:1042
 msgid "Cannot configure world: Nothing selected"
-msgstr "Не могу настроить мир: ничего не выбрано"
+msgstr "Не могу настроить мир: Ничего не выбрано"
 
 #: src/guiMainMenu.cpp:1146
 msgid "Failed to delete all world files"
@@ -385,7 +385,7 @@ msgstr "Пароли не совпадают!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Продолжить"
+msgstr "Играть дальше"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
@@ -503,7 +503,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr "Иероглифы"
+msgstr "Кандзи"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
@@ -728,7 +728,7 @@ msgstr "Ошибка при инициализации мира"
 
 #: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Не выбран мир и не введен адрес."
+msgstr "Не выбран мир и не введен адрес. Делать нечего."
 
 #: src/main.cpp:1653
 msgid "Could not find or load game \""
