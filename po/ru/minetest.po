@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-17 11:28+0200\n"
-"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
+"PO-Revision-Date: 2013-03-04 22:43+0200\n"
+"Last-Translator: Egor Zimovets <4aiman@inbox.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -41,11 +41,11 @@ msgstr "включено"
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr "Включить все"
+msgstr "Включить всё"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr "Отключить все"
+msgstr "Отключить всё"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
@@ -107,7 +107,7 @@ msgstr "ЛКМ: Переместить все предметы, ПКМ: Пере
 #: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "В работе"
+msgstr "Продолжить"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -173,7 +173,7 @@ msgstr "Чат"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr "Комманда"
+msgstr "Команда"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
@@ -189,11 +189,11 @@ msgstr "Ускорение"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
-msgstr "Включить прохождение сквозь стены"
+msgstr "Проходить сквозь стены"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr "Выбор видимой области"
+msgstr "Выбор зоны видимости"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
@@ -201,7 +201,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "Невозможно создать мир: имя содержит недопустимые символы"
+msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
 
 #: src/guiMainMenu.cpp:64
 msgid "Cannot create world: A world by this name already exists"
@@ -229,7 +229,7 @@ msgstr "Об авторах"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
-msgstr "Выбрать мир:"
+msgstr "Выберите мир:"
 
 #: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
 msgid "Delete"
@@ -241,7 +241,7 @@ msgstr "Новый"
 
 #: src/guiMainMenu.cpp:317
 msgid "Configure"
-msgstr "Настройка"
+msgstr "Настроить"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
@@ -249,11 +249,11 @@ msgstr "Играть"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
-msgstr "Творчество"
+msgstr "Режим Творчества"
 
 #: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
 msgid "Enable Damage"
-msgstr "Включить повреждения"
+msgstr "Получение повреждений"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
@@ -281,7 +281,7 @@ msgstr "Оставьте адрес пустым для запуска лока�
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
-msgstr "Начать игру / Подключиться"
+msgstr "Начать игру"
 
 #: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
 msgid "Delete world"
@@ -309,25 +309,26 @@ msgstr "Непрозрачная вода"
 
 #: src/guiMainMenu.cpp:639
 msgid "Mip-Mapping"
-msgstr "Mip-Mapping"
+msgstr "Mip-текстурирование"
 
 #: src/guiMainMenu.cpp:646
 msgid "Anisotropic Filtering"
-msgstr "Анизотропная фильтрация"
+msgstr "Анизотропный фильтр"
 
 #: src/guiMainMenu.cpp:653
 msgid "Bi-Linear Filtering"
-msgstr "Билинейная фильтрация"
+msgstr "Билинейный фильтр"
 
 #: src/guiMainMenu.cpp:660
 msgid "Tri-Linear Filtering"
-msgstr "Трилинейная фильтрация"
+msgstr "Трилинейный фильтр"
 
 #: src/guiMainMenu.cpp:668
 msgid "Shaders"
 msgstr "Шейдеры"
 
 #: src/guiMainMenu.cpp:675
+#, fuzzy
 msgid "Preload item visuals"
 msgstr "Кэшировать предметы"
 
@@ -337,15 +338,15 @@ msgstr "Включить частицы"
 
 #: src/guiMainMenu.cpp:692
 msgid "Change keys"
-msgstr "Настройки управления"
+msgstr "Сменить управление"
 
 #: src/guiMainMenu.cpp:977
 msgid "Address required."
-msgstr "Введите адрес."
+msgstr "Нужно ввести адрес."
 
 #: src/guiMainMenu.cpp:995
 msgid "Cannot delete world: Nothing selected"
-msgstr "Не могу удалить мир: ничего не выбрано"
+msgstr "Не могу удалить мир: Ничего не выбрано"
 
 #: src/guiMainMenu.cpp:1010
 msgid "Files to be deleted"
@@ -439,11 +440,11 @@ msgstr "Правая клавиша"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "Доп. кнопка 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Назад"
+msgstr "Backspace"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -451,23 +452,23 @@ msgstr "Очистить"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr ""
+msgstr "Ввод"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr "Вкладка"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "Доп. кнопка 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr ""
+msgstr "Капслок"
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #: src/keycode.cpp:225
 msgid "Kana"
@@ -475,7 +476,7 @@ msgstr "Кана"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr "Меню"
+msgstr "Alt"
 
 #: src/keycode.cpp:225
 msgid "Pause"
@@ -486,8 +487,9 @@ msgid "Shift"
 msgstr ""
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Convert"
-msgstr ""
+msgstr "Преобразовать"
 
 #: src/keycode.cpp:226
 msgid "Escape"
@@ -503,7 +505,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr "Иероглифы"
+msgstr "Кандзи"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
@@ -522,44 +524,49 @@ msgid "Home"
 msgstr ""
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Mode Change"
-msgstr ""
+msgstr "Смена режима"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "След."
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Prior"
-msgstr ""
+msgstr "Пред."
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Пробел"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "Вниз"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Выполнить"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Print"
-msgstr ""
+msgstr "Печать"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Select"
-msgstr ""
+msgstr "Выбор"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Вверх"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Справка"
 
 #: src/keycode.cpp:229
 msgid "Insert"
@@ -571,75 +578,77 @@ msgstr ""
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Левая кл. Win"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Apps"
-msgstr ""
+msgstr "Приложения"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Доп. клав. 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Доп. клав. 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Прав. кл. Win"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Sleep"
-msgstr ""
+msgstr "Сон"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Доп. клав. 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Доп. клав. 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Доп. клав. 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Доп. клав. 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Доп. клав. 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Доп. клав. 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Доп. клав. *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Доп. клав. +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Доп. клав. -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Доп. клав. /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Доп. клав. 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Доп. клав. 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
@@ -651,7 +660,7 @@ msgstr ""
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Левый Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
@@ -659,27 +668,27 @@ msgstr "Правый Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Левый Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Левый Alt"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Правый Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Правый Alt"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Запятая"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Минус"
 
 #: src/keycode.cpp:243
 msgid "Period"
@@ -687,7 +696,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Плюс"
 
 #: src/keycode.cpp:247
 msgid "Attn"
@@ -740,7 +749,7 @@ msgstr ""
 
 #: src/main.cpp:1707
 msgid "Connection error (timed out?)"
-msgstr "Ошибка соединения (таймаут?)"
+msgstr "Ошибка соединения (таймаут пинга?)"
 
 #: src/main.cpp:1718
 msgid ""
