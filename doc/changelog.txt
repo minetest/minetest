@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.3.3: (tagged on 2013-03-05)
+- Fix a password-related vulnerability (late backport from some early 0.4)
+
 0.3.2: (tagged on 2012-05-12)
 - Include unistd.h in filesys.cpp
 - Add wooden planks to creative inventory
