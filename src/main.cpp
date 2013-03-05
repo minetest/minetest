@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "test.h"
+#include "clouds.h"
 #include "server.h"
 #include "constants.h"
 #include "porting.h"
@@ -596,50 +597,120 @@ private:
 	bool rightreleased;
 };
 
-void drawMenuBackground(video::IVideoDriver* driver)
-{
+//Draw the tiled menu background
+void drawMenuBackground(video::IVideoDriver* driver) {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
+
+	std::string path = getTexturePath("menubg.png");
+	if (path[0]) {
+		video::ITexture *bgtexture =
+			driver->getTexture(path.c_str());
+
+		if (bgtexture) {
+			s32 scaledsize = 128;
 		
-	video::ITexture *bgtexture =
-			driver->getTexture(getTexturePath("menubg.png").c_str());
-	if(bgtexture)
-	{
-		s32 scaledsize = 128;
+			// The important difference between destsize and screensize is
+			// that destsize is rounded to whole scaled pixels.
+			// These formulas use component-wise multiplication and division of v2u32.
+			v2u32 texturesize = bgtexture->getSize();
+			v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
+			v2u32 destsize = scaledsize * sourcesize / texturesize;
 		
-		// The important difference between destsize and screensize is
-		// that destsize is rounded to whole scaled pixels.
-		// These formulas use component-wise multiplication and division of v2u32.
-		v2u32 texturesize = bgtexture->getSize();
-		v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
-		v2u32 destsize = scaledsize * sourcesize / texturesize;
-		
-		// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
-		driver->draw2DImage(bgtexture,
-			core::rect<s32>(0, 0, destsize.X, destsize.Y),
-			core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-			NULL, NULL, true);
+			// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
+			driver->draw2DImage(bgtexture,
+				core::rect<s32>(0, 0, destsize.X, destsize.Y),
+				core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
+				NULL, NULL, true);
+		}
 	}
-	
-	video::ITexture *logotexture =
-			driver->getTexture(getTexturePath("menulogo.png").c_str());
-	if(logotexture)
-	{
-		v2s32 logosize(logotexture->getOriginalSize().Width,
-				logotexture->getOriginalSize().Height);
-		logosize *= 4;
+}
 
-		video::SColor bgcolor(255,50,50,50);
-		core::rect<s32> bgrect(0, screensize.Height-logosize.Y-20,
-				screensize.Width, screensize.Height);
-		driver->draw2DRectangle(bgcolor, bgrect, NULL);
+//Draw the footer at the bottom of the window
+void drawMenuFooter(video::IVideoDriver* driver, bool clouds) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	std::string path = getTexturePath(clouds ?
+						"menufooter_clouds.png" : "menufooter.png");
+	if (path[0]) {
+		video::ITexture *footertexture =
+			driver->getTexture(path.c_str());
 
-		core::rect<s32> rect(0,0,logosize.X,logosize.Y);
-		rect += v2s32(screensize.Width/2,screensize.Height-10-logosize.Y);
-		rect -= v2s32(logosize.X/2, 0);
-		driver->draw2DImage(logotexture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(logotexture->getSize())),
-			NULL, NULL, true);
+		if (footertexture) {
+			f32 mult = (((f32)screensize.Width)) /
+				((f32)footertexture->getOriginalSize().Width);
+
+			v2s32 footersize(((f32)footertexture->getOriginalSize().Width) * mult,
+					((f32)footertexture->getOriginalSize().Height) * mult);
+
+			// Don't draw the footer if there isn't enough room
+			s32 free_space = (((s32)screensize.Height)-320)/2;
+			if (free_space > footersize.Y) {
+				core::rect<s32> rect(0,0,footersize.X,footersize.Y);
+				rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
+				rect -= v2s32(footersize.X/2, 0);
+
+				driver->draw2DImage(footertexture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(footertexture->getSize())),
+					NULL, NULL, true);
+			}
+		}
+	}
+}
+
+// Draw the Header over the main menu
+void drawMenuHeader(video::IVideoDriver* driver) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+
+	std::string path = getTexturePath("menuheader.png");
+	if (path[0]) {
+		video::ITexture *splashtexture =
+		driver->getTexture(path.c_str());
+
+		if(splashtexture) {
+			//v2s32 splashsize((splashtexture->getOriginalSize().Width*100)/
+			//	splashtexture->getOriginalSize().Height, 80);
+
+			f32 mult = (((f32)screensize.Width / 2)) /
+				((f32)splashtexture->getOriginalSize().Width);
+
+			v2s32 splashsize(((f32)splashtexture->getOriginalSize().Width) * mult,
+					((f32)splashtexture->getOriginalSize().Height) * mult);
+
+			// Don't draw the header is there isn't enough room
+			s32 free_space = (((s32)screensize.Height)-320)/2;
+			if (free_space > splashsize.Y) {
+				core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
+				splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
+					((free_space/2)-splashsize.Y/2)+10);
+
+				video::SColor bgcolor(255,50,50,50);
+
+				driver->draw2DImage(splashtexture, splashrect,
+					core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(splashtexture->getSize())),
+					NULL, NULL, true);
+			}
+		}
+	}
+}
+
+// Draw the Splash over the clouds and under the main menu
+void drawMenuSplash(video::IVideoDriver* driver) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	if (getTexturePath("menusplash.png") != "") {
+		video::ITexture *splashtexture =
+			driver->getTexture(getTexturePath("menusplash.png").c_str());
+
+		if(splashtexture) {
+			core::rect<s32> splashrect(0, 0, screensize.Width, screensize.Height);
+
+			video::SColor bgcolor(255,50,50,50);
+
+			driver->draw2DImage(splashtexture, splashrect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(splashtexture->getSize())),
+				NULL, NULL, true);
+		}
 	}
 }
 
@@ -1540,6 +1611,22 @@ int main(int argc, char *argv[])
 								&g_menumgr, &menudata, g_gamecallback);
 					menu->allowFocusRemoval(true);
 
+					// Clouds for the main menu
+					bool cloud_menu_background = false;
+					Clouds *clouds = NULL;
+					if (g_settings->getBool("menu_clouds")) {
+						cloud_menu_background = true;
+						clouds = new Clouds(smgr->getRootSceneNode(),
+											smgr, -1, rand(), 100);
+						clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+
+						// A camera to see the clouds
+						scene::ICameraSceneNode* camera;
+						camera = smgr->addCameraSceneNode(0,
+									v3f(0,0,0), v3f(0, 60, 100));
+						camera->setFarValue(10000);
+					}
+
 					if(error_message != L"")
 					{
 						verbosestream<<"error_message = "
@@ -1552,6 +1639,9 @@ int main(int argc, char *argv[])
 						error_message = L"";
 					}
 
+					// Time is in milliseconds, for clouds
+					u32 lasttime = device->getTimer()->getTime();
+
 					infostream<<"Created main menu"<<std::endl;
 
 					while(device->run() && kill == false)
@@ -1559,23 +1649,50 @@ int main(int argc, char *argv[])
 						if(menu->getStatus() == true)
 							break;
 
-						//driver->beginScene(true, true, video::SColor(255,0,0,0));
-						driver->beginScene(true, true, video::SColor(255,128,128,128));
+						// Time calc for the clouds
+						f32 dtime; // in seconds
+						if (cloud_menu_background) {
+							u32 time = device->getTimer()->getTime();
+							if(time > lasttime)
+								dtime = (time - lasttime) / 1000.0;
+ 							else
+								dtime = 0;
+							lasttime = time;
+						}
 
-						drawMenuBackground(driver);
+						//driver->beginScene(true, true, video::SColor(255,0,0,0));
+						driver->beginScene(true, true, video::SColor(255,140,186,250));
+
+						if (cloud_menu_background) {
+							// *3 otherwise the clouds would move very slowly
+							clouds->step(dtime*3); 
+							clouds->render();
+							smgr->drawAll();
+							drawMenuSplash(driver);
+							drawMenuFooter(driver, true);
+							drawMenuHeader(driver);
+						} else {
+							drawMenuBackground(driver);
+							drawMenuFooter(driver, false);
+						}
 
 						guienv->drawAll();
-						
+
 						driver->endScene();
 						
 						// On some computers framerate doesn't seem to be
 						// automatically limited
-						sleep_ms(25);
+						if (!cloud_menu_background)
+							sleep_ms(25);
 					}
 					
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
+					if (cloud_menu_background) {
+						clouds->drop();
+						smgr->clear();
+					}
 				}
 
 				playername = wide_to_narrow(menudata.name);
