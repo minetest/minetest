@@ -125,6 +125,8 @@
 #farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
+# Use a cloud animation for the main menu background
+#menu_clouds = true
 # Path for screenshots
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
