@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef LUA_NODE_H_
 #define LUA_NODE_H_
 
-#include <irr_v3d.h>
 #include <iostream>
 #include <map>
 

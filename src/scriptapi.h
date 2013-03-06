@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <set>
 #include <map>
+#include "irr_v3d.h"
+#include "irr_v2d.h"
 
 extern "C" {
 #include <lua.h>

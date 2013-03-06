@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef LUA_NODEMETA_H_
 #define LUA_NODEMETA_H_
 
-#include <irr_v3d.h>
-
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>

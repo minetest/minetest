@@ -25,7 +25,6 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include <irr_v3d.h>
 #include <vector>
 
 #include "itemdef.h"
