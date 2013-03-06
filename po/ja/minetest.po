@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-03-01 04:34+0200\n"
-"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
+"PO-Revision-Date: 2013-03-06 05:12+0200\n"
+"Last-Translator: c h <akerunakayama@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -23,36 +23,36 @@ msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
-"警告: いくつかのMODが未構成です.\n"
-"これらは構成を保存するとデフォルトで有効化されます.  "
+"警告: マインテストの改造がいくつか設定されていません。\n"
+"これらを設定を保存すると自動で有効化されます。 "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
-"警告: いくつかの構成済みMODが見つかりません.\n"
-"これらの設定は構成を保存すると削除されます.  "
+"警告: いくつかの設定みの改造ファイルが見つかりません.\n"
+"これらの情報は設定を保存すると削除されます.  "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
-msgstr "有効しました"
+msgstr "有効にしました"
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr "全部を有効する"
+msgstr "全部を有効にしました"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr "全部を無効する"
+msgstr "全部を無効にしました"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr "結合度は:"
+msgstr "この改造ファイルが必要です："
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr "必要される:"
+msgstr "この改造に必要されます:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -69,7 +69,7 @@ msgstr "設定を保存しました.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "警告：設定が一定でわありません。"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -89,15 +89,15 @@ msgstr "ゲーム"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr "設ける"
+msgstr "作る"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "死んでしまいました。"
+msgstr "死亡しました。"
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "生まれて帰る"
+msgstr "リスポーン"
 
 #: src/guiFormSpecMenu.cpp:572
 msgid "Left click: Move all items, Right click: Move single item"
