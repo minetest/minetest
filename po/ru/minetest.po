@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-03-04 22:43+0200\n"
-"Last-Translator: Egor Zimovets <4aiman@inbox.ru>\n"
+"PO-Revision-Date: 2013-03-07 22:56+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -197,7 +197,7 @@ msgstr "Выбор зоны видимости"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
-msgstr ""
+msgstr "Выдать стеки"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
@@ -456,7 +456,7 @@ msgstr "Ввод"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -484,7 +484,7 @@ msgstr "Пауза"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 #, fuzzy
@@ -492,16 +492,19 @@ msgid "Convert"
 msgstr "Преобразовать"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
