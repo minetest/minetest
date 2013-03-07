@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-03-06 05:12+0200\n"
-"Last-Translator: c h <akerunakayama@gmail.com>\n"
+"PO-Revision-Date: 2013-03-07 23:06+0200\n"
+"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr "設定を保存しました.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr "警告：設定が一定でわありません。"
+msgstr "注意：設定が一定でわありません。"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -89,7 +89,7 @@ msgstr "ゲーム"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr "作る"
+msgstr "作成"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -110,15 +110,15 @@ msgstr "続く"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
+msgstr "キーバインド"
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "「使う」は下りる"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "「ジャンプ」を二回押すと飛べる"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
@@ -178,15 +178,15 @@ msgstr "コンソール"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr ""
+msgstr "飛べるモードをトグル"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr ""
+msgstr "ファストモードをトグル"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
-msgstr ""
+msgstr "ノクリップモードをトグル"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
@@ -242,7 +242,7 @@ msgstr "設定"
 
 #: src/guiMainMenu.cpp:332 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "選択した世界に入る"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
@@ -262,11 +262,11 @@ msgstr "アドレス/ポート"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
 msgid "Show Public"
-msgstr ""
+msgstr "公共を見せる"
 
 #: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
 msgid "Show Favorites"
-msgstr ""
+msgstr "お気に入りを見せる"
 
 #: src/guiMainMenu.cpp:459
 msgid "Connect"
@@ -274,7 +274,7 @@ msgstr "接続"
 
 #: src/guiMainMenu.cpp:529
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "アドレスを入力しないかぎりロカルサーバーを開始。"
 
 #: src/guiMainMenu.cpp:538
 msgid "Start Game / Connect"
@@ -289,9 +289,8 @@ msgid "Create world"
 msgstr "ワールド作成"
 
 #: src/guiMainMenu.cpp:611
-#, fuzzy
 msgid "Fancy trees"
-msgstr "風変わりな木"
+msgstr "きれいな木"
 
 #: src/guiMainMenu.cpp:617
 #, fuzzy
@@ -415,15 +414,15 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "左ボタン"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "中ボタン"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "右ボタン"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -435,7 +434,7 @@ msgstr "Back Space"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "消す"
 
 #: src/keycode.cpp:224
 msgid "Return"
@@ -463,7 +462,7 @@ msgstr "カタカナ/ひらがな"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "メニュー"
 
 #: src/keycode.cpp:225
 msgid "Pause"
@@ -498,8 +497,9 @@ msgid "Nonconvert"
 msgstr "無変換"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Accept"
-msgstr ""
+msgstr "Accept"
 
 #: src/keycode.cpp:227
 msgid "End"
@@ -511,7 +511,7 @@ msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "モードを変更"
 
 #: src/keycode.cpp:227
 msgid "Next"
@@ -522,112 +522,138 @@ msgid "Prior"
 msgstr "Page Up"
 
 #: src/keycode.cpp:227
+#, fuzzy
 msgid "Space"
-msgstr ""
+msgstr "Space"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Down"
-msgstr ""
+msgstr "Down"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Execute"
-msgstr ""
+msgstr "Execute"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Print"
-msgstr ""
+msgstr "Print"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #: src/keycode.cpp:228
+#, fuzzy
 msgid "Up"
-msgstr ""
+msgstr "Up"
 
 #: src/keycode.cpp:229
+#, fuzzy
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 #: src/keycode.cpp:229
 msgid "Insert"
 msgstr "Insert"
 
 #: src/keycode.cpp:229
+#, fuzzy
 msgid "Snapshot"
-msgstr ""
+msgstr "Snapshot"
 
 #: src/keycode.cpp:232
+#, fuzzy
 msgid "Left Windows"
-msgstr ""
+msgstr "Left Windows"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Apps"
-msgstr ""
+msgstr "Apps"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Right Windows"
-msgstr ""
+msgstr "Right Windows"
 
 #: src/keycode.cpp:233
+#, fuzzy
 msgid "Sleep"
-msgstr ""
+msgstr "Sleep"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp:234
+#, fuzzy
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp:235
+#, fuzzy
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
@@ -663,43 +689,52 @@ msgstr "右メニュー"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "読点"
 
 #: src/keycode.cpp:243
+#, fuzzy
 msgid "Minus"
-msgstr ""
+msgstr "Minus"
 
 #: src/keycode.cpp:243
+#, fuzzy
 msgid "Period"
-msgstr ""
+msgstr "Period"
 
 #: src/keycode.cpp:243
+#, fuzzy
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "Erase OEF"
-msgstr ""
+msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clear"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
