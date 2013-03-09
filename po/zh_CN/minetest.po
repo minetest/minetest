@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 20:25+0100\n"
-"PO-Revision-Date: 2013-02-23 03:40+0200\n"
+"PO-Revision-Date: 2013-03-09 09:41+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -193,7 +193,6 @@ msgid "Range select"
 msgstr "选择范围"
 
 #: src/guiKeyChangeMenu.cpp:388
-#, fuzzy
 msgid "Print stacks"
 msgstr "打印栈"
 
@@ -262,7 +261,6 @@ msgid "Address/Port"
 msgstr "地址/端口"
 
 #: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
-#, fuzzy
 msgid "Show Public"
 msgstr "显示公共"
 
@@ -291,9 +289,8 @@ msgid "Create world"
 msgstr "创造世界"
 
 #: src/guiMainMenu.cpp:611
-#, fuzzy
 msgid "Fancy trees"
-msgstr "更好看的树"
+msgstr "更漂亮的树"
 
 #: src/guiMainMenu.cpp:617
 msgid "Smooth Lighting"
@@ -439,7 +436,6 @@ msgid "Right Button"
 msgstr "右键"
 
 #: src/keycode.cpp:223
-#, fuzzy
 msgid "X Button 1"
 msgstr "X键1"
 
@@ -448,9 +444,8 @@ msgid "Back"
 msgstr "退格"
 
 #: src/keycode.cpp:224
-#, fuzzy
 msgid "Clear"
-msgstr "清除"
+msgstr "Clear键"
 
 #: src/keycode.cpp:224
 msgid "Return"
@@ -473,7 +468,6 @@ msgid "Control"
 msgstr "Ctrl"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Kana"
 msgstr "假名"
 
@@ -498,22 +492,18 @@ msgid "Escape"
 msgstr "Escape键"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Final"
-msgstr "最终"
+msgstr "Final键"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Junja"
-msgstr "Junja"
+msgstr "Junja键"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Kanji"
-msgstr "汉字"
+msgstr "Kanji键"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Nonconvert"
 msgstr "无变换"
 
@@ -538,9 +528,8 @@ msgid "Next"
 msgstr "下一个"
 
 #: src/keycode.cpp:227
-#, fuzzy
 msgid "Prior"
-msgstr "前一个"
+msgstr "Prior键"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -671,17 +660,14 @@ msgid "Left Control"
 msgstr "左Control键"
 
 #: src/keycode.cpp:241
-#, fuzzy
 msgid "Left Menu"
 msgstr "左菜单"
 
 #: src/keycode.cpp:241
-#, fuzzy
 msgid "Right Control"
-msgstr "右控制"
+msgstr "右Control键"
 
 #: src/keycode.cpp:241
-#, fuzzy
 msgid "Right Menu"
 msgstr "右菜单"
 
@@ -702,34 +688,28 @@ msgid "Plus"
 msgstr "加号"
 
 #: src/keycode.cpp:247
-#, fuzzy
 msgid "Attn"
-msgstr "注意"
+msgstr "Attn键"
 
 #: src/keycode.cpp:247
-#, fuzzy
 msgid "CrSel"
-msgstr "CrSel"
+msgstr "CrSel键"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "Erase OEF"
-msgstr "Erase OEF"
+msgstr "Erase OEF键"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "ExSel"
-msgstr "不选"
+msgstr "ExSel键"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "OEM Clear"
-msgstr "默认设置"
+msgstr "OEM Clear键"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "PA1"
-msgstr "PA1"
+msgstr "PA1键"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
@@ -752,7 +732,6 @@ msgid "Could not find or load game \""
 msgstr "无法找到或载入游戏模式“"
 
 #: src/main.cpp:1667
-#, fuzzy
 msgid "Invalid gamespec."
 msgstr "非法游戏模式规格。"
 
