@@ -37,18 +37,18 @@ void luaentity_get(lua_State *L, u16 id);
 /* Minetest interface                                                        */
 /*****************************************************************************/
 // Returns true if succesfully added into Lua; false otherwise.
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name);
-void scriptapi_luaentity_activate(lua_State *L, u16 id,
+bool scriptapi_luaentity_add(u16 id, const char *name);
+void scriptapi_luaentity_activate(u16 id,
 		const std::string &staticdata, u32 dtime_s);
-void scriptapi_luaentity_rm(lua_State *L, u16 id);
-std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id);
-void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
+void scriptapi_luaentity_rm(u16 id);
+std::string scriptapi_luaentity_get_staticdata(u16 id);
+void scriptapi_luaentity_get_properties(u16 id,
 		ObjectProperties *prop);
-void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
-void scriptapi_luaentity_punch(lua_State *L, u16 id,
+void scriptapi_luaentity_step(u16 id, float dtime);
+void scriptapi_luaentity_punch(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir);
-void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
+void scriptapi_luaentity_rightclick(u16 id,
 		ServerActiveObject *clicker);
 
 #endif /* LUA_ENTITY_H_ */

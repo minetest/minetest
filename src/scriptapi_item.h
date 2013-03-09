@@ -155,11 +155,11 @@ extern struct EnumString es_ItemType[];
 /*****************************************************************************/
 /* Minetest interface                                                        */
 /*****************************************************************************/
-bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_drop(ItemStack &item,
 		ServerActiveObject *dropper, v3f pos);
-bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_place(ItemStack &item,
 		ServerActiveObject *placer, const PointedThing &pointed);
-bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_use(ItemStack &item,
 		ServerActiveObject *user, const PointedThing &pointed);
 
 

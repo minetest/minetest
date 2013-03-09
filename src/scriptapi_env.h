@@ -155,10 +155,10 @@ public:
 /* Minetest interface                                                        */
 /*****************************************************************************/
 // On environment step
-void scriptapi_environment_step(lua_State *L, float dtime);
+void scriptapi_environment_step(float dtime);
 // After generating a piece of map
-void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
+void scriptapi_environment_on_generated(v3s16 minp, v3s16 maxp,
 		u32 blockseed);
-void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
+void scriptapi_add_environment(ServerEnvironment *env);
 
 #endif /* LUA_ENVIRONMENT_H_ */

@@ -395,7 +395,7 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						scriptapi_environment_on_generated(m_server->m_lua,
+						scriptapi_environment_on_generated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 

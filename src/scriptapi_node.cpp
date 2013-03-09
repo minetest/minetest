@@ -79,9 +79,10 @@ struct EnumString es_NodeBoxType[] =
 };
 
 
-bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
+bool scriptapi_node_on_punch(v3s16 p, MapNode node,
 		ServerActiveObject *puncher)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -101,9 +102,10 @@ bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
 	return true;
 }
 
-bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
+bool scriptapi_node_on_dig(v3s16 p, MapNode node,
 		ServerActiveObject *digger)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -123,8 +125,9 @@ bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 	return true;
 }
 
-void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node)
+void scriptapi_node_on_construct(v3s16 p, MapNode node)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -141,8 +144,9 @@ void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node)
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
-void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node)
+void scriptapi_node_on_destruct(v3s16 p, MapNode node)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -159,8 +163,9 @@ void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node)
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
-void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node)
+void scriptapi_node_after_destruct(v3s16 p, MapNode node)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -178,8 +183,9 @@ void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node)
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
-bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime)
+bool scriptapi_node_on_timer(v3s16 p, MapNode node, f32 dtime)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -201,11 +207,12 @@ bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime)
 	return false;
 }
 
-void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
+void scriptapi_node_on_receive_fields(v3s16 p,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields,
 		ServerActiveObject *sender)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);

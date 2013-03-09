@@ -870,8 +870,9 @@ void read_object_properties(lua_State *L, int index,
 	object_reference
 */
 
-void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
+void scriptapi_add_object_reference(ServerActiveObject *cobj)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
@@ -893,8 +894,9 @@ void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_settable(L, objectstable);
 }
 
-void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
+void scriptapi_rm_object_reference(ServerActiveObject *cobj)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;

@@ -507,12 +507,13 @@ static bool get_detached_inventory_callback(lua_State *L,
 }
 
 // Return number of accepted items to be moved
-int scriptapi_detached_inventory_allow_move(lua_State *L,
+int scriptapi_detached_inventory_allow_move(
 		const std::string &name,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -546,11 +547,12 @@ int scriptapi_detached_inventory_allow_move(lua_State *L,
 }
 
 // Return number of accepted items to be put
-int scriptapi_detached_inventory_allow_put(lua_State *L,
+int scriptapi_detached_inventory_allow_put(
 		const std::string &name,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -580,11 +582,12 @@ int scriptapi_detached_inventory_allow_put(lua_State *L,
 }
 
 // Return number of accepted items to be taken
-int scriptapi_detached_inventory_allow_take(lua_State *L,
+int scriptapi_detached_inventory_allow_take(
 		const std::string &name,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -614,12 +617,13 @@ int scriptapi_detached_inventory_allow_take(lua_State *L,
 }
 
 // Report moved items
-void scriptapi_detached_inventory_on_move(lua_State *L,
+void scriptapi_detached_inventory_on_move(
 		const std::string &name,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -650,11 +654,12 @@ void scriptapi_detached_inventory_on_move(lua_State *L,
 }
 
 // Report put items
-void scriptapi_detached_inventory_on_put(lua_State *L,
+void scriptapi_detached_inventory_on_put(
 		const std::string &name,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -681,11 +686,12 @@ void scriptapi_detached_inventory_on_put(lua_State *L,
 }
 
 // Report taken items
-void scriptapi_detached_inventory_on_take(lua_State *L,
+void scriptapi_detached_inventory_on_take(
 		const std::string &name,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);

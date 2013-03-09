@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #include <lua.h>
 }
+#include "mods.h"
 #include "scriptapi_inventory.h"
 #include "scriptapi_nodemeta.h"
 #include "scriptapi_entity.h"
@@ -41,35 +42,55 @@ extern "C" {
 
 class Server;
 
-void scriptapi_export(lua_State *L, Server *server);
-bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
+void scriptapi_export(Server *server);
+bool loadmod(lua_State *L, const std::string &scriptpath,
 		const std::string &modname);
 
 // Returns true if script handled message
-bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
+bool scriptapi_on_chat_message(const std::string &name,
 		const std::string &message);
 
 /* server */
-void scriptapi_on_shutdown(lua_State *L);
+void scriptapi_on_shutdown();
 
 /* misc */
-void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
-bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player);
-bool scriptapi_get_auth(lua_State *L, const std::string &playername,
+void scriptapi_on_newplayer(ServerActiveObject *player);
+void scriptapi_on_dieplayer(ServerActiveObject *player);
+bool scriptapi_on_respawnplayer(ServerActiveObject *player);
+void scriptapi_on_joinplayer(ServerActiveObject *player);
+void scriptapi_on_leaveplayer(ServerActiveObject *player);
+bool scriptapi_get_auth(const std::string &playername,
 		std::string *dst_password, std::set<std::string> *dst_privs);
-void scriptapi_create_auth(lua_State *L, const std::string &playername,
+void scriptapi_create_auth(const std::string &playername,
 		const std::string &password);
-bool scriptapi_set_password(lua_State *L, const std::string &playername,
+bool scriptapi_set_password(const std::string &playername,
 		const std::string &password);
 
 /* player */
-void scriptapi_on_player_receive_fields(lua_State *L, 
+void scriptapi_on_player_receive_fields(
 		ServerActiveObject *player,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields);
+
+
+class ScriptAPI {
+
+public:
+	static ScriptAPI* GetInstance(bool create=false);
+	static void Reset();
+
+	ScriptAPI();
+
+	bool Initialize(Server* server,std::string builtinpath);
+	bool LoadMods(std::vector<ModSpec> &mods);
+
+	lua_State* getState();
+private:
+	static ScriptAPI* m_ScriptAPI;
+
+	lua_State*  m_LuaState;
+	Server*     m_Server;
+};
 
 #endif
 

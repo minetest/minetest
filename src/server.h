@@ -461,9 +461,6 @@ public:
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
 
-	// Envlock and conlock should be locked when using Lua
-	lua_State *getLua(){ return m_lua; }
-
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
 
@@ -671,10 +668,6 @@ private:
 
 	// Biome Definition Manager
 	BiomeDefManager *m_biomedef;
-
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	lua_State *m_lua;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;

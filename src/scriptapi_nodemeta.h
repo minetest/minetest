@@ -94,29 +94,29 @@ public:
 /* Minetest interface                                                        */
 /*****************************************************************************/
 // Return number of accepted items to be moved
-int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_move(v3s16 p,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player);
 // Return number of accepted items to be put
-int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_put(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player);
 // Return number of accepted items to be taken
-int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_take(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player);
 // Report moved items
-void scriptapi_nodemeta_inventory_on_move(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_move(v3s16 p,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player);
 // Report put items
-void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_put(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player);
 // Report taken items
-void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_take(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player);
 
