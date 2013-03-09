@@ -336,11 +336,12 @@ const luaL_reg NodeMetaRef::methods[] = {
 */
 
 // Return number of accepted items to be moved
-int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_move(v3s16 p,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -380,10 +381,11 @@ int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
 }
 
 // Return number of accepted items to be put
-int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_put(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -419,10 +421,11 @@ int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
 }
 
 // Return number of accepted items to be taken
-int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
+int scriptapi_nodemeta_inventory_allow_take(v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -458,11 +461,12 @@ int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
 }
 
 // Report moved items
-void scriptapi_nodemeta_inventory_on_move(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_move( v3s16 p,
 		const std::string &from_list, int from_index,
 		const std::string &to_list, int to_index,
 		int count, ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -499,10 +503,11 @@ void scriptapi_nodemeta_inventory_on_move(lua_State *L, v3s16 p,
 }
 
 // Report put items
-void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_put( v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -535,10 +540,11 @@ void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
 }
 
 // Report taken items
-void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
+void scriptapi_nodemeta_inventory_on_take( v3s16 p,
 		const std::string &listname, int index, ItemStack &stack,
 		ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);

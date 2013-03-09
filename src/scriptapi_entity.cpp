@@ -31,7 +31,7 @@ extern "C" {
 #include "scriptapi_common.h"
 
 
-void luaentity_get(lua_State *L, u16 id)
+void luaentity_get(lua_State* L, u16 id)
 {
 	// Get minetest.luaentities[i]
 	lua_getglobal(L, "minetest");
@@ -47,8 +47,9 @@ void luaentity_get(lua_State *L, u16 id)
 	luaentity
 */
 
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
+bool scriptapi_luaentity_add(u16 id, const char *name)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
@@ -97,9 +98,10 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	return true;
 }
 
-void scriptapi_luaentity_activate(lua_State *L, u16 id,
+void scriptapi_luaentity_activate(u16 id,
 		const std::string &staticdata, u32 dtime_s)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
@@ -124,8 +126,9 @@ void scriptapi_luaentity_activate(lua_State *L, u16 id,
 	}
 }
 
-void scriptapi_luaentity_rm(lua_State *L, u16 id)
+void scriptapi_luaentity_rm(u16 id)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_luaentity_rm: id="<<id<<std::endl;
@@ -144,8 +147,9 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
-std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
+std::string scriptapi_luaentity_get_staticdata(u16 id)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
@@ -173,9 +177,10 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 	return std::string(s, len);
 }
 
-void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
+void scriptapi_luaentity_get_properties(u16 id,
 		ObjectProperties *prop)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
@@ -214,8 +219,9 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	lua_pop(L, 1);
 }
 
-void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
+void scriptapi_luaentity_step(u16 id, float dtime)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
@@ -239,10 +245,11 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
 //                       tool_capabilities, direction)
-void scriptapi_luaentity_punch(lua_State *L, u16 id,
+void scriptapi_luaentity_punch(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
@@ -268,9 +275,10 @@ void scriptapi_luaentity_punch(lua_State *L, u16 id,
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
-void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
+void scriptapi_luaentity_rightclick(u16 id,
 		ServerActiveObject *clicker)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;

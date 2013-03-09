@@ -222,9 +222,10 @@ bool get_item_callback(lua_State *L,
 	}
 }
 
-bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_drop(ItemStack &item,
 		ServerActiveObject *dropper, v3f pos)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -244,9 +245,10 @@ bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
 	return true;
 }
 
-bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_place(ItemStack &item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -266,9 +268,10 @@ bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
 	return true;
 }
 
-bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
+bool scriptapi_item_on_use(ItemStack &item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);

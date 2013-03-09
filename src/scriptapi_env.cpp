@@ -266,7 +266,7 @@ int EnvRef::l_place_node(lua_State *L)
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
 	// Place it with a NULL placer (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = scriptapi_item_on_place(L, item, NULL, pointed);
+	bool success = scriptapi_item_on_place(item, NULL, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -288,7 +288,7 @@ int EnvRef::l_dig_node(lua_State *L)
 	}
 	// Dig it out with a NULL digger (appears in Lua as a
 	// non-functional ObjectRef)
-	bool success = scriptapi_node_on_dig(L, pos, n, NULL);
+	bool success = scriptapi_node_on_dig(pos, n, NULL);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -310,7 +310,7 @@ int EnvRef::l_punch_node(lua_State *L)
 	}
 	// Punch it with a NULL puncher (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = scriptapi_node_on_punch(L, pos, n, NULL);
+	bool success = scriptapi_node_on_punch(pos, n, NULL);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -783,9 +783,10 @@ const luaL_reg EnvRef::methods[] = {
 	{0,0}
 };
 
-void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
+void scriptapi_environment_on_generated(v3s16 minp, v3s16 maxp,
 		u32 blockseed)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_environment_on_generated"<<std::endl;
@@ -801,8 +802,9 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
 	scriptapi_run_callbacks(L, 3, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_environment_step(lua_State *L, float dtime)
+void scriptapi_environment_step(float dtime)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	//infostream<<"scriptapi_environment_step"<<std::endl;
@@ -816,8 +818,9 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
+void scriptapi_add_environment(ServerEnvironment *env)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_add_environment"<<std::endl;

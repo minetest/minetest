@@ -33,15 +33,15 @@ extern "C" {
 /*****************************************************************************/
 /* Minetest interface                                                        */
 /*****************************************************************************/
-bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
+bool scriptapi_node_on_punch(v3s16 p, MapNode node,
 		ServerActiveObject *puncher);
-bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
+bool scriptapi_node_on_dig(v3s16 p, MapNode node,
 		ServerActiveObject *digger);
-void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
-void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
-void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node);
-bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime);
-void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
+void scriptapi_node_on_construct(v3s16 p, MapNode node);
+void scriptapi_node_on_destruct(v3s16 p, MapNode node);
+void scriptapi_node_after_destruct(v3s16 p, MapNode node);
+bool scriptapi_node_on_timer(v3s16 p, MapNode node, f32 dtime);
+void scriptapi_node_on_receive_fields(v3s16 p,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields,
 		ServerActiveObject *sender);

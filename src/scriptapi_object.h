@@ -208,7 +208,7 @@ void read_object_properties(lua_State *L, int index,
 /*****************************************************************************/
 /* Minetest interface                                                        */
 /*****************************************************************************/
-void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
-void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
+void scriptapi_add_object_reference(ServerActiveObject *cobj);
+void scriptapi_rm_object_reference(ServerActiveObject *cobj);
 
 #endif /* LUA_OBJECT_H_ */

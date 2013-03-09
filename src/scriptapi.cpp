@@ -32,6 +32,7 @@ extern "C" {
 #include "biome.h"
 #include "script.h"
 #include "rollback.h"
+#include "filesys.h"
 
 #include "scriptapi_types.h"
 #include "scriptapi_env.h"
@@ -69,7 +70,7 @@ public:
 	}
 };
 
-bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
+bool loadmod(lua_State *L, const std::string &scriptpath,
 		const std::string &modname)
 {
 	ModNameStorer modnamestorer(L, modname);
@@ -133,9 +134,10 @@ static void get_auth_handler(lua_State *L)
 		throw LuaError(L, "Authentication handler table not valid");
 }
 
-bool scriptapi_get_auth(lua_State *L, const std::string &playername,
+bool scriptapi_get_auth(const std::string &playername,
 		std::string *dst_password, std::set<std::string> *dst_privs)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -171,9 +173,10 @@ bool scriptapi_get_auth(lua_State *L, const std::string &playername,
 	return true;
 }
 
-void scriptapi_create_auth(lua_State *L, const std::string &playername,
+void scriptapi_create_auth(const std::string &playername,
 		const std::string &password)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -188,9 +191,10 @@ void scriptapi_create_auth(lua_State *L, const std::string &playername,
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
-bool scriptapi_set_password(lua_State *L, const std::string &playername,
+bool scriptapi_set_password(const std::string &playername,
 		const std::string &password)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -328,7 +332,7 @@ static void read_server_sound_params(lua_State *L, int index,
 // - runs the callbacks
 // - removes the table and arguments from the lua stack
 // - pushes the return value, computed depending on mode
-void scriptapi_run_callbacks(lua_State *L, int nargs,
+void scriptapi_run_callbacks(lua_State* L, int nargs,
 		RunCallbacksMode mode)
 {
 	// Insert the return value into the lua stack, below the table
@@ -417,9 +421,10 @@ void scriptapi_run_callbacks(lua_State *L, int nargs,
 	}
 }
 
-bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
+bool scriptapi_on_chat_message(const std::string &name,
 		const std::string &message)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -435,8 +440,9 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 	return ate;
 }
 
-void scriptapi_on_shutdown(lua_State *L)
+void scriptapi_on_shutdown()
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -448,8 +454,9 @@ void scriptapi_on_shutdown(lua_State *L)
 	scriptapi_run_callbacks(L, 0, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
+void scriptapi_on_newplayer(ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -462,8 +469,9 @@ void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player)
+void scriptapi_on_dieplayer(ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -476,8 +484,9 @@ void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player)
 	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
+bool scriptapi_on_respawnplayer(ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -492,8 +501,9 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 	return positioning_handled_by_some;
 }
 
-void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player)
+void scriptapi_on_joinplayer(ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -506,8 +516,9 @@ void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player)
 	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player)
+void scriptapi_on_leaveplayer( ServerActiveObject *player)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -523,11 +534,12 @@ void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player)
 /*
 	player
 */
-void scriptapi_on_player_receive_fields(lua_State *L,
+void scriptapi_on_player_receive_fields(
 		ServerActiveObject *player,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
+	lua_State* L = ScriptAPI::GetInstance()->getState();
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
@@ -1000,78 +1012,7 @@ static int l_notify_authentication_modified(lua_State *L)
 	return 0;
 }
 
-// get_craft_recipes(result item)
-static int l_get_all_craft_recipes(lua_State *L)
-{
-	char tmp[20];
-	int input_i = 1;
-	std::string o_item = luaL_checkstring(L,input_i);
-	IGameDef *gdef = get_server(L);
-	ICraftDefManager *cdef = gdef->cdef();
-	CraftInput input;
-	CraftOutput output(o_item,0);
-	std::vector<CraftDefinition*> recipes_list = cdef->getCraftRecipes(output, gdef);
-	if (recipes_list.empty())
-	{
-		lua_pushnil(L);
-		return 1;
-	}
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(std::vector<CraftDefinition*>::const_iterator
-		i = recipes_list.begin();
-		i != recipes_list.end(); i++)
-	{
-		CraftOutput tmpout;
-		tmpout.item = "";
-		tmpout.time = 0;
-		CraftDefinition *def = *i;
-		tmpout = def->getOutput(input, gdef);
-		if(tmpout.item.substr(0,output.item.length()) == output.item)
-		{
-			input = def->getInput(output, gdef);
-			lua_pushvalue(L, table_insert);
-			lua_pushvalue(L, table);
-			lua_newtable(L);
-			int k = 0;
-			lua_newtable(L);
-			for(std::vector<ItemStack>::const_iterator
-				i = input.items.begin();
-				i != input.items.end(); i++, k++)
-			{
-				if (i->empty()) continue;
-				sprintf(tmp,"%d",k);
-				lua_pushstring(L,tmp);
-				lua_pushstring(L,i->name.c_str());
-				lua_settable(L, -3);
-			}
-			lua_setfield(L, -2, "items");
-			setintfield(L, -1, "width", input.width);
-			switch (input.method)
-				{
-				case CRAFT_METHOD_NORMAL:
-					lua_pushstring(L,"normal");
-					break;
-				case CRAFT_METHOD_COOKING:
-					lua_pushstring(L,"cooking");
-					break;
-				case CRAFT_METHOD_FUEL:
-					lua_pushstring(L,"fuel");
-					break;
-				default:
-					lua_pushstring(L,"unknown");
-				}
-			lua_setfield(L, -2, "type");
-			if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		}
-	}
-	return 1;
-}
+
 
 // rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
 static int l_rollback_get_last_node_actor(lua_State *L)
@@ -1205,4 +1146,75 @@ void scriptapi_export(lua_State *L, Server *server)
 	LuaPseudoRandom::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);
+}
+
+// singleton handling
+
+ScriptAPI* ScriptAPI::m_ScriptAPI = 0;
+
+ScriptAPI* ScriptAPI::GetInstance(bool create) {
+	if ((ScriptAPI::m_ScriptAPI == 0) &&
+			(create)) {
+		ScriptAPI::m_ScriptAPI = new ScriptAPI();
+	}
+	assert(ScriptAPI::m_ScriptAPI != 0);
+	return ScriptAPI::m_ScriptAPI;
+}
+
+void ScriptAPI::Reset() {
+	script_deinit(ScriptAPI::m_ScriptAPI->m_LuaState);
+	delete (ScriptAPI::m_ScriptAPI);
+
+	ScriptAPI::m_ScriptAPI = 0;
+}
+
+ScriptAPI::ScriptAPI()
+:	m_LuaState(script_init()),
+ 	m_Server(0)
+{
+	infostream<<"Server: Initializing Lua"<<std::endl;
+}
+
+
+// class functions
+
+bool ScriptAPI::Initialize(Server* server,std::string builtinpath) {
+	m_Server = server;
+	scriptapi_export(m_LuaState, m_Server);
+
+	infostream<<"Server: Loading builtin.lua [\""
+			<<builtinpath<<"\"]"<<std::endl;
+
+	bool success = loadmod(m_LuaState, builtinpath, "__builtin");
+	if(!success){
+		errorstream<<"Server: Failed to load and run "
+				<<builtinpath<<std::endl;
+		throw ModError("Failed to load and run "+builtinpath);
+	}
+
+	return true;
+}
+
+bool ScriptAPI::LoadMods(std::vector<ModSpec> &mods) {
+	// Load and run "mod" scripts
+	for(std::vector<ModSpec>::iterator i = mods.begin();
+			i != mods.end(); i++){
+		const ModSpec &mod = *i;
+		infostream<<mod.name<<" ";
+		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
+		infostream<<"  ["<<padStringRight(mod.name, 12)<<"] [\""
+				<<scriptpath<<"\"]"<<std::endl;
+		bool success = loadmod(m_LuaState, scriptpath, mod.name);
+		if(!success){
+			errorstream<<"Server: Failed to load and run "
+					<<scriptpath<<std::endl;
+			throw ModError("Failed to load and run "+scriptpath);
+		}
+	}
+	infostream<<std::endl;
+	return true;
+}
+
+lua_State* ScriptAPI::getState() {
+	return m_LuaState;
 }

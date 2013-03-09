@@ -189,16 +189,13 @@ public:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef,
+	ServerEnvironment(ServerMap *map, IGameDef *gamedef,
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
 	Map & getMap();
 
 	ServerMap & getServerMap();
-
-	lua_State* getLua()
-		{ return m_lua; }
 
 	IGameDef *getGameDef()
 		{ return m_gamedef; }
@@ -343,8 +340,6 @@ private:
 	
 	// The map
 	ServerMap *m_map;
-	// Lua state
-	lua_State *m_lua;
 	// Game definition
 	IGameDef *m_gamedef;
 	// Background block emerger (the server, in practice)
