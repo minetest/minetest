@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-03-07 22:56+0200\n"
-"Last-Translator: Mitori Itoshiki <mito551@gmail.com>\n"
+"PO-Revision-Date: 2013-03-09 14:28+0200\n"
+"Last-Translator: 4aiman Konsorumaniakku <4aiman@inbox.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -197,7 +197,7 @@ msgstr "Выбор зоны видимости"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
-msgstr "Выдать стеки"
+msgstr ""
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
@@ -456,7 +456,7 @@ msgstr "Ввод"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr "Tab"
+msgstr "Табуляция"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -464,7 +464,7 @@ msgstr "Доп. кнопка 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Капслок"
+msgstr "Caps Lock"
 
 #: src/keycode.cpp:225
 msgid "Control"
@@ -492,7 +492,6 @@ msgid "Convert"
 msgstr "Преобразовать"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Escape"
 msgstr "Escape"
 
@@ -520,11 +519,11 @@ msgstr "Принять"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp:227
 #, fuzzy
@@ -573,7 +572,7 @@ msgstr "Справка"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
@@ -655,11 +654,11 @@ msgstr "Доп. клав. 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
