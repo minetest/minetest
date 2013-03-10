@@ -157,7 +157,7 @@ inline float easeCurve(float t) {
 		(s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \
-		noise2d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
+		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
 		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #endif

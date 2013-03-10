@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPGENV6_HEADER
 #define MAPGENV6_HEADER
 
+#include "dungeongen.h"
 #include "mapgen.h"
 
 #define AVERAGE_MUD_AMOUNT 4

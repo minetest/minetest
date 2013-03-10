@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 #include "emerge.h"
+#include "dungeongen.h"
 #include "mapgen_v6.h"
 
 /////////////////// Mapgen V6 perlin noise default values
@@ -1241,6 +1242,14 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		END OF AGING LOOP
 	************************/
 
+	/*
+		Add dungeons
+	*/
+	if (flags & MG_DUNGEONS) {
+		DungeonGen dgen(ndef, data->seed, water_level);
+		dgen.generate(&vmanip, blockseed, full_node_min, full_node_max);
+	}
+	
 	/*
 		Add top and bottom side of water to transforming_liquid queue
 	*/
