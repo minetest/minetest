@@ -227,6 +227,155 @@ public:
 	std::string m_formspec;
 	FormspecFormSource** m_game_formspec;
 };
+
+/*
+	Item draw routine
+*/
+void draw_item(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamedef,
+		v2s32 upperleftpos, s32 imgsize, s32 itemcount,
+		InventoryList *mainlist, u16 selectitem, unsigned short int direction)
+		//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+		//NOTE: direction: 0-> left-right, 1-> right-left, 2->top-bottom, 3->bottom-top
+{
+	s32 padding = imgsize/6;
+	s32 height = imgsize + padding*2;
+	s32 width = itemcount*(imgsize+padding*2);
+	if(direction == 2 or direction == 3){
+		width = imgsize + padding*2;
+		height = itemcount*(imgsize+padding*2);
+	}
+	s32 fullimglen = imgsize + padding*2;
+	
+	// Position of upper left corner of bar
+	v2s32 pos = upperleftpos;
+	
+	// Draw background color
+	/*core::rect<s32> barrect(0,0,width,height);
+	barrect += pos;
+	video::SColor bgcolor(255,128,128,128);
+	driver->draw2DRectangle(bgcolor, barrect, NULL);*/
+
+	core::rect<s32> imgrect(0,0,imgsize,imgsize);
+
+	for(s32 i=0; i<itemcount; i++)
+	{
+		const ItemStack &item = mainlist->getItem(i);
+		
+		v2s32 steppos;
+		if(direction == 1){
+			steppos = v2s32(-(padding+i*fullimglen), padding);
+		} else if(direction == 2) {
+			steppos = v2s32(padding, padding+i*fullimglen);
+		} else if(direction == 3) {
+			steppos = v2s32(padding, -(padding+i*fullimglen));
+		} else {
+			steppos = v2s32(padding+i*fullimglen, padding);
+		}
+		core::rect<s32> rect = imgrect + pos
+				+ steppos;
+		
+		if(selectitem == (i+1))
+		{
+			video::SColor c_outside(255,128,128,128);
+			//video::SColor c_outside(255,0,0,0);
+			video::SColor c_inside(255,64,64,64);
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			// Black base borders
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1 - padding),
+						v2s32(x2 + padding, y1)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y2),
+						v2s32(x2 + padding, y2 + padding)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding, y2)
+					), NULL);
+			/*// Light inside borders
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1 - padding/2),
+						v2s32(x2 + padding/2, y1)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y2),
+						v2s32(x2 + padding/2, y2 + padding/2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding/2, y2)
+					), NULL);
+			*/
+		}
+
+		video::SColor bgcolor2(128,0,0,0);
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
+		drawItemStack(driver, font, item, rect, NULL, gamedef);
+	}
+	
+}
+
+/*
+	Statbar draw routine
+*/
+void draw_statbar(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamedef,
+		v2s32 upperleftpos, std::string texture, s32 count)
+		//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+		//NOTE: direction: 0-> left-right, 1-> right-left, 2->top-bottom, 3->bottom-top
+{
+	video::ITexture *stat_texture =
+		gamedef->getTextureSource()->getTextureRaw(texture);
+	if(stat_texture)
+	{
+		v2s32 p = upperleftpos;
+		for(s32 i=0; i<count/2; i++)
+		{
+			core::dimension2di srcd(stat_texture->getOriginalSize());
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,srcd.Width,srcd.Height);
+			rect += p;
+			driver->draw2DImage(stat_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(srcd.Width,0);
+		}
+		if(count % 2 == 1)
+		{
+			core::dimension2di srcd(stat_texture->getOriginalSize());
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,srcd.Width/2,srcd.Height);
+			rect += p;
+			srcd.Width /= 2;
+			driver->draw2DImage(stat_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(srcd.Width*2,0);
+		}
+	}
+}
+
 /*
 	Hotbar draw routine
 */
@@ -241,14 +390,14 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		errorstream<<"draw_hotbar(): mainlist == NULL"<<std::endl;
 		return;
 	}
-	
+#if 0
 	s32 padding = imgsize/12;
 	//s32 height = imgsize + padding*2;
 	s32 width = itemcount*(imgsize+padding*2);
 	
 	// Position of upper left corner of bar
 	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
-	
+
 	// Draw background color
 	/*core::rect<s32> barrect(0,0,width,height);
 	barrect += pos;
@@ -314,15 +463,22 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 					core::rect<s32>(
 						v2s32(x2, y1),
 						v2s32(x2 + padding/2, y2)
-					), NULL);
-			*/
+					), NULL);*/
+			
 		}
 
 		video::SColor bgcolor2(128,0,0,0);
 		driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
-	
+#else
+	s32 padding = imgsize/12;
+	s32 width = itemcount*(imgsize+padding*2);
+	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
+	draw_item(driver, font, gamedef, pos, imgsize, itemcount,
+				mainlist, playeritem + 1, 0);
+#endif
+#if 0
 	/*
 		Draw hearts
 	*/
@@ -357,6 +513,10 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			p += v2s32(16,0);
 		}
 	}
+#else
+	draw_statbar(driver, font, gamedef, pos + v2s32(0, -20),
+		"heart.png", halfheartcount);
+#endif
 }
 
 /*
@@ -917,6 +1077,29 @@ public:
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
 	}
 };
+
+std::deque<std::string> split(std::string s, std::string delimiters)
+{
+	std::size_t current;
+	std::size_t next = -1;
+	std::deque<std::string> out;
+	do
+	{
+	  current = next + 1;
+	  next = s.find_first_of( delimiters, current );
+	  out.push_back(s.substr( current, next - current ));
+	}
+	while (next != std::string::npos);
+	return out;
+}
+
+template <typename T>
+T StringToNumber ( const std::string &Text )
+{
+	std::stringstream ss(Text);
+	T result;
+	return ss >> result ? result : 0;
+}
 
 void the_game(
 	bool &kill,
@@ -2039,7 +2222,6 @@ void the_game(
 		/*
 			Player speed control
 		*/
-		{
 			/*bool a_up,
 			bool a_down,
 			bool a_left,
@@ -2075,9 +2257,8 @@ void the_game(
 			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
 			128*(int)input->getLeftState()+
 			256*(int)input->getRightState();
-			LocalPlayer* player = client.getEnv().getLocalPlayer();
-			player->keyPressed=keyPressed;
-		}
+			LocalPlayer* playerxx = client.getEnv().getLocalPlayer();
+			playerxx->keyPressed=keyPressed;
 		
 		/*
 			Run server
