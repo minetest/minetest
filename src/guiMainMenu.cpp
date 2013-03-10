@@ -209,7 +209,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	changeCtype("");
 
 	// Version
-	//if(m_data->selected_tab != TAB_CREDITS)
 	{
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
@@ -219,7 +218,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 
 	//v2s32 center(size.X/2, size.Y/2);
-	v2s32 c800(size.X/2-400, size.Y/2-300);
+	v2s32 c800(size.X/2-400, size.Y/2-270);
 	
 	m_topleft_client = c800 + v2s32(90, 70+50+30);
 	m_size_client = v2s32(620, 270);
@@ -237,7 +236,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	m_topleft_server = m_topleft_client + v2s32(0, m_size_client.Y+20);
 	
 	// Tabs
-#if 1
 	{
 		core::rect<s32> rect(0, 0, m_size_client.X, 30);
 		rect += m_topleft_client + v2s32(0, -30);
@@ -250,7 +248,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->addTab(wgettext("Credits"));
 		e->setActiveTab(m_data->selected_tab);
 	}
-#endif
 	
 	if(m_data->selected_tab == TAB_SINGLEPLAYER)
 	{
@@ -786,15 +783,15 @@ void GUIMainMenu::drawMenu()
 			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 		}
 		video::ITexture *logotexture =
-				driver->getTexture(getTexturePath("menulogo.png").c_str());
+				driver->getTexture(getTexturePath("logo.png").c_str());
 		if(logotexture)
 		{
 			v2s32 logosize(logotexture->getOriginalSize().Width,
 					logotexture->getOriginalSize().Height);
-			logosize *= 2;
+
 			core::rect<s32> rect(0,0,logosize.X,logosize.Y);
 			rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
-			rect += v2s32(130, 50);
+			rect += v2s32(500, 30);
 			driver->draw2DImage(logotexture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(logotexture->getSize())),
