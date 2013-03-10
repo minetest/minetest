@@ -153,8 +153,10 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	minetest.log("action", placer:get_player_name() .. " places node "
-		.. def.name .. " at " .. minetest.pos_to_string(place_to))
+	if placer:get_player_name() ~= "" then
+		minetest.log("action", placer:get_player_name() .. " places node "
+			.. def.name .. " at " .. minetest.pos_to_string(place_to))
+	end
 	
 	local oldnode = minetest.env:get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = 0}
