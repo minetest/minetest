@@ -216,6 +216,7 @@ public:
 
 	std::deque<std::string> achieves;
 	u16 achieve_timer;
+	std::map<std::string, std::string> hud;
 
 	f32 movement_acceleration_default;
 	f32 movement_acceleration_air;

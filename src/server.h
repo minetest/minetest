@@ -508,6 +508,8 @@ public:
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	bool achieve(const char *name, const std::string &achievement);
+	bool hudadd(const char *name, const std::string &id, const std::string &form);
+	bool hudrm(const char *name, const std::string &id);
 private:
 
 	// con::PeerHandler implementation.
@@ -550,6 +552,8 @@ private:
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
 	void SendAchieve(u16 peer_id, const std::string achievement);
+	void SendHUDAdd(u16 peer_id, const std::string id, const std::string form);
+	void SendHUDRm(u16 peer_id, const std::string id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

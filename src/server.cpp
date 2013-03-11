@@ -3542,6 +3542,45 @@ void Server::SendAchieve(u16 peer_id, const std::string achievement)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendHUDAdd(u16 peer_id, const std::string id, const std::string form)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDADD);
+	os.write((char*)buf, 2);
+	os<<serializeString(id);
+	os<<serializeString(form);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDRm(u16 peer_id, const std::string id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDRM);
+	os.write((char*)buf, 2);
+	os<<serializeString(id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(core::map<u16, RemoteClient*>::Iterator
@@ -4524,6 +4563,34 @@ bool Server::achieve(const char *playername, const std::string &achievement)
 	}
 
 	SendAchieve(player->peer_id, achievement);
+	return true;
+}
+
+bool Server::hudadd(const char *playername, const std::string &id, const std::string &form)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudadd: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDAdd(player->peer_id, id, form);
+	return true;
+}
+
+bool Server::hudrm(const char *playername, const std::string &id)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudrm: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDRm(player->peer_id, id);
 	return true;
 }
 

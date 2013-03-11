@@ -157,7 +157,9 @@ enum ClientEventType
 	CE_DEATHSCREEN,
 	CE_TEXTURES_UPDATED,
 	CE_SHOW_FORMSPEC,
-	CE_ACHIEVE
+	CE_ACHIEVE,
+	CE_HUDADD,
+	CE_HUDRM
 };
 
 struct ClientEvent
@@ -186,6 +188,13 @@ struct ClientEvent
 		struct{
 			std::string* achievement;
 		} achieve;
+		struct{
+			std::string* id;
+			std::string* form;
+		} hudadd;
+		struct{
+			std::string* id;
+		} hudrm;
 		struct{
 		} textures_updated;
 	};

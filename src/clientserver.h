@@ -394,6 +394,22 @@ enum ToClientCommand
 		u32 len
 		u8[len] achievement
 	*/
+
+	TOCLIENT_HUDADD = 0x48,
+	/*
+		u16 command
+		u32 len
+		u8[len] id
+		u32 len
+		u8[len] form
+	*/
+
+	TOCLIENT_HUDRM = 0x49,
+	/*
+		u16 command
+		u32 len
+		u8[len] id
+	*/
 };
 
 enum ToServerCommand
