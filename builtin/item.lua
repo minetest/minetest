@@ -330,10 +330,12 @@ function minetest.node_dig(pos, node, digger)
 	local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
 	-- Wear out tool
-	local tp = wielded:get_tool_capabilities()
-	local dp = minetest.get_dig_params(def.groups, tp)
-	wielded:add_wear(dp.wear)
-	digger:set_wielded_item(wielded)
+	if not minetest.setting_getbool("creative_mode") then
+		local tp = wielded:get_tool_capabilities()
+		local dp = minetest.get_dig_params(def.groups, tp)
+		wielded:add_wear(dp.wear)
+		digger:set_wielded_item(wielded)
+	end
 	
 	-- Handle drops
 	minetest.handle_node_drops(pos, drops, digger)
