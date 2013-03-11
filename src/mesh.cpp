@@ -453,7 +453,11 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 
 	scene::IMeshSceneNode* meshnode = smgr->addMeshSceneNode(mesh, NULL, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
 	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
+	scene::IMesh* nodemesh = meshnode->getMesh();
+	for (u32 i=0; i<nodemesh->getMeshBufferCount(); ++i){
+		nodemesh->getMeshBuffer(i)->getMaterial().AntiAliasing = video::EAAM_FULL_BASIC;
+	}
+	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, false);
 	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
 
 	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,

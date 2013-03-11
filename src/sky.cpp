@@ -29,7 +29,7 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
 	mat.Lighting = false;
 	mat.ZBuffer = video::ECFN_NEVER;
 	mat.ZWriteEnable = false;
-	mat.AntiAliasing=0;
+	mat.AntiAliasing = video::EAAM_SIMPLE;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	mat.BackfaceCulling = false;
@@ -94,6 +94,19 @@ void Sky::render()
 
 	if(m_sunlight_seen)
 	{
+
+		float nightlength = 0.415;
+		float wn = nightlength / 2;
+		float wicked_time_of_day = 0;
+		if(m_time_of_day > wn && m_time_of_day < 1.0 - wn)
+			wicked_time_of_day = (m_time_of_day - wn)/(1.0-wn*2)*0.5 + 0.25;
+		else if(m_time_of_day < 0.5)
+			wicked_time_of_day = m_time_of_day / wn * 0.25;
+		else
+			wicked_time_of_day = 1.0 - ((1.0-m_time_of_day) / wn * 0.25);
+		/*std::cerr<<"time_of_day="<<m_time_of_day<<" -> "
+				<<"wicked_time_of_day="<<wicked_time_of_day<<std::endl;*/
+
 		float sunsize = 0.07;
 		video::SColorf suncolor_f(1, 1, 0, 1);
 		suncolor_f.r = 1;
@@ -107,18 +120,6 @@ void Sky::render()
 		float moonsize = 0.04;
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
-		
-		float nightlength = 0.415;
-		float wn = nightlength / 2;
-		float wicked_time_of_day = 0;
-		if(m_time_of_day > wn && m_time_of_day < 1.0 - wn)
-			wicked_time_of_day = (m_time_of_day - wn)/(1.0-wn*2)*0.5 + 0.25;
-		else if(m_time_of_day < 0.5)
-			wicked_time_of_day = m_time_of_day / wn * 0.25;
-		else
-			wicked_time_of_day = 1.0 - ((1.0-m_time_of_day) / wn * 0.25);
-		/*std::cerr<<"time_of_day="<<m_time_of_day<<" -> "
-				<<"wicked_time_of_day="<<wicked_time_of_day<<std::endl;*/
 
 		video::SColor suncolor = suncolor_f.toSColor();
 		video::SColor suncolor2 = suncolor2_f.toSColor();
@@ -133,8 +134,8 @@ void Sky::render()
 		driver->setMaterial(m_materials[1]);
 		
 		//video::SColor cloudyfogcolor(255,255,255,255);
-		video::SColor cloudyfogcolor = m_bgcolor;
-		//video::SColor cloudyfogcolor = m_bgcolor.getInterpolated(m_skycolor, 0.5);
+		//video::SColor cloudyfogcolor = m_bgcolor;
+		video::SColor cloudyfogcolor = m_bgcolor.getInterpolated(m_skycolor, 0.5);
 		
 		// Draw far cloudy fog thing
 		for(u32 j=0; j<4; j++)
@@ -183,7 +184,7 @@ void Sky::render()
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
-
+#if 1 //This may be turned off in the future
 		driver->setMaterial(m_materials[2]);
 
 		{
@@ -208,7 +209,7 @@ void Sky::render()
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
-
+#endif
 		driver->setMaterial(m_materials[1]);
 		
 		// Draw sun
@@ -367,12 +368,13 @@ void Sky::render()
 					scene::EPT_QUADS, video::EIT_16BIT);
 		}while(0);
 		
-		for(u32 j=0; j<2; j++)
+		for(u32 j=0; j<4; j++)
 		{
 			//video::SColor c = m_skycolor;
 			video::SColor c = cloudyfogcolor;
-			vertices[0] = video::S3DVertex(-1,-1.0,-1, 0,0,1, c, t, t);
-			vertices[1] = video::S3DVertex( 1,-1.0,-1, 0,0,1, c, o, t);
+			video::SColor d = m_skycolor;
+			vertices[0] = video::S3DVertex(-1,-1.0,-1, 0,0,1, d, t, t);
+			vertices[1] = video::S3DVertex( 1,-1.0,-1, 0,0,1, d, o, t);
 			vertices[2] = video::S3DVertex( 1,-0.02,-1, 0,0,1, c, o, o);
 			vertices[3] = video::S3DVertex(-1,-0.02,-1, 0,0,1, c, t, o);
 			for(u32 i=0; i<4; i++){
@@ -380,7 +382,10 @@ void Sky::render()
 				if(j==0)
 					// Switch from -Z (south) to +X (east)
 					vertices[i].Pos.rotateXZBy(90);
-				else
+				else if(j==1)
+					// Switch from -Z (south) to +Z (north)
+					vertices[i].Pos.rotateXZBy(180);
+				else if(j==2)
 					// Switch from -Z (south) to -X (west)
 					vertices[i].Pos.rotateXZBy(-90);
 			}
@@ -410,7 +415,10 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
 	
-	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
+	bool is_dawn = (time_brightness >= 0.1 && time_brightness < 0.35);
+	float dawn = 1 - (fabsf(time_brightness - 0.1) / 5);
+	if(time_brightness > 0.35)
+		dawn = 1;
 
 	//video::SColorf bgcolor_bright_normal_f(170./255,200./255,230./255, 1.0);
 	video::SColorf bgcolor_bright_normal_f(155./255,193./255,240./255, 1.0);
@@ -431,37 +439,35 @@ void Sky::update(float time_of_day, float time_brightness,
 			video::SColor(255, 240,240,255);
 	//video::SColorf cloudcolor_bright_dawn_f(1.0, 0.591, 0.4);
 	//video::SColorf cloudcolor_bright_dawn_f(1.0, 0.65, 0.44);
-	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
-
+	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.5, 0.2);
+/*
 	if(sunlight_seen){
 		//m_brightness = m_brightness * 0.95 + direct_brightness * 0.05;
-		m_brightness = m_brightness * 0.95 + time_brightness * 0.05;
+		m_brightness = m_brightness * 0.85 + time_brightness * 0.15;
 	}
 	else{
 		if(direct_brightness < m_brightness)
 			m_brightness = m_brightness * 0.95 + direct_brightness * 0.05;
 		else
 			m_brightness = m_brightness * 0.98 + direct_brightness * 0.02;
-	}
+	}*/
+	m_brightness = time_brightness;
 	
 	m_clouds_visible = true;
 	float color_change_fraction = 0.98;
 	if(sunlight_seen){
-		if(is_dawn){
-			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-					bgcolor_bright_dawn_f, color_change_fraction);
-			m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-					skycolor_bright_dawn_f, color_change_fraction);
-			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
-					cloudcolor_bright_dawn_f, color_change_fraction);
-		} else {
-			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-					bgcolor_bright_normal_f, color_change_fraction);
-			m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-					skycolor_bright_normal_f, color_change_fraction);
-			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
-					cloudcolor_bright_normal_f, color_change_fraction);
-		}
+		m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
+				bgcolor_bright_normal_f, color_change_fraction);
+		m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
+				skycolor_bright_normal_f, color_change_fraction);
+		m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
+				cloudcolor_bright_normal_f, color_change_fraction);
+		m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
+				bgcolor_bright_dawn_f, dawn);
+		m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
+				skycolor_bright_dawn_f, dawn);
+		m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
+				cloudcolor_bright_dawn_f, dawn);
 	} else {
 		m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 				bgcolor_bright_indoor_f, color_change_fraction);

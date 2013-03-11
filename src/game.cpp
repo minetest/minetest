@@ -304,7 +304,7 @@ void draw_item(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamed
 						v2s32(x2, y1),
 						v2s32(x2 + padding, y2)
 					), NULL);
-			/*// Light inside borders
+			// Light inside borders
 			driver->draw2DRectangle(c_inside,
 					core::rect<s32>(
 						v2s32(x1 - padding/2, y1 - padding/2),
@@ -325,7 +325,7 @@ void draw_item(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamed
 						v2s32(x2, y1),
 						v2s32(x2 + padding/2, y2)
 					), NULL);
-			*/
+
 		}
 
 		video::SColor bgcolor2(128,0,0,0);
@@ -391,7 +391,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		return;
 	}
 #if 0
-	s32 padding = imgsize/12;
+	s32 padding = imgsize/6;
 	//s32 height = imgsize + padding*2;
 	s32 width = itemcount*(imgsize+padding*2);
 	
@@ -415,9 +415,9 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		
 		if(playeritem == i)
 		{
-			video::SColor c_outside(255,255,0,0);
+			video::SColor c_outside(255,128,128,128);
 			//video::SColor c_outside(255,0,0,0);
-			//video::SColor c_inside(255,192,192,192);
+			video::SColor c_inside(255,64,64,64);
 			s32 x1 = rect.UpperLeftCorner.X;
 			s32 y1 = rect.UpperLeftCorner.Y;
 			s32 x2 = rect.LowerRightCorner.X;
@@ -443,7 +443,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 						v2s32(x2, y1),
 						v2s32(x2 + padding, y2)
 					), NULL);
-			/*// Light inside borders
+			// Light inside borders
 			driver->draw2DRectangle(c_inside,
 					core::rect<s32>(
 						v2s32(x1 - padding/2, y1 - padding/2),
@@ -463,7 +463,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 					core::rect<s32>(
 						v2s32(x2, y1),
 						v2s32(x2 + padding/2, y2)
-					), NULL);*/
+					), NULL);
 			
 		}
 
@@ -472,7 +472,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 #else
-	s32 padding = imgsize/12;
+	s32 padding = imgsize/6;
 	s32 width = itemcount*(imgsize+padding*2);
 	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
 	draw_item(driver, font, gamedef, pos, imgsize, itemcount,
@@ -590,7 +590,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 		if(selected_object != NULL)
 		{
-			if(selected_object->doShowSelectionBox())
+			/*if(selected_object->doShowSelectionBox())
 			{
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
@@ -601,7 +601,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 				hilightboxes.push_back(aabb3f(
 						selection_box->MinEdge + pos,
 						selection_box->MaxEdge + pos));
-			}
+			}*/
 
 
 			result.type = POINTEDTHING_OBJECT;
@@ -2913,10 +2913,10 @@ void the_game(
 		
 		time_of_day = client.getEnv().getTimeOfDayF();
 		float maxsm = 0.05;
-		if(fabs(time_of_day - time_of_day_smooth) > maxsm &&
+		/*if(//fabs(time_of_day - time_of_day_smooth) > maxsm &&
 				fabs(time_of_day - time_of_day_smooth + 1.0) > maxsm &&
 				fabs(time_of_day - time_of_day_smooth - 1.0) > maxsm)
-			time_of_day_smooth = time_of_day;
+			time_of_day_smooth = time_of_day;*/
 		float todsm = 0.05;
 		if(time_of_day_smooth > 0.8 && time_of_day < 0.2)
 			time_of_day_smooth = time_of_day_smooth * (1.0-todsm)
@@ -3297,7 +3297,8 @@ void the_game(
 		
 		video::SMaterial m;
 		//m.Thickness = 10;
-		m.Thickness = 3;
+		//m.Thickness = 3;
+		m.Thickness = 1;
 		m.Lighting = false;
 		driver->setMaterial(m);
 
