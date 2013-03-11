@@ -2363,6 +2363,17 @@ void the_game(
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
+				else if (event.type == CE_HUDADD)
+				{
+					player->hud[*event.hudadd.id] = *event.hudadd.form;
+					delete(event.hudadd.id);
+					delete(event.hudadd.form);
+				}
+				else if (event.type == CE_HUDRM)
+				{
+					player->hud.erase(*event.hudrm.id);
+					delete(event.hudrm.id);
+				}
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{
 					update_wielded_item_trigger = true;
@@ -3290,6 +3301,33 @@ void the_game(
 			graph.draw(10, screensize.Y - 10, driver, font);
 		}
 
+		if(show_hud)
+		{
+			for(std::map<std::string, std::string>::iterator it = player->hud.begin();
+				it != player->hud.end(); ++it)
+			{
+				std::deque<std::string> spt = split(it->second, "~");
+				if(spt.size() < 2) {
+					actionstream<<"luadraw: ignoring drawform "<<it->second
+						<<" of key "<<it->first<<" due to lack of command."<<std::endl;
+					continue;
+				}
+				std::string com = spt.at(0);
+				if(com == "back") {
+					std::string tex = spt[1];
+					video::ITexture *texture =
+						gamedef->getTextureSource()->getTextureRaw(tex);
+					core::dimension2di imgsize(texture->getOriginalSize());
+					core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
+					const video::SColor color(255,255,255,255);
+					const video::SColor colors[] = {color,color,color,color};
+					driver->draw2DImage(texture, rect,
+						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+						NULL, colors, true);
+				}
+			}
+		}
+
 		/*
 			Draw crosshair
 		*/
@@ -3350,10 +3388,90 @@ void the_game(
 		}
 
 		/*
+			Draw lua hud items
+		*/
+		std::deque<gui::IGUIStaticText *> luaguitexts;
+		if(show_hud)
+		{
+			for(std::map<std::string, std::string>::iterator it = player->hud.begin();
+				it != player->hud.end(); ++it)
+			{
+				std::deque<std::string> spt = split(it->second, "~");
+				if(spt.size() < 2) {
+					actionstream<<"luadraw: ignoring drawform "<<it->second
+						<<" of key "<<it->first<<" due to lack of command."<<std::endl;
+					continue;
+				}
+				std::string com = spt.at(0);
+				if(com == "image"){
+					std::string texname = spt[1];
+					float scalex = StringToNumber<float>(spt[2]);
+					float scaley = StringToNumber<float>(spt[3]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[4])*screensize.X,
+											StringToNumber<float>(spt[5])*screensize.Y);
+
+					video::ITexture *texture =
+						gamedef->getTextureSource()->getTextureRaw(texname);
+					const video::SColor color(255,255,255,255);
+					const video::SColor colors[] = {color,color,color,color};
+					core::dimension2di imgsize(texture->getOriginalSize());
+					core::rect<s32> rect(0, 0, imgsize.Width*scalex,
+												imgsize.Height*scaley);
+					rect += pos;
+					driver->draw2DImage(texture, rect,
+						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+						NULL, colors, true);
+				} else if(com == "text") {
+					std::wstring text;
+					text.assign(spt[1].begin(), spt[1].end());
+					float sizex = StringToNumber<float>(spt[2])*screensize.X;
+					float sizey = StringToNumber<float>(spt[3]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[4])*screensize.X,
+											StringToNumber<float>(spt[5])*screensize.Y);
+
+					gui::IGUIStaticText *luaguitext = guienv->addStaticText(
+							text.c_str(),
+							core::rect<s32>(0, 0, sizex, text_height*sizey)+pos,
+							false, false);
+					luaguitexts.push_back(luaguitext);
+				} else if(com == "statbar") {
+					std::string tex = spt[1];
+					u32 count = StringToNumber<u32>(spt[2]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[3])*screensize.X,
+											StringToNumber<float>(spt[4])*screensize.Y);
+					draw_statbar(driver, font, gamedef, pos, tex, count);
+				} else if(com == "inv") {
+					std::string list = spt[1];
+					u32 numitems = StringToNumber<u32>(spt[2]);
+					u32 item = StringToNumber<u32>(spt[3]);
+					u32 direction = StringToNumber<u32>(spt[4]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[5])*screensize.X,
+											StringToNumber<float>(spt[6])*screensize.Y);
+					InventoryList* inv = local_inventory.getList(list);
+					draw_item(driver, font, gamedef, pos, hotbar_imagesize,
+								numitems, inv, item, direction);
+				} else if(com == "back") {
+					//no-op
+				} else {
+					actionstream<<"luadraw: ignoring drawform "<<it->second<<
+						"of key "<<it->first<<" due to incorrect command."<<std::endl;
+					continue;
+				}
+			}
+		}
+
+		/*
 			Draw gui
 		*/
 		// 0-1ms
 		guienv->drawAll();
+		
+		/*
+			Remove lua-texts
+		*/
+		for(std::deque<gui::IGUIStaticText *>::iterator it = luaguitexts.begin();
+			it != luaguitexts.end(); ++it)
+			(**it).remove();
 
 		/*
 			End scene

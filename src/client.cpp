@@ -1936,6 +1936,36 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.show_formspec.formname = new std::string(formname);
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_HUDADD)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string id = deSerializeString(is);
+		std::string form = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_HUDADD;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.hudadd.id = new std::string(id);
+		event.hudadd.form = new std::string(form);
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDRM)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string id = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_HUDRM;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.hudrm.id = new std::string(id);
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

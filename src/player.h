@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h" // BS
+#include <queue>
 
 #define PLAYERNAME_SIZE 20
 
@@ -208,6 +209,8 @@ public:
 	u8 light;
 
 	Inventory inventory;
+
+	std::map<std::string, std::string> hud;
 
 	f32 movement_acceleration_default;
 	f32 movement_acceleration_air;

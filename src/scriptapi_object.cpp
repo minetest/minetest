@@ -655,6 +655,38 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	return 1;
 }
 
+// hud_add(self, id, form)
+int ObjectRef::l_hud_add(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if(player == NULL) return 0;
+
+	std::string id = "";
+	if(!lua_isnil(L, 2))
+		id = lua_tostring(L, 2);
+	std::string form = "";
+	if(!lua_isnil(L, 3))
+		form = lua_tostring(L, 3);
+	get_server(L)->hudadd(player->getName(), id, form);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// hud_rm(self, id)
+int ObjectRef::l_hud_rm(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if(player == NULL) return 0;
+
+	std::string id = "";
+	if(!lua_isnil(L, 2))
+		id = lua_tostring(L, 2);
+	get_server(L)->hudrm(player->getName(), id);
+	lua_pushboolean(L, true);
+	return 1;
+}
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -759,6 +791,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
+	luamethod(ObjectRef, hud_add),
+	luamethod(ObjectRef, hud_rm),
 	{0,0}
 };
 

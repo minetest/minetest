@@ -381,6 +381,22 @@ enum ToClientCommand
 		f1000 movement_liquid_sink
 		f1000 movement_gravity
 	*/
+
+	TOCLIENT_HUDADD = 0x47,
+	/*
+		u16 command
+		u32 len
+		u8[len] id
+		u32 len
+		u8[len] form
+	*/
+
+	TOCLIENT_HUDRM = 0x48,
+	/*
+		u16 command
+		u32 len
+		u8[len] id
+	*/
 };
 
 enum ToServerCommand
