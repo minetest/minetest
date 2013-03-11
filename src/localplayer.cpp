@@ -557,6 +557,8 @@ void LocalPlayer::applyControl(float dtime)
 		speedH = speedH.normalize() * movement_speed_fast;
 	else if(control.sneak && !free_move && !in_liquid && !in_liquid_stable)
 		speedH = speedH.normalize() * movement_speed_crouch;
+	else if(control.shld && !free_move && !in_liquid && !in_liquid_stable)
+		speedH = speedH.normalize() * movement_speed_block;
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
 

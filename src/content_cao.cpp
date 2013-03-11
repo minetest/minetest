@@ -1725,7 +1725,8 @@ public:
 				m_armor_groups,
 				toolcap,
 				punchitem,
-				time_from_last_punch);
+				time_from_last_punch,
+				0);
 
 		if(result.did_punch && result.damage != 0)
 		{

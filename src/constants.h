@@ -90,6 +90,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Maximum hit points of a player
 #define PLAYER_MAX_HP 20
+#define PLAYER_MAX_AP 40
 
 #endif
 

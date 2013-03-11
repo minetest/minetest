@@ -382,7 +382,7 @@ void draw_statbar(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *ga
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		IGameDef *gamedef,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory, s32 halfheartcount, u16 playeritem)
+		Inventory *inventory, s32 halfheartcount, s32 halfarmorcount, u16 playeritem)
 {
 	InventoryList *mainlist = inventory->getList("main");
 	if(mainlist == NULL)
@@ -513,9 +513,42 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			p += v2s32(16,0);
 		}
 	}
+	video::ITexture *armor_texture =
+		gamedef->getTextureSource()->getTextureRaw("armor.png");
+	if(armor_texture)
+	{
+		v2s32 p = pos + v2s32(0, -40);
+		for(s32 i=0; i<halfarmorcount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(armor_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(armor_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+		if(halfarmorcount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16/2,16);
+			rect += p;
+			core::dimension2di srcd(armor_texture->getOriginalSize());
+			srcd.Width /= 2;
+			driver->draw2DImage(armor_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+	}
 #else
 	draw_statbar(driver, font, gamedef, pos + v2s32(0, -20),
 		"heart.png", halfheartcount);
+	draw_statbar(driver, font, gamedef, pos + v2s32(0, -40),
+		"armor.png", halfarmorcount);
 #endif
 }
 
@@ -2243,6 +2276,7 @@ void the_game(
 				input->isKeyDown(getKeySetting("keymap_sneak")),
 				input->getLeftState(),
 				input->getRightState(),
+				input->isKeyDown(getKeySetting("keymap_shld")),
 				camera_pitch,
 				camera_yaw
 			);
@@ -2256,7 +2290,8 @@ void the_game(
 			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
 			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
 			128*(int)input->getLeftState()+
-			256*(int)input->getRightState();
+			256*(int)input->getRightState()+
+			512*(int)input->isKeyDown(getKeySetting("keymap_shld"));
 			LocalPlayer* playerxx = client.getEnv().getLocalPlayer();
 			playerxx->keyPressed=keyPressed;
 		
@@ -3114,6 +3149,11 @@ void the_game(
 			
 			update_wielded_item_trigger = true;
 		}
+		static bool conrot(false);
+		if(control.shld != conrot){
+			conrot = control.shld;
+			update_wielded_item_trigger = true;
+		}
 		if(update_wielded_item_trigger)
 		{
 			update_wielded_item_trigger = false;
@@ -3122,7 +3162,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item);
+			camera.wield(item, device, control.shld);
 		}
 
 		/*
@@ -3323,7 +3363,7 @@ void the_game(
 			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getAP(), client.getPlayerItem());
 		}
 
 		/*

@@ -141,7 +141,8 @@ public:
 	virtual int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
 			ServerActiveObject *puncher=NULL,
-			float time_from_last_punch=1000000)
+			float time_from_last_punch=1000000,
+			int shld=0)
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}

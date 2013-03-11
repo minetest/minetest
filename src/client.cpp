@@ -1553,6 +1553,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			m_client_event_queue.push_back(event);
 		}
 	}
+	else if(command == TOCLIENT_AP)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		//u8 oldap = player->ap;
+		u8 ap = readU8(is);
+		player->ap = ap;
+	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -2469,6 +2479,13 @@ u16 Client::getHP()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
+}
+
+u16 Client::getAP()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->ap;
 }
 
 bool Client::getChatMessage(std::wstring &message)

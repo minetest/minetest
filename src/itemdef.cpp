@@ -216,7 +216,8 @@ public:
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
-			cc->wield_mesh->drop();
+			if(cc->wield_mesh) //This could be NULL*
+				cc->wield_mesh->drop();
 		}
 #endif
 	}

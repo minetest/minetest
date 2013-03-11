@@ -35,6 +35,7 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
+	ap(0),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
@@ -46,17 +47,22 @@ Player::Player(IGameDef *gamedef):
 	updateName("<not set>");
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
+	inventory.addList("armor", 6);
+	/*1:helmet 2:breastplate 3:leggings 4:boots 5:gloves 6:shield*/
 	InventoryList *craft = inventory.addList("craft", 9);
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
 
 	// Can be redefined via Lua
-	inventory_formspec =  "size[8,7.5]"
-		//"image[1,0.6;1,2;player.png]"
-		"list[current_player;main;0,3.5;8,4;]"
-		"list[current_player;craft;3,0;3,3;]"
-		"list[current_player;craftpreview;7,1;1,1;]";
+	inventory_formspec =  "size[10,8.5]"
+		"image[2,1;1,2;player.png]"
+		"list[current_player;main;1,4.5;8,4;]"
+		"list[current_player;craft;5,0;3,3;]"
+		"list[current_player;craftpreview;9,1;1,1;]"
+		"list[current_player;armor;1,0;1,4;]"
+		"list[current_player;armor;0,0;1,1;]"
+		"list[current_player;armor;2,0;1,1;]";
 
 	// Initialize movement settings at default values, so movement can work if the server fails to send them
 	movement_acceleration_default = 3 * BS;
@@ -64,6 +70,7 @@ Player::Player(IGameDef *gamedef):
 	movement_acceleration_fast = 10 * BS;
 	movement_speed_walk = 4 * BS;
 	movement_speed_crouch = 1.35 * BS;
+	movement_speed_block = 1.75 * BS;
 	movement_speed_fast = 20 * BS;
 	movement_speed_climb = 2 * BS;
 	movement_speed_jump = 6.5 * BS;
@@ -150,13 +157,13 @@ void Player::serialize(std::ostream &os)
 {
 	// Utilize a Settings object for storing values
 	Settings args;
-	args.setS32("version", 1);
 	args.set("name", m_name);
 	//args.set("password", m_password);
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("ap", ap);
 
 	args.writeLines(os);
 
@@ -182,7 +189,6 @@ void Player::deSerialize(std::istream &is)
 		args.parseConfigLine(line);
 	}
 
-	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
 	updateName(name.c_str());
 	setPitch(args.getFloat("pitch"));
@@ -192,6 +198,11 @@ void Player::deSerialize(std::istream &is)
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
+	}
+	try{
+		ap = args.getS32("ap");
+	}catch(SettingNotFoundException &e){
+		ap = 20;
 	}
 
 	inventory.deSerialize(is);

@@ -311,7 +311,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
-	// WTF is this? It can't be right
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
@@ -529,17 +528,30 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, IrrlichtDevice *device, bool turn)
 {
 	IItemDefManager *idef = m_gamedef->idef();
-	scene::IMesh *wield_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
-	if(wield_mesh)
-	{
+	std::string itnm = item.getDefinition(idef).name;
+	scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
+	if(m_wield_rotate.count(itnm) == 0){
+		if(!wield_mesh) {
+			m_wield_rotate[itnm] = wield_mesh;
+		} else {
+			scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
+			m_wield_rotate[itnm] = man->createMeshWelded(wield_mesh);
+			core::matrix4 trans = core::matrix4();
+			trans.setRotationDegrees(core::vector3df(-40, -45, 45));
+			trans.setTranslation(core::vector3df(0, 10, 10));
+			man->transform(m_wield_rotate[itnm], trans);
+		}
+	}
+	if(turn) {
+		wield_mesh = m_wield_rotate[itnm];
+	}
+	if(wield_mesh) {
 		m_wieldnode->setMesh(wield_mesh);
 		m_wieldnode->setVisible(true);
-	}
-	else
-	{
+	} else {
 		m_wieldnode->setVisible(false);
 	}
 }

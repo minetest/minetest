@@ -381,6 +381,12 @@ enum ToClientCommand
 		f1000 movement_liquid_sink
 		f1000 movement_gravity
 	*/
+
+	TOCLIENT_AP = 0x46,
+	/*
+		u16 command
+		u8 ap
+	*/
 };
 
 enum ToServerCommand

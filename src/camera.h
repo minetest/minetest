@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
+#include <IMeshManipulator.h>
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -117,7 +118,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, IrrlichtDevice *device, bool turn);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -139,6 +140,7 @@ private:
 	MapDrawControl& m_draw_control;
 	
 	IGameDef *m_gamedef;
+	std::map<const std::string, scene::IMesh*> m_wield_rotate;
 
 	// Absolute camera position
 	v3f m_camera_position;
