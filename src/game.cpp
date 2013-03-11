@@ -2452,7 +2452,8 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, busytime, screensize, tool_reload_ratio,
+			local_inventory, client.getPlayerItem(), control.shld);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();

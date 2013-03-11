@@ -132,6 +132,20 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
+	std::deque<CameraAnimType> to_remove;
+	for(std::map<CameraAnimType, CameraAnim*>::iterator it = m_anims.begin();
+			it != m_anims.end(); it++) {
+		m_anim_times[it->first] += dtime;
+		if(m_anim_times[it->first] > 60) {
+			to_remove.push_front(it->first);
+		}
+	}
+
+	for(std::deque<CameraAnimType>::iterator it = to_remove.begin();
+		it != to_remove.end(); it++) {
+		pop_anim(*it);
+	}
+
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
@@ -212,7 +226,7 @@ void Camera::step(f32 dtime)
 }
 
 void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-		f32 tool_reload_ratio)
+		f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -320,6 +334,46 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	v3f wield_position = v3f(55, -35, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	static bool oldturn = false;
+	if(is_anim(CA_ChangeWield) && m_anim_times[CA_ChangeWield] < 0.5) {
+		f32 time = m_anim_times[CA_ChangeWield];
+		wield_position.Y += pow((time-0.25)*4, 2)*60 - 60;
+		if(not get_anim(CA_ChangeWield)->ChangeWield.changed
+			&& m_anim_times[CA_ChangeWield] > 0.25) {
+			// Update wielded tool
+			InventoryList *mlist = local_inventory.getList("main");
+			ItemStack item;
+			if(mlist != NULL)
+				item = mlist->getItem(player_item);
+
+			IItemDefManager *idef = m_gamedef->idef();
+			std::string itnm = item.getDefinition(idef).name;
+			scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
+			if(turn){wield_mesh = m_wield_rotate[itnm];}
+			if(wield_mesh){m_wieldnode->setVisible(true);}
+			else{m_wieldnode->setVisible(false);}
+			m_wieldnode->setMesh(wield_mesh);
+			get_anim(CA_ChangeWield)->ChangeWield.changed = true;
+			oldturn = turn;
+		}
+	}
+	if(oldturn != turn) {
+		// Update wielded tool
+		InventoryList *mlist = local_inventory.getList("main");
+		ItemStack item;
+		if(mlist != NULL)
+			item = mlist->getItem(player_item);
+
+		IItemDefManager *idef = m_gamedef->idef();
+		std::string itnm = item.getDefinition(idef).name;
+		scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
+		if(turn){wield_mesh = m_wield_rotate[itnm];}
+		if(wield_mesh){m_wieldnode->setVisible(true);}
+		else{m_wieldnode->setVisible(false);}
+		m_wieldnode->setMesh(wield_mesh);
+		get_anim(CA_ChangeWield)->ChangeWield.changed = true;
+		oldturn = turn;
+	}
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
@@ -534,25 +588,20 @@ void Camera::wield(const ItemStack &item, IrrlichtDevice *device, bool turn)
 	std::string itnm = item.getDefinition(idef).name;
 	scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
 	if(m_wield_rotate.count(itnm) == 0){
-		if(!wield_mesh) {
-			m_wield_rotate[itnm] = wield_mesh;
-		} else {
-			scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
-			m_wield_rotate[itnm] = man->createMeshWelded(wield_mesh);
-			core::matrix4 trans = core::matrix4();
-			trans.setRotationDegrees(core::vector3df(-40, -45, 45));
-			trans.setTranslation(core::vector3df(0, 10, 10));
-			man->transform(m_wield_rotate[itnm], trans);
-		}
+		scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
+		m_wield_rotate[itnm] = man->createMeshWelded(wield_mesh);
+		core::matrix4 trans = core::matrix4();
+		trans.setRotationDegrees(core::vector3df(-40, -45, 45));
+		trans.setTranslation(core::vector3df(0, 10, 10));
+		man->transform(m_wield_rotate[itnm], trans);
 	}
-	if(turn) {
-		wield_mesh = m_wield_rotate[itnm];
-	}
-	if(wield_mesh) {
-		m_wieldnode->setMesh(wield_mesh);
-		m_wieldnode->setVisible(true);
-	} else {
-		m_wieldnode->setVisible(false);
+	if(item.name != wielditem.name) {
+		wielditem = item;
+		// Delay changing of the mesh for the anim
+		bool zz = is_anim(CA_ChangeWield) && (m_anim_times[CA_ChangeWield] < 0.5);
+		push_anim(CA_ChangeWield);
+		if(zz)
+			m_anim_times[CA_ChangeWield] += 0.1;
 	}
 }
 

@@ -27,10 +27,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
 #include <IMeshManipulator.h>
+#include <deque>
 
 class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
+
+enum CameraAnimType {
+	CA_ChangeWield = 35 //for debugging purposes
+};
+
+struct CameraAnim {
+	CameraAnimType type;
+	struct {
+		bool changed;
+	} ChangeWield;
+};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -108,7 +120,7 @@ public:
 	// Update the camera from the local player's position.
 	// frametime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-			f32 tool_reload_ratio);
+			f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in);
@@ -175,6 +187,26 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button;
+
+	// Wield item
+	ItemStack wielditem;
+
+	// Anim dict (to add anims for update_wield and others)
+	std::map<CameraAnimType, CameraAnim*> m_anims;
+	std::map<CameraAnimType, f32> m_anim_times;
+	void push_anim(CameraAnimType type) {
+		CameraAnim anim = {type};
+		m_anims[type] = &anim;
+		m_anim_times[type] = 0;
+	};
+	void pop_anim(CameraAnimType type) {
+		if (m_anims.count(type)) {
+			m_anims.erase(type);
+			m_anim_times.erase(type);
+		}
+	};
+	bool is_anim(CameraAnimType type) { return m_anims.count(type); };
+	CameraAnim* get_anim(CameraAnimType type) { return m_anims.at(type); };
 };
 
 #endif
