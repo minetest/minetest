@@ -156,7 +156,8 @@ enum ClientEventType
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
 	CE_TEXTURES_UPDATED,
-	CE_SHOW_FORMSPEC
+	CE_SHOW_FORMSPEC,
+	CE_ACHIEVE
 };
 
 struct ClientEvent
@@ -182,6 +183,9 @@ struct ClientEvent
 			std::string* formspec;
 			std::string* formname;
 		} show_formspec;
+		struct{
+			std::string* achievement;
+		} achieve;
 		struct{
 		} textures_updated;
 	};

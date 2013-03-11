@@ -22,9 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi_types.h"
 #include "script.h"
 
-#include <irr_v2d.h>
-
-
 // garbage collector
 int LuaPerlinNoise::gc_object(lua_State *L)
 {

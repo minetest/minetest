@@ -1936,6 +1936,20 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.show_formspec.formname = new std::string(formname);
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_ACHIEVE)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string achievement = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_ACHIEVE;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.achieve.achievement = new std::string(achievement);
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

@@ -3468,6 +3468,25 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, co
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendAchieve(u16 peer_id, const std::string achievement)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_ACHIEVE);
+	os.write((char*)buf, 2);
+	os<<serializeString(achievement);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(core::map<u16, RemoteClient*>::Iterator
@@ -4418,6 +4437,20 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 	}
 
 	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	return true;
+}
+
+bool Server::achieve(const char *playername, const std::string &achievement)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"achieve: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendAchieve(player->peer_id, achievement);
 	return true;
 }
 

@@ -381,6 +381,13 @@ enum ToClientCommand
 		f1000 movement_liquid_sink
 		f1000 movement_gravity
 	*/
+
+	TOCLIENT_ACHIEVE = 0x46,
+	/*
+		u16 command
+		u32 len
+		u8[len] achievement
+	*/
 };
 
 enum ToServerCommand

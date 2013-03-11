@@ -2363,6 +2363,11 @@ void the_game(
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
+				else if (event.type == CE_ACHIEVE)
+				{
+					player->achieves.push_back(*event.achieve.achievement);
+					delete(event.achieve.achievement);
+				}
 				else if(event.type == CE_TEXTURES_UPDATED)
 				{
 					update_wielded_item_trigger = true;
@@ -3347,6 +3352,35 @@ void the_game(
 			player->hurt_tilt_timer -= dtime*5;
 			if(player->hurt_tilt_timer < 0)
 				player->hurt_tilt_strength = 0;
+		}
+
+		/*
+			Draw achievements
+		*/
+		if(!player->achieves.empty()){
+			player->achieve_timer += 1;
+			bool time_up = player->achieve_timer >= 450; //50 ~~ 1 sec
+			if(show_hud && !time_up)
+			{
+				video::ITexture *achieve_texture =
+					gamedef->getTextureSource()->getTextureRaw(player->achieves.front());
+				const video::SColor color(255,255,255,255);
+				const video::SColor colors[] = {color,color,color,color};
+				core::dimension2di imgsize(achieve_texture->getOriginalSize());
+				core::rect<s32> rect((screensize.X*3)/4,0,screensize.X,
+					((screensize.X/4)*imgsize.Height)/imgsize.Width);
+				rect += core::vector2d<s32>(-10,10);
+				driver->draw2DImage(achieve_texture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+					NULL, colors, true);
+			}
+			if(time_up)
+			{
+				player->achieves.pop_front();
+				player->achieve_timer = 0;
+			}
+		} else {
+			player->achieve_timer = 0;
 		}
 
 		/*
