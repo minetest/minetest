@@ -66,6 +66,7 @@ const luaL_Reg security_funcs[] =
 //global variables
 /******************************************************************************/
 std::map<std::string,lua_CFunction> glb_security_backup;
+std::vector<FILE*>                  glb_security_current_files;
 
 //functions
 /******************************************************************************/
@@ -102,6 +103,7 @@ void InitSecurity(lua_State* L) {
 	replaceLibFunc(L,"io","read",       l_forbidden);
 	replaceLibFunc(L,"io","tmpfile",    l_forbidden);
 	replaceLibFunc(L,"io","write",      l_forbidden);
+	replaceLibFunc(L,"io","close",      l_safe_io_close);
 
 }
 
@@ -179,13 +181,13 @@ void replaceLibFunc(lua_State *L,
 		lua_pushstring(L,funcname.c_str());
 		lua_gettable(L,-2);
 		if (lua_iscfunction(L,-1)) {
-			std::cout << "replacing: " << libname << "." << funcname << std::endl;
+			infostream << "Security: replacing: " << libname << "." << funcname << std::endl;
 			glb_security_backup[libname + "." + funcname] = lua_tocfunction(L,-1);
 			lua_pushcfunction(L, function);
 			lua_settable(L,-3);
 		}
 		else {
-			std::cout << "adding: " << libname << "." << funcname << std::endl;
+			infostream << "Security: adding: " << libname << "." << funcname << std::endl;
 			luaL_Reg toadd[2] = {
 					{ funcname.c_str(), function },
 					{0,0}
@@ -195,7 +197,7 @@ void replaceLibFunc(lua_State *L,
 		}
 	}
 	else {
-		std::cout << "unable to replace/add " << funcname
+		errorstream << "Security: unable to replace/add " << funcname
 				<< " for nonexistant lib" << libname << std::endl;
 	}
 }
@@ -322,8 +324,34 @@ int l_safe_io_open(lua_State *L) {
 	const char *filename = luaL_checkstring(L, 1);
 
 	if (inAllowedFolder(L,filename)) {
-		return glb_security_backup["io.open"](L);
+		int retval = glb_security_backup["io.open"](L);
+
+		FILE* toadd = *((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE));
+		if (toadd != 0)
+			glb_security_current_files.push_back(toadd);
+
+		return retval;
 	}
 	lua_pushnil(L);
 	return 1;
+}
+
+/******************************************************************************/
+int l_safe_io_close(lua_State *L) {
+	FILE* toclose = *((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE));
+
+	std::vector<FILE*>::iterator pos;
+
+	for (pos = glb_security_current_files.begin();
+						pos != glb_security_current_files.end(); pos++) {
+		if (*pos == toclose)
+			break;
+	}
+
+	if (pos != glb_security_current_files.end()) {
+		glb_security_current_files.erase(pos);
+		return glb_security_backup["io.close"](L);
+	}
+
+	return 0;
 }

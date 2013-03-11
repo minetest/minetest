@@ -28,6 +28,7 @@ int l_safe_remove(lua_State *L);
 int l_safe_mkdir(lua_State *L);
 int l_safe_io_lines(lua_State *L);
 int l_safe_io_open(lua_State *L);
+int l_safe_io_close(lua_State *L);
 
 //this functions need to ne replaced with safe ones too
 int l_safe_rawequal(lua_State *L);
