@@ -655,6 +655,20 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	return 1;
 }
 
+// push_achieve(self, achieve)
+int ObjectRef::l_push_achieve(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if(player == NULL) return 0;
+
+	std::string achieve = "";
+	if(!lua_isnil(L, 2))
+		achieve = lua_tostring(L, 2);
+	get_server(L)->achieve(player->getName(), achieve);
+	lua_pushboolean(L, true);
+	return 1;
+}
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -759,6 +773,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
+	luamethod(ObjectRef, push_achieve),
 	{0,0}
 };
 

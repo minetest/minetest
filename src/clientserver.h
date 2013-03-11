@@ -387,6 +387,13 @@ enum ToClientCommand
 		u16 command
 		u8 ap
 	*/
+
+	TOCLIENT_ACHIEVE = 0x47,
+	/*
+		u16 command
+		u32 len
+		u8[len] achievement
+	*/
 };
 
 enum ToServerCommand

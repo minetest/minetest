@@ -181,6 +181,9 @@ private:
 	// get_player_control_bits(self)
 	static int l_get_player_control_bits(lua_State *L);
 
+	// push_achieve(self, achieve)
+	static int l_push_achieve(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 
