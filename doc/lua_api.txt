@@ -765,6 +765,31 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
+Drawforms
+----------
+Drawforms are very similar to formspecs, but have a comletely different
+syntax. This may be changed later on.
+
+image~<image>~<scalex>~<scaley>~<X>~<Y>
+^ Draw an image.
+^ Note that X and Y are proportional to the screensize.
+
+text~<text>~<sizex>~<sizey>~<X>~<Y>
+^ Draw some text.
+^ X and Y are proportional, but sizex and sizey are in pixals.
+
+statbar~<image>~<amount>~<X>~<Y>
+^ Draw a statbar.
+^ amount is in half-points.
+
+inv~<list>~<numitems>~<item>~<dir>~<X>~<Y>
+^ Draw an inventory space.
+^ item specifiys the selected item, but is 1-based. 0 -> none selected.
+^ dir = 0-> left-right, 1-> right-left, 2->top-bottom, 3->bottom-top.
+
+back~<image>
+^ Draw an image behind the screen.
+
 Helper functions
 -----------------
 dump2(obj, name="_", dumped={})
@@ -807,6 +832,7 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
+minetest.register_particle(name, particle definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
@@ -1010,6 +1036,7 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
+minetest.spawn_particle(name, pos, vel, time to live)
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.
@@ -1236,6 +1263,11 @@ Player-only: (no-op for other objects)
 	{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
 - get_player_control_bits(): returns integer with bit packed player pressed keys
 	bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+- push_achieve(image): make player achieve something
+- hud_add(id, drawform)
+  ^ id is used for later reference
+  ^ If this id has already been used, it will reset its drawform
+- hud_rm(id): remove an id from the lua hud
 	
 InvRef: Reference to an inventory
 methods:
@@ -1551,6 +1583,17 @@ Node definition (register_node)
 	^ intensity: 1.0 = mid range of regular TNT
 	^ If defined, called when an explosion touches the node, instead of
 	  removing the node
+}
+
+Particle Definition:
+{
+    texture = '',
+    size = {x=1, y=1},
+    timers = {[func(obj)]=duration},
+    on_end = func(obj),
+    is_upright = false,
+    fall = false,
+    fallspeed = 0.01,
 }
 
 Recipe for register_craft: (shaped)
