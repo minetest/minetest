@@ -50,7 +50,7 @@ extern "C" {
 #include "util/pointedthing.h"
 #include "rollback.h"
 #include "treegen.h"
-#include "lua_security.h"
+#include "scriptapi_security.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {

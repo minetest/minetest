@@ -27,8 +27,9 @@ extern "C" {
 #include <errno.h>
 
 #include <iostream>
+#include <map>
 
-#include "lua_security.h"
+#include "scriptapi_security.h"
 #include "filesys.h"
 #include "mods.h"
 #include "server.h"
@@ -62,6 +63,9 @@ const luaL_Reg security_funcs[] =
 	{0,0}
 };
 
+//global variables
+/******************************************************************************/
+std::map<std::string,lua_CFunction> glb_security_backup;
 
 //functions
 /******************************************************************************/
@@ -92,15 +96,12 @@ void InitSecurity(lua_State* L) {
 
 	replaceLibFunc(L,"io","input",      l_forbidden);
 	replaceLibFunc(L,"io","output",     l_forbidden);
-	replaceLibFunc(L,"io","lines",      l_forbidden);
-	replaceLibFunc(L,"io","open",       l_safe_open);
+	replaceLibFunc(L,"io","lines",      l_safe_io_lines);
+	replaceLibFunc(L,"io","open",       l_safe_io_open);
 	replaceLibFunc(L,"io","popen",      l_forbidden);
 	replaceLibFunc(L,"io","read",       l_forbidden);
 	replaceLibFunc(L,"io","tmpfile",    l_forbidden);
 	replaceLibFunc(L,"io","write",      l_forbidden);
-	replaceLibFunc(L,"io","close",      l_forbidden);
-
-	replaceMetatableFunc(L,LUA_FILEHANDLE,"close", l_safe_fclose);
 
 }
 
@@ -173,35 +174,32 @@ void replaceLibFunc(lua_State *L,
 						std::string libname,
 						std::string funcname,
 						int (function)(lua_State*)) {
+	lua_getglobal(L, libname.c_str());
+	if (lua_istable(L,-1)) {
+		lua_pushstring(L,funcname.c_str());
+		lua_gettable(L,-2);
+		if (lua_iscfunction(L,-1)) {
+			std::cout << "replacing: " << libname << "." << funcname << std::endl;
+			glb_security_backup[libname + "." + funcname] = lua_tocfunction(L,-1);
+			lua_pushcfunction(L, function);
+			lua_settable(L,-3);
+		}
+		else {
+			std::cout << "adding: " << libname << "." << funcname << std::endl;
+			luaL_Reg toadd[2] = {
+					{ funcname.c_str(), function },
+					{0,0}
+				};
 
-	luaL_Reg toreplace[2] = {
-			{ funcname.c_str(), function },
-			{0,0}
-		};
-
-	luaL_register(L, libname.c_str(), toreplace);
-	lua_pop(L, 1);
+			luaL_register(L, libname.c_str(), toadd);
+		}
+	}
+	else {
+		std::cout << "unable to replace/add " << funcname
+				<< " for nonexistant lib" << libname << std::endl;
+	}
 }
 
-/******************************************************************************/
-void replaceMetatableFunc(lua_State* L,
-							std::string metatablename,
-							std::string funcname,
-							int (function)(lua_State*)) {
-
-	//get metatable onto stack
-	luaL_getmetatable (L,metatablename.c_str());
-
-	luaL_Reg toreplace[2] = {
-			{ funcname.c_str(), function },
-			{0,0}
-		};
-
-	luaL_register(L, NULL, toreplace);
-
-	//switch back to environment
-	lua_remove(L, 1);
-}
 /******************************************************************************/
 int l_safe_dofile(lua_State *L) {
 	std::string filename = luaL_checkstring(L, 1);
@@ -285,51 +283,6 @@ int l_safe_setmetatable(lua_State *L) {
 }
 
 /******************************************************************************/
-int l_safe_open(lua_State *L) {
-	const char *filename = luaL_checkstring(L, 1);
-
-	if (inAllowedFolder(L,filename)) {
-		const char *mode = luaL_optstring(L, 2, "r");
-		FILE **pf = (FILE **)lua_newuserdata(L, sizeof(FILE *));
-		*pf = NULL;  /* file handle is currently `closed' */
-		luaL_getmetatable(L, LUA_FILEHANDLE);
-		lua_setmetatable(L, -2);
-		*pf = fopen(filename, mode);
-
-		if (*pf != NULL) return 1;
-
-		lua_pushboolean(L, false);
-		return 1;
-	}
-	else {
-		script_error(L, "Security: some mod tried to access \"%s\"!\n",filename);
-	}
-	lua_pushboolean(L, false);
-	return 1;
-}
-
-/******************************************************************************/
-#define tofilep(L)	((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE))
-int l_safe_fclose(lua_State *L) {
-
-	FILE **p = tofilep(L);
-	int ok = (fclose(*p) == 0);
-	*p = NULL;
-
-	int en = errno;  /* calls to Lua API may change this value */
-	if (ok) {
-		lua_pushboolean(L, true);
-		return 1;
-		}
-	else {
-		lua_pushnil(L);
-		lua_pushfstring(L, "%s", strerror(en));
-		lua_pushinteger(L, en);
-		return 3;
-	}
-}
-
-/******************************************************************************/
 int l_safe_remove(lua_State *L) {
 	const char *filename = luaL_checkstring(L, 1);
 
@@ -350,5 +303,27 @@ int l_safe_mkdir(lua_State *L) {
 		return 1;
 	}
 	lua_pushboolean(L,false);
+	return 1;
+}
+
+/******************************************************************************/
+int l_safe_io_lines(lua_State *L) {
+	const char *filename = luaL_checkstring(L, 1);
+
+	if (inAllowedFolder(L,filename)) {
+		return glb_security_backup["io.lines"](L);
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
+/******************************************************************************/
+int l_safe_io_open(lua_State *L) {
+	const char *filename = luaL_checkstring(L, 1);
+
+	if (inAllowedFolder(L,filename)) {
+		return glb_security_backup["io.open"](L);
+	}
+	lua_pushnil(L);
 	return 1;
 }

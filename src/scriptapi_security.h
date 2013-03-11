@@ -18,16 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUA_SECURITY_HEADER
-#define LUA_SECURITY_HEADER
+#ifndef SCRIPTAPI_SECURITY_HEADER
+#define SCRIPTAPI_SECURITY_HEADER
 
 //lua functions
 int l_safe_dofile(lua_State *L);
 int l_forbidden(lua_State *L);
-int l_safe_open(lua_State *L);
-int l_safe_fclose(lua_State *L);
 int l_safe_remove(lua_State *L);
 int l_safe_mkdir(lua_State *L);
+int l_safe_io_lines(lua_State *L);
+int l_safe_io_open(lua_State *L);
 
 //this functions need to ne replaced with safe ones too
 int l_safe_rawequal(lua_State *L);
@@ -40,11 +40,6 @@ int l_safe_setmetatable(lua_State *L);
 void InitSecurity(lua_State* L);
 
 void replaceLibFunc(lua_State *L,
-						std::string libname,
-						std::string funcname,
-						int (function)(lua_State*));
-
-void replaceMetatableFunc(lua_State *L,
 						std::string libname,
 						std::string funcname,
 						int (function)(lua_State*));
