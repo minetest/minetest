@@ -935,7 +935,6 @@ public:
 			if(mesh)
 			{
 				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
-				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,
 						m_prop.visual_size.X));
@@ -1412,9 +1411,10 @@ public:
 		if(m_animated_meshnode == NULL)
 			return;
 
-		m_animated_meshnode->setFrameLoop((int)m_animation_range.X, (int)m_animation_range.Y);
-		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 		m_animated_meshnode->setTransitionTime(m_animation_blend);
+		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+		m_animated_meshnode->setFrameLoop((int)m_animation_range.X, (int)m_animation_range.Y);
+		m_animated_meshnode->animateJoints(); // Needed for some animations
 	}
 
 	void updateBonePosition()
