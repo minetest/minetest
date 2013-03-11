@@ -41,6 +41,10 @@ enum CraftMethod
 	CRAFT_METHOD_COOKING,
 	// Using something as fuel for a furnace
 	CRAFT_METHOD_FUEL,
+	// Smoking an item with specific wood
+	CRAFT_METHOD_SMOKING,
+	// Enchant an item to make it stronger (or to transform it?)
+	CRAFT_METHOD_ENCHANT,
 };
 
 /*
@@ -340,6 +344,93 @@ private:
 	std::string recipe;
 	// Time in seconds
 	float burntime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
+};
+
+/*
+	A smoking (in smoker) definition
+	Supported crafting method: CRAFT_METHOD_SMOKING.
+*/
+class CraftDefinitionSmoking: public CraftDefinition
+{
+public:
+	CraftDefinitionSmoking():
+		output(""), recipe(""), fuel(""), cooktime()
+	{};
+	CraftDefinitionSmoking(
+			const std::string &output_,
+			const std::string &recipe_,
+			const std::string &fuel_,
+			float cooktime_,
+			const CraftReplacements &replacements_):
+		output(output_), recipe(recipe_), fuel(fuel_), cooktime(cooktime_), replacements(replacements_)
+	{};
+	virtual ~CraftDefinitionSmoking(){};
+
+	virtual std::string getName() const;
+	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
+	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
+
+	virtual std::string dump() const;
+
+protected:
+	virtual void serializeBody(std::ostream &os) const;
+	virtual void deSerializeBody(std::istream &is, int version);
+
+private:
+	// Output itemstring
+	std::string output;
+	// Recipe itemstring
+	std::string recipe;
+	// Fuel itemstring
+	std::string fuel;
+	// Time in seconds
+	float cooktime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
+};
+
+/*
+	An enchanting (on magic table) definition
+	Supported crafting method: CRAFT_METHOD_ENCHANT.
+*/
+class CraftDefinitionEnchant: public CraftDefinition
+{
+public:
+	CraftDefinitionEnchant():
+		output(""), recipe(""), magic("")
+	{};
+	CraftDefinitionEnchant(
+			const std::string &output_,
+			const std::string &recipe_,
+			const std::string &magic_,
+			const CraftReplacements &replacements_):
+		output(output_), recipe(recipe_), magic(magic_), replacements(replacements_)
+	{};
+	virtual ~CraftDefinitionEnchant(){};
+
+	virtual std::string getName() const;
+	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
+	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
+
+	virtual std::string dump() const;
+
+protected:
+	virtual void serializeBody(std::ostream &os) const;
+	virtual void deSerializeBody(std::istream &is, int version);
+
+private:
+	// Output itemstring
+	std::string output;
+	// Recipe itemstring
+	std::string recipe;
+	// Magic itemstring
+	std::string magic;
 	// Replacement items for decrementInput()
 	CraftReplacements replacements;
 };

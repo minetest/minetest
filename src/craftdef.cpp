@@ -884,6 +884,171 @@ void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
 }
 
 /*
+	CraftDefinitionSmoking
+*/
+
+std::string CraftDefinitionSmoking::getName() const
+{
+	return "smoking";
+}
+
+bool CraftDefinitionSmoking::check(const CraftInput &input, IGameDef *gamedef) const
+{
+	if(input.method != CRAFT_METHOD_SMOKING)
+		return false;
+
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
+
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 2){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of cooking recipe with output="<<output<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef()) && inputItemMatchesRecipe(input_filtered[1], fuel, gamedef->idef());
+}
+
+CraftOutput CraftDefinitionSmoking::getOutput(const CraftInput &input, IGameDef *gamedef) const
+{
+	return CraftOutput(output, cooktime);
+}
+
+CraftInput CraftDefinitionSmoking::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_SMOKING,cooktime,craftGetItems(rec,gamedef));
+}
+
+void CraftDefinitionSmoking::decrementInput(CraftInput &input, IGameDef *gamedef) const
+{
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
+}
+
+std::string CraftDefinitionSmoking::dump() const
+{
+	std::ostringstream os(std::ios::binary);
+	os<<"(cooking, output=\""<<output
+		<<"\", recipe=\""<<recipe
+		<<"\", fuel=\""<<fuel
+		<<"\", cooktime="<<cooktime<<")"
+		<<", replacements="<<replacements.dump()<<")";
+	return os.str();
+}
+
+void CraftDefinitionSmoking::serializeBody(std::ostream &os) const
+{
+	os<<serializeString(output);
+	os<<serializeString(recipe);
+	os<<serializeString(fuel);
+	writeF1000(os, cooktime);
+	replacements.serialize(os);
+}
+
+void CraftDefinitionSmoking::deSerializeBody(std::istream &is, int version)
+{
+	if(version != 1) throw SerializationError(
+			"unsupported CraftDefinitionSmoking version");
+	output = deSerializeString(is);
+	recipe = deSerializeString(is);
+	fuel = deSerializeString(is);
+	cooktime = readF1000(is);
+	replacements.deSerialize(is);
+}
+
+/*
+	CraftDefinitionEnchant
+*/
+
+std::string CraftDefinitionEnchant::getName() const
+{
+	return "enchant";
+}
+
+bool CraftDefinitionEnchant::check(const CraftInput &input, IGameDef *gamedef) const
+{
+	if(input.method != CRAFT_METHOD_ENCHANT)
+		return false;
+
+	// Filter empty items out of input
+	std::vector<std::string> input_filtered;
+	for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++)
+	{
+		if(i->name != "")
+			input_filtered.push_back(i->name);
+	}
+
+	// If there is a wrong number of items in input, no match
+	if(input_filtered.size() != 2){
+		/*dstream<<"Number of input items ("<<input_filtered.size()
+				<<") does not match recipe size (1) "
+				<<"of cooking recipe with output="<<output<<std::endl;*/
+		return false;
+	}
+	
+	// Check the single input item
+	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef()) && inputItemMatchesRecipe(input_filtered[1], magic, gamedef->idef());
+}
+
+CraftOutput CraftDefinitionEnchant::getOutput(const CraftInput &input, IGameDef *gamedef) const
+{
+	return CraftOutput(output, 0);
+}
+
+CraftInput CraftDefinitionEnchant::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_SMOKING,0,craftGetItems(rec,gamedef));
+}
+
+void CraftDefinitionEnchant::decrementInput(CraftInput &input, IGameDef *gamedef) const
+{
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
+}
+
+std::string CraftDefinitionEnchant::dump() const
+{
+	std::ostringstream os(std::ios::binary);
+	os<<"(cooking, output=\""<<output
+		<<"\", recipe=\""<<recipe
+		<<"\", magic=\""<<magic
+		<<", replacements="<<replacements.dump()<<")";
+	return os.str();
+}
+
+void CraftDefinitionEnchant::serializeBody(std::ostream &os) const
+{
+	os<<serializeString(output);
+	os<<serializeString(recipe);
+	os<<serializeString(magic);
+	replacements.serialize(os);
+}
+
+void CraftDefinitionEnchant::deSerializeBody(std::istream &is, int version)
+{
+	if(version != 1) throw SerializationError(
+			"unsupported CraftDefinitionEnchant version");
+	output = deSerializeString(is);
+	recipe = deSerializeString(is);
+	magic = deSerializeString(is);
+	replacements.deSerialize(is);
+}
+
+/*
 	Craft definition manager
 */
 
