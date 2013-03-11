@@ -275,6 +275,76 @@ int l_register_craft(lua_State *L)
 				recipe, burntime, replacements);
 		craftdef->registerCraft(def);
 	}
+	/*
+		CraftDefinitionSmoking
+	*/
+	else if(type == "smoking"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (smoking)"
+					" is missing an output");
+
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (smoking)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+
+		std::string fuel = getstringfield_default(L, table, "fuel", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (smoking)"
+					" is missing a fuel"
+					" (output=\"" + output + "\")");
+
+		float cooktime = getfloatfield_default(L, table, "cooktime", 3.0);
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (cooking output=\"" + output + "\")");
+		}
+
+		CraftDefinition *def = new CraftDefinitionSmoking(
+				output, recipe, fuel, cooktime, replacements);
+		craftdef->registerCraft(def);
+	}
+	/*
+		CraftDefinitionEnchant
+	*/
+	else if(type == "enchant"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (enchant)"
+					" is missing an output");
+
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (enchant)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+
+		std::string magic = getstringfield_default(L, table, "magic", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (enchant)"
+					" is missing a magic"
+					" (output=\"" + output + "\")");
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (cooking output=\"" + output + "\")");
+		}
+
+		CraftDefinition *def = new CraftDefinitionEnchant(
+				output, recipe, magic, replacements);
+		craftdef->registerCraft(def);
+	}
 	else
 	{
 		throw LuaError(L, "Unknown crafting definition type: \"" + type + "\"");
