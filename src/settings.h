@@ -460,7 +460,7 @@ public:
 			n = m_defaults.find(name);
 			if(n == m_defaults.end())
 			{
-				throw SettingNotFoundException("Setting not found");
+				throw SettingNotFoundException(("Setting [" + name + "] not found ").c_str());
 			}
 		}
 
