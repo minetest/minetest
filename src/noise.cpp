@@ -574,7 +574,7 @@ float *Noise::perlinMap3D(float x, float y, float z) {
 void Noise::transformNoiseMap(float xx, float yy, float zz) {
 	// more correct use distantion from 0,0,0 via pow, but + is faster
 	float rangescale = ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 3 - (fabs(xx) + fabs(yy) + fabs(zz)) ) / (MAP_GENERATION_LIMIT * 3) ) * (np->rangescale - 1) );
-	errorstream << "TNM rs="  << rangescale << " from=" << (np)->rangescale << " x=" << xx << " z=" << zz << "     " << std::endl;
+	// errorstream << "TNM rs="  << rangescale << " from=" << (np)->rangescale << " x=" << xx << " z=" << zz << "     " << std::endl;
 	int i = 0;
 	for (int z = 0; z != sz; z++) {
 		for (int y = 0; y != sy; y++) {
