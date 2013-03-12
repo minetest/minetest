@@ -250,18 +250,20 @@ end
 function minetest.item_drop(itemstack, dropper, pos)
 	if dropper.get_player_name then
 		local v = dropper:get_look_dir()
-		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
-		local obj = minetest.env:add_item(p, itemstack)
+		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
+		local cs = itemstack:get_count()
+		if dropper:get_player_control().sneak then
+			cs = 1
+		end
+		local item = itemstack:take_item(cs)
+		local obj = minetest.env:add_item(p, item)
 		if obj then
-			v.x = v.x*2
-			v.y = v.y*2 + 1
-			v.z = v.z*2
+			v.x = v.x*4
+			v.y = v.y*4 + 2
+			v.z = v.z*4
 			obj:setvelocity(v)
 		end
-	else
-		minetest.env:add_item(pos, itemstack)
-	end
-	return ItemStack("")
+	return itemstack
 end
 
 function minetest.item_eat(hp_change, replace_with_item)
