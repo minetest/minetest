@@ -272,6 +272,7 @@ NoiseParams *read_noiseparams(lua_State *L, int index)
 	np->seed    = getintfield_default(L, index, "seed", 0);
 	np->octaves = getintfield_default(L, index, "octaves", 0);
 	np->persist = getfloatfield_default(L, index, "persist", 0.0);
+	np->rangescale = getfloatfield_default(L, index, "rangescale", 1.0);
 
 	return np;
 }

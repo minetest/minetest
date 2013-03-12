@@ -37,23 +37,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /////////////////// Mapgen V6 perlin noise default values
 NoiseParams nparams_v6_def_terrain_base =
-	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 5};
 NoiseParams nparams_v6_def_terrain_higher =
-	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6};
+	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6, 10};
 NoiseParams nparams_v6_def_steepness =
-	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7};
+	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 10};
 NoiseParams nparams_v6_def_height_select =
-	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
+	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69, 5};
 NoiseParams nparams_v6_def_trees =
-	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66};
+	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66, 1};
 NoiseParams nparams_v6_def_mud =
-	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55};
+	{AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55, 1};
 NoiseParams nparams_v6_def_beach =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50, 1};
 NoiseParams nparams_v6_def_biome =
-	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50};
+	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 9130, 3, 0.50, 1};
 NoiseParams nparams_v6_def_cave =
-	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50};
+	{6.0, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50, 1};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -500,17 +500,17 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			noise_terrain_base->perlinMap2D(
 				x + 0.5 * noise_terrain_base->np->spread.X,
 				z + 0.5 * noise_terrain_base->np->spread.Z);
-			noise_terrain_base->transformNoiseMap();
+			noise_terrain_base->transformNoiseMap(x, z);
 
 			noise_terrain_higher->perlinMap2D(
 				x + 0.5 * noise_terrain_higher->np->spread.X,
 				z + 0.5 * noise_terrain_higher->np->spread.Z);
-			noise_terrain_higher->transformNoiseMap();
+			noise_terrain_higher->transformNoiseMap(x, z);
 
 			noise_steepness->perlinMap2D(
 				x + 0.5 * noise_steepness->np->spread.X,
 				z + 0.5 * noise_steepness->np->spread.Z);
-			noise_steepness->transformNoiseMap();
+			noise_steepness->transformNoiseMap(x, z);
 
 			noise_height_select->perlinMap2D(
 				x + 0.5 * noise_height_select->np->spread.X,

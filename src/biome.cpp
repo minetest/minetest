@@ -65,7 +65,7 @@ int bg4_biomes[]  = {BT_HILLS, BT_EXTREMEHILLS, BT_MOUNTAINS, BT_DESERT, BT_DESE
 float bg5_temps[] = {5.0, 40.0};
 int bg5_biomes[]  = {BT_LAKE, BT_PLAINS, BT_DESERT};*/
 
-NoiseParams np_default = {20.0, 15.0, v3f(250., 250., 250.), 82341, 5, 0.6};
+NoiseParams np_default = {20.0, 15.0, v3f(250., 250., 250.), 82341, 5, 0.6, 1};
 
 
 BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {

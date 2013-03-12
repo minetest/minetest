@@ -67,12 +67,13 @@ struct NoiseParams {
 	int seed;
 	int octaves;
 	float persist;
+	float rangescale;
 };
 
 
 // Convenience macros for getting/setting NoiseParams in Settings
-#define getNoiseParams(x) getStruct<NoiseParams>((x), "f,f,v3,s32,s32,f")
-#define setNoiseParams(x, y) setStruct((x), "f,f,v3,s32,s32,f", (y))
+#define getNoiseParams(x) getStruct<NoiseParams>((x), "f,f,v3,s32,s32,f,f")
+#define setNoiseParams(x, y) setStruct((x), "f,f,v3,s32,s32,f,f", (y))
 
 class Noise {
 public:
@@ -106,7 +107,7 @@ public:
 		int seed);
 	float *perlinMap2D(float x, float y);
 	float *perlinMap3D(float x, float y, float z);
-	void transformNoiseMap();
+	void transformNoiseMap(float x = 0, float z = 0, float y = 0);
 };
 
 // Return value: -1 ... 1
