@@ -37,13 +37,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /////////////////// Mapgen V6 perlin noise default values
 NoiseParams nparams_v6_def_terrain_base =
-	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 5};
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 10};
 NoiseParams nparams_v6_def_terrain_higher =
 	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6, 10};
 NoiseParams nparams_v6_def_steepness =
-	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 10};
+	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 1};
 NoiseParams nparams_v6_def_height_select =
-	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69, 5};
+	{0.5, 1.0, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69, 1};
 NoiseParams nparams_v6_def_trees =
 	{0.0, 1.0, v3f(125.0, 125.0, 125.0), 2, 4, 0.66, 1};
 NoiseParams nparams_v6_def_mud =
@@ -500,17 +500,17 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			noise_terrain_base->perlinMap2D(
 				x + 0.5 * noise_terrain_base->np->spread.X,
 				z + 0.5 * noise_terrain_base->np->spread.Z);
-			noise_terrain_base->transformNoiseMap(x, z);
+			noise_terrain_base->transformNoiseMap(x, 0, z);
 
 			noise_terrain_higher->perlinMap2D(
 				x + 0.5 * noise_terrain_higher->np->spread.X,
 				z + 0.5 * noise_terrain_higher->np->spread.Z);
-			noise_terrain_higher->transformNoiseMap(x, z);
+			noise_terrain_higher->transformNoiseMap(x, 0, z);
 
 			noise_steepness->perlinMap2D(
 				x + 0.5 * noise_steepness->np->spread.X,
 				z + 0.5 * noise_steepness->np->spread.Z);
-			noise_steepness->transformNoiseMap(x, z);
+			noise_steepness->transformNoiseMap(x, 0, z);
 
 			noise_height_select->perlinMap2D(
 				x + 0.5 * noise_height_select->np->spread.X,
@@ -525,7 +525,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			noise_mud->perlinMap2D(
 				x + 0.5 * noise_mud->np->spread.X,
 				z + 0.5 * noise_mud->np->spread.Z);
-			noise_mud->transformNoiseMap();
+			noise_mud->transformNoiseMap(x, 0, z);
 		}
 		noise_beach->perlinMap2D(
 			x + 0.2 * noise_beach->np->spread.X,
