@@ -1738,7 +1738,8 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			total_level -= liquid_levels_want[D_BOTTOM];
 		}
 
-		if (relax && p0.Y <= water_level && liquid_levels[D_TOP] == 0 && total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level - can_liquid_same_level + 2 && can_liquid_same_level >= relax + 1) { //relax up
+		//relax up
+		if (relax && p0.Y <= water_level && liquid_levels[D_TOP] == 0 && liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level - (can_liquid_same_level - relax) && can_liquid_same_level >= relax + 1) { 
 			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level; 
 		}
 
@@ -1749,7 +1750,8 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			: total_level / can_liquid_same_level;
 		total_level -= want_level * can_liquid_same_level;
 
-		if (relax && p0.Y > water_level && liquid_levels[D_TOP] == 0 && liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && want_level == 0 && total_level <= can_liquid_same_level - 2 && can_liquid_same_level >= relax + 1) { //relax down
+		//relax down
+		if (relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 && liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && want_level == 0 && total_level <= (can_liquid_same_level - relax)  && can_liquid_same_level >= relax + 1) {
 			total_level = 0;
 		}
 
