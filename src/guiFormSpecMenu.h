@@ -209,11 +209,11 @@ protected:
 	IFormSource *m_form_src;
 	TextDest *m_text_dst;
 
-	core::array<ListDrawSpec> m_inventorylists;
-	core::array<ImageDrawSpec> m_backgrounds;	
-	core::array<ImageDrawSpec> m_images;
-	core::array<ImageDrawSpec> m_itemimages;
-	core::array<FieldSpec> m_fields;
+	std::vector<ListDrawSpec> m_inventorylists;
+	std::vector<ImageDrawSpec> m_backgrounds;
+	std::vector<ImageDrawSpec> m_images;
+	std::vector<ImageDrawSpec> m_itemimages;
+	std::vector<FieldSpec> m_fields;
 
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;

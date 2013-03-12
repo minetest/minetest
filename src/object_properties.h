@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <iostream>
 #include <map>
+#include <vector>
 
 struct ObjectProperties
 {
@@ -35,8 +36,8 @@ struct ObjectProperties
 	std::string visual;
 	std::string mesh;
 	v2f visual_size;
-	core::array<std::string> textures;
-	core::array<video::SColor> colors;
+	std::vector<std::string> textures;
+	std::vector<video::SColor> colors;
 	v2s16 spritediv;
 	v2s16 initial_sprite_basepos;
 	bool is_visible;

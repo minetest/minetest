@@ -230,9 +230,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
-			core::map<v3s16, f32> neighbor_levels;
-			core::map<v3s16, content_t> neighbor_contents;
-			core::map<v3s16, u8> neighbor_flags;
+			std::map<v3s16, f32> neighbor_levels;
+			std::map<v3s16, content_t> neighbor_contents;
+			std::map<v3s16, u8> neighbor_flags;
 			const u8 neighborflag_top_is_same_liquid = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
@@ -273,9 +273,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						flags |= neighborflag_top_is_same_liquid;
 				}
 				
-				neighbor_levels.insert(neighbor_dirs[i], level);
-				neighbor_contents.insert(neighbor_dirs[i], content);
-				neighbor_flags.insert(neighbor_dirs[i], flags);
+				neighbor_levels[neighbor_dirs[i]] = level;
+				neighbor_contents[neighbor_dirs[i]] = content;
+				neighbor_flags[neighbor_dirs[i]] = flags;
 			}
 
 			// Corner heights (average between four liquids)

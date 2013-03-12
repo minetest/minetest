@@ -206,10 +206,10 @@ public:
 	{
 		assert(img);
 		// Remove old image
-		core::map<std::string, video::IImage*>::Node *n;
+		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
-		if(n){
-			video::IImage *oldimg = n->getValue();
+		if(n != m_images.end()){
+			video::IImage *oldimg = n->second;
 			if(oldimg)
 				oldimg->drop();
 		}
@@ -229,20 +229,20 @@ public:
 	}
 	video::IImage* get(const std::string &name)
 	{
-		core::map<std::string, video::IImage*>::Node *n;
+		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
-		if(n)
-			return n->getValue();
+		if(n != m_images.end())
+			return n->second;
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
 	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
 	{
-		core::map<std::string, video::IImage*>::Node *n;
+		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
-		if(n){
-			n->getValue()->grab(); // Grab for caller
-			return n->getValue();
+		if(n != m_images.end()){
+			n->second->grab(); // Grab for caller
+			return n->second;
 		}
 		video::IVideoDriver* driver = device->getVideoDriver();
 		std::string path = getTexturePath(name.c_str());
@@ -263,7 +263,7 @@ public:
 		return img;
 	}
 private:
-	core::map<std::string, video::IImage*> m_images;
+	std::map<std::string, video::IImage*> m_images;
 };
 
 /*
@@ -417,9 +417,9 @@ private:
 
 	// A texture id is index in this array.
 	// The first position contains a NULL texture.
-	core::array<SourceAtlasPointer> m_atlaspointer_cache;
+	std::vector<SourceAtlasPointer> m_atlaspointer_cache;
 	// Maps a texture name to an index in the former.
-	core::map<std::string, u32> m_name_to_id;
+	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
 	JMutex m_atlaspointer_cache_mutex;
 	
@@ -465,11 +465,11 @@ u32 TextureSource::getTextureId(const std::string &name)
 			See if texture already exists
 		*/
 		JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL)
+		if(n != m_name_to_id.end())
 		{
-			return n->getValue();
+			return n->second;
 		}
 	}
 	
@@ -579,13 +579,13 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	{
 		JMutexAutoLock lock(m_atlaspointer_cache_mutex);
 
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL)
+		if(n != m_name_to_id.end())
 		{
 			/*infostream<<"getTextureIdDirect(): \""<<name
 					<<"\" found in cache"<<std::endl;*/
-			return n->getValue();
+			return n->second;
 		}
 	}
 
@@ -724,7 +724,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		baseimg_dim = baseimg->getDimension();
 	SourceAtlasPointer nap(name, ap, baseimg, v2s32(0,0), baseimg_dim);
 	m_atlaspointer_cache.push_back(nap);
-	m_name_to_id.insert(name, id);
+	m_name_to_id[name] = id;
 
 	/*infostream<<"getTextureIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
@@ -769,7 +769,7 @@ void TextureSource::processQueue()
 	/*
 		Fetch textures
 	*/
-	if(m_get_texture_queue.size() > 0)
+	if(!m_get_texture_queue.empty())
 	{
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_texture_queue.pop();
@@ -872,7 +872,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		main content features
 	*/
 
-	core::map<std::string, bool> sourcelist;
+	std::set<std::string> sourcelist;
 
 	for(u16 j=0; j<MAX_CONTENT+1; j++)
 	{
@@ -882,16 +882,16 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		for(u32 i=0; i<6; i++)
 		{
 			std::string name = f.tiledef[i].name;
-			sourcelist[name] = true;
+			sourcelist.insert(name);
 		}
 	}
 	
 	infostream<<"Creating texture atlas out of textures: ";
-	for(core::map<std::string, bool>::Iterator
-			i = sourcelist.getIterator();
-			i.atEnd() == false; i++)
+	for(std::set<std::string>::iterator
+			i = sourcelist.begin();
+			i != sourcelist.end(); ++i)
 	{
-		std::string name = i.getNode()->getKey();
+		std::string name = *i;
 		infostream<<"\""<<name<<"\" ";
 	}
 	infostream<<std::endl;
@@ -910,11 +910,11 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	pos_in_atlas.X = column_padding;
 	pos_in_atlas.Y = padding;
 
-	for(core::map<std::string, bool>::Iterator
-			i = sourcelist.getIterator();
-			i.atEnd() == false; i++)
+	for(std::set<std::string>::iterator
+			i = sourcelist.begin();
+			i != sourcelist.end(); ++i)
 	{
-		std::string name = i.getNode()->getKey();
+		std::string name = *i;
 
 		// Generate image by name
 		video::IImage *img2 = generate_image_from_scratch(name, m_device,
@@ -1026,11 +1026,11 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		bool reuse_old_id = false;
 		u32 id = m_atlaspointer_cache.size();
 		// Check old id without fetching a texture
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
 		// If it exists, we will replace the old definition
-		if(n){
-			id = n->getValue();
+		if(n != m_name_to_id.end()){
+			id = n->second;
 			reuse_old_id = true;
 			/*infostream<<"TextureSource::buildMainAtlas(): "
 					<<"Replacing old AtlasPointer"<<std::endl;*/
@@ -1066,12 +1066,12 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	/*
 		Second pass: set texture pointer in generated AtlasPointers
 	*/
-	for(core::map<std::string, bool>::Iterator
-			i = sourcelist.getIterator();
-			i.atEnd() == false; i++)
+	for(std::set<std::string>::iterator
+			i = sourcelist.begin();
+			i != sourcelist.end(); ++i)
 	{
-		std::string name = i.getNode()->getKey();
-		if(m_name_to_id.find(name) == NULL)
+		std::string name = *i;
+		if(m_name_to_id.find(name) == m_name_to_id.end())
 			continue;
 		u32 id = m_name_to_id[name];
 		//infostream<<"id of name "<<name<<" is "<<id<<std::endl;

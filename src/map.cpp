@@ -73,34 +73,30 @@ Map::~Map()
 	/*
 		Free all MapSectors
 	*/
-	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
-	for(; i.atEnd() == false; i++)
+	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
+		i != m_sectors.end(); ++i)
 	{
-		MapSector *sector = i.getNode()->getValue();
-		delete sector;
+		delete i->second;
 	}
 }
 
 void Map::addEventReceiver(MapEventReceiver *event_receiver)
 {
-	m_event_receivers.insert(event_receiver, false);
+	m_event_receivers.insert(event_receiver);
 }
 
 void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 {
-	if(m_event_receivers.find(event_receiver) == NULL)
-		return;
-	m_event_receivers.remove(event_receiver);
+	m_event_receivers.erase(event_receiver);
 }
 
 void Map::dispatchEvent(MapEditEvent *event)
 {
-	for(core::map<MapEventReceiver*, bool>::Iterator
-			i = m_event_receivers.getIterator();
-			i.atEnd()==false; i++)
+	for(std::set<MapEventReceiver*>::iterator
+			i = m_event_receivers.begin();
+			i != m_event_receivers.end(); ++i)
 	{
-		MapEventReceiver* event_receiver = i.getNode()->getKey();
-		event_receiver->onMapEditEvent(event);
+		(*i)->onMapEditEvent(event);
 	}
 }
 
@@ -111,12 +107,12 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 		return sector;
 	}
 
-	core::map<v2s16, MapSector*>::Node *n = m_sectors.find(p);
+	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
 
-	if(n == NULL)
+	if(n == m_sectors.end())
 		return NULL;
 
-	MapSector *sector = n->getValue();
+	MapSector *sector = n->second;
 
 	// Cache the last result
 	m_sector_cache_p = p;
@@ -236,9 +232,9 @@ void Map::setNode(v3s16 p, MapNode & n)
 	values of from_nodes are lighting values.
 */
 void Map::unspreadLight(enum LightBank bank,
-		core::map<v3s16, u8> & from_nodes,
-		core::map<v3s16, bool> & light_sources,
-		core::map<v3s16, MapBlock*>  & modified_blocks)
+		std::map<v3s16, u8> & from_nodes,
+		std::set<v3s16> & light_sources,
+		std::map<v3s16, MapBlock*>  & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -256,9 +252,7 @@ void Map::unspreadLight(enum LightBank bank,
 
 	u32 blockchangecount = 0;
 
-	core::map<v3s16, u8> unlighted_nodes;
-	core::map<v3s16, u8>::Iterator j;
-	j = from_nodes.getIterator();
+	std::map<v3s16, u8> unlighted_nodes;
 
 	/*
 		Initialize block cache
@@ -268,9 +262,10 @@ void Map::unspreadLight(enum LightBank bank,
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
-	for(; j.atEnd() == false; j++)
+	for(std::map<v3s16, u8>::iterator j = from_nodes.begin();
+		j != from_nodes.end(); ++j)
 	{
-		v3s16 pos = j.getNode()->getKey();
+		v3s16 pos = j->first;
 		v3s16 blockpos = getNodeBlockPos(pos);
 
 		// Only fetch a new block if the block position has changed
@@ -297,7 +292,7 @@ void Map::unspreadLight(enum LightBank bank,
 		// Get node straight from the block
 		MapNode n = block->getNode(relpos);
 
-		u8 oldlight = j.getNode()->getValue();
+		u8 oldlight = j->second;
 
 		// Loop through 6 neighbors
 		for(u16 i=0; i<6; i++)
@@ -354,7 +349,7 @@ void Map::unspreadLight(enum LightBank bank,
 						n2.setLight(bank, 0, nodemgr);
 						block->setNode(relpos, n2);
 
-						unlighted_nodes.insert(n2pos, current_light);
+						unlighted_nodes[n2pos] = current_light;
 						changed = true;
 
 						/*
@@ -373,16 +368,16 @@ void Map::unspreadLight(enum LightBank bank,
 						light_sources.remove(n2pos);*/
 				}
 				else{
-					light_sources.insert(n2pos, true);
+					light_sources.insert(n2pos);
 				}
 
 				// Add to modified_blocks
 				if(changed == true && block_checked_in_modified == false)
 				{
 					// If the block is not found in modified_blocks, add.
-					if(modified_blocks.find(blockpos) == NULL)
+					if(modified_blocks.find(blockpos) == modified_blocks.end())
 					{
-						modified_blocks.insert(blockpos, block);
+						modified_blocks[blockpos] = block;
 					}
 					block_checked_in_modified = true;
 				}
@@ -408,11 +403,11 @@ void Map::unspreadLight(enum LightBank bank,
 */
 void Map::unLightNeighbors(enum LightBank bank,
 		v3s16 pos, u8 lightwas,
-		core::map<v3s16, bool> & light_sources,
-		core::map<v3s16, MapBlock*>  & modified_blocks)
+		std::set<v3s16> & light_sources,
+		std::map<v3s16, MapBlock*>  & modified_blocks)
 {
-	core::map<v3s16, u8> from_nodes;
-	from_nodes.insert(pos, lightwas);
+	std::map<v3s16, u8> from_nodes;
+	from_nodes[pos] = lightwas;
 
 	unspreadLight(bank, from_nodes, light_sources, modified_blocks);
 }
@@ -422,8 +417,8 @@ void Map::unLightNeighbors(enum LightBank bank,
 	goes on recursively.
 */
 void Map::spreadLight(enum LightBank bank,
-		core::map<v3s16, bool> & from_nodes,
-		core::map<v3s16, MapBlock*> & modified_blocks)
+		std::set<v3s16> & from_nodes,
+		std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -441,9 +436,7 @@ void Map::spreadLight(enum LightBank bank,
 
 	u32 blockchangecount = 0;
 
-	core::map<v3s16, bool> lighted_nodes;
-	core::map<v3s16, bool>::Iterator j;
-	j = from_nodes.getIterator();
+	std::set<v3s16> lighted_nodes;
 
 	/*
 		Initialize block cache
@@ -453,12 +446,10 @@ void Map::spreadLight(enum LightBank bank,
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
-	for(; j.atEnd() == false; j++)
-	//for(; j != from_nodes.end(); j++)
+	for(std::set<v3s16>::iterator j = from_nodes.begin();
+		j != from_nodes.end(); ++j)
 	{
-		v3s16 pos = j.getNode()->getKey();
-		//v3s16 pos = *j;
-		//infostream<<"pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
+		v3s16 pos = *j;
 		v3s16 blockpos = getNodeBlockPos(pos);
 
 		// Only fetch a new block if the block position has changed
@@ -525,8 +516,7 @@ void Map::spreadLight(enum LightBank bank,
 				*/
 				if(n2.getLight(bank, nodemgr) > undiminish_light(oldlight))
 				{
-					lighted_nodes.insert(n2pos, true);
-					//lighted_nodes.push_back(n2pos);
+					lighted_nodes.insert(n2pos);
 					changed = true;
 				}
 				/*
@@ -539,8 +529,7 @@ void Map::spreadLight(enum LightBank bank,
 					{
 						n2.setLight(bank, newlight, nodemgr);
 						block->setNode(relpos, n2);
-						lighted_nodes.insert(n2pos, true);
-						//lighted_nodes.push_back(n2pos);
+						lighted_nodes.insert(n2pos);
 						changed = true;
 					}
 				}
@@ -549,9 +538,9 @@ void Map::spreadLight(enum LightBank bank,
 				if(changed == true && block_checked_in_modified == false)
 				{
 					// If the block is not found in modified_blocks, add.
-					if(modified_blocks.find(blockpos) == NULL)
+					if(modified_blocks.find(blockpos) == modified_blocks.end())
 					{
-						modified_blocks.insert(blockpos, block);
+						modified_blocks[blockpos] = block;
 					}
 					block_checked_in_modified = true;
 				}
@@ -577,10 +566,10 @@ void Map::spreadLight(enum LightBank bank,
 */
 void Map::lightNeighbors(enum LightBank bank,
 		v3s16 pos,
-		core::map<v3s16, MapBlock*> & modified_blocks)
+		std::map<v3s16, MapBlock*> & modified_blocks)
 {
-	core::map<v3s16, bool> from_nodes;
-	from_nodes.insert(pos, true);
+	std::set<v3s16> from_nodes;
+	from_nodes.insert(pos);
 	spreadLight(bank, from_nodes, modified_blocks);
 }
 
@@ -635,7 +624,7 @@ v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 	Mud is turned into grass in where the sunlight stops.
 */
 s16 Map::propagateSunlight(v3s16 start,
-		core::map<v3s16, MapBlock*> & modified_blocks)
+		std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -662,7 +651,7 @@ s16 Map::propagateSunlight(v3s16 start,
 			n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
 			block->setNode(relpos, n);
 
-			modified_blocks.insert(blockpos, block);
+			modified_blocks[blockpos] = block;
 		}
 		else
 		{
@@ -674,8 +663,8 @@ s16 Map::propagateSunlight(v3s16 start,
 }
 
 void Map::updateLighting(enum LightBank bank,
-		core::map<v3s16, MapBlock*> & a_blocks,
-		core::map<v3s16, MapBlock*> & modified_blocks)
+		std::map<v3s16, MapBlock*> & a_blocks,
+		std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -688,22 +677,21 @@ void Map::updateLighting(enum LightBank bank,
 	//bool debug=true;
 	//u32 count_was = modified_blocks.size();
 
-	core::map<v3s16, MapBlock*> blocks_to_update;
+	std::map<v3s16, MapBlock*> blocks_to_update;
 
-	core::map<v3s16, bool> light_sources;
+	std::set<v3s16> light_sources;
 
-	core::map<v3s16, u8> unlight_from;
+	std::map<v3s16, u8> unlight_from;
 
 	int num_bottom_invalid = 0;
 
 	{
 	//TimeTaker t("first stuff");
 
-	core::map<v3s16, MapBlock*>::Iterator i;
-	i = a_blocks.getIterator();
-	for(; i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator i = a_blocks.begin();
+		i != a_blocks.end(); ++i)
 	{
-		MapBlock *block = i.getNode()->getValue();
+		MapBlock *block = i->second;
 
 		for(;;)
 		{
@@ -713,9 +701,8 @@ void Map::updateLighting(enum LightBank bank,
 
 			v3s16 pos = block->getPos();
 			v3s16 posnodes = block->getPosRelative();
-			modified_blocks.insert(pos, block);
-
-			blocks_to_update.insert(pos, block);
+			modified_blocks[pos] = block;
+			blocks_to_update[pos] = block;
 
 			/*
 				Clear all light from block
@@ -735,7 +722,7 @@ void Map::updateLighting(enum LightBank bank,
 					// If node sources light, add to list
 					u8 source = nodemgr->get(n).light_source;
 					if(source != 0)
-						light_sources[p + posnodes] = true;
+						light_sources.insert(p + posnodes);
 
 					// Collect borders for unlighting
 					if((x==0 || x == MAP_BLOCKSIZE-1
@@ -744,7 +731,7 @@ void Map::updateLighting(enum LightBank bank,
 					&& oldlight != 0)
 					{
 						v3s16 p_map = p + posnodes;
-						unlight_from.insert(p_map, oldlight);
+						unlight_from[p_map] = oldlight;
 					}
 				}
 				catch(InvalidPositionException &e)
@@ -912,8 +899,8 @@ void Map::updateLighting(enum LightBank bank,
 	//m_dout<<"Done ("<<getTimestamp()<<")"<<std::endl;
 }
 
-void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
-		core::map<v3s16, MapBlock*> & modified_blocks)
+void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
+		std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	updateLighting(LIGHTBANK_DAY, a_blocks, modified_blocks);
 	updateLighting(LIGHTBANK_NIGHT, a_blocks, modified_blocks);
@@ -921,11 +908,11 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 	{
-		MapBlock *block = i.getNode()->getValue();
+		MapBlock *block = i->second;
 		block->expireDayNightDiff();
 	}
 }
@@ -933,7 +920,7 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 /*
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		core::map<v3s16, MapBlock*> &modified_blocks)
+		std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 
@@ -952,7 +939,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	v3s16 bottompos = p + v3s16(0,-1,0);
 
 	bool node_under_sunlight = true;
-	core::map<v3s16, bool> light_sources;
+	std::set<v3s16> light_sources;
 
 	/*
 		Collect old node for rollback
@@ -994,7 +981,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 blockpos = getNodeBlockPos(p);
 		MapBlock * block = getBlockNoCreate(blockpos);
 		assert(block != NULL);
-		modified_blocks.insert(blockpos, block);
+		modified_blocks[blockpos] = block;
 
 		assert(isValidPosition(p));
 
@@ -1078,12 +1065,11 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 	{
-		MapBlock *block = i.getNode()->getValue();
-		block->expireDayNightDiff();
+		i->second->expireDayNightDiff();
 	}
 
 	/*
@@ -1132,7 +1118,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 /*
 */
 void Map::removeNodeAndUpdate(v3s16 p,
-		core::map<v3s16, MapBlock*> &modified_blocks)
+		std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 
@@ -1166,7 +1152,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	{
 	}
 
-	core::map<v3s16, bool> light_sources;
+	std::set<v3s16> light_sources;
 
 	enum LightBank banks[] =
 	{
@@ -1214,7 +1200,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock * block = getBlockNoCreate(blockpos);
 	assert(block != NULL);
-	modified_blocks.insert(blockpos, block);
+	modified_blocks[blockpos] = block;
 
 	/*
 		If the removed node was under sunlight, propagate the
@@ -1270,12 +1256,11 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 	{
-		MapBlock *block = i.getNode()->getValue();
-		block->expireDayNightDiff();
+		i->second->expireDayNightDiff();
 	}
 
 	/*
@@ -1330,15 +1315,15 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 
 	bool succeeded = true;
 	try{
-		core::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock*> modified_blocks;
 		addNodeAndUpdate(p, n, modified_blocks);
 
 		// Copy modified_blocks to event
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = modified_blocks.getIterator();
-				i.atEnd()==false; i++)
+		for(std::map<v3s16, MapBlock*>::iterator
+				i = modified_blocks.begin();
+				i != modified_blocks.end(); ++i)
 		{
-			event.modified_blocks.insert(i.getNode()->getKey(), false);
+			event.modified_blocks.erase(i->first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -1358,15 +1343,15 @@ bool Map::removeNodeWithEvent(v3s16 p)
 
 	bool succeeded = true;
 	try{
-		core::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock*> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
 
 		// Copy modified_blocks to event
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = modified_blocks.getIterator();
-				i.atEnd()==false; i++)
+		for(std::map<v3s16, MapBlock*>::iterator
+				i = modified_blocks.begin();
+				i != modified_blocks.end(); ++i)
 		{
-			event.modified_blocks.insert(i.getNode()->getKey(), false);
+			event.modified_blocks.erase(i->first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -1439,33 +1424,31 @@ bool Map::getDayNightDiff(v3s16 blockpos)
 	Updates usage timers
 */
 void Map::timerUpdate(float dtime, float unload_timeout,
-		core::list<v3s16> *unloaded_blocks)
+		std::list<v3s16> *unloaded_blocks)
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
 
 	// Profile modified reasons
 	Profiler modprofiler;
 
-	core::list<v2s16> sector_deletion_queue;
+	std::list<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
 
-	core::map<v2s16, MapSector*>::Iterator si;
-
 	beginSave();
-	si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
+	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
+		si != m_sectors.end(); ++si)
 	{
-		MapSector *sector = si.getNode()->getValue();
+		MapSector *sector = si->second;
 
 		bool all_blocks_deleted = true;
 
-		core::list<MapBlock*> blocks;
+		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(core::list<MapBlock*>::Iterator i = blocks.begin();
-				i != blocks.end(); i++)
+		for(std::list<MapBlock*>::iterator i = blocks.begin();
+				i != blocks.end(); ++i)
 		{
 			MapBlock *block = (*i);
 
@@ -1501,7 +1484,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 		if(all_blocks_deleted)
 		{
-			sector_deletion_queue.push_back(si.getNode()->getKey());
+			sector_deletion_queue.push_back(si->first);
 		}
 	}
 	endSave();
@@ -1526,17 +1509,17 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	}
 }
 
-void Map::deleteSectors(core::list<v2s16> &list)
+void Map::deleteSectors(std::list<v2s16> &list)
 {
-	core::list<v2s16>::Iterator j;
-	for(j=list.begin(); j!=list.end(); j++)
+	for(std::list<v2s16>::iterator j = list.begin();
+		j != list.end(); ++j)
 	{
 		MapSector *sector = m_sectors[*j];
 		// If sector is in sector cache, remove it from there
 		if(m_sector_cache == sector)
 			m_sector_cache = NULL;
 		// Remove from map and delete
-		m_sectors.remove(*j);
+		m_sectors.erase(*j);
 		delete sector;
 	}
 }
@@ -1642,7 +1625,7 @@ const v3s16 g_7dirs[7] =
 #define D_TOP 6
 #define D_SELF 1
 
-void Map::transformLiquidsFinite(core::map<v3s16, MapBlock*> & modified_blocks)
+void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -1663,7 +1646,7 @@ void Map::transformLiquidsFinite(core::map<v3s16, MapBlock*> & modified_blocks)
 	UniqueQueue<v3s16> must_reflow, must_reflow_second;
 
 	// List of MapBlocks that will require a lighting update (due to lava)
-	core::map<v3s16, MapBlock*> lighting_modified_blocks;
+	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
 	while(m_transforming_liquid.size() > 0)
 	{
@@ -1904,7 +1887,7 @@ void Map::transformLiquidsFinite(core::map<v3s16, MapBlock*> & modified_blocks)
 			v3s16 blockpos = getNodeBlockPos(p0);
 			MapBlock *block = getBlockNoCreateNoEx(blockpos);
 			if(block != NULL) {
-				modified_blocks.insert(blockpos, block);
+				modified_blocks[blockpos] = block;
 				// If node emits light, MapBlock requires lighting update
 				if(nodemgr->get(n0).light_source != 0)
 					lighting_modified_blocks[block->getPos()] = block;
@@ -1925,11 +1908,11 @@ void Map::transformLiquidsFinite(core::map<v3s16, MapBlock*> & modified_blocks)
 	updateLighting(lighting_modified_blocks, modified_blocks);
 }
 
-void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
+void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 {
 
 	if (g_settings->getBool("liquid_finite")) return Map::transformLiquidsFinite(modified_blocks);
-	
+
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	DSTACK(__FUNCTION_NAME);
@@ -1945,7 +1928,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	UniqueQueue<v3s16> must_reflow;
 
 	// List of MapBlocks that will require a lighting update (due to lava)
-	core::map<v3s16, MapBlock*> lighting_modified_blocks;
+	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
 	while(m_transforming_liquid.size() != 0)
 	{
@@ -2165,7 +2148,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL) {
-			modified_blocks.insert(blockpos, block);
+			modified_blocks[blockpos] =  block;
 			// If node emits light, MapBlock requires lighting update
 			if(nodemgr->get(n0).light_source != 0)
 				lighting_modified_blocks[block->getPos()] = block;
@@ -2571,7 +2554,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 }
 
 MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
-		core::map<v3s16, MapBlock*> &changed_blocks)
+		std::map<v3s16, MapBlock*> &changed_blocks)
 {
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
@@ -2676,10 +2659,10 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	/*
 		Go through changed blocks
 	*/
-	for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator i = changed_blocks.begin();
+			i != changed_blocks.end(); ++i)
 	{
-		MapBlock *block = i.getNode()->getValue();
+		MapBlock *block = i->second;
 		assert(block);
 		/*
 			Update day/night difference cache of the MapBlocks
@@ -2797,7 +2780,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	/*
 		Insert to container
 	*/
-	m_sectors.insert(p2d, sector);
+	m_sectors[p2d] = sector;
 
 	return sector;
 }
@@ -2808,7 +2791,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 */
 MapBlock * ServerMap::generateBlock(
 		v3s16 p,
-		core::map<v3s16, MapBlock*> &modified_blocks
+		std::map<v3s16, MapBlock*> &modified_blocks
 )
 {
 	DSTACKF("%s: p=(%d,%d,%d)", __FUNCTION_NAME, p.X, p.Y, p.Z);
@@ -3008,7 +2991,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	}
 	/*if(allow_generate)
 	{
-		core::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock*> modified_blocks;
 		MapBlock *block = generateBlock(p, modified_blocks);
 		if(block)
 		{
@@ -3017,11 +3000,11 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 			event.p = p;
 
 			// Copy modified_blocks to event
-			for(core::map<v3s16, MapBlock*>::Iterator
-					i = modified_blocks.getIterator();
-					i.atEnd()==false; i++)
+			for(std::map<v3s16, MapBlock*>::iterator
+					i = modified_blocks.begin();
+					i != modified_blocks.end(); ++i)
 			{
-				event.modified_blocks.insert(i.getNode()->getKey(), false);
+				event.modified_blocks.erase(i->first);
 			}
 
 			// Queue event
@@ -3262,10 +3245,10 @@ void ServerMap::save(ModifiedState save_level)
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
-	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
-	for(; i.atEnd() == false; i++)
+	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
+		i != m_sectors.end(); ++i)
 	{
-		ServerMapSector *sector = (ServerMapSector*)i.getNode()->getValue();
+		ServerMapSector *sector = (ServerMapSector*)i->second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
 
 		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN)
@@ -3273,11 +3256,11 @@ void ServerMap::save(ModifiedState save_level)
 			saveSectorMeta(sector);
 			sector_meta_count++;
 		}
-		core::list<MapBlock*> blocks;
+		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
-		core::list<MapBlock*>::Iterator j;
 
-		for(j=blocks.begin(); j!=blocks.end(); j++)
+		for(std::list<MapBlock*>::iterator j = blocks.begin();
+			j != blocks.end(); ++j)
 		{
 			MapBlock *block = *j;
 
@@ -3350,7 +3333,7 @@ v3s16 ServerMap::getIntegerAsBlock(sqlite3_int64 i)
 	return v3s16(x,y,z);
 }
 
-void ServerMap::listAllLoadableBlocks(core::list<v3s16> &dst)
+void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	if(loadFromFolders()){
 		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
@@ -3487,7 +3470,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 					<<" Continuing with a sector with no metadata."
 					<<std::endl;*/
 			sector = new ServerMapSector(this, p2d, m_gamedef);
-			m_sectors.insert(p2d, sector);
+			m_sectors[p2d] = sector;
 		}
 		else
 		{
@@ -3987,9 +3970,9 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		u8 flags = 0;
 		MapBlock *block;
 		v3s16 p(x,y,z);
-		core::map<v3s16, u8>::Node *n;
+		std::map<v3s16, u8>::iterator n;
 		n = m_loaded_blocks.find(p);
-		if(n != NULL)
+		if(n != m_loaded_blocks.end())
 			continue;
 
 		bool block_data_inexistent = false;
@@ -4017,7 +4000,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		if(block_data_inexistent)
 		{
 			flags |= VMANIP_BLOCK_DATA_INEXIST;
-			
+
 			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
 			// Fill with VOXELFLAG_INEXISTENT
 			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
@@ -4033,7 +4016,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
 		}*/
 
-		m_loaded_blocks.insert(p, flags);
+		m_loaded_blocks[p] = flags;
 	}
 
 	//infostream<<"emerge done"<<std::endl;
@@ -4045,7 +4028,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		  run on background.
 */
 void MapVoxelManipulator::blitBack
-		(core::map<v3s16, MapBlock*> & modified_blocks)
+		(std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
@@ -4156,9 +4139,9 @@ void ManualMapVoxelManipulator::initialEmerge(
 		u8 flags = 0;
 		MapBlock *block;
 		v3s16 p(x,y,z);
-		core::map<v3s16, u8>::Node *n;
+		std::map<v3s16, u8>::iterator n;
 		n = m_loaded_blocks.find(p);
-		if(n != NULL)
+		if(n != m_loaded_blocks.end())
 			continue;
 
 		bool block_data_inexistent = false;
@@ -4199,12 +4182,12 @@ void ManualMapVoxelManipulator::initialEmerge(
 			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
 		}*/
 
-		m_loaded_blocks.insert(p, flags);
+		m_loaded_blocks[p] = flags;
 	}
 }
 
 void ManualMapVoxelManipulator::blitBackAll(
-		core::map<v3s16, MapBlock*> * modified_blocks)
+		std::map<v3s16, MapBlock*> * modified_blocks)
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
@@ -4212,37 +4195,22 @@ void ManualMapVoxelManipulator::blitBackAll(
 	/*
 		Copy data of all blocks
 	*/
-	for(core::map<v3s16, u8>::Iterator
-			i = m_loaded_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, u8>::iterator
+			i = m_loaded_blocks.begin();
+			i != m_loaded_blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
-		u8 flags = i.getNode()->getValue();
-		
-		bool existed = !(flags & VMANIP_BLOCK_DATA_INEXIST);
+		v3s16 p = i->first;
+		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		bool existed = !(i->second & VMANIP_BLOCK_DATA_INEXIST);
 		if(existed == false)
 		{
-			// The Great Bug was found using this
-			/*infostream<<"ManualMapVoxelManipulator::blitBackAll: "
-					<<"Inexistent ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;*/
-			continue;
-		}
-		
-		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-		if(block == NULL)
-		{
-			infostream<<"WARNING: "<<__FUNCTION_NAME
-					<<": got NULL block "
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;
 			continue;
 		}
 
 		block->copyFrom(*this);
-		
+
 		if(modified_blocks)
-			modified_blocks->insert(p, block);
+			(*modified_blocks)[p] = block;
 	}
 }
 

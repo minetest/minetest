@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 #include "porting.h"
+#include <list>
+#include <map>
+#include <set>
 
 enum ValueType
 {
@@ -63,12 +66,12 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		for(core::map<std::string, std::string>::Iterator
-				i = m_settings.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, std::string>::iterator
+				i = m_settings.begin();
+				i != m_settings.end(); ++i)
 		{
-			std::string name = i.getNode()->getKey();
-			std::string value = i.getNode()->getValue();
+			std::string name = i->first;
+			std::string value = i->second;
 			os<<name<<" = "<<value<<"\n";
 		}
 	}
@@ -76,12 +79,11 @@ public:
 	// return all keys used 
 	std::vector<std::string> getNames(){
 		std::vector<std::string> names;
-		for(core::map<std::string, std::string>::Iterator
-				i = m_settings.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, std::string>::iterator
+				i = m_settings.begin();
+				i != m_settings.end(); ++i)
 		{
-			std::string name = i.getNode()->getKey();
-			names.push_back(name);
+			names.push_back(i->first);
 		}
 		return names;  
 	}
@@ -89,7 +91,7 @@ public:
 	// remove a setting
 	bool remove(const std::string& name)
 	{
-		return m_settings.remove(name);
+		return m_settings.erase(name);
 	}
 
 
@@ -188,8 +190,8 @@ public:
 		Returns false on EOF
 	*/
 	bool getUpdatedConfigObject(std::istream &is,
-			core::list<std::string> &dst,
-			core::map<std::string, bool> &updated,
+			std::list<std::string> &dst,
+			std::set<std::string> &updated,
 			bool &value_changed)
 	{
 		JMutexAutoLock lock(m_mutex);
@@ -228,7 +230,7 @@ public:
 		std::string value = sf.next("\n");
 		value = trim(value);
 
-		if(m_settings.find(name))
+		if(m_settings.find(name) != m_settings.end())
 		{
 			std::string newvalue = m_settings[name];
 
@@ -242,7 +244,7 @@ public:
 
 			dst.push_back(name + " = " + newvalue + line_end);
 
-			updated[name] = true;
+			updated.insert(name);
 		}
 		else //file contains a setting which is not in m_settings
 			value_changed=true;
@@ -260,8 +262,8 @@ public:
 		infostream<<"Updating configuration file: \""
 				<<filename<<"\""<<std::endl;
 
-		core::list<std::string> objects;
-		core::map<std::string, bool> updated;
+		std::list<std::string> objects;
+		std::set<std::string> updated;
 		bool something_actually_changed = false;
 
 		// Read and modify stuff
@@ -286,11 +288,11 @@ public:
 		// If something not yet determined to have been changed, check if
 		// any new stuff was added
 		if(!something_actually_changed){
-			for(core::map<std::string, std::string>::Iterator
-					i = m_settings.getIterator();
-					i.atEnd() == false; i++)
+			for(std::map<std::string, std::string>::iterator
+					i = m_settings.begin();
+					i != m_settings.end(); ++i)
 			{
-				if(updated.find(i.getNode()->getKey()))
+				if(updated.find(i->first) != updated.end())
 					continue;
 				something_actually_changed = true;
 				break;
@@ -318,9 +320,9 @@ public:
 			/*
 				Write updated stuff
 			*/
-			for(core::list<std::string>::Iterator
+			for(std::list<std::string>::iterator
 					i = objects.begin();
-					i != objects.end(); i++)
+					i != objects.end(); ++i)
 			{
 				os<<(*i);
 			}
@@ -328,14 +330,14 @@ public:
 			/*
 				Write stuff that was not already in the file
 			*/
-			for(core::map<std::string, std::string>::Iterator
-					i = m_settings.getIterator();
-					i.atEnd() == false; i++)
+			for(std::map<std::string, std::string>::iterator
+					i = m_settings.begin();
+					i != m_settings.end(); ++i)
 			{
-				if(updated.find(i.getNode()->getKey()))
+				if(updated.find(i->first) != updated.end())
 					continue;
-				std::string name = i.getNode()->getKey();
-				std::string value = i.getNode()->getValue();
+				std::string name = i->first;
+				std::string value = i->second;
 				infostream<<"Adding \""<<name<<"\" = \""<<value<<"\""
 						<<std::endl;
 				os<<name<<" = "<<value<<"\n";
@@ -351,7 +353,7 @@ public:
 		returns true on success
 	*/
 	bool parseCommandLine(int argc, char *argv[],
-			core::map<std::string, ValueSpec> &allowed_options)
+			std::map<std::string, ValueSpec> &allowed_options)
 	{
 		int nonopt_index = 0;
 		int i=1;
@@ -379,16 +381,16 @@ public:
 
 			std::string name = argname.substr(2);
 
-			core::map<std::string, ValueSpec>::Node *n;
+			std::map<std::string, ValueSpec>::iterator n;
 			n = allowed_options.find(name);
-			if(n == NULL)
+			if(n == allowed_options.end())
 			{
 				errorstream<<"Unknown command-line parameter \""
 						<<argname<<"\""<<std::endl;
 				return false;
 			}
 
-			ValueType type = n->getValue().type;
+			ValueType type = n->second.type;
 
 			std::string value = "";
 
@@ -444,25 +446,25 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		return (m_settings.find(name) || m_defaults.find(name));
+		return (m_settings.find(name) != m_settings.end() || m_defaults.find(name) != m_defaults.end());
 	}
 
 	std::string get(std::string name)
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		core::map<std::string, std::string>::Node *n;
+		std::map<std::string, std::string>::iterator n;
 		n = m_settings.find(name);
-		if(n == NULL)
+		if(n == m_settings.end())
 		{
 			n = m_defaults.find(name);
-			if(n == NULL)
+			if(n == m_defaults.end())
 			{
 				throw SettingNotFoundException("Setting not found");
 			}
 		}
 
-		return n->getValue();
+		return n->second;
 	}
 
 	bool getBool(std::string name)
@@ -919,19 +921,8 @@ fail:
 		if(&other == this)
 			return;
 
-		for(core::map<std::string, std::string>::Iterator
-				i = other.m_settings.getIterator();
-				i.atEnd() == false; i++)
-		{
-			m_settings[i.getNode()->getKey()] = i.getNode()->getValue();
-		}
-
-		for(core::map<std::string, std::string>::Iterator
-				i = other.m_defaults.getIterator();
-				i.atEnd() == false; i++)
-		{
-			m_defaults[i.getNode()->getKey()] = i.getNode()->getValue();
-		}
+		m_settings.insert(other.m_settings.begin(), other.m_settings.end());
+		m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
 
 		return;
 	}
@@ -944,21 +935,7 @@ fail:
 		if(&other == this)
 			return *this;
 
-		for(core::map<std::string, std::string>::Iterator
-				i = other.m_settings.getIterator();
-				i.atEnd() == false; i++)
-		{
-			m_settings.insert(i.getNode()->getKey(),
-					i.getNode()->getValue());
-		}
-
-		for(core::map<std::string, std::string>::Iterator
-				i = other.m_defaults.getIterator();
-				i.atEnd() == false; i++)
-		{
-			m_defaults.insert(i.getNode()->getKey(),
-					i.getNode()->getValue());
-		}
+		update(other);
 
 		return *this;
 
@@ -979,8 +956,8 @@ fail:
 	}
 
 private:
-	core::map<std::string, std::string> m_settings;
-	core::map<std::string, std::string> m_defaults;
+	std::map<std::string, std::string> m_settings;
+	std::map<std::string, std::string> m_defaults;
 	// All methods that access m_settings/m_defaults directly should lock this.
 	JMutex m_mutex;
 };

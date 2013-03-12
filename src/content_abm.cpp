@@ -114,7 +114,7 @@ public:
 		actionstream<<"A sapling grows into a tree at "
 				<<PP(p)<<std::endl;
 
-		core::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock*> modified_blocks;
 		v3s16 tree_p = p;
 		ManualMapVoxelManipulator vmanip(map);
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
@@ -124,24 +124,19 @@ public:
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
-		core::map<v3s16, MapBlock*> lighting_modified_blocks;
-		for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
-		{
-			lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
-		}
+		std::map<v3s16, MapBlock*> lighting_modified_blocks;
+		lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
 		map->updateLighting(lighting_modified_blocks, modified_blocks);
 
 		// Send a MEET_OTHER event
 		MapEditEvent event;
 		event.type = MEET_OTHER;
-		for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+//		event.modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
+		for(std::map<v3s16, MapBlock*>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 		{
-			v3s16 p = i.getNode()->getKey();
-			event.modified_blocks.insert(p, true);
+			event.modified_blocks.insert(i->first);
 		}
 		map->dispatchEvent(&event);
 	}

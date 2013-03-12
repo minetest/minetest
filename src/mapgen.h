@@ -72,6 +72,11 @@ public:
 	int water_level;
 	bool generating;
 	int id;
+	ManualMapVoxelManipulator *vm;
+	INodeDefManager *ndef;
+
+	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
+	void updateLighting(v3s16 nmin, v3s16 nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {};
 	virtual int getGroundLevelAtPoint(v2s16 p) = 0;

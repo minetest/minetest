@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 // Calculate the borders of a "d-radius" cube
-void getFacePositions(core::list<v3s16> &list, u16 d)
+void getFacePositions(std::list<v3s16> &list, u16 d)
 {
 	if(d == 0)
 	{

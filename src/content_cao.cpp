@@ -50,7 +50,7 @@ struct ToolCapabilities;
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+std::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 /*
 	SmoothTranslator

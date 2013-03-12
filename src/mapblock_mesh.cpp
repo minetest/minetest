@@ -445,7 +445,7 @@ struct FastFace
 };
 
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
-		v3f p, v3s16 dir, v3f scale, u8 light_source, core::array<FastFace> &dest)
+		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
 	
@@ -745,7 +745,7 @@ static void updateFastFaceRow(
 		v3f translate_dir_f,
 		v3s16 face_dir,
 		v3f face_dir_f,
-		core::array<FastFace> &dest)
+		std::vector<FastFace> &dest)
 {
 	v3s16 p = startpos;
 	
@@ -897,7 +897,7 @@ static void updateFastFaceRow(
 }
 
 static void updateAllFastFaceRows(MeshMakeData *data,
-		core::array<FastFace> &dest)
+		std::vector<FastFace> &dest)
 {
 	/*
 		Go through every y,z and get top(y+) faces in rows of x+
@@ -962,7 +962,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	// 24-155ms for MAP_BLOCKSIZE=32  (NOTE: probably outdated)
 	//TimeTaker timer1("MapBlockMesh()");
 
-	core::array<FastFace> fastfaces_new;
+	std::vector<FastFace> fastfaces_new;
 
 	/*
 		We are including the faces of the trailing edges of the block.
@@ -1124,8 +1124,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		m_mesh->addMeshBuffer(buf);
 		// Mesh grabbed it
 		buf->drop();
-		buf->append(p.vertices.pointer(), p.vertices.size(),
-				p.indices.pointer(), p.indices.size());
+		buf->append(&p.vertices[0], p.vertices.size(),
+				&p.indices[0], p.indices.size());
 	}
 
 	/*

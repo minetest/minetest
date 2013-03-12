@@ -143,13 +143,13 @@ private:
 struct PreMeshBuffer
 {
 	TileSpec tile;
-	core::array<u16> indices;
-	core::array<video::S3DVertex> vertices;
+	std::vector<u16> indices;
+	std::vector<video::S3DVertex> vertices;
 };
 
 struct MeshCollector
 {
-	core::array<PreMeshBuffer> prebuffers;
+	std::vector<PreMeshBuffer> prebuffers;
 
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
