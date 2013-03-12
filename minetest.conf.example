@@ -95,9 +95,11 @@
 # Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
 # When finite liquid: relax flowing blocks to source if level near max and N nearby source blocks, more realistic, but not true constant. values: 0,1,2,3,4 : 0 - disable, 1 - most aggresive
-#liquid_relax = 1
-# optimization: faster cave flood (and not true constant)
+#liquid_relax = 2
+# Optimization: faster cave flood (and not true constant)
 #liquid_fast_flood = 1
+# Underground water and lava springs, its infnity sources if liquid_finite enabled
+#underground_springs = 1
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
