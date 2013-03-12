@@ -37,9 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /////////////////// Mapgen V6 perlin noise default values
 NoiseParams nparams_v6_def_terrain_base =
-	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 10};
+	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 1};
 NoiseParams nparams_v6_def_terrain_higher =
-	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6, 10};
+	{20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6, 1};
 NoiseParams nparams_v6_def_steepness =
 	{0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 1};
 NoiseParams nparams_v6_def_height_select =
