@@ -335,20 +335,26 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 end
 
 function core.item_drop(itemstack, dropper, pos)
-	if dropper.get_player_name then
+	if dropper.is_player then
 		local v = dropper:get_look_dir()
-		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
-		local obj = core.add_item(p, itemstack)
+		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
+		local cs = itemstack:get_count()
+		if dropper:get_player_control().sneak then
+			cs = 1
+		end
+		local item = itemstack:take_item(cs)
+		local obj = core.add_item(p, item)
 		if obj then
 			v.x = v.x*2
-			v.y = v.y*2 + 1
+			v.y = v.y*2 + 2
 			v.z = v.z*2
 			obj:setvelocity(v)
 		end
+
 	else
 		core.add_item(pos, itemstack)
 	end
-	return ItemStack("")
+	return itemstack
 end
 
 function core.item_eat(hp_change, replace_with_item)
@@ -592,4 +598,3 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	on_drop = nil,
 	on_use = nil,
 }
-
