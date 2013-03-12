@@ -235,5 +235,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgv7_np_bgroup",   "0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6");
 	settings->setDefault("mgv7_np_heat",     "25, 50, (500, 500, 500), 35293, 1, 0");
 	settings->setDefault("mgv7_np_humidity", "50, 31.25, (750, 750, 750), 12094, 2, 0.6");
+
+	settings->setDefault("mgindev_np_terrain_base",   "-4, 20, (250.0, 250, 250), 82341, 5, 0.6, 10");
+	settings->setDefault("mgindev_np_terrain_higher", "20, 16, (500, 500, 500), 85039, 5, 0.6, 10");
+	settings->setDefault("mgindev_np_steepness",      "0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 10");
+	settings->setDefault("mgindev_np_mud",            "4, 2, (200, 200, 200), 91013, 3, 0.55, 1");
+
 }
 

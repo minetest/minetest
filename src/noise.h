@@ -89,7 +89,7 @@ public:
 	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
 	~Noise();
 
-	void init(NoiseParams *np, int seed, int sx, int sy, int sz);
+	virtual void init(NoiseParams *np, int seed, int sx, int sy, int sz);
 	void setSize(int sx, int sy);
 	void setSize(int sx, int sy, int sz);
 	void setSpreadFactor(v3f spread);

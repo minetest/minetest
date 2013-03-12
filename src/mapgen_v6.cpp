@@ -878,6 +878,24 @@ void MapgenV6::growGrass() {
 	}
 }
 
+void MapgenV6::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave) {
+		cave.min_tunnel_diameter = 2;
+		cave.max_tunnel_diameter = ps.range(2,6);
+		cave.dswitchint = ps.range(1,14);
+		//cave.tunnel_routepoints = 0;
+		//cave.part_max_length_rs = 0;
+		cave.flooded = large_cave && ps.range(0,4);
+		if(large_cave){
+			cave.part_max_length_rs = ps.range(2,4);
+			cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
+			cave.min_tunnel_diameter = 5;
+			cave.max_tunnel_diameter = ps.range(7, ps.range(8,24));
+		} else {
+			cave.part_max_length_rs = ps.range(2,9);
+			cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
+		}
+		cave.large_cave_is_flat = (ps.range(0,1) == 0);
+};
 
 void MapgenV6::generateCaves(int max_stone_y) {
 	// 24ms @cs=8
@@ -911,21 +929,9 @@ void MapgenV6::generateCaves(int max_stone_y) {
 			break;*/
 
 		bool large_cave = (jj >= caves_count);
-		s16 min_tunnel_diameter = 2;
-		s16 max_tunnel_diameter = ps.range(2,6);
-		int dswitchint = ps.range(1,14);
-		u16 tunnel_routepoints = 0;
-		int part_max_length_rs = 0;
-		if(large_cave){
-			part_max_length_rs = ps.range(2,4);
-			tunnel_routepoints = ps.range(5, ps.range(15,30));
-			min_tunnel_diameter = 5;
-			max_tunnel_diameter = ps.range(7, ps.range(8,24));
-		} else {
-			part_max_length_rs = ps.range(2,9);
-			tunnel_routepoints = ps.range(10, ps.range(15,30));
-		}
-		bool large_cave_is_flat = (ps.range(0,1) == 0);
+
+		Cave cave;
+		defineCave(cave, ps, node_min, large_cave);
 
 		v3f main_direction(0,0,0);
 
@@ -938,13 +944,13 @@ void MapgenV6::generateCaves(int max_stone_y) {
 		// Allow a bit more
 		//(this should be more than the maximum radius of the tunnel)
 		s16 insure = 10;
-		s16 more = max_spread_amount - max_tunnel_diameter / 2 - insure;
+		s16 more = max_spread_amount - cave.max_tunnel_diameter / 2 - insure;
 		ar += v3s16(1,0,1) * more * 2;
 		of -= v3s16(1,0,1) * more;
 
 		s16 route_y_min = 0;
 		// Allow half a diameter + 7 over stone surface
-		s16 route_y_max = -of.Y + max_stone_y + max_tunnel_diameter/2 + 7;
+		s16 route_y_max = -of.Y + max_stone_y + cave.max_tunnel_diameter/2 + 7;
 
 		// Limit maximum to area
 		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
@@ -954,10 +960,10 @@ void MapgenV6::generateCaves(int max_stone_y) {
 			s16 min = 0;
 			if(node_min.Y < water_level && node_max.Y > water_level)
 			{
-				min = water_level - max_tunnel_diameter/3 - of.Y;
-				route_y_max = water_level + max_tunnel_diameter/3 - of.Y;
+				min = water_level - cave.max_tunnel_diameter/3 - of.Y;
+				route_y_max = water_level + cave.max_tunnel_diameter/3 - of.Y;
 			}
-			route_y_min = ps.range(min, min + max_tunnel_diameter);
+			route_y_min = ps.range(min, min + cave.max_tunnel_diameter);
 			route_y_min = rangelim(route_y_min, 0, route_y_max);
 		}
 
@@ -985,9 +991,9 @@ void MapgenV6::generateCaves(int max_stone_y) {
 			Generate some tunnel starting from orp
 		*/
 
-		for(u16 j=0; j<tunnel_routepoints; j++)
+		for(u16 j=0; j<cave.tunnel_routepoints; j++)
 		{
-			if(j%dswitchint==0 && large_cave == false)
+			if(j%cave.dswitchint==0 && large_cave == false)
 			{
 				main_direction = v3f(
 					((float)(ps.next()%20)-(float)10)/10,
@@ -998,8 +1004,8 @@ void MapgenV6::generateCaves(int max_stone_y) {
 			}
 
 			// Randomize size
-			s16 min_d = min_tunnel_diameter;
-			s16 max_d = max_tunnel_diameter;
+			s16 min_d = cave.min_tunnel_diameter;
+			s16 max_d = cave.max_tunnel_diameter;
 			s16 rs = ps.range(min_d, max_d);
 
 			// Every second section is rough
@@ -1009,17 +1015,17 @@ void MapgenV6::generateCaves(int max_stone_y) {
 			if(large_cave)
 			{
 				maxlen = v3s16(
-					rs*part_max_length_rs,
-					rs*part_max_length_rs/2,
-					rs*part_max_length_rs
+					rs*cave.part_max_length_rs,
+					rs*cave.part_max_length_rs/2,
+					rs*cave.part_max_length_rs
 				);
 			}
 			else
 			{
 				maxlen = v3s16(
-					rs*part_max_length_rs,
-					ps.range(1, rs*part_max_length_rs),
-					rs*part_max_length_rs
+					rs*cave.part_max_length_rs,
+					ps.range(1, rs*cave.part_max_length_rs),
+					rs*cave.part_max_length_rs
 				);
 			}
 
@@ -1091,7 +1097,7 @@ void MapgenV6::generateCaves(int max_stone_y) {
 							/*// Make better floors in small caves
 							if(y0 <= -rs/2 && rs<=7)
 								continue;*/
-							if (large_cave_is_flat) {
+							if (cave.large_cave_is_flat) {
 								// Make large caves not so tall
 								if (rs > 7 && abs(y0) >= rs/3)
 									continue;
@@ -1109,13 +1115,13 @@ void MapgenV6::generateCaves(int max_stone_y) {
 							u32 i = vm->m_area.index(p);
 
 							if(large_cave) {
-								if (full_node_min.Y < water_level &&
+								if (cave.flooded && full_node_min.Y < water_level &&
 									full_node_max.Y > water_level) {
 									if (p.Y <= water_level)
 										vm->m_data[i] = waternode;
 									else
 										vm->m_data[i] = airnode;
-								} else if (full_node_max.Y < water_level) {
+								} else if (cave.flooded && full_node_max.Y < water_level) {
 									if (p.Y < startp.Y - 2)
 										vm->m_data[i] = lavanode;
 									else

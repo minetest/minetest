@@ -225,6 +225,7 @@ set(common_SRCS
 	emerge.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
+	mapgen_indev.cpp
 	treegen.cpp
 	dungeongen.cpp
 	content_nodemeta.cpp

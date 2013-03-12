@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
+#include "mapgen_indev.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
