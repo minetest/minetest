@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
+#include "guiKeyChangeMenu.h"
 #include "guiFormSpecMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
@@ -1525,6 +1526,13 @@ void the_game(
 			(new GUIVolumeChange(guienv, guiroot, -1,
 				&g_menumgr, &client))->drop();
 			g_gamecallback->changevolume_requested = false;
+		}
+
+		if(g_gamecallback->changekeys_requested)
+		{
+			(new GUIKeyChangeMenu(guienv, guiroot, -1,
+				&g_menumgr))->drop();
+			g_gamecallback->changekeys_requested = false;
 		}
 
 		/* Process TextureSource's queue */

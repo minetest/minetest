@@ -84,6 +84,11 @@ void GUIPauseMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(263);
+		if(e != NULL)
+			e->remove();
+	}
 }
 
 void GUIPauseMenu::regenerateGui(v2u32 screensize)
@@ -113,7 +118,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	*/
 	const s32 btn_height = 30;
 	const s32 btn_gap = 20;
-	const s32 btn_num = m_simple_singleplayer_mode ? 4 : 5;
+	const s32 btn_num = m_simple_singleplayer_mode ? 5 : 6;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	changeCtype("");
 	{
@@ -138,6 +143,13 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 262,
 			wgettext("Sound Volume"));
+	}
+	btn_y += btn_height + btn_gap;
+	{
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		Environment->addButton(rect, this, 263,
+			wgettext("Change keys"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
@@ -251,6 +263,10 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			case 262:
 				quitMenu();
 				m_gamecallback->changeVolume();
+				return true;
+			case 263:
+				quitMenu();
+				m_gamecallback->changeKeys();
 				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();
