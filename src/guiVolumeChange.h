@@ -30,8 +30,7 @@ class GUIVolumeChange : public GUIModalMenu
 public:
 	GUIVolumeChange(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			IMenuManager *menumgr,
-			Client* client);
+			IMenuManager *menumgr);
 	~GUIVolumeChange();
 	
 	void removeChildren();
@@ -43,9 +42,6 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
-private:
-	Client* m_client;
 
 };
 

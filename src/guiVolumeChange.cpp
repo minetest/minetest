@@ -37,11 +37,9 @@ const int ID_soundSlider = 266;
 
 GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr,
-		Client* client
+		IMenuManager *menumgr
 ):
-	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client)
+	GUIModalMenu(env, parent, id, menumgr)
 {
 }
 
