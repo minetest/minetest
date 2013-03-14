@@ -906,7 +906,7 @@ static int l_get_modnames(lua_State *L)
 	{
 		bool added = false;
 		for(std::list<std::string>::iterator x = mods_sorted.begin();
-		    x != mods_unsorted.end(); ++x)
+		    x != mods_sorted.end(); ++x)
 		{
 			// I doubt anybody using Minetest will be using
 			// anything not ASCII based :)
