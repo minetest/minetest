@@ -42,6 +42,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "subgame.h"
 
+#define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+
+const wchar_t *contrib_core_strs[] = {
+	L"Perttu Ahola (celeron55) <celeron55@gmail.com>",
+	L"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
+	L"PilzAdam <pilzadam@minetest.net>",
+	L"Ilya Zhuravlev (thexyz) <xyz@minetest.net>",
+	L"Lisa Milne (darkrose) <lisa@ltmnet.com>"
+};
+
+const wchar_t *contrib_active_strs[] = {
+	L"RealBadAngel <mk@realbadangel.pl>",
+	L"sfan5 <sfan5@live.de>",
+	L"sapier <sapier@gmx.net>",
+	L"proller <proler@gmail.com>",
+	L"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	L"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
+	L"ShadowNinja",
+	L"dannydark <the_skeleton_of_a_child@yahoo.co.uk>",
+	L"Jeija <jeija@mesecons.net>",
+	L"MirceaKitsune <sonichedgehog_hyperblast00@yahoo.com>"
+};
+
+const wchar_t *contrib_previous_strs[] = {
+	L"kahrl <kahrl@gmx.net>",
+	L"Giuseppe Bilotta (Oblomov) <giuseppe.bilotta@gmail.com>",
+	L"Jonathan Neuschafer <j.neuschaefer@gmx.net>",
+	L"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>",
+	L"Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>",
+	L"matttpt <matttpt@gmail.com>",
+	L"JacobF <queatz@gmail.com>" 
+};
+
+
 struct CreateWorldDestMainMenu : public CreateWorldDest
 {
 	CreateWorldDestMainMenu(GUIMainMenu *menu):
@@ -256,7 +290,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
-			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
+			const wchar_t *text = L"S\nI\nN\nG\nL\nE\n \nP\nL\nA\nY\nE\nR\n";
 			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
@@ -703,7 +737,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		// CREDITS
 		{
-			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			core::rect<s32> rect(0, 0, 9, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nR\nE\nD\nI\nT\nS";
 			gui::IGUIStaticText *t =
@@ -711,15 +745,34 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		{
-			core::rect<s32> rect(0, 0, 454, 250);
-			rect += m_topleft_client + v2s32(110, 50+35);
-			Environment->addStaticText(narrow_to_wide(
-			"Minetest " VERSION_STRING "\n"
-			"http://minetest.net/\n"
-			"\n"
-			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors: PilzAdam, Taoki, tango_, kahrl (kaaaaaahrl?), darkrose, matttpt, erlehmann, SpeedProg, JacobF, teddydestodes, marktraceur, Jonathan Neuschäfer, thexyz, VanessaE, sfan5... and tens of more random people."
-			).c_str(), rect, false, true, this, -1);
+			core::rect<s32> rect(0, 0, 130, 70);
+			rect += m_topleft_client + v2s32(35, 160);
+			Environment->addStaticText(
+				L"Minetest " VERSION_STRING "\nhttp://minetest.net/",
+				 rect, false, true, this, -1);
+		}
+		{
+			video::SColor yellow(255, 255, 255, 0);
+			core::rect<s32> rect(0, 0, 450, 260);
+			rect += m_topleft_client + v2s32(168, 5);
+			
+			irr::gui::IGUIListBox *list = Environment->addListBox(rect, this);
+			
+			list->addItem(L"Core Developers");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_core_strs); i++)
+				list->addItem(contrib_core_strs[i]);
+			list->addItem(L"");
+			list->addItem(L"Active Contributors");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_active_strs); i++)
+				list->addItem(contrib_active_strs[i]);
+			list->addItem(L"");
+			list->addItem(L"Previous Contributors");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_previous_strs); i++)
+				list->addItem(contrib_previous_strs[i]);
+			list->addItem(L"");
 		}
 	}
 
@@ -791,7 +844,7 @@ void GUIMainMenu::drawMenu()
 
 			core::rect<s32> rect(0,0,logosize.X,logosize.Y);
 			rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
-			rect += v2s32(500, 30);
+			rect += v2s32(50, 60);
 			driver->draw2DImage(logotexture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(logotexture->getSize())),
