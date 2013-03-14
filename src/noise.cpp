@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "debug.h"
 #include "util/numeric.h"
+#include "constants.h"
+#include "log.h"
 
 #define NOISE_MAGIC_X    1619
 #define NOISE_MAGIC_Y    31337
@@ -569,12 +571,15 @@ float *Noise::perlinMap3D(float x, float y, float z) {
 }
 
 
-void Noise::transformNoiseMap() {
+void Noise::transformNoiseMap(float xx, float yy, float zz) {
+	// more correct use distantion from 0,0,0 via pow, but + is faster
+	float rangescale = ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 3 - (fabs(xx) + fabs(yy) + fabs(zz)) ) / (MAP_GENERATION_LIMIT * 3) ) * (np->rangescale - 1) );
+	// errorstream << "TNM rs="  << rangescale << " from=" << (np)->rangescale << " x=" << xx << " z=" << zz << "     " << std::endl;
 	int i = 0;
 	for (int z = 0; z != sz; z++) {
 		for (int y = 0; y != sy; y++) {
 			for (int x = 0; x != sx; x++) {
-				result[i] = result[i] * np->scale + np->offset;
+				result[i] = result[i] * np->scale * rangescale + np->offset;
 				i++;
 			}
 		}
