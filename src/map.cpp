@@ -1739,19 +1739,32 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		//relax up
-		if (relax && p0.Y <= water_level && liquid_levels[D_TOP] == 0 && liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level - (can_liquid_same_level - relax) && can_liquid_same_level >= relax + 1) { 
-			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level; 
+		if (	relax
+			&& p0.Y <= water_level
+			&& liquid_levels[D_TOP] == 0
+			&& liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE
+			&& total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level - (can_liquid_same_level - relax)
+			&& can_liquid_same_level >= relax + 1
+		) {
+			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level;
 		}
 
 		// calculate self level 5 blocks
-		u8 want_level = 
+		u8 want_level =
 			  total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level
-			? LIQUID_LEVEL_SOURCE 
+			? LIQUID_LEVEL_SOURCE
 			: total_level / can_liquid_same_level;
 		total_level -= want_level * can_liquid_same_level;
 
 		//relax down
-		if (relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 && liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && want_level == 0 && total_level <= (can_liquid_same_level - relax)  && can_liquid_same_level >= relax + 1) {
+		if (	relax
+			&& p0.Y == water_level + 1 // only on sea level
+			&& liquid_levels[D_TOP] == 0
+			&& liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE
+			&& want_level == 0
+			&& total_level <= (can_liquid_same_level - relax)
+			&& can_liquid_same_level >= relax + 1
+		) {
 			total_level = 0;
 		}
 
@@ -1826,7 +1839,11 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				new_node_content = CONTENT_AIR;
 
 			// last level must flow down on stairs
-			if (liquid_levels_want[i] != liquid_levels[i] && liquid_levels[D_TOP] <= 0 && !neighbors[D_BOTTOM].l && new_node_level >= 1 && new_node_level <= 2) //maybe == 1 // 
+			if (	liquid_levels_want[i] != liquid_levels[i]
+				&& liquid_levels[D_TOP] <= 0
+				&& !neighbors[D_BOTTOM].l
+				&& new_node_level >= 1
+				&& new_node_level <= 2) //maybe == 1
 				for (u16 ii = D_SELF + 1; ii < D_TOP; ++ii) { // only same level
 				if (!neighbors[ii].l)
 					continue;

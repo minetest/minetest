@@ -74,7 +74,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+2, 1/12/12/12, 5, -16,    -5  )
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+3, 1/9/9/9,    5, -31000, -17 )
 
-	if minetest.setting_get("underground_springs") then
+	if minetest.setting_getbool("underground_springs") then
 		generate_ore("default:water_source", "default:stone", minp, maxp, seed+4, 1/24/24/24, 12, -100,   -11,   128)
 		generate_ore("default:water_source", "default:stone", minp, maxp, seed+5, 1/28/28/28, 8,  -10000, -101,  128)
 		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+6, 1/38/38/38, 6,  -500,   -101,  128)
