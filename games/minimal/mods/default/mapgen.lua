@@ -69,10 +69,19 @@ local function generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, 
 end
 
 minetest.register_on_generated(function(minp, maxp, seed)
-	generate_ore("default:stone_with_coal", "default:stone", minp, maxp, seed,   1/8/8/8,    5, -31000,  64)
-	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+1, 1/16/16/16, 5,   -5,   7)
-	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+2, 1/12/12/12, 5, -16,   -5)
-	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+3, 1/9/9/9,    5, -31000, -17)
+	generate_ore("default:stone_with_coal", "default:stone", minp, maxp, seed,   1/8/8/8,    5, -31000, 64  )
+	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+1, 1/16/16/16, 5, -5,     7   )
+	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+2, 1/12/12/12, 5, -16,    -5  )
+	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+3, 1/9/9/9,    5, -31000, -17 )
+
+	if minetest.setting_get("underground_springs") then
+		generate_ore("default:water_source", "default:stone", minp, maxp, seed+4, 1/24/24/24, 12, -100,   -11,   128)
+		generate_ore("default:water_source", "default:stone", minp, maxp, seed+5, 1/28/28/28, 8,  -10000, -101,  128)
+		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+6, 1/38/38/38, 6,  -500,   -101,  128)
+		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+7, 1/30/30/30, 16, -5000,  -501,  128)
+		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+8, 1/24/24/24, 20, -31000, -5001, 128)
+	end
+
 	-- Generate clay
 	if maxp.y >= 2 and minp.y <= 0 then
 		-- Assume X and Z lengths are equal
@@ -109,12 +118,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 			end
 		end
 		end
-	end
-	if minetest.setting_get("liquid_finite") then
-		generate_ore("default:water_source", "default:stone", minp, maxp, seed+42, 1/24/24/24, 4,  -100,   -10,  128)
-		generate_ore("default:water_source", "default:stone", minp, maxp, seed+42, 1/28/28/28, 3,  -10000, -101, 128)
-		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+43, 1/38/38/38, 2,  -500,   -100, 128)
-		generate_ore("default:lava_source",  "default:stone", minp, maxp, seed+43, 1/30/30/30, 4,  -31000, -501, 128)
 	end
 end)
 

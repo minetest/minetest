@@ -203,16 +203,17 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
 	settings->setDefault("movement_liquid_sink", "10");
 	settings->setDefault("movement_gravity", "9.81");
-	
+
 	//liquid stuff
 	settings->setDefault("liquid_finite", "false");
 	settings->setDefault("liquid_update", "1.0");
-	settings->setDefault("liquid_relax", "1");
+	settings->setDefault("liquid_relax", "2");
 	settings->setDefault("liquid_fast_flood", "1");
+	settings->setDefault("underground_springs", "1");
 
 	//mapgen stuff
 	settings->setDefault("mg_name", "v6");
-	settings->setDefault("water_level", "1");	
+	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
 	settings->setDefault("mgv6_freq_desert", "0.45");
