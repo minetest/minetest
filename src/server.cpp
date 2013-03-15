@@ -1021,6 +1021,9 @@ Server::Server(
 				<<builtinpath<<std::endl;
 		throw ModError("Failed to load and run "+builtinpath);
 	}
+
+	InitSecurity(m_lua);
+
 	// Find mods in mod search paths
 	m_mods = getMods(m_modspaths);
 	// Print 'em

@@ -10,6 +10,12 @@ minetest.register_item_raw = nil
 local register_alias_raw = minetest.register_alias_raw
 minetest.register_item_raw = nil
 
+local setmetatable_backup = setmetatable
+setmetatable = nil
+
+local rawget_backup = rawget
+rawget = nil
+
 --
 -- Item / entity / ABM registration functions
 --
@@ -25,9 +31,9 @@ minetest.registered_aliases = {}
 -- For tables that are indexed by item name:
 -- If table[X] does not exist, default to table[minetest.registered_aliases[X]]
 local function set_alias_metatable(table)
-	setmetatable(table, {
+	setmetatable_backup(table, {
 		__index = function(name)
-			return rawget(table, minetest.registered_aliases[name])
+			return rawget_backup(table, minetest.registered_aliases[name])
 		end
 	})
 end
@@ -103,16 +109,16 @@ function minetest.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
-		setmetatable(itemdef, {__index = minetest.nodedef_default})
+		setmetatable_backup(itemdef, {__index = minetest.nodedef_default})
 		minetest.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
-		setmetatable(itemdef, {__index = minetest.craftitemdef_default})
+		setmetatable_backup(itemdef, {__index = minetest.craftitemdef_default})
 		minetest.registered_craftitems[itemdef.name] = itemdef
 	elseif itemdef.type == "tool" then
-		setmetatable(itemdef, {__index = minetest.tooldef_default})
+		setmetatable_backup(itemdef, {__index = minetest.tooldef_default})
 		minetest.registered_tools[itemdef.name] = itemdef
 	elseif itemdef.type == "none" then
-		setmetatable(itemdef, {__index = minetest.noneitemdef_default})
+		setmetatable_backup(itemdef, {__index = minetest.noneitemdef_default})
 	else
 		error("Unable to register item: Type is invalid: " .. dump(itemdef))
 	end

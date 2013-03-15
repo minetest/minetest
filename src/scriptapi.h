@@ -39,6 +39,7 @@ struct ToolCapabilities;
 void scriptapi_export(lua_State *L, Server *server);
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 		const std::string &modname);
+void InitSecurity(lua_State* L);
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
 
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);

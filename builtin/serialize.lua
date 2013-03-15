@@ -14,6 +14,9 @@
 
 local no_identity = { number=1, boolean=1, string=1, ['nil']=1 }
 
+local setfenv_backup = setfenv
+setfenv = false
+
 function minetest.serialize(x)
 
 	local gensym_max   =  0  -- index of the gensym() symbol generator
@@ -168,7 +171,7 @@ local function stringtotable(sdata)
 	if sdata:byte(1) == 27 then return nil, "binary bytecode prohibited" end
 	local f, message = assert(loadstring(sdata))
 	if not f then return nil, message end
-	setfenv(f, table)
+	setfenv_backup(f, table)
 	return f()
 end
 

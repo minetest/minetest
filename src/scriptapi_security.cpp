@@ -52,11 +52,11 @@ const luaL_Reg security_funcs[] =
 	{"dofile"       , l_safe_dofile },
 	{"loadfile"     , l_forbidden },
 	{"load"         , l_forbidden },
-//	{"rawequal"     , l_safe_rawequal },     unsafe but required for register*
-//	{"rawget"       , l_safe_rawget },       unsafe but required for register*
-//	{"rawset"       , l_safe_rawset },       unsafe but required for register*
-//	{"setfenv"      , l_safe_fenv },         unsafe but required for serialize/deserialize
-//	{"setmetatable" , l_safe_setmetatable }, unsafe but required for register*
+	{"rawequal"     , l_forbidden },
+	{"rawget"       , l_forbidden },
+	{"rawset"       , l_forbidden },
+	{"setfenv"      , l_forbidden },
+	{"setmetatable" , l_forbidden },
 	{"module"       , l_forbidden },
 	{"require"      , l_forbidden },
 	{"newproxy"     , l_forbidden },
@@ -79,7 +79,6 @@ void InitSecurity(lua_State* L) {
 		infostream << "================================================================================" << std::endl;
 		return;
 	}
-
 	luaL_register(L, "_G", security_funcs);
 	lua_pop(L, 1);
 

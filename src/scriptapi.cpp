@@ -5379,8 +5379,6 @@ void scriptapi_export(lua_State *L, Server *server)
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
 	LuaPerlinNoise::Register(L);
-
-	InitSecurity(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
