@@ -313,6 +313,7 @@ set(minetest_SRCS
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
 	guiVolumeChange.cpp
+	guiSettingsMenu.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
