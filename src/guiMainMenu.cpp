@@ -689,7 +689,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->enable_particles, rect, this,
 					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
-
+		// Volume change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+120);

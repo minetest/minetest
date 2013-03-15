@@ -24,14 +24,50 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "main.h"
-
+// For IGameCallback
+#include "guiPauseMenu.h"
 #include "gettext.h"
+
+enum
+{
+	GUI_ID_QUIT_BUTTON = 101,
+	GUI_ID_NAME_INPUT,
+	GUI_ID_ADDRESS_INPUT,
+	GUI_ID_PORT_INPUT,
+	GUI_ID_FANCYTREE_CB,
+	GUI_ID_SMOOTH_LIGHTING_CB,
+	GUI_ID_3D_CLOUDS_CB,
+	GUI_ID_OPAQUE_WATER_CB,
+	GUI_ID_MIPMAP_CB,
+	GUI_ID_ANISOTROPIC_CB,
+	GUI_ID_BILINEAR_CB,
+	GUI_ID_TRILINEAR_CB,
+	GUI_ID_SHADERS_CB,
+	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
+	GUI_ID_ENABLE_PARTICLES_CB,
+	GUI_ID_DAMAGE_CB,
+	GUI_ID_CREATIVE_CB,
+	GUI_ID_PUBLIC_CB,
+	GUI_ID_JOIN_GAME_BUTTON,
+	GUI_ID_CHANGE_VOLUME_BUTTON,
+	GUI_ID_CHANGE_KEYS_BUTTON,
+	GUI_ID_DELETE_WORLD_BUTTON,
+	GUI_ID_CREATE_WORLD_BUTTON,
+	GUI_ID_CONFIGURE_WORLD_BUTTON,
+	GUI_ID_WORLD_LISTBOX,
+	GUI_ID_TAB_CONTROL,
+	GUI_ID_SERVERLIST,
+	GUI_ID_SERVERLIST_TOGGLE,
+	GUI_ID_SERVERLIST_DELETE,
+};
 
 GUISettingsMenu::GUISettingsMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
+		IGameCallback *gamecallback,
 		IMenuManager *menumgr
 ):
-	GUIModalMenu(env, parent, id, menumgr)
+	GUIModalMenu(env, parent, id, menumgr),
+	m_gamecallback(gamecallback)
 {
 }
 
@@ -59,30 +95,70 @@ void GUISettingsMenu::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
+	
+	v2s32 size(screensize.X, screensize.Y);
+	
 	core::rect<s32> rect(
-			screensize.X/2 - 380/2,
-			screensize.Y/2 - 200/2,
-			screensize.X/2 + 380/2,
-			screensize.Y/2 + 200/2
+			screensize.X/2 - size.X/2,
+			screensize.Y/2 - size.Y/2,
+			screensize.X/2 + size.X/2,
+			screensize.Y/2 + size.Y/2
 	);
 	
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = rect.getSize();
-	v2s32 topleft_client(40, 0);
-	v2s32 size_client = size - v2s32(40, 0);
+	//v2s32 size = rect.getSize();
+	
 	/*
 		Add stuff
 	*/
+	
 	changeCtype("");
+	
+	//v2s32 center(size.X/2, size.Y/2);
+	v2s32 c800(size.X/2-400, size.Y/2-270);
+	
+	m_topleft_client = c800 + v2s32(90, 70+50+30);
+	m_size_client = v2s32(620, 270);
+
+	m_size_server = v2s32(620, 140);
+	
+	
+	m_topleft_server = m_topleft_client + v2s32(0, m_size_client.Y+20);
+	
 	{
-		core::rect<s32> rect(0, 0, 80, 30);
-		rect = rect + v2s32(size.X/2-80/2, size.Y/2+55);
-		Environment->addButton(rect, this, 267,
-			wgettext("Exit"));
+		core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+		rect += m_topleft_client + v2s32(15, 0);
+		const wchar_t *text = L"S\nE\nT\nT\nI\nN\nG\nS";
+		gui::IGUIStaticText *t =
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	}
-	changeCtype("");
+	
+	s32 option_x = 70;
+	s32 option_y = 50;
+	u32 option_w = 150;
+
+	//checkboxes go here
+
+	// Volume change button
+	{
+		core::rect<s32> rect(0, 0, 120, 30);
+		rect += m_topleft_client + v2s32(option_x, option_y+120);
+		Environment->addButton(rect, this,
+				GUI_ID_CHANGE_VOLUME_BUTTON, wgettext("Sound Volume"));
+	}
+	// Key change button
+	{
+		core::rect<s32> rect(0, 0, 120, 30);
+		/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
+				m_size_client.Y-30-20);*/
+		rect += m_topleft_client + v2s32(option_x+120+20, option_y+120);
+		Environment->addButton(rect, this,
+				GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
+	}
+	changeCtype("C");
 }
 
 void GUISettingsMenu::drawMenu()
@@ -92,7 +168,10 @@ void GUISettingsMenu::drawMenu()
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	video::SColor bgcolor(140,0,0,0);
-	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+	//driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+	core::rect<s32> rect(0, 0, m_size_client.X, m_size_client.Y);
+	rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
+	driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 	gui::IGUIElement::draw();
 }
 
@@ -112,13 +191,19 @@ bool GUISettingsMenu::OnEvent(const SEvent& event)
 		}
 	}
 	if(event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED)
+	{
+		switch(event.GUIEvent.Caller->getID())
 		{
-			if (event.GUIEvent.Caller->getID() == 267)
-				{
-					quitMenu();
-					return true;
-				}
+		case GUI_ID_CHANGE_VOLUME_BUTTON:
+			quitMenu();
+			m_gamecallback->changeVolume();
+			return true;
+		case GUI_ID_CHANGE_KEYS_BUTTON:
+			quitMenu();
+			m_gamecallback->changeKeys();
+			return true;
 		}
+	}
 	return Parent ? Parent->OnEvent(event) : false;
 }
 

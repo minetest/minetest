@@ -22,11 +22,14 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "client.h"
 #include <string>
 
+class IGameCallback;
+
 class GUISettingsMenu : public GUIModalMenu
 {
 public:
 	GUISettingsMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
+			IGameCallback *gamecallback,
 			IMenuManager *menumgr);
 	~GUISettingsMenu();
 	
@@ -40,6 +43,12 @@ public:
 
 	bool OnEvent(const SEvent& event);
 
+private:
+	IGameCallback *m_gamecallback;
+	v2s32 m_topleft_client;
+	v2s32 m_size_client;
+	v2s32 m_topleft_server;
+	v2s32 m_size_server;
 };
 
 #endif

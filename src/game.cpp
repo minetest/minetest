@@ -1525,7 +1525,7 @@ void the_game(
 		if(g_gamecallback->changesettings_requested)
 		{
 			(new GUISettingsMenu(guienv, guiroot, -1,
-				&g_menumgr))->drop();
+				g_gamecallback, &g_menumgr))->drop();
 			g_gamecallback->changesettings_requested = false;
 		}
 
