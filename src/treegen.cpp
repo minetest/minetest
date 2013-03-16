@@ -528,19 +528,27 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 			continue;
 		v3s16 p1 = p0 + v3s16(x,0,z);
 		v3s16 p2 = p0 + v3s16(x,-1,z);
-		if(vmanip.m_area.contains(p2)
-				&& vmanip.m_data[vmanip.m_area.index(p2)] == CONTENT_AIR)
-			vmanip.m_data[vmanip.m_area.index(p2)] = treenode;
-		else if(vmanip.m_area.contains(p1))
-			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+		u32 vi1 = vmanip.m_area.index(p1);
+		u32 vi2 = vmanip.m_area.index(p2);
+		
+		if (vmanip.m_area.contains(p2) &&
+			vmanip.m_data[vi2].getContent() == CONTENT_AIR)
+			vmanip.m_data[vi2] = treenode;
+		else if (vmanip.m_area.contains(p1) &&
+				vmanip.m_data[vi1].getContent() == CONTENT_AIR)
+			vmanip.m_data[vi1] = treenode;
 	}
+	vmanip.m_data[vmanip.m_area.index(p0)] = treenode;
 
 	s16 trunk_h = pr.range(8, 12);
 	v3s16 p1 = p0;
-	for(s16 ii=0; ii<trunk_h; ii++)
+	for (s16 ii=0; ii<trunk_h; ii++)
 	{
-		if(vmanip.m_area.contains(p1))
-			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+		if (vmanip.m_area.contains(p1)) {
+			u32 vi = vmanip.m_area.index(p1);
+			if (vmanip.m_data[vi].getContent() == CONTENT_AIR)
+				vmanip.m_data[vi] = treenode;
+		}
 		p1.Y++;
 	}
 
@@ -593,8 +601,8 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		if(vmanip.m_area.contains(p) == false)
 			continue;
 		u32 vi = vmanip.m_area.index(p);
-		if(vmanip.m_data[vi].getContent() != CONTENT_AIR
-				&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+		if (vmanip.m_data[vi].getContent() != CONTENT_AIR &&
+			vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1)

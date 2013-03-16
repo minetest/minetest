@@ -94,7 +94,17 @@ public:
 class MakeTreesFromSaplingsABM : public ActiveBlockModifier
 {
 private:
+	content_t c_junglesapling;
+	content_t c_dirt;
+	content_t c_dirt_with_grass;
+	
 public:
+	MakeTreesFromSaplingsABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
+		c_junglesapling   = nodemgr->getId("junglesapling");
+		c_dirt            = nodemgr->getId("mapgen_dirt");
+		c_dirt_with_grass = nodemgr->getId("mapgen_dirt_with_grass");
+	}
+
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
@@ -112,7 +122,12 @@ public:
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		ServerMap *map = &env->getServerMap();
 		
-		bool is_jungle_tree = n.getContent() == ndef->getId("junglesapling");
+		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
+		if (n_below.getContent() != c_dirt &&
+			n_below.getContent() != c_dirt_with_grass)
+			return;
+			
+		bool is_jungle_tree = n.getContent() == c_junglesapling;
 		
 		actionstream <<"A " << (is_jungle_tree ? "jungle " : "")
 				<< "sapling grows into a tree at "
@@ -187,7 +202,7 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
 	env->addActiveBlockModifier(new GrowGrassABM());
 	env->addActiveBlockModifier(new RemoveGrassABM());
-	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM());
+	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM(env, nodedef));
 	if (g_settings->getBool("liquid_finite"))
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 }
