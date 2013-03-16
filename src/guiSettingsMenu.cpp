@@ -26,6 +26,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "main.h"
 // For IGameCallback
 #include "guiPauseMenu.h"
+// For MainMenuData
+#include "guiMainMenu.h"
 #include "gettext.h"
 
 enum
@@ -140,7 +142,84 @@ void GUISettingsMenu::regenerateGui(v2u32 screensize)
 	s32 option_y = 50;
 	u32 option_w = 150;
 
-	//checkboxes go here
+	MainMenuData *m_data;
+	{
+		core::rect<s32> rect(0, 0, option_w, 30);
+		rect += m_topleft_client + v2s32(option_x, option_y);
+		Environment->addCheckBox(m_data->fancy_trees, rect, this,
+				GUI_ID_FANCYTREE_CB, wgettext("Fancy trees"));
+	}
+	{
+		core::rect<s32> rect(0, 0, option_w, 30);
+		rect += m_topleft_client + v2s32(option_x, option_y+20);
+		Environment->addCheckBox(m_data->smooth_lighting, rect, this,
+				GUI_ID_SMOOTH_LIGHTING_CB, wgettext("Smooth Lighting"));
+	}
+	{
+		core::rect<s32> rect(0, 0, option_w, 30);
+		rect += m_topleft_client + v2s32(option_x, option_y+20*2);
+		Environment->addCheckBox(m_data->clouds_3d, rect, this,
+				GUI_ID_3D_CLOUDS_CB, wgettext("3D Clouds"));
+	}
+	{
+		core::rect<s32> rect(0, 0, option_w, 30);
+		rect += m_topleft_client + v2s32(option_x, option_y+20*3);
+		Environment->addCheckBox(m_data->opaque_water, rect, this,
+				GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
+	}
+
+
+	// Anisotropic/mipmap/bi-/trilinear settings
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175, option_y);
+		Environment->addCheckBox(m_data->mip_map, rect, this,
+				   GUI_ID_MIPMAP_CB, wgettext("Mip-Mapping"));
+	}
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175, option_y+20);
+		Environment->addCheckBox(m_data->anisotropic_filter, rect, this,
+				   GUI_ID_ANISOTROPIC_CB, wgettext("Anisotropic Filtering"));
+	}
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175, option_y+20*2);
+		Environment->addCheckBox(m_data->bilinear_filter, rect, this,
+				   GUI_ID_BILINEAR_CB, wgettext("Bi-Linear Filtering"));
+	}
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175, option_y+20*3);
+		Environment->addCheckBox(m_data->trilinear_filter, rect, this,
+				   GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
+	}
+
+	// shader/on demand image loading/particles settings
+	{
+		core::rect<s32> rect(0, 0, option_w+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175*2, option_y);
+		Environment->addCheckBox(m_data->enable_shaders, rect, this,
+				GUI_ID_SHADERS_CB, wgettext("Shaders"));
+	}
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175*2, option_y+20);
+		Environment->addCheckBox(m_data->preload_item_visuals, rect, this,
+				GUI_ID_PRELOAD_ITEM_VISUALS_CB, wgettext("Preload item visuals"));
+	}
+
+	{
+		core::rect<s32> rect(0, 0, option_w+20+20, 30);
+		rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*2);
+		Environment->addCheckBox(m_data->enable_particles, rect, this,
+				GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
+	}
 
 	// Volume change button
 	{
