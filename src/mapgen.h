@@ -46,6 +46,7 @@ class ManualMapVoxelManipulator;
 class VoxelManipulator;
 class INodeDefManager;
 class BlockMakeData;
+class VoxelArea;
 
 struct MapgenParams {
 	std::string mg_name;
@@ -76,7 +77,10 @@ public:
 	INodeDefManager *ndef;
 
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
+	void setLighting(v3s16 nmin, v3s16 nmax, u8 light);
+	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
 	void updateLighting(v3s16 nmin, v3s16 nmax);
+	void updateLightingOld(v3s16 nmin, v3s16 nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {};
 	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
