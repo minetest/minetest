@@ -35,11 +35,13 @@ extern NoiseParams nparams_v6_def_terrain_base;
 extern NoiseParams nparams_v6_def_terrain_higher;
 extern NoiseParams nparams_v6_def_steepness;
 extern NoiseParams nparams_v6_def_height_select;
-extern NoiseParams nparams_v6_def_trees;
 extern NoiseParams nparams_v6_def_mud;
 extern NoiseParams nparams_v6_def_beach;
 extern NoiseParams nparams_v6_def_biome;
 extern NoiseParams nparams_v6_def_cave;
+extern NoiseParams nparams_v6_def_humidity;
+extern NoiseParams nparams_v6_def_trees;
+extern NoiseParams nparams_v6_def_apple_trees;
 
 struct MapgenV6Params : public MapgenParams {
 	float freq_desert;
@@ -48,12 +50,14 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams *np_terrain_higher;
 	NoiseParams *np_steepness;
 	NoiseParams *np_height_select;
-	NoiseParams *np_trees;
 	NoiseParams *np_mud;
 	NoiseParams *np_beach;
 	NoiseParams *np_biome;
 	NoiseParams *np_cave;
-
+	NoiseParams *np_humidity;
+	NoiseParams *np_trees;
+	NoiseParams *np_apple_trees;
+	
 	MapgenV6Params() {
 		freq_desert       = 0.45;
 		freq_beach        = 0.15;
@@ -61,11 +65,14 @@ struct MapgenV6Params : public MapgenParams {
 		np_terrain_higher = &nparams_v6_def_terrain_higher;
 		np_steepness      = &nparams_v6_def_steepness;
 		np_height_select  = &nparams_v6_def_height_select;
-		np_trees          = &nparams_v6_def_trees;
 		np_mud            = &nparams_v6_def_mud;
 		np_beach          = &nparams_v6_def_beach;
 		np_biome          = &nparams_v6_def_biome;
 		np_cave           = &nparams_v6_def_cave;
+		np_humidity       = &nparams_v6_def_humidity;
+		np_trees          = &nparams_v6_def_trees;
+		np_apple_trees    = &nparams_v6_def_apple_trees;
+
 	}
 	
 	bool readParams(Settings *settings);
@@ -90,11 +97,13 @@ public:
 	Noise *noise_terrain_higher;
 	Noise *noise_steepness;
 	Noise *noise_height_select;
-	Noise *noise_trees;
 	Noise *noise_mud;
 	Noise *noise_beach;
 	Noise *noise_biome;
 	NoiseParams *np_cave;
+	NoiseParams *np_humidity;
+	NoiseParams *np_trees;
+	NoiseParams *np_apple_trees;
 	float freq_desert;
 	float freq_beach;
 	
@@ -126,8 +135,9 @@ public:
 	bool block_is_underground(u64 seed, v3s16 blockpos);
 	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 	
+	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);
-	float getTreeAmount(int index);
+	bool getHaveAppleTree(v2s16 p);
 	float getMudAmount(v2s16 p);
 	float getMudAmount(int index);
 	bool getHaveBeach(v2s16 p);

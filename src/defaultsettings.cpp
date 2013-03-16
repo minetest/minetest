@@ -219,15 +219,17 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgv6_freq_desert", "0.45");
 	settings->setDefault("mgv6_freq_beach", "0.15");
 
-	settings->setDefault("mgv6_np_terrain_base",   "-4, 20, (250.0, 250, 250), 82341, 5, 0.6");
+	settings->setDefault("mgv6_np_terrain_base",   "-4, 20, (250, 250, 250), 82341, 5, 0.6");
 	settings->setDefault("mgv6_np_terrain_higher", "20, 16, (500, 500, 500), 85039, 5, 0.6");
 	settings->setDefault("mgv6_np_steepness",      "0.85, 0.5, (125, 125, 125), -932, 5, 0.7");
 	settings->setDefault("mgv6_np_height_select",  "0.5, 1, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
 	settings->setDefault("mgv6_np_mud",            "4, 2, (200, 200, 200), 91013, 3, 0.55");
 	settings->setDefault("mgv6_np_beach",          "0, 1, (250, 250, 250), 59420, 3, 0.50");
 	settings->setDefault("mgv6_np_biome",          "0, 1, (250, 250, 250), 9130, 3, 0.50");
 	settings->setDefault("mgv6_np_cave",           "6, 6, (250, 250, 250), 34329, 3, 0.50");
+	settings->setDefault("mgv6_np_humidity",       "0.5, 0.5, (500, 500, 500), 72384, 4, 0.66");
+	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
+	settings->setDefault("mgv6_np_apple_trees",    "0, 1, (100, 100, 100), 342902, 3, 0.45");
 
 	settings->setDefault("mgv7_np_terrain",  "10, 12, (350, 350, 350), 82341, 5, 0.6");
 	settings->setDefault("mgv7_np_bgroup",   "0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6");

@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_TREES         0x01
 #define MG_CAVES         0x02
 #define MG_DUNGEONS      0x04
-#define MGV6_FORESTS     0x08
+#define MGV6_JUNGLES     0x08
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 

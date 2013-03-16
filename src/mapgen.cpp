@@ -39,7 +39,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
 	{"caves",          MG_CAVES},
 	{"dungeons",       MG_DUNGEONS},
-	{"v6_forests",     MGV6_FORESTS},
+	{"v6_jungles",     MGV6_JUNGLES},
 	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
 	{NULL,			   0}
@@ -209,16 +209,19 @@ bool MapgenV6Params::readParams(Settings *settings) {
 	np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
 	np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
 	np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
-	np_trees          = settings->getNoiseParams("mgv6_np_trees");
 	np_mud            = settings->getNoiseParams("mgv6_np_mud");
 	np_beach          = settings->getNoiseParams("mgv6_np_beach");
 	np_biome          = settings->getNoiseParams("mgv6_np_biome");
 	np_cave           = settings->getNoiseParams("mgv6_np_cave");
+	np_humidity       = settings->getNoiseParams("mgv6_np_humidity");
+	np_trees          = settings->getNoiseParams("mgv6_np_trees");
+	np_apple_trees    = settings->getNoiseParams("mgv6_np_apple_trees");
 
 	bool success =
 		np_terrain_base  && np_terrain_higher && np_steepness &&
 		np_height_select && np_trees          && np_mud       &&
-		np_beach         && np_biome          && np_cave;
+		np_beach         && np_biome          && np_cave      &&
+		np_humidity      && np_apple_trees;
 	return success;
 }
 
@@ -231,11 +234,13 @@ void MapgenV6Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
 	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
 	settings->setNoiseParams("mgv6_np_height_select",  np_height_select);
-	settings->setNoiseParams("mgv6_np_trees",          np_trees);
 	settings->setNoiseParams("mgv6_np_mud",            np_mud);
 	settings->setNoiseParams("mgv6_np_beach",          np_beach);
 	settings->setNoiseParams("mgv6_np_biome",          np_biome);
 	settings->setNoiseParams("mgv6_np_cave",           np_cave);
+	settings->setNoiseParams("mgv6_np_humidity",       np_humidity);
+	settings->setNoiseParams("mgv6_np_trees",          np_trees);
+	settings->setNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
 }
 
 

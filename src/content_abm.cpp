@@ -99,6 +99,7 @@ public:
 	{
 		std::set<std::string> s;
 		s.insert("sapling");
+		s.insert("junglesapling");
 		return s;
 	}
 	virtual float getTriggerInterval()
@@ -111,16 +112,25 @@ public:
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		ServerMap *map = &env->getServerMap();
 		
-		actionstream<<"A sapling grows into a tree at "
-				<<PP(p)<<std::endl;
+		bool is_jungle_tree = n.getContent() == ndef->getId("junglesapling");
+		
+		actionstream <<"A " << (is_jungle_tree ? "jungle " : "")
+				<< "sapling grows into a tree at "
+				<< PP(p) << std::endl;
 
 		std::map<v3s16, MapBlock*> modified_blocks;
 		v3s16 tree_p = p;
 		ManualMapVoxelManipulator vmanip(map);
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
 		vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
-		bool is_apple_tree = myrand()%4 == 0;
-		treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef, myrand());
+		
+		if (is_jungle_tree) {
+			treegen::make_jungletree(vmanip, tree_p, ndef, myrand());
+		} else {
+			bool is_apple_tree = myrand() % 4 == 0;
+			treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef, myrand());
+		}
+		
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
