@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi_entity.h"
 #include "scriptapi_common.h"
 
-
 /*
 	ObjectRef
 */
@@ -582,6 +581,30 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 	return 1;
 }
 
+// set_look_pitch(self, radians)
+int ObjectRef::l_set_look_pitch(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if(co == NULL) return 0;
+	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	// Do it
+	co->setPitch(pitch);
+	return 1;
+}
+
+// set_look_yaw(self, radians)
+int ObjectRef::l_set_look_yaw(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if(co == NULL) return 0;
+	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	// Do it
+	co->setYaw(yaw);
+	return 1;
+}
+
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
@@ -755,6 +778,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
+	luamethod(ObjectRef, set_look_yaw),
+	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),

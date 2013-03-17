@@ -1228,6 +1228,8 @@ Player-only: (no-op for other objects)
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+- set_look_pitch(radians): sets look pitch
+- set_look_yaw(radians): sets look yaw
 - set_inventory_formspec(formspec)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer

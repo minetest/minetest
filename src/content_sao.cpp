@@ -1230,6 +1230,20 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_moved = true;
 }
 
+void PlayerSAO::setYaw(float yaw)
+{
+	m_player->setYaw(yaw);
+	// Force change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setPitch(float pitch)
+{
+	m_player->setPitch(pitch);
+	// Force change on client
+	m_moved = true;
+}
+
 int PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,

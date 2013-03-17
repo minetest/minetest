@@ -147,6 +147,8 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
+	void setYaw(float);
+	void setPitch(float);
 
 	/*
 		Interaction interface
