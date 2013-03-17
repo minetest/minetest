@@ -364,6 +364,29 @@ ServerMap & ServerEnvironment::getServerMap()
 	return *m_map;
 }
 
+bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize)
+{
+	float distance = pos1.getDistanceFrom(pos2);
+
+	//calculate normalized direction vector
+	v3f normalized_vector = v3f((pos2.X - pos1.X)/distance,
+								(pos2.Y - pos1.Y)/distance,
+								(pos2.Z - pos1.Z)/distance);
+
+	//find out if there's a node on path between pos1 and pos2
+	for (float i = 1; i < distance; i += stepsize) {
+		v3s16 pos = floatToInt(v3f(normalized_vector.X * i,
+				normalized_vector.Y * i,
+				normalized_vector.Z * i) +pos1,BS);
+
+		MapNode n = getMap().getNodeNoEx(pos);
+
+		if(n.param0 != CONTENT_AIR) {
+			return false;
+		}
+	}
+	return true;
+}
 
 void ServerEnvironment::serializePlayers(const std::string &savedir)
 {

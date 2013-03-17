@@ -137,6 +137,12 @@ private:
 
 	static int l_spawn_tree(lua_State *L);
 
+
+	static int l_line_of_sight(lua_State *L);
+
+	//find a path between two positions
+	static int l_find_path(lua_State *L);
+
 public:
 	EnvRef(ServerEnvironment *env);
 
