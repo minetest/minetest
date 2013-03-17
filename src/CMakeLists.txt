@@ -264,6 +264,7 @@ set(common_SRCS
 	clientserver.cpp
 	staticobject.cpp
 	serverlist.cpp
+	pathfinder.cpp
 	util/serialize.cpp
 	util/directiontables.cpp
 	util/numeric.cpp

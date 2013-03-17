@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "script.h"
 #include "treegen.h"
+#include "pathfinder.h"
 #include "util/pointedthing.h"
 #include "scriptapi_types.h"
 #include "scriptapi_noise.h"
@@ -647,6 +648,69 @@ int EnvRef::l_clear_objects(lua_State *L)
 	return 0;
 }
 
+int EnvRef::l_line_of_sight(lua_State *L) {
+	float stepsize = 1.0;
+
+	//infostream<<"EnvRef::l_get_node()"<<std::endl;
+	EnvRef *o = checkobject(L, 1);
+	ServerEnvironment *env = o->m_env;
+	if(env == NULL) return 0;
+
+	// read position 1 from lua
+	v3f pos1 = checkFloatPos(L, 2);
+	// read position 2 from lua
+	v3f pos2 = checkFloatPos(L, 2);
+	//read step size from lua
+	if(lua_isnumber(L, 3))
+	stepsize = lua_tonumber(L, 3);
+
+	return (env->line_of_sight(pos1,pos2,stepsize));
+}
+
+int EnvRef::l_find_path(lua_State *L)
+{
+	EnvRef *o = checkobject(L, 1);
+	ServerEnvironment *env = o->m_env;
+
+	if(env == NULL) return 0;
+
+	v3s16 pos1                  = read_v3s16(L, 2);
+	v3s16 pos2                  = read_v3s16(L, 3);
+	unsigned int searchdistance = luaL_checkint(L, 4);
+	unsigned int max_jump       = luaL_checkint(L, 5);
+	unsigned int max_drop       = luaL_checkint(L, 6);
+	algorithm algo              = A_PLAIN_NP;
+	if(! lua_isnil(L, 7)) {
+		std::string algorithm       = luaL_checkstring(L,7);
+
+		if (algorithm == "A*")
+			algo = A_PLAIN;
+
+		if (algorithm == "Dijkstra")
+			algo = DIJKSTRA;
+	}
+
+	std::vector<v3s16> path =
+			get_Path(env,pos1,pos2,searchdistance,max_jump,max_drop,algo);
+
+	if (path.size() > 0)
+	{
+		lua_newtable(L);
+		int top = lua_gettop(L);
+		unsigned int index = 1;
+		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end();i++)
+		{
+			lua_pushnumber(L,index);
+			push_v3s16(L, *i);
+			lua_settable(L, top);
+			index++;
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
 int EnvRef::l_spawn_tree(lua_State *L)
 {
 	EnvRef *o = checkobject(L, 1);
@@ -780,6 +844,8 @@ const luaL_reg EnvRef::methods[] = {
 	luamethod(EnvRef, get_perlin_map),
 	luamethod(EnvRef, clear_objects),
 	luamethod(EnvRef, spawn_tree),
+	luamethod(EnvRef, line_of_sight),
+	luamethod(EnvRef, find_path),
 	{0,0}
 };
 

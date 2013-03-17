@@ -298,6 +298,9 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 	
+	//check if there's a line of sight between two positions
+	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
+
 private:
 
 	/*

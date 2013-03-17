@@ -1185,7 +1185,21 @@ methods:
 - get_perlin(seeddiff, octaves, persistence, scale)
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 - clear_objects()
-  ^ clear all objects in the environments 
+  ^ clear all objects in the environments
+- line_of_sight(pos1,pos2,stepsize) ->true/false
+  ^ checkif there is a direct line of sight between pos1 and pos2
+  ^ pos1 First position
+  ^ pos2 Second position
+  ^ stepsize smaller gives more accurate results but requires more computing
+             time. Default is 1.
+-find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm) -> table containing path
+  ^ returns a table of 3d points representing a path from pos1 to pos2 or nil
+  ^ pos1: start position
+  ^ pos2: end position
+  ^ searchdistance: number of blocks to search in each direction
+  ^ max_jump: maximum height difference to consider walkable
+  ^ max_drop: maximum height difference to consider droppable
+  ^ algorithm: A*_noprefetch(default), A*, Dijkstra
 - spawn_tree (pos, {treedef})
   ^ spawns L-System tree at given pos with definition in treedef table
 treedef={
