@@ -524,7 +524,6 @@ float *Noise::perlinMap2D(float x, float y) {
 		for (j = 0; j != sy; j++) {
 			for (i = 0; i != sx; i++) {
 				result[index] += g * buf[index];
-//dstream << "pm2d i="<<index<<" r="<< result[index]<<std::endl;
 				index++;
 			}
 		}

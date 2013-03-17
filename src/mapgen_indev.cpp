@@ -191,6 +191,7 @@ float MapgenIndev::baseTerrainLevelFromNoise(v2s16 p) {
 							steepness,    height_select);
 }
 
+
 float MapgenIndev::baseTerrainLevelFromMap(int index) {
 	if (flags & MG_FLAT)
 		return water_level;
@@ -204,6 +205,7 @@ float MapgenIndev::baseTerrainLevelFromMap(int index) {
 							steepness,    height_select);
 }
 
+
 float MapgenIndev::getMudAmount(int index)
 {
 	if (flags & MG_FLAT)
@@ -215,6 +217,7 @@ float MapgenIndev::getMudAmount(int index)
 	
 	return noiseindev_mud->result[index];
 }
+
 
 void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave) {
 	cave.min_tunnel_diameter = 2;
@@ -243,4 +246,4 @@ void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool 
 		cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
 	}
 	cave.large_cave_is_flat = (ps.range(0,1) == 0);
-};
+}

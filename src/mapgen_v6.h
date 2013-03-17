@@ -157,7 +157,6 @@ public:
 	
 	u32 get_blockseed(u64 seed, v3s16 p);
 	
-	
 	virtual void calculateNoise();
 	int generateGround();
 	void addMud();
@@ -165,7 +164,8 @@ public:
 	void addDirtGravelBlobs();
 	void growGrass();
 	void placeTrees();
-	virtual void defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave);
+	virtual void defineCave(Cave &cave, PseudoRandom ps,
+							v3s16 node_min, bool large_cave);
 	void generateCaves(int max_stone_y);
 };
 

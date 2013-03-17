@@ -878,13 +878,12 @@ void MapgenV6::growGrass() {
 	}
 }
 
-void MapgenV6::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave) {
+void MapgenV6::defineCave(Cave &cave, PseudoRandom ps,
+						 v3s16 node_min, bool large_cave) {
 		cave.min_tunnel_diameter = 2;
 		cave.max_tunnel_diameter = ps.range(2,6);
 		cave.dswitchint = ps.range(1,14);
-		//cave.tunnel_routepoints = 0;
-		//cave.part_max_length_rs = 0;
-		cave.flooded = large_cave && ps.range(0,4);
+		cave.flooded = true; //large_cave && ps.range(0,4);
 		if(large_cave){
 			cave.part_max_length_rs = ps.range(2,4);
 			cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
@@ -895,7 +894,8 @@ void MapgenV6::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool lar
 			cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
 		}
 		cave.large_cave_is_flat = (ps.range(0,1) == 0);
-};
+}
+
 
 void MapgenV6::generateCaves(int max_stone_y) {
 	// 24ms @cs=8
