@@ -254,6 +254,94 @@ void GUISettingsMenu::regenerateGui(v2u32 screensize)
 	changeCtype("C");
 }
 
+void GUISettingsMenu::readInput()
+{
+	MainMenuData dst;
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_MIPMAP_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.mip_map = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ANISOTROPIC_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.anisotropic_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_BILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.bilinear_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_TRILINEAR_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.trilinear_filter = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_SHADERS_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		        dst.enable_shaders = ((gui::IGUICheckBox*)e)->isChecked() ? 2 : 0;
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_PRELOAD_ITEM_VISUALS_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		        dst.preload_item_visuals = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_PARTICLES_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst.enable_particles = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	g_settings->set("new_style_leaves", itos(dst.fancy_trees));
+	g_settings->set("smooth_lighting", itos(dst.smooth_lighting));
+	g_settings->set("enable_3d_clouds", itos(dst.clouds_3d));
+	g_settings->set("opaque_water", itos(dst.opaque_water));
+
+	g_settings->set("mip_map", itos(dst.mip_map));
+	g_settings->set("anisotropic_filter", itos(dst.anisotropic_filter));
+	g_settings->set("bilinear_filter", itos(dst.bilinear_filter));
+	g_settings->set("trilinear_filter", itos(dst.trilinear_filter));
+
+	g_settings->setS32("enable_shaders", dst.enable_shaders);
+	g_settings->set("preload_item_visuals", itos(dst.preload_item_visuals));
+	g_settings->set("enable_particles", itos(dst.enable_particles));
+
+}
+
+void GUISettingsMenu::acceptInput()
+{
+	readInput();
+}
+
 void GUISettingsMenu::drawMenu()
 {
 	gui::IGUISkin* skin = Environment->getSkin();
@@ -279,6 +367,7 @@ bool GUISettingsMenu::OnEvent(const SEvent& event)
 		}
 		if(event.KeyInput.Key==KEY_RETURN && event.KeyInput.PressedDown)
 		{
+			acceptInput();
 			quitMenu();
 			return true;
 		}
