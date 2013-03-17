@@ -80,6 +80,7 @@
 # when set to higher number than 0
 #fsaa = 0
 #vsync = false
+#fov = 72
 # Address to connect to (#blank = start local server)
 #address = 
 # Enable random user input, for testing
@@ -127,6 +128,8 @@
 #farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
+#cloud_height = 120
+#enable_3d_clouds = true
 # Use a cloud animation for the main menu background
 #menu_clouds = true
 # Path for screenshots
@@ -314,7 +317,7 @@
 #water_level = 1
 # Size of chunks to be generated.
 #chunksize = 5
-# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend, v6_jungles
+# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend, v6_jungles, dungeons
 #mg_flags = trees, caves, v6_biome_blend
 # How large deserts and beaches are
 #mgv6_freq_desert = 0.45
