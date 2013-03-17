@@ -1324,7 +1324,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 				i = modified_blocks.begin();
 				i != modified_blocks.end(); ++i)
 		{
-			event.modified_blocks.erase(i->first);
+			event.modified_blocks.insert(i->first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -1352,7 +1352,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 				i = modified_blocks.begin();
 				i != modified_blocks.end(); ++i)
 		{
-			event.modified_blocks.erase(i->first);
+			event.modified_blocks.insert(i->first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -3058,7 +3058,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 					i = modified_blocks.begin();
 					i != modified_blocks.end(); ++i)
 			{
-				event.modified_blocks.erase(i->first);
+				event.modified_blocks.insert(i->first);
 			}
 
 			// Queue event
