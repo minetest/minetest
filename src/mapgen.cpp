@@ -111,7 +111,7 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 }
 
 
-void Mapgen::updateLighting(v3s16 nmin, v3s16 nmax) {
+void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
 				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
 	bool block_is_underground = (water_level >= nmax.Y);
@@ -174,7 +174,7 @@ void Mapgen::updateLighting(v3s16 nmin, v3s16 nmax) {
 }
 
 
-void Mapgen::updateLightingOld(v3s16 nmin, v3s16 nmax) {
+void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
 
 	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,

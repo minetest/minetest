@@ -163,7 +163,7 @@ public:
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
 	void addDirtGravelBlobs();
 	void growGrass();
-	void placeTrees();
+	void placeTreesAndJungleGrass();
 	virtual void defineCave(Cave &cave, PseudoRandom ps,
 							v3s16 node_min, bool large_cave);
 	void generateCaves(int max_stone_y);

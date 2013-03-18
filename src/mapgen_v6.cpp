@@ -457,12 +457,12 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Grow grass
 	growGrass();
 
-	// Generate some trees
+	// Generate some trees, and add grass, if a jungle
 	if (flags & MG_TREES)
-		placeTrees();
+		placeTreesAndJungleGrass();
 
 	// Calculate lighting
-	updateLighting(node_min, node_max);
+	calcLighting(node_min, node_max);
 	
 	this->generating = false;
 }
@@ -783,14 +783,26 @@ void MapgenV6::addDirtGravelBlobs() {
 }
 
 
-void MapgenV6::placeTrees() {
+void MapgenV6::placeTreesAndJungleGrass() {
 	//TimeTaker t("placeTrees");
+	if (node_max.Y < water_level)
+		return;
+	
+	PseudoRandom grassrandom(blockseed + 53);
+	content_t c_junglegrass = ndef->getId("mapgen_junglegrass");
+	// if we don't have junglegrass, don't place cignore... that's bad
+	if (c_junglegrass == CONTENT_IGNORE)
+		c_junglegrass = CONTENT_AIR;
+	MapNode n_junglegrass(c_junglegrass);
+	v3s16 em = vm->m_area.getExtent();
 	
 	// Divide area into parts
 	s16 div = 8;
 	s16 sidelen = central_area_size.X / div;
 	double area = sidelen * sidelen;
 	
+	// N.B.  We must add jungle grass first, since tree leaves will
+	// obstruct the ground, giving us a false ground level
 	for (s16 z0 = 0; z0 < div; z0++)
 	for (s16 x0 = 0; x0 < div; x0++) {
 		// Center position of part of division
@@ -811,9 +823,36 @@ void MapgenV6::placeTrees() {
 		
 		// Amount of trees, jungle area
 		u32 tree_count = area * getTreeAmount(p2d_center);
-		bool is_jungle = (flags & MGV6_JUNGLES) && (getHumidity(p2d_center) > 0.75);
-		if (is_jungle)
-			tree_count *= 4;
+		
+		float humidity;
+		bool is_jungle = false;
+		if (flags & MGV6_JUNGLES) {
+			humidity = getHumidity(p2d_center);
+			if (humidity > 0.75) {
+				is_jungle = true;
+				tree_count *= 4;
+			}
+		}
+
+		// Add jungle grass
+		if (is_jungle) {			
+			u32 grass_count = 5 * humidity * tree_count;
+			for (u32 i = 0; i < grass_count; i++) {
+				s16 x = grassrandom.range(p2d_min.X, p2d_max.X);
+				s16 z = grassrandom.range(p2d_min.Y, p2d_max.Y);
+				
+				s16 y = find_ground_level(v2s16(x, z)); ////////////////optimize this!
+				if (y < water_level || y < node_min.Y || y > node_max.Y)
+					continue;
+				
+				u32 vi = vm->m_area.index(x, y, z);
+				// place on dirt_with_grass, since we know it is exposed to sunlight
+				if (vm->m_data[vi].getContent() == c_dirt_with_grass) {
+					vm->m_area.add_y(em, vi, 1);
+					vm->m_data[vi] = n_junglegrass;
+				}
+			}
+		}
 		
 		// Put trees in random places on part of division
 		for (u32 i = 0; i < tree_count; i++) {
@@ -846,7 +885,7 @@ void MapgenV6::placeTrees() {
 			}
 		}
 	}
-	//printf("placeTrees: %dms\n", t.stop());
+	//printf("placeTreesAndJungleGrass: %dms\n", t.stop());
 }
 
 
@@ -877,6 +916,7 @@ void MapgenV6::growGrass() {
 			n->setContent(c_dirt_with_grass);
 	}
 }
+
 
 void MapgenV6::defineCave(Cave &cave, PseudoRandom ps,
 						 v3s16 node_min, bool large_cave) {
