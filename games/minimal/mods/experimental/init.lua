@@ -28,10 +28,10 @@ minetest.after(1.0, switch_player_visual)
 ]]
 
 minetest.register_node("experimental:soundblock", {
-	tile_images = {"unknown_block.png", "default_tnt_bottom.png",
+	tile_images = {"unknown_node.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
-	inventory_image = minetest.inventorycube("unknown_block.png",
+	inventory_image = minetest.inventorycube("unknown_node.png",
 			"default_tnt_side.png", "default_tnt_side.png"),
 	groups = {dig_immediate=3},
 })
