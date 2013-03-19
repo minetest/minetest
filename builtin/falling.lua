@@ -170,12 +170,14 @@ function nodeupdate(p)
 	p.x = math.floor(p.x+0.5)
 	p.y = math.floor(p.y+0.5)
 	p.z = math.floor(p.z+0.5)
+	nodeupdate_single(p)
 	
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		p2 = {x=p.x+x, y=p.y+y, z=p.z+z}
-		nodeupdate_single(p2)
+		if not (x==0 and y==0 and z==0) then
+			minetest.after(0.1, nodeupdate_single, {x=p.x+x, y=p.y+y, z=p.z+z})
+		end
 	end
 	end
 	end
