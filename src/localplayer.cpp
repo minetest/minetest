@@ -270,7 +270,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 				if(nodemgr->get(map.getNode(p)).walkable == false)
 					continue;
 				// And the node above it has to be nonwalkable
-				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable == true)
+				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable ||
+				nodemgr->get(map.getNode(p+v3s16(0,2,0))).walkable)
 					continue;
 			}
 			catch(InvalidPositionException &e)
