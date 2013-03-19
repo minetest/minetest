@@ -864,7 +864,7 @@ public:
 			m_spritenode = smgr->addBillboardSceneNode(
 					NULL, v2f(1, 1), v3f(0,0,0), -1);
 			m_spritenode->setMaterialTexture(0,
-					tsrc->getTextureRaw("unknown_block.png"));
+					tsrc->getTextureRaw("unknown_node.png"));
 			m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 			m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -1268,7 +1268,7 @@ public:
 		{
 			if(m_prop.visual == "sprite")
 			{
-				std::string texturestring = "unknown_block.png";
+				std::string texturestring = "unknown_node.png";
 				if(m_prop.textures.size() >= 1)
 					texturestring = m_prop.textures[0];
 				texturestring += mod;
@@ -1334,7 +1334,7 @@ public:
 			{
 				for (u32 i = 0; i < 6; ++i)
 				{
-					std::string texturestring = "unknown_block.png";
+					std::string texturestring = "unknown_node.png";
 					if(m_prop.textures.size() > i)
 						texturestring = m_prop.textures[i];
 					texturestring += mod;

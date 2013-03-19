@@ -2388,7 +2388,7 @@ void the_game(
 				infotext = narrow_to_wide(meta->getString("infotext"));
 			} else {
 				MapNode n = map.getNode(nodepos);
-				if(nodedef->get(n).tiledef[0].name == "unknown_block.png"){
+				if(nodedef->get(n).tiledef[0].name == "unknown_node.png"){
 					infotext = L"Unknown node: ";
 					infotext += narrow_to_wide(nodedef->get(n).name);
 				}

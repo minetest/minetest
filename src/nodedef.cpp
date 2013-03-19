@@ -593,7 +593,7 @@ public:
 			{
 				tiledef[j] = f->tiledef[j];
 				if(tiledef[j].name == "")
-					tiledef[j].name = "unknown_block.png";
+					tiledef[j].name = "unknown_node.png";
 			}
 
 			bool is_liquid = false;

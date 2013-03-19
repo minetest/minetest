@@ -253,8 +253,8 @@ minetest.register_item(":unknown", {
 
 minetest.register_node(":air", {
 	description = "Air (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -269,8 +269,8 @@ minetest.register_node(":air", {
 
 minetest.register_node(":ignore", {
 	description = "Ignore (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "none",
 	sunlight_propagates = false,
