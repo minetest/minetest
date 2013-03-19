@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-02-07 22:14+0200\n"
-"Last-Translator: Francizca Rodriguez <joaoadriano3@gmail.com>\n"
+"PO-Revision-Date: 2013-03-19 04:31+0200\n"
+"Last-Translator: Lord James <neftali_dtctv@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -48,11 +48,11 @@ msgstr "Desactivar todos"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr "Dependencia:"
+msgstr "Dependencias:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr "Requiere:"
+msgstr "es dependencia de:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -217,7 +217,7 @@ msgstr "Multijugador"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
-msgstr "Server"
+msgstr "Servidor"
 
 #: src/guiMainMenu.cpp:248
 msgid "Settings"
@@ -651,15 +651,15 @@ msgstr "Bloq Despl"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr "Mayúscula Izquierda"
+msgstr "Mayús Izqda"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr "Mayúscula Derecha"
+msgstr "Mayús Dcha"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr "Control Izquierdo"
+msgstr "Control Izqdo"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
@@ -667,7 +667,7 @@ msgstr "Menú Izquierda"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr "Control Derecho"
+msgstr "Control Dcho"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
