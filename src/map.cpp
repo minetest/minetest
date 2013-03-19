@@ -2497,19 +2497,15 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	bool enable_mapgen_debug_info = m_emerge->mapgen_debug_info;
 	EMERGE_DBG_OUT("initBlockMake(): " PP(blockpos) " - " PP(blockpos));
 
-	//s16 chunksize = 3;
-	//v3s16 chunk_offset(-1,-1,-1);
-	//s16 chunksize = 4;
-	//v3s16 chunk_offset(-1,-1,-1);
-	s16 chunksize = 5;
-	v3s16 chunk_offset(-2,-2,-2);
+	s16 chunksize = m_mgparams->chunksize;
+	s16 coffset = -chunksize / 2;
+	v3s16 chunk_offset(coffset, coffset, coffset);
 	v3s16 blockpos_div = getContainerPos(blockpos - chunk_offset, chunksize);
 	v3s16 blockpos_min = blockpos_div * chunksize;
 	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
 	blockpos_min += chunk_offset;
 	blockpos_max += chunk_offset;
 
-	//v3s16 extra_borders(1,1,1);
 	v3s16 extra_borders(1,1,1);
 
 	// Do nothing if not inside limits (+-1 because of neighbors)
