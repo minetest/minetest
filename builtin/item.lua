@@ -157,6 +157,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 	
 	local oldnode = minetest.env:get_node(place_to)
+	local drops = minetest.get_node_drops(oldnode.name, "")
 	local newnode = {name = def.name, param1 = 0, param2 = 0}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
@@ -193,6 +194,9 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	minetest.env:add_node(place_to, newnode)
 
 	local take_item = true
+
+	-- Drop items from nodes that are buildable_to
+	minetest.handle_node_drops(place_to, drops, placer)
 
 	-- Run callback
 	if def.after_place_node then
