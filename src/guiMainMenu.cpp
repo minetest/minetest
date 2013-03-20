@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "guiMainMenu.h"
+#include "guiVolumeChange.h"
 #include "guiKeyChangeMenu.h"
 #include "guiCreateWorld.h"
 #include "guiConfigureWorld.h"
@@ -144,6 +145,7 @@ enum
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_PUBLIC_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
+	GUI_ID_CHANGE_VOLUME_BUTTON,
 	GUI_ID_CHANGE_KEYS_BUTTON,
 	GUI_ID_DELETE_WORLD_BUTTON,
 	GUI_ID_CREATE_WORLD_BUTTON,
@@ -721,13 +723,19 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->enable_particles, rect, this,
 					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
-
+		// Volume change button
+		{
+			core::rect<s32> rect(0, 0, 120, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			Environment->addButton(rect, this,
+					GUI_ID_CHANGE_VOLUME_BUTTON, wgettext("Sound Volume"));
+		}
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
 					m_size_client.Y-30-20);*/
-			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			rect += m_topleft_client + v2s32(option_x+120+20, option_y+120);
 			Environment->addButton(rect, this,
 					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
 		}
@@ -1044,6 +1052,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				}
 				acceptInput();
 				quitMenu();
+				return true;
+			}
+			case GUI_ID_CHANGE_VOLUME_BUTTON: {
+				GUIVolumeChange *vmenu = new GUIVolumeChange(env, parent, -1,menumgr);
+				vmenu->drop();
 				return true;
 			}
 			case GUI_ID_CHANGE_KEYS_BUTTON: {

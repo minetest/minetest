@@ -137,7 +137,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 262,
-			wgettext("Sound Volume"));
+			wgettext("Settings"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
@@ -250,7 +250,7 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 				return true;
 			case 262:
 				quitMenu();
-				m_gamecallback->changeVolume();
+				m_gamecallback->changeSettings();
 				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();
