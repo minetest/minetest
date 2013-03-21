@@ -31,6 +31,7 @@ NoiseIndevParams nparams_indev_def_steepness
 	(0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 1);
 NoiseIndevParams nparams_indev_def_mud
 	(AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55, 1);
+NoiseIndevParams nparams_indev_def_biome;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -39,16 +40,13 @@ void NoiseIndev::init(NoiseIndevParams *np, int seed, int sx, int sy, int sz) {
 	this->npindev   = np;
 }
 
-
 NoiseIndev::NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy) : Noise(np, seed, sx, sy) {
         init(np, seed, sx, sy, 1);
 }
 
-
 NoiseIndev::NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy, int sz) : Noise(np, seed, sx, sy, sz) {
         init(np, seed, sx, sy, sz);
 }
-
 
 float farscale(float scale, float x, float y, float z) {
 	return ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 3 - (fabs(x) + fabs(y) + fabs(z)) ) / (MAP_GENERATION_LIMIT * 3) ) * (scale - 1) );
@@ -78,7 +76,7 @@ MapgenIndev::MapgenIndev(int mapgenid, MapgenIndevParams *params) : MapgenV6(map
 //        noise_trees          = new Noise(params->np_trees,          seed, csize.X, csize.Y);
         noiseindev_mud            = new NoiseIndev(params->npindev_mud,            seed, csize.X, csize.Y);
 //        noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
-//        noise_biome          = new Noise(params->np_biome,          seed, csize.X, csize.Y);
+        noiseindev_biome          = new NoiseIndev(params->npindev_biome,          seed, csize.X, csize.Y);
 }
 
 MapgenIndev::~MapgenIndev() {
@@ -89,7 +87,7 @@ MapgenIndev::~MapgenIndev() {
 	//delete noise_trees;
 	delete noiseindev_mud;
 	//delete noise_beach;
-	//delete noise_biome;
+	delete noiseindev_biome;
 }
 
 
@@ -100,20 +98,20 @@ void MapgenIndev::calculateNoise() {
 	// Need to adjust for the original implementation's +.5 offset...
 	if (!(flags & MG_FLAT)) {
 		noiseindev_terrain_base->perlinMap2D(
-			x + 0.5 * noiseindev_terrain_base->npindev->spread.X,
-			z + 0.5 * noiseindev_terrain_base->npindev->spread.Z);
+			x + 0.5 * noiseindev_terrain_base->npindev->spread.X * farscale(noiseindev_terrain_base->npindev->farspread, x, y, z),
+			z + 0.5 * noiseindev_terrain_base->npindev->spread.Z * farscale(noiseindev_terrain_base->npindev->farspread, x, y, z));
 		noiseindev_terrain_base->transformNoiseMapFarScale(x, y, z);
 		//noise_terrain_base->transformNoiseMap();
 
 		noiseindev_terrain_higher->perlinMap2D(
-			x + 0.5 * noiseindev_terrain_higher->npindev->spread.X,
-			z + 0.5 * noiseindev_terrain_higher->npindev->spread.Z);
+			x + 0.5 * noiseindev_terrain_higher->npindev->spread.X * farscale(noiseindev_terrain_higher->npindev->farspread, x, y, z),
+			z + 0.5 * noiseindev_terrain_higher->npindev->spread.Z * farscale(noiseindev_terrain_higher->npindev->farspread, x, y, z));
 		noiseindev_terrain_higher->transformNoiseMapFarScale(x, y, z);
 		//noise_terrain_higher->transformNoiseMap();
 
 		noiseindev_steepness->perlinMap2D(
-			x + 0.5 * noiseindev_steepness->npindev->spread.X,
-			z + 0.5 * noiseindev_steepness->npindev->spread.Z);
+			x + 0.5 * noiseindev_steepness->npindev->spread.X * farscale(noiseindev_steepness->npindev->farspread, x, y, z),
+			z + 0.5 * noiseindev_steepness->npindev->spread.Z * farscale(noiseindev_steepness->npindev->farspread, x, y, z));
 		noiseindev_steepness->transformNoiseMapFarScale(x, y, z);
 
 		noise_height_select->perlinMap2D(
@@ -123,8 +121,8 @@ void MapgenIndev::calculateNoise() {
 	
 	if (!(flags & MG_FLAT)) {
 		noiseindev_mud->perlinMap2D(
-			x + 0.5 * noiseindev_mud->npindev->spread.X,
-			z + 0.5 * noiseindev_mud->npindev->spread.Z);
+			x + 0.5 * noiseindev_mud->npindev->spread.X * farscale(noiseindev_mud->npindev->farspread, x, y, z),
+			z + 0.5 * noiseindev_mud->npindev->spread.Z * farscale(noiseindev_mud->npindev->farspread, x, y, z));
 		noiseindev_mud->transformNoiseMapFarScale(x, y, z);
 	}
 	noise_beach->perlinMap2D(
@@ -132,8 +130,8 @@ void MapgenIndev::calculateNoise() {
 		z + 0.7 * noise_beach->np->spread.Z);
 
 	noise_biome->perlinMap2D(
-		x + 0.6 * noise_biome->np->spread.X,
-		z + 0.2 * noise_biome->np->spread.Z);
+		x + 0.6 * noiseindev_biome->npindev->spread.X * farscale(noiseindev_biome->npindev->farspread, x, y, z),
+		z + 0.2 * noiseindev_biome->npindev->spread.Z * farscale(noiseindev_biome->npindev->farspread, x, y, z));
 }
 
 bool MapgenIndevParams::readParams(Settings *settings) {
@@ -147,7 +145,7 @@ bool MapgenIndevParams::readParams(Settings *settings) {
         np_trees          = settings->getNoiseParams("mgv6_np_trees");
         npindev_mud            = settings->getNoiseIndevParams("mgindev_np_mud");
         np_beach          = settings->getNoiseParams("mgv6_np_beach");
-        np_biome          = settings->getNoiseParams("mgv6_np_biome");
+        npindev_biome     = settings->getNoiseIndevParams("mgindev_np_biome");
         np_cave           = settings->getNoiseParams("mgv6_np_cave");
 
         bool success =
@@ -169,7 +167,7 @@ void MapgenIndevParams::writeParams(Settings *settings) {
         settings->setNoiseParams("mgv6_np_trees",          np_trees);
         settings->setNoiseIndevParams("mgindev_np_mud",            npindev_mud);
         settings->setNoiseParams("mgv6_np_beach",          np_beach);
-        settings->setNoiseParams("mgv6_np_biome",          np_biome);
+        settings->setNoiseIndevParams("mgindev_np_biome",          npindev_biome);
         settings->setNoiseParams("mgv6_np_cave",           np_cave);
 }
 
