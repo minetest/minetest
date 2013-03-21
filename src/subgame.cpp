@@ -24,12 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 
-std::string getGameName(const std::string &game_path)
+bool getGameConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "game.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
+
+std::string getGameName(const std::string &game_path)
+{
 	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if(!succeeded)
+	if(!getGameConfig(game_path, conf))
 		return "";
 	if(!conf.exists("name"))
 		return "";
@@ -117,6 +121,11 @@ std::set<std::string> getAvailableGameIds()
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(!dirlist[j].dir)
 				continue;
+			// If configuration file is not found or broken, ignore game
+			Settings conf;
+			if(!getGameConfig(*i + DIR_DELIM + dirlist[j].name, conf))
+				continue;
+			// Add it to result
 			const char *ends[] = {"_game", NULL};
 			std::string shorter = removeStringEnd(dirlist[j].name, ends);
 			if(shorter != "")
