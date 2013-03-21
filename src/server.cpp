@@ -736,10 +736,10 @@ Server::Server(
 	}
 	// complain about mods declared to be loaded, but not found
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
-		it != m_mods.end(); ++it)
+			it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
-		it != unsatisfied_mods.end(); ++it)
+			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
 	{		

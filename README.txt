@@ -9,9 +9,10 @@ and contributors (see source file comments and the version control log)
 In case you downloaded the source code:
 ---------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download the minetest_game project too:
+contained, you probably want to download these projects too:
+  https://github.com/minetest/common/
   https://github.com/minetest/minetest_game/
-See the README.txt in it.
+See the README.txt in them.
 
 Further documentation
 ----------------------
@@ -87,10 +88,17 @@ $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd minetest-minetest-286edd4 (or similar)
 
+Download common (needed for minetest_game and some others)
+$ cd games/
+$ wget https://github.com/minetest/common/tarball/master -O common.tar.gz
+$ tar xf common.tar.gz
+$ mv minetest-common-* common
+$ cd ..
+
 Download minetest_game (otherwise only the "Minimal development test" game is available)
 $ cd games/
-$ wget https://github.com/minetest/minetest_game/tarball/master -O master.tar.gz
-$ tar xf master.tar.gz
+$ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
+$ tar xf minetest_game.tar.gz
 $ mv minetest-minetest_game-* minetest_game
 $ cd ..
 
@@ -111,7 +119,7 @@ $ ./minetest
 Compiling on Windows:
 ---------------------
 - This section is outdated. In addition to what is described here:
-  - In addition to minetest, you need to download minetest_game.
+  - In addition to minetest, you need to download common and minetest_game.
   - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 - You need:
