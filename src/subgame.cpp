@@ -24,6 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
+{
+	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
+
 bool getGameConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "game.conf";

@@ -243,3 +243,12 @@ void set_default_settings(Settings *settings)
 
 }
 
+void override_default_settings(Settings *settings, Settings *from)
+{
+	std::vector<std::string> names = from->getNames();
+	for(size_t i=0; i<names.size(); i++){
+		const std::string &name = names[i];
+		settings->setDefault(name, from->get(name));
+	}
+}
+
