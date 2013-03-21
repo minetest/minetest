@@ -180,10 +180,34 @@ if(USE_FREETYPE)
 	set(CGUITTFONT_LIBRARY cguittfont)
 endif(USE_FREETYPE)
 
-# Do not use system-wide installation of Lua, because it'll likely be a
-# different version and/or has different build options.
-set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
-set(LUA_LIBRARY "lua")
+if(NOT LUAJIT)
+	# Do not use system-wide installation of Lua, because it'll likely be a
+	# different version and/or has different build options.
+	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
+	set(LUA_LIBRARY "lua")
+endif(NOT LUAJIT)
+if(LUAJIT)
+	# use bundled luajit lib, build it using the original make system
+	# reference: http://stackoverflow.com/questions/7876753/reusing-custom-makefile-for-static-library-with-cmake
+	#
+	set(LUAJIT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/luajit/src")
+	# set the output destination (this may work only on unix systems
+	set(LUAJIT_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/luajit/src/libluajit.a")
+	# create a custom target called build_luajit that is part of ALL
+	# and will run each time you type make
+	add_custom_target(build_luajit ALL
+					COMMAND ${CMAKE_MAKE_PROGRAM}
+					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/luajit
+					COMMENT "Original luajit makefile target")
+	# now create an imported static target
+	add_library(luajit STATIC IMPORTED)
+	# Import target "luajit" for configuration ""
+	set_property(TARGET luajit APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+	set_target_properties(luajit PROPERTIES
+		IMPORTED_LOCATION_NOCONFIG "${LUAJIT_LIBRARY}")
+	# now you can use luajit as if it were a regular cmake built target in your project
+	add_dependencies(luajit build_luajit)
+endif(LUAJIT)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
@@ -351,9 +375,18 @@ include_directories(
 	${SOUND_INCLUDE_DIRS}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
-	${LUA_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 )
+if(NOT LUAJIT)
+	include_directories(
+		${LUA_INCLUDE_DIR}
+	)
+endif(NOT LUAJIT)
+if(LUAJIT)
+	include_directories(
+		${LUAJIT_INCLUDE_DIR}
+	)
+endif(LUAJIT)
 
 if(USE_FREETYPE)
 	include_directories(
@@ -385,12 +418,21 @@ if(BUILD_CLIENT)
 		${SOUND_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
-		${LUA_LIBRARY}
 		${JSON_LIBRARY}
 		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
+	if(NOT LUAJIT)
+		target_link_libraries(${PROJECT_NAME}
+			${LUA_LIBRARY}
+		)
+	endif(NOT LUAJIT)
+	if(LUAJIT)
+		target_link_libraries(${PROJECT_NAME}
+			luajit
+		)
+	endif(LUAJIT)
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -415,9 +457,18 @@ if(BUILD_SERVER)
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
 		${GETTEXT_LIBRARY}
-		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if(NOT LUAJIT)
+		target_link_libraries(${PROJECT_NAME}server
+			${LUA_LIBRARY}
+		)
+	endif(NOT LUAJIT)
+	if(LUAJIT)
+		target_link_libraries(${PROJECT_NAME}server
+			luajit
+		)
+	endif(LUAJIT)
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}server
@@ -448,7 +499,7 @@ if(MSVC)
 	# Flags for C files (sqlite)
 	# /MT = Link statically with standard library stuff
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
@@ -456,13 +507,13 @@ if(MSVC)
 
 else()
 	# Probably GCC
-	
+
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
-	
+
 	if(NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
@@ -485,7 +536,7 @@ else()
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
 	endif()
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
@@ -597,10 +648,12 @@ if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)
 endif (BUILD_CLIENT AND USE_FREETYPE)
 
-if (LUA_FOUND)
-else (LUA_FOUND)
-	add_subdirectory(lua)
-endif (LUA_FOUND)
+if(NOT LUAJIT)
+	if (LUA_FOUND)
+	else (LUA_FOUND)
+		add_subdirectory(lua)
+	endif (LUA_FOUND)
+endif(NOT LUAJIT)
 
 if (JSON_FOUND)
 else (JSON_FOUND)
