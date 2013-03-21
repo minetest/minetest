@@ -22,7 +22,7 @@ function minetest.serialize(x)
 	local nested       = { } -- transient, set of elements currently being traversed
 	local nest_points  = { }
 	local nest_patches = { }
-	
+
 	local function gensym()
 		gensym_max = gensym_max + 1 ;  return gensym_max
 	end
@@ -65,7 +65,7 @@ function minetest.serialize(x)
 		if     seen_once [x]     then seen_once [x], multiple [x] = nil, true
 		elseif multiple  [x]     then -- pass
 		else   seen_once [x] = true end
-		
+
 		if type (x) == 'table' then
 			nested [x] = true
 			for k, v in pairs (x) do
@@ -136,12 +136,12 @@ function minetest.serialize(x)
 			error ("Can't serialize data of type "..t)
 		end
 	end
-	
+
 	local function dump_nest_patches()
 		for _, entry in ipairs(nest_patches) do
 			local p, k, v = unpack (entry)
 			assert (multiple[p])
-			local set = dump_or_ref_val (p) .. "[" .. dump_or_ref_val (k) .. "] = " .. 
+			local set = dump_or_ref_val (p) .. "[" .. dump_or_ref_val (k) .. "] = " ..
 				dump_or_ref_val (v) .. " -- rec "
 			table.insert (localdefs, set)
 		end
@@ -153,7 +153,7 @@ function minetest.serialize(x)
 
 	if next (localdefs) then
 		return "local _={ }\n" ..
-			table.concat (localdefs, "\n") .. 
+			table.concat (localdefs, "\n") ..
 			"\nreturn " .. toplevel
 	else
 		return "return " .. toplevel
@@ -197,7 +197,7 @@ local function unit_test()
 	unitTest("test 1b", unittest_input.cat.speed == unittest_output.cat.speed)
 	unitTest("test 1c", unittest_input.dog.sound == unittest_output.dog.sound)
 
-	unittest_input = {escapechars="\n\r\t\v\\\"\'\[\]", noneuropean="θשׁ٩∂"}
+    unittest_input = {escapechars="\n\r\t\v\\\"\'", noneuropean="θשׁ٩∂"}
 	unittest_output = minetest.deserialize(minetest.serialize(unittest_input))
 	unitTest("test 3a", unittest_input.escapechars == unittest_output.escapechars)
 	unitTest("test 3b", unittest_input.noneuropean == unittest_output.noneuropean)
