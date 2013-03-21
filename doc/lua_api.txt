@@ -27,6 +27,36 @@ Startup
 Mods are loaded during server startup from the mod load paths by running
 the init.lua scripts in a shared environment.
 
+Paths
+-----
+RUN_IN_PLACE=1: (Windows release, local build)
+ $path_user:  Linux:    <build directory>
+              Windows:  <build directory>
+ $path_share: Linux:    <build directory>
+              Windows:  <build directory>
+
+RUN_IN_PLACE=0: (Linux release)
+ $path_share: Linux:    /usr/share/minetest
+              Windows:  <install directory>/minetest-0.4.x
+ $path_user:  Linux:    ~/.minetest
+              Windows:  C:/users/<user>/AppData/minetest (maybe)
+
+Games
+-----
+Games are looked up from:
+  $path_share/games/gameid/
+  $path_user/games/gameid/
+where gameid is unique to each game.
+
+The game directory contains the file game.conf, which contains these fields:
+  name = <Human-readable full name of the game>
+  common_mods = <Comma-separated list of common mods>
+eg.
+  name = Minetest
+  common_mods = bucket, default, doors, fire, stairs
+
+Common mods are loaded from the pseudo-game "common".
+
 Mod load path
 -------------
 Generic:
