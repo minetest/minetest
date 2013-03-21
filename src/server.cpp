@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
+#include "defaultsettings.h"
 
 void * ServerThread::Thread()
 {
@@ -686,6 +687,13 @@ Server::Server(
 	infostream<<"- world:  "<<m_path_world<<std::endl;
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
+
+	// Initialize default settings and override defaults with those provided
+	// by the game
+	set_default_settings(g_settings);
+	Settings gamedefaults;
+	getGameMinetestConfig(gamespec.path, gamedefaults);
+	override_default_settings(g_settings, &gamedefaults);
 
 	// Create biome definition manager
 	m_biomedef = new BiomeDefManager(this);

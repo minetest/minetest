@@ -54,6 +54,9 @@ struct SubgameSpec
 	}
 };
 
+// minetest.conf
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
+// game.conf
 bool getGameConfig(const std::string &game_path, Settings &conf);
 
 std::string getGameName(const std::string &game_path);

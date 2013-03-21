@@ -57,6 +57,9 @@ eg.
 
 Common mods are loaded from the pseudo-game "common".
 
+The game directory can contain the file minetest.conf, which will be used
+to set default settings when running the particular game.
+
 Mod load path
 -------------
 Generic:
