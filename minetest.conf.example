@@ -311,7 +311,7 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently v6 and indev are supported.
+# Name of map generator to be used.  Currently v6, indev and singlenode are supported.
 #mg_name = v6
 # Water level of map.
 #water_level = 1
