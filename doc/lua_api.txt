@@ -310,6 +310,10 @@ param2 is reserved for the engine when any of these are used:
   paramtype2 == "facedir"
   ^ The rotation of the node is stored in param2. Furnaces and chests are
     rotated this way. Can be made by using minetest.dir_to_facedir().
+    Values range 0 - 23
+    facedir modulo 4 = axisdir
+    0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
+    facedir's two less significant bits are rotation around the axis
 
 Nodes can also contain extra data. See "Node Metadata".
 

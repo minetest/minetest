@@ -205,7 +205,8 @@ struct TileSpec
 			texture == other.texture &&
 			alpha == other.alpha &&
 			material_type == other.material_type &&
-			material_flags == other.material_flags
+			material_flags == other.material_flags &&
+			rotation == other.rotation
 		);
 	}
 
@@ -264,6 +265,7 @@ struct TileSpec
 	// Animation parameters
 	u8 animation_frame_count;
 	u16 animation_frame_length_ms;
+	u8 rotation;
 };
 
 #endif

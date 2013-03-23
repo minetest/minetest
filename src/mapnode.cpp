@@ -107,7 +107,7 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if(f.param_type_2 == CPT2_FACEDIR)
-		return getParam2() & 0x03;
+		return getParam2() & 0x1F;
 	return 0;
 }
 
@@ -140,29 +140,131 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 	{
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr);
+		u8 axisdir = facedir>>2;
+		facedir&=0x03;
 		for(std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
 				i != fixed.end(); i++)
 		{
 			aabb3f box = *i;
-			if(facedir == 1)
+			switch (axisdir)
 			{
-				box.MinEdge.rotateXZBy(-90);
-				box.MaxEdge.rotateXZBy(-90);
-				box.repair();
+			case 0:
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXZBy(-90);
+					box.MaxEdge.rotateXZBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXZBy(180);
+					box.MaxEdge.rotateXZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXZBy(90);
+					box.MaxEdge.rotateXZBy(90);
+				}
+				break;
+			case 1: // z+
+				box.MinEdge.rotateYZBy(90);
+				box.MaxEdge.rotateYZBy(90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXYBy(90);
+					box.MaxEdge.rotateXYBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXYBy(180);
+					box.MaxEdge.rotateXYBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXYBy(-90);
+					box.MaxEdge.rotateXYBy(-90);
+				}
+				break;
+			case 2: //z-
+				box.MinEdge.rotateYZBy(-90);
+				box.MaxEdge.rotateYZBy(-90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXYBy(-90);
+					box.MaxEdge.rotateXYBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXYBy(180);
+					box.MaxEdge.rotateXYBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXYBy(90);
+					box.MaxEdge.rotateXYBy(90);
+				}
+				break;
+			case 3:  //x+
+				box.MinEdge.rotateXYBy(-90);
+				box.MaxEdge.rotateXYBy(-90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateYZBy(90);
+					box.MaxEdge.rotateYZBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateYZBy(180);
+					box.MaxEdge.rotateYZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateYZBy(-90);
+					box.MaxEdge.rotateYZBy(-90);
+				}
+				break;
+			case 4:  //x-
+				box.MinEdge.rotateXYBy(90);
+				box.MaxEdge.rotateXYBy(90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateYZBy(-90);
+					box.MaxEdge.rotateYZBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateYZBy(180);
+					box.MaxEdge.rotateYZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateYZBy(90);
+					box.MaxEdge.rotateYZBy(90);
+				}
+				break;
+			case 5:
+				box.MinEdge.rotateXYBy(-180);
+				box.MaxEdge.rotateXYBy(-180);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXZBy(90);
+					box.MaxEdge.rotateXZBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXZBy(180);
+					box.MaxEdge.rotateXZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXZBy(-90);
+					box.MaxEdge.rotateXZBy(-90);
+				}
+				break;
+			default:
+				break;
 			}
-			else if(facedir == 2)
-			{
-				box.MinEdge.rotateXZBy(180);
-				box.MaxEdge.rotateXZBy(180);
-				box.repair();
-			}
-			else if(facedir == 3)
-			{
-				box.MinEdge.rotateXZBy(90);
-				box.MaxEdge.rotateXZBy(90);
-				box.repair();
-			}
+			box.repair();
 			boxes.push_back(box);
 		}
 	}
