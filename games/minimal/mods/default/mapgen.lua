@@ -74,6 +74,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+2, 1/12/12/12, 5, -16,    -5  )
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+3, 1/9/9/9,    5, -31000, -17 )
 
+	generate_ore("default:stone_with_coal", "default:stone", minp, maxp, seed+4, 1/8/8/8,    5, 200, 31000 ) -- for float islands and far scaled mountains
+	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+5, 1/9/9/9,    5, 200, 31000 )
+
 	if minetest.setting_getbool("underground_springs") then
 		generate_ore("default:water_source", "default:stone", minp, maxp, seed+4, 1/24/24/24, 12, -100,   -11,   128)
 		generate_ore("default:water_source", "default:stone", minp, maxp, seed+5, 1/28/28/28, 8,  -10000, -101,  128)
