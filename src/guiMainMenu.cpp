@@ -140,6 +140,7 @@ enum
 	GUI_ID_SHADERS_CB,
 	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
 	GUI_ID_ENABLE_PARTICLES_CB,
+	GUI_ID_LIQUID_FINITE_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_PUBLIC_CB,
@@ -430,6 +431,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			e->setDrawBackground(true);
 			if (m_data->serverlist_show_available == false)
 				m_data->servers = ServerList::getLocal();
+#if USE_CURL
+			else
+				m_data->servers = ServerList::getOnline();
+#endif
 			updateGuiServerList();
 			e->setSelected(0);
 		}
@@ -722,6 +727,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
 
+		{
+			core::rect<s32> rect(0, 0, option_w+20+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*3);
+			Environment->addCheckBox(m_data->liquid_finite, rect, this,
+					GUI_ID_LIQUID_FINITE_CB, wgettext("Finite liquid"));
+		}
+
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -966,6 +978,12 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_PARTICLES_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->enable_particles = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_LIQUID_FINITE_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->liquid_finite = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
