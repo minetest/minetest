@@ -52,6 +52,7 @@ struct MainMenuData
 	int enable_shaders;
 	bool preload_item_visuals;
 	bool enable_particles;
+	bool liquid_finite;
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
@@ -71,7 +72,13 @@ struct MainMenuData
 
 	MainMenuData():
 		// Generic
-		selected_tab(0),
+		selected_tab(
+#if USE_CURL
+		    1
+#else
+		    0
+#endif
+		),
 		// Client opts
 		fancy_trees(false),
 		smooth_lighting(false),
@@ -84,7 +91,13 @@ struct MainMenuData
 		// Actions
 		only_refresh(false),
 
-		serverlist_show_available(false)
+		serverlist_show_available(
+#if USE_CURL
+		    true
+#else
+		    false
+#endif
+)
 	{}
 };
 
