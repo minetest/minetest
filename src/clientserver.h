@@ -81,6 +81,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_SHOW_FORMSPEC
 	PROTOCOL_VERSION 17:
 		Serialization format change: include backface_culling flag in TileDef
+		Added rightclickable field in nodedef
 */
 
 #define LATEST_PROTOCOL_VERSION 17
