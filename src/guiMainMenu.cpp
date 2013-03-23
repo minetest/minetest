@@ -43,6 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 
 #define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+#define LSTRING(x) LSTRING_(x)
+#define LSTRING_(x) L##x
 
 const wchar_t *contrib_core_strs[] = {
 	L"Perttu Ahola (celeron55) <celeron55@gmail.com>",
@@ -760,7 +762,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 130, 70);
 			rect += m_topleft_client + v2s32(35, 160);
 			Environment->addStaticText(
-				L"Minetest " VERSION_STRING "\nhttp://minetest.net/",
+				L"Minetest " LSTRING(VERSION_STRING) L"\nhttp://minetest.net/",
 				 rect, false, true, this, -1);
 		}
 		{

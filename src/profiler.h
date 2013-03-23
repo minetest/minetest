@@ -73,7 +73,7 @@ public:
 			else{
 				/* No add shall have been used */
 				assert(n->second != -2);
-				n->second = std::max(n->second, 0) + 1;
+				n->second = (std::max)(n->second, 0) + 1;
 			}
 		}
 		{
