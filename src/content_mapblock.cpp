@@ -42,14 +42,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
 void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	const TileSpec *tiles, int tilecount,
+	TileSpec *tiles, int tilecount,
 	video::SColor &c, const f32* txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6);
 
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
-
+ 
+ 
+ 
 	if(txc == NULL)
 	{
 		static const f32 txc_default[24] = {
@@ -97,15 +99,70 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
-	for(s32 j=0; j<24; j++)
+	v2f t;
+	for(int i = 0; i < tilecount; i++)
+				{
+				switch (tiles[i].rotation)
+				{
+				case 0:
+					break;
+				case 1: //R90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+					break;
+				case 2: //R180
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(180,irr::core::vector2df(0, 0));
+					break;
+				case 3: //R270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					break;
+				case 4: //FXR90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 5: //FXR270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					t=vertices[i*4].TCoords;
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 6: //FYR90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				case 7: //FYR270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				case 8: //FX
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 9: //FY
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				default:
+					break;
+				}
+			}
+		for(s32 j=0; j<24; j++)
 	{
 		int tileindex = MYMIN(j/4, tilecount-1);
 		vertices[j].TCoords *= tiles[tileindex].texture.size;
 		vertices[j].TCoords += tiles[tileindex].texture.pos;
 	}
-
 	u16 indices[] = {0,1,2,2,3,0};
-
 	// Add to mesh collector
 	for(s32 j=0; j<24; j+=4)
 	{
@@ -1154,14 +1211,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, 1),
 				v3s16(0, 0, -1)
 			};
-
 			TileSpec tiles[6];
-			for(int i = 0; i < 6; i++)
-			{
-				// Handles facedir rotation for textures
-				tiles[i] = getNodeTile(n, p, tile_dirs[i], data);
-			}
-
+			
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1172,17 +1223,43 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					i = boxes.begin();
 					i != boxes.end(); i++)
 			{
+			for(int j = 0; j < 6; j++)
+				{
+				// Handles facedir rotation for textures
+				tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
+				}
 				aabb3f box = *i;
 				box.MinEdge += pos;
 				box.MaxEdge += pos;
+				
+				f32 temp;
+				if (box.MinEdge.X > box.MaxEdge.X)
+				{
+					temp=box.MinEdge.X;
+					box.MinEdge.X=box.MaxEdge.X;
+					box.MaxEdge.X=temp;
+				}
+				if (box.MinEdge.Y > box.MaxEdge.Y)
+				{
+					temp=box.MinEdge.Y;
+					box.MinEdge.Y=box.MaxEdge.Y;
+					box.MaxEdge.Y=temp;
+				}
+				if (box.MinEdge.Z > box.MaxEdge.Z)
+				{
+					temp=box.MinEdge.Z;
+					box.MinEdge.Z=box.MaxEdge.Z;
+					box.MaxEdge.Z=temp;
+				}
 
+				//
 				// Compute texture coords
-				f32 tx1 = (i->MinEdge.X/BS)+0.5;
-				f32 ty1 = (i->MinEdge.Y/BS)+0.5;
-				f32 tz1 = (i->MinEdge.Z/BS)+0.5;
-				f32 tx2 = (i->MaxEdge.X/BS)+0.5;
-				f32 ty2 = (i->MaxEdge.Y/BS)+0.5;
-				f32 tz2 = (i->MaxEdge.Z/BS)+0.5;
+				f32 tx1 = (box.MinEdge.X/BS)+0.5;
+				f32 ty1 = (box.MinEdge.Y/BS)+0.5;
+				f32 tz1 = (box.MinEdge.Z/BS)+0.5;
+				f32 tx2 = (box.MaxEdge.X/BS)+0.5;
+				f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
+				f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
 				f32 txc[24] = {
 					// up
 					tx1, 1-tz2, tx2, 1-tz1,
@@ -1197,7 +1274,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					// front
 					tx1, 1-ty2, tx2, 1-ty1,
 				};
-
 				makeCuboid(&collector, box, tiles, 6, c, txc);
 			}
 		break;}
