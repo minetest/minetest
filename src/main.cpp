@@ -1557,6 +1557,7 @@ int main(int argc, char *argv[])
 				menudata.enable_shaders = g_settings->getS32("enable_shaders");
 				menudata.preload_item_visuals = g_settings->getBool("preload_item_visuals");
 				menudata.enable_particles = g_settings->getBool("enable_particles");
+				menudata.liquid_finite = g_settings->getBool("liquid_finite");
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
@@ -1724,6 +1725,8 @@ int main(int argc, char *argv[])
 				}
 
 				playername = wide_to_narrow(menudata.name);
+				if (playername == "")
+					playername = std::string("Guest") + itos(myrand_range(1000,9999));
 				password = translatePassword(playername, menudata.password);
 				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
@@ -1747,6 +1750,7 @@ int main(int argc, char *argv[])
 				g_settings->setS32("enable_shaders", menudata.enable_shaders);
 				g_settings->set("preload_item_visuals", itos(menudata.preload_item_visuals));
 				g_settings->set("enable_particles", itos(menudata.enable_particles));
+				g_settings->set("liquid_finite", itos(menudata.liquid_finite));
 
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
