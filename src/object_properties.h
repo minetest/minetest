@@ -41,6 +41,7 @@ struct ObjectProperties
 	v2s16 initial_sprite_basepos;
 	bool is_visible;
 	bool makes_footstep_sound;
+	bool force_load;
 	float automatic_rotate;
 
 

@@ -1040,7 +1040,22 @@ void ServerEnvironment::step(float dtime)
 					floatToInt(player->getPosition(), BS));
 			players_blockpos.push_back(blockpos);
 		}
-		
+		for(core::map<u16, ServerActiveObject*>::Iterator
+			i = m_active_objects.getIterator();
+			i.atEnd()==false; i++)
+		{
+			ServerActiveObject* obj = i.getNode()->getValue();
+			if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+				continue;
+			ObjectProperties* props = obj->accessObjectProperties();
+			if(props->force_load){
+				v3f objectpos = obj->getBasePosition();
+				v3s16 blockpos = getNodeBlockPos(
+				floatToInt(objectpos, BS));
+				players_blockpos.push_back(blockpos);
+			}
+		}
+
 		/*
 			Update list of active blocks, collecting changes
 		*/

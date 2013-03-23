@@ -82,6 +82,10 @@ function minetest.register_entity(name, prototype)
 		error("Unable to register entity: Name is nil")
 	end
 	name = check_modname_prefix(tostring(name))
+	
+	if minetest.setting_getbool("force_load_off") then
+		prototype.force_load = nil
+	end
 
 	prototype.name = name
 	prototype.__index = prototype  -- so that it can be used as a metatable
