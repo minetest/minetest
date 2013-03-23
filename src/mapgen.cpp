@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 #include "treegen.h"
+#include "mapgen.h"
 #include "mapgen_v6.h"
 
 FlagDesc flagdesc_mapgen[] = {

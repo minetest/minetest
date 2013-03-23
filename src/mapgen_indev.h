@@ -23,30 +23,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "mapgen_v6.h"
 
+float farscale(float scale, float z);
+float farscale(float scale, float x, float z);
 float farscale(float scale, float x, float y, float z);
 
 struct NoiseIndevParams : public NoiseParams {
 	float farscale;
+	float farspread;
 
 	NoiseIndevParams(){}
-	NoiseIndevParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_, float farscale_) 
-	    //:NoiseParams(offset_, scale_, spread_, seed_, octaves_,  persist_)
+	NoiseIndevParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_, float farscale_ = 1, float farspread_ = 1)
 	{
-	//NoiseParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_) {
 		offset = offset_;
 		scale = scale_;
 		spread = spread_;
 		seed = seed_;
 		octaves = octaves_;
 		persist = persist_;
-	//}
+
 		farscale = farscale_;
+		farspread = farspread_;
 	}
 
 };
 
-#define getNoiseIndevParams(x) getStruct<NoiseIndevParams>((x), "f,f,v3,s32,s32,f,f")
-#define setNoiseIndevParams(x, y) setStruct((x), "f,f,v3,s32,s32,f,f", (y))
+#define getNoiseIndevParams(x) getStruct<NoiseIndevParams>((x), "f,f,v3,s32,s32,f,f,f")
+#define setNoiseIndevParams(x, y) setStruct((x), "f,f,v3,s32,s32,f,f,f", (y))
 
 class NoiseIndev : public Noise {
     public:
@@ -59,6 +61,8 @@ class NoiseIndev : public Noise {
 	void transformNoiseMapFarScale(float xx = 0, float yy = 0, float zz = 0);
 };
 
+extern NoiseIndevParams nparams_indev_def;
+/*
 extern NoiseIndevParams nparams_indev_def_terrain_base;
 extern NoiseIndevParams nparams_indev_def_terrain_higher;
 extern NoiseIndevParams nparams_indev_def_steepness;
@@ -66,9 +70,10 @@ extern NoiseIndevParams nparams_indev_def_steepness;
 //extern NoiseIndevParams nparams_indev_def_trees;
 extern NoiseIndevParams nparams_indev_def_mud;
 //extern NoiseIndevParams nparams_indev_def_beach;
-//extern NoiseIndevParams nparams_indev_def_biome;
+extern NoiseIndevParams nparams_indev_def_biome;
 //extern NoiseIndevParams nparams_indev_def_cave;
-
+extern NoiseIndevParams nparams_indev_def_float_islands;
+*/
 
 struct MapgenIndevParams : public MapgenV6Params {
 	NoiseIndevParams *npindev_terrain_base;
@@ -78,21 +83,28 @@ struct MapgenIndevParams : public MapgenV6Params {
 	//NoiseParams *np_trees;
 	NoiseIndevParams *npindev_mud;
 	//NoiseParams *np_beach;
-	//NoiseParams *np_biome;
+	NoiseIndevParams *npindev_biome;
 	//NoiseParams *np_cave;
+	NoiseIndevParams *npindev_float_islands1;
+	NoiseIndevParams *npindev_float_islands2;
+	NoiseIndevParams *npindev_float_islands3;
 
 	MapgenIndevParams() {
 		//freq_desert       = 0.45;
 		//freq_beach        = 0.15;
-		npindev_terrain_base   = &nparams_indev_def_terrain_base;
-		npindev_terrain_higher = &nparams_indev_def_terrain_higher;
-		npindev_steepness      = &nparams_indev_def_steepness;
+		npindev_terrain_base   = &nparams_indev_def; //&nparams_indev_def_terrain_base;
+		npindev_terrain_higher = &nparams_indev_def; //&nparams_indev_def_terrain_higher;
+		npindev_steepness      = &nparams_indev_def; //&nparams_indev_def_steepness;
 		//np_height_select  = &nparams_v6_def_height_select;
 		//np_trees          = &nparams_v6_def_trees;
-		npindev_mud            = &nparams_indev_def_mud;
+		npindev_mud            = &nparams_indev_def; //&nparams_indev_def_mud;
 		//np_beach          = &nparams_v6_def_beach;
-		//np_biome          = &nparams_v6_def_biome;
+		npindev_biome          = &nparams_indev_def; //&nparams_indev_def_biome;
 		//np_cave           = &nparams_v6_def_cave;
+		npindev_float_islands1  = &nparams_indev_def; //&nparams_indev_def_float_islands;
+		npindev_float_islands2  = &nparams_indev_def; //&nparams_indev_def_float_islands;
+		npindev_float_islands3  = &nparams_indev_def; //&nparams_indev_def_float_islands;
+
 	}
 
 	bool readParams(Settings *settings);
@@ -108,8 +120,11 @@ class MapgenIndev : public MapgenV6 {
 	//NoiseIndev *noise_trees;
 	NoiseIndev *noiseindev_mud;
 	//NoiseIndev *noise_beach;
-	//NoiseIndev *noise_biome;
+	NoiseIndev *noiseindev_biome;
 	//NoiseIndevParams *np_cave;
+	NoiseIndev *noiseindev_float_islands1;
+	NoiseIndev *noiseindev_float_islands2;
+	NoiseIndev *noiseindev_float_islands3;
 
 	MapgenIndev(int mapgenid, MapgenIndevParams *params);
 	~MapgenIndev();
@@ -119,6 +134,9 @@ class MapgenIndev : public MapgenV6 {
 	float baseTerrainLevelFromMap(int index);
 	float getMudAmount(int index);
 	void defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave);
+	void generateSomething();
+	
+	void generateFloatIslands(int min_y);
 };
 
 struct MapgenFactoryIndev : public MapgenFactoryV6 {
@@ -130,6 +148,5 @@ struct MapgenFactoryIndev : public MapgenFactoryV6 {
 		return new MapgenIndevParams();
 	};
 };
-
 
 #endif

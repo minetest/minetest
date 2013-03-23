@@ -167,6 +167,7 @@ public:
 	virtual void defineCave(Cave &cave, PseudoRandom ps,
 							v3s16 node_min, bool large_cave);
 	void generateCaves(int max_stone_y);
+	virtual void generateSomething() {}; //for next mapgen
 };
 
 struct MapgenFactoryV6 : public MapgenFactory {

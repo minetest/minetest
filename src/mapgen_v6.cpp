@@ -422,6 +422,8 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate general ground level to full area
 	stone_surface_max_y = generateGround();
 
+	generateSomething();
+
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
 	// Limit dirt flow area by 1 because mud is flown into neighbors.
 	s16 mudflow_minpos = -max_spread_amount + 1;
