@@ -157,7 +157,10 @@ enum ClientEventType
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
 	CE_TEXTURES_UPDATED,
-	CE_SHOW_FORMSPEC
+	CE_SHOW_FORMSPEC,
+	CE_SPAWN_PARTICLE,
+	CE_ADD_PARTICLESPAWNER,
+	CE_DELETE_PARTICLESPAWNER
 };
 
 struct ClientEvent
@@ -185,6 +188,35 @@ struct ClientEvent
 		} show_formspec;
 		struct{
 		} textures_updated;
+		struct{
+			v3f *pos;
+			v3f *vel;
+			v3f *acc;
+			f32 expirationtime;
+			f32 size;
+			bool collisiondetection;
+			std::string *texture;
+		} spawn_particle;
+		struct{
+			u16 amount;
+			f32 spawntime;
+			v3f *minpos;
+			v3f *maxpos;
+			v3f *minvel;
+			v3f *maxvel;
+			v3f *minacc;
+			v3f *maxacc;
+			f32 minexptime;
+			f32 maxexptime;
+			f32 minsize;
+			f32 maxsize;
+			bool collisiondetection;
+			std::string *texture;
+			u32 id;
+		} add_particlespawner;
+		struct{
+			u32 id;
+		} delete_particlespawner;
 	};
 };
 

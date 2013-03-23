@@ -1028,6 +1028,37 @@ minetest.get_ban_description(ip_or_name) -> ban description (string)
 minetest.ban_player(name) -> ban a player
 minetest.unban_player_or_ip(name) -> unban player or IP address
 
+Particles:
+minetest.add_particle(pos, velocity, acceleration, expirationtime,
+	size, collisiondetection, texture, playername)
+^ Spawn particle at pos with velocity and acceleration
+^ Disappears after expirationtime seconds
+^ collisiondetection: if true collides with physical objects
+^ Uses texture (string)
+^ Playername is optional, if specified spawns particle only on the player's client
+
+minetest.add_particlespawner(amount, time,
+	minpos, maxpos,
+	minvel, maxvel,
+	minacc, maxacc,
+	minexptime, maxexptime,
+	minsize, maxsize,
+	collisiondetection, texture, playername)
+^ Add a particlespawner, an object that spawns an amount of particles over time seconds
+^ The particle's properties are random values in between the boundings:
+^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
+^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+^ collisiondetection: if true uses collisiondetection
+^ Uses texture (string)
+^ Playername is optional, if specified spawns particle only on the player's client
+^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
+^ Returns and id
+
+minetest.delete_particlespawner(id, player)
+^ Delete ParticleSpawner with id (return value from add_particlespawner)
+^ If playername is specified, only deletes on the player's client,
+^ otherwise on all clients
+
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer

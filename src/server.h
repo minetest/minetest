@@ -456,6 +456,35 @@ public:
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
+	void spawnParticle(const char *playername,
+		v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	void spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	u32 addParticleSpawner(const char *playername,
+		u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture);
+
+	u32 addParticleSpawnerAll(u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture);
+
+	void deleteParticleSpawner(const char *playername, u32 id);
+	void deleteParticleSpawnerAll(u32 id);
+
 
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 
@@ -573,6 +602,41 @@ private:
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
 	void sendDetachedInventories(u16 peer_id);
+
+	// Adds a ParticleSpawner on peer with peer_id
+	void SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture, u32 id);
+
+	// Adds a ParticleSpawner on all peers
+	void SendAddParticleSpawnerAll(u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture, u32 id);
+
+	// Deletes ParticleSpawner on a single client
+	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
+
+	// Deletes ParticleSpawner on all clients
+	void SendDeleteParticleSpawnerAll(u32 id);
+
+	// Spawns particle on single client
+	void SendSpawnParticle(u16 peer_id,
+		v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	// Spawns particle on all clients
+	void SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
 
 	/*
 		Something random
@@ -790,6 +854,11 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+
+	/*
+		Particles
+	*/
+	std::vector<u32> m_particlespawner_ids;
 };
 
 /*
