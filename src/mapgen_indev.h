@@ -27,26 +27,26 @@ float farscale(float scale, float x, float y, float z);
 
 struct NoiseIndevParams : public NoiseParams {
 	float farscale;
+	float farspread;
 
 	NoiseIndevParams(){}
-	NoiseIndevParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_, float farscale_) 
-	    //:NoiseParams(offset_, scale_, spread_, seed_, octaves_,  persist_)
+	NoiseIndevParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_, float farscale_ = 1, float farspread_ = 1)
 	{
-	//NoiseParams(float offset_, float scale_, v3f spread_, int seed_, int octaves_, float persist_) {
 		offset = offset_;
 		scale = scale_;
 		spread = spread_;
 		seed = seed_;
 		octaves = octaves_;
 		persist = persist_;
-	//}
+
 		farscale = farscale_;
+		farspread = farspread_;
 	}
 
 };
 
-#define getNoiseIndevParams(x) getStruct<NoiseIndevParams>((x), "f,f,v3,s32,s32,f,f")
-#define setNoiseIndevParams(x, y) setStruct((x), "f,f,v3,s32,s32,f,f", (y))
+#define getNoiseIndevParams(x) getStruct<NoiseIndevParams>((x), "f,f,v3,s32,s32,f,f,f")
+#define setNoiseIndevParams(x, y) setStruct((x), "f,f,v3,s32,s32,f,f,f", (y))
 
 class NoiseIndev : public Noise {
     public:
@@ -66,7 +66,7 @@ extern NoiseIndevParams nparams_indev_def_steepness;
 //extern NoiseIndevParams nparams_indev_def_trees;
 extern NoiseIndevParams nparams_indev_def_mud;
 //extern NoiseIndevParams nparams_indev_def_beach;
-//extern NoiseIndevParams nparams_indev_def_biome;
+extern NoiseIndevParams nparams_indev_def_biome;
 //extern NoiseIndevParams nparams_indev_def_cave;
 
 
@@ -78,7 +78,7 @@ struct MapgenIndevParams : public MapgenV6Params {
 	//NoiseParams *np_trees;
 	NoiseIndevParams *npindev_mud;
 	//NoiseParams *np_beach;
-	//NoiseParams *np_biome;
+	NoiseIndevParams *npindev_biome;
 	//NoiseParams *np_cave;
 
 	MapgenIndevParams() {
@@ -91,7 +91,7 @@ struct MapgenIndevParams : public MapgenV6Params {
 		//np_trees          = &nparams_v6_def_trees;
 		npindev_mud            = &nparams_indev_def_mud;
 		//np_beach          = &nparams_v6_def_beach;
-		//np_biome          = &nparams_v6_def_biome;
+		npindev_biome          = &nparams_indev_def_biome;
 		//np_cave           = &nparams_v6_def_cave;
 	}
 
@@ -108,7 +108,7 @@ class MapgenIndev : public MapgenV6 {
 	//NoiseIndev *noise_trees;
 	NoiseIndev *noiseindev_mud;
 	//NoiseIndev *noise_beach;
-	//NoiseIndev *noise_biome;
+	NoiseIndev *noiseindev_biome;
 	//NoiseIndevParams *np_cave;
 
 	MapgenIndev(int mapgenid, MapgenIndevParams *params);
@@ -130,6 +130,5 @@ struct MapgenFactoryIndev : public MapgenFactoryV6 {
 		return new MapgenIndevParams();
 	};
 };
-
 
 #endif
