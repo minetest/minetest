@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // assert
 #include "modalMenu.h"
 #include "guiPauseMenu.h" //For IGameCallback
+#include <list>
 
 extern gui::IGUIEnvironment* guienv;
 extern gui::IGUIStaticText *guiroot;
@@ -37,15 +38,15 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(GUIModalMenu *menu)
 	{
-		for(core::list<GUIModalMenu*>::Iterator
+		for(std::list<GUIModalMenu*>::iterator
 				i = m_stack.begin();
-				i != m_stack.end(); i++)
+				i != m_stack.end(); ++i)
 		{
 			assert(*i != menu);
 		}
 
 		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(false);
+			m_stack.back()->setVisible(false);
 		m_stack.push_back(menu);
 	}
 
@@ -55,9 +56,9 @@ public:
 		bool removed_entry;
 		do{
 			removed_entry = false;
-			for(core::list<GUIModalMenu*>::Iterator
+			for(std::list<GUIModalMenu*>::iterator
 					i = m_stack.begin();
-					i != m_stack.end(); i++)
+					i != m_stack.end(); ++i)
 			{
 				if(*i == menu)
 				{
@@ -73,7 +74,7 @@ public:
 		m_stack.erase(i);*/
 		
 		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(true);
+			m_stack.back()->setVisible(true);
 	}
 
 	u32 menuCount()
@@ -81,7 +82,7 @@ public:
 		return m_stack.size();
 	}
 
-	core::list<GUIModalMenu*> m_stack;
+	std::list<GUIModalMenu*> m_stack;
 };
 
 extern MainMenuManager g_menumgr;
@@ -94,6 +95,7 @@ public:
 	MainGameCallback(IrrlichtDevice *a_device):
 		disconnect_requested(false),
 		changepassword_requested(false),
+		changevolume_requested(false),
 		device(a_device)
 	{
 	}
@@ -113,8 +115,14 @@ public:
 		changepassword_requested = true;
 	}
 
+	virtual void changeVolume()
+	{
+		changevolume_requested = true;
+	}
+	
 	bool disconnect_requested;
 	bool changepassword_requested;
+	bool changevolume_requested;
 	IrrlichtDevice *device;
 };
 

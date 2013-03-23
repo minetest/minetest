@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -30,7 +30,8 @@ public:
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed
+			u32 seed,
+			s16 cloudheight=0
 	);
 
 	~Clouds();

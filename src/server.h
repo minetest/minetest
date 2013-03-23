@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -38,6 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
 #include <list> // Needed for rollbackRevertActions()
+#include <algorithm>
+
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 struct LuaState;
 typedef struct lua_State lua_State;
@@ -47,6 +50,7 @@ class IWritableCraftDefManager;
 class EventManager;
 class PlayerSAO;
 class IRollbackManager;
+class EmergeManager;
 
 class ServerError : public std::exception
 {
@@ -70,117 +74,55 @@ public:
 */
 v3f findSpawnPos(ServerMap &map);
 
-/*
-	A structure containing the data needed for queueing the fetching
-	of blocks.
-*/
-struct QueuedBlockEmerge
-{
-	v3s16 pos;
-	// key = peer_id, value = flags
-	core::map<u16, u8> peer_ids;
-};
 
-/*
-	This is a thread-safe class.
-*/
-class BlockEmergeQueue
+class MapEditEventIgnorer
 {
 public:
-	BlockEmergeQueue()
+	MapEditEventIgnorer(bool *flag):
+		m_flag(flag)
 	{
-		m_mutex.Init();
+		if(*m_flag == false)
+			*m_flag = true;
+		else
+			m_flag = NULL;
 	}
 
-	~BlockEmergeQueue()
+	~MapEditEventIgnorer()
 	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		if(m_flag)
 		{
-			QueuedBlockEmerge *q = *i;
-			delete q;
+			assert(*m_flag);
+			*m_flag = false;
 		}
-	}
-
-	/*
-		peer_id=0 adds with nobody to send to
-	*/
-	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
-	{
-		DSTACK(__FUNCTION_NAME);
-
-		JMutexAutoLock lock(m_mutex);
-
-		if(peer_id != 0)
-		{
-			/*
-				Find if block is already in queue.
-				If it is, update the peer to it and quit.
-			*/
-			core::list<QueuedBlockEmerge*>::Iterator i;
-			for(i=m_queue.begin(); i!=m_queue.end(); i++)
-			{
-				QueuedBlockEmerge *q = *i;
-				if(q->pos == pos)
-				{
-					q->peer_ids[peer_id] = flags;
-					return;
-				}
-			}
-		}
-
-		/*
-			Add the block
-		*/
-		QueuedBlockEmerge *q = new QueuedBlockEmerge;
-		q->pos = pos;
-		if(peer_id != 0)
-			q->peer_ids[peer_id] = flags;
-		m_queue.push_back(q);
-	}
-
-	// Returned pointer must be deleted
-	// Returns NULL if queue is empty
-	QueuedBlockEmerge * pop()
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		core::list<QueuedBlockEmerge*>::Iterator i = m_queue.begin();
-		if(i == m_queue.end())
-			return NULL;
-		QueuedBlockEmerge *q = *i;
-		m_queue.erase(i);
-		return q;
-	}
-
-	u32 size()
-	{
-		JMutexAutoLock lock(m_mutex);
-		return m_queue.size();
-	}
-
-	u32 peerItemCount(u16 peer_id)
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		u32 count = 0;
-
-		core::list<QueuedBlockEmerge*>::Iterator i;
-		for(i=m_queue.begin(); i!=m_queue.end(); i++)
-		{
-			QueuedBlockEmerge *q = *i;
-			if(q->peer_ids.find(peer_id) != NULL)
-				count++;
-		}
-
-		return count;
 	}
 
 private:
-	core::list<QueuedBlockEmerge*> m_queue;
-	JMutex m_mutex;
+	bool *m_flag;
+};
+
+class MapEditEventAreaIgnorer
+{
+public:
+	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
+		m_ignorevariable(ignorevariable)
+	{
+		if(m_ignorevariable->getVolume() == 0)
+			*m_ignorevariable = a;
+		else
+			m_ignorevariable = NULL;
+	}
+
+	~MapEditEventAreaIgnorer()
+	{
+		if(m_ignorevariable)
+		{
+			assert(m_ignorevariable->getVolume() != 0);
+			*m_ignorevariable = VoxelArea();
+		}
+	}
+
+private:
+	VoxelArea *m_ignorevariable;
 };
 
 class Server;
@@ -198,30 +140,6 @@ public:
 	}
 
 	void * Thread();
-};
-
-class EmergeThread : public SimpleThread
-{
-	Server *m_server;
-
-public:
-
-	EmergeThread(Server *server):
-		SimpleThread(),
-		m_server(server)
-	{
-	}
-
-	void * Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
 };
 
 struct PlayerInfo
@@ -249,7 +167,7 @@ struct PrioritySortedBlockTransfer
 		pos = a_pos;
 		peer_id = a_peer_id;
 	}
-	bool operator < (PrioritySortedBlockTransfer &other)
+	bool operator < (const PrioritySortedBlockTransfer &other) const
 	{
 		return priority < other.priority;
 	}
@@ -354,14 +272,14 @@ public:
 		dtime is used for resetting send radius at slow interval
 	*/
 	void GetNextBlocks(Server *server, float dtime,
-			core::array<PrioritySortedBlockTransfer> &dest);
+			std::vector<PrioritySortedBlockTransfer> &dest);
 
 	void GotBlock(v3s16 p);
 
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
 
 	s32 SendingCount()
 	{
@@ -397,7 +315,7 @@ public:
 		List of active objects that the client knows of.
 		Value is dummy.
 	*/
-	core::map<u16, bool> m_known_objects;
+	std::set<u16> m_known_objects;
 
 private:
 	/*
@@ -409,7 +327,7 @@ private:
 		Key is position, value is dummy.
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
-	core::map<v3s16, bool> m_blocks_sent;
+	std::set<v3s16> m_blocks_sent;
 	s16 m_nearest_unsent_d;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer;
@@ -422,7 +340,7 @@ private:
 		Block is removed when GOTBLOCKS is received.
 		Value is time from sending. (not used at the moment)
 	*/
-	core::map<v3s16, float> m_blocks_sending;
+	std::map<v3s16, float> m_blocks_sending;
 
 	/*
 		Count of excess GotBlocks().
@@ -464,7 +382,7 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	core::list<PlayerInfo> getPlayerInfo();
+	std::list<PlayerInfo> getPlayerInfo();
 
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
@@ -577,7 +495,7 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
-	void getModNames(core::list<std::string> &modlist);
+	void getModNames(std::list<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 
 	std::string getWorldPath(){ return m_path_world; }
@@ -602,6 +520,7 @@ private:
 		Static send methods
 	*/
 
+	static void SendMovement(con::Connection &con, u16 peer_id);
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
@@ -635,9 +554,9 @@ private:
 	*/
 	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
@@ -649,7 +568,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
-			const core::list<MediaRequest> &tosend);
+			const std::list<MediaRequest> &tosend);
 
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
@@ -718,7 +637,9 @@ private:
 
 	// Some timers
 	float m_liquid_transform_timer;
+	float m_liquid_transform_every;
 	float m_print_info_timer;
+	float m_masterserver_timer;
 	float m_objectdata_timer;
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
@@ -735,7 +656,8 @@ private:
 	con::Connection m_con;
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
-	core::map<u16, RemoteClient*> m_clients;
+	std::map<u16, RemoteClient*> m_clients;
+	u16 m_clients_number; //for announcing masterserver
 
 	// Bann checking
 	BanManager m_banmanager;
@@ -781,10 +703,6 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread m_thread;
-	// This thread fetches and generates map
-	EmergeThread m_emergethread;
-	// Queue of block coordinates to be processed by the emerge thread
-	BlockEmergeQueue m_emerge_queue;
 
 	/*
 		Time related stuff
@@ -818,7 +736,7 @@ private:
 	*/
 
 	// Mod parent directory paths
-	core::list<std::string> m_modspaths;
+	std::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
 

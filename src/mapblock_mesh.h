@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -143,13 +143,13 @@ private:
 struct PreMeshBuffer
 {
 	TileSpec tile;
-	core::array<u16> indices;
-	core::array<video::S3DVertex> vertices;
+	std::vector<u16> indices;
+	std::vector<video::S3DVertex> vertices;
 };
 
 struct MeshCollector
 {
-	core::array<PreMeshBuffer> prebuffers;
+	std::vector<PreMeshBuffer> prebuffers;
 
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,

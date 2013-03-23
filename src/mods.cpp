@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
+#include "strfnd.h"
 
 std::map<std::string, ModSpec> getModsInPath(std::string path)
 {
@@ -46,6 +47,7 @@ std::map<std::string, ModSpec> getModsInPath(std::string path)
 			modpack_is.close(); // We don't actually need the file
 			ModSpec spec(modname,modpath);
 			spec.modpack_content = getModsInPath(modpath);
+			spec.is_modpack = true;
 			result.insert(std::make_pair(modname,spec));
 		}
 		else // not a modpack, add the modspec
@@ -76,7 +78,7 @@ std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mod
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) //is a modpack
+		if(mod.is_modpack)
 		{
 			std::map<std::string, ModSpec> content = 
 				flattenModTree(mod.modpack_content);
@@ -98,7 +100,7 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) //is a modpack
+		if(mod.is_modpack)
 		{
 			std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 			result.reserve(result.size() + content.size());
@@ -187,11 +189,58 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 	}
 }
 
+// If failed, returned modspec has name==""
+static ModSpec findCommonMod(const std::string &modname)
+{
+	// Try to find in {$user,$share}/games/common/$modname
+	std::vector<std::string> find_paths;
+	find_paths.push_back(porting::path_user + DIR_DELIM + "games" +
+			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+	find_paths.push_back(porting::path_share + DIR_DELIM + "games" +
+			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+	for(u32 i=0; i<find_paths.size(); i++){
+		const std::string &try_path = find_paths[i];
+		if(fs::PathExists(try_path))
+			return ModSpec(modname, try_path);
+	}
+	// Failed to find mod
+	return ModSpec();
+}
+
 ModConfiguration::ModConfiguration(std::string worldpath)
 {
+	SubgameSpec gamespec = findWorldSubgame(worldpath);
+
+	// Add common mods without dependency handling
+	std::vector<std::string> inexistent_common_mods;
+	Settings gameconf;
+	if(getGameConfig(gamespec.path, gameconf)){
+		if(gameconf.exists("common_mods")){
+			Strfnd f(gameconf.get("common_mods"));
+			while(!f.atend()){
+				std::string modname = trim(f.next(","));
+				if(modname.empty())
+					continue;
+				ModSpec spec = findCommonMod(modname);
+				if(spec.name.empty())
+					inexistent_common_mods.push_back(modname);
+				else
+					m_sorted_mods.push_back(spec);
+			}
+		}
+	}
+	if(!inexistent_common_mods.empty()){
+		std::string s = "Required common mods ";
+		for(u32 i=0; i<inexistent_common_mods.size(); i++){
+			if(i != 0) s += ", ";
+			s += std::string("\"") + inexistent_common_mods[i] + "\"";
+		}
+		s += " could not be found.";
+		throw ModError(s);
+	}
+
 	// Add all world mods and all game mods
 	addModsInPath(worldpath + DIR_DELIM + "worldmods");
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
 	addModsInPath(gamespec.gamemods_path);
 
 	// check world.mt file for mods explicitely declared to be
@@ -216,6 +265,6 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	}
 
 	for(std::set<std::string>::const_iterator i = gamespec.addon_mods_paths.begin();
-		i != gamespec.addon_mods_paths.end(); ++i)
+			i != gamespec.addon_mods_paths.end(); ++i)
 		addModsInPathFiltered((*i),exclude_mod_names);
 }

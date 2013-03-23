@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LOCALPLAYER_HEADER
 
 #include "player.h"
+#include <list>
 
 class LocalPlayer : public Player
 {
@@ -38,7 +39,7 @@ public:
 	v3f overridePosition;
 	
 	void move(f32 dtime, Map &map, f32 pos_max_d,
-			core::list<CollisionInfo> *collision_info);
+			std::list<CollisionInfo> *collision_info);
 	void move(f32 dtime, Map &map, f32 pos_max_d);
 
 	void applyControl(float dtime);

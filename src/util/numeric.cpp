@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 // Calculate the borders of a "d-radius" cube
-void getFacePositions(core::list<v3s16> &list, u16 d)
+void getFacePositions(std::list<v3s16> &list, u16 d)
 {
 	if(d == 0)
 	{

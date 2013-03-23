@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
+#include <set>
+#include <map>
 
 struct MapDrawControl
 {
@@ -128,7 +130,7 @@ public:
 	// Check if sector was drawn on last render()
 	bool sectorWasDrawn(v2s16 p)
 	{
-		return (m_last_drawn_sectors.find(p) != NULL);
+		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
 	}
 	
 private:
@@ -143,9 +145,9 @@ private:
 	f32 m_camera_fov;
 	JMutex m_camera_mutex;
 
-	core::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock*> m_drawlist;
 	
-	core::map<v2s16, bool> m_last_drawn_sectors;
+	std::set<v2s16> m_last_drawn_sectors;
 };
 
 #endif

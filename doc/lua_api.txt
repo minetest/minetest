@@ -27,6 +27,39 @@ Startup
 Mods are loaded during server startup from the mod load paths by running
 the init.lua scripts in a shared environment.
 
+Paths
+-----
+RUN_IN_PLACE=1: (Windows release, local build)
+ $path_user:  Linux:    <build directory>
+              Windows:  <build directory>
+ $path_share: Linux:    <build directory>
+              Windows:  <build directory>
+
+RUN_IN_PLACE=0: (Linux release)
+ $path_share: Linux:    /usr/share/minetest
+              Windows:  <install directory>/minetest-0.4.x
+ $path_user:  Linux:    ~/.minetest
+              Windows:  C:/users/<user>/AppData/minetest (maybe)
+
+Games
+-----
+Games are looked up from:
+  $path_share/games/gameid/
+  $path_user/games/gameid/
+where gameid is unique to each game.
+
+The game directory contains the file game.conf, which contains these fields:
+  name = <Human-readable full name of the game>
+  common_mods = <Comma-separated list of common mods>
+eg.
+  name = Minetest
+  common_mods = bucket, default, doors, fire, stairs
+
+Common mods are loaded from the pseudo-game "common".
+
+The game directory can contain the file minetest.conf, which will be used
+to set default settings when running the particular game.
+
 Mod load path
 -------------
 Generic:
@@ -778,6 +811,9 @@ string:trim()
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
+^ Same but in reverse
+minetest.formspec_escape(string) -> string
+^ escapes characters like [, ], and \ that can not be used in formspecs
 
 minetest namespace reference
 -----------------------------
@@ -919,12 +955,17 @@ minetest.get_craft_result(input) -> output, decremented_input
 ^ output.time = number, if unsuccessful: 0
 ^ decremented_input = like input
 minetest.get_craft_recipe(output) -> input
+^ returns last registered recipe for output item (node)
 ^ output is a node or item type such as 'default:torch'
 ^ input.method = 'normal' or 'cooking' or 'fuel'
 ^ input.width = for example 3
 ^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
+minetest.get_all_craft_recipes(output) -> table or nil
+^ returns table with all registered recipes for output item (node)
+^ returns nil if no recipe was found
+^ table entries have same format as minetest.get_craft_recipe
 minetest.handle_node_drops(pos, drops, digger)
 ^ drops: list of itemstrings
 ^ Handles drops from nodes after digging: Default action is to put them into
@@ -969,9 +1010,9 @@ minetest.sound_play(spec, parameters) -> handle
 minetest.sound_stop(handle)
 
 Timing:
-minetest.after(time, func, param)
+minetest.after(time, func, ...)
 ^ Call function after time seconds
-^ param is optional; to pass multiple parameters, pass a table.
+^ Optional: Variable number of arguments that are passed to func
 
 Server:
 minetest.request_shutdown() -> request for server shutdown
@@ -1093,12 +1134,15 @@ treedef={
   thin_branches, - boolean true -> use thin (1 node) branches
   fruit,         - string  fruit node name
   fruit_chance,  - num     chance (0-100) to replace leaves with fruit node
+  seed,          - num     random seed
   }
 
 Key for Special L-System Symbols used in Axioms
   G  - move forward one unit with the pen up
   F  - move forward one unit with the pen down drawing trunks and branches
-  f  - move forward one unit with the pen down drawing leaves
+  f  - move forward one unit with the pen down drawing leaves (100% chance)
+  T  - move forward one unit with the pen down drawing trunks only
+  R  - move forward one unit with the pen down placing fruit
   A  - replace with rules set A
   B  - replace with rules set B
   C  - replace with rules set C
@@ -1217,6 +1261,8 @@ Player-only: (no-op for other objects)
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+- set_look_pitch(radians): sets look pitch
+- set_look_yaw(radians): sets look yaw
 - set_inventory_formspec(formspec)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
@@ -1499,8 +1545,10 @@ Node definition (register_node)
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
-    on_rightclick = func(pos, node, clicker),
+    on_rightclick = func(pos, node, clicker, itemstack),
     ^ default: nil
+    ^ if defined, itemstack will hold clicker's wielded item
+      Shall return the leftover itemstack
     on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node

@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -345,17 +345,16 @@ const KeyPress NumberKey[] = {
 */
 
 // A simple cache for quicker lookup
-core::map<std::string, KeyPress> g_key_setting_cache;
+std::map<std::string, KeyPress> g_key_setting_cache;
 
 KeyPress getKeySetting(const char *settingname)
 {
-	core::map<std::string, KeyPress>::Node *n;
+	std::map<std::string, KeyPress>::iterator n;
 	n = g_key_setting_cache.find(settingname);
-	if(n)
-		return n->getValue();
-	g_key_setting_cache.insert(settingname,
-			g_settings->get(settingname).c_str());
-	return g_key_setting_cache.find(settingname)->getValue();
+	if(n != g_key_setting_cache.end())
+		return n->second;
+	g_key_setting_cache[settingname] = g_settings->get(settingname).c_str();
+	return g_key_setting_cache.find(settingname)->second;
 }
 
 void clearKeyCache()

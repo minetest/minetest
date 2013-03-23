@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 kwolekr, Ryan Kwolek <kwolekr2@cs.scranton.edu>
+Minetest
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr2@cs.scranton.edu>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -127,7 +127,7 @@ void BiomeDefManager::addBiome(Biome *b) {
 	bgroup->push_back(b);
 
 	verbosestream << "BiomeDefManager: added biome '" << b->name <<
-		"' to biome group " << b->groupid << std::endl;
+		"' to biome group " << (int)b->groupid << std::endl;
 }
 
 

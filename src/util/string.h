@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -27,6 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <vector>
 #include <sstream>
+
+struct FlagDesc {
+	const char *name;
+	u32 flag;
+};
 
 static inline std::string padStringRight(std::string s, size_t len)
 {
@@ -281,8 +286,27 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 	return to;
 }
 
+/*
+	Removes all \\ from a string that had been escaped (FormSpec strings)
+*/
+inline std::string unescape_string(std::string &s)
+{
+	std::string res;
+	
+	for (size_t i = 0; i <= s.length(); i++) {
+		if (s[i] == '\\')
+			i++;
+		res += s[i];
+	}
+	
+	return res;
+}
+
 std::string translatePassword(std::string playername, std::wstring password);
 size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata);
+u32 readFlagString(std::string str, FlagDesc *flagdesc);
+std::string writeFlagString(u32 flags, FlagDesc *flagdesc);
+char *mystrtok_r(char *s, const char *sep, char **lasts);
 
 #endif
 

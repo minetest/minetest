@@ -15,7 +15,8 @@ openal_stripped_file=$dir/openal_stripped.zip
 mingwm10_dll_file=$dir/mingwm10.dll
 irrlicht_version=1.7.2
 ogg_version=1.2.1
-vorbis_version=1.3.2
+vorbis_version=1.3.3
+curl_version=7.18.0
 
 # unzip -l $openal_stripped_file:
 #        0  2012-04-03 00:25   openal_stripped/
@@ -33,32 +34,43 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-wget http://downloads.sourceforge.net/irrlicht/irrlicht-$irrlicht_version.zip \
+[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://downloads.sourceforge.net/irrlicht/irrlicht-$irrlicht_version.zip \
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip || exit 1
-wget http://www.winimage.com/zLibDll/zlib125.zip \
+[ -e $packagedir/zlib125.zip ] || wget http://www.winimage.com/zLibDll/zlib125.zip \
 	-c -O $packagedir/zlib125.zip || exit 1
-wget http://www.winimage.com/zLibDll/zlib125dll.zip \
+[ -e $packagedir/zlib125dll.zip ] || wget http://www.winimage.com/zLibDll/zlib125dll.zip \
 	-c -O $packagedir/zlib125dll.zip || exit 1
-wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dev.7z \
+[ -e $packagedir/libogg-$ogg_version-dev.7z ] || wget http://mirror.transact.net.au/sourceforge/w/project/wi/winlibs/libogg/libogg-$ogg_version-dev.7z \
 	-c -O $packagedir/libogg-$ogg_version-dev.7z || exit 1
-wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dll.7z \
+[ -e $packagedir/libogg-$ogg_version-dll.7z ] || wget http://mirror.transact.net.au/sourceforge/w/project/wi/winlibs/libogg/libogg-$ogg_version-dll.7z \
 	-c -O $packagedir/libogg-$ogg_version-dll.7z || exit 1
-wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dev.7z \
+[ -e $packagedir/libvorbis-$vorbis_version-dev.7z ] || wget http://minetest.ru/bin/libvorbis-$vorbis_version-dev.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
-wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dll.7z \
+[ -e $packagedir/libvorbis-$vorbis_version-dll.7z ] || wget http://minetest.ru/bin/libvorbis-$vorbis_version-dll.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
-wget http://github.com/celeron55/minetest/zipball/master \
-	-c -O $packagedir/minetest.zip || exit 1
-cp $openal_stripped_file $packagedir/openal_stripped.zip || exit 1
-cp $mingwm10_dll_file $packagedir/mingwm10.dll || exit 1
-wget http://github.com/celeron55/minetest_game/zipball/master \
-	-c -O $packagedir/minetest_game.zip || exit 1
+[ -e $packagedir/libcurl-$curl_version-win32-msvc.zip ] || wget http://curl.haxx.se/download/libcurl-$curl_version-win32-msvc.zip \
+	-c -O $packagedir/libcurl-$curl_version-win32-msvc.zip || exit 1
+wget http://github.com/minetest/minetest/zipball/master \
+	-c -O $packagedir/minetest.zip --tries=3 || (echo "Please download http://github.com/minetest/minetest/zipball/master manually and save it as $packagedir/minetest.zip"; read -s)
+[ -e $packagedir/minetest.zip ] || (echo "minetest.zip not found"; exit 1)
+wget http://github.com/minetest/common/zipball/master \
+	-c -O $packagedir/common.zip --tries=3 || (echo "Please download http://github.com/minetest/common/zipball/master manually and save it as $packagedir/common.zip"; read -s)
+[ -e $packagedir/common.zip ] || (echo "common.zip not found"; exit 1)
+wget http://github.com/minetest/minetest_game/zipball/master \
+	-c -O $packagedir/minetest_game.zip --tries=3 || (echo "Please download http://github.com/minetest/minetest_game/zipball/master manually and save it as $packagedir/minetest_game.zip"; read -s)
+[ -e $packagedir/minetest_game.zip ] || (echo "minetest_game.zip not found"; exit 1)
+[ -e $packagedir/openal_stripped.zip ] || wget http://minetest.ru/bin/openal_stripped.zip \
+	-c -O $packagedir/openal_stripped.zip || exit 1
+[ -e $packagedir/mingwm10.dll ] || wget http://minetest.ru/bin/mingwm10.dll \
+	-c -O $packagedir/mingwm10.dll || exit 1
+
 
 # Figure out some path names from the packages
-minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
+minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
 minetestdir=$builddir/$minetestdirname || exit 1
-git_hash=`echo $minetestdirname | sed -e 's/celeron55-minetest-//'`
-minetest_gamedirname=`unzip -l $packagedir/minetest_game.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
+git_hash=`echo $minetestdirname | sed -e 's/minetest-minetest-//'`
+commondirname=`unzip -l $packagedir/common.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
+minetest_gamedirname=`unzip -l $packagedir/minetest_game.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
 
 # Extract stuff
 cd $libdir || exit 1
@@ -69,6 +81,7 @@ unzip -o $packagedir/zlib125dll.zip -d zlib125dll || exit 1
 7z x -y -olibogg $packagedir/libogg-$ogg_version-dll.7z || exit 1
 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
+unzip -o $packagedir/libcurl-$curl_version-win32-msvc.zip -d libcurl || exit 1
 unzip -o $packagedir/openal_stripped.zip || exit 1
 cd $builddir || exit 1
 unzip -o $packagedir/minetest.zip || exit 1
@@ -76,6 +89,13 @@ unzip -o $packagedir/minetest.zip || exit 1
 # Symlink minetestdir
 rm -rf $builddir/minetest
 ln -s $minetestdir $builddir/minetest
+
+# Extract common
+cd $minetestdir/games || exit 1
+rm -rf common || exit 1
+unzip -o $packagedir/common.zip || exit 1
+commondir=$minetestdir/games/$commondirname || exit 1
+mv $commondir $minetestdir/games/common || exit 1
 
 # Extract minetest_game
 cd $minetestdir/games || exit 1
@@ -106,6 +126,10 @@ cmake $minetestdir -DCMAKE_TOOLCHAIN_FILE=$toolchain_file -DENABLE_SOUND=1 \
 	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include \
 	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/OpenAL32.lib \
 	-DOPENAL_DLL=$libdir/openal_stripped/bin/OpenAL32.dll \
+	-DENABLE_CURL=1 \
+	-DCURL_DLL=$libdir/libcurl/libcurl.dll \
+	-DCURL_INCLUDE_DIR=$libdir/libcurl/include \
+	-DCURL_LIBRARY=$libdir/libcurl/libcurl.lib \
 	-DMINGWM10_DLL=$packagedir/mingwm10.dll \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \

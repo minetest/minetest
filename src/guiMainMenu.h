@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -52,9 +52,11 @@ struct MainMenuData
 	int enable_shaders;
 	bool preload_item_visuals;
 	bool enable_particles;
+	bool liquid_finite;
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
+	bool enable_public;
 	int selected_world;
 	bool simple_singleplayer_mode;
 	// Actions
@@ -70,19 +72,32 @@ struct MainMenuData
 
 	MainMenuData():
 		// Generic
-		selected_tab(0),
+		selected_tab(
+#if USE_CURL
+		    1
+#else
+		    0
+#endif
+		),
 		// Client opts
 		fancy_trees(false),
 		smooth_lighting(false),
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
+		enable_public(false),
 		selected_world(0),
 		simple_singleplayer_mode(false),
 		// Actions
 		only_refresh(false),
 
-		serverlist_show_available(false)
+		serverlist_show_available(
+#if USE_CURL
+		    true
+#else
+		    false
+#endif
+)
 	{}
 };
 

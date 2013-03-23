@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "settings.h"
+#include "filesys.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -93,7 +94,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "true");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("enable_texture_atlas", "true");
+	settings->setDefault("enable_texture_atlas", "false");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
@@ -108,6 +109,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_height", "120");
+	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
@@ -129,8 +131,18 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("media_fetch_threads", "8");
 
-	settings->setDefault("serverlist_url", "servers.minetest.ru/server.list");
+	settings->setDefault("serverlist_url", "servers.minetest.net");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
+	settings->setDefault("server_announce", "false");
+	settings->setDefault("server_url", "");
+	settings->setDefault("server_address", "");
+	settings->setDefault("server_name", "");
+	settings->setDefault("server_description", "");
+
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
+	settings->setDefault("font_size", "13");
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
+	settings->setDefault("mono_font_size", "13");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
@@ -172,28 +184,71 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("congestion_control_max_rate", "400");
 	settings->setDefault("congestion_control_min_rate", "10");
 	settings->setDefault("remote_media", "");
+	settings->setDefault("debug_log_level", "2");
+	settings->setDefault("emergequeue_limit_total", "256");
+	settings->setDefault("emergequeue_limit_diskonly", "");
+	settings->setDefault("emergequeue_limit_generate", "");
+	settings->setDefault("num_emerge_threads", "1");
 	
-	//mapgen related things
+	// physics stuff
+	settings->setDefault("movement_acceleration_default", "3");
+	settings->setDefault("movement_acceleration_air", "2");
+	settings->setDefault("movement_acceleration_fast", "10");
+	settings->setDefault("movement_speed_walk", "4");
+	settings->setDefault("movement_speed_crouch", "1.35");
+	settings->setDefault("movement_speed_fast", "20");
+	settings->setDefault("movement_speed_climb", "2");
+	settings->setDefault("movement_speed_jump", "6.5");
+	settings->setDefault("movement_liquid_fluidity", "1");
+	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
+	settings->setDefault("movement_liquid_sink", "10");
+	settings->setDefault("movement_gravity", "9.81");
+
+	//liquid stuff
+	settings->setDefault("liquid_finite", "false");
+	settings->setDefault("liquid_update", "1.0");
+	settings->setDefault("liquid_relax", "2");
+	settings->setDefault("liquid_fast_flood", "1");
+	settings->setDefault("underground_springs", "1");
+
+	//mapgen stuff
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "19");
+	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
 	settings->setDefault("mgv6_freq_desert", "0.45");
 	settings->setDefault("mgv6_freq_beach", "0.15");
 
-	settings->setDefault("mgv6_np_terrain_base",   "-4, 20, (250.0, 250, 250), 82341, 5, 0.6");
+	settings->setDefault("mgv6_np_terrain_base",   "-4, 20, (250, 250, 250), 82341, 5, 0.6");
 	settings->setDefault("mgv6_np_terrain_higher", "20, 16, (500, 500, 500), 85039, 5, 0.6");
 	settings->setDefault("mgv6_np_steepness",      "0.85, 0.5, (125, 125, 125), -932, 5, 0.7");
 	settings->setDefault("mgv6_np_height_select",  "0.5, 1, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
 	settings->setDefault("mgv6_np_mud",            "4, 2, (200, 200, 200), 91013, 3, 0.55");
 	settings->setDefault("mgv6_np_beach",          "0, 1, (250, 250, 250), 59420, 3, 0.50");
 	settings->setDefault("mgv6_np_biome",          "0, 1, (250, 250, 250), 9130, 3, 0.50");
 	settings->setDefault("mgv6_np_cave",           "6, 6, (250, 250, 250), 34329, 3, 0.50");
+	settings->setDefault("mgv6_np_humidity",       "0.5, 0.5, (500, 500, 500), 72384, 4, 0.66");
+	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
+	settings->setDefault("mgv6_np_apple_trees",    "0, 1, (100, 100, 100), 342902, 3, 0.45");
 
 	settings->setDefault("mgv7_np_terrain",  "10, 12, (350, 350, 350), 82341, 5, 0.6");
 	settings->setDefault("mgv7_np_bgroup",   "0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6");
 	settings->setDefault("mgv7_np_heat",     "25, 50, (500, 500, 500), 35293, 1, 0");
 	settings->setDefault("mgv7_np_humidity", "50, 31.25, (750, 750, 750), 12094, 2, 0.6");
+
+	settings->setDefault("mgindev_np_terrain_base",   "-4, 20, (250.0, 250, 250), 82341, 5, 0.6, 10");
+	settings->setDefault("mgindev_np_terrain_higher", "20, 16, (500, 500, 500), 85039, 5, 0.6, 10");
+	settings->setDefault("mgindev_np_steepness",      "0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 10");
+	settings->setDefault("mgindev_np_mud",            "4, 2, (200, 200, 200), 91013, 3, 0.55, 1");
+
+}
+
+void override_default_settings(Settings *settings, Settings *from)
+{
+	std::vector<std::string> names = from->getNames();
+	for(size_t i=0; i<names.size(); i++){
+		const std::string &name = names[i];
+		settings->setDefault(name, from->get(name));
+	}
 }
 

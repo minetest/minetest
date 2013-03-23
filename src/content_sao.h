@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -147,6 +147,8 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
+	void setYaw(float);
+	void setPitch(float);
 
 	/*
 		Interaction interface

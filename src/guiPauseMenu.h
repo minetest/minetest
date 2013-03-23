@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,7 @@ public:
 	virtual void exitToOS() = 0;
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
+	virtual void changeVolume() = 0;
 };
 
 class GUIPauseMenu : public GUIModalMenu

@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include <ostream>
+#include <map>
+#include <list>
 
 class MapBlock;
 class Map;
@@ -60,7 +62,7 @@ public:
 	
 	void deleteBlock(MapBlock *block);
 	
-	void getBlocks(core::list<MapBlock*> &dest);
+	void getBlocks(std::list<MapBlock*> &dest);
 	
 	// Always false at the moment, because sector contains no metadata.
 	bool differs_from_disk;
@@ -68,7 +70,7 @@ public:
 protected:
 	
 	// The pile of MapBlocks
-	core::map<s16, MapBlock*> m_blocks;
+	std::map<s16, MapBlock*> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)
@@ -110,7 +112,7 @@ public:
 			std::istream &is,
 			Map *parent,
 			v2s16 p2d,
-			core::map<v2s16, MapSector*> & sectors,
+			std::map<v2s16, MapSector*> & sectors,
 			IGameDef *gamedef
 		);
 		

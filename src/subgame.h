@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <set>
 #include <vector>
+
+class Settings;
 
 #define WORLDNAME_BLACKLISTED_CHARS "/\\"
 
@@ -51,6 +53,11 @@ struct SubgameSpec
 		return (id != "" && path != "");
 	}
 };
+
+// minetest.conf
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
+// game.conf
+bool getGameConfig(const std::string &game_path, Settings &conf);
 
 std::string getGameName(const std::string &game_path);
 

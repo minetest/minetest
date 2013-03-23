@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -24,12 +24,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 
-std::string getGameName(const std::string &game_path)
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
+{
+	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
+
+bool getGameConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "game.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
+
+std::string getGameName(const std::string &game_path)
+{
 	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if(!succeeded)
+	if(!getGameConfig(game_path, conf))
 		return "";
 	if(!conf.exists("name"))
 		return "";
@@ -117,6 +127,11 @@ std::set<std::string> getAvailableGameIds()
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(!dirlist[j].dir)
 				continue;
+			// If configuration file is not found or broken, ignore game
+			Settings conf;
+			if(!getGameConfig(*i + DIR_DELIM + dirlist[j].name, conf))
+				continue;
+			// Add it to result
 			const char *ends[] = {"_game", NULL};
 			std::string shorter = removeStringEnd(dirlist[j].name, ends);
 			if(shorter != "")

@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -199,6 +199,10 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	/*
 		Calculate new velocity
 	*/
+	if( dtime > 0.5 ) {
+		infostream<<"collisionMoveSimple: WARNING: maximum step interval exceeded, lost movement details!"<<std::endl;
+		dtime = 0.5;
+	}
 	speed_f += accel_f * dtime;
 
     // If there is no speed, there are no collisions

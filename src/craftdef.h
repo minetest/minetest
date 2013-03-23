@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -358,6 +358,8 @@ public:
 			bool decrementInput, IGameDef *gamedef) const=0;
 	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
 			IGameDef *gamedef) const=0;
+	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
+			IGameDef *gamedef) const=0;
 	
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
@@ -375,6 +377,8 @@ public:
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
 	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const=0;
+	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output, 
 			IGameDef *gamedef) const=0;
 
 	// Print crafting recipes for debugging

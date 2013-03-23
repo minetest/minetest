@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "genericobject.h"
 #include "util/serialize.h"
 
-core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
 /*
 	DummyLoadSAO
@@ -1227,6 +1227,20 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_last_good_position = pos;
 	m_last_good_position_age = 0;
 	// Force position change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setYaw(float yaw)
+{
+	m_player->setYaw(yaw);
+	// Force change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setPitch(float pitch)
+{
+	m_player->setPitch(pitch);
+	// Force change on client
 	m_moved = true;
 }
 

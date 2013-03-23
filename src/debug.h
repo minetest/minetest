@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,9 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threads.h"
 #include "gettime.h"
 #include "exceptions.h"
+#include <map>
 
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
 	#include <windows.h>
 	#ifdef _MSC_VER
 		#include <eh.h>
@@ -162,7 +166,7 @@ struct DebugStack
 	int stack_max_i; // Highest i that was seen
 };
 
-extern core::map<threadid_t, DebugStack*> g_debug_stacks;
+extern std::map<threadid_t, DebugStack*> g_debug_stacks;
 extern JMutex g_debug_stacks_mutex;
 
 extern void debug_stacks_init();
@@ -202,42 +206,42 @@ public:
 
 	void add(u16 command)
 	{
-		core::map<u16, u16>::Node *n = m_packets.find(command);
-		if(n == NULL)
+		std::map<u16, u16>::iterator n = m_packets.find(command);
+		if(n == m_packets.end())
 		{
 			m_packets[command] = 1;
 		}
 		else
 		{
-			n->setValue(n->getValue()+1);
+			n->second++;
 		}
 	}
 
 	void clear()
 	{
-		for(core::map<u16, u16>::Iterator
-				i = m_packets.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<u16, u16>::iterator
+				i = m_packets.begin();
+				i != m_packets.end(); ++i)
 		{
-			i.getNode()->setValue(0);
+			i->second = 0;
 		}
 	}
 
 	void print(std::ostream &o)
 	{
-		for(core::map<u16, u16>::Iterator
-				i = m_packets.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<u16, u16>::iterator
+				i = m_packets.begin();
+				i != m_packets.end(); ++i)
 		{
-			o<<"cmd "<<i.getNode()->getKey()
-					<<" count "<<i.getNode()->getValue()
+			o<<"cmd "<<i->first
+					<<" count "<<i->second
 					<<std::endl;
 		}
 	}
 
 private:
 	// command, count
-	core::map<u16, u16> m_packets;
+	std::map<u16, u16> m_packets;
 };
 
 /*

@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "test.h"
+#include "clouds.h"
 #include "server.h"
 #include "constants.h"
 #include "porting.h"
@@ -68,6 +69,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
+#if USE_FREETYPE
+#include "xCGUITTFont.h"
+#endif
 #include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
@@ -593,50 +597,120 @@ private:
 	bool rightreleased;
 };
 
-void drawMenuBackground(video::IVideoDriver* driver)
-{
+//Draw the tiled menu background
+void drawMenuBackground(video::IVideoDriver* driver) {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
+
+	std::string path = getTexturePath("menubg.png");
+	if (path[0]) {
+		video::ITexture *bgtexture =
+			driver->getTexture(path.c_str());
+
+		if (bgtexture) {
+			s32 scaledsize = 128;
 		
-	video::ITexture *bgtexture =
-			driver->getTexture(getTexturePath("menubg.png").c_str());
-	if(bgtexture)
-	{
-		s32 scaledsize = 128;
+			// The important difference between destsize and screensize is
+			// that destsize is rounded to whole scaled pixels.
+			// These formulas use component-wise multiplication and division of v2u32.
+			v2u32 texturesize = bgtexture->getSize();
+			v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
+			v2u32 destsize = scaledsize * sourcesize / texturesize;
 		
-		// The important difference between destsize and screensize is
-		// that destsize is rounded to whole scaled pixels.
-		// These formulas use component-wise multiplication and division of v2u32.
-		v2u32 texturesize = bgtexture->getSize();
-		v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
-		v2u32 destsize = scaledsize * sourcesize / texturesize;
-		
-		// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
-		driver->draw2DImage(bgtexture,
-			core::rect<s32>(0, 0, destsize.X, destsize.Y),
-			core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-			NULL, NULL, true);
+			// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
+			driver->draw2DImage(bgtexture,
+				core::rect<s32>(0, 0, destsize.X, destsize.Y),
+				core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
+				NULL, NULL, true);
+		}
 	}
-	
-	video::ITexture *logotexture =
-			driver->getTexture(getTexturePath("menulogo.png").c_str());
-	if(logotexture)
-	{
-		v2s32 logosize(logotexture->getOriginalSize().Width,
-				logotexture->getOriginalSize().Height);
-		logosize *= 4;
+}
 
-		video::SColor bgcolor(255,50,50,50);
-		core::rect<s32> bgrect(0, screensize.Height-logosize.Y-20,
-				screensize.Width, screensize.Height);
-		driver->draw2DRectangle(bgcolor, bgrect, NULL);
+//Draw the footer at the bottom of the window
+void drawMenuFooter(video::IVideoDriver* driver, bool clouds) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	std::string path = getTexturePath(clouds ?
+						"menufooter_clouds.png" : "menufooter.png");
+	if (path[0]) {
+		video::ITexture *footertexture =
+			driver->getTexture(path.c_str());
 
-		core::rect<s32> rect(0,0,logosize.X,logosize.Y);
-		rect += v2s32(screensize.Width/2,screensize.Height-10-logosize.Y);
-		rect -= v2s32(logosize.X/2, 0);
-		driver->draw2DImage(logotexture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(logotexture->getSize())),
-			NULL, NULL, true);
+		if (footertexture) {
+			f32 mult = (((f32)screensize.Width)) /
+				((f32)footertexture->getOriginalSize().Width);
+
+			v2s32 footersize(((f32)footertexture->getOriginalSize().Width) * mult,
+					((f32)footertexture->getOriginalSize().Height) * mult);
+
+			// Don't draw the footer if there isn't enough room
+			s32 free_space = (((s32)screensize.Height)-320)/2;
+			if (free_space > footersize.Y) {
+				core::rect<s32> rect(0,0,footersize.X,footersize.Y);
+				rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
+				rect -= v2s32(footersize.X/2, 0);
+
+				driver->draw2DImage(footertexture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(footertexture->getSize())),
+					NULL, NULL, true);
+			}
+		}
+	}
+}
+
+// Draw the Header over the main menu
+void drawMenuHeader(video::IVideoDriver* driver) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+
+	std::string path = getTexturePath("menuheader.png");
+	if (path[0]) {
+		video::ITexture *splashtexture =
+		driver->getTexture(path.c_str());
+
+		if(splashtexture) {
+			//v2s32 splashsize((splashtexture->getOriginalSize().Width*100)/
+			//	splashtexture->getOriginalSize().Height, 80);
+
+			f32 mult = (((f32)screensize.Width / 2)) /
+				((f32)splashtexture->getOriginalSize().Width);
+
+			v2s32 splashsize(((f32)splashtexture->getOriginalSize().Width) * mult,
+					((f32)splashtexture->getOriginalSize().Height) * mult);
+
+			// Don't draw the header is there isn't enough room
+			s32 free_space = (((s32)screensize.Height)-320)/2;
+			if (free_space > splashsize.Y) {
+				core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
+				splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
+					((free_space/2)-splashsize.Y/2)+10);
+
+				video::SColor bgcolor(255,50,50,50);
+
+				driver->draw2DImage(splashtexture, splashrect,
+					core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(splashtexture->getSize())),
+					NULL, NULL, true);
+			}
+		}
+	}
+}
+
+// Draw the Splash over the clouds and under the main menu
+void drawMenuSplash(video::IVideoDriver* driver) {
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	if (getTexturePath("menusplash.png") != "") {
+		video::ITexture *splashtexture =
+			driver->getTexture(getTexturePath("menusplash.png").c_str());
+
+		if(splashtexture) {
+			core::rect<s32> splashrect(0, 0, screensize.Width, screensize.Height);
+
+			video::SColor bgcolor(255,50,50,50);
+
+			driver->draw2DImage(splashtexture, splashrect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(splashtexture->getSize())),
+				NULL, NULL, true);
+		}
 	}
 }
 
@@ -697,14 +771,14 @@ void SpeedTests()
 	}
 
 	{
-		TimeTaker timer("Testing core::map speed");
+		TimeTaker timer("Testing std::map speed");
 		
-		core::map<v2s16, f32> map1;
+		std::map<v2s16, f32> map1;
 		tempf = -324;
 		const s16 ii=300;
 		for(s16 y=0; y<ii; y++){
 			for(s16 x=0; x<ii; x++){
-				map1.insert(v2s16(x,y), tempf);
+				map1[v2s16(x,y)] =  tempf;
 				tempf += 1;
 			}
 		}
@@ -767,58 +841,66 @@ int main(int argc, char *argv[])
 
 	log_register_thread("main");
 
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
+	// This enables internatonal characters input
+	if( setlocale(LC_ALL, "") == NULL )
+	{
+		fprintf( stderr, "%s: warning: could not set default locale\n", argv[0] );
+	}
 
+	// Set locale. This is for forcing '.' as the decimal point.
+	try {
+		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
+		setlocale(LC_NUMERIC, "C");
+	} catch (const std::exception& ex) {
+		errorstream<<"Could not set numeric locale to C"<<std::endl;
+	}
 	/*
 		Parse command line
 	*/
 	
 	// List all allowed options
-	core::map<std::string, ValueSpec> allowed_options;
-	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
-			_("Show allowed options")));
-	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
-			_("Load configuration from specified file")));
-	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			_("Set network port (UDP)")));
-	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Disable unit tests")));
-	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Enable unit tests")));
-	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
-			_("Same as --world (deprecated)")));
-	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)")));
-	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)")));
-	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
-			_("Print more information to console")));
-	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
-			_("Print even more information to console")));
-	allowed_options.insert("trace", ValueSpec(VALUETYPE_FLAG,
-			_("Print enormous amounts of information to log and console")));
-	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
-			_("Set logfile path ('' = no logging)")));
-	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
-			_("Set gameid (\"--gameid list\" prints available ones)")));
+	std::map<std::string, ValueSpec> allowed_options;
+	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
+			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
+			_("Load configuration from specified file"))));
+	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
+			_("Set network port (UDP)"))));
+	allowed_options.insert(std::make_pair("disable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Disable unit tests"))));
+	allowed_options.insert(std::make_pair("enable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Enable unit tests"))));
+	allowed_options.insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
+			_("Same as --world (deprecated)"))));
+	allowed_options.insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
+			_("Set world path (implies local game) ('list' lists all)"))));
+	allowed_options.insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
+			_("Set world by name (implies local game)"))));
+	allowed_options.insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
+			_("Print more information to console"))));
+	allowed_options.insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
+			_("Print even more information to console"))));
+	allowed_options.insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
+			_("Print enormous amounts of information to log and console"))));
+	allowed_options.insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
+			_("Set logfile path ('' = no logging)"))));
+	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
+			_("Set gameid (\"--gameid list\" prints available ones)"))));
 #ifndef SERVER
-	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests")));
-	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			_("Address to connect to. ('' = local game)")));
-	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
-			_("Enable random user input, for testing")));
-	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			_("Run dedicated server")));
-	allowed_options.insert("name", ValueSpec(VALUETYPE_STRING,
-			_("Set player name")));
-	allowed_options.insert("password", ValueSpec(VALUETYPE_STRING,
-			_("Set password")));
-	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
-			_("Disable main menu")));
+	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
+			_("Run speed tests"))));
+	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
+			_("Address to connect to. ('' = local game)"))));
+	allowed_options.insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
+			_("Enable random user input, for testing"))));
+	allowed_options.insert(std::make_pair("server", ValueSpec(VALUETYPE_FLAG,
+			_("Run dedicated server"))));
+	allowed_options.insert(std::make_pair("name", ValueSpec(VALUETYPE_STRING,
+			_("Set player name"))));
+	allowed_options.insert(std::make_pair("password", ValueSpec(VALUETYPE_STRING,
+			_("Set password"))));
+	allowed_options.insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
+			_("Disable main menu"))));
 #endif
 
 	Settings cmd_args;
@@ -828,20 +910,20 @@ int main(int argc, char *argv[])
 	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
 	{
 		dstream<<_("Allowed options:")<<std::endl;
-		for(core::map<std::string, ValueSpec>::Iterator
-				i = allowed_options.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, ValueSpec>::iterator
+				i = allowed_options.begin();
+				i != allowed_options.end(); ++i)
 		{
 			std::ostringstream os1(std::ios::binary);
-			os1<<"  --"<<i.getNode()->getKey();
-			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
+			os1<<"  --"<<i->first;
+			if(i->second.type == VALUETYPE_FLAG)
 				{}
 			else
 				os1<<_(" <value>");
 			dstream<<padStringRight(os1.str(), 24);
 
-			if(i.getNode()->getValue().help != NULL)
-				dstream<<i.getNode()->getValue().help;
+			if(i->second.help != NULL)
+				dstream<<i->second.help;
 			dstream<<std::endl;
 		}
 
@@ -875,23 +957,8 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
 
-	init_gettext((porting::path_share+DIR_DELIM+".."+DIR_DELIM+"locale").c_str());
-	
-	// Initialize debug streams
-#define DEBUGFILE "debug.txt"
-#if RUN_IN_PLACE
-	std::string logfile = DEBUGFILE;
-#else
-	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
-#endif
-	if(cmd_args.exists("logfile"))
-		logfile = cmd_args.get("logfile");
-	if(logfile != "")
-		debugstreams_init(false, logfile.c_str());
-	else
-		debugstreams_init(false, NULL);
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
 
-	infostream<<"logfile    = "<<logfile<<std::endl;
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
 
@@ -957,7 +1024,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		core::array<std::string> filenames;
+		std::vector<std::string> filenames;
 		filenames.push_back(porting::path_user +
 				DIR_DELIM + "minetest.conf");
 		// Legacy configuration file location
@@ -984,6 +1051,31 @@ int main(int argc, char *argv[])
 		if(configpath == "")
 			configpath = filenames[0];
 	}
+	
+	// Initialize debug streams
+#define DEBUGFILE "debug.txt"
+#if RUN_IN_PLACE
+	std::string logfile = DEBUGFILE;
+#else
+	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
+#endif
+	if(cmd_args.exists("logfile"))
+		logfile = cmd_args.get("logfile");
+	
+	log_remove_output(&main_dstream_no_stderr_log_out);
+	int loglevel = g_settings->getS32("debug_log_level");
+
+	if (loglevel == 0) //no logging
+		logfile = "";
+	else if (loglevel > 0 && loglevel <= LMT_NUM_VALUES)
+		log_add_output_maxlev(&main_dstream_no_stderr_log_out, (LogMessageLevel)(loglevel - 1));
+
+	if(logfile != "")
+		debugstreams_init(false, logfile.c_str());
+	else
+		debugstreams_init(false, NULL);
+		
+	infostream<<"logfile    = "<<logfile<<std::endl;
 
 	// Initialize random seed
 	srand(time(0));
@@ -1084,6 +1176,7 @@ int main(int argc, char *argv[])
 #else
 	bool run_dedicated_server = cmd_args.getFlag("server");
 #endif
+	g_settings->set("server_dedicated", run_dedicated_server ? "true" : "false");
 	if(run_dedicated_server)
 	{
 		DSTACK("Dedicated server branch");
@@ -1257,6 +1350,14 @@ int main(int argc, char *argv[])
 		driverType = video::EDT_DIRECT3D9;
 	else if(driverstring == "opengl")
 		driverType = video::EDT_OPENGL;
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	else if(driverstring == "ogles1")
+		driverType = video::EDT_OGLES1;
+#endif
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+	else if(driverstring == "ogles2")
+		driverType = video::EDT_OGLES2;
+#endif
 	else
 	{
 		errorstream<<"WARNING: Invalid video_driver specified; defaulting "
@@ -1329,7 +1430,13 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
+	#if USE_FREETYPE
+	std::string font_path = g_settings->get("font_path");
+	u16 font_size = g_settings->getU16("font_size");
+	gui::IGUIFont *font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	#else
 	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
+	#endif
 	if(font)
 		skin->setFont(font);
 	else
@@ -1450,9 +1557,11 @@ int main(int argc, char *argv[])
 				menudata.enable_shaders = g_settings->getS32("enable_shaders");
 				menudata.preload_item_visuals = g_settings->getBool("preload_item_visuals");
 				menudata.enable_particles = g_settings->getBool("enable_particles");
+				menudata.liquid_finite = g_settings->getBool("liquid_finite");
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
+				menudata.enable_public = g_settings->getBool("server_announce");
 				// Default to selecting nothing
 				menudata.selected_world = -1;
 				// Get world listing for the menu
@@ -1489,7 +1598,7 @@ int main(int argc, char *argv[])
 				if(skip_main_menu == false)
 				{
 					video::IVideoDriver* driver = device->getVideoDriver();
-					
+					float fps_max = g_settings->getFloat("fps_max");
 					infostream<<"Waiting for other menus"<<std::endl;
 					while(device->run() && kill == false)
 					{
@@ -1511,6 +1620,22 @@ int main(int argc, char *argv[])
 								&g_menumgr, &menudata, g_gamecallback);
 					menu->allowFocusRemoval(true);
 
+					// Clouds for the main menu
+					bool cloud_menu_background = false;
+					Clouds *clouds = NULL;
+					if (g_settings->getBool("menu_clouds")) {
+						cloud_menu_background = true;
+						clouds = new Clouds(smgr->getRootSceneNode(),
+											smgr, -1, rand(), 100);
+						clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+
+						// A camera to see the clouds
+						scene::ICameraSceneNode* camera;
+						camera = smgr->addCameraSceneNode(0,
+									v3f(0,0,0), v3f(0, 60, 100));
+						camera->setFarValue(10000);
+					}
+
 					if(error_message != L"")
 					{
 						verbosestream<<"error_message = "
@@ -1523,6 +1648,9 @@ int main(int argc, char *argv[])
 						error_message = L"";
 					}
 
+					// Time is in milliseconds, for clouds
+					u32 lasttime = device->getTimer()->getTime();
+
 					infostream<<"Created main menu"<<std::endl;
 
 					while(device->run() && kill == false)
@@ -1530,26 +1658,75 @@ int main(int argc, char *argv[])
 						if(menu->getStatus() == true)
 							break;
 
-						//driver->beginScene(true, true, video::SColor(255,0,0,0));
-						driver->beginScene(true, true, video::SColor(255,128,128,128));
+						// Time calc for the clouds
+						f32 dtime; // in seconds
+						if (cloud_menu_background) {
+							u32 time = device->getTimer()->getTime();
+							if(time > lasttime)
+								dtime = (time - lasttime) / 1000.0;
+ 							else
+								dtime = 0;
+							lasttime = time;
+						}
 
-						drawMenuBackground(driver);
+						//driver->beginScene(true, true, video::SColor(255,0,0,0));
+						driver->beginScene(true, true, video::SColor(255,140,186,250));
+
+						if (cloud_menu_background) {
+							// *3 otherwise the clouds would move very slowly
+							clouds->step(dtime*3); 
+							clouds->render();
+							smgr->drawAll();
+							drawMenuSplash(driver);
+							drawMenuFooter(driver, true);
+							drawMenuHeader(driver);
+						} else {
+							drawMenuBackground(driver);
+							drawMenuFooter(driver, false);
+						}
 
 						guienv->drawAll();
-						
+
 						driver->endScene();
 						
 						// On some computers framerate doesn't seem to be
 						// automatically limited
-						sleep_ms(25);
+						if (cloud_menu_background) {
+							// Time of frame without fps limit
+							float busytime;
+							u32 busytime_u32;
+							// not using getRealTime is necessary for wine
+							u32 time = device->getTimer()->getTime();
+							if(time > lasttime)
+								busytime_u32 = time - lasttime;
+							else
+								busytime_u32 = 0;
+							busytime = busytime_u32 / 1000.0;
+
+							// FPS limiter
+							u32 frametime_min = 1000./fps_max;
+			
+							if(busytime_u32 < frametime_min) {
+								u32 sleeptime = frametime_min - busytime_u32;
+								device->sleep(sleeptime);
+							}
+						} else {
+							sleep_ms(25);
+						}
 					}
 					
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
+					if (cloud_menu_background) {
+						clouds->drop();
+						smgr->clear();
+					}
 				}
 
 				playername = wide_to_narrow(menudata.name);
+				if (playername == "")
+					playername = std::string("Guest") + itos(myrand_range(1000,9999));
 				password = translatePassword(playername, menudata.password);
 				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
@@ -1573,9 +1750,11 @@ int main(int argc, char *argv[])
 				g_settings->setS32("enable_shaders", menudata.enable_shaders);
 				g_settings->set("preload_item_visuals", itos(menudata.preload_item_visuals));
 				g_settings->set("enable_particles", itos(menudata.enable_particles));
+				g_settings->set("liquid_finite", itos(menudata.liquid_finite));
 
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("server_announce", itos(menudata.enable_public));
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
@@ -1602,10 +1781,10 @@ int main(int argc, char *argv[])
 				else if (address != "")
 				{
 					ServerListSpec server;
-					server.name = menudata.servername;
-					server.address = wide_to_narrow(menudata.address);
-					server.port = wide_to_narrow(menudata.port);
-					server.description = menudata.serverdescription;
+					server["name"] = menudata.servername;
+					server["address"] = wide_to_narrow(menudata.address);
+					server["port"] = wide_to_narrow(menudata.port);
+					server["description"] = menudata.serverdescription;
 					ServerList::insert(server);
 				}
 				

@@ -8,6 +8,7 @@
 -- Initialize some very basic things
 print = minetest.debug
 math.randomseed(os.time())
+os.setlocale("C", "numeric")
 
 -- Load other files
 dofile(minetest.get_modpath("__builtin").."/serialize.lua")

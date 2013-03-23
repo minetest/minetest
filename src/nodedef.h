@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -199,6 +199,8 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
+	// Player cannot build to these (placement prediction disabled)
+	bool rightclickable;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.

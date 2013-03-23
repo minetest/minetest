@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -40,20 +40,57 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
 
 #ifdef _WIN32
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
 	#include <windows.h>
 	
-	#define ALIGNOF(x) __alignof(x)
 	#define sleep_ms(x) Sleep(x)
-	#define strtok_r(x, y, z) strtok_s(x, y, z)
-	#define strtof(x, y) (float)strtod(x, y)
-	#define strtoll(x, y, z) _strtoi64(x, y, z)
-	#define strtoull(x, y, z) _strtoui64(x, y, z)
 #else
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
 	
-	#define ALIGNOF(x) __alignof__(x)
+	#if (defined(linux) || defined(__linux)) && !defined(_GNU_SOURCE)
+		#define _GNU_SOURCE
+	#endif
+
+	#include <sched.h>
+
+	#ifdef __FreeBSD__
+		#include <pthread_np.h>
+		typedef cpuset_t cpu_set_t;
+	#elif defined(__sun) || defined(sun)
+		#include <sys/types.h>
+		#include <sys/processor.h>
+	#elif defined(_AIX)
+		#include <sys/processor.h>
+	#elif __APPLE__
+		#include <mach/mach_init.h>
+		#include <mach/thread_policy.h>
+	#endif
+
 	#define sleep_ms(x) usleep(x*1000)
+	
+	#define THREAD_PRIORITY_LOWEST       0
+	#define THREAD_PRIORITY_BELOW_NORMAL 1
+	#define THREAD_PRIORITY_NORMAL       2
+	#define THREAD_PRIORITY_ABOVE_NORMAL 3
+	#define THREAD_PRIORITY_HIGHEST      4
+#endif
+
+#ifdef _MSC_VER
+	#define ALIGNOF(x) __alignof(x)
+	#define strtok_r(x, y, z) strtok_s(x, y, z)
+	#define strtof(x, y) (float)strtod(x, y)
+	#define strtoll(x, y, z) _strtoi64(x, y, z)
+	#define strtoull(x, y, z) _strtoui64(x, y, z)
+	#define strcasecmp(x, y) stricmp(x, y)
+#else
+	#define ALIGNOF(x) __alignof__(x)
+#endif
+
+#ifdef __MINGW32__
+	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
 #define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
@@ -93,6 +130,21 @@ std::string getDataPath(const char *subpath);
 	Initialize path_share and path_user.
 */
 void initializePaths();
+
+/*
+	Get number of online processors in the system.
+*/
+int getNumberOfProcessors();
+
+/*
+	Set a thread's affinity to a particular processor.
+*/
+bool threadBindToProcessor(threadid_t tid, int pnumber);
+
+/*
+	Set a thread's priority.
+*/
+bool threadSetPriority(threadid_t tid, int prio);
 
 /*
 	Resolution is 10-20ms.

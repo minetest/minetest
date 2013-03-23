@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -69,15 +69,13 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 	m_worldmods = flattenModTree(getModsInPath(worldmods_path));
 
 	// fill m_addontree with add-on mods
-	ModSpec addons("Add-Ons");
 	std::set<std::string> paths = m_gspec.addon_mods_paths;
 	for(std::set<std::string>::iterator it=paths.begin();
 		it != paths.end(); ++it)
 	{
 		std::map<std::string,ModSpec> mods = getModsInPath(*it);
-		addons.modpack_content.insert(mods.begin(), mods.end());
+		m_addontree.insert(mods.begin(), mods.end());
 	}
-	m_addontree.insert(std::make_pair(addons.name,addons));
 
 	// expand modpacks
 	m_addonmods = flattenModTree(m_addontree);
@@ -116,7 +114,7 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 		ModSpec mod = (*it).second;
 		// a mod is new if it is not a modpack, and does not occur in
 		// mod_names
-		if(mod.modpack_content.empty() &&
+		if(!mod.is_modpack &&
 		   mod_names.count(modname) == 0)
 			m_new_mod_names.insert(modname);
 	}
@@ -253,7 +251,9 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 		rect += v2s32(220, 0) + topleft;
 		m_treeview = Environment->addTreeView(rect, this,
 											  GUI_ID_MOD_TREEVIEW,true);
-		buildTreeView(m_addontree, m_treeview->getRoot());
+		gui::IGUITreeViewNode* node 
+			= m_treeview->getRoot()->addChildBack(L"Add-Ons");
+		buildTreeView(m_addontree, node);
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
@@ -407,20 +407,30 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_ENABLEALL: {
-				if(selected_node != NULL && selected_node->getText() != NULL)
-				{
+				if(selected_node != NULL && selected_node->getParent() == m_treeview->getRoot())
+				{  
+					enableAllMods(m_addonmods,true);
+				} 
+				else if(selected_node != NULL && selected_node->getText() != NULL)
+				{  
 					std::string modname = wide_to_narrow(selected_node->getText());
-					ModSpec mod = m_addonmods[modname];
-					enableAllMods(mod.modpack_content,true);
+					std::map<std::string, ModSpec>::iterator mod_it = m_addonmods.find(modname);
+					if(mod_it != m_addonmods.end())
+						enableAllMods(mod_it->second.modpack_content,true);
 				}
 				return true;
 			}
 			case GUI_ID_DISABLEALL: {
+				if(selected_node != NULL && selected_node->getParent() == m_treeview->getRoot())
+				{
+					enableAllMods(m_addonmods,false);
+				} 
 				if(selected_node != NULL && selected_node->getText() != NULL)
 				{
 					std::string modname = wide_to_narrow(selected_node->getText());
-					ModSpec mod = m_addonmods[modname];
-					enableAllMods(mod.modpack_content,false);
+					std::map<std::string, ModSpec>::iterator mod_it = m_addonmods.find(modname);
+					if(mod_it != m_addonmods.end())
+						enableAllMods(mod_it->second.modpack_content,false);
 				}
 				return true;
 			}
@@ -438,7 +448,7 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 			return true;
 		}
 		if(event.GUIEvent.EventType==gui::EGET_TREEVIEW_NODE_SELECT &&
-			event.GUIEvent.Caller->getID() == GUI_ID_MOD_TREEVIEW)
+		   event.GUIEvent.Caller->getID() == GUI_ID_MOD_TREEVIEW)
 		{
 			selecting_dep = -1;
 			selecting_rdep = -1;
@@ -517,7 +527,7 @@ void GUIConfigureWorld::buildTreeView(std::map<std::string, ModSpec> mods,
 		gui::IGUITreeViewNode* new_node = 
 			node->addChildBack(narrow_to_wide(modname).c_str());
 		m_nodes.insert(std::make_pair(modname, new_node));
-		if(!mod.modpack_content.empty())
+		if(mod.is_modpack)
 			buildTreeView(mod.modpack_content, new_node);
 		else
 		{
@@ -552,22 +562,42 @@ void GUIConfigureWorld::adjustSidebar()
 		modname_w = L"N/A";
 	std::string modname = wide_to_narrow(modname_w);
 
-	// if modpack, show enable/disable all buttons. otherwise, show
-	// enabled checkbox
-	if(node->hasChilds())
+	ModSpec mspec;
+	std::map<std::string, ModSpec>::iterator it = m_addonmods.find(modname);
+	if(it != m_addonmods.end())
+		mspec = it->second;
+
+	m_dependencies_listbox->clear();
+	m_rdependencies_listbox->clear();
+
+	// if no mods installed, there is nothing to enable/disable, so we
+	// don't show buttons or checkbox on the sidebar
+	if(node->getParent() == m_treeview->getRoot() && !node->hasChilds())
+	{
+		m_disableall->setVisible(false);
+		m_enableall->setVisible(false);
+		m_enabled_checkbox->setVisible(false);
+		return;
+	} 
+	
+    // a modpack is not enabled/disabled by itself, only its cotnents
+    // are. so we show show enable/disable all buttons, but hide the
+    // checkbox
+	if(node->getParent() == m_treeview->getRoot() ||
+	   mspec.is_modpack)
 	{
 		m_enabled_checkbox->setVisible(false);
 		m_disableall->setVisible(true);
 		m_enableall->setVisible(true);
 		m_modname_text->setText((L"Modpack: "+modname_w).c_str());
+		return;
 	}	
-	else	
-	{
-		m_disableall->setVisible(false);
-		m_enableall->setVisible(false);
-		m_enabled_checkbox->setVisible(true);
-		m_modname_text->setText((L"Mod: "+modname_w).c_str());
-	}
+
+	// for a normal mod, we hide the enable/disable all buttons, but show the checkbox.
+	m_disableall->setVisible(false);
+	m_enableall->setVisible(false);
+	m_enabled_checkbox->setVisible(true);
+	m_modname_text->setText((L"Mod: "+modname_w).c_str());
 
 	// the mod is enabled unless it is disabled in the world.mt settings. 
 	bool mod_enabled = true;
@@ -575,9 +605,6 @@ void GUIConfigureWorld::adjustSidebar()
 		mod_enabled = m_settings.getBool("load_mod_"+modname);
 	m_enabled_checkbox->setChecked(mod_enabled);
 
-	// dependencies of this mod:
-	m_dependencies_listbox->clear();
-	ModSpec mspec = m_addonmods[modname];
 	for(std::set<std::string>::iterator it=mspec.depends.begin();
 		it != mspec.depends.end(); ++it)
 	{
@@ -593,9 +620,7 @@ void GUIConfigureWorld::adjustSidebar()
 		m_dependencies_listbox->addItem(narrow_to_wide(dependency).c_str());
 	}
 
-
 	// reverse dependencies of this mod:
-	m_rdependencies_listbox->clear();
 	std::pair< std::multimap<std::string, std::string>::iterator, 
 			std::multimap<std::string, std::string>::iterator > rdep = 
 		m_reverse_depends.equal_range(modname);
@@ -616,24 +641,30 @@ void GUIConfigureWorld::enableAllMods(std::map<std::string, ModSpec> mods,bool e
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
-		if(!mod.modpack_content.empty()) 
+		if(mod.is_modpack) 
 			// a modpack, recursively enable all mods in it
 			enableAllMods(mod.modpack_content,enable);
 		else // not a modpack
 			setEnabled(mod.name, enable);
+
 	}
 }
 
 void GUIConfigureWorld::enableMod(std::string modname)
 {
+	std::map<std::string, ModSpec>::iterator mod_it = m_addonmods.find(modname);
+	if(mod_it == m_addonmods.end()){
+		errorstream << "enableMod() called with invalid mod name \"" << modname << "\"" << std::endl;
+		return;
+	}
+	ModSpec mspec = mod_it->second;
 	m_settings.setBool("load_mod_"+modname,true);
 	std::map<std::string,gui::IGUITreeViewNode*>::iterator it = 
 		m_nodes.find(modname);
- 	if(it != m_nodes.end())
+	if(it != m_nodes.end())
 		(*it).second->setIcon(CHECKMARK_STR);
 	m_new_mod_names.erase(modname);
 	//also enable all dependencies
-	ModSpec mspec = m_addonmods[modname];
 	for(std::set<std::string>::iterator it=mspec.depends.begin();
 		it != mspec.depends.end(); ++it)
 	{
@@ -646,6 +677,12 @@ void GUIConfigureWorld::enableMod(std::string modname)
 
 void GUIConfigureWorld::disableMod(std::string modname)
 {
+	std::map<std::string, ModSpec>::iterator mod_it = m_addonmods.find(modname);
+	if(mod_it == m_addonmods.end()){
+		errorstream << "disableMod() called with invalid mod name \"" << modname << "\"" << std::endl;
+		return;
+	}
+
 	m_settings.setBool("load_mod_"+modname,false);
 	std::map<std::string,gui::IGUITreeViewNode*>::iterator it = 
 		m_nodes.find(modname);
