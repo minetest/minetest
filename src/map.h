@@ -50,7 +50,7 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
-class BlockMakeData;
+struct BlockMakeData;
 
 
 /*

@@ -45,7 +45,7 @@ class MapBlock;
 class ManualMapVoxelManipulator;
 class VoxelManipulator;
 class INodeDefManager;
-class BlockMakeData;
+struct BlockMakeData;
 class VoxelArea;
 
 struct MapgenParams {
