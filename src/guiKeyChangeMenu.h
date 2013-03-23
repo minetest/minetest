@@ -1,8 +1,8 @@
 /*
- Minetest-c55
- Copyright (C) 2010-11 celeron55, Perttu Ahola <celeron55@gmail.com>
- Copyright (C) 2011 Ciaran Gultnieks <ciaran@ciarang.com>
- Copyright (C) 2011 teddydestodes <derkomtur@schattengang.net>
+ Minetest
+ Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+ Copyright (C) 2013 Ciaran Gultnieks <ciaran@ciarang.com>
+ Copyright (C) 2013 teddydestodes <derkomtur@schattengang.net>
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as published by

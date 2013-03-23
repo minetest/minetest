@@ -7,474 +7,396 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2011-07-21 15:48+0200\n"
-"Last-Translator: Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>\n"
+"POT-Creation-Date: 2013-01-23 18:24+0200\n"
+"PO-Revision-Date: 2013-02-28 17:44+0200\n"
+"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
-#: src/guiKeyChangeMenu.cpp:84
-msgid "KEYBINDINGS"
+#: src/guiConfigureWorld.cpp:125
+msgid ""
+"Warning: Some mods are not configured yet.\n"
+"They will be enabled by default when you save the configuration.  "
 msgstr ""
+"Attention : certains mods ne sont pas encore configurés.\n"
+"Ils seront activés par défaut quand vous enregistrerez la configuration. "
 
-#: src/guiKeyChangeMenu.cpp:94
-msgid "Forward"
+#: src/guiConfigureWorld.cpp:144
+msgid ""
+"Warning: Some configured mods are missing.\n"
+"Their setting will be removed when you save the configuration.  "
 msgstr ""
+"Attention : certains mods configurés sont introuvables.\n"
+"Leur réglages seront effacés quand vous enregistrerez la configuration. "
 
-#: src/guiKeyChangeMenu.cpp:111
-msgid "Backward"
-msgstr ""
+#: src/guiConfigureWorld.cpp:208
+msgid "enabled"
+msgstr "activé"
 
-#: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
-msgid "Left"
-msgstr ""
+#: src/guiConfigureWorld.cpp:215
+msgid "Enable All"
+msgstr "Tout activer"
 
-#: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
-msgid "Right"
-msgstr ""
+#: src/guiConfigureWorld.cpp:222
+msgid "Disable All"
+msgstr "Tout désactiver"
 
-#: src/guiKeyChangeMenu.cpp:158
-msgid "Use"
-msgstr ""
+#: src/guiConfigureWorld.cpp:228
+msgid "depends on:"
+msgstr "dépend de :"
 
-#: src/guiKeyChangeMenu.cpp:173
-msgid "Sneak"
-msgstr ""
+#: src/guiConfigureWorld.cpp:240
+msgid "is required by:"
+msgstr "est requis par :"
 
-#: src/guiKeyChangeMenu.cpp:189
-msgid "Jump"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:204
-msgid "Inventory"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:220
-msgid "Chat"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:236
-msgid "Toggle fly"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:251
-msgid "Toggle fast"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:266
-msgid "Range select"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:283
-msgid "Print stacks"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:298
-msgid "Save"
-msgstr ""
-
-#: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
+#: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
+#: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
-#: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
-#: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
-#: src/guiKeyChangeMenu.cpp:557 src/guiKeyChangeMenu.cpp:562
-#: src/guiKeyChangeMenu.cpp:567 src/guiKeyChangeMenu.cpp:572
-#: src/guiKeyChangeMenu.cpp:577 src/guiKeyChangeMenu.cpp:582
-#: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
-#: src/guiKeyChangeMenu.cpp:597
-msgid "press Key"
-msgstr ""
+#: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
+msgid "Save"
+msgstr "Enregistrer"
 
-#: src/guiKeyChangeMenu.h:33
-msgid "Left Button"
-msgstr ""
+#: src/guiConfigureWorld.cpp:394
+msgid "Configuration saved.  "
+msgstr "Configuration enregistrée. "
 
-#: src/guiKeyChangeMenu.h:33
-msgid "Middle Button"
-msgstr ""
+#: src/guiConfigureWorld.cpp:402
+msgid "Warning: Configuration not consistent.  "
+msgstr "Attention : configuration incorrecte. "
 
-#: src/guiKeyChangeMenu.h:33
-msgid "Right Button"
-msgstr ""
+#: src/guiConfirmMenu.cpp:120
+msgid "Yes"
+msgstr "Oui"
 
-#: src/guiKeyChangeMenu.h:33
-msgid "X Button 1"
-msgstr ""
+#: src/guiConfirmMenu.cpp:126
+msgid "No"
+msgstr "Non"
 
-#: src/guiKeyChangeMenu.h:34
-msgid "Back"
-msgstr ""
+#: src/guiCreateWorld.cpp:116
+msgid "World name"
+msgstr "Nom du monde"
 
-#: src/guiKeyChangeMenu.h:34
-msgid "Clear"
-msgstr ""
+#: src/guiCreateWorld.cpp:135
+msgid "Game"
+msgstr "Jeu"
 
-#: src/guiKeyChangeMenu.h:34
-msgid "Return"
-msgstr ""
+#: src/guiCreateWorld.cpp:159
+msgid "Create"
+msgstr "Créer"
 
-#: src/guiKeyChangeMenu.h:34
-msgid "Tab"
-msgstr ""
+#: src/guiDeathScreen.cpp:96
+msgid "You died."
+msgstr "Vous êtes mort."
 
-#: src/guiKeyChangeMenu.h:34
-msgid "X Button 2"
-msgstr ""
+#: src/guiDeathScreen.cpp:104
+msgid "Respawn"
+msgstr "Réapparaître"
 
-#: src/guiKeyChangeMenu.h:35
-msgid "Capital"
-msgstr ""
+#: src/guiFormSpecMenu.cpp:572
+msgid "Left click: Move all items, Right click: Move single item"
+msgstr "Clic gauche: déplacer tous les objets -- Clic droit: déplacer un objet"
 
-#: src/guiKeyChangeMenu.h:35
-msgid "Control"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:35
-msgid "Kana"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:35
-msgid "Menu"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:35
-msgid "Pause"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:35
-msgid "Shift"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Convert"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Escape"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Final"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Junja"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Kanji"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:36
-msgid "Nonconvert"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-msgid "Accept"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-msgid "End"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-msgid "Home"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-#, fuzzy
-msgid "Mode Change"
-msgstr "Changer"
-
-#: src/guiKeyChangeMenu.h:37
-msgid "Next"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-msgid "Priot"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:37
-msgid "Space"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:38
-msgid "Down"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:38
-msgid "Execute"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:38
-msgid "Print"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:38
-msgid "Select"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:38
-msgid "Up"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:39
-#, fuzzy
-msgid "Delete"
-msgstr "Supprimer carte"
-
-#: src/guiKeyChangeMenu.h:39
-msgid "Help"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:39
-msgid "Insert"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:39
-msgid "Snapshot"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:42
-msgid "Left Windows"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:43
-msgid "Apps"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:43
-msgid "Numpad 0"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:43
-msgid "Numpad 1"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:43
-msgid "Right Windows"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:43
-msgid "Sleep"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 2"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 3"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 4"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 5"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 6"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:44
-msgid "Numpad 7"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad *"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad +"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad -"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad /"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad 8"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:45
-msgid "Numpad 9"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:49
-msgid "Num Lock"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:49
-msgid "Scroll Lock"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:50
-msgid "Left Shift"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:50
-msgid "Right Shight"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:51
-msgid "Left Control"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:51
-msgid "Left Menu"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:51
-msgid "Right Control"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:51
-msgid "Right Menu"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:53
-msgid "Comma"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:53
-msgid "Minus"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:53
-msgid "Period"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:53
-msgid "Plus"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:57
-msgid "Attn"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:57
-msgid "CrSel"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "Erase OEF"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "ExSel"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "OEM Clear"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "PA1"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "Play"
-msgstr ""
-
-#: src/guiKeyChangeMenu.h:58
-msgid "Zoom"
-msgstr ""
-
-#: src/guiMainMenu.cpp:181
-msgid "Name/Password"
-msgstr "Nom / MdP"
-
-#: src/guiMainMenu.cpp:206
-msgid "Address/Port"
-msgstr "Adresse / Port"
-
-#: src/guiMainMenu.cpp:228
-msgid "Leave address blank to start a local server."
-msgstr "Laisser l'adresse vide pour lancer un serveur local."
-
-#: src/guiMainMenu.cpp:235
-msgid "Fancy trees"
-msgstr "Arbres spéciaux"
-
-#: src/guiMainMenu.cpp:241
-msgid "Smooth Lighting"
-msgstr "Lumière douce"
-
-#: src/guiMainMenu.cpp:249
-msgid "Start Game / Connect"
-msgstr "Démarrer / Connecter"
-
-#: src/guiMainMenu.cpp:258
-msgid "Change keys"
-msgstr "Changer touches"
-
-#: src/guiMainMenu.cpp:281
-msgid "Creative Mode"
-msgstr "Mode créatif"
-
-#: src/guiMainMenu.cpp:287
-msgid "Enable Damage"
-msgstr "Activer blessures"
-
-#: src/guiMainMenu.cpp:295
-msgid "Delete map"
-msgstr "Supprimer carte"
-
-#: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
+#: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
+#: src/guiTextInputMenu.cpp:123
 msgid "Proceed"
 msgstr "OK"
 
-#: src/guiPasswordChange.cpp:103
+#: src/guiKeyChangeMenu.cpp:114
+msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+msgstr "Affectation des touches"
+
+#: src/guiKeyChangeMenu.cpp:151
+msgid "\"Use\" = climb down"
+msgstr "\"Use\" = descendre (escalade)"
+
+#: src/guiKeyChangeMenu.cpp:164
+msgid "Double tap \"jump\" to toggle fly"
+msgstr "Double appui sur \"saut\" pour voler"
+
+#: src/guiKeyChangeMenu.cpp:269
+msgid "Key already in use"
+msgstr "Touche déjà utilisée"
+
+#: src/guiKeyChangeMenu.cpp:347
+msgid "press key"
+msgstr "appuyez sur la touche"
+
+#: src/guiKeyChangeMenu.cpp:372
+msgid "Forward"
+msgstr "Avancer"
+
+#: src/guiKeyChangeMenu.cpp:373
+msgid "Backward"
+msgstr "Reculer"
+
+#: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
+msgid "Left"
+msgstr "Gauche"
+
+#: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
+msgid "Right"
+msgstr "Droite"
+
+#: src/guiKeyChangeMenu.cpp:376
+msgid "Use"
+msgstr "Utiliser"
+
+#: src/guiKeyChangeMenu.cpp:377
+msgid "Jump"
+msgstr "Sauter"
+
+#: src/guiKeyChangeMenu.cpp:378
+msgid "Sneak"
+msgstr "Marcher"
+
+#: src/guiKeyChangeMenu.cpp:379
+msgid "Drop"
+msgstr "Lâcher"
+
+#: src/guiKeyChangeMenu.cpp:380
+msgid "Inventory"
+msgstr "Inventaire"
+
+#: src/guiKeyChangeMenu.cpp:381
+msgid "Chat"
+msgstr "Parler"
+
+#: src/guiKeyChangeMenu.cpp:382
+msgid "Command"
+msgstr "Commande"
+
+#: src/guiKeyChangeMenu.cpp:383
+msgid "Console"
+msgstr "Console"
+
+#: src/guiKeyChangeMenu.cpp:384
+msgid "Toggle fly"
+msgstr "Voler"
+
+#: src/guiKeyChangeMenu.cpp:385
+msgid "Toggle fast"
+msgstr "Mode rapide"
+
+#: src/guiKeyChangeMenu.cpp:386
+msgid "Toggle noclip"
+msgstr "Mode noclip"
+
+#: src/guiKeyChangeMenu.cpp:387
+msgid "Range select"
+msgstr "Distance de rendu"
+
+#: src/guiKeyChangeMenu.cpp:388
+msgid "Print stacks"
+msgstr "Imprimer stacks"
+
+#: src/guiMainMenu.cpp:55
+msgid "Cannot create world: Name contains invalid characters"
+msgstr "Impossible de créer le monde: le nom contient des caractères invalides"
+
+#: src/guiMainMenu.cpp:64
+msgid "Cannot create world: A world by this name already exists"
+msgstr "Impossible de créer le monde: ce nom est déjà utilisé"
+
+#: src/guiMainMenu.cpp:245
+msgid "Singleplayer"
+msgstr "Solo"
+
+#: src/guiMainMenu.cpp:246
+msgid "Multiplayer"
+msgstr "Multijoueur"
+
+#: src/guiMainMenu.cpp:247
+msgid "Advanced"
+msgstr "Avancé"
+
+#: src/guiMainMenu.cpp:248
+msgid "Settings"
+msgstr "Réglages"
+
+#: src/guiMainMenu.cpp:249
+msgid "Credits"
+msgstr "Crédits"
+
+#: src/guiMainMenu.cpp:280
+msgid "Select World:"
+msgstr "Sélectionner le monde :"
+
+#: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
+msgid "Delete"
+msgstr "Supprimer"
+
+#: src/guiMainMenu.cpp:309
+msgid "New"
+msgstr "Nouveau"
+
+#: src/guiMainMenu.cpp:317
+msgid "Configure"
+msgstr "Configurer"
+
+#: src/guiMainMenu.cpp:332 src/keycode.cpp:248
+msgid "Play"
+msgstr "Jouer"
+
+#: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
+msgid "Creative Mode"
+msgstr "Mode créatif"
+
+#: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
+msgid "Enable Damage"
+msgstr "Activer blessures"
+
+#: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
+msgid "Name/Password"
+msgstr "Nom / MdP"
+
+#: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
+msgid "Address/Port"
+msgstr "Adresse / Port"
+
+#: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
+msgid "Show Public"
+msgstr "Voir serveurs publics"
+
+#: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
+msgid "Show Favorites"
+msgstr "Voir serveurs favoris"
+
+#: src/guiMainMenu.cpp:459
+msgid "Connect"
+msgstr "Rejoindre"
+
+#: src/guiMainMenu.cpp:529
+msgid "Leave address blank to start a local server."
+msgstr "Laisser l'adresse vide pour lancer un serveur local."
+
+#: src/guiMainMenu.cpp:538
+msgid "Start Game / Connect"
+msgstr "Démarrer / Connecter"
+
+#: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
+msgid "Delete world"
+msgstr "Supprimer monde"
+
+#: src/guiMainMenu.cpp:577
+msgid "Create world"
+msgstr "Créer un monde"
+
+#: src/guiMainMenu.cpp:611
+msgid "Fancy trees"
+msgstr "Arbres spéciaux"
+
+#: src/guiMainMenu.cpp:617
+msgid "Smooth Lighting"
+msgstr "Lumière douce"
+
+#: src/guiMainMenu.cpp:623
+msgid "3D Clouds"
+msgstr "Nuages 3D"
+
+#: src/guiMainMenu.cpp:629
+msgid "Opaque water"
+msgstr "Eau opaque"
+
+#: src/guiMainMenu.cpp:639
+msgid "Mip-Mapping"
+msgstr "Mip-mapping"
+
+#: src/guiMainMenu.cpp:646
+msgid "Anisotropic Filtering"
+msgstr "Filtrage anisotropique"
+
+#: src/guiMainMenu.cpp:653
+msgid "Bi-Linear Filtering"
+msgstr "Filtrage bilinéaire"
+
+#: src/guiMainMenu.cpp:660
+msgid "Tri-Linear Filtering"
+msgstr "Filtrage trilinéaire"
+
+#: src/guiMainMenu.cpp:668
+msgid "Shaders"
+msgstr "Shaders"
+
+#: src/guiMainMenu.cpp:675
+msgid "Preload item visuals"
+msgstr "Précharger les visuels d'objets"
+
+#: src/guiMainMenu.cpp:682
+msgid "Enable Particles"
+msgstr "Activer les particules"
+
+#: src/guiMainMenu.cpp:692
+msgid "Change keys"
+msgstr "Changer touches"
+
+#: src/guiMainMenu.cpp:977
+msgid "Address required."
+msgstr "Adresse requise."
+
+#: src/guiMainMenu.cpp:995
+msgid "Cannot delete world: Nothing selected"
+msgstr "Impossible de supprimer le monde : rien n'est sélectionné"
+
+#: src/guiMainMenu.cpp:1010
+msgid "Files to be deleted"
+msgstr "Fichiers à effacer"
+
+#: src/guiMainMenu.cpp:1026
+msgid "Cannot create world: No games found"
+msgstr "Impossible de créer le monde : aucun jeu n'est présent"
+
+#: src/guiMainMenu.cpp:1042
+msgid "Cannot configure world: Nothing selected"
+msgstr "Impossible de configurer ce monde : aucune sélection active"
+
+#: src/guiMainMenu.cpp:1146
+msgid "Failed to delete all world files"
+msgstr "Tous les fichiers du monde n'ont pu être effacés"
+
+#: src/guiPasswordChange.cpp:108
 msgid "Old Password"
 msgstr "Ancien mot de passe"
 
-#: src/guiPasswordChange.cpp:120
+#: src/guiPasswordChange.cpp:125
 msgid "New Password"
 msgstr "Nouveau mot de passe"
 
-#: src/guiPasswordChange.cpp:136
+#: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
 msgstr "Confirmer mot de passe"
 
-#: src/guiPasswordChange.cpp:153
+#: src/guiPasswordChange.cpp:158
 msgid "Change"
 msgstr "Changer"
 
-#: src/guiPasswordChange.cpp:162
+#: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Mauvaise correspondance!"
+msgstr "Mot de passe incorrect !"
 
-#: src/guiPauseMenu.cpp:111
+#: src/guiPauseMenu.cpp:118
 msgid "Continue"
 msgstr "Continuer"
 
-#: src/guiPauseMenu.cpp:118
+#: src/guiPauseMenu.cpp:127
 msgid "Change Password"
 msgstr "Changer mot de passe"
 
-#: src/guiPauseMenu.cpp:125
-msgid "Disconnect"
-msgstr "Déconnection"
+#: src/guiPauseMenu.cpp:135
+msgid "Exit to Menu"
+msgstr "Quitter vers le menu"
 
-#: src/guiPauseMenu.cpp:132
+#: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
 msgstr "Quitter le jeu"
 
-#: src/guiPauseMenu.cpp:139
-#, fuzzy
+#: src/guiPauseMenu.cpp:149
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -488,13 +410,340 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
-"Touches:\n"
-"- WASD: Marcher\n"
-"- Clic gauche: Creuser bloc\n"
-"- Clic droite: Insérer bloc\n"
-"- Roulette: Sélection élément\n"
-"- 0...9: Sélection élément\n"
-"- Shift: S'accroupir\n"
-"- R: Active la vue de tous les blocs\n"
-"- I: Inventaire\n"
-"- T: Chat\n"
+"Touches :\n"
+"- ZQSD : courir\n"
+"- Clic gauche : Creuser bloc\n"
+"- Clic droite : Insérer bloc\n"
+"- Roulette : Sélection objet\n"
+"- 0...9 : Sélection objet\n"
+"- Shift : marcher\n"
+"- R : active la vue de tous les blocs\n"
+"- I : inventaire\n"
+"- T : parler\n"
+
+#: src/keycode.cpp:223
+msgid "Left Button"
+msgstr "Bouton gauche"
+
+#: src/keycode.cpp:223
+msgid "Middle Button"
+msgstr "Bouton milieu"
+
+#: src/keycode.cpp:223
+msgid "Right Button"
+msgstr "Bouton droit"
+
+#: src/keycode.cpp:223
+msgid "X Button 1"
+msgstr "Bouton X 1"
+
+#: src/keycode.cpp:224
+msgid "Back"
+msgstr "Retour arrière"
+
+#: src/keycode.cpp:224
+msgid "Clear"
+msgstr "Vider"
+
+#: src/keycode.cpp:224
+msgid "Return"
+msgstr "Retour"
+
+#: src/keycode.cpp:224
+msgid "Tab"
+msgstr "Tabulation"
+
+#: src/keycode.cpp:224
+msgid "X Button 2"
+msgstr "Bouton X 2"
+
+#: src/keycode.cpp:225
+msgid "Capital"
+msgstr "Verr. maj."
+
+#: src/keycode.cpp:225
+msgid "Control"
+msgstr "Contrôle"
+
+#: src/keycode.cpp:225
+msgid "Kana"
+msgstr "Kana"
+
+#: src/keycode.cpp:225
+msgid "Menu"
+msgstr "Menu"
+
+#: src/keycode.cpp:225
+msgid "Pause"
+msgstr "Pause"
+
+#: src/keycode.cpp:225
+msgid "Shift"
+msgstr "Majuscule"
+
+#: src/keycode.cpp:226
+msgid "Convert"
+msgstr "Convertir"
+
+#: src/keycode.cpp:226
+msgid "Escape"
+msgstr "Échap"
+
+#: src/keycode.cpp:226
+msgid "Final"
+msgstr "Final"
+
+#: src/keycode.cpp:226
+msgid "Junja"
+msgstr "Junja"
+
+#: src/keycode.cpp:226
+msgid "Kanji"
+msgstr "Kanji"
+
+#: src/keycode.cpp:226
+msgid "Nonconvert"
+msgstr "Nonconvert"
+
+#: src/keycode.cpp:227
+msgid "Accept"
+msgstr "Accepter"
+
+#: src/keycode.cpp:227
+msgid "End"
+msgstr "Fin"
+
+#: src/keycode.cpp:227
+msgid "Home"
+msgstr "Origine"
+
+#: src/keycode.cpp:227
+msgid "Mode Change"
+msgstr "Changer de mode"
+
+#: src/keycode.cpp:227
+msgid "Next"
+msgstr "Suivant"
+
+#: src/keycode.cpp:227
+msgid "Prior"
+msgstr "Précèdent"
+
+#: src/keycode.cpp:227
+msgid "Space"
+msgstr "Espace"
+
+#: src/keycode.cpp:228
+msgid "Down"
+msgstr "Bas"
+
+#: src/keycode.cpp:228
+msgid "Execute"
+msgstr "Éxécuter"
+
+#: src/keycode.cpp:228
+msgid "Print"
+msgstr "Imprimer"
+
+#: src/keycode.cpp:228
+msgid "Select"
+msgstr "Sélectionner"
+
+#: src/keycode.cpp:228
+msgid "Up"
+msgstr "Haut"
+
+#: src/keycode.cpp:229
+msgid "Help"
+msgstr "Aide"
+
+#: src/keycode.cpp:229
+msgid "Insert"
+msgstr "Insérer"
+
+#: src/keycode.cpp:229
+msgid "Snapshot"
+msgstr "Capture d'écran"
+
+#: src/keycode.cpp:232
+msgid "Left Windows"
+msgstr "Windows gauche"
+
+#: src/keycode.cpp:233
+msgid "Apps"
+msgstr "Applications"
+
+#: src/keycode.cpp:233
+msgid "Numpad 0"
+msgstr "Pavé num. 0"
+
+#: src/keycode.cpp:233
+msgid "Numpad 1"
+msgstr "Pavé num. 1"
+
+#: src/keycode.cpp:233
+msgid "Right Windows"
+msgstr "Windows droite"
+
+#: src/keycode.cpp:233
+msgid "Sleep"
+msgstr "Mise en veille"
+
+#: src/keycode.cpp:234
+msgid "Numpad 2"
+msgstr "Pavé num. 2"
+
+#: src/keycode.cpp:234
+msgid "Numpad 3"
+msgstr "Pavé num. 3"
+
+#: src/keycode.cpp:234
+msgid "Numpad 4"
+msgstr "Pavé num. 4"
+
+#: src/keycode.cpp:234
+msgid "Numpad 5"
+msgstr "Pavé num. 5"
+
+#: src/keycode.cpp:234
+msgid "Numpad 6"
+msgstr "Pavé num. 6"
+
+#: src/keycode.cpp:234
+msgid "Numpad 7"
+msgstr "Pavé num. 7"
+
+#: src/keycode.cpp:235
+msgid "Numpad *"
+msgstr "Pavé num. *"
+
+#: src/keycode.cpp:235
+msgid "Numpad +"
+msgstr "Pavé num. +"
+
+#: src/keycode.cpp:235
+msgid "Numpad -"
+msgstr "Pavé num. -"
+
+#: src/keycode.cpp:235
+msgid "Numpad /"
+msgstr "Pavé num. /"
+
+#: src/keycode.cpp:235
+msgid "Numpad 8"
+msgstr "Pavé num. 8"
+
+#: src/keycode.cpp:235
+msgid "Numpad 9"
+msgstr "Pavé num. 9"
+
+#: src/keycode.cpp:239
+msgid "Num Lock"
+msgstr "Verr. pavé num."
+
+#: src/keycode.cpp:239
+msgid "Scroll Lock"
+msgstr "Verr. défilement"
+
+#: src/keycode.cpp:240
+msgid "Left Shift"
+msgstr "Majuscule gauche"
+
+#: src/keycode.cpp:240
+msgid "Right Shift"
+msgstr "Majuscule droite"
+
+#: src/keycode.cpp:241
+msgid "Left Control"
+msgstr "Contrôle gauche"
+
+#: src/keycode.cpp:241
+msgid "Left Menu"
+msgstr "Menu gauche"
+
+#: src/keycode.cpp:241
+msgid "Right Control"
+msgstr "Contrôle droite"
+
+#: src/keycode.cpp:241
+msgid "Right Menu"
+msgstr "Menu droite"
+
+#: src/keycode.cpp:243
+msgid "Comma"
+msgstr "Virgule"
+
+#: src/keycode.cpp:243
+msgid "Minus"
+msgstr "Moins"
+
+#: src/keycode.cpp:243
+msgid "Period"
+msgstr "Point"
+
+#: src/keycode.cpp:243
+msgid "Plus"
+msgstr "Plus"
+
+#: src/keycode.cpp:247
+msgid "Attn"
+msgstr "Attente"
+
+#: src/keycode.cpp:247
+msgid "CrSel"
+msgstr "Vider sélection"
+
+#: src/keycode.cpp:248
+msgid "Erase OEF"
+msgstr "Écraser l'OEF"
+
+#: src/keycode.cpp:248
+msgid "ExSel"
+msgstr "ExSel"
+
+#: src/keycode.cpp:248
+msgid "OEM Clear"
+msgstr "OEM Clear"
+
+#: src/keycode.cpp:248
+msgid "PA1"
+msgstr "PA1"
+
+#: src/keycode.cpp:248
+msgid "Zoom"
+msgstr "Zoomer"
+
+#: src/main.cpp:1384
+msgid "Main Menu"
+msgstr "Menu principal"
+
+#: src/main.cpp:1633
+msgid "Failed to initialize world"
+msgstr "Le monde n'a pas pu être initialisé"
+
+#: src/main.cpp:1645
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "Pas de monde sélectionné et pas d'adresse. Rien à faire."
+
+#: src/main.cpp:1653
+msgid "Could not find or load game \""
+msgstr "N'a pas pu trouver ou charger le jeu \""
+
+#: src/main.cpp:1667
+msgid "Invalid gamespec."
+msgstr "gamespec invalide."
+
+#: src/main.cpp:1707
+msgid "Connection error (timed out?)"
+msgstr "Erreur de connexion (perte de connexion ?)"
+
+#: src/main.cpp:1718
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Voir debug.txt pour plus d'information."
+
+#~ msgid "Delete map"
+#~ msgstr "Supprimer carte"

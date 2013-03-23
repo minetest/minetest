@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -89,7 +89,7 @@ public:
 	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
 	~Noise();
 
-	void init(NoiseParams *np, int seed, int sx, int sy, int sz);
+	virtual void init(NoiseParams *np, int seed, int sx, int sy, int sz);
 	void setSize(int sx, int sy);
 	void setSize(int sx, int sy, int sz);
 	void setSpreadFactor(v3f spread);
@@ -157,7 +157,7 @@ inline float easeCurve(float t) {
 		(s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \
-		noise2d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
+		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
 		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, (np)->persist))
 
 #endif

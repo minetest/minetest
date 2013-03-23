@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 
 #include "gettext.h"
+
+#if USE_FREETYPE
+#include "intlGUIEditBox.h"
+#endif
 
 GUITextInputMenu::GUITextInputMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -105,8 +109,12 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 300, 30);
 		rect = rect + v2s32(size.X/2-300/2, size.Y/2-30/2-25);
-		gui::IGUIElement *e = 
-		Environment->addEditBox(text.c_str(), rect, true, this, 256);
+		#if USE_FREETYPE
+		gui::IGUIElement *e = (gui::IGUIElement *) new gui::intlGUIEditBox(text.c_str(), true, Environment, this, 256, rect);
+		e->drop();
+		#else
+		gui::IGUIElement *e = Environment->addEditBox(text.c_str(), rect, true, this, 256);
+		#endif
 		Environment->setFocus(e);
 
 		irr::SEvent evt;

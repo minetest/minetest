@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -160,18 +160,145 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				Add water sources to mesh if using new style
 			*/
 			TileSpec tile_liquid = f.special_tiles[0];
+			TileSpec tile_liquid_bfculled = getNodeTile(n, p, v3s16(0,0,0), data);
 			AtlasPointer &pa_liquid = tile_liquid.texture;
 
-			bool top_is_air = false;
-			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			if(n.getContent() == CONTENT_AIR)
-				top_is_air = true;
-			
-			if(top_is_air == false)
-				continue;
+			bool top_is_same_liquid = false;
+			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
+			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(f.liquid_alternative_source);
+			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
+				top_is_same_liquid = true;
 
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
+
+			/*
+				Generate sides
+			 */
+			v3s16 side_dirs[4] = {
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			for(u32 i=0; i<4; i++)
+			{
+				v3s16 dir = side_dirs[i];
+
+				MapNode neighbor = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
+				content_t neighbor_content = neighbor.getContent();
+				const ContentFeatures &n_feat = nodedef->get(neighbor_content);
+				MapNode n_top = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir+ v3s16(0,1,0));
+				content_t n_top_c = n_top.getContent();
+
+				if(neighbor_content == CONTENT_IGNORE)
+					continue;
+
+				/*
+					If our topside is liquid and neighbor's topside
+					is liquid, don't draw side face
+				*/
+				if(top_is_same_liquid && (n_top_c == c_flowing ||
+						n_top_c == c_source || n_top_c == CONTENT_IGNORE))
+					continue;
+
+				// Don't draw face if neighbor is blocking the view
+				if(n_feat.solidness == 2)
+					continue;
+
+				bool neighbor_is_same_liquid = (neighbor_content == c_source
+						|| neighbor_content == c_flowing);
+
+				// Don't draw any faces if neighbor same is liquid and top is
+				// same liquid
+				if(neighbor_is_same_liquid && !top_is_same_liquid)
+					continue;
+
+				// Use backface culled material if neighbor doesn't have a
+				// solidness of 0
+				const TileSpec *current_tile = &tile_liquid;
+				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
+					current_tile = &tile_liquid_bfculled;
+
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
+				};
+
+				/*
+					If our topside is liquid, set upper border of face
+					at upper border of node
+				*/
+				if(top_is_same_liquid)
+				{
+					vertices[2].Pos.Y = 0.5*BS;
+					vertices[3].Pos.Y = 0.5*BS;
+				}
+				/*
+					Otherwise upper position of face is liquid level
+				*/
+				else
+				{
+					vertices[2].Pos.Y = (node_liquid_level-0.5)*BS;
+					vertices[3].Pos.Y = (node_liquid_level-0.5)*BS;
+				}
+				/*
+					If neighbor is liquid, lower border of face is liquid level
+				*/
+				if(neighbor_is_same_liquid)
+				{
+					vertices[0].Pos.Y = (node_liquid_level-0.5)*BS;
+					vertices[1].Pos.Y = (node_liquid_level-0.5)*BS;
+				}
+				/*
+					If neighbor is not liquid, lower border of face is
+					lower border of node
+				*/
+				else
+				{
+					vertices[0].Pos.Y = -0.5*BS;
+					vertices[1].Pos.Y = -0.5*BS;
+				}
+
+				for(s32 j=0; j<4; j++)
+				{
+					if(dir == v3s16(0,0,1))
+						vertices[j].Pos.rotateXZBy(0);
+					if(dir == v3s16(0,0,-1))
+						vertices[j].Pos.rotateXZBy(180);
+					if(dir == v3s16(-1,0,0))
+						vertices[j].Pos.rotateXZBy(90);
+					if(dir == v3s16(1,0,-0))
+						vertices[j].Pos.rotateXZBy(-90);
+
+					// Do this to not cause glitches when two liquids are
+					// side-by-side
+					/*if(neighbor_is_same_liquid == false){
+						vertices[j].Pos.X *= 0.98;
+						vertices[j].Pos.Z *= 0.98;
+					}*/
+
+					vertices[j].Pos += intToFloat(p, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(*current_tile, vertices, 4, indices, 6);
+			}
+
+			/*
+				Generate top
+			 */
+			if(top_is_same_liquid)
+				continue;
 			
 			video::S3DVertex vertices[4] =
 			{
@@ -185,7 +312,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						pa_liquid.x0(), pa_liquid.y0()),
 			};
 
-			v3f offset(p.X, p.Y + (-0.5+node_liquid_level)*BS, p.Z);
+			v3f offset(p.X*BS, p.Y*BS + (-0.5+node_liquid_level)*BS, p.Z*BS);
 			for(s32 i=0; i<4; i++)
 			{
 				vertices[i].Pos += offset;
@@ -230,9 +357,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
-			core::map<v3s16, f32> neighbor_levels;
-			core::map<v3s16, content_t> neighbor_contents;
-			core::map<v3s16, u8> neighbor_flags;
+			std::map<v3s16, f32> neighbor_levels;
+			std::map<v3s16, content_t> neighbor_contents;
+			std::map<v3s16, u8> neighbor_flags;
 			const u8 neighborflag_top_is_same_liquid = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
@@ -261,7 +388,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing)
 						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
-								+ 0.5) / 8.0 * node_liquid_level) * BS;
+								+ 0.5) / (float)LIQUID_LEVEL_SOURCE * node_liquid_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -273,9 +400,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						flags |= neighborflag_top_is_same_liquid;
 				}
 				
-				neighbor_levels.insert(neighbor_dirs[i], level);
-				neighbor_contents.insert(neighbor_dirs[i], content);
-				neighbor_flags.insert(neighbor_dirs[i], flags);
+				neighbor_levels[neighbor_dirs[i]] = level;
+				neighbor_contents[neighbor_dirs[i]] = content;
+				neighbor_flags[neighbor_dirs[i]] = flags;
 			}
 
 			// Corner heights (average between four liquids)
@@ -324,7 +451,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 				}
 				if(air_count >= 2)
-					cornerlevel = -0.5*BS;
+					cornerlevel = -0.5*BS+0.2;
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
@@ -733,7 +860,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
-			for(u32 j=0; j<4; j++)
+			for(u32 j=0; j<2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
@@ -758,16 +885,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				{
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(-45);
-				}
-				else if(j == 2)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(135);
-				}
-				else if(j == 3)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-135);
 				}
 
 				for(u16 i=0; i<4; i++)

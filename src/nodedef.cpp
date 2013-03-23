@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -199,6 +199,7 @@ void ContentFeatures::reset()
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
+	rightclickable = true;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
@@ -271,6 +272,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	serializeSimpleSoundSpec(sound_dug, os);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
+	writeU8(os, rightclickable);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -334,6 +336,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
+		rightclickable = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -604,9 +607,12 @@ public:
 					}
 				}
 				break;
+			case NDT_PLANTLIKE:
+				f->solidness = 0;
+				f->backface_culling = false;
+				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
-			case NDT_PLANTLIKE:
 			case NDT_FENCELIKE:
 			case NDT_RAILLIKE:
 			case NDT_NODEBOX:

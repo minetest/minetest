@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -108,8 +108,8 @@ public:
 		m_speed = speed;
 	}
 	
-	// Y direction is ignored
-	void accelerate(v3f target_speed, f32 max_increase);
+	void accelerateHorizontal(v3f target_speed, f32 max_increase);
+	void accelerateVertical(v3f target_speed, f32 max_increase);
 
 	v3f getPosition()
 	{
@@ -196,16 +196,31 @@ public:
 
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
-	bool in_water;
+	bool in_liquid;
 	// This is more stable and defines the maximum speed of the player
-	bool in_water_stable;
+	bool in_liquid_stable;
+	// Gets the viscosity of water to calculate friction
+	u8 liquid_viscosity;
 	bool is_climbing;
-	bool swimming_up;
+	bool swimming_vertical;
 	bool camera_barely_in_ceiling;
 	
 	u8 light;
 
 	Inventory inventory;
+
+	f32 movement_acceleration_default;
+	f32 movement_acceleration_air;
+	f32 movement_acceleration_fast;
+	f32 movement_speed_walk;
+	f32 movement_speed_crouch;
+	f32 movement_speed_fast;
+	f32 movement_speed_climb;
+	f32 movement_speed_jump;
+	f32 movement_liquid_fluidity;
+	f32 movement_liquid_fluidity_smooth;
+	f32 movement_liquid_sink;
+	f32 movement_gravity;
 
 	u16 hp;
 

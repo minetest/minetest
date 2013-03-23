@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,17 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include "config.h"
+#include "json/json.h"
 
 #ifndef SERVERLIST_HEADER
 #define SERVERLIST_HEADER
 
-struct ServerListSpec
-{
-	std::string name;
-	std::string address;
-	std::string port;
-	std::string description;
-};
+typedef Json::Value ServerListSpec;
 
 namespace ServerList
 {
@@ -41,6 +36,11 @@ namespace ServerList
 	bool insert(ServerListSpec server);
 	std::vector<ServerListSpec> deSerialize(std::string liststring);
 	std::string serialize(std::vector<ServerListSpec>);
+	std::vector<ServerListSpec> deSerializeJson(std::string liststring);
+	std::string serializeJson(std::vector<ServerListSpec>);
+	#if USE_CURL
+	void sendAnnounce(std::string action = "", u16 clients = 0);
+	#endif
 } //ServerList namespace
 
 #endif

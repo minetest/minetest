@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -27,10 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
-	in_water(false),
-	in_water_stable(false),
+	in_liquid(false),
+	in_liquid_stable(false),
+	liquid_viscosity(0),
 	is_climbing(false),
-	swimming_up(false),
+	swimming_vertical(false),
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
@@ -56,19 +57,35 @@ Player::Player(IGameDef *gamedef):
 		"list[current_player;main;0,3.5;8,4;]"
 		"list[current_player;craft;3,0;3,3;]"
 		"list[current_player;craftpreview;7,1;1,1;]";
+
+	// Initialize movement settings at default values, so movement can work if the server fails to send them
+	movement_acceleration_default = 3 * BS;
+	movement_acceleration_air = 2 * BS;
+	movement_acceleration_fast = 10 * BS;
+	movement_speed_walk = 4 * BS;
+	movement_speed_crouch = 1.35 * BS;
+	movement_speed_fast = 20 * BS;
+	movement_speed_climb = 2 * BS;
+	movement_speed_jump = 6.5 * BS;
+	movement_liquid_fluidity = 1 * BS;
+	movement_liquid_fluidity_smooth = 0.5 * BS;
+	movement_liquid_sink = 10 * BS;
+	movement_gravity = 9.81 * BS;
 }
 
 Player::~Player()
 {
 }
 
-// Y direction is ignored
-void Player::accelerate(v3f target_speed, f32 max_increase)
+// Horizontal acceleration (X and Z), Y direction is ignored
+void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 {
+	if(max_increase == 0)
+		return;
+
 	v3f d_wanted = target_speed - m_speed;
 	d_wanted.Y = 0;
-	f32 dl_wanted = d_wanted.getLength();
-	f32 dl = dl_wanted;
+	f32 dl = d_wanted.getLength();
 	if(dl > max_increase)
 		dl = max_increase;
 	
@@ -76,7 +93,6 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 
 	m_speed.X += d.X;
 	m_speed.Z += d.Z;
-	//m_speed += d;
 
 #if 0 // old code
 	if(m_speed.X < target_speed.X - max_increase)
@@ -96,6 +112,32 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 		m_speed.Z = target_speed.Z;
 	else if(m_speed.Z > target_speed.Z)
 		m_speed.Z = target_speed.Z;
+#endif
+}
+
+// Vertical acceleration (Y), X and Z directions are ignored
+void Player::accelerateVertical(v3f target_speed, f32 max_increase)
+{
+	if(max_increase == 0)
+		return;
+
+	f32 d_wanted = target_speed.Y - m_speed.Y;
+	if(d_wanted > max_increase)
+		d_wanted = max_increase;
+	else if(d_wanted < -max_increase)
+		d_wanted = -max_increase;
+
+	m_speed.Y += d_wanted;
+
+#if 0 // old code
+	if(m_speed.Y < target_speed.Y - max_increase)
+		m_speed.Y += max_increase;
+	else if(m_speed.Y > target_speed.Y + max_increase)
+		m_speed.Y -= max_increase;
+	else if(m_speed.Y < target_speed.Y)
+		m_speed.Y = target_speed.Y;
+	else if(m_speed.Y > target_speed.Y)
+		m_speed.Y = target_speed.Y;
 #endif
 }
 

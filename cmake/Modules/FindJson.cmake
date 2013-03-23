@@ -1,0 +1,18 @@
+# Look for json, use our own if not found
+
+#FIND_PATH(JSON_INCLUDE_DIR json.h)
+
+#FIND_LIBRARY(JSON_LIBRARY NAMES jsoncpp)
+
+#IF(JSON_LIBRARY AND JSON_INCLUDE_DIR)
+#	SET( JSON_FOUND TRUE )
+#ENDIF(JSON_LIBRARY AND JSON_INCLUDE_DIR)
+
+#IF(JSON_FOUND)
+#	MESSAGE(STATUS "Found system jsoncpp header file in ${JSON_INCLUDE_DIR}")
+#	MESSAGE(STATUS "Found system jsoncpp library ${JSON_LIBRARY}")
+#ELSE(JSON_FOUND)
+	SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/json)
+	SET(JSON_LIBRARY jsoncpp)
+	MESSAGE(STATUS "Using project jsoncpp library")
+#ENDIF(JSON_FOUND)

@@ -1,6 +1,6 @@
 /*
-Part of Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Part of Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -112,13 +112,13 @@ struct HeightPoint
 	float have_sand;
 	float tree_amount;
 };
-core::map<v2s16, HeightPoint> g_heights;
+std::map<v2s16, HeightPoint> g_heights;
 
 HeightPoint ground_height(u64 seed, v2s16 p2d)
 {
-	core::map<v2s16, HeightPoint>::Node *n = g_heights.find(p2d);
-	if(n)
-		return n->getValue();
+	std::map<v2s16, HeightPoint>::iterator n = g_heights.find(p2d);
+	if(n != g_heights.end())
+		return n->second;
 	HeightPoint hp;
 	s16 level = Mapgen::find_ground_level_from_noise(seed, p2d, 3);
 	hp.gh = (level-4)*BS;

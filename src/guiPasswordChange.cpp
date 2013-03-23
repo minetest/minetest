@@ -1,7 +1,7 @@
 /*
-Part of Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2011 Ciaran Gultnieks <ciaran@ciarang.com>
+Part of Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013 Ciaran Gultnieks <ciaran@ciarang.com>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

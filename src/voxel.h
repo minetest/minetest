@@ -1,6 +1,6 @@
 /*
-Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "debug.h"
 #include "mapnode.h"
+#include <set>
+#include <list>
 
 class INodeDefManager;
 
@@ -186,7 +188,7 @@ public:
 
 		a: area inside *this
 	*/
-	void diff(const VoxelArea &a, core::list<VoxelArea> &result)
+	void diff(const VoxelArea &a, std::list<VoxelArea> &result)
 	{
 		/*
 			This can result in a maximum of 6 areas
@@ -519,14 +521,14 @@ public:
 	// TODO: Move to voxelalgorithms.h
 
 	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
-			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
+			std::set<v3s16> & light_sources, INodeDefManager *nodemgr);
 	void unspreadLight(enum LightBank bank,
-			core::map<v3s16, u8> & from_nodes,
-			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
+			std::map<v3s16, u8> & from_nodes,
+			std::set<v3s16> & light_sources, INodeDefManager *nodemgr);
 
 	void spreadLight(enum LightBank bank, v3s16 p, INodeDefManager *nodemgr);
 	void spreadLight(enum LightBank bank,
-			core::map<v3s16, bool> & from_nodes, INodeDefManager *nodemgr);
+			std::set<v3s16> & from_nodes, INodeDefManager *nodemgr);
 
 	/*
 		Virtual functions

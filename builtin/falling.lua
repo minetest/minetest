@@ -57,6 +57,10 @@ minetest.register_entity("__builtin:falling_node", {
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[bcn.name] and
 				minetest.registered_nodes[bcn.name].walkable then
+			if minetest.registered_nodes[bcn.name].buildable_to then
+				minetest.env:remove_node(bcp)
+				return
+			end
 			local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 			-- Check what's here
 			local n2 = minetest.env:get_node(np)
@@ -80,6 +84,7 @@ minetest.register_entity("__builtin:falling_node", {
 			-- Create node and remove entity
 			minetest.env:add_node(np, {name=self.nodename})
 			self.object:remove()
+			nodeupdate(np)
 		else
 			-- Do nothing
 		end
@@ -144,7 +149,8 @@ function nodeupdate_single(p)
 		n_bottom = minetest.env:get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
-				not minetest.registered_nodes[n_bottom.name].walkable then
+				(not minetest.registered_nodes[n_bottom.name].walkable or 
+					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			minetest.env:remove_node(p)
 			spawn_falling_node(p, n.name)
 			nodeupdate(p)
