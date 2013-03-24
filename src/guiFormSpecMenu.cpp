@@ -1399,12 +1399,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
 		{
-			if(event.GUIEvent.Caller->getID() > 257)
+			for(u32 i=0; i<m_fields.size(); i++)
 			{
-				acceptInput();
-				quitMenu();
-				// quitMenu deallocates menu
-				return true;
+				FieldSpec &s = m_fields[i];
+				if(s.fid == event.GUIEvent.Caller->getID())
+				{
+					s.send = true;
+					acceptInput();
+					Environment->setFocus(this);
+					return true;
+				}
 			}
 		}
 	}
