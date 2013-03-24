@@ -704,11 +704,16 @@ static int l_register_ore(lua_State *L)
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);	
 	Ore *ore = createOre(oretype);
+	if (!ore) {
+		errorstream << "register_ore: ore_type "
+			<< oretype << " not implemented";
+		return 0;
+	}
 	
 	ore->ore_name       = getstringfield_default(L, index, "ore", "");
 	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
-	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 0);
-	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 0);
+	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
+	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
 	ore->height_min     = getintfield_default(L, index, "height_min", 0);
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
@@ -719,6 +724,13 @@ static int l_register_ore(lua_State *L)
 	lua_pop(L, 1);
 	
 	ore->noise = NULL;
+	
+	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
+		errorstream << "register_ore: clust_scarcity and clust_num_ores"
+			"must be greater than 0";
+		delete ore;
+		return 0;
+	}
 	
 	emerge->ores.push_back(ore);
 	
