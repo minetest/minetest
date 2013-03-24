@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.4
+Minetest Lua Modding API Reference 0.4.5
 ==========================================
 More information at http://c55.me/minetest/
 
@@ -371,6 +371,25 @@ A box is defined as:
   {x1, y1, z1, x2, y2, z2}
 A box of a regular node would look like:
   {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+
+Ore types
+---------------
+These tell in what manner the ore is generated.
+All default ores are of the uniformly-distributed scatter type.
+
+- scatter
+    Randomly chooses a location and generates a cluster of ore.
+    If noise_params is specified, the ore will be placed if the 3d perlin noise at 
+    that point is greater than the noise_threshhold, giving the ability to create a non-equal
+    distribution of ore.
+- sheet
+    Creates a sheet of ore in a blob shape according to the 2d perlin noise described by
+    the noise_params structure.  The height of the blob is randomly scattered, with a maximum
+    height of clust_size.  Here, clust_scarcity and clust_num_ores are ignored.
+    This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
+- claylike - NOT YET IMPLEMENTED
+    Places ore if there are no more than clust_scarcity number of specified nodes within a Von Neumann
+    neighborhood of clust_size radius.
 
 Representations of simple things
 --------------------------------
@@ -844,6 +863,7 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
+minetest.register_ore(ore definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
@@ -1667,6 +1687,28 @@ Recipe for register_craft (furnace fuel)
     type = "fuel",
     recipe = "default:leaves",
     burntime = 1,
+}
+
+Ore definition (register_ore)
+{
+    ore_type = "scatter" -- See "Ore types"
+    ore = "default:stone_with_coal",
+    wherein = "default:stone",
+    clust_scarcity = 8*8*8,
+        ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
+    ^ This value should be *MUCH* higher than your intuition might tell you!
+    clust_num_ores = 8,
+        ^ Number of ores in a cluster
+    clust_size = 3,
+        ^ Size of the bounding box of the cluster
+    ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
+    height_min = -31000,
+    height_max = 64,
+    noise_threshhold = 0.5,
+        ^ If noise is above this threshhold, ore is placed.  Not needed for a uniform distribution
+    noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
+        ^ NoiseParams structure describing the perlin noise used for ore distribution.
+    ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
 }
 
 Chatcommand definition (register_chatcommand)
