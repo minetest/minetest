@@ -126,7 +126,7 @@ class MapgenIndev : public MapgenV6 {
 	NoiseIndev *noiseindev_float_islands2;
 	NoiseIndev *noiseindev_float_islands3;
 
-	MapgenIndev(int mapgenid, MapgenIndevParams *params);
+	MapgenIndev(int mapgenid, MapgenIndevParams *params, EmergeManager *emerge);
 	~MapgenIndev();
 	void calculateNoise();
 
@@ -141,7 +141,7 @@ class MapgenIndev : public MapgenV6 {
 
 struct MapgenFactoryIndev : public MapgenFactoryV6 {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenIndev(mgid, (MapgenIndevParams *)params);
+		return new MapgenIndev(mgid, (MapgenIndevParams *)params, emerge);
 	};
 
 	MapgenParams *createMapgenParams() {

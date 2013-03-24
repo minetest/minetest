@@ -80,7 +80,9 @@ void NoiseIndev::transformNoiseMapFarScale(float xx, float yy, float zz) {
         }
 }
 
-MapgenIndev::MapgenIndev(int mapgenid, MapgenIndevParams *params) : MapgenV6(mapgenid, params) {
+MapgenIndev::MapgenIndev(int mapgenid, MapgenIndevParams *params, EmergeManager *emerge) 
+	: MapgenV6(mapgenid, params, emerge)
+{
         noiseindev_terrain_base   = new NoiseIndev(params->npindev_terrain_base,   seed, csize.X, csize.Z);
         noiseindev_terrain_higher = new NoiseIndev(params->npindev_terrain_higher, seed, csize.X, csize.Z);
         noiseindev_steepness      = new NoiseIndev(params->npindev_steepness,      seed, csize.X, csize.Z);

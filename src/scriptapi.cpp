@@ -30,6 +30,7 @@ extern "C" {
 #include "settings.h" // For accessing g_settings
 #include "main.h" // For g_settings
 #include "biome.h"
+#include "emerge.h"
 #include "script.h"
 #include "rollback.h"
 
@@ -239,6 +240,14 @@ struct EnumString es_BiomeTerrainType[] =
 	{BIOME_TERRAIN_NETHER, "nether"},
 	{BIOME_TERRAIN_AETHER, "aether"},
 	{BIOME_TERRAIN_FLAT,   "flat"},
+	{0, NULL},
+};
+
+struct EnumString es_OreType[] =
+{
+	{ORE_SCATTER,  "scatter"},
+	{ORE_SHEET,    "sheet"},
+	{ORE_CLAYLIKE, "claylike"},
 	{0, NULL},
 };
 
@@ -612,8 +621,6 @@ static int l_register_biome_groups(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int index = 1;
-	if (!lua_istable(L, index))
-		throw LuaError(L, "register_biome_groups: parameter is not a table");
 
 	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
 	if (!bmgr) {
@@ -685,6 +692,40 @@ static int l_register_biome(lua_State *L)
 	return 0;
 }
 
+
+static int l_register_ore(lua_State *L)
+{
+	int index = 1;
+	luaL_checktype(L, index, LUA_TTABLE);
+	
+	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
+	EmergeManager *emerge = get_server(L)->getEmergeManager();
+	
+	enum OreType oretype = (OreType)getenumfield(L, index,
+				"ore_type", es_OreType, ORE_SCATTER);	
+	Ore *ore = createOre(oretype);
+	
+	ore->ore_name       = getstringfield_default(L, index, "ore", "");
+	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
+	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 0);
+	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 0);
+	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
+	ore->height_min     = getintfield_default(L, index, "height_min", 0);
+	ore->height_max     = getintfield_default(L, index, "height_max", 0);
+	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+
+	lua_getfield(L, index, "noise_params");
+	ore->np = read_noiseparams(L, -1);
+	lua_pop(L, 1);
+	
+	ore->noise = NULL;
+	
+	emerge->ores.push_back(ore);
+	
+	verbosestream << "register_ore: ore '" << ore->ore_name
+		<< "' registered" << std::endl;
+	return 0;
+}
 
 
 // setting_set(name, value)
@@ -1060,6 +1101,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_craft", l_register_craft},
 	{"register_biome", l_register_biome},
 	{"register_biome_groups", l_register_biome_groups},
+	{"register_ore", l_register_ore},
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},

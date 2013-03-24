@@ -653,7 +653,6 @@ Server::Server(
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_thread(this),
-	//m_emergethread(this),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_shutdown_requested(false),
@@ -698,7 +697,10 @@ Server::Server(
 
 	// Create biome definition manager
 	m_biomedef = new BiomeDefManager(this);
-
+	
+	// Create emerge manager
+	m_emerge = new EmergeManager(this, m_biomedef);
+	
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
@@ -813,9 +815,6 @@ Server::Server(
 
 	// Add default biomes after nodedef had its aliases added
 	m_biomedef->addDefaultBiomes();
-
-	// Create emerge manager
-	m_emerge = new EmergeManager(this, m_biomedef);
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
