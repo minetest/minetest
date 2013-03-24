@@ -784,9 +784,38 @@ static int l_get_ban_description(lua_State *L)
 	lua_pushstring(L, get_server(L)->getBanDescription(std::string(ip_or_name)).c_str());
 	return 1;
 }
+// kick_player()
+static int l_kick_player(lua_State *L)
+{
+	const char * name = luaL_checkstring(L, 1);
+	Player *player = get_env(L)->getPlayer(name);
+	if(player == NULL)
+	{
+		lua_pushboolean(L, false); // no such player
+		return 1;
+	}
+	try
+	{
+		server->notifyPlayer(name, narrow_to_wide("You have been kicked from the server"));
+		server->notifyPlayers(narrow_to_wide("*** "+name+" was kicked from the game."));
+		u16 peerId = get_env(L)->getPlayer(name)->peer_id;
+		Connection::RemovePeer(peerId);
+		
+	}
+	catch(con::PeerNotFoundException) // unlikely
+	{
+		dstream << __FUNCTION_NAME << ": peer was not found" << std::endl;
+		lua_pushboolean(L, false); // error
+		return 1;
+	}
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 
 // ban_player()
 static int l_ban_player(lua_State *L)
+
 {
 	const char * name = luaL_checkstring(L, 1);
 	Player *player = get_env(L)->getPlayer(name);
@@ -1069,6 +1098,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_ban_list", l_get_ban_list},
 	{"get_ban_description", l_get_ban_description},
 	{"ban_player", l_ban_player},
+	{"kick_player", l_kick_player},
 	{"unban_player_or_ip", l_unban_player_of_ip},
 	{"get_inventory", l_get_inventory},
 	{"create_detached_inventory_raw", l_create_detached_inventory_raw},

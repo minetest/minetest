@@ -610,6 +610,18 @@ minetest.register_chatcommand("shutdown", {
 	end,
 })
 
+minetest.register_chatcommand("kick", {
+	params = "<name> <reason>",
+	description = "kick player once without banning",
+	privs = {kick=true},
+	func = function(name, param)
+		local player, reason = string.match(param, "([^ ]) ([^ ])")
+		if not minetest.env:get_player_by_name(player) then
+			minetest.chat_send_player(name, "No such player")
+			return
+		if not minetest.kick_player(param) then
+			minetest.chat_send_player(name, "Failed to kick player")
+
 minetest.register_chatcommand("ban", {
 	params = "<name>",
 	description = "ban IP of player",
