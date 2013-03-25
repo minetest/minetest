@@ -165,12 +165,12 @@ void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int index = 0;
 	for (int z = z0; z != z1; z++)
 	for (int x = x0; x != x1; x++) {
-		
-		if (noise->result[index++] < nthresh)
+		float noiseval = noise->result[index++];
+		if (noiseval < nthresh)
 			continue;
 			
 		int height = max_height * (1. / pr.range(1, 3));
-		int y0 = y_start + pr.range(1, 3) - 1;
+		int y0 = y_start + np->scale * noiseval; //pr.range(1, 3) - 1;
 		int y1 = y0 + height;
 		for (int y = y0; y != y1; y++) {
 			u32 i = vm->m_area.index(x, y, z);

@@ -383,9 +383,12 @@ All default ores are of the uniformly-distributed scatter type.
     that point is greater than the noise_threshhold, giving the ability to create a non-equal
     distribution of ore.
 - sheet
-    Creates a sheet of ore in a blob shape according to the 2d perlin noise described by
-    the noise_params structure.  The height of the blob is randomly scattered, with a maximum
-    height of clust_size.  Here, clust_scarcity and clust_num_ores are ignored.
+    Creates a sheet of ore in a blob shape according to the 2d perlin noise described by noise_params.
+    The relative height of the sheet can be controlled by the same perlin noise as well, by specifying
+    a non-zero 'scale' parameter in noise_params.  IMPORTANT: The noise is not transformed by offset or
+    scale when comparing against the noise threshhold, but scale is used to determine relative height.
+    The height of the blob is randomly scattered, with a maximum height of clust_size.
+    clust_scarcity and clust_num_ores are ignored.
     This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
 - claylike - NOT YET IMPLEMENTED
     Places ore if there are no more than clust_scarcity number of specified nodes within a Von Neumann
