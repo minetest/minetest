@@ -708,11 +708,15 @@ public:
 			if(player && player->isLocal()){
 				m_is_local_player = true;
 			}
+			m_env->addPlayerName(m_name.c_str());
 		}
 	}
 
 	~GenericCAO()
 	{
+		if(m_is_player){
+			m_env->removePlayerName(m_name.c_str());
+		}
 	}
 
 	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)

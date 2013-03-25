@@ -464,7 +464,7 @@ void ChatPrompt::historyNext()
 	}
 }
 
-void ChatPrompt::nickCompletion(const std::list<std::wstring>& names, bool backwards)
+void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwards)
 {
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
@@ -493,13 +493,13 @@ void ChatPrompt::nickCompletion(const std::list<std::wstring>& names, bool backw
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
-	for (std::list<std::wstring>::const_iterator
+	for (std::list<std::string>::const_iterator
 			i = names.begin();
 			i != names.end(); ++i)
 	{
-		if (str_starts_with(*i, prefix, true))
+		if (str_starts_with(narrow_to_wide(*i), prefix, true))
 		{
-			std::wstring completion = *i;
+			std::wstring completion = narrow_to_wide(*i);
 			if (prefix_start == 0)
 				completion += L":";
 			completions.push_back(completion);

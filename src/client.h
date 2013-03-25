@@ -315,7 +315,7 @@ public:
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 
-	std::list<std::wstring> getConnectedPlayerNames();
+	std::list<std::string> getConnectedPlayerNames();
 
 	float getAnimationTime();
 
