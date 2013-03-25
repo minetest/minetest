@@ -1514,6 +1514,9 @@ Item definition (register_node, register_craftitem, register_tool)
     ^ Otherwise should be name of node which the client immediately places
       on ground when the player places the item. Server will always update
       actual result to client in a short moment.
+    sound = {
+        place = <SimpleSoundSpec>,
+    }
 
     on_place = func(itemstack, placer, pointed_thing),
     ^ Shall place item and return the leftover itemstack
@@ -1581,6 +1584,7 @@ Node definition (register_node)
         footstep = <SimpleSoundSpec>,
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
+        place = <SimpleSoundSpec>,
     },
 
     on_construct = func(pos),

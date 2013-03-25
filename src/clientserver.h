@@ -87,6 +87,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_DELETE_PARTICLESPAWNER
 	PROTOCOL_VERSION 18:
 		damageGroups added to ToolCapabilities
+		sound_place added to ItemDefinition
 */
 
 #define LATEST_PROTOCOL_VERSION 18
