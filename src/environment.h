@@ -470,6 +470,13 @@ public:
 	ClientEnvEvent getClientEvent();
 
 	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+
+	std::list<std::string> getPlayerNames()
+	{ return m_player_names; }
+	void addPlayerName(std::string name)
+	{ m_player_names.push_back(name); }
+	void removePlayerName(std::string name)
+	{ m_player_names.remove(name); }
 	
 private:
 	ClientMap *m_map;
@@ -482,6 +489,7 @@ private:
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
+	std::list<std::string> m_player_names;
 };
 
 #endif

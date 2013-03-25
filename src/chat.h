@@ -160,7 +160,7 @@ public:
 	void historyNext();
 
 	// Nick completion
-	void nickCompletion(const std::list<std::wstring>& names, bool backwards);
+	void nickCompletion(const std::list<std::string>& names, bool backwards);
 
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
