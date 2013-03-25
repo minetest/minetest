@@ -75,6 +75,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	}
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
+	sound_place = def.sound_place;
 	return *this;
 }
 
@@ -107,13 +108,17 @@ void ItemDefinition::reset()
 		tool_capabilities = NULL;
 	}
 	groups.clear();
+	sound_place = SimpleSoundSpec();
 
 	node_placement_prediction = "";
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 1); // version
+	if(protocol_version <= 17)
+		writeU8(os, 1); // version
+	else
+		writeU8(os, 2); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -137,6 +142,11 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
+	if(protocol_version > 17){
+		//serializeSimpleSoundSpec(sound_place, os);
+		os<<serializeString(sound_place.name);
+		writeF1000(os, sound_place.gain);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -146,7 +156,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 1)
+	if(version != 1 && version != 2)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -171,10 +181,24 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
+	if(version == 1){
+		// We cant be sure that node_placement_prediction is send in version 1
+		try{
+			node_placement_prediction = deSerializeString(is);
+		}catch(SerializationError &e) {};
+		// Set the old default sound
+		sound_place.name = "default_place_node";
+		sound_place.gain = 0.5;
+	} else if(version == 2) {
+		node_placement_prediction = deSerializeString(is);
+		//deserializeSimpleSoundSpec(sound_place, is);
+		sound_place.name = deSerializeString(is);
+		sound_place.gain = readF1000(is);
+	}
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		node_placement_prediction = deSerializeString(is);
+		
 	}catch(SerializationError &e) {};
 }
 
