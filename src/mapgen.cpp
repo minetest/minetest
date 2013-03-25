@@ -141,8 +141,10 @@ void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed + 4234);
 	
 	int ymin = MYMAX(nmin.Y, height_min);
-	int ymax = MYMIN(nmax.Y, height_max);	
-	
+	int ymax = MYMIN(nmax.Y, height_max);
+	if (clust_size >= ymax - ymin + 1)
+		return;
+		
 	int x0 = nmin.X;
 	int z0 = nmin.Z;
 	
@@ -150,7 +152,6 @@ void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int z1 = nmax.Z;
 	
 	int max_height = clust_size;
-	
 	int y_start = pr.range(ymin, ymax - max_height);
 	
 	if (!noise) {
