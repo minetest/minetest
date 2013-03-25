@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <set>
 #include "itemgroup.h"
+#include "sound.h"
 class IGameDef;
 struct ToolCapabilities;
 
@@ -66,6 +67,7 @@ struct ItemDefinition
 	// May be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
 	ItemGroupList groups;
+	SimpleSoundSpec sound_place;
 
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.

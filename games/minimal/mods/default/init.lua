@@ -659,6 +659,8 @@ function default.node_sound_dirt_defaults(table)
 			{name="", gain=0.5}
 	--table.dug = table.dug or
 	--		{name="default_dirt_break", gain=0.5}
+	table.place = table.place or
+			{name="default_grass_footstep", gain=0.5}
 	default.node_sound_defaults(table)
 	return table
 end
