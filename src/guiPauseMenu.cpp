@@ -97,9 +97,9 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	core::rect<s32> rect(
-			screensize.X/2 - 580/2,
+			screensize.X/2 - 670/2,
 			screensize.Y/2 - 300/2,
-			screensize.X/2 + 580/2,
+			screensize.X/2 + 670/2,
 			screensize.Y/2 + 300/2
 	);
 	
@@ -155,7 +155,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	}
 
 	{
-		core::rect<s32> rect(0, 0, 180, 240);
+		core::rect<s32> rect(0, 0, 500, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
 		Environment->addStaticText(chartowchar_t(gettext(
 		"Default Controls:\n"
@@ -165,11 +165,13 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		"- Mouse wheel: select item\n"
 		"- 0...9: select item\n"
 		"- Shift: sneak\n"
+		"- Space: jump\n"
+		"- Space/Shift: climb/decend a ladder\n"
 		"- R: Toggle viewing all loaded chunks\n"
 		"- I: Inventory menu\n"
 		"- ESC: This menu\n"
 		"- T: Chat\n"
-		)), rect, false, true, this, 258);
+		)), rect, false, true, this, 300);
 	}
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
