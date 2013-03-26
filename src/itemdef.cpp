@@ -75,6 +75,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	}
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
+	sound_place = def.sound_place;
 	return *this;
 }
 
@@ -107,6 +108,7 @@ void ItemDefinition::reset()
 		tool_capabilities = NULL;
 	}
 	groups.clear();
+	sound_place = SimpleSoundSpec();
 
 	node_placement_prediction = "";
 }
@@ -137,6 +139,9 @@ void ItemDefinition::serialize(std::ostream &os) const
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
+	//serializeSimpleSoundSpec(sound_place, os);
+	os<<serializeString(sound_place.name);
+	writeF1000(os, sound_place.gain);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -175,6 +180,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// block to not need to increase the version.
 	try{
 		node_placement_prediction = deSerializeString(is);
+		//deserializeSimpleSoundSpec(sound_place, is);
+		sound_place.name = deSerializeString(is);
+		sound_place.gain = readF1000(is);
 	}catch(SerializationError &e) {};
 }
 

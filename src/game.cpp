@@ -2394,11 +2394,6 @@ void the_game(
 				}
 			}
 			
-			// We can't actually know, but assume the sound of right-clicking
-			// to be the sound of placing a node
-			soundmaker.m_player_rightpunch_sound.gain = 0.5;
-			soundmaker.m_player_rightpunch_sound.name = "default_place_node";
-			
 			/*
 				Handle digging
 			*/
@@ -2617,6 +2612,9 @@ void the_game(
 									<<") - Position not loaded"<<std::endl;
 						}
 					}while(0);
+					
+					// Read the sound
+					soundmaker.m_player_rightpunch_sound = def.sound_place;
 				}
 			}
 		}
