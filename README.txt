@@ -81,7 +81,7 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
+$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
 $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
@@ -115,6 +115,7 @@ $ ./minetest
 - You can build a bare server or a bare client by specifying -DBUILD_CLIENT=0 or -DBUILD_SERVER=0
 - You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
   - Debug build is slower, but gives much more useful output in a debugger
+- If you build a bare server, you don't need to have Irrlicht installed. In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
 
 Compiling on Windows:
 ---------------------
