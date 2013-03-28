@@ -665,3 +665,23 @@ minetest.register_chatcommand("clearobjects", {
 		minetest.chat_send_all("*** Cleared all objects.")
 	end,
 })
+
+minetest.register_chatcommand("msg", {
+	params = "<name> <message>",
+	description = "Send a private message",
+	privs = {shout=true},
+	func = function(name, param)
+		local found, _, sendto, message = param:find("^([^%s]+)%s(.+)$")
+		if found then
+			if minetest.env:get_player_by_name(sendto) then
+				minetest.log("action", "PM from "..name.." to "..sendto..": "..message)
+				minetest.chat_send_player(sendto, "PM from "..name..": "..message)
+				minetest.chat_send_player(name, "Message sent")
+			else
+				minetest.chat_send_player(name, "The player "..sendto.." is not online")
+			end
+		else
+			minetest.chat_send_player(name, "Invalid usage, see /help msg")
+		end
+	end,
+})
