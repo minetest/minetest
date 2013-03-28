@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-23 18:24+0200\n"
-"PO-Revision-Date: 2013-03-09 14:28+0200\n"
-"Last-Translator: 4aiman Konsorumaniakku <4aiman@inbox.ru>\n"
+"PO-Revision-Date: 2013-03-28 15:29+0200\n"
+"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -196,8 +196,9 @@ msgid "Range select"
 msgstr "Выбор зоны видимости"
 
 #: src/guiKeyChangeMenu.cpp:388
+#, fuzzy
 msgid "Print stacks"
-msgstr ""
+msgstr "напечатать стеки"
 
 #: src/guiMainMenu.cpp:55
 msgid "Cannot create world: Name contains invalid characters"
@@ -213,7 +214,7 @@ msgstr "Одиночная игра"
 
 #: src/guiMainMenu.cpp:246
 msgid "Multiplayer"
-msgstr "Сетевая игра"
+msgstr "Многопользовательская игра"
 
 #: src/guiMainMenu.cpp:247
 msgid "Advanced"
@@ -225,7 +226,7 @@ msgstr "Настройки"
 
 #: src/guiMainMenu.cpp:249
 msgid "Credits"
-msgstr "Об авторах"
+msgstr "Благодарности"
 
 #: src/guiMainMenu.cpp:280
 msgid "Select World:"
@@ -249,11 +250,11 @@ msgstr "Играть"
 
 #: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
 msgid "Creative Mode"
-msgstr "Режим Творчества"
+msgstr "Режим создания"
 
 #: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
 msgid "Enable Damage"
-msgstr "Получение повреждений"
+msgstr "Включить повреждения"
 
 #: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
 msgid "Name/Password"
@@ -398,7 +399,7 @@ msgstr "Выход в меню"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Выход в реальность"
+msgstr "Выход в ОС"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -417,7 +418,7 @@ msgstr ""
 "Управление по умолчанию:\n"
 "- WASD: перемещение\n"
 "- ЛКМ: копать/ударить\n"
-"- ПКМ: строить/использовать\n"
+"- ПКМ: поставить/использовать\n"
 "- Колесо мыши: выбор предмета\n"
 "- 0...9: выбор предмета\n"
 "- Shift: красться\n"
@@ -444,7 +445,7 @@ msgstr "Доп. кнопка 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Backspace"
+msgstr "назад"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -452,11 +453,12 @@ msgstr "Очистить"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr "Ввод"
+msgstr "Вернуться"
 
 #: src/keycode.cpp:224
+#, fuzzy
 msgid "Tab"
-msgstr "Табуляция"
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -476,7 +478,7 @@ msgstr "Кана"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr "Alt"
+msgstr "меню"
 
 #: src/keycode.cpp:225
 msgid "Pause"
@@ -576,7 +578,7 @@ msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "снимок"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
@@ -674,7 +676,7 @@ msgstr "Левый Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr "Левый Alt"
+msgstr "Левая клавиша меню"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
@@ -682,7 +684,7 @@ msgstr "Правый Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr "Правый Alt"
+msgstr "Правая клавиша меню"
 
 #: src/keycode.cpp:243
 msgid "Comma"
@@ -693,16 +695,18 @@ msgid "Minus"
 msgstr "Минус"
 
 #: src/keycode.cpp:243
+#, fuzzy
 msgid "Period"
-msgstr ""
+msgstr "период"
 
 #: src/keycode.cpp:243
 msgid "Plus"
 msgstr "Плюс"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "Attn"
-msgstr ""
+msgstr "внимание"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
