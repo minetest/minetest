@@ -381,8 +381,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	}
 	
 	// Initialize something to armor groups
-	m_armor_groups["fleshy"] = 3;
-	m_armor_groups["snappy"] = 2;
+	m_armor_groups["fleshy"] = 100;
 }
 
 LuaEntitySAO::~LuaEntitySAO()
@@ -942,8 +941,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	assert(m_peer_id != 0);
 	setBasePosition(m_player->getPosition());
 	m_inventory = &m_player->inventory;
-	m_armor_groups["choppy"] = 2;
-	m_armor_groups["fleshy"] = 3;
+	m_armor_groups["fleshy"] = 100;
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;

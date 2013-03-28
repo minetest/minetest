@@ -556,7 +556,7 @@ private:
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
 	static void SendItemDef(con::Connection &con, u16 peer_id,
-			IItemDefManager *itemdef);
+			IItemDefManager *itemdef, u16 protocol_version);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
 			INodeDefManager *nodedef, u16 protocol_version);
 

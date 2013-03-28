@@ -111,7 +111,7 @@ void ItemDefinition::reset()
 	node_placement_prediction = "";
 }
 
-void ItemDefinition::serialize(std::ostream &os) const
+void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
 	writeU8(os, 1); // version
 	writeU8(os, type);
@@ -126,7 +126,7 @@ void ItemDefinition::serialize(std::ostream &os) const
 	std::string tool_capabilities_s = "";
 	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
-		tool_capabilities->serialize(tmp_os);
+		tool_capabilities->serialize(tmp_os, protocol_version);
 		tool_capabilities_s = tmp_os.str();
 	}
 	os<<serializeString(tool_capabilities_s);
@@ -547,7 +547,7 @@ public:
 			m_aliases[name] = convert_to;
 		}
 	}
-	void serialize(std::ostream &os)
+	void serialize(std::ostream &os, u16 protocol_version)
 	{
 		writeU8(os, 0); // version
 		u16 count = m_item_definitions.size();
@@ -559,7 +559,7 @@ public:
 			ItemDefinition *def = i->second;
 			// Serialize ItemDefinition and write wrapped in a string
 			std::ostringstream tmp_os(std::ios::binary);
-			def->serialize(tmp_os);
+			def->serialize(tmp_os, protocol_version);
 			os<<serializeString(tmp_os.str());
 		}
 		writeU16(os, m_aliases.size());
