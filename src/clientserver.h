@@ -85,9 +85,11 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_SPAWN_PARTICLE
 		TOCLIENT_ADD_PARTICLESPAWNER
 		TOCLIENT_DELETE_PARTICLESPAWNER
+	PROTOCOL_VERSION 18:
+		damageGroups added to ToolCapabilities
 */
 
-#define LATEST_PROTOCOL_VERSION 17
+#define LATEST_PROTOCOL_VERSION 18
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13

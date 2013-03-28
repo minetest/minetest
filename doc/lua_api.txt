@@ -471,9 +471,11 @@ a node is destroyable and how long it takes to destroy by a tool.
 Groups of entities
 -------------------
 For entities, groups are, as of now, used only for calculating damage.
+The rating is the percentage of damage caused by tools with this damage group.
+See "Entity damage mechanism".
 
-object.get_armor_groups() -> a group-rating table (eg. {fleshy=3})
-object.set_armor_groups({level=2, fleshy=2, cracky=2})
+object.get_armor_groups() -> a group-rating table (eg. {fleshy=100})
+object.set_armor_groups({fleshy=30, cracky=80})
 
 Groups of tools
 ----------------
@@ -522,7 +524,6 @@ Special groups
 
 Known damage and digging time defining groups
 ----------------------------------------------
-Valid ratings for these are 0, 1, 2 and 3, unless otherwise stated.
 - crumbly: dirt, sand
 - cracky: tough but crackable stuff like stone.
 - snappy: something that can be cut using fine tools; eg. leaves, small
@@ -575,6 +576,7 @@ groups to enable interaction with tools.
     * Uses (until the tool breaks)
     * Maximum level (usually 0, 1, 2 or 3)
     * Digging times
+    * Damage groups
 
 **Full punch interval**:
 When used as a weapon, the tool will do full damage if this time is spent
@@ -606,8 +608,9 @@ maximum level.
     result in the tool to be able to dig nodes that have a rating of 2 or 3
     for this group, and unable to dig the rating 1, which is the toughest.
     Unless there is a matching group that enables digging otherwise.
-  * For entities, damage equals the amount of nodes dug in the time spent
-    between hits, with a maximum time of ''full_punch_interval''.
+
+**Damage groups**
+List of damage for groups of entities. See "Entity damage mechanism".
 
 Example definition of the capabilities of a tool
 -------------------------------------------------
@@ -617,6 +620,7 @@ tool_capabilities = {
     groupcaps={
         crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
     }
+    damage_groups = {fleshy=2},
 }
 
 This makes the tool be able to dig nodes that fullfill both of these:
@@ -647,10 +651,12 @@ Notes:
 Entity damage mechanism
 ------------------------
 Damage calculation:
-- Take the time spent after the last hit
-- Limit time to full_punch_interval
-- Take the damage groups and imagine a bunch of nodes that have them
-- Damage in HP is the amount of nodes destroyed in this time.
+damage = 0
+foreach group in cap.damage_groups:
+    damage += cap.damage_groups[group] * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+        * (object.armor_groups[group] / 100.0)
+        -- Where object.armor_groups[group] is 0 for inexisting values
+return damage
 
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
@@ -1496,10 +1502,10 @@ Item definition (register_node, register_craftitem, register_tool)
         max_drop_level=0,
         groupcaps={
             -- For example:
-            fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
             snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
-        }
+        },
+        damage_groups = {groupname=damage},
     }
     node_placement_prediction = nil,
     ^ If nil and item is node, prediction is made automatically

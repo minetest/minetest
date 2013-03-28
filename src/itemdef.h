@@ -80,7 +80,7 @@ struct ItemDefinition
 	ItemDefinition& operator=(const ItemDefinition &def);
 	~ItemDefinition();
 	void reset();
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 private:
 	void resetInitial();
@@ -109,7 +109,7 @@ public:
 		IGameDef *gamedef) const=0;
 #endif
 
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 };
 
 class IWritableItemDefManager : public IItemDefManager
@@ -146,7 +146,7 @@ public:
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)=0;
 
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 	virtual void deSerialize(std::istream &is)=0;
 
 	// Do stuff asked by threads that can only be done in the main thread
