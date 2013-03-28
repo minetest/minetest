@@ -125,10 +125,10 @@ public:
 			const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		core::map<std::string, std::string>::Node *n;
+		std::map<std::string, std::string>::iterator n;
 		n = m_programs.find(combined);
-		if(n)
-			return n->getValue();
+		if(n != m_programs.end())
+			return n->second;
 		return "";
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
@@ -136,10 +136,10 @@ public:
 			const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		core::map<std::string, std::string>::Node *n;
+		std::map<std::string, std::string>::iterator n;
 		n = m_programs.find(combined);
-		if(n)
-			return n->getValue();
+		if(n != m_programs.end())
+			return n->second;
 		std::string path = getShaderPath(name_of_shader, filename);
 		if(path == ""){
 			infostream<<"SourceShaderCache::getOrLoad(): No path found for \""
@@ -156,7 +156,7 @@ public:
 		return "";
 	}
 private:
-	core::map<std::string, std::string> m_programs;
+	std::map<std::string, std::string> m_programs;
 	std::string readFile(const std::string &path)
 	{
 		std::ifstream is(path.c_str(), std::ios::binary);
@@ -332,9 +332,9 @@ private:
 
 	// A shader id is index in this array.
 	// The first position contains a dummy shader.
-	core::array<ShaderInfo> m_shaderinfo_cache;
+	std::vector<ShaderInfo> m_shaderinfo_cache;
 	// Maps a shader name to an index in the former.
-	core::map<std::string, u32> m_name_to_id;
+	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
 	JMutex m_shaderinfo_cache_mutex;
 
@@ -343,7 +343,7 @@ private:
 
 	// Global constant setters
 	// TODO: Delete these in the destructor
-	core::array<IShaderConstantSetter*> m_global_setters;
+	std::vector<IShaderConstantSetter*> m_global_setters;
 };
 
 IWritableShaderSource* createShaderSource(IrrlichtDevice *device)
@@ -399,10 +399,10 @@ u32 ShaderSource::getShaderId(const std::string &name)
 			See if shader already exists
 		*/
 		JMutexAutoLock lock(m_shaderinfo_cache_mutex);
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL)
-			return n->getValue();
+		if(n != m_name_to_id.end())
+			return n->second;
 	}
 
 	/*
@@ -471,12 +471,12 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name)
 	{
 		JMutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL){
+		if(n != m_name_to_id.end()){
 			/*infostream<<"getShaderIdDirect(): \""<<name
 					<<"\" found in cache"<<std::endl;*/
-			return n->getValue();
+			return n->second;
 		}
 	}
 
@@ -494,7 +494,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name)
 
 	u32 id = m_shaderinfo_cache.size();
 	m_shaderinfo_cache.push_back(info);
-	m_name_to_id.insert(name, id);
+	m_name_to_id[name] = id;
 
 	/*infostream<<"getShaderIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
@@ -531,7 +531,7 @@ void ShaderSource::processQueue()
 	/*
 		Fetch shaders
 	*/
-	if(m_get_shader_queue.size() > 0){
+	if(!m_get_shader_queue.empty()){
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_shader_queue.pop();
 

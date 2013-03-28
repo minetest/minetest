@@ -81,6 +81,7 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 	virtual bool isStaticAllowed() {return accessObjectProperties()->staticize;};
+	bool getCollisionBox(aabb3f *toset);
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -151,6 +152,8 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
+	void setYaw(float);
+	void setPitch(float);
 
 	/*
 		Interaction interface
@@ -238,6 +241,8 @@ public:
 		m_privs = privs;
 		m_is_singleplayer = is_singleplayer;
 	}
+
+	bool getCollisionBox(aabb3f *toset);
 
 private:
 	std::string getPropertyPacket();

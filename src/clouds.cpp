@@ -29,7 +29,8 @@ Clouds::Clouds(
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id,
-		u32 seed
+		u32 seed,
+		s16 cloudheight
 ):
 	scene::ISceneNode(parent, mgr, id),
 	m_seed(seed),
@@ -45,7 +46,8 @@ Clouds::Clouds(
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
-	m_cloud_y = BS * g_settings->getS16("cloud_height");
+	m_cloud_y = BS * (cloudheight ? cloudheight :
+				g_settings->getS16("cloud_height"));
 
 	m_box = core::aabbox3d<f32>(-BS*1000000,m_cloud_y-BS,-BS*1000000,
 			BS*1000000,m_cloud_y+BS,BS*1000000);

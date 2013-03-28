@@ -79,9 +79,15 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		Serialization format changes
 	PROTOCOL_VERSION 16:
 		TOCLIENT_SHOW_FORMSPEC
+	PROTOCOL_VERSION 17:
+		Serialization format change: include backface_culling flag in TileDef
+		Added rightclickable field in nodedef
+		TOCLIENT_SPAWN_PARTICLE
+		TOCLIENT_ADD_PARTICLESPAWNER
+		TOCLIENT_DELETE_PARTICLESPAWNER
 */
 
-#define LATEST_PROTOCOL_VERSION 16
+#define LATEST_PROTOCOL_VERSION 17
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -356,6 +362,7 @@ enum ToClientCommand
 		u8[len] name
 		[2] serialized inventory
 	*/
+
 	TOCLIENT_SHOW_FORMSPEC = 0x44,
 	/*
 		[0] u16 command
@@ -382,20 +389,60 @@ enum ToClientCommand
 		f1000 movement_gravity
 	*/
 
-	TOCLIENT_AP = 0x46,
+	TOCLIENT_SPAWN_PARTICLE = 0x46,
+	/*
+		u16 command
+		v3f1000 pos
+		v3f1000 velocity
+		v3f1000 acceleration
+		f1000 expirationtime
+		f1000 size
+		u8 bool collisiondetection
+		u32 len
+		u8[len] texture
+	*/
+
+	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
+	/*
+		u16 command
+		u16 amount
+		f1000 spawntime
+		v3f1000 minpos
+		v3f1000 maxpos
+		v3f1000 minvel
+		v3f1000 maxvel
+		v3f1000 minacc
+		v3f1000 maxacc
+		f1000 minexptime
+		f1000 maxexptime
+		f1000 minsize
+		f1000 maxsize
+		u8 bool collisiondetection
+		u32 len
+		u8[len] texture
+		u32 id
+	*/
+
+	TOCLIENT_DELETE_PARTICLESPAWNER = 0x48,
+	/*
+		u16 command
+		u32 id
+	*/
+
+	TOCLIENT_AP = 0x49,
 	/*
 		u16 command
 		u8 ap
 	*/
 
-	TOCLIENT_ACHIEVE = 0x47,
+	TOCLIENT_ACHIEVE = 0x50,
 	/*
 		u16 command
 		u32 len
 		u8[len] achievement
 	*/
 
-	TOCLIENT_HUDADD = 0x48,
+	TOCLIENT_HUDADD = 0x51,
 	/*
 		u16 command
 		u32 len
@@ -404,7 +451,7 @@ enum ToClientCommand
 		u8[len] form
 	*/
 
-	TOCLIENT_HUDRM = 0x49,
+	TOCLIENT_HUDRM = 0x52,
 	/*
 		u16 command
 		u32 len

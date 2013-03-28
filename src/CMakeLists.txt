@@ -172,6 +172,7 @@ endif()
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
+find_package(OpenGLES2)
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
@@ -218,6 +219,7 @@ set(common_SRCS
 	scriptapi_object.cpp
 	scriptapi_nodemeta.cpp
 	scriptapi_inventory.cpp
+	scriptapi_particles.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
@@ -225,7 +227,10 @@ set(common_SRCS
 	emerge.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
+	mapgen_indev.cpp
+	mapgen_singlenode.cpp
 	treegen.cpp
+	dungeongen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
 	collision.cpp
@@ -384,6 +389,7 @@ if(BUILD_CLIENT)
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${JSON_LIBRARY}
+		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)

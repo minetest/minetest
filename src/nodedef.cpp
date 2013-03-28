@@ -107,26 +107,31 @@ void NodeBox::deSerialize(std::istream &is)
 	TileDef
 */
 
-void TileDef::serialize(std::ostream &os) const
+void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 0); // version
+	if(protocol_version >= 17)
+		writeU8(os, 1); 
+	else
+		writeU8(os, 0);
 	os<<serializeString(name);
 	writeU8(os, animation.type);
 	writeU16(os, animation.aspect_w);
 	writeU16(os, animation.aspect_h);
 	writeF1000(os, animation.length);
+	if(protocol_version >= 17)
+		writeU8(os, backface_culling);
 }
 
 void TileDef::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 0)
-		throw SerializationError("unsupported TileDef version");
 	name = deSerializeString(is);
 	animation.type = (TileAnimationType)readU8(is);
 	animation.aspect_w = readU16(is);
 	animation.aspect_h = readU16(is);
 	animation.length = readF1000(is);
+	if(version >= 1)
+		backface_culling = readU8(is);
 }
 
 /*
@@ -235,10 +240,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
 	for(u32 i=0; i<6; i++)
-		tiledef[i].serialize(os);
+		tiledef[i].serialize(os, protocol_version);
 	writeU8(os, CF_SPECIAL_COUNT);
 	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
-		tiledef_special[i].serialize(os);
+		tiledef_special[i].serialize(os, protocol_version);
 	}
 	writeU8(os, alpha);
 	writeU8(os, post_effect_color.getAlpha());
@@ -270,9 +275,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	serializeSimpleSoundSpec(sound_footstep, os);
 	serializeSimpleSoundSpec(sound_dig, os);
 	serializeSimpleSoundSpec(sound_dug, os);
+	writeU8(os, rightclickable);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
-	writeU8(os, rightclickable);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -331,12 +336,12 @@ void ContentFeatures::deSerialize(std::istream &is)
 	deSerializeSimpleSoundSpec(sound_footstep, is);
 	deSerializeSimpleSoundSpec(sound_dig, is);
 	deSerializeSimpleSoundSpec(sound_dug, is);
+	rightclickable = readU8(is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
-		rightclickable = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -809,10 +814,10 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 		writeF1000(os, visual_scale);
 		writeU8(os, 6);
 		for(u32 i=0; i<6; i++)
-			tiledef[i].serialize(os);
+			tiledef[i].serialize(os, protocol_version);
 		writeU8(os, CF_SPECIAL_COUNT);
 		for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
-			tiledef_special[i].serialize(os);
+			tiledef_special[i].serialize(os, protocol_version);
 		}
 		writeU8(os, alpha);
 		writeU8(os, post_effect_color.getAlpha());

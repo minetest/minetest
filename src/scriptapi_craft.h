@@ -33,6 +33,7 @@ extern "C" {
 /*****************************************************************************/
 int l_register_craft(lua_State *L);
 int l_get_craft_recipe(lua_State *L);
+int l_get_all_craft_recipes(lua_State *L);
 int l_get_craft_result(lua_State *L);
 
 /*****************************************************************************/

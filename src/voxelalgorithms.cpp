@@ -39,8 +39,8 @@ void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
 
 void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 		enum LightBank bank, INodeDefManager *ndef,
-		core::map<v3s16, bool> & light_sources,
-		core::map<v3s16, u8> & unlight_from)
+		std::set<v3s16> & light_sources,
+		std::map<v3s16, u8> & unlight_from)
 {
 	// The full area we shall touch
 	VoxelArea required_a = a;
@@ -60,7 +60,7 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 		// If node sources light, add to list
 		u8 source = ndef->get(n).light_source;
 		if(source != 0)
-			light_sources[p] = true;
+			light_sources.insert(p);
 
 		// Collect borders for unlighting
 		if((x==a.MinEdge.X || x == a.MaxEdge.X
@@ -68,14 +68,14 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 		|| z==a.MinEdge.Z || z == a.MaxEdge.Z)
 		&& oldlight != 0)
 		{
-			unlight_from.insert(p, oldlight);
+			unlight_from[p] = oldlight;
 		}
 	}
 }
 
 SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		bool inexistent_top_provides_sunlight,
-		core::map<v3s16, bool> & light_sources,
+		std::set<v3s16> & light_sources,
 		INodeDefManager *ndef)
 {
 	// Return values
@@ -127,7 +127,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 				n.setLight(LIGHTBANK_DAY, incoming_light, ndef);
 
 			if(diminish_light(incoming_light) != 0)
-				light_sources.insert(p, true);
+				light_sources.insert(p);
 		}
 
 		// Check validity of sunlight at top of block below if it

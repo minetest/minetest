@@ -39,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "biome.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
+#include "mapgen_indev.h"
+#include "mapgen_singlenode.h"
 
 
 /////////////////////////////// Emerge Manager ////////////////////////////////
@@ -46,6 +48,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 	//register built-in mapgens
 	registerMapgen("v6", new MapgenFactoryV6());
+	registerMapgen("indev", new MapgenFactoryIndev());
+	registerMapgen("singlenode", new MapgenFactorySinglenode());
 
 	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
 	this->params   = NULL;
@@ -359,7 +363,7 @@ void *EmergeThread::Thread() {
 		*/
 		BlockMakeData data;
 		MapBlock *block = NULL;
-		core::map<v3s16, MapBlock *> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		
 		if (getBlockOrStartGen(p, &block, &data, allow_generate)) {
 			{
@@ -415,13 +419,13 @@ void *EmergeThread::Thread() {
 		JMutexAutoLock lock(m_server->m_con_mutex);
 		// Add the originally fetched block to the modified list
 		if (block)
-			modified_blocks.insert(p, block);
+			modified_blocks[p] = block;
 
 		// Set the modified blocks unsent for all the clients
-		for (core::map<u16, RemoteClient*>::Iterator
-			 i = m_server->m_clients.getIterator();
-			 i.atEnd() == false; i++) {
-			RemoteClient *client = i.getNode()->getValue();
+		for (std::map<u16, RemoteClient*>::iterator
+			 i = m_server->m_clients.begin();
+			 i != m_server->m_clients.end(); ++i) {
+			RemoteClient *client = i->second;
 			if (modified_blocks.size() > 0) {
 				// Remove block from sent history
 				client->SetBlocksNotSent(modified_blocks);

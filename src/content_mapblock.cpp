@@ -42,14 +42,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
 void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	const TileSpec *tiles, int tilecount,
+	TileSpec *tiles, int tilecount,
 	video::SColor &c, const f32* txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6);
 
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
-
+ 
+ 
+ 
 	if(txc == NULL)
 	{
 		static const f32 txc_default[24] = {
@@ -97,15 +99,70 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
-	for(s32 j=0; j<24; j++)
+	v2f t;
+	for(int i = 0; i < tilecount; i++)
+				{
+				switch (tiles[i].rotation)
+				{
+				case 0:
+					break;
+				case 1: //R90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+					break;
+				case 2: //R180
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(180,irr::core::vector2df(0, 0));
+					break;
+				case 3: //R270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					break;
+				case 4: //FXR90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 5: //FXR270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					t=vertices[i*4].TCoords;
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 6: //FYR90
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				case 7: //FYR270
+					for (int x = 0; x < 4; x++)
+						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				case 8: //FX
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
+					break;
+				case 9: //FY
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
+					break;
+				default:
+					break;
+				}
+			}
+		for(s32 j=0; j<24; j++)
 	{
 		int tileindex = MYMIN(j/4, tilecount-1);
 		vertices[j].TCoords *= tiles[tileindex].texture.size;
 		vertices[j].TCoords += tiles[tileindex].texture.pos;
 	}
-
 	u16 indices[] = {0,1,2,2,3,0};
-
 	// Add to mesh collector
 	for(s32 j=0; j<24; j+=4)
 	{
@@ -160,18 +217,145 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				Add water sources to mesh if using new style
 			*/
 			TileSpec tile_liquid = f.special_tiles[0];
+			TileSpec tile_liquid_bfculled = getNodeTile(n, p, v3s16(0,0,0), data);
 			AtlasPointer &pa_liquid = tile_liquid.texture;
 
-			bool top_is_air = false;
-			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			if(n.getContent() == CONTENT_AIR)
-				top_is_air = true;
-			
-			if(top_is_air == false)
-				continue;
+			bool top_is_same_liquid = false;
+			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
+			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(f.liquid_alternative_source);
+			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
+				top_is_same_liquid = true;
 
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
+
+			/*
+				Generate sides
+			 */
+			v3s16 side_dirs[4] = {
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			for(u32 i=0; i<4; i++)
+			{
+				v3s16 dir = side_dirs[i];
+
+				MapNode neighbor = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
+				content_t neighbor_content = neighbor.getContent();
+				const ContentFeatures &n_feat = nodedef->get(neighbor_content);
+				MapNode n_top = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir+ v3s16(0,1,0));
+				content_t n_top_c = n_top.getContent();
+
+				if(neighbor_content == CONTENT_IGNORE)
+					continue;
+
+				/*
+					If our topside is liquid and neighbor's topside
+					is liquid, don't draw side face
+				*/
+				if(top_is_same_liquid && (n_top_c == c_flowing ||
+						n_top_c == c_source || n_top_c == CONTENT_IGNORE))
+					continue;
+
+				// Don't draw face if neighbor is blocking the view
+				if(n_feat.solidness == 2)
+					continue;
+
+				bool neighbor_is_same_liquid = (neighbor_content == c_source
+						|| neighbor_content == c_flowing);
+
+				// Don't draw any faces if neighbor same is liquid and top is
+				// same liquid
+				if(neighbor_is_same_liquid && !top_is_same_liquid)
+					continue;
+
+				// Use backface culled material if neighbor doesn't have a
+				// solidness of 0
+				const TileSpec *current_tile = &tile_liquid;
+				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
+					current_tile = &tile_liquid_bfculled;
+
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
+				};
+
+				/*
+					If our topside is liquid, set upper border of face
+					at upper border of node
+				*/
+				if(top_is_same_liquid)
+				{
+					vertices[2].Pos.Y = 0.5*BS;
+					vertices[3].Pos.Y = 0.5*BS;
+				}
+				/*
+					Otherwise upper position of face is liquid level
+				*/
+				else
+				{
+					vertices[2].Pos.Y = (node_liquid_level-0.5)*BS;
+					vertices[3].Pos.Y = (node_liquid_level-0.5)*BS;
+				}
+				/*
+					If neighbor is liquid, lower border of face is liquid level
+				*/
+				if(neighbor_is_same_liquid)
+				{
+					vertices[0].Pos.Y = (node_liquid_level-0.5)*BS;
+					vertices[1].Pos.Y = (node_liquid_level-0.5)*BS;
+				}
+				/*
+					If neighbor is not liquid, lower border of face is
+					lower border of node
+				*/
+				else
+				{
+					vertices[0].Pos.Y = -0.5*BS;
+					vertices[1].Pos.Y = -0.5*BS;
+				}
+
+				for(s32 j=0; j<4; j++)
+				{
+					if(dir == v3s16(0,0,1))
+						vertices[j].Pos.rotateXZBy(0);
+					if(dir == v3s16(0,0,-1))
+						vertices[j].Pos.rotateXZBy(180);
+					if(dir == v3s16(-1,0,0))
+						vertices[j].Pos.rotateXZBy(90);
+					if(dir == v3s16(1,0,-0))
+						vertices[j].Pos.rotateXZBy(-90);
+
+					// Do this to not cause glitches when two liquids are
+					// side-by-side
+					/*if(neighbor_is_same_liquid == false){
+						vertices[j].Pos.X *= 0.98;
+						vertices[j].Pos.Z *= 0.98;
+					}*/
+
+					vertices[j].Pos += intToFloat(p, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(*current_tile, vertices, 4, indices, 6);
+			}
+
+			/*
+				Generate top
+			 */
+			if(top_is_same_liquid)
+				continue;
 			
 			video::S3DVertex vertices[4] =
 			{
@@ -185,7 +369,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						pa_liquid.x0(), pa_liquid.y0()),
 			};
 
-			v3f offset(p.X, p.Y + (-0.5+node_liquid_level)*BS, p.Z);
+			v3f offset(p.X*BS, p.Y*BS + (-0.5+node_liquid_level)*BS, p.Z*BS);
 			for(s32 i=0; i<4; i++)
 			{
 				vertices[i].Pos += offset;
@@ -230,9 +414,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
-			core::map<v3s16, f32> neighbor_levels;
-			core::map<v3s16, content_t> neighbor_contents;
-			core::map<v3s16, u8> neighbor_flags;
+			std::map<v3s16, f32> neighbor_levels;
+			std::map<v3s16, content_t> neighbor_contents;
+			std::map<v3s16, u8> neighbor_flags;
 			const u8 neighborflag_top_is_same_liquid = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
@@ -273,9 +457,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						flags |= neighborflag_top_is_same_liquid;
 				}
 				
-				neighbor_levels.insert(neighbor_dirs[i], level);
-				neighbor_contents.insert(neighbor_dirs[i], content);
-				neighbor_flags.insert(neighbor_dirs[i], flags);
+				neighbor_levels[neighbor_dirs[i]] = level;
+				neighbor_contents[neighbor_dirs[i]] = content;
+				neighbor_flags[neighbor_dirs[i]] = flags;
 			}
 
 			// Corner heights (average between four liquids)
@@ -324,7 +508,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 				}
 				if(air_count >= 2)
-					cornerlevel = -0.5*BS+0.1;
+					cornerlevel = -0.5*BS+0.2;
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
@@ -1027,14 +1211,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, 1),
 				v3s16(0, 0, -1)
 			};
-
 			TileSpec tiles[6];
-			for(int i = 0; i < 6; i++)
-			{
-				// Handles facedir rotation for textures
-				tiles[i] = getNodeTile(n, p, tile_dirs[i], data);
-			}
-
+			
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1045,17 +1223,43 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					i = boxes.begin();
 					i != boxes.end(); i++)
 			{
+			for(int j = 0; j < 6; j++)
+				{
+				// Handles facedir rotation for textures
+				tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
+				}
 				aabb3f box = *i;
 				box.MinEdge += pos;
 				box.MaxEdge += pos;
+				
+				f32 temp;
+				if (box.MinEdge.X > box.MaxEdge.X)
+				{
+					temp=box.MinEdge.X;
+					box.MinEdge.X=box.MaxEdge.X;
+					box.MaxEdge.X=temp;
+				}
+				if (box.MinEdge.Y > box.MaxEdge.Y)
+				{
+					temp=box.MinEdge.Y;
+					box.MinEdge.Y=box.MaxEdge.Y;
+					box.MaxEdge.Y=temp;
+				}
+				if (box.MinEdge.Z > box.MaxEdge.Z)
+				{
+					temp=box.MinEdge.Z;
+					box.MinEdge.Z=box.MaxEdge.Z;
+					box.MaxEdge.Z=temp;
+				}
 
+				//
 				// Compute texture coords
-				f32 tx1 = (i->MinEdge.X/BS)+0.5;
-				f32 ty1 = (i->MinEdge.Y/BS)+0.5;
-				f32 tz1 = (i->MinEdge.Z/BS)+0.5;
-				f32 tx2 = (i->MaxEdge.X/BS)+0.5;
-				f32 ty2 = (i->MaxEdge.Y/BS)+0.5;
-				f32 tz2 = (i->MaxEdge.Z/BS)+0.5;
+				f32 tx1 = (box.MinEdge.X/BS)+0.5;
+				f32 ty1 = (box.MinEdge.Y/BS)+0.5;
+				f32 tz1 = (box.MinEdge.Z/BS)+0.5;
+				f32 tx2 = (box.MaxEdge.X/BS)+0.5;
+				f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
+				f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
 				f32 txc[24] = {
 					// up
 					tx1, 1-tz2, tx2, 1-tz1,
@@ -1070,7 +1274,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					// front
 					tx1, 1-ty2, tx2, 1-ty1,
 				};
-
 				makeCuboid(&collector, box, tiles, 6, c, txc);
 			}
 		break;}

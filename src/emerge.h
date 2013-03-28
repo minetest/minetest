@@ -63,8 +63,9 @@ public:
 	std::map<v3s16, BlockEmergeData *> blocks_enqueued;
 	std::map<u16, u16> peer_queue_count;
 
-	//biome manager
+	//Mapgen-related structures
 	BiomeDefManager *biomedef;
+	std::vector<Ore *> ores;
 
 	EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef);
 	~EmergeManager();

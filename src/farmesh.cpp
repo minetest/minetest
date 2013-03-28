@@ -112,13 +112,13 @@ struct HeightPoint
 	float have_sand;
 	float tree_amount;
 };
-core::map<v2s16, HeightPoint> g_heights;
+std::map<v2s16, HeightPoint> g_heights;
 
 HeightPoint ground_height(u64 seed, v2s16 p2d)
 {
-	core::map<v2s16, HeightPoint>::Node *n = g_heights.find(p2d);
-	if(n)
-		return n->getValue();
+	std::map<v2s16, HeightPoint>::iterator n = g_heights.find(p2d);
+	if(n != g_heights.end())
+		return n->second;
 	HeightPoint hp;
 	s16 level = Mapgen::find_ground_level_from_noise(seed, p2d, 3);
 	hp.gh = (level-4)*BS;

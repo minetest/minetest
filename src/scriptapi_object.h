@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -168,6 +168,12 @@ private:
 
 	// get_look_yaw(self)
 	static int l_get_look_yaw(lua_State *L);
+
+	// set_look_pitch(self, radians)
+	static int l_set_look_pitch(lua_State *L);
+
+	// set_look_yaw(self, radians)
+	static int l_set_look_yaw(lua_State *L);
 
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);

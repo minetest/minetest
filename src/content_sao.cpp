@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "genericobject.h"
 #include "util/serialize.h"
 
-core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
 /*
 	DummyLoadSAO
@@ -62,6 +62,10 @@ public:
 	{
 		m_removed = true;
 		infostream<<"DummyLoadSAO step"<<std::endl;
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 private:
@@ -130,6 +134,10 @@ public:
 			ActiveObjectMessage aom(getId(), false, data);
 			m_messages_out.push_back(aom);
 		}
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 private:
@@ -208,8 +216,7 @@ public:
 		v3f pos_f_old = pos_f;
 		v3f accel_f = v3f(0,0,0);
 		f32 stepheight = 0;
-		IGameDef *gamedef = m_env->getGameDef();
-		moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+		moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
 				pos_max_d, box, stepheight, dtime,
 				pos_f, m_speed_f, accel_f);
 		
@@ -312,6 +319,10 @@ public:
 		}
 		
 		return 0;
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 
@@ -491,8 +502,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			IGameDef *gamedef = m_env->getGameDef();
-			moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
 					pos_max_d, box, stepheight, dtime,
 					p_pos, p_velocity, p_acceleration);
 			// Apply results
@@ -893,6 +903,22 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push_back(aom);
 }
 
+bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
+	if (m_prop.physical)
+	{
+		//update collision box
+		toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+		toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+
+		toset->MinEdge += m_base_position;
+		toset->MaxEdge += m_base_position;
+
+		return true;
+	}
+
+	return false;
+}
+
 /*
 	PlayerSAO
 */
@@ -1244,6 +1270,20 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_moved = true;
 }
 
+void PlayerSAO::setYaw(float yaw)
+{
+	m_player->setYaw(yaw);
+	// Force change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setPitch(float pitch)
+{
+	m_player->setPitch(pitch);
+	// Force change on client
+	m_moved = true;
+}
+
 int PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,
@@ -1460,3 +1500,7 @@ std::string PlayerSAO::getPropertyPacket()
 	return gob_cmd_set_properties(m_prop);
 }
 
+bool PlayerSAO::getCollisionBox(aabb3f *toset) {
+	//player collision handling is already done clientside no need to do it twice
+	return false;
+}

@@ -269,12 +269,14 @@ NoiseParams *read_noiseparams(lua_State *L, int index)
 	np->scale   = getfloatfield_default(L, index, "scale", 0.0);
 	lua_getfield(L, index, "spread");
 	np->spread  = read_v3f(L, -1);
+	lua_pop(L, 1);
 	np->seed    = getintfield_default(L, index, "seed", 0);
 	np->octaves = getintfield_default(L, index, "octaves", 0);
 	np->persist = getfloatfield_default(L, index, "persist", 0.0);
 
 	return np;
 }
+
 
 /*
 	LuaPseudoRandom

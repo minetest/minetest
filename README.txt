@@ -9,9 +9,10 @@ and contributors (see source file comments and the version control log)
 In case you downloaded the source code:
 ---------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download the minetest_game project too:
+contained, you probably want to download these projects too:
+  https://github.com/minetest/common/
   https://github.com/minetest/minetest_game/
-See the README.txt in it.
+See the README.txt in them.
 
 Further documentation
 ----------------------
@@ -80,17 +81,24 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
+$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
 $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd minetest-minetest-286edd4 (or similar)
 
+Download common (needed for minetest_game and some others)
+$ cd games/
+$ wget https://github.com/minetest/common/tarball/master -O common.tar.gz
+$ tar xf common.tar.gz
+$ mv minetest-common-* common
+$ cd ..
+
 Download minetest_game (otherwise only the "Minimal development test" game is available)
 $ cd games/
-$ wget https://github.com/minetest/minetest_game/tarball/master -O master.tar.gz
-$ tar xf master.tar.gz
+$ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
+$ tar xf minetest_game.tar.gz
 $ mv minetest-minetest_game-* minetest_game
 $ cd ..
 
@@ -107,11 +115,12 @@ $ ./minetest
 - You can build a bare server or a bare client by specifying -DBUILD_CLIENT=0 or -DBUILD_SERVER=0
 - You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
   - Debug build is slower, but gives much more useful output in a debugger
+- If you build a bare server, you don't need to have Irrlicht installed. In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
 
 Compiling on Windows:
 ---------------------
 - This section is outdated. In addition to what is described here:
-  - In addition to minetest, you need to download minetest_game.
+  - In addition to minetest, you need to download common and minetest_game.
   - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 - You need:

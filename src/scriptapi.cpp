@@ -30,6 +30,7 @@ extern "C" {
 #include "settings.h" // For accessing g_settings
 #include "main.h" // For g_settings
 #include "biome.h"
+#include "emerge.h"
 #include "script.h"
 #include "rollback.h"
 
@@ -44,6 +45,7 @@ extern "C" {
 #include "scriptapi_item.h"
 #include "scriptapi_content.h"
 #include "scriptapi_craft.h"
+#include "scriptapi_particles.h"
 
 /*****************************************************************************/
 /* Mod related                                                               */
@@ -238,6 +240,14 @@ struct EnumString es_BiomeTerrainType[] =
 	{BIOME_TERRAIN_NETHER, "nether"},
 	{BIOME_TERRAIN_AETHER, "aether"},
 	{BIOME_TERRAIN_FLAT,   "flat"},
+	{0, NULL},
+};
+
+struct EnumString es_OreType[] =
+{
+	{ORE_SCATTER,  "scatter"},
+	{ORE_SHEET,    "sheet"},
+	{ORE_CLAYLIKE, "claylike"},
 	{0, NULL},
 };
 
@@ -611,8 +621,6 @@ static int l_register_biome_groups(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int index = 1;
-	if (!lua_istable(L, index))
-		throw LuaError(L, "register_biome_groups: parameter is not a table");
 
 	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
 	if (!bmgr) {
@@ -684,6 +692,52 @@ static int l_register_biome(lua_State *L)
 	return 0;
 }
 
+
+static int l_register_ore(lua_State *L)
+{
+	int index = 1;
+	luaL_checktype(L, index, LUA_TTABLE);
+	
+	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
+	EmergeManager *emerge = get_server(L)->getEmergeManager();
+	
+	enum OreType oretype = (OreType)getenumfield(L, index,
+				"ore_type", es_OreType, ORE_SCATTER);	
+	Ore *ore = createOre(oretype);
+	if (!ore) {
+		errorstream << "register_ore: ore_type "
+			<< oretype << " not implemented";
+		return 0;
+	}
+	
+	ore->ore_name       = getstringfield_default(L, index, "ore", "");
+	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
+	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
+	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
+	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
+	ore->height_min     = getintfield_default(L, index, "height_min", 0);
+	ore->height_max     = getintfield_default(L, index, "height_max", 0);
+	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+
+	lua_getfield(L, index, "noise_params");
+	ore->np = read_noiseparams(L, -1);
+	lua_pop(L, 1);
+	
+	ore->noise = NULL;
+	
+	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
+		errorstream << "register_ore: clust_scarcity and clust_num_ores"
+			"must be greater than 0";
+		delete ore;
+		return 0;
+	}
+	
+	emerge->ores.push_back(ore);
+	
+	verbosestream << "register_ore: ore '" << ore->ore_name
+		<< "' registered" << std::endl;
+	return 0;
+}
 
 
 // setting_set(name, value)
@@ -895,24 +949,24 @@ static int l_get_modpath(lua_State *L)
 static int l_get_modnames(lua_State *L)
 {
 	// Get a list of mods
-	core::list<std::string> mods_unsorted, mods_sorted;
+	std::list<std::string> mods_unsorted, mods_sorted;
 	get_server(L)->getModNames(mods_unsorted);
 
 	// Take unsorted items from mods_unsorted and sort them into
 	// mods_sorted; not great performance but the number of mods on a
 	// server will likely be small.
-	for(core::list<std::string>::Iterator i = mods_unsorted.begin();
-	    i != mods_unsorted.end(); i++)
+	for(std::list<std::string>::iterator i = mods_unsorted.begin();
+	    i != mods_unsorted.end(); ++i)
 	{
 		bool added = false;
-		for(core::list<std::string>::Iterator x = mods_sorted.begin();
-		    x != mods_unsorted.end(); x++)
+		for(std::list<std::string>::iterator x = mods_sorted.begin();
+		    x != mods_sorted.end(); ++x)
 		{
 			// I doubt anybody using Minetest will be using
 			// anything not ASCII based :)
 			if((*i).compare(*x) <= 0)
 			{
-				mods_sorted.insert_before(x, *i);
+				mods_sorted.insert(x, *i);
 				added = true;
 				break;
 			}
@@ -929,7 +983,7 @@ static int l_get_modnames(lua_State *L)
 	// Package them up for Lua
 	lua_newtable(L);
 	int new_table = lua_gettop(L);
-	core::list<std::string>::Iterator i = mods_sorted.begin();
+	std::list<std::string>::iterator i = mods_sorted.begin();
 	while(i != mods_sorted.end())
 	{
 		lua_pushvalue(L, insertion_func);
@@ -939,7 +993,7 @@ static int l_get_modnames(lua_State *L)
 		{
 			script_error(L, "error: %s", lua_tostring(L, -1));
 		}
-		i++;
+		++i;
 	}
 	return 1;
 }
@@ -998,79 +1052,6 @@ static int l_notify_authentication_modified(lua_State *L)
 		name = lua_tostring(L, 1);
 	get_server(L)->reportPrivsModified(name);
 	return 0;
-}
-
-// get_craft_recipes(result item)
-static int l_get_all_craft_recipes(lua_State *L)
-{
-	char tmp[20];
-	int input_i = 1;
-	std::string o_item = luaL_checkstring(L,input_i);
-	IGameDef *gdef = get_server(L);
-	ICraftDefManager *cdef = gdef->cdef();
-	CraftInput input;
-	CraftOutput output(o_item,0);
-	std::vector<CraftDefinition*> recipes_list = cdef->getCraftRecipes(output, gdef);
-	if (recipes_list.empty())
-	{
-		lua_pushnil(L);
-		return 1;
-	}
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(std::vector<CraftDefinition*>::const_iterator
-		i = recipes_list.begin();
-		i != recipes_list.end(); i++)
-	{
-		CraftOutput tmpout;
-		tmpout.item = "";
-		tmpout.time = 0;
-		CraftDefinition *def = *i;
-		tmpout = def->getOutput(input, gdef);
-		if(tmpout.item.substr(0,output.item.length()) == output.item)
-		{
-			input = def->getInput(output, gdef);
-			lua_pushvalue(L, table_insert);
-			lua_pushvalue(L, table);
-			lua_newtable(L);
-			int k = 0;
-			lua_newtable(L);
-			for(std::vector<ItemStack>::const_iterator
-				i = input.items.begin();
-				i != input.items.end(); i++, k++)
-			{
-				if (i->empty()) continue;
-				sprintf(tmp,"%d",k);
-				lua_pushstring(L,tmp);
-				lua_pushstring(L,i->name.c_str());
-				lua_settable(L, -3);
-			}
-			lua_setfield(L, -2, "items");
-			setintfield(L, -1, "width", input.width);
-			switch (input.method)
-				{
-				case CRAFT_METHOD_NORMAL:
-					lua_pushstring(L,"normal");
-					break;
-				case CRAFT_METHOD_COOKING:
-					lua_pushstring(L,"cooking");
-					break;
-				case CRAFT_METHOD_FUEL:
-					lua_pushstring(L,"fuel");
-					break;
-				default:
-					lua_pushstring(L,"unknown");
-				}
-			lua_setfield(L, -2, "type");
-			if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		}
-	}
-	return 1;
 }
 
 // rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
@@ -1132,6 +1113,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_craft", l_register_craft},
 	{"register_biome", l_register_biome},
 	{"register_biome_groups", l_register_biome_groups},
+	{"register_ore", l_register_ore},
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
@@ -1162,6 +1144,9 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_all_craft_recipes", l_get_all_craft_recipes},
 	{"rollback_get_last_node_actor", l_rollback_get_last_node_actor},
 	{"rollback_revert_actions_by", l_rollback_revert_actions_by},
+	{"add_particle", l_add_particle},
+	{"add_particlespawner", l_add_particlespawner},
+	{"delete_particlespawner", l_delete_particlespawner},
 	{NULL, NULL}
 };
 
