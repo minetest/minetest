@@ -1295,9 +1295,15 @@ methods:
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
 - set_animation({x=1,y=1}, frame_speed=15, frame_blend=0)
-- set_attach(parent, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+- set_attach(parent, bone, position, rotation)
+  ^ bone = string
+  ^ position = {x=num, y=num, z=num} (relative)
+  ^ rotation = {x=num, y=num, z=num}
 - set_detach()
-- set_bone_position("", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+- set_bone_position(bone, position, rotation)
+  ^ bone = string
+  ^ position = {x=num, y=num, z=num} (relative)
+  ^ rotation = {x=num, y=num, z=num}
 - set_properties(object property table)
 LuaEntitySAO-only: (no-op for other objects)
 - setvelocity({x=num, y=num, z=num})
