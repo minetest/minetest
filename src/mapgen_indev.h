@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 #include "mapgen_v6.h"
+#include "pseudo_random.h"
 
 float farscale(float scale, float z);
 float farscale(float scale, float x, float z);

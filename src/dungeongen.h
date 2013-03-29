@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DUNGEONGEN_HEADER
 
 #include "voxel.h"
+#include "pseudo_random.h"
 #include "noise.h"
 
 #define VMANIP_FLAG_DUNGEON_INSIDE VOXELFLAG_CHECKED1

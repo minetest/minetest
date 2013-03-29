@@ -25,6 +25,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "pseudo_random.h"
 #include "noise.h"
 
 class LuaPerlinNoise

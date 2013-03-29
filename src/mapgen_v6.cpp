@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 #include "voxel.h"
+#include "pseudo_random.h"
 #include "noise.h"
 #include "mapblock.h"
 #include "mapnode.h"

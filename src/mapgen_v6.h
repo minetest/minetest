@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGENV6_HEADER
 
 #include "mapgen.h"
+#include "pseudo_random.h"
 
 #define AVERAGE_MUD_AMOUNT 4
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
