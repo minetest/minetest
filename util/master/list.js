@@ -54,9 +54,8 @@ function success(r) {
         h += '</td>';
         h += '<td class="mts_description">' + e(s.description) + '</td>';
         h += '<td class="mts_flags">' + e(s.password ? 'Pwd ' : '') + (s.creative ? 'Cre ' : '') + (s.damage ? 'Dmg ' : '') + (s.pvp ? 'Pvp ' : '') + (s.dedicated ? 'Ded ' : '') + '</td>';
-        if (!s.time || s.time < 0) s.time = 0;
         if (!s.start || s.start < 0) s.start = 0;
-        h += '<td class="mts_time">' + (s.uptime ? human_time(s.uptime, 1) : '') + '</td>';
+        h += '<td class="mts_time">' + (s.uptime ? human_time(s.uptime, 1) : s.start ? human_time(s.start) : '') + '</td>';
         h += '<td class="mts_ping">' + (s.ping ? parseFloat(s.ping).toFixed(3) * 1000 : '') + '</td>';
         h += '</tr>';
     }
