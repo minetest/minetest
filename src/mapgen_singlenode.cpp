@@ -76,14 +76,15 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 		c_node = CONTENT_AIR;
 	
 	MapNode n_node(c_node);
-	int i = 0;
 	
-	for (s16 z=node_min.Z; z<=node_max.Z; z++)
-	for (s16 y=node_min.Y; y<=node_max.Y; y++)
-	for (s16 x=node_min.X; x<=node_max.X; x++) {
-		if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-			vm->m_data[i] = n_node;
-		i++;
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
+		u32 i = vm->m_area.index(node_min.X, y, z);
+		for (s16 x = node_min.X; x <= node_max.X; x++) {
+			if (vm->m_data[i].getContent() == CONTENT_IGNORE)
+				vm->m_data[i] = n_node;
+			i++;
+		}
 	}
 
 	// Add top and bottom side of water to transforming_liquid queue
