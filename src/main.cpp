@@ -133,7 +133,12 @@ MainGameCallback *g_gamecallback = NULL;
 u32 getTimeMs()
 {
 	/* Use imprecise system calls directly (from porting.h) */
-	return porting::getTimeMs();
+	return porting::getTime(PRECISION_MILLI);
+}
+
+u32 getTime(TimePrecision prec)
+{
+	return porting::getTime(prec);
 }
 
 #else
@@ -142,7 +147,7 @@ u32 getTimeMs()
 class TimeGetter
 {
 public:
-	virtual u32 getTime() = 0;
+	virtual u32 getTime(TimePrecision prec) = 0;
 };
 
 // A precise irrlicht one
@@ -152,11 +157,15 @@ public:
 	IrrlichtTimeGetter(IrrlichtDevice *device):
 		m_device(device)
 	{}
-	u32 getTime()
+	u32 getTime(TimePrecision prec)
 	{
-		if(m_device == NULL)
-			return 0;
-		return m_device->getTimer()->getRealTime();
+		if (prec == PRECISION_MILLI) {
+			if(m_device == NULL)
+				return 0;
+			return m_device->getTimer()->getRealTime();
+		} else {
+			return porting::getTime(prec);
+		}
 	}
 private:
 	IrrlichtDevice *m_device;
@@ -165,9 +174,9 @@ private:
 class SimpleTimeGetter: public TimeGetter
 {
 public:
-	u32 getTime()
+	u32 getTime(TimePrecision prec)
 	{
-		return porting::getTimeMs();
+		return porting::getTime(prec);
 	}
 };
 
@@ -179,7 +188,13 @@ u32 getTimeMs()
 {
 	if(g_timegetter == NULL)
 		return 0;
-	return g_timegetter->getTime();
+	return g_timegetter->getTime(PRECISION_MILLI);
+}
+
+u32 getTime(TimePrecision prec) {
+	if (g_timegetter == NULL)
+		return 0;
+	return g_timegetter->getTime(prec);
 }
 
 #endif
@@ -805,7 +820,7 @@ void SpeedTests()
 			}
 		}
 		// Do at least 10ms
-		while(timer.getTime() < 10);
+		while(timer.getTimerTime() < 10);
 
 		u32 dtime = timer.stop();
 		u32 per_ms = n / dtime;
