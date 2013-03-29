@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PLAYER_HEADER
 #define PLAYER_HEADER
 
+#include "debug.h"
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h" // BS
