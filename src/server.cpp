@@ -1243,7 +1243,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id);
 			counter = 0.01;
 		}
 		counter += dtime;

@@ -18,6 +18,7 @@ nginx:
 
         location / {
             index  index.html;
+            add_header Access-Control-Allow-Origin *;
         }
         location /announce {
             fastcgi_pass   unix:/var/run/fcgiwrap/fcgiwrap.sock;
@@ -35,6 +36,10 @@ apache .htaccess:
   Allow from all
  </FilesMatch>
  Deny from all
+ <ifModule mod_headers.c>
+     Header set Access-Control-Allow-Origin: *
+ </ifModule>
+
 
 
 =cut
