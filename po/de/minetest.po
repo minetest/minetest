@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-30 20:01+0200\n"
+"PO-Revision-Date: 2013-03-30 20:02+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -756,7 +756,7 @@ msgstr "Keine Welt ausgewählt und keine Adresse angegeben. Nichts zu tun."
 
 #: src/main.cpp:1850
 msgid "Could not find or load game \""
-msgstr "Kann Spiel nicht finden/laden\""
+msgstr "Kann Spiel nicht finden/laden \""
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
