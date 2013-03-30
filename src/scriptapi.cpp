@@ -754,15 +754,18 @@ static int l_chat_send_all(lua_State *L)
 	return 0;
 }
 
-// chat_send_player(name, text)
+// chat_send_player(name, text, prepend)
 static int l_chat_send_player(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
 	const char *text = luaL_checkstring(L, 2);
+	bool prepend = true;
+	if (lua_isboolean(L, 3))
+		prepend = lua_toboolean(L, 3);
 	// Get server from registry
 	Server *server = get_server(L);
 	// Send
-	server->notifyPlayer(name, narrow_to_wide(text));
+	server->notifyPlayer(name, narrow_to_wide(text), prepend);
 	return 0;
 }
 

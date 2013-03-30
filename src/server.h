@@ -456,7 +456,7 @@ public:
 	}
 
 	// Envlock and conlock should be locked when calling this
-	void notifyPlayer(const char *name, const std::wstring msg);
+	void notifyPlayer(const char *name, const std::wstring msg, const bool prepend);
 	void notifyPlayers(const std::wstring msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,

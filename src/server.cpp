@@ -4606,12 +4606,15 @@ void Server::saveConfig()
 		g_settings->updateConfigFile(m_path_config.c_str());
 }
 
-void Server::notifyPlayer(const char *name, const std::wstring msg)
+void Server::notifyPlayer(const char *name, const std::wstring msg, const bool prepend = true)
 {
 	Player *player = m_env->getPlayer(name);
 	if(!player)
 		return;
-	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
+	if (prepend)
+		SendChatMessage(player->peer_id, std::wstring(L"Server -!- ")+msg);
+	else
+		SendChatMessage(player->peer_id, msg);
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec, const std::string &formname)

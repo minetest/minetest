@@ -1005,7 +1005,8 @@ minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 
 Chat:
 minetest.chat_send_all(text)
-minetest.chat_send_player(name, text)
+minetest.chat_send_player(name, text, prepend)
+^ prepend: optional, if it is set to false "Server -!- " will not be prepended to the message
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
