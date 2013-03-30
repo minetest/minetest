@@ -1251,7 +1251,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -2088,7 +2088,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendMovement(m_con, peer_id);
 
 		// Send item definitions
-		SendItemDef(m_con, peer_id, m_itemdef);
+		SendItemDef(m_con, peer_id, m_itemdef, client->net_proto_version);
 
 		// Send node definitions
 		SendNodeDef(m_con, peer_id, m_nodedef, client->net_proto_version);
@@ -3397,7 +3397,7 @@ void Server::SendDeathscreen(con::Connection &con, u16 peer_id,
 }
 
 void Server::SendItemDef(con::Connection &con, u16 peer_id,
-		IItemDefManager *itemdef)
+		IItemDefManager *itemdef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3409,7 +3409,7 @@ void Server::SendItemDef(con::Connection &con, u16 peer_id,
 	*/
 	writeU16(os, TOCLIENT_ITEMDEF);
 	std::ostringstream tmp_os(std::ios::binary);
-	itemdef->serialize(tmp_os);
+	itemdef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 	os<<serializeLongString(tmp_os2.str());

@@ -67,6 +67,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_view_bobbing_anim(0),
 	m_view_bobbing_state(0),
 	m_view_bobbing_speed(0),
+	wielditem(55),
 
 	m_digging_anim(0),
 	m_digging_button(-1)
@@ -225,7 +226,7 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
+void Camera::update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, v2u32 screensize,
 		f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn)
 {
 	// Get player position
@@ -338,6 +339,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	if(is_anim(CA_ChangeWield) && m_anim_times[CA_ChangeWield] < 0.5) {
 		f32 time = m_anim_times[CA_ChangeWield];
 		wield_position.Y += pow((time-0.25)*4, 2)*60 - 60;
+		actionstream<<"XX"<<get_anim(CA_ChangeWield)->ChangeWield.changed<<std::endl;
 		if(not get_anim(CA_ChangeWield)->ChangeWield.changed
 			&& m_anim_times[CA_ChangeWield] > 0.25) {
 			// Update wielded tool
@@ -349,7 +351,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 			IItemDefManager *idef = m_gamedef->idef();
 			std::string itnm = item.getDefinition(idef).name;
 			scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
-			if(turn){wield_mesh = m_wield_rotate[itnm];}
+			actionstream<<(bool)wield_mesh<<std::endl;
 			if(wield_mesh){m_wieldnode->setVisible(true);}
 			else{m_wieldnode->setVisible(false);}
 			m_wieldnode->setMesh(wield_mesh);
@@ -357,7 +359,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 			oldturn = turn;
 		}
 	}
-	if(oldturn != turn) {
+	/*if(oldturn != turn) {
 		// Update wielded tool
 		InventoryList *mlist = local_inventory.getList("main");
 		ItemStack item;
@@ -367,12 +369,24 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		IItemDefManager *idef = m_gamedef->idef();
 		std::string itnm = item.getDefinition(idef).name;
 		scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
-		if(turn){wield_mesh = m_wield_rotate[itnm];}
+		if(turn){
+			scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
+			scene::IMesh* wm = man->createMeshWelded(wield_mesh);
+			core::matrix4 trans = core::matrix4();
+			trans.setRotationDegrees(core::vector3df(-40, -45, 45));
+			trans.setTranslation(core::vector3df(0, 10, 10));
+			man->transform(wm, trans);
+			wield_mesh = wm;
+		}
 		if(wield_mesh){m_wieldnode->setVisible(true);}
 		else{m_wieldnode->setVisible(false);}
 		m_wieldnode->setMesh(wield_mesh);
 		get_anim(CA_ChangeWield)->ChangeWield.changed = true;
 		oldturn = turn;
+	}*/
+	if(turn) {
+		wield_rotation += core::vector3df(-25, 40, 45);
+		wield_position += core::vector3df(0, 10, 10);
 	}
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
 		f32 frac = 1.0;
@@ -582,21 +596,10 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item, IrrlichtDevice *device, bool turn)
+void Camera::wield(const ItemStack &item, u16 player_select)
 {
-	IItemDefManager *idef = m_gamedef->idef();
-	std::string itnm = item.getDefinition(idef).name;
-	scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
-	if(m_wield_rotate.count(itnm) == 0){
-		scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
-		m_wield_rotate[itnm] = man->createMeshWelded(wield_mesh);
-		core::matrix4 trans = core::matrix4();
-		trans.setRotationDegrees(core::vector3df(-40, -45, 45));
-		trans.setTranslation(core::vector3df(0, 10, 10));
-		man->transform(m_wield_rotate[itnm], trans);
-	}
-	if(item.name != wielditem.name) {
-		wielditem = item;
+	if(player_select != wielditem) {
+		wielditem = player_select;
 		// Delay changing of the mesh for the anim
 		bool zz = is_anim(CA_ChangeWield) && (m_anim_times[CA_ChangeWield] < 0.5);
 		push_anim(CA_ChangeWield);

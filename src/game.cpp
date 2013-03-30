@@ -2398,26 +2398,6 @@ void the_game(
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
-				else if (event.type == CE_ACHIEVE)
-				{
-					player->achieves.push_back(*event.achieve.achievement);
-					delete(event.achieve.achievement);
-				}
-				else if (event.type == CE_HUDADD)
-				{
-					player->hud[*event.hudadd.id] = *event.hudadd.form;
-					delete(event.hudadd.id);
-					delete(event.hudadd.form);
-				}
-				else if (event.type == CE_HUDRM)
-				{
-					player->hud.erase(*event.hudrm.id);
-					delete(event.hudrm.id);
-				}
-				else if(event.type == CE_TEXTURES_UPDATED)
-				{
-					update_wielded_item_trigger = true;
-				}
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
@@ -2459,6 +2439,22 @@ void the_game(
 				{
 					delete_particlespawner (event.delete_particlespawner.id);
 				}
+				else if (event.type == CE_ACHIEVE)
+				{
+					player->achieves.push_back(*event.achieve.achievement);
+					delete(event.achieve.achievement);
+				}
+				else if (event.type == CE_HUDADD)
+				{
+					player->hud[*event.hudadd.id] = *event.hudadd.form;
+					delete(event.hudadd.id);
+					delete(event.hudadd.form);
+				}
+				else if (event.type == CE_HUDRM)
+				{
+					player->hud.erase(*event.hudrm.id);
+					delete(event.hudrm.id);
+				}
 			}
 		}
 		
@@ -2493,7 +2489,7 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio,
+		camera.update(player, device, busytime, screensize, tool_reload_ratio,
 			local_inventory, client.getPlayerItem(), control.shld);
 		camera.step(dtime);
 
@@ -2626,11 +2622,6 @@ void the_game(
 					infotext += narrow_to_wide(nodedef->get(n).name);
 				}
 			}
-			
-			// We can't actually know, but assume the sound of right-clicking
-			// to be the sound of placing a node
-			soundmaker.m_player_rightpunch_sound.gain = 0.5;
-			soundmaker.m_player_rightpunch_sound.name = "default_place_node";
 			
 			/*
 				Handle digging
@@ -2850,6 +2841,9 @@ void the_game(
 									<<") - Position not loaded"<<std::endl;
 						}
 					}while(0);
+					
+					// Read the sound
+					soundmaker.m_player_rightpunch_sound = def.sound_place;
 				}
 			}
 		}
@@ -3223,7 +3217,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item, device, control.shld);
+			camera.wield(item, client.getPlayerItem());
 		}
 
 		/*

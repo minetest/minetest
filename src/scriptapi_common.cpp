@@ -117,6 +117,20 @@ ToolCapabilities read_tool_capabilities(
 		}
 	}
 	lua_pop(L, 1);
+	lua_getfield(L, table, "damage_groups");
+	if(lua_istable(L, -1)){
+		int table_damage_groups = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table_damage_groups) != 0){
+			// key at index -2 and value at index -1
+			std::string groupname = luaL_checkstring(L, -2);
+			u16 value = luaL_checkinteger(L, -1);
+			toolcap.damageGroups[groupname] = value;
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
 	return toolcap;
 }
 
@@ -154,6 +168,16 @@ void set_tool_capabilities(lua_State *L, int table,
 	}
 	// Set groupcaps table
 	lua_setfield(L, -2, "groupcaps");
+	//Create damage_groups table
+	lua_newtable(L);
+	// For each damage group
+	for(std::map<std::string, s16>::const_iterator
+			i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
+		// Create damage group table
+		lua_pushinteger(L, i->second);
+		lua_setfield(L, -2, i->first.c_str());
+	}
+	lua_setfield(L, -2, "damage_groups");
 }
 
 void push_tool_capabilities(lua_State *L,

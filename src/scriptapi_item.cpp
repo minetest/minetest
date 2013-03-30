@@ -96,6 +96,14 @@ ItemDefinition read_item_definition(lua_State *L, int index,
 	read_groups(L, -1, def.groups);
 	lua_pop(L, 1);
 
+	lua_getfield(L, index, "sounds");
+	if(lua_istable(L, -1)){
+		lua_getfield(L, -1, "place");
+		read_soundspec(L, -1, def.sound_place);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
 	// "" = no prediction

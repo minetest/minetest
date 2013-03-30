@@ -119,7 +119,7 @@ public:
 
 	// Update the camera from the local player's position.
 	// frametime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
+	void update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, v2u32 screensize,
 			f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn);
 
 	// Render distance feedback loop
@@ -130,7 +130,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item, IrrlichtDevice *device, bool turn);
+	void wield(const ItemStack &item, u16 player_select);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -152,7 +152,6 @@ private:
 	MapDrawControl& m_draw_control;
 	
 	IGameDef *m_gamedef;
-	std::map<const std::string, scene::IMesh*> m_wield_rotate;
 
 	// Absolute camera position
 	v3f m_camera_position;
@@ -189,7 +188,7 @@ private:
 	s32 m_digging_button;
 
 	// Wield item
-	ItemStack wielditem;
+	u16 wielditem;
 
 	// Anim dict (to add anims for update_wield and others)
 	std::map<CameraAnimType, CameraAnim*> m_anims;

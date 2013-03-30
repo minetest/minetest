@@ -52,6 +52,7 @@ struct ToolGroupCap
 
 // CLANG SUCKS DONKEY BALLS
 typedef std::map<std::string, struct ToolGroupCap> ToolGCMap;
+typedef std::map<std::string, s16> DamageGroup;
 
 struct ToolCapabilities
 {
@@ -59,19 +60,22 @@ struct ToolCapabilities
 	int max_drop_level;
 	// CLANG SUCKS DONKEY BALLS
 	ToolGCMap groupcaps;
+	DamageGroup damageGroups;
 
 	ToolCapabilities(
 			float full_punch_interval_=1.4,
 			int max_drop_level_=1,
 			// CLANG SUCKS DONKEY BALLS
-			ToolGCMap groupcaps_=ToolGCMap()
+			ToolGCMap groupcaps_=ToolGCMap(),
+			DamageGroup damageGroups_=DamageGroup()
 	):
 		full_punch_interval(full_punch_interval_),
 		max_drop_level(max_drop_level_),
-		groupcaps(groupcaps_)
+		groupcaps(groupcaps_),
+		damageGroups(damageGroups_)
 	{}
 
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u16 version) const;
 	void deSerialize(std::istream &is);
 };
 
@@ -103,19 +107,17 @@ struct HitParams
 {
 	s16 hp;
 	s16 wear;
-	std::string main_group;
 
-	HitParams(s16 hp_=0, s16 wear_=0, std::string main_group_=""):
+	HitParams(s16 hp_=0, s16 wear_=0):
 		hp(hp_),
-		wear(wear_),
-		main_group(main_group_)
+		wear(wear_)
 	{}
 };
 
-HitParams getHitParams(const ItemGroupList &groups,
+HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch);
 
-HitParams getHitParams(const ItemGroupList &groups,
+HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp);
 
 struct PunchDamageResult
@@ -123,7 +125,6 @@ struct PunchDamageResult
 	bool did_punch;
 	int damage;
 	int wear;
-	std::string main_group;
 
 	PunchDamageResult():
 		did_punch(false),
