@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <exception>
+#include <set>
 #include "debug.h"
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
@@ -352,7 +353,7 @@ public:
 	}
 
 	// See comments in mapblock.cpp
-	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
+	bool propagateSunlight(std::set<v3s16> & light_sources,
 			bool remove_light=false, bool *black_air_left=NULL);
 	
 	// Copies data to VoxelManipulator to getPosRelative()

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <vector>
 
+class Settings;
+
 #define WORLDNAME_BLACKLISTED_CHARS "/\\"
 
 struct SubgameSpec
@@ -51,6 +53,11 @@ struct SubgameSpec
 		return (id != "" && path != "");
 	}
 };
+
+// minetest.conf
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
+// game.conf
+bool getGameConfig(const std::string &game_path, Settings &conf);
 
 std::string getGameName(const std::string &game_path);
 

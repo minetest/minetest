@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_TIMETAKER_HEADER
 
 #include "../irrlichttypes.h"
+#include "../gettime.h"
 
 /*
 	TimeTaker
@@ -29,7 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TimeTaker
 {
 public:
-	TimeTaker(const char *name, u32 *result=NULL);
+	TimeTaker(const char *name, u32 *result=NULL,
+		TimePrecision=PRECISION_MILLI);
 
 	~TimeTaker()
 	{
@@ -38,12 +40,13 @@ public:
 
 	u32 stop(bool quiet=false);
 
-	u32 getTime();
+	u32 getTimerTime();
 
 private:
 	const char *m_name;
 	u32 m_time1;
 	bool m_running;
+	TimePrecision m_precision;
 	u32 *m_result;
 };
 

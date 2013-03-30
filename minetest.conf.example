@@ -80,6 +80,7 @@
 # when set to higher number than 0
 #fsaa = 0
 #vsync = false
+#fov = 72
 # Address to connect to (#blank = start local server)
 #address = 
 # Enable random user input, for testing
@@ -95,9 +96,11 @@
 # Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
 # When finite liquid: relax flowing blocks to source if level near max and N nearby source blocks, more realistic, but not true constant. values: 0,1,2,3,4 : 0 - disable, 1 - most aggresive
-#liquid_relax = 1
-# optimization: faster cave flood (and not true constant)
+#liquid_relax = 2
+# Optimization: faster cave flood (and not true constant)
 #liquid_fast_flood = 1
+# Underground water and lava springs, its infnity sources if liquid_finite enabled
+#underground_springs = 1
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
@@ -125,6 +128,10 @@
 #farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
+#cloud_height = 120
+#enable_3d_clouds = true
+# Use a cloud animation for the main menu background
+#menu_clouds = true
 # Path for screenshots
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
@@ -304,29 +311,45 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently only v6 is supported.
+# Name of map generator to be used.  Currently v6, indev and singlenode are supported.
 #mg_name = v6
 # Water level of map.
 #water_level = 1
 # Size of chunks to be generated.
 #chunksize = 5
-# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend
+# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend, v6_jungles, dungeons
 #mg_flags = trees, caves, v6_biome_blend
 # How large deserts and beaches are
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
 # Perlin noise attributes for different map generation parameters
 # Offset, scale, spread factor, seed offset, number of octaves, persistence
-#mgv6_np_terrain_base = -4, 20, (250.0, 250, 250), 82341, 5, 0.6
+#mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6
 #mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6
 #mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7
 #mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69
-#mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66
 #mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55
 #mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50
 #mgv6_np_biome = 0, 1, (250, 250, 250), 9130, 3, 0.50
 #mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50
+#mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 4, 0.66
+#mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66
+#mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45
+
 #mgv7_np_terrain = 10, 12, (350, 350, 350), 82341, 5, 0.6
 #mgv7_np_bgroup = 0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6
 #mgv7_np_heat = 25, 50, (500, 500, 500), 35293, 1, 0
 #mgv7_np_humidity = 50, 31.25, (750, 750, 750), 12094, 2, 0.6
+
+# Offset, scale, spread factor, seed offset, number of octaves, persistence, farscale, farspread
+#mgindev_np_terrain_base   = -4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10
+#mgindev_np_terrain_higher = 20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10
+#mgindev_np_steepness      = 0.85, 0.5, (125, 125, 125), -932,  5, 0.7,  2,   10
+#mgindev_np_mud            = 4,    2,   (200, 200, 200), 91013, 3, 0.55, 1,   1
+#mgindev_np_float_islands1 = 0,    1,   (64,  64,  64 ), 3683,  5, 0.5,  1,   1.5
+#mgindev_np_float_islands2 = 0,    1,   (8,   8,   8  ), 9292,  2, 0.5,  1,   1.5
+#mgindev_np_float_islands3 = 0,    1,   (256, 256, 256), 6412,  2, 0.5,  1,   0.5
+#mgindev_np_biome          = 0,    1,   (250, 250, 250), 9130,  3, 0.50, 1,   10
+
+# Float islands starts from height, 0 to disable
+#mgindev_float_islands = 500

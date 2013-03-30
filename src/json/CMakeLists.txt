@@ -6,9 +6,9 @@ else( UNIX )
 	set(json_platform_LIBS "")
 endif( UNIX )
 
-add_library(json ${json_SRCS})
+add_library(jsoncpp ${json_SRCS})
 
 target_link_libraries(
-	json
+	jsoncpp
 	${json_platform_LIBS}
 )

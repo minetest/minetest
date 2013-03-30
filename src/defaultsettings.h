@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Settings;
 
 void set_default_settings(Settings *settings);
+void override_default_settings(Settings *settings, Settings *from);
 
 #endif
 

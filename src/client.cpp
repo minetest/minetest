@@ -232,8 +232,8 @@ void * MediaFetchThread::Thread()
 	#if USE_CURL
 	CURL *curl;
 	CURLcode res;
-	for (core::list<MediaRequest>::Iterator i = m_file_requests.begin();
-			i != m_file_requests.end(); i++) {
+	for (std::list<MediaRequest>::iterator i = m_file_requests.begin();
+			i != m_file_requests.end(); ++i) {
 		curl = curl_easy_init();
 		assert(curl);
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
@@ -360,8 +360,8 @@ Client::~Client()
 		}
 	}
 
-	for (core::list<MediaFetchThread*>::Iterator i = m_media_fetch_threads.begin();
-			i != m_media_fetch_threads.end(); i++)
+	for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
+			i != m_media_fetch_threads.end(); ++i)
 		delete *i;
 }
 
@@ -585,7 +585,7 @@ void Client::step(float dtime)
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
-		core::list<v3s16> deleted_blocks;
+		std::list<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
@@ -599,8 +599,8 @@ void Client::step(float dtime)
 			NOTE: This loop is intentionally iterated the way it is.
 		*/
 
-		core::list<v3s16>::Iterator i = deleted_blocks.begin();
-		core::list<v3s16> sendlist;
+		std::list<v3s16>::iterator i = deleted_blocks.begin();
+		std::list<v3s16> sendlist;
 		for(;;)
 		{
 			if(sendlist.size() == 255 || i == deleted_blocks.end())
@@ -619,9 +619,9 @@ void Client::step(float dtime)
 				writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
 				reply[2] = sendlist.size();
 				u32 k = 0;
-				for(core::list<v3s16>::Iterator
+				for(std::list<v3s16>::iterator
 						j = sendlist.begin();
-						j != sendlist.end(); j++)
+						j != sendlist.end(); ++j)
 				{
 					writeV3S16(&reply[2+1+6*k], *j);
 					k++;
@@ -635,7 +635,7 @@ void Client::step(float dtime)
 			}
 
 			sendlist.push_back(*i);
-			i++;
+			++i;
 		}
 	}
 
@@ -727,7 +727,7 @@ void Client::step(float dtime)
 				<<std::endl;*/
 		
 		int num_processed_meshes = 0;
-		while(m_mesh_update_thread.m_queue_out.size() > 0)
+		while(!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
@@ -779,10 +779,10 @@ void Client::step(float dtime)
 	*/
 	if (m_media_receive_started) {
 		bool all_stopped = true;
-		for (core::list<MediaFetchThread*>::Iterator thread = m_media_fetch_threads.begin();
-				thread != m_media_fetch_threads.end(); thread++) {
+		for (std::list<MediaFetchThread*>::iterator thread = m_media_fetch_threads.begin();
+				thread != m_media_fetch_threads.end(); ++thread) {
 			all_stopped &= !(*thread)->IsRunning();
-			while ((*thread)->m_file_data.size() > 0) {
+			while (!(*thread)->m_file_data.empty()) {
 				std::pair <std::string, std::string> out = (*thread)->m_file_data.pop_front();
 				++m_media_received_count;
 
@@ -803,9 +803,9 @@ void Client::step(float dtime)
 				}
 
 				{
-					core::map<std::string, std::string>::Node *n;
+					std::map<std::string, std::string>::iterator n;
 					n = m_media_name_sha1_map.find(out.first);
-					if(n == NULL)
+					if(n == m_media_name_sha1_map.end())
 						errorstream<<"The server sent a file that has not "
 								<<"been announced."<<std::endl;
 					else
@@ -814,11 +814,11 @@ void Client::step(float dtime)
 			}
 		}
 		if (all_stopped) {
-			core::list<MediaRequest> fetch_failed;
-			for (core::list<MediaFetchThread*>::Iterator thread = m_media_fetch_threads.begin();
-					thread != m_media_fetch_threads.end(); thread++) {
-				for (core::list<MediaRequest>::Iterator request = (*thread)->m_failed.begin();
-						request != (*thread)->m_failed.end(); request++)
+			std::list<MediaRequest> fetch_failed;
+			for (std::list<MediaFetchThread*>::iterator thread = m_media_fetch_threads.begin();
+					thread != m_media_fetch_threads.end(); ++thread) {
+				for (std::list<MediaRequest>::iterator request = (*thread)->m_failed.begin();
+						request != (*thread)->m_failed.end(); ++request)
 					fetch_failed.push_back(*request);
 				(*thread)->m_failed.clear();
 			}
@@ -1015,14 +1015,14 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 		string name
 	}
 */
-void Client::request_media(const core::list<MediaRequest> &file_requests)
+void Client::request_media(const std::list<MediaRequest> &file_requests)
 {
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
 	writeU16(os, file_requests.size());
 
-	for(core::list<MediaRequest>::ConstIterator i = file_requests.begin();
-			i != file_requests.end(); i++) {
+	for(std::list<MediaRequest>::const_iterator i = file_requests.begin();
+			i != file_requests.end(); ++i) {
 		os<<serializeString(i->name);
 	}
 
@@ -1622,7 +1622,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		infostream<<"Client: Received media announcement: packet size: "
 				<<datasize<<std::endl;
 
-		core::list<MediaRequest> file_requests;
+		std::list<MediaRequest> file_requests;
 
 		for(int i=0; i<num_files; i++)
 		{
@@ -1641,7 +1641,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			std::string sha1_hex = hex_encode(sha1_raw);
 			std::ostringstream tmp_os(std::ios_base::binary);
 			bool found_in_cache = m_media_cache.load_sha1(sha1_raw, tmp_os);
-			m_media_name_sha1_map.set(name, sha1_raw);
+			m_media_name_sha1_map[name] = sha1_raw;
 
 			// If found in cache, try to load it from there
 			if(found_in_cache)
@@ -1677,16 +1677,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			request_media(file_requests);
 		} else {
 			#if USE_CURL
-			core::list<MediaFetchThread*>::Iterator cur = m_media_fetch_threads.begin();
-			for(core::list<MediaRequest>::Iterator i = file_requests.begin();
-					i != file_requests.end(); i++) {
+			std::list<MediaFetchThread*>::iterator cur = m_media_fetch_threads.begin();
+			for(std::list<MediaRequest>::iterator i = file_requests.begin();
+					i != file_requests.end(); ++i) {
 				(*cur)->m_file_requests.push_back(*i);
 				cur++;
 				if (cur == m_media_fetch_threads.end())
 					cur = m_media_fetch_threads.begin();
 			}
-			for (core::list<MediaFetchThread*>::Iterator i = m_media_fetch_threads.begin();
-					i != m_media_fetch_threads.end(); i++) {
+			for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
+					i != m_media_fetch_threads.end(); ++i) {
 				(*i)->m_remote_url = remote_media;
 				(*i)->Start();
 			}
@@ -1762,9 +1762,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			}
 
 			{
-				core::map<std::string, std::string>::Node *n;
+				std::map<std::string, std::string>::iterator n;
 				n = m_media_name_sha1_map.find(name);
-				if(n == NULL)
+				if(n == m_media_name_sha1_map.end())
 					errorstream<<"The server sent a file that has not "
 							<<"been announced."<<std::endl;
 				else
@@ -1934,6 +1934,89 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// adding a std:string to a struct isn't possible
 		event.show_formspec.formspec = new std::string(formspec);
 		event.show_formspec.formname = new std::string(formname);
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_SPAWN_PARTICLE)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		v3f pos = readV3F1000(is);
+		v3f vel = readV3F1000(is);
+		v3f acc = readV3F1000(is);
+		float expirationtime = readF1000(is);
+		float size = readF1000(is);
+		bool collisiondetection = readU8(is);
+		std::string texture = deSerializeLongString(is);
+
+		ClientEvent event;
+		event.type = CE_SPAWN_PARTICLE;
+		event.spawn_particle.pos = new v3f (pos);
+		event.spawn_particle.vel = new v3f (vel);
+		event.spawn_particle.acc = new v3f (acc);
+
+		event.spawn_particle.expirationtime = expirationtime;
+		event.spawn_particle.size = size;
+		event.add_particlespawner.collisiondetection =
+				collisiondetection;
+		event.spawn_particle.texture = new std::string(texture);
+
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_ADD_PARTICLESPAWNER)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u16 amount = readU16(is);
+		float spawntime = readF1000(is);
+		v3f minpos = readV3F1000(is);
+		v3f maxpos = readV3F1000(is);
+		v3f minvel = readV3F1000(is);
+		v3f maxvel = readV3F1000(is);
+		v3f minacc = readV3F1000(is);
+		v3f maxacc = readV3F1000(is);
+		float minexptime = readF1000(is);
+		float maxexptime = readF1000(is);
+		float minsize = readF1000(is);
+		float maxsize = readF1000(is);
+		bool collisiondetection = readU8(is);
+		std::string texture = deSerializeLongString(is);
+		u32 id = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_ADD_PARTICLESPAWNER;
+		event.add_particlespawner.amount = amount;
+		event.add_particlespawner.spawntime = spawntime;
+
+		event.add_particlespawner.minpos = new v3f (minpos);
+		event.add_particlespawner.maxpos = new v3f (maxpos);
+		event.add_particlespawner.minvel = new v3f (minvel);
+		event.add_particlespawner.maxvel = new v3f (maxvel);
+		event.add_particlespawner.minacc = new v3f (minacc);
+		event.add_particlespawner.maxacc = new v3f (maxacc);
+
+		event.add_particlespawner.minexptime = minexptime;
+		event.add_particlespawner.maxexptime = maxexptime;
+		event.add_particlespawner.minsize = minsize;
+		event.add_particlespawner.maxsize = maxsize;
+		event.add_particlespawner.collisiondetection = collisiondetection;
+		event.add_particlespawner.texture = new std::string(texture);
+		event.add_particlespawner.id = id;
+
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_DELETE_PARTICLESPAWNER)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU16(is);
+
+		ClientEvent event;
+		event.type = CE_DELETE_PARTICLESPAWNER;
+		event.delete_particlespawner.id = id;
+
 		m_client_event_queue.push_back(event);
 	}
 	else
@@ -2231,7 +2314,7 @@ void Client::sendPlayerItem(u16 item)
 
 void Client::removeNode(v3s16 p)
 {
-	core::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock*> modified_blocks;
 
 	try
 	{
@@ -2245,12 +2328,11 @@ void Client::removeNode(v3s16 p)
 	// add urgent task to update the modified node
 	addUpdateMeshTaskForNode(p, false, true);
 
-	for(core::map<v3s16, MapBlock * >::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock * >::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
-		addUpdateMeshTaskWithEdge(p);
+		addUpdateMeshTaskWithEdge(i->first);
 	}
 }
 
@@ -2258,7 +2340,7 @@ void Client::addNode(v3s16 p, MapNode n)
 {
 	TimeTaker timer1("Client::addNode()");
 
-	core::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock*> modified_blocks;
 
 	try
 	{
@@ -2268,12 +2350,11 @@ void Client::addNode(v3s16 p, MapNode n)
 	catch(InvalidPositionException &e)
 	{}
 	
-	for(core::map<v3s16, MapBlock * >::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock * >::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
-		addUpdateMeshTaskWithEdge(p);
+		addUpdateMeshTaskWithEdge(i->first);
 	}
 }
 	
@@ -2373,7 +2454,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 		core::line3d<f32> shootline_on_map
 	)
 {
-	core::array<DistanceSortedActiveObject> objects;
+	std::vector<DistanceSortedActiveObject> objects;
 
 	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
 
@@ -2381,7 +2462,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	
 	// Sort them.
 	// After this, the closest object is the first in the array.
-	objects.sort();
+	std::sort(objects.begin(), objects.end());
 
 	for(u32 i=0; i<objects.size(); i++)
 	{
@@ -2420,13 +2501,13 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 
-core::list<std::wstring> Client::getConnectedPlayerNames()
+std::list<std::wstring> Client::getConnectedPlayerNames()
 {
-	core::list<Player*> players = m_env.getPlayers(true);
-	core::list<std::wstring> playerNames;
-	for(core::list<Player*>::Iterator
+	std::list<Player*> players = m_env.getPlayers(true);
+	std::list<std::wstring> playerNames;
+	for(std::list<Player*>::iterator
 			i = players.begin();
-			i != players.end(); i++)
+			i != players.end(); ++i)
 	{
 		Player *player = *i;
 		playerNames.push_back(narrow_to_wide(player->getName()));

@@ -53,6 +53,9 @@ cd $builddir
 wget http://github.com/minetest/minetest/zipball/master \
 	-c -O $packagedir/minetest.zip --tries=3 || (echo "Please download http://github.com/minetest/minetest/zipball/master manually and save it as $packagedir/minetest.zip"; read -s)
 [ -e $packagedir/minetest.zip ] || (echo "minetest.zip not found"; exit 1)
+wget http://github.com/minetest/common/zipball/master \
+	-c -O $packagedir/common.zip --tries=3 || (echo "Please download http://github.com/minetest/common/zipball/master manually and save it as $packagedir/common.zip"; read -s)
+[ -e $packagedir/common.zip ] || (echo "common.zip not found"; exit 1)
 wget http://github.com/minetest/minetest_game/zipball/master \
 	-c -O $packagedir/minetest_game.zip --tries=3 || (echo "Please download http://github.com/minetest/minetest_game/zipball/master manually and save it as $packagedir/minetest_game.zip"; read -s)
 [ -e $packagedir/minetest_game.zip ] || (echo "minetest_game.zip not found"; exit 1)
@@ -66,6 +69,7 @@ wget http://github.com/minetest/minetest_game/zipball/master \
 minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
 minetestdir=$builddir/$minetestdirname || exit 1
 git_hash=`echo $minetestdirname | sed -e 's/minetest-minetest-//'`
+commondirname=`unzip -l $packagedir/common.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
 minetest_gamedirname=`unzip -l $packagedir/minetest_game.zip | head -n 7 | tail -n 1 | sed -e 's/^[^m]*//' -e 's/\/.*$//'`
 
 # Extract stuff
@@ -85,6 +89,13 @@ unzip -o $packagedir/minetest.zip || exit 1
 # Symlink minetestdir
 rm -rf $builddir/minetest
 ln -s $minetestdir $builddir/minetest
+
+# Extract common
+cd $minetestdir/games || exit 1
+rm -rf common || exit 1
+unzip -o $packagedir/common.zip || exit 1
+commondir=$minetestdir/games/$commondirname || exit 1
+mv $commondir $minetestdir/games/common || exit 1
 
 # Extract minetest_game
 cd $minetestdir/games || exit 1

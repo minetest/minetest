@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
 #include <list> // Needed for rollbackRevertActions()
+#include <algorithm>
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -166,7 +167,7 @@ struct PrioritySortedBlockTransfer
 		pos = a_pos;
 		peer_id = a_peer_id;
 	}
-	bool operator < (PrioritySortedBlockTransfer &other)
+	bool operator < (const PrioritySortedBlockTransfer &other) const
 	{
 		return priority < other.priority;
 	}
@@ -271,14 +272,14 @@ public:
 		dtime is used for resetting send radius at slow interval
 	*/
 	void GetNextBlocks(Server *server, float dtime,
-			core::array<PrioritySortedBlockTransfer> &dest);
+			std::vector<PrioritySortedBlockTransfer> &dest);
 
 	void GotBlock(v3s16 p);
 
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
 
 	s32 SendingCount()
 	{
@@ -314,7 +315,7 @@ public:
 		List of active objects that the client knows of.
 		Value is dummy.
 	*/
-	core::map<u16, bool> m_known_objects;
+	std::set<u16> m_known_objects;
 
 private:
 	/*
@@ -326,7 +327,7 @@ private:
 		Key is position, value is dummy.
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
-	core::map<v3s16, bool> m_blocks_sent;
+	std::set<v3s16> m_blocks_sent;
 	s16 m_nearest_unsent_d;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer;
@@ -339,7 +340,7 @@ private:
 		Block is removed when GOTBLOCKS is received.
 		Value is time from sending. (not used at the moment)
 	*/
-	core::map<v3s16, float> m_blocks_sending;
+	std::map<v3s16, float> m_blocks_sending;
 
 	/*
 		Count of excess GotBlocks().
@@ -381,7 +382,7 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	core::list<PlayerInfo> getPlayerInfo();
+	std::list<PlayerInfo> getPlayerInfo();
 
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
@@ -455,6 +456,35 @@ public:
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
+	void spawnParticle(const char *playername,
+		v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	void spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	u32 addParticleSpawner(const char *playername,
+		u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture);
+
+	u32 addParticleSpawnerAll(u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture);
+
+	void deleteParticleSpawner(const char *playername, u32 id);
+	void deleteParticleSpawnerAll(u32 id);
+
 
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 
@@ -494,7 +524,7 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
-	void getModNames(core::list<std::string> &modlist);
+	void getModNames(std::list<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 
 	std::string getWorldPath(){ return m_path_world; }
@@ -526,7 +556,7 @@ private:
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
 	static void SendItemDef(con::Connection &con, u16 peer_id,
-			IItemDefManager *itemdef);
+			IItemDefManager *itemdef, u16 protocol_version);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
 			INodeDefManager *nodedef, u16 protocol_version);
 
@@ -553,9 +583,9 @@ private:
 	*/
 	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
@@ -567,11 +597,46 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
-			const core::list<MediaRequest> &tosend);
+			const std::list<MediaRequest> &tosend);
 
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
 	void sendDetachedInventories(u16 peer_id);
+
+	// Adds a ParticleSpawner on peer with peer_id
+	void SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture, u32 id);
+
+	// Adds a ParticleSpawner on all peers
+	void SendAddParticleSpawnerAll(u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture, u32 id);
+
+	// Deletes ParticleSpawner on a single client
+	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
+
+	// Deletes ParticleSpawner on all clients
+	void SendDeleteParticleSpawnerAll(u32 id);
+
+	// Spawns particle on single client
+	void SendSpawnParticle(u16 peer_id,
+		v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
+
+	// Spawns particle on all clients
+	void SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture);
 
 	/*
 		Something random
@@ -655,7 +720,7 @@ private:
 	con::Connection m_con;
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
-	core::map<u16, RemoteClient*> m_clients;
+	std::map<u16, RemoteClient*> m_clients;
 	u16 m_clients_number; //for announcing masterserver
 
 	// Bann checking
@@ -735,7 +800,7 @@ private:
 	*/
 
 	// Mod parent directory paths
-	core::list<std::string> m_modspaths;
+	std::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
 
@@ -789,6 +854,11 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+
+	/*
+		Particles
+	*/
+	std::vector<u32> m_particlespawner_ids;
 };
 
 /*

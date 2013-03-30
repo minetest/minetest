@@ -903,6 +903,10 @@ void Inventory::deSerialize(std::istream &is)
 
 			m_lists.push_back(list);
 		}
+		else
+		{
+			throw SerializationError("invalid inventory specifier");
+		}
 	}
 }
 

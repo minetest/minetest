@@ -129,11 +129,18 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	end
 
 	local under = pointed_thing.under
-	local oldnode_under = minetest.env:get_node(under)
+	local oldnode_under = minetest.env:get_node_or_nil(under)
+	local above = pointed_thing.above
+	local oldnode_above = minetest.env:get_node_or_nil(above)
+
+	if not oldnode_under or not oldnode_above then
+		minetest.log("info", placer:get_player_name() .. " tried to place"
+			.. " node in unloaded position " .. minetest.pos_to_string(above))
+		return itemstack
+	end
+
 	local olddef_under = ItemStack({name=oldnode_under.name}):get_definition()
 	olddef_under = olddef_under or minetest.nodedef_default
-	local above = pointed_thing.above
-	local oldnode_above = minetest.env:get_node(above)
 	local olddef_above = ItemStack({name=oldnode_above.name}):get_definition()
 	olddef_above = olddef_above or minetest.nodedef_default
 

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include <iostream>
 #include <queue>
+#include <algorithm>
 #include "clientserver.h"
 #include "map.h"
 #include "jmutexautolock.h"
@@ -58,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
+#include "defaultsettings.h"
 
 void * ServerThread::Thread()
 {
@@ -126,7 +128,7 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 }
 
 void RemoteClient::GetNextBlocks(Server *server, float dtime,
-		core::array<PrioritySortedBlockTransfer> &dest)
+		std::vector<PrioritySortedBlockTransfer> &dest)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -274,11 +276,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		core::list<v3s16> list;
+		std::list<v3s16> list;
 		getFacePositions(list, d);
 
-		core::list<v3s16>::Iterator li;
-		for(li=list.begin(); li!=list.end(); li++)
+		std::list<v3s16>::iterator li;
+		for(li=list.begin(); li!=list.end(); ++li)
 		{
 			v3s16 p = *li + center;
 
@@ -305,7 +307,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 
 			// Don't send blocks that are currently being transferred
-			if(m_blocks_sending.find(p) != NULL)
+			if(m_blocks_sending.find(p) != m_blocks_sending.end())
 				continue;
 
 			/*
@@ -382,7 +384,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				Don't send already sent blocks
 			*/
 			{
-				if(m_blocks_sent.find(p) != NULL)
+				if(m_blocks_sent.find(p) != m_blocks_sent.end())
 				{
 					continue;
 				}
@@ -554,21 +556,21 @@ queue_full_break:
 
 void RemoteClient::GotBlock(v3s16 p)
 {
-	if(m_blocks_sending.find(p) != NULL)
-		m_blocks_sending.remove(p);
+	if(m_blocks_sending.find(p) != m_blocks_sending.end())
+		m_blocks_sending.erase(p);
 	else
 	{
 		/*infostream<<"RemoteClient::GotBlock(): Didn't find in"
 				" m_blocks_sending"<<std::endl;*/
 		m_excess_gotblocks++;
 	}
-	m_blocks_sent.insert(p, true);
+	m_blocks_sent.insert(p);
 }
 
 void RemoteClient::SentBlock(v3s16 p)
 {
-	if(m_blocks_sending.find(p) == NULL)
-		m_blocks_sending.insert(p, 0.0);
+	if(m_blocks_sending.find(p) == m_blocks_sending.end())
+		m_blocks_sending[p] = 0.0;
 	else
 		infostream<<"RemoteClient::SentBlock(): Sent block"
 				" already in m_blocks_sending"<<std::endl;
@@ -578,26 +580,26 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 {
 	m_nearest_unsent_d = 0;
 
-	if(m_blocks_sending.find(p) != NULL)
-		m_blocks_sending.remove(p);
-	if(m_blocks_sent.find(p) != NULL)
-		m_blocks_sent.remove(p);
+	if(m_blocks_sending.find(p) != m_blocks_sending.end())
+		m_blocks_sending.erase(p);
+	if(m_blocks_sent.find(p) != m_blocks_sent.end())
+		m_blocks_sent.erase(p);
 }
 
-void RemoteClient::SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 {
 	m_nearest_unsent_d = 0;
 
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = blocks.getIterator();
-			i.atEnd()==false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = blocks.begin();
+			i != blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
+		v3s16 p = i->first;
 
-		if(m_blocks_sending.find(p) != NULL)
-			m_blocks_sending.remove(p);
-		if(m_blocks_sent.find(p) != NULL)
-			m_blocks_sent.remove(p);
+		if(m_blocks_sending.find(p) != m_blocks_sending.end())
+			m_blocks_sending.erase(p);
+		if(m_blocks_sent.find(p) != m_blocks_sent.end())
+			m_blocks_sent.erase(p);
 	}
 }
 
@@ -651,7 +653,6 @@ Server::Server(
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_thread(this),
-	//m_emergethread(this),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_shutdown_requested(false),
@@ -687,9 +688,19 @@ Server::Server(
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
+	// Initialize default settings and override defaults with those provided
+	// by the game
+	set_default_settings(g_settings);
+	Settings gamedefaults;
+	getGameMinetestConfig(gamespec.path, gamedefaults);
+	override_default_settings(g_settings, &gamedefaults);
+
 	// Create biome definition manager
 	m_biomedef = new BiomeDefManager(this);
-
+	
+	// Create emerge manager
+	m_emerge = new EmergeManager(this, m_biomedef);
+	
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
@@ -736,10 +747,10 @@ Server::Server(
 	}
 	// complain about mods declared to be loaded, but not found
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
-		it != m_mods.end(); ++it)
+			it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
-		it != unsatisfied_mods.end(); ++it)
+			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
 	{		
@@ -805,9 +816,6 @@ Server::Server(
 	// Add default biomes after nodedef had its aliases added
 	m_biomedef->addDefaultBiomes();
 
-	// Create emerge manager
-	m_emerge = new EmergeManager(this, m_biomedef);
-
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
 	m_env = new ServerEnvironment(servermap, m_lua, this, this);
@@ -854,13 +862,13 @@ Server::~Server()
 		/*
 			Send the message to clients
 		*/
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
 			// Get client and check that it is valid
-			RemoteClient *client = i.getNode()->getValue();
-			assert(client->peer_id == i.getNode()->getKey());
+			RemoteClient *client = i->second;
+			assert(client->peer_id == i->first);
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 
@@ -909,13 +917,13 @@ Server::~Server()
 	{
 		JMutexAutoLock clientslock(m_con_mutex);
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
 
 			// Delete client
-			delete i.getNode()->getValue();
+			delete i->second;
 		}
 	}
 
@@ -1073,11 +1081,11 @@ void Server::AsyncRunStep()
 			//JMutexAutoLock envlock(m_env_mutex);
 			JMutexAutoLock conlock(m_con_mutex);
 
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
+			for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
 			{
-				RemoteClient *client = i.getNode()->getValue();
+				RemoteClient *client = i->second;
 				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
 						m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
 				// Send as reliable
@@ -1117,11 +1125,11 @@ void Server::AsyncRunStep()
 
 		ScopeProfiler sp(g_profiler, "Server: handle players");
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
+			RemoteClient *client = i->second;
 			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
 			if(playersao == NULL)
 				continue;
@@ -1161,7 +1169,7 @@ void Server::AsyncRunStep()
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
-		core::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock*> modified_blocks;
 		m_env->getMap().transformLiquids(modified_blocks);
 #if 0
 		/*
@@ -1186,11 +1194,11 @@ void Server::AsyncRunStep()
 
 		JMutexAutoLock lock2(m_con_mutex);
 
-		for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
+			RemoteClient *client = i->second;
 
 			if(modified_blocks.size() > 0)
 			{
@@ -1212,12 +1220,12 @@ void Server::AsyncRunStep()
 			m_clients_number = 0;
 			if(m_clients.size() != 0)
 				infostream<<"Players:"<<std::endl;
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
+			for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
 			{
 				//u16 peer_id = i.getNode()->getKey();
-				RemoteClient *client = i.getNode()->getValue();
+				RemoteClient *client = i->second;
 				Player *player = m_env->getPlayer(client->peer_id);
 				if(player==NULL)
 					continue;
@@ -1235,7 +1243,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -1259,11 +1267,11 @@ void Server::AsyncRunStep()
 		s16 radius = g_settings->getS16("active_object_send_range_blocks");
 		radius *= MAP_BLOCKSIZE;
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
+			RemoteClient *client = i->second;
 
 			// If definitions and textures have not been sent, don't
 			// send objects either
@@ -1281,8 +1289,8 @@ void Server::AsyncRunStep()
 			}
 			v3s16 pos = floatToInt(player->getPosition(), BS);
 
-			core::map<u16, bool> removed_objects;
-			core::map<u16, bool> added_objects;
+			std::set<u16> removed_objects;
+			std::set<u16> added_objects;
 			m_env->getRemovedActiveObjects(pos, radius,
 					client->m_known_objects, removed_objects);
 			m_env->getAddedActiveObjects(pos, radius,
@@ -1302,20 +1310,20 @@ void Server::AsyncRunStep()
 			// Handle removed objects
 			writeU16((u8*)buf, removed_objects.size());
 			data_buffer.append(buf, 2);
-			for(core::map<u16, bool>::Iterator
-					i = removed_objects.getIterator();
-					i.atEnd()==false; i++)
+			for(std::set<u16>::iterator
+					i = removed_objects.begin();
+					i != removed_objects.end(); ++i)
 			{
 				// Get object
-				u16 id = i.getNode()->getKey();
+				u16 id = *i;
 				ServerActiveObject* obj = m_env->getActiveObject(id);
 
 				// Add to data buffer for sending
-				writeU16((u8*)buf, i.getNode()->getKey());
+				writeU16((u8*)buf, id);
 				data_buffer.append(buf, 2);
 
 				// Remove from known objects
-				client->m_known_objects.remove(i.getNode()->getKey());
+				client->m_known_objects.erase(id);
 
 				if(obj && obj->m_known_by_count > 0)
 					obj->m_known_by_count--;
@@ -1324,12 +1332,12 @@ void Server::AsyncRunStep()
 			// Handle added objects
 			writeU16((u8*)buf, added_objects.size());
 			data_buffer.append(buf, 2);
-			for(core::map<u16, bool>::Iterator
-					i = added_objects.getIterator();
-					i.atEnd()==false; i++)
+			for(std::set<u16>::iterator
+					i = added_objects.begin();
+					i != added_objects.end(); ++i)
 			{
 				// Get object
-				u16 id = i.getNode()->getKey();
+				u16 id = *i;
 				ServerActiveObject* obj = m_env->getActiveObject(id);
 
 				// Get object type
@@ -1353,7 +1361,7 @@ void Server::AsyncRunStep()
 					data_buffer.append(serializeLongString(""));
 
 				// Add to known objects
-				client->m_known_objects.insert(i.getNode()->getKey(), false);
+				client->m_known_objects.insert(id);
 
 				if(obj)
 					obj->m_known_by_count++;
@@ -1412,7 +1420,7 @@ void Server::AsyncRunStep()
 
 		// Key = object id
 		// Value = data sent by object
-		core::map<u16, core::list<ActiveObjectMessage>* > buffered_messages;
+		std::map<u16, std::list<ActiveObjectMessage>* > buffered_messages;
 
 		// Get active object messages from environment
 		for(;;)
@@ -1421,43 +1429,43 @@ void Server::AsyncRunStep()
 			if(aom.id == 0)
 				break;
 
-			core::list<ActiveObjectMessage>* message_list = NULL;
-			core::map<u16, core::list<ActiveObjectMessage>* >::Node *n;
+			std::list<ActiveObjectMessage>* message_list = NULL;
+			std::map<u16, std::list<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
-			if(n == NULL)
+			if(n == buffered_messages.end())
 			{
-				message_list = new core::list<ActiveObjectMessage>;
-				buffered_messages.insert(aom.id, message_list);
+				message_list = new std::list<ActiveObjectMessage>;
+				buffered_messages[aom.id] = message_list;
 			}
 			else
 			{
-				message_list = n->getValue();
+				message_list = n->second;
 			}
 			message_list->push_back(aom);
 		}
 
 		// Route data to every client
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd()==false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
+			RemoteClient *client = i->second;
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for(core::map<u16, core::list<ActiveObjectMessage>* >::Iterator
-					j = buffered_messages.getIterator();
-					j.atEnd()==false; j++)
+			for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+					j = buffered_messages.begin();
+					j != buffered_messages.end(); ++j)
 			{
 				// If object is not known by client, skip it
-				u16 id = j.getNode()->getKey();
-				if(client->m_known_objects.find(id) == NULL)
+				u16 id = j->first;
+				if(client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
 				// Get message list of object
-				core::list<ActiveObjectMessage>* list = j.getNode()->getValue();
+				std::list<ActiveObjectMessage>* list = j->second;
 				// Go through every message
-				for(core::list<ActiveObjectMessage>::Iterator
-						k = list->begin(); k != list->end(); k++)
+				for(std::list<ActiveObjectMessage>::iterator
+						k = list->begin(); k != list->end(); ++k)
 				{
 					// Compose the full new data with header
 					ActiveObjectMessage aom = *k;
@@ -1508,11 +1516,11 @@ void Server::AsyncRunStep()
 		}
 
 		// Clear buffered_messages
-		for(core::map<u16, core::list<ActiveObjectMessage>* >::Iterator
-				i = buffered_messages.getIterator();
-				i.atEnd()==false; i++)
+		for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+				i = buffered_messages.begin();
+				i != buffered_messages.end(); ++i)
 		{
-			delete i.getNode()->getValue();
+			delete i->second;
 		}
 	}
 
@@ -1546,7 +1554,7 @@ void Server::AsyncRunStep()
 			// Players far away from the change are stored here.
 			// Instead of sending the changes, MapBlocks are set not sent
 			// for them.
-			core::list<u16> far_players;
+			std::list<u16> far_players;
 
 			if(event->type == MEET_ADDNODE)
 			{
@@ -1580,12 +1588,11 @@ void Server::AsyncRunStep()
 			{
 				infostream<<"Server: MEET_OTHER"<<std::endl;
 				prof.add("MEET_OTHER", 1);
-				for(core::map<v3s16, bool>::Iterator
-						i = event->modified_blocks.getIterator();
-						i.atEnd()==false; i++)
+				for(std::set<v3s16>::iterator
+						i = event->modified_blocks.begin();
+						i != event->modified_blocks.end(); ++i)
 				{
-					v3s16 p = i.getNode()->getKey();
-					setBlockNotSent(p);
+					setBlockNotSent(*i);
 				}
 			}
 			else
@@ -1601,19 +1608,18 @@ void Server::AsyncRunStep()
 			if(far_players.size() > 0)
 			{
 				// Convert list format to that wanted by SetBlocksNotSent
-				core::map<v3s16, MapBlock*> modified_blocks2;
-				for(core::map<v3s16, bool>::Iterator
-						i = event->modified_blocks.getIterator();
-						i.atEnd()==false; i++)
+				std::map<v3s16, MapBlock*> modified_blocks2;
+				for(std::set<v3s16>::iterator
+						i = event->modified_blocks.begin();
+						i != event->modified_blocks.end(); ++i)
 				{
-					v3s16 p = i.getNode()->getKey();
-					modified_blocks2.insert(p,
-							m_env->getMap().getBlockNoCreateNoEx(p));
+					modified_blocks2[*i] =
+							m_env->getMap().getBlockNoCreateNoEx(*i);
 				}
 				// Set blocks not sent
-				for(core::list<u16>::Iterator
+				for(std::list<u16>::iterator
 						i = far_players.begin();
-						i != far_players.end(); i++)
+						i != far_players.end(); ++i)
 				{
 					u16 peer_id = *i;
 					RemoteClient *client = getClient(peer_id);
@@ -1792,7 +1798,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u8 client_max = data[2];
 		u8 our_max = SER_FMT_VER_HIGHEST;
 		// Use the highest version supported by both
-		u8 deployed = core::min_(client_max, our_max);
+		u8 deployed = std::min(client_max, our_max);
 		// If it's lower than the lowest supported, give up.
 		if(deployed < SER_FMT_VER_LOWEST)
 			deployed = SER_FMT_VER_INVALID;
@@ -2074,7 +2080,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendMovement(m_con, peer_id);
 
 		// Send item definitions
-		SendItemDef(m_con, peer_id, m_itemdef);
+		SendItemDef(m_con, peer_id, m_itemdef, client->net_proto_version);
 
 		// Send node definitions
 		SendNodeDef(m_con, peer_id, m_nodedef, client->net_proto_version);
@@ -2143,12 +2149,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		{
 			std::ostringstream os(std::ios_base::binary);
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
+			for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
 			{
-				RemoteClient *client = i.getNode()->getValue();
-				assert(client->peer_id == i.getNode()->getKey());
+				RemoteClient *client = i->second;
+				assert(client->peer_id == i->first);
 				if(client->serialization_version == SER_FMT_VER_INVALID)
 					continue;
 				// Get player
@@ -2520,13 +2526,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Send the message to clients
 			*/
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
+			for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
 			{
 				// Get client and check that it is valid
-				RemoteClient *client = i.getNode()->getValue();
-				assert(client->peer_id == i.getNode()->getKey());
+				RemoteClient *client = i->second;
+				assert(client->peer_id == i->first);
 				if(client->serialization_version == SER_FMT_VER_INVALID)
 					continue;
 
@@ -2651,7 +2657,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		core::list<MediaRequest> tosend;
+		std::list<MediaRequest> tosend;
 		u16 numfiles = readU16(is);
 
 		infostream<<"Sending "<<numfiles<<" files to "
@@ -3189,19 +3195,19 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 	}
 }
 
-core::list<PlayerInfo> Server::getPlayerInfo()
+std::list<PlayerInfo> Server::getPlayerInfo()
 {
 	DSTACK(__FUNCTION_NAME);
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
-	core::list<PlayerInfo> list;
+	std::list<PlayerInfo> list;
 
-	core::list<Player*> players = m_env->getPlayers();
+	std::list<Player*> players = m_env->getPlayers();
 
-	core::list<Player*>::Iterator i;
+	std::list<Player*>::iterator i;
 	for(i = players.begin();
-			i != players.end(); i++)
+			i != players.end(); ++i)
 	{
 		PlayerInfo info;
 
@@ -3336,7 +3342,7 @@ void Server::SendDeathscreen(con::Connection &con, u16 peer_id,
 }
 
 void Server::SendItemDef(con::Connection &con, u16 peer_id,
-		IItemDefManager *itemdef)
+		IItemDefManager *itemdef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3348,7 +3354,7 @@ void Server::SendItemDef(con::Connection &con, u16 peer_id,
 	*/
 	writeU16(os, TOCLIENT_ITEMDEF);
 	std::ostringstream tmp_os(std::ios::binary);
-	itemdef->serialize(tmp_os);
+	itemdef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 	os<<serializeLongString(tmp_os2.str());
@@ -3468,15 +3474,141 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, co
 	m_con.Send(peer_id, 0, data, true);
 }
 
-void Server::BroadcastChatMessage(const std::wstring &message)
+// Spawns a particle on peer with peer_id
+void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration, float expirationtime, float size, bool collisiondetection, std::string texture)
 {
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_SPAWN_PARTICLE);
+	writeV3F1000(os, pos);
+	writeV3F1000(os, velocity);
+	writeV3F1000(os, acceleration);
+	writeF1000(os, expirationtime);
+	writeF1000(os, size);
+	writeU8(os,  collisiondetection);
+	os<<serializeLongString(texture);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+// Spawns a particle on all peers
+void Server::SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration, float expirationtime, float size, bool collisiondetection, std::string texture)
+{
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); i++)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		SendSpawnParticle(client->peer_id, pos, velocity, acceleration,
+			expirationtime, size, collisiondetection, texture);
+	}
+}
+
+// Adds a ParticleSpawner on peer with peer_id
+void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3f minpos, v3f maxpos,
+	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
+	float minsize, float maxsize, bool collisiondetection, std::string texture, u32 id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_ADD_PARTICLESPAWNER);
+
+	writeU16(os, amount);
+	writeF1000(os, spawntime);
+	writeV3F1000(os, minpos);
+	writeV3F1000(os, maxpos);
+	writeV3F1000(os, minvel);
+	writeV3F1000(os, maxvel);
+	writeV3F1000(os, minacc);
+	writeV3F1000(os, maxacc);
+	writeF1000(os, minexptime);
+	writeF1000(os, maxexptime);
+	writeF1000(os, minsize);
+	writeF1000(os, maxsize);
+	writeU8(os,  collisiondetection);
+	os<<serializeLongString(texture);
+	writeU32(os, id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+// Adds a ParticleSpawner on all peers
+void Server::SendAddParticleSpawnerAll(u16 amount, float spawntime, v3f minpos, v3f maxpos,
+	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
+	float minsize, float maxsize, bool collisiondetection, std::string texture, u32 id)
+{
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		SendAddParticleSpawner(client->peer_id, amount, spawntime,
+			minpos, maxpos, minvel, maxvel, minacc, maxacc,
+			minexptime, maxexptime, minsize, maxsize, collisiondetection, texture, id);
+	}
+}
+
+void Server::SendDeleteParticleSpawner(u16 peer_id, u32 id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_DELETE_PARTICLESPAWNER);
+
+	writeU16(os, id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendDeleteParticleSpawnerAll(u32 id)
+{
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		SendDeleteParticleSpawner(client->peer_id, id);
+	}
+}
+
+void Server::BroadcastChatMessage(const std::wstring &message)
+{
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); ++i)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 
@@ -3595,10 +3727,10 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	}
 	else
 	{
-		for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator(); i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin(); i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
+			RemoteClient *client = i->second;
 			Player *player = m_env->getPlayer(client->peer_id);
 			if(!player)
 				continue;
@@ -3668,7 +3800,7 @@ void Server::stopSound(s32 handle)
 }
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	core::list<u16> *far_players, float far_d_nodes)
+	std::list<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -3681,13 +3813,13 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	writeS16(&reply[4], p.Y);
 	writeS16(&reply[6], p.Z);
 
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); ++i)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 
@@ -3717,18 +3849,18 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		core::list<u16> *far_players, float far_d_nodes)
+		std::list<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); ++i)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 
@@ -3768,11 +3900,11 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 void Server::setBlockNotSent(v3s16 p)
 {
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd()==false; i++)
+	for(std::map<u16, RemoteClient*>::iterator
+		i = m_clients.begin();
+		i != m_clients.end(); ++i)
 	{
-		RemoteClient *client = i.getNode()->getValue();
+		RemoteClient *client = i->second;
 		client->SetBlockNotSent(p);
 	}
 }
@@ -3839,19 +3971,19 @@ void Server::SendBlocks(float dtime)
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
-	core::array<PrioritySortedBlockTransfer> queue;
+	std::vector<PrioritySortedBlockTransfer> queue;
 
 	s32 total_sending = 0;
 
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i)
 		{
-			RemoteClient *client = i.getNode()->getValue();
-			assert(client->peer_id == i.getNode()->getKey());
+			RemoteClient *client = i->second;
+			assert(client->peer_id == i->first);
 
 			// If definitions and textures have not been sent, don't
 			// send MapBlocks either
@@ -3870,7 +4002,7 @@ void Server::SendBlocks(float dtime)
 	// Sort.
 	// Lowest priority number comes first.
 	// Lowest is most important.
-	queue.sort();
+	std::sort(queue.begin(), queue.end());
 
 	for(u32 i=0; i<queue.size(); i++)
 	{
@@ -4017,7 +4149,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	verbosestream<<"Server: Announcing files to id("<<peer_id<<")"
 			<<std::endl;
 
-	core::list<SendableMediaAnnouncement> file_announcements;
+	std::list<SendableMediaAnnouncement> file_announcements;
 
 	for(std::map<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); i++){
@@ -4043,9 +4175,9 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	writeU16(os, TOCLIENT_ANNOUNCE_MEDIA);
 	writeU16(os, file_announcements.size());
 
-	for(core::list<SendableMediaAnnouncement>::Iterator
+	for(std::list<SendableMediaAnnouncement>::iterator
 			j = file_announcements.begin();
-			j != file_announcements.end(); j++){
+			j != file_announcements.end(); ++j){
 		os<<serializeString(j->name);
 		os<<serializeString(j->sha1_digest);
 	}
@@ -4074,7 +4206,7 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(u16 peer_id,
-		const core::list<MediaRequest> &tosend)
+		const std::list<MediaRequest> &tosend)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4086,13 +4218,13 @@ void Server::sendRequestedMedia(u16 peer_id,
 	// Put 5kB in one bunch (this is not accurate)
 	u32 bytes_per_bunch = 5000;
 
-	core::array< core::list<SendableMedia> > file_bunches;
-	file_bunches.push_back(core::list<SendableMedia>());
+	std::vector< std::list<SendableMedia> > file_bunches;
+	file_bunches.push_back(std::list<SendableMedia>());
 
 	u32 file_size_bunch_total = 0;
 
-	for(core::list<MediaRequest>::ConstIterator i = tosend.begin();
-			i != tosend.end(); i++)
+	for(std::list<MediaRequest>::const_iterator i = tosend.begin();
+			i != tosend.end(); ++i)
 	{
 		if(m_media.find(i->name) == m_media.end()){
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
@@ -4138,7 +4270,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch){
-			file_bunches.push_back(core::list<SendableMedia>());
+			file_bunches.push_back(std::list<SendableMedia>());
 			file_size_bunch_total = 0;
 		}
 
@@ -4169,9 +4301,9 @@ void Server::sendRequestedMedia(u16 peer_id,
 		writeU16(os, i);
 		writeU32(os, file_bunches[i].size());
 
-		for(core::list<SendableMedia>::Iterator
+		for(std::list<SendableMedia>::iterator
 				j = file_bunches[i].begin();
-				j != file_bunches[i].end(); j++){
+				j != file_bunches[i].end(); ++j){
 			os<<serializeString(j->name);
 			os<<serializeLongString(j->data);
 		}
@@ -4212,10 +4344,10 @@ void Server::sendDetachedInventoryToAll(const std::string &name)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++){
-		RemoteClient *client = i.getNode()->getValue();
+	for(std::map<u16, RemoteClient*>::iterator
+			i = m_clients.begin();
+			i != m_clients.end(); ++i){
+		RemoteClient *client = i->second;
 		sendDetachedInventory(name, client->peer_id);
 	}
 }
@@ -4299,11 +4431,11 @@ RemoteClient* Server::getClient(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	//JMutexAutoLock lock(m_con_mutex);
-	core::map<u16, RemoteClient*>::Node *n;
+	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
 	// A client should exist for all peers
-	assert(n != NULL);
-	return n->getValue();
+	assert(n != m_clients.end());
+	return n->second;
 }
 
 std::wstring Server::getStatusString()
@@ -4315,15 +4447,15 @@ std::wstring Server::getStatusString()
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Information about clients
-	core::map<u16, RemoteClient*>::Iterator i;
+	std::map<u16, RemoteClient*>::iterator i;
 	bool first;
 	os<<L", clients={";
-	for(i = m_clients.getIterator(), first = true;
-		i.atEnd() == false; i++)
+	for(i = m_clients.begin(), first = true;
+		i != m_clients.end(); ++i)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		RemoteClient *client = i->second;
+		assert(client->peer_id == i->first);
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 		// Get player
@@ -4363,10 +4495,10 @@ bool Server::checkPriv(const std::string &name, const std::string &priv)
 void Server::reportPrivsModified(const std::string &name)
 {
 	if(name == ""){
-		for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++){
-			RemoteClient *client = i.getNode()->getValue();
+		for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i){
+			RemoteClient *client = i->second;
 			Player *player = m_env->getPlayer(client->peer_id);
 			reportPrivsModified(player->getName());
 		}
@@ -4424,6 +4556,111 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);
+}
+
+void Server::spawnParticle(const char *playername, v3f pos,
+		v3f velocity, v3f acceleration,
+		float expirationtime, float size, bool
+		collisiondetection, std::string texture)
+{
+	Player *player = m_env->getPlayer(playername);
+	if(!player)
+		return;
+	SendSpawnParticle(player->peer_id, pos, velocity, acceleration,
+			expirationtime, size, collisiondetection, texture);
+}
+
+void Server::spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+		float expirationtime, float size,
+		bool collisiondetection, std::string texture)
+{
+	SendSpawnParticleAll(pos, velocity, acceleration,
+			expirationtime, size, collisiondetection, texture);
+}
+
+u32 Server::addParticleSpawner(const char *playername,
+		u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture)
+{
+	Player *player = m_env->getPlayer(playername);
+	if(!player)
+		return -1;
+
+	u32 id = 0;
+	for(;;) // look for unused particlespawner id
+	{
+		id++;
+		if (std::find(m_particlespawner_ids.begin(),
+				m_particlespawner_ids.end(), id)
+				== m_particlespawner_ids.end())
+		{
+			m_particlespawner_ids.push_back(id);
+			break;
+		}
+	}
+
+	SendAddParticleSpawner(player->peer_id, amount, spawntime,
+		minpos, maxpos, minvel, maxvel, minacc, maxacc,
+		minexptime, maxexptime, minsize, maxsize,
+		collisiondetection, texture, id);
+
+	return id;
+}
+
+u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
+		v3f minpos, v3f maxpos,
+		v3f minvel, v3f maxvel,
+		v3f minacc, v3f maxacc,
+		float minexptime, float maxexptime,
+		float minsize, float maxsize,
+		bool collisiondetection, std::string texture)
+{
+	u32 id = 0;
+	for(;;) // look for unused particlespawner id
+	{
+		id++;
+		if (std::find(m_particlespawner_ids.begin(),
+				m_particlespawner_ids.end(), id)
+				== m_particlespawner_ids.end())
+		{
+			m_particlespawner_ids.push_back(id);
+			break;
+		}
+	}
+
+	SendAddParticleSpawnerAll(amount, spawntime,
+		minpos, maxpos, minvel, maxvel, minacc, maxacc,
+		minexptime, maxexptime, minsize, maxsize,
+		collisiondetection, texture, id);
+
+	return id;
+}
+
+void Server::deleteParticleSpawner(const char *playername, u32 id)
+{
+	Player *player = m_env->getPlayer(playername);
+	if(!player)
+		return;
+
+	m_particlespawner_ids.erase(
+			std::remove(m_particlespawner_ids.begin(),
+			m_particlespawner_ids.end(), id),
+			m_particlespawner_ids.end());
+	SendDeleteParticleSpawner(player->peer_id, id);
+}
+
+void Server::deleteParticleSpawnerAll(u32 id)
+{
+	m_particlespawner_ids.erase(
+			std::remove(m_particlespawner_ids.begin(),
+			m_particlespawner_ids.end(), id),
+			m_particlespawner_ids.end());
+	SendDeleteParticleSpawnerAll(id);
 }
 
 void Server::queueBlockEmerge(v3s16 blockpos, bool allow_generate)
@@ -4579,11 +4816,11 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 	}
 	return NULL;
 }
-void Server::getModNames(core::list<std::string> &modlist)
+void Server::getModNames(std::list<std::string> &modlist)
 {
 	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
 	{
-		modlist.push_back((*i).name);
+		modlist.push_back(i->name);
 	}
 }
 std::string Server::getBuiltinLuaPath()
@@ -4733,15 +4970,15 @@ void Server::handlePeerChange(PeerChange &c)
 		*/
 
 		// Error check
-		core::map<u16, RemoteClient*>::Node *n;
+		std::map<u16, RemoteClient*>::iterator n;
 		n = m_clients.find(c.peer_id);
 		// The client shouldn't already exist
-		assert(n == NULL);
+		assert(n == m_clients.end());
 
 		// Create client
 		RemoteClient *client = new RemoteClient();
 		client->peer_id = c.peer_id;
-		m_clients.insert(client->peer_id, client);
+		m_clients[client->peer_id] = client;
 
 	} // PEER_ADDED
 	else if(c.type == PEER_REMOVED)
@@ -4751,22 +4988,22 @@ void Server::handlePeerChange(PeerChange &c)
 		*/
 
 		// Error check
-		core::map<u16, RemoteClient*>::Node *n;
+		std::map<u16, RemoteClient*>::iterator n;
 		n = m_clients.find(c.peer_id);
 		// The client should exist
-		assert(n != NULL);
+		assert(n != m_clients.end());
 
 		/*
 			Mark objects to be not known by the client
 		*/
-		RemoteClient *client = n->getValue();
+		RemoteClient *client = n->second;
 		// Handle objects
-		for(core::map<u16, bool>::Iterator
-				i = client->m_known_objects.getIterator();
-				i.atEnd()==false; i++)
+		for(std::set<u16>::iterator
+				i = client->m_known_objects.begin();
+				i != client->m_known_objects.end(); ++i)
 		{
 			// Get object
-			u16 id = i.getNode()->getKey();
+			u16 id = *i;
 			ServerActiveObject* obj = m_env->getActiveObject(id);
 
 			if(obj && obj->m_known_by_count > 0)
@@ -4824,12 +5061,12 @@ void Server::handlePeerChange(PeerChange &c)
 			if(player != NULL)
 			{
 				std::ostringstream os(std::ios_base::binary);
-				for(core::map<u16, RemoteClient*>::Iterator
-					i = m_clients.getIterator();
-					i.atEnd() == false; i++)
+				for(std::map<u16, RemoteClient*>::iterator
+					i = m_clients.begin();
+					i != m_clients.end(); ++i)
 				{
-					RemoteClient *client = i.getNode()->getValue();
-					assert(client->peer_id == i.getNode()->getKey());
+					RemoteClient *client = i->second;
+					assert(client->peer_id == i->first);
 					if(client->serialization_version == SER_FMT_VER_INVALID)
 						continue;
 					// Get player
@@ -4849,7 +5086,7 @@ void Server::handlePeerChange(PeerChange &c)
 
 		// Delete client
 		delete m_clients[c.peer_id];
-		m_clients.remove(c.peer_id);
+		m_clients.erase(c.peer_id);
 
 		// Send player info to all remaining clients
 		//SendPlayerInfos();

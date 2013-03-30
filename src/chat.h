@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include <string>
+#include <vector>
+#include <list>
 
 // Chat console related classes, only used by the client
 
@@ -55,7 +57,7 @@ struct ChatFormattedFragment
 struct ChatFormattedLine
 {
 	// Array of text fragments
-	core::array<ChatFormattedFragment> fragments;
+	std::vector<ChatFormattedFragment> fragments;
 	// true if first line of one formatted ChatLine
 	bool first;
 };
@@ -110,7 +112,7 @@ public:
 	// Appends the formatted lines to the destination array and
 	// returns the number of formatted lines.
 	u32 formatChatLine(const ChatLine& line, u32 cols,
-			core::array<ChatFormattedLine>& destination) const;
+			std::vector<ChatFormattedLine>& destination) const;
 
 protected:
 	s32 getTopScrollPos() const;
@@ -120,7 +122,7 @@ private:
 	// Scrollback size
 	u32 m_scrollback;
 	// Array of unformatted chat lines
-	core::array<ChatLine> m_unformatted;
+	std::vector<ChatLine> m_unformatted;
 	
 	// Number of character columns in console
 	u32 m_cols;
@@ -129,7 +131,7 @@ private:
 	// Scroll position (console's top line index into m_formatted)
 	s32 m_scroll;
 	// Array of formatted lines
-	core::array<ChatFormattedLine> m_formatted;
+	std::vector<ChatFormattedLine> m_formatted;
 	// Empty formatted line, for error returns
 	ChatFormattedLine m_empty_formatted_line;
 };
@@ -158,7 +160,7 @@ public:
 	void historyNext();
 
 	// Nick completion
-	void nickCompletion(const core::list<std::wstring>& names, bool backwards);
+	void nickCompletion(const std::list<std::wstring>& names, bool backwards);
 
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
@@ -209,7 +211,7 @@ private:
 	// Currently edited line
 	std::wstring m_line;
 	// History buffer
-	core::array<std::wstring> m_history;
+	std::vector<std::wstring> m_history;
 	// History index (0 <= m_history_index <= m_history.size()) 
 	u32 m_history_index;
 	// Maximum number of history entries

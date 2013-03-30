@@ -30,7 +30,8 @@ public:
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed
+			u32 seed,
+			s16 cloudheight=0
 	);
 
 	~Clouds();

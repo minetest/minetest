@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.4
+Minetest Lua Modding API Reference 0.4.5
 ==========================================
 More information at http://c55.me/minetest/
 
@@ -26,6 +26,39 @@ Startup
 --------
 Mods are loaded during server startup from the mod load paths by running
 the init.lua scripts in a shared environment.
+
+Paths
+-----
+RUN_IN_PLACE=1: (Windows release, local build)
+ $path_user:  Linux:    <build directory>
+              Windows:  <build directory>
+ $path_share: Linux:    <build directory>
+              Windows:  <build directory>
+
+RUN_IN_PLACE=0: (Linux release)
+ $path_share: Linux:    /usr/share/minetest
+              Windows:  <install directory>/minetest-0.4.x
+ $path_user:  Linux:    ~/.minetest
+              Windows:  C:/users/<user>/AppData/minetest (maybe)
+
+Games
+-----
+Games are looked up from:
+  $path_share/games/gameid/
+  $path_user/games/gameid/
+where gameid is unique to each game.
+
+The game directory contains the file game.conf, which contains these fields:
+  name = <Human-readable full name of the game>
+  common_mods = <Comma-separated list of common mods>
+eg.
+  name = Minetest
+  common_mods = bucket, default, doors, fire, stairs
+
+Common mods are loaded from the pseudo-game "common".
+
+The game directory can contain the file minetest.conf, which will be used
+to set default settings when running the particular game.
 
 Mod load path
 -------------
@@ -170,18 +203,18 @@ from the available ones of the following files:
 Examples of sound parameter tables:
 -- Play locationless on all clients
 {
-	gain = 1.0, -- default
+    gain = 1.0, -- default
 }
 -- Play locationless to a player
 {
-	to_player = name,
-	gain = 1.0, -- default
+    to_player = name,
+    gain = 1.0, -- default
 }
 -- Play in a location
 {
-	pos = {x=1,y=2,z=3},
-	gain = 1.0, -- default
-	max_hear_distance = 32, -- default
+    pos = {x=1,y=2,z=3},
+    gain = 1.0, -- default
+    max_hear_distance = 32, -- default
 }
 -- Play connected to an object, looped
 {
@@ -233,11 +266,11 @@ local drawtype = get_nodedef_field(nodename, "drawtype")
 Example: minetest.get_item_group(name, group) has been implemented as:
 
 function minetest.get_item_group(name, group)
-	if not minetest.registered_items[name] or not
-			minetest.registered_items[name].groups[group] then
-		return 0
-	end
-	return minetest.registered_items[name].groups[group]
+    if not minetest.registered_items[name] or not
+            minetest.registered_items[name].groups[group] then
+        return 0
+    end
+    return minetest.registered_items[name].groups[group]
 end
 
 Nodes
@@ -277,6 +310,10 @@ param2 is reserved for the engine when any of these are used:
   paramtype2 == "facedir"
   ^ The rotation of the node is stored in param2. Furnaces and chests are
     rotated this way. Can be made by using minetest.dir_to_facedir().
+    Values range 0 - 23
+    facedir modulo 4 = axisdir
+    0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
+    facedir's two less significant bits are rotation around the axis
 
 Nodes can also contain extra data. See "Node Metadata".
 
@@ -334,6 +371,28 @@ A box is defined as:
   {x1, y1, z1, x2, y2, z2}
 A box of a regular node would look like:
   {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+
+Ore types
+---------------
+These tell in what manner the ore is generated.
+All default ores are of the uniformly-distributed scatter type.
+
+- scatter
+    Randomly chooses a location and generates a cluster of ore.
+    If noise_params is specified, the ore will be placed if the 3d perlin noise at 
+    that point is greater than the noise_threshhold, giving the ability to create a non-equal
+    distribution of ore.
+- sheet
+    Creates a sheet of ore in a blob shape according to the 2d perlin noise described by noise_params.
+    The relative height of the sheet can be controlled by the same perlin noise as well, by specifying
+    a non-zero 'scale' parameter in noise_params.  IMPORTANT: The noise is not transformed by offset or
+    scale when comparing against the noise threshhold, but scale is used to determine relative height.
+    The height of the blob is randomly scattered, with a maximum height of clust_size.
+    clust_scarcity and clust_num_ores are ignored.
+    This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
+- claylike - NOT YET IMPLEMENTED
+    Places ore if there are no more than clust_scarcity number of specified nodes within a Von Neumann
+    neighborhood of clust_size radius.
 
 Representations of simple things
 --------------------------------
@@ -412,9 +471,11 @@ a node is destroyable and how long it takes to destroy by a tool.
 Groups of entities
 -------------------
 For entities, groups are, as of now, used only for calculating damage.
+The rating is the percentage of damage caused by tools with this damage group.
+See "Entity damage mechanism".
 
-object.get_armor_groups() -> a group-rating table (eg. {fleshy=3})
-object.set_armor_groups({level=2, fleshy=2, cracky=2})
+object.get_armor_groups() -> a group-rating table (eg. {fleshy=100})
+object.set_armor_groups({fleshy=30, cracky=80})
 
 Groups of tools
 ----------------
@@ -435,7 +496,7 @@ An example: Make meat soup from any meat, any water and any bowl
 }
 An another example: Make red wool from white wool and red dye
 {
-	type = 'shapeless',
+    type = 'shapeless',
     output = 'wool:red',
     recipe = {'wool:white', 'group:dye,basecolor_red'},
 }
@@ -446,7 +507,7 @@ Special groups
 - level: Can be used to give an additional sense of progression in the game.
   - A larger level will cause eg. a weapon of a lower level make much less
     damage, and get weared out much faster, or not be able to get drops
-	from destroyed nodes.
+    from destroyed nodes.
   - 0 is something that is directly accessible at the start of gameplay
   - There is no upper limit
 - dig_immediate: (player can always pick up node without tool wear)
@@ -463,7 +524,6 @@ Special groups
 
 Known damage and digging time defining groups
 ----------------------------------------------
-Valid ratings for these are 0, 1, 2 and 3, unless otherwise stated.
 - crumbly: dirt, sand
 - cracky: tough but crackable stuff like stone.
 - snappy: something that can be cut using fine tools; eg. leaves, small
@@ -516,6 +576,7 @@ groups to enable interaction with tools.
     * Uses (until the tool breaks)
     * Maximum level (usually 0, 1, 2 or 3)
     * Digging times
+    * Damage groups
 
 **Full punch interval**:
 When used as a weapon, the tool will do full damage if this time is spent
@@ -547,17 +608,19 @@ maximum level.
     result in the tool to be able to dig nodes that have a rating of 2 or 3
     for this group, and unable to dig the rating 1, which is the toughest.
     Unless there is a matching group that enables digging otherwise.
-  * For entities, damage equals the amount of nodes dug in the time spent
-    between hits, with a maximum time of ''full_punch_interval''.
+
+**Damage groups**
+List of damage for groups of entities. See "Entity damage mechanism".
 
 Example definition of the capabilities of a tool
 -------------------------------------------------
 tool_capabilities = {
-	full_punch_interval=1.5,
-	max_drop_level=1,
-	groupcaps={
-		crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
-	}
+    full_punch_interval=1.5,
+    max_drop_level=1,
+    groupcaps={
+        crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
+    }
+    damage_groups = {fleshy=2},
 }
 
 This makes the tool be able to dig nodes that fullfill both of these:
@@ -588,10 +651,12 @@ Notes:
 Entity damage mechanism
 ------------------------
 Damage calculation:
-- Take the time spent after the last hit
-- Limit time to full_punch_interval
-- Take the damage groups and imagine a bunch of nodes that have them
-- Damage in HP is the amount of nodes destroyed in this time.
+damage = 0
+foreach group in cap.damage_groups:
+    damage += cap.damage_groups[group] * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+        * (object.armor_groups[group] / 100.0)
+        -- Where object.armor_groups[group] is 0 for inexisting values
+return damage
 
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
@@ -717,7 +782,7 @@ field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ default is the default value of the field
   ^ default may contain variable references such as '${text}' which
     will fill the value from the metadata value 'text'
-	^ Note: no extra text or more than a single variable is supported ATM.
+    ^ Note: no extra text or more than a single variable is supported ATM.
 
 field[<name>;<label>;<default>]
 ^ as above but without position/size units
@@ -778,6 +843,9 @@ string:trim()
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
+^ Same but in reverse
+minetest.formspec_escape(string) -> string
+^ escapes characters like [, ], and \ that can not be used in formspecs
 
 minetest namespace reference
 -----------------------------
@@ -804,6 +872,7 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
+minetest.register_ore(ore definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
@@ -919,12 +988,17 @@ minetest.get_craft_result(input) -> output, decremented_input
 ^ output.time = number, if unsuccessful: 0
 ^ decremented_input = like input
 minetest.get_craft_recipe(output) -> input
+^ returns last registered recipe for output item (node)
 ^ output is a node or item type such as 'default:torch'
 ^ input.method = 'normal' or 'cooking' or 'fuel'
 ^ input.width = for example 3
 ^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
+minetest.get_all_craft_recipes(output) -> table or nil
+^ returns table with all registered recipes for output item (node)
+^ returns nil if no recipe was found
+^ table entries have same format as minetest.get_craft_recipe
 minetest.handle_node_drops(pos, drops, digger)
 ^ drops: list of itemstrings
 ^ Handles drops from nodes after digging: Default action is to put them into
@@ -969,9 +1043,9 @@ minetest.sound_play(spec, parameters) -> handle
 minetest.sound_stop(handle)
 
 Timing:
-minetest.after(time, func, param)
+minetest.after(time, func, ...)
 ^ Call function after time seconds
-^ param is optional; to pass multiple parameters, pass a table.
+^ Optional: Variable number of arguments that are passed to func
 
 Server:
 minetest.request_shutdown() -> request for server shutdown
@@ -982,6 +1056,37 @@ minetest.get_ban_list() -> ban list (same as minetest.get_ban_description(""))
 minetest.get_ban_description(ip_or_name) -> ban description (string)
 minetest.ban_player(name) -> ban a player
 minetest.unban_player_or_ip(name) -> unban player or IP address
+
+Particles:
+minetest.add_particle(pos, velocity, acceleration, expirationtime,
+    size, collisiondetection, texture, playername)
+^ Spawn particle at pos with velocity and acceleration
+^ Disappears after expirationtime seconds
+^ collisiondetection: if true collides with physical objects
+^ Uses texture (string)
+^ Playername is optional, if specified spawns particle only on the player's client
+
+minetest.add_particlespawner(amount, time,
+    minpos, maxpos,
+    minvel, maxvel,
+    minacc, maxacc,
+    minexptime, maxexptime,
+    minsize, maxsize,
+    collisiondetection, texture, playername)
+^ Add a particlespawner, an object that spawns an amount of particles over time seconds
+^ The particle's properties are random values in between the boundings:
+^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
+^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+^ collisiondetection: if true uses collisiondetection
+^ Uses texture (string)
+^ Playername is optional, if specified spawns particle only on the player's client
+^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
+^ Returns and id
+
+minetest.delete_particlespawner(id, player)
+^ Delete ParticleSpawner with id (return value from add_particlespawner)
+^ If playername is specified, only deletes on the player's client,
+^ otherwise on all clients
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -1196,9 +1301,15 @@ methods:
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
 - set_animation({x=1,y=1}, frame_speed=15, frame_blend=0)
-- set_attach(parent, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+- set_attach(parent, bone, position, rotation)
+  ^ bone = string
+  ^ position = {x=num, y=num, z=num} (relative)
+  ^ rotation = {x=num, y=num, z=num}
 - set_detach()
-- set_bone_position("", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+- set_bone_position(bone, position, rotation)
+  ^ bone = string
+  ^ position = {x=num, y=num, z=num} (relative)
+  ^ rotation = {x=num, y=num, z=num}
 - set_properties(object property table)
 LuaEntitySAO-only: (no-op for other objects)
 - setvelocity({x=num, y=num, z=num})
@@ -1220,15 +1331,17 @@ Player-only: (no-op for other objects)
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+- set_look_pitch(radians): sets look pitch
+- set_look_yaw(radians): sets look yaw
 - set_inventory_formspec(formspec)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
 - get_inventory_formspec() -> formspec string
 - get_player_control(): returns table with player pressed keys
-	{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
+    {jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
 - get_player_control_bits(): returns integer with bit packed player pressed keys
-	bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
-	
+    bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+    
 InvRef: Reference to an inventory
 methods:
 - is_empty(listname): return true if list is empty
@@ -1313,8 +1426,8 @@ Registered entities
     ^ puncher: ObjectRef (can be nil)
     ^ time_from_last_punch: Meant for disallowing spamming of clicks (can be nil)
     ^ tool_capabilities: capability table of used tool (can be nil)
-	^ dir: unit vector of direction of punch. Always defined. Points from
-	       the puncher to the punched.
+    ^ dir: unit vector of direction of punch. Always defined. Points from
+           the puncher to the punched.
   - on_rightclick(self, clicker)
   - get_staticdata(self)
     ^ Should return a string that will be passed to on_activate when
@@ -1389,10 +1502,10 @@ Item definition (register_node, register_craftitem, register_tool)
         max_drop_level=0,
         groupcaps={
             -- For example:
-            fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
             snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
-        }
+        },
+        damage_groups = {groupname=damage},
     }
     node_placement_prediction = nil,
     ^ If nil and item is node, prediction is made automatically
@@ -1401,6 +1514,9 @@ Item definition (register_node, register_craftitem, register_tool)
     ^ Otherwise should be name of node which the client immediately places
       on ground when the player places the item. Server will always update
       actual result to client in a short moment.
+    sound = {
+        place = <SimpleSoundSpec>,
+    }
 
     on_place = func(itemstack, placer, pointed_thing),
     ^ Shall place item and return the leftover itemstack
@@ -1435,10 +1551,10 @@ Node definition (register_node)
     drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
-	^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
+    ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
     ^ List can be shortened to needed length
     special_tiles = {tile definition 1, Tile definition 2},
-	^ Special textures of node; used rarely (old field name: special_materials)
+    ^ Special textures of node; used rarely (old field name: special_materials)
     ^ List can be shortened to needed length
     alpha = 255,
     post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
@@ -1468,6 +1584,7 @@ Node definition (register_node)
         footstep = <SimpleSoundSpec>,
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
+        place = <SimpleSoundSpec>,
     },
 
     on_construct = func(pos),
@@ -1494,7 +1611,7 @@ Node definition (register_node)
     can_dig = function(pos,player)
     ^ returns true if node can be dug, or false if not
     ^ default: nil
-	
+    
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
@@ -1517,32 +1634,32 @@ Node definition (register_node)
     ^ Called when an UI form (eg. sign text input) returns data
     ^ default: nil
 
-	allow_metadata_inventory_move = func(pos, from_list, from_index,
-			to_list, to_index, count, player),
-	^ Called when a player wants to move items inside the inventory
-	^ Return value: number of items allowed to move
-	
-	allow_metadata_inventory_put = func(pos, listname, index, stack, player),
-	^ Called when a player wants to put something into the inventory
-	^ Return value: number of items allowed to put
-	^ Return value: -1: Allow and don't modify item count in inventory
-  
-	allow_metadata_inventory_take = func(pos, listname, index, stack, player),
-	^ Called when a player wants to take something out of the inventory
-	^ Return value: number of items allowed to take
-	^ Return value: -1: Allow and don't modify item count in inventory
-
-	on_metadata_inventory_move = func(pos, from_list, from_index,
-			to_list, to_index, count, player),
-	on_metadata_inventory_put = func(pos, listname, index, stack, player),
-	on_metadata_inventory_take = func(pos, listname, index, stack, player),
-	^ Called after the actual action has happened, according to what was allowed.
-	^ No return value
+    allow_metadata_inventory_move = func(pos, from_list, from_index,
+            to_list, to_index, count, player),
+    ^ Called when a player wants to move items inside the inventory
+    ^ Return value: number of items allowed to move
     
-	on_blast = func(pos, intensity),
-	^ intensity: 1.0 = mid range of regular TNT
-	^ If defined, called when an explosion touches the node, instead of
-	  removing the node
+    allow_metadata_inventory_put = func(pos, listname, index, stack, player),
+    ^ Called when a player wants to put something into the inventory
+    ^ Return value: number of items allowed to put
+    ^ Return value: -1: Allow and don't modify item count in inventory
+  
+    allow_metadata_inventory_take = func(pos, listname, index, stack, player),
+    ^ Called when a player wants to take something out of the inventory
+    ^ Return value: number of items allowed to take
+    ^ Return value: -1: Allow and don't modify item count in inventory
+
+    on_metadata_inventory_move = func(pos, from_list, from_index,
+            to_list, to_index, count, player),
+    on_metadata_inventory_put = func(pos, listname, index, stack, player),
+    on_metadata_inventory_take = func(pos, listname, index, stack, player),
+    ^ Called after the actual action has happened, according to what was allowed.
+    ^ No return value
+    
+    on_blast = func(pos, intensity),
+    ^ intensity: 1.0 = mid range of regular TNT
+    ^ If defined, called when an explosion touches the node, instead of
+      removing the node
 }
 
 Recipe for register_craft: (shaped)
@@ -1591,6 +1708,28 @@ Recipe for register_craft (furnace fuel)
     burntime = 1,
 }
 
+Ore definition (register_ore)
+{
+    ore_type = "scatter" -- See "Ore types"
+    ore = "default:stone_with_coal",
+    wherein = "default:stone",
+    clust_scarcity = 8*8*8,
+    ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
+    ^ This value should be *MUCH* higher than your intuition might tell you!
+    clust_num_ores = 8,
+    ^ Number of ores in a cluster
+    clust_size = 3,
+    ^ Size of the bounding box of the cluster
+    ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
+    height_min = -31000,
+    height_max = 64,
+    noise_threshhold = 0.5,
+    ^ If noise is above this threshhold, ore is placed.  Not needed for a uniform distribution
+    noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
+    ^ NoiseParams structure describing the perlin noise used for ore distribution.
+    ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
+}
+
 Chatcommand definition (register_chatcommand)
 {
     params = "<name> <privilege>", -- short parameter description
@@ -1601,24 +1740,24 @@ Chatcommand definition (register_chatcommand)
 
 Detached inventory callbacks
 {
-	allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     ^ Called when a player wants to move items inside the inventory
-	^ Return value: number of items allowed to move
-	
+    ^ Return value: number of items allowed to move
+    
     allow_put = func(inv, listname, index, stack, player),
     ^ Called when a player wants to put something into the inventory
-	^ Return value: number of items allowed to put
-	^ Return value: -1: Allow and don't modify item count in inventory
+    ^ Return value: number of items allowed to put
+    ^ Return value: -1: Allow and don't modify item count in inventory
    
     allow_take = func(inv, listname, index, stack, player),
     ^ Called when a player wants to take something out of the inventory
-	^ Return value: number of items allowed to take
-	^ Return value: -1: Allow and don't modify item count in inventory
-	
-	on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+    ^ Return value: number of items allowed to take
+    ^ Return value: -1: Allow and don't modify item count in inventory
+    
+    on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     on_put = func(inv, listname, index, stack, player),
     on_take = func(inv, listname, index, stack, player),
-	^ Called after the actual action has happened, according to what was allowed.
-	^ No return value
+    ^ Called after the actual action has happened, according to what was allowed.
+    ^ No return value
 }
 

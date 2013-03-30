@@ -29,6 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameCallback;
 
+enum {
+	SERVERLIST_FAVORITES,
+	SERVERLIST_PUBLIC,
+};
+
 struct MainMenuData
 {
 	// These are in the native format of the gui elements
@@ -52,6 +57,7 @@ struct MainMenuData
 	int enable_shaders;
 	bool preload_item_visuals;
 	bool enable_particles;
+	bool liquid_finite;
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
@@ -63,7 +69,7 @@ struct MainMenuData
 	std::string create_world_gameid;
 	bool only_refresh;
 
-	bool serverlist_show_available; // if false show local favorites only
+	int selected_serverlist;
 
 	std::vector<WorldSpec> worlds;
 	std::vector<SubgameSpec> games;
@@ -84,7 +90,7 @@ struct MainMenuData
 		// Actions
 		only_refresh(false),
 
-		serverlist_show_available(false)
+		selected_serverlist(SERVERLIST_FAVORITES)
 	{}
 };
 

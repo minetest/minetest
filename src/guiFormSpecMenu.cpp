@@ -207,18 +207,18 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	Strfnd f(m_formspec_string);
 	while(f.atend() == false)
 	{
-		std::string type = trim(f.next("["));
+		std::string type = trim(f.next_esc("["));
 		if(type == "invsize" || type == "size")
 		{
 			v2f invsize;
-			invsize.X = stof(f.next(","));
+			invsize.X = stof(f.next_esc(","));
 			if(type == "size")
 			{
-				invsize.Y = stof(f.next("]"));
+				invsize.Y = stof(f.next_esc("]"));
 			}
 			else{
-				invsize.Y = stof(f.next(";"));
-				f.next("]");
+				invsize.Y = stof(f.next_esc(";"));
+				f.next_esc("]");
 			}
 			infostream<<"Form size ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
 
@@ -242,24 +242,24 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 		else if(type == "list")
 		{
-			std::string name = f.next(";");
+			std::string name = f.next_esc(";");
 			InventoryLocation loc;
 			if(name == "context" || name == "current_name")
 				loc = m_current_inventory_location;
 			else
 				loc.deSerialize(name);
-			std::string listname = f.next(";");
+			std::string listname = f.next_esc(";");
 			v2s32 pos = basepos;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = stoi(f.next(","));
-			geom.Y = stoi(f.next(";"));
+			geom.X = stoi(f.next_esc(","));
+			geom.Y = stoi(f.next_esc(";"));
 			infostream<<"list inv="<<name<<", listname="<<listname
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
-			std::string start_i_s = f.next("]");
+			std::string start_i_s = f.next_esc("]");
 			s32 start_i = 0;
 			if(start_i_s != "")
 				start_i = stoi(start_i_s);
@@ -270,12 +270,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "image")
 		{
 			v2s32 pos = basepos;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = stof(f.next(",")) * (float)imgsize.X;
-			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
-			std::string name = f.next("]");
+			geom.X = stof(f.next_esc(",")) * (float)imgsize.X;
+			geom.Y = stof(f.next_esc(";")) * (float)imgsize.Y;
+			std::string name = f.next_esc("]");
 			infostream<<"image name="<<name
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
@@ -287,12 +287,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "item_image")
 		{
 			v2s32 pos = basepos;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = stof(f.next(",")) * (float)imgsize.X;
-			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
-			std::string name = f.next("]");
+			geom.X = stof(f.next_esc(",")) * (float)imgsize.X;
+			geom.Y = stof(f.next_esc(";")) * (float)imgsize.Y;
+			std::string name = f.next_esc("]");
 			infostream<<"item name="<<name
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
@@ -304,12 +304,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "background")
 		{
 			v2s32 pos = basepos;
-			pos.X += stof(f.next(",")) * (float)spacing.X - ((float)spacing.X-(float)imgsize.X)/2;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y - ((float)spacing.Y-(float)imgsize.Y)/2;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X - ((float)spacing.X-(float)imgsize.X)/2;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y - ((float)spacing.Y-(float)imgsize.Y)/2;
 			v2s32 geom;
-			geom.X = stof(f.next(",")) * (float)spacing.X;
-			geom.Y = stof(f.next(";")) * (float)spacing.Y;
-			std::string name = f.next("]");
+			geom.X = stof(f.next_esc(",")) * (float)spacing.X;
+			geom.Y = stof(f.next_esc(";")) * (float)spacing.Y;
+			std::string name = f.next_esc("]");
 			infostream<<"image name="<<name
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
@@ -320,8 +320,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 		else if(type == "field" || type == "textarea")
 		{
-			std::string fname = f.next(";");
-			std::string flabel = f.next(";");
+			std::string fname = f.next_esc(";");
+			std::string flabel = f.next_esc(";");
 
 			if(fname.find(",") == std::string::npos && flabel.find(",") == std::string::npos)
 			{
@@ -372,14 +372,14 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 
 				
-				fname = f.next(";");
-				flabel = f.next(";");
+				fname = f.next_esc(";");
+				flabel = f.next_esc(";");
 				if(bp_set != 2)
 					errorstream<<"WARNING: invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
 				
 			}
 
-			std::string odefault = f.next("]");
+			std::string odefault = f.next_esc("]");
 			std::string fdefault;
 
 			// fdefault may contain a variable reference, which
@@ -388,6 +388,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				fdefault = m_form_src->resolveText(odefault);
 			else
 				fdefault = odefault;
+
+			fdefault = unescape_string(fdefault);
+			flabel = unescape_string(flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
@@ -434,14 +437,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "label")
 		{
 			v2s32 pos = padding;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 
 			rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
 			
-			std::string flabel = f.next("]");
+			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
+
+			flabel = unescape_string(flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(""),
@@ -455,18 +460,20 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "button" || type == "button_exit")
 		{
 			v2s32 pos = padding;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
-			pos.Y += (stof(f.next(";")) * (float)imgsize.Y)/2;
+			geom.X = (stof(f.next_esc(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			pos.Y += (stof(f.next_esc(";")) * (float)imgsize.Y)/2;
 
 			rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
 			
-			std::string fname = f.next(";");
-			std::string flabel = f.next("]");
+			std::string fname = f.next_esc(";");
+			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
+
+			flabel = unescape_string(flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
@@ -483,19 +490,21 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "image_button" || type == "image_button_exit")
 		{
 			v2s32 pos = padding;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
-			geom.Y = (stof(f.next(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
+			geom.X = (stof(f.next_esc(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			geom.Y = (stof(f.next_esc(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
 
 			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 			
-			std::string fimage = f.next(";");
-			std::string fname = f.next(";");
-			std::string flabel = f.next("]");
+			std::string fimage = f.next_esc(";");
+			std::string fname = f.next_esc(";");
+			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
+
+			flabel = unescape_string(flabel);
 
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
@@ -519,15 +528,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else if(type == "item_image_button")
 		{
 			v2s32 pos = padding;
-			pos.X += stof(f.next(",")) * (float)spacing.X;
-			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			pos.X += stof(f.next_esc(",")) * (float)spacing.X;
+			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 			v2s32 geom;
-			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
-			geom.Y = (stof(f.next(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
+			geom.X = (stof(f.next_esc(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			geom.Y = (stof(f.next_esc(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
 			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);		
-			std::string fimage = f.next(";");
-			std::string fname = f.next(";");
-			std::string flabel = f.next("]");
+			std::string fimage = f.next_esc(";");
+			std::string fname = f.next_esc(";");
+			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;		
 			IItemDefManager *idef = m_gamedef->idef();
@@ -535,6 +544,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			item.deSerialize(fimage, idef);
 			video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 			std::string tooltip = item.getDefinition(idef).description;
+			flabel = unescape_string(flabel);
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
 				narrow_to_wide(flabel.c_str()),
@@ -556,7 +566,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		else
 		{
 			// Ignore others
-			std::string ts = f.next("]");
+			std::string ts = f.next_esc("]");
 			infostream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
 					<<std::endl;
 		}

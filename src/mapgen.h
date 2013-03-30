@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_TREES         0x01
 #define MG_CAVES         0x02
 #define MG_DUNGEONS      0x04
-#define MGV6_FORESTS     0x08
+#define MGV6_JUNGLES     0x08
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 
@@ -45,7 +45,8 @@ class MapBlock;
 class ManualMapVoxelManipulator;
 class VoxelManipulator;
 class INodeDefManager;
-class BlockMakeData;
+struct BlockMakeData;
+class VoxelArea;
 
 struct MapgenParams {
 	std::string mg_name;
@@ -72,6 +73,14 @@ public:
 	int water_level;
 	bool generating;
 	int id;
+	ManualMapVoxelManipulator *vm;
+	INodeDefManager *ndef;
+
+	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
+	void setLighting(v3s16 nmin, v3s16 nmax, u8 light);
+	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
+	void calcLighting(v3s16 nmin, v3s16 nmax);
+	void calcLightingOld(v3s16 nmin, v3s16 nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {};
 	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
@@ -87,6 +96,49 @@ struct MapgenFactory {
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
 };
+
+enum OreType {
+	ORE_SCATTER,
+	ORE_SHEET,
+	ORE_CLAYLIKE
+};
+
+class Ore {
+public:
+	std::string ore_name;
+	std::string wherein_name;
+
+	content_t ore;
+	content_t wherein;  // the node to be replaced
+	s16 clust_scarcity; //
+	s16 clust_num_ores; // how many ore nodes are in a chunk
+	s16 clust_size;     // how large (in nodes) a chunk of ore is
+	s16 height_min;
+	s16 height_max;
+	float nthresh;      // threshhold for noise at which an ore is placed 
+	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
+	Noise *noise;
+	
+	Ore() {
+		ore     = CONTENT_IGNORE;
+		wherein = CONTENT_IGNORE;
+		np      = NULL;
+		noise   = NULL;
+	}
+	
+	void resolveNodeNames(INodeDefManager *ndef);
+	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
+};
+
+class OreScatter : public Ore {
+	 void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+
+class OreSheet : public Ore {
+	void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+
+Ore *createOre(OreType type);
 
 #endif
 

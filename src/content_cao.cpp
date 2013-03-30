@@ -50,7 +50,7 @@ struct ToolCapabilities;
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+std::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 /*
 	SmoothTranslator
@@ -174,6 +174,7 @@ public:
 
 	void processMessage(const std::string &data);
 
+	bool getCollisionBox(aabb3f *toset) { return false; }
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
@@ -329,6 +330,7 @@ public:
 	std::string infoText()
 		{return m_infotext;}
 
+	bool getCollisionBox(aabb3f *toset) { return false; }
 private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
@@ -641,6 +643,22 @@ public:
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		if (m_prop.physical) {
+			aabb3f retval;
+			//update collision box
+			toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+			toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+
+			toset->MinEdge += m_position;
+			toset->MaxEdge += m_position;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	void initialize(const std::string &data)
@@ -1127,8 +1145,7 @@ public:
 				v3f p_pos = m_position;
 				v3f p_velocity = m_velocity;
 				v3f p_acceleration = m_acceleration;
-				IGameDef *gamedef = env->getGameDef();
-				moveresult = collisionMoveSimple(&env->getMap(), gamedef,
+				moveresult = collisionMoveSimple(env,env->getGameDef(),
 						pos_max_d, box, stepheight, dtime,
 						p_pos, p_velocity, p_acceleration);
 				// Apply results

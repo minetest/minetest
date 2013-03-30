@@ -445,7 +445,7 @@ struct FastFace
 };
 
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
-		v3f p, v3s16 dir, v3f scale, u8 light_source, core::array<FastFace> &dest)
+		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
 	
@@ -455,6 +455,80 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+	v3s16 t;
+	switch (tile.rotation)
+	{
+	case 0:
+		break;
+	case 1: //R90
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[3];
+		vertex_dirs[3] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[1];
+		vertex_dirs[1] = t;
+		break;
+	case 2: //R180
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[2];
+		vertex_dirs[2] = t;
+		t = vertex_dirs[1];
+		vertex_dirs[1] = vertex_dirs[3];
+		vertex_dirs[3] = t;
+		break;
+	case 3: //R270
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[1];
+		vertex_dirs[1] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[3];
+		vertex_dirs[3] = t;
+		break;
+	case 4: //FXR90
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[3];
+		vertex_dirs[3] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[1];
+		vertex_dirs[1] = t;
+		tile.texture.pos.Y += tile.texture.size.Y;
+		tile.texture.size.Y *= -1;
+		break;
+	case 5: //FXR270
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[1];
+		vertex_dirs[1] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[3];
+		vertex_dirs[3] = t;
+		tile.texture.pos.Y += tile.texture.size.Y;
+		tile.texture.size.Y *= -1;
+		break;
+	case 6: //FYR90
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[3];
+		vertex_dirs[3] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[1];
+		vertex_dirs[1] = t;
+		tile.texture.pos.X += tile.texture.size.X;
+		tile.texture.size.X *= -1;
+		break;
+	case 7: //FYR270
+		t = vertex_dirs[0];
+		vertex_dirs[0] = vertex_dirs[1];
+		vertex_dirs[1] = vertex_dirs[2];
+		vertex_dirs[2] = vertex_dirs[3];
+		vertex_dirs[3] = t;
+		tile.texture.pos.X += tile.texture.size.X;
+		tile.texture.size.X *= -1;
+		break;
+	case 8: //FX
+		tile.texture.pos.Y += tile.texture.size.Y;
+		tile.texture.size.Y *= -1;
+		break;
+	case 9: //FY
+		tile.texture.pos.X += tile.texture.size.X;
+		tile.texture.size.X *= -1;
+		break;
+	default:
+		break;
+	}
 	for(u16 i=0; i<4; i++)
 	{
 		vertex_pos[i] = v3f(
@@ -601,60 +675,50 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	//  5 = (0,0,-1)
 	//  6 = (0,-1,0)
 	//  7 = (-1,0,0)
-	u8 dir_i = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
+	u8 dir_i = ((dir.X + 2 * dir.Y + 3 * dir.Z) & 7)*2;
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef);
-	assert(facedir <= 3);
-	
-	static const u8 dir_to_tile[4 * 8] =
+	assert(facedir <= 23);
+	static const u16 dir_to_tile[24 * 16] =
 	{
-		// 0  +X  +Y  +Z   0  -Z  -Y  -X
-		   0,  2,  0,  4,  0,  5,  1,  3,  // facedir = 0
-		   0,  4,  0,  3,  0,  2,  1,  5,  // facedir = 1
-		   0,  3,  0,  5,  0,  4,  1,  2,  // facedir = 2
-		   0,  5,  0,  2,  0,  3,  1,  4,  // facedir = 3
+		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation  
+		   0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
+		   0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
+		   0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
+		   0,0,  5,0 , 0,1 , 2,0 ,  0,0,  3,0 , 1,3 , 4,0 ,
+
+		   0,0,  2,3 , 5,0 , 0,2 ,  0,0,  1,0 , 4,2 , 3,1 ,  // rotate around z+ 4 - 7
+		   0,0,  4,3 , 2,0 , 0,3 ,  0,0,  1,1 , 3,2 , 5,1 ,
+		   0,0,  3,3 , 4,0 , 0,0 ,  0,0,  1,2 , 5,2 , 2,1 ,
+		   0,0,  5,3 , 3,0 , 0,1 ,  0,0,  1,3 , 2,2 , 4,1 ,
+
+		   0,0,  2,1 , 4,2 , 1,2 ,  0,0,  0,0 , 5,0 , 3,3 ,  // rotate around z- 8 - 11
+		   0,0,  4,1 , 3,2 , 1,3 ,  0,0,  0,3 , 2,0 , 5,3 ,
+		   0,0,  3,1 , 5,2 , 1,0 ,  0,0,  0,2 , 4,0 , 2,3 ,
+		   0,0,  5,1 , 2,2 , 1,1 ,  0,0,  0,1 , 3,0 , 4,3 ,
+
+		   0,0,  0,3 , 3,3 , 4,1 ,  0,0,  5,3 , 2,3 , 1,3 ,  // rotate around x+ 12 - 15
+		   0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
+		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
+		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
+		   
+		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19  
+		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
+		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,  
+		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,  
+		
+		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
+		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,  
+		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,  
+		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2   
+		   
 	};
-	u8 tileindex = dir_to_tile[facedir*8 + dir_i];
-
-	// If not rotated or is side tile, we're done
-	if(facedir == 0 || (tileindex != 0 && tileindex != 1))
-		return getNodeTileN(mn, p, tileindex, data);
-
-	// This is the top or bottom tile, and it shall be rotated; thus rotate it
-	TileSpec spec = getNodeTileN(mn, p, tileindex, data);
-	if(tileindex == 0){
-		if(facedir == 1){ // -90
-			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-			name += "^[transformR270";
-			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
-		}
-		else if(facedir == 2){ // 180
-			spec.texture.pos += spec.texture.size;
-			spec.texture.size *= -1;
-		}
-		else if(facedir == 3){ // 90
-			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-			name += "^[transformR90";
-			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
-		}
-	}
-	else if(tileindex == 1){
-		if(facedir == 1){ // -90
-			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-			name += "^[transformR90";
-			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
-		}
-		else if(facedir == 2){ // 180
-			spec.texture.pos += spec.texture.size;
-			spec.texture.size *= -1;
-		}
-		else if(facedir == 3){ // 90
-			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-			name += "^[transformR270";
-			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
-		}
-	}
+	u16 tile_index=facedir*16 + dir_i;
+	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
+	spec.rotation=dir_to_tile[tile_index + 1];
+	std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+	spec.texture = data->m_gamedef->tsrc()->getTexture(name);
 	return spec;
 }
 
@@ -745,7 +809,7 @@ static void updateFastFaceRow(
 		v3f translate_dir_f,
 		v3s16 face_dir,
 		v3f face_dir_f,
-		core::array<FastFace> &dest)
+		std::vector<FastFace> &dest)
 {
 	v3s16 p = startpos;
 	
@@ -794,6 +858,7 @@ static void updateFastFaceRow(
 					&& next_lights[2] == lights[2]
 					&& next_lights[3] == lights[3]
 					&& next_tile == tile
+					&& tile.rotation == 0
 					&& next_light_source == light_source)
 			{
 				next_is_different = false;
@@ -897,7 +962,7 @@ static void updateFastFaceRow(
 }
 
 static void updateAllFastFaceRows(MeshMakeData *data,
-		core::array<FastFace> &dest)
+		std::vector<FastFace> &dest)
 {
 	/*
 		Go through every y,z and get top(y+) faces in rows of x+
@@ -962,7 +1027,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	// 24-155ms for MAP_BLOCKSIZE=32  (NOTE: probably outdated)
 	//TimeTaker timer1("MapBlockMesh()");
 
-	core::array<FastFace> fastfaces_new;
+	std::vector<FastFace> fastfaces_new;
 
 	/*
 		We are including the faces of the trailing edges of the block.
@@ -1124,8 +1189,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		m_mesh->addMeshBuffer(buf);
 		// Mesh grabbed it
 		buf->drop();
-		buf->append(p.vertices.pointer(), p.vertices.size(),
-				p.indices.pointer(), p.indices.size());
+		buf->append(&p.vertices[0], p.vertices.size(),
+				&p.indices[0], p.indices.size());
 	}
 
 	/*

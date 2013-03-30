@@ -42,6 +42,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "subgame.h"
 
+#define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+#define LSTRING(x) LSTRING_(x)
+#define LSTRING_(x) L##x
+
+const wchar_t *contrib_core_strs[] = {
+	L"Perttu Ahola (celeron55) <celeron55@gmail.com>",
+	L"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
+	L"PilzAdam <pilzadam@minetest.net>",
+	L"Ilya Zhuravlev (thexyz) <xyz@minetest.net>",
+	L"Lisa Milne (darkrose) <lisa@ltmnet.com>",
+	L"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>",
+	L"proller <proler@gmail.com>"
+};
+
+const wchar_t *contrib_active_strs[] = {
+	L"sfan5 <sfan5@live.de>",
+	L"sapier <sapier@gmx.net>",
+	L"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	L"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
+	L"Jeija <jeija@mesecons.net>",
+	L"MirceaKitsune <mirceakitsune@gmail.com>",
+	L"ShadowNinja",
+	L"dannydark <the_skeleton_of_a_child@yahoo.co.uk>",
+	L"0gb.us <0gb.us@0gb.us>"
+};
+
+const wchar_t *contrib_previous_strs[] = {
+	L"kahrl <kahrl@gmx.net>",
+	L"Giuseppe Bilotta (Oblomov) <giuseppe.bilotta@gmail.com>",
+	L"Jonathan Neuschafer <j.neuschaefer@gmx.net>",
+	L"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>",
+	L"Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>",
+	L"matttpt <matttpt@gmail.com>",
+	L"JacobF <queatz@gmail.com>" 
+};
+
+
 struct CreateWorldDestMainMenu : public CreateWorldDest
 {
 	CreateWorldDestMainMenu(GUIMainMenu *menu):
@@ -106,6 +143,7 @@ enum
 	GUI_ID_SHADERS_CB,
 	GUI_ID_PRELOAD_ITEM_VISUALS_CB,
 	GUI_ID_ENABLE_PARTICLES_CB,
+	GUI_ID_LIQUID_FINITE_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_PUBLIC_CB,
@@ -119,6 +157,7 @@ enum
 	GUI_ID_SERVERLIST,
 	GUI_ID_SERVERLIST_TOGGLE,
 	GUI_ID_SERVERLIST_DELETE,
+	GUI_ID_SERVERLIST_TITLE,
 };
 
 enum
@@ -209,7 +248,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	changeCtype("");
 
 	// Version
-	//if(m_data->selected_tab != TAB_CREDITS)
 	{
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
@@ -219,7 +257,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 
 	//v2s32 center(size.X/2, size.Y/2);
-	v2s32 c800(size.X/2-400, size.Y/2-300);
+	v2s32 c800(size.X/2-400, size.Y/2-270);
 	
 	m_topleft_client = c800 + v2s32(90, 70+50+30);
 	m_size_client = v2s32(620, 270);
@@ -237,7 +275,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	m_topleft_server = m_topleft_client + v2s32(0, m_size_client.Y+20);
 	
 	// Tabs
-#if 1
 	{
 		core::rect<s32> rect(0, 0, m_size_client.X, 30);
 		rect += m_topleft_client + v2s32(0, -30);
@@ -250,7 +287,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->addTab(wgettext("Credits"));
 		e->setActiveTab(m_data->selected_tab);
 	}
-#endif
 	
 	if(m_data->selected_tab == TAB_SINGLEPLAYER)
 	{
@@ -259,7 +295,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
-			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
+			const wchar_t *text = L"S\nI\nN\nG\nL\nE\n \nP\nL\nA\nY\nE\nR\n";
 			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
@@ -392,13 +428,38 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		changeCtype("");
 		// Server List
 		{
-			core::rect<s32> rect(0, 0, 390, 160);
-			rect += m_topleft_client + v2s32(50, 10);
+			core::rect<s32> rect(0, 0, 390, 140);
+			rect += m_topleft_client + v2s32(50, 30);
 			gui::IGUIListBox *e = Environment->addListBox(rect, this,
 					GUI_ID_SERVERLIST);
 			e->setDrawBackground(true);
-			if (m_data->serverlist_show_available == false)
+#if USE_CURL
+			if(m_data->selected_serverlist == SERVERLIST_FAVORITES) {
 				m_data->servers = ServerList::getLocal();
+				{
+					core::rect<s32> rect(0, 0, 390, 20);
+					rect += m_topleft_client + v2s32(50, 10);
+					Environment->addStaticText(wgettext("Favorites:"),
+						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				}
+			} else {
+				m_data->servers = ServerList::getOnline();
+				{
+					core::rect<s32> rect(0, 0, 390, 20);
+					rect += m_topleft_client + v2s32(50, 10);
+					Environment->addStaticText(wgettext("Public Server List:"),
+						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				}
+			}
+#else
+			m_data->servers = ServerList::getLocal();
+			{
+				core::rect<s32> rect(0, 0, 390, 20);
+				rect += m_topleft_client + v2s32(50, 10);
+				Environment->addStaticText(wgettext("Favorites:"),
+					rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+			}
+#endif
 			updateGuiServerList();
 			e->setSelected(0);
 		}
@@ -435,7 +496,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_TOGGLE,
 				wgettext("Show Public"));
 			e->setIsPushButton(true);
-			if (m_data->serverlist_show_available)
+			if (m_data->selected_serverlist == SERVERLIST_PUBLIC)
 			{
 				e->setText(wgettext("Show Favorites"));
 				e->setPressed();
@@ -448,7 +509,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(50+260+10, 180);
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_DELETE,
 				wgettext("Delete"));
-			if (m_data->serverlist_show_available) // Hidden on Show-Online mode
+			if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // Hidden when on public list
 				e->setVisible(false);
 		}
 		// Start game button
@@ -691,6 +752,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
 		}
 
+		{
+			core::rect<s32> rect(0, 0, option_w+20+20, 30);
+			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*3);
+			Environment->addCheckBox(m_data->liquid_finite, rect, this,
+					GUI_ID_LIQUID_FINITE_CB, wgettext("Finite liquid"));
+		}
+
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -706,7 +774,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		// CREDITS
 		{
-			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			core::rect<s32> rect(0, 0, 9, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nR\nE\nD\nI\nT\nS";
 			gui::IGUIStaticText *t =
@@ -714,15 +782,34 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		{
-			core::rect<s32> rect(0, 0, 454, 250);
-			rect += m_topleft_client + v2s32(110, 50+35);
-			Environment->addStaticText(narrow_to_wide(
-			"Minetest " VERSION_STRING "\n"
-			"http://minetest.net/\n"
-			"\n"
-			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors: PilzAdam, Taoki, tango_, kahrl (kaaaaaahrl?), darkrose, matttpt, erlehmann, SpeedProg, JacobF, teddydestodes, marktraceur, Jonathan Neuschäfer, thexyz, VanessaE, sfan5... and tens of more random people."
-			).c_str(), rect, false, true, this, -1);
+			core::rect<s32> rect(0, 0, 130, 70);
+			rect += m_topleft_client + v2s32(35, 160);
+			Environment->addStaticText(
+				L"Minetest " LSTRING(VERSION_STRING) L"\nhttp://minetest.net/",
+				 rect, false, true, this, -1);
+		}
+		{
+			video::SColor yellow(255, 255, 255, 0);
+			core::rect<s32> rect(0, 0, 450, 260);
+			rect += m_topleft_client + v2s32(168, 5);
+			
+			irr::gui::IGUIListBox *list = Environment->addListBox(rect, this);
+			
+			list->addItem(L"Core Developers");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_core_strs); i++)
+				list->addItem(contrib_core_strs[i]);
+			list->addItem(L"");
+			list->addItem(L"Active Contributors");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_active_strs); i++)
+				list->addItem(contrib_active_strs[i]);
+			list->addItem(L"");
+			list->addItem(L"Previous Contributors");
+			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
+			for (int i = 0; i != ARRAYLEN(contrib_previous_strs); i++)
+				list->addItem(contrib_previous_strs[i]);
+			list->addItem(L"");
 		}
 	}
 
@@ -786,15 +873,15 @@ void GUIMainMenu::drawMenu()
 			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 		}
 		video::ITexture *logotexture =
-				driver->getTexture(getTexturePath("menulogo.png").c_str());
+				driver->getTexture(getTexturePath("logo.png").c_str());
 		if(logotexture)
 		{
 			v2s32 logosize(logotexture->getOriginalSize().Width,
 					logotexture->getOriginalSize().Height);
-			logosize *= 2;
+
 			core::rect<s32> rect(0,0,logosize.X,logosize.Y);
 			rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
-			rect += v2s32(130, 50);
+			rect += v2s32(50, 60);
 			driver->draw2DImage(logotexture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(logotexture->getSize())),
@@ -916,6 +1003,12 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_PARTICLES_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->enable_particles = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_LIQUID_FINITE_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->liquid_finite = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
@@ -1083,25 +1176,28 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				gui::IGUIElement *togglebutton = getElementFromId(GUI_ID_SERVERLIST_TOGGLE);
 				gui::IGUIElement *deletebutton = getElementFromId(GUI_ID_SERVERLIST_DELETE);
 				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
-				if (m_data->serverlist_show_available) // switch to favorite list
+				gui::IGUIElement *title = getElementFromId(GUI_ID_SERVERLIST_TITLE);
+				if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // switch to favorite list
 				{
 					m_data->servers = ServerList::getLocal();
 					togglebutton->setText(wgettext("Show Public"));
+					title->setText(wgettext("Favorites:"));
 					deletebutton->setVisible(true);
 					updateGuiServerList();
 					serverlist->setSelected(0);
+					m_data->selected_serverlist = SERVERLIST_FAVORITES;
 				}
 				else // switch to online list
 				{
 					m_data->servers = ServerList::getOnline();
 					togglebutton->setText(wgettext("Show Favorites"));
+					title->setText(wgettext("Public Server List:"));
 					deletebutton->setVisible(false);
 					updateGuiServerList();
 					serverlist->setSelected(0);
+					m_data->selected_serverlist = SERVERLIST_PUBLIC;
 				}
 				serverListOnSelected();
-
-				m_data->serverlist_show_available = !m_data->serverlist_show_available;
 			}
 			#endif
 			}

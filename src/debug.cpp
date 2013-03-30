@@ -130,7 +130,7 @@ void DebugStack::print(std::ostream &os, bool everything)
 		os<<"Probably overflown."<<std::endl;
 }
 
-core::map<threadid_t, DebugStack*> g_debug_stacks;
+std::map<threadid_t, DebugStack*> g_debug_stacks;
 JMutex g_debug_stacks_mutex;
 
 void debug_stacks_init()
@@ -144,12 +144,11 @@ void debug_stacks_print_to(std::ostream &os)
 
 	os<<"Debug stacks:"<<std::endl;
 
-	for(core::map<threadid_t, DebugStack*>::Iterator
-			i = g_debug_stacks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<threadid_t, DebugStack*>::iterator
+			i = g_debug_stacks.begin();
+			i != g_debug_stacks.end(); ++i)
 	{
-		DebugStack *stack = i.getNode()->getValue();
-		stack->print(os, false);
+		i->second->print(os, false);
 	}
 }
 
@@ -159,11 +158,11 @@ void debug_stacks_print()
 
 	DEBUGPRINT("Debug stacks:\n");
 
-	for(core::map<threadid_t, DebugStack*>::Iterator
-			i = g_debug_stacks.getIterator();
-			i.atEnd() == false; i++)
+	for(std::map<threadid_t, DebugStack*>::iterator
+			i = g_debug_stacks.begin();
+			i != g_debug_stacks.end(); ++i)
 	{
-		DebugStack *stack = i.getNode()->getValue();
+		DebugStack *stack = i->second;
 
 		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
@@ -179,18 +178,18 @@ DebugStacker::DebugStacker(const char *text)
 
 	JMutexAutoLock lock(g_debug_stacks_mutex);
 
-	core::map<threadid_t, DebugStack*>::Node *n;
+	std::map<threadid_t, DebugStack*>::iterator n;
 	n = g_debug_stacks.find(threadid);
-	if(n != NULL)
+	if(n != g_debug_stacks.end())
 	{
-		m_stack = n->getValue();
+		m_stack = n->second;
 	}
 	else
 	{
 		/*DEBUGPRINT("Creating new debug stack for thread %x\n",
 				(unsigned int)threadid);*/
 		m_stack = new DebugStack(threadid);
-		g_debug_stacks.insert(threadid, m_stack);
+		g_debug_stacks[threadid] = m_stack;
 	}
 
 	if(m_stack->stack_i >= DEBUG_STACK_SIZE)
@@ -224,7 +223,7 @@ DebugStacker::~DebugStacker()
 		/*DEBUGPRINT("Deleting debug stack for thread %x\n",
 				(unsigned int)threadid);*/
 		delete m_stack;
-		g_debug_stacks.remove(threadid);
+		g_debug_stacks.erase(threadid);
 	}
 }
 

@@ -27,33 +27,36 @@ class ManualMapVoxelManipulator;
 class INodeDefManager;
 
 
-namespace treegen
-{
+namespace treegen {
 
-struct TreeDef
-{
-std::string initial_axiom;
-std::string rules_a;
-std::string rules_b;
-std::string rules_c;
-std::string rules_d;
-MapNode trunknode;
-MapNode leavesnode;
-MapNode leaves2node;
-int leaves2_chance;
-int angle;
-int iterations;
-int iterations_random_level;
-std::string trunk_type;
-bool thin_branches;
-MapNode fruitnode;
-int fruit_chance;
-int seed;
-};
+	struct TreeDef {
+		std::string initial_axiom;
+		std::string rules_a;
+		std::string rules_b;
+		std::string rules_c;
+		std::string rules_d;
+
+		MapNode trunknode;
+		MapNode leavesnode;
+		MapNode leaves2node;
+
+		int leaves2_chance;
+		int angle;
+		int iterations;
+		int iterations_random_level;
+		std::string trunk_type;
+		bool thin_branches;
+		MapNode fruitnode;
+		int fruit_chance;
+		int seed;
+	};
 
 	// Add default tree
 	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef,int seed);
+		bool is_apple_tree, INodeDefManager *ndef, int seed);
+	// Add jungle tree
+	void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
+		INodeDefManager *ndef, int seed);
 
 	// Add L-Systems tree (used by engine)
 	void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
@@ -73,7 +76,7 @@ int seed;
 		PseudoRandom ps, TreeDef &tree_definition);
 	void tree_fruit_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
 		TreeDef &tree_definition);
-	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle,v3f axis);
+	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis);
 
 	v3f transposeMatrix(irr::core::matrix4 M ,v3f v);
 

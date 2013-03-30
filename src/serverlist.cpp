@@ -232,7 +232,7 @@ static size_t ServerAnnounceCallback(void *contents, size_t size, size_t nmemb, 
     //((std::string*)userp)->append((char*)contents, size * nmemb);
     //return size * nmemb;
 }
-void sendAnnounce(std::string action, u16 clients) {
+void sendAnnounce(std::string action, u16 clients, double uptime, std::string gameid) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
@@ -250,6 +250,9 @@ void sendAnnounce(std::string action, u16 clients) {
 		server["pvp"]		= g_settings->getBool("enable_pvp");
 		server["clients"]	= clients;
 		server["clients_max"]	= g_settings->get("max_users");
+		if (uptime >=1) server["uptime"] = (int)uptime;
+		if (gameid!="") server["gameid"] = gameid;
+		
 	}
 	if(server["action"] == "start")
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
@@ -259,6 +262,7 @@ void sendAnnounce(std::string action, u16 clients) {
 	if (curl)
 	{
 		CURLcode res;
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+std::string("/announce?json=")+curl_easy_escape(curl, writer.write( server ).c_str(), 0)).c_str());
 		//curl_easy_setopt(curl, CURLOPT_USERAGENT, "minetest");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::ServerAnnounceCallback);

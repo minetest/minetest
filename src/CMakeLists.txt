@@ -161,7 +161,7 @@ else()
 		endif(APPLE)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
-	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
+	set(PLATFORM_LIBS -lpthread -lrt ${CMAKE_DL_LIBS})
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
@@ -172,6 +172,7 @@ endif()
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
+find_package(OpenGLES2)
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
@@ -205,6 +206,20 @@ set(common_SRCS
 	itemdef.cpp
 	nodedef.cpp
 	object_properties.cpp
+	scriptapi_types.cpp
+	scriptapi_common.cpp
+	scriptapi_content.cpp
+	scriptapi_craft.cpp
+	scriptapi_node.cpp
+	scriptapi_item.cpp
+	scriptapi_env.cpp
+	scriptapi_nodetimer.cpp
+	scriptapi_noise.cpp
+	scriptapi_entity.cpp
+	scriptapi_object.cpp
+	scriptapi_nodemeta.cpp
+	scriptapi_inventory.cpp
+	scriptapi_particles.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
@@ -212,7 +227,10 @@ set(common_SRCS
 	emerge.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
+	mapgen_indev.cpp
+	mapgen_singlenode.cpp
 	treegen.cpp
+	dungeongen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
 	collision.cpp
@@ -371,6 +389,7 @@ if(BUILD_CLIENT)
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${JSON_LIBRARY}
+		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
