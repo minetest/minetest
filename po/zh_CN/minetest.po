@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-30 20:25+0100\n"
+"POT-Creation-Date: 2013-03-30 19:56+0100\n"
 "PO-Revision-Date: 2013-03-09 09:41+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,12 +99,12 @@ msgstr "你死了。"
 msgid "Respawn"
 msgstr "重生"
 
-#: src/guiFormSpecMenu.cpp:572
+#: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
-#: src/guiTextInputMenu.cpp:123
+#: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
+#: src/guiTextInputMenu.cpp:131
 msgid "Proceed"
 msgstr "继续游戏"
 
@@ -196,167 +196,185 @@ msgstr "选择范围"
 msgid "Print stacks"
 msgstr "打印栈"
 
-#: src/guiMainMenu.cpp:55
+#: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
 msgstr "无法创建世界：名字包含非法字符"
 
-#: src/guiMainMenu.cpp:64
+#: src/guiMainMenu.cpp:101
 msgid "Cannot create world: A world by this name already exists"
 msgstr "无法创建世界：同名世界已经存在"
 
-#: src/guiMainMenu.cpp:245
+#: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
 msgstr "单人游戏"
 
-#: src/guiMainMenu.cpp:246
+#: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
 msgstr "多人游戏"
 
-#: src/guiMainMenu.cpp:247
+#: src/guiMainMenu.cpp:285
 msgid "Advanced"
 msgstr "高级联机设置"
 
-#: src/guiMainMenu.cpp:248
+#: src/guiMainMenu.cpp:286
 msgid "Settings"
 msgstr "设置"
 
-#: src/guiMainMenu.cpp:249
+#: src/guiMainMenu.cpp:287
 msgid "Credits"
 msgstr "关于"
 
-#: src/guiMainMenu.cpp:280
+#: src/guiMainMenu.cpp:317
 msgid "Select World:"
 msgstr "选择世界："
 
-#: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
+#: src/guiMainMenu.cpp:339 src/guiMainMenu.cpp:511 src/keycode.cpp:229
 msgid "Delete"
 msgstr "删除"
 
-#: src/guiMainMenu.cpp:309
+#: src/guiMainMenu.cpp:346
 msgid "New"
 msgstr "新建"
 
-#: src/guiMainMenu.cpp:317
+#: src/guiMainMenu.cpp:354
 msgid "Configure"
 msgstr "配置"
 
-#: src/guiMainMenu.cpp:332 src/keycode.cpp:248
+#: src/guiMainMenu.cpp:369 src/keycode.cpp:248
 msgid "Play"
 msgstr "开始游戏"
 
-#: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
+#: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
 msgstr "创造模式"
 
-#: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
+#: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
 msgstr "开启伤害"
 
-#: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
+#: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
 msgid "Name/Password"
 msgstr "名字/密码"
 
-#: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
+#: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
+#, fuzzy
+msgid "Favorites:"
+msgstr "显示最爱"
+
+#: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
+msgid "Public Server List:"
+msgstr ""
+
+#: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
 msgstr "地址/端口"
 
-#: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
+#: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
 msgid "Show Public"
 msgstr "显示公共"
 
-#: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
+#: src/guiMainMenu.cpp:501 src/guiMainMenu.cpp:1193
 msgid "Show Favorites"
 msgstr "显示最爱"
 
-#: src/guiMainMenu.cpp:459
+#: src/guiMainMenu.cpp:521
 msgid "Connect"
 msgstr "连接"
 
-#: src/guiMainMenu.cpp:529
+#: src/guiMainMenu.cpp:591
 msgid "Leave address blank to start a local server."
 msgstr "地址栏留空可启动本地服务器。"
 
-#: src/guiMainMenu.cpp:538
+#: src/guiMainMenu.cpp:600
 msgid "Start Game / Connect"
 msgstr "启动游戏/连接"
 
-#: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
+#: src/guiMainMenu.cpp:632
+#, fuzzy
+msgid "Public"
+msgstr "显示公共"
+
+#: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
 msgstr "删除世界"
 
-#: src/guiMainMenu.cpp:577
+#: src/guiMainMenu.cpp:647
 msgid "Create world"
 msgstr "创造世界"
 
-#: src/guiMainMenu.cpp:611
+#: src/guiMainMenu.cpp:681
 msgid "Fancy trees"
 msgstr "更漂亮的树"
 
-#: src/guiMainMenu.cpp:617
+#: src/guiMainMenu.cpp:687
 msgid "Smooth Lighting"
 msgstr "平滑光照"
 
-#: src/guiMainMenu.cpp:623
+#: src/guiMainMenu.cpp:693
 msgid "3D Clouds"
 msgstr "3D云彩"
 
-#: src/guiMainMenu.cpp:629
+#: src/guiMainMenu.cpp:699
 msgid "Opaque water"
 msgstr "不反光的水"
 
-#: src/guiMainMenu.cpp:639
+#: src/guiMainMenu.cpp:709
 msgid "Mip-Mapping"
 msgstr "贴图处理"
 
-#: src/guiMainMenu.cpp:646
+#: src/guiMainMenu.cpp:716
 msgid "Anisotropic Filtering"
 msgstr "各向异性过滤"
 
-#: src/guiMainMenu.cpp:653
+#: src/guiMainMenu.cpp:723
 msgid "Bi-Linear Filtering"
 msgstr "双线性过滤"
 
-#: src/guiMainMenu.cpp:660
+#: src/guiMainMenu.cpp:730
 msgid "Tri-Linear Filtering"
 msgstr "三线性过滤"
 
-#: src/guiMainMenu.cpp:668
+#: src/guiMainMenu.cpp:738
 msgid "Shaders"
 msgstr "着色器"
 
-#: src/guiMainMenu.cpp:675
+#: src/guiMainMenu.cpp:745
 msgid "Preload item visuals"
 msgstr "预先加载物品图像"
 
-#: src/guiMainMenu.cpp:682
+#: src/guiMainMenu.cpp:752
 msgid "Enable Particles"
 msgstr "启用粒子效果"
 
-#: src/guiMainMenu.cpp:692
+#: src/guiMainMenu.cpp:759
+msgid "Finite liquid"
+msgstr ""
+
+#: src/guiMainMenu.cpp:769
 msgid "Change keys"
 msgstr "改变键位设置"
 
-#: src/guiMainMenu.cpp:977
+#: src/guiMainMenu.cpp:1084
 msgid "Address required."
 msgstr "需要地址。"
 
-#: src/guiMainMenu.cpp:995
+#: src/guiMainMenu.cpp:1102
 msgid "Cannot delete world: Nothing selected"
 msgstr "无法删除世界：没有选择世界"
 
-#: src/guiMainMenu.cpp:1010
+#: src/guiMainMenu.cpp:1117
 msgid "Files to be deleted"
 msgstr "将被删除的文件"
 
-#: src/guiMainMenu.cpp:1026
+#: src/guiMainMenu.cpp:1133
 msgid "Cannot create world: No games found"
 msgstr "无法创造世界：未找到游戏模式"
 
-#: src/guiMainMenu.cpp:1042
+#: src/guiMainMenu.cpp:1149
 msgid "Cannot configure world: Nothing selected"
 msgstr "无法配置世界：没有选择世界"
 
-#: src/guiMainMenu.cpp:1146
+#: src/guiMainMenu.cpp:1256
 msgid "Failed to delete all world files"
 msgstr "无法删除所有该世界的文件"
 
@@ -380,23 +398,27 @@ msgstr "更改"
 msgid "Passwords do not match!"
 msgstr "密码不匹配！"
 
-#: src/guiPauseMenu.cpp:118
+#: src/guiPauseMenu.cpp:123
 msgid "Continue"
 msgstr "继续"
 
-#: src/guiPauseMenu.cpp:127
+#: src/guiPauseMenu.cpp:132
 msgid "Change Password"
 msgstr "更改密码"
 
-#: src/guiPauseMenu.cpp:135
+#: src/guiPauseMenu.cpp:140
+msgid "Sound Volume"
+msgstr ""
+
+#: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
 msgstr "退出至菜单"
 
-#: src/guiPauseMenu.cpp:142
+#: src/guiPauseMenu.cpp:154
 msgid "Exit to OS"
 msgstr "退出至操作系统"
 
-#: src/guiPauseMenu.cpp:149
+#: src/guiPauseMenu.cpp:161
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -422,6 +444,14 @@ msgstr ""
 "I：物品栏\n"
 "ESC：菜单\n"
 "T：聊天\n"
+
+#: src/guiVolumeChange.cpp:108
+msgid "Sound Volume: "
+msgstr ""
+
+#: src/guiVolumeChange.cpp:121
+msgid "Exit"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -715,31 +745,31 @@ msgstr "PA1键"
 msgid "Zoom"
 msgstr "缩放"
 
-#: src/main.cpp:1384
+#: src/main.cpp:1506
 msgid "Main Menu"
 msgstr "主菜单"
 
-#: src/main.cpp:1633
+#: src/main.cpp:1830
 msgid "Failed to initialize world"
 msgstr "无法初始化世界"
 
-#: src/main.cpp:1645
+#: src/main.cpp:1842
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "没有选择世界或提供地址。未执行操作。"
 
-#: src/main.cpp:1653
+#: src/main.cpp:1850
 msgid "Could not find or load game \""
 msgstr "无法找到或载入游戏模式“"
 
-#: src/main.cpp:1667
+#: src/main.cpp:1864
 msgid "Invalid gamespec."
 msgstr "非法游戏模式规格。"
 
-#: src/main.cpp:1707
+#: src/main.cpp:1904
 msgid "Connection error (timed out?)"
 msgstr "连接出错（超时？）"
 
-#: src/main.cpp:1718
+#: src/main.cpp:1915
 msgid ""
 "\n"
 "Check debug.txt for details."

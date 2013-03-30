@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-23 18:24+0200\n"
+"POT-Creation-Date: 2013-03-30 19:56+0100\n"
 "PO-Revision-Date: 2013-02-28 17:44+0200\n"
 "Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
@@ -99,12 +99,12 @@ msgstr "Vous êtes mort."
 msgid "Respawn"
 msgstr "Réapparaître"
 
-#: src/guiFormSpecMenu.cpp:572
+#: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "Clic gauche: déplacer tous les objets -- Clic droit: déplacer un objet"
 
-#: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
-#: src/guiTextInputMenu.cpp:123
+#: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
+#: src/guiTextInputMenu.cpp:131
 msgid "Proceed"
 msgstr "OK"
 
@@ -196,167 +196,185 @@ msgstr "Distance de rendu"
 msgid "Print stacks"
 msgstr "Imprimer stacks"
 
-#: src/guiMainMenu.cpp:55
+#: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
 msgstr "Impossible de créer le monde: le nom contient des caractères invalides"
 
-#: src/guiMainMenu.cpp:64
+#: src/guiMainMenu.cpp:101
 msgid "Cannot create world: A world by this name already exists"
 msgstr "Impossible de créer le monde: ce nom est déjà utilisé"
 
-#: src/guiMainMenu.cpp:245
+#: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
 msgstr "Solo"
 
-#: src/guiMainMenu.cpp:246
+#: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
 msgstr "Multijoueur"
 
-#: src/guiMainMenu.cpp:247
+#: src/guiMainMenu.cpp:285
 msgid "Advanced"
 msgstr "Avancé"
 
-#: src/guiMainMenu.cpp:248
+#: src/guiMainMenu.cpp:286
 msgid "Settings"
 msgstr "Réglages"
 
-#: src/guiMainMenu.cpp:249
+#: src/guiMainMenu.cpp:287
 msgid "Credits"
 msgstr "Crédits"
 
-#: src/guiMainMenu.cpp:280
+#: src/guiMainMenu.cpp:317
 msgid "Select World:"
 msgstr "Sélectionner le monde :"
 
-#: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
+#: src/guiMainMenu.cpp:339 src/guiMainMenu.cpp:511 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Supprimer"
 
-#: src/guiMainMenu.cpp:309
+#: src/guiMainMenu.cpp:346
 msgid "New"
 msgstr "Nouveau"
 
-#: src/guiMainMenu.cpp:317
+#: src/guiMainMenu.cpp:354
 msgid "Configure"
 msgstr "Configurer"
 
-#: src/guiMainMenu.cpp:332 src/keycode.cpp:248
+#: src/guiMainMenu.cpp:369 src/keycode.cpp:248
 msgid "Play"
 msgstr "Jouer"
 
-#: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
+#: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
 msgstr "Mode créatif"
 
-#: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
+#: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
 msgstr "Activer blessures"
 
-#: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
+#: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
 msgid "Name/Password"
 msgstr "Nom / MdP"
 
-#: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
+#: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
+#, fuzzy
+msgid "Favorites:"
+msgstr "Voir serveurs favoris"
+
+#: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
+msgid "Public Server List:"
+msgstr ""
+
+#: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
 msgstr "Adresse / Port"
 
-#: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
+#: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
 msgid "Show Public"
 msgstr "Voir serveurs publics"
 
-#: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
+#: src/guiMainMenu.cpp:501 src/guiMainMenu.cpp:1193
 msgid "Show Favorites"
 msgstr "Voir serveurs favoris"
 
-#: src/guiMainMenu.cpp:459
+#: src/guiMainMenu.cpp:521
 msgid "Connect"
 msgstr "Rejoindre"
 
-#: src/guiMainMenu.cpp:529
+#: src/guiMainMenu.cpp:591
 msgid "Leave address blank to start a local server."
 msgstr "Laisser l'adresse vide pour lancer un serveur local."
 
-#: src/guiMainMenu.cpp:538
+#: src/guiMainMenu.cpp:600
 msgid "Start Game / Connect"
 msgstr "Démarrer / Connecter"
 
-#: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
+#: src/guiMainMenu.cpp:632
+#, fuzzy
+msgid "Public"
+msgstr "Voir serveurs publics"
+
+#: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
 msgstr "Supprimer monde"
 
-#: src/guiMainMenu.cpp:577
+#: src/guiMainMenu.cpp:647
 msgid "Create world"
 msgstr "Créer un monde"
 
-#: src/guiMainMenu.cpp:611
+#: src/guiMainMenu.cpp:681
 msgid "Fancy trees"
 msgstr "Arbres spéciaux"
 
-#: src/guiMainMenu.cpp:617
+#: src/guiMainMenu.cpp:687
 msgid "Smooth Lighting"
 msgstr "Lumière douce"
 
-#: src/guiMainMenu.cpp:623
+#: src/guiMainMenu.cpp:693
 msgid "3D Clouds"
 msgstr "Nuages 3D"
 
-#: src/guiMainMenu.cpp:629
+#: src/guiMainMenu.cpp:699
 msgid "Opaque water"
 msgstr "Eau opaque"
 
-#: src/guiMainMenu.cpp:639
+#: src/guiMainMenu.cpp:709
 msgid "Mip-Mapping"
 msgstr "Mip-mapping"
 
-#: src/guiMainMenu.cpp:646
+#: src/guiMainMenu.cpp:716
 msgid "Anisotropic Filtering"
 msgstr "Filtrage anisotropique"
 
-#: src/guiMainMenu.cpp:653
+#: src/guiMainMenu.cpp:723
 msgid "Bi-Linear Filtering"
 msgstr "Filtrage bilinéaire"
 
-#: src/guiMainMenu.cpp:660
+#: src/guiMainMenu.cpp:730
 msgid "Tri-Linear Filtering"
 msgstr "Filtrage trilinéaire"
 
-#: src/guiMainMenu.cpp:668
+#: src/guiMainMenu.cpp:738
 msgid "Shaders"
 msgstr "Shaders"
 
-#: src/guiMainMenu.cpp:675
+#: src/guiMainMenu.cpp:745
 msgid "Preload item visuals"
 msgstr "Précharger les visuels d'objets"
 
-#: src/guiMainMenu.cpp:682
+#: src/guiMainMenu.cpp:752
 msgid "Enable Particles"
 msgstr "Activer les particules"
 
-#: src/guiMainMenu.cpp:692
+#: src/guiMainMenu.cpp:759
+msgid "Finite liquid"
+msgstr ""
+
+#: src/guiMainMenu.cpp:769
 msgid "Change keys"
 msgstr "Changer touches"
 
-#: src/guiMainMenu.cpp:977
+#: src/guiMainMenu.cpp:1084
 msgid "Address required."
 msgstr "Adresse requise."
 
-#: src/guiMainMenu.cpp:995
+#: src/guiMainMenu.cpp:1102
 msgid "Cannot delete world: Nothing selected"
 msgstr "Impossible de supprimer le monde : rien n'est sélectionné"
 
-#: src/guiMainMenu.cpp:1010
+#: src/guiMainMenu.cpp:1117
 msgid "Files to be deleted"
 msgstr "Fichiers à effacer"
 
-#: src/guiMainMenu.cpp:1026
+#: src/guiMainMenu.cpp:1133
 msgid "Cannot create world: No games found"
 msgstr "Impossible de créer le monde : aucun jeu n'est présent"
 
-#: src/guiMainMenu.cpp:1042
+#: src/guiMainMenu.cpp:1149
 msgid "Cannot configure world: Nothing selected"
 msgstr "Impossible de configurer ce monde : aucune sélection active"
 
-#: src/guiMainMenu.cpp:1146
+#: src/guiMainMenu.cpp:1256
 msgid "Failed to delete all world files"
 msgstr "Tous les fichiers du monde n'ont pu être effacés"
 
@@ -380,23 +398,27 @@ msgstr "Changer"
 msgid "Passwords do not match!"
 msgstr "Mot de passe incorrect !"
 
-#: src/guiPauseMenu.cpp:118
+#: src/guiPauseMenu.cpp:123
 msgid "Continue"
 msgstr "Continuer"
 
-#: src/guiPauseMenu.cpp:127
+#: src/guiPauseMenu.cpp:132
 msgid "Change Password"
 msgstr "Changer mot de passe"
 
-#: src/guiPauseMenu.cpp:135
+#: src/guiPauseMenu.cpp:140
+msgid "Sound Volume"
+msgstr ""
+
+#: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
 msgstr "Quitter vers le menu"
 
-#: src/guiPauseMenu.cpp:142
+#: src/guiPauseMenu.cpp:154
 msgid "Exit to OS"
 msgstr "Quitter le jeu"
 
-#: src/guiPauseMenu.cpp:149
+#: src/guiPauseMenu.cpp:161
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -420,6 +442,14 @@ msgstr ""
 "- R : active la vue de tous les blocs\n"
 "- I : inventaire\n"
 "- T : parler\n"
+
+#: src/guiVolumeChange.cpp:108
+msgid "Sound Volume: "
+msgstr ""
+
+#: src/guiVolumeChange.cpp:121
+msgid "Exit"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -713,31 +743,31 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoomer"
 
-#: src/main.cpp:1384
+#: src/main.cpp:1506
 msgid "Main Menu"
 msgstr "Menu principal"
 
-#: src/main.cpp:1633
+#: src/main.cpp:1830
 msgid "Failed to initialize world"
 msgstr "Le monde n'a pas pu être initialisé"
 
-#: src/main.cpp:1645
+#: src/main.cpp:1842
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Pas de monde sélectionné et pas d'adresse. Rien à faire."
 
-#: src/main.cpp:1653
+#: src/main.cpp:1850
 msgid "Could not find or load game \""
 msgstr "N'a pas pu trouver ou charger le jeu \""
 
-#: src/main.cpp:1667
+#: src/main.cpp:1864
 msgid "Invalid gamespec."
 msgstr "gamespec invalide."
 
-#: src/main.cpp:1707
+#: src/main.cpp:1904
 msgid "Connection error (timed out?)"
 msgstr "Erreur de connexion (perte de connexion ?)"
 
-#: src/main.cpp:1718
+#: src/main.cpp:1915
 msgid ""
 "\n"
 "Check debug.txt for details."
