@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-02-21 17:34+0200\n"
-"Last-Translator: Sfan5 . <sfan5@live.de>\n"
+"PO-Revision-Date: 2013-03-30 20:01+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -258,13 +258,12 @@ msgid "Name/Password"
 msgstr "Name/Passwort"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
-#, fuzzy
 msgid "Favorites:"
-msgstr "Zeige Favoriten"
+msgstr "Zeige Favoriten:"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Öffentliche Server Liste:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -291,9 +290,8 @@ msgid "Start Game / Connect"
 msgstr "Spiel starten / Verbinden"
 
 #: src/guiMainMenu.cpp:632
-#, fuzzy
 msgid "Public"
-msgstr "Zeige öffentliche"
+msgstr "Öffentlich"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -349,7 +347,7 @@ msgstr "Aktiviere Partikel"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Realistiches Wasser"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -409,7 +407,7 @@ msgstr "Passwort ändern"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Sound Lautstärke"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -446,11 +444,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Sound Lautstärke: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Zurück"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
