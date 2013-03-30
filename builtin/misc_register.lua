@@ -273,7 +273,7 @@ minetest.register_node(":ignore", {
 	walkable = false,
 	pointable = false,
 	diggable = false,
-	buildable_to = true, -- A way to remove accidentally placed ignores
+	buildable_to = false, -- Otherwise placing nodes could replace the node you try to place it on
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
