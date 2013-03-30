@@ -618,7 +618,7 @@ void drawMenuBackground(video::IVideoDriver* driver) {
 
 	std::string path = getTexturePath("menubg.png");
 	if (path[0]) {
-		video::ITexture *bgtexture =
+		static const video::ITexture *bgtexture =
 			driver->getTexture(path.c_str());
 
 		if (bgtexture) {
@@ -646,7 +646,7 @@ void drawMenuFooter(video::IVideoDriver* driver, bool clouds) {
 	std::string path = getTexturePath(clouds ?
 						"menufooter_clouds.png" : "menufooter.png");
 	if (path[0]) {
-		video::ITexture *footertexture =
+		static const video::ITexture *footertexture =
 			driver->getTexture(path.c_str());
 
 		if (footertexture) {
@@ -678,7 +678,7 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 
 	std::string path = getTexturePath("menuheader.png");
 	if (path[0]) {
-		video::ITexture *splashtexture =
+		static const video::ITexture *splashtexture =
 		driver->getTexture(path.c_str());
 
 		if(splashtexture) {
@@ -713,7 +713,7 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 void drawMenuSplash(video::IVideoDriver* driver) {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 	if (getTexturePath("menusplash.png") != "") {
-		video::ITexture *splashtexture =
+		static const video::ITexture *splashtexture =
 			driver->getTexture(getTexturePath("menusplash.png").c_str());
 
 		if(splashtexture) {
