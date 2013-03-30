@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <list>
+#include <cstdlib>
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
@@ -33,6 +34,7 @@ extern "C" {
 #include "emerge.h"
 #include "script.h"
 #include "rollback.h"
+#include "config.h" // For VERSION_STRING and CMAKE_VERSION(MAJOR|MINOR|PATCH)
 
 #include "scriptapi_types.h"
 #include "scriptapi_env.h"
@@ -1103,6 +1105,23 @@ static int l_rollback_revert_actions_by(lua_State *L)
 	return 2;
 }
 
+// get_version()
+static int l_get_version(lua_State *L)
+{
+	lua_pushstring(L, VERSION_STRING);
+	lua_pushnumber(L, atoi(CMAKE_VERSION_MAJOR)); // no error checking because atoi returns NULL (= 0) on error
+	lua_pushnumber(L, atoi(CMAKE_VERSION_MINOR));
+	std::string patch = "";
+	const char *patch_str = CMAKE_VERSION_PATCH;
+	while(isdigit(*patch_str)) // remove junk(= non-number) from VERSION_PATCH if any
+	{
+	    patch.append(1, (char) *patch_str);
+	    patch_str++;
+	}
+	lua_pushnumber(L, atoi(patch.c_str()));
+	return 4;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -1147,6 +1166,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"add_particle", l_add_particle},
 	{"add_particlespawner", l_add_particlespawner},
 	{"delete_particlespawner", l_delete_particlespawner},
+	{"get_version", l_get_version},
 	{NULL, NULL}
 };
 
