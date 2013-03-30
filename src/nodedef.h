@@ -138,6 +138,7 @@ enum NodeDrawType
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
 	NDT_NODEBOX,
+	NDT_MAX,
 };
 
 #define CF_SPECIAL_COUNT 2

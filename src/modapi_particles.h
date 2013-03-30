@@ -1,5 +1,5 @@
 /*
-Minetest
+Minetest-c55
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -17,33 +17,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SCRIPT_HEADER
-#define SCRIPT_HEADER
+#ifndef MODAPI_PARTICLES_H_
+#define MODAPI_PARTICLES_H_
 
-#include <exception>
-#include <string>
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+}
 
-typedef struct lua_State lua_State;
-
-class LuaError : public std::exception
-{
+class ModApiParticles : public ModApiBase {
 public:
-	LuaError(lua_State *L, const std::string &s);
-
-	virtual ~LuaError() throw()
-	{}
-	virtual const char * what() const throw()
-	{
-		return m_s.c_str();
-	}
-	std::string m_s;
+	bool Initialize(lua_State *L, int top);
+private:
+	static int l_add_particle(lua_State *L);
+	static int l_add_particlespawner(lua_State *L);
+	static int l_delete_particlespawner(lua_State *L);
 };
 
-lua_State* script_init();
-void script_deinit(lua_State *L);
-std::string script_get_backtrace(lua_State *L);
-void script_error(lua_State *L, const char *fmt, ...);
-bool script_load(lua_State *L, const char *path);
+
 
 #endif
-

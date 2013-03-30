@@ -50,6 +50,7 @@ class IGameDef;
 class Map;
 class ServerMap;
 class ClientMap;
+class ScriptApi;
 
 class Environment
 {
@@ -190,7 +191,7 @@ public:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef,
+	ServerEnvironment(ServerMap *map, ScriptApi *iface, IGameDef *gamedef,
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
@@ -198,8 +199,9 @@ public:
 
 	ServerMap & getServerMap();
 
-	lua_State* getLua()
-		{ return m_lua; }
+	//TODO find way to remove this fct!
+	ScriptApi* getScriptIface()
+		{ return m_ScriptIface; }
 
 	IGameDef *getGameDef()
 		{ return m_gamedef; }
@@ -345,7 +347,7 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	lua_State *m_lua;
+	ScriptApi* m_ScriptIface;
 	// Game definition
 	IGameDef *m_gamedef;
 	// Background block emerger (the server, in practice)

@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -17,16 +17,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUA_PARTICLES_H_
-#define LUA_PARTICLES_H_
+#ifndef SCRIPTAPI_PLAYER_H_
+#define SCRIPTAPI_PLAYER_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#include "scriptapi_base.h"
 
-int l_add_particle(lua_State *L);
-int l_add_particlespawner(lua_State *L);
-int l_delete_particlespawner(lua_State *L);
 
-#endif
+class ScriptApiPlayer
+		: virtual public ScriptApiBase
+{
+public:
+	virtual ~ScriptApiPlayer();
+
+	void on_newplayer(ServerActiveObject *player);
+	void on_dieplayer(ServerActiveObject *player);
+	bool on_respawnplayer(ServerActiveObject *player);
+	void on_joinplayer(ServerActiveObject *player);
+	void on_leaveplayer(ServerActiveObject *player);
+
+	void on_playerReceiveFields(ServerActiveObject *player,
+			const std::string &formname,
+			const std::map<std::string, std::string> &fields);
+};
+
+
+#endif /* SCRIPTAPI_PLAYER_H_ */
