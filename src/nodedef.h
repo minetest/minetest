@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
+#include <list>
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
@@ -35,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
+
+typedef std::list<std::pair<content_t, int> > GroupItems;
 
 enum ContentParamType
 {

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "nameidmapping.h"
 #include "util/serialize.h"
+//#include "profiler.h" // For TimeTaker
 
 /*
 	NodeBox
@@ -452,6 +453,7 @@ public:
 	virtual void getIds(const std::string &name, std::set<content_t> &result)
 			const
 	{
+		//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 		if(name.substr(0,6) != "group:"){
 			content_t id = CONTENT_IGNORE;
 			if(getId(name, id))
@@ -459,6 +461,20 @@ public:
 			return;
 		}
 		std::string group = name.substr(6);
+
+#if 1	// Optimized version, takes less than 1 microsecond at -O1
+		std::map<std::string, GroupItems>::const_iterator
+			i = m_group_to_items.find(group);
+		if (i == m_group_to_items.end())
+			return;
+
+		const GroupItems &items = i->second;
+		for (GroupItems::const_iterator j = items.begin();
+			j != items.end(); ++j) {
+			if ((*j).second != 0)
+				result.insert((*j).first);
+		}
+#else	// Old version, takes about ~150-200us at -O1
 		for(u16 id=0; id<=MAX_CONTENT; id++)
 		{
 			const ContentFeatures &f = m_content_features[id];
@@ -467,6 +483,8 @@ public:
 			if(itemgroup_get(f.groups, group) != 0)
 				result.insert(id);
 		}
+#endif
+		//printf("getIds: %dus\n", t.stop());
 	}
 	virtual const ContentFeatures& get(const std::string &name) const
 	{
@@ -498,6 +516,21 @@ public:
 		m_content_features[c] = def;
 		if(def.name != "")
 			addNameIdMapping(c, def.name);
+
+		// Add this content to the list of all groups it belongs to
+		for (ItemGroupList::const_iterator i = def.groups.begin();
+			i != def.groups.end(); ++i) {
+			std::string group_name = i->first;
+			
+			std::map<std::string, GroupItems>::iterator
+				j = m_group_to_items.find(group_name);
+			if (j == m_group_to_items.end()) {
+				m_group_to_items[group_name].push_back(std::make_pair(c, i->second));
+			} else {
+				GroupItems &items = j->second;
+				items.push_back(std::make_pair(c, i->second));
+			}
+		}
 	}
 	virtual content_t set(const std::string &name,
 			const ContentFeatures &def)
@@ -787,6 +820,9 @@ private:
 	// item aliases too. Updated by updateAliases()
 	// Note: Not serialized.
 	std::map<std::string, content_t> m_name_id_mapping_with_aliases;
+	// A mapping from groups to a list of content_ts (and their levels)
+	// that belong to it.  Necessary for a direct lookup in getIds().
+	std::map<std::string, GroupItems> m_group_to_items;
 };
 
 IWritableNodeDefManager* createNodeDefManager()
