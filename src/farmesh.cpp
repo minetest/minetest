@@ -198,28 +198,6 @@ void FarMesh::render()
 
 		v2f p0 = v2f(xi,zi)*grid_size + world_center_of_drawing_in_noise_f;
 		
-		/*double noise[4];
-		double d = 100*BS;
-		noise[0] = d*noise2d_perlin(
-				(float)(p_in_noise_i.X+0)*grid_size/BS/100,
-				(float)(p_in_noise_i.Y+0)*grid_size/BS/100,
-				m_seed, 3, 0.5);
-		
-		noise[1] = d*noise2d_perlin(
-				(float)(p_in_noise_i.X+0)*grid_size/BS/100,
-				(float)(p_in_noise_i.Y+1)*grid_size/BS/100,
-				m_seed, 3, 0.5);
-		
-		noise[2] = d*noise2d_perlin(
-				(float)(p_in_noise_i.X+1)*grid_size/BS/100,
-				(float)(p_in_noise_i.Y+1)*grid_size/BS/100,
-				m_seed, 3, 0.5);
-		
-		noise[3] = d*noise2d_perlin(
-				(float)(p_in_noise_i.X+1)*grid_size/BS/100,
-				(float)(p_in_noise_i.Y+0)*grid_size/BS/100,
-				m_seed, 3, 0.5);*/
-		
 		HeightPoint hps[5];
 		hps[0] = ground_height(m_seed, v2s16(
 				(p_in_noise_i.X+0)*grid_size/BS,

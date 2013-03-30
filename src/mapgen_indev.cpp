@@ -27,87 +27,146 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 NoiseIndevParams nparams_indev_def;
 
-/*
-NoiseIndevParams nparams_indev_def_terrain_base;
-//	(-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6, 1);
-NoiseIndevParams nparams_indev_def_terrain_higher;
-//	(20.0, 16.0, v3f(500.0, 500.0, 500.0), 85039, 5, 0.6, 1);
-NoiseIndevParams nparams_indev_def_steepness;
-//	(0.85, 0.5, v3f(125.0, 125.0, 125.0), -932, 5, 0.7, 1);
-NoiseIndevParams nparams_indev_def_mud;
-//	(AVERAGE_MUD_AMOUNT, 2.0, v3f(200.0, 200.0, 200.0), 91013, 3, 0.55, 1);
-NoiseIndevParams nparams_indev_def_float_islands;
-//	(1, 10.0, v3f(500.0, 500.0, 500.0), 32451, 5, 0.6, 1);
-NoiseIndevParams nparams_indev_def_biome;
-*/
-
 ///////////////////////////////////////////////////////////////////////////////
 
-void NoiseIndev::init(NoiseIndevParams *np, int seed, int sx, int sy, int sz) {
-	Noise::init((NoiseParams*)np, seed, sx, sy, sz);
-	this->npindev   = np;
+NoiseIndev::NoiseIndev(NoiseIndevParams *np,
+                       float xShift, float yShift, float zShift)
+{
+	m_baseNoise = createDefaultBaseNoise();
+	m_noise = new ParameterizedNoise(m_baseNoise, *np);
+	m_xShift = xShift;
+	m_yShift = yShift;
+	m_zShift = zShift;
+	m_yPlane = 0.0f;
+
+	this->npindev = np;
 }
 
-NoiseIndev::NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy) : Noise(np, seed, sx, sy) {
-        init(np, seed, sx, sy, 1);
-}
-
-NoiseIndev::NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy, int sz) : Noise(np, seed, sx, sy, sz) {
-        init(np, seed, sx, sy, sz);
-}
-
-float farscale(float scale, float z) {
+inline static float farscale(float scale, float z) {
 	return ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 1 - (fabs(z))                     ) / (MAP_GENERATION_LIMIT * 1) ) * (scale - 1) );
 }
 
-float farscale(float scale, float x, float z) {
+inline static float farscale(float scale, float x, float z) {
 	return ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 2 - (fabs(x) + fabs(z))           ) / (MAP_GENERATION_LIMIT * 2) ) * (scale - 1) );
 }
 
-float farscale(float scale, float x, float y, float z) {
+inline static float farscale(float scale, float x, float y, float z) {
 	return ( 1 + ( 1 - (MAP_GENERATION_LIMIT * 3 - (fabs(x) + fabs(y) + fabs(z)) ) / (MAP_GENERATION_LIMIT * 3) ) * (scale - 1) );
 }
 
-void NoiseIndev::transformNoiseMapFarScale(float xx, float yy, float zz) {
-        int i = 0;
-        for (int z = 0; z != sz; z++) {
-                for (int y = 0; y != sy; y++) {
-                        for (int x = 0; x != sx; x++) {
-                                result[i] = result[i] * npindev->scale * farscale(npindev->farscale, xx, yy, zz) + npindev->offset;
-                                i++;
-                        }
-                }
-        }
+inline static float farScaleTransform(float value,
+                                      float scale,
+                                      float farScale,
+                                      float offset,
+                                      float xx, float yy, float zz) {
+	return value*scale*farscale(farScale, xx, yy, zz) + offset;
+}
+
+float NoiseIndev::noise(int seed, float x, float y) {
+	return farScaleTransform(
+	          m_noise->noise(seed, x+m_xShift, y+m_yShift),
+	          npindev->scale,
+	          npindev->farscale,
+	          npindev->offset,
+	          x, m_yPlane, y);
+}
+
+float NoiseIndev::noise(int seed, float x, float y, float z) {
+	return farScaleTransform(
+	          m_noise->noise(seed, x+m_xShift, y+m_yShift, z+m_zShift),
+	          npindev->scale,
+	          npindev->farscale,
+	          npindev->offset,
+	          x, y, z);
+}
+
+void NoiseIndev::noiseBlock(int seed,
+                            int sx, float x0, float dx,
+                            int sy, float y0, float dy,
+                            float* results) {
+	float scale = farscale(npindev->farspread, x0, m_yPlane);
+	float x = x0 + m_xShift*npindev->spread.X*scale;
+	float y = y0 + m_yShift*npindev->spread.Z*scale;
+
+	m_noise->noiseBlock(seed,
+	                    sx, x, dx,
+	                    sy, y, dy,
+	                    results);
+
+	int n = sx*sy;
+	for (int i = 0; i < n; ++i) {
+		results[i] = farScaleTransform(results[i],
+		                               npindev->scale,
+		                               npindev->farscale,
+		                               npindev->offset,
+		                               x, m_yPlane, y);
+	}
+}
+
+void NoiseIndev::noiseBlock(int seed,
+                            int sx, float x0, float dx,
+                            int sy, float y0, float dy,
+                            int sz, float z0, float dz,
+                            float* results) {
+	float scale = farscale(npindev->farspread, x0, y0, z0);
+	float x = x0 + m_xShift*npindev->spread.X*scale;
+	float y = y0 + m_yShift*npindev->spread.Y*scale;
+	float z = z0 + m_zShift*npindev->spread.Z*scale;
+
+	m_noise->noiseBlock(seed,
+	                    sx, x, dx,
+	                    sy, y, dy,
+	                    sz, z, dz,
+	                    results);
+
+	int n = sx*sy*sz;
+	for (int i = 0; i < n; ++i) {
+		results[i] = farScaleTransform(results[i],
+		                               npindev->scale,
+		                               npindev->farscale,
+		                               npindev->offset,
+		                               x, y, z);
+	}
 }
 
 MapgenIndev::MapgenIndev(int mapgenid, MapgenIndevParams *params, EmergeManager *emerge) 
 	: MapgenV6(mapgenid, params, emerge)
 {
-        noiseindev_terrain_base   = new NoiseIndev(params->npindev_terrain_base,   seed, csize.X, csize.Z);
-        noiseindev_terrain_higher = new NoiseIndev(params->npindev_terrain_higher, seed, csize.X, csize.Z);
-        noiseindev_steepness      = new NoiseIndev(params->npindev_steepness,      seed, csize.X, csize.Z);
-//        noise_height_select  = new Noise(params->np_height_select,  seed, csize.X, csize.Y);
-//        noise_trees          = new Noise(params->np_trees,          seed, csize.X, csize.Y);
-        noiseindev_mud            = new NoiseIndev(params->npindev_mud,            seed, csize.X, csize.Z);
-//        noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
-        noiseindev_float_islands1  = new NoiseIndev(params->npindev_float_islands1,  seed, csize.X, csize.Y, csize.Z);
-        noiseindev_float_islands2  = new NoiseIndev(params->npindev_float_islands2,  seed, csize.X, csize.Y, csize.Z);
-        noiseindev_float_islands3  = new NoiseIndev(params->npindev_float_islands3,  seed, csize.X, csize.Z);
-        noiseindev_biome          = new NoiseIndev(params->npindev_biome,          seed, csize.X, csize.Z);
+	noiseindev_terrain_base = new NoiseIndev(params->npindev_terrain_base, 0.5f, 0.5f);
+	noiseindev_terrain_higher = new NoiseIndev(params->npindev_terrain_higher, 0.5f, 0.5f);
+	noiseindev_steepness = new NoiseIndev(params->npindev_steepness, 0.5f, 0.5f);
+	noiseindev_mud = new NoiseIndev(params->npindev_mud, 0.5f, 0.5f);
+	noiseindev_float_islands1 = new NoiseIndev(params->npindev_float_islands1, 0.33f, 0.33f, 0.33f);
+	noiseindev_float_islands2 = new NoiseIndev(params->npindev_float_islands2, 0.33f, 0.33f, 0.33f);
+	noiseindev_float_islands3  = new NoiseIndev(params->npindev_float_islands3, 0.5f, 0.5f);
+
+	int size2d = csize.X*csize.Z;
+	int size3d = csize.X*csize.Y*csize.Z;
+	noiseindev_results_terrain_base = new float[size2d];
+	noiseindev_results_terrain_higher = new float[size2d];
+	noiseindev_results_steepness      = new float[size2d];
+	noiseindev_results_mud            = new float[size2d];
+	noiseindev_results_float_islands1  = new float[size3d];
+	noiseindev_results_float_islands2  = new float[size3d];
+	noiseindev_results_float_islands3  = new float[size2d];
+	noiseindev_results_biome          = new float[size2d];
 }
 
 MapgenIndev::~MapgenIndev() {
+	delete[] noiseindev_results_terrain_base;
+	delete[] noiseindev_results_terrain_higher;
+	delete[] noiseindev_results_steepness;
+	delete[] noiseindev_results_mud;
+	delete[] noiseindev_results_float_islands1;
+	delete[] noiseindev_results_float_islands2;
+	delete[] noiseindev_results_float_islands3;
 	delete noiseindev_terrain_base;
 	delete noiseindev_terrain_higher;
 	delete noiseindev_steepness;
-	//delete noise_height_select;
-	//delete noise_trees;
 	delete noiseindev_mud;
-	//delete noise_beach;
 	delete noiseindev_float_islands1;
 	delete noiseindev_float_islands2;
 	delete noiseindev_float_islands3;
-	delete noiseindev_biome;
 }
 
 void MapgenIndev::calculateNoise() {
@@ -116,59 +175,51 @@ void MapgenIndev::calculateNoise() {
 	int z = node_min.Z;
 	// Need to adjust for the original implementation's +.5 offset...
 	if (!(flags & MG_FLAT)) {
-		noiseindev_terrain_base->perlinMap2D(
-			x + 0.5 * noiseindev_terrain_base->npindev->spread.X * farscale(noiseindev_terrain_base->npindev->farspread, x, z),
-			z + 0.5 * noiseindev_terrain_base->npindev->spread.Z * farscale(noiseindev_terrain_base->npindev->farspread, x, z));
-		noiseindev_terrain_base->transformNoiseMapFarScale(x, y, z);
+		noiseindev_terrain_base->setYPlane(y);
+		noiseindev_terrain_base->noiseBlock(seed,
+		                                    csize.X, x, 1.0f,
+		                                    csize.Z, z, 1.0f,
+		                                    noiseindev_results_terrain_base);
 
-		noiseindev_terrain_higher->perlinMap2D(
-			x + 0.5 * noiseindev_terrain_higher->npindev->spread.X * farscale(noiseindev_terrain_higher->npindev->farspread, x, z),
-			z + 0.5 * noiseindev_terrain_higher->npindev->spread.Z * farscale(noiseindev_terrain_higher->npindev->farspread, x, z));
-		noiseindev_terrain_higher->transformNoiseMapFarScale(x, y, z);
+		noiseindev_terrain_higher->setYPlane(y);
+		noiseindev_terrain_higher->noiseBlock(seed,
+		                                      csize.X, x, 1.0f,
+		                                      csize.Z, z, 1.0f,
+		                                      noiseindev_results_terrain_higher);
 
-		noiseindev_steepness->perlinMap2D(
-			x + 0.5 * noiseindev_steepness->npindev->spread.X * farscale(noiseindev_steepness->npindev->farspread, x, z),
-			z + 0.5 * noiseindev_steepness->npindev->spread.Z * farscale(noiseindev_steepness->npindev->farspread, x, z));
-		noiseindev_steepness->transformNoiseMapFarScale(x, y, z);
+		noiseindev_steepness->setYPlane(y);
+		noiseindev_steepness->noiseBlock(seed,
+		                                 csize.X, x, 1.0f,
+		                                 csize.Z, z, 1.0f,
+		                                 noiseindev_results_steepness);
 
-		noise_height_select->perlinMap2D(
-			x + 0.5 * noise_height_select->np->spread.X,
-			z + 0.5 * noise_height_select->np->spread.Z);
+		noiseindev_float_islands1->noiseBlock(seed,
+		                                      csize.X, x, 1.0f,
+		                                      csize.Y, y, 1.0f,
+		                                      csize.Z, z, 1.0f,
+		                                      noiseindev_results_float_islands1);
 
-		noiseindev_float_islands1->perlinMap3D(
-			x + 0.33 * noiseindev_float_islands1->npindev->spread.X * farscale(noiseindev_float_islands1->npindev->farspread, x, y, z),
-			y + 0.33 * noiseindev_float_islands1->npindev->spread.Y * farscale(noiseindev_float_islands1->npindev->farspread, x, y, z),
-			z + 0.33 * noiseindev_float_islands1->npindev->spread.Z * farscale(noiseindev_float_islands1->npindev->farspread, x, y, z)
-		);
-		noiseindev_float_islands1->transformNoiseMapFarScale(x, y, z);
+		noiseindev_float_islands2->noiseBlock(seed,
+		                                      csize.X, x, 1.0f,
+		                                      csize.Y, y, 1.0f,
+		                                      csize.Z, z, 1.0f,
+		                                      noiseindev_results_float_islands2);
 
-		noiseindev_float_islands2->perlinMap3D(
-			x + 0.33 * noiseindev_float_islands2->npindev->spread.X * farscale(noiseindev_float_islands2->npindev->farspread, x, y, z),
-			y + 0.33 * noiseindev_float_islands2->npindev->spread.Y * farscale(noiseindev_float_islands2->npindev->farspread, x, y, z),
-			z + 0.33 * noiseindev_float_islands2->npindev->spread.Z * farscale(noiseindev_float_islands2->npindev->farspread, x, y, z)
-		);
-		noiseindev_float_islands2->transformNoiseMapFarScale(x, y, z);
-
-		noiseindev_float_islands3->perlinMap2D(
-			x + 0.5 * noiseindev_float_islands3->npindev->spread.X * farscale(noiseindev_float_islands3->npindev->farspread, x, z),
-			z + 0.5 * noiseindev_float_islands3->npindev->spread.Z * farscale(noiseindev_float_islands3->npindev->farspread, x, z));
-		noiseindev_float_islands3->transformNoiseMapFarScale(x, y, z);
+		noiseindev_float_islands2->setYPlane(y);
+		noiseindev_float_islands2->noiseBlock(seed,
+		                                      csize.X, x, 1.0f,
+		                                      csize.Z, z, 1.0f,
+		                                      noiseindev_results_float_islands2);
 
 	}
 	
 	if (!(flags & MG_FLAT)) {
-		noiseindev_mud->perlinMap2D(
-			x + 0.5 * noiseindev_mud->npindev->spread.X * farscale(noiseindev_mud->npindev->farspread, x, y, z),
-			z + 0.5 * noiseindev_mud->npindev->spread.Z * farscale(noiseindev_mud->npindev->farspread, x, y, z));
-		noiseindev_mud->transformNoiseMapFarScale(x, y, z);
+		noiseindev_mud->setYPlane(y);
+		noiseindev_mud->noiseBlock(seed,
+		                           csize.X, x, 1.0f,
+		                           csize.Z, z, 1.0f,
+		                           noiseindev_results_mud);
 	}
-	noise_beach->perlinMap2D(
-		x + 0.2 * noise_beach->np->spread.X,
-		z + 0.7 * noise_beach->np->spread.Z);
-
-	noise_biome->perlinMap2D(
-		x + 0.6 * noiseindev_biome->npindev->spread.X * farscale(noiseindev_biome->npindev->farspread, x, z),
-		z + 0.2 * noiseindev_biome->npindev->spread.Z * farscale(noiseindev_biome->npindev->farspread, x, z));
 }
 
 bool MapgenIndevParams::readParams(Settings *settings) {
@@ -218,42 +269,32 @@ void MapgenIndevParams::writeParams(Settings *settings) {
 float MapgenIndev::baseTerrainLevelFromNoise(v2s16 p) {
 	if (flags & MG_FLAT)
 		return water_level;
-		
-	float terrain_base   = NoisePerlin2DPosOffset(noiseindev_terrain_base->npindev,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float terrain_higher = NoisePerlin2DPosOffset(noiseindev_terrain_higher->npindev,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float steepness      = NoisePerlin2DPosOffset(noiseindev_steepness->npindev,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float height_select  = NoisePerlin2DNoTxfmPosOffset(noise_height_select->np,
-							p.X, 0.5, p.Y, 0.5, seed);
+
+	float terrain_base = noiseindev_terrain_base->noise(seed, p.X, p.Y);
+	float terrain_higher = noiseindev_terrain_higher->noise(seed, p.X, p.Y);
+	float steepness = noiseindev_steepness->noise(seed, p.X, p.Y);
 
 	return baseTerrainLevel(terrain_base, terrain_higher,
-							steepness,    height_select);
+							steepness,    0.0f);
 }
 
 float MapgenIndev::baseTerrainLevelFromMap(int index) {
 	if (flags & MG_FLAT)
 		return water_level;
 	
-	float terrain_base   = noiseindev_terrain_base->result[index];
-	float terrain_higher = noiseindev_terrain_higher->result[index];
-	float steepness      = noiseindev_steepness->result[index];
-	float height_select  = noise_height_select->result[index];
-	
+	float terrain_base = noiseindev_results_terrain_base[index];
+	float terrain_higher = noiseindev_results_terrain_higher[index];
+	float steepness      = noiseindev_results_steepness[index];
+
 	return baseTerrainLevel(terrain_base, terrain_higher,
-							steepness,    height_select);
+							steepness,    0.0f);
 }
 
 float MapgenIndev::getMudAmount(int index) {
 	if (flags & MG_FLAT)
 		return AVERAGE_MUD_AMOUNT;
-		
-	/*return ((float)AVERAGE_MUD_AMOUNT + 2.0 * noise2d_perlin(
-			0.5+(float)p.X/200, 0.5+(float)p.Y/200,
-			seed+91013, 3, 0.55));*/
-	
-	return noiseindev_mud->result[index];
+
+	return noiseindev_results_mud[index];
 }
 
 void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave) {
@@ -280,44 +321,6 @@ void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool 
 	cave.large_cave_is_flat = (ps.range(0,1) == 0);
 }
 
-/*
-// version with one perlin3d. use with good params like
-settings->setDefault("mgindev_np_float_islands1",  "-9.5, 10,  (20,  50,  50 ), 45123, 5, 0.6,  1.5, 5");
-void MapgenIndev::generateFloatIslands(int min_y) {
-	if (node_min.Y < min_y) return;
-	v3s16 p0(node_min.X, node_min.Y, node_min.Z);
-	MapNode n1(c_stone), n2(c_desert_stone);
-	int xl = node_max.X - node_min.X;
-	int yl = node_max.Y - node_min.Y;
-	int zl = node_max.Z - node_min.Z;
-	u32 index = 0;
-	for (int x1 = 0; x1 <= xl; x1++)
-	{
-		//int x = x1 + node_min.Y;
-		for (int z1 = 0; z1 <= zl; z1++)
-		{
-			//int z = z1 + node_min.Z;
-			for (int y1 = 0; y1 <= yl; y1++, index++)
-			{
-				//int y = y1 + node_min.Y;
-				float noise = noiseindev_float_islands1->result[index];
-				//dstream << " y1="<<y1<< " x1="<<x1<<" z1="<<z1<< " noise="<<noise << std::endl;
-				if (noise > 0 ) {
-					v3s16 p = p0 + v3s16(x1, y1, z1);
-					u32 i = vm->m_area.index(p);
-					if (!vm->m_area.contains(i))
-						continue;
-					// Cancel if not  air
-					if (vm->m_data[i].getContent() != CONTENT_AIR)
-						continue;
-					vm->m_data[i] = noise > 1 ? n1 : n2;
-				}
-			}
-		}
-	}
-}
-*/
-
 void MapgenIndev::generateFloatIslands(int min_y) {
 	if (node_min.Y < min_y) return;
 	PseudoRandom pr(blockseed + 985);
@@ -339,16 +342,16 @@ void MapgenIndev::generateFloatIslands(int min_y) {
 	{
 		for (int z1 = 0; z1 <= zl; ++z1, ++index2d)
 		{
-			float noise3 = noiseindev_float_islands3->result[index2d];
+			float noise3 = noiseindev_results_float_islands3[index2d];
 			float pmidy = midy + noise3 / 1.5 * AMPY;
 			for (int y1 = 0; y1 <= yl; ++y1, ++index)
 			{
 				int y = y1 + node_min.Y;
-				float noise1 = noiseindev_float_islands1->result[index];
+				float noise1 = noiseindev_results_float_islands1[index];
 				float offset = y > pmidy ? (y - pmidy) / TGRAD : (pmidy - y) / BGRAD;
 				float noise1off = noise1 - offset - RAR;
 				if (noise1off > 0 && noise1off < 0.7) {
-					float noise2 = noiseindev_float_islands2->result[index];
+					float noise2 = noiseindev_results_float_islands2[index];
 					if (noise2 - noise1off > -0.7){
 						v3s16 p = p0 + v3s16(x1, y1, z1);
 						u32 i = vm->m_area.index(p);

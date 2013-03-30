@@ -159,32 +159,29 @@ void Clouds::render()
 
 	// Read noise
 
-	bool *grid = new bool[cloud_radius_i*2*cloud_radius_i*2];
+	NoiseParams np;
+	np.offset = 0.0f;
+	np.scale = 1.0f;
+	np.spread.X = 200.0f*BS/cloud_size;
+	np.spread.Y = 200.0f*BS/cloud_size;
+	np.spread.Z = 1.0f;
+	np.seed = 0;
+	np.octaves = 3;
+	np.persist = 0.4f;
 
-	for(s16 zi=-cloud_radius_i; zi<cloud_radius_i; zi++)
-	for(s16 xi=-cloud_radius_i; xi<cloud_radius_i; xi++)
+	u32 n_cloud_cells = 2*cloud_radius_i * 2*cloud_radius_i;
+
+	Noise* noise = createDefaultBaseNoise();
+	float* noise_results = new float[n_cloud_cells];
+	noise->noiseBlock(m_seed,
+	                  2*cloud_radius_i, -cloud_radius_i, 1.0f,
+	                  2*cloud_radius_i, -cloud_radius_i, 1.0f,
+	                  noise_results);
+
+	bool *grid = new bool[n_cloud_cells];
+	for (u32 i = 0; i < n_cloud_cells; ++i)
 	{
-		u32 i = (zi+cloud_radius_i)*cloud_radius_i*2 + xi+cloud_radius_i;
-
-		v2s16 p_in_noise_i(
-			xi+center_of_drawing_in_noise_i.X,
-			zi+center_of_drawing_in_noise_i.Y
-		);
-
-#if 0
-		double noise = noise2d_perlin_abs(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.4);
-		grid[i] = (noise >= 0.80);
-#endif
-#if 1
-		double noise = noise2d_perlin(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.5);
-		grid[i] = (noise >= 0.4);
-#endif
+	   grid[i] = (noise_results[i] >= 0.4f);
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
@@ -328,6 +325,8 @@ void Clouds::render()
 	}
 
 	delete[] grid;
+	delete[] noise_results;
+	delete noise;
 	
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,

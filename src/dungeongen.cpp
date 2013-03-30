@@ -48,12 +48,26 @@ DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel) {
 	np_rarity  = &nparams_dungeon_rarity;
 	np_wetness = &nparams_dungeon_wetness;
 	np_density = &nparams_dungeon_density;
+
+	base_noise = createDefaultBaseNoise();
+	noise_rarity = new ParameterizedNoise(base_noise, *np_rarity);
+	noise_wetness = new ParameterizedNoise(base_noise, *np_wetness);
+	noise_density = new ParameterizedNoise(base_noise, *np_density);
+
 	/*
 	cid_water_source = ndef->getId("mapgen_water_source");
 	cid_cobble       = ndef->getId("mapgen_cobble");
 	cid_mossycobble  = ndef->getId("mapgen_mossycobble");
 	cid_torch        = ndef->getId("default:torch");
 	*/
+}
+
+DungeonGen::~DungeonGen()
+{
+	delete noise_density;
+	delete noise_wetness;
+	delete noise_rarity;
+	delete base_noise;
 }
 
 
@@ -63,7 +77,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	int approx_groundlevel = 10 + water_level;
 
 	if ((nmin.Y + nmax.Y) / 2 >= approx_groundlevel ||
-		NoisePerlin3D(np_rarity, nmin.X, nmin.Y, nmin.Z, mapseed) < 0.2)
+		noise_rarity->noise(mapseed, nmin.X, nmin.Y, nmin.Z) < 0.2)
 		return;
 		
 	this->vmanip    = vm;
@@ -95,22 +109,44 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	
 	// Add it
 	makeDungeon(v3s16(1,1,1) * MAP_BLOCKSIZE);
+
+	size_t sx = nmax.X - nmin.X + 1;
+	size_t sy = nmax.Y - nmin.Y + 1;
+	size_t sz = nmax.Z - nmin.Z + 1;
+	size_t sxyz = sx*sy*sz;
+
+	float* wetness_results = new float[sxyz];
+	float* density_results = new float[sxyz];
+
+	noise_wetness->noiseBlock(mapseed,
+	                          sx, nmin.X, 1.0f,
+	                          sy, nmin.Y, 1.0f,
+	                          sz, nmin.Z, 1.0f,
+	                          wetness_results);
+	noise_density->noiseBlock(mapseed,
+	                          sx, nmin.X, 1.0f,
+	                          sy, nmin.Y, 1.0f,
+	                          sz, nmin.Z, 1.0f,
+	                          density_results);
 	
 	// Convert some cobble to mossy cobble
+	int ni = 0;
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 			u32 i = vmanip->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				if (vmanip->m_data[i].getContent() == cid_cobble) {
-					float wetness = NoisePerlin3D(np_wetness, x, y, z, mapseed);
-					float density = NoisePerlin3D(np_density, x, y, z, blockseed);
-					if (density < wetness / 3.0)
+					if (density_results[i] < wetness_results[i] / 3.0)
 						vmanip->m_data[i].setContent(cid_mossycobble);
 				}
+				ni++;
 				i++;
 			}
 		}
 	}
+
+	delete[] wetness_results;
+	delete[] density_results;
 	
 	//printf("== gen dungeons: %dms\n", t.stop());
 }

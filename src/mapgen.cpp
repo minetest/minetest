@@ -109,12 +109,17 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int orechance = (csize * csize * csize) / clust_num_ores;
 	int nclusters = volume / clust_scarcity;
 
+	Noise* oreNoise = 0;
+	if (np) {
+		oreNoise = new ParameterizedNoise(createDefaultBaseNoise(), *np);
+	}
+
 	for (int i = 0; i != nclusters; i++) {
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
 		int y0 = pr.range(ymin,   ymax   - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
 		
-		if (np && (NoisePerlin3D(np, x0, y0, z0, mg->seed) < nthresh))
+		if (oreNoise && (oreNoise->noise(mg->seed, x0, y0, z0) < nthresh))
 			continue;
 		
 		for (int z1 = 0; z1 != csize; z1++)
@@ -128,6 +133,8 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 				vm->m_data[i] = n_ore;
 		}
 	}
+
+	delete oreNoise;
 }
 
 
@@ -155,18 +162,21 @@ void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int max_height = clust_size;
 	int y_start = pr.range(ymin, ymax - max_height);
 	
+	int sx = nmax.X - nmin.X + 1;
+	int sz = nmax.Z - nmin.Z + 1;
 	if (!noise) {
-		int sx = nmax.X - nmin.X + 1;
-		int sz = nmax.Z - nmin.Z + 1;
-		noise = new Noise(np, 0, sx, sz);
+		noise = new ParameterizedNoise(createDefaultBaseNoise(), *np);
 	}
-	noise->seed = mg->seed + y_start;
-	noise->perlinMap2D(x0, z0);
+	float* noise_results = new float[sx*sz];
+	noise->noiseBlock(mg->seed,
+	                  sx, x0, 1.0f,
+	                  sz, z0, 1.0f,
+	                  noise_results);
 	
 	int index = 0;
 	for (int z = z0; z != z1; z++)
 	for (int x = x0; x != x1; x++) {
-		float noiseval = noise->result[index++];
+		float noiseval = noise_results[index++];
 		if (noiseval < nthresh)
 			continue;
 			
@@ -182,6 +192,8 @@ void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 				vm->m_data[i] = n_ore;
 		}
 	}
+
+	delete[] noise_results;
 }
 
 
@@ -391,18 +403,25 @@ s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
 
 
 bool Mapgen::get_have_beach(u64 seed, v2s16 p2d) {
-	double sandnoise = noise2d_perlin(
-			0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
-			seed+59420, 3, 0.50);
+	Noise* baseNoise = createDefaultBaseNoise();
+	FractalNoise fractNoise(baseNoise, 3, 0.5);
+	double sandnoise = fractNoise.noise(seed+59420,
+	                                    0.2f+(float)p2d.X/250.0f,
+	                                    0.7f+(float)p2d.Y/250.0f);
+	delete baseNoise;
 
 	return (sandnoise > 0.15);
 }
 
 
 double Mapgen::tree_amount_2d(u64 seed, v2s16 p) {
-	double noise = noise2d_perlin(
-			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
-			seed+2, 4, 0.66);
+	Noise* baseNoise = createDefaultBaseNoise();
+	FractalNoise fractNoise(baseNoise, 4, 0.66);
+	double noise = fractNoise.noise(seed+2,
+	                                0.5f+(float)p.X/125.0f,
+	                                0.5f+(float)p.Y/125.0f);
+	delete baseNoise;
+
 	double zeroval = -0.39;
 	if(noise < zeroval)
 		return 0;

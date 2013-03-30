@@ -31,10 +31,10 @@ extern "C" {
 class LuaPerlinNoise
 {
 private:
+	Noise* base_noise;
+	Noise* fractal_noise;
+	Noise* noise;
 	int seed;
-	int octaves;
-	float persistence;
-	float scale;
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -67,7 +67,14 @@ public:
 class LuaPerlinNoiseMap
 {
 private:
+	int seed;
+	int sx;
+	int sy;
+	int sz;
+	Noise *base_noise;
 	Noise *noise;
+	float* noise_results;
+
 	static const char className[];
 	static const luaL_reg methods[];
 

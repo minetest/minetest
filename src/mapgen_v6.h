@@ -106,6 +106,8 @@ public:
 	v3s16 central_area_size;
 	int volume_nodes;
 
+	Noise *base_noise;
+
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
 	Noise *noise_steepness;
@@ -113,6 +115,13 @@ public:
 	Noise *noise_mud;
 	Noise *noise_beach;
 	Noise *noise_biome;
+	float *noise_results_terrain_base;
+	float *noise_results_terrain_higher;
+	float *noise_results_steepness;
+	float *noise_results_height_select;
+	float *noise_results_mud;
+	float *noise_results_beach;
+	float *noise_results_biome;
 	NoiseParams *np_cave;
 	NoiseParams *np_humidity;
 	NoiseParams *np_trees;

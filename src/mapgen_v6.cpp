@@ -85,17 +85,70 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 	np_trees       = params->np_trees;
 	np_apple_trees = params->np_apple_trees;
 
-	noise_terrain_base   = new Noise(params->np_terrain_base,   seed, csize.X, csize.Y);
-	noise_terrain_higher = new Noise(params->np_terrain_higher, seed, csize.X, csize.Y);
-	noise_steepness      = new Noise(params->np_steepness,      seed, csize.X, csize.Y);
-	noise_height_select  = new Noise(params->np_height_select,  seed, csize.X, csize.Y);
-	noise_mud            = new Noise(params->np_mud,            seed, csize.X, csize.Y);
-	noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
-	noise_biome          = new Noise(params->np_biome,          seed, csize.X, csize.Y);
+	base_noise = createDefaultBaseNoise();
+
+	NoiseParams np_tmp;
+
+	noise_terrain_base =
+		new ParameterizedNoise(base_noise,
+		                       *params->np_terrain_base,
+		                       0.5f, 0.5f);
+	noise_terrain_higher =
+		new ParameterizedNoise(base_noise,
+		                       *params->np_terrain_higher,
+		                       0.5f, 0.5f);
+	noise_steepness =
+		new ParameterizedNoise(base_noise,
+		                       *params->np_steepness,
+		                       0.5f, 0.5f);
+
+	np_tmp = *params->np_height_select;
+	np_tmp.offset = 0.0f;
+	np_tmp.scale = 1.0f;
+	noise_height_select =
+		new ParameterizedNoise(base_noise,
+		                       np_tmp,
+		                       0.5f, 0.5f);
+
+	noise_mud =
+		new ParameterizedNoise(base_noise,
+		                       *params->np_mud,
+		                       0.5f, 0.5f);
+
+	np_tmp = *params->np_beach;
+	np_tmp.offset = 0.0f;
+	np_tmp.scale = 1.0f;
+	noise_beach =
+		new ParameterizedNoise(base_noise,
+		                       np_tmp,
+		                       0.2f, 0.7f);
+
+	np_tmp = *params->np_biome;
+	np_tmp.offset = 0.0f;
+	np_tmp.scale = 1.0f;
+	noise_biome =
+		new ParameterizedNoise(base_noise,
+		                       np_tmp,
+		                       0.6f, 0.2f);
+
+	noise_results_terrain_base = new float[csize.X*csize.Y];
+	noise_results_terrain_higher = new float[csize.X*csize.Y];
+	noise_results_steepness = new float[csize.X*csize.Y];
+	noise_results_height_select = new float[csize.X*csize.Y];
+	noise_results_mud = new float[csize.X*csize.Y];
+	noise_results_beach = new float[csize.X*csize.Y];
+	noise_results_biome = new float[csize.X*csize.Y];
 }
 
 
 MapgenV6::~MapgenV6() {
+	delete[] noise_results_terrain_base;
+	delete[] noise_results_terrain_higher;
+	delete[] noise_results_steepness;
+	delete[] noise_results_height_select;
+	delete[] noise_results_mud;
+	delete[] noise_results_beach;
+	delete[] noise_results_biome;
 	delete noise_terrain_base;
 	delete noise_terrain_higher;
 	delete noise_steepness;
@@ -103,6 +156,7 @@ MapgenV6::~MapgenV6() {
 	delete noise_mud;
 	delete noise_beach;
 	delete noise_biome;
+	delete base_noise;
 }
 
 
@@ -194,15 +248,11 @@ float MapgenV6::baseTerrainLevel(float terrain_base, float terrain_higher,
 float MapgenV6::baseTerrainLevelFromNoise(v2s16 p) {
 	if (flags & MG_FLAT)
 		return water_level;
-		
-	float terrain_base   = NoisePerlin2DPosOffset(noise_terrain_base->np,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float terrain_higher = NoisePerlin2DPosOffset(noise_terrain_higher->np,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float steepness      = NoisePerlin2DPosOffset(noise_steepness->np,
-							p.X, 0.5, p.Y, 0.5, seed);
-	float height_select  = NoisePerlin2DNoTxfmPosOffset(noise_height_select->np,
-							p.X, 0.5, p.Y, 0.5, seed);
+
+	float terrain_base = noise_terrain_base->noise(seed, p.X, p.Y);
+	float terrain_higher = noise_terrain_higher->noise(seed, p.X, p.Y);
+	float steepness = noise_steepness->noise(seed, p.X, p.Y);
+	float height_select = noise_height_select->noise(seed, p.X, p.Y);
 
 	return baseTerrainLevel(terrain_base, terrain_higher,
 							steepness,    height_select);
@@ -219,10 +269,10 @@ float MapgenV6::baseTerrainLevelFromMap(int index) {
 	if (flags & MG_FLAT)
 		return water_level;
 	
-	float terrain_base   = noise_terrain_base->result[index];
-	float terrain_higher = noise_terrain_higher->result[index];
-	float steepness      = noise_steepness->result[index];
-	float height_select  = noise_height_select->result[index];
+	float terrain_base   = noise_results_terrain_base[index];
+	float terrain_higher = noise_results_terrain_higher[index];
+	float steepness      = noise_results_steepness[index];
+	float height_select  = noise_results_height_select[index];
 	
 	return baseTerrainLevel(terrain_base, terrain_higher,
 							steepness,    height_select);
@@ -261,12 +311,8 @@ BiomeType MapgenV6::getBiome(v2s16 p) {
 
 float MapgenV6::getHumidity(v2s16 p)
 {
-	/*double noise = noise2d_perlin(
-		0.5+(float)p.X/500, 0.5+(float)p.Y/500,
-		seed+72384, 4, 0.66);
-	noise = (noise + 1.0)/2.0;*/
-
-	float noise = NoisePerlin2D(np_humidity, p.X, p.Y, seed);
+	ParameterizedNoise noiseObj(base_noise, *np_humidity);
+	float noise = noiseObj.noise(seed, p.X, p.Y);
 
 	if (noise < 0.0)
 		noise = 0.0;
@@ -278,11 +324,9 @@ float MapgenV6::getHumidity(v2s16 p)
 
 float MapgenV6::getTreeAmount(v2s16 p)
 {
-	/*double noise = noise2d_perlin(
-			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
-			seed+2, 4, 0.66);*/
-	
-	float noise = NoisePerlin2D(np_trees, p.X, p.Y, seed);
+    ParameterizedNoise noiseObj(base_noise, *np_trees);
+	float noise = noiseObj.noise(seed, p.X, p.Y);
+
 	float zeroval = -0.39;
 	if (noise < zeroval)
 		return 0;
@@ -293,11 +337,8 @@ float MapgenV6::getTreeAmount(v2s16 p)
 
 bool MapgenV6::getHaveAppleTree(v2s16 p)
 {
-	/*is_apple_tree = noise2d_perlin(
-		0.5+(float)p.X/100, 0.5+(float)p.Z/100,
-		data->seed+342902, 3, 0.45) > 0.2;*/
-	
-	float noise = NoisePerlin2D(np_apple_trees, p.X, p.Y, seed);
+    ParameterizedNoise noiseObj(base_noise, *np_apple_trees);
+	float noise = noiseObj.noise(seed, p.X, p.Y);
 	
 	return noise > 0.2;
 }
@@ -308,40 +349,27 @@ float MapgenV6::getMudAmount(int index)
 	if (flags & MG_FLAT)
 		return AVERAGE_MUD_AMOUNT;
 		
-	/*return ((float)AVERAGE_MUD_AMOUNT + 2.0 * noise2d_perlin(
-			0.5+(float)p.X/200, 0.5+(float)p.Y/200,
-			seed+91013, 3, 0.55));*/
-	
-	return noise_mud->result[index];
+	return noise_results_mud[index];
 }
 
 
 bool MapgenV6::getHaveBeach(int index)
 {
 	// Determine whether to have sand here
-	/*double sandnoise = noise2d_perlin(
-			0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
-			seed+59420, 3, 0.50);*/
-	
-	float sandnoise = noise_beach->result[index];
+	float sandnoise = noise_results_beach[index];
 	return (sandnoise > freq_beach);
 }
 
 
 BiomeType MapgenV6::getBiome(int index, v2s16 p)
 {
-	// Just do something very simple as for now
-	/*double d = noise2d_perlin(
-			0.6+(float)p2d.X/250, 0.2+(float)p2d.Y/250,
-			seed+9130, 3, 0.50);*/
-	
-	float d = noise_biome->result[index];
+	float d = noise_results_biome[index];
 	if (d > freq_desert)
 		return BT_DESERT;
 		
 	if ((flags & MGV6_BIOME_BLEND) &&
 		(d > freq_desert - 0.10) &&
-		((noise2d(p.X, p.Y, seed) + 1.0) > (freq_desert - d) * 20.0))
+		((base_noise->noise(seed, p.X, p.Y) + 1.0) > (freq_desert - d) * 20.0))
 		return BT_DESERT;
 	
 	return BT_NORMAL;
@@ -484,38 +512,44 @@ void MapgenV6::calculateNoise() {
 
 	// Need to adjust for the original implementation's +.5 offset...
 	if (!(flags & MG_FLAT)) {
-		noise_terrain_base->perlinMap2D(
-			x + 0.5 * noise_terrain_base->np->spread.X,
-			z + 0.5 * noise_terrain_base->np->spread.Z);
-		noise_terrain_base->transformNoiseMap();
 
-		noise_terrain_higher->perlinMap2D(
-			x + 0.5 * noise_terrain_higher->np->spread.X,
-			z + 0.5 * noise_terrain_higher->np->spread.Z);
-		noise_terrain_higher->transformNoiseMap();
+		// Use of x, y for array size but x, z for coordinate purposeful
 
-		noise_steepness->perlinMap2D(
-			x + 0.5 * noise_steepness->np->spread.X,
-			z + 0.5 * noise_steepness->np->spread.Z);
-		noise_steepness->transformNoiseMap();
+		noise_terrain_base->noiseBlock(seed,
+		                               csize.X, x, 1.0f,
+		                               csize.Y, z, 1.0f,
+		                               noise_results_terrain_base);
 
-		noise_height_select->perlinMap2D(
-			x + 0.5 * noise_height_select->np->spread.X,
-			z + 0.5 * noise_height_select->np->spread.Z);
+		noise_terrain_higher->noiseBlock(seed,
+		                                 csize.X, x, 1.0f,
+		                                 csize.Y, z, 1.0f,
+		                                 noise_results_terrain_higher);
 
-		noise_mud->perlinMap2D(
-			x + 0.5 * noise_mud->np->spread.X,
-			z + 0.5 * noise_mud->np->spread.Z);
-		noise_mud->transformNoiseMap();
+		noise_steepness->noiseBlock(seed,
+		                            csize.X, x, 1.0f,
+		                            csize.Y, z, 1.0f,
+		                            noise_results_steepness);
+
+		noise_height_select->noiseBlock(seed,
+		                                csize.X, x, 1.0f,
+		                                csize.Y, z, 1.0f,
+		                                noise_results_height_select);
+
+		noise_mud->noiseBlock(seed,
+		                      csize.X, x, 1.0f,
+		                      csize.Y, z, 1.0f,
+		                      noise_results_mud);
 	}
 
-	noise_beach->perlinMap2D(
-		x + 0.2 * noise_beach->np->spread.X,
-		z + 0.7 * noise_beach->np->spread.Z);
+	noise_beach->noiseBlock(seed,
+	                        csize.X, x, 1.0f,
+	                        csize.Y, z, 1.0f,
+	                        noise_results_beach);
 
-	noise_biome->perlinMap2D(
-		x + 0.6 * noise_biome->np->spread.X,
-		z + 0.2 * noise_biome->np->spread.Z);
+	noise_biome->noiseBlock(seed,
+	                        csize.X, x, 1.0f,
+	                        csize.Y, z, 1.0f,
+	                        noise_results_biome);
 }
 
 
@@ -947,14 +981,10 @@ void MapgenV6::defineCave(Cave &cave, PseudoRandom ps,
 
 
 void MapgenV6::generateCaves(int max_stone_y) {
-	// 24ms @cs=8
-	//TimeTaker timer1("caves");
-	
-	/*double cave_amount = 6.0 + 6.0 * noise2d_perlin(
-		0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
-		data->seed+34329, 3, 0.50);*/
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
-	float cave_amount = NoisePerlin2D(np_cave, node_min.X, node_min.Y, seed);
+
+	ParameterizedNoise noiseObj(base_noise, *np_cave);
+	float cave_amount = noiseObj.noise(seed, node_min.X, node_min.Y);
 
 	cave_amount = MYMAX(0.0, cave_amount);
 	u32 caves_count = cave_amount * volume_nodes / 50000;
