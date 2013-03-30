@@ -116,6 +116,9 @@ minetest.register_chatcommand("grant", {
 		if not grantname or not grantprivstr then
 			minetest.chat_send_player(name, "Invalid parameters (see /help grant)")
 			return
+		elseif not minetest.auth_table[grantname] then
+			minetest.chat_send_player(name, "Player "..grantname.." does not exist.")
+			return
 		end
 		local grantprivs = minetest.string_to_privs(grantprivstr)
 		if grantprivstr == "all" then
@@ -158,6 +161,9 @@ minetest.register_chatcommand("revoke", {
 		local revokename, revokeprivstr = string.match(param, "([^ ]+) (.+)")
 		if not revokename or not revokeprivstr then
 			minetest.chat_send_player(name, "Invalid parameters (see /help revoke)")
+			return
+		elseif not minetest.auth_table[revokename] then
+			minetest.chat_send_player(name, "Player "..revokename.." does not exist.")
 			return
 		end
 		local revokeprivs = minetest.string_to_privs(revokeprivstr)
