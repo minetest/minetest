@@ -157,6 +157,7 @@ enum
 	GUI_ID_SERVERLIST,
 	GUI_ID_SERVERLIST_TOGGLE,
 	GUI_ID_SERVERLIST_DELETE,
+	GUI_ID_SERVERLIST_TITLE,
 };
 
 enum
@@ -427,16 +428,37 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		changeCtype("");
 		// Server List
 		{
-			core::rect<s32> rect(0, 0, 390, 160);
-			rect += m_topleft_client + v2s32(50, 10);
+			core::rect<s32> rect(0, 0, 390, 140);
+			rect += m_topleft_client + v2s32(50, 30);
 			gui::IGUIListBox *e = Environment->addListBox(rect, this,
 					GUI_ID_SERVERLIST);
 			e->setDrawBackground(true);
-			if (m_data->serverlist_show_available == false)
-				m_data->servers = ServerList::getLocal();
 #if USE_CURL
-			else
+			if(m_data->selected_serverlist == SERVERLIST_FAVORITES) {
+				m_data->servers = ServerList::getLocal();
+				{
+					core::rect<s32> rect(0, 0, 110, 20);
+					rect += m_topleft_client + v2s32(50, 10);
+					Environment->addStaticText(wgettext("Favorites:"),
+						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				}
+			} else {
 				m_data->servers = ServerList::getOnline();
+				{
+					core::rect<s32> rect(0, 0, 110, 20);
+					rect += m_topleft_client + v2s32(50, 10);
+					Environment->addStaticText(wgettext("Public Server List:"),
+						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				}
+			}
+#else
+			m_data->servers = ServerList::getLocal();
+			{
+				core::rect<s32> rect(0, 0, 110, 20);
+				rect += m_topleft_client + v2s32(50, 10);
+				Environment->addStaticText(wgettext("Favorites:"),
+					rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+			}
 #endif
 			updateGuiServerList();
 			e->setSelected(0);
@@ -474,7 +496,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_TOGGLE,
 				wgettext("Show Public"));
 			e->setIsPushButton(true);
-			if (m_data->serverlist_show_available)
+			if (m_data->selected_serverlist == SERVERLIST_PUBLIC)
 			{
 				e->setText(wgettext("Show Favorites"));
 				e->setPressed();
@@ -487,7 +509,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(50+260+10, 180);
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_DELETE,
 				wgettext("Delete"));
-			if (m_data->serverlist_show_available) // Hidden on Show-Online mode
+			if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // Hidden when on public list
 				e->setVisible(false);
 		}
 		// Start game button
@@ -1154,25 +1176,28 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				gui::IGUIElement *togglebutton = getElementFromId(GUI_ID_SERVERLIST_TOGGLE);
 				gui::IGUIElement *deletebutton = getElementFromId(GUI_ID_SERVERLIST_DELETE);
 				gui::IGUIListBox *serverlist = (gui::IGUIListBox*)getElementFromId(GUI_ID_SERVERLIST);
-				if (m_data->serverlist_show_available) // switch to favorite list
+				gui::IGUIElement *title = getElementFromId(GUI_ID_SERVERLIST_TITLE);
+				if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // switch to favorite list
 				{
 					m_data->servers = ServerList::getLocal();
 					togglebutton->setText(wgettext("Show Public"));
+					title->setText(wgettext("Favorites:"));
 					deletebutton->setVisible(true);
 					updateGuiServerList();
 					serverlist->setSelected(0);
+					m_data->selected_serverlist = SERVERLIST_FAVORITES;
 				}
 				else // switch to online list
 				{
 					m_data->servers = ServerList::getOnline();
 					togglebutton->setText(wgettext("Show Favorites"));
+					title->setText(wgettext("Public Server List:"));
 					deletebutton->setVisible(false);
 					updateGuiServerList();
 					serverlist->setSelected(0);
+					m_data->selected_serverlist = SERVERLIST_PUBLIC;
 				}
 				serverListOnSelected();
-
-				m_data->serverlist_show_available = !m_data->serverlist_show_available;
 			}
 			#endif
 			}

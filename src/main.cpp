@@ -1556,6 +1556,8 @@ int main(int argc, char *argv[])
 				MainMenuData menudata;
 				if(g_settings->exists("selected_mainmenu_tab"))
 					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
+				if(g_settings->exists("selected_serverlist"))
+					menudata.selected_serverlist = g_settings->getS32("selected_serverlist");
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
@@ -1752,6 +1754,7 @@ int main(int argc, char *argv[])
 				simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 				// Save settings
 				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
+				g_settings->setS32("selected_serverlist", menudata.selected_serverlist);
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
