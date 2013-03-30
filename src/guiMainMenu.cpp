@@ -437,7 +437,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			if(m_data->selected_serverlist == SERVERLIST_FAVORITES) {
 				m_data->servers = ServerList::getLocal();
 				{
-					core::rect<s32> rect(0, 0, 110, 20);
+					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
 					Environment->addStaticText(wgettext("Favorites:"),
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
@@ -445,7 +445,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			} else {
 				m_data->servers = ServerList::getOnline();
 				{
-					core::rect<s32> rect(0, 0, 110, 20);
+					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
 					Environment->addStaticText(wgettext("Public Server List:"),
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
@@ -454,7 +454,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 #else
 			m_data->servers = ServerList::getLocal();
 			{
-				core::rect<s32> rect(0, 0, 110, 20);
+				core::rect<s32> rect(0, 0, 390, 20);
 				rect += m_topleft_client + v2s32(50, 10);
 				Environment->addStaticText(wgettext("Favorites:"),
 					rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
