@@ -682,9 +682,6 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 		driver->getTexture(path.c_str());
 
 		if(splashtexture) {
-			//v2s32 splashsize((splashtexture->getOriginalSize().Width*100)/
-			//	splashtexture->getOriginalSize().Height, 80);
-
 			f32 mult = (((f32)screensize.Width / 2)) /
 				((f32)splashtexture->getOriginalSize().Width);
 
@@ -712,9 +709,10 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 // Draw the Splash over the clouds and under the main menu
 void drawMenuSplash(video::IVideoDriver* driver) {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
-	if (getTexturePath("menusplash.png") != "") {
+	std::string path = getTexturePath("menusplash.png");
+	if (path[0]) {
 		static const video::ITexture *splashtexture =
-			driver->getTexture(getTexturePath("menusplash.png").c_str());
+			driver->getTexture(path.c_str());
 
 		if(splashtexture) {
 			core::rect<s32> splashrect(0, 0, screensize.Width, screensize.Height);
