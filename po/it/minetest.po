@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-30 11:04+0200\n"
+"PO-Revision-Date: 2013-03-30 20:50+0200\n"
 "Last-Translator: Fabio Luongo <e249260@rmqkr.net>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -765,7 +765,7 @@ msgstr "Impossibile trovare o caricare il gioco \""
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
-msgstr "Gamespec invalide."
+msgstr "Specifiche di gioco non valide."
 
 #: src/main.cpp:1904
 msgid "Connection error (timed out?)"
