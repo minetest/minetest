@@ -85,7 +85,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
 	endif()
 endif()
 

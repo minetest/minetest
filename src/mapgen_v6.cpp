@@ -928,20 +928,20 @@ void MapgenV6::growGrass() {
 
 void MapgenV6::defineCave(Cave &cave, PseudoRandom ps,
 						 v3s16 node_min, bool large_cave) {
-		cave.min_tunnel_diameter = 2;
-		cave.max_tunnel_diameter = ps.range(2,6);
-		cave.dswitchint = ps.range(1,14);
-		cave.flooded = true; //large_cave && ps.range(0,4);
-		if(large_cave){
-			cave.part_max_length_rs = ps.range(2,4);
-			cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
-			cave.min_tunnel_diameter = 5;
-			cave.max_tunnel_diameter = ps.range(7, ps.range(8,24));
-		} else {
-			cave.part_max_length_rs = ps.range(2,9);
-			cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
-		}
-		cave.large_cave_is_flat = (ps.range(0,1) == 0);
+	cave.min_tunnel_diameter = 2;
+	cave.max_tunnel_diameter = ps.range(2,6);
+	cave.dswitchint = ps.range(1,14);
+	cave.flooded = true; //large_cave && ps.range(0,4);
+	if (large_cave){
+		cave.part_max_length_rs = ps.range(2,4);
+		cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
+		cave.min_tunnel_diameter = 5;
+		cave.max_tunnel_diameter = ps.range(7, ps.range(8,24));
+	} else {
+		cave.part_max_length_rs = ps.range(2,9);
+		cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
+	}
+	cave.large_cave_is_flat = (ps.range(0,1) == 0);
 }
 
 
@@ -1120,7 +1120,13 @@ void MapgenV6::generateCaves(int max_stone_y) {
 				rp.Z = ar.Z-1;
 			vec = rp - orp;
 
-			for(float f=0; f<1.0; f+=1.0/vec.getLength())
+			float veclen = vec.getLength();
+			// As odd as it sounds, veclen is *exactly*
+			// 0.0 sometimes, causing a FPE
+			if (veclen == 0.0)
+				veclen = 1.0;
+
+			for(float f=0; f<1.0; f+=1.0/veclen)
 			{
 				v3f fp = orp + vec * f;
 				fp.X += 0.1*ps.range(-10,10);

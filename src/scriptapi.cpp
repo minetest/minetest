@@ -727,7 +727,7 @@ static int l_register_ore(lua_State *L)
 	
 	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
 		errorstream << "register_ore: clust_scarcity and clust_num_ores"
-			"must be greater than 0";
+			" must be greater than 0" << std::endl;
 		delete ore;
 		return 0;
 	}
