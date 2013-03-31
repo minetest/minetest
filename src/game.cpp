@@ -1243,6 +1243,7 @@ struct KeyCache {
 		KEYMAP_ID_INCREASE_VIEWING_RANGE,
 		KEYMAP_ID_DECREASE_VIEWING_RANGE,
 		KEYMAP_ID_RANGESELECT,
+		KEYMAP_ID_ZOOM,
 
 		KEYMAP_ID_QUICKTUNE_NEXT,
 		KEYMAP_ID_QUICKTUNE_PREV,
@@ -1299,6 +1300,7 @@ void KeyCache::populate()
 			= getKeySetting("keymap_decrease_viewing_range_min");
 	key[KEYMAP_ID_RANGESELECT]
 			= getKeySetting("keymap_rangeselect");
+	key[KEYMAP_ID_ZOOM] = getKeySetting("keymap_zoom");
 
 	key[KEYMAP_ID_QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KEYMAP_ID_QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
@@ -2927,6 +2929,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP]),
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]),
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_ZOOM]),
 		input->getLeftState(),
 		input->getRightState(),
 		cam.camera_pitch,
