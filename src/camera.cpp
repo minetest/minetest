@@ -71,10 +71,11 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_digging_anim(0),
 	m_digging_button(-1),
 
-	wielditem(55),
 	hand_anim_time(0),
 	is_hand_anim(false),
-	hand_anim_changed(false)
+	hand_anim_changed(false),
+	wieldslot(55),
+	wieldname("")
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -565,8 +566,9 @@ void Camera::setDigging(s32 button)
 
 void Camera::wield(const ItemStack &item, u16 player_select)
 {
-	if(player_select != wielditem) {
-		wielditem = player_select;
+	if(player_select != wieldslot || item.getDefinition(m_gamedef->idef()).name != wieldname) {
+		wieldslot = player_select;
+		wieldname = item.getDefinition(m_gamedef->idef()).name;
 		// Delay changing of the mesh for the anim
 		if(is_hand_anim && (hand_anim_time < 0.5)) {
 			hand_anim_time = 0.1f;

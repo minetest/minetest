@@ -176,13 +176,12 @@ private:
 	// If 1, right-click digging animation
 	s32 m_digging_button;
 
-	// Wield item
-	u16 wielditem;
-
 	// Camera Hand Anim
 	f32 hand_anim_time;
 	bool is_hand_anim;
 	bool hand_anim_changed;
+	u16 wieldslot;
+	std::string wieldname;
 };
 
 #endif
