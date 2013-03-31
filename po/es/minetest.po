@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-19 04:31+0200\n"
-"Last-Translator: Lord James <neftali_dtctv@hotmail.com>\n"
+"PO-Revision-Date: 2013-03-31 16:25+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -260,13 +260,12 @@ msgid "Name/Password"
 msgstr "Nombre/Clave"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
-#, fuzzy
 msgid "Favorites:"
-msgstr "Mostrar Favoritos"
+msgstr "Favoritos:"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Lista de Servidores Públicos:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -293,9 +292,8 @@ msgid "Start Game / Connect"
 msgstr "Iniciar juego/Conectar"
 
 #: src/guiMainMenu.cpp:632
-#, fuzzy
 msgid "Public"
-msgstr "Servidores Públicos"
+msgstr "Público"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -351,7 +349,7 @@ msgstr "Partículas"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Líquidos Finitos"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -411,7 +409,7 @@ msgstr "Modificar contraseña"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volúmen del Sonido"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -449,11 +447,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Volúmen del Sonido: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Salir"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
