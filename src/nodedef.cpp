@@ -822,6 +822,7 @@ private:
 	std::map<std::string, content_t> m_name_id_mapping_with_aliases;
 	// A mapping from groups to a list of content_ts (and their levels)
 	// that belong to it.  Necessary for a direct lookup in getIds().
+	// Note: Not serialized.
 	std::map<std::string, GroupItems> m_group_to_items;
 };
 
