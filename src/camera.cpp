@@ -67,10 +67,14 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_view_bobbing_anim(0),
 	m_view_bobbing_state(0),
 	m_view_bobbing_speed(0),
-	wielditem(55),
 
 	m_digging_anim(0),
-	m_digging_button(-1)
+	m_digging_button(-1),
+
+	wielditem(55),
+	hand_anim_time(0),
+	is_hand_anim(false),
+	hand_anim_changed(false)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -133,19 +137,9 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
-	std::deque<CameraAnimType> to_remove;
-	for(std::map<CameraAnimType, CameraAnim*>::iterator it = m_anims.begin();
-			it != m_anims.end(); it++) {
-		m_anim_times[it->first] += dtime;
-		if(m_anim_times[it->first] > 60) {
-			to_remove.push_front(it->first);
-		}
-	}
-
-	for(std::deque<CameraAnimType>::iterator it = to_remove.begin();
-		it != to_remove.end(); it++) {
-		pop_anim(*it);
-	}
+	hand_anim_time += dtime;
+	if(hand_anim_time > 10)
+		hand_anim_time = 10;
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -336,12 +330,11 @@ void Camera::update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, 
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	static bool oldturn = false;
-	if(is_anim(CA_ChangeWield) && m_anim_times[CA_ChangeWield] < 0.5) {
-		f32 time = m_anim_times[CA_ChangeWield];
+	if(is_hand_anim && hand_anim_time < 0.5) {
+		f32 time = hand_anim_time;
 		wield_position.Y += pow((time-0.25)*4, 2)*60 - 60;
-		actionstream<<"XX"<<get_anim(CA_ChangeWield)->ChangeWield.changed<<std::endl;
-		if(not get_anim(CA_ChangeWield)->ChangeWield.changed
-			&& m_anim_times[CA_ChangeWield] > 0.25) {
+		if(not hand_anim_changed
+			&& hand_anim_time > 0.25) {
 			// Update wielded tool
 			InventoryList *mlist = local_inventory.getList("main");
 			ItemStack item;
@@ -351,39 +344,13 @@ void Camera::update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, 
 			IItemDefManager *idef = m_gamedef->idef();
 			std::string itnm = item.getDefinition(idef).name;
 			scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
-			actionstream<<(bool)wield_mesh<<std::endl;
 			if(wield_mesh){m_wieldnode->setVisible(true);}
 			else{m_wieldnode->setVisible(false);}
 			m_wieldnode->setMesh(wield_mesh);
-			get_anim(CA_ChangeWield)->ChangeWield.changed = true;
+			hand_anim_changed = true;
 			oldturn = turn;
 		}
 	}
-	/*if(oldturn != turn) {
-		// Update wielded tool
-		InventoryList *mlist = local_inventory.getList("main");
-		ItemStack item;
-		if(mlist != NULL)
-			item = mlist->getItem(player_item);
-
-		IItemDefManager *idef = m_gamedef->idef();
-		std::string itnm = item.getDefinition(idef).name;
-		scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
-		if(turn){
-			scene::IMeshManipulator *man = device->getVideoDriver()->getMeshManipulator();
-			scene::IMesh* wm = man->createMeshWelded(wield_mesh);
-			core::matrix4 trans = core::matrix4();
-			trans.setRotationDegrees(core::vector3df(-40, -45, 45));
-			trans.setTranslation(core::vector3df(0, 10, 10));
-			man->transform(wm, trans);
-			wield_mesh = wm;
-		}
-		if(wield_mesh){m_wieldnode->setVisible(true);}
-		else{m_wieldnode->setVisible(false);}
-		m_wieldnode->setMesh(wield_mesh);
-		get_anim(CA_ChangeWield)->ChangeWield.changed = true;
-		oldturn = turn;
-	}*/
 	if(turn) {
 		wield_rotation += core::vector3df(-25, 40, 45);
 		wield_position += core::vector3df(0, 10, 10);
@@ -601,10 +568,13 @@ void Camera::wield(const ItemStack &item, u16 player_select)
 	if(player_select != wielditem) {
 		wielditem = player_select;
 		// Delay changing of the mesh for the anim
-		bool zz = is_anim(CA_ChangeWield) && (m_anim_times[CA_ChangeWield] < 0.5);
-		push_anim(CA_ChangeWield);
-		if(zz)
-			m_anim_times[CA_ChangeWield] += 0.1;
+		if(is_hand_anim && (hand_anim_time < 0.5)) {
+			hand_anim_time = 0.1f;
+		} else {
+			hand_anim_time = 0.0f;
+		}
+		is_hand_anim = true;
+		hand_anim_changed = false;
 	}
 }
 

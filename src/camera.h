@@ -33,17 +33,6 @@ class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
 
-enum CameraAnimType {
-	CA_ChangeWield = 35 //for debugging purposes
-};
-
-struct CameraAnim {
-	CameraAnimType type;
-	struct {
-		bool changed;
-	} ChangeWield;
-};
-
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
 	and performs view bobbing etc. It also displays the wielded tool in front of the
@@ -190,22 +179,10 @@ private:
 	// Wield item
 	u16 wielditem;
 
-	// Anim dict (to add anims for update_wield and others)
-	std::map<CameraAnimType, CameraAnim*> m_anims;
-	std::map<CameraAnimType, f32> m_anim_times;
-	void push_anim(CameraAnimType type) {
-		CameraAnim anim = {type};
-		m_anims[type] = &anim;
-		m_anim_times[type] = 0;
-	};
-	void pop_anim(CameraAnimType type) {
-		if (m_anims.count(type)) {
-			m_anims.erase(type);
-			m_anim_times.erase(type);
-		}
-	};
-	bool is_anim(CameraAnimType type) { return m_anims.count(type); };
-	CameraAnim* get_anim(CameraAnimType type) { return m_anims.at(type); };
+	// Camera Hand Anim
+	f32 hand_anim_time;
+	bool is_hand_anim;
+	bool hand_anim_changed;
 };
 
 #endif
