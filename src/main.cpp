@@ -618,7 +618,7 @@ void drawMenuBackground(video::IVideoDriver* driver) {
 
 	std::string path = getTexturePath("menubg.png");
 	if (path[0]) {
-		video::ITexture *bgtexture =
+		static const video::ITexture *bgtexture =
 			driver->getTexture(path.c_str());
 
 		if (bgtexture) {
@@ -646,7 +646,7 @@ void drawMenuFooter(video::IVideoDriver* driver, bool clouds) {
 	std::string path = getTexturePath(clouds ?
 						"menufooter_clouds.png" : "menufooter.png");
 	if (path[0]) {
-		video::ITexture *footertexture =
+		static const video::ITexture *footertexture =
 			driver->getTexture(path.c_str());
 
 		if (footertexture) {
@@ -678,13 +678,10 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 
 	std::string path = getTexturePath("menuheader.png");
 	if (path[0]) {
-		video::ITexture *splashtexture =
+		static const video::ITexture *splashtexture =
 		driver->getTexture(path.c_str());
 
 		if(splashtexture) {
-			//v2s32 splashsize((splashtexture->getOriginalSize().Width*100)/
-			//	splashtexture->getOriginalSize().Height, 80);
-
 			f32 mult = (((f32)screensize.Width / 2)) /
 				((f32)splashtexture->getOriginalSize().Width);
 
@@ -712,9 +709,10 @@ void drawMenuHeader(video::IVideoDriver* driver) {
 // Draw the Splash over the clouds and under the main menu
 void drawMenuSplash(video::IVideoDriver* driver) {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
-	if (getTexturePath("menusplash.png") != "") {
-		video::ITexture *splashtexture =
-			driver->getTexture(getTexturePath("menusplash.png").c_str());
+	std::string path = getTexturePath("menusplash.png");
+	if (path[0]) {
+		static const video::ITexture *splashtexture =
+			driver->getTexture(path.c_str());
 
 		if(splashtexture) {
 			core::rect<s32> splashrect(0, 0, screensize.Width, screensize.Height);
@@ -1556,6 +1554,8 @@ int main(int argc, char *argv[])
 				MainMenuData menudata;
 				if(g_settings->exists("selected_mainmenu_tab"))
 					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
+				if(g_settings->exists("selected_serverlist"))
+					menudata.selected_serverlist = g_settings->getS32("selected_serverlist");
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
@@ -1752,6 +1752,7 @@ int main(int argc, char *argv[])
 				simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 				// Save settings
 				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
+				g_settings->setS32("selected_serverlist", menudata.selected_serverlist);
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
