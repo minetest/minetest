@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-31 16:25+0200\n"
+"PO-Revision-Date: 2013-03-31 16:28+0200\n"
 "Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -121,7 +121,7 @@ msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Pulsar dos veces \"saltar\" para activar volar"
+msgstr "Dos veces \"saltar\" para volar"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
