@@ -110,7 +110,7 @@ public:
 
 	content_t ore;
 	content_t wherein;  // the node to be replaced
-	s16 clust_scarcity; //
+	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
 	s16 clust_num_ores; // how many ore nodes are in a chunk
 	s16 clust_size;     // how large (in nodes) a chunk of ore is
 	s16 height_min;
