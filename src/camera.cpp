@@ -103,6 +103,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
+	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
 	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
 	m_nametags.clear();
 }
@@ -387,8 +388,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 		m_camera_position = my_cp;
 
-	// Get FOV setting
-	f32 fov_degrees = m_cache_fov;
+	// Get FOV
+	f32 fov_degrees;
+	if (player->getPlayerControl().zoom) {
+		fov_degrees = m_cache_zoom_fov;
+	} else {
+		fov_degrees = m_cache_fov;
+	}
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 
