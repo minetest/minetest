@@ -3,19 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-03-31 15:40+0200\n"
+"Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ky\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
@@ -35,11 +36,11 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr ""
+msgstr "Баарын күйгүзүү"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr ""
+msgstr "Баарын өчүрүү"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
@@ -52,47 +53,47 @@ msgstr ""
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Жокко чыгаруу"
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
-msgstr ""
+msgstr "Сактоо"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "Ырастоолор сакталды.  "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "Эскертүү: Туура эмес конфигурация.  "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Ооба"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Жок"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Дүйнөнүн аты"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "Оюн"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "Жаратуу"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Сиз өлдүңүз."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Кайтадан жаралуу"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
@@ -101,7 +102,7 @@ msgstr ""
 #: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:131
 msgid "Proceed"
-msgstr ""
+msgstr "Улантуу"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -125,27 +126,27 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr ""
+msgstr "Алга"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "Артка"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Солго"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Оңго"
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "Колдонуу"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
-msgstr ""
+msgstr "Секирүү"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
@@ -153,7 +154,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Ыргытуу"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
@@ -161,15 +162,15 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
-msgstr ""
+msgstr "Маек"
 
 #: src/guiKeyChangeMenu.cpp:382
 msgid "Command"
-msgstr ""
+msgstr "Команда"
 
 #: src/guiKeyChangeMenu.cpp:383
 msgid "Console"
-msgstr ""
+msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
@@ -213,31 +214,31 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:286
 msgid "Settings"
-msgstr ""
+msgstr "Ырастоолор"
 
 #: src/guiMainMenu.cpp:287
 msgid "Credits"
-msgstr ""
+msgstr "Алкыштар"
 
 #: src/guiMainMenu.cpp:317
 msgid "Select World:"
-msgstr ""
+msgstr "Дүйнөнү тандаңыз:"
 
 #: src/guiMainMenu.cpp:339 src/guiMainMenu.cpp:511 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Өчүрүү"
 
 #: src/guiMainMenu.cpp:346
 msgid "New"
-msgstr ""
+msgstr "Жаңы"
 
 #: src/guiMainMenu.cpp:354
 msgid "Configure"
-msgstr ""
+msgstr "Ырастоо"
 
 #: src/guiMainMenu.cpp:369 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Ойноо"
 
 #: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
@@ -249,7 +250,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
 msgid "Name/Password"
-msgstr ""
+msgstr "Атыңыз/Сырсөзүңүз"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
 msgid "Favorites:"
@@ -261,7 +262,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
-msgstr ""
+msgstr "Адреси/Порту"
 
 #: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
 msgid "Show Public"
@@ -273,7 +274,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:521
 msgid "Connect"
-msgstr ""
+msgstr "Туташуу"
 
 #: src/guiMainMenu.cpp:591
 msgid "Leave address blank to start a local server."
@@ -289,11 +290,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
-msgstr ""
+msgstr "Дүйнөнү өчүрүү"
 
 #: src/guiMainMenu.cpp:647
 msgid "Create world"
-msgstr ""
+msgstr "Дүйнөнү жаратуу"
 
 #: src/guiMainMenu.cpp:681
 msgid "Fancy trees"
@@ -305,7 +306,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:693
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D булуттар"
 
 #: src/guiMainMenu.cpp:699
 msgid "Opaque water"
