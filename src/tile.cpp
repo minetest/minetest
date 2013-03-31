@@ -826,7 +826,7 @@ void TextureSource::rebuildImagesAndTextures()
 		video::ITexture *t = NULL;
 		if(img)
 			t = driver->addTexture(sap->name.c_str(), img);
-		
+		video::ITexture *t_old = sap->a.atlas;
 		// Replace texture
 		sap->a.atlas = t;
 		sap->a.pos = v2f(0,0);
@@ -835,6 +835,9 @@ void TextureSource::rebuildImagesAndTextures()
 		sap->atlas_img = img;
 		sap->intpos = v2s32(0,0);
 		sap->intsize = img->getDimension();
+
+		if (t_old != 0)
+			driver->removeTexture(t_old);
 	}
 }
 
