@@ -1886,7 +1886,14 @@ void the_game(
 					+ itos(range_new));
 			statustext_time = 0;
 		}
-		
+
+
+		if (input->isKeyDown(getKeySetting("keymap_zoom"))) {
+			player->zoom=true;
+		} else {
+			player->zoom=false;
+		}
+
 		// Reset jump_timer
 		if(!input->isKeyDown(getKeySetting("keymap_jump")) && reset_jump_timer)
 		{

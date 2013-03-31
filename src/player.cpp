@@ -35,6 +35,7 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
+	zoom(false),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),

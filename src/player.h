@@ -227,6 +227,8 @@ public:
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
+	bool zoom;
+
 	u16 peer_id;
 	
 	std::string inventory_formspec;
