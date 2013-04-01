@@ -48,7 +48,8 @@ class INodeDefManager;
 struct BlockMakeData;
 class VoxelArea;
 
-struct MapgenParams {
+class MapgenParams {
+public:
 	std::string mg_name;
 	int chunksize;
 	u64 seed;
@@ -62,6 +63,8 @@ struct MapgenParams {
 		chunksize   = 5;
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
+	virtual ~MapgenParams() {
+	};
 	
 	virtual bool readParams(Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) {};
@@ -69,6 +72,7 @@ struct MapgenParams {
 
 class Mapgen {
 public:
+	virtual ~Mapgen() {};
 	int seed;
 	int water_level;
 	bool generating;
@@ -95,6 +99,7 @@ struct MapgenFactory {
 	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
+	virtual ~MapgenFactory() {};
 };
 
 enum OreType {
@@ -126,6 +131,8 @@ public:
 		noise   = NULL;
 	}
 	
+	virtual ~Ore() {};
+
 	void resolveNodeNames(INodeDefManager *ndef);
 	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
 };

@@ -1232,7 +1232,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 MapBlockMesh::~MapBlockMesh()
 {
 	m_mesh->drop();
-	m_mesh = NULL;
+	m_mesh = 0;
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)

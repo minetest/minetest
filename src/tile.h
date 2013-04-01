@@ -155,7 +155,6 @@ public:
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
-	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);

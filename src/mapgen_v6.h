@@ -53,7 +53,8 @@ struct Cave {
 	bool flooded;
 };
 
-struct MapgenV6Params : public MapgenParams {
+class MapgenV6Params : public MapgenParams {
+public:
 	float freq_desert;
 	float freq_beach;
 	NoiseParams *np_terrain_base;
@@ -71,20 +72,34 @@ struct MapgenV6Params : public MapgenParams {
 	MapgenV6Params() {
 		freq_desert       = 0.45;
 		freq_beach        = 0.15;
-		np_terrain_base   = &nparams_v6_def_terrain_base;
-		np_terrain_higher = &nparams_v6_def_terrain_higher;
-		np_steepness      = &nparams_v6_def_steepness;
-		np_height_select  = &nparams_v6_def_height_select;
-		np_mud            = &nparams_v6_def_mud;
-		np_beach          = &nparams_v6_def_beach;
-		np_biome          = &nparams_v6_def_biome;
-		np_cave           = &nparams_v6_def_cave;
-		np_humidity       = &nparams_v6_def_humidity;
-		np_trees          = &nparams_v6_def_trees;
-		np_apple_trees    = &nparams_v6_def_apple_trees;
+		np_terrain_base   = new NoiseParams(nparams_v6_def_terrain_base);
+		np_terrain_higher = new NoiseParams(nparams_v6_def_terrain_higher);
+		np_steepness      = new NoiseParams(nparams_v6_def_steepness);
+		np_height_select  = new NoiseParams(nparams_v6_def_height_select);
+		np_mud            = new NoiseParams(nparams_v6_def_mud);
+		np_beach          = new NoiseParams(nparams_v6_def_beach);
+		np_biome          = new NoiseParams(nparams_v6_def_biome);
+		np_cave           = new NoiseParams(nparams_v6_def_cave);
+		np_humidity       = new NoiseParams(nparams_v6_def_humidity);
+		np_trees          = new NoiseParams(nparams_v6_def_trees);
+		np_apple_trees    = new NoiseParams(nparams_v6_def_apple_trees);
 
 	}
 	
+	virtual ~MapgenV6Params() {
+		delete np_terrain_base;
+		delete np_terrain_higher;
+		delete np_steepness;
+		delete np_height_select;
+		delete np_mud;
+		delete np_beach;
+		delete np_biome;
+		delete np_cave;
+		delete np_humidity;
+		delete np_trees;
+		delete np_apple_trees;
+	};
+
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };

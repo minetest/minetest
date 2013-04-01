@@ -340,6 +340,19 @@ bool MapgenV6Params::readParams(Settings *settings) {
 	freq_desert = settings->getFloat("mgv6_freq_desert");
 	freq_beach  = settings->getFloat("mgv6_freq_beach");
 
+	if (np_terrain_base) delete np_terrain_base;
+	if (np_terrain_higher) delete np_terrain_higher;
+	if (np_steepness) delete np_steepness;
+	if (np_height_select) delete np_height_select;
+	if (np_mud) delete np_mud;
+	if (np_beach) delete np_beach;
+	if (np_biome) delete np_biome;
+	if (np_cave) delete np_cave;
+	if (np_humidity) delete np_humidity;
+	if (np_trees) delete np_trees;
+	if (np_apple_trees) delete np_apple_trees;
+
+
 	np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
 	np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
 	np_steepness      = settings->getNoiseParams("mgv6_np_steepness");

@@ -234,13 +234,20 @@ public:
 	}
 	virtual ~CItemDefManager()
 	{
+		for (std::map<std::string, ItemDefinition*>::iterator iter = m_item_definitions.begin();
+				iter != m_item_definitions.end(); iter ++) {
+			delete iter->second;
+		}
+		m_item_definitions.clear();
 #ifndef SERVER
 		const std::list<ClientCached*> &values = m_clientcached.getValues();
 		for(std::list<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
+			//TODO there's missing a grab somewhere!!
 			cc->wield_mesh->drop();
+			delete cc;
 		}
 #endif
 	}
@@ -328,11 +335,8 @@ public:
 		}
 
 		// Create a wield mesh
-		if(cc->wield_mesh != NULL)
-		{
-			cc->wield_mesh->drop();
-			cc->wield_mesh = NULL;
-		}
+		assert(cc->wield_mesh == NULL);
+
 		if(def->type == ITEM_NODE && def->wield_image == "")
 		{
 			need_node_mesh = true;
@@ -351,6 +355,7 @@ public:
 					tsrc->getTextureRaw(imagename),
 					driver,
 					def->wield_scale * v3f(40.0, 40.0, 4.0));
+
 			if(cc->wield_mesh == NULL)
 			{
 				infostream<<"ItemDefManager: WARNING: "
@@ -358,6 +363,8 @@ public:
 					<<"Unable to create extruded mesh for item "
 					<<def->name<<std::endl;
 			}
+
+			//cc->wield_mesh is already grabbed
 		}
 
 		if(need_node_mesh)
@@ -436,16 +443,16 @@ public:
 			/*
 				Use the node mesh as the wield mesh
 			*/
-			if(cc->wield_mesh == NULL)
-			{
-				// Scale to proper wield mesh proportions
-				scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
-						* def->wield_scale);
-				cc->wield_mesh = node_mesh;
-				cc->wield_mesh->grab();
-			}
 
-			// falling outside of here deletes node_mesh
+
+			// Scale to proper wield mesh proportions
+			scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
+					* def->wield_scale);
+
+			cc->wield_mesh = node_mesh;
+			cc->wield_mesh->grab();
+
+			assert(cc->wield_mesh->getReferenceCount() >= 2);
 		}
 
 		// Put in cache
@@ -494,6 +501,7 @@ public:
 		ClientCached *cc = getClientCached(name, gamedef);
 		if(!cc)
 			return NULL;
+
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh

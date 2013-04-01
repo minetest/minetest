@@ -85,16 +85,36 @@ EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
 
 
 EmergeManager::~EmergeManager() {
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
-		emergethread[i]->setRun(false);
-		emergethread[i]->qevent.signal();
-		emergethread[i]->stop();
-		delete emergethread[i];
-		delete mapgen[i];
+
+	for (std::vector<EmergeThread*>::iterator iter = emergethread.begin();
+			iter != emergethread.end(); iter++ ) {
+		(*iter)->setRun(false);
+		(*iter)->qevent.signal();
+		(*iter)->stop();
+		delete *iter;
 	}
+	emergethread.clear();
+
+
+	for (std::vector<Mapgen*>::iterator iter = mapgen.begin();
+			iter != mapgen.end(); iter++ ) {
+		delete *iter;
+	}
+	mapgen.clear();
 	
-	delete biomedef;
-	delete params;
+	for (std::vector<Ore *>::iterator iter = ores.begin(); iter != ores.end();
+			iter++) {
+		delete *iter;
+	}
+	ores.clear();
+
+	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
+			iter != mglist.end(); iter ++) {
+		delete iter->second;
+	}
+	mglist.clear();
+
+	// params are deleted by map!
 }
 
 

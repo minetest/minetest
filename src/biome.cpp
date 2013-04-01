@@ -78,8 +78,19 @@ BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {
 
 
 BiomeDefManager::~BiomeDefManager() {
-	for (unsigned int i = 0; i != bgroups.size(); i++)
-		delete bgroups[i];
+	for (std::vector<std::vector<Biome *> *>::iterator outer_iter = bgroups.begin();
+		outer_iter != bgroups.end(); outer_iter++) {
+		for (std::vector<Biome *>::iterator inner_iter =  (*outer_iter)->begin();
+				inner_iter != (*outer_iter)->end(); inner_iter ++) {
+			delete (*inner_iter);
+		}
+		(*outer_iter)->clear();
+		delete (*outer_iter);
+	}
+
+	bgroups.clear();
+
+	delete biome_default;
 }
 
 
@@ -107,7 +118,8 @@ void BiomeDefManager::addBiomeGroup(float freq) {
 	if (size)
 		newfreq += bgroup_freqs[size - 1];
 	bgroup_freqs.push_back(newfreq);
-	bgroups.push_back(new std::vector<Biome *>);
+	std::vector<Biome *>* topush = new std::vector<Biome *>();
+	bgroups.push_back(topush);
 
 	verbosestream << "BiomeDefManager: added biome group with frequency " <<
 		newfreq << std::endl;
@@ -145,7 +157,7 @@ void BiomeDefManager::addDefaultBiomes() {
 	b->heat_max     = FLT_MAX;
 	b->humidity_min = FLT_MIN;
 	b->humidity_max = FLT_MAX;
-	b->np = &np_default;
+	b->np = new NoiseParams(np_default);
 	biome_default = b;
 }
 

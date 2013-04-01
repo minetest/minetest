@@ -1775,11 +1775,13 @@ void run_tests()
 	if(tests_failed == 0){
 		infostream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
 		infostream<<"run_tests() passed."<<std::endl;
-		return;
 	} else {
 		errorstream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
 		errorstream<<"run_tests() aborting."<<std::endl;
 		abort();
 	}
+
+	delete idef;
+	delete ndef;
 }
 

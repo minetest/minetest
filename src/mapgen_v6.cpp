@@ -79,10 +79,11 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 
 	this->ystride = csize.X; //////fix this
 
-	np_cave        = params->np_cave;
-	np_humidity    = params->np_humidity;
-	np_trees       = params->np_trees;
-	np_apple_trees = params->np_apple_trees;
+	//need to allocate new in order to be symetric to reading settings
+	np_cave        = new NoiseParams(*params->np_cave);
+	np_humidity    = new NoiseParams(*params->np_humidity);
+	np_trees       = new NoiseParams(*params->np_trees);
+	np_apple_trees = new NoiseParams(*params->np_apple_trees);
 
 	noise_terrain_base   = new Noise(params->np_terrain_base,   seed, csize.X, csize.Y);
 	noise_terrain_higher = new Noise(params->np_terrain_higher, seed, csize.X, csize.Y);
@@ -95,6 +96,11 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 
 
 MapgenV6::~MapgenV6() {
+
+	delete np_cave;
+	delete np_humidity;
+	delete np_trees;
+	delete np_apple_trees;
 	delete noise_terrain_base;
 	delete noise_terrain_higher;
 	delete noise_steepness;

@@ -940,6 +940,7 @@ void the_game(
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
+
 	// Calculate text height using the font
 	u32 text_height = font->getDimension(L"Random test string").Height;
 
@@ -1005,11 +1006,7 @@ void the_game(
 	// Create UI for modifying quicktune values
 	QuicktuneShortcutter quicktune;
 
-	/*
-		Create server.
-		SharedPtr will delete it when it goes out of scope.
-	*/
-	SharedPtr<Server> server;
+	Server* server = 0;
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
@@ -1017,6 +1014,12 @@ void the_game(
 				simple_singleplayer_mode);
 		server->start(port);
 	}
+
+	/*
+		Skybox thingy
+	*/
+	Sky *sky = NULL;
+	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 
 	try{
 	do{ // Client scope (breakable do-while(0))
@@ -1029,6 +1032,9 @@ void the_game(
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
+
+	/* number of textures prior client start */
+	verbosestream << "Prior starting client " << driver->getTextureCount() << " textures are known to Irrlicht" << std::endl;
 
 	Client client(device, playername.c_str(), password, draw_control,
 			tsrc, shsrc, itemdef, nodedef, sound, &eventmgr);
@@ -1212,12 +1218,6 @@ void the_game(
 		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1, time(0));
 	}
 
-	/*
-		Skybox thingy
-	*/
-
-	Sky *sky = NULL;
-	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 	
 	/*
 		FarMesh
@@ -3263,7 +3263,7 @@ void the_game(
 	if(gui_chat_console)
 		gui_chat_console->drop();
 	clear_particles ();
-	
+
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
 		generator and other stuff quits
@@ -3279,7 +3279,6 @@ void the_game(
 
 	chat_backend.addMessage(L"", L"# Disconnected.");
 	chat_backend.addMessage(L"", L"");
-
 	// Client scope (client is destructed before destructing *def and tsrc)
 	}while(0);
 	} // try-catch
@@ -3290,9 +3289,15 @@ void the_game(
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 	}
-	
+
 	if(!sound_is_dummy)
 		delete sound;
+
+	//has to be deleted first to stop all server threads
+	delete server;
+
+	//has to be deleted after server as it may use it
+	sky->drop();
 
 	delete tsrc;
 	delete shsrc;

@@ -123,6 +123,8 @@ public:
 	{
 	}
 
+	virtual ~MeshUpdateThread();
+
 	void * Thread();
 
 	MeshUpdateQueue m_queue_in;

@@ -39,6 +39,13 @@ enum BiomeTerrainType
 
 class Biome {
 public:
+	Biome() {
+		np = 0;
+	}
+	virtual ~Biome() {
+		if (np)
+			delete np;
+	};
 	MapNode n_top;
 	MapNode n_filler;
 	s16 ntopnodes;
@@ -85,7 +92,7 @@ public:
 	INodeDefManager *ndef;
 
 	BiomeDefManager(IGameDef *gamedef);
-	~BiomeDefManager();
+	virtual ~BiomeDefManager();
 
 	Biome *createBiome(BiomeTerrainType btt);
 	Biome *getBiome(float bgfreq, float heat, float humidity);

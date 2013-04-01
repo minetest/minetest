@@ -32,6 +32,9 @@ public:
 	PseudoRandom(int seed): m_next(seed)
 	{
 	}
+
+	virtual ~PseudoRandom() {};
+
 	void seed(int seed)
 	{
 		m_next = seed;
@@ -87,7 +90,7 @@ public:
 
 	Noise(NoiseParams *np, int seed, int sx, int sy);
 	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
-	~Noise();
+	virtual ~Noise();
 
 	virtual void init(NoiseParams *np, int seed, int sx, int sy, int sz);
 	void setSize(int sx, int sy);

@@ -201,6 +201,13 @@ struct SourceAtlasPointer
 class SourceImageCache
 {
 public:
+	~SourceImageCache() {
+		for(std::map<std::string, video::IImage*>::iterator iterator = m_images.begin();
+				iterator != m_images.end(); iterator++) {
+			iterator->second->drop();
+		}
+		m_images.clear();
+	}
 	void insert(const std::string &name, video::IImage *img,
 			bool prefer_local, video::IVideoDriver *driver)
 	{
@@ -209,23 +216,27 @@ public:
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
 		if(n != m_images.end()){
-			video::IImage *oldimg = n->second;
-			if(oldimg)
-				oldimg->drop();
+			if(n->second)
+				n->second->drop();
 		}
+
+		video::IImage* toadd = img;
+		bool need_to_grab = true;
+
 		// Try to use local texture instead if asked to
 		if(prefer_local){
 			std::string path = getTexturePath(name.c_str());
 			if(path != ""){
 				video::IImage *img2 = driver->createImageFromFile(path.c_str());
 				if(img2){
-					m_images[name] = img2;
-					return;
+					toadd = img2;
+					need_to_grab = false;
 				}
 			}
 		}
-		img->grab();
-		m_images[name] = img;
+		if (need_to_grab)
+			toadd->grab();
+		m_images[name] = toadd;
 	}
 	video::IImage* get(const std::string &name)
 	{
@@ -254,8 +265,7 @@ public:
 		infostream<<"SourceImageCache::getOrLoad(): Loading path \""<<path
 				<<"\""<<std::endl;
 		video::IImage *img = driver->createImageFromFile(path.c_str());
-		// Even if could not be loaded, put as NULL
-		//m_images[name] = img;
+
 		if(img){
 			m_images[name] = img;
 			img->grab(); // Grab for caller
@@ -274,7 +284,7 @@ class TextureSource : public IWritableTextureSource
 {
 public:
 	TextureSource(IrrlichtDevice *device);
-	~TextureSource();
+	virtual ~TextureSource();
 
 	/*
 		Example case:
@@ -396,10 +406,6 @@ public:
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
-
-	// Build the main texture atlas which contains most of the
-	// textures.
-	void buildMainAtlas(class IGameDef *gamedef);
 	
 private:
 	
@@ -454,6 +460,21 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 
 TextureSource::~TextureSource()
 {
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+
+	unsigned int textures_before = driver->getTextureCount();
+
+	for (std::vector<SourceAtlasPointer>::iterator iter = m_atlaspointer_cache.begin();
+			iter != m_atlaspointer_cache.end(); iter++) {
+		video::ITexture *t = driver->getTexture(iter->name.c_str());
+		if (t)
+			driver->removeTexture(t);
+
+		iter->atlas_img->drop();
+	}
+	m_atlaspointer_cache.clear();
+
+	std::cerr << "~TextureSource() "<< textures_before << "/" << driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -543,8 +564,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 /*
 	Generates an image from a full string like
 	"stone.png^mineral_coal.png^[crack0".
-
-	This is used by buildMainAtlas().
 */
 video::IImage* generate_image_from_scratch(std::string name,
 		IrrlichtDevice *device, SourceImageCache *sourcecache);
@@ -826,7 +845,7 @@ void TextureSource::rebuildImagesAndTextures()
 		video::ITexture *t = NULL;
 		if(img)
 			t = driver->addTexture(sap->name.c_str(), img);
-		
+		video::ITexture *t_old = sap->a.atlas;
 		// Replace texture
 		sap->a.atlas = t;
 		sap->a.pos = v2f(0,0);
@@ -835,258 +854,10 @@ void TextureSource::rebuildImagesAndTextures()
 		sap->atlas_img = img;
 		sap->intpos = v2s32(0,0);
 		sap->intsize = img->getDimension();
+
+		if (t_old)
+			driver->removeTexture(t_old);
 	}
-}
-
-void TextureSource::buildMainAtlas(class IGameDef *gamedef) 
-{
-	assert(gamedef->tsrc() == this);
-	INodeDefManager *ndef = gamedef->ndef();
-
-	infostream<<"TextureSource::buildMainAtlas()"<<std::endl;
-
-	//return; // Disable (for testing)
-	
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
-
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-
-	// Create an image of the right size
-	core::dimension2d<u32> max_dim = driver->getMaxTextureSize();
-	core::dimension2d<u32> atlas_dim(2048,2048);
-	atlas_dim.Width  = MYMIN(atlas_dim.Width,  max_dim.Width);
-	atlas_dim.Height = MYMIN(atlas_dim.Height, max_dim.Height);
-	video::IImage *atlas_img =
-			driver->createImage(video::ECF_A8R8G8B8, atlas_dim);
-	//assert(atlas_img);
-	if(atlas_img == NULL)
-	{
-		errorstream<<"TextureSource::buildMainAtlas(): Failed to create atlas "
-				"image; not building texture atlas."<<std::endl;
-		return;
-	}
-
-	/*
-		Grab list of stuff to include in the texture atlas from the
-		main content features
-	*/
-
-	std::set<std::string> sourcelist;
-
-	for(u16 j=0; j<MAX_CONTENT+1; j++)
-	{
-		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
-			continue;
-		const ContentFeatures &f = ndef->get(j);
-		for(u32 i=0; i<6; i++)
-		{
-			std::string name = f.tiledef[i].name;
-			sourcelist.insert(name);
-		}
-	}
-	
-	infostream<<"Creating texture atlas out of textures: ";
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-		infostream<<"\""<<name<<"\" ";
-	}
-	infostream<<std::endl;
-
-	// Padding to disallow texture bleeding
-	// (16 needed if mipmapping is used; otherwise less will work too)
-	s32 padding = 16;
-	s32 column_padding = 16;
-	s32 column_width = 256; // Space for 16 pieces of 16x16 textures
-
-	/*
-		First pass: generate almost everything
-	*/
-	core::position2d<s32> pos_in_atlas(0,0);
-	
-	pos_in_atlas.X = column_padding;
-	pos_in_atlas.Y = padding;
-
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-
-		// Generate image by name
-		video::IImage *img2 = generate_image_from_scratch(name, m_device,
-				&m_sourcecache);
-		if(img2 == NULL)
-		{
-			errorstream<<"TextureSource::buildMainAtlas(): "
-					<<"Couldn't generate image \""<<name<<"\""<<std::endl;
-			continue;
-		}
-
-		core::dimension2d<u32> dim = img2->getDimension();
-
-		// Don't add to atlas if image is too large
-		core::dimension2d<u32> max_size_in_atlas(64,64);
-		if(dim.Width > max_size_in_atlas.Width
-		|| dim.Height > max_size_in_atlas.Height)
-		{
-			infostream<<"TextureSource::buildMainAtlas(): Not adding "
-					<<"\""<<name<<"\" because image is large"<<std::endl;
-			continue;
-		}
-
-		// Wrap columns and stop making atlas if atlas is full
-		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
-		{
-			if(pos_in_atlas.X > (s32)atlas_dim.Width - column_width - column_padding){
-				errorstream<<"TextureSource::buildMainAtlas(): "
-						<<"Atlas is full, not adding more textures."
-						<<std::endl;
-				break;
-			}
-			pos_in_atlas.Y = padding;
-			pos_in_atlas.X += column_width + column_padding*2;
-		}
-		
-		/*infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
-				<<"\" to texture atlas"<<std::endl;*/
-
-		// Tile it a few times in the X direction
-		u16 xwise_tiling = column_width / dim.Width;
-		if(xwise_tiling > 16) // Limit to 16 (more gives no benefit)
-			xwise_tiling = 16;
-		for(u32 j=0; j<xwise_tiling; j++)
-		{
-			// Copy the copy to the atlas
-			/*img2->copyToWithAlpha(atlas_img,
-					pos_in_atlas + v2s32(j*dim.Width,0),
-					core::rect<s32>(v2s32(0,0), dim),
-					video::SColor(255,255,255,255),
-					NULL);*/
-			img2->copyTo(atlas_img,
-					pos_in_atlas + v2s32(j*dim.Width,0),
-					core::rect<s32>(v2s32(0,0), dim),
-					NULL);
-		}
-
-		// Copy the borders a few times to disallow texture bleeding
-		for(u32 side=0; side<2; side++) // top and bottom
-		for(s32 y0=0; y0<padding; y0++)
-		for(s32 x0=0; x0<(s32)xwise_tiling*(s32)dim.Width; x0++)
-		{
-			s32 dst_y;
-			s32 src_y;
-			if(side==0)
-			{
-				dst_y = y0 + pos_in_atlas.Y + dim.Height;
-				src_y = pos_in_atlas.Y + dim.Height - 1;
-			}
-			else
-			{
-				dst_y = -y0 + pos_in_atlas.Y-1;
-				src_y = pos_in_atlas.Y;
-			}
-			s32 x = x0 + pos_in_atlas.X;
-			video::SColor c = atlas_img->getPixel(x, src_y);
-			atlas_img->setPixel(x,dst_y,c);
-		}
-
-		for(u32 side=0; side<2; side++) // left and right
-		for(s32 x0=0; x0<column_padding; x0++)
-		for(s32 y0=-padding; y0<(s32)dim.Height+padding; y0++)
-		{
-			s32 dst_x;
-			s32 src_x;
-			if(side==0)
-			{
-				dst_x = x0 + pos_in_atlas.X + dim.Width*xwise_tiling;
-				src_x = pos_in_atlas.X + dim.Width*xwise_tiling - 1;
-			}
-			else
-			{
-				dst_x = -x0 + pos_in_atlas.X-1;
-				src_x = pos_in_atlas.X;
-			}
-			s32 y = y0 + pos_in_atlas.Y;
-			s32 src_y = MYMAX((int)pos_in_atlas.Y, MYMIN((int)pos_in_atlas.Y + (int)dim.Height - 1, y));
-			s32 dst_y = y;
-			video::SColor c = atlas_img->getPixel(src_x, src_y);
-			atlas_img->setPixel(dst_x,dst_y,c);
-		}
-
-		img2->drop();
-
-		/*
-			Add texture to caches
-		*/
-		
-		bool reuse_old_id = false;
-		u32 id = m_atlaspointer_cache.size();
-		// Check old id without fetching a texture
-		std::map<std::string, u32>::iterator n;
-		n = m_name_to_id.find(name);
-		// If it exists, we will replace the old definition
-		if(n != m_name_to_id.end()){
-			id = n->second;
-			reuse_old_id = true;
-			/*infostream<<"TextureSource::buildMainAtlas(): "
-					<<"Replacing old AtlasPointer"<<std::endl;*/
-		}
-
-		// Create AtlasPointer
-		AtlasPointer ap(id);
-		ap.atlas = NULL; // Set on the second pass
-		ap.pos = v2f((float)pos_in_atlas.X/(float)atlas_dim.Width,
-				(float)pos_in_atlas.Y/(float)atlas_dim.Height);
-		ap.size = v2f((float)dim.Width/(float)atlas_dim.Width,
-				(float)dim.Width/(float)atlas_dim.Height);
-		ap.tiled = xwise_tiling;
-
-		// Create SourceAtlasPointer and add to containers
-		SourceAtlasPointer nap(name, ap, atlas_img, pos_in_atlas, dim);
-		if(reuse_old_id)
-			m_atlaspointer_cache[id] = nap;
-		else
-			m_atlaspointer_cache.push_back(nap);
-		m_name_to_id[name] = id;
-			
-		// Increment position
-		pos_in_atlas.Y += dim.Height + padding * 2;
-	}
-
-	/*
-		Make texture
-	*/
-	video::ITexture *t = driver->addTexture("__main_atlas__", atlas_img);
-	assert(t);
-
-	/*
-		Second pass: set texture pointer in generated AtlasPointers
-	*/
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-		if(m_name_to_id.find(name) == m_name_to_id.end())
-			continue;
-		u32 id = m_name_to_id[name];
-		//infostream<<"id of name "<<name<<" is "<<id<<std::endl;
-		m_atlaspointer_cache[id].a.atlas = t;
-	}
-
-	/*
-		Write image to file so that it can be inspected
-	*/
-	/*std::string atlaspath = porting::path_user
-			+ DIR_DELIM + "generated_texture_atlas.png";
-	infostream<<"Removing and writing texture atlas for inspection to "
-			<<atlaspath<<std::endl;
-	fs::RecursiveDelete(atlaspath);
-	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
@@ -1160,6 +931,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	// Stuff starting with [ are special commands
 	if(part_of_name.size() == 0 || part_of_name[0] != '[')
 	{
+		//note getOrLoad grabs image we need to drop it!
 		video::IImage *image = sourcecache->getOrLoad(part_of_name, device);
 
 		if(image == NULL)
@@ -1202,7 +974,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			core::dimension2d<u32> dim = image->getDimension();
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 			image->copyTo(baseimg);
-			image->drop();
 		}
 		// Else blit on base.
 		else
@@ -1221,9 +992,10 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 					video::SColor(255,255,255,255),
 					NULL);*/
 			blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
-			// Drop image
-			image->drop();
 		}
+
+		//cleanup
+		image->drop();
 	}
 	else
 	{
@@ -1290,6 +1062,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				It is an image with a number of cracking stages
 				horizontally tiled.
 			*/
+			// note getOrLoad grabs image we need to drop it
 			video::IImage *img_crack = sourcecache->getOrLoad(
 					"crack_anylength.png", device);
 		
@@ -1346,6 +1119,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				if(img_crack_cropped)
 					img_crack_cropped->drop();
 				
+				//cleanup
 				img_crack->drop();
 			}
 		}
@@ -1374,6 +1148,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
+
+				//note getOrLoad grabs image don't forget to drop it
 				video::IImage *img = sourcecache->getOrLoad(filename, device);
 				if(img)
 				{
@@ -1649,6 +1425,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			if(baseimg == NULL)
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
+
+			//note getOrLoad grabs image don't forget to drop it
 			video::IImage *img = sourcecache->getOrLoad(filename, device);
 			if(img)
 			{

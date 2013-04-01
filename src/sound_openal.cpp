@@ -272,6 +272,16 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 		infostream<<"Audio: Deinitialized."<<std::endl;
+
+		for (std::map<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
+				i != m_buffers.end(); i++) {
+			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
+					iter != (*i).second.end(); iter++) {
+				delete *iter;
+			}
+			(*i).second.clear();
+		}
+		m_buffers.clear();
 	}
 	
 	void addBuffer(const std::string &name, SoundBuffer *buf)

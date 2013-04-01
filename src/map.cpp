@@ -2350,7 +2350,8 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	m_map_metadata_changed(true),
 	m_database(NULL),
 	m_database_read(NULL),
-	m_database_write(NULL)
+	m_database_write(NULL),
+	m_mgparams(0)
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
@@ -2490,6 +2491,7 @@ ServerMap::~ServerMap()
 		delete chunk;
 	}
 #endif
+	delete m_mgparams;
 }
 
 bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)

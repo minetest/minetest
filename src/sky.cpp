@@ -56,6 +56,10 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
 	}
 }
 
+Sky::~Sky() {
+
+}
+
 void Sky::OnRegisterSceneNode()
 {
 	if (IsVisible)

@@ -698,7 +698,6 @@ static int l_register_ore(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 	
-	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
 	EmergeManager *emerge = get_server(L)->getEmergeManager();
 	
 	enum OreType oretype = (OreType)getenumfield(L, index,

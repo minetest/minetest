@@ -163,6 +163,15 @@ QueuedMeshUpdate * MeshUpdateQueue::pop()
 	MeshUpdateThread
 */
 
+MeshUpdateThread::~MeshUpdateThread()
+{
+	while(!m_queue_out.empty())
+	{
+		MeshUpdateResult r = m_queue_out.pop_front();
+		delete r.mesh;
+	}
+}
+
 void * MeshUpdateThread::Thread()
 {
 	ThreadStarted();
@@ -316,12 +325,6 @@ Client::Client(
 	m_avg_rtt_timer = 0.0;
 	m_playerpos_send_timer = 0.0;
 	m_ignore_damage_timer = 0.0;
-
-	// Build main texture atlas, now that the GameDef exists (that is, us)
-	if(g_settings->getBool("enable_texture_atlas"))
-		m_tsrc->buildMainAtlas(this);
-	else
-		infostream<<"Not building texture atlas."<<std::endl;
 	
 	/*
 		Add local player
@@ -333,9 +336,10 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
-
+#if USE_CURL
 	for (size_t i = 0; i < g_settings->getU16("media_fetch_threads"); ++i)
 		m_media_fetch_threads.push_back(new MediaFetchThread(this));
+#endif
 }
 
 Client::~Client()
@@ -359,10 +363,11 @@ Client::~Client()
 			delete i->second;
 		}
 	}
-
+#if USE_CURL
 	for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
 			i != m_media_fetch_threads.end(); ++i)
 		delete *i;
+#endif
 }
 
 void Client::connect(Address address)
@@ -773,7 +778,7 @@ void Client::step(float dtime)
 		if(num_processed_meshes > 0)
 			g_profiler->graphAdd("num_processed_meshes", num_processed_meshes);
 	}
-
+#if USE_CURL
 	/*
 		Load fetched media
 	*/
@@ -829,7 +834,7 @@ void Client::step(float dtime)
 			}
 		}
 	}
-
+#endif
 	/*
 		If the server didn't update the inventory in a while, revert
 		the local inventory (so the player notices the lag problem
@@ -985,7 +990,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		scene::ISceneManager *smgr = m_device->getSceneManager();
 		scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
 		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
-		
+		rfile->drop();
 		return true;
 	}
 
@@ -1673,7 +1678,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_media_count = file_requests.size();
 		m_media_receive_started = true;
 
-		if (remote_media == "" || !USE_CURL) {
+		if ((remote_media == "") || (!USE_CURL)) {
 			request_media(file_requests);
 		} else {
 			#if USE_CURL
@@ -1700,6 +1705,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Send as reliable
 			Send(0, data, true);
 		}
+
 		ClientEvent event;
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
@@ -2722,11 +2728,6 @@ void Client::afterContentReceived()
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();
-
-	// Update texture atlas
-	infostream<<"- Updating texture atlas"<<std::endl;
-	if(g_settings->getBool("enable_texture_atlas"))
-		m_tsrc->buildMainAtlas(this);
 
 	// Rebuild shaders
 	m_shsrc->rebuildShaders();
