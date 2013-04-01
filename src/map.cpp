@@ -2351,7 +2351,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	m_database(NULL),
 	m_database_read(NULL),
 	m_database_write(NULL),
-	m_mgparams(0)
+	m_mgparams(NULL)
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
