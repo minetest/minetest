@@ -42,7 +42,14 @@ FlagDesc flagdesc_mapgen[] = {
 	{"v6_jungles",     MGV6_JUNGLES},
 	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
-	{NULL,			   0}
+	{NULL,             0}
+};
+
+FlagDesc flagdesc_ore[] = {
+	{"absheight",            OREFLAG_ABSHEIGHT},
+	{"scatter_noisedensity", OREFLAG_DENSITY},
+	{"claylike_nodeisnt",    OREFLAG_NODEISNT},
+	{NULL,                   0}
 };
 
 
@@ -87,17 +94,28 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 
 
 void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
-	if (nmin.Y > height_max || nmax.Y < height_min)
+	int in_range = 0;
+
+	in_range |= (nmin.Y <= height_max && nmax.Y >= height_min);
+	if (flags & OREFLAG_ABSHEIGHT)
+		in_range |= (nmin.Y >= -height_max && nmax.Y <= -height_min) << 1;
+	if (!in_range)
 		return;
-	
+
 	resolveNodeNames(mg->ndef);
 	
 	MapNode n_ore(ore);
 	ManualMapVoxelManipulator *vm = mg->vm;
 	PseudoRandom pr(blockseed);
+	int ymin, ymax;
 	
-	int ymin   = MYMAX(nmin.Y, height_min);
-	int ymax   = MYMIN(nmax.Y, height_max);
+	if (in_range & ORE_RANGE_MIRROR) {
+		ymin = MYMAX(nmin.Y, -height_max);
+		ymax = MYMIN(nmax.Y, -height_min);
+	} else {
+		ymin = MYMAX(nmin.Y, height_min);
+		ymax = MYMIN(nmax.Y, height_max);
+	}
 	if (clust_size >= ymax - ymin + 1)
 		return;
 	
@@ -131,17 +149,29 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 
 
 void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
-	if (nmin.Y > height_max || nmax.Y < height_min)
-		return;
+	int in_range = 0;
 
+	in_range |= (nmin.Y <= height_max && nmax.Y >= height_min);
+	if (flags & OREFLAG_ABSHEIGHT)
+		in_range |= (nmin.Y >= -height_max && nmax.Y <= -height_min) << 1;
+	if (!in_range)
+		return;
+		
 	resolveNodeNames(mg->ndef);
 
 	MapNode n_ore(ore);
 	ManualMapVoxelManipulator *vm = mg->vm;
 	PseudoRandom pr(blockseed + 4234);
+	int ymin, ymax;
 	
-	int ymin = MYMAX(nmin.Y, height_min);
-	int ymax = MYMIN(nmax.Y, height_max);
+	if (in_range & ORE_RANGE_MIRROR) {
+		ymin = MYMAX(nmin.Y, -height_max);
+		ymax = MYMIN(nmax.Y, -height_min);
+	} else {
+		ymin = MYMAX(nmin.Y, height_min);
+		ymax = MYMIN(nmax.Y, height_max);
+	}
+
 	if (clust_size >= ymax - ymin + 1)
 		return;
 		

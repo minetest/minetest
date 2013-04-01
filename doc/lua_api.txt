@@ -394,6 +394,13 @@ All default ores are of the uniformly-distributed scatter type.
     Places ore if there are no more than clust_scarcity number of specified nodes within a Von Neumann
     neighborhood of clust_size radius.
 
+Ore attributes
+-------------------
+Currently supported flags:  absheight
+ - absheight
+    Also produce this same ore between the height range of -height_max and -height_min.
+    Useful for having ore in sky realms without having to duplicate ore entries.
+
 Representations of simple things
 --------------------------------
 Position/vector:
@@ -1723,6 +1730,8 @@ Ore definition (register_ore)
     ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
     height_min = -31000,
     height_max = 64,
+    flags = "",
+    ^ Attributes for this ore generation
     noise_threshhold = 0.5,
     ^ If noise is above this threshhold, ore is placed.  Not needed for a uniform distribution
     noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}

@@ -51,6 +51,8 @@ bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
                              const char *fieldname, float &result);
+u32                getflagsfield(lua_State *L, int table,
+                             const char *fieldname, FlagDesc *flagdesc);
 
 std::string        checkstringfield(lua_State *L, int table,
                              const char *fieldname);

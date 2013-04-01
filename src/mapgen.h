@@ -36,7 +36,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 
+/////////////////// Ore generation flags
+// Use absolute value of height to determine ore placement
+#define OREFLAG_ABSHEIGHT 0x01 
+// Use 3d noise to get density of ore placement, instead of just the position
+#define OREFLAG_DENSITY   0x02 // not yet implemented
+// For claylike ore types, place ore if the number of surrounding
+// nodes isn't the specified node
+#define OREFLAG_NODEISNT  0x04 // not yet implemented
+
 extern FlagDesc flagdesc_mapgen[];
+extern FlagDesc flagdesc_ore[];
 
 class BiomeDefManager;
 class Biome;
@@ -103,6 +113,9 @@ enum OreType {
 	ORE_CLAYLIKE
 };
 
+#define ORE_RANGE_ACTUAL 1
+#define ORE_RANGE_MIRROR 2
+
 class Ore {
 public:
 	std::string ore_name;
@@ -115,6 +128,7 @@ public:
 	s16 clust_size;     // how large (in nodes) a chunk of ore is
 	s16 height_min;
 	s16 height_max;
+	u32 flags;          // attributes for this ore
 	float nthresh;      // threshhold for noise at which an ore is placed 
 	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
