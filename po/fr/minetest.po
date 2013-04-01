@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-02-28 17:44+0200\n"
+"PO-Revision-Date: 2013-04-01 14:08+0200\n"
 "Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
@@ -257,13 +257,12 @@ msgid "Name/Password"
 msgstr "Nom / MdP"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
-#, fuzzy
 msgid "Favorites:"
-msgstr "Voir serveurs favoris"
+msgstr "Favoris :"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Liste de serveurs publics :"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -290,9 +289,8 @@ msgid "Start Game / Connect"
 msgstr "Démarrer / Connecter"
 
 #: src/guiMainMenu.cpp:632
-#, fuzzy
 msgid "Public"
-msgstr "Voir serveurs publics"
+msgstr "Public"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -348,7 +346,7 @@ msgstr "Activer les particules"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Liquides limités"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -408,7 +406,7 @@ msgstr "Changer mot de passe"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volume sonore"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -445,11 +443,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Volume sonore :"
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "OK"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
