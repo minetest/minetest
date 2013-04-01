@@ -384,12 +384,12 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-void GUIKeyChangeMenu::add_key(int id, std::string button_name, std::string setting_name)
+void GUIKeyChangeMenu::add_key(int id, wchar_t* button_name, std::string setting_name)
 {
 	key_setting *k = new key_setting;
 	k->id = id;
 
-	k->button_name = wgettext(button_name.c_str());
+	k->button_name = button_name;
 	k->setting_name = setting_name;
 	k->key = getKeySetting(k->setting_name.c_str());
 	key_settings.push_back(k);
@@ -397,21 +397,21 @@ void GUIKeyChangeMenu::add_key(int id, std::string button_name, std::string sett
 
 void GUIKeyChangeMenu::init_keys()
 {
-	this->add_key(GUI_ID_KEY_FORWARD_BUTTON,   "Forward",       "keymap_forward");
-	this->add_key(GUI_ID_KEY_BACKWARD_BUTTON,  "Backward",      "keymap_backward");
-	this->add_key(GUI_ID_KEY_LEFT_BUTTON,      "Left",          "keymap_left");
-	this->add_key(GUI_ID_KEY_RIGHT_BUTTON,     "Right",         "keymap_right");
-	this->add_key(GUI_ID_KEY_USE_BUTTON,       "Use",           "keymap_special1");
-	this->add_key(GUI_ID_KEY_JUMP_BUTTON,      "Jump",          "keymap_jump");
-	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     "Sneak",         "keymap_sneak");
-	this->add_key(GUI_ID_KEY_DROP_BUTTON,      "Drop",          "keymap_drop");
-	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, "Inventory",     "keymap_inventory");
-	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      "Chat",          "keymap_chat");
-	this->add_key(GUI_ID_KEY_CMD_BUTTON,       "Command",       "keymap_cmd");
-	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   "Console",       "keymap_console");
-	this->add_key(GUI_ID_KEY_FLY_BUTTON,       "Toggle fly",    "keymap_freemove");
-	this->add_key(GUI_ID_KEY_FAST_BUTTON,      "Toggle fast",   "keymap_fastmove");
-	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    "Toggle noclip", "keymap_noclip");
-	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     "Range select",  "keymap_rangeselect");
-	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      "Print stacks",  "keymap_print_debug_stacks");
+	this->add_key(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),       "keymap_forward");
+	this->add_key(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),      "keymap_backward");
+	this->add_key(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),          "keymap_left");
+	this->add_key(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),         "keymap_right");
+	this->add_key(GUI_ID_KEY_USE_BUTTON,       wgettext("Use"),           "keymap_special1");
+	this->add_key(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),          "keymap_jump");
+	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),         "keymap_sneak");
+	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),          "keymap_drop");
+	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),     "keymap_inventory");
+	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),          "keymap_chat");
+	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),       "keymap_cmd");
+	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),       "keymap_console");
+	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),    "keymap_freemove");
+	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),   "keymap_fastmove");
+	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"), "keymap_noclip");
+	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),  "keymap_rangeselect");
+	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),  "keymap_print_debug_stacks");
 }
