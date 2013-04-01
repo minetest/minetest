@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-30 20:02+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"PO-Revision-Date: 2013-04-01 17:27+0200\n"
+"Last-Translator: Markus Lehmann <lolxd751@gmail.com>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -359,7 +359,7 @@ msgstr "Adresse benötigt."
 
 #: src/guiMainMenu.cpp:1102
 msgid "Cannot delete world: Nothing selected"
-msgstr "Kann Welt nicht löschen: Nichts ausgewählt"
+msgstr "Bitte Welt auswählen"
 
 #: src/guiMainMenu.cpp:1117
 msgid "Files to be deleted"
