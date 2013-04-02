@@ -101,6 +101,12 @@ function minetest.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+    -- Use the nodebox as selection box if it's not set manually
+	if itemdef.type == "node" and itemdef.drawtype == "nodebox"
+	  and not itemdef.selection_box then
+		itemdef.selection_box = itemdef.node_box
+	end
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
