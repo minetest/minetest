@@ -1207,6 +1207,15 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			switch(event.GUIEvent.Caller->getID())
 			{
 				case GUI_ID_ADDRESS_INPUT: case GUI_ID_PORT_INPUT: case GUI_ID_NAME_INPUT: case 264:
+				MainMenuData cur;
+				readInput(&cur);
+				if (getTab() == TAB_MULTIPLAYER && cur.address == L"")
+				{
+					(new GUIMessageMenu(env, parent, -1, menumgr,
+							wgettext("Address required."))
+							)->drop();
+					return true;
+				}
 				acceptInput();
 				quitMenu();
 				return true;
