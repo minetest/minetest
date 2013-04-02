@@ -101,6 +101,26 @@ function minetest.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+	-- Calculate a single box that will encompass only the nodeboxes
+	if itemdef.type == "node" and itemdef.drawtype == "nodebox"
+	  and not itemdef.selection_box then
+		local minp = {x=1000,y=1000,z=1000}
+		local maxp = {x=-1000,y=-1000,z=-1000}
+		for _,box in ipairs(itemdef.node_box.fixed) do
+			local x1, y1, z1, x2, y2, z2 = unpack(box)
+			if x1 < minp.x then minp.x = x1 end
+			if y1 < minp.y then minp.y = y1 end
+			if z1 < minp.z then minp.z = z1 end
+			if x2 > maxp.x then maxp.x = x2 end
+			if y2 > maxp.y then maxp.y = y2 end
+			if z2 > maxp.z then maxp.z = z2 end
+		end
+		itemdef.selection_box = {
+			type = "fixed",
+			fixed = { minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z },
+		}
+	end
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
