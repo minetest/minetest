@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-01 18:52+0200\n"
-"Last-Translator: Esteban I. RM <exio4.com@gmail.com>\n"
+"PO-Revision-Date: 2013-04-03 17:22+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -52,7 +52,7 @@ msgstr "Dependencias:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr "es dependencia de:"
+msgstr "es requerido por:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -93,11 +93,11 @@ msgstr "Crear"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "Estas Muerto."
+msgstr "Has muerto."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Respawn"
+msgstr "Revivir"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
@@ -121,7 +121,7 @@ msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Pulsa dos veces el botón de salto para volar"
+msgstr "Dos veces \"saltar\" para volar"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
@@ -157,7 +157,7 @@ msgstr "Saltar"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr "Agacharse"
+msgstr "Caminar"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
@@ -193,11 +193,11 @@ msgstr "Activar noclip"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr "Seleccionar rango"
+msgstr "Seleccionar distancia"
 
 #: src/guiKeyChangeMenu.cpp:388
 msgid "Print stacks"
-msgstr "Imprimir Stacks"
+msgstr "Imprimir Pilas"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
@@ -217,7 +217,7 @@ msgstr "Multijugador"
 
 #: src/guiMainMenu.cpp:285
 msgid "Advanced"
-msgstr "Servidor"
+msgstr "Avanzado"
 
 #: src/guiMainMenu.cpp:286
 msgid "Settings"
@@ -337,7 +337,7 @@ msgstr "Filtrado Tri-Lineal"
 
 #: src/guiMainMenu.cpp:738
 msgid "Shaders"
-msgstr "Habilitar Shaders"
+msgstr "Sombreadores"
 
 #: src/guiMainMenu.cpp:745
 msgid "Preload item visuals"
@@ -440,10 +440,10 @@ msgstr ""
 "- Ratón, rueda: seleccionar objecto\n"
 "- 0... 9: Seleccionar objecto\n"
 "- Mayúscula: caminar despacio\n"
-"- R: Ajustar distancia de los chunks cargados\n"
+"- R: Ajustar distancia de los pedazos cargados\n"
 "- I: Inventario \n"
 "- ESC: Este Menu\n"
-"- T: Chat\n"
+"- T: Conversar\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
@@ -519,7 +519,7 @@ msgstr "Convertir"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr "Esc"
+msgstr "Escape"
 
 #: src/keycode.cpp:226
 msgid "Final"
@@ -535,7 +535,7 @@ msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr "Nonconvert"
+msgstr "No convertir"
 
 #: src/keycode.cpp:227
 msgid "Accept"
@@ -691,7 +691,7 @@ msgstr "Control Izqdo"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr "Menú Izquierda"
+msgstr "Menú Izquierdo"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
@@ -699,23 +699,23 @@ msgstr "Control Dcho"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr "Menú Derecha"
+msgstr "Menú Derecho"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ","
+msgstr "Coma"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr "-"
+msgstr "Menos"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr "."
+msgstr "Punto"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr "+"
+msgstr "Más"
 
 #: src/keycode.cpp:247
 msgid "Attn"
