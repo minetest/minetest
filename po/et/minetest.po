@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-07 09:48+0200\n"
+"PO-Revision-Date: 2013-04-03 16:41+0200\n"
 "Last-Translator: Ragnar Laud <ragnarlaud@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: et\n"
@@ -260,13 +260,12 @@ msgid "Name/Password"
 msgstr "Nimi/Parool"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
-#, fuzzy
 msgid "Favorites:"
-msgstr "Näita lemmikuid"
+msgstr "Lemmikud:"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Avatud serverite nimekiri:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -293,9 +292,8 @@ msgid "Start Game / Connect"
 msgstr "Alusta mängu / Liitu"
 
 #: src/guiMainMenu.cpp:632
-#, fuzzy
 msgid "Public"
-msgstr "Näita avalikke"
+msgstr "Avalik"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -351,7 +349,7 @@ msgstr "Lülita osakesed sisse"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Löppev vedelik"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -411,7 +409,7 @@ msgstr "Vaheta parooli"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Hääle volüüm"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -449,11 +447,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Hääle Volüüm: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Välju"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -692,90 +690,96 @@ msgstr "Parem Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Vasak CTRL"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Vasak Menüü"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Parem CTRL"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Parem Menüü"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Koma"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Miinus"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Punkt"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Pluss"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Kustuta OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Tühi"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Suumi"
 
 #: src/main.cpp:1506
 msgid "Main Menu"
-msgstr ""
+msgstr "Menüü"
 
 #: src/main.cpp:1830
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Maailma initsialiseerimine ebaõnnestus"
 
 #: src/main.cpp:1842
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Pole valitud ei maailma ega IP aadressi. Pole midagi teha."
 
 #: src/main.cpp:1850
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Ei leia ega suuda jätkata mängu."
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Vale mängu ID."
 
 #: src/main.cpp:1904
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Ühenduse viga (Aeg otsas?)"
 
 #: src/main.cpp:1915
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Vaata debug.txt info jaoks."
