@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "settings.h"
 #include "util/directiontables.h"
+#include "filesys.h"
+#include "porting.h"
 
 float srgb_linear_multiply(float f, float m, float max)
 {
@@ -1095,10 +1097,25 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		Also store animation info
 	*/
 	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
-	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
-			getShader("test_shader_1").material;
-	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
-			getShader("test_shader_2").material;
+	std::list<video::E_MATERIAL_TYPE> shadermat;
+	if(enable_shaders)
+	{
+		std::string baseshaderpath = porting::path_share + DIR_DELIM + std::string("client") + DIR_DELIM + "shaders";
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(baseshaderpath);
+		for(u32 j=0; j<dirlist.size(); j++)
+		{
+			if(!dirlist[j].dir)
+				continue;
+			std::string shadername = dirlist[j].name;
+			// Ignore all directories beginning with a ".", especially
+			// VCS directories like ".git" or ".svn"
+			if(shadername[0] == '.')
+				continue;
+			std::string shaderpath = baseshaderpath + DIR_DELIM + shadername;
+
+			shadermat.push_back(m_gamedef->getShaderSource()->getShader(shadername).material);
+		}
+	}
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1174,7 +1191,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture.atlas);
 		if(enable_shaders)
-			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2);
+		{
+			for(std::list<video::E_MATERIAL_TYPE>::iterator shadermat_iter = shadermat.begin();
+				shadermat_iter != shadermat.end(); shadermat_iter++)
+			{
+				// The default shaders need to be applied together
+				// try to grab next shader, if available, and apply both together
+				video::E_MATERIAL_TYPE a = *shadermat_iter;
+				video::E_MATERIAL_TYPE b = (++shadermat_iter == shadermat.end()) ? (video::E_MATERIAL_TYPE) NULL : *shadermat_iter;
+				p.tile.applyMaterialOptionsWithShaders(material, a, b);
+				if(b == (video::E_MATERIAL_TYPE) NULL) break;
+			}
+		}
 		else
 			p.tile.applyMaterialOptions(material);
 
