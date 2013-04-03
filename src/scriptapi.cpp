@@ -717,6 +717,7 @@ static int l_register_ore(lua_State *L)
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
 	ore->height_min     = getintfield_default(L, index, "height_min", 0);
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
+	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
 
 	lua_getfield(L, index, "noise_params");

@@ -244,7 +244,7 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 		local n = minetest.env:get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
-			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack)
+			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack
 		end
 	end
 

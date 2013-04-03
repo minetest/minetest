@@ -336,6 +336,13 @@ void setboolfield(lua_State *L, int table,
 	lua_setfield(L, table, fieldname);
 }
 
+u32 getflagsfield(lua_State *L, int table,
+		const char *fieldname, FlagDesc *flagdesc) {
+	std::string flagstring;
+	
+	flagstring = getstringfield_default(L, table, fieldname, "");
+	return readFlagString(flagstring, flagdesc);
+}
 
 /* minetest specific types */
 MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
