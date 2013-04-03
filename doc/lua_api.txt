@@ -1,5 +1,5 @@
-Minetest Lua Modding API Reference 0.4.5
-==========================================
+Minetest Lua Modding API Reference 0.4.6
+========================================
 More information at http://c55.me/minetest/
 
 Introduction
