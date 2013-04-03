@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
-#if 1
+#if 0
 // Middle-raised variation of a_n+1 = a_n * 0.786
 // Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
 // LIGHT_SUN is read as LIGHT_MAX from here.
@@ -40,6 +40,27 @@ u8 light_decode_table[LIGHT_MAX+1] =
 157,
 200,
 255,
+};
+#endif
+
+#if 1
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
+23,
+27,
+33,
+40,
+48,
+57,
+69,
+83,
+100,
+121,
+146,
+176,
+212,
+255
 };
 #endif
 

@@ -182,7 +182,8 @@ PunchDamageResult getPunchDamage(
 		const ItemGroupList &armor_groups,
 		const ToolCapabilities *toolcap,
 		const ItemStack *punchitem,
-		float time_from_last_punch
+		float time_from_last_punch,
+		int armor
 ){
 	bool do_hit = true;
 	{
@@ -204,7 +205,7 @@ PunchDamageResult getPunchDamage(
 				time_from_last_punch);
 		result.did_punch = true;
 		result.wear = hitparams.wear;
-		result.damage = hitparams.hp;
+		result.damage = hitparams.hp - armor;
 	}
 
 	return result;

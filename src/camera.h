@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
+#include <IMeshManipulator.h>
+#include <deque>
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -106,8 +108,8 @@ public:
 
 	// Update the camera from the local player's position.
 	// frametime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-			f32 tool_reload_ratio);
+	void update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, v2u32 screensize,
+			f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in);
@@ -117,7 +119,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, u16 player_select);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -173,6 +175,13 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button;
+
+	// Camera Hand Anim
+	f32 hand_anim_time;
+	bool is_hand_anim;
+	bool hand_anim_changed;
+	u16 wieldslot;
+	std::string wieldname;
 };
 
 #endif

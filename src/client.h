@@ -160,7 +160,10 @@ enum ClientEventType
 	CE_SHOW_FORMSPEC,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
-	CE_DELETE_PARTICLESPAWNER
+	CE_DELETE_PARTICLESPAWNER,
+	CE_ACHIEVE,
+	CE_HUDADD,
+	CE_HUDRM
 };
 
 struct ClientEvent
@@ -186,6 +189,16 @@ struct ClientEvent
 			std::string* formspec;
 			std::string* formname;
 		} show_formspec;
+		struct{
+			std::string* achievement;
+		} achieve;
+		struct{
+			std::string* id;
+			std::string* form;
+		} hudadd;
+		struct{
+			std::string* id;
+		} hudrm;
 		struct{
 		} textures_updated;
 		struct{
@@ -323,6 +336,7 @@ public:
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
+	u16 getAP();
 
 	bool checkPrivilege(const std::string &priv)
 	{ return (m_privileges.count(priv) != 0); }

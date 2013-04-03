@@ -75,6 +75,15 @@ inline u8 undiminish_light(u8 light)
 
 extern u8 light_decode_table[LIGHT_MAX+1];
 
+inline u8 light_decode(u8 light)
+{
+	if(light >= LIGHT_MAX){
+		return 255;
+	}
+	return floor(255 * pow(0.83, LIGHT_MAX-light));
+//	return light_decode_table[light];
+}
+
 // 0 <= light <= LIGHT_SUN
 // 0 <= return value <= 255
 inline u8 decode_light(u8 light)
@@ -82,7 +91,8 @@ inline u8 decode_light(u8 light)
 	if(light > LIGHT_MAX)
 		light = LIGHT_MAX;
 	
-	return light_decode_table[light];
+	return light_decode(light);
+//	return light_decode_table[light];
 }
 
 // 0.0 <= light <= 1.0
@@ -92,12 +102,12 @@ inline float decode_light_f(float light_f)
 	s32 i = (u32)(light_f * LIGHT_MAX + 0.5);
 
 	if(i <= 0)
-		return (float)light_decode_table[0] / 255.0;
+		return (float)light_decode(0) / 255.0;
 	if(i >= LIGHT_MAX)
-		return (float)light_decode_table[LIGHT_MAX] / 255.0;
+		return (float)light_decode(LIGHT_MAX) / 255.0;
 
-	float v1 = (float)light_decode_table[i-1] / 255.0;
-	float v2 = (float)light_decode_table[i] / 255.0;
+	float v1 = (float)light_decode(i-1) / 255.0;
+	float v2 = (float)light_decode(i) / 255.0;
 	float f0 = (float)i - 0.5;
 	float f = light_f * LIGHT_MAX - f0;
 	return f * v2 + (1.0 - f) * v1;

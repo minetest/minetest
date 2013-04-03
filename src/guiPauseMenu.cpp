@@ -165,6 +165,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		"- Mouse wheel: select item\n"
 		"- 0...9: select item\n"
 		"- Shift: sneak\n"
+		"- Contl: shield\n"
 		"- R: Toggle viewing all loaded chunks\n"
 		"- I: Inventory menu\n"
 		"- ESC: This menu\n"

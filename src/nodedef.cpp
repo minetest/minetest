@@ -255,7 +255,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, param_type_2);
 	writeU8(os, is_ground_content);
 	writeU8(os, light_propagates);
-	writeU8(os, sunlight_propagates);
+	writeU8(os, false);
 	writeU8(os, walkable);
 	writeU8(os, pointable);
 	writeU8(os, diggable);

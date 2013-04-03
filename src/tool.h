@@ -139,7 +139,8 @@ PunchDamageResult getPunchDamage(
 		const ItemGroupList &armor_groups,
 		const ToolCapabilities *toolcap,
 		const ItemStack *punchitem,
-		float time_from_last_punch
+		float time_from_last_punch,
+		int armor
 );
 
 #endif

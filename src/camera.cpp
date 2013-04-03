@@ -69,7 +69,13 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_view_bobbing_speed(0),
 
 	m_digging_anim(0),
-	m_digging_button(-1)
+	m_digging_button(-1),
+
+	hand_anim_time(0),
+	is_hand_anim(false),
+	hand_anim_changed(false),
+	wieldslot(55),
+	wieldname("")
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -132,6 +138,10 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
+	hand_anim_time += dtime;
+	if(hand_anim_time > 10)
+		hand_anim_time = 10;
+
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
@@ -211,8 +221,8 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-		f32 tool_reload_ratio)
+void Camera::update(LocalPlayer* player, IrrlichtDevice* device, f32 frametime, v2u32 screensize,
+		f32 tool_reload_ratio, Inventory local_inventory, u16 player_item, bool turn)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -311,7 +321,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
-	// WTF is this? It can't be right
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
@@ -321,6 +330,32 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	v3f wield_position = v3f(55, -35, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	static bool oldturn = false;
+	if(is_hand_anim && hand_anim_time < 0.5) {
+		f32 time = hand_anim_time;
+		wield_position.Y += pow((time-0.25)*4, 2)*60 - 60;
+		if(not hand_anim_changed
+			&& hand_anim_time > 0.25) {
+			// Update wielded tool
+			InventoryList *mlist = local_inventory.getList("main");
+			ItemStack item;
+			if(mlist != NULL)
+				item = mlist->getItem(player_item);
+
+			IItemDefManager *idef = m_gamedef->idef();
+			std::string itnm = item.getDefinition(idef).name;
+			scene::IMesh *wield_mesh = idef->getWieldMesh(itnm, m_gamedef);
+			if(wield_mesh){m_wieldnode->setVisible(true);}
+			else{m_wieldnode->setVisible(false);}
+			m_wieldnode->setMesh(wield_mesh);
+			hand_anim_changed = true;
+			oldturn = turn;
+		}
+	}
+	if(turn) {
+		wield_rotation += core::vector3df(-25, 40, 45);
+		wield_position += core::vector3df(0, 10, 10);
+	}
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
@@ -529,18 +564,19 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, u16 player_select)
 {
-	IItemDefManager *idef = m_gamedef->idef();
-	scene::IMesh *wield_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
-	if(wield_mesh)
-	{
-		m_wieldnode->setMesh(wield_mesh);
-		m_wieldnode->setVisible(true);
-	}
-	else
-	{
-		m_wieldnode->setVisible(false);
+	if(player_select != wieldslot || item.getDefinition(m_gamedef->idef()).name != wieldname) {
+		wieldslot = player_select;
+		wieldname = item.getDefinition(m_gamedef->idef()).name;
+		// Delay changing of the mesh for the anim
+		if(is_hand_anim && (hand_anim_time < 0.5)) {
+			hand_anim_time = 0.1f;
+		} else {
+			hand_anim_time = 0.0f;
+		}
+		is_hand_anim = true;
+		hand_anim_changed = false;
 	}
 }
 

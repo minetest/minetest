@@ -53,14 +53,16 @@ public:
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
 			ServerActiveObject *puncher=NULL,
-			float time_from_last_punch=1000000);
+			float time_from_last_punch=1000000, int shld=0);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
 	void setHP(s16 hp);
+	void setAP(s16 ap);
 	s16 getHP() const;
+	s16 getAP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
@@ -78,6 +80,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	virtual bool isStaticAllowed() {return accessObjectProperties()->staticize;};
 	bool getCollisionBox(aabb3f *toset);
 private:
 	std::string getPropertyPacket();
@@ -89,6 +92,7 @@ private:
 	struct ObjectProperties m_prop;
 	
 	s16 m_hp;
+	s16 m_ap;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
@@ -161,7 +165,9 @@ public:
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
+	s16 getAP() const;
 	void setHP(s16 hp);
+	void setAP(s16 ap);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
@@ -284,6 +290,7 @@ public:
 	bool m_moved;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_ap_not_sent;
 	bool m_wielded_item_not_sent;
 };
 

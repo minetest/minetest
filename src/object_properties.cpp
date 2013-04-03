@@ -38,7 +38,8 @@ ObjectProperties::ObjectProperties():
 	initial_sprite_basepos(0,0),
 	is_visible(true),
 	makes_footstep_sound(false),
-	automatic_rotate(0)
+	automatic_rotate(0),
+	staticize(true)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));

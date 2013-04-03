@@ -227,27 +227,27 @@ public:
 	std::string m_formspec;
 	FormspecFormSource** m_game_formspec;
 };
+
 /*
-	Hotbar draw routine
+	Item draw routine
 */
-void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
-		IGameDef *gamedef,
-		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory, s32 halfheartcount, u16 playeritem)
+void draw_item(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamedef,
+		v2s32 upperleftpos, s32 imgsize, s32 itemcount,
+		InventoryList *mainlist, u16 selectitem, unsigned short int direction)
+		//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+		//NOTE: direction: 0-> left-right, 1-> right-left, 2->top-bottom, 3->bottom-top
 {
-	InventoryList *mainlist = inventory->getList("main");
-	if(mainlist == NULL)
-	{
-		errorstream<<"draw_hotbar(): mainlist == NULL"<<std::endl;
-		return;
-	}
-	
-	s32 padding = imgsize/12;
-	//s32 height = imgsize + padding*2;
+	s32 padding = imgsize/6;
+	s32 height = imgsize + padding*2;
 	s32 width = itemcount*(imgsize+padding*2);
+	if(direction == 2 or direction == 3){
+		width = imgsize + padding*2;
+		height = itemcount*(imgsize+padding*2);
+	}
+	s32 fullimglen = imgsize + padding*2;
 	
 	// Position of upper left corner of bar
-	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
+	v2s32 pos = upperleftpos;
 	
 	// Draw background color
 	/*core::rect<s32> barrect(0,0,width,height);
@@ -261,14 +261,24 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	{
 		const ItemStack &item = mainlist->getItem(i);
 		
+		v2s32 steppos;
+		if(direction == 1){
+			steppos = v2s32(-(padding+i*fullimglen), padding);
+		} else if(direction == 2) {
+			steppos = v2s32(padding, padding+i*fullimglen);
+		} else if(direction == 3) {
+			steppos = v2s32(padding, -(padding+i*fullimglen));
+		} else {
+			steppos = v2s32(padding+i*fullimglen, padding);
+		}
 		core::rect<s32> rect = imgrect + pos
-				+ v2s32(padding+i*(imgsize+padding*2), padding);
+				+ steppos;
 		
-		if(playeritem == i)
+		if(selectitem == (i+1))
 		{
-			video::SColor c_outside(255,255,0,0);
+			video::SColor c_outside(255,128,128,128);
 			//video::SColor c_outside(255,0,0,0);
-			//video::SColor c_inside(255,192,192,192);
+			video::SColor c_inside(255,64,64,64);
 			s32 x1 = rect.UpperLeftCorner.X;
 			s32 y1 = rect.UpperLeftCorner.Y;
 			s32 x2 = rect.LowerRightCorner.X;
@@ -294,7 +304,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 						v2s32(x2, y1),
 						v2s32(x2 + padding, y2)
 					), NULL);
-			/*// Light inside borders
+			// Light inside borders
 			driver->draw2DRectangle(c_inside,
 					core::rect<s32>(
 						v2s32(x1 - padding/2, y1 - padding/2),
@@ -315,7 +325,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 						v2s32(x2, y1),
 						v2s32(x2 + padding/2, y2)
 					), NULL);
-			*/
+
 		}
 
 		video::SColor bgcolor2(128,0,0,0);
@@ -323,6 +333,152 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 	
+}
+
+/*
+	Statbar draw routine
+*/
+void draw_statbar(video::IVideoDriver *driver, gui::IGUIFont *font, IGameDef *gamedef,
+		v2s32 upperleftpos, std::string texture, s32 count)
+		//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+		//NOTE: direction: 0-> left-right, 1-> right-left, 2->top-bottom, 3->bottom-top
+{
+	video::ITexture *stat_texture =
+		gamedef->getTextureSource()->getTextureRaw(texture);
+	if(stat_texture)
+	{
+		v2s32 p = upperleftpos;
+		for(s32 i=0; i<count/2; i++)
+		{
+			core::dimension2di srcd(stat_texture->getOriginalSize());
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,srcd.Width,srcd.Height);
+			rect += p;
+			driver->draw2DImage(stat_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(srcd.Width,0);
+		}
+		if(count % 2 == 1)
+		{
+			core::dimension2di srcd(stat_texture->getOriginalSize());
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,srcd.Width/2,srcd.Height);
+			rect += p;
+			srcd.Width /= 2;
+			driver->draw2DImage(stat_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(srcd.Width*2,0);
+		}
+	}
+}
+
+/*
+	Hotbar draw routine
+*/
+void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
+		IGameDef *gamedef,
+		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
+		Inventory *inventory, s32 halfheartcount, s32 halfarmorcount, u16 playeritem)
+{
+	InventoryList *mainlist = inventory->getList("main");
+	if(mainlist == NULL)
+	{
+		errorstream<<"draw_hotbar(): mainlist == NULL"<<std::endl;
+		return;
+	}
+#if 0
+	s32 padding = imgsize/6;
+	//s32 height = imgsize + padding*2;
+	s32 width = itemcount*(imgsize+padding*2);
+	
+	// Position of upper left corner of bar
+	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
+
+	// Draw background color
+	/*core::rect<s32> barrect(0,0,width,height);
+	barrect += pos;
+	video::SColor bgcolor(255,128,128,128);
+	driver->draw2DRectangle(bgcolor, barrect, NULL);*/
+
+	core::rect<s32> imgrect(0,0,imgsize,imgsize);
+
+	for(s32 i=0; i<itemcount; i++)
+	{
+		const ItemStack &item = mainlist->getItem(i);
+		
+		core::rect<s32> rect = imgrect + pos
+				+ v2s32(padding+i*(imgsize+padding*2), padding);
+		
+		if(playeritem == i)
+		{
+			video::SColor c_outside(255,128,128,128);
+			//video::SColor c_outside(255,0,0,0);
+			video::SColor c_inside(255,64,64,64);
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			// Black base borders
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1 - padding),
+						v2s32(x2 + padding, y1)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y2),
+						v2s32(x2 + padding, y2 + padding)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding, y2)
+					), NULL);
+			// Light inside borders
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1 - padding/2),
+						v2s32(x2 + padding/2, y1)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y2),
+						v2s32(x2 + padding/2, y2 + padding/2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding/2, y2)
+					), NULL);
+			
+		}
+
+		video::SColor bgcolor2(128,0,0,0);
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
+		drawItemStack(driver, font, item, rect, NULL, gamedef);
+	}
+#else
+	s32 padding = imgsize/6;
+	s32 width = itemcount*(imgsize+padding*2);
+	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
+	draw_item(driver, font, gamedef, pos, imgsize, itemcount,
+				mainlist, playeritem + 1, 0);
+#endif
+#if 0
 	/*
 		Draw hearts
 	*/
@@ -357,6 +513,43 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			p += v2s32(16,0);
 		}
 	}
+	video::ITexture *armor_texture =
+		gamedef->getTextureSource()->getTextureRaw("armor.png");
+	if(armor_texture)
+	{
+		v2s32 p = pos + v2s32(0, -40);
+		for(s32 i=0; i<halfarmorcount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(armor_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(armor_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+		if(halfarmorcount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16/2,16);
+			rect += p;
+			core::dimension2di srcd(armor_texture->getOriginalSize());
+			srcd.Width /= 2;
+			driver->draw2DImage(armor_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+	}
+#else
+	draw_statbar(driver, font, gamedef, pos + v2s32(0, -20),
+		"heart.png", halfheartcount);
+	draw_statbar(driver, font, gamedef, pos + v2s32(0, -40),
+		"armor.png", halfarmorcount);
+#endif
 }
 
 /*
@@ -397,7 +590,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 		if(selected_object != NULL)
 		{
-			if(selected_object->doShowSelectionBox())
+			/*if(selected_object->doShowSelectionBox())
 			{
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
@@ -408,7 +601,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 				hilightboxes.push_back(aabb3f(
 						selection_box->MinEdge + pos,
 						selection_box->MaxEdge + pos));
-			}
+			}*/
 
 
 			result.type = POINTEDTHING_OBJECT;
@@ -917,6 +1110,29 @@ public:
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
 	}
 };
+
+std::deque<std::string> split(std::string s, std::string delimiters)
+{
+	std::size_t current;
+	std::size_t next = -1;
+	std::deque<std::string> out;
+	do
+	{
+	  current = next + 1;
+	  next = s.find_first_of( delimiters, current );
+	  out.push_back(s.substr( current, next - current ));
+	}
+	while (next != std::string::npos);
+	return out;
+}
+
+template <typename T>
+T StringToNumber ( const std::string &Text )
+{
+	std::stringstream ss(Text);
+	T result;
+	return ss >> result ? result : 0;
+}
 
 void the_game(
 	bool &kill,
@@ -2039,7 +2255,6 @@ void the_game(
 		/*
 			Player speed control
 		*/
-		{
 			/*bool a_up,
 			bool a_down,
 			bool a_left,
@@ -2061,6 +2276,7 @@ void the_game(
 				input->isKeyDown(getKeySetting("keymap_sneak")),
 				input->getLeftState(),
 				input->getRightState(),
+				input->isKeyDown(getKeySetting("keymap_shld")),
 				camera_pitch,
 				camera_yaw
 			);
@@ -2074,10 +2290,10 @@ void the_game(
 			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
 			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
 			128*(int)input->getLeftState()+
-			256*(int)input->getRightState();
-			LocalPlayer* player = client.getEnv().getLocalPlayer();
-			player->keyPressed=keyPressed;
-		}
+			256*(int)input->getRightState()+
+			512*(int)input->isKeyDown(getKeySetting("keymap_shld"));
+			LocalPlayer* playerxx = client.getEnv().getLocalPlayer();
+			playerxx->keyPressed=keyPressed;
 		
 		/*
 			Run server
@@ -2182,10 +2398,6 @@ void the_game(
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
-				else if(event.type == CE_TEXTURES_UPDATED)
-				{
-					update_wielded_item_trigger = true;
-				}
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
@@ -2227,6 +2439,22 @@ void the_game(
 				{
 					delete_particlespawner (event.delete_particlespawner.id);
 				}
+				else if (event.type == CE_ACHIEVE)
+				{
+					player->achieves.push_back(*event.achieve.achievement);
+					delete(event.achieve.achievement);
+				}
+				else if (event.type == CE_HUDADD)
+				{
+					player->hud[*event.hudadd.id] = *event.hudadd.form;
+					delete(event.hudadd.id);
+					delete(event.hudadd.form);
+				}
+				else if (event.type == CE_HUDRM)
+				{
+					player->hud.erase(*event.hudrm.id);
+					delete(event.hudrm.id);
+				}
 			}
 		}
 		
@@ -2261,7 +2489,8 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, device, busytime, screensize, tool_reload_ratio,
+			local_inventory, client.getPlayerItem(), control.shld);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
@@ -2721,10 +2950,10 @@ void the_game(
 		
 		time_of_day = client.getEnv().getTimeOfDayF();
 		float maxsm = 0.05;
-		if(fabs(time_of_day - time_of_day_smooth) > maxsm &&
+		/*if(//fabs(time_of_day - time_of_day_smooth) > maxsm &&
 				fabs(time_of_day - time_of_day_smooth + 1.0) > maxsm &&
 				fabs(time_of_day - time_of_day_smooth - 1.0) > maxsm)
-			time_of_day_smooth = time_of_day;
+			time_of_day_smooth = time_of_day;*/
 		float todsm = 0.05;
 		if(time_of_day_smooth > 0.8 && time_of_day < 0.2)
 			time_of_day_smooth = time_of_day_smooth * (1.0-todsm)
@@ -2975,6 +3204,11 @@ void the_game(
 			
 			update_wielded_item_trigger = true;
 		}
+		static bool conrot(false);
+		if(control.shld != conrot){
+			conrot = control.shld;
+			update_wielded_item_trigger = true;
+		}
 		if(update_wielded_item_trigger)
 		{
 			update_wielded_item_trigger = false;
@@ -2983,7 +3217,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item);
+			camera.wield(item, client.getPlayerItem());
 		}
 
 		/*
@@ -3101,7 +3335,8 @@ void the_game(
 		
 		video::SMaterial m;
 		//m.Thickness = 10;
-		m.Thickness = 3;
+		//m.Thickness = 3;
+		m.Thickness = 1;
 		m.Lighting = false;
 		driver->setMaterial(m);
 
@@ -3151,6 +3386,33 @@ void the_game(
 			graph.draw(10, screensize.Y - 10, driver, font);
 		}
 
+		if(show_hud)
+		{
+			for(std::map<std::string, std::string>::iterator it = player->hud.begin();
+				it != player->hud.end(); ++it)
+			{
+				std::deque<std::string> spt = split(it->second, "~");
+				if(spt.size() < 2) {
+					actionstream<<"luadraw: ignoring drawform "<<it->second
+						<<" of key "<<it->first<<" due to lack of command."<<std::endl;
+					continue;
+				}
+				std::string com = spt.at(0);
+				if(com == "back") {
+					std::string tex = spt[1];
+					video::ITexture *texture =
+						gamedef->getTextureSource()->getTextureRaw(tex);
+					core::dimension2di imgsize(texture->getOriginalSize());
+					core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
+					const video::SColor color(255,255,255,255);
+					const video::SColor colors[] = {color,color,color,color};
+					driver->draw2DImage(texture, rect,
+						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+						NULL, colors, true);
+				}
+			}
+		}
+
 		/*
 			Draw crosshair
 		*/
@@ -3184,7 +3446,7 @@ void the_game(
 			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getAP(), client.getPlayerItem());
 		}
 
 		/*
@@ -3211,10 +3473,119 @@ void the_game(
 		}
 
 		/*
+			Draw achievements
+		*/
+		if(!player->achieves.empty()){
+			player->achieve_timer += 1;
+			bool time_up = player->achieve_timer >= 450; //50 ~~ 1 sec
+			if(show_hud && !time_up)
+			{
+				video::ITexture *achieve_texture =
+					gamedef->getTextureSource()->getTextureRaw(player->achieves.front());
+				const video::SColor color(255,255,255,255);
+				const video::SColor colors[] = {color,color,color,color};
+				core::dimension2di imgsize(achieve_texture->getOriginalSize());
+				core::rect<s32> rect((screensize.X*3)/4,0,screensize.X,
+					((screensize.X/4)*imgsize.Height)/imgsize.Width);
+				rect += core::vector2d<s32>(-10,10);
+				driver->draw2DImage(achieve_texture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+					NULL, colors, true);
+			}
+			if(time_up)
+			{
+				player->achieves.pop_front();
+				player->achieve_timer = 0;
+			}
+		} else {
+			player->achieve_timer = 0;
+		}
+
+		/*
+			Draw lua hud items
+		*/
+		std::deque<gui::IGUIStaticText *> luaguitexts;
+		if(show_hud)
+		{
+			for(std::map<std::string, std::string>::iterator it = player->hud.begin();
+				it != player->hud.end(); ++it)
+			{
+				std::deque<std::string> spt = split(it->second, "~");
+				if(spt.size() < 2) {
+					actionstream<<"luadraw: ignoring drawform "<<it->second
+						<<" of key "<<it->first<<" due to lack of command."<<std::endl;
+					continue;
+				}
+				std::string com = spt.at(0);
+				if(com == "image"){
+					std::string texname = spt[1];
+					float scalex = StringToNumber<float>(spt[2]);
+					float scaley = StringToNumber<float>(spt[3]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[4])*screensize.X,
+											StringToNumber<float>(spt[5])*screensize.Y);
+
+					video::ITexture *texture =
+						gamedef->getTextureSource()->getTextureRaw(texname);
+					const video::SColor color(255,255,255,255);
+					const video::SColor colors[] = {color,color,color,color};
+					core::dimension2di imgsize(texture->getOriginalSize());
+					core::rect<s32> rect(0, 0, imgsize.Width*scalex,
+												imgsize.Height*scaley);
+					rect += pos;
+					driver->draw2DImage(texture, rect,
+						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+						NULL, colors, true);
+				} else if(com == "text") {
+					std::wstring text;
+					text.assign(spt[1].begin(), spt[1].end());
+					float sizex = StringToNumber<float>(spt[2])*screensize.X;
+					float sizey = StringToNumber<float>(spt[3]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[4])*screensize.X,
+											StringToNumber<float>(spt[5])*screensize.Y);
+
+					gui::IGUIStaticText *luaguitext = guienv->addStaticText(
+							text.c_str(),
+							core::rect<s32>(0, 0, sizex, text_height*sizey)+pos,
+							false, false);
+					luaguitexts.push_back(luaguitext);
+				} else if(com == "statbar") {
+					std::string tex = spt[1];
+					u32 count = StringToNumber<u32>(spt[2]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[3])*screensize.X,
+											StringToNumber<float>(spt[4])*screensize.Y);
+					draw_statbar(driver, font, gamedef, pos, tex, count);
+				} else if(com == "inv") {
+					std::string list = spt[1];
+					u32 numitems = StringToNumber<u32>(spt[2]);
+					u32 item = StringToNumber<u32>(spt[3]);
+					u32 direction = StringToNumber<u32>(spt[4]);
+					core::vector2d<s32> pos(StringToNumber<float>(spt[5])*screensize.X,
+											StringToNumber<float>(spt[6])*screensize.Y);
+					InventoryList* inv = local_inventory.getList(list);
+					draw_item(driver, font, gamedef, pos, hotbar_imagesize,
+								numitems, inv, item, direction);
+				} else if(com == "back") {
+					//no-op
+				} else {
+					actionstream<<"luadraw: ignoring drawform "<<it->second<<
+						"of key "<<it->first<<" due to incorrect command."<<std::endl;
+					continue;
+				}
+			}
+		}
+
+		/*
 			Draw gui
 		*/
 		// 0-1ms
 		guienv->drawAll();
+		
+		/*
+			Remove lua-texts
+		*/
+		for(std::deque<gui::IGUIStaticText *>::iterator it = luaguitexts.begin();
+			it != luaguitexts.end(); ++it)
+			(**it).remove();
 
 		/*
 			End scene

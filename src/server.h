@@ -537,6 +537,9 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
+	bool achieve(const char *name, const std::string &achievement);
+	bool hudadd(const char *name, const std::string &id, const std::string &form);
+	bool hudrm(const char *name, const std::string &id);
 private:
 
 	// con::PeerHandler implementation.
@@ -551,6 +554,7 @@ private:
 
 	static void SendMovement(con::Connection &con, u16 peer_id);
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
+	static void SendAP(con::Connection &con, u16 peer_id, u8 ap);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
@@ -572,10 +576,14 @@ private:
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
 	void SendPlayerHP(u16 peer_id);
+	void SendPlayerAP(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
+	void SendAchieve(u16 peer_id, const std::string achievement);
+	void SendHUDAdd(u16 peer_id, const std::string id, const std::string form);
+	void SendHUDRm(u16 peer_id, const std::string id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

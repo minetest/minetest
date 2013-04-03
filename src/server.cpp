@@ -1146,6 +1146,14 @@ void Server::AsyncRunStep()
 			}
 
 			/*
+				Handle player APs
+			*/
+			if(playersao->m_ap_not_sent && g_settings->getBool("enable_damage"))
+			{
+				SendPlayerAP(client->peer_id);
+			}
+
+			/*
 				Send player inventories if necessary
 			*/
 			if(playersao->m_moved){
@@ -2102,6 +2110,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(g_settings->getBool("enable_damage"))
 			SendPlayerHP(peer_id);
 
+		// Send AP
+		if(g_settings->getBool("enable_damage"))
+			SendPlayerAP(peer_id);
+
 		// Send detached inventories
 		sendDetachedInventories(peer_id);
 
@@ -2228,6 +2240,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->control.sneak = (bool)(keyPressed&64);
 		player->control.LMB = (bool)(keyPressed&128);
 		player->control.RMB = (bool)(keyPressed&256);
+		player->control.shld = (bool)(keyPressed&512);
 
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
@@ -2447,6 +2460,28 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Do the action
 		a->apply(this, playersao, this);
+		// Do we have to update the player AP?
+		if (a->getType() == IACTION_MOVE){
+			IMoveAction *ma = (IMoveAction*)a;
+			bool from_inv_is_current_player =
+				(ma->from_inv.type == InventoryLocation::PLAYER) &&
+				(ma->from_inv.name == player->getName());
+			bool to_inv_is_current_player =
+				(ma->to_inv.type == InventoryLocation::PLAYER) &&
+				(ma->to_inv.name == player->getName());
+			if ((from_inv_is_current_player&&(ma->from_list == "armor"))||(to_inv_is_current_player&&(ma->to_list == "armor"))){
+				InventoryList* ivnl = playersao->getInventory()->getList("armor");
+				u16 ap =
+					itemgroup_get(ivnl->getItem(0).getDefinition(m_itemdef).groups, "armor")+
+					itemgroup_get(ivnl->getItem(1).getDefinition(m_itemdef).groups, "armor")+
+					itemgroup_get(ivnl->getItem(2).getDefinition(m_itemdef).groups, "armor")+
+					itemgroup_get(ivnl->getItem(3).getDefinition(m_itemdef).groups, "armor")+
+					itemgroup_get(ivnl->getItem(4).getDefinition(m_itemdef).groups, "armor")+
+					itemgroup_get(ivnl->getItem(5).getDefinition(m_itemdef).groups, "armor");
+				playersao->setAP(ap);
+				//actionstream<<"armor = "<<ap<<std::endl;
+			}
+		}
 		// Eat the action
 		delete a;
 	}
@@ -2559,13 +2594,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
 					<<std::endl;
 
-			playersao->setHP(playersao->getHP() - damage);
+			if (playersao->getAP() < damage)
+				playersao->setHP(playersao->getHP()+playersao->getAP()-damage);
 
 			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
 				DiePlayer(peer_id);
 
 			if(playersao->m_hp_not_sent)
 				SendPlayerHP(peer_id);
+
+			if(playersao->m_ap_not_sent)
+				SendPlayerAP(peer_id);
 		}
 	}
 	else if(command == TOSERVER_PASSWORD)
@@ -2849,7 +2888,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				float time_from_last_punch =
 					playersao->resetTimeFromLastPunch();
 				pointed_object->punch(dir, &toolcap, playersao,
-						time_from_last_punch);
+						time_from_last_punch,
+						itemgroup_get(pointed_object->getWieldedItem().getDefinition(m_itemdef).groups, "shield"));
 			}
 
 		} // action == 0
@@ -3308,6 +3348,21 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendAP(con::Connection &con, u16 peer_id, u8 ap)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_AP);
+	writeU8(os, ap);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
 void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 		const std::wstring &reason)
 {
@@ -3474,6 +3529,64 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, co
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendAchieve(u16 peer_id, const std::string achievement)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_ACHIEVE);
+	os.write((char*)buf, 2);
+	os<<serializeString(achievement);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDAdd(u16 peer_id, const std::string id, const std::string form)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDADD);
+	os.write((char*)buf, 2);
+	os<<serializeString(id);
+	os<<serializeString(form);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDRm(u16 peer_id, const std::string id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDRM);
+	os.write((char*)buf, 2);
+	os<<serializeString(id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 // Spawns a particle on peer with peer_id
 void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration, float expirationtime, float size, bool collisiondetection, std::string texture)
 {
@@ -3623,6 +3736,15 @@ void Server::SendPlayerHP(u16 peer_id)
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
 	SendHP(m_con, peer_id, playersao->getHP());
+}
+
+void Server::SendPlayerAP(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+	playersao->m_ap_not_sent = false;
+	SendAP(m_con, peer_id, playersao->getAP());
 }
 
 void Server::SendMovePlayer(u16 peer_id)
@@ -4401,6 +4523,15 @@ void Server::RespawnPlayer(u16 peer_id)
 			<<" respawns"<<std::endl;
 
 	playersao->setHP(PLAYER_MAX_HP);
+	InventoryList* ivnl = playersao->getInventory()->getList("armor");
+	u16 ap =
+		itemgroup_get(ivnl->getItem(0).getDefinition(m_itemdef).groups, "armor")+
+		itemgroup_get(ivnl->getItem(1).getDefinition(m_itemdef).groups, "armor")+
+		itemgroup_get(ivnl->getItem(2).getDefinition(m_itemdef).groups, "armor")+
+		itemgroup_get(ivnl->getItem(3).getDefinition(m_itemdef).groups, "armor")+
+		itemgroup_get(ivnl->getItem(4).getDefinition(m_itemdef).groups, "armor")+
+		itemgroup_get(ivnl->getItem(5).getDefinition(m_itemdef).groups, "armor");
+	playersao->setAP(ap);
 
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, playersao);
 	if(!repositioned){
@@ -4550,6 +4681,48 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 	}
 
 	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	return true;
+}
+
+bool Server::achieve(const char *playername, const std::string &achievement)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"achieve: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendAchieve(player->peer_id, achievement);
+	return true;
+}
+
+bool Server::hudadd(const char *playername, const std::string &id, const std::string &form)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudadd: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDAdd(player->peer_id, id, form);
+	return true;
+}
+
+bool Server::hudrm(const char *playername, const std::string &id)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudrm: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDRm(player->peer_id, id);
 	return true;
 }
 

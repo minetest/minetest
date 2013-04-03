@@ -2411,10 +2411,17 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	assert(lplayer);
 	
 	if(handle_hp){
-		if(lplayer->hp > damage)
-			lplayer->hp -= damage;
-		else
-			lplayer->hp = 0;
+		u32 ap = lplayer->ap;
+		if(lplayer->control.shld){
+			//Shielding adds 2 AP
+			ap = ap + 2;
+		}
+		if(ap < damage){
+			if (lplayer->hp > (damage - ap))
+				lplayer->hp -= (damage - ap);
+			else
+				lplayer->hp = 0;
+		}
 	}
 
 	ClientEnvEvent event;

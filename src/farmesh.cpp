@@ -57,7 +57,7 @@ FarMesh::FarMesh(
 	//m_materials[0].setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_materials[0].setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_materials[0].setFlag(video::EMF_FOG_ENABLE, false);
-	//m_materials[0].setFlag(video::EMF_ANTI_ALIASING, true);
+	m_materials[0].setFlag(video::EMF_ANTI_ALIASING, true);
 	//m_materials[0].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_materials[0].setFlag(video::EMF_FOG_ENABLE, true);
 	

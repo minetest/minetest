@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h" // BS
+#include <queue>
 
 #define PLAYERNAME_SIZE 20
 
@@ -41,6 +42,7 @@ struct PlayerControl
 		sneak = false;
 		LMB = false;
 		RMB = false;
+		shld = false;
 		pitch = 0;
 		yaw = 0;
 	}
@@ -54,6 +56,7 @@ struct PlayerControl
 		bool a_sneak,
 		bool a_LMB,
 		bool a_RMB,
+		bool a_shld,
 		float a_pitch,
 		float a_yaw
 	)
@@ -67,6 +70,7 @@ struct PlayerControl
 		sneak = a_sneak;
 		LMB = a_LMB;
 		RMB = a_RMB;
+		shld = a_shld;
 		pitch = a_pitch;
 		yaw = a_yaw;
 	}
@@ -79,6 +83,7 @@ struct PlayerControl
 	bool sneak;
 	bool LMB;
 	bool RMB;
+	bool shld;
 	float pitch;
 	float yaw;
 };
@@ -209,11 +214,16 @@ public:
 
 	Inventory inventory;
 
+	std::deque<std::string> achieves;
+	u16 achieve_timer;
+	std::map<std::string, std::string> hud;
+
 	f32 movement_acceleration_default;
 	f32 movement_acceleration_air;
 	f32 movement_acceleration_fast;
 	f32 movement_speed_walk;
 	f32 movement_speed_crouch;
+	f32 movement_speed_block;
 	f32 movement_speed_fast;
 	f32 movement_speed_climb;
 	f32 movement_speed_jump;
@@ -223,6 +233,7 @@ public:
 	f32 movement_gravity;
 
 	u16 hp;
+	u16 ap;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;

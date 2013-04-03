@@ -357,6 +357,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_init_state(state),
 	m_registered(false),
 	m_hp(-1),
+	m_ap(-1),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
 	m_yaw(0),
@@ -644,7 +645,7 @@ std::string LuaEntitySAO::getStaticData()
 int LuaEntitySAO::punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
-		float time_from_last_punch)
+		float time_from_last_punch, int shld)
 {
 	if(!m_registered){
 		// Delete unknown LuaEntities when punched
@@ -667,11 +668,12 @@ int LuaEntitySAO::punch(v3f dir,
 			m_armor_groups,
 			toolcap,
 			punchitem,
-			time_from_last_punch);
+			time_from_last_punch,
+			m_ap);
 	
 	if(result.did_punch)
 	{
-		setHP(getHP() - result.damage);
+		setHP(getHP() - result.damage + shld);
 		
 		actionstream<<getDescription()<<" punched by "
 				<<puncher->getDescription()<<", damage "<<result.damage
@@ -745,9 +747,20 @@ void LuaEntitySAO::setHP(s16 hp)
 	m_hp = hp;
 }
 
+void LuaEntitySAO::setAP(s16 ap)
+{
+	if(ap < 0) ap = 0;
+	m_ap = ap;
+}
+
 s16 LuaEntitySAO::getHP() const
 {
 	return m_hp;
+}
+
+s16 LuaEntitySAO::getAP() const
+{
+	return m_ap;
 }
 
 void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
@@ -935,6 +948,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_moved(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
+	m_ap_not_sent(false),
 	m_wielded_item_not_sent(false)
 {
 	assert(m_player);
@@ -1320,6 +1334,11 @@ s16 PlayerSAO::getHP() const
 	return m_player->hp;
 }
 
+s16 PlayerSAO::getAP() const
+{
+	return m_player->ap;
+}
+
 void PlayerSAO::setHP(s16 hp)
 {
 	s16 oldhp = m_player->hp;
@@ -1350,6 +1369,27 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+void PlayerSAO::setAP(s16 ap)
+{
+	s16 oldap = m_player->ap;
+
+	if(ap < 0)
+		ap = 0;
+	else if(ap > PLAYER_MAX_AP)
+		ap = PLAYER_MAX_AP;
+
+	if(ap < oldap && g_settings->getBool("enable_damage") == false)
+	{
+		m_ap_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->ap = ap;
+
+	if(ap != oldap)
+		m_ap_not_sent = true;
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)

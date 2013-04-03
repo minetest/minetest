@@ -1553,6 +1553,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			m_client_event_queue.push_back(event);
 		}
 	}
+	else if(command == TOCLIENT_AP)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		//u8 oldap = player->ap;
+		u8 ap = readU8(is);
+		player->ap = ap;
+	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -2017,6 +2027,50 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.type = CE_DELETE_PARTICLESPAWNER;
 		event.delete_particlespawner.id = id;
 
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_ACHIEVE)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string achievement = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_ACHIEVE;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.achieve.achievement = new std::string(achievement);
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDADD)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string id = deSerializeString(is);
+		std::string form = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_HUDADD;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.hudadd.id = new std::string(id);
+		event.hudadd.form = new std::string(form);
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDRM)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string id = deSerializeString(is);
+
+		ClientEvent event;
+		event.type = CE_HUDRM;
+		// pointer is required as event is a struct only!
+		// adding a std:string to a struct isn't possible
+		event.hudrm.id = new std::string(id);
 		m_client_event_queue.push_back(event);
 	}
 	else
@@ -2550,6 +2604,13 @@ u16 Client::getHP()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
+}
+
+u16 Client::getAP()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->ap;
 }
 
 bool Client::getChatMessage(std::wstring &message)
