@@ -27,6 +27,8 @@ class ClientEnvironment;
 
 class ClientActiveObject;
 
+class ClientActiveObject;
+
 class LocalPlayer : public Player
 {
 public:
