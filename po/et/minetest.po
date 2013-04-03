@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-03 16:41+0200\n"
-"Last-Translator: Ragnar Laud <ragnarlaud@gmail.com>\n"
+"PO-Revision-Date: 2013-04-03 17:02+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
@@ -498,7 +498,6 @@ msgid "Control"
 msgstr "CTRL"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Kana"
 msgstr "Kana"
 
@@ -527,12 +526,10 @@ msgid "Final"
 msgstr "Viimane"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Junja"
 msgstr "Junja"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Kanji"
 msgstr "Kanji"
 
@@ -721,12 +718,10 @@ msgid "Plus"
 msgstr "Pluss"
 
 #: src/keycode.cpp:247
-#, fuzzy
 msgid "Attn"
 msgstr "Attn"
 
 #: src/keycode.cpp:247
-#, fuzzy
 msgid "CrSel"
 msgstr "CrSel"
 
@@ -735,7 +730,6 @@ msgid "Erase OEF"
 msgstr "Kustuta OEF"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "ExSel"
 msgstr "ExSel"
 
@@ -744,7 +738,6 @@ msgid "OEM Clear"
 msgstr "OEM Tühi"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "PA1"
 msgstr "PA1"
 
