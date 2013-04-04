@@ -199,6 +199,7 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_dir = lua_toboolean(L, -1);
 		prop->automatic_face_movement_dir_offset = 0.0;
 	}
+	getboolfield(L, -1, "staticize", prop->staticize);
 	lua_pop(L, 1);
 }
 

@@ -80,6 +80,7 @@ public:
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset);
 	bool collideWithObjects();
+	virtual bool isStaticAllowed() {return accessObjectProperties()->staticize;};
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);

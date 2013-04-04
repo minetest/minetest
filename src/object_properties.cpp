@@ -43,6 +43,7 @@ ObjectProperties::ObjectProperties():
 	stepheight(0),
 	automatic_face_movement_dir(false),
 	automatic_face_movement_dir_offset(0.0)
+	staticize(true)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
