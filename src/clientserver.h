@@ -88,9 +88,11 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 	PROTOCOL_VERSION 18:
 		damageGroups added to ToolCapabilities
 		sound_place added to ItemDefinition
+	PROTOCOL_VERSION 19:
+		GENERIC_CMD_SET_PHYSICS_OVERRIDE
 */
 
-#define LATEST_PROTOCOL_VERSION 18
+#define LATEST_PROTOCOL_VERSION 19
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13

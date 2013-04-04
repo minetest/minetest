@@ -928,6 +928,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_properties_sent(true),
 	m_privs(privs),
 	m_is_singleplayer(is_singleplayer),
+	m_physics_override_sent(false),
 	m_animation_sent(false),
 	m_bone_position_sent(false),
 	m_attachment_sent(false),
@@ -1009,7 +1010,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	if(protocol_version >= 15)
+	if(protocol_version >= 16)
 	{
 		writeU8(os, 1); // version
 		os<<serializeString(m_player->getName()); // name
@@ -1019,7 +1020,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_player->getYaw());
 		writeS16(os, getHP());
 
-		writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
+		writeU8(os, 5 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
@@ -1027,6 +1028,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
 		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		os<<serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed, m_physics_override_jump, m_physics_override_gravity)); // 5
 	}
 	else
 	{
@@ -1196,6 +1198,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
+	if(m_physics_override_sent == false){
+		m_physics_override_sent = true;
+		std::string str = gob_cmd_update_physics_override(m_physics_override_speed, m_physics_override_jump, m_physics_override_gravity);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
 	if(m_animation_sent == false){
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
@@ -1356,6 +1366,14 @@ void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
 	m_armor_groups = armor_groups;
 	m_armor_groups_sent = false;
+}
+
+void PlayerSAO::setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
+{
+	m_physics_override_speed = physics_override_speed;
+	m_physics_override_jump = physics_override_jump;
+	m_physics_override_gravity = physics_override_gravity;
+	m_physics_override_sent = false;
 }
 
 void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend)
