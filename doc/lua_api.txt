@@ -1002,6 +1002,7 @@ minetest.auth_reload()
 ^ These call the authentication handler
 minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 ^ A quickhand for checking privileges
+minetest.get_player_ip(name) -> IP address string
 
 Chat:
 minetest.chat_send_all(text)

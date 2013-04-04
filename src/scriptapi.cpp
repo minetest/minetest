@@ -788,6 +788,31 @@ static int l_get_player_privs(lua_State *L)
 	return 1;
 }
 
+// get_player_ip()
+static int l_get_player_ip(lua_State *L)
+{
+	const char * name = luaL_checkstring(L, 1);
+	Player *player = get_env(L)->getPlayer(name);
+	if(player == NULL)
+	{
+		lua_pushnil(L); // no such player
+		return 1;
+	}
+	try
+	{
+		Address addr = get_server(L)->getPeerAddress(get_env(L)->getPlayer(name)->peer_id);
+		std::string ip_str = addr.serializeString();
+		lua_pushstring(L, ip_str.c_str());
+		return 1;
+	}
+	catch(con::PeerNotFoundException) // unlikely
+	{
+		dstream << __FUNCTION_NAME << ": peer was not found" << std::endl;
+		lua_pushnil(L); // error
+		return 1;
+	}
+}
+
 // get_ban_list()
 static int l_get_ban_list(lua_State *L)
 {
@@ -1084,6 +1109,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
+	{"get_player_ip", l_get_player_ip},
 	{"get_ban_list", l_get_ban_list},
 	{"get_ban_description", l_get_ban_description},
 	{"ban_player", l_ban_player},
