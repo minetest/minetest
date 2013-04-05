@@ -190,14 +190,14 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 }
 
 // If failed, returned modspec has name==""
-static ModSpec findCommonMod(const std::string &modname)
+static ModSpec findCommonMod(const std::string& modset, const std::string &modname)
 {
-	// Try to find in {$user,$share}/games/common/$modname
+	// Try to find in {$user,$share}/games/$modset/$modname
 	std::vector<std::string> find_paths;
 	find_paths.push_back(porting::path_user + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+			DIR_DELIM + modset + DIR_DELIM + "mods" + DIR_DELIM + modname);
 	find_paths.push_back(porting::path_share + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+			DIR_DELIM + modset + DIR_DELIM + "mods" + DIR_DELIM + modname);
 	for(u32 i=0; i<find_paths.size(); i++){
 		const std::string &try_path = find_paths[i];
 		if(fs::PathExists(try_path))
@@ -215,15 +215,28 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	std::vector<std::string> inexistent_common_mods;
 	Settings gameconf;
 	if(getGameConfig(gamespec.path, gameconf)){
-		if(gameconf.exists("common_mods")){
-			Strfnd f(gameconf.get("common_mods"));
+		//grab a vector of gameconf keys
+		std::vector<std::string> keys = gameconf.getNames();
+		
+		//go through the vector to identify sets of common mods
+		for (std::vector<std::string>::iterator kit = keys.begin(); kit != keys.end(); ++kit)
+			if (kit->length() > 5 and not kit->compare(kit->length() - 5, 5, "_mods"))
+		{
+			//for each mod named. . .
+			Strfnd f(gameconf.get(*kit));
 			while(!f.atend()){
 				std::string modname = trim(f.next(","));
 				if(modname.empty())
 					continue;
-				ModSpec spec = findCommonMod(modname);
+				
+				//find the modspec
+				ModSpec spec = findCommonMod(kit->substr(0, kit->length() - 5), modname);
+				
+				//alert as to its absence
 				if(spec.name.empty())
 					inexistent_common_mods.push_back(modname);
+				
+				//or add it to the list of mods to load
 				else
 					m_sorted_mods.push_back(spec);
 			}
