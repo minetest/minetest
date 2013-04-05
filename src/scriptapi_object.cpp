@@ -297,6 +297,28 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	return 0;
 }
 
+// set_physics_override(self, physics_override_speed, physics_override_jump, physics_override_gravity)
+int ObjectRef::l_set_physics_override(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = (PlayerSAO *) getobject(ref);
+	if(co == NULL) return 0;
+	// Do it
+	if(!lua_isnil(L, 2)){
+		co->m_physics_override_speed = lua_tonumber(L, 2);
+		co->m_physics_override_sent = false;
+	}
+	if(!lua_isnil(L, 3)){
+		co->m_physics_override_jump = lua_tonumber(L, 3);
+		co->m_physics_override_sent = false;
+	}
+	if(!lua_isnil(L, 4)){
+		co->m_physics_override_gravity = lua_tonumber(L, 4);
+		co->m_physics_override_sent = false;
+	}
+	return 0;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -756,6 +778,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_wielded_item),
 	luamethod(ObjectRef, set_wielded_item),
 	luamethod(ObjectRef, set_armor_groups),
+	luamethod(ObjectRef, set_physics_override),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, set_attach),

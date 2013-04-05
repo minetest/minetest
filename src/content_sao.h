@@ -101,7 +101,7 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
-	
+
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
@@ -257,8 +257,6 @@ private:
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
 
-
-
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
@@ -285,6 +283,11 @@ public:
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_wielded_item_not_sent;
+
+	float m_physics_override_speed;
+	float m_physics_override_jump;
+	float m_physics_override_gravity;
+	bool m_physics_override_sent;
 };
 
 #endif

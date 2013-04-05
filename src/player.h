@@ -222,6 +222,10 @@ public:
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
 
+	float physics_override_speed;
+	float physics_override_jump;
+	float physics_override_gravity;
+
 	u16 hp;
 
 	float hurt_tilt_timer;

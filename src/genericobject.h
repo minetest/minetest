@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_SET_ANIMATION 6
 #define GENERIC_CMD_SET_BONE_POSITION 7
 #define GENERIC_CMD_SET_ATTACHMENT 8
+#define GENERIC_CMD_SET_PHYSICS_OVERRIDE 9
 
 #include "object_properties.h"
 std::string gob_cmd_set_properties(const ObjectProperties &prop);
@@ -61,6 +62,8 @@ std::string gob_cmd_punched(s16 damage, s16 result_hp);
 
 #include "itemgroup.h"
 std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
+
+std::string gob_cmd_update_physics_override(float physics_override_speed, float physics_override_jump, float physics_override_gravity);
 
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend);
 

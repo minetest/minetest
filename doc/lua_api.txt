@@ -1348,6 +1348,10 @@ Player-only: (no-op for other objects)
     {jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
 - get_player_control_bits(): returns integer with bit packed player pressed keys
     bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+- set_physics_override(speed, jump, gravity)
+    modifies per-player walking speed, jump height, and gravity.
+    Values default to 1 and act as offsets to the physics settings 
+    in minetest.conf. nil will keep the current setting.
     
 InvRef: Reference to an inventory
 methods:
