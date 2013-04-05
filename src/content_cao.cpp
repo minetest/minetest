@@ -1679,6 +1679,19 @@ public:
 
 			updateTexturePos();
 		}
+		else if(cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE)
+		{
+			float override_speed = readF1000(is);
+			float override_jump = readF1000(is);
+			float override_gravity = readF1000(is);
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->physics_override_speed = override_speed;
+				player->physics_override_jump = override_jump;
+				player->physics_override_gravity = override_gravity;
+			}
+		}
 		else if(cmd == GENERIC_CMD_SET_ANIMATION)
 		{
 			m_animation_range = readV2F1000(is);

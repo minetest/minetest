@@ -529,7 +529,7 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speedJ = getSpeed();
 			if(speedJ.Y >= -0.5 * BS)
 			{
-				speedJ.Y = movement_speed_jump;
+				speedJ.Y = movement_speed_jump * physics_override_jump;
 				setSpeed(speedJ);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
@@ -584,8 +584,8 @@ void LocalPlayer::applyControl(float dtime)
 		incH = incV = movement_acceleration_default * BS * dtime;
 
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speedH, incH);
-	accelerateVertical(speedV, incV);
+	accelerateHorizontal(speedH * physics_override_speed, incH * physics_override_speed);
+	accelerateVertical(speedV * physics_override_speed, incV * physics_override_speed);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()

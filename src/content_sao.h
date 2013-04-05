@@ -101,7 +101,7 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
-	
+
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
@@ -164,6 +164,7 @@ public:
 	void setHP(s16 hp);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
+	void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
@@ -257,8 +258,6 @@ private:
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
 
-
-
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
@@ -269,6 +268,11 @@ private:
 	float m_animation_speed;
 	float m_animation_blend;
 	bool m_animation_sent;
+
+	float m_physics_override_speed;
+	float m_physics_override_jump;
+	float m_physics_override_gravity;
+	bool m_physics_override_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
 	bool m_bone_position_sent;

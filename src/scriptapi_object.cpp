@@ -297,6 +297,26 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	return 0;
 }
 
+// set_physics_override(self, physics_override_speed, physics_override_jump, physics_override_gravity)
+int ObjectRef::l_set_physics_override(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if(co == NULL) return 0;
+	// Do it
+	float physics_override_speed = 1;
+	if(!lua_isnil(L, 2))
+		physics_override_speed = lua_tonumber(L, 2);
+	float physics_override_jump = 1;
+	if(!lua_isnil(L, 3))
+		physics_override_jump = lua_tonumber(L, 3);
+	float physics_override_gravity = 1;
+	if(!lua_isnil(L, 4))
+		physics_override_gravity = lua_tonumber(L, 4);
+	co->setPhysicsOverride(physics_override_speed, physics_override_jump, physics_override_gravity);
+	return 0;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -756,6 +776,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_wielded_item),
 	luamethod(ObjectRef, set_wielded_item),
 	luamethod(ObjectRef, set_armor_groups),
+	luamethod(ObjectRef, set_physics_override),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, set_attach),
