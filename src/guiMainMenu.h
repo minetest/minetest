@@ -117,7 +117,10 @@ public:
 	void deleteWorld(const std::vector<std::string> &paths);
 	int getTab();
 	void displayMessageMenu(std::wstring msg);
-	
+
+private:
+	void enableCtrl(gui::IGUIButton* pButton);
+
 private:
 	MainMenuData *m_data;
 	bool m_accepted;
