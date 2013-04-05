@@ -1909,7 +1909,6 @@ void the_game(
 		/*
 			Player speed control
 		*/
-		{
 			/*bool a_up,
 			bool a_down,
 			bool a_left,
@@ -1931,6 +1930,7 @@ void the_game(
 				input->isKeyDown(getKeySetting("keymap_sneak")),
 				input->getLeftState(),
 				input->getRightState(),
+				input->isKeyDown(getKeySetting("keymap_shld")),
 				camera_pitch,
 				camera_yaw
 			);
@@ -1944,10 +1944,10 @@ void the_game(
 			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
 			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
 			128*(int)input->getLeftState()+
-			256*(int)input->getRightState();
-			LocalPlayer* player = client.getEnv().getLocalPlayer();
-			player->keyPressed=keyPressed;
-		}
+			256*(int)input->getRightState()+
+			512*(int)input->isKeyDown(getKeySetting("keymap_shld"));
+			LocalPlayer* playerxx = client.getEnv().getLocalPlayer();
+			playerxx->keyPressed=keyPressed;
 		
 		/*
 			Run server
@@ -2220,7 +2220,7 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, busytime, screensize, tool_reload_ratio, control.shld);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
@@ -2934,6 +2934,11 @@ void the_game(
 			
 			update_wielded_item_trigger = true;
 		}
+		static bool conrot(false);
+		if(control.shld != conrot){
+			conrot = control.shld;
+			update_wielded_item_trigger = true;
+		}
 		if(update_wielded_item_trigger)
 		{
 			update_wielded_item_trigger = false;
@@ -2942,7 +2947,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item);
+			camera.wield(item, client.getPlayerItem());
 		}
 
 		/*

@@ -107,7 +107,7 @@ public:
 	// Update the camera from the local player's position.
 	// frametime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-			f32 tool_reload_ratio);
+			f32 tool_reload_ratio, bool turn=false);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in);
@@ -117,7 +117,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, u16 player_select);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -178,6 +178,13 @@ private:
 
 	//dummymesh for camera
 	irr::scene::IAnimatedMesh* m_dummymesh;
+
+	// Camera Hand Anim
+	f32 hand_anim_time;
+	bool is_hand_anim;
+	bool hand_anim_changed;
+	u16 wieldslot;
+	std::string wieldname;
 };
 
 #endif
