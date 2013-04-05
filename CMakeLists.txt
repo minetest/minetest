@@ -67,6 +67,7 @@ elseif(APPLE)
 	set(DOCDIR "share/doc/${PROJECT_NAME}")
 	set(EXAMPLE_CONF_DIR ${DOCDIR})
 	set(LOCALEDIR "locale")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif(UNIX) # Linux, BSD etc
 	if(RUN_IN_PLACE)
 		set(SHAREDIR ".")
@@ -87,6 +88,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
 		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
 	endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 set(CUSTOM_SHAREDIR "" CACHE STRING "Directory to install data files into")
