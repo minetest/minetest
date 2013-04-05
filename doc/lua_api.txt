@@ -1589,6 +1589,7 @@ Node definition (register_node)
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
     selection_box = {type="regular"}, -- See "Node boxes"
+    ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
     legacy_wallmounted = false, -- Support maps made in and before January 2012
     sounds = {

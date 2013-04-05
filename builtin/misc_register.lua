@@ -103,6 +103,10 @@ function minetest.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
+		-- Use the nodebox as selection box if it's not set manually
+		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
+			itemdef.selection_box = itemdef.node_box
+		end
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
 		minetest.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
