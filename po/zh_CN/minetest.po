@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-09 09:41+0200\n"
+"PO-Revision-Date: 2013-04-05 04:43+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -257,13 +257,12 @@ msgid "Name/Password"
 msgstr "名字/密码"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
-#, fuzzy
 msgid "Favorites:"
-msgstr "显示最爱"
+msgstr "最爱的服务器："
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "公共服务器列表："
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -290,9 +289,8 @@ msgid "Start Game / Connect"
 msgstr "启动游戏/连接"
 
 #: src/guiMainMenu.cpp:632
-#, fuzzy
 msgid "Public"
-msgstr "显示公共"
+msgstr "公共服务器"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -348,7 +346,7 @@ msgstr "启用粒子效果"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "液体有限延伸"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -408,7 +406,7 @@ msgstr "更改密码"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "音量"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -447,11 +445,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "音量： "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
