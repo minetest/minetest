@@ -54,3 +54,5 @@ Makefile
 cmake_install.cmake
 locale/
 
+
+/src/luaJIT/src/host/buildvm_arch.h
