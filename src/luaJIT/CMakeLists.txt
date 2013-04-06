@@ -51,6 +51,7 @@ endif()
 mark_as_advanced(LUAJIT_USE_DLOPEN)
 
 if(DEFAULT_POSIX)
+	list ( APPEND LIBS m )
 else()
 endif()
 
