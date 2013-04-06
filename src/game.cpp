@@ -993,6 +993,10 @@ void the_game(
 		sound_is_dummy = true;
 	}
 
+	Server* server = NULL;
+	Sky *sky = NULL;
+
+	try{
 	// Event manager
 	EventManager eventmgr;
 
@@ -1005,8 +1009,6 @@ void the_game(
 
 	// Create UI for modifying quicktune values
 	QuicktuneShortcutter quicktune;
-
-	Server* server = 0;
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
@@ -1018,10 +1020,9 @@ void the_game(
 	/*
 		Skybox thingy
 	*/
-	Sky *sky = NULL;
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 
-	try{
+
 	do{ // Client scope (breakable do-while(0))
 	
 	/*
@@ -3288,6 +3289,16 @@ void the_game(
 				+ narrow_to_wide(e.what()) + L"\n\nThe server is probably "
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
+	}
+	catch(ServerError &e)
+	{
+		error_message = narrow_to_wide(e.what());
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
+	}
+	catch(ModError &e)
+	{
+		errorstream<<e.what()<<std::endl;
+		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
 	}
 
 	if(!sound_is_dummy)
