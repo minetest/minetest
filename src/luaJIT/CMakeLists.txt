@@ -78,7 +78,6 @@ set(LUAJIT_SOVERSION
 #
 # libs & cflags
 #
-set(COMMON_LDFLAGS "${COMMON_LDFLAGS}")
 
 # For "Mac OS X 10.3-"
 if(LUAJIT_USE_MACOSX)
@@ -101,6 +100,8 @@ endif(LUAJIT_ANSI)
 # COMMON_CFLAGS has no effect without this line
 #
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
+
+set(CMAKE_EXE_LINKERS_FLAG "${CMAKE_EXE_LINKERS_FLAG} ${COMMON_LDFLAGS}")
 
 #
 # standard flags to use for each build type.
