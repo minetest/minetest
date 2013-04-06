@@ -265,9 +265,9 @@ void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool 
 		cave.part_max_length_rs = ps.range(2,4);
 		if (node_min.Y < -100 && !ps.range(0, farscale(0.2, node_min.X,node_min.Y,node_min.Z)*30)) { //huge
 			cave.flooded = !ps.range(0, 3);
-			cave.tunnel_routepoints = ps.range(5, 20);
+			cave.tunnel_routepoints = ps.range(5, 30);
 			cave.min_tunnel_diameter = 30;
-			cave.max_tunnel_diameter = ps.range(40, ps.range(80,120));
+			cave.max_tunnel_diameter = ps.range(40, ps.range(80,200));
 		} else {
 			cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
 			cave.min_tunnel_diameter = 5;
