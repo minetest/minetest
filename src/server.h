@@ -485,7 +485,6 @@ public:
 	void deleteParticleSpawner(const char *playername, u32 id);
 	void deleteParticleSpawnerAll(u32 id);
 
-
 	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 
 	// Creates or resets inventory
@@ -497,10 +496,8 @@ public:
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
 
-	//TODO:  determine what should be locked when accessing the emerge manager
+	//TODO: determine what (if anything) should be locked to access EmergeManager
 	EmergeManager *getEmergeManager(){ return m_emerge; }
-
-	BiomeDefManager *getBiomeDef(){ return m_biomedef; }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -733,9 +730,6 @@ private:
 
 	// Emerge manager
 	EmergeManager *m_emerge;
-
-	// Biome Definition Manager
-	BiomeDefManager *m_biomedef;
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua

@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr2@cs.scranton.edu>
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,68 +23,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "main.h"
 
-#define BT_NONE			0
-#define BT_OCEAN		1
-#define BT_LAKE			2
-#define BT_SBEACH		3
-#define BT_GBEACH		4
-#define BT_PLAINS		5
-#define BT_HILLS		6
-#define BT_EXTREMEHILLS 7
-#define BT_MOUNTAINS	8
-#define BT_DESERT		9
-#define BT_DESERTHILLS	10
-#define BT_HELL			11
-#define BT_AETHER		12
 
-#define BT_BTMASK		0x3F
-
-#define BTF_SNOW		0x40
-#define BTF_FOREST		0x80
-
-#define BGFREQ_1 (           0.40)
-#define BGFREQ_2 (BGFREQ_1 + 0.05)
-#define BGFREQ_3 (BGFREQ_2 + 0.08)
-#define BGFREQ_4 (BGFREQ_3 + 0.35)
-#define BGFREQ_5 (BGFREQ_4 + 0.18)
-//BGFREQ_5 is not checked as an upper bound; it ought to sum up to 1.00, but it's okay if it doesn't.
+NoiseParams nparams_biome_def_heat =
+	{50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.70};
+NoiseParams nparams_biome_def_humidity =
+	{50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.55};
 
 
-/*float bg1_temps[] = {0.0};
-int bg1_biomes[]  = {BT_OCEAN};
+BiomeDefManager::BiomeDefManager() {
+	biome_registration_finished = false;
+	np_heat     = &nparams_biome_def_heat;
+	np_humidity = &nparams_biome_def_humidity;
 
-float bg2_temps[] = {10.0};
-int bg2_biomes[]  = {BT_GBEACH, BT_SBEACH};
+	// Create default biome to be used in case none exist
+	Biome *b = new Biome;
+	
+	b->id    = 0;
+	b->name  = "Default";
+	b->flags = 0;
 
-float bg3_temps[] = {30.0, 40.0};
-int bg3_biomes[]  = {BT_HILLS, BT_EXTREMEHILLS, BT_MOUNTAINS};
+	b->c_top         = CONTENT_AIR;
+	b->top_depth     = 0;
+	b->c_filler      = b->c_top;
+	b->filler_height = MAP_GENERATION_LIMIT;
 
-float bg4_temps[] = {25.0, 30.0, 35.0, 40.0};
-int bg4_biomes[]  = {BT_HILLS, BT_EXTREMEHILLS, BT_MOUNTAINS, BT_DESERT, BT_DESERTHILLS};
+	b->height_min      = -MAP_GENERATION_LIMIT;
+	b->height_max      = MAP_GENERATION_LIMIT;
+	b->heat_point      = 0.0;
+	b->humidity_point  = 0.0;
 
-float bg5_temps[] = {5.0, 40.0};
-int bg5_biomes[]  = {BT_LAKE, BT_PLAINS, BT_DESERT};*/
-
-NoiseParams np_default = {20.0, 15.0, v3f(250., 250., 250.), 82341, 5, 0.6};
-
-
-BiomeDefManager::BiomeDefManager(IGameDef *gamedef) {
-	this->m_gamedef = gamedef;
-	this->ndef      = gamedef->ndef();
-
-	//the initial biome group
-	bgroups.push_back(new std::vector<Biome *>);
+	biomes.push_back(b);
 }
 
 
 BiomeDefManager::~BiomeDefManager() {
-	for (unsigned int i = 0; i != bgroups.size(); i++)
-		delete bgroups[i];
+	//if (biomecache)
+	//	delete[] biomecache;
+	
+	for (size_t i = 0; i != biomes.size(); i++)
+		delete biomes[i];
 }
 
 
 Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
-	switch (btt) {
+	/*switch (btt) {
 		case BIOME_TERRAIN_NORMAL:
 			return new Biome;
 		case BIOME_TERRAIN_LIQUID:
@@ -92,142 +74,97 @@ Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
 		case BIOME_TERRAIN_NETHER:
 			return new BiomeHell;
 		case BIOME_TERRAIN_AETHER:
-			return new BiomeAether;
+			return new BiomeSky;
 		case BIOME_TERRAIN_FLAT:
 			return new BiomeSuperflat;
 	}
-	return NULL;
+	return NULL;*/
+	return new Biome;
 }
 
 
-void BiomeDefManager::addBiomeGroup(float freq) {
-	int size = bgroup_freqs.size();
-	float newfreq = freq;
+// just a PoC, obviously needs optimization later on (precalculate this)
+void BiomeDefManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map) {
+	int i = 0;
+	for (int y = 0; y != input->mapsize.Y; y++) {
+		for (int x = 0; x != input->mapsize.X; x++, i++) {
+			float heat     = (input->heat_map[i] + 1) * 50;
+			float humidity = (input->humidity_map[i] + 1) * 50;
+			biomeid_map[i] = getBiome(heat, humidity, input->height_map[i])->id;
+		}
+	}
+}
 
-	if (size)
-		newfreq += bgroup_freqs[size - 1];
-	bgroup_freqs.push_back(newfreq);
-	bgroups.push_back(new std::vector<Biome *>);
 
-	verbosestream << "BiomeDefManager: added biome group with frequency " <<
-		newfreq << std::endl;
+void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
+	Biome *b;
+	
+	biome_registration_finished = true;
+	
+	for (size_t i = 0; i != biomes.size(); i++) {
+		b = biomes[i];
+		
+		if (b->c_top == CONTENT_IGNORE) {
+			b->c_top = ndef->getId(b->top_nodename);
+			if (b->c_top == CONTENT_IGNORE) {
+				errorstream << "BiomeDefManager::resolveNodeNames: node '"
+					<< b->top_nodename << "' not defined" << std::endl;
+				b->c_top = CONTENT_AIR;
+				b->top_depth = 0;
+			}
+		}
+		
+		if (b->c_filler == CONTENT_IGNORE) {
+			b->c_filler = ndef->getId(b->filler_nodename);
+			if (b->c_filler == CONTENT_IGNORE) {
+				errorstream << "BiomeDefManager::resolveNodeNames: node '"
+					<< b->filler_nodename << "' not defined" << std::endl;
+				b->c_filler = CONTENT_AIR;
+				b->filler_height = MAP_GENERATION_LIMIT;
+			}
+		}
+	}
 }
 
 
 void BiomeDefManager::addBiome(Biome *b) {
-	std::vector<Biome *> *bgroup;
-
-	if ((unsigned int)b->groupid >= bgroups.size()) {
-		errorstream << "BiomeDefManager: attempted to add biome '" << b->name
-		 << "' to nonexistent biome group " << b->groupid << std::endl;
+	if (biome_registration_finished) {
+		errorstream << "BIomeDefManager: biome registration already finished, dropping " << b->name <<std::endl;
+		delete b;
+		return;
+	}
+	
+	size_t nbiomes = biomes.size();
+	if (nbiomes >= 0xFF) {
+		errorstream << "BiomeDefManager: too many biomes, dropping " << b->name << std::endl;
+		delete b;
 		return;
 	}
 
-	bgroup = bgroups[b->groupid];
-	bgroup->push_back(b);
-
-	verbosestream << "BiomeDefManager: added biome '" << b->name <<
-		"' to biome group " << (int)b->groupid << std::endl;
+	b->id = (u8)nbiomes;
+	biomes.push_back(b);
+	verbosestream << "BiomeDefManager: added biome " << b->name << std::endl;
 }
 
 
-void BiomeDefManager::addDefaultBiomes() {
-	Biome *b;
+Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
+	Biome *b, *biome_closest = NULL;
+	float dist_min = FLT_MAX;
 
-	b = new Biome;
-	b->name         = "Default";
-	b->n_top        = MapNode(ndef->getId("mapgen_stone"));
-	b->n_filler     = b->n_top;
-	b->ntopnodes    = 0;
-	b->height_min   = -MAP_GENERATION_LIMIT;
-	b->height_max   = MAP_GENERATION_LIMIT;
-	b->heat_min     = FLT_MIN;
-	b->heat_max     = FLT_MAX;
-	b->humidity_min = FLT_MIN;
-	b->humidity_max = FLT_MAX;
-	b->np = &np_default;
-	biome_default = b;
-}
+	for (size_t i = 1; i < biomes.size(); i++) {
+		b = biomes[i];
+		if (y > b->height_max || y < b->height_min)
+			continue;
 
-
-Biome *BiomeDefManager::getBiome(float bgfreq, float heat, float humidity) {
-	std::vector<Biome *> *bgroup;
-	Biome *b;
-	int i;
-
-	int ngroups = bgroup_freqs.size();
-	if (!ngroups)
-		return biome_default;
-	for (i = 0; (i != ngroups) && (bgfreq > bgroup_freqs[i]); i++);
-	bgroup = bgroups[i];
-
-	int nbiomes = bgroup->size();
-	for (i = 0; i != nbiomes; i++) {
-		b = bgroup->operator[](i);
-		if (heat >= b->heat_min && heat <= b->heat_max &&
-			humidity >= b->humidity_min && humidity <= b->humidity_max)
-			return b;
+		float d_heat      = heat     - b->heat_point;
+		float d_humidity  = humidity - b->humidity_point;
+		float dist = (d_heat * d_heat) +
+					 (d_humidity * d_humidity);
+		if (dist < dist_min) {
+			dist_min = dist;
+			biome_closest = b;
+		}
 	}
-
-	return biome_default;
-}
-
-
-//////////////////////////// [ Generic biome ] ////////////////////////////////
-
-
-int Biome::getSurfaceHeight(float noise_terrain) {
-	return np->offset + np->scale * noise_terrain;
-}
-
-
-void Biome::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-
-}
-
-
-///////////////////////////// [ Ocean biome ] /////////////////////////////////
-
-
-void BiomeLiquid::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-
-}
-
-
-///////////////////////////// [ Nether biome ] /////////////////////////////////
-
-
-int BiomeHell::getSurfaceHeight(float noise_terrain) {
-	return np->offset + np->scale * noise_terrain;
-}
-
-
-void BiomeHell::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-
-}
-
-
-///////////////////////////// [ Aether biome ] ////////////////////////////////
-
-
-int BiomeAether::getSurfaceHeight(float noise_terrain) {
-	return np->offset + np->scale * noise_terrain;
-}
-
-
-void BiomeAether::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-
-}
-
-
-/////////////////////////// [ Superflat biome ] ///////////////////////////////
-
-
-int BiomeSuperflat::getSurfaceHeight(float noise_terrain) {
-	return ntopnodes;
-}
-
-
-void BiomeSuperflat::genColumn(Mapgen *mapgen, int x, int z, int y1, int y2) {
-
+	
+	return biome_closest ? biome_closest : biomes[0];
 }

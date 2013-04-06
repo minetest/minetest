@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "treegen.h"
 #include "mapgen_v6.h"
+#include "mapgen_v7.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -406,6 +407,31 @@ void MapgenV6Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv6_np_humidity",       np_humidity);
 	settings->setNoiseParams("mgv6_np_trees",          np_trees);
 	settings->setNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
+}
+
+
+bool MapgenV7Params::readParams(Settings *settings) {
+	np_terrain_base    = settings->getNoiseParams("mgv7_np_terrain_base");
+	np_terrain_alt     = settings->getNoiseParams("mgv7_np_terrain_alt");
+	np_terrain_mod     = settings->getNoiseParams("mgv7_np_terrain_mod");
+	np_terrain_persist = settings->getNoiseParams("mgv7_np_terrain_persist");
+	np_height_select   = settings->getNoiseParams("mgv7_np_height_select");
+	np_ridge           = settings->getNoiseParams("mgv7_np_ridge");
+	
+	bool success =
+		np_terrain_base    && np_terrain_alt   && np_terrain_mod &&
+		np_terrain_persist && np_height_select && np_ridge;
+	return success;
+}
+
+
+void MapgenV7Params::writeParams(Settings *settings) {
+	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
+	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
+	settings->setNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod);
+	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
+	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }
 
 

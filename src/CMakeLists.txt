@@ -227,6 +227,7 @@ set(common_SRCS
 	emerge.cpp
 	mapgen.cpp
 	mapgen_v6.cpp
+	mapgen_v7.cpp
 	mapgen_indev.cpp
 	mapgen_singlenode.cpp
 	treegen.cpp
