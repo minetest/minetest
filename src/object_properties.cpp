@@ -38,7 +38,8 @@ ObjectProperties::ObjectProperties():
 	initial_sprite_basepos(0,0),
 	is_visible(true),
 	makes_footstep_sound(false),
-	automatic_rotate(0)
+	automatic_rotate(0),
+	force_load(false)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
@@ -69,6 +70,7 @@ std::string ObjectProperties::dump()
 	os<<", is_visible="<<is_visible;
 	os<<", makes_footstep_sound="<<makes_footstep_sound;
 	os<<", automatic_rotate="<<automatic_rotate;
+	os<<", force_load="<<force_load;
 	return os.str();
 }
 
@@ -97,6 +99,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	for(u32 i=0; i<colors.size(); i++){
 		writeARGB8(os, colors[i]);
 	}
+	writeU8(os, force_load);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -129,6 +132,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			for(u32 i=0; i<color_count; i++){
 				colors.push_back(readARGB8(is));
 			}
+			force_load = readU8(is);
 		}catch(SerializationError &e){}
 	}
 	else
