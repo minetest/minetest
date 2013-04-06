@@ -1886,7 +1886,14 @@ void the_game(
 					+ itos(range_new));
 			statustext_time = 0;
 		}
-		
+
+
+		if (input->isKeyDown(getKeySetting("keymap_zoom"))) {
+			player->zoom=true;
+		} else {
+			player->zoom=false;
+		}
+
 		// Reset jump_timer
 		if(!input->isKeyDown(getKeySetting("keymap_jump")) && reset_jump_timer)
 		{
@@ -2015,7 +2022,12 @@ void the_game(
 				if(input->isKeyDown(irr::KEY_RIGHT))
 					dx += dtime * keyspeed;*/
 				
-				float d = 0.2;
+				float d;
+				if (player->zoom) {
+					d = 0.05;
+				} else {
+					d = 0.2;
+				}
 				camera_yaw -= dx*d;
 				camera_pitch += dy*d;
 				if(camera_pitch < -89.5) camera_pitch = -89.5;
