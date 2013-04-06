@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -16,108 +16,52 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef LUA_NODEMETA_H_
-#define LUA_NODEMETA_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#ifndef SCRIPTAPI_NODEMETA_H_
+#define SCRIPTAPI_NODEMETA_H_
 
-#include "environment.h"
-#include "nodemetadata.h"
+#include "scriptapi_base.h"
+#include "scriptapi_item.h"
+#include "irr_v3d.h"
 
-/*
-	NodeMetaRef
-*/
+class ItemStack;
 
-class NodeMetaRef
+class ScriptApiNodemeta
+		: virtual public ScriptApiBase,
+		  public ScriptApiItem
 {
-private:
-	v3s16 m_p;
-	ServerEnvironment *m_env;
-
-	static const char className[];
-	static const luaL_reg methods[];
-
-	static NodeMetaRef *checkobject(lua_State *L, int narg);
-
-	static NodeMetadata* getmeta(NodeMetaRef *ref, bool auto_create);
-
-	static void reportMetadataChange(NodeMetaRef *ref);
-
-	// Exported functions
-
-	// garbage collector
-	static int gc_object(lua_State *L);
-
-	// get_string(self, name)
-	static int l_get_string(lua_State *L);
-
-	// set_string(self, name, var)
-	static int l_set_string(lua_State *L);
-
-	// get_int(self, name)
-	static int l_get_int(lua_State *L);
-
-	// set_int(self, name, var)
-	static int l_set_int(lua_State *L);
-
-	// get_float(self, name)
-	static int l_get_float(lua_State *L);
-
-	// set_float(self, name, var)
-	static int l_set_float(lua_State *L);
-
-	// get_inventory(self)
-	static int l_get_inventory(lua_State *L);
-
-	// to_table(self)
-	static int l_to_table(lua_State *L);
-
-	// from_table(self, table)
-	static int l_from_table(lua_State *L);
-
 public:
-	NodeMetaRef(v3s16 p, ServerEnvironment *env);
+	ScriptApiNodemeta();
+	virtual ~ScriptApiNodemeta();
 
-	~NodeMetaRef();
+	// Return number of accepted items to be moved
+	int nodemeta_inventory_AllowMove(v3s16 p,
+			const std::string &from_list, int from_index,
+			const std::string &to_list, int to_index,
+			int count, ServerActiveObject *player);
+	// Return number of accepted items to be put
+	int nodemeta_inventory_AllowPut(v3s16 p,
+			const std::string &listname, int index, ItemStack &stack,
+			ServerActiveObject *player);
+	// Return number of accepted items to be taken
+	int nodemeta_inventory_AllowTake(v3s16 p,
+			const std::string &listname, int index, ItemStack &stack,
+			ServerActiveObject *player);
+	// Report moved items
+	void nodemeta_inventory_OnMove(v3s16 p,
+			const std::string &from_list, int from_index,
+			const std::string &to_list, int to_index,
+			int count, ServerActiveObject *player);
+	// Report put items
+	void nodemeta_inventory_OnPut(v3s16 p,
+			const std::string &listname, int index, ItemStack &stack,
+			ServerActiveObject *player);
+	// Report taken items
+	void nodemeta_inventory_OnTake(v3s16 p,
+			const std::string &listname, int index, ItemStack &stack,
+			ServerActiveObject *player);
+private:
 
-	// Creates an NodeMetaRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, v3s16 p, ServerEnvironment *env);
-
-	static void Register(lua_State *L);
 };
 
-/*****************************************************************************/
-/* Minetest interface                                                        */
-/*****************************************************************************/
-// Return number of accepted items to be moved
-int scriptapi_nodemeta_inventory_allow_move(lua_State *L, v3s16 p,
-		const std::string &from_list, int from_index,
-		const std::string &to_list, int to_index,
-		int count, ServerActiveObject *player);
-// Return number of accepted items to be put
-int scriptapi_nodemeta_inventory_allow_put(lua_State *L, v3s16 p,
-		const std::string &listname, int index, ItemStack &stack,
-		ServerActiveObject *player);
-// Return number of accepted items to be taken
-int scriptapi_nodemeta_inventory_allow_take(lua_State *L, v3s16 p,
-		const std::string &listname, int index, ItemStack &stack,
-		ServerActiveObject *player);
-// Report moved items
-void scriptapi_nodemeta_inventory_on_move(lua_State *L, v3s16 p,
-		const std::string &from_list, int from_index,
-		const std::string &to_list, int to_index,
-		int count, ServerActiveObject *player);
-// Report put items
-void scriptapi_nodemeta_inventory_on_put(lua_State *L, v3s16 p,
-		const std::string &listname, int index, ItemStack &stack,
-		ServerActiveObject *player);
-// Report taken items
-void scriptapi_nodemeta_inventory_on_take(lua_State *L, v3s16 p,
-		const std::string &listname, int index, ItemStack &stack,
-		ServerActiveObject *player);
-
-#endif //LUA_NODEMETA_H_
+#endif /* SCRIPTAPI_NODEMETA_H_ */

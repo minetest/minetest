@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -17,39 +17,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUA_NODE_H_
-#define LUA_NODE_H_
+#ifndef SCRIPTAPI_NODE_H_
+#define SCRIPTAPI_NODE_H_
 
-#include <iostream>
 #include <map>
 
-extern "C" {
-#include <lua.h>
-}
+#include "irr_v3d.h"
+#include "scriptapi_base.h"
+#include "scriptapi_nodemeta.h"
 
-#include "content_sao.h"
-#include "map.h"
+class MapNode;
+class ServerActiveObject;
 
-/*****************************************************************************/
-/* Minetest interface                                                        */
-/*****************************************************************************/
-bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
-		ServerActiveObject *puncher);
-bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
-		ServerActiveObject *digger);
-void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
-void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
-void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node);
-bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime);
-void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
-		const std::string &formname,
-		const std::map<std::string, std::string> &fields,
-		ServerActiveObject *sender);
+class ScriptApiNode
+		: virtual public ScriptApiBase,
+		  public ScriptApiNodemeta
+{
+public:
+	ScriptApiNode();
+	virtual ~ScriptApiNode();
 
-extern struct EnumString es_DrawType[];
-extern struct EnumString es_ContentParamType[];
-extern struct EnumString es_ContentParamType2[];
-extern struct EnumString es_LiquidType[];
-extern struct EnumString es_NodeBoxType[];
+	bool node_on_punch(v3s16 p, MapNode node,
+			ServerActiveObject *puncher);
+	bool node_on_dig(v3s16 p, MapNode node,
+			ServerActiveObject *digger);
+	void node_on_construct(v3s16 p, MapNode node);
+	void node_on_destruct(v3s16 p, MapNode node);
+	void node_after_destruct(v3s16 p, MapNode node);
+	bool node_on_timer(v3s16 p, MapNode node, f32 dtime);
+	void node_on_receive_fields(v3s16 p,
+			const std::string &formname,
+			const std::map<std::string, std::string> &fields,
+			ServerActiveObject *sender);
+public:
+	static struct EnumString es_DrawType[];
+	static struct EnumString es_ContentParamType[];
+	static struct EnumString es_ContentParamType2[];
+	static struct EnumString es_LiquidType[];
+	static struct EnumString es_NodeBoxType[];
+};
 
-#endif /* LUA_NODE_H_ */
+
+
+#endif /* SCRIPTAPI_NODE_H_ */

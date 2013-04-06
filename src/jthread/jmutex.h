@@ -57,6 +57,7 @@ public:
 	int Lock();
 	int Unlock();
 	bool IsInitialized() 						{ return initialized; }
+
 private:
 #if (defined(WIN32) || defined(_WIN32_WCE))
 #ifdef JMUTEX_CRITICALSECTION
@@ -66,6 +67,14 @@ private:
 #endif // JMUTEX_CRITICALSECTION
 #else // pthread mutex
 	pthread_mutex_t mutex;
+
+	bool IsLocked() {
+		if (pthread_mutex_trylock(&mutex)) {
+			pthread_mutex_unlock(&mutex);
+			return true;
+		}
+		return false;
+	}
 #endif // WIN32
 	bool initialized;
 };

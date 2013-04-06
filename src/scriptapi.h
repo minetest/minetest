@@ -17,59 +17,66 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SCRIPTAPI_HEADER
-#define SCRIPTAPI_HEADER
+#ifndef SCRIPTAPI_H_
+#define SCRIPTAPI_H_
 
-#include <string>
-#include <set>
 #include <map>
-#include "irr_v3d.h"
-#include "irr_v2d.h"
+#include <set>
+#include <vector>
 
-extern "C" {
-#include <lua.h>
-}
-#include "scriptapi_inventory.h"
-#include "scriptapi_nodemeta.h"
-#include "scriptapi_entity.h"
-#include "scriptapi_object.h"
+#include "scriptapi_base.h"
+#include "scriptapi_player.h"
 #include "scriptapi_env.h"
-#include "scriptapi_item.h"
 #include "scriptapi_node.h"
+#include "scriptapi_inventory.h"
+#include "scriptapi_entity.h"
 
-#define luamethod(class, name) {#name, class::l_##name}
+class ModApiBase;
 
-class Server;
+/*****************************************************************************/
+/* Scriptapi <-> Core Interface                                              */
+/*****************************************************************************/
 
-void scriptapi_export(lua_State *L, Server *server);
-bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
-		const std::string &modname);
+class ScriptApi
+		: virtual public ScriptApiBase,
+		  public ScriptApiPlayer,
+		  public ScriptApiEnv,
+		  public ScriptApiNode,
+		  public ScriptApiDetached,
+		  public ScriptApiEntity
+{
+public:
+	ScriptApi();
+	ScriptApi(Server* server);
+	~ScriptApi();
 
-// Returns true if script handled message
-bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
-		const std::string &message);
+	// Returns true if script handled message
+	bool on_chat_message(const std::string &name, const std::string &message);
 
-/* server */
-void scriptapi_on_shutdown(lua_State *L);
+	/* server */
+	void on_shutdown();
 
-/* misc */
-void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
-bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player);
-bool scriptapi_get_auth(lua_State *L, const std::string &playername,
-		std::string *dst_password, std::set<std::string> *dst_privs);
-void scriptapi_create_auth(lua_State *L, const std::string &playername,
-		const std::string &password);
-bool scriptapi_set_password(lua_State *L, const std::string &playername,
-		const std::string &password);
+	/* auth */
+	bool getAuth(const std::string &playername,
+			std::string *dst_password, std::set<std::string> *dst_privs);
+	void createAuth(const std::string &playername,
+			const std::string &password);
+	bool setPassword(const std::string &playername,
+			const std::string &password);
 
-/* player */
-void scriptapi_on_player_receive_fields(lua_State *L, 
-		ServerActiveObject *player,
-		const std::string &formname,
-		const std::map<std::string, std::string> &fields);
+	/** register a lua api module to scriptapi */
+	static bool registerModApiModule(ModApiBase* prototype);
+	/** load a mod **/
+	bool loadMod(const std::string &scriptpath,const std::string &modname);
 
-#endif
+private:
+	void getAuthHandler();
+	void readPrivileges(int index,std::set<std::string> &result);
 
+	bool scriptLoad(const char *path);
+
+	static std::vector<ModApiBase*>* m_ModApiModules;
+
+};
+
+#endif /* SCRIPTAPI_H_ */

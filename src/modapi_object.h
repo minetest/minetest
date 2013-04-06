@@ -17,17 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUA_OBJECT_H_
-#define LUA_OBJECT_H_
+#ifndef MODAPI_OBJECT_H_
+#define MODAPI_OBJECT_H_
 
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
 }
 
-#include "serverobject.h"
-#include "content_sao.h"
-#include "player.h"
+class ServerActiveObject;
+class LuaEntitySAO;
+class PlayerSAO;
+class Player;
 
 /*
 	ObjectRef
@@ -204,20 +205,4 @@ public:
 	static void Register(lua_State *L);
 };
 
-/*****************************************************************************/
-/* scriptapi internal                                                        */
-/*****************************************************************************/
-// Creates a new anonymous reference if cobj=NULL or id=0
-void objectref_get_or_create(lua_State *L,
-		ServerActiveObject *cobj);
-void objectref_get(lua_State *L, u16 id);
-void read_object_properties(lua_State *L, int index,
-		ObjectProperties *prop);
-
-/*****************************************************************************/
-/* Minetest interface                                                        */
-/*****************************************************************************/
-void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
-void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
-
-#endif /* LUA_OBJECT_H_ */
+#endif /* MODAPI_OBJECT_H_ */

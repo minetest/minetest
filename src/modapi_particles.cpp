@@ -18,11 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scriptapi.h"
-#include "scriptapi_particles.h"
+#include "scriptapi_converter.h"
+#include "modapi_base.h"
+#include "modapi_particles.h"
 #include "server.h"
-#include "script.h"
-#include "scriptapi_types.h"
-#include "scriptapi_common.h"
+#include "modapi_internal.h"
+
+bool ModApiParticles::Initialize(lua_State *L, int top) {
+	bool retval = true;
+
+	retval &= API_FCT(add_particle);
+	retval &= API_FCT(add_particlespawner);
+	retval &= API_FCT(delete_particlespawner);
+
+	return retval;
+}
 
 // add_particle(pos, velocity, acceleration, expirationtime,
 // 		size, collisiondetection, texture, player)
@@ -30,10 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // expirationtime = num (seconds)
 // size = num
 // texture = e.g."default_wood.png"
-int l_add_particle(lua_State *L)
+int ModApiParticles::l_add_particle(lua_State *L)
 {
-	// Get server from registry
-	Server *server = get_server(L);
 	// Get parameters
 	v3f pos = check_v3f(L, 1);
 	v3f vel = check_v3f(L, 2);
@@ -46,13 +54,13 @@ int l_add_particle(lua_State *L)
 	if (lua_gettop(L) == 8) // only spawn for a single player
 	{
 		const char *playername = luaL_checkstring(L, 8);
-		server->spawnParticle(playername,
+		getServer(L)->spawnParticle(playername,
 			pos, vel, acc, expirationtime,
 			size, collisiondetection, texture);
 	}
 	else // spawn for all players
 	{
-		server->spawnParticleAll(pos, vel, acc,
+		getServer(L)->spawnParticleAll(pos, vel, acc,
 			expirationtime, size, collisiondetection, texture);
 	}
 	return 1;
@@ -72,10 +80,8 @@ int l_add_particle(lua_State *L)
 // minsize/maxsize = num
 // collisiondetection = bool
 // texture = e.g."default_wood.png"
-int l_add_particlespawner(lua_State *L)
+int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
-	// Get server from registry
-	Server *server = get_server(L);
 	// Get parameters
 	u16 amount = luaL_checknumber(L, 1);
 	float time = luaL_checknumber(L, 2);
@@ -95,7 +101,7 @@ int l_add_particlespawner(lua_State *L)
 	if (lua_gettop(L) == 15) // only spawn for a single player
 	{
 		const char *playername = luaL_checkstring(L, 15);
-		u32 id = server->addParticleSpawner(playername,
+		u32 id = getServer(L)->addParticleSpawner(playername,
 							amount, time,
 							minpos, maxpos,
 							minvel, maxvel,
@@ -108,7 +114,7 @@ int l_add_particlespawner(lua_State *L)
 	}
 	else // spawn for all players
 	{
-		u32 id = server->addParticleSpawnerAll(	amount, time,
+		u32 id = getServer(L)->addParticleSpawnerAll(	amount, time,
 							minpos, maxpos,
 							minvel, maxvel,
 							minacc, maxacc,
@@ -123,21 +129,21 @@ int l_add_particlespawner(lua_State *L)
 
 // delete_particlespawner(id, player)
 // player (string) is optional
-int l_delete_particlespawner(lua_State *L)
+int ModApiParticles::l_delete_particlespawner(lua_State *L)
 {
-	// Get server from registry
-	Server *server = get_server(L);
 	// Get parameters
 	u32 id = luaL_checknumber(L, 1);
 
 	if (lua_gettop(L) == 2) // only delete for one player
 	{
 		const char *playername = luaL_checkstring(L, 2);
-		server->deleteParticleSpawner(playername, id);
+		getServer(L)->deleteParticleSpawner(playername, id);
 	}
 	else // delete for all players
 	{
-		server->deleteParticleSpawnerAll(id);
+		getServer(L)->deleteParticleSpawnerAll(id);
 	}
 	return 1;
 }
+
+ModApiParticles modapiparticles_prototyp;

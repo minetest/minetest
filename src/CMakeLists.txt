@@ -206,22 +206,31 @@ set(common_SRCS
 	itemdef.cpp
 	nodedef.cpp
 	object_properties.cpp
-	scriptapi_types.cpp
-	scriptapi_common.cpp
-	scriptapi_content.cpp
-	scriptapi_craft.cpp
 	scriptapi_node.cpp
 	scriptapi_item.cpp
 	scriptapi_env.cpp
-	scriptapi_nodetimer.cpp
-	scriptapi_noise.cpp
 	scriptapi_entity.cpp
-	scriptapi_object.cpp
 	scriptapi_nodemeta.cpp
 	scriptapi_inventory.cpp
-	scriptapi_particles.cpp
+	scriptapi_player.cpp
+	scriptapi_base.cpp
+	scriptapi_converter.cpp
+	scriptapi_content.cpp
+	scriptapi_types.cpp
 	scriptapi.cpp
-	script.cpp
+	modapi.cpp
+	modapi_base.cpp
+	modapi_item.cpp
+	modapi_internal.cpp
+	modapi_env.cpp
+	modapi_inventory.cpp
+	modapi_noise.cpp
+	modapi_nodetimer.cpp
+	modapi_object.cpp
+	modapi_nodemeta.cpp
+	modapi_noise.cpp
+	modapi_craft.cpp
+	modapi_particles.cpp
 	log.cpp
 	content_sao.cpp
 	emerge.cpp
@@ -483,7 +492,7 @@ else()
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
