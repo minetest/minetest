@@ -3466,8 +3466,16 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-
-	MapgenParams *mgparams = m_emerge->getParamsFromSettings(&params);
+	
+	MapgenParams *mgparams;
+	try {
+		mgparams = m_emerge->getParamsFromSettings(&params);
+	} catch (SettingNotFoundException &e) {
+		infostream << "Couldn't get a setting from map_meta.txt: "
+				   << e.what() << std::endl;
+		mgparams = NULL;
+	}
+	
 	if (mgparams) {
 		if (m_mgparams)
 			delete m_mgparams;
