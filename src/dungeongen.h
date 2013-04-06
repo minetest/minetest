@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DUNGEONGEN_HEADER
 
 #include "voxel.h"
+#include "pseudo_random.h"
 #include "noise.h"
 
 #define VMANIP_FLAG_DUNGEON_INSIDE VOXELFLAG_CHECKED1
@@ -49,6 +50,11 @@ public:
 	NoiseParams *np_rarity;
 	NoiseParams *np_wetness;
 	NoiseParams *np_density;
+
+	Noise* base_noise;
+	Noise* noise_rarity;
+	Noise* noise_wetness;
+	Noise* noise_density;
 	
 	content_t cid_water_source;
 	content_t cid_cobble;
@@ -61,6 +67,7 @@ public:
 	v3s16 m_dir;
 
 	DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel);
+	~DungeonGen();
 	void generate(ManualMapVoxelManipulator *vm, u32 bseed,
 				  v3s16 full_node_min, v3s16 full_node_max);
 	//void generate(v3s16 full_node_min, v3s16 full_node_max, u32 bseed);

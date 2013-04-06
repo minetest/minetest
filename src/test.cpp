@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
-#include "noise.h" // PseudoRandom used for random data for compression
+#include "pseudo_random.h" // PseudoRandom used for random data for compression
 #include "clientserver.h" // LATEST_PROTOCOL_VERSION
 #include <algorithm>
 

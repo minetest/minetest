@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER_HEADER
 #define SERVER_HEADER
 
+#include "debug.h"
 #include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_bloated.h"

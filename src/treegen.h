@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TREEGEN_HEADER
 
 #include <matrix4.h>
+#include "pseudo_random.h"
 #include "noise.h"
 
 class ManualMapVoxelManipulator;

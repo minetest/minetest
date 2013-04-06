@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "environment.h"
 #include "nodedef.h"
+#include "pseudo_random.h"
 #include "treegen.h"
 
 namespace treegen

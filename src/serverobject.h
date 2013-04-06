@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVEROBJECT_HEADER
 #define SERVEROBJECT_HEADER
 
+#include "debug.h"
 #include "irrlichttypes_bloated.h"
 #include "activeobject.h"
 #include "inventorymanager.h"
