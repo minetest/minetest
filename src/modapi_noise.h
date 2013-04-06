@@ -25,6 +25,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "irr_v3d.h"
 #include "noise.h"
 
 class LuaPerlinNoise

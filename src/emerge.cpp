@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "settings.h"
-#include "script.h"
 #include "scriptapi.h"
 #include "profiler.h"
 #include "log.h"
@@ -399,7 +398,7 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						scriptapi_environment_on_generated(m_server->m_lua,
+						SERVER_TO_SA(m_server)->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 

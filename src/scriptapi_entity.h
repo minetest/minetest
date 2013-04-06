@@ -1,5 +1,5 @@
 /*
-Minetest-c55
+Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -17,38 +17,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUA_ENTITY_H_
-#define LUA_ENTITY_H_
+#ifndef SCRIPTAPI_ENTITY_H_
+#define SCRIPTAPI_ENTITY_H_
 
-extern "C" {
-#include <lua.h>
-}
+#include "scriptapi_base.h"
+#include "irr_v3d.h"
 
-#include "object_properties.h"
-#include "content_sao.h"
-#include "tool.h"
+class ObjectProperties;
+class ToolCapabilities;
 
-/*****************************************************************************/
-/* scriptapi internal                                                        */
-/*****************************************************************************/
-void luaentity_get(lua_State *L, u16 id);
+class ScriptApiEntity
+		: virtual public ScriptApiBase
+{
+public:
+	bool luaentity_Add(u16 id, const char *name);
+	void luaentity_Activate(u16 id,
+			const std::string &staticdata, u32 dtime_s);
+	void luaentity_Remove(u16 id);
+	std::string luaentity_GetStaticdata(u16 id);
+	void luaentity_GetProperties(u16 id,
+			ObjectProperties *prop);
+	void luaentity_Step(u16 id, float dtime);
+	void luaentity_Punch(u16 id,
+			ServerActiveObject *puncher, float time_from_last_punch,
+			const ToolCapabilities *toolcap, v3f dir);
+	void luaentity_Rightclick(u16 id,
+			ServerActiveObject *clicker);
+};
 
-/*****************************************************************************/
-/* Minetest interface                                                        */
-/*****************************************************************************/
-// Returns true if succesfully added into Lua; false otherwise.
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name);
-void scriptapi_luaentity_activate(lua_State *L, u16 id,
-		const std::string &staticdata, u32 dtime_s);
-void scriptapi_luaentity_rm(lua_State *L, u16 id);
-std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id);
-void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
-		ObjectProperties *prop);
-void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
-void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *puncher, float time_from_last_punch,
-		const ToolCapabilities *toolcap, v3f dir);
-void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
-		ServerActiveObject *clicker);
 
-#endif /* LUA_ENTITY_H_ */
+
+#endif /* SCRIPTAPI_ENTITY_H_ */

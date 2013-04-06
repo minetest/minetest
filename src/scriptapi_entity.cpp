@@ -17,43 +17,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scriptapi.h"
 #include "scriptapi_entity.h"
+#include "log.h"
+#include "object_properties.h"
+#include "scriptapi_converter.h"
+#include "scriptapi_content.h"
 
 extern "C" {
-#include <lauxlib.h>
+#include "lauxlib.h"
 }
 
-#include "log.h"
-#include "script.h"
-#include "scriptapi_types.h"
-#include "scriptapi_object.h"
-#include "scriptapi_common.h"
-
-
-void luaentity_get(lua_State *L, u16 id)
+bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
-	// Get minetest.luaentities[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "luaentities");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // luaentities
-	lua_remove(L, -2); // minetest
-}
+	SCRIPTAPI_PRECHECKHEADER
 
-/*
-	luaentity
-*/
-
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
 	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
 			<<name<<"\""<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.registered_entities[name]
 	lua_getglobal(L, "minetest");
@@ -80,7 +59,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 
 	// Add object reference
 	// This should be userdata with metatable ObjectRef
-	objectref_get(L, id);
+	objectrefGet(id);
 	luaL_checktype(L, -1, LUA_TUSERDATA);
 	if(!luaL_checkudata(L, -1, "ObjectRef"))
 		luaL_typerror(L, -1, "ObjectRef");
@@ -97,16 +76,15 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 	return true;
 }
 
-void scriptapi_luaentity_activate(lua_State *L, u16 id,
+void ScriptApiEntity::luaentity_Activate(u16 id,
 		const std::string &staticdata, u32 dtime_s)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	verbosestream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	int object = lua_gettop(L);
 
 	// Get on_activate function
@@ -119,15 +97,15 @@ void scriptapi_luaentity_activate(lua_State *L, u16 id,
 		lua_pushinteger(L, dtime_s);
 		// Call with 3 arguments, 0 results
 		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error running function on_activate: %s\n",
+			scriptError("error running function on_activate: %s\n",
 					lua_tostring(L, -1));
 	}
 }
 
-void scriptapi_luaentity_rm(lua_State *L, u16 id)
+void ScriptApiEntity::luaentity_Remove(u16 id)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	verbosestream<<"scriptapi_luaentity_rm: id="<<id<<std::endl;
 
 	// Get minetest.luaentities table
@@ -144,15 +122,14 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
-std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
+std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	int object = lua_gettop(L);
 
 	// Get get_staticdata function
@@ -165,7 +142,7 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 	lua_pushvalue(L, object); // self
 	// Call with 1 arguments, 1 results
 	if(lua_pcall(L, 1, 1, 0))
-		script_error(L, "error running function get_staticdata: %s\n",
+		scriptError("error running function get_staticdata: %s\n",
 				lua_tostring(L, -1));
 
 	size_t len=0;
@@ -173,16 +150,15 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 	return std::string(s, len);
 }
 
-void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
+void ScriptApiEntity::luaentity_GetProperties(u16 id,
 		ObjectProperties *prop)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	//infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	//int object = lua_gettop(L);
 
 	// Set default values that differ from ObjectProperties defaults
@@ -214,15 +190,14 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	lua_pop(L, 1);
 }
 
-void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
+void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	int object = lua_gettop(L);
 	// State: object is at top of stack
 	// Get step function
@@ -234,22 +209,21 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 	lua_pushnumber(L, dtime); // dtime
 	// Call with 2 arguments, 0 results
 	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error running function 'on_step': %s\n", lua_tostring(L, -1));
+		scriptError("error running function 'on_step': %s\n", lua_tostring(L, -1));
 }
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
 //                       tool_capabilities, direction)
-void scriptapi_luaentity_punch(lua_State *L, u16 id,
+void ScriptApiEntity::luaentity_Punch(u16 id,
 		ServerActiveObject *puncher, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	int object = lua_gettop(L);
 	// State: object is at top of stack
 	// Get function
@@ -258,26 +232,25 @@ void scriptapi_luaentity_punch(lua_State *L, u16 id,
 		return;
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
-	objectref_get_or_create(L, puncher); // Clicker reference
+	objectrefGetOrCreate(puncher); // Clicker reference
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
 	// Call with 5 arguments, 0 results
 	if(lua_pcall(L, 5, 0, 0))
-		script_error(L, "error running function 'on_punch': %s\n", lua_tostring(L, -1));
+		scriptError("error running function 'on_punch': %s\n", lua_tostring(L, -1));
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
-void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
+void ScriptApiEntity::luaentity_Rightclick(u16 id,
 		ServerActiveObject *clicker)
 {
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
+	SCRIPTAPI_PRECHECKHEADER
+
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
-	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L, id);
+	luaentity_get(L,id);
 	int object = lua_gettop(L);
 	// State: object is at top of stack
 	// Get function
@@ -286,8 +259,9 @@ void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
 		return;
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
-	objectref_get_or_create(L, clicker); // Clicker reference
+	objectrefGetOrCreate(clicker); // Clicker reference
 	// Call with 2 arguments, 0 results
 	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error running function 'on_rightclick': %s\n", lua_tostring(L, -1));
+		scriptError("error running function 'on_rightclick': %s\n", lua_tostring(L, -1));
 }
+

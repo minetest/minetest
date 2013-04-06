@@ -18,7 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scriptapi.h"
-#include "scriptapi_nodetimer.h"
+#include "modapi_nodetimer.h"
+#include "modapi_internal.h"
 #include "map.h"
 
 
@@ -164,3 +165,5 @@ const luaL_reg NodeTimerRef::methods[] = {
 	luamethod(NodeTimerRef, get_elapsed),
 	{0,0}
 };
+
+REGISTER_LUA_REF(NodeTimerRef);

@@ -687,9 +687,8 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 
 				if ((g_pos2.totalcost < 0) ||
 						(g_pos2.totalcost > new_cost)) {
-					int old_cost = g_pos2.totalcost;
 					DEBUG_OUT(LVL "Pathfinder: updating path at: "<<
-							PPOS(ipos2) << " from: " << old_cost << " to "<<
+							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << std::endl);
 					if (update_all_costs(ipos2,invert(directions[i]),
 											new_cost,level)) {
@@ -847,9 +846,8 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 
 				if ((g_pos2.totalcost < 0) ||
 						(g_pos2.totalcost > new_cost)) {
-					int old_cost = g_pos2.totalcost;
 					DEBUG_OUT(LVL "Pathfinder: updating path at: "<<
-							PPOS(ipos2) << " from: " << old_cost << " to "<<
+							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << " srcdir=" <<
 							PPOS(invert(direction))<< std::endl);
 					if (update_cost_heuristic(ipos2,invert(direction),

@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scriptapi.h"
-#include "scriptapi_noise.h"
-#include "scriptapi_types.h"
-#include "script.h"
+#include "modapi_noise.h"
+#include "modapi_internal.h"
+#include "scriptapi_converter.h"
+#include "log.h"
 
 // garbage collector
 int LuaPerlinNoise::gc_object(lua_State *L)
@@ -32,6 +32,7 @@ int LuaPerlinNoise::gc_object(lua_State *L)
 
 int LuaPerlinNoise::l_get2d(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
 	v2f pos2d = read_v2f(L,2);
 	lua_Number val = noise2d_perlin(pos2d.X/o->scale, pos2d.Y/o->scale, o->seed, o->octaves, o->persistence);
@@ -40,6 +41,7 @@ int LuaPerlinNoise::l_get2d(lua_State *L)
 }
 int LuaPerlinNoise::l_get3d(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
 	v3f pos3d = read_v3f(L,2);
 	lua_Number val = noise3d_perlin(pos3d.X/o->scale, pos3d.Y/o->scale, pos3d.Z/o->scale, o->seed, o->octaves, o->persistence);
@@ -65,6 +67,7 @@ LuaPerlinNoise::~LuaPerlinNoise()
 // Creates an LuaPerlinNoise and leaves it on top of stack
 int LuaPerlinNoise::create_object(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	int seed = luaL_checkint(L, 1);
 	int octaves = luaL_checkint(L, 2);
 	float persistence = luaL_checknumber(L, 3);
@@ -78,6 +81,7 @@ int LuaPerlinNoise::create_object(lua_State *L)
 
 LuaPerlinNoise* LuaPerlinNoise::checkobject(lua_State *L, int narg)
 {
+	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
 	if(!ud) luaL_typerror(L, narg, className);
@@ -133,6 +137,7 @@ int LuaPerlinNoiseMap::gc_object(lua_State *L)
 
 int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	int i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
@@ -156,6 +161,7 @@ int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 
 int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	int i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
@@ -253,32 +259,6 @@ const luaL_reg LuaPerlinNoiseMap::methods[] = {
 };
 
 /*
-	NoiseParams
-*/
-NoiseParams *read_noiseparams(lua_State *L, int index)
-{
-	if (index < 0)
-		index = lua_gettop(L) + 1 + index;
-
-	if (!lua_istable(L, index))
-		return NULL;
-
-	NoiseParams *np = new NoiseParams;
-
-	np->offset  = getfloatfield_default(L, index, "offset", 0.0);
-	np->scale   = getfloatfield_default(L, index, "scale", 0.0);
-	lua_getfield(L, index, "spread");
-	np->spread  = read_v3f(L, -1);
-	lua_pop(L, 1);
-	np->seed    = getintfield_default(L, index, "seed", 0);
-	np->octaves = getintfield_default(L, index, "octaves", 0);
-	np->persist = getfloatfield_default(L, index, "persist", 0.0);
-
-	return np;
-}
-
-
-/*
 	LuaPseudoRandom
 */
 
@@ -293,6 +273,7 @@ int LuaPseudoRandom::gc_object(lua_State *L)
 // next(self, min=0, max=32767) -> get next value
 int LuaPseudoRandom::l_next(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	LuaPseudoRandom *o = checkobject(L, 1);
 	int min = 0;
 	int max = 32767;
@@ -386,3 +367,7 @@ const luaL_reg LuaPseudoRandom::methods[] = {
 	luamethod(LuaPseudoRandom, next),
 	{0,0}
 };
+
+REGISTER_LUA_REF(LuaPseudoRandom);
+REGISTER_LUA_REF(LuaPerlinNoiseMap);
+REGISTER_LUA_REF(LuaPerlinNoise);

@@ -18,14 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scriptapi.h"
-#include "scriptapi_object.h"
+#include "scriptapi_converter.h"
+#include "scriptapi_content.h"
+#include "modapi_object.h"
+#include "modapi_internal.h"
+#include "modapi_inventory.h"
+#include "modapi_item.h"
 #include "log.h"
 #include "tool.h"
-#include "scriptapi_types.h"
-#include "scriptapi_inventory.h"
-#include "scriptapi_item.h"
-#include "scriptapi_entity.h"
-#include "scriptapi_common.h"
+#include "serverobject.h"
+#include "content_object.h"
+#include "content_sao.h"
+#include "server.h"
 
 /*
 	ObjectRef
@@ -87,6 +91,7 @@ int ObjectRef::gc_object(lua_State *L) {
 // remove(self)
 int ObjectRef::l_remove(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -99,6 +104,7 @@ int ObjectRef::l_remove(lua_State *L)
 // returns: {x=num, y=num, z=num}
 int ObjectRef::l_getpos(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -116,6 +122,7 @@ int ObjectRef::l_getpos(lua_State *L)
 // setpos(self, pos)
 int ObjectRef::l_setpos(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
@@ -130,6 +137,7 @@ int ObjectRef::l_setpos(lua_State *L)
 // moveto(self, pos, continuous=false)
 int ObjectRef::l_moveto(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
@@ -146,6 +154,7 @@ int ObjectRef::l_moveto(lua_State *L)
 // punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 int ObjectRef::l_punch(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ObjectRef *puncher_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
@@ -170,6 +179,7 @@ int ObjectRef::l_punch(lua_State *L)
 // right_click(self, clicker); clicker = an another ObjectRef
 int ObjectRef::l_right_click(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ObjectRef *ref2 = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
@@ -186,6 +196,7 @@ int ObjectRef::l_right_click(lua_State *L)
 // returns: nil
 int ObjectRef::l_set_hp(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	luaL_checknumber(L, 2);
 	ServerActiveObject *co = getobject(ref);
@@ -204,6 +215,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 // 0 if not applicable to this type of object
 int ObjectRef::l_get_hp(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL){
@@ -222,12 +234,13 @@ int ObjectRef::l_get_hp(lua_State *L)
 // get_inventory(self)
 int ObjectRef::l_get_inventory(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
 	// Do it
 	InventoryLocation loc = co->getInventoryLocation();
-	if(get_server(L)->getInventory(loc) != NULL)
+	if(STACK_TO_SERVER(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L); // An object may have no inventory (nil)
@@ -237,6 +250,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 // get_wield_list(self)
 int ObjectRef::l_get_wield_list(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -248,6 +262,7 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 // get_wield_index(self)
 int ObjectRef::l_get_wield_index(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -259,6 +274,7 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 // get_wielded_item(self)
 int ObjectRef::l_get_wielded_item(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL){
@@ -274,11 +290,12 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 // set_wielded_item(self, itemstack or itemstring or table or nil)
 int ObjectRef::l_set_wielded_item(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
 	// Do it
-	ItemStack item = read_item(L, 2);
+	ItemStack item = read_item(L, 2,STACK_TO_SERVER(L));
 	bool success = co->setWieldedItem(item);
 	lua_pushboolean(L, success);
 	return 1;
@@ -287,6 +304,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 // set_armor_groups(self, groups)
 int ObjectRef::l_set_armor_groups(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -322,6 +340,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 // set_animation(self, frame_range, frame_speed, frame_blend)
 int ObjectRef::l_set_animation(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -342,6 +361,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 // set_bone_position(self, std::string bone, v3f position, v3f rotation)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -362,6 +382,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 // set_attach(self, parent, bone, position, rotation)
 int ObjectRef::l_set_attach(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ObjectRef *parent_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
@@ -385,6 +406,7 @@ int ObjectRef::l_set_attach(lua_State *L)
 // set_detach(self)
 int ObjectRef::l_set_detach(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -396,6 +418,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 // set_properties(self, properties)
 int ObjectRef::l_set_properties(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
@@ -412,6 +435,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 // setvelocity(self, {x=num, y=num, z=num})
 int ObjectRef::l_setvelocity(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -424,6 +448,7 @@ int ObjectRef::l_setvelocity(lua_State *L)
 // getvelocity(self)
 int ObjectRef::l_getvelocity(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -436,6 +461,7 @@ int ObjectRef::l_getvelocity(lua_State *L)
 // setacceleration(self, {x=num, y=num, z=num})
 int ObjectRef::l_setacceleration(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -449,6 +475,7 @@ int ObjectRef::l_setacceleration(lua_State *L)
 // getacceleration(self)
 int ObjectRef::l_getacceleration(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -461,6 +488,7 @@ int ObjectRef::l_getacceleration(lua_State *L)
 // setyaw(self, radians)
 int ObjectRef::l_setyaw(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -473,6 +501,7 @@ int ObjectRef::l_setyaw(lua_State *L)
 // getyaw(self)
 int ObjectRef::l_getyaw(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -485,6 +514,7 @@ int ObjectRef::l_getyaw(lua_State *L)
 // settexturemod(self, mod)
 int ObjectRef::l_settexturemod(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -498,6 +528,7 @@ int ObjectRef::l_settexturemod(lua_State *L)
 //           select_horiz_by_yawpitch=false)
 int ObjectRef::l_setsprite(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -522,6 +553,7 @@ int ObjectRef::l_setsprite(lua_State *L)
 // get_entity_name(self)
 int ObjectRef::l_get_entity_name(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -534,6 +566,7 @@ int ObjectRef::l_get_entity_name(lua_State *L)
 // get_luaentity(self)
 int ObjectRef::l_get_luaentity(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if(co == NULL) return 0;
@@ -547,6 +580,7 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 // is_player(self)
 int ObjectRef::l_is_player(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	lua_pushboolean(L, (player != NULL));
@@ -556,6 +590,7 @@ int ObjectRef::l_is_player(lua_State *L)
 // get_player_name(self)
 int ObjectRef::l_get_player_name(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL){
@@ -570,6 +605,7 @@ int ObjectRef::l_get_player_name(lua_State *L)
 // get_look_dir(self)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
@@ -584,6 +620,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 // get_look_pitch(self)
 int ObjectRef::l_get_look_pitch(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
@@ -595,6 +632,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 // get_look_yaw(self)
 int ObjectRef::l_get_look_yaw(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
@@ -606,6 +644,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 // set_look_pitch(self, radians)
 int ObjectRef::l_set_look_pitch(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if(co == NULL) return 0;
@@ -618,6 +657,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 // set_look_yaw(self, radians)
 int ObjectRef::l_set_look_yaw(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if(co == NULL) return 0;
@@ -630,13 +670,14 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
 	std::string formspec = luaL_checkstring(L, 2);
 
 	player->inventory_formspec = formspec;
-	get_server(L)->reportInventoryFormspecModified(player->getName());
+	STACK_TO_SERVER(L)->reportInventoryFormspecModified(player->getName());
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -644,6 +685,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 // get_inventory_formspec(self) -> formspec
 int ObjectRef::l_get_inventory_formspec(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
@@ -656,6 +698,7 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 // get_player_control(self)
 int ObjectRef::l_get_player_control(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL){
@@ -689,6 +732,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 // get_player_control_bits(self)
 int ObjectRef::l_get_player_control_bits(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL){
@@ -810,159 +854,4 @@ const luaL_reg ObjectRef::methods[] = {
 	{0,0}
 };
 
-// Creates a new anonymous reference if cobj=NULL or id=0
-void objectref_get_or_create(lua_State *L,
-		ServerActiveObject *cobj)
-{
-	if(cobj == NULL || cobj->getId() == 0){
-		ObjectRef::create(L, cobj);
-	} else {
-		objectref_get(L, cobj->getId());
-	}
-}
-
-void objectref_get(lua_State *L, u16 id)
-{
-	// Get minetest.object_refs[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // minetest
-}
-
-/*
-	ObjectProperties
-*/
-
-void read_object_properties(lua_State *L, int index,
-		ObjectProperties *prop)
-{
-	if(index < 0)
-		index = lua_gettop(L) + 1 + index;
-	if(!lua_istable(L, index))
-		return;
-
-	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
-
-	getboolfield(L, -1, "physical", prop->physical);
-
-	getfloatfield(L, -1, "weight", prop->weight);
-
-	lua_getfield(L, -1, "collisionbox");
-	if(lua_istable(L, -1))
-		prop->collisionbox = read_aabb3f(L, -1, 1.0);
-	lua_pop(L, 1);
-
-	getstringfield(L, -1, "visual", prop->visual);
-
-	getstringfield(L, -1, "mesh", prop->mesh);
-
-	lua_getfield(L, -1, "visual_size");
-	if(lua_istable(L, -1))
-		prop->visual_size = read_v2f(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "textures");
-	if(lua_istable(L, -1)){
-		prop->textures.clear();
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				prop->textures.push_back(lua_tostring(L, -1));
-			else
-				prop->textures.push_back("");
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	}
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "colors");
-	if(lua_istable(L, -1)){
-		prop->colors.clear();
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				prop->colors.push_back(readARGB8(L, -1));
-			else
-				prop->colors.push_back(video::SColor(255, 255, 255, 255));
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	}
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "spritediv");
-	if(lua_istable(L, -1))
-		prop->spritediv = read_v2s16(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "initial_sprite_basepos");
-	if(lua_istable(L, -1))
-		prop->initial_sprite_basepos = read_v2s16(L, -1);
-	lua_pop(L, 1);
-
-	getboolfield(L, -1, "is_visible", prop->is_visible);
-	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
-	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
-}
-
-/*
-	object_reference
-*/
-
-void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
-	StackUnroller stack_unroller(L);
-
-	// Create object on stack
-	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
-	int object = lua_gettop(L);
-
-	// Get minetest.object_refs table
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-
-	// object_refs[id] = object
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_pushvalue(L, object); // Copy object to top of stack
-	lua_settable(L, objectstable);
-}
-
-void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
-	StackUnroller stack_unroller(L);
-
-	// Get minetest.object_refs table
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-
-	// Get object_refs[id]
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_gettable(L, objectstable);
-	// Set object reference to NULL
-	ObjectRef::set_null(L);
-	lua_pop(L, 1); // pop object
-
-	// Set object_refs[id] = nil
-	lua_pushnumber(L, cobj->getId()); // Push id
-	lua_pushnil(L);
-	lua_settable(L, objectstable);
-}
+REGISTER_LUA_REF(ObjectRef)

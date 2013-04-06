@@ -17,20 +17,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scriptapi.h"
-#include "scriptapi_craft.h"
+
+#include "modapi_craft.h"
+#include "modapi_internal.h"
+#include "scriptapi_converter.h"
+#include "scriptapi_content.h"
+#include "server.h"
+#include "modapi_item.h"
 
 extern "C" {
-#include <lauxlib.h>
+#include "lauxlib.h"
 }
 
-#include "script.h"
-#include "scriptapi_types.h"
-#include "scriptapi_common.h"
-#include "scriptapi_item.h"
+ModApiCraft::ModApiCraft()
+	: ModApiBase() {
 
+}
 
-struct EnumString es_CraftMethod[] =
+struct EnumString ModApiCraft::es_CraftMethod[] =
 {
 	{CRAFT_METHOD_NORMAL, "normal"},
 	{CRAFT_METHOD_COOKING, "cooking"},
@@ -40,7 +44,7 @@ struct EnumString es_CraftMethod[] =
 
 
 // helper for register_craft
-bool read_craft_recipe_shaped(lua_State *L, int index,
+bool ModApiCraft::readCraftRecipeShaped(lua_State *L, int index,
 		int &width, std::vector<std::string> &recipe)
 {
 	if(index < 0)
@@ -81,7 +85,7 @@ bool read_craft_recipe_shaped(lua_State *L, int index,
 }
 
 // helper for register_craft
-bool read_craft_recipe_shapeless(lua_State *L, int index,
+bool ModApiCraft::readCraftRecipeShapeless(lua_State *L, int index,
 		std::vector<std::string> &recipe)
 {
 	if(index < 0)
@@ -103,7 +107,7 @@ bool read_craft_recipe_shapeless(lua_State *L, int index,
 }
 
 // helper for register_craft
-bool read_craft_replacements(lua_State *L, int index,
+bool ModApiCraft::readCraftReplacements(lua_State *L, int index,
 		CraftReplacements &replacements)
 {
 	if(index < 0)
@@ -135,15 +139,16 @@ bool read_craft_replacements(lua_State *L, int index,
 	return true;
 }
 // register_craft({output=item, recipe={{item00,item10},{item01,item11}})
-int l_register_craft(lua_State *L)
+int ModApiCraft::l_register_craft(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	//infostream<<"register_craft"<<std::endl;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int table = 1;
 
 	// Get the writable craft definition manager from the server
 	IWritableCraftDefManager *craftdef =
-			get_server(L)->getWritableCraftDefManager();
+			getServer(L)->getWritableCraftDefManager();
 
 	std::string type = getstringfield_default(L, table, "type", "shaped");
 
@@ -161,7 +166,7 @@ int l_register_craft(lua_State *L)
 		if(lua_isnil(L, -1))
 			throw LuaError(L, "Crafting definition is missing a recipe"
 					" (output=\"" + output + "\")");
-		if(!read_craft_recipe_shaped(L, -1, width, recipe))
+		if(!readCraftRecipeShaped(L, -1, width, recipe))
 			throw LuaError(L, "Invalid crafting recipe"
 					" (output=\"" + output + "\")");
 
@@ -169,7 +174,7 @@ int l_register_craft(lua_State *L)
 		lua_getfield(L, table, "replacements");
 		if(!lua_isnil(L, -1))
 		{
-			if(!read_craft_replacements(L, -1, replacements))
+			if(!readCraftReplacements(L, -1, replacements))
 				throw LuaError(L, "Invalid replacements"
 						" (output=\"" + output + "\")");
 		}
@@ -193,7 +198,7 @@ int l_register_craft(lua_State *L)
 			throw LuaError(L, "Crafting definition (shapeless)"
 					" is missing a recipe"
 					" (output=\"" + output + "\")");
-		if(!read_craft_recipe_shapeless(L, -1, recipe))
+		if(!readCraftRecipeShapeless(L, -1, recipe))
 			throw LuaError(L, "Invalid crafting recipe"
 					" (output=\"" + output + "\")");
 
@@ -201,7 +206,7 @@ int l_register_craft(lua_State *L)
 		lua_getfield(L, table, "replacements");
 		if(!lua_isnil(L, -1))
 		{
-			if(!read_craft_replacements(L, -1, replacements))
+			if(!readCraftReplacements(L, -1, replacements))
 				throw LuaError(L, "Invalid replacements"
 						" (output=\"" + output + "\")");
 		}
@@ -242,7 +247,7 @@ int l_register_craft(lua_State *L)
 		lua_getfield(L, table, "replacements");
 		if(!lua_isnil(L, -1))
 		{
-			if(!read_craft_replacements(L, -1, replacements))
+			if(!readCraftReplacements(L, -1, replacements))
 				throw LuaError(L, "Invalid replacements"
 						" (cooking output=\"" + output + "\")");
 		}
@@ -266,7 +271,7 @@ int l_register_craft(lua_State *L)
 		lua_getfield(L, table, "replacements");
 		if(!lua_isnil(L, -1))
 		{
-			if(!read_craft_replacements(L, -1, replacements))
+			if(!readCraftReplacements(L, -1, replacements))
 				throw LuaError(L, "Invalid replacements"
 						" (fuel recipe=\"" + recipe + "\")");
 		}
@@ -285,8 +290,10 @@ int l_register_craft(lua_State *L)
 }
 
 // get_craft_result(input)
-int l_get_craft_result(lua_State *L)
+int ModApiCraft::l_get_craft_result(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	int input_i = 1;
 	std::string method_s = getstringfield_default(L, input_i, "method", "normal");
 	enum CraftMethod method = (CraftMethod)getenumfield(L, input_i, "method",
@@ -297,10 +304,10 @@ int l_get_craft_result(lua_State *L)
 		width = luaL_checkinteger(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, input_i, "items");
-	std::vector<ItemStack> items = read_items(L, -1);
+	std::vector<ItemStack> items = read_items(L, -1,getServer(L));
 	lua_pop(L, 1); // items
 
-	IGameDef *gdef = get_server(L);
+	IGameDef *gdef = getServer(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input(method, width, items);
 	CraftOutput output;
@@ -328,14 +335,16 @@ int l_get_craft_result(lua_State *L)
 }
 
 // get_craft_recipe(result item)
-int l_get_craft_recipe(lua_State *L)
+int ModApiCraft::l_get_craft_recipe(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	int k = 0;
 	char tmp[20];
 	int input_i = 1;
 	std::string o_item = luaL_checkstring(L,input_i);
 
-	IGameDef *gdef = get_server(L);
+	IGameDef *gdef = getServer(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input;
 	CraftOutput output(o_item,0);
@@ -381,12 +390,14 @@ int l_get_craft_recipe(lua_State *L)
 }
 
 // get_all_craft_recipes(result item)
-int l_get_all_craft_recipes(lua_State *L)
+int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	char tmp[20];
 	int input_i = 1;
 	std::string o_item = luaL_checkstring(L,input_i);
-	IGameDef *gdef = get_server(L);
+	IGameDef *gdef = getServer(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input;
 	CraftOutput output(o_item,0);
@@ -452,3 +463,16 @@ int l_get_all_craft_recipes(lua_State *L)
 	}
 	return 1;
 }
+
+bool ModApiCraft::Initialize(lua_State* L, int top) {
+	bool retval = true;
+
+	retval &= API_FCT(get_all_craft_recipes);
+	retval &= API_FCT(get_craft_recipe);
+	retval &= API_FCT(get_craft_result);
+	retval &= API_FCT(register_craft);
+
+	return retval;
+}
+
+ModApiCraft modapicraft_prototype;
