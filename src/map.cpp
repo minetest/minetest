@@ -1763,9 +1763,9 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level; 
 		}
 
-		// prevent lakes in air under unloaded blocks
+		// prevent lakes in air above unloaded blocks
 		if (p0.Y > water_level && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE) {
-			total_level = 0;
+			--total_level;
 		}
 
 		// calculate self level 5 blocks
