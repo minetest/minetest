@@ -201,6 +201,13 @@ struct SourceAtlasPointer
 class SourceImageCache
 {
 public:
+	~SourceImageCache() {
+		for(std::map<std::string, video::IImage*>::iterator iter = m_images.begin();
+				iter != m_images.end(); iter++) {
+			iter->second->drop();
+		}
+		m_images.clear();
+	}
 	void insert(const std::string &name, video::IImage *img,
 			bool prefer_local, video::IVideoDriver *driver)
 	{
@@ -209,23 +216,28 @@ public:
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
 		if(n != m_images.end()){
-			video::IImage *oldimg = n->second;
-			if(oldimg)
-				oldimg->drop();
+			if(n->second)
+				n->second->drop();
 		}
+
+		video::IImage* toadd = img;
+		bool need_to_grab = true;
+
 		// Try to use local texture instead if asked to
 		if(prefer_local){
 			std::string path = getTexturePath(name.c_str());
 			if(path != ""){
 				video::IImage *img2 = driver->createImageFromFile(path.c_str());
 				if(img2){
-					m_images[name] = img2;
-					return;
+					toadd = img2;
+					need_to_grab = false;
 				}
 			}
 		}
-		img->grab();
-		m_images[name] = img;
+
+		if (need_to_grab)
+			toadd->grab();
+		m_images[name] = toadd;
 	}
 	video::IImage* get(const std::string &name)
 	{
@@ -254,8 +266,7 @@ public:
 		infostream<<"SourceImageCache::getOrLoad(): Loading path \""<<path
 				<<"\""<<std::endl;
 		video::IImage *img = driver->createImageFromFile(path.c_str());
-		// Even if could not be loaded, put as NULL
-		//m_images[name] = img;
+
 		if(img){
 			m_images[name] = img;
 			img->grab(); // Grab for caller
@@ -274,7 +285,7 @@ class TextureSource : public IWritableTextureSource
 {
 public:
 	TextureSource(IrrlichtDevice *device);
-	~TextureSource();
+	virtual ~TextureSource();
 
 	/*
 		Example case:
@@ -454,6 +465,27 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 
 TextureSource::~TextureSource()
 {
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+
+	unsigned int textures_before = driver->getTextureCount();
+
+	for (std::vector<SourceAtlasPointer>::iterator iter =
+			m_atlaspointer_cache.begin();  iter != m_atlaspointer_cache.end();
+			iter++)
+	{
+		video::ITexture *t = driver->getTexture(iter->name.c_str());
+
+		//cleanup texture
+		if (t)
+			driver->removeTexture(t);
+
+		//cleanup source image
+		iter->atlas_img->drop();
+	}
+	m_atlaspointer_cache.clear();
+
+	infostream << "~TextureSource() "<< textures_before << "/"
+			<< driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -1205,7 +1237,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			core::dimension2d<u32> dim = image->getDimension();
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 			image->copyTo(baseimg);
-			image->drop();
 		}
 		// Else blit on base.
 		else
@@ -1224,9 +1255,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 					video::SColor(255,255,255,255),
 					NULL);*/
 			blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
-			// Drop image
-			image->drop();
 		}
+		//cleanup
+		image->drop();
 	}
 	else
 	{
