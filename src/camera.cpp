@@ -69,7 +69,8 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_view_bobbing_speed(0),
 
 	m_digging_anim(0),
-	m_digging_button(-1)
+	m_digging_button(-1),
+	m_dummymesh(createCubeMesh(v3f(1,1,1)))
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -84,13 +85,14 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = m_wieldmgr->addMeshSceneNode(createCubeMesh(v3f(1,1,1)), NULL);  // need a dummy mesh
+	m_wieldnode = m_wieldmgr->addMeshSceneNode(m_dummymesh, NULL);  // need a dummy mesh
 }
 
 Camera::~Camera()
 {
-	m_wieldnode->setMesh(NULL);
 	m_wieldmgr->drop();
+
+	delete m_dummymesh;
 }
 
 bool Camera::successfullyCreated(std::wstring& error_message)
