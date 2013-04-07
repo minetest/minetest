@@ -985,7 +985,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		scene::ISceneManager *smgr = m_device->getSceneManager();
 		scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
 		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
-		
+		rfile->drop();
 		return true;
 	}
 
