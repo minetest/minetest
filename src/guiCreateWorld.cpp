@@ -113,8 +113,9 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 100, 20);
 		rect += v2s32(0, 5) + topleft;
-		Environment->addStaticText(wgettext("World name"),
-			rect, false, true, this, -1);
+		wchar_t* text = wgettext("World name");
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 30);
@@ -132,8 +133,9 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 100, 20);
 		rect += v2s32(0, 40+5) + topleft;
-		Environment->addStaticText(wgettext("Game"),
-			rect, false, true, this, -1);
+		wchar_t* text = wgettext("Game");
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 80);
@@ -155,14 +157,18 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(170, 140) + topleft;
+		wchar_t* text = wgettext("Create");
 		Environment->addButton(rect, this, GUI_ID_CREATE,
-			wgettext("Create"));
+			text);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(300, 140) + topleft;
+		wchar_t* text = wgettext("Cancel");
 		Environment->addButton(rect, this, GUI_ID_CANCEL,
-			wgettext("Cancel"));
+			text);
+		delete [] text;
 	}
 	changeCtype("C");
 }
