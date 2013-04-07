@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IMaterialRendererServices.h>
+#include "IMeshCache.h"
 #include "client.h"
 #include "server.h"
 #include "guiPauseMenu.h"
@@ -3314,6 +3315,21 @@ void the_game(
 	delete shsrc;
 	delete nodedef;
 	delete itemdef;
+
+	//extended resource accounting
+	infostream << "Irrlicht resources after cleanup:" << std::endl;
+	infostream << "\tRemaining meshes   : "
+		<< device->getSceneManager()->getMeshCache()->getMeshCount() << std::endl;
+	infostream << "\tRemaining textures : "
+		<< driver->getTextureCount() << std::endl;
+	for (unsigned int i = 0; i < driver->getTextureCount(); i++ ) {
+		irr::video::ITexture* texture = driver->getTextureByIndex(i);
+		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
+				<< std::endl;
+	}
+	infostream << "\tRemaining materials: "
+		<< driver-> getMaterialRendererCount ()
+		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;
 }
 
 
