@@ -363,6 +363,15 @@ Client::~Client()
 	for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
 			i != m_media_fetch_threads.end(); ++i)
 		delete *i;
+
+	// cleanup 3d model meshes on client shutdown
+	while (m_device->getSceneManager()->getMeshCache()->getMeshCount() != 0) {
+		scene::IAnimatedMesh * mesh =
+			m_device->getSceneManager()->getMeshCache()->getMeshByIndex(0);
+
+		if (mesh != NULL)
+			m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
+	}
 }
 
 void Client::connect(Address address)
@@ -976,14 +985,26 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	{
 		verbosestream<<"Client: Storing model into Irrlicht: "
 				<<"\""<<filename<<"\""<<std::endl;
+		scene::ISceneManager *smgr = m_device->getSceneManager();
+
+		//check if mesh was already cached
+		scene::IAnimatedMesh *mesh =
+			smgr->getMeshCache()->getMeshByName(filename.c_str());
+
+		if (mesh != NULL) {
+			errorstream << "Multiple models with name: " << filename.c_str() <<
+					" found replacing previous model!" << std::endl;
+
+			smgr->getMeshCache()->removeMesh(mesh);
+			mesh = 0;
+		}
 
 		io::IFileSystem *irrfs = m_device->getFileSystem();
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), filename.c_str());
 		assert(rfile);
 		
-		scene::ISceneManager *smgr = m_device->getSceneManager();
-		scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
+		mesh = smgr->getMesh(rfile);
 		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
 		
 		return true;
