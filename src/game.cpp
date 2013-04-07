@@ -134,6 +134,10 @@ struct TextDestPlayerInventory : public TextDest
 		m_client->sendInventoryFields(m_formname, fields);
 	}
 
+	void setFormName(std::string formname) {
+		m_formname = formname;
+	}
+
 	Client *m_client;
 	std::string m_formname;
 };
@@ -920,6 +924,7 @@ void the_game(
 )
 {
 	FormspecFormSource* current_formspec = 0;
+	TextDestPlayerInventory* current_textdest = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -2237,18 +2242,19 @@ void the_game(
 					{
 						/* Create menu */
 						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
-
+						current_textdest = new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
 										&client, gamedef);
 						menu->setFormSource(current_formspec);
-						menu->setTextDest(new TextDestPlayerInventory(&client,*(event.show_formspec.formname)));
+						menu->setTextDest(current_textdest);
 						menu->drop();
 					}
 					else
 					{
 						/* update menu */
+						current_textdest->setFormName(*(event.show_formspec.formname));
 						current_formspec->setForm(*(event.show_formspec.formspec));
 					}
 					delete(event.show_formspec.formspec);
