@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "treegen.h"
 #include "mapgen_v6.h"
+#include "mapgen_v7.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -240,8 +241,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 
 void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
@@ -277,8 +277,7 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 
 
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
@@ -341,9 +340,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 
 void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
-
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level > nmax.Y);
 	bool sunlight = !block_is_underground;
 
@@ -406,6 +403,31 @@ void MapgenV6Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv6_np_humidity",       np_humidity);
 	settings->setNoiseParams("mgv6_np_trees",          np_trees);
 	settings->setNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
+}
+
+
+bool MapgenV7Params::readParams(Settings *settings) {
+	np_terrain_base    = settings->getNoiseParams("mgv7_np_terrain_base");
+	np_terrain_alt     = settings->getNoiseParams("mgv7_np_terrain_alt");
+	np_terrain_mod     = settings->getNoiseParams("mgv7_np_terrain_mod");
+	np_terrain_persist = settings->getNoiseParams("mgv7_np_terrain_persist");
+	np_height_select   = settings->getNoiseParams("mgv7_np_height_select");
+	np_ridge           = settings->getNoiseParams("mgv7_np_ridge");
+	
+	bool success =
+		np_terrain_base    && np_terrain_alt   && np_terrain_mod &&
+		np_terrain_persist && np_height_select && np_ridge;
+	return success;
+}
+
+
+void MapgenV7Params::writeParams(Settings *settings) {
+	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
+	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
+	settings->setNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod);
+	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
+	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }
 
 

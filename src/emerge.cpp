@@ -1,6 +1,7 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -39,19 +40,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "biome.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
+#include "mapgen_v7.h"
 #include "mapgen_indev.h"
 #include "mapgen_singlenode.h"
 
 
 /////////////////////////////// Emerge Manager ////////////////////////////////
 
-EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
+EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
 	registerMapgen("v6", new MapgenFactoryV6());
+	//registerMapgen("v7", new MapgenFactoryV7());
 	registerMapgen("indev", new MapgenFactoryIndev());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
 
-	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
+	this->ndef     = gamedef->getNodeDefManager();
+	this->biomedef = new BiomeDefManager();
 	this->params   = NULL;
 	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
@@ -103,6 +107,8 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 	
 	if (mapgen.size())
 		return;
+	
+	biomedef->resolveNodeNames(ndef);
 	
 	this->params = mgparams;
 	for (unsigned int i = 0; i != emergethread.size(); i++) {
@@ -237,6 +243,8 @@ MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
 MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	std::string mg_name = settings->get("mg_name");
 	MapgenParams *mgparams = createMapgenParams(mg_name);
+	if (!mgparams)
+		return NULL;
 	
 	mgparams->mg_name     = mg_name;
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");

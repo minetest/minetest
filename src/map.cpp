@@ -1763,6 +1763,11 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level; 
 		}
 
+		// prevent lakes in air above unloaded blocks
+		if (p0.Y > water_level && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE) {
+			--total_level;
+		}
+
 		// calculate self level 5 blocks
 		u8 want_level = 
 			  total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level
@@ -1807,8 +1812,8 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		for (u16 ii = 0; ii < 7; ii++) // infinity and cave flood optimization
-			if (liquid_levels_want[ii] >= 0 &&
-				(neighbors[ii].i ||
+			if (    neighbors[ii].i ||
+				(liquid_levels_want[ii] >= 0 &&
 				 (fast_flood && p0.Y < water_level &&
 				  (initial_size >= 1000
 				   && ii != D_TOP
@@ -1916,8 +1921,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 
 			if(!suspect.empty()){
 				// Blame suspect
-				RollbackScopeActor rollback_scope(m_gamedef->rollback(),
-													suspect, true);
+				RollbackScopeActor rollback_scope(m_gamedef->rollback(), suspect, true);
 				// Get old node for rollback
 				RollbackNode rollback_oldnode(this, p0, m_gamedef);
 				// Set node
@@ -3462,8 +3466,16 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-
-	MapgenParams *mgparams = m_emerge->getParamsFromSettings(&params);
+	
+	MapgenParams *mgparams;
+	try {
+		mgparams = m_emerge->getParamsFromSettings(&params);
+	} catch (SettingNotFoundException &e) {
+		infostream << "Couldn't get a setting from map_meta.txt: "
+				   << e.what() << std::endl;
+		mgparams = NULL;
+	}
+	
 	if (mgparams) {
 		if (m_mgparams)
 			delete m_mgparams;

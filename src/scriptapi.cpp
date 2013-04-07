@@ -616,76 +616,36 @@ static int l_get_server_status(lua_State *L)
 	return 1;
 }
 
-// register_biome_groups({frequencies})
-static int l_register_biome_groups(lua_State *L)
-{
-	luaL_checktype(L, 1, LUA_TTABLE);
-	int index = 1;
-
-	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
-	if (!bmgr) {
-		verbosestream << "register_biome_groups: BiomeDefManager not active" << std::endl;
-		return 0;
-	}
-
-	lua_pushnil(L);
-	for (int i = 1; lua_next(L, index) != 0; i++) {
-		bmgr->addBiomeGroup(lua_tonumber(L, -1));
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-
-	return 0;
-}
 
 // register_biome({lots of stuff})
 static int l_register_biome(lua_State *L)
 {
-	luaL_checktype(L, 1, LUA_TTABLE);
-	int index = 1, groupid;
-	std::string nodename;
+	int index = 1;
+	luaL_checktype(L, index, LUA_TTABLE);
 
-	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
-	BiomeDefManager *bmgr = get_server(L)->getBiomeDef();
+	BiomeDefManager *bmgr = get_server(L)->getEmergeManager()->biomedef;
 	if (!bmgr) {
 		verbosestream << "register_biome: BiomeDefManager not active" << std::endl;
 		return 0;
 	}
-
-	groupid = getintfield_default(L, index, "group_id", 0);
-
+	
 	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
 					"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
 
-	b->name = getstringfield_default(L, index, "name", "");
+	b->name            = getstringfield_default(L, index, "name", "");
+	b->top_nodename    = getstringfield_default(L, index, "top_node", "");
+	b->top_depth       = getintfield_default(L, index, "top_depth", 0);
+	b->filler_nodename = getstringfield_default(L, index, "filler_node", "");
+	b->filler_height   = getintfield_default(L, index, "filler_height", 0);
+	b->height_min      = getintfield_default(L, index, "height_min", 0);
+	b->height_max      = getintfield_default(L, index, "height_max", 0);
+	b->heat_point      = getfloatfield_default(L, index, "heat_point", 0.);
+	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
 
-	if (getstringfield(L, index, "node_top", nodename))
-		b->n_top = MapNode(ndef->getId(nodename));
-	else
-		b->n_top = MapNode(CONTENT_IGNORE);
-
-	if (getstringfield(L, index, "node_filler", nodename))
-		b->n_filler = MapNode(ndef->getId(nodename));
-	else
-		b->n_filler = b->n_top;
-
-	b->ntopnodes = getintfield_default(L, index, "num_top_nodes", 0);
-
-	b->height_min   = getintfield_default(L, index, "height_min", 0);
-	b->height_max   = getintfield_default(L, index, "height_max", 0);
-	b->heat_min     = getfloatfield_default(L, index, "heat_min", 0.);
-	b->heat_max     = getfloatfield_default(L, index, "heat_max", 0.);
-	b->humidity_min = getfloatfield_default(L, index, "humidity_min", 0.);
-	b->humidity_max = getfloatfield_default(L, index, "humidity_max", 0.);
-
-	b->np = new NoiseParams; // should read an entire NoiseParams later on...
-	getfloatfield(L, index, "scale", b->np->scale);
-	getfloatfield(L, index, "offset", b->np->offset);
-
-	b->groupid = (s8)groupid;
-	b->flags   = 0; //reserved
-
+	b->flags    = 0; //reserved
+	b->c_top    = CONTENT_IGNORE;
+	b->c_filler = CONTENT_IGNORE;
 	bmgr->addBiome(b);
 
 	verbosestream << "register_biome: " << b->name << std::endl;
@@ -698,7 +658,6 @@ static int l_register_ore(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 	
-	IWritableNodeDefManager *ndef = get_server(L)->getWritableNodeDefManager();
 	EmergeManager *emerge = get_server(L)->getEmergeManager();
 	
 	enum OreType oretype = (OreType)getenumfield(L, index,
@@ -1113,7 +1072,6 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
 	{"register_biome", l_register_biome},
-	{"register_biome_groups", l_register_biome_groups},
 	{"register_ore", l_register_ore},
 	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},

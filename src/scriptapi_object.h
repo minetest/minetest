@@ -103,6 +103,9 @@ private:
 	// set_armor_groups(self, groups)
 	static int l_set_armor_groups(lua_State *L);
 
+	// set_physics_override(self, physics_override_speed, physics_override_jump, physics_override_gravity)
+	static int l_set_physics_override(lua_State *L);
+
 	// set_animation(self, frame_range, frame_speed, frame_blend)
 	static int l_set_animation(lua_State *L);
 

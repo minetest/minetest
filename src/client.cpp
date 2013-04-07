@@ -2501,18 +2501,9 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 
-std::list<std::wstring> Client::getConnectedPlayerNames()
+std::list<std::string> Client::getConnectedPlayerNames()
 {
-	std::list<Player*> players = m_env.getPlayers(true);
-	std::list<std::wstring> playerNames;
-	for(std::list<Player*>::iterator
-			i = players.begin();
-			i != players.end(); ++i)
-	{
-		Player *player = *i;
-		playerNames.push_back(narrow_to_wide(player->getName()));
-	}
-	return playerNames;
+	return m_env.getPlayerNames();
 }
 
 float Client::getAnimationTime()

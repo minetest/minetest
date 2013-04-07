@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -105,6 +106,7 @@ public:
 		float step_x, float step_y, float step_z,
 		int seed);
 	float *perlinMap2D(float x, float y);
+	float *perlinMap2DModulated(float x, float y, float *persist_map);
 	float *perlinMap3D(float x, float y, float z);
 	void transformNoiseMap();
 };

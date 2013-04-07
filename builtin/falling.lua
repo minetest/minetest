@@ -142,7 +142,7 @@ end
 -- Some common functions
 --
 
-function nodeupdate_single(p)
+function nodeupdate_single(p, delay)
 	n = minetest.env:get_node(p)
 	if minetest.get_node_group(n.name, "falling_node") ~= 0 then
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
@@ -151,9 +151,13 @@ function nodeupdate_single(p)
 		if minetest.registered_nodes[n_bottom.name] and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
-			minetest.env:remove_node(p)
-			spawn_falling_node(p, n.name)
-			nodeupdate(p)
+			if delay then
+				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
+			else
+				minetest.env:remove_node(p)
+				spawn_falling_node(p, n.name)
+				nodeupdate(p)
+			end
 		end
 	end
 	
@@ -174,8 +178,7 @@ function nodeupdate(p)
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		p2 = {x=p.x+x, y=p.y+y, z=p.z+z}
-		nodeupdate_single(p2)
+		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, not (x==0 and y==0 and z==0))
 	end
 	end
 	end

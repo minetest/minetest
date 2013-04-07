@@ -209,9 +209,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 	speed_f += accel_f * dtime;
 
-    // If there is no speed, there are no collisions
+	// If there is no speed, there are no collisions
 	if(speed_f.getLength() == 0)
 		return result;
+
+	// Limit speed for avoiding hangs
+	speed_f.Y=rangelim(speed_f.Y,-5000,5000);
+	speed_f.X=rangelim(speed_f.X,-5000,5000);
+	speed_f.Z=rangelim(speed_f.Z,-5000,5000);
 
 	/*
 		Collect node boxes in movement range

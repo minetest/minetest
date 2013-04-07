@@ -1,5 +1,5 @@
-Minetest Lua Modding API Reference 0.4.5
-==========================================
+Minetest Lua Modding API Reference 0.4.6
+========================================
 More information at http://c55.me/minetest/
 
 Introduction
@@ -1185,7 +1185,21 @@ methods:
 - get_perlin(seeddiff, octaves, persistence, scale)
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 - clear_objects()
-  ^ clear all objects in the environments 
+  ^ clear all objects in the environments
+- line_of_sight(pos1,pos2,stepsize) ->true/false
+  ^ checkif there is a direct line of sight between pos1 and pos2
+  ^ pos1 First position
+  ^ pos2 Second position
+  ^ stepsize smaller gives more accurate results but requires more computing
+             time. Default is 1.
+-find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm) -> table containing path
+  ^ returns a table of 3d points representing a path from pos1 to pos2 or nil
+  ^ pos1: start position
+  ^ pos2: end position
+  ^ searchdistance: number of blocks to search in each direction
+  ^ max_jump: maximum height difference to consider walkable
+  ^ max_drop: maximum height difference to consider droppable
+  ^ algorithm: A*_noprefetch(default), A*, Dijkstra
 - spawn_tree (pos, {treedef})
   ^ spawns L-System tree at given pos with definition in treedef table
 treedef={
@@ -1348,6 +1362,10 @@ Player-only: (no-op for other objects)
     {jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}
 - get_player_control_bits(): returns integer with bit packed player pressed keys
     bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+- set_physics_override(speed, jump, gravity)
+    modifies per-player walking speed, jump height, and gravity.
+    Values default to 1 and act as offsets to the physics settings 
+    in minetest.conf. nil will keep the current setting.
     
 InvRef: Reference to an inventory
 methods:
@@ -1585,6 +1603,7 @@ Node definition (register_node)
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
     selection_box = {type="regular"}, -- See "Node boxes"
+    ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
     legacy_wallmounted = false, -- Support maps made in and before January 2012
     sounds = {

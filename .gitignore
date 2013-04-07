@@ -37,6 +37,7 @@ src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
 src/jthread/libjthread.a
+src/json/libjson.a
 src/lua/build/
 src/lua/CMakeFiles/
 src/cguittfont/CMakeFiles/

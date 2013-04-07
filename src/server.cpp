@@ -646,7 +646,6 @@ Server::Server(
 	m_rollback_sink_enabled(true),
 	m_enable_rollback_recording(false),
 	m_emerge(NULL),
-	m_biomedef(NULL),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -694,12 +693,9 @@ Server::Server(
 	Settings gamedefaults;
 	getGameMinetestConfig(gamespec.path, gamedefaults);
 	override_default_settings(g_settings, &gamedefaults);
-
-	// Create biome definition manager
-	m_biomedef = new BiomeDefManager(this);
 	
 	// Create emerge manager
-	m_emerge = new EmergeManager(this, m_biomedef);
+	m_emerge = new EmergeManager(this);
 	
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
@@ -812,9 +808,6 @@ Server::Server(
 
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
-
-	// Add default biomes after nodedef had its aliases added
-	m_biomedef->addDefaultBiomes();
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);

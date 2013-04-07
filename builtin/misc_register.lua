@@ -103,6 +103,10 @@ function minetest.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
+		-- Use the nodebox as selection box if it's not set manually
+		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
+			itemdef.selection_box = itemdef.node_box
+		end
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
 		minetest.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
@@ -249,8 +253,8 @@ minetest.register_item(":unknown", {
 
 minetest.register_node(":air", {
 	description = "Air (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -265,8 +269,8 @@ minetest.register_node(":air", {
 
 minetest.register_node(":ignore", {
 	description = "Ignore (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "none",
 	sunlight_propagates = false,

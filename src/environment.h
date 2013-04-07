@@ -298,6 +298,9 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 	
+	//check if there's a line of sight between two positions
+	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
+
 private:
 
 	/*
@@ -470,6 +473,13 @@ public:
 	ClientEnvEvent getClientEvent();
 
 	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+
+	std::list<std::string> getPlayerNames()
+	{ return m_player_names; }
+	void addPlayerName(std::string name)
+	{ m_player_names.push_back(name); }
+	void removePlayerName(std::string name)
+	{ m_player_names.remove(name); }
 	
 private:
 	ClientMap *m_map;
@@ -482,6 +492,7 @@ private:
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
+	std::list<std::string> m_player_names;
 };
 
 #endif
