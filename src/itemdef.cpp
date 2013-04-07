@@ -226,6 +226,12 @@ class CItemDefManager: public IWritableItemDefManager
 public:
 	CItemDefManager()
 	{
+		for (std::map<std::string, ItemDefinition*>::iterator iter =
+				m_item_definitions.begin(); iter != m_item_definitions.end();
+				iter ++) {
+			delete iter->second;
+		}
+		m_item_definitions.clear();
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
 #endif
@@ -241,6 +247,7 @@ public:
 		{
 			ClientCached *cc = *i;
 			cc->wield_mesh->drop();
+			delete cc;
 		}
 #endif
 	}
@@ -328,11 +335,7 @@ public:
 		}
 
 		// Create a wield mesh
-		if(cc->wield_mesh != NULL)
-		{
-			cc->wield_mesh->drop();
-			cc->wield_mesh = NULL;
-		}
+		assert(cc->wield_mesh == NULL);
 		if(def->type == ITEM_NODE && def->wield_image == "")
 		{
 			need_node_mesh = true;
@@ -436,16 +439,16 @@ public:
 			/*
 				Use the node mesh as the wield mesh
 			*/
-			if(cc->wield_mesh == NULL)
-			{
-				// Scale to proper wield mesh proportions
-				scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
-						* def->wield_scale);
-				cc->wield_mesh = node_mesh;
-				cc->wield_mesh->grab();
-			}
 
-			// falling outside of here deletes node_mesh
+			// Scale to proper wield mesh proportions
+			scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
+					* def->wield_scale);
+
+			cc->wield_mesh = node_mesh;
+			cc->wield_mesh->grab();
+
+			//no way reference count can be smaller than 2 in this place!
+			assert(cc->wield_mesh->getReferenceCount() >= 2);
 		}
 
 		// Put in cache
