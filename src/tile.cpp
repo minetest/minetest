@@ -1661,6 +1661,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			video::IImage *image = driver->createImage(rtt, v2s32(0,0), dim);
 			assert(image);
 
+			//cleanup texture
+			driver->removeTexture(rtt);
+
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 
 			if(image)
