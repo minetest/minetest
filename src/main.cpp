@@ -1902,16 +1902,6 @@ int main(int argc, char *argv[])
 			error_message = wgettext("Connection error (timed out?)");
 			errorstream<<wide_to_narrow(error_message)<<std::endl;
 		}
-		catch(ServerError &e)
-		{
-			error_message = narrow_to_wide(e.what());
-			errorstream<<wide_to_narrow(error_message)<<std::endl;
-		}
-		catch(ModError &e)
-		{
-			errorstream<<e.what()<<std::endl;
-			error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
-		}
 #ifdef NDEBUG
 		catch(std::exception &e)
 		{
