@@ -186,7 +186,9 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	//printf("makeChunk: %dms\n", t.stop());
 	
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
-	calcLighting(node_min, node_max);
+	
+	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	//setLighting(node_min, node_max, 0xFF);
 
 	this->generating = false;

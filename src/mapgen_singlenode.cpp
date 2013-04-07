@@ -91,7 +91,8 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	updateLiquid(&data->transforming_liquid, node_min, node_max);
 
 	// Calculate lighting
-	calcLighting(node_min, node_max);
+	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	
 	this->generating = false;
 }

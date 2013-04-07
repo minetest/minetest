@@ -241,8 +241,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 
 void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
@@ -278,8 +277,7 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 
 
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
@@ -342,9 +340,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 
 void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
-
-	VoxelArea a(nmin - v3s16(1,0,1) * MAP_BLOCKSIZE,
-				nmax + v3s16(1,0,1) * MAP_BLOCKSIZE);
+	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level > nmax.Y);
 	bool sunlight = !block_is_underground;
 
