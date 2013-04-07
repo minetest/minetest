@@ -197,7 +197,7 @@ local function unit_test()
 	unitTest("test 1b", unittest_input.cat.speed == unittest_output.cat.speed)
 	unitTest("test 1c", unittest_input.dog.sound == unittest_output.dog.sound)
 
-	unittest_input = {escapechars="\n\r\t\v\\\"\'\[\]", noneuropean="θשׁ٩∂"}
+	unittest_input = {escapechars="\n\r\t\v\\\"\'", noneuropean="θשׁ٩∂"}
 	unittest_output = minetest.deserialize(minetest.serialize(unittest_input))
 	unitTest("test 3a", unittest_input.escapechars == unittest_output.escapechars)
 	unitTest("test 3b", unittest_input.noneuropean == unittest_output.noneuropean)
