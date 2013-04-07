@@ -243,6 +243,8 @@ MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
 MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	std::string mg_name = settings->get("mg_name");
 	MapgenParams *mgparams = createMapgenParams(mg_name);
+	if (!mgparams)
+		return NULL;
 	
 	mgparams->mg_name     = mg_name;
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
