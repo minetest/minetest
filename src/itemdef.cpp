@@ -228,6 +228,7 @@ public:
 	{
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
+		m_driver = NULL;
 #endif
 	
 		clear();
@@ -242,6 +243,14 @@ public:
 			ClientCached *cc = *i;
 			cc->wield_mesh->drop();
 		}
+
+		if (m_driver != NULL) {
+			for (unsigned int i = 0; i < m_extruded_textures.size(); i++) {
+				m_driver->removeTexture(m_extruded_textures[i]);
+			}
+			m_extruded_textures.clear();
+		}
+		m_driver = NULL;
 #endif
 	}
 	virtual const ItemDefinition& get(const std::string &name_) const
@@ -290,6 +299,10 @@ public:
 		return m_item_definitions.find(name) != m_item_definitions.end();
 	}
 #ifndef SERVER
+private:
+	static video::IVideoDriver * m_driver;
+	static std::vector<video::ITexture*> m_extruded_textures;
+public:
 	ClientCached* createClientCachedDirect(const std::string &name,
 			IGameDef *gamedef) const
 	{
@@ -431,6 +444,13 @@ public:
 					cc->inventory_texture =
 						tsrc->getTextureRaw(f.tiledef[0].name);
 				}
+			}
+			else
+			{
+				if (m_driver == 0)
+					m_driver = driver;
+
+				m_extruded_textures.push_back(cc->inventory_texture);
 			}
 
 			/*
@@ -658,3 +678,8 @@ IWritableItemDefManager* createItemDefManager()
 	return new CItemDefManager();
 }
 
+#ifndef SERVER
+//TODO very very very dirty hack!
+video::IVideoDriver * CItemDefManager::m_driver = 0;
+std::vector<video::ITexture*> CItemDefManager::m_extruded_textures;
+#endif
