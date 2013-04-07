@@ -104,10 +104,12 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, bw, 30);
 		rect = rect + v2s32(size.X/2-bw/2, size.Y/2-30/2+5 + msg_h/2);
+		wchar_t* text = wgettext("Proceed");
 		gui::IGUIElement *e = 
 		Environment->addButton(rect, this, 257,
-			wgettext("Proceed"));
+			text);
 		Environment->setFocus(e);
+		delete[] text;
 	}
 	changeCtype("C");
 }
