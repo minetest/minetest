@@ -94,7 +94,7 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 }
 
 
-void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
+void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int in_range = 0;
 
 	in_range |= (nmin.Y <= height_max && nmax.Y >= height_min);
@@ -105,9 +105,6 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 
 	resolveNodeNames(mg->ndef);
 	
-	MapNode n_ore(ore);
-	ManualMapVoxelManipulator *vm = mg->vm;
-	PseudoRandom pr(blockseed);
 	int ymin, ymax;
 	
 	if (in_range & ORE_RANGE_MIRROR) {
@@ -120,6 +117,17 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	if (clust_size >= ymax - ymin + 1)
 		return;
 	
+	nmin.Y = ymin;
+	nmax.Y = ymax;
+	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
+}
+
+
+void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
+						u32 blockseed, v3s16 nmin, v3s16 nmax) {
+	PseudoRandom pr(blockseed);
+	MapNode n_ore(ore, 0, ore_param2);
+
 	int volume = (nmax.X - nmin.X + 1) *
 				 (nmax.Y - nmin.Y + 1) *
 				 (nmax.Z - nmin.Z + 1);
@@ -129,10 +137,10 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 
 	for (int i = 0; i != nclusters; i++) {
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
-		int y0 = pr.range(ymin,   ymax   - csize + 1);
+		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
 		
-		if (np && (NoisePerlin3D(np, x0, y0, z0, mg->seed) < nthresh))
+		if (np && (NoisePerlin3D(np, x0, y0, z0, seed) < nthresh))
 			continue;
 		
 		for (int z1 = 0; z1 != csize; z1++)
@@ -149,53 +157,25 @@ void OreScatter::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 }
 
 
-void OreSheet::generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
-	int in_range = 0;
-
-	in_range |= (nmin.Y <= height_max && nmax.Y >= height_min);
-	if (flags & OREFLAG_ABSHEIGHT)
-		in_range |= (nmin.Y >= -height_max && nmax.Y <= -height_min) << 1;
-	if (!in_range)
-		return;
-		
-	resolveNodeNames(mg->ndef);
-
-	MapNode n_ore(ore);
-	ManualMapVoxelManipulator *vm = mg->vm;
+void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
+						u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed + 4234);
-	int ymin, ymax;
-	
-	if (in_range & ORE_RANGE_MIRROR) {
-		ymin = MYMAX(nmin.Y, -height_max);
-		ymax = MYMIN(nmax.Y, -height_min);
-	} else {
-		ymin = MYMAX(nmin.Y, height_min);
-		ymax = MYMIN(nmax.Y, height_max);
-	}
-
-	if (clust_size >= ymax - ymin + 1)
-		return;
-		
-	int x0 = nmin.X;
-	int z0 = nmin.Z;
-	
-	int x1 = nmax.X;
-	int z1 = nmax.Z;
+	MapNode n_ore(ore, 0, ore_param2);
 	
 	int max_height = clust_size;
-	int y_start = pr.range(ymin, ymax - max_height);
+	int y_start = pr.range(nmin.Y, nmax.Y - max_height);
 	
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
 		int sz = nmax.Z - nmin.Z + 1;
 		noise = new Noise(np, 0, sx, sz);
 	}
-	noise->seed = mg->seed + y_start;
-	noise->perlinMap2D(x0, z0);
+	noise->seed = seed + y_start;
+	noise->perlinMap2D(nmin.X, nmin.Z);
 	
 	int index = 0;
-	for (int z = z0; z != z1; z++)
-	for (int x = x0; x != x1; x++) {
+	for (int z = nmin.Z; z <= nmax.Z; z++)
+	for (int x = nmin.X; x <= nmax.X; x++) {
 		float noiseval = noise->result[index++];
 		if (noiseval < nthresh)
 			continue;

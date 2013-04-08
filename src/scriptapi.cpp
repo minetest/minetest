@@ -670,6 +670,7 @@ static int l_register_ore(lua_State *L)
 	}
 	
 	ore->ore_name       = getstringfield_default(L, index, "ore", "");
+	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);

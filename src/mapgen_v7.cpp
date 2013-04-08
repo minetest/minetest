@@ -180,7 +180,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 
 	for (size_t i = 0; i != emerge->ores.size(); i++) {
 		Ore *ore = emerge->ores[i];
-		ore->generate(this, blockseed + i, node_min, node_max);
+		ore->placeOre(this, blockseed + i, node_min, node_max);
 	}
 	
 	//printf("makeChunk: %dms\n", t.stop());
