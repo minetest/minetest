@@ -329,6 +329,9 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 	if(!touching_ground_was && touching_ground){
 		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
 		m_gamedef->event()->put(e);
+
+		// Set camera impact value to be used for view bobbing
+		camera_impact = getSpeed().Y * -1;
 	}
 
 	{

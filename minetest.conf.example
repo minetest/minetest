@@ -136,6 +136,10 @@
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
+# Fall bobbing. Amount is the intensity of the swing, velocity the maximum impact speed, step the effect speed
+#fall_bobbing_amount = 5.0
+#fall_bobbing_velocity = 40
+#fall_bobbing_step = 0.02
 # Anaglyph stereo
 #anaglyph = false
 #anaglyph_strength = 0.1

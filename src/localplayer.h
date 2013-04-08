@@ -59,6 +59,8 @@ public:
 	float last_yaw;
 	unsigned int last_keyPressed;
 
+	float camera_impact;
+
 private:
 	// This is used for determining the sneaking range
 	v3s16 m_sneak_node;
