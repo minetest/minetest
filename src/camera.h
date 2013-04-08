@@ -166,6 +166,8 @@ private:
 	s32 m_view_bobbing_state;
 	// Speed of view bobbing animation
 	f32 m_view_bobbing_speed;
+	// Fall view bobbing
+	f32 m_view_bobbing_fall;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
 	f32 m_digging_anim;
