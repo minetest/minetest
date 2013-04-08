@@ -901,7 +901,6 @@ void ServerEnvironment::clearAllObjects()
 {
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Removing all active objects"<<std::endl;
-	std::list<u16> objects_to_remove;
 	for(std::map<u16, ServerActiveObject*>::iterator
 			i = m_active_objects.begin();
 			i != m_active_objects.end(); ++i)
@@ -936,14 +935,8 @@ void ServerEnvironment::clearAllObjects()
 		// Delete active object
 		if(obj->environmentDeletes())
 			delete obj;
-		// Id to be removed from m_active_objects
-		objects_to_remove.push_back(id);
-	}
-	// Remove references from m_active_objects
-	for(std::list<u16>::iterator i = objects_to_remove.begin();
-			i != objects_to_remove.end(); ++i)
-	{
-		m_active_objects.erase(*i);
+		//Why do we create new list?? Less memory, more fun...
+		m_active_object.erase(id);
 	}
 
 	std::list<v3s16> loadable_blocks;
@@ -982,7 +975,7 @@ void ServerEnvironment::clearAllObjects()
 
 		if(num_blocks_checked % report_interval == 0){
 			float percent = 100.0 * (float)num_blocks_checked /
-					loadable_blocks.size();
+					(float)loadable_blocks.size();
 			infostream<<"ServerEnvironment::clearAllObjects(): "
 					<<"Cleared "<<num_objs_cleared<<" objects"
 					<<" in "<<num_blocks_cleared<<" blocks ("
