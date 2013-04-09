@@ -417,7 +417,7 @@ int l_get_all_craft_recipes(lua_State *L)
 			lua_pushvalue(L, table_insert);
 			lua_pushvalue(L, table);
 			lua_newtable(L);
-			int k = 0;
+			int k = 1;
 			lua_newtable(L);
 			for(std::vector<ItemStack>::const_iterator
 				i = input.items.begin();
