@@ -1781,5 +1781,7 @@ void run_tests()
 		errorstream<<"run_tests() aborting."<<std::endl;
 		abort();
 	}
+	delete idef;
+	delete ndef;
 }
 

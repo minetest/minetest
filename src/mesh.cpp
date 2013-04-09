@@ -246,6 +246,8 @@ static scene::IAnimatedMesh* extrudeARGB(u32 twidth, u32 theight, u8 *data)
 		}
 	}
 
+	delete[] solidity;
+
 	// Add to mesh
 	scene::SMesh *mesh = new scene::SMesh();
 	mesh->addMeshBuffer(buf);
