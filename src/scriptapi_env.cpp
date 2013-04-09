@@ -662,9 +662,11 @@ int EnvRef::l_line_of_sight(lua_State *L) {
 	v3f pos2 = checkFloatPos(L, 2);
 	//read step size from lua
 	if(lua_isnumber(L, 3))
-	stepsize = lua_tonumber(L, 3);
+		stepsize = lua_tonumber(L, 3);
 
-	return (env->line_of_sight(pos1,pos2,stepsize));
+	lua_pushboolean(L, env->line_of_sight(pos1,pos2,stepsize));
+
+	return 1;
 }
 
 int EnvRef::l_find_path(lua_State *L)
