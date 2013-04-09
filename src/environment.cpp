@@ -936,9 +936,14 @@ void ServerEnvironment::clearAllObjects()
 		// Delete active object
 		if(obj->environmentDeletes())
 			delete obj;
+<<<<<<< HEAD
 		++i;
 		//Why do we create new list?? Less memory, more fun...
 		m_active_object.erase(id);
+=======
+	        //Why must we create new list, if we can do everything here....
+		m_active_objects.erase(id);
+>>>>>>> 03f205f5a36ae726bcfb63103cc9042f9c1f05f6
 	}
 
 	std::list<v3s16> loadable_blocks;
