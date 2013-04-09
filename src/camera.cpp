@@ -133,6 +133,13 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
+	if(m_view_bobbing_fall > 0)
+	{
+		m_view_bobbing_fall -= 2 * dtime;
+		if(m_view_bobbing_fall <= 0)
+			m_view_bobbing_fall = -1; // Mark the effect as finished
+	}
+
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
@@ -251,19 +258,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 
 	if(player->camera_impact >= 1)
 	{
-		// Base maximum velocity on jump speed
-		float fall_bobbing_velocity = g_settings->getFloat("movement_speed_jump") * 5;
-
-		if(m_view_bobbing_fall == 0)
+		if(m_view_bobbing_fall == -1) // Effect took place and has finished
+			player->camera_impact = m_view_bobbing_fall = 0;
+		else if(m_view_bobbing_fall == 0) // Initialize effect
 			m_view_bobbing_fall = 1;
 
-		if(m_view_bobbing_fall > 0)
-		{
-			m_view_bobbing_fall -= 0.02; // Step speed
-
-			if(m_view_bobbing_fall <= 0)
-				m_view_bobbing_fall = player->camera_impact = 0;
-		}
+		// Base maximum velocity on jump speed
+		float fall_bobbing_velocity = g_settings->getFloat("movement_speed_jump") * 5;
 
 		// Convert 0 -> 1 to 0 -> 1 -> 0
 		float fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
