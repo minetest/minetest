@@ -226,17 +226,11 @@ class CItemDefManager: public IWritableItemDefManager
 public:
 	CItemDefManager()
 	{
-		for (std::map<std::string, ItemDefinition*>::iterator iter =
-				m_item_definitions.begin(); iter != m_item_definitions.end();
-				iter ++) {
-			delete iter->second;
-		}
-		m_item_definitions.clear();
+
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
 		m_driver = NULL;
 #endif
-	
 		clear();
 	}
 	virtual ~CItemDefManager()
@@ -260,6 +254,12 @@ public:
 		}
 		m_driver = NULL;
 #endif
+		for (std::map<std::string, ItemDefinition*>::iterator iter =
+				m_item_definitions.begin(); iter != m_item_definitions.end();
+				iter ++) {
+			delete iter->second;
+		}
+		m_item_definitions.clear();
 	}
 	virtual const ItemDefinition& get(const std::string &name_) const
 	{
