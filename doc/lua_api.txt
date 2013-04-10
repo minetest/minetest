@@ -528,7 +528,8 @@ Special groups
 - attached_node: if the node under it is not a walkable block the node will be
                   dropped as an item. If the node is wallmounted the
                   wallmounted direction is checked.
-
+- hanging_node: drops node(s) beneath it if they contain hanging_node group. 
+                  Can only place node when top node is haning_node or walkable true
 Known damage and digging time defining groups
 ----------------------------------------------
 - crumbly: dirt, sand
