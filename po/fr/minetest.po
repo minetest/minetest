@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-01 14:13+0200\n"
-"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
+"PO-Revision-Date: 2013-04-10 23:52+0200\n"
+"Last-Translator: Me Moala <moala@online.fr>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgid ""
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
 "Attention : certains mods configurés sont introuvables.\n"
-"Leur réglages seront effacés quand vous enregistrerez la configuration. "
+"Leurs réglages seront effacés quand vous enregistrerez la configuration. "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
@@ -101,7 +101,8 @@ msgstr "Réapparaître"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr "Clic gauche: déplacer tous les objets -- Clic droit: déplacer un objet"
+msgstr ""
+"Clic gauche : déplacer tous les objets -- Clic droit : déplacer un objet"
 
 #: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:131
@@ -198,11 +199,11 @@ msgstr "Imprimer stacks"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "Impossible de créer le monde: le nom contient des caractères invalides"
+msgstr "Impossible de créer le monde : le nom contient des caractères invalides"
 
 #: src/guiMainMenu.cpp:101
 msgid "Cannot create world: A world by this name already exists"
-msgstr "Impossible de créer le monde: ce nom est déjà utilisé"
+msgstr "Impossible de créer le monde : ce nom est déjà utilisé"
 
 #: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
@@ -430,16 +431,17 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
-"Touches :\n"
-"- ZQSD : courir\n"
-"- Clic gauche : Creuser bloc\n"
-"- Clic droite : Insérer bloc\n"
-"- Roulette : Sélection objet\n"
-"- 0...9 : Sélection objet\n"
-"- Shift : marcher\n"
+"Touches par défaut :\n"
+"- ZQSD : se déplacer\n"
+"- Clic gauche : creuser bloc\n"
+"- Clic droite : insérer bloc\n"
+"- Roulette : sélectionner objet\n"
+"- 0...9 : sélectionner objet\n"
+"- Shift : déplacement prudent\n"
 "- R : active la vue de tous les blocs\n"
 "- I : inventaire\n"
-"- T : parler\n"
+"- Échap : ce menu\n"
+"- T : discuter\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
@@ -555,7 +557,7 @@ msgstr "Suivant"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr "Précèdent"
+msgstr "Précédent"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -567,7 +569,7 @@ msgstr "Bas"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr "Éxécuter"
+msgstr "Exécuter"
 
 #: src/keycode.cpp:228
 msgid "Print"
