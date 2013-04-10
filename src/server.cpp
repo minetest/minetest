@@ -1776,12 +1776,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// drop player if is ip is banned
 		if(m_banmanager->isIpBanned(addr_s)){
+			std::string ban_name = m_banmanager->getBanName(addr_s);
 			infostream<<"Server: A banned client tried to connect from "
 					<<addr_s<<"; banned name was "
-					<<m_banmanager->getBanName(addr_s)<<std::endl;
+					<<ban_name<<std::endl;
 			// This actually doesn't seem to transfer to the client
 			DenyAccess(peer_id, L"Your ip is banned. Banned name was "
-					+narrow_to_wide(m_banmanager->getBanName(addr_s)));
+					+narrow_to_wide(ban_name));
 			m_con.DeletePeer(peer_id);
 			return;
 		}
