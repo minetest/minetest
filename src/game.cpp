@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IMaterialRendererServices.h>
+#include "IMeshCache.h"
 #include "client.h"
 #include "server.h"
 #include "guiPauseMenu.h"
@@ -992,6 +993,9 @@ void the_game(
 		sound_is_dummy = true;
 	}
 
+	Server *server = NULL;
+
+	try{
 	// Event manager
 	EventManager eventmgr;
 
@@ -1007,9 +1011,8 @@ void the_game(
 
 	/*
 		Create server.
-		SharedPtr will delete it when it goes out of scope.
 	*/
-	SharedPtr<Server> server;
+
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
@@ -1018,7 +1021,6 @@ void the_game(
 		server->start(port);
 	}
 
-	try{
 	do{ // Client scope (breakable do-while(0))
 	
 	/*
@@ -3290,14 +3292,44 @@ void the_game(
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 	}
+	catch(ServerError &e)
+	{
+		error_message = narrow_to_wide(e.what());
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
+	}
+	catch(ModError &e)
+	{
+		errorstream<<e.what()<<std::endl;
+		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
+	}
+
+
 	
 	if(!sound_is_dummy)
 		delete sound;
+
+	//has to be deleted first to stop all server threads
+	delete server;
 
 	delete tsrc;
 	delete shsrc;
 	delete nodedef;
 	delete itemdef;
+
+	//extended resource accounting
+	infostream << "Irrlicht resources after cleanup:" << std::endl;
+	infostream << "\tRemaining meshes   : "
+		<< device->getSceneManager()->getMeshCache()->getMeshCount() << std::endl;
+	infostream << "\tRemaining textures : "
+		<< driver->getTextureCount() << std::endl;
+	for (unsigned int i = 0; i < driver->getTextureCount(); i++ ) {
+		irr::video::ITexture* texture = driver->getTextureByIndex(i);
+		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
+				<< std::endl;
+	}
+	infostream << "\tRemaining materials: "
+		<< driver-> getMaterialRendererCount ()
+		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;
 }
 
 

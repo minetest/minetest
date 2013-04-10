@@ -904,6 +904,9 @@ Server::~Server()
 	*/
 	stop();
 
+	//shutdown all emerge threads first!
+	delete m_emerge;
+
 	/*
 		Delete clients
 	*/
@@ -923,7 +926,6 @@ Server::~Server()
 	// Delete things in the reverse order of creation
 	delete m_env;
 	delete m_rollback;
-	delete m_emerge;
 	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;

@@ -89,7 +89,9 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 		std::string name_narrow = wide_to_narrow(name);
 		if(!string_allowed_blacklist(name_narrow, WORLDNAME_BLACKLISTED_CHARS))
 		{
-			m_menu->displayMessageMenu(wgettext("Cannot create world: Name contains invalid characters"));
+			wchar_t* text = wgettext("Cannot create world: Name contains invalid characters");
+			m_menu->displayMessageMenu(text);
+			delete[] text;
 			return;
 		}
 		std::vector<WorldSpec> worlds = getAvailableWorlds();
@@ -98,7 +100,9 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 		{
 			if((*i).name == name_narrow)
 			{
-				m_menu->displayMessageMenu(wgettext("Cannot create world: A world by this name already exists"));
+				wchar_t* text = wgettext("Cannot create world: A world by this name already exists");
+				m_menu->displayMessageMenu(text);
+				delete[] text;
 				return;
 			}
 		}
@@ -280,12 +284,24 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		rect += m_topleft_client + v2s32(0, -30);
 		gui::IGUITabControl *e = Environment->addTabControl(
 				rect, this, true, true, GUI_ID_TAB_CONTROL);
-		e->addTab(wgettext("Singleplayer"));
-		e->addTab(wgettext("Multiplayer"));
-		e->addTab(wgettext("Advanced"));
-		e->addTab(wgettext("Settings"));
-		e->addTab(wgettext("Credits"));
+		wchar_t* text = wgettext("Singleplayer");
+		e->addTab(text);
+		delete[] text;
+		text = wgettext("Multiplayer");
+		e->addTab(text);
+		delete[] text;
+		text = wgettext("Advanced");
+		e->addTab(text);
+		delete[] text;
+		text = wgettext("Settings");
+		e->addTab(text);
+		delete[] text;
+		text = wgettext("Credits");
+		e->addTab(text);
+		delete[] text;
+
 		e->setActiveTab(m_data->selected_tab);
+
 	}
 	
 	if(m_data->selected_tab == TAB_SINGLEPLAYER)
@@ -313,9 +329,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, world_sel_w-4, 20);
 			rect += m_topleft_client + v2s32(world_sel_x+4, world_sel_y-20);
+			wchar_t* text = wgettext("Select World:");
 			/*gui::IGUIStaticText *e =*/ Environment->addStaticText(
-					wgettext("Select World:"), 
+					text,
 					rect, false, true, this, -1);
+			delete[] text;
 			/*e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);*/
 		}
 		{
@@ -335,23 +353,29 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x, world_sel_y+world_sel_h+0);
+			wchar_t* text = wgettext("Delete");
 			Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
-				  wgettext("Delete"));
+				 text);
+			delete[] text;
 		}
 		// Create world button
 		{
 			core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+world_button_w+bs, world_sel_y+world_sel_h+0);
+			wchar_t* text = wgettext("New");
 			Environment->addButton(rect, this, GUI_ID_CREATE_WORLD_BUTTON,
-				  wgettext("New"));
+				 text);
+			delete[] text;
 		}
 		// Configure world button
 		{
 			core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+(world_button_w+bs)*2,
 					world_sel_y+world_sel_h+0);
+			wchar_t* text = wgettext("Configure");
 			Environment->addButton(rect, this, GUI_ID_CONFIGURE_WORLD_BUTTON,
-				  wgettext("Configure"));
+				text);
+			delete[] text;
 		}
 		// Start game button
 		{
@@ -365,8 +389,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, bw, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+world_sel_w-bw,
 					world_sel_y+world_sel_h+30+bs);
+			wchar_t* text = wgettext("Play");
 			Environment->addButton(rect, this,
-					GUI_ID_JOIN_GAME_BUTTON, wgettext("Play"));
+					GUI_ID_JOIN_GAME_BUTTON, text);
+			delete[] text;
 		}
 		// Options
 		s32 option_x = 50;
@@ -376,14 +402,18 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*0);
+			wchar_t* text = wgettext("Creative Mode");
 			Environment->addCheckBox(m_data->creative_mode, rect, this,
-					GUI_ID_CREATIVE_CB, wgettext("Creative Mode"));
+					GUI_ID_CREATIVE_CB, text);
+			delete[] text;
 		}
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*1);
+			wchar_t* text = wgettext("Enable Damage");
 			Environment->addCheckBox(m_data->enable_damage, rect, this,
-					GUI_ID_DAMAGE_CB, wgettext("Enable Damage"));
+					GUI_ID_DAMAGE_CB, text);
+			delete[] text;
 		}
 		changeCtype("C");
 	}
@@ -402,9 +432,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		// Nickname + password
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
+			wchar_t* text = wgettext("Name/Password");
 			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 10+6);
-			Environment->addStaticText(wgettext("Name/Password"), 
+			Environment->addStaticText(text,
 				rect, false, true, this, -1);
+			delete [] text;
 		}
 		changeCtype("C");
 		{
@@ -467,8 +499,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
 			rect += m_topleft_client + v2s32(50, m_size_client.Y-50-15+6);
-			Environment->addStaticText(wgettext("Address/Port"),
+			wchar_t* text = wgettext("Address/Port");
+			Environment->addStaticText(text,
 				rect, false, true, this, -1);
+			delete [] text;
 		}
 		changeCtype("C");
 		{
@@ -493,13 +527,17 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 260, 30);
 			rect += m_topleft_client + v2s32(50,
 					180);
+			wchar_t* text = wgettext("Show Public");
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_TOGGLE,
-				wgettext("Show Public"));
+				text);
+			delete[] text;
 			e->setIsPushButton(true);
 			if (m_data->selected_serverlist == SERVERLIST_PUBLIC)
 			{
-				e->setText(wgettext("Show Favorites"));
+				wchar_t* text = wgettext("Show Favorites");
+				e->setText(text);
 				e->setPressed();
+				delete[] text;
 			}
 		}
 		#endif
@@ -507,18 +545,23 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			rect += m_topleft_client + v2s32(50+260+10, 180);
+			wchar_t* text = wgettext("Delete");
 			gui::IGUIButton *e = Environment->addButton(rect, this, GUI_ID_SERVERLIST_DELETE,
-				wgettext("Delete"));
+					text);
 			if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // Hidden when on public list
 				e->setVisible(false);
+
+			delete [] text;
 		}
 		// Start game button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			rect += m_topleft_client + v2s32(m_size_client.X-130-30,
 					m_size_client.Y-25-15);
+			wchar_t* text = wgettext("Connect");
 			Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
-				wgettext("Connect"));
+				text);
+			delete[] text;
 		}
 		changeCtype("C");
 	}
@@ -538,8 +581,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
 			rect += m_topleft_client + v2s32(35+30, 35+6);
-			Environment->addStaticText(wgettext("Name/Password"), 
+			wchar_t* text = wgettext("Name/Password");
+			Environment->addStaticText(text,
 				rect, false, true, this, -1);
+			delete [] text;
 		}
 		changeCtype("C");
 		{
@@ -565,8 +610,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
 			rect += m_topleft_client + v2s32(35+30, 75+6);
-			Environment->addStaticText(wgettext("Address/Port"),
+			wchar_t* text = wgettext("Address/Port");
+			Environment->addStaticText(text,
 				rect, false, true, this, -1);
+			delete[] text;
 		}
 		changeCtype("C");
 		{
@@ -588,16 +635,20 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 400, 20);
 			rect += m_topleft_client + v2s32(160+30, 75+35);
-			Environment->addStaticText(wgettext("Leave address blank to start a local server."),
+			wchar_t* text = wgettext("Leave address blank to start a local server.");
+			Environment->addStaticText(text,
 				rect, false, true, this, -1);
+			delete[] text;
 		}
 		// Start game button
 		{
 			core::rect<s32> rect(0, 0, 180, 30);
 			rect += m_topleft_client + v2s32(m_size_client.X-180-30,
 					m_size_client.Y-30-20);
+			wchar_t* text = wgettext("Start Game / Connect");
 			Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
-				wgettext("Start Game / Connect"));
+				text);
+			delete[] text;
 		}
 		/*
 			Server section
@@ -615,36 +666,46 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 250, 30);
 			rect += m_topleft_server + v2s32(30+20+250+20, 20);
+			wchar_t* text = wgettext("Creative Mode");
 			Environment->addCheckBox(m_data->creative_mode, rect, this, GUI_ID_CREATIVE_CB,
-				wgettext("Creative Mode"));
+				text);
+			delete[] text;
 		}
 		{
 			core::rect<s32> rect(0, 0, 250, 30);
 			rect += m_topleft_server + v2s32(30+20+250+20, 40);
+			wchar_t* text = wgettext("Enable Damage");
 			Environment->addCheckBox(m_data->enable_damage, rect, this, GUI_ID_DAMAGE_CB,
-				wgettext("Enable Damage"));
+				text);
+			delete[] text;
 		}
 		#if USE_CURL
 		{
 			core::rect<s32> rect(0, 0, 250, 30);
 			rect += m_topleft_server + v2s32(30+20+250+20, 60);
+			wchar_t* text = wgettext("Public");
 			Environment->addCheckBox(m_data->enable_public, rect, this, GUI_ID_PUBLIC_CB,
-				wgettext("Public"));
+				text);
+			delete[] text;
 		}
 		#endif
 		// Delete world button
 		{
 			core::rect<s32> rect(0, 0, 130, 30);
 			rect += m_topleft_server + v2s32(30+20+250+20, 90);
+			wchar_t* text = wgettext("Delete world");
 			Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
-				  wgettext("Delete world"));
+				 text );
+			delete[] text;
 		}
 		// Create world button
 		{
 			core::rect<s32> rect(0, 0, 130, 30);
 			rect += m_topleft_server + v2s32(30+20+250+20+140, 90);
+			wchar_t* text = wgettext("Create world");
 			Environment->addButton(rect, this, GUI_ID_CREATE_WORLD_BUTTON,
-				  wgettext("Create world"));
+				 text );
+			delete[] text;
 		}
 		// World selection listbox
 		{
@@ -677,26 +738,34 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y);
+			wchar_t* text = wgettext("Fancy trees");
 			Environment->addCheckBox(m_data->fancy_trees, rect, this,
-					GUI_ID_FANCYTREE_CB, wgettext("Fancy trees")); 
+					GUI_ID_FANCYTREE_CB, text);
+			delete[] text;
 		}
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20);
+			wchar_t* text = wgettext("Smooth Lighting");
 			Environment->addCheckBox(m_data->smooth_lighting, rect, this,
-					GUI_ID_SMOOTH_LIGHTING_CB, wgettext("Smooth Lighting"));
+					GUI_ID_SMOOTH_LIGHTING_CB, text);
+			delete[] text;
 		}
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*2);
+			wchar_t* text = wgettext("3D Clouds");
 			Environment->addCheckBox(m_data->clouds_3d, rect, this,
-					GUI_ID_3D_CLOUDS_CB, wgettext("3D Clouds"));
+					GUI_ID_3D_CLOUDS_CB, text);
+			delete[] text;
 		}
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*3);
+			wchar_t* text = wgettext("Opaque water");
 			Environment->addCheckBox(m_data->opaque_water, rect, this,
-					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
+					GUI_ID_OPAQUE_WATER_CB, text);
+			delete[] text;
 		}
 
 
@@ -705,58 +774,74 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175, option_y);
+			wchar_t* text = wgettext("Mip-Mapping");
 			Environment->addCheckBox(m_data->mip_map, rect, this,
-				       GUI_ID_MIPMAP_CB, wgettext("Mip-Mapping"));
+				       GUI_ID_MIPMAP_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175, option_y+20);
+			wchar_t* text = wgettext("Anisotropic Filtering");
 			Environment->addCheckBox(m_data->anisotropic_filter, rect, this,
-				       GUI_ID_ANISOTROPIC_CB, wgettext("Anisotropic Filtering"));
+				       GUI_ID_ANISOTROPIC_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175, option_y+20*2);
+			wchar_t* text = wgettext("Bi-Linear Filtering");
 			Environment->addCheckBox(m_data->bilinear_filter, rect, this,
-				       GUI_ID_BILINEAR_CB, wgettext("Bi-Linear Filtering"));
+				       GUI_ID_BILINEAR_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175, option_y+20*3);
+			wchar_t* text = wgettext("Tri-Linear Filtering");
 			Environment->addCheckBox(m_data->trilinear_filter, rect, this,
-				       GUI_ID_TRILINEAR_CB, wgettext("Tri-Linear Filtering"));
+				       GUI_ID_TRILINEAR_CB, text);
+			delete[] text;
 		}
 
 		// shader/on demand image loading/particles settings
 		{
 			core::rect<s32> rect(0, 0, option_w+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y);
+			wchar_t* text = wgettext("Shaders");
 			Environment->addCheckBox(m_data->enable_shaders, rect, this,
-					GUI_ID_SHADERS_CB, wgettext("Shaders"));
+					GUI_ID_SHADERS_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20);
+			wchar_t* text = wgettext("Preload item visuals");
 			Environment->addCheckBox(m_data->preload_item_visuals, rect, this,
-					GUI_ID_PRELOAD_ITEM_VISUALS_CB, wgettext("Preload item visuals"));
+					GUI_ID_PRELOAD_ITEM_VISUALS_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*2);
+			wchar_t* text = wgettext("Enable Particles");
 			Environment->addCheckBox(m_data->enable_particles, rect, this,
-					GUI_ID_ENABLE_PARTICLES_CB, wgettext("Enable Particles"));
+					GUI_ID_ENABLE_PARTICLES_CB, text);
+			delete[] text;
 		}
 
 		{
 			core::rect<s32> rect(0, 0, option_w+20+20, 30);
 			rect += m_topleft_client + v2s32(option_x+175*2, option_y+20*3);
+			wchar_t* text = wgettext("Finite liquid");
 			Environment->addCheckBox(m_data->liquid_finite, rect, this,
-					GUI_ID_LIQUID_FINITE_CB, wgettext("Finite liquid"));
+					GUI_ID_LIQUID_FINITE_CB, text);
+			delete[] text;
 		}
 
 		// Key change button
@@ -765,8 +850,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
 					m_size_client.Y-30-20);*/
 			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			wchar_t* text = wgettext("Change keys");
 			Environment->addButton(rect, this,
-					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
+					GUI_ID_CHANGE_KEYS_BUTTON, text);
+			delete[] text;
 		}
 		changeCtype("C");
 	}
@@ -1080,9 +1167,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				readInput(&cur);
 				if (getTab() == TAB_MULTIPLAYER && cur.address == L"")
 				{
+					wchar_t* text = wgettext("Address required.");
 					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Address required."))
+							text)
 							)->drop();
+					delete[] text;
 					return true;
 				}
 				acceptInput();
@@ -1098,9 +1187,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				MainMenuData cur;
 				readInput(&cur);
 				if(cur.selected_world == -1){
+					wchar_t* text = wgettext("Cannot delete world: Nothing selected");
 					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Cannot delete world: Nothing selected"))
+							text)
 							)->drop();
+					delete[] text;
 				} else {
 					WorldSpec spec = m_data->worlds[cur.selected_world];
 					// Get files and directories involved
@@ -1110,12 +1201,16 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 					// Launch confirmation dialog
 					ConfirmDestDeleteWorld *dest = new
 							ConfirmDestDeleteWorld(spec, this, paths);
-					std::wstring text = wgettext("Delete world");
+					wchar_t* text1 = wgettext("Delete world");
+					wchar_t* text2 = wgettext("Files to be deleted");
+					std::wstring text = text1;
 					text += L" \"";
 					text += narrow_to_wide(spec.name);
 					text += L"\"?\n\n";
-					text += wgettext("Files to be deleted");
+					text += text2;
 					text += L":\n";
+					delete[] text1;
+					delete[] text2;
 					for(u32 i=0; i<paths.size(); i++){
 						if(i == 3){ text += L"..."; break; }
 						text += narrow_to_wide(paths[i]) + L"\n";
@@ -1128,10 +1223,12 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			case GUI_ID_CREATE_WORLD_BUTTON: {
 				std::vector<SubgameSpec> games = getAvailableGames();
 				if(games.size() == 0){
+					wchar_t* text = wgettext("Cannot create world: No games found");
 					GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
 							-1, menumgr,
-							wgettext("Cannot create world: No games found"));
+							text);
 					menu->drop();
+					delete[] text;
 				} else {
 					CreateWorldDest *dest = new CreateWorldDestMainMenu(this);
 					GUICreateWorld *menu = new GUICreateWorld(env, parent, -1,
@@ -1145,9 +1242,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				readInput(&cur);
 				if(cur.selected_world == -1)
 				{
+					wchar_t* text = wgettext("Cannot configure world: Nothing selected");
 					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Cannot configure world: Nothing selected"))
+							text)
 							)->drop();
+					delete[] text;
 				} 
 				else 
 				{
@@ -1180,8 +1279,12 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				if (m_data->selected_serverlist == SERVERLIST_PUBLIC) // switch to favorite list
 				{
 					m_data->servers = ServerList::getLocal();
-					togglebutton->setText(wgettext("Show Public"));
-					title->setText(wgettext("Favorites:"));
+					wchar_t* text1 = wgettext("Show Public");
+					wchar_t* text2 = wgettext("Favorites:");
+					togglebutton->setText(text1);
+					title->setText(text2);
+					delete[] text1;
+					delete[] text2;
 					deletebutton->setVisible(true);
 					updateGuiServerList();
 					serverlist->setSelected(0);
@@ -1190,8 +1293,12 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				else // switch to online list
 				{
 					m_data->servers = ServerList::getOnline();
-					togglebutton->setText(wgettext("Show Favorites"));
-					title->setText(wgettext("Public Server List:"));
+					wchar_t* text1 = wgettext("Show Favorites");
+					wchar_t* text2 = wgettext("Public Server List:");
+					togglebutton->setText(text1);
+					title->setText(text2);
+					delete[] text1;
+					delete[] text2;
 					deletebutton->setVisible(false);
 					updateGuiServerList();
 					serverlist->setSelected(0);
@@ -1261,8 +1368,10 @@ void GUIMainMenu::deleteWorld(const std::vector<std::string> &paths)
 	// Delete files
 	bool did = fs::DeletePaths(paths);
 	if(!did){
+		wchar_t* text = wgettext("Failed to delete all world files");
 		GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
-				-1, menumgr, wgettext("Failed to delete all world files"));
+				-1, menumgr, text);
+		delete[] text;
 		menu->drop();
 	}
 	// Quit menu to refresh it

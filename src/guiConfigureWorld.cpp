@@ -120,11 +120,12 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 	}
 	if(!m_new_mod_names.empty())
 	{
+		wchar_t* text = wgettext("Warning: Some mods are not configured yet.\n"
+				"They will be enabled by default when you save the configuration.  ");
 		GUIMessageMenu *menu = 
-			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
-							   wgettext("Warning: Some mods are not configured yet.\n" 
-										"They will be enabled by default when you save the configuration.  ")); 
+			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, text);
 		menu->drop();
+		delete[] text;
 	}
 	
 
@@ -139,10 +140,11 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 	}
 	if(!missing_mods.empty())
 	{
+		wchar_t* text = wgettext("Warning: Some configured mods are missing.\n"
+				"Their setting will be removed when you save the configuration.  ");
 		GUIMessageMenu *menu = 
-			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
-							   wgettext("Warning: Some configured mods are missing.\n"
-										"Their setting will be removed when you save the configuration.  ")); 
+			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, text);
+		delete[] text;
 		for(std::set<std::string>::iterator it = missing_mods.begin();
 			it != missing_mods.end(); ++it)
 			m_settings.remove("load_mod_"+(*it));
@@ -203,30 +205,36 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 200, 20);
 		rect += v2s32(0, 25) + topleft;
+		wchar_t* text = wgettext("enabled");
 		m_enabled_checkbox = 
 			Environment->addCheckBox(false, rect, this, GUI_ID_ENABLED_CHECKBOX, 
-									 wgettext("enabled"));
+									 text);
+		delete[] text;
 		m_enabled_checkbox->setVisible(false);
 	}
 	{
 		core::rect<s32> rect(0, 0, 85, 30);
 		rect = rect + v2s32(0, 25) + topleft;
+		wchar_t* text = wgettext("Enable All");
 		m_enableall = Environment->addButton(rect, this, GUI_ID_ENABLEALL,
-											 wgettext("Enable All"));
+											 text);
+		delete[] text;
 		m_enableall->setVisible(false);
 	}
 	{
 		core::rect<s32> rect(0, 0, 85, 30);
 		rect = rect + v2s32(115, 25) + topleft;
-		m_disableall = Environment->addButton(rect, this, GUI_ID_DISABLEALL,
-											  wgettext("Disable All"));
+		wchar_t* text = wgettext("Disable All");
+		m_disableall = Environment->addButton(rect, this, GUI_ID_DISABLEALL, text );
+		delete[] text;
 		m_disableall->setVisible(false);
 	}
 	{
 		core::rect<s32> rect(0, 0, 200, 20);
 		rect += v2s32(0, 60) + topleft;
-		Environment->addStaticText(wgettext("depends on:"),
-			rect, false, false, this, -1);
+		wchar_t* text = wgettext("depends on:");
+		Environment->addStaticText(text, rect, false, false, this, -1);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 200, 85);
@@ -237,8 +245,9 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 200, 20);
 		rect += v2s32(0, 175) + topleft;
-		Environment->addStaticText(wgettext("is required by:"),
-					rect, false, false, this, -1);
+		wchar_t* text = wgettext("is required by:");
+		Environment->addStaticText( text, rect, false, false, this, -1);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 200, 85);
@@ -258,14 +267,16 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(330, 270) - topleft;
-		Environment->addButton(rect, this, GUI_ID_CANCEL,
-			wgettext("Cancel"));
+		wchar_t* text = wgettext("Cancel");
+		Environment->addButton(rect, this, GUI_ID_CANCEL, text);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(460, 270) - topleft;
-		Environment->addButton(rect, this, GUI_ID_SAVE,
-			wgettext("Save"));
+		wchar_t* text = wgettext("Save");
+		Environment->addButton(rect, this, GUI_ID_SAVE, text);
+		delete[] text;
 	}
 	changeCtype("C");
 
@@ -389,17 +400,21 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				// bug in the text-size calculation. if the trailing
 				// spaces are removed from the message text, the
 				// message gets wrapped and parts of it are cut off:
+				wchar_t* text = wgettext("Configuration saved.  ");
 				GUIMessageMenu *menu = 
 					new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
-									   wgettext("Configuration saved.  "));
+									 text );
+				delete[] text;
 				menu->drop();
 
 				ModConfiguration modconf(m_wspec.path);
 				if(!modconf.isConsistent())
 				{
-					GUIMessageMenu *menu = 
+					wchar_t* text = wgettext("Warning: Configuration not consistent.  ");
+					GUIMessageMenu *menu =
 						new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
-										   wgettext("Warning: Configuration not consistent.  "));
+										 text );
+					delete[] text;
 					menu->drop();
 				}
 
