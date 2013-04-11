@@ -87,6 +87,7 @@ class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
+struct HudElement;
 
 class Player
 {
@@ -243,6 +244,9 @@ public:
 	
 	u32 keyPressed;
 
+	std::map<u32, HudElement*> hud;
+	std::map<u8, u32> hud_bars;
+
 protected:
 	IGameDef *m_gamedef;
 
@@ -251,6 +255,18 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
+};
+
+struct HudElement {
+	u8 type;
+	core::vector2df pos;
+	std::string name;
+
+	core::vector2df scale;
+	std::string text;
+	u32 number;
+	u32 item;
+	u32 dir;
 };
 
 /*

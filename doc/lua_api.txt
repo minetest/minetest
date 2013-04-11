@@ -1379,7 +1379,20 @@ Player-only: (no-op for other objects)
     modifies per-player walking speed, jump height, and gravity.
     Values default to 1 and act as offsets to the physics settings 
     in minetest.conf. nil will keep the current setting.
-    
+- hud_add(id, hud definition)
+  ^ id is used for later reference
+  ^ If this id has already been used, it will reset its drawform
+- hud_rm(id): remove an id from the lua hud
+- hud_change(id, stat, value): change a value of a previously added element
+  ^ stat/table key: 0/position, 1/name, 2/scale, 3/text, 4/number,
+  ^ 5/item, 6/dir
+- hud_get_next_id(): get the next available id for a hud element
+- hud_lock_next_bar(right): add a non-conflicting statbar
+  ^ if right, will claim spot on right side, rather then left
+  ^ returns element id on success, false otherwise
+- hud_unlock_bar(id): remove a non-conflicting statbar
+  ^ id is the value returned by calling hud_lock_next_bar()
+
 InvRef: Reference to an inventory
 methods:
 - is_empty(listname): return true if list is empty
@@ -1802,3 +1815,20 @@ Detached inventory callbacks
     ^ No return value
 }
 
+HUD Definition (hud_add)
+{
+    type = "I",           -- One of "I"(image), "S"(statbar),
+    ^ "T"(text), "i"(inv)
+    position = {x=0.5, y=0.5},   -- Left corner position
+    name = "<name>",
+    scale = {x=2, y=2},
+    text = "<text>",
+    ^ Used as texture name for statbars and images, and as list name
+    ^ for inv
+    number = 2,
+    ^ Used as stat for statbar, and as # of items for inv
+    item = 3,      -- Selected item in inv. 0 -> no item selected
+    dir = 0,
+    ^ dir/inv direction: 0/left-right, 1/right-left,
+    ^ 2/top-bottom, 3/bottom-top
+}
