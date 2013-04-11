@@ -245,19 +245,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
-	//Get camera tilt timer (hurt animation)
+	// Get camera tilt timer (hurt animation)
 	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
 
-	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
-	m_headnode->updateAbsolutePosition();
-
-	// Compute relative camera position and target
-	v3f rel_cam_pos = v3f(0,0,0);
-	v3f rel_cam_target = v3f(0,0,1);
-	v3f rel_cam_up = v3f(0,1,0);
-
+	// Fall bobbing animation
+	float fall_bobbing = 0;
 	if(player->camera_impact >= 1)
 	{
 		if(m_view_bobbing_fall == -1) // Effect took place and has finished
@@ -266,21 +258,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 			m_view_bobbing_fall = 1;
 
 		// Convert 0 -> 1 to 0 -> 1 -> 0
-		float fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
+		fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
 		// Smoothen and invert the above
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
-		fall_bobbing *= (1 - rangelim(35 / player->camera_impact, 0, 1)) * 0.05;
-
-		// Decrease the effecy by pitch
-		float pitch = player->getPitch() / 90;
-		if (pitch < 0)
-			pitch *= -1;
-		fall_bobbing *= 1 - pitch;
-
-		rel_cam_pos.Y += fall_bobbing / 2;
-		rel_cam_target.Y += fall_bobbing;
+		fall_bobbing *= (1 - rangelim(35 / player->camera_impact, 0, 1)) * 4;
 	}
+
+	// Set head node transformation
+	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
+	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
+	m_headnode->updateAbsolutePosition();
+
+	// Compute relative camera position and target
+	v3f rel_cam_pos = v3f(0,0,0);
+	v3f rel_cam_target = v3f(0,0,1);
+	v3f rel_cam_up = v3f(0,1,0);
 
 	if (m_view_bobbing_anim != 0)
 	{
