@@ -265,17 +265,20 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		else if(m_view_bobbing_fall == 0) // Initialize effect
 			m_view_bobbing_fall = 1;
 
-		// Base maximum velocity on jump speed
-		float fall_bobbing_velocity = g_settings->getFloat("movement_speed_jump") * 5;
-
 		// Convert 0 -> 1 to 0 -> 1 -> 0
 		float fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
 		// Smoothen and invert the above
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
-		fall_bobbing *= (1 - rangelim(fall_bobbing_velocity / player->camera_impact, 0, 1)) * 5;
+		fall_bobbing *= (1 - rangelim(35 / player->camera_impact, 0, 1)) * 0.05;
 
-		rel_cam_pos.Y += fall_bobbing;
+		// Decrease the effecy by pitch
+		float pitch = player->getPitch() / 90;
+		if (pitch < 0)
+			pitch *= -1;
+		fall_bobbing *= 1 - pitch;
+
+		rel_cam_pos.Y += fall_bobbing / 2;
 		rel_cam_target.Y += fall_bobbing;
 	}
 
