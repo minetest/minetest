@@ -190,6 +190,28 @@ private:
 	// get_player_control_bits(self)
 	static int l_get_player_control_bits(lua_State *L);
 
+	// hud_add(self, id, form)
+	static int l_hud_add(lua_State *L);
+
+	// hud_rm(self, id)
+	static int l_hud_rm(lua_State *L);
+
+	// hud_change(self, id, stat, data)
+	static int l_hud_change(lua_State *L);
+
+	// hud_get_next_id(self)
+	static int l_hud_get_next_id(lua_State *L);
+	static u32 hud_get_next_id(lua_State *L);
+
+	// hud_get(self, id)
+	static int l_hud_get(lua_State *L);
+
+	// hud_lock_next_bar(self, right)
+	static int l_hud_lock_next_bar(lua_State *L);
+
+	// hud_unlock_bar(self, id)
+	static int l_hud_unlock_bar(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

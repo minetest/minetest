@@ -2040,6 +2040,73 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_HUDADD)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id                = readU32(is);
+		u8 type               = readU8(is);
+		core::vector2df pos   = readV2F1000(is);
+		std::string name      = deSerializeString(is);
+		core::vector2df scale = readV2F1000(is);
+		std::string text      = deSerializeString(is);
+		u32 number            = readU32(is);
+		u32 item              = readU32(is);
+		u32 dir               = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_HUDADD;
+		event.hudadd.id = id;
+		event.hudadd.type = type;
+		event.hudadd.pos = new v2f(pos);
+		event.hudadd.name = new std::string(name);
+		event.hudadd.scale = new v2f(scale);
+		event.hudadd.text = new std::string(text);
+		event.hudadd.number = number;
+		event.hudadd.item = item;
+		event.hudadd.dir = dir;
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDRM)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_HUDRM;
+		event.hudrm.id = id;
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDCHANGE)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU32(is);
+		u8 stat = readU8(is);
+		core::vector2df v2fdata;
+		std::string sdata;
+		u32 data = 0;
+		if(stat == 0 || stat == 2) {
+			v2fdata = readV2F1000(is);
+		} else if(stat == 1 || stat == 3) {
+			sdata = deSerializeString(is);
+		} else {
+			data = readU32(is);
+		}
+
+		ClientEvent event;
+		event.type = CE_HUDCHANGE;
+		event.hudchange.id = id;
+		event.hudchange.stat = stat;
+		event.hudchange.v2fdata = new v2f(v2fdata);
+		event.hudchange.sdata = new std::string(sdata);
+		event.hudchange.data = data;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
