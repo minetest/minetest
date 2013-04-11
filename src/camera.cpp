@@ -137,7 +137,7 @@ void Camera::step(f32 dtime)
 {
 	if(m_view_bobbing_fall > 0)
 	{
-		m_view_bobbing_fall -= 2 * dtime;
+		m_view_bobbing_fall -= 3 * dtime;
 		if(m_view_bobbing_fall <= 0)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
 	}
@@ -262,7 +262,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		// Smoothen and invert the above
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
-		fall_bobbing *= (1 - rangelim(35 / player->camera_impact, 0, 1)) * 4;
+		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
 	}
 
 	// Set head node transformation
