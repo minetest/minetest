@@ -136,8 +136,6 @@
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
-# Amount of fall bobbing
-#fall_bobbing_amount = 5.0
 # Anaglyph stereo
 #anaglyph = false
 #anaglyph_strength = 0.1

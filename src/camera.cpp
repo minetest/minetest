@@ -273,7 +273,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		// Smoothen and invert the above
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
-		fall_bobbing *= (1 - rangelim(fall_bobbing_velocity / player->camera_impact, 0, 1)) * g_settings->getFloat("fall_bobbing_amount");
+		fall_bobbing *= (1 - rangelim(fall_bobbing_velocity / player->camera_impact, 0, 1)) * 5;
 
 		rel_cam_pos.Y += fall_bobbing;
 		rel_cam_target.Y += fall_bobbing;
