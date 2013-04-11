@@ -1079,7 +1079,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if(m_attachment_parent_id && !isAttached())
+	if(!isAttached())
 	{
 		m_attachment_parent_id = 0;
 		m_attachment_bone = "";
