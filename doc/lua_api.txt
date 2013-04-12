@@ -1002,10 +1002,23 @@ minetest.get_craft_recipe(output) -> input
 ^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
                               stack 5, stack 6, stack 7, stack 8, stack 9 }
 ^ input.items = nil if no recipe found
-minetest.get_all_craft_recipes(output) -> table or nil
-^ returns table with all registered recipes for output item (node)
-^ returns nil if no recipe was found
-^ table entries have same format as minetest.get_craft_recipe
+minetest.get_all_craft_recipes(query item) -> table or nil
+^ returns indexed table with all registered recipes for query item (node)
+  or nil if no recipe was found
+  recipe entry table:
+  { 
+   method = 'normal' or 'cooking' or 'fuel'
+   width = 0-3, 0 means shapeless recipe
+   items = indexed [1-9] table with recipe items
+   output = string with item name and quantity
+  }
+  Example query for default:gold_ingot will return table:
+  {
+   1={type = "cooking", width = 3, output = "default:gold_ingot",
+    items = {1 = "default:gold_lump"}},
+   2={type = "normal", width = 1, output = "default:gold_ingot 9",
+    items = {1 = "default:goldblock"}}
+  }
 minetest.handle_node_drops(pos, drops, digger)
 ^ drops: list of itemstrings
 ^ Handles drops from nodes after digging: Default action is to put them into

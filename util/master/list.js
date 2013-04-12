@@ -1,3 +1,5 @@
+var master_root, output_to;
+
 function e(s) {
     if (typeof s === "undefined") s = '';
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); //mc"
@@ -39,7 +41,7 @@ function human_time(t, abs) {
 
 function success(r) {
     if (!r || !r.list) return;
-    var h = '<table class="mts_table"><tr class="mts_head"><th>ip[:port]</th><th>clients/max</th><th>version gameid</th><th>name</th><th>desc</th><th>flags</th><th>uptime</th><th>ping</th></tr>';
+    var h = '<table class="mts_table"><tr class="mts_head"><th>ip[:port]</th><th>clients/max</th><th>version gameid</th><th>name</th><th>description</th><th>flags</th><th>uptime</th><th>ping</th></tr>';
     for (var i = 0; i < r.list.length; ++i) {
         var s = r.list[i];
         if (!s) continue;
@@ -60,9 +62,8 @@ function success(r) {
         h += '</tr>';
     }
     h += '</table>'
-    jQuery('#table').html(h);
+    jQuery(output_to || '#servers_table').html(h);
 }
-var master_root;
 
 function get() {
     jQuery.getJSON((master_root || '') + 'list', success);
