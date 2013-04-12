@@ -94,7 +94,6 @@ EmergeManager::~EmergeManager() {
 		emergethread[i]->qevent.signal();
 		emergethread[i]->stop();
 		delete emergethread[i];
-		delete mapgen[i];
 	}
 	emergethread.clear();
 
