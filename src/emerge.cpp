@@ -97,9 +97,6 @@ EmergeManager::~EmergeManager() {
 		delete mapgen[i];
 	}
 	emergethread.clear();
-
-	for (unsigned int i = 0; i < mapgen.size(); i++)
-		delete mapgen[i];
 	mapgen.clear();
 
 	for (unsigned int i = 0; i < ores.size(); i++)

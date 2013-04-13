@@ -480,7 +480,8 @@ TextureSource::~TextureSource()
 			driver->removeTexture(t);
 
 		//cleanup source image
-		iter->atlas_img->drop();
+		if (iter->atlas_img)
+			iter->atlas_img->drop();
 	}
 	m_atlaspointer_cache.clear();
 
