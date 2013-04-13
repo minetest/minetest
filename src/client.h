@@ -186,8 +186,8 @@ struct ClientEvent
 			f32 camera_point_target_z;
 		} deathscreen;
 		struct{
-			std::string* formspec;
-			std::string* formname;
+			std::string *formspec;
+			std::string *formname;
 		} show_formspec;
 		struct{
 		} textures_updated;
@@ -221,24 +221,24 @@ struct ClientEvent
 			u32 id;
 		} delete_particlespawner;
 		struct{
-			u32          id;
-			u8           type;
-			v2f*         pos;
-			std::string* name;
-			v2f*         scale;
-			std::string* text;
-			u32          number;
-			u32          item;
-			u32          dir;
+			u32 id;
+			u8 type;
+			v2f *pos;
+			std::string *name;
+			v2f *scale;
+			std::string *text;
+			u32 number;
+			u32 item;
+			u32 dir;
 		} hudadd;
 		struct{
 			u32 id;
 		} hudrm;
 		struct{
 			u32 id;
-			u8 stat;
-			v2f* v2fdata;
-			std::string* sdata;
+			HudElementStat stat;
+			v2f *v2fdata;
+			std::string *sdata;
 			u32 data;
 		} hudchange;
 	};

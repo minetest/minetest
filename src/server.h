@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 #include "ban.h"
+#include "hud.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "mods.h"
@@ -51,6 +52,7 @@ class EventManager;
 class PlayerSAO;
 class IRollbackManager;
 class EmergeManager;
+//struct HudElement;
 
 class ServerError : public std::exception
 {
@@ -534,11 +536,11 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
-	bool hudadd(const char *pname, const u32 &id, HudElement *element);
-	bool hudrm(const char *pname, const u32 &id);
-	bool hudchange(const char *pname, const u32 &id, const u8 &stat, v2f data);
-	bool hudchange(const char *pname, const u32 &id, const u8 &stat, std::string data);
-	bool hudchange(const char *pname, const u32 &id, const u8 &stat, u32 data);
+	
+	u32 hudAdd(Player *player, HudElement *element);
+	bool hudRemove(Player *player, u32 id);
+	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
+	
 private:
 
 	// con::PeerHandler implementation.
@@ -578,11 +580,9 @@ private:
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
-	void SendHUDAdd(u16 peer_id, const u32 id, HudElement* form);
-	void SendHUDRm(u16 peer_id, const u32 id);
-	void SendHUDChange(u16 peer_id, const u32 id, const u8 stat, v2f data);
-	void SendHUDChange(u16 peer_id, const u32 id, const u8 stat, std::string data);
-	void SendHUDChange(u16 peer_id, const u32 id, const u8 stat, u32 data);
+	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
+	void SendHUDRemove(u16 peer_id, u32 id);
+	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

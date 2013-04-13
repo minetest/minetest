@@ -29,14 +29,6 @@ extern "C" {
 #include "content_sao.h"
 #include "player.h"
 
-#define HUD_STAT_POS    0
-#define HUD_STAT_NAME   1
-#define HUD_STAT_SCALE  2
-#define HUD_STAT_TEXT   3
-#define HUD_STAT_NUMBER 4
-#define HUD_STAT_ITEM   5
-#define HUD_STAT_DIR    6
-
 /*
 	ObjectRef
 */
@@ -202,22 +194,13 @@ private:
 	static int l_hud_add(lua_State *L);
 
 	// hud_rm(self, id)
-	static int l_hud_rm(lua_State *L);
+	static int l_hud_remove(lua_State *L);
 
 	// hud_change(self, id, stat, data)
 	static int l_hud_change(lua_State *L);
 
-	// hud_get_next_id(self)
-	static u32 hud_get_next_id(lua_State *L);
-
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
-
-	// hud_lock_next_bar(self, right)
-	static int l_hud_lock_next_bar(lua_State *L);
-
-	// hud_unlock_bar(self, id)
-	static int l_hud_unlock_bar(lua_State *L);
 
 public:
 	ObjectRef(ServerActiveObject *object);

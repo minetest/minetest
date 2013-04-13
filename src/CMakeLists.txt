@@ -327,6 +327,7 @@ set(minetest_SRCS
 	particles.cpp
 	clientobject.cpp
 	chat.cpp
+	hud.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp

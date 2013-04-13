@@ -26,6 +26,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi_item.h"
 #include "scriptapi_entity.h"
 #include "scriptapi_common.h"
+#include "hud.h"
+
+
+struct EnumString es_HudElementType[] =
+{
+	{HUD_ELEM_IMAGE,     "image"},
+	{HUD_ELEM_TEXT,      "text"},
+	{HUD_ELEM_STATBAR,   "statbar"},
+	{HUD_ELEM_INVENTORY, "inventory"},
+	{0, NULL},
+};
+
+struct EnumString es_HudElementStat[] =
+{
+	{HUD_STAT_POS,    "pos"},
+	{HUD_STAT_NAME,   "name"},
+	{HUD_STAT_SCALE,  "scale"},
+	{HUD_STAT_TEXT,   "text"},
+	{HUD_STAT_NUMBER, "number"},
+	{HUD_STAT_ITEM,   "item"},
+	{HUD_STAT_DIR,    "direction"},
+	{0, NULL},
+};
+
 
 /*
 	ObjectRef
@@ -705,103 +729,114 @@ int ObjectRef::l_hud_add(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL)
+		return 0;
 
-	u32 id = hud_get_next_id(L);
-	HudElement* form = new HudElement;
-	std::string SS = getstringfield_default(L, 3, "type", "I");
-	form->type = SS[0];
-	lua_getfield(L, 3, "position");
-	if(lua_istable(L, -1))
-		form->pos = read_v2f(L, -1);
-	else
-		form->pos = v2f();
+	HudElement *elem = new HudElement;
+	
+	elem->type = (HudElementType)getenumfield(L, 2, "hud_elem_type",
+								es_HudElementType, HUD_ELEM_TEXT);
+	
+	lua_getfield(L, 2, "position");
+	elem->pos = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
-	form->name = getstringfield_default(L, 3, "name", "");
-
-	lua_getfield(L, 3, "scale");
-	if(lua_istable(L, -1))
-		form->scale = read_v2f(L, -1);
-	else
-		form->scale = v2f();
+	
+	lua_getfield(L, 2, "scale");
+	elem->scale = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
+	
+	elem->name   = getstringfield_default(L, 2, "name", "");
+	elem->text   = getstringfield_default(L, 2, "text", "");
+	elem->number = getintfield_default(L, 2, "number", 0);
+	elem->item   = getintfield_default(L, 2, "item", 0);
+	elem->dir    = getintfield_default(L, 2, "dir", 0);
 
-	form->text = getstringfield_default(L, 3, "text", "");
-	form->number = getintfield_default(L, 3, "number", 0);
-	form->item = getintfield_default(L, 3, "item", 0);
-	form->dir = getintfield_default(L, 3, "dir", 0);
+	u32 id = get_server(L)->hudAdd(player, elem);
+	if (id == (u32)-1) {
+		delete elem;
+		return 0;
+	}
 
-	get_server(L)->hudadd(player->getName(), id, form);
-	player->hud[id] = form;
 	lua_pushnumber(L, id);
 	return 1;
 }
 
-// hud_rm(self, id)
-int ObjectRef::l_hud_rm(lua_State *L)
+// hud_remove(self, id)
+int ObjectRef::l_hud_remove(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL)
+		return 0;
 
 	u32 id = -1;
-	if(!lua_isnil(L, 2))
+	if (!lua_isnil(L, 2))
 		id = lua_tonumber(L, 2);
-	get_server(L)->hudrm(player->getName(), id);
-	player->hud.at(id)->type = (u8)NULL;
+	
+	if (!get_server(L)->hudRemove(player, id))
+		return 0;
+
 	lua_pushboolean(L, true);
 	return 1;
 }
-
 
 // hud_change(self, id, stat, data)
 int ObjectRef::l_hud_change(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL)
+		return 0;
 
 	u32 id = -1;
-	if(!lua_isnil(L, 2))
+	if (!lua_isnil(L, 2))
 		id = lua_tonumber(L, 2);
-	u8 stat = -1;
-	if(!lua_isnil(L, 3))
-		stat = lua_tonumber(L, 3);
-	if(stat == 0 || stat == 2) {
-		get_server(L)->hudchange(player->getName(), id, stat, read_v2f(L, 4));
-	} else if(stat == 1 || stat == 3) {
-		get_server(L)->hudchange(player->getName(), id, stat, lua_tostring(L, 4));
-	} else {
-		get_server(L)->hudchange(player->getName(), id, stat, lua_tonumber(L, 4));
+	
+	HudElementStat stat = (HudElementStat)getenumfield(L, 3, "stat",
+								es_HudElementStat, HUD_STAT_NUMBER);
+	
+	if (id >= player->hud.size())
+		return 0;
+	
+	void *value = NULL;
+	HudElement *e = player->hud[id];
+	if (!e)
+		return 0;
+	
+	switch (stat) {
+		case HUD_STAT_POS:
+			e->pos = read_v2f(L, 4);
+			value = &e->pos;
+			break;
+		case HUD_STAT_NAME:
+			e->name = lua_tostring(L, 4);
+			value = &e->name;
+			break;
+		case HUD_STAT_SCALE:
+			e->scale = read_v2f(L, 4);
+			value = &e->scale;
+			break;
+		case HUD_STAT_TEXT:
+			e->text = lua_tostring(L, 4);
+			value = &e->text;
+			break;
+		case HUD_STAT_NUMBER:
+			e->number = lua_tonumber(L, 4);
+			value = &e->number;
+			break;
+		case HUD_STAT_ITEM:
+			e->item = lua_tonumber(L, 4);
+			value = &e->item;
+			break;
+		case HUD_STAT_DIR:
+			e->dir = lua_tonumber(L, 4);
+			value = &e->dir;
 	}
-
-	HudElement* e = player->hud[id];
-	switch(stat) {
-		case HUD_STAT_POS:    e->pos = read_v2f(L, 4);
-		case HUD_STAT_NAME:   e->name = lua_tostring(L, 4);
-		case HUD_STAT_SCALE:  e->scale = read_v2f(L, 4);
-		case HUD_STAT_TEXT:   e->text = lua_tostring(L, 4);
-		case HUD_STAT_NUMBER: e->number = lua_tonumber(L, 4);
-		case HUD_STAT_ITEM:   e->item = lua_tonumber(L, 4);
-		case HUD_STAT_DIR:    e->dir = lua_tonumber(L, 4);
-	}
+	
+	get_server(L)->hudChange(player, id, stat, value);
 
 	lua_pushboolean(L, true);
 	return 1;
-}
-
-u32 ObjectRef::hud_get_next_id(lua_State *L)
-{
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-
-	for(std::map<u32, HudElement*>::iterator it=player->hud.begin();
-		it!=player->hud.end();it++) {
-		if(it->second->type == (u8)NULL) {
-			return it->first;
-		}
-	}
-	return player->hud.size();
 }
 
 // hud_get(self, id)
@@ -809,98 +844,43 @@ int ObjectRef::l_hud_get(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL)
+		return 0;
 
-	HudElement* e = player->hud.at(lua_tonumber(L, -1));
+	u32 id = lua_tonumber(L, -1);
+	if (id >= player->hud.size())
+		return 0;
+	
+	HudElement *e = player->hud[id];
+	if (!e)
+		return 0;
+	
 	lua_newtable(L);
-	lua_pushstring(L, std::string(1, e->type).c_str());
+	
+	lua_pushstring(L, es_HudElementType[(u8)e->type].str);
 	lua_setfield(L, -2, "type");
+	
 	push_v2f(L, e->pos);
 	lua_setfield(L, -2, "position");
+	
 	lua_pushstring(L, e->name.c_str());
 	lua_setfield(L, -2, "name");
+	
 	push_v2f(L, e->scale);
 	lua_setfield(L, -2, "scale");
+	
 	lua_pushstring(L, e->text.c_str());
 	lua_setfield(L, -2, "text");
+	
 	lua_pushnumber(L, e->number);
 	lua_setfield(L, -2, "number");
+	
 	lua_pushnumber(L, e->item);
 	lua_setfield(L, -2, "item");
+	
 	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
 
-	return 1;
-}
-
-// hud_lock_next_bar(self, texture, right)
-// return id on success, false otherwise
-int ObjectRef::l_hud_lock_next_bar(lua_State *L)
-{
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
-
-	bool right = false;
-	if(!lua_isnil(L, 2))
-		right = lua_toboolean(L, 2);
-	v2f pos(0, 0);
-	u8 i = 0;
-	if(right)
-		pos.X = 1;
-		i += 3;
-	for(u8 it = 0; it < 4; it++) {
-		if(player->hud_bars.count(i+it) == 1) {
-			if(it == 3) {
-				lua_pushboolean(L, false);
-				return 1;
-			}
-		} else {
-			i += it;
-			pos.Y = it;
-			break;
-		}
-	}
-	HudElement* form = new HudElement;
-	form->type = 's';
-	form->pos = pos;
-	form->name = "";
-	form->scale = v2f();
-	form->text = "";
-	form->number = 0;
-	form->item = 0;
-	form->dir = 0;
-
-	u32 id = hud_get_next_id(L);
-	get_server(L)->hudadd(player->getName(), id, form);
-	player->hud[id] = form;
-	player->hud_bars[i] = id;
-	lua_pushnumber(L, id);
-	return 1;
-}
-
-// hud_unlock_bar(self, id)
-int ObjectRef::l_hud_unlock_bar(lua_State *L)
-{
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
-
-	u32 id = 0;
-	if(!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-
-	for(std::map<u8, u32>::iterator it=player->hud_bars.begin();
-		it!=player->hud_bars.end();it++) {
-		if(it->second == id) {
-			player->hud_bars.erase(it->first);
-			get_server(L)->hudrm(player->getName(), id);
-			player->hud.at(id)->type = (u8)NULL;
-			lua_pushboolean(L, true);
-			return 1;
-		}
-	}
-	lua_pushboolean(L, false);
 	return 1;
 }
 
@@ -1011,11 +991,11 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
 	luamethod(ObjectRef, hud_add),
-	luamethod(ObjectRef, hud_rm),
+	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
-	luamethod(ObjectRef, hud_lock_next_bar),
-	luamethod(ObjectRef, hud_unlock_bar),
+	//luamethod(ObjectRef, hud_lock_next_bar),
+	//luamethod(ObjectRef, hud_unlock_bar),
 	{0,0}
 };
 

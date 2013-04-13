@@ -401,6 +401,43 @@ Currently supported flags:  absheight
     Also produce this same ore between the height range of -height_max and -height_min.
     Useful for having ore in sky realms without having to duplicate ore entries.
 
+HUD element types
+-------------------
+The position field is used for all element types.
+To account for differing resolutions, the position coordinates are the percentage of the screen,
+ranging in value from 0 to 1.
+The name field is not yet used, but should contain a description of what the HUD element represents.
+Below are the specific uses for fields in each type; fields not listed for that type are ignored.
+
+Note: Future revisions to the HUD API may be incompatible; the HUD API is still in the experimental stages.
+
+- image
+    Displays an image on the HUD.
+	- scale: The scale of the image, with 1 being the original texture size.
+             Only the X coordinate scale is used.
+    - text: The name of the texture that is displayed.
+- text
+    Displays text on the HUD.
+    - scale: Defines the bounding rectangle of the text.
+             A value such as {x=100, y=100} should work.
+    - text: The text to be displayed in the HUD element.
+    - number: An integer containing the RGB value of the color used to draw the text.
+              Specify 0xFFFFFF for white text, 0xFF0000 for red, and so on.
+- statbar
+    Displays a horizontal bar made up of half-images.
+    - text: The name of the texture that is used.
+    - number: The number of half-textures that are displayed.
+              If odd, will end with a vertically center-split texture.
+- inventory
+    - text: The name of the inventory list to be displayed.
+    - number: Number of items in the inventory to be displayed.
+    - item: Position of item that is selected.
+    - direction: Direction in which the inventory list is drawn.
+                 0 draws from left to right,
+                 1 draws from right to left,
+                 2 draws from top to bottom, and
+                 3 draws from bottom to top.
+
 Representations of simple things
 --------------------------------
 Position/vector:
@@ -1379,19 +1416,11 @@ Player-only: (no-op for other objects)
     modifies per-player walking speed, jump height, and gravity.
     Values default to 1 and act as offsets to the physics settings 
     in minetest.conf. nil will keep the current setting.
-- hud_add(id, hud definition)
-  ^ id is used for later reference
-  ^ If this id has already been used, it will reset its drawform
-- hud_rm(id): remove an id from the lua hud
-- hud_change(id, stat, value): change a value of a previously added element
-  ^ stat/table key: 0/position, 1/name, 2/scale, 3/text, 4/number,
-  ^ 5/item, 6/dir
-- hud_get_next_id(): get the next available id for a hud element
-- hud_lock_next_bar(right): add a non-conflicting statbar
-  ^ if right, will claim spot on right side, rather then left
-  ^ returns element id on success, false otherwise
-- hud_unlock_bar(id): remove a non-conflicting statbar
-  ^ id is the value returned by calling hud_lock_next_bar()
+- hud_add(hud definition): add a HUD element described by HUD def, returns ID number on success
+- hud_remove(id): remove the HUD element of the specified id
+- hud_change(id, stat, value): change a value of a previously added HUD element
+  ^ element stat values: position, name, scale, text, number, item, dir
+- hud_get(id): gets the HUD element definition structure of the specified ID
 
 InvRef: Reference to an inventory
 methods:
@@ -1815,20 +1844,18 @@ Detached inventory callbacks
     ^ No return value
 }
 
-HUD Definition (hud_add)
+HUD Definition (hud_add, hud_get)
 {
-    type = "I",           -- One of "I"(image), "S"(statbar),
-    ^ "T"(text), "i"(inv)
-    position = {x=0.5, y=0.5},   -- Left corner position
+    type = "image",
+    ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+    position = {x=0.5, y=0.5},
+    ^ Left corner position of element
     name = "<name>",
     scale = {x=2, y=2},
     text = "<text>",
-    ^ Used as texture name for statbars and images, and as list name
-    ^ for inv
     number = 2,
-    ^ Used as stat for statbar, and as # of items for inv
-    item = 3,      -- Selected item in inv. 0 -> no item selected
+    item = 3,
+    ^ Selected item in inventory.  0 for no item selected.
     dir = 0,
-    ^ dir/inv direction: 0/left-right, 1/right-left,
-    ^ 2/top-bottom, 3/bottom-top
+    ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
 }
