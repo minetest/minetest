@@ -180,23 +180,35 @@ if(USE_FREETYPE)
 	set(CGUITTFONT_LIBRARY cguittfont)
 endif(USE_FREETYPE)
 
+OPTION(USE_LUAJIT "Use LuaJIT instead Lua" 1)
 
-find_library(LUA_LIBRARY luajit
-		NAMES luajit-5.1)
-find_path(LUA_INCLUDE_DIR luajit.h
-	NAMES luajit.h
-	PATH_SUFFIXES luajit-2.0)
-message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
-message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
-
-if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
-	message (STATUS "LuaJIT found.")
-else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
-	message (STATUS "LuaJIT not found, using bundled Lua.")
+# Do not use system-wide installation of Lua, because it'll likely be a
+# different version and/or has different build options.
+if(USE_LUAJIT)
+	OPTION(SYSTEM_LUAJIT "Use system LuaJIT instead bundled" 0)
+	if(SYSTEM_LUAJIT)
+		find_library(LUA_LIBRARY luajit
+					NAMES luajit-5.1)
+		find_path(LUA_INCLUDE_DIR luajit.h
+					NAMES luajit.h
+					PATH_SUFFIXES luajit-2.0)
+		message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
+		message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
+	endif(SYSTEM_LUAJIT)
+	if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+		message (STATUS "System LuaJIT found. Using it.")
+	else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+		message (STATUS "Using project LuaJIT library.")
+		set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/luaJIT/src")
+		set(LUA_LIBRARY "luajit")
+		add_subdirectory(luaJIT)
+	endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+else(USE_LUAJIT)
+	message (STATUS "Using project Lua library.")
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
 	set(LUA_LIBRARY "lua")
 	add_subdirectory(lua)
-endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+endif(USE_LUAJIT)
 
 mark_as_advanced(LUA_LIBRARY)
 mark_as_advanced(LUA_INCLUDE_DIR)
