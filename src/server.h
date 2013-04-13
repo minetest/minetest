@@ -534,7 +534,7 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
-	bool hudadd(const char *pname, const u32 &id, hud_element *element);
+	bool hudadd(const char *pname, const u32 &id, HudElement *element);
 	bool hudrm(const char *pname, const u32 &id);
 	bool hudchange(const char *pname, const u32 &id, const u8 &stat, v2f data);
 	bool hudchange(const char *pname, const u32 &id, const u8 &stat, std::string data);
@@ -578,7 +578,7 @@ private:
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
-	void SendHUDAdd(u16 peer_id, const u32 id, hud_element* form);
+	void SendHUDAdd(u16 peer_id, const u32 id, HudElement* form);
 	void SendHUDRm(u16 peer_id, const u32 id);
 	void SendHUDChange(u16 peer_id, const u32 id, const u8 stat, v2f data);
 	void SendHUDChange(u16 peer_id, const u32 id, const u8 stat, std::string data);

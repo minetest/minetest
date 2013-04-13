@@ -2390,7 +2390,7 @@ void the_game(
 				}
 				else if (event.type == CE_HUDADD)
 				{
-					hud_element* e = new hud_element;
+					HudElement* e = new HudElement;
 					e->type   = event.hudadd.type;
 					e->pos    = *event.hudadd.pos;
 					e->name   = *event.hudadd.name;
@@ -2411,7 +2411,7 @@ void the_game(
 				}
 				else if (event.type == CE_HUDCHANGE)
 				{
-					hud_element* e = player->hud[event.hudchange.id];
+					HudElement* e = player->hud[event.hudchange.id];
 					if(event.hudchange.stat == 0)
 						e->pos = *event.hudchange.v2fdata;
 					else if(event.hudchange.stat == 1)
@@ -3416,10 +3416,10 @@ void the_game(
 		std::deque<gui::IGUIStaticText *> luaguitexts;
 		if(show_hud)
 		{
-			for(std::map<u32, hud_element*>::iterator it = player->hud.begin();
+			for(std::map<u32, HudElement*>::iterator it = player->hud.begin();
 				it != player->hud.end(); ++it)
 			{
-				hud_element* e = it->second;
+				HudElement* e = it->second;
 				v2f posp(e->pos * v2f(screensize.X, screensize.Y));
 				core::vector2d<s32> pos(posp.X, posp.Y);
 				if(e->type == 'I'){         //Img
@@ -3473,7 +3473,7 @@ void the_game(
 		*/
 		for(std::deque<gui::IGUIStaticText *>::iterator it = luaguitexts.begin();
 			it != luaguitexts.end(); ++it)
-			(**it).remove();
+			(*it)->remove();
 
 		/*
 			End scene

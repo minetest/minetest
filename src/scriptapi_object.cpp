@@ -700,17 +700,15 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	return 1;
 }
 
-// hud_add(self, id, form)
+// hud_add(self, form)
 int ObjectRef::l_hud_add(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
 
-	u32 id = -1;
-	if(!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-	hud_element* form = new hud_element;
+	u32 id = hud_get_next_id(L);
+	HudElement* form = new HudElement;
 	std::string SS = getstringfield_default(L, 3, "type", "I");
 	form->type = SS[0];
 	lua_getfield(L, 3, "position");
@@ -735,7 +733,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 
 	get_server(L)->hudadd(player->getName(), id, form);
 	player->hud[id] = form;
-	lua_pushboolean(L, true);
+	lua_pushnumber(L, id);
 	return 1;
 }
 
@@ -754,6 +752,7 @@ int ObjectRef::l_hud_rm(lua_State *L)
 	lua_pushboolean(L, true);
 	return 1;
 }
+
 
 // hud_change(self, id, stat, data)
 int ObjectRef::l_hud_change(lua_State *L)
@@ -776,41 +775,18 @@ int ObjectRef::l_hud_change(lua_State *L)
 		get_server(L)->hudchange(player->getName(), id, stat, lua_tonumber(L, 4));
 	}
 
-	hud_element* e = player->hud[id];
-	if(stat == 0)
-		e->pos = read_v2f(L, 4);
-	else if(stat == 1)
-		e->name = lua_tostring(L, 4);
-	else if(stat == 2)
-		e->scale = read_v2f(L, 4);
-	else if(stat == 3)
-		e->text = lua_tostring(L, 4);
-	else if(stat == 4)
-		e->number = lua_tonumber(L, 4);
-	else if(stat == 5)
-		e->item = lua_tonumber(L, 4);
-	else if(stat == 6)
-		e->dir = lua_tonumber(L, 4);
+	HudElement* e = player->hud[id];
+	switch(stat) {
+		case HUD_STAT_POS:    e->pos = read_v2f(L, 4);
+		case HUD_STAT_NAME:   e->name = lua_tostring(L, 4);
+		case HUD_STAT_SCALE:  e->scale = read_v2f(L, 4);
+		case HUD_STAT_TEXT:   e->text = lua_tostring(L, 4);
+		case HUD_STAT_NUMBER: e->number = lua_tonumber(L, 4);
+		case HUD_STAT_ITEM:   e->item = lua_tonumber(L, 4);
+		case HUD_STAT_DIR:    e->dir = lua_tonumber(L, 4);
+	}
 
 	lua_pushboolean(L, true);
-	return 1;
-}
-
-// hud_get_next_id(self)
-int ObjectRef::l_hud_get_next_id(lua_State *L)
-{
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
-
-	for(std::map<u32, hud_element*>::iterator it=player->hud.begin();
-		it!=player->hud.end();it++) {
-		if(it->second->type == (u8)NULL) {
-			lua_pushnumber(L, it->first);
-			return 1;
-		}
-	}
-	lua_pushnumber(L, player->hud.size());
 	return 1;
 }
 
@@ -819,7 +795,7 @@ u32 ObjectRef::hud_get_next_id(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 
-	for(std::map<u32, hud_element*>::iterator it=player->hud.begin();
+	for(std::map<u32, HudElement*>::iterator it=player->hud.begin();
 		it!=player->hud.end();it++) {
 		if(it->second->type == (u8)NULL) {
 			return it->first;
@@ -835,7 +811,7 @@ int ObjectRef::l_hud_get(lua_State *L)
 	Player *player = getplayer(ref);
 	if(player == NULL) return 0;
 
-	hud_element* e = player->hud.at(lua_tonumber(L, -1));
+	HudElement* e = player->hud.at(lua_tonumber(L, -1));
 	lua_newtable(L);
 	lua_pushstring(L, std::string(1, e->type).c_str());
 	lua_setfield(L, -2, "type");
@@ -885,7 +861,7 @@ int ObjectRef::l_hud_lock_next_bar(lua_State *L)
 			break;
 		}
 	}
-	hud_element* form = new hud_element;
+	HudElement* form = new HudElement;
 	form->type = 's';
 	form->pos = pos;
 	form->name = "";
@@ -1037,7 +1013,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_add),
 	luamethod(ObjectRef, hud_rm),
 	luamethod(ObjectRef, hud_change),
-	luamethod(ObjectRef, hud_get_next_id),
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_lock_next_bar),
 	luamethod(ObjectRef, hud_unlock_bar),

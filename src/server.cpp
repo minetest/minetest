@@ -3595,7 +3595,7 @@ void Server::SendDeleteParticleSpawnerAll(u32 id)
 	}
 }
 
-void Server::SendHUDAdd(u16 peer_id, const u32 id, hud_element* form)
+void Server::SendHUDAdd(u16 peer_id, const u32 id, HudElement* form)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4657,7 +4657,7 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 	return true;
 }
 
-bool Server::hudadd(const char *playername, const u32 &id, hud_element* form)
+bool Server::hudadd(const char *playername, const u32 &id, HudElement* form)
 {
 	Player *player = m_env->getPlayer(playername);
 
