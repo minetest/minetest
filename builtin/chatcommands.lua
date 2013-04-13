@@ -377,16 +377,26 @@ minetest.register_chatcommand("mods", {
 	description = "lists mods installed on the server",
 	privs = {},
 	func = function(name, param)
-		local response = ""
 		local modnames = minetest.get_modnames()
-		for i, mod in ipairs(modnames) do
-			response = response .. mod
-			-- Add space if not at the end
-			if i ~= #modnames then
-				response = response .. " "
+		if param == "" then
+			local response = ""
+			for i, mod in ipairs(modnames) do
+				response = response .. mod
+				-- Add space if not at the end
+				if i ~= #modnames then
+					response = response .. " "
+				end
 			end
+			minetest.chat_send_player(name, response)
+		else
+			for i, mod in ipairs(modnames) do
+				if mod == param then
+					minetest.chat_send_player(name, param.." is installed on this server")
+					return
+				end
+			end
+			minetest.chat_send_player(name, param.." is not installed on this server")
 		end
-		minetest.chat_send_player(name, response)
 	end,
 })
 
