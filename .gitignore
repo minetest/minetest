@@ -21,11 +21,9 @@ tags
 !/mods/minetest/mods_here.txt
 /worlds/
 /world/
-
 ## Configuration/log files
 minetest.conf
 debug.txt
-
 ## Build files
 CMakeFiles/*
 src/CMakeFiles/*
@@ -54,4 +52,5 @@ CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 locale/
-
+/src/luaJIT/src/host/buildvm_arch.h
+/build/
