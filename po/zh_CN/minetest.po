@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-05 04:43+0200\n"
+"PO-Revision-Date: 2013-04-13 09:58+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -52,7 +52,7 @@ msgstr "依赖于:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr "需要："
+msgstr "被需要："
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
