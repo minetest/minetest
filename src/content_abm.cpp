@@ -99,14 +99,10 @@ class MakeTreesFromSaplingsABM : public ActiveBlockModifier
 {
 private:
 	content_t c_junglesapling;
-	content_t c_dirt;
-	content_t c_dirt_with_grass;
 	
 public:
 	MakeTreesFromSaplingsABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
-		c_junglesapling   = nodemgr->getId("junglesapling");
-		c_dirt            = nodemgr->getId("mapgen_dirt");
-		c_dirt_with_grass = nodemgr->getId("mapgen_dirt_with_grass");
+		c_junglesapling = nodemgr->getId("junglesapling");
 	}
 
 	virtual std::set<std::string> getTriggerContents()
@@ -127,8 +123,7 @@ public:
 		ServerMap *map = &env->getServerMap();
 		
 		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
-		if (n_below.getContent() != c_dirt &&
-			n_below.getContent() != c_dirt_with_grass)
+		if (!((ItemGroupList) ndef->get(n_below).groups)["soil"])
 			return;
 			
 		bool is_jungle_tree = n.getContent() == c_junglesapling;
