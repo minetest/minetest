@@ -1731,9 +1731,10 @@ int main(int argc, char *argv[])
 							sleep_ms(25);
 						}
 					}
+					// Save controls status
+					menu->readInput(&menudata);
 					
 					infostream<<"Dropping main menu"<<std::endl;
-
 					menu->drop();
 					if (cloud_menu_background) {
 						clouds->drop();
