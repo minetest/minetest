@@ -510,7 +510,7 @@ Usage:
 - Groups are stored in a table, having the group names with keys and the
   group ratings as values. For example:
     groups = {crumbly=3, soil=1}
-    ^ Default dirt (soil group actually currently not defined; TODO)
+    ^ Default dirt
     groups = {crumbly=2, soil=1, level=2, outerspace=1}
     ^ A more special dirt-kind of thing
 - Groups always have a rating associated with them. If there is no
@@ -583,6 +583,7 @@ Special groups
 - attached_node: if the node under it is not a walkable block the node will be
                   dropped as an item. If the node is wallmounted the
                   wallmounted direction is checked.
+- soil: saplings will grow on nodes in this group
 
 Known damage and digging time defining groups
 ----------------------------------------------
