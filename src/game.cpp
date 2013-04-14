@@ -994,6 +994,7 @@ void the_game(
 	}
 
 	Server *server = NULL;
+	Sky *sky = NULL;
 
 	try{
 	// Event manager
@@ -1020,6 +1021,11 @@ void the_game(
 				simple_singleplayer_mode);
 		server->start(port);
 	}
+
+	/*
+		Skybox thingy
+	*/
+	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 
 	do{ // Client scope (breakable do-while(0))
 	
@@ -1214,13 +1220,6 @@ void the_game(
 		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1, time(0));
 	}
 
-	/*
-		Skybox thingy
-	*/
-
-	Sky *sky = NULL;
-	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
-	
 	/*
 		FarMesh
 	*/
@@ -3310,6 +3309,9 @@ void the_game(
 
 	//has to be deleted first to stop all server threads
 	delete server;
+
+	//has to be deleted after server as server may use it
+	sky->drop();
 
 	delete tsrc;
 	delete shsrc;
