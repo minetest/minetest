@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
 "PO-Revision-Date: 2013-03-28 15:29+0200\n"
-"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
+"Last-Translator: Pavlov Ilya <TTChangeTheWorld@gmail.com\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -98,7 +98,7 @@ msgstr "Вы умерли."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Воскреснуть"
+msgstr "Возродиться"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
@@ -111,9 +111,7 @@ msgstr "Продолжить"
 
 #: src/guiKeyChangeMenu.cpp:114
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
-"Сочетания клавиш. (Если это меню сломалось, удалите настройки из minetest."
-"conf)"
+msgstr "Сочетания клавиш. (Если это меню сломалось, удалите настройки из minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
@@ -121,7 +119,7 @@ msgstr "\"Использовать\" = спускаться"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Дважды нажмите «прыгнуть», чтобы включить полет"
+msgstr "Дважды нажмите \"прыгнуть\", чтобы включить полет"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
@@ -198,7 +196,7 @@ msgstr "Выбор зоны видимости"
 #: src/guiKeyChangeMenu.cpp:388
 #, fuzzy
 msgid "Print stacks"
-msgstr "напечатать стеки"
+msgstr "Напечатать стеки"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
@@ -250,7 +248,7 @@ msgstr "Играть"
 
 #: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
-msgstr "Режим создания"
+msgstr "Творческий режим"
 
 #: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
@@ -267,7 +265,7 @@ msgstr "Сохраненные"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Публичный список серверов:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -328,15 +326,15 @@ msgstr "Mip-текстурирование"
 
 #: src/guiMainMenu.cpp:716
 msgid "Anisotropic Filtering"
-msgstr "Анизотропный фильтр"
+msgstr "Анизотропная фильтрация"
 
 #: src/guiMainMenu.cpp:723
 msgid "Bi-Linear Filtering"
-msgstr "Билинейный фильтр"
+msgstr "Билинейная фильтрация"
 
 #: src/guiMainMenu.cpp:730
 msgid "Tri-Linear Filtering"
-msgstr "Трилинейный фильтр"
+msgstr "Трилинейная фильтрация"
 
 #: src/guiMainMenu.cpp:738
 msgid "Shaders"
@@ -353,7 +351,7 @@ msgstr "Включить частицы"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Конечные жидкости"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -413,7 +411,7 @@ msgstr "Изменить пароль"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Громкость звука"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -442,20 +440,20 @@ msgstr ""
 "- ЛКМ: копать/ударить\n"
 "- ПКМ: поставить/использовать\n"
 "- Колесо мыши: выбор предмета\n"
-"- 0...9: выбор предмета\n"
-"- Shift: красться\n"
-"- R: переключить видимость всех загруженных чанков\n"
-"- I: инвентарь\n"
-"- ESC: это меню\n"
-"- T: чат\n"
+"- 0...9: Выбор предмета\n"
+"- Shift: Красться\n"
+"- R: Переключить видимость всех загруженных чанков\n"
+"- I: Инвентарь\n"
+"- ESC: Это меню\n"
+"- T: Чат\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Громкость звука: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Выход"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -475,7 +473,7 @@ msgstr "Доп. кнопка 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "назад"
+msgstr "Назад"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -508,7 +506,7 @@ msgstr "Кана"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr "меню"
+msgstr "Меню"
 
 #: src/keycode.cpp:225
 msgid "Pause"
@@ -543,7 +541,7 @@ msgstr "Кандзи"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr ""
+msgstr "Не сконвертировано"
 
 #: src/keycode.cpp:227
 msgid "Accept"
@@ -551,11 +549,11 @@ msgstr "Принять"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr "End"
+msgstr "Конец"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr "Home"
+msgstr "Домой"
 
 #: src/keycode.cpp:227
 #, fuzzy
@@ -608,7 +606,7 @@ msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr "снимок"
+msgstr "Cнимок"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
@@ -727,7 +725,7 @@ msgstr "Минус"
 #: src/keycode.cpp:243
 #, fuzzy
 msgid "Period"
-msgstr "период"
+msgstr "Период"
 
 #: src/keycode.cpp:243
 msgid "Plus"
@@ -736,7 +734,7 @@ msgstr "Плюс"
 #: src/keycode.cpp:247
 #, fuzzy
 msgid "Attn"
-msgstr "внимание"
+msgstr "Внимание"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
@@ -781,7 +779,7 @@ msgstr "Невозможно найти или загрузить игру \""
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Неправильные настройки."
 
 #: src/main.cpp:1904
 msgid "Connection error (timed out?)"
