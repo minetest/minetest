@@ -1764,7 +1764,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		// prevent lakes in air above unloaded blocks
-		if (p0.Y > water_level && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE) {
+		if ((p0.Y > water_level || (!fast_flood && liquid_levels[D_TOP] == 0)) && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE) {
 			--total_level;
 		}
 
