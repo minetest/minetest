@@ -865,6 +865,42 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
+int ServerEnvironment::get_surface(v3s16 basepos, int serachup, bool walkable_only) {
+
+	int max = serachup + basepos.Y;
+
+	MapNode last_node = getMap().getNodeNoEx(basepos);
+	MapNode node = last_node;
+	v3s16 runpos = basepos;
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
+	bool last_was_walkable = nodemgr->get(node).walkable;
+
+	while ((runpos.Y < max) && (node.param0 != CONTENT_AIR)) {
+		runpos.Y += 1;
+		last_node = node;
+		node = getMap().getNodeNoEx(runpos);
+
+		if (!walkable_only) {
+			if ((last_node.param0 != CONTENT_AIR) &&
+				(last_node.param0 != CONTENT_IGNORE) &&
+				(node.param0 == CONTENT_AIR)) {
+				return runpos.Y;
+			}
+		}
+		else {
+			bool is_walkable = nodemgr->get(node).walkable;
+
+			if (last_was_walkable && (!is_walkable)) {
+				return runpos.Y;
+			}
+			last_was_walkable = is_walkable;
+		}
+	}
+
+	return basepos.Y -1;
+}
+
 bool ServerEnvironment::removeNode(v3s16 p)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();

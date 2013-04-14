@@ -303,7 +303,11 @@ public:
 	
 	// is weather active in this environment?
 	bool m_use_weather;
-	
+
+	//get surface level starting on basepos.y up to basepos.y + searchup
+	//returns basepos.y -1 if no surface has been found
+	int get_surface(v3s16 basepos, int serachup, bool walkable_only);
+
 private:
 
 	/*

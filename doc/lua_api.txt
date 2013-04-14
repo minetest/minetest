@@ -1256,6 +1256,11 @@ minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)
 ^ max_jump: maximum height difference to consider walkable
 ^ max_drop: maximum height difference to consider droppable
 ^ algorithm: A*_noprefetch(default), A*, Dijkstra
+- get_surface(basepos,yoffset,walkable_only=false)
+^ returns y-value of surface or nil if surface not found
+^ basepos position to start search
+^ yoffset maximum number of nodes starting at basepos.y to search up for surface
+^ walkable_only consider each node below a non walkable node as surface 
 minetest.spawn_tree (pos, {treedef})
 ^ spawns L-System tree at given pos with definition in treedef table
 minetest.transforming_liquid_add(pos)

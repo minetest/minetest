@@ -697,6 +697,30 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	return 0;
 }
 
+// minetest.get_surface(basepos,yoffset,walkable_only=false)
+int ModApiEnvMod::l_get_surface(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 basepos = read_v3s16(L, 1);
+	int max_y = luaL_checkint(L, 2);
+	bool walkable_only = false;
+
+	if (!lua_isnil(L,3)) {
+		walkable_only = lua_toboolean(L, -1);
+	}
+
+	int result = env->get_surface(basepos,max_y,walkable_only);
+
+	if (result >= basepos.Y) {
+		lua_pushnumber(L,result);
+		return 1;
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
 // minetest.spawn_tree(pos, treedef)
 int ModApiEnvMod::l_spawn_tree(lua_State *L)
 {
@@ -779,7 +803,6 @@ int ModApiEnvMod::l_get_humidity(lua_State *L)
 	return 1;
 }
 
-
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -816,4 +839,5 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(get_heat);
 	API_FCT(get_humidity);
+	API_FCT(get_surface);
 }
