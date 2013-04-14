@@ -151,6 +151,8 @@
 #crosshair_color = (255,255,255)
 # Cross alpha (opaqueness, between 0 and 255)
 #crosshair_alpha = 255
+# Sensitivity multiplier
+#mouse_sensitivity = 0.2
 # Sound settings
 #enable_sound = true
 #sound_volume = 0.7
