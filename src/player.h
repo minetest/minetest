@@ -180,6 +180,10 @@ public:
 		return m_name;
 	}
 
+	core::aabbox3d<f32> getCollisionbox() {
+		return m_collisionbox;
+	}
+
 	virtual bool isLocal() const
 	{ return false; }
 	virtual PlayerSAO *getPlayerSAO()
@@ -255,6 +259,7 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
+	core::aabbox3d<f32> m_collisionbox;
 };
 
 
