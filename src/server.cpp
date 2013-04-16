@@ -3595,6 +3595,115 @@ void Server::SendDeleteParticleSpawnerAll(u32 id)
 	}
 }
 
+void Server::SendHUDAdd(u16 peer_id, const u32 id, HudElement* form)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDADD);
+	os.write((char*)buf, 2);
+	writeU32(os, id);
+	writeU8(os, form->type);
+	writeV2F1000(os, form->pos);
+	os<<serializeString(form->name);
+	writeV2F1000(os, form->scale);
+	os<<serializeString(form->text);
+	writeU32(os, form->number);
+	writeU32(os, form->item);
+	writeU32(os, form->dir);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDRm(u16 peer_id, const u32 id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDRM);
+	os.write((char*)buf, 2);
+	writeU32(os, id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDChange(u16 peer_id, const u32 id, const u8 stat, v2f data)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDCHANGE);
+	os.write((char*)buf, 2);
+	writeU32(os, id);
+	writeU8(os, stat);
+	writeV2F1000(os, data);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> ddata((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, ddata, true);
+}
+
+void Server::SendHUDChange(u16 peer_id, const u32 id, const u8 stat, std::string data)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDCHANGE);
+	os.write((char*)buf, 2);
+	writeU32(os, id);
+	writeU8(os, stat);
+	os<<serializeString(data);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> ddata((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, ddata, true);
+}
+
+void Server::SendHUDChange(u16 peer_id, const u32 id, const u8 stat, u32 data)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+
+	// Write command
+	writeU16(buf, TOCLIENT_HUDCHANGE);
+	os.write((char*)buf, 2);
+	writeU32(os, id);
+	writeU8(os, stat);
+	writeU32(os, data);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> ddata((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, ddata, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(std::map<u16, RemoteClient*>::iterator
@@ -4545,6 +4654,76 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 	}
 
 	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	return true;
+}
+
+bool Server::hudadd(const char *playername, const u32 &id, HudElement* form)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudadd: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDAdd(player->peer_id, id, form);
+	return true;
+}
+
+bool Server::hudrm(const char *playername, const u32 &id)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudrm: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDRm(player->peer_id, id);
+	return true;
+}
+
+bool Server::hudchange(const char *playername, const u32 &id, const u8 &stat, v2f data)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudchange: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDChange(player->peer_id, id, stat, data);
+	return true;
+}
+
+bool Server::hudchange(const char *playername, const u32 &id, const u8 &stat, std::string data)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudchange: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDChange(player->peer_id, id, stat, data);
+	return true;
+}
+
+bool Server::hudchange(const char *playername, const u32 &id, const u8 &stat, u32 data)
+{
+	Player *player = m_env->getPlayer(playername);
+
+	if(!player)
+	{
+		infostream<<"hudchange: couldn't find player:"<<playername<<std::endl;
+		return false;
+	}
+
+	SendHUDChange(player->peer_id, id, stat, data);
 	return true;
 }
 
