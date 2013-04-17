@@ -729,6 +729,18 @@ public:
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
+	static void playerDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+	}
+
+	static void playerFallingDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+	}
+
 	void registerReceiver(MtEventManager *mgr)
 	{
 		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
@@ -737,6 +749,8 @@ public:
 		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
 		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
 		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
+		mgr->reg("PlayerDamage", SoundMaker::playerDamage, this);
+		mgr->reg("PlayerFallingDamage", SoundMaker::playerFallingDamage, this);
 	}
 
 	void step(float dtime)
@@ -2202,6 +2216,9 @@ void the_game(
 					player->hurt_tilt_timer = 1.5;
 					player->hurt_tilt_strength = event.player_damage.amount/2;
 					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 2.0, 10.0);
+
+					MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
+					gamedef->event()->put(e);
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{

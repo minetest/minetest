@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "event.h"
 #endif
 #include "daynightratio.h"
 #include "map.h"
@@ -2190,8 +2191,11 @@ void ClientEnvironment::step(float dtime)
 		{
 			f32 damage_f = (speed - tolerance)/BS * post_factor;
 			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0)
+			if(damage != 0){
 				damageLocalPlayer(damage, true);
+				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
+				m_gamedef->event()->put(e);
+			}
 		}
 	}
 	
