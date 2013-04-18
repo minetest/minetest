@@ -119,8 +119,10 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		wchar_t* text = wgettext("Continue");
 		Environment->addButton(rect, this, 256,
-			wgettext("Continue"));
+			text);
+		delete[] text;
 	}
 	btn_y += btn_height + btn_gap;
 	if(!m_simple_singleplayer_mode)
@@ -128,48 +130,58 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 140, btn_height);
 			rect = rect + v2s32(size.X/2-140/2, btn_y);
+			wchar_t* text = wgettext("Change Password");
 			Environment->addButton(rect, this, 261,
-				wgettext("Change Password"));
+				text);
+			delete[] text;
 		}
 		btn_y += btn_height + btn_gap;
 	}
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		wchar_t* text = wgettext("Sound Volume");
 		Environment->addButton(rect, this, 262,
-			wgettext("Sound Volume"));
+			text);
+		delete[] text;
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		wchar_t* text = wgettext("Exit to Menu");
 		Environment->addButton(rect, this, 260,
-			wgettext("Exit to Menu"));
+			text);
+		delete[] text;
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		wchar_t* text = wgettext("Exit to OS");
 		Environment->addButton(rect, this, 257,
-			wgettext("Exit to OS"));
+			text);
+		delete[] text;
 	}
 
 	{
 		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
-		Environment->addStaticText(chartowchar_t(gettext(
-		"Default Controls:\n"
-		"- WASD: Walk\n"
-		"- Mouse left: dig/hit\n"
-		"- Mouse right: place/use\n"
-		"- Mouse wheel: select item\n"
-		"- 0...9: select item\n"
-		"- Shift: sneak\n"
-		"- R: Toggle viewing all loaded chunks\n"
-		"- I: Inventory menu\n"
-		"- ESC: This menu\n"
-		"- T: Chat\n"
-		)), rect, false, true, this, 258);
+		wchar_t* text = wgettext("Default Controls:\n"
+				"- WASD: Walk\n"
+				"- Mouse left: dig/hit\n"
+				"- Mouse right: place/use\n"
+				"- Mouse wheel: select item\n"
+				"- 0...9: select item\n"
+				"- Shift: sneak\n"
+				"- R: Toggle viewing all loaded chunks\n"
+				"- I: Inventory menu\n"
+				"- ESC: This menu\n"
+				"- T: Chat\n"
+				);
+		Environment->addStaticText(text, rect, false, true, this, 258);
+		delete[] text;
+
 	}
 	{
 		core::rect<s32> rect(0, 0, 180, 220);

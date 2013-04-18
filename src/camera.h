@@ -166,6 +166,8 @@ private:
 	s32 m_view_bobbing_state;
 	// Speed of view bobbing animation
 	f32 m_view_bobbing_speed;
+	// Fall view bobbing
+	f32 m_view_bobbing_fall;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
 	f32 m_digging_anim;
@@ -173,6 +175,9 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button;
+
+	//dummymesh for camera
+	irr::scene::IAnimatedMesh* m_dummymesh;
 };
 
 #endif

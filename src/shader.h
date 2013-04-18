@@ -49,6 +49,7 @@ struct ShaderInfo
 	video::E_MATERIAL_TYPE material;
 
 	ShaderInfo(): name(""), material(video::EMT_SOLID) {}
+	virtual ~ShaderInfo() {}
 };
 
 /*

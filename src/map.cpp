@@ -2494,6 +2494,8 @@ ServerMap::~ServerMap()
 		delete chunk;
 	}
 #endif
+
+	delete m_mgparams;
 }
 
 bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)

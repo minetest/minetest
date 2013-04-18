@@ -467,7 +467,7 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate the registered ores
 	for (unsigned int i = 0; i != emerge->ores.size(); i++) {
 		Ore *ore = emerge->ores[i];
-		ore->generate(this, blockseed + i, node_min, node_max);
+		ore->placeOre(this, blockseed + i, node_min, node_max);
 	}
 
 	// Calculate lighting

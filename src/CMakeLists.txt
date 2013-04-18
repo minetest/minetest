@@ -180,10 +180,26 @@ if(USE_FREETYPE)
 	set(CGUITTFONT_LIBRARY cguittfont)
 endif(USE_FREETYPE)
 
-# Do not use system-wide installation of Lua, because it'll likely be a
-# different version and/or has different build options.
-set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
-set(LUA_LIBRARY "lua")
+
+find_library(LUA_LIBRARY luajit
+		NAMES luajit-5.1)
+find_path(LUA_INCLUDE_DIR luajit.h
+	NAMES luajit.h
+	PATH_SUFFIXES luajit-2.0)
+message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
+message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
+
+if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
+	message (STATUS "LuaJIT found.")
+else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+	message (STATUS "LuaJIT not found, using bundled Lua.")
+	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
+	set(LUA_LIBRARY "lua")
+	add_subdirectory(lua)
+endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+
+mark_as_advanced(LUA_LIBRARY)
+mark_as_advanced(LUA_INCLUDE_DIR)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
@@ -311,6 +327,7 @@ set(minetest_SRCS
 	particles.cpp
 	clientobject.cpp
 	chat.cpp
+	hud.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
@@ -600,11 +617,6 @@ endif (SQLITE3_FOUND)
 if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)
 endif (BUILD_CLIENT AND USE_FREETYPE)
-
-if (LUA_FOUND)
-else (LUA_FOUND)
-	add_subdirectory(lua)
-endif (LUA_FOUND)
 
 if (JSON_FOUND)
 else (JSON_FOUND)

@@ -96,9 +96,20 @@ EmergeManager::~EmergeManager() {
 		delete emergethread[i];
 		delete mapgen[i];
 	}
+	emergethread.clear();
+	mapgen.clear();
+
+	for (unsigned int i = 0; i < ores.size(); i++)
+		delete ores[i];
+	ores.clear();
 	
+	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
+			iter != mglist.end(); iter ++) {
+		delete iter->second;
+	}
+	mglist.clear();
+
 	delete biomedef;
-	delete params;
 }
 
 

@@ -904,6 +904,9 @@ Server::~Server()
 	*/
 	stop();
 
+	//shutdown all emerge threads first!
+	delete m_emerge;
+
 	/*
 		Delete clients
 	*/
@@ -923,7 +926,6 @@ Server::~Server()
 	// Delete things in the reverse order of creation
 	delete m_env;
 	delete m_rollback;
-	delete m_emerge;
 	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -3447,7 +3449,9 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
 }
-void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname)
+
+void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec,
+					const std::string formname)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3468,7 +3472,9 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec, co
 }
 
 // Spawns a particle on peer with peer_id
-void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration, float expirationtime, float size, bool collisiondetection, std::string texture)
+void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration,
+				float expirationtime, float size, bool collisiondetection,
+				std::string texture)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3490,7 +3496,9 @@ void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f accelerat
 }
 
 // Spawns a particle on all peers
-void Server::SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration, float expirationtime, float size, bool collisiondetection, std::string texture)
+void Server::SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
+				float expirationtime, float size, bool collisiondetection,
+				std::string texture)
 {
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
@@ -3591,6 +3599,76 @@ void Server::SendDeleteParticleSpawnerAll(u32 id)
 
 		SendDeleteParticleSpawner(client->peer_id, id);
 	}
+}
+
+void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUDADD);
+	writeU32(os, id);
+	writeU8(os, (u8)form->type);
+	writeV2F1000(os, form->pos);
+	os << serializeString(form->name);
+	writeV2F1000(os, form->scale);
+	os << serializeString(form->text);
+	writeU32(os, form->number);
+	writeU32(os, form->item);
+	writeU32(os, form->dir);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDRemove(u16 peer_id, u32 id)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUDRM);
+	writeU32(os, id);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUDCHANGE);
+	writeU32(os, id);
+	writeU8(os, (u8)stat);
+	switch (stat) {
+		case HUD_STAT_POS:
+		case HUD_STAT_SCALE:
+			writeV2F1000(os, *(v2f *)value);
+			break;
+		case HUD_STAT_NAME:
+		case HUD_STAT_TEXT:
+			os << serializeString(*(std::string *)value);
+			break;
+		case HUD_STAT_NUMBER:
+		case HUD_STAT_ITEM:
+		case HUD_STAT_DIR:
+		default:
+			writeU32(os, *(u32 *)value);
+			break;
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
 }
 
 void Server::BroadcastChatMessage(const std::wstring &message)
@@ -4543,6 +4621,39 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 	}
 
 	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	return true;
+}
+
+u32 Server::hudAdd(Player *player, HudElement *form) {
+	if (!player)
+		return -1;
+
+	u32 id = hud_get_free_id(player);
+	if (id < player->hud.size())
+		player->hud[id] = form;
+	else
+		player->hud.push_back(form);
+	
+	SendHUDAdd(player->peer_id, id, form);
+	return id;
+}
+
+bool Server::hudRemove(Player *player, u32 id) {
+	if (!player || id >= player->hud.size() || !player->hud[id])
+		return false;
+
+	delete player->hud[id];
+	player->hud[id] = NULL;
+	
+	SendHUDRemove(player->peer_id, id);
+	return true;
+}
+
+bool Server::hudChange(Player *player, u32 id, HudElementStat stat, void *data) {
+	if (!player)
+		return false;
+
+	SendHUDChange(player->peer_id, id, stat, data);
 	return true;
 }
 

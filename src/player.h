@@ -87,6 +87,7 @@ class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
+class HudElement;
 
 class Player
 {
@@ -242,6 +243,8 @@ public:
 	}
 	
 	u32 keyPressed;
+	
+	std::vector<HudElement *> hud;
 
 protected:
 	IGameDef *m_gamedef;
@@ -252,6 +255,7 @@ protected:
 	v3f m_speed;
 	v3f m_position;
 };
+
 
 /*
 	Player on the server

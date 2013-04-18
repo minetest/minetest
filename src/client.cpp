@@ -363,6 +363,15 @@ Client::~Client()
 	for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
 			i != m_media_fetch_threads.end(); ++i)
 		delete *i;
+
+	// cleanup 3d model meshes on client shutdown
+	while (m_device->getSceneManager()->getMeshCache()->getMeshCount() != 0) {
+		scene::IAnimatedMesh * mesh =
+			m_device->getSceneManager()->getMeshCache()->getMeshByIndex(0);
+
+		if (mesh != NULL)
+			m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
+	}
 }
 
 void Client::connect(Address address)
@@ -976,16 +985,28 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	{
 		verbosestream<<"Client: Storing model into Irrlicht: "
 				<<"\""<<filename<<"\""<<std::endl;
+		scene::ISceneManager *smgr = m_device->getSceneManager();
+
+		//check if mesh was already cached
+		scene::IAnimatedMesh *mesh =
+			smgr->getMeshCache()->getMeshByName(filename.c_str());
+
+		if (mesh != NULL) {
+			errorstream << "Multiple models with name: " << filename.c_str() <<
+					" found replacing previous model!" << std::endl;
+
+			smgr->getMeshCache()->removeMesh(mesh);
+			mesh = 0;
+		}
 
 		io::IFileSystem *irrfs = m_device->getFileSystem();
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), filename.c_str());
 		assert(rfile);
 		
-		scene::ISceneManager *smgr = m_device->getSceneManager();
-		scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
+		mesh = smgr->getMesh(rfile);
 		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
-		
+		rfile->drop();
 		return true;
 	}
 
@@ -2017,6 +2038,74 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.type = CE_DELETE_PARTICLESPAWNER;
 		event.delete_particlespawner.id = id;
 
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDADD)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id           = readU32(is);
+		u8 type          = readU8(is);
+		v2f pos          = readV2F1000(is);
+		std::string name = deSerializeString(is);
+		v2f scale        = readV2F1000(is);
+		std::string text = deSerializeString(is);
+		u32 number       = readU32(is);
+		u32 item         = readU32(is);
+		u32 dir          = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_HUDADD;
+		event.hudadd.id     = id;
+		event.hudadd.type   = type;
+		event.hudadd.pos    = new v2f(pos);
+		event.hudadd.name   = new std::string(name);
+		event.hudadd.scale  = new v2f(scale);
+		event.hudadd.text   = new std::string(text);
+		event.hudadd.number = number;
+		event.hudadd.item   = item;
+		event.hudadd.dir    = dir;
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDRM)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU32(is);
+
+		ClientEvent event;
+		event.type = CE_HUDRM;
+		event.hudrm.id = id;
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUDCHANGE)
+	{	
+		std::string sdata;
+		v2f v2fdata;
+		u32 intdata = 0;
+		
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id  = readU32(is);
+		u8 stat = (HudElementStat)readU8(is);
+		
+		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE)
+			v2fdata = readV2F1000(is);
+		else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
+			sdata = deSerializeString(is);
+		else
+			intdata = readU32(is);
+		
+		ClientEvent event;
+		event.type = CE_HUDCHANGE;
+		event.hudchange.id      = id;
+		event.hudchange.stat    = (HudElementStat)stat;
+		event.hudchange.v2fdata = new v2f(v2fdata);
+		event.hudchange.sdata   = new std::string(sdata);
+		event.hudchange.data    = intdata;
 		m_client_event_queue.push_back(event);
 	}
 	else

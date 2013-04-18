@@ -75,6 +75,13 @@ GUIModalMenu(env, parent, id, menumgr)
 GUIKeyChangeMenu::~GUIKeyChangeMenu()
 {
 	removeChildren();
+
+	for (std::vector<key_setting*>::iterator iter = key_settings.begin();
+			iter != key_settings.end(); iter ++) {
+		delete[] (*iter)->button_name;
+		delete (*iter);
+	}
+	key_settings.clear();
 }
 
 void GUIKeyChangeMenu::removeChildren()
@@ -111,8 +118,10 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 600, 40);
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
-		Environment->addStaticText(wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)"),
+		wchar_t* text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
+		Environment->addStaticText(text,
 								   rect, false, true, this, -1);
+		delete[] text;
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
@@ -132,7 +141,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect < s32 > rect(0, 0, 100, 30);
 			rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
-			k->button = Environment->addButton(rect, this, k->id, wgettext(k->key.name()));
+			wchar_t* text = wgettext(k->key.name());
+			k->button = Environment->addButton(rect, this, k->id, text );
+			delete[] text;
 		}
 		if(i + 1 == KMaxButtonPerColumns)
 			offset = v2s32(250, 60);
@@ -147,8 +158,10 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
+			wchar_t* text = wgettext("\"Use\" = climb down");
 			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
-					GUI_ID_CB_AUX1_DESCENDS, wgettext("\"Use\" = climb down"));
+					GUI_ID_CB_AUX1_DESCENDS, text);
+			delete[] text;
 		}
 		offset += v2s32(0, 25);
 	}
@@ -160,8 +173,10 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
+			wchar_t* text = wgettext("Double tap \"jump\" to toggle fly");
 			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
-					GUI_ID_CB_DOUBLETAP_JUMP, wgettext("Double tap \"jump\" to toggle fly"));
+					GUI_ID_CB_DOUBLETAP_JUMP, text);
+			delete[] text;
 		}
 		offset += v2s32(0, 25);
 	}
@@ -169,14 +184,18 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(size.X - 100 - 20, size.Y - 40);
+		wchar_t* text =  wgettext("Save");
 		Environment->addButton(rect, this, GUI_ID_BACK_BUTTON,
-							   wgettext("Save"));
+							 text);
+		delete[] text;
 	}
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(size.X - 100 - 20 - 100 - 20, size.Y - 40);
+		wchar_t* text = wgettext("Cancel");
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
-							   wgettext("Cancel"));
+							 text );
+		delete[] text;
 	}
 	changeCtype("C");
 	
@@ -230,7 +249,9 @@ bool GUIKeyChangeMenu::resetMenu()
 			key_setting *k = key_settings.at(i);
 			if(k->id == activeKey)
 			{
-				k->button->setText(wgettext(k->key.name()));
+				wchar_t* text = wgettext(k->key.name());
+				k->button->setText(text);
+				delete[] text;
 				break;
 			}
 		}
@@ -266,8 +287,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			core::rect < s32 > rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
-			this->key_used_text = Environment->addStaticText(wgettext("Key already in use"),
+			wchar_t* text = wgettext("Key already in use");
+			this->key_used_text = Environment->addStaticText(text,
 									rect, false, true, this, -1);
+			delete[] text;
 			//infostream << "Key already in use" << std::endl;
 		}
 
@@ -284,7 +307,9 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			}
 			assert(k);
 			k->key = kp;
-			k->button->setText(wgettext(k->key.name()));
+			wchar_t* text = wgettext(k->key.name());
+			k->button->setText(text);
+			delete[] text;
 
 			this->key_used.push_back(kp);
 
@@ -344,7 +369,9 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					resetMenu();
 					shift_down = false;
 					activeKey = event.GUIEvent.Caller->getID();
-					k->button->setText(wgettext("press key"));
+					wchar_t* text = wgettext("press key");
+					k->button->setText(text);
+					delete[] text;
 					this->key_used.erase(std::remove(this->key_used.begin(),
 							this->key_used.end(), k->key), this->key_used.end());
 					break;
@@ -357,11 +384,12 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-void GUIKeyChangeMenu::add_key(int id, std::string button_name, std::string setting_name)
+void GUIKeyChangeMenu::add_key(int id, wchar_t* button_name, std::string setting_name)
 {
 	key_setting *k = new key_setting;
 	k->id = id;
-	k->button_name = wgettext(button_name.c_str());
+
+	k->button_name = button_name;
 	k->setting_name = setting_name;
 	k->key = getKeySetting(k->setting_name.c_str());
 	key_settings.push_back(k);
@@ -369,21 +397,21 @@ void GUIKeyChangeMenu::add_key(int id, std::string button_name, std::string sett
 
 void GUIKeyChangeMenu::init_keys()
 {
-	this->add_key(GUI_ID_KEY_FORWARD_BUTTON, gettext("Forward"), "keymap_forward");
-	this->add_key(GUI_ID_KEY_BACKWARD_BUTTON, gettext("Backward"), "keymap_backward");
-	this->add_key(GUI_ID_KEY_LEFT_BUTTON, gettext("Left"), "keymap_left");
-	this->add_key(GUI_ID_KEY_RIGHT_BUTTON, gettext("Right"), "keymap_right");
-	this->add_key(GUI_ID_KEY_USE_BUTTON, gettext("Use"), "keymap_special1");
-	this->add_key(GUI_ID_KEY_JUMP_BUTTON, gettext("Jump"), "keymap_jump");
-	this->add_key(GUI_ID_KEY_SNEAK_BUTTON, gettext("Sneak"), "keymap_sneak");
-	this->add_key(GUI_ID_KEY_DROP_BUTTON, gettext("Drop"), "keymap_drop");
-	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, gettext("Inventory"), "keymap_inventory");
-	this->add_key(GUI_ID_KEY_CHAT_BUTTON, gettext("Chat"), "keymap_chat");
-	this->add_key(GUI_ID_KEY_CMD_BUTTON, gettext("Command"), "keymap_cmd");
-	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON, gettext("Console"), "keymap_console");
-	this->add_key(GUI_ID_KEY_FLY_BUTTON, gettext("Toggle fly"), "keymap_freemove");
-	this->add_key(GUI_ID_KEY_FAST_BUTTON, gettext("Toggle fast"), "keymap_fastmove");
-	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON, gettext("Toggle noclip"), "keymap_noclip");
-	this->add_key(GUI_ID_KEY_RANGE_BUTTON, gettext("Range select"), "keymap_rangeselect");
-	this->add_key(GUI_ID_KEY_DUMP_BUTTON, gettext("Print stacks"), "keymap_print_debug_stacks");
+	this->add_key(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),       "keymap_forward");
+	this->add_key(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),      "keymap_backward");
+	this->add_key(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),          "keymap_left");
+	this->add_key(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),         "keymap_right");
+	this->add_key(GUI_ID_KEY_USE_BUTTON,       wgettext("Use"),           "keymap_special1");
+	this->add_key(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),          "keymap_jump");
+	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),         "keymap_sneak");
+	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),          "keymap_drop");
+	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),     "keymap_inventory");
+	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),          "keymap_chat");
+	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),       "keymap_cmd");
+	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),       "keymap_console");
+	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),    "keymap_freemove");
+	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),   "keymap_fastmove");
+	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"), "keymap_noclip");
+	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),  "keymap_rangeselect");
+	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),  "keymap_print_debug_stacks");
 }

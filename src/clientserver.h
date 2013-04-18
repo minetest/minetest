@@ -90,9 +90,13 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		sound_place added to ItemDefinition
 	PROTOCOL_VERSION 19:
 		GENERIC_CMD_SET_PHYSICS_OVERRIDE
+	PROTOCOL_VERSION 20:
+		TOCLIENT_HUD_ADD
+		TOCLIENT_HUD_RM
+		TOCLIENT_HUD_CHANGE
 */
 
-#define LATEST_PROTOCOL_VERSION 19
+#define LATEST_PROTOCOL_VERSION 20
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -432,6 +436,39 @@ enum ToClientCommand
 	/*
 		u16 command
 		u32 id
+	*/
+
+	TOCLIENT_HUDADD = 0x49,
+	/*
+		u16 command
+		u32 id
+		u8 type
+		v2f1000 pos
+		u32 len
+		u8[len] name
+		v2f1000 scale
+		u32 len2
+		u8[len2] text
+		u32 number
+		u32 item
+		u32 dir
+	*/
+
+	TOCLIENT_HUDRM = 0x50,
+	/*
+		u16 command
+		u32 id
+	*/
+
+	TOCLIENT_HUDCHANGE = 0x51,
+	/*
+		u16 command
+		u32 id
+		u8 stat
+		[v2f1000 data |
+		 u32 len
+		 u8[len] data |
+		 u32 data]
 	*/
 };
 

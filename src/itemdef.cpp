@@ -226,8 +226,15 @@ class CItemDefManager: public IWritableItemDefManager
 public:
 	CItemDefManager()
 	{
+		for (std::map<std::string, ItemDefinition*>::iterator iter =
+				m_item_definitions.begin(); iter != m_item_definitions.end();
+				iter ++) {
+			delete iter->second;
+		}
+		m_item_definitions.clear();
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
+		m_driver = NULL;
 #endif
 	
 		clear();
@@ -241,7 +248,16 @@ public:
 		{
 			ClientCached *cc = *i;
 			cc->wield_mesh->drop();
+			delete cc;
 		}
+
+		if (m_driver != NULL) {
+			for (unsigned int i = 0; i < m_extruded_textures.size(); i++) {
+				m_driver->removeTexture(m_extruded_textures[i]);
+			}
+			m_extruded_textures.clear();
+		}
+		m_driver = NULL;
 #endif
 	}
 	virtual const ItemDefinition& get(const std::string &name_) const
@@ -290,6 +306,10 @@ public:
 		return m_item_definitions.find(name) != m_item_definitions.end();
 	}
 #ifndef SERVER
+private:
+	static video::IVideoDriver * m_driver;
+	static std::vector<video::ITexture*> m_extruded_textures;
+public:
 	ClientCached* createClientCachedDirect(const std::string &name,
 			IGameDef *gamedef) const
 	{
@@ -328,11 +348,7 @@ public:
 		}
 
 		// Create a wield mesh
-		if(cc->wield_mesh != NULL)
-		{
-			cc->wield_mesh->drop();
-			cc->wield_mesh = NULL;
-		}
+		assert(cc->wield_mesh == NULL);
 		if(def->type == ITEM_NODE && def->wield_image == "")
 		{
 			need_node_mesh = true;
@@ -432,20 +448,27 @@ public:
 						tsrc->getTextureRaw(f.tiledef[0].name);
 				}
 			}
+			else
+			{
+				if (m_driver == 0)
+					m_driver = driver;
+
+				m_extruded_textures.push_back(cc->inventory_texture);
+			}
 
 			/*
 				Use the node mesh as the wield mesh
 			*/
-			if(cc->wield_mesh == NULL)
-			{
-				// Scale to proper wield mesh proportions
-				scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
-						* def->wield_scale);
-				cc->wield_mesh = node_mesh;
-				cc->wield_mesh->grab();
-			}
 
-			// falling outside of here deletes node_mesh
+			// Scale to proper wield mesh proportions
+			scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
+					* def->wield_scale);
+
+			cc->wield_mesh = node_mesh;
+			cc->wield_mesh->grab();
+
+			//no way reference count can be smaller than 2 in this place!
+			assert(cc->wield_mesh->getReferenceCount() >= 2);
 		}
 
 		// Put in cache
@@ -658,3 +681,8 @@ IWritableItemDefManager* createItemDefManager()
 	return new CItemDefManager();
 }
 
+#ifndef SERVER
+//TODO very very very dirty hack!
+video::IVideoDriver * CItemDefManager::m_driver = 0;
+std::vector<video::ITexture*> CItemDefManager::m_extruded_textures;
+#endif

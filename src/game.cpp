@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IMaterialRendererServices.h>
+#include "IMeshCache.h"
 #include "client.h"
 #include "server.h"
 #include "guiPauseMenu.h"
@@ -58,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "quicktune_shortcutter.h"
 #include "clientmap.h"
+#include "hud.h"
 #include "sky.h"
 #include "sound.h"
 #if USE_SOUND
@@ -227,137 +229,6 @@ public:
 	std::string m_formspec;
 	FormspecFormSource** m_game_formspec;
 };
-/*
-	Hotbar draw routine
-*/
-void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
-		IGameDef *gamedef,
-		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory, s32 halfheartcount, u16 playeritem)
-{
-	InventoryList *mainlist = inventory->getList("main");
-	if(mainlist == NULL)
-	{
-		errorstream<<"draw_hotbar(): mainlist == NULL"<<std::endl;
-		return;
-	}
-	
-	s32 padding = imgsize/12;
-	//s32 height = imgsize + padding*2;
-	s32 width = itemcount*(imgsize+padding*2);
-	
-	// Position of upper left corner of bar
-	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
-	
-	// Draw background color
-	/*core::rect<s32> barrect(0,0,width,height);
-	barrect += pos;
-	video::SColor bgcolor(255,128,128,128);
-	driver->draw2DRectangle(bgcolor, barrect, NULL);*/
-
-	core::rect<s32> imgrect(0,0,imgsize,imgsize);
-
-	for(s32 i=0; i<itemcount; i++)
-	{
-		const ItemStack &item = mainlist->getItem(i);
-		
-		core::rect<s32> rect = imgrect + pos
-				+ v2s32(padding+i*(imgsize+padding*2), padding);
-		
-		if(playeritem == i)
-		{
-			video::SColor c_outside(255,255,0,0);
-			//video::SColor c_outside(255,0,0,0);
-			//video::SColor c_inside(255,192,192,192);
-			s32 x1 = rect.UpperLeftCorner.X;
-			s32 y1 = rect.UpperLeftCorner.Y;
-			s32 x2 = rect.LowerRightCorner.X;
-			s32 y2 = rect.LowerRightCorner.Y;
-			// Black base borders
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y1 - padding),
-						v2s32(x2 + padding, y1)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y2),
-						v2s32(x2 + padding, y2 + padding)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y1),
-						v2s32(x1, y2)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-						v2s32(x2 + padding, y2)
-					), NULL);
-			/*// Light inside borders
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1 - padding/2),
-						v2s32(x2 + padding/2, y1)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y2),
-						v2s32(x2 + padding/2, y2 + padding/2)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1),
-						v2s32(x1, y2)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-						v2s32(x2 + padding/2, y2)
-					), NULL);
-			*/
-		}
-
-		video::SColor bgcolor2(128,0,0,0);
-		driver->draw2DRectangle(bgcolor2, rect, NULL);
-		drawItemStack(driver, font, item, rect, NULL, gamedef);
-	}
-	
-	/*
-		Draw hearts
-	*/
-	video::ITexture *heart_texture =
-		gamedef->getTextureSource()->getTextureRaw("heart.png");
-	if(heart_texture)
-	{
-		v2s32 p = pos + v2s32(0, -20);
-		for(s32 i=0; i<halfheartcount/2; i++)
-		{
-			const video::SColor color(255,255,255,255);
-			const video::SColor colors[] = {color,color,color,color};
-			core::rect<s32> rect(0,0,16,16);
-			rect += p;
-			driver->draw2DImage(heart_texture, rect,
-				core::rect<s32>(core::position2d<s32>(0,0),
-				core::dimension2di(heart_texture->getOriginalSize())),
-				NULL, colors, true);
-			p += v2s32(16,0);
-		}
-		if(halfheartcount % 2 == 1)
-		{
-			const video::SColor color(255,255,255,255);
-			const video::SColor colors[] = {color,color,color,color};
-			core::rect<s32> rect(0,0,16/2,16);
-			rect += p;
-			core::dimension2di srcd(heart_texture->getOriginalSize());
-			srcd.Width /= 2;
-			driver->draw2DImage(heart_texture, rect,
-				core::rect<s32>(core::position2d<s32>(0,0), srcd),
-				NULL, colors, true);
-			p += v2s32(16,0);
-		}
-	}
-}
 
 /*
 	Check if a node is pointable
@@ -943,14 +814,8 @@ void the_game(
 	// Calculate text height using the font
 	u32 text_height = font->getDimension(L"Random test string").Height;
 
-	v2u32 screensize(0,0);
 	v2u32 last_screensize(0,0);
-	screensize = driver->getScreenSize();
-
-	const s32 hotbar_itemcount = 8;
-	//const s32 hotbar_imagesize = 36;
-	//const s32 hotbar_imagesize = 64;
-	s32 hotbar_imagesize = 48;
+	v2u32 screensize = driver->getScreenSize();
 	
 	/*
 		Draw "Loading" screen
@@ -992,6 +857,9 @@ void the_game(
 		sound_is_dummy = true;
 	}
 
+	Server *server = NULL;
+
+	try{
 	// Event manager
 	EventManager eventmgr;
 
@@ -1007,9 +875,8 @@ void the_game(
 
 	/*
 		Create server.
-		SharedPtr will delete it when it goes out of scope.
 	*/
-	SharedPtr<Server> server;
+
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
@@ -1018,7 +885,6 @@ void the_game(
 		server->start(port);
 	}
 
-	try{
 	do{ // Client scope (breakable do-while(0))
 	
 	/*
@@ -1373,6 +1239,12 @@ void the_game(
 	LocalPlayer* player = client.getEnv().getLocalPlayer();
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
+	
+	/*
+		HUD object
+	*/
+	Hud hud(driver, guienv, font, text_height,
+			gamedef, player, &local_inventory);
 
 	for(;;)
 	{
@@ -1546,13 +1418,11 @@ void the_game(
 		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
 		//bool screensize_changed = screensize != last_screensize;
 
-		// Resize hotbar
-		if(screensize.Y <= 800)
-			hotbar_imagesize = 32;
-		else if(screensize.Y <= 1280)
-			hotbar_imagesize = 48;
-		else
-			hotbar_imagesize = 64;
+			
+		// Update HUD values
+		hud.screensize    = screensize;
+		hud.displaycenter = displaycenter;
+		hud.resizeHotbar();
 		
 		// Hilight boxes collected during the loop and displayed
 		std::vector<aabb3f> hilightboxes;
@@ -1916,7 +1786,7 @@ void the_game(
 		{
 			s32 wheel = input->getMouseWheel();
 			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
-					hotbar_itemcount-1);
+					hud.hotbar_itemcount-1);
 
 			if(wheel < 0)
 			{
@@ -1940,7 +1810,7 @@ void the_game(
 			const KeyPress *kp = NumberKey + (i + 1) % 10;
 			if(input->wasKeyDown(*kp))
 			{
-				if(i < PLAYER_INVENTORY_SIZE && i < hotbar_itemcount)
+				if(i < PLAYER_INVENTORY_SIZE && i < hud.hotbar_itemcount)
 				{
 					new_playeritem = i;
 
@@ -2226,6 +2096,83 @@ void the_game(
 				else if(event.type == CE_DELETE_PARTICLESPAWNER)
 				{
 					delete_particlespawner (event.delete_particlespawner.id);
+				}
+				else if (event.type == CE_HUDADD)
+				{
+					u32 id = event.hudadd.id;
+					size_t nhudelem = player->hud.size();
+					if (id > nhudelem || (id < nhudelem && player->hud[id])) {
+						delete event.hudadd.pos;
+						delete event.hudadd.name;
+						delete event.hudadd.scale;
+						delete event.hudadd.text;
+						continue;
+					}
+					
+					HudElement *e = new HudElement;
+					e->type   = (HudElementType)event.hudadd.type;
+					e->pos    = *event.hudadd.pos;
+					e->name   = *event.hudadd.name;
+					e->scale  = *event.hudadd.scale;
+					e->text   = *event.hudadd.text;
+					e->number = event.hudadd.number;
+					e->item   = event.hudadd.item;
+					e->dir    = event.hudadd.dir;
+					
+					if (id == nhudelem)
+						player->hud.push_back(e);
+					else
+						player->hud[id] = e;
+
+					delete event.hudadd.pos;
+					delete event.hudadd.name;
+					delete event.hudadd.scale;
+					delete event.hudadd.text;
+				}
+				else if (event.type == CE_HUDRM)
+				{
+					u32 id = event.hudrm.id;
+					if (id < player->hud.size() && player->hud[id]) {
+						delete player->hud[id];
+						player->hud[id] = NULL;
+					}
+				}
+				else if (event.type == CE_HUDCHANGE)
+				{
+					u32 id = event.hudchange.id;
+					if (id >= player->hud.size() || !player->hud[id]) {
+						delete event.hudchange.v2fdata;
+						delete event.hudchange.sdata;
+						continue;
+					}
+						
+					HudElement* e = player->hud[id];
+					switch (event.hudchange.stat) {
+						case HUD_STAT_POS:
+							e->pos = *event.hudchange.v2fdata;
+							break;
+						case HUD_STAT_NAME:
+							e->name = *event.hudchange.sdata;
+							break;
+						case HUD_STAT_SCALE:
+							e->scale = *event.hudchange.v2fdata;
+							break;
+						case HUD_STAT_TEXT:
+							e->text = *event.hudchange.sdata;
+							break;
+						case HUD_STAT_NUMBER:
+							e->number = event.hudchange.data;
+							break;
+						case HUD_STAT_ITEM:
+							e->item = event.hudchange.data;
+							break;
+						case HUD_STAT_DIR:
+							e->dir = event.hudchange.data;
+							break;
+					}
+					
+					delete event.hudchange.v2fdata;
+					delete event.hudchange.sdata;
 				}
 			}
 		}
@@ -3003,7 +2950,6 @@ void the_game(
 		*/
 
 		TimeTaker tt_draw("mainloop: draw");
-
 		
 		{
 			TimeTaker timer("beginScene");
@@ -3107,26 +3053,8 @@ void the_game(
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-		if(show_hud)
-		{
-			v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
-			u32 selectionbox_color_r = rangelim(myround(selectionbox_color.X), 0, 255);
-			u32 selectionbox_color_g = rangelim(myround(selectionbox_color.Y), 0, 255);
-			u32 selectionbox_color_b = rangelim(myround(selectionbox_color.Z), 0, 255);
-
-			for(std::vector<aabb3f>::const_iterator
-					i = hilightboxes.begin();
- 					i != hilightboxes.end(); i++)
-	 		{
-				/*infostream<<"hilightbox min="
-						<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
-						<<" max="
-						<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
-						<<std::endl;*/
-				driver->draw3DBox(*i, video::SColor(255,selectionbox_color_r,selectionbox_color_g,selectionbox_color_b));
-			}
-		}
-
+		if (show_hud)
+			hud.drawSelectionBoxes(hilightboxes);
 		/*
 			Wielded tool
 		*/
@@ -3154,22 +3082,9 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		if(show_hud)
-		{
-			v3f crosshair_color = g_settings->getV3F("crosshair_color");
-			u32 crosshair_color_r = rangelim(myround(crosshair_color.X), 0, 255);
-			u32 crosshair_color_g = rangelim(myround(crosshair_color.Y), 0, 255);
-			u32 crosshair_color_b = rangelim(myround(crosshair_color.Z), 0, 255);
-			u32 crosshair_alpha = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
-
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-					displaycenter + core::vector2d<s32>(10,0),
-					video::SColor(crosshair_alpha,crosshair_color_r,crosshair_color_g,crosshair_color_b));
-			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-					displaycenter + core::vector2d<s32>(0,10),
-					video::SColor(crosshair_alpha,crosshair_color_r,crosshair_color_g,crosshair_color_b));
-		}
-
+		if (show_hud)
+			hud.drawCrosshair();
+			
 		} // timer
 
 		//timer10.stop();
@@ -3179,11 +3094,9 @@ void the_game(
 		/*
 			Draw hotbar
 		*/
-		if(show_hud)
+		if (show_hud)
 		{
-			draw_hotbar(driver, font, gamedef,
-					v2s32(displaycenter.X, screensize.Y),
-					hotbar_imagesize, hotbar_itemcount, &local_inventory,
+			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
 					client.getHP(), client.getPlayerItem());
 		}
 
@@ -3209,6 +3122,12 @@ void the_game(
 			if(player->hurt_tilt_timer < 0)
 				player->hurt_tilt_strength = 0;
 		}
+
+		/*
+			Draw lua hud items
+		*/
+		if (show_hud)
+			hud.drawLuaElements();
 
 		/*
 			Draw gui
@@ -3258,11 +3177,11 @@ void the_game(
 	/*
 		Drop stuff
 	*/
-	if(clouds)
+	if (clouds)
 		clouds->drop();
-	if(gui_chat_console)
+	if (gui_chat_console)
 		gui_chat_console->drop();
-	clear_particles ();
+	clear_particles();
 	
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
@@ -3290,14 +3209,44 @@ void the_game(
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 	}
+	catch(ServerError &e)
+	{
+		error_message = narrow_to_wide(e.what());
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
+	}
+	catch(ModError &e)
+	{
+		errorstream<<e.what()<<std::endl;
+		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
+	}
+
+
 	
 	if(!sound_is_dummy)
 		delete sound;
+
+	//has to be deleted first to stop all server threads
+	delete server;
 
 	delete tsrc;
 	delete shsrc;
 	delete nodedef;
 	delete itemdef;
+
+	//extended resource accounting
+	infostream << "Irrlicht resources after cleanup:" << std::endl;
+	infostream << "\tRemaining meshes   : "
+		<< device->getSceneManager()->getMeshCache()->getMeshCount() << std::endl;
+	infostream << "\tRemaining textures : "
+		<< driver->getTextureCount() << std::endl;
+	for (unsigned int i = 0; i < driver->getTextureCount(); i++ ) {
+		irr::video::ITexture* texture = driver->getTextureByIndex(i);
+		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
+				<< std::endl;
+	}
+	infostream << "\tRemaining materials: "
+		<< driver-> getMaterialRendererCount ()
+		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;
 }
 
 

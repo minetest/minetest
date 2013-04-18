@@ -67,9 +67,11 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_view_bobbing_anim(0),
 	m_view_bobbing_state(0),
 	m_view_bobbing_speed(0),
+	m_view_bobbing_fall(0),
 
 	m_digging_anim(0),
-	m_digging_button(-1)
+	m_digging_button(-1),
+	m_dummymesh(createCubeMesh(v3f(1,1,1)))
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -84,13 +86,14 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = m_wieldmgr->addMeshSceneNode(createCubeMesh(v3f(1,1,1)), NULL);  // need a dummy mesh
+	m_wieldnode = m_wieldmgr->addMeshSceneNode(m_dummymesh, NULL);  // need a dummy mesh
 }
 
 Camera::~Camera()
 {
-	m_wieldnode->setMesh(NULL);
 	m_wieldmgr->drop();
+
+	delete m_dummymesh;
 }
 
 bool Camera::successfullyCreated(std::wstring& error_message)
@@ -132,6 +135,13 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
+	if(m_view_bobbing_fall > 0)
+	{
+		m_view_bobbing_fall -= 3 * dtime;
+		if(m_view_bobbing_fall <= 0)
+			m_view_bobbing_fall = -1; // Mark the effect as finished
+	}
+
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
@@ -235,11 +245,28 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
-	//Get camera tilt timer (hurt animation)
+	// Get camera tilt timer (hurt animation)
 	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
 
+	// Fall bobbing animation
+	float fall_bobbing = 0;
+	if(player->camera_impact >= 1)
+	{
+		if(m_view_bobbing_fall == -1) // Effect took place and has finished
+			player->camera_impact = m_view_bobbing_fall = 0;
+		else if(m_view_bobbing_fall == 0) // Initialize effect
+			m_view_bobbing_fall = 1;
+
+		// Convert 0 -> 1 to 0 -> 1 -> 0
+		fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
+		// Smoothen and invert the above
+		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
+		// Amplify according to the intensity of the impact
+		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
+	}
+
 	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength,0));
+	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
 	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
 	m_headnode->updateAbsolutePosition();
 
