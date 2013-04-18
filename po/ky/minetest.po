@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-03-31 15:40+0200\n"
+"PO-Revision-Date: 2013-04-18 04:09+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ky\n"
@@ -202,15 +202,15 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
-msgstr ""
+msgstr "Бир кишилик оюн"
 
 #: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
-msgstr ""
+msgstr "Көп колдонучуулук оюн"
 
 #: src/guiMainMenu.cpp:285
 msgid "Advanced"
-msgstr ""
+msgstr "Кошумча"
 
 #: src/guiMainMenu.cpp:286
 msgid "Settings"
@@ -242,7 +242,7 @@ msgstr "Ойноо"
 
 #: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
-msgstr ""
+msgstr "Чыгармачылык режим"
 
 #: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
@@ -262,7 +262,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
-msgstr "Адреси/Порту"
+msgstr "Дареги/порту"
 
 #: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
 msgid "Show Public"
@@ -282,7 +282,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:600
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "Оюнду баштоо/туташуу"
 
 #: src/guiMainMenu.cpp:632
 msgid "Public"
@@ -298,7 +298,7 @@ msgstr "Дүйнөнү жаратуу"
 
 #: src/guiMainMenu.cpp:681
 msgid "Fancy trees"
-msgstr ""
+msgstr "Кооз бактар"
 
 #: src/guiMainMenu.cpp:687
 msgid "Smooth Lighting"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:693
 msgid "3D Clouds"
-msgstr "3D булуттар"
+msgstr "3D-булуттар"
 
 #: src/guiMainMenu.cpp:699
 msgid "Opaque water"
@@ -330,7 +330,7 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:738
 msgid "Shaders"
-msgstr ""
+msgstr "Шейдерлер"
 
 #: src/guiMainMenu.cpp:745
 msgid "Preload item visuals"
@@ -374,19 +374,19 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr ""
+msgstr "Эски сырсөз"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "Жаңы сырсөз"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr ""
+msgstr "Сырсөздү аныктоо"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr ""
+msgstr "Өзгөртүү"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
@@ -394,11 +394,11 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:123
 msgid "Continue"
-msgstr ""
+msgstr "Улантуу"
 
 #: src/guiPauseMenu.cpp:132
 msgid "Change Password"
-msgstr ""
+msgstr "Сырсөздү өзгөртүү"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
@@ -406,11 +406,11 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Менюга чыгуу"
 
 #: src/guiPauseMenu.cpp:154
 msgid "Exit to OS"
-msgstr ""
+msgstr "Системага чыгуу"
 
 #: src/guiPauseMenu.cpp:161
 msgid ""
@@ -453,11 +453,11 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "Артка"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Тазалоо"
 
 #: src/keycode.cpp:224
 msgid "Return"
@@ -481,15 +481,15 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Кана"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Пауза"
 
 #: src/keycode.cpp:225
 msgid "Shift"
@@ -521,15 +521,15 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Кабыл алуу"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
@@ -537,7 +537,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr ""
+msgstr "Кийинки"
 
 #: src/keycode.cpp:227
 msgid "Prior"
@@ -557,19 +557,19 @@ msgstr ""
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "Басма"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr ""
+msgstr "Тандоо"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Өйдө"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Жардам"
 
 #: src/keycode.cpp:229
 msgid "Insert"
@@ -585,7 +585,7 @@ msgstr ""
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "Тиркемелер"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -601,7 +601,7 @@ msgstr ""
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "Уйку"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
@@ -665,7 +665,7 @@ msgstr ""
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Оң Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
@@ -689,7 +689,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Минус"
 
 #: src/keycode.cpp:243
 msgid "Period"
@@ -697,7 +697,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Плюс"
 
 #: src/keycode.cpp:247
 msgid "Attn"
@@ -725,11 +725,11 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Масштаб"
 
 #: src/main.cpp:1506
 msgid "Main Menu"
-msgstr ""
+msgstr "Башкы меню"
 
 #: src/main.cpp:1830
 msgid "Failed to initialize world"
@@ -741,7 +741,7 @@ msgstr ""
 
 #: src/main.cpp:1850
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Оюнду табуу же жүктөө мүмкүн эмес \""
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
