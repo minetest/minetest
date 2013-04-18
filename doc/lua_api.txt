@@ -1846,7 +1846,7 @@ Detached inventory callbacks
 
 HUD Definition (hud_add, hud_get)
 {
-    type = "image",
+    hud_elem_type = "image", -- see HUD element types
     ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
     position = {x=0.5, y=0.5},
     ^ Left corner position of element
