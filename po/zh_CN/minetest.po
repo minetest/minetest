@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-13 09:58+0200\n"
+"PO-Revision-Date: 2013-04-19 16:10+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -314,7 +314,7 @@ msgstr "3D云彩"
 
 #: src/guiMainMenu.cpp:699
 msgid "Opaque water"
-msgstr "不反光的水"
+msgstr "不透明的水"
 
 #: src/guiMainMenu.cpp:709
 msgid "Mip-Mapping"
