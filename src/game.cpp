@@ -808,6 +808,8 @@ void nodePlacementPrediction(Client &client,
 			MapNode n_under = map.getNode(nodepos);
 			if(nodedef->get(n_under).buildable_to)
 				p = nodepos;
+			else if (!nodedef->get(map.getNode(p)).buildable_to)
+				return;
 		}catch(InvalidPositionException &e){}
 		// Find id of predicted node
 		content_t id;
