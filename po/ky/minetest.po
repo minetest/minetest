@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-18 04:09+0200\n"
+"PO-Revision-Date: 2013-04-20 07:29+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ky\n"
@@ -32,7 +32,7 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
-msgstr ""
+msgstr "күйгүзүлгөн"
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
@@ -44,11 +44,11 @@ msgstr "Баарын өчүрүү"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr ""
+msgstr "көз карандылыктары:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
-msgstr ""
+msgstr "талап кылганы:"
 
 #: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
 #: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
@@ -97,7 +97,7 @@ msgstr "Кайтадан жаралуу"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "Сол кнопкасы: Бардык буюмдарды ташуу, Оң кнопкасы: Бир буюмду ташуу"
 
 #: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:131
@@ -122,7 +122,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:347
 msgid "press key"
-msgstr ""
+msgstr "клавишаны басыңыз"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
@@ -150,7 +150,7 @@ msgstr "Секирүү"
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr ""
+msgstr "Уурданып басуу"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
@@ -158,7 +158,7 @@ msgstr "Ыргытуу"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
-msgstr ""
+msgstr "Мүлк-шайман"
 
 #: src/guiKeyChangeMenu.cpp:381
 msgid "Chat"
@@ -174,11 +174,11 @@ msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr ""
+msgstr "Учууну күйгүзүү"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr ""
+msgstr "Тез басууну күйгүзүү"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
