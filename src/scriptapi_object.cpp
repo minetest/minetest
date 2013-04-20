@@ -749,7 +749,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->text   = getstringfield_default(L, 2, "text", "");
 	elem->number = getintfield_default(L, 2, "number", 0);
 	elem->item   = getintfield_default(L, 2, "item", 0);
-	elem->dir    = getintfield_default(L, 2, "dir", 0);
+	elem->dir    = getintfield_default(L, 2, "direction", 0);
 
 	u32 id = get_server(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {

@@ -198,7 +198,7 @@ void Hud::drawLuaElements() {
 				font->draw(narrow_to_wide(e->text).c_str(), size + pos, color);
 				break; }
 			case HUD_ELEM_STATBAR:
-				drawStatbar(pos, e->text, e->number);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number);
 				break;
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
@@ -212,38 +212,55 @@ void Hud::drawLuaElements() {
 }
 
 
-void Hud::drawStatbar(v2s32 upperleftpos, std::string texture, s32 count) {
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count) {
+	const video::SColor color(255, 255, 255, 255);
+	const video::SColor colors[] = {color, color, color, color};
+	
 	video::ITexture *stat_texture =
 		gamedef->getTextureSource()->getTextureRaw(texture);
 	if (!stat_texture)
 		return;
+		
+	core::dimension2di srcd(stat_texture->getOriginalSize());
 
-	v2s32 p = upperleftpos;
+	v2s32 p = pos;
+	if (corner & HUD_CORNER_LOWER)
+		p -= srcd.Height;
+
+	v2s32 steppos;
+	switch (drawdir) {
+		case HUD_DIR_RIGHT_LEFT:
+			steppos = v2s32(-1, 0);
+			break;
+		case HUD_DIR_TOP_BOTTOM:
+			steppos = v2s32(0, 1);
+			break;
+		case HUD_DIR_BOTTOM_TOP:
+			steppos = v2s32(0, -1);
+			break;
+		default:
+			steppos = v2s32(1, 0);	
+	}
+	steppos.X *= srcd.Width;
+	steppos.Y *= srcd.Height;
+	
 	for (s32 i = 0; i < count / 2; i++)
 	{
-		core::dimension2di srcd(stat_texture->getOriginalSize());
-		const video::SColor color(255, 255, 255, 255);
-		const video::SColor colors[] = {color, color, color, color};
-		core::rect<s32> rect(0, 0, srcd.Width, srcd.Height);
-		rect += p;
-		driver->draw2DImage(stat_texture, rect,
-			core::rect<s32>(core::position2d<s32>(0, 0), srcd),
-			NULL, colors, true);
-		p += v2s32(srcd.Width, 0);
+		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
+		core::rect<s32> dstrect(srcrect);
+
+		dstrect += p;
+		driver->draw2DImage(stat_texture, dstrect, srcrect, NULL, colors, true);
+		p += steppos;
 	}
 	
 	if (count % 2 == 1)
 	{
-		core::dimension2di srcd(stat_texture->getOriginalSize());
-		const video::SColor color(255, 255, 255, 255);
-		const video::SColor colors[] = {color, color, color, color};
-		core::rect<s32> rect(0, 0, srcd.Width / 2, srcd.Height);
-		rect += p;
-		srcd.Width /= 2;
-		driver->draw2DImage(stat_texture, rect,
-			core::rect<s32>(core::position2d<s32>(0, 0), srcd),
-			NULL, colors, true);
-		p += v2s32(srcd.Width * 2, 0);
+		core::rect<s32> srcrect(0, 0, srcd.Width / 2, srcd.Height);
+		core::rect<s32> dstrect(srcrect);
+
+		dstrect += p;
+		driver->draw2DImage(stat_texture, dstrect, srcrect, NULL, colors, true);
 	}
 }
 
@@ -260,14 +277,15 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
 	drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	drawStatbar(pos + v2s32(0, -20), "heart.png", halfheartcount);
+	drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
+				"heart.png", halfheartcount);
 }
 
 
 void Hud::drawCrosshair() {
-	driver->draw2DLine(displaycenter - v2s32(10,0),
+	driver->draw2DLine(displaycenter - v2s32(10, 0),
 			displaycenter + v2s32(10, 0), crosshair_argb);
-	driver->draw2DLine(displaycenter - v2s32(0,10),
+	driver->draw2DLine(displaycenter - v2s32(0, 10),
 			displaycenter + v2s32(0, 10), crosshair_argb);
 }
 
