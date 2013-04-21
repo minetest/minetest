@@ -788,15 +788,17 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = -1;
-	if (!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-	
-	HudElementStat stat = (HudElementStat)getenumfield(L, 3, "stat",
-								es_HudElementStat, HUD_STAT_NUMBER);
-	
+	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
 	if (id >= player->hud.size())
 		return 0;
+		
+	HudElementStat stat = HUD_STAT_NUMBER;
+	if (!lua_isnil(L, 3)) {
+		int statint;
+		std::string statstr = lua_tostring(L, 3);
+		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
+				(HudElementStat)statint : HUD_STAT_NUMBER;
+	}
 	
 	void *value = NULL;
 	HudElement *e = player->hud[id];
@@ -832,7 +834,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 			e->dir = lua_tonumber(L, 4);
 			value = &e->dir;
 	}
-	
+
 	get_server(L)->hudChange(player, id, stat, value);
 
 	lua_pushboolean(L, true);
