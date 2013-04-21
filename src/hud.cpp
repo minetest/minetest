@@ -284,17 +284,33 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 
 void Hud::drawCrosshair() {
 	ITextureSource *tsrc = gamedef->getTextureSource();
+	v3f spd = player->getSpeed();
+	float b1=BS/10; // small speed improvement
+	float fspd = abs(spd.X/b1) + abs(spd.Y/b1) + abs(spd.Z/b1);
+	float sneak = 0;
+	if (player->control.sneak) sneak=0.1;
+	float mult = rangelim(1 + (fspd/750) - sneak, 0, 2);
 	if (tsrc->isKnownSourceImage("crosshair.png")) {
+
+		video::SColor crosshair_colors [] = {crosshair_argb, crosshair_argb, crosshair_argb, crosshair_argb};
 		video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+
 		v2u32 size = crosshair->getOriginalSize();
-		v2s32 lsize = v2s32(displaycenter.X - (size.X / 2), displaycenter.Y - (size.Y / 2));
-		driver->draw2DImage(crosshair, lsize, core::rect<s32>(0, 0, size.X, size.Y),
-			0, crosshair_argb, true);
+		v2u32 msize = v2u32(size.X * mult, size.Y * mult);
+
+		core::rect<s32> rect(0,0,msize.X,msize.Y);
+		rect += v2s32(displaycenter.X - (msize.X / 2), displaycenter.Y - (msize.Y / 2));
+
+		driver->draw2DImage(crosshair, rect,
+			core::rect<s32>(0, 0, size.X, size.Y),
+			NULL, crosshair_colors, true);
+
+
 	} else {
-		driver->draw2DLine(displaycenter - v2s32(10, 0),
-				displaycenter + v2s32(10, 0), crosshair_argb);
-		driver->draw2DLine(displaycenter - v2s32(0, 10),
-				displaycenter + v2s32(0, 10), crosshair_argb);
+		driver->draw2DLine(displaycenter - v2s32(10 * mult, 0),
+				displaycenter + v2s32(10 * mult, 0), crosshair_argb);
+		driver->draw2DLine(displaycenter - v2s32(0, 10 * mult),
+				displaycenter + v2s32(0, 10 * mult), crosshair_argb);
 	}
 }
 
