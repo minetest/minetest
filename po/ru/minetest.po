@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-15 19:35+0200\n"
-"Last-Translator: Ilya Pavlov <TTChangeTheWorld@gmail.com>\n"
+"PO-Revision-Date: 2013-04-21 10:01+0200\n"
+"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -118,11 +118,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:151
 msgid "\"Use\" = climb down"
-msgstr "\"Использовать\" = спускаться"
+msgstr "\"Использовать\" = вниз"
 
 #: src/guiKeyChangeMenu.cpp:164
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Дважды нажмите \"прыгнуть\", чтобы включить полет"
+msgstr "Двойной прыжок = летать"
 
 #: src/guiKeyChangeMenu.cpp:269
 msgid "Key already in use"
@@ -162,7 +162,7 @@ msgstr "Красться"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr "Выбросить"
+msgstr "Бросить"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
@@ -182,24 +182,23 @@ msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp:384
 msgid "Toggle fly"
-msgstr "Включить полёт"
+msgstr "Полёт"
 
 #: src/guiKeyChangeMenu.cpp:385
 msgid "Toggle fast"
-msgstr "Включить ускорение"
+msgstr "Ускорение"
 
 #: src/guiKeyChangeMenu.cpp:386
 msgid "Toggle noclip"
-msgstr "Проходить сквозь стены"
+msgstr "Включить noclip"
 
 #: src/guiKeyChangeMenu.cpp:387
 msgid "Range select"
-msgstr "Выбор зоны видимости"
+msgstr "Зона видимости"
 
 #: src/guiKeyChangeMenu.cpp:388
-#, fuzzy
 msgid "Print stacks"
-msgstr "Напечатать стеки"
+msgstr "Печать стеков"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
@@ -215,7 +214,7 @@ msgstr "Одиночная игра"
 
 #: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
-msgstr "Многопользовательская игра"
+msgstr "Сетевая игра"
 
 #: src/guiMainMenu.cpp:285
 msgid "Advanced"
@@ -251,11 +250,11 @@ msgstr "Играть"
 
 #: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
-msgstr "Творческий Режим"
+msgstr "Режим Создания"
 
 #: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
-msgstr "Включить Повреждения"
+msgstr "Включить урон"
 
 #: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
 msgid "Name/Password"
@@ -267,7 +266,7 @@ msgstr "Избранное:"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr "Публичный Список Серверов:"
+msgstr "Список Публичных Серверов:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -291,11 +290,11 @@ msgstr "Оставьте адрес пустым для запуска лока�
 
 #: src/guiMainMenu.cpp:600
 msgid "Start Game / Connect"
-msgstr "Начать игру/Присоединиться"
+msgstr "Начать игру/Подключиться"
 
 #: src/guiMainMenu.cpp:632
 msgid "Public"
-msgstr "Общественные"
+msgstr "Публичные"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -356,7 +355,7 @@ msgstr "Конечные жидкости"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
-msgstr "Сменить управление"
+msgstr "Смена управления"
 
 #: src/guiMainMenu.cpp:1084
 msgid "Address required."
@@ -443,7 +442,7 @@ msgstr ""
 "- Колесо мыши: выбор предмета\n"
 "- 0...9: выбор предмета\n"
 "- Shift: красться\n"
-"- R: переключить видимость всех загруженных чанков\n"
+"- R: смотреть далеко\n"
 "- I: инвентарь\n"
 "- ESC: это меню\n"
 "- T: чат\n"
@@ -458,15 +457,15 @@ msgstr "Выход"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Левая Клавиша"
+msgstr "Левая Кнопка"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Средняя Клавиша"
+msgstr "Средняя Кнопка"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr "Правая Клавиша"
+msgstr "Правая Кнопка"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -733,24 +732,28 @@ msgid "Attn"
 msgstr "Внимание"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "Erase OEF"
-msgstr ""
+msgstr "Стереть ОНС"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
-msgstr ""
+msgstr "Exsel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "Очистить OEM"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
