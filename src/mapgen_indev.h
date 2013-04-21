@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 #include "mapgen_v6.h"
+#include "cavegen.h"
 
 float farscale(float scale, float z);
 float farscale(float scale, float x, float z);
@@ -133,8 +134,9 @@ class MapgenIndev : public MapgenV6 {
 	float baseTerrainLevelFromNoise(v2s16 p);
 	float baseTerrainLevelFromMap(int index);
 	float getMudAmount(int index);
-	void defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave);
-	void generateSomething();
+	void generateCaves(int max_stone_y);
+	//void defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave);
+	void generateExperimental();
 	
 	void generateFloatIslands(int min_y);
 };
@@ -147,6 +149,12 @@ struct MapgenFactoryIndev : public MapgenFactoryV6 {
 	MapgenParams *createMapgenParams() {
 		return new MapgenIndevParams();
 	};
+};
+
+class CaveIndev : public CaveV6 {
+public:
+	CaveIndev(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2, v3s16 node_min,
+			bool is_large_cave, content_t c_water, content_t c_lava);
 };
 
 #endif

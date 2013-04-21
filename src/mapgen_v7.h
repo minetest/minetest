@@ -110,6 +110,8 @@ public:
 	void testBiomes();
 	void addTopNodes();
 	void growGrass();
+	
+	void generateCaves(int max_stone_y);
 };
 
 struct MapgenFactoryV7 : public MapgenFactory {

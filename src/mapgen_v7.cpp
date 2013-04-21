@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "emerge.h"
 #include "dungeongen.h"
+#include "cavegen.h"
 #include "treegen.h"
 #include "biome.h"
 #include "mapgen_v7.h"
@@ -142,7 +143,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
 	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
-	//blockseed = emerge->getBlockSeed(full_node_min);
+	blockseed = emerge->getBlockSeed(full_node_min);  //////use getBlockSeed2()!
 
 	// Make some noise
 	calculateNoise();
@@ -163,14 +164,17 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	c_dirt_with_grass = ndef->getId("mapgen_dirt_with_grass");
 	c_sand            = ndef->getId("mapgen_sand");
 	c_water_source    = ndef->getId("mapgen_water_source");
+	c_lava_source     = ndef->getId("mapgen_lava_source");
 	
 	generateTerrain();
 	carveRidges();
 	
 	//carveRivers();
-	addTopNodes();
-	growGrass();
+
 	
+	generateCaves(stone_surface_max_y);
+	addTopNodes();
+	growGrass();	
 	//v3s16 central_area_size = node_max - node_min + v3s16(1,1,1);
 
 	if (flags & MG_DUNGEONS) {
@@ -398,6 +402,8 @@ void MapgenV7::addTopNodes() {
 	
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+		Biome *biome = bmgr->biomes[biomemap[index]];
+		
 		// First, add top nodes below the ridge
 		s16 y = ridge_heightmap[index];
 		
@@ -408,7 +414,8 @@ void MapgenV7::addTopNodes() {
 		if (y > node_max.Y) {
 			y = node_max.Y; // Let's see if we can still go downward anyway
 			u32 vi = vm->m_area.index(x, y, z);
-			if (vm->m_data[vi].getContent() != CONTENT_AIR)
+			content_t c = vm->m_data[vi].getContent();
+			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
 				continue;
 		}
 		
@@ -417,12 +424,14 @@ void MapgenV7::addTopNodes() {
 		// where a ridge had been carved
 		u32 i = vm->m_area.index(x, y, z);
 		for (; y >= node_min.Y; y--) {
-			if (vm->m_data[i].getContent() != CONTENT_AIR)
+			content_t c = vm->m_data[i].getContent();
+			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
+			//if (vm->m_data[i].getContent() != CONTENT_AIR)
 				break;
 			vm->m_area.add_y(em, i, -1);
 		}
 
-		Biome *biome = bmgr->biomes[biomemap[index]];
+		
 
 		if (y != node_min.Y - 1) {
 			ridge_heightmap[index] = y; //update ridgeheight
@@ -440,7 +449,9 @@ void MapgenV7::addTopNodes() {
 
 		i = vm->m_area.index(x, y, z);
 		for (; y >= node_min.Y; y--) {
-			if (vm->m_data[i].getContent() != CONTENT_AIR)
+			content_t c = vm->m_data[i].getContent();
+			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
+			//if (vm->m_data[i].getContent() != CONTENT_AIR)
 				break;
 			vm->m_area.add_y(em, i, -1);
 		}
@@ -487,4 +498,27 @@ void MapgenV7::growGrass() {
 		if (n->getContent() == c_dirt && surface_y >= water_level - 20)
 			n->setContent(c_dirt_with_grass);
 	}
+}
+
+#include "mapgen_v6.h"
+void MapgenV7::generateCaves(int max_stone_y) {
+	PseudoRandom ps(blockseed + 21343);
+	PseudoRandom ps2(blockseed + 1032);
+
+	int volume_nodes = (node_max.X - node_min.X + 1) *
+					   (node_max.Y - node_min.Y + 1) * MAP_BLOCKSIZE;
+	float cave_amount = NoisePerlin2D(&nparams_v6_def_cave,
+								node_min.X, node_min.Y, seed);
+	
+	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 50000;
+	for (u32 i = 0; i < caves_count; i++) {
+		CaveV6 cave(this, &ps, &ps2, false, c_water_source, c_lava_source);
+		cave.makeCave(node_min, node_max, max_stone_y);
+	}
+	
+	u32 bruises_count = (ps.range(1, 6) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
+	for (u32 i = 0; i < bruises_count; i++) {
+		CaveV6 cave(this, &ps, &ps2, true, c_water_source, c_lava_source);
+		cave.makeCave(node_min, node_max, max_stone_y);
+	}	
 }
