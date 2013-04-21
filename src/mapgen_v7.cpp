@@ -115,7 +115,23 @@ MapgenV7::~MapgenV7() {
 
 
 int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
-	return 20;
+	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Y);
+	float heat      = NoisePerlin2D(bmgr->np_heat, p.X, p.Y, seed);
+	float humidity  = NoisePerlin2D(bmgr->np_humidity, p.X, p.Y, seed);
+	Biome *b = bmgr->getBiome(heat, humidity, groundlevel);
+	
+	s16 y = groundlevel;
+	if (y > water_level) {
+		int iters = 1024; // don't even bother iterating more than 1024 times..
+		while (iters--) {
+			float ridgenoise = NoisePerlin3D(noise_ridge->np, p.X, y, p.Y, seed);
+			if (ridgenoise * (float)(y * y) < 15.0)
+				break;
+			y--;
+		}
+	}
+
+	return y + b->top_depth;
 }
 
 
@@ -169,12 +185,8 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	generateTerrain();
 	carveRidges();
 	
-	//carveRivers();
-
-	
 	generateCaves(stone_surface_max_y);
 	addTopNodes();
-	growGrass();	
 	//v3s16 central_area_size = node_max - node_min + v3s16(1,1,1);
 
 	if (flags & MG_DUNGEONS) {
@@ -193,7 +205,8 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-	//setLighting(node_min, node_max, 0xFF);
+	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+	//			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
 
 	this->generating = false;
 }
@@ -256,7 +269,7 @@ float MapgenV7::baseTerrainLevelAtPoint(int x, int z) {
 }
 
 
-float MapgenV7::baseTerrainLevelFromMap(int index) {	
+float MapgenV7::baseTerrainLevelFromMap(int index) {
 	float terrain_mod  = noise_terrain_mod->result[index];
 	float hselect      = noise_height_select->result[index];
 	float terrain_base = noise_terrain_base->result[index];
@@ -399,12 +412,12 @@ void MapgenV7::addTopNodes() {
 	v3s16 em = vm->m_area.getExtent();
 	s16 ntopnodes;
 	u32 index = 0;
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = bmgr->biomes[biomemap[index]];
 		
-		// First, add top nodes below the ridge
+		//////////////////// First, add top nodes below the ridge
 		s16 y = ridge_heightmap[index];
 		
 		// This cutoff is good enough, but not perfect.
@@ -415,7 +428,7 @@ void MapgenV7::addTopNodes() {
 			y = node_max.Y; // Let's see if we can still go downward anyway
 			u32 vi = vm->m_area.index(x, y, z);
 			content_t c = vm->m_data[vi].getContent();
-			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
+			if (ndef->get(c).walkable)
 				continue;
 		}
 		
@@ -425,15 +438,12 @@ void MapgenV7::addTopNodes() {
 		u32 i = vm->m_area.index(x, y, z);
 		for (; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[i].getContent();
-			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
-			//if (vm->m_data[i].getContent() != CONTENT_AIR)
+			if (ndef->get(c).walkable)
 				break;
 			vm->m_area.add_y(em, i, -1);
 		}
 
-		
-
-		if (y != node_min.Y - 1) {
+		if (y != node_min.Y - 1 && y >= water_level) {
 			ridge_heightmap[index] = y; //update ridgeheight
 			ntopnodes = biome->top_depth;
 			for (; y <= node_max.Y && ntopnodes; y++) {
@@ -441,17 +451,28 @@ void MapgenV7::addTopNodes() {
 				vm->m_data[i] = MapNode(biome->c_top);
 				vm->m_area.add_y(em, i, 1);
 			}
-			//heightmap[index] = y;
+			// If dirt, grow grass on it.
+			if (vm->m_data[i].getContent() == CONTENT_AIR) {
+				vm->m_area.add_y(em, i, -1);
+				if (vm->m_data[i].getContent() == c_dirt)
+					vm->m_data[i] = MapNode(c_dirt_with_grass);
+			}
 		}
 		
-		// Now, add top nodes on top of the ridge
+		//////////////////// Now, add top nodes on top of the ridge
 		y = heightmap[index];
+		if (y > node_max.Y) {
+			y = node_max.Y; // Let's see if we can still go downward anyway
+			u32 vi = vm->m_area.index(x, y, z);
+			content_t c = vm->m_data[vi].getContent();
+			if (ndef->get(c).walkable)
+				continue;
+		}
 
 		i = vm->m_area.index(x, y, z);
 		for (; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[i].getContent();
-			if (c == biome->c_filler || c == c_stone)//c != CONTENT_AIR)
-			//if (vm->m_data[i].getContent() != CONTENT_AIR)
+			if (ndef->get(c).walkable)
 				break;
 			vm->m_area.add_y(em, i, -1);
 		}
@@ -467,38 +488,16 @@ void MapgenV7::addTopNodes() {
 				vm->m_data[i] = MapNode(biome->c_top);
 				vm->m_area.add_y(em, i, 1);
 			}
-		}
-	}
-}
-
-
-void MapgenV7::growGrass() {
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++) {
-		// Find the lowest surface to which enough light ends up to make
-		// grass grow.  Basically just wait until not air and not leaves.
-		s16 surface_y = 0;
-		{
-			v3s16 em = vm->m_area.getExtent();
-			u32 i = vm->m_area.index(x, node_max.Y, z);
-			s16 y;
-			// Go to ground level
-			for (y = node_max.Y; y >= node_min.Y; y--) {
-				MapNode &n = vm->m_data[i];
-				if (ndef->get(n).param_type != CPT_LIGHT ||
-					ndef->get(n).liquid_type != LIQUID_NONE)
-					break;
+			// If dirt, grow grass on it.
+			if (vm->m_data[i].getContent() == CONTENT_AIR) {
 				vm->m_area.add_y(em, i, -1);
+				if (vm->m_data[i].getContent() == c_dirt)
+					vm->m_data[i] = MapNode(c_dirt_with_grass);
 			}
-			surface_y = (y >= node_min.Y) ? y : node_min.Y;
 		}
-
-		u32 i = vm->m_area.index(x, surface_y, z);
-		MapNode *n = &vm->m_data[i];
-		if (n->getContent() == c_dirt && surface_y >= water_level - 20)
-			n->setContent(c_dirt_with_grass);
 	}
 }
+
 
 #include "mapgen_v6.h"
 void MapgenV7::generateCaves(int max_stone_y) {
