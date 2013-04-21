@@ -249,6 +249,7 @@ set(common_SRCS
 	mapgen_math.cpp
 	treegen.cpp
 	dungeongen.cpp
+	cavegen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
 	collision.cpp
@@ -328,6 +329,7 @@ set(minetest_SRCS
 	particles.cpp
 	clientobject.cpp
 	chat.cpp
+	hud.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp

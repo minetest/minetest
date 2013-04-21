@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "map.h"
 #include "main.h"
+#include "util/numeric.h"
 #include "log.h"
 
 /////////////////// Mapgen Indev perlin noise (default values - not used, from config or defaultsettings)
@@ -154,9 +155,6 @@ void MapgenIndev::calculateNoise() {
 			z + 0.5 * noiseindev_float_islands3->npindev->spread.Z * farscale(noiseindev_float_islands3->npindev->farspread, x, z));
 		noiseindev_float_islands3->transformNoiseMapFarScale(x, y, z);
 
-	}
-	
-	if (!(flags & MG_FLAT)) {
 		noiseindev_mud->perlinMap2D(
 			x + 0.5 * noiseindev_mud->npindev->spread.X * farscale(noiseindev_mud->npindev->farspread, x, y, z),
 			z + 0.5 * noiseindev_mud->npindev->spread.Z * farscale(noiseindev_mud->npindev->farspread, x, y, z));
@@ -256,28 +254,66 @@ float MapgenIndev::getMudAmount(int index) {
 	return noiseindev_mud->result[index];
 }
 
-void MapgenIndev::defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave) {
-	cave.min_tunnel_diameter = 2;
-	cave.max_tunnel_diameter = ps.range(2,6);
-	cave.dswitchint = ps.range(1,14);
-	cave.flooded = large_cave && ps.range(0,4);
-	if(large_cave){
-		cave.part_max_length_rs = ps.range(2,4);
-		if (node_min.Y < -100 && !ps.range(0, farscale(0.2, node_min.X,node_min.Y,node_min.Z)*30)) { //huge
-			cave.flooded = !ps.range(0, 3);
-			cave.tunnel_routepoints = ps.range(5, 30);
-			cave.min_tunnel_diameter = 30;
-			cave.max_tunnel_diameter = ps.range(40, ps.range(80,200));
+void MapgenIndev::generateCaves(int max_stone_y) {
+	float cave_amount = NoisePerlin2D(np_cave, node_min.X, node_min.Y, seed);
+	int volume_nodes = (node_max.X - node_min.X + 1) *
+					   (node_max.Y - node_min.Y + 1) * MAP_BLOCKSIZE;
+	cave_amount = MYMAX(0.0, cave_amount);
+	u32 caves_count = cave_amount * volume_nodes / 50000;
+	u32 bruises_count = 1;
+	PseudoRandom ps(blockseed + 21343);
+	PseudoRandom ps2(blockseed + 1032);
+	
+	if (ps.range(1, 6) == 1)
+		bruises_count = ps.range(0, ps.range(0, 2));
+	
+	if (getBiome(v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
+		caves_count   /= 3;
+		bruises_count /= 3;
+	}
+	
+	for (u32 i = 0; i < caves_count + bruises_count; i++) {
+		bool large_cave = (i >= caves_count);
+		CaveIndev cave(this, &ps, &ps2, node_min, large_cave,
+						c_water_source, c_lava_source);
+
+		cave.makeCave(node_min, node_max, max_stone_y);
+	}
+}
+
+CaveIndev::CaveIndev(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2,
+				v3s16 node_min, bool is_large_cave,
+				content_t c_water, content_t c_lava) {
+	this->vm = mg->vm;
+	this->water_level = mg->water_level;
+	this->large_cave = is_large_cave;
+	this->ps  = ps;
+	this->ps2 = ps2;
+	this->c_water_source = c_water;
+	this->c_lava_source  = c_lava;
+
+	min_tunnel_diameter = 2;
+	max_tunnel_diameter = ps->range(2,6);
+	dswitchint = ps->range(1,14);
+	flooded = large_cave && ps->range(0,4);
+	if (large_cave) {
+		part_max_length_rs = ps->range(2,4);
+		float scale = farscale(0.2, node_min.X, node_min.Y, node_min.Z);
+		if (node_min.Y < -100 && !ps->range(0, scale * 30)) { //huge
+			flooded = !ps->range(0, 3);
+			tunnel_routepoints = ps->range(5, 30);
+			min_tunnel_diameter = 30;
+			max_tunnel_diameter = ps->range(40, ps->range(80, 200));
 		} else {
-			cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
-			cave.min_tunnel_diameter = 5;
-			cave.max_tunnel_diameter = ps.range(7, ps.range(8,24));
+			tunnel_routepoints = ps->range(5, ps->range(15,30));
+			min_tunnel_diameter = 5;
+			max_tunnel_diameter = ps->range(7, ps->range(8,24));
 		}
 	} else {
-		cave.part_max_length_rs = ps.range(2,9);
-		cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
+		part_max_length_rs = ps->range(2,9);
+		tunnel_routepoints = ps->range(10, ps->range(15,30));
 	}
-	cave.large_cave_is_flat = (ps.range(0,1) == 0);
+	large_cave_is_flat = (ps->range(0,1) == 0);
 }
 
 /*
@@ -365,7 +401,8 @@ void MapgenIndev::generateFloatIslands(int min_y) {
 	}
 }
 
-void MapgenIndev::generateSomething() {
+void MapgenIndev::generateExperimental() {
 	int float_islands = g_settings->getS16("mgindev_float_islands");
-	if(float_islands) generateFloatIslands(float_islands);
+	if (float_islands)
+		generateFloatIslands(float_islands);
 }

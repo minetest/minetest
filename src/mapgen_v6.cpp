@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "emerge.h"
 #include "dungeongen.h"
+#include "cavegen.h"
 #include "treegen.h"
 #include "mapgen_v6.h"
 
@@ -423,7 +424,7 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate general ground level to full area
 	stone_surface_max_y = generateGround();
 
-	generateSomething();
+	generateExperimental();
 
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
 	// Limit dirt flow area by 1 because mud is flown into neighbors.
@@ -927,35 +928,10 @@ void MapgenV6::growGrass() {
 }
 
 
-void MapgenV6::defineCave(Cave &cave, PseudoRandom ps,
-						 v3s16 node_min, bool large_cave) {
-	cave.min_tunnel_diameter = 2;
-	cave.max_tunnel_diameter = ps.range(2,6);
-	cave.dswitchint = ps.range(1,14);
-	cave.flooded = true; //large_cave && ps.range(0,4);
-	if (large_cave){
-		cave.part_max_length_rs = ps.range(2,4);
-		cave.tunnel_routepoints = ps.range(5, ps.range(15,30));
-		cave.min_tunnel_diameter = 5;
-		cave.max_tunnel_diameter = ps.range(7, ps.range(8,24));
-	} else {
-		cave.part_max_length_rs = ps.range(2,9);
-		cave.tunnel_routepoints = ps.range(10, ps.range(15,30));
-	}
-	cave.large_cave_is_flat = (ps.range(0,1) == 0);
-}
-
-
 void MapgenV6::generateCaves(int max_stone_y) {
-	// 24ms @cs=8
-	//TimeTaker timer1("caves");
-	
-	/*double cave_amount = 6.0 + 6.0 * noise2d_perlin(
-		0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
-		data->seed+34329, 3, 0.50);*/
-	const s16 max_spread_amount = MAP_BLOCKSIZE;
 	float cave_amount = NoisePerlin2D(np_cave, node_min.X, node_min.Y, seed);
-
+	int volume_nodes = (node_max.X - node_min.X + 1) *
+					   (node_max.Y - node_min.Y + 1) * MAP_BLOCKSIZE;
 	cave_amount = MYMAX(0.0, cave_amount);
 	u32 caves_count = cave_amount * volume_nodes / 50000;
 	u32 bruises_count = 1;
@@ -970,238 +946,10 @@ void MapgenV6::generateCaves(int max_stone_y) {
 		bruises_count /= 3;
 	}
 	
-	for(u32 jj = 0; jj < caves_count + bruises_count; jj++) {
-		/*int avg_height = (int)
-			  ((base_rock_level_2d(data->seed, v2s16(node_min.X, node_min.Z)) +
-				base_rock_level_2d(data->seed, v2s16(node_max.X, node_max.Z))) / 2);
-		if ((node_max.Y + node_min.Y) / 2 > avg_height)
-			break;*/
+	for (u32 i = 0; i < caves_count + bruises_count; i++) {
+		bool large_cave = (i >= caves_count);
+		CaveV6 cave(this, &ps, &ps2, large_cave, c_water_source, c_lava_source);
 
-		bool large_cave = (jj >= caves_count);
-
-		Cave cave;
-		defineCave(cave, ps, node_min, large_cave);
-
-		v3f main_direction(0,0,0);
-
-		// Allowed route area size in nodes
-		v3s16 ar = central_area_size;
-
-		// Area starting point in nodes
-		v3s16 of = node_min;
-
-		// Allow a bit more
-		//(this should be more than the maximum radius of the tunnel)
-		s16 insure = 10;
-		s16 more = max_spread_amount - cave.max_tunnel_diameter / 2 - insure;
-		ar += v3s16(1,0,1) * more * 2;
-		of -= v3s16(1,0,1) * more;
-
-		s16 route_y_min = 0;
-		// Allow half a diameter + 7 over stone surface
-		s16 route_y_max = -of.Y + max_stone_y + cave.max_tunnel_diameter/2 + 7;
-
-		// Limit maximum to area
-		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
-
-		if(large_cave)
-		{
-			s16 min = 0;
-			if(node_min.Y < water_level && node_max.Y > water_level)
-			{
-				min = water_level - cave.max_tunnel_diameter/3 - of.Y;
-				route_y_max = water_level + cave.max_tunnel_diameter/3 - of.Y;
-			}
-			route_y_min = ps.range(min, min + cave.max_tunnel_diameter);
-			route_y_min = rangelim(route_y_min, 0, route_y_max);
-		}
-
-		s16 route_start_y_min = route_y_min;
-		s16 route_start_y_max = route_y_max;
-
-		route_start_y_min = rangelim(route_start_y_min, 0, ar.Y-1);
-		route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y-1);
-
-		// Randomize starting position
-		v3f orp(
-			(float)(ps.next()%ar.X)+0.5,
-			(float)(ps.range(route_start_y_min, route_start_y_max))+0.5,
-			(float)(ps.next()%ar.Z)+0.5
-		);
-
-		v3s16 startp(orp.X, orp.Y, orp.Z);
-		startp += of;
-
-		MapNode airnode(CONTENT_AIR);
-		MapNode waternode(c_water_source);
-		MapNode lavanode(c_lava_source);
-
-		/*
-			Generate some tunnel starting from orp
-		*/
-
-		for(u16 j=0; j<cave.tunnel_routepoints; j++)
-		{
-			if(j%cave.dswitchint==0 && large_cave == false)
-			{
-				main_direction = v3f(
-					((float)(ps.next()%20)-(float)10)/10,
-					((float)(ps.next()%20)-(float)10)/30,
-					((float)(ps.next()%20)-(float)10)/10
-				);
-				main_direction *= (float)ps.range(0, 10)/10;
-			}
-
-			// Randomize size
-			s16 min_d = cave.min_tunnel_diameter;
-			s16 max_d = cave.max_tunnel_diameter;
-			s16 rs = ps.range(min_d, max_d);
-
-			// Every second section is rough
-			bool randomize_xz = (ps2.range(1,2) == 1);
-
-			v3s16 maxlen;
-			if(large_cave)
-			{
-				maxlen = v3s16(
-					rs*cave.part_max_length_rs,
-					rs*cave.part_max_length_rs/2,
-					rs*cave.part_max_length_rs
-				);
-			}
-			else
-			{
-				maxlen = v3s16(
-					rs*cave.part_max_length_rs,
-					ps.range(1, rs*cave.part_max_length_rs),
-					rs*cave.part_max_length_rs
-				);
-			}
-
-			v3f vec;
-
-			vec = v3f(
-				(float)(ps.next()%(maxlen.X*1))-(float)maxlen.X/2,
-				(float)(ps.next()%(maxlen.Y*1))-(float)maxlen.Y/2,
-				(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
-			);
-
-			// Jump downward sometimes
-			if(!large_cave && ps.range(0,12) == 0)
-			{
-				vec = v3f(
-					(float)(ps.next()%(maxlen.X*1))-(float)maxlen.X/2,
-					(float)(ps.next()%(maxlen.Y*2))-(float)maxlen.Y*2/2,
-					(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
-				);
-			}
-
-			/*if(large_cave){
-				v3f p = orp + vec;
-				s16 h = find_ground_level_clever(vmanip,
-						v2s16(p.X, p.Z), ndef);
-				route_y_min = h - rs/3;
-				route_y_max = h + rs;
-			}*/
-
-			vec += main_direction;
-
-			v3f rp = orp + vec;
-			if(rp.X < 0)
-				rp.X = 0;
-			else if(rp.X >= ar.X)
-				rp.X = ar.X-1;
-			if(rp.Y < route_y_min)
-				rp.Y = route_y_min;
-			else if(rp.Y >= route_y_max)
-				rp.Y = route_y_max-1;
-			if(rp.Z < 0)
-				rp.Z = 0;
-			else if(rp.Z >= ar.Z)
-				rp.Z = ar.Z-1;
-			vec = rp - orp;
-
-			float veclen = vec.getLength();
-			// As odd as it sounds, veclen is *exactly*
-			// 0.0 sometimes, causing a FPE
-			if (veclen == 0.0)
-				veclen = 1.0;
-
-			for(float f=0; f<1.0; f+=1.0/veclen)
-			{
-				v3f fp = orp + vec * f;
-				fp.X += 0.1*ps.range(-10,10);
-				fp.Z += 0.1*ps.range(-10,10);
-				v3s16 cp(fp.X, fp.Y, fp.Z);
-
-				s16 d0 = -rs/2;
-				s16 d1 = d0 + rs;
-				if(randomize_xz){
-					d0 += ps.range(-1,1);
-					d1 += ps.range(-1,1);
-				}
-				for(s16 z0=d0; z0<=d1; z0++)
-				{
-					s16 si = rs/2 - MYMAX(0, abs(z0)-rs/7-1);
-					for(s16 x0=-si-ps.range(0,1); x0<=si-1+ps.range(0,1); x0++)
-					{
-						s16 maxabsxz = MYMAX(abs(x0), abs(z0));
-						s16 si2 = rs/2 - MYMAX(0, maxabsxz-rs/7-1);
-						for(s16 y0=-si2; y0<=si2; y0++)
-						{
-							/*// Make better floors in small caves
-							if(y0 <= -rs/2 && rs<=7)
-								continue;*/
-							if (cave.large_cave_is_flat) {
-								// Make large caves not so tall
-								if (rs > 7 && abs(y0) >= rs/3)
-									continue;
-							}
-
-							s16 z = cp.Z + z0;
-							s16 y = cp.Y + y0;
-							s16 x = cp.X + x0;
-							v3s16 p(x,y,z);
-							p += of;
-
-							if(vm->m_area.contains(p) == false)
-								continue;
-
-							u32 i = vm->m_area.index(p);
-
-							if(large_cave) {
-								if (cave.flooded && full_node_min.Y < water_level &&
-									full_node_max.Y > water_level) {
-									if (p.Y <= water_level)
-										vm->m_data[i] = waternode;
-									else
-										vm->m_data[i] = airnode;
-								} else if (cave.flooded && full_node_max.Y < water_level) {
-									if (p.Y < startp.Y - 2)
-										vm->m_data[i] = lavanode;
-									else
-										vm->m_data[i] = airnode;
-								} else {
-									vm->m_data[i] = airnode;
-								}
-							} else {
-								// Don't replace air or water or lava or ignore
-								if (vm->m_data[i].getContent() == CONTENT_IGNORE ||
-									vm->m_data[i].getContent() == CONTENT_AIR ||
-									vm->m_data[i].getContent() == c_water_source ||
-									vm->m_data[i].getContent() == c_lava_source)
-									continue;
-
-								vm->m_data[i] = airnode;
-
-								// Set tunnel flag
-								vm->m_flags[i] |= VMANIP_FLAG_CAVE;
-							}
-						}
-					}
-				}
-			}
-			orp = rp;
-		}
+		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
