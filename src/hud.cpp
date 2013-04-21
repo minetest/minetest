@@ -297,7 +297,19 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 
 
 void Hud::drawCrosshair() {
-	if (player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) {
+	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE))
+		return;
+	
+	ITextureSource *tsrc = gamedef->getTextureSource();
+	if (tsrc->isKnownSourceImage("crosshair.png")) {
+		video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+		v2u32 size  = crosshair->getOriginalSize();
+		v2s32 lsize = v2s32(displaycenter.X - (size.X / 2),
+							displaycenter.Y - (size.Y / 2));
+		driver->draw2DImage(crosshair, lsize,
+				core::rect<s32>(0, 0, size.X, size.Y),
+				0, crosshair_argb, true);
+	} else {
 		driver->draw2DLine(displaycenter - v2s32(10, 0),
 				displaycenter + v2s32(10, 0), crosshair_argb);
 		driver->draw2DLine(displaycenter - v2s32(0, 10),
