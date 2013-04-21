@@ -1084,8 +1084,8 @@ void ServerEnvironment::step(float dtime)
 		{
 			v3s16 p = *i;
 
-			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
-					<<") became inactive"<<std::endl;*/
+			/* infostream<<"Server: Block " << PP(p)
+				<< " became inactive"<<std::endl; */
 			
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
@@ -1104,9 +1104,6 @@ void ServerEnvironment::step(float dtime)
 				i != blocks_added.end(); ++i)
 		{
 			v3s16 p = *i;
-			
-			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
-					<<") became active"<<std::endl;*/
 
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL){
@@ -1117,6 +1114,8 @@ void ServerEnvironment::step(float dtime)
 			}
 
 			activateBlock(block);
+			/* infostream<<"Server: Block " << PP(p)
+				<< " became active"<<std::endl; */
 		}
 	}
 
@@ -1850,17 +1849,17 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 							<<" Forcing delete."<<std::endl;
 					force_delete = true;
 				} else {
-					u16 new_id = pending_delete ? id : 0;
 					// If static counterpart already exists, remove it first.
 					// This shouldn't happen, but happens rarely for some
 					// unknown reason. Unsuccessful attempts have been made to
 					// find said reason.
-					if(new_id && block->m_static_objects.m_active.find(new_id) != block->m_static_objects.m_active.end()){
+					if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
 						infostream<<"ServerEnv: WARNING: Performing hack #83274"
 								<<std::endl;
-						block->m_static_objects.remove(new_id);
+						block->m_static_objects.remove(id);
 					}
-					block->m_static_objects.insert(new_id, s_obj);
+					//store static data
+					block->m_static_objects.insert(0, s_obj);
 					
 					// Only mark block as modified if data changed considerably
 					if(shall_be_written)
