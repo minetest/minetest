@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 
 #define AVERAGE_MUD_AMOUNT 4
-#define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
 enum BiomeType
 {
@@ -42,16 +41,6 @@ extern NoiseParams nparams_v6_def_cave;
 extern NoiseParams nparams_v6_def_humidity;
 extern NoiseParams nparams_v6_def_trees;
 extern NoiseParams nparams_v6_def_apple_trees;
-
-struct Cave {
-	s16 min_tunnel_diameter;
-	s16 max_tunnel_diameter;
-	int dswitchint;
-	u16 tunnel_routepoints;
-	int part_max_length_rs;
-	bool large_cave_is_flat;
-	bool flooded;
-};
 
 struct MapgenV6Params : public MapgenParams {
 	float freq_desert;
@@ -166,10 +155,8 @@ public:
 	void addDirtGravelBlobs();
 	void growGrass();
 	void placeTreesAndJungleGrass();
-	virtual void defineCave(Cave &cave, PseudoRandom ps,
-							v3s16 node_min, bool large_cave);
-	void generateCaves(int max_stone_y);
-	virtual void generateSomething() {}; //for next mapgen
+	virtual void generateCaves(int max_stone_y);
+	virtual void generateExperimental() {}
 };
 
 struct MapgenFactoryV6 : public MapgenFactory {

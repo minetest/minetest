@@ -27,6 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_DIR_TOP_BOTTOM 2
 #define HUD_DIR_BOTTOM_TOP 3
 
+#define HUD_CORNER_UPPER  0
+#define HUD_CORNER_LOWER  1
+#define HUD_CORNER_CENTER 2
+
 class Player;
 
 enum HudElementType {
@@ -102,7 +106,7 @@ public:
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
-	void drawStatbar(v2s32 upperleftpos, std::string texture, s32 count);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count);
 	
 	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
 	void resizeHotbar();
