@@ -48,7 +48,8 @@ enum HudElementStat {
 	HUD_STAT_NUMBER,
 	HUD_STAT_ITEM,
 	HUD_STAT_DIR,
-	HUD_STAT_ALIGN
+	HUD_STAT_ALIGN,
+	HUD_STAT_OFFSET
 };
 
 struct HudElement {
@@ -61,6 +62,7 @@ struct HudElement {
 	u32 item;
 	u32 dir;
 	v2f align;
+	v2f offset;
 };
 
 
@@ -108,7 +110,7 @@ public:
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset);
 	
 	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
 	void resizeHotbar();
