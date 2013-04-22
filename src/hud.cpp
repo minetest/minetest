@@ -189,6 +189,7 @@ void Hud::drawLuaElements() {
 				v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
 				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
 				rect += offset;
+				rect += v2s32(e->offset.X, e->offset.Y);
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -202,11 +203,13 @@ void Hud::drawLuaElements() {
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
-				font->draw(text.c_str(), size + pos + offset, color);
+				v2s32 offs(e->offset.X, e->offset.Y);
+				font->draw(text.c_str(), size + pos + offset + offs, color);
 				break; }
-			case HUD_ELEM_STATBAR:
-				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number);
-				break;
+			case HUD_ELEM_STATBAR: {
+				v2s32 offs(e->offset.X, e->offset.Y);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs);
+				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
 				drawItem(pos, hotbar_imagesize, e->number, inv, e->item, e->dir);
@@ -219,7 +222,7 @@ void Hud::drawLuaElements() {
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count) {
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset) {
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
@@ -233,6 +236,8 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 	v2s32 p = pos;
 	if (corner & HUD_CORNER_LOWER)
 		p -= srcd.Height;
+
+	p += offset;
 
 	v2s32 steppos;
 	switch (drawdir) {
@@ -285,7 +290,7 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	
 	drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
 	drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
-				"heart.png", halfheartcount);
+				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
 

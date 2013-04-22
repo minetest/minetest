@@ -453,6 +453,7 @@ enum ToClientCommand
 		u32 item
 		u32 dir
 		v2f1000 align
+		v2f1000 offset
 	*/
 
 	TOCLIENT_HUDRM = 0x50,

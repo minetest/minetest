@@ -48,6 +48,7 @@ struct EnumString es_HudElementStat[] =
 	{HUD_STAT_ITEM,   "item"},
 	{HUD_STAT_DIR,    "direction"},
 	{HUD_STAT_ALIGN,  "alignment"},
+	{HUD_STAT_OFFSET, "offset"},
 	{0, NULL},
 };
 
@@ -756,6 +757,10 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
 
+	lua_getfield(L, 2, "offset");
+	elem->offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
 	u32 id = get_server(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {
 		delete elem;
@@ -841,6 +846,9 @@ int ObjectRef::l_hud_change(lua_State *L)
 		case HUD_STAT_ALIGN:
 			e->align = read_v2f(L, 4);
 			value = &e->align;
+		case HUD_STAT_OFFSET:
+			e->offset = read_v2f(L, 4);
+			value = &e->offset;
 	}
 
 	get_server(L)->hudChange(player, id, stat, value);

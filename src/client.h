@@ -231,6 +231,7 @@ struct ClientEvent
 			u32 item;
 			u32 dir;
 			v2f *align;
+			v2f *offset;
 		} hudadd;
 		struct{
 			u32 id;
