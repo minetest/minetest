@@ -198,6 +198,7 @@ struct ClientEvent
 			f32 expirationtime;
 			f32 size;
 			bool collisiondetection;
+			bool vertical;
 			std::string *texture;
 		} spawn_particle;
 		struct{
@@ -214,6 +215,7 @@ struct ClientEvent
 			f32 minsize;
 			f32 maxsize;
 			bool collisiondetection;
+			bool vertical;
 			std::string *texture;
 			u32 id;
 		} add_particlespawner;

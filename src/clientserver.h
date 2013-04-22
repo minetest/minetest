@@ -412,6 +412,7 @@ enum ToClientCommand
 		f1000 expirationtime
 		f1000 size
 		u8 bool collisiondetection
+		u8 bool vertical
 		u32 len
 		u8[len] texture
 	*/
@@ -432,6 +433,7 @@ enum ToClientCommand
 		f1000 minsize
 		f1000 maxsize
 		u8 bool collisiondetection
+		u8 bool vertical
 		u32 len
 		u8[len] texture
 		u32 id

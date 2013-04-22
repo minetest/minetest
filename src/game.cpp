@@ -2291,6 +2291,7 @@ void the_game(
 						 event.spawn_particle.expirationtime,
 						 event.spawn_particle.size,
 						 event.spawn_particle.collisiondetection,
+						 event.spawn_particle.vertical,
 						 texture,
 						 v2f(0.0, 0.0),
 						 v2f(1.0, 1.0));
@@ -2315,6 +2316,7 @@ void the_game(
 						 event.add_particlespawner.minsize,
 						 event.add_particlespawner.maxsize,
 						 event.add_particlespawner.collisiondetection,
+						 event.add_particlespawner.vertical,
 						 texture,
 						 event.add_particlespawner.id);
 				}

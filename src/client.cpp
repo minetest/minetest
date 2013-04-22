@@ -2001,6 +2001,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		float expirationtime = readF1000(is);
 		float size = readF1000(is);
 		bool collisiondetection = readU8(is);
+		bool vertical = readU8(is);
 		std::string texture = deSerializeLongString(is);
 
 		ClientEvent event;
@@ -2013,6 +2014,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.spawn_particle.size = size;
 		event.spawn_particle.collisiondetection =
 				collisiondetection;
+		event.spawn_particle.vertical = vertical;
 		event.spawn_particle.texture = new std::string(texture);
 
 		m_client_event_queue.push_back(event);
@@ -2035,6 +2037,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		float minsize = readF1000(is);
 		float maxsize = readF1000(is);
 		bool collisiondetection = readU8(is);
+		bool vertical = readU8(is);
 		std::string texture = deSerializeLongString(is);
 		u32 id = readU32(is);
 
@@ -2055,6 +2058,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.add_particlespawner.minsize = minsize;
 		event.add_particlespawner.maxsize = maxsize;
 		event.add_particlespawner.collisiondetection = collisiondetection;
+		event.add_particlespawner.vertical = vertical;
 		event.add_particlespawner.texture = new std::string(texture);
 		event.add_particlespawner.id = id;
 

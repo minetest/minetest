@@ -22,85 +22,173 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "server.h"
 
-// add_particle(pos, velocity, acceleration, expirationtime,
-// 		size, collisiondetection, texture, player)
+// add_particle({pos=, velocity=, acceleration=, expirationtime=,
+// 		size=, collisiondetection=, vertical=, texture=, player=})
 // pos/velocity/acceleration = {x=num, y=num, z=num}
 // expirationtime = num (seconds)
 // size = num
+// collisiondetection = bool
+// vertical = bool
 // texture = e.g."default_wood.png"
 int ModApiParticles::l_add_particle(lua_State *L)
 {
 	// Get parameters
-	v3f pos = check_v3f(L, 1);
-	v3f vel = check_v3f(L, 2);
-	v3f acc = check_v3f(L, 3);
-	float expirationtime = luaL_checknumber(L, 4);
-	float size = luaL_checknumber(L, 5);
-	bool collisiondetection = lua_toboolean(L, 6);
-	std::string texture = luaL_checkstring(L, 7);
+	v3f pos, vel, acc;
+	    pos= vel= acc= v3f(0, 0, 0);
+	float expirationtime, size;
+	      expirationtime= size= 1;
+	bool collisiondetection, vertical;
+	     collisiondetection= vertical= false;
+	std::string texture = "";
+	const char *playername = "";
 
-	if (lua_gettop(L) == 8) // only spawn for a single player
+	if (lua_gettop(L) > 1) // deprecated
 	{
-		const char *playername = luaL_checkstring(L, 8);
-		getServer(L)->spawnParticle(playername,
-			pos, vel, acc, expirationtime,
-			size, collisiondetection, texture);
+		pos = check_v3f(L, 1);
+		vel = check_v3f(L, 2);
+		acc = check_v3f(L, 3);
+		expirationtime = luaL_checknumber(L, 4);
+		size = luaL_checknumber(L, 5);
+		collisiondetection = lua_toboolean(L, 6);
+		texture = luaL_checkstring(L, 7);
+		if (lua_gettop(L) == 8) // only spawn for a single player
+			playername = luaL_checkstring(L, 8);
 	}
-	else // spawn for all players
+	else if (lua_istable(L, 1))
+	{
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0)
+		{
+			const char *key = lua_tostring(L, -2);
+				  if(strcmp(key,"pos")==0){
+					pos=check_v3f(L, -1);
+			}else if(strcmp(key,"vel")==0){
+					vel=check_v3f(L, -1);
+			}else if(strcmp(key,"acc")==0){
+					acc=check_v3f(L, -1);
+			}else if(strcmp(key,"expirationtime")==0){
+					expirationtime=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"size")==0){
+					size=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"collisiondetection")==0){
+					collisiondetection=lua_toboolean(L, -1);
+			}else if(strcmp(key,"vertical")==0){
+					vertical=lua_toboolean(L, -1);
+			}else if(strcmp(key,"texture")==0){
+					texture=luaL_checkstring(L, -1);
+			}else if(strcmp(key,"playername")==0){
+					playername=luaL_checkstring(L, -1);
+			}
+			lua_pop(L, 1);
+		}
+	}
+	if (strcmp(playername, "")==0) // spawn for all players
 	{
 		getServer(L)->spawnParticleAll(pos, vel, acc,
-			expirationtime, size, collisiondetection, texture);
+			expirationtime, size, collisiondetection, vertical, texture);
+	}
+	else
+	{
+		getServer(L)->spawnParticle(playername,
+			pos, vel, acc, expirationtime,
+			size, collisiondetection, vertical, texture);
 	}
 	return 1;
 }
 
-// add_particlespawner(amount, time,
-//				minpos, maxpos,
-//				minvel, maxvel,
-//				minacc, maxacc,
-//				minexptime, maxexptime,
-//				minsize, maxsize,
-//				collisiondetection,
-//				texture,
-//				player)
+// add_particlespawner({amount=, time=,
+//				minpos=, maxpos=,
+//				minvel=, maxvel=,
+//				minacc=, maxacc=,
+//				minexptime=, maxexptime=,
+//				minsize=, maxsize=,
+//				collisiondetection=,
+//				vertical=,
+//				texture=,
+//				player=})
 // minpos/maxpos/minvel/maxvel/minacc/maxacc = {x=num, y=num, z=num}
 // minexptime/maxexptime = num (seconds)
 // minsize/maxsize = num
 // collisiondetection = bool
+// vertical = bool
 // texture = e.g."default_wood.png"
 int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
 	// Get parameters
-	u16 amount = luaL_checknumber(L, 1);
-	float time = luaL_checknumber(L, 2);
-	v3f minpos = check_v3f(L, 3);
-	v3f maxpos = check_v3f(L, 4);
-	v3f minvel = check_v3f(L, 5);
-	v3f maxvel = check_v3f(L, 6);
-	v3f minacc = check_v3f(L, 7);
-	v3f maxacc = check_v3f(L, 8);
-	float minexptime = luaL_checknumber(L, 9);
-	float maxexptime = luaL_checknumber(L, 10);
-	float minsize = luaL_checknumber(L, 11);
-	float maxsize = luaL_checknumber(L, 12);
-	bool collisiondetection = lua_toboolean(L, 13);
-	std::string texture = luaL_checkstring(L, 14);
+	u16 amount = 1;
+	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
+	    minpos= maxpos= minvel= maxvel= minacc= maxacc= v3f(0, 0, 0);
+	float time, minexptime, maxexptime, minsize, maxsize;
+	      time= minexptime= maxexptime= minsize= maxsize= 1;
+	bool collisiondetection, vertical;
+	     collisiondetection= vertical= false;
+	std::string texture = "";
+	const char *playername = "";
 
-	if (lua_gettop(L) == 15) // only spawn for a single player
+	if (lua_gettop(L) > 1) //deprecated
 	{
-		const char *playername = luaL_checkstring(L, 15);
-		u32 id = getServer(L)->addParticleSpawner(playername,
-							amount, time,
-							minpos, maxpos,
-							minvel, maxvel,
-							minacc, maxacc,
-							minexptime, maxexptime,
-							minsize, maxsize,
-							collisiondetection,
-							texture);
-		lua_pushnumber(L, id);
+		amount = luaL_checknumber(L, 1);
+		time = luaL_checknumber(L, 2);
+		minpos = check_v3f(L, 3);
+		maxpos = check_v3f(L, 4);
+		minvel = check_v3f(L, 5);
+		maxvel = check_v3f(L, 6);
+		minacc = check_v3f(L, 7);
+		maxacc = check_v3f(L, 8);
+		minexptime = luaL_checknumber(L, 9);
+		maxexptime = luaL_checknumber(L, 10);
+		minsize = luaL_checknumber(L, 11);
+		maxsize = luaL_checknumber(L, 12);
+		collisiondetection = lua_toboolean(L, 13);
+		texture = luaL_checkstring(L, 14);
+		if (lua_gettop(L) == 15) // only spawn for a single player
+			playername = luaL_checkstring(L, 15);
 	}
-	else // spawn for all players
+	else if (lua_istable(L, 1))
+	{
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0)
+		{
+			const char *key = lua_tostring(L, -2);
+			      if(strcmp(key,"amount")==0){
+					amount=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"time")==0){
+					time=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"minpos")==0){
+					minpos=check_v3f(L, -1);
+			}else if(strcmp(key,"maxpos")==0){
+					maxpos=check_v3f(L, -1);
+			}else if(strcmp(key,"minvel")==0){
+					minvel=check_v3f(L, -1);
+			}else if(strcmp(key,"maxvel")==0){
+					maxvel=check_v3f(L, -1);
+			}else if(strcmp(key,"minacc")==0){
+					minacc=check_v3f(L, -1);
+			}else if(strcmp(key,"maxacc")==0){
+					maxacc=check_v3f(L, -1);
+			}else if(strcmp(key,"minexptime")==0){
+					minexptime=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"maxexptime")==0){
+					maxexptime=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"minsize")==0){
+					minsize=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"maxsize")==0){
+					maxsize=luaL_checknumber(L, -1);
+			}else if(strcmp(key,"collisiondetection")==0){
+					collisiondetection=lua_toboolean(L, -1);
+			}else if(strcmp(key,"vertical")==0){
+					vertical=lua_toboolean(L, -1);
+			}else if(strcmp(key,"texture")==0){
+					texture=luaL_checkstring(L, -1);
+			}else if(strcmp(key,"playername")==0){
+					playername=luaL_checkstring(L, -1);
+			}
+			lua_pop(L, 1);
+		}
+	}
+	if (strcmp(playername, "")==0) //spawn for all players
 	{
 		u32 id = getServer(L)->addParticleSpawnerAll(	amount, time,
 							minpos, maxpos,
@@ -109,6 +197,21 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 							minexptime, maxexptime,
 							minsize, maxsize,
 							collisiondetection,
+							vertical,
+							texture);
+		lua_pushnumber(L, id);
+	}
+	else
+	{
+		u32 id = getServer(L)->addParticleSpawner(playername,
+							amount, time,
+							minpos, maxpos,
+							minvel, maxvel,
+							minacc, maxacc,
+							minexptime, maxexptime,
+							minsize, maxsize,
+							collisiondetection,
+							vertical,
 							texture);
 		lua_pushnumber(L, id);
 	}

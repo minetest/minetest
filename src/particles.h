@@ -42,6 +42,7 @@ class Particle : public scene::ISceneNode
 		float expirationtime,
 		float size,
 		bool collisiondetection,
+		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
 		v2f texsize
@@ -92,6 +93,7 @@ private:
 	float m_size;
 	u8 m_light;
 	bool m_collisiondetection;
+	bool m_vertical;
 };
 
 class ParticleSpawner
@@ -108,6 +110,7 @@ class ParticleSpawner
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection,
+		bool vertical,
 		video::ITexture *texture,
 		u32 id);
 
@@ -138,6 +141,7 @@ class ParticleSpawner
 	video::ITexture *m_texture;
 	std::vector<float> m_spawntimes;
 	bool m_collisiondetection;
+	bool m_vertical;
 };
 
 void allparticles_step (float dtime, ClientEnvironment &env);

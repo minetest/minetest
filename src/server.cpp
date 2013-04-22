@@ -3560,7 +3560,7 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string formspec,
 // Spawns a particle on peer with peer_id
 void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
-				std::string texture)
+				bool vertical, std::string texture)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3572,6 +3572,7 @@ void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f accelerat
 	writeF1000(os, expirationtime);
 	writeF1000(os, size);
 	writeU8(os,  collisiondetection);
+	writeU8(os, vertical);
 	os<<serializeLongString(texture);
 
 	// Make data buffer
@@ -3584,7 +3585,7 @@ void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f accelerat
 // Spawns a particle on all peers
 void Server::SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
-				std::string texture)
+				bool vertical, std::string texture)
 {
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
@@ -3597,14 +3598,14 @@ void Server::SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 			continue;
 
 		SendSpawnParticle(client->peer_id, pos, velocity, acceleration,
-			expirationtime, size, collisiondetection, texture);
+			expirationtime, size, collisiondetection, vertical, texture);
 	}
 }
 
 // Adds a ParticleSpawner on peer with peer_id
 void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
-	float minsize, float maxsize, bool collisiondetection, std::string texture, u32 id)
+	float minsize, float maxsize, bool collisiondetection, bool vertical, std::string texture, u32 id)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3624,6 +3625,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3
 	writeF1000(os, minsize);
 	writeF1000(os, maxsize);
 	writeU8(os,  collisiondetection);
+	writeU8(os, vertical);
 	os<<serializeLongString(texture);
 	writeU32(os, id);
 
@@ -3637,7 +3639,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3
 // Adds a ParticleSpawner on all peers
 void Server::SendAddParticleSpawnerAll(u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
-	float minsize, float maxsize, bool collisiondetection, std::string texture, u32 id)
+	float minsize, float maxsize, bool collisiondetection, bool vertical, std::string texture, u32 id)
 {
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
@@ -3651,7 +3653,7 @@ void Server::SendAddParticleSpawnerAll(u16 amount, float spawntime, v3f minpos, 
 
 		SendAddParticleSpawner(client->peer_id, amount, spawntime,
 			minpos, maxpos, minvel, maxvel, minacc, maxacc,
-			minexptime, maxexptime, minsize, maxsize, collisiondetection, texture, id);
+			minexptime, maxexptime, minsize, maxsize, collisiondetection, vertical, texture, id);
 	}
 }
 
@@ -5021,21 +5023,21 @@ void Server::notifyPlayers(const std::wstring msg)
 void Server::spawnParticle(const char *playername, v3f pos,
 		v3f velocity, v3f acceleration,
 		float expirationtime, float size, bool
-		collisiondetection, std::string texture)
+		collisiondetection, bool vertical, std::string texture)
 {
 	Player *player = m_env->getPlayer(playername);
 	if(!player)
 		return;
 	SendSpawnParticle(player->peer_id, pos, velocity, acceleration,
-			expirationtime, size, collisiondetection, texture);
+			expirationtime, size, collisiondetection, vertical, texture);
 }
 
 void Server::spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, std::string texture)
+		bool collisiondetection, bool vertical, std::string texture)
 {
 	SendSpawnParticleAll(pos, velocity, acceleration,
-			expirationtime, size, collisiondetection, texture);
+			expirationtime, size, collisiondetection, vertical, texture);
 }
 
 u32 Server::addParticleSpawner(const char *playername,
@@ -5045,7 +5047,7 @@ u32 Server::addParticleSpawner(const char *playername,
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture)
+		bool collisiondetection, bool vertical, std::string texture)
 {
 	Player *player = m_env->getPlayer(playername);
 	if(!player)
@@ -5067,7 +5069,7 @@ u32 Server::addParticleSpawner(const char *playername,
 	SendAddParticleSpawner(player->peer_id, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
-		collisiondetection, texture, id);
+		collisiondetection, vertical, texture, id);
 
 	return id;
 }
@@ -5078,7 +5080,7 @@ u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture)
+		bool collisiondetection, bool vertical, std::string texture)
 {
 	u32 id = 0;
 	for(;;) // look for unused particlespawner id
@@ -5096,7 +5098,7 @@ u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
 	SendAddParticleSpawnerAll(amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
-		collisiondetection, texture, id);
+		collisiondetection, vertical, texture, id);
 
 	return id;
 }
