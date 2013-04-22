@@ -409,6 +409,9 @@ ranging in value from 0 to 1.
 The name field is not yet used, but should contain a description of what the HUD element represents.
 The direction field is the direction in which something is drawn.
 0 draws from left to right, 1 draws from right to left, 2 draws from top to bottom, and 3 draws from bottom to top.
+The alignment field specifies how the item will be aligned. It ranges from -1 to 1,
+with 0 being the center, -1 is moved to the left/up, and 1 is to the right/down. Fractional
+values can be used.
 Below are the specific uses for fields in each type; fields not listed for that type are ignored.
 
 Note: Future revisions to the HUD API may be incompatible; the HUD API is still in the experimental stages.
@@ -418,6 +421,7 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
 	- scale: The scale of the image, with 1 being the original texture size.
              Only the X coordinate scale is used.
     - text: The name of the texture that is displayed.
+    - alignment: The alignment of the image.
 - text
     Displays text on the HUD.
     - scale: Defines the bounding rectangle of the text.
@@ -425,6 +429,7 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
     - text: The text to be displayed in the HUD element.
     - number: An integer containing the RGB value of the color used to draw the text.
               Specify 0xFFFFFF for white text, 0xFF0000 for red, and so on.
+    - alignment: The alignment of the text.
 - statbar
     Displays a horizontal bar made up of half-images.
     - text: The name of the texture that is used.
@@ -1857,4 +1862,6 @@ HUD Definition (hud_add, hud_get)
     ^ Selected item in inventory.  0 for no item selected.
     direction = 0,
     ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+    alignment = {x=0, y=0},
+    ^ See "HUD Element Types"
 }

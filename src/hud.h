@@ -47,7 +47,8 @@ enum HudElementStat {
 	HUD_STAT_TEXT,
 	HUD_STAT_NUMBER,
 	HUD_STAT_ITEM,
-	HUD_STAT_DIR
+	HUD_STAT_DIR,
+	HUD_STAT_ALIGN
 };
 
 struct HudElement {
@@ -59,6 +60,7 @@ struct HudElement {
 	u32 number;
 	u32 item;
 	u32 dir;
+	v2f align;
 };
 
 

@@ -186,6 +186,9 @@ void Hud::drawLuaElements() {
 				core::rect<s32> rect(0, 0, imgsize.Width  * e->scale.X,
 									       imgsize.Height * e->scale.X);
 				rect += pos;
+				v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
+				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
+				rect += offset;
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -195,7 +198,11 @@ void Hud::drawLuaElements() {
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				font->draw(narrow_to_wide(e->text).c_str(), size + pos, color);
+				std::wstring text = narrow_to_wide(e->text);
+				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
+				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
+				             (e->align.Y - 1.0) * (textsize.Height / 2));
+				font->draw(text.c_str(), size + pos + offset, color);
 				break; }
 			case HUD_ELEM_STATBAR:
 				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number);
