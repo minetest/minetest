@@ -2106,6 +2106,7 @@ void the_game(
 						delete event.hudadd.name;
 						delete event.hudadd.scale;
 						delete event.hudadd.text;
+						delete event.hudadd.align;
 						continue;
 					}
 					
@@ -2118,6 +2119,7 @@ void the_game(
 					e->number = event.hudadd.number;
 					e->item   = event.hudadd.item;
 					e->dir    = event.hudadd.dir;
+					e->align  = *event.hudadd.align;
 					
 					if (id == nhudelem)
 						player->hud.push_back(e);
@@ -2128,6 +2130,7 @@ void the_game(
 					delete event.hudadd.name;
 					delete event.hudadd.scale;
 					delete event.hudadd.text;
+					delete event.hudadd.align;
 				}
 				else if (event.type == CE_HUDRM)
 				{
@@ -2168,6 +2171,9 @@ void the_game(
 							break;
 						case HUD_STAT_DIR:
 							e->dir = event.hudchange.data;
+							break;
+						case HUD_STAT_ALIGN:
+							e->align = *event.hudchange.v2fdata;
 							break;
 					}
 					

@@ -2054,6 +2054,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u32 number       = readU32(is);
 		u32 item         = readU32(is);
 		u32 dir          = readU32(is);
+		v2f align        = readV2F1000(is);
 
 		ClientEvent event;
 		event.type = CE_HUDADD;
@@ -2066,6 +2067,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudadd.number = number;
 		event.hudadd.item   = item;
 		event.hudadd.dir    = dir;
+		event.hudadd.align  = new v2f(align);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUDRM)

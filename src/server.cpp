@@ -3616,6 +3616,7 @@ void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 	writeU32(os, form->number);
 	writeU32(os, form->item);
 	writeU32(os, form->dir);
+	writeV2F1000(os, form->align);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3650,6 +3651,7 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 	switch (stat) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
+		case HUD_STAT_ALIGN:
 			writeV2F1000(os, *(v2f *)value);
 			break;
 		case HUD_STAT_NAME:
