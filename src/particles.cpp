@@ -57,6 +57,7 @@ Particle::Particle(
 	float expirationtime,
 	float size,
 	bool collisiondetection,
+	bool vertical,
 	video::ITexture *texture,
 	v2f texpos,
 	v2f texsize
@@ -86,6 +87,7 @@ Particle::Particle(
 	m_player = player;
 	m_size = size;
 	m_collisiondetection = collisiondetection;
+	m_vertical = vertical;
 
 	// Irrlicht stuff
 	m_collisionbox = core::aabbox3d<f32>
@@ -199,8 +201,13 @@ void Particle::updateVertices()
 
 	for(u16 i=0; i<4; i++)
 	{
-		m_vertices[i].Pos.rotateYZBy(m_player->getPitch());
-		m_vertices[i].Pos.rotateXZBy(m_player->getYaw());
+		if (m_vertical) {
+			v3f ppos = m_player->getPosition()/BS;
+			m_vertices[i].Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
+		} else {
+			m_vertices[i].Pos.rotateYZBy(m_player->getPitch());
+			m_vertices[i].Pos.rotateXZBy(m_player->getYaw());
+		}
 		m_box.addInternalPoint(m_vertices[i].Pos);
 		m_vertices[i].Pos += m_pos*BS;
 	}
@@ -293,6 +300,7 @@ void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 		rand()%100/100., // expiration time
 		visual_size,
 		true,
+		false,
 		texture,
 		texpos,
 		texsize);
@@ -306,7 +314,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, video::ITexture *texture, u32 id)
+	bool collisiondetection, bool vertical, video::ITexture *texture, u32 id)
 {
 	m_gamedef = gamedef;
 	m_smgr = smgr;
@@ -324,6 +332,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_minsize = minsize;
 	m_maxsize = maxsize;
 	m_collisiondetection = collisiondetection;
+	m_vertical = vertical;
 	m_texture = texture;
 	m_time = 0;
 
@@ -372,6 +381,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment &env)
 					exptime,
 					size,
 					m_collisiondetection,
+					m_vertical,
 					m_texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0));
@@ -410,6 +420,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment &env)
 					exptime,
 					size,
 					m_collisiondetection,
+					m_vertical,
 					m_texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0));

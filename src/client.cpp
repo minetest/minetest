@@ -1844,6 +1844,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		float size = readF1000(is);
 		bool collisiondetection = readU8(is);
 		std::string texture = deSerializeLongString(is);
+		bool vertical = false;
+		try {
+			vertical = readU8(is);
+		} catch (...) {}
 
 		ClientEvent event;
 		event.type = CE_SPAWN_PARTICLE;
@@ -1855,6 +1859,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.spawn_particle.size = size;
 		event.spawn_particle.collisiondetection =
 				collisiondetection;
+		event.spawn_particle.vertical = vertical;
 		event.spawn_particle.texture = new std::string(texture);
 
 		m_client_event_queue.push_back(event);
@@ -1879,6 +1884,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		bool collisiondetection = readU8(is);
 		std::string texture = deSerializeLongString(is);
 		u32 id = readU32(is);
+		bool vertical = false;
+		try {
+			vertical = readU8(is);
+		} catch (...) {}
 
 		ClientEvent event;
 		event.type = CE_ADD_PARTICLESPAWNER;
@@ -1897,6 +1906,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.add_particlespawner.minsize = minsize;
 		event.add_particlespawner.maxsize = maxsize;
 		event.add_particlespawner.collisiondetection = collisiondetection;
+		event.add_particlespawner.vertical = vertical;
 		event.add_particlespawner.texture = new std::string(texture);
 		event.add_particlespawner.id = id;
 

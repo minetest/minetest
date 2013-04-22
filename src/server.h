@@ -389,11 +389,11 @@ public:
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	void spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	u32 addParticleSpawner(const char *playername,
 		u16 amount, float spawntime,
@@ -402,7 +402,7 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	u32 addParticleSpawnerAll(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -410,7 +410,7 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	void deleteParticleSpawner(const char *playername, u32 id);
 	void deleteParticleSpawnerAll(u32 id);
@@ -556,7 +556,7 @@ private:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture, u32 id);
+		bool collisiondetection, bool vertical, std::string texture, u32 id);
 
 	// Adds a ParticleSpawner on all peers
 	void SendAddParticleSpawnerAll(u16 amount, float spawntime,
@@ -565,7 +565,7 @@ private:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, std::string texture, u32 id);
+		bool collisiondetection, bool vertical, std::string texture, u32 id);
 
 	// Deletes ParticleSpawner on a single client
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
@@ -577,12 +577,12 @@ private:
 	void SendSpawnParticle(u16 peer_id,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	// Spawns particle on all clients
 	void SendSpawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, std::string texture);
+		bool collisiondetection, bool vertical, std::string texture);
 
 	/*
 		Something random
