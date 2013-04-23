@@ -97,6 +97,8 @@ void ChatBuffer::step(f32 dtime)
 
 void ChatBuffer::deleteOldest(u32 count)
 {
+	bool at_bottom = (m_scroll == getBottomScrollPos());
+
 	u32 del_unformatted = 0;
 	u32 del_formatted = 0;
 
@@ -120,6 +122,11 @@ void ChatBuffer::deleteOldest(u32 count)
 
 	m_unformatted.erase(m_unformatted.begin(), m_unformatted.begin() + del_unformatted);
 	m_formatted.erase(m_formatted.begin(), m_formatted.begin() + del_formatted);
+
+	if (at_bottom)
+		m_scroll = getBottomScrollPos();
+	else
+		scrollAbsolute(m_scroll - del_formatted);
 }
 
 void ChatBuffer::deleteByAge(f32 maxAge)
