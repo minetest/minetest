@@ -2097,7 +2097,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u32 id  = readU32(is);
 		u8 stat = (HudElementStat)readU8(is);
 		
-		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE)
+		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE
+		 || stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 			v2fdata = readV2F1000(is);
 		else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
 			sdata = deSerializeString(is);
