@@ -225,6 +225,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_pop(L, 1);
 
 	f.alpha = getintfield_default(L, index, "alpha", 255);
+	
+	bool usealpha = getboolfield_default(L, index,
+						"use_texture_alpha", false);
+	if (usealpha)
+		f.alpha = 0;
 
 	/* Other stuff */
 

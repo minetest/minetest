@@ -1649,6 +1649,7 @@ Node definition (register_node)
     ^ Special textures of node; used rarely (old field name: special_materials)
     ^ List can be shortened to needed length
     alpha = 255,
+    use_texture_alpha = false, -- Use texture's alpha channel
     post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
     paramtype = "none", -- See "Nodes"
     paramtype2 = "none", -- See "Nodes"

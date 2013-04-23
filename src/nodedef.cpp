@@ -658,15 +658,11 @@ public:
 				break;
 			}
 
-			u8 material_type = 0;
-			if(is_liquid){
-				if(f->alpha == 255)
-					material_type = TILE_MATERIAL_LIQUID_OPAQUE;
-				else
-					material_type = TILE_MATERIAL_LIQUID_TRANSPARENT;
-			} else{
-				material_type = TILE_MATERIAL_BASIC;
-			}
+			u8 material_type;
+			if (is_liquid)
+				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
+			else
+				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
