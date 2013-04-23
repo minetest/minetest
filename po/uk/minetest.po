@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-04-23 17:00+0200\n"
+"Last-Translator: ?????? ???????? <Martin_Devil@mail.ru>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
@@ -35,15 +37,15 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:215
 msgid "Enable All"
-msgstr ""
+msgstr "Увімкнути Все"
 
 #: src/guiConfigureWorld.cpp:222
 msgid "Disable All"
-msgstr ""
+msgstr "Вимкнути Усе"
 
 #: src/guiConfigureWorld.cpp:228
 msgid "depends on:"
-msgstr ""
+msgstr "залежить від:"
 
 #: src/guiConfigureWorld.cpp:240
 msgid "is required by:"
@@ -56,15 +58,15 @@ msgstr ""
 
 #: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
 msgid "Save"
-msgstr ""
+msgstr "Зберегти"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "Налаштування Збережено!"
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "Попередження: Помилкова конфігурація."
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -125,15 +127,15 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "Forward"
-msgstr ""
+msgstr "Уперед"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "Backward"
-msgstr ""
+msgstr "Назад"
 
 #: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Уліво"
 
 #: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
 msgid "Right"
@@ -141,7 +143,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:376
 msgid "Use"
-msgstr ""
+msgstr "Використовувата"
 
 #: src/guiKeyChangeMenu.cpp:377
 msgid "Jump"
@@ -149,11 +151,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:378
 msgid "Sneak"
-msgstr ""
+msgstr "Крастися"
 
 #: src/guiKeyChangeMenu.cpp:379
 msgid "Drop"
-msgstr ""
+msgstr "Викинути"
 
 #: src/guiKeyChangeMenu.cpp:380
 msgid "Inventory"
@@ -754,4 +756,4 @@ msgstr ""
 msgid ""
 "\n"
 "Check debug.txt for details."
-msgstr ""
+msgstr "Деталі у файлі debug.txt."
