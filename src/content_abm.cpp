@@ -51,11 +51,15 @@ public:
 		ServerMap *map = &env->getServerMap();
 		
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
+		content_t c_snow = ndef->getId("snow");
 		if(ndef->get(n_top).light_propagates &&
 				!ndef->get(n_top).isLiquid() &&
 				n_top.getLightBlend(env->getDayNightRatio(), ndef) >= 13)
 		{
-			n.setContent(ndef->getId("mapgen_dirt_with_grass"));
+			if(c_snow != CONTENT_IGNORE && n_top.getContent() == c_snow)
+				n.setContent(ndef->getId("dirt_with_snow"));
+			else
+				n.setContent(ndef->getId("mapgen_dirt_with_grass"));
 			map->addNodeWithEvent(p, n);
 		}
 	}
