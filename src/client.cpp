@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IMeshCache.h"
 #include "util/serialize.h"
 #include "config.h"
+#include "util/directiontables.h"
 
 #if USE_CURL
 #include <curl/curl.h>
@@ -2723,21 +2724,14 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool 
 	}
 	catch(InvalidPositionException &e){}
 	// Leading edge
-	try{
-		v3s16 p = blockpos + v3s16(-1,0,0);
-		addUpdateMeshTask(p, false, urgent);
+	for (int i=0;i<6;i++)
+	{
+		try{
+			v3s16 p = blockpos + g_6dirs[i];
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
 	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,-1,0);
-		addUpdateMeshTask(p, false, urgent);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,-1);
-		addUpdateMeshTask(p, false, urgent);
-	}
-	catch(InvalidPositionException &e){}
 }
 
 void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
