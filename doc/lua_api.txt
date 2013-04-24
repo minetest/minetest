@@ -1433,6 +1433,9 @@ Player-only: (no-op for other objects)
 - hud_change(id, stat, value): change a value of a previously added HUD element
   ^ element stat values: position, name, scale, text, number, item, dir
 - hud_get(id): gets the HUD element definition structure of the specified ID
+- hud_builtin_enable(what, flag): enable or disable built-in HUD items
+  ^ what: "hotbar", "healthbar", "crosshair", "wielditem"
+  ^ flag: true/false
 
 InvRef: Reference to an inventory
 methods:

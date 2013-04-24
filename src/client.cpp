@@ -2114,6 +2114,20 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudchange.data    = intdata;
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_HUD_BUILTIN_ENABLE)
+	{	
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u32 id = readU8(is);
+		bool flag = (readU8(is) ? true : false);
+
+		ClientEvent event;
+		event.type = CE_HUD_BUILTIN_ENABLE;
+		event.hudbuiltin.id     = (HudBuiltinElement)id;
+		event.hudbuiltin.flag   = flag;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

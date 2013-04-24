@@ -2186,6 +2186,14 @@ void the_game(
 					delete event.hudchange.v2fdata;
 					delete event.hudchange.sdata;
 				}
+				else if (event.type == CE_HUD_BUILTIN_ENABLE) {
+					u32 bit = (u32)event.hudbuiltin.id;
+					u32 mask = 1 << bit;
+					if (event.hudbuiltin.flag)
+						player->hud_flags |= mask;
+					else
+						player->hud_flags &= ~mask;
+				}
 			}
 		}
 		
@@ -3070,7 +3078,7 @@ void the_game(
 		/*
 			Wielded tool
 		*/
-		if(show_hud)
+		if(show_hud && (player->hud_flags & HUD_DRAW_WIELDITEM))
 		{
 			// Warning: This clears the Z buffer.
 			camera.drawWieldedTool();
@@ -3094,7 +3102,7 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		if (show_hud)
+		if (show_hud && (player->hud_flags & HUD_DRAW_CROSSHAIR))
 			hud.drawCrosshair();
 			
 		} // timer
@@ -3109,7 +3117,8 @@ void the_game(
 		if (show_hud)
 		{
 			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getPlayerItem(),
+					player->hud_flags);
 		}
 
 		/*
