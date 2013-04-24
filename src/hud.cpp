@@ -277,7 +277,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 }
 
 
-void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
+void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags) {
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
 		errorstream << "draw_hotbar(): mainlist == NULL" << std::endl;
@@ -288,8 +288,10 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
-	drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
+	if (flags & HUD_DRAW_HOTBAR)
+		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
+	if (flags & HUD_DRAW_HEALTHBAR)
+		drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
 				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
