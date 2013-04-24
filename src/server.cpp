@@ -3675,6 +3675,22 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendHUDBuiltinEnable(u16 peer_id, u32 id, bool flag)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUD_BUILTIN_ENABLE);
+	writeU8(os, id);
+	writeU8(os, (flag ? 1 : 0));
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(std::map<u16, RemoteClient*>::iterator
@@ -4661,6 +4677,14 @@ bool Server::hudChange(Player *player, u32 id, HudElementStat stat, void *data) 
 		return false;
 
 	SendHUDChange(player->peer_id, id, stat, data);
+	return true;
+}
+
+bool Server::hudBuiltinEnable(Player *player, u32 id, bool flag) {
+	if (!player)
+		return false;
+
+	SendHUDBuiltinEnable(player->peer_id, id, flag);
 	return true;
 }
 

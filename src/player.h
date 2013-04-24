@@ -245,6 +245,7 @@ public:
 	u32 keyPressed;
 	
 	std::vector<HudElement *> hud;
+	u32 hud_flags;
 
 protected:
 	IGameDef *m_gamedef;
