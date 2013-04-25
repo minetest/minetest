@@ -303,7 +303,7 @@ CaveIndev::CaveIndev(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2,
 			flooded = !ps->range(0, 3);
 			tunnel_routepoints = ps->range(5, 30);
 			min_tunnel_diameter = 30;
-			max_tunnel_diameter = ps->range(40, ps->range(80, 200));
+			max_tunnel_diameter = ps->range(40, ps->range(80, 150));
 		} else {
 			tunnel_routepoints = ps->range(5, ps->range(15,30));
 			min_tunnel_diameter = 5;
