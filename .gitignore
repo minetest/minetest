@@ -59,4 +59,7 @@ CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 locale/
+*.cbp
+*.layout
+*.o
 
