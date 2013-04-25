@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-25 08:50+0700\n"
+"PO-Revision-Date: 2013-04-25 19:17+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ky\n"
@@ -202,11 +202,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
-msgstr "Бир кишилик оюн"
+msgstr "Бир кишилик"
 
 #: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
-msgstr "Көп кишилик оюн"
+msgstr "Көп кишилик"
 
 #: src/guiMainMenu.cpp:285
 msgid "Advanced"
@@ -278,7 +278,7 @@ msgstr "Туташуу"
 
 #: src/guiMainMenu.cpp:591
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "Жердик серверди жүргүзүү үчүн даректи бош калтырыңыз."
 
 #: src/guiMainMenu.cpp:600
 msgid "Start Game / Connect"
@@ -302,7 +302,7 @@ msgstr "Кооз бактар"
 
 #: src/guiMainMenu.cpp:687
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Тегиз жарык"
 
 #: src/guiMainMenu.cpp:693
 msgid "3D Clouds"
@@ -310,23 +310,23 @@ msgstr "3D-булуттар"
 
 #: src/guiMainMenu.cpp:699
 msgid "Opaque water"
-msgstr ""
+msgstr "Күңүрт суу"
 
 #: src/guiMainMenu.cpp:709
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip-текстуралоо"
 
 #: src/guiMainMenu.cpp:716
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Анизатропия фильтрациясы"
 
 #: src/guiMainMenu.cpp:723
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Экисызык фильтрациясы"
 
 #: src/guiMainMenu.cpp:730
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Үчсызык фильтрациясы"
 
 #: src/guiMainMenu.cpp:738
 msgid "Shaders"
@@ -338,11 +338,11 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:752
 msgid "Enable Particles"
-msgstr ""
+msgstr "Бөлүкчөлөрдү күйгүзүү"
 
 #: src/guiMainMenu.cpp:759
 msgid "Finite liquid"
-msgstr ""
+msgstr "Чектүү суюктук"
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
@@ -410,7 +410,7 @@ msgstr "Менюга чыгуу"
 
 #: src/guiPauseMenu.cpp:154
 msgid "Exit to OS"
-msgstr "Системага чыгуу"
+msgstr "ОС-га чыгуу"
 
 #: src/guiPauseMenu.cpp:161
 msgid ""
@@ -426,10 +426,21 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Жарыяланбас башкаруу:\n"
+"- WASD: Басуу\n"
+"- Сол кнопкасы: казуу/согуу\n"
+"- Оң кнопкасы: коюу/колдонуу\n"
+"- Чычкан дөңгөлөгү: буюмду тандоо\n"
+"- 0...9: буюмду тандоо\n"
+"- Shift: уурданып басуу\n"
+"- R: алыс кароо\n"
+"- I: мүлк-шайман\n"
+"- ESC: бул меню\n"
+"- T: маек\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr "Үн көлөмү:"
+msgstr "Үн көлөмү: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
@@ -465,7 +476,7 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -473,7 +484,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/keycode.cpp:225
 msgid "Control"
@@ -493,7 +504,7 @@ msgstr "Пауза"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -501,7 +512,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr ""
+msgstr "Esc"
 
 #: src/keycode.cpp:226
 msgid "Final"
@@ -533,7 +544,7 @@ msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "Режимди өзгөртүү"
 
 #: src/keycode.cpp:227
 msgid "Next"
@@ -545,7 +556,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Боштук"
 
 #: src/keycode.cpp:228
 msgid "Down"
@@ -593,7 +604,7 @@ msgstr "Кош. клав. 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr "Кош. клав. 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
@@ -653,11 +664,11 @@ msgstr "Кош. клав. 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
@@ -673,15 +684,15 @@ msgstr "Сол Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Сол меню"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Оң Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Оң меню"
 
 #: src/keycode.cpp:243
 msgid "Comma"
@@ -756,3 +767,5 @@ msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Толугураак маалымат үчүн debug.txt файлын текшериңиз."
