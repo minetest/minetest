@@ -277,7 +277,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 }
 
 
-void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags) {
+void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
 		errorstream << "draw_hotbar(): mainlist == NULL" << std::endl;
@@ -288,19 +288,21 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
-	if (flags & HUD_DRAW_HOTBAR)
+	if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)
 		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	if (flags & HUD_DRAW_HEALTHBAR)
+	if (player->hud_flags & HUD_FLAG_HEALTHBAR_VISIBLE)
 		drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
 				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
 
 void Hud::drawCrosshair() {
-	driver->draw2DLine(displaycenter - v2s32(10, 0),
-			displaycenter + v2s32(10, 0), crosshair_argb);
-	driver->draw2DLine(displaycenter - v2s32(0, 10),
-			displaycenter + v2s32(0, 10), crosshair_argb);
+	if (player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) {
+		driver->draw2DLine(displaycenter - v2s32(10, 0),
+				displaycenter + v2s32(10, 0), crosshair_argb);
+		driver->draw2DLine(displaycenter - v2s32(0, 10),
+				displaycenter + v2s32(0, 10), crosshair_argb);
+	}
 }
 
 

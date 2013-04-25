@@ -3675,18 +3675,18 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 	m_con.Send(peer_id, 0, data, true);
 }
 
-void Server::SendHUDBuiltinEnable(u16 peer_id, u32 id, bool flag)
+void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 {
 	std::ostringstream os(std::ios_base::binary);
 
 	// Write command
-	writeU16(os, TOCLIENT_HUD_BUILTIN_ENABLE);
-	writeU8(os, id);
-	writeU8(os, (flag ? 1 : 0));
+	writeU16(os, TOCLIENT_HUD_SET_FLAGS);
+	writeU32(os, flags);
+	writeU32(os, mask);
 
 	// Make data buffer
 	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
 }
@@ -4680,11 +4680,11 @@ bool Server::hudChange(Player *player, u32 id, HudElementStat stat, void *data) 
 	return true;
 }
 
-bool Server::hudBuiltinEnable(Player *player, u32 id, bool flag) {
+bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 	if (!player)
 		return false;
 
-	SendHUDBuiltinEnable(player->peer_id, id, flag);
+	SendHUDSetFlags(player->peer_id, flags, mask);
 	return true;
 }
 

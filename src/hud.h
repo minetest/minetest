@@ -31,10 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
-#define HUD_DRAW_HOTBAR (1 << 0)
-#define HUD_DRAW_HEALTHBAR (1 << 1)
-#define HUD_DRAW_CROSSHAIR (1 << 2)
-#define HUD_DRAW_WIELDITEM (1 << 3)
+#define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
+#define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
+#define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
+#define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
 
 class Player;
 
@@ -68,14 +68,6 @@ struct HudElement {
 	u32 dir;
 	v2f align;
 	v2f offset;
-};
-
-
-enum HudBuiltinElement {
-	HUD_BUILTIN_HOTBAR = 0,
-	HUD_BUILTIN_HEALTHBAR,
-	HUD_BUILTIN_CROSSHAIR,
-	HUD_BUILTIN_WIELDITEM
 };
 
 
@@ -123,9 +115,10 @@ public:
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+					 std::string texture, s32 count, v2s32 offset);
 	
-	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags);
+	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
 	void resizeHotbar();
 	
 	void drawCrosshair();

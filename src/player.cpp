@@ -54,35 +54,33 @@ Player::Player(IGameDef *gamedef):
 	inventory.addList("craftresult", 1);
 
 	// Can be redefined via Lua
-	inventory_formspec =  "size[8,7.5]"
+	inventory_formspec = "size[8,7.5]"
 		//"image[1,0.6;1,2;player.png]"
 		"list[current_player;main;0,3.5;8,4;]"
 		"list[current_player;craft;3,0;3,3;]"
 		"list[current_player;craftpreview;7,1;1,1;]";
 
 	// Initialize movement settings at default values, so movement can work if the server fails to send them
-	movement_acceleration_default = 3 * BS;
-	movement_acceleration_air = 2 * BS;
-	movement_acceleration_fast = 10 * BS;
-	movement_speed_walk = 4 * BS;
-	movement_speed_crouch = 1.35 * BS;
-	movement_speed_fast = 20 * BS;
-	movement_speed_climb = 2 * BS;
-	movement_speed_jump = 6.5 * BS;
-	movement_liquid_fluidity = 1 * BS;
-	movement_liquid_fluidity_smooth = 0.5 * BS;
-	movement_liquid_sink = 10 * BS;
-	movement_gravity = 9.81 * BS;
+	movement_acceleration_default   = 3    * BS;
+	movement_acceleration_air       = 2    * BS;
+	movement_acceleration_fast      = 10   * BS;
+	movement_speed_walk             = 4    * BS;
+	movement_speed_crouch           = 1.35 * BS;
+	movement_speed_fast             = 20   * BS;
+	movement_speed_climb            = 2    * BS;
+	movement_speed_jump             = 6.5  * BS;
+	movement_liquid_fluidity        = 1    * BS;
+	movement_liquid_fluidity_smooth = 0.5  * BS;
+	movement_liquid_sink            = 10   * BS;
+	movement_gravity                = 9.81 * BS;
 
 	// Movement overrides are multipliers and must be 1 by default
-	physics_override_speed = 1;
-	physics_override_jump = 1;
+	physics_override_speed   = 1;
+	physics_override_jump    = 1;
 	physics_override_gravity = 1;
 
-	hud_flags = HUD_DRAW_HOTBAR
-			| HUD_DRAW_HEALTHBAR
-			| HUD_DRAW_CROSSHAIR
-			| HUD_DRAW_WIELDITEM;
+	hud_flags = HUD_FLAG_HOTBAR_VISIBLE | HUD_FLAG_HEALTHBAR_VISIBLE |
+			 HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE;
 }
 
 Player::~Player()
