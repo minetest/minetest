@@ -329,6 +329,7 @@ Look for examples in games/minimal or games/minetest_game.
 - liquid
 - flowingliquid
 - glasslike
+- glasslike_framed
 - allfaces
 - allfaces_optional
 - torchlike

@@ -628,6 +628,10 @@ public:
 				f->solidness = 0;
 				f->visual_solidness = 1;
 				break;
+			case NDT_GLASSLIKE_FRAMED:
+				f->solidness = 0;
+				f->visual_solidness = 1;
+				break;
 			case NDT_ALLFACES:
 				f->solidness = 0;
 				f->visual_solidness = 1;
