@@ -133,8 +133,6 @@ enum NodeDrawType
 	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
 	NDT_FLOWINGLIQUID, // A very special kind of thing
 	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
-	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all visible faces
-						  // uses 2 textures, one for frames, second for faces
 	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
 	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
 	NDT_TORCHLIKE,
@@ -143,6 +141,9 @@ enum NodeDrawType
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
 	NDT_NODEBOX,
+	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
+	                      // visible faces
+						  // uses 2 textures, one for frames, second for faces
 };
 
 #define CF_SPECIAL_COUNT 2
