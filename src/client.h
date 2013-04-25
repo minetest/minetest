@@ -160,7 +160,11 @@ enum ClientEventType
 	CE_SHOW_FORMSPEC,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
-	CE_DELETE_PARTICLESPAWNER
+	CE_DELETE_PARTICLESPAWNER,
+	CE_HUDADD,
+	CE_HUDRM,
+	CE_HUDCHANGE,
+	CE_HUD_BUILTIN_ENABLE
 };
 
 struct ClientEvent
@@ -183,8 +187,8 @@ struct ClientEvent
 			f32 camera_point_target_z;
 		} deathscreen;
 		struct{
-			std::string* formspec;
-			std::string* formname;
+			std::string *formspec;
+			std::string *formname;
 		} show_formspec;
 		struct{
 		} textures_updated;
@@ -217,6 +221,33 @@ struct ClientEvent
 		struct{
 			u32 id;
 		} delete_particlespawner;
+		struct{
+			u32 id;
+			u8 type;
+			v2f *pos;
+			std::string *name;
+			v2f *scale;
+			std::string *text;
+			u32 number;
+			u32 item;
+			u32 dir;
+			v2f *align;
+			v2f *offset;
+		} hudadd;
+		struct{
+			u32 id;
+		} hudrm;
+		struct{
+			u32 id;
+			HudElementStat stat;
+			v2f *v2fdata;
+			std::string *sdata;
+			u32 data;
+		} hudchange;
+		struct{
+			u32 id;
+			u32 flag;
+		} hudbuiltin;
 	};
 };
 

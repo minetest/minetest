@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "player.h"
+#include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "connection.h" // PEER_ID_INEXISTENT
@@ -41,7 +42,8 @@ Player::Player(IGameDef *gamedef):
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
-	m_position(0,0,0)
+	m_position(0,0,0),
+	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30)
 {
 	updateName("<not set>");
 	inventory.clear();
@@ -76,6 +78,11 @@ Player::Player(IGameDef *gamedef):
 	physics_override_speed = 1;
 	physics_override_jump = 1;
 	physics_override_gravity = 1;
+
+	hud_flags = HUD_DRAW_HOTBAR
+			| HUD_DRAW_HEALTHBAR
+			| HUD_DRAW_CROSSHAIR
+			| HUD_DRAW_WIELDITEM;
 }
 
 Player::~Player()

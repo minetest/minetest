@@ -87,6 +87,7 @@ class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
+class HudElement;
 
 class Player
 {
@@ -179,6 +180,10 @@ public:
 		return m_name;
 	}
 
+	core::aabbox3d<f32> getCollisionbox() {
+		return m_collisionbox;
+	}
+
 	virtual bool isLocal() const
 	{ return false; }
 	virtual PlayerSAO *getPlayerSAO()
@@ -242,6 +247,9 @@ public:
 	}
 	
 	u32 keyPressed;
+	
+	std::vector<HudElement *> hud;
+	u32 hud_flags;
 
 protected:
 	IGameDef *m_gamedef;
@@ -251,7 +259,9 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
+	core::aabbox3d<f32> m_collisionbox;
 };
+
 
 /*
 	Player on the server

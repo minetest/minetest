@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 #include "ban.h"
+#include "hud.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "mods.h"
@@ -51,6 +52,7 @@ class EventManager;
 class PlayerSAO;
 class IRollbackManager;
 class EmergeManager;
+//struct HudElement;
 
 class ServerError : public std::exception
 {
@@ -454,7 +456,7 @@ public:
 	}
 
 	// Envlock and conlock should be locked when calling this
-	void notifyPlayer(const char *name, const std::wstring msg);
+	void notifyPlayer(const char *name, const std::wstring msg, const bool prepend);
 	void notifyPlayers(const std::wstring msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
@@ -534,6 +536,12 @@ public:
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
+	
+	u32 hudAdd(Player *player, HudElement *element);
+	bool hudRemove(Player *player, u32 id);
+	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
+	bool hudBuiltinEnable(Player *player, u32 id, bool flag);
+	
 private:
 
 	// con::PeerHandler implementation.
@@ -573,6 +581,10 @@ private:
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
+	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
+	void SendHUDRemove(u16 peer_id, u32 id);
+	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
+	void SendHUDBuiltinEnable(u16 peer_id, u32 id, bool flag);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

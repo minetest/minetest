@@ -141,6 +141,9 @@ enum NodeDrawType
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
 	NDT_NODEBOX,
+	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
+	                      // visible faces
+						  // uses 2 textures, one for frames, second for faces
 };
 
 #define CF_SPECIAL_COUNT 2
