@@ -10,6 +10,7 @@ void main (void)
 	col *= gl_Color;
 	col = col * col; // SRGB -> Linear
 	col *= 1.8;
+	col.a = 1.0 - exp(1.0 - col.a) / exp(1.0);
 	col.r = 1.0 - exp(1.0 - col.r) / exp(1.0);
 	col.g = 1.0 - exp(1.0 - col.g) / exp(1.0);
 	col.b = 1.0 - exp(1.0 - col.b) / exp(1.0);
