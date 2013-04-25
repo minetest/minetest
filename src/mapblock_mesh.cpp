@@ -1338,11 +1338,19 @@ void MeshCollector::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices)
 {
+	if(numIndices > 65535)
+	{
+		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
+		return;
+	}
+
 	PreMeshBuffer *p = NULL;
 	for(u32 i=0; i<prebuffers.size(); i++)
 	{
 		PreMeshBuffer &pp = prebuffers[i];
 		if(pp.tile != tile)
+			continue;
+		if(pp.indices.size() + numIndices > 65535)
 			continue;
 
 		p = &pp;
@@ -1361,11 +1369,6 @@ void MeshCollector::append(const TileSpec &tile,
 	for(u32 i=0; i<numIndices; i++)
 	{
 		u32 j = indices[i] + vertex_count;
-		if(j > 65535)
-		{
-			dstream<<"FIXME: Meshbuffer ran out of indices"<<std::endl;
-			// NOTE: Fix is to just add an another MeshBuffer
-		}
 		p->indices.push_back(j);
 	}
 	for(u32 i=0; i<numVertices; i++)
