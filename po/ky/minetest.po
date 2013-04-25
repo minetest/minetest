@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-20 07:29+0200\n"
+"PO-Revision-Date: 2013-04-25 08:50+0700\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ky\n"
@@ -206,7 +206,7 @@ msgstr "Бир кишилик оюн"
 
 #: src/guiMainMenu.cpp:284
 msgid "Multiplayer"
-msgstr "Көп колдонучуулук оюн"
+msgstr "Көп кишилик оюн"
 
 #: src/guiMainMenu.cpp:285
 msgid "Advanced"
@@ -246,19 +246,19 @@ msgstr "Чыгармачылык режим"
 
 #: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
 msgid "Enable Damage"
-msgstr ""
+msgstr "Убалды күйгүзүү"
 
 #: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
 msgid "Name/Password"
-msgstr "Атыңыз/Сырсөзүңүз"
+msgstr "Аты/сырсөзү"
 
 #: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
 msgid "Favorites:"
-msgstr ""
+msgstr "Тандалмалар:"
 
 #: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
 msgid "Public Server List:"
-msgstr ""
+msgstr "Жалпылык серверлердин тизмеси:"
 
 #: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
 msgid "Address/Port"
@@ -266,11 +266,11 @@ msgstr "Дареги/порту"
 
 #: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
 msgid "Show Public"
-msgstr ""
+msgstr "Жалпылыкты көрсөтүү"
 
 #: src/guiMainMenu.cpp:501 src/guiMainMenu.cpp:1193
 msgid "Show Favorites"
-msgstr ""
+msgstr "Тандалмаларды көрсөтүү"
 
 #: src/guiMainMenu.cpp:521
 msgid "Connect"
@@ -286,7 +286,7 @@ msgstr "Оюнду баштоо/туташуу"
 
 #: src/guiMainMenu.cpp:632
 msgid "Public"
-msgstr ""
+msgstr "Жалпылык"
 
 #: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
 msgid "Delete world"
@@ -346,31 +346,31 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:769
 msgid "Change keys"
-msgstr ""
+msgstr "Клавишаларды өзгөртүү"
 
 #: src/guiMainMenu.cpp:1084
 msgid "Address required."
-msgstr ""
+msgstr "Дареги талап кылынат."
 
 #: src/guiMainMenu.cpp:1102
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
 
 #: src/guiMainMenu.cpp:1117
 msgid "Files to be deleted"
-msgstr ""
+msgstr "Өчүрүлмөкчү файлдар"
 
 #: src/guiMainMenu.cpp:1133
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
 
 #: src/guiMainMenu.cpp:1149
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
 
 #: src/guiMainMenu.cpp:1256
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
@@ -390,7 +390,7 @@ msgstr "Өзгөртүү"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Сырсөздөр дал келген жок!"
 
 #: src/guiPauseMenu.cpp:123
 msgid "Continue"
@@ -402,7 +402,7 @@ msgstr "Сырсөздү өзгөртүү"
 
 #: src/guiPauseMenu.cpp:140
 msgid "Sound Volume"
-msgstr ""
+msgstr "Үн көлөмү"
 
 #: src/guiPauseMenu.cpp:147
 msgid "Exit to Menu"
@@ -429,23 +429,23 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Үн көлөмү:"
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Чыгуу"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Сол кнопка"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Ортоңку кнопка"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Оң кнопка"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -477,7 +477,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #: src/keycode.cpp:225
 msgid "Kana"
@@ -553,7 +553,7 @@ msgstr ""
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Аткаруу"
 
 #: src/keycode.cpp:228
 msgid "Print"
@@ -573,15 +573,15 @@ msgstr "Жардам"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "Сүрөт"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Сол Windows"
 
 #: src/keycode.cpp:233
 msgid "Apps"
@@ -589,15 +589,15 @@ msgstr "Тиркемелер"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Кош. клав. 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Оң Windows"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
@@ -605,51 +605,51 @@ msgstr "Уйку"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Кош. клав. 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Кош. клав. 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Кош. клав. 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Кош. клав. 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Кош. клав. 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Кош. клав. 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Кош. клав. *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Кош. клав. +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Кош. клав. -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Кош. клав. /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Кош. клав. 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Кош. клав. 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
@@ -661,7 +661,7 @@ msgstr ""
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Сол Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
@@ -669,7 +669,7 @@ msgstr "Оң Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Сол Ctrl"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
@@ -685,7 +685,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Үтүр"
 
 #: src/keycode.cpp:243
 msgid "Minus"
@@ -693,7 +693,7 @@ msgstr "Минус"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Айланма сан"
 
 #: src/keycode.cpp:243
 msgid "Plus"
@@ -749,7 +749,7 @@ msgstr ""
 
 #: src/main.cpp:1904
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Туташтыруу катасы (убакытыңыз өтүп кеттиби?)"
 
 #: src/main.cpp:1915
 msgid ""
