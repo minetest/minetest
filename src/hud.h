@@ -82,8 +82,6 @@ inline u32 hud_get_free_id(Player *player) {
 
 #ifndef SERVER
 
-#include <deque>
-
 #include <IGUIFont.h>
 
 #include "gamedef.h"
@@ -99,6 +97,7 @@ public:
 	IGameDef *gamedef;
 	LocalPlayer *player;
 	Inventory *inventory;
+	ITextureSource *tsrc;
 
 	v2u32 screensize;
 	v2s32 displaycenter;
@@ -107,6 +106,7 @@ public:
 	
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
+	bool use_crosshair_image;
 	
 	Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 		gui::IGUIFont *font, u32 text_height, IGameDef *gamedef,
