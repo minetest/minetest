@@ -66,20 +66,17 @@ minetest.register_entity("__builtin:falling_node", {
 			local n2 = minetest.env:get_node(np)
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
-			if n2.name ~= "air" and (not minetest.registered_nodes[n2.name] or
-					minetest.registered_nodes[n2.name].liquidtype == "none") then
-				local drops = minetest.get_node_drops(n2.name, "")
-				minetest.env:remove_node(np)
-				-- Add dropped items
-				local _, dropped_item
-				for _, dropped_item in ipairs(drops) do
-					minetest.env:add_item(np, dropped_item)
-				end
-				-- Run script hook
-				local _, callback
-				for _, callback in ipairs(minetest.registered_on_dignodes) do
-					callback(np, n2, nil)
-				end
+			local drops = minetest.get_node_drops(n2.name, "")
+			minetest.env:remove_node(np)
+			-- Add dropped items
+			local _, dropped_item
+			for _, dropped_item in ipairs(drops) do
+				minetest.env:add_item(np, dropped_item)
+			end
+			-- Run script hook
+			local _, callback
+			for _, callback in ipairs(minetest.registered_on_dignodes) do
+				callback(np, n2, nil)
 			end
 			-- Create node and remove entity
 			minetest.env:add_node(np, {name=self.nodename})
