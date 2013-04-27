@@ -31,6 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
+#define HUD_DRAW_HOTBAR (1 << 0)
+#define HUD_DRAW_HEALTHBAR (1 << 1)
+#define HUD_DRAW_CROSSHAIR (1 << 2)
+#define HUD_DRAW_WIELDITEM (1 << 3)
+
 class Player;
 
 enum HudElementType {
@@ -47,7 +52,9 @@ enum HudElementStat {
 	HUD_STAT_TEXT,
 	HUD_STAT_NUMBER,
 	HUD_STAT_ITEM,
-	HUD_STAT_DIR
+	HUD_STAT_DIR,
+	HUD_STAT_ALIGN,
+	HUD_STAT_OFFSET
 };
 
 struct HudElement {
@@ -59,6 +66,16 @@ struct HudElement {
 	u32 number;
 	u32 item;
 	u32 dir;
+	v2f align;
+	v2f offset;
+};
+
+
+enum HudBuiltinElement {
+	HUD_BUILTIN_HOTBAR = 0,
+	HUD_BUILTIN_HEALTHBAR,
+	HUD_BUILTIN_CROSSHAIR,
+	HUD_BUILTIN_WIELDITEM
 };
 
 
@@ -90,7 +107,7 @@ public:
 	IGameDef *gamedef;
 	LocalPlayer *player;
 	Inventory *inventory;
-	
+
 	v2u32 screensize;
 	v2s32 displaycenter;
 	s32 hotbar_imagesize;
@@ -106,9 +123,9 @@ public:
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset);
 	
-	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
+	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags);
 	void resizeHotbar();
 	
 	void drawCrosshair();

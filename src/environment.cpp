@@ -1295,16 +1295,17 @@ bool isFreeServerActiveObjectId(u16 id,
 u16 getFreeServerActiveObjectId(
 		std::map<u16, ServerActiveObject*> &objects)
 {
-	u16 new_id = 1;
+	//try to reuse id's as late as possible
+	static u16 last_used_id = 0;
+	u16 startid = last_used_id;
 	for(;;)
 	{
-		if(isFreeServerActiveObjectId(new_id, objects))
-			return new_id;
+		last_used_id ++;
+		if(isFreeServerActiveObjectId(last_used_id, objects))
+			return last_used_id;
 		
-		if(new_id == 65535)
+		if(last_used_id == startid)
 			return 0;
-
-		new_id++;
 	}
 }
 
@@ -2296,16 +2297,17 @@ bool isFreeClientActiveObjectId(u16 id,
 u16 getFreeClientActiveObjectId(
 		std::map<u16, ClientActiveObject*> &objects)
 {
-	u16 new_id = 1;
+	//try to reuse id's as late as possible
+	static u16 last_used_id = 0;
+	u16 startid = last_used_id;
 	for(;;)
 	{
-		if(isFreeClientActiveObjectId(new_id, objects))
-			return new_id;
+		last_used_id ++;
+		if(isFreeClientActiveObjectId(last_used_id, objects))
+			return last_used_id;
 		
-		if(new_id == 65535)
+		if(last_used_id == startid)
 			return 0;
-
-		new_id++;
 	}
 }
 

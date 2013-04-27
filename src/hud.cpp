@@ -186,6 +186,10 @@ void Hud::drawLuaElements() {
 				core::rect<s32> rect(0, 0, imgsize.Width  * e->scale.X,
 									       imgsize.Height * e->scale.X);
 				rect += pos;
+				v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
+				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
+				rect += offset;
+				rect += v2s32(e->offset.X, e->offset.Y);
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -195,11 +199,17 @@ void Hud::drawLuaElements() {
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				font->draw(narrow_to_wide(e->text).c_str(), size + pos, color);
+				std::wstring text = narrow_to_wide(e->text);
+				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
+				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
+				             (e->align.Y - 1.0) * (textsize.Height / 2));
+				v2s32 offs(e->offset.X, e->offset.Y);
+				font->draw(text.c_str(), size + pos + offset + offs, color);
 				break; }
-			case HUD_ELEM_STATBAR:
-				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number);
-				break;
+			case HUD_ELEM_STATBAR: {
+				v2s32 offs(e->offset.X, e->offset.Y);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs);
+				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
 				drawItem(pos, hotbar_imagesize, e->number, inv, e->item, e->dir);
@@ -212,7 +222,7 @@ void Hud::drawLuaElements() {
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count) {
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset) {
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
@@ -226,6 +236,8 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 	v2s32 p = pos;
 	if (corner & HUD_CORNER_LOWER)
 		p -= srcd.Height;
+
+	p += offset;
 
 	v2s32 steppos;
 	switch (drawdir) {
@@ -265,7 +277,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 }
 
 
-void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
+void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags) {
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
 		errorstream << "draw_hotbar(): mainlist == NULL" << std::endl;
@@ -276,9 +288,11 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
-	drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
-				"heart.png", halfheartcount);
+	if (flags & HUD_DRAW_HOTBAR)
+		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
+	if (flags & HUD_DRAW_HEALTHBAR)
+		drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
+				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
 

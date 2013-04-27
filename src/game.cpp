@@ -2106,6 +2106,8 @@ void the_game(
 						delete event.hudadd.name;
 						delete event.hudadd.scale;
 						delete event.hudadd.text;
+						delete event.hudadd.align;
+						delete event.hudadd.offset;
 						continue;
 					}
 					
@@ -2118,6 +2120,8 @@ void the_game(
 					e->number = event.hudadd.number;
 					e->item   = event.hudadd.item;
 					e->dir    = event.hudadd.dir;
+					e->align  = *event.hudadd.align;
+					e->offset = *event.hudadd.offset;
 					
 					if (id == nhudelem)
 						player->hud.push_back(e);
@@ -2128,6 +2132,8 @@ void the_game(
 					delete event.hudadd.name;
 					delete event.hudadd.scale;
 					delete event.hudadd.text;
+					delete event.hudadd.align;
+					delete event.hudadd.offset;
 				}
 				else if (event.type == CE_HUDRM)
 				{
@@ -2169,10 +2175,24 @@ void the_game(
 						case HUD_STAT_DIR:
 							e->dir = event.hudchange.data;
 							break;
+						case HUD_STAT_ALIGN:
+							e->align = *event.hudchange.v2fdata;
+							break;
+						case HUD_STAT_OFFSET:
+							e->offset = *event.hudchange.v2fdata;
+							break;
 					}
 					
 					delete event.hudchange.v2fdata;
 					delete event.hudchange.sdata;
+				}
+				else if (event.type == CE_HUD_BUILTIN_ENABLE) {
+					u32 bit = (u32)event.hudbuiltin.id;
+					u32 mask = 1 << bit;
+					if (event.hudbuiltin.flag)
+						player->hud_flags |= mask;
+					else
+						player->hud_flags &= ~mask;
 				}
 			}
 		}
@@ -3058,7 +3078,7 @@ void the_game(
 		/*
 			Wielded tool
 		*/
-		if(show_hud)
+		if(show_hud && (player->hud_flags & HUD_DRAW_WIELDITEM))
 		{
 			// Warning: This clears the Z buffer.
 			camera.drawWieldedTool();
@@ -3082,7 +3102,7 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		if (show_hud)
+		if (show_hud && (player->hud_flags & HUD_DRAW_CROSSHAIR))
 			hud.drawCrosshair();
 			
 		} // timer
@@ -3097,7 +3117,8 @@ void the_game(
 		if (show_hud)
 		{
 			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getPlayerItem(),
+					player->hud_flags);
 		}
 
 		/*
