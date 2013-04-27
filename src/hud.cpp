@@ -45,6 +45,8 @@ Hud::Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 	hotbar_imagesize = 48;
 	hotbar_itemcount = 8;
 	
+	tsrc = gamedef->getTextureSource();
+	
 	v3f crosshair_color = g_settings->getV3F("crosshair_color");
 	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
 	u32 cross_g = rangelim(myround(crosshair_color.Y), 0, 255);
@@ -57,6 +59,8 @@ Hud::Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
 	u32 sbox_b = rangelim(myround(selectionbox_color.Z), 0, 255);
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
+	
+	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 }
 
 
@@ -175,8 +179,7 @@ void Hud::drawLuaElements() {
 		v2s32 pos(e->pos.X * screensize.X, e->pos.Y * screensize.Y);
 		switch (e->type) {
 			case HUD_ELEM_IMAGE: {
-				video::ITexture *texture =
-					gamedef->getTextureSource()->getTextureRaw(e->text);
+				video::ITexture *texture = tsrc->getTextureRaw(e->text);
 				if (!texture)
 					continue;
 
@@ -226,8 +229,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
-	video::ITexture *stat_texture =
-		gamedef->getTextureSource()->getTextureRaw(texture);
+	video::ITexture *stat_texture = tsrc->getTextureRaw(texture);
 	if (!stat_texture)
 		return;
 		
@@ -277,7 +279,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 }
 
 
-void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u32 flags) {
+void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
 		errorstream << "draw_hotbar(): mainlist == NULL" << std::endl;
@@ -288,19 +290,32 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, u
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
-	if (flags & HUD_DRAW_HOTBAR)
+	if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)
 		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	if (flags & HUD_DRAW_HEALTHBAR)
+	if (player->hud_flags & HUD_FLAG_HEALTHBAR_VISIBLE)
 		drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
 				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
 
 void Hud::drawCrosshair() {
-	driver->draw2DLine(displaycenter - v2s32(10, 0),
-			displaycenter + v2s32(10, 0), crosshair_argb);
-	driver->draw2DLine(displaycenter - v2s32(0, 10),
-			displaycenter + v2s32(0, 10), crosshair_argb);
+	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE))
+		return;
+		
+	if (use_crosshair_image) {
+		video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+		v2u32 size  = crosshair->getOriginalSize();
+		v2s32 lsize = v2s32(displaycenter.X - (size.X / 2),
+							displaycenter.Y - (size.Y / 2));
+		driver->draw2DImage(crosshair, lsize,
+				core::rect<s32>(0, 0, size.X, size.Y),
+				0, crosshair_argb, true);
+	} else {
+		driver->draw2DLine(displaycenter - v2s32(10, 0),
+				displaycenter + v2s32(10, 0), crosshair_argb);
+		driver->draw2DLine(displaycenter - v2s32(0, 10),
+				displaycenter + v2s32(0, 10), crosshair_argb);
+	}
 }
 
 

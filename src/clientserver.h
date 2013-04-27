@@ -474,11 +474,11 @@ enum ToClientCommand
 		 u32 data]
 	*/
 
-	TOCLIENT_HUD_BUILTIN_ENABLE = 0x4c,
+	TOCLIENT_HUD_SET_FLAGS = 0x4c,
 	/*
 		u16 command
-		u8 id
-		u8 flag
+		u32 flags
+		u32 mask
 	*/
 };
 

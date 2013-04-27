@@ -2097,8 +2097,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u32 id  = readU32(is);
 		u8 stat = (HudElementStat)readU8(is);
 		
-		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE
-		 || stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
+		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
+			stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 			v2fdata = readV2F1000(is);
 		else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
 			sdata = deSerializeString(is);
@@ -2114,19 +2114,19 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudchange.data    = intdata;
 		m_client_event_queue.push_back(event);
 	}
-	else if(command == TOCLIENT_HUD_BUILTIN_ENABLE)
+	else if(command == TOCLIENT_HUD_SET_FLAGS)
 	{	
 		std::string datastring((char *)&data[2], datasize - 2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		u32 id = readU8(is);
-		bool flag = (readU8(is) ? true : false);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
 
-		ClientEvent event;
-		event.type = CE_HUD_BUILTIN_ENABLE;
-		event.hudbuiltin.id     = (HudBuiltinElement)id;
-		event.hudbuiltin.flag   = flag;
-		m_client_event_queue.push_back(event);
+		u32 flags = readU32(is);
+		u32 mask  = readU32(is);
+		
+		player->hud_flags &= ~mask;
+		player->hud_flags |= flags;
 	}
 	else
 	{

@@ -540,7 +540,7 @@ public:
 	u32 hudAdd(Player *player, HudElement *element);
 	bool hudRemove(Player *player, u32 id);
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
-	bool hudBuiltinEnable(Player *player, u32 id, bool flag);
+	bool hudSetFlags(Player *player, u32 flags, u32 mask);
 	
 private:
 
@@ -584,7 +584,8 @@ private:
 	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
-	void SendHUDBuiltinEnable(u16 peer_id, u32 id, bool flag);
+	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
+	
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
