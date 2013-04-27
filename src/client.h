@@ -163,8 +163,7 @@ enum ClientEventType
 	CE_DELETE_PARTICLESPAWNER,
 	CE_HUDADD,
 	CE_HUDRM,
-	CE_HUDCHANGE,
-	CE_HUD_BUILTIN_ENABLE
+	CE_HUDCHANGE
 };
 
 struct ClientEvent
@@ -244,10 +243,6 @@ struct ClientEvent
 			std::string *sdata;
 			u32 data;
 		} hudchange;
-		struct{
-			u32 id;
-			u32 flag;
-		} hudbuiltin;
 	};
 };
 

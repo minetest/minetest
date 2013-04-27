@@ -54,10 +54,10 @@ struct EnumString es_HudElementStat[] =
 
 struct EnumString es_HudBuiltinElement[] =
 {
-	{HUD_BUILTIN_HOTBAR,           "hotbar"},
-	{HUD_BUILTIN_HEALTHBAR,        "healthbar"},
-	{HUD_BUILTIN_CROSSHAIR,        "crosshair"},
-	{HUD_BUILTIN_WIELDITEM,        "wielditem"},
+	{HUD_FLAG_HOTBAR_VISIBLE,    "hotbar"},
+	{HUD_FLAG_HEALTHBAR_VISIBLE, "healthbar"},
+	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
+	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
 	{0, NULL},
 };
 
@@ -911,30 +911,29 @@ int ObjectRef::l_hud_get(lua_State *L)
 	return 1;
 }
 
-// hud_builtin_enable(self, id, flag)
-int ObjectRef::l_hud_builtin_enable(lua_State *L)
+// hud_set_flags(self, flags)
+int ObjectRef::l_hud_set_flags(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
-	HudBuiltinElement id;
-	int id_i;
+	u32 flags = 0;
+	u32 mask  = 0;
+	bool flag;
 	
-	std::string s(lua_tostring(L, 2));
-	
-	// Return nil if component is not in enum
-	if (!string_to_enum(es_HudBuiltinElement, id_i, s))
+	const EnumString *esp = es_HudBuiltinElement;
+	for (int i = 0; esp[i].str; i++) {
+		if (getboolfield(L, 2, esp[i].str, flag)) {
+			flags |= esp[i].num * flag;
+			mask  |= esp[i].num;
+		}
+	}
+	if (!get_server(L)->hudSetFlags(player, flags, mask))
 		return 0;
-	
-	id = (HudBuiltinElement)id_i;
 
-	bool flag = (bool)lua_toboolean(L, 3);
-
-	bool ok = get_server(L)->hudBuiltinEnable(player, id, flag);
-
-	lua_pushboolean(L, (int)ok);
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -1048,9 +1047,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
-	luamethod(ObjectRef, hud_builtin_enable),
-	//luamethod(ObjectRef, hud_lock_next_bar),
-	//luamethod(ObjectRef, hud_unlock_bar),
+	luamethod(ObjectRef, hud_set_flags),
 	{0,0}
 };
 
