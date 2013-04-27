@@ -789,6 +789,65 @@ public:
 	}
 };
 
+void nodePlacementPrediction(Client &client,
+		const ItemDefinition &playeritem_def,
+		v3s16 nodepos, v3s16 neighbourpos)
+{
+	std::string prediction = playeritem_def.node_placement_prediction;
+	INodeDefManager *nodedef = client.ndef();
+	ClientMap &map = client.getEnv().getClientMap();
+
+	if(prediction != "" && !nodedef->get(map.getNode(nodepos)).rightclickable)
+	{
+		verbosestream<<"Node placement prediction for "
+				<<playeritem_def.name<<" is "
+				<<prediction<<std::endl;
+		v3s16 p = neighbourpos;
+		// Place inside node itself if buildable_to
+		try{
+			MapNode n_under = map.getNode(nodepos);
+			if(nodedef->get(n_under).buildable_to)
+				p = nodepos;
+		}catch(InvalidPositionException &e){}
+		// Find id of predicted node
+		content_t id;
+		bool found = nodedef->getId(prediction, id);
+		if(!found){
+			errorstream<<"Node placement prediction failed for "
+					<<playeritem_def.name<<" (places "
+					<<prediction
+					<<") - Name not known"<<std::endl;
+			return;
+		}
+		// Predict param2
+		u8 param2 = 0;
+		if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED){
+			v3s16 dir = nodepos - neighbourpos;
+			if(abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))){
+				param2 = dir.Y < 0 ? 1 : 0;
+			} else if(abs(dir.X) > abs(dir.Z)){
+				param2 = dir.X < 0 ? 3 : 2;
+			} else {
+				param2 = dir.Z < 0 ? 5 : 4;
+			}
+		}
+		// TODO: Facedir prediction
+		// TODO: If predicted node is in attached_node group, check attachment
+		// Add node to client map
+		MapNode n(id, 0, param2);
+		try{
+			// This triggers the required mesh update too
+			client.addNode(p, n);
+		}catch(InvalidPositionException &e){
+			errorstream<<"Node placement prediction failed for "
+					<<playeritem_def.name<<" (places "
+					<<prediction
+					<<") - Position not loaded"<<std::endl;
+		}
+	}
+}
+
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -2198,17 +2257,15 @@ void the_game(
 			- Can it point to liquids?
 		*/
 		ItemStack playeritem;
-		bool playeritem_usable = false;
-		bool playeritem_liquids_pointable = false;
 		{
 			InventoryList *mlist = local_inventory.getList("main");
 			if(mlist != NULL)
 			{
 				playeritem = mlist->getItem(client.getPlayerItem());
-				playeritem_usable = playeritem.getDefinition(itemdef).usable;
-				playeritem_liquids_pointable = playeritem.getDefinition(itemdef).liquids_pointable;
 			}
 		}
+		const ItemDefinition &playeritem_def =
+				playeritem.getDefinition(itemdef);
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef);
 		
@@ -2267,7 +2324,7 @@ void the_game(
 				// input
 				&client, player_position, camera_direction,
 				camera_position, shootline, d,
-				playeritem_liquids_pointable, !ldown_for_dig,
+				playeritem_def.liquids_pointable, !ldown_for_dig,
 				// output
 				hilightboxes,
 				selected_object);
@@ -2327,7 +2384,7 @@ void the_game(
 		else
 			repeat_rightclick_timer = 0;
 
-		if(playeritem_usable && input->getLeftState())
+		if(playeritem_def.usable && input->getLeftState())
 		{
 			if(input->getLeftClicked())
 				client.interact(4, pointed);
@@ -2534,46 +2591,13 @@ void the_game(
 					
 					// If the wielded item has node placement prediction,
 					// make that happen
-					const ItemDefinition &def =
-							playeritem.getDefinition(itemdef);
-					if(def.node_placement_prediction != ""
-							&& !nodedef->get(map.getNode(nodepos)).rightclickable)
-					do{ // breakable
-						verbosestream<<"Node placement prediction for "
-								<<playeritem.name<<" is "
-								<<def.node_placement_prediction<<std::endl;
-						v3s16 p = neighbourpos;
-						// Place inside node itself if buildable_to
-						try{
-							MapNode n_under = map.getNode(nodepos);
-							if(nodedef->get(n_under).buildable_to)
-								p = nodepos;
-						}catch(InvalidPositionException &e){}
-						// Find id of predicted node
-						content_t id;
-						bool found =
-							nodedef->getId(def.node_placement_prediction, id);
-						if(!found){
-							errorstream<<"Node placement prediction failed for "
-									<<playeritem.name<<" (places "
-									<<def.node_placement_prediction
-									<<") - Name not known"<<std::endl;
-							break;
-						}
-						MapNode n(id);
-						try{
-							// This triggers the required mesh update too
-							client.addNode(p, n);
-						}catch(InvalidPositionException &e){
-							errorstream<<"Node placement prediction failed for "
-									<<playeritem.name<<" (places "
-									<<def.node_placement_prediction
-									<<") - Position not loaded"<<std::endl;
-						}
-					}while(0);
+					nodePlacementPrediction(client,
+							playeritem_def,
+							nodepos, neighbourpos);
 					
 					// Read the sound
-					soundmaker.m_player_rightpunch_sound = def.sound_place;
+					soundmaker.m_player_rightpunch_sound =
+							playeritem_def.sound_place;
 				}
 			}
 		}
