@@ -22,9 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
+class MapgenV6;
+class MapgenV7;
+
 class CaveV6 {
 public:
+	MapgenV6 *mg;
 	ManualMapVoxelManipulator *vm;
+	INodeDefManager *ndef;
 
 	s16 min_tunnel_diameter;
 	s16 max_tunnel_diameter;
@@ -40,10 +45,10 @@ public:
 	v3s16 node_min;
 	v3s16 node_max;
 	
-	v3f orp;  //original point
-	v3s16 of;
+	v3f orp;  // starting point, relative to caved space
+	v3s16 of; // absolute coordinates of caved space
 	v3s16 ar; // allowed route area
-	s16 rs;   // radius size
+	s16 rs;   // tunnel radius size
 	v3f main_direction;
 	
 	s16 route_y_min;
@@ -58,11 +63,53 @@ public:
 	int water_level;
 
 	CaveV6() {}
-	CaveV6(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2, bool large_cave,
-			content_t c_water, content_t c_lava);
+	CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool large_cave);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz);
+};
+
+class CaveV7 {
+public:
+	MapgenV7 *mg;
+	ManualMapVoxelManipulator *vm;
+	INodeDefManager *ndef;
+
+	s16 min_tunnel_diameter;
+	s16 max_tunnel_diameter;
+	u16 tunnel_routepoints;
+	int dswitchint;
+	int part_max_length_rs;
+
+	bool large_cave;
+	bool large_cave_is_flat;
+	bool flooded;
+
+	s16 max_stone_y;
+	v3s16 node_min;
+	v3s16 node_max;
+	
+	v3f orp;  // starting point, relative to caved space
+	v3s16 of; // absolute coordinates of caved space
+	v3s16 ar; // allowed route area
+	s16 rs;   // tunnel radius size
+	v3f main_direction;
+	
+	s16 route_y_min;
+	s16 route_y_max;
+	
+	PseudoRandom *ps;
+	
+	content_t c_water_source;
+	content_t c_lava_source;
+	
+	int water_level;
+
+	CaveV7() {}
+	CaveV7(MapgenV7 *mg, PseudoRandom *ps, bool large_cave);
+	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
+	void makeTunnel(bool dirswitch);
+	void carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine);
 };
 
 #endif
