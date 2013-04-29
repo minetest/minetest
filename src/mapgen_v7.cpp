@@ -78,7 +78,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	this->water_level = params->water_level;
 	this->flags   = params->flags;
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
-//	this->ystride = csize.X; //////fix this
+	this->ystride = csize.X; //////fix this
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
@@ -187,7 +187,6 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	generateCaves(stone_surface_max_y);
 	addTopNodes();
-	//v3s16 central_area_size = node_max - node_min + v3s16(1,1,1);
 
 	if (flags & MG_DUNGEONS) {
 		DungeonGen dgen(ndef, data->seed, water_level);
@@ -452,7 +451,8 @@ void MapgenV7::addTopNodes() {
 				vm->m_area.add_y(em, i, 1);
 			}
 			// If dirt, grow grass on it.
-			if (vm->m_data[i].getContent() == CONTENT_AIR) {
+			if (y > water_level - 10 &&
+				vm->m_data[i].getContent() == CONTENT_AIR) {
 				vm->m_area.add_y(em, i, -1);
 				if (vm->m_data[i].getContent() == c_dirt)
 					vm->m_data[i] = MapNode(c_dirt_with_grass);
@@ -489,7 +489,8 @@ void MapgenV7::addTopNodes() {
 				vm->m_area.add_y(em, i, 1);
 			}
 			// If dirt, grow grass on it.
-			if (vm->m_data[i].getContent() == CONTENT_AIR) {
+			if (y > water_level - 10 &&
+				vm->m_data[i].getContent() == CONTENT_AIR) {
 				vm->m_area.add_y(em, i, -1);
 				if (vm->m_data[i].getContent() == c_dirt)
 					vm->m_data[i] = MapNode(c_dirt_with_grass);
@@ -502,22 +503,22 @@ void MapgenV7::addTopNodes() {
 #include "mapgen_v6.h"
 void MapgenV7::generateCaves(int max_stone_y) {
 	PseudoRandom ps(blockseed + 21343);
-	PseudoRandom ps2(blockseed + 1032);
 
 	int volume_nodes = (node_max.X - node_min.X + 1) *
-					   (node_max.Y - node_min.Y + 1) * MAP_BLOCKSIZE;
+					   (node_max.Y - node_min.Y + 1) *
+					   (node_max.Z - node_min.Z + 1);
 	float cave_amount = NoisePerlin2D(&nparams_v6_def_cave,
 								node_min.X, node_min.Y, seed);
-	
-	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 50000;
+
+	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 250000;
 	for (u32 i = 0; i < caves_count; i++) {
-		CaveV6 cave(this, &ps, &ps2, false, c_water_source, c_lava_source);
+		CaveV7 cave(this, &ps, false);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
-	
-	u32 bruises_count = (ps.range(1, 6) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
+
+	u32 bruises_count = (ps.range(1, 8) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
 	for (u32 i = 0; i < bruises_count; i++) {
-		CaveV6 cave(this, &ps, &ps2, true, c_water_source, c_lava_source);
+		CaveV7 cave(this, &ps, true);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}	
 }

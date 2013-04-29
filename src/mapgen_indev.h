@@ -153,8 +153,8 @@ struct MapgenFactoryIndev : public MapgenFactoryV6 {
 
 class CaveIndev : public CaveV6 {
 public:
-	CaveIndev(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2, v3s16 node_min,
-			bool is_large_cave, content_t c_water, content_t c_lava);
+	CaveIndev(MapgenIndev *mg, PseudoRandom *ps, PseudoRandom *ps2,
+			v3s16 node_min, bool is_large_cave);
 };
 
 #endif

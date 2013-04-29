@@ -274,23 +274,21 @@ void MapgenIndev::generateCaves(int max_stone_y) {
 	
 	for (u32 i = 0; i < caves_count + bruises_count; i++) {
 		bool large_cave = (i >= caves_count);
-		CaveIndev cave(this, &ps, &ps2, node_min, large_cave,
-						c_water_source, c_lava_source);
+		CaveIndev cave(this, &ps, &ps2, node_min, large_cave);
 
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
 
-CaveIndev::CaveIndev(Mapgen *mg, PseudoRandom *ps, PseudoRandom *ps2,
-				v3s16 node_min, bool is_large_cave,
-				content_t c_water, content_t c_lava) {
+CaveIndev::CaveIndev(MapgenIndev *mg, PseudoRandom *ps, PseudoRandom *ps2,
+				v3s16 node_min, bool is_large_cave) {
 	this->vm = mg->vm;
 	this->water_level = mg->water_level;
 	this->large_cave = is_large_cave;
 	this->ps  = ps;
 	this->ps2 = ps2;
-	this->c_water_source = c_water;
-	this->c_lava_source  = c_lava;
+	this->c_water_source = mg->c_water_source;
+	this->c_lava_source  = mg->c_lava_source;
 
 	min_tunnel_diameter = 2;
 	max_tunnel_diameter = ps->range(2,6);
