@@ -44,7 +44,7 @@ void drawItemStack(video::IVideoDriver *driver,
 {
 	if(item.empty())
 		return;
-	
+
 	const ItemDefinition &def = item.getDefinition(gamedef->idef());
 	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
 
@@ -184,7 +184,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 {
 	// Remove children
 	removeChildren();
-	
+
 	v2s32 size(100,100);
 	s32 helptext_h = 15;
 	core::rect<s32> rect;
@@ -195,9 +195,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Used to adjust form size automatically if needed
 	// A proceed button is added if there is no size[] element
 	int bp_set = 0;
-	
+
 	/* Convert m_init_draw_spec to m_inventorylists */
-	
+
 	m_inventorylists.clear();
 	m_images.clear();
 	m_backgrounds.clear();
@@ -371,12 +371,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 
-				
+
 				fname = f.next_esc(";");
 				flabel = f.next_esc(";");
 				if(bp_set != 2)
 					errorstream<<"WARNING: invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
-				
+
 			}
 
 			std::string odefault = f.next_esc("]");
@@ -441,7 +441,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			pos.Y += stof(f.next_esc(";")) * (float)spacing.Y;
 
 			rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
-			
+
 			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
 				errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
@@ -467,7 +467,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			pos.Y += (stof(f.next_esc(";")) * (float)imgsize.Y)/2;
 
 			rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
-			
+
 			std::string fname = f.next_esc(";");
 			std::string flabel = f.next_esc("]");
 			if(bp_set != 2)
@@ -497,7 +497,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			geom.Y = (stof(f.next_esc(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
 
 			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-			
+
 			std::string fimage = f.next_esc(";");
 			std::string fname = f.next_esc(";");
 			std::string flabel = f.next_esc("]");
@@ -515,14 +515,14 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			spec.is_button = true;
 			if(type == "image_button_exit")
 				spec.is_exit = true;
-			
+
 			video::ITexture *texture = m_gamedef->tsrc()->getTextureRaw(fimage);
 			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
 			e->setUseAlphaChannel(true);
 			e->setImage(texture);
 			e->setPressedImage(texture);
 			e->setScaleImage(true);
-			
+
 			m_fields.push_back(spec);
 		}
 		else if(type == "item_image_button")
@@ -628,7 +628,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
-	
+
 	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
 		const ListDrawSpec &s = m_inventorylists[i];
@@ -659,7 +659,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (skin)
 		font = skin->getFont();
-	
+
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	if(!inv){
 		infostream<<"GUIFormSpecMenu::drawList(): WARNING: "
@@ -676,9 +676,9 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				<<std::endl;
 		return;
 	}
-	
+
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
-	
+
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		u32 item_i = i + s.start_item_i;
@@ -758,7 +758,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (skin)
 		font = skin->getFont();
-	
+
 	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 	assert(inv);
 	InventoryList *list = inv->getList(m_selected_item->listname);
@@ -789,7 +789,7 @@ void GUIFormSpecMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
@@ -814,7 +814,7 @@ void GUIFormSpecMenu::drawMenu()
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
-	
+
 	/*
 		Draw images
 	*/
@@ -834,7 +834,7 @@ void GUIFormSpecMenu::drawMenu()
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
-	
+
 	/*
 		Draw item images
 	*/
@@ -856,7 +856,7 @@ void GUIFormSpecMenu::drawMenu()
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
-	
+
 	/*
 		Draw items
 		Phase 0: Item slot rectangles
@@ -875,7 +875,7 @@ void GUIFormSpecMenu::drawMenu()
 		Call base class
 	*/
 	gui::IGUIElement::draw();
-	
+
 	/*
 		Draw fields/buttons tooltips
 	*/
@@ -900,7 +900,7 @@ void GUIFormSpecMenu::drawMenu()
 			}
 		}
 	}
-	
+
 	/*
 		Draw dragged item stack
 	*/

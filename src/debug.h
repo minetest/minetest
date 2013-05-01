@@ -95,7 +95,7 @@ public:
 			//TODO: Is this slow?
 			fflush(g_debugstreams[i]);
 		}
-		
+
 		return c;
 	}
 	std::streamsize xsputn(const char *s, std::streamsize n)
@@ -112,7 +112,7 @@ public:
 
 		return n;
 	}
-	
+
 private:
 	bool m_disable_stderr;
 };
@@ -159,7 +159,7 @@ struct DebugStack
 	DebugStack(threadid_t id);
 	void print(FILE *file, bool everything);
 	void print(std::ostream &os, bool everything);
-	
+
 	threadid_t threadid;
 	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
 	int stack_i; // Points to the lowest empty position

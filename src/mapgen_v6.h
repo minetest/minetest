@@ -56,7 +56,7 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams *np_humidity;
 	NoiseParams *np_trees;
 	NoiseParams *np_apple_trees;
-	
+
 	MapgenV6Params() {
 		freq_desert       = 0.45;
 		freq_beach        = 0.15;
@@ -73,7 +73,7 @@ struct MapgenV6Params : public MapgenParams {
 		np_apple_trees    = &nparams_v6_def_apple_trees;
 
 	}
-	
+
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
@@ -107,7 +107,7 @@ public:
 	NoiseParams *np_apple_trees;
 	float freq_desert;
 	float freq_beach;
-	
+
 	content_t c_stone;
 	content_t c_dirt;
 	content_t c_dirt_with_grass;
@@ -121,7 +121,7 @@ public:
 
 	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
 	~MapgenV6();
-	
+
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 
@@ -135,7 +135,7 @@ public:
 	s16 find_stone_level(v2s16 p2d);
 	bool block_is_underground(u64 seed, v3s16 blockpos);
 	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
-	
+
 	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);
 	bool getHaveAppleTree(v2s16 p);
@@ -145,9 +145,9 @@ public:
 	bool getHaveBeach(int index);
 	BiomeType getBiome(v2s16 p);
 	BiomeType getBiome(int index, v2s16 p);
-	
+
 	u32 get_blockseed(u64 seed, v3s16 p);
-	
+
 	virtual void calculateNoise();
 	int generateGround();
 	void addMud();
@@ -163,7 +163,7 @@ struct MapgenFactoryV6 : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
 		return new MapgenV6(mgid, (MapgenV6Params *)params, emerge);
 	};
-	
+
 	MapgenParams *createMapgenParams() {
 		return new MapgenV6Params();
 	};

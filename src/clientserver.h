@@ -135,7 +135,7 @@ enum ToClientCommand
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	TOCLIENT_REMOVENODE = 0x22,
-	
+
 	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
 	/*
 		[0] u16 command
@@ -156,7 +156,7 @@ enum ToClientCommand
 		[N] u16 peer_id
 		[N] char[20] name
 	*/
-	
+
 	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
 
 	TOCLIENT_SECTORMETA = 0x26, // Obsolete
@@ -171,7 +171,7 @@ enum ToClientCommand
 		[0] u16 command
 		[2] serialized inventory
 	*/
-	
+
 	TOCLIENT_OBJECTDATA = 0x28, // Obsolete
 	/*
 		Sent as unreliable.
@@ -222,7 +222,7 @@ enum ToClientCommand
 			string initialization data
 		}
 	*/
-	
+
 	TOCLIENT_ACTIVE_OBJECT_MESSAGES = 0x32,
 	/*
 		u16 command
@@ -288,21 +288,21 @@ enum ToClientCommand
 		u16 length of remote media server url (if applicable)
 		string url
 	*/
-	
+
 	TOCLIENT_TOOLDEF = 0x39,
 	/*
 		u16 command
 		u32 length of the next item
 		serialized ToolDefManager
 	*/
-	
+
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
 		u16 command
 		u32 length of the next item
 		serialized NodeDefManager
 	*/
-	
+
 	TOCLIENT_CRAFTITEMDEF = 0x3b,
 	/*
 		u16 command
@@ -329,7 +329,7 @@ enum ToClientCommand
 		u32 length of next item
 		serialized ItemDefManager
 	*/
-	
+
 	TOCLIENT_PLAY_SOUND = 0x3f,
 	/*
 		u16 command
@@ -567,7 +567,7 @@ enum ToServerCommand
 		2: stop digging (all parameters ignored)
 		3: digging completed
 	*/
-	
+
 	TOSERVER_RELEASE = 0x29, // Obsolete
 
 	// (oops, there is some gap here)
@@ -609,7 +609,7 @@ enum ToServerCommand
 		[3] u16 id
 		[5] u16 item
 	*/
-	
+
 	TOSERVER_DAMAGE = 0x35,
 	/*
 		u16 command
@@ -632,7 +632,7 @@ enum ToServerCommand
 		[0] u16 TOSERVER_PLAYERITEM
 		[2] u16 item
 	*/
-	
+
 	TOSERVER_RESPAWN=0x38,
 	/*
 		u16 TOSERVER_RESPAWN
@@ -654,7 +654,7 @@ enum ToServerCommand
 
 		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
 	*/
-	
+
 	TOSERVER_REMOVED_SOUNDS = 0x3a,
 	/*
 		u16 command

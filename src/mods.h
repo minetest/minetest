@@ -92,7 +92,7 @@ public:
 		m_sorted_mods()
 	{}
 
-		
+
 	ModConfiguration(std::string worldpath);
 
 	// adds all mods in the given path. used for games, modpacks

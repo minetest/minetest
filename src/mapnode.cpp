@@ -331,7 +331,7 @@ u32 MapNode::serializedLength(u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-		
+
 	if(version == 0)
 		return 1;
 	else if(version <= 9)
@@ -345,13 +345,13 @@ void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-	
+
 	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
 	// in memory; conversion just won't work in this direction.
 	if(version < 24)
 		throw SerializationError("MapNode::serialize: serialization to "
 				"version < 24 not possible");
-		
+
 	writeU16(dest+0, param0);
 	writeU8(dest+2, param1);
 	writeU8(dest+3, param2);
@@ -360,7 +360,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-		
+
 	if(version <= 21)
 	{
 		deSerialize_pre22(source, version);
@@ -523,7 +523,7 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 			param2 &= 0x0f;
 		}
 	}
-	
+
 	// Convert special values from old version to new
 	if(version <= 19)
 	{

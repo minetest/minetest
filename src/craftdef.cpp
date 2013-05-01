@@ -521,7 +521,7 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 {
 	if(input.method != CRAFT_METHOD_NORMAL)
 		return false;
-	
+
 	// Filter empty items out of input
 	std::vector<std::string> input_filtered;
 	for(std::vector<ItemStack>::const_iterator
@@ -755,7 +755,7 @@ bool CraftDefinitionCooking::check(const CraftInput &input, IGameDef *gamedef) c
 				<<"of cooking recipe with output="<<output<<std::endl;*/
 		return false;
 	}
-	
+
 	// Check the single input item
 	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }
@@ -836,7 +836,7 @@ bool CraftDefinitionFuel::check(const CraftInput &input, IGameDef *gamedef) cons
 				<<"of fuel recipe with burntime="<<burntime<<std::endl;*/
 		return false;
 	}
-	
+
 	// Check the single input item
 	return inputItemMatchesRecipe(input_filtered[0], recipe, gamedef->idef());
 }

@@ -137,7 +137,7 @@ class MapgenIndev : public MapgenV6 {
 	void generateCaves(int max_stone_y);
 	//void defineCave(Cave & cave, PseudoRandom ps, v3s16 node_min, bool large_cave);
 	void generateExperimental();
-	
+
 	void generateFloatIslands(int min_y);
 };
 

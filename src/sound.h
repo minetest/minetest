@@ -48,7 +48,7 @@ class ISoundManager
 {
 public:
 	virtual ~ISoundManager(){}
-	
+
 	// Multiple sounds can be loaded per name; when played, the sound
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure

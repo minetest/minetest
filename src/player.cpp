@@ -98,7 +98,7 @@ void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 	f32 dl = d_wanted.getLength();
 	if(dl > max_increase)
 		dl = max_increase;
-	
+
 	v3f d = d_wanted.normalize() * dl;
 
 	m_speed.X += d.X;
@@ -171,14 +171,14 @@ void Player::serialize(std::ostream &os)
 	args.writeLines(os);
 
 	os<<"PlayerArgsEnd\n";
-	
+
 	inventory.serialize(os);
 }
 
 void Player::deSerialize(std::istream &is)
 {
 	Settings args;
-	
+
 	for(;;)
 	{
 		if(is.eof())

@@ -373,7 +373,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
 		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
 		wield_position.Z += 25 * 0.5;
-	
+
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
 		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
@@ -446,7 +446,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
 	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
-	
+
 	// Immediately apply hard limits
 	if(m_draw_control.wanted_range < viewing_range_min)
 		m_draw_control.wanted_range = viewing_range_min;
@@ -541,7 +541,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 	}
 
 	new_range += wanted_range_change;
-	
+
 	//f32 new_range_unclamped = new_range;
 	new_range = MYMAX(new_range, viewing_range_min);
 	new_range = MYMIN(new_range, viewing_range_max);

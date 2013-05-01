@@ -308,9 +308,9 @@ public:
 		packet is constructed. If not, returns one of length 0.
 	*/
 	SharedBuffer<u8> insert(BufferedPacket &p, bool reliable);
-	
+
 	void removeUnreliableTimedOuts(float dtime, float timeout);
-	
+
 private:
 	// Key is seqnum
 	std::map<u16, IncomingSplitPacket*> m_buf;
@@ -326,7 +326,7 @@ struct Channel
 	u16 next_outgoing_seqnum;
 	u16 next_incoming_seqnum;
 	u16 next_outgoing_split_seqnum;
-	
+
 	// This is for buffering the incoming packets that are coming in
 	// the wrong order
 	ReliablePacketBuffer incoming_reliables;
@@ -348,7 +348,7 @@ public:
 	virtual ~PeerHandler()
 	{
 	}
-	
+
 	/*
 		This is called after the Peer has been inserted into the
 		Connection's peer container.
@@ -367,7 +367,7 @@ public:
 
 	Peer(u16 a_id, Address a_address);
 	virtual ~Peer();
-	
+
 	/*
 		Calculates avg_rtt and resend_timeout.
 
@@ -392,7 +392,7 @@ public:
 	// This is set to true when the peer has actually sent something
 	// with the id we have given to it
 	bool has_sent_with_id;
-	
+
 	float m_sendtime_accu;
 	float m_max_packets_per_second;
 	int m_num_sent;
@@ -460,7 +460,7 @@ struct ConnectionEvent
 		}
 		return "Invalid ConnectionEvent";
 	}
-	
+
 	void dataReceived(u16 peer_id_, SharedBuffer<u8> data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
@@ -505,7 +505,7 @@ struct ConnectionCommand
 	u8 channelnum;
 	Buffer<u8> data;
 	bool reliable;
-	
+
 	ConnectionCommand(): type(CONNCMD_NONE) {}
 
 	void serve(u16 port_)
@@ -559,7 +559,7 @@ public:
 	ConnectionEvent getEvent();
 	ConnectionEvent waitEvent(u32 timeout_ms);
 	void putCommand(ConnectionCommand &c);
-	
+
 	void SetTimeoutMs(int timeout){ m_bc_receive_timeout = timeout; }
 	void Serve(unsigned short port);
 	void Connect(Address address);
@@ -573,7 +573,7 @@ public:
 	Address GetPeerAddress(u16 peer_id);
 	float GetPeerAvgRTT(u16 peer_id);
 	void DeletePeer(u16 peer_id);
-	
+
 private:
 	void putEvent(ConnectionEvent &e);
 	void processCommand(ConnectionCommand &c);
@@ -611,24 +611,24 @@ private:
 			SharedBuffer<u8> packetdata, u16 peer_id,
 			u8 channelnum, bool reliable);
 	bool deletePeer(u16 peer_id, bool timeout);
-	
+
 	Queue<OutgoingPacket> m_outgoing_queue;
 	MutexedQueue<ConnectionEvent> m_event_queue;
 	MutexedQueue<ConnectionCommand> m_command_queue;
-	
+
 	u32 m_protocol_id;
 	u32 m_max_packet_size;
 	float m_timeout;
 	UDPSocket m_socket;
 	u16 m_peer_id;
-	
+
 	std::map<u16, Peer*> m_peers;
 	JMutex m_peers_mutex;
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;
 	int m_bc_receive_timeout;
-	
+
 	void SetPeerID(u16 id){ m_peer_id = id; }
 	u32 GetProtocolID(){ return m_protocol_id; }
 	void PrintInfo(std::ostream &out);

@@ -168,7 +168,7 @@ public:
 		}
 		m_action_todisk_buffer.clear();
 	}
-	
+
 	// Other
 
 	RollbackManager(const std::string &filepath, IGameDef *gamedef):
@@ -194,7 +194,7 @@ public:
 		if(m_action_todisk_buffer.size() >= 100)
 			flush();
 	}
-	
+
 	bool readFile(std::list<RollbackAction> &dst)
 	{
 		// Load whole file to memory
@@ -213,7 +213,7 @@ public:
 			if(line == "")
 				continue;
 			std::istringstream is(line);
-			
+
 			try{
 				std::string action_time_raw;
 				std::getline(is, action_time_raw, ' ');
@@ -270,7 +270,7 @@ public:
 		}
 		return action_buffer;
 	}
-	
+
 	std::string getLastNodeActor(v3s16 p, int range, int seconds,
 			v3s16 *act_p, int *act_seconds)
 	{
@@ -281,7 +281,7 @@ public:
 		int first_time = cur_time - seconds;
 
 		std::list<RollbackAction> action_buffer = getEntriesSince(first_time);
-		
+
 		std::list<RollbackAction> result;
 
 		for(std::list<RollbackAction>::const_reverse_iterator
@@ -305,7 +305,7 @@ public:
 						abs(action_p.Z - p.Z) > range)
 					continue;
 			}
-			
+
 			if(act_p)
 				*act_p = action_p;
 			if(act_seconds)
@@ -323,9 +323,9 @@ public:
 		// Figure out time
 		int cur_time = time(0);
 		int first_time = cur_time - seconds;
-		
+
 		std::list<RollbackAction> action_buffer = getEntriesSince(first_time);
-		
+
 		std::list<RollbackAction> result;
 
 		for(std::list<RollbackAction>::const_reverse_iterator

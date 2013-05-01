@@ -49,7 +49,7 @@ FarMesh::FarMesh(
 	m_render_range(20*MAP_BLOCKSIZE)
 {
 	dstream<<__FUNCTION_NAME<<std::endl;
-	
+
 	//video::IVideoDriver* driver = mgr->getVideoDriver();
 
 	m_materials[0].setFlag(video::EMF_LIGHTING, false);
@@ -60,7 +60,7 @@ FarMesh::FarMesh(
 	//m_materials[0].setFlag(video::EMF_ANTI_ALIASING, true);
 	//m_materials[0].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_materials[0].setFlag(video::EMF_FOG_ENABLE, true);
-	
+
 	m_materials[1].setFlag(video::EMF_LIGHTING, false);
 	m_materials[1].setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_materials[1].setFlag(video::EMF_BILINEAR_FILTER, false);
@@ -88,7 +88,7 @@ video::SMaterial& FarMesh::getMaterial(u32 i)
 {
 	return m_materials[i];
 }
-	
+
 
 void FarMesh::OnRegisterSceneNode()
 {
@@ -150,13 +150,13 @@ void FarMesh::render()
 		return;*/
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-	
+
 	//const s16 grid_radius_i = 12;
 	//const float grid_size = BS*50;
 	const s16 grid_radius_i = m_render_range/MAP_BLOCKSIZE;
 	const float grid_size = BS*MAP_BLOCKSIZE;
 	const v2f grid_speed(-BS*0, 0);
-	
+
 	// Position of grid noise origin in world coordinates
 	v2f world_grid_origin_pos_f(0,0);
 	// Position of grid noise origin from the camera
@@ -186,7 +186,7 @@ void FarMesh::render()
 			xi+center_of_drawing_in_noise_i.X,
 			zi+center_of_drawing_in_noise_i.Y
 		);
-		
+
 		// If sector was drawn, don't draw it this way
 		if(m_client->m_env.getClientMap().sectorWasDrawn(p_in_noise_i))
 			continue;
@@ -197,29 +197,29 @@ void FarMesh::render()
 			continue;*/
 
 		v2f p0 = v2f(xi,zi)*grid_size + world_center_of_drawing_in_noise_f;
-		
+
 		/*double noise[4];
 		double d = 100*BS;
 		noise[0] = d*noise2d_perlin(
 				(float)(p_in_noise_i.X+0)*grid_size/BS/100,
 				(float)(p_in_noise_i.Y+0)*grid_size/BS/100,
 				m_seed, 3, 0.5);
-		
+
 		noise[1] = d*noise2d_perlin(
 				(float)(p_in_noise_i.X+0)*grid_size/BS/100,
 				(float)(p_in_noise_i.Y+1)*grid_size/BS/100,
 				m_seed, 3, 0.5);
-		
+
 		noise[2] = d*noise2d_perlin(
 				(float)(p_in_noise_i.X+1)*grid_size/BS/100,
 				(float)(p_in_noise_i.Y+1)*grid_size/BS/100,
 				m_seed, 3, 0.5);
-		
+
 		noise[3] = d*noise2d_perlin(
 				(float)(p_in_noise_i.X+1)*grid_size/BS/100,
 				(float)(p_in_noise_i.Y+0)*grid_size/BS/100,
 				m_seed, 3, 0.5);*/
-		
+
 		HeightPoint hps[5];
 		hps[0] = ground_height(m_seed, v2s16(
 				(p_in_noise_i.X+0)*grid_size/BS,
@@ -237,7 +237,7 @@ void FarMesh::render()
 				(p_in_noise_i.X+0)*grid_size/BS+MAP_BLOCKSIZE/2,
 				(p_in_noise_i.Y+0)*grid_size/BS+MAP_BLOCKSIZE/2);
 		hps[4] = ground_height(m_seed, centerpoint);
-		
+
 		float noise[5];
 		float h_min = BS*65535;
 		float h_max = -BS*65536;
@@ -263,16 +263,16 @@ void FarMesh::render()
 		tree_amount_avg /= 5.0;
 
 		float steepness = (h_max - h_min)/grid_size;
-		
+
 		float light_f = noise[0]+noise[1]-noise[2]-noise[3];
 		light_f /= 100;
 		if(light_f < -1.0) light_f = -1.0;
 		if(light_f > 1.0) light_f = 1.0;
 		//light_f += 1.0;
 		//light_f /= 2.0;
-		
+
 		v2f p1 = p0 + v2f(1,1)*grid_size;
-		
+
 		bool ground_is_sand = false;
 		bool ground_is_rock = false;
 		bool ground_is_mud = false;
@@ -325,7 +325,7 @@ void FarMesh::render()
 				}
 			}
 		}
-		
+
 		// Set to water level
 		for(u32 i=0; i<4; i++)
 		{
@@ -336,9 +336,9 @@ void FarMesh::render()
 		float b = m_brightness + light_f*0.1*m_brightness;
 		if(b < 0) b = 0;
 		if(b > 2) b = 2;
-		
+
 		c = video::SColor(255, b*c.getRed(), b*c.getGreen(), b*c.getBlue());
-		
+
 		driver->setMaterial(m_materials[0]);
 
 		video::S3DVertex vertices[4] =
@@ -357,10 +357,10 @@ void FarMesh::render()
 				&& ground_is_mud == true)
 		{
 			driver->setMaterial(m_materials[1]);
-			
+
 			float b = m_brightness;
 			c = video::SColor(255, b*255, b*255, b*255);
-			
+
 			{
 				video::S3DVertex vertices[4] =
 				{

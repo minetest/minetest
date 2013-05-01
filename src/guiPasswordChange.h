@@ -32,7 +32,7 @@ public:
 			IMenuManager *menumgr,
 			Client* client);
 	~GUIPasswordChange();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -44,7 +44,7 @@ public:
 	bool acceptInput();
 
 	bool OnEvent(const SEvent& event);
-	
+
 private:
 	Client* m_client;
 

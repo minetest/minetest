@@ -41,7 +41,7 @@ public:
 			IMenuManager *menumgr,
 			bool simple_singleplayer_mode);
 	~GUIPauseMenu();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -51,7 +51,7 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
+
 private:
 	IGameCallback *m_gamecallback;
 	bool m_simple_singleplayer_mode;

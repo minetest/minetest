@@ -75,7 +75,7 @@ public:
 			os<<name<<" = "<<value<<"\n";
 		}
 	}
-  
+
 	// return all keys used 
 	std::vector<std::string> getNames(){
 		std::vector<std::string> names;
@@ -248,7 +248,7 @@ public:
 		}
 		else //file contains a setting which is not in m_settings
 			value_changed=true;
-			
+
 		return true;
 	}
 
@@ -839,7 +839,7 @@ fail:
 		set(name, std::string(sbuf));
 		return true;
 	}
-	
+
 	void setFlagStr(std::string name, u32 flags, FlagDesc *flagdesc)
 	{
 		set(name, writeFlagString(flags, flagdesc));

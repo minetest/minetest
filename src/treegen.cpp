@@ -530,7 +530,7 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		v3s16 p2 = p0 + v3s16(x,-1,z);
 		u32 vi1 = vmanip.m_area.index(p1);
 		u32 vi2 = vmanip.m_area.index(p2);
-		
+
 		if (vmanip.m_area.contains(p2) &&
 			vmanip.m_data[vi2].getContent() == CONTENT_AIR)
 			vmanip.m_data[vi2] = treenode;

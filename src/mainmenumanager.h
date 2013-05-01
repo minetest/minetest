@@ -72,7 +72,7 @@ public:
 		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
 		assert(*i == menu);
 		m_stack.erase(i);*/
-		
+
 		if(m_stack.size() != 0)
 			m_stack.back()->setVisible(true);
 	}
@@ -119,7 +119,7 @@ public:
 	{
 		changevolume_requested = true;
 	}
-	
+
 	bool disconnect_requested;
 	bool changepassword_requested;
 	bool changevolume_requested;

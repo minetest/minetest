@@ -1724,7 +1724,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 					}
 					break;
 			}
-			
+
 			if (nb.l && nb.t == NEIGHBOR_SAME_LEVEL)
 				++can_liquid_same_level;
 			if (liquid_levels[i] > 0)
@@ -1857,7 +1857,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			} else {
 				new_node_level = liquid_levels_want[i];
 			}
-			
+
 			if (new_node_level >= LIQUID_LEVEL_SOURCE)
 				new_node_content = liquid_kind;
 			else if (new_node_level > 0)
@@ -1911,7 +1911,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			<<new_node_content<< " p2="<<(int)n0.param2<< " nl="
 			<<(int)new_node_level<<std::endl;
 			*/
-			
+
 			n0.setContent(new_node_content);
 			// Find out whether there is a suspect for this action
 			std::string suspect;
@@ -2589,7 +2589,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 		//TimeTaker timer("initBlockMake() initialEmerge");
 		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
 	}
-	
+
 	// Ensure none of the blocks to be generated were marked as containing CONTENT_IGNORE
 /*	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
 		for (s16 y = blockpos_min.Y; y <= blockpos_max.Y; y++) {
@@ -3468,7 +3468,7 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-	
+
 	MapgenParams *mgparams;
 	try {
 		mgparams = m_emerge->getParamsFromSettings(&params);
@@ -3477,7 +3477,7 @@ void ServerMap::loadMapMeta()
 				   << e.what() << std::endl;
 		mgparams = NULL;
 	}
-	
+
 	if (mgparams) {
 		if (m_mgparams)
 			delete m_mgparams;
@@ -4227,7 +4227,7 @@ void ManualMapVoxelManipulator::initialEmerge(
 		if(block_data_inexistent)
 		{
 			flags |= VMANIP_BLOCK_DATA_INEXIST;
-			
+
 			/*
 				Mark area inexistent
 			*/

@@ -87,13 +87,13 @@ private:
 	std::string m_init_state;
 	bool m_registered;
 	struct ObjectProperties m_prop;
-	
+
 	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
-	
+
 	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
@@ -162,7 +162,7 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
-	
+
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
@@ -240,7 +240,7 @@ public:
 
 private:
 	std::string getPropertyPacket();
-	
+
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;

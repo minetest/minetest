@@ -66,7 +66,7 @@ SHA1::SHA1()
 {
 	// make sure that the data type is the right size
 	assert( sizeof( Uint32 ) * 5 == 20 );
-	
+
 	// initialize
 	H0 = 0x67452301;
 	H1 = 0xefcdab89;
@@ -105,7 +105,7 @@ void SHA1::process()
 									+(bytes[t*4 + 2] << 8)
 									+ bytes[t*4 + 3];
 	for(; t< 80; t++ ) W[t] = lrot( W[t-3]^W[t-8]^W[t-14]^W[t-16], 1 );
-	
+
 	/* main loop */
 	Uint32 temp;
 	for( t = 0; t < 80; t++ )
@@ -163,7 +163,7 @@ void SHA1::addBytes( const char* data, int num )
 		num -= toCopy;
 		data += toCopy;
 		unprocessedBytes += toCopy;
-		
+
 		// there is a full block
 		if( unprocessedBytes == 64 ) process();
 	}
@@ -177,7 +177,7 @@ unsigned char* SHA1::getDigest()
 	Uint32 totalBitsH = size >> 29;
 	// add 0x80 to the message
 	addBytes( "\x80", 1 );
-	
+
 	unsigned char footer[64] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

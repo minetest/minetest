@@ -70,7 +70,7 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
@@ -80,7 +80,7 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 			screensize.X/2 + 500/2,
 			screensize.Y/2 + 200/2
 	);
-	
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
@@ -117,7 +117,7 @@ void GUIDeathScreen::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	{
 		video::SColor color(180,50,0,0);
 		driver->draw2DRectangle(color,

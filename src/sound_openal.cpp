@@ -119,7 +119,7 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 	char array[BUFFER_SIZE]; // Local fixed size array
 	vorbis_info *pInfo;
 	OggVorbis_File oggFile;
-	
+
 	// Do a dumb-ass static string copy for old versions of ov_fopen
 	// because they expect a non-const char*
 	char nonconst[10000];
@@ -211,7 +211,7 @@ public:
 		m_is_initialized(false)
 	{
 		ALCenum error = ALC_NO_ERROR;
-		
+
 		infostream<<"Audio: Initializing..."<<std::endl;
 
 		m_device = alcOpenDevice(NULL);
@@ -283,7 +283,7 @@ public:
 		m_buffers.clear();
 		infostream<<"Audio: Deinitialized."<<std::endl;
 	}
-	
+
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
 		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
@@ -375,7 +375,7 @@ public:
 		m_sounds_playing[id] = sound;
 		return id;
 	}
-	
+
 	void deleteSound(int id)
 	{
 		std::map<int, PlayingSound*>::iterator i =
@@ -383,7 +383,7 @@ public:
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
-		
+
 		alDeleteSources(1, &sound->source_id);
 
 		delete sound;
@@ -411,7 +411,7 @@ public:
 		}
 		return getBuffer(name);
 	}
-	
+
 	// Remove stopped sounds
 	void maintain()
 	{
@@ -482,7 +482,7 @@ public:
 		alListenerfv(AL_ORIENTATION, f);
 		warn_if_error(alGetError(), "updateListener");
 	}
-	
+
 	void setListenerGain(float gain)
 	{
 		alListenerf(AL_GAIN, gain);

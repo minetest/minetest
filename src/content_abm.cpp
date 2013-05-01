@@ -49,7 +49,7 @@ public:
 	{
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		ServerMap *map = &env->getServerMap();
-		
+
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
 		content_t c_snow = ndef->getId("snow");
 		if(ndef->get(n_top).light_propagates &&
@@ -83,7 +83,7 @@ public:
 	{
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		ServerMap *map = &env->getServerMap();
-		
+
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
 		if((!ndef->get(n_top).light_propagates &&
 				n_top.getContent() != CONTENT_IGNORE) ||
@@ -101,7 +101,7 @@ private:
 	content_t c_junglesapling;
 	content_t c_dirt;
 	content_t c_dirt_with_grass;
-	
+
 public:
 	MakeTreesFromSaplingsABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
 		c_junglesapling   = nodemgr->getId("junglesapling");
@@ -125,14 +125,14 @@ public:
 	{
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		ServerMap *map = &env->getServerMap();
-		
+
 		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
 		if (n_below.getContent() != c_dirt &&
 			n_below.getContent() != c_dirt_with_grass)
 			return;
-			
+
 		bool is_jungle_tree = n.getContent() == c_junglesapling;
-		
+
 		actionstream <<"A " << (is_jungle_tree ? "jungle " : "")
 				<< "sapling grows into a tree at "
 				<< PP(p) << std::endl;
@@ -142,14 +142,14 @@ public:
 		ManualMapVoxelManipulator vmanip(map);
 		v3s16 tree_blockp = getNodeBlockPos(tree_p);
 		vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
-		
+
 		if (is_jungle_tree) {
 			treegen::make_jungletree(vmanip, tree_p, ndef, myrand());
 		} else {
 			bool is_apple_tree = myrand() % 4 == 0;
 			treegen::make_tree(vmanip, tree_p, is_apple_tree, ndef, myrand());
 		}
-		
+
 		vmanip.blitBackAll(&modified_blocks);
 
 		// update lighting
@@ -183,7 +183,7 @@ public:
 		nodemgr->getIds("group:liquid", liquids);
 		for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
 			contents.insert(nodemgr->get(*k).liquid_alternative_flowing);
-		
+
 	}
 	virtual std::set<std::string> getTriggerContents()
 	{

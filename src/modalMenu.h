@@ -47,7 +47,7 @@ public:
 				core::rect<s32>(0,0,100,100))
 	{
 		//m_force_regenerate_gui = false;
-		
+
 		m_menumgr = menumgr;
 		m_allow_focus_removal = false;
 		m_screensize_old = v2u32(0,0);
@@ -75,7 +75,7 @@ public:
 	{
 		if(!IsVisible)
 			return;
-			
+
 		video::IVideoDriver* driver = Environment->getVideoDriver();
 		v2u32 screensize = driver->getScreenSize();
 		if(screensize != m_screensize_old /*|| m_force_regenerate_gui*/)
@@ -87,7 +87,7 @@ public:
 
 		drawMenu();
 	}
-	
+
 	/*
 		This should be called when the menu wants to quit.
 

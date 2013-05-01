@@ -68,17 +68,17 @@ public:
 	INodeDefManager *ndef;
 
 	std::map<std::string, MapgenFactory *> mglist;
-	
+
 	std::vector<Mapgen *> mapgen;
 	std::vector<EmergeThread *> emergethread;
-	
+
 	//settings
 	MapgenParams *params;
 	bool mapgen_debug_info;
 	u16 qlimit_total;
 	u16 qlimit_diskonly;
 	u16 qlimit_generate;
-	
+
 	//block emerge queue data structures
 	JMutex queuemutex;
 	std::map<v3s16, BlockEmergeData *> blocks_enqueued;
@@ -96,11 +96,11 @@ public:
 						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
-	
+
 	void registerMapgen(std::string name, MapgenFactory *mgfactory);
 	MapgenParams *getParamsFromSettings(Settings *settings);
 	void setParamsToSettings(Settings *settings);
-	
+
 	//mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
@@ -116,11 +116,11 @@ class EmergeThread : public SimpleThread
 	Mapgen *mapgen;
 	bool enable_mapgen_debug_info;
 	int id;
-	
+
 public:
 	Event qevent;
 	std::queue<v3s16> blockqueue;
-	
+
 	EmergeThread(Server *server, int ethreadid):
 		SimpleThread(),
 		m_server(server),

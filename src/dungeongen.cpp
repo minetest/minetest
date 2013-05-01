@@ -44,7 +44,7 @@ DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel) {
 	this->ndef        = ndef;
 	this->mapseed     = seed;
 	this->water_level = waterlevel;
-	
+
 	np_rarity  = &nparams_dungeon_rarity;
 	np_wetness = &nparams_dungeon_wetness;
 	np_density = &nparams_dungeon_density;
@@ -65,7 +65,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	if ((nmin.Y + nmax.Y) / 2 >= approx_groundlevel ||
 		NoisePerlin3D(np_rarity, nmin.X, nmin.Y, nmin.Z, mapseed) < 0.2)
 		return;
-		
+
 	this->vmanip    = vm;
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
@@ -92,10 +92,10 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 			}
 		}
 	}
-	
+
 	// Add it
 	makeDungeon(v3s16(1,1,1) * MAP_BLOCKSIZE);
-	
+
 	// Convert some cobble to mossy cobble
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
@@ -111,7 +111,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 			}
 		}
 	}
-	
+
 	//printf("== gen dungeons: %dms\n", t.stop());
 }
 
@@ -132,14 +132,14 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		roomsize = is_large_room ?
 			v3s16(random.range(8, 16),random.range(8, 16),random.range(8, 16)) :
 			v3s16(random.range(4,  8),random.range(4,  6),random.range(4, 8));
-		
+
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
 		roomplace = vmanip->m_area.MinEdge + start_padding + v3s16(
 			random.range(0,areasize.X-roomsize.X-1-start_padding.X),
 			random.range(0,areasize.Y-roomsize.Y-1-start_padding.Y),
 			random.range(0,areasize.Z-roomsize.Z-1-start_padding.Z));
-			
+
 		/*
 			Check that we're not putting the room to an unknown place,
 			otherwise it might end up floating in the air
@@ -211,7 +211,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		// Create walker and find a place for a door
 		v3s16 doorplace;
 		v3s16 doordir;
-		
+
 		m_pos = walker_start_place;
 		bool r = findPlaceForDoor(doorplace, doordir);
 		if (r == false)
@@ -252,7 +252,7 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 {
 	MapNode n_cobble(cid_cobble);
 	MapNode n_air(CONTENT_AIR);
-	
+
 	// Make +-X walls
 	for (s16 z = 0; z < roomsize.Z; z++)
 	for (s16 y = 0; y < roomsize.Y; y++)
@@ -389,10 +389,10 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 	u32 partlength = random.range(1, 13);
 	u32 partcount = 0;
 	s16 make_stairs = 0;
-	
+
 	if (random.next() % 2 == 0 && partlength >= 3)
 		make_stairs = random.next() % 2 ? 1 : -1;
-	
+
 	for (u32 i = 0; i < length; i++) {
 		v3s16 p = p0 + dir;
 		if (partcount != 0)
@@ -405,7 +405,7 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(cid_cobble), 0);
 				makeHole(p);
 				makeHole(p - dir);
-				
+
 				// TODO: fix stairs code so it works 100% (quite difficult)
 
 				// exclude stairs from the bottom step
@@ -413,11 +413,11 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 					((make_stairs == -1) && i != length - 1)) {
 					// rotate face 180 deg if making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
-					
+
 					u32 vi = vmanip->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
 					if (vmanip->m_data[vi].getContent() == cid_cobble)
 						vmanip->m_data[vi] = MapNode(cid_cobblestair, 0, facedir);
-					
+
 					vi = vmanip->m_area.index(p.X, p.Y, p.Z);
 					if (vmanip->m_data[vi].getContent() == cid_cobble)
 						vmanip->m_data[vi] = MapNode(cid_cobblestair, 0, facedir);

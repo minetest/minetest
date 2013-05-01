@@ -144,7 +144,7 @@ public:
 		}
 		m_buf += c;
 	}
-	
+
 private:
 	enum LogMessageLevel m_lev;
 	std::string m_buf;

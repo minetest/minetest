@@ -49,9 +49,9 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
- 
- 
- 
+
+
+
 	if(txc == NULL)
 	{
 		static const f32 txc_default[24] = {
@@ -184,11 +184,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		Some settings
 	*/
 	bool new_style_water = g_settings->getBool("new_style_water");
-	
+
 	float node_liquid_level = 1.0;
 	if(new_style_water)
 		node_liquid_level = 0.85;
-	
+
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
@@ -203,7 +203,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		// Only solidness=0 stuff is drawn here
 		if(f.solidness != 0)
 			continue;
-		
+
 		switch(f.drawtype){
 		default:
 			infostream<<"Got "<<f.drawtype<<std::endl;
@@ -356,7 +356,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			 */
 			if(top_is_same_liquid)
 				continue;
-			
+
 			video::S3DVertex vertices[4] =
 			{
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
@@ -394,7 +394,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			content_t c_source = nodedef->getId(f.liquid_alternative_source);
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
-			
+
 			u16 l = 0;
 			// If this liquid emits light and doesn't contain light, draw
 			// it at what it emits, for an increased effect
@@ -411,7 +411,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			else
 				l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
-			
+
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
 			std::map<v3s16, f32> neighbor_levels;
@@ -456,7 +456,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							n2.getContent() == c_flowing)
 						flags |= neighborflag_top_is_same_liquid;
 				}
-				
+
 				neighbor_levels[neighbor_dirs[i]] = level;
 				neighbor_contents[neighbor_dirs[i]] = content;
 				neighbor_flags[neighbor_dirs[i]] = flags;
@@ -464,7 +464,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			// Corner heights (average between four liquids)
 			f32 corner_levels[4];
-			
+
 			v3s16 halfdirs[4] = {
 				v3s16(0,0,0),
 				v3s16(1,0,0),
@@ -544,14 +544,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				content_t neighbor_content = neighbor_contents[dir];
 				const ContentFeatures &n_feat = nodedef->get(neighbor_content);
-				
+
 				// Don't draw face if neighbor is blocking the view
 				if(n_feat.solidness == 2)
 					continue;
-				
+
 				bool neighbor_is_same_liquid = (neighbor_content == c_source
 						|| neighbor_content == c_flowing);
-				
+
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
 				if(neighbor_is_same_liquid == true
@@ -563,7 +563,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				const TileSpec *current_tile = &tile_liquid;
 				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
 					current_tile = &tile_liquid_bfculled;
-				
+
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
@@ -575,7 +575,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
 							pa_liquid.x0(), pa_liquid.y0()),
 				};
-				
+
 				/*
 					If our topside is liquid, set upper border of face
 					at upper border of node
@@ -593,7 +593,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					vertices[2].Pos.Y = corner_levels[side_corners[i][0]];
 					vertices[3].Pos.Y = corner_levels[side_corners[i][1]];
 				}
-				
+
 				/*
 					If neighbor is liquid, lower border of face is corner
 					liquid levels
@@ -612,7 +612,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					vertices[0].Pos.Y = -0.5*BS;
 					vertices[1].Pos.Y = -0.5*BS;
 				}
-				
+
 				for(s32 j=0; j<4; j++)
 				{
 					if(dir == v3s16(0,0,1))
@@ -623,7 +623,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.rotateXZBy(90);
 					if(dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
-						
+
 					// Do this to not cause glitches when two liquids are
 					// side-by-side
 					/*if(neighbor_is_same_liquid == false){
@@ -638,11 +638,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// Add to mesh collector
 				collector.append(*current_tile, vertices, 4, indices, 6);
 			}
-			
+
 			/*
 				Generate top side, if appropriate
 			*/
-			
+
 			if(top_is_same_liquid == false)
 			{
 				video::S3DVertex vertices[4] =
@@ -656,7 +656,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
 							pa_liquid.x0(), pa_liquid.y0()),
 				};
-				
+
 				// To get backface culling right, the vertices need to go
 				// clockwise around the front of the face. And we happened to
 				// calculate corner levels in exact reverse order.
@@ -670,7 +670,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					vertices[i].Pos.Y += corner_levels[j];
 					vertices[i].Pos += intToFloat(p, BS);
 				}
-				
+
 				// Default downwards-flowing texture animation goes from 
 				// -Z towards +Z, thus the direction is +Z.
 				// Rotate texture to make animation go in flow direction
@@ -750,7 +750,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
 						ap.x0(), ap.y0()),
 				};
-				
+
 				// Rotations in the g_6dirs format
 				if(j == 0) // Z+
 					for(u16 i=0; i<4; i++)
@@ -820,7 +820,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				aabb3f(-a,-a, a, a, a, a), // z+
 				aabb3f(-a,-a,-a, a, a,-a)  // z-
 			};
-			
+
 			int visible_faces[6] = {0,0,0,0,0,0};
 			int nb[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			u8 i;
@@ -928,7 +928,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		case NDT_TORCHLIKE:
 		{
 			v3s16 dir = n.getWallMountedDir(nodedef);
-			
+
 			u8 tileindex = 0;
 			if(dir == v3s16(0,-1,0)){
 				tileindex = 0; // floor
@@ -994,7 +994,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
-				
+
 			float d = (float)BS/16;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
@@ -1038,7 +1038,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 			AtlasPointer ap = tile.texture;
-			
+
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1085,13 +1085,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
 			TileSpec tile_nocrack = tile;
 			tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
-			
+
 			// A hack to put wood the right way around in the posts
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			TileSpec tile_rot = tile;
 			tile_rot.texture = tsrc->getTexture(tsrc->getTextureName(
 					tile.texture.id) + "^[transformR90");
-					
+
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1188,7 +1188,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			MapNode n_minus_z_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y+1, z-1));
 			MapNode n_plus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z+1));
 			MapNode n_minus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z-1));
-			
+
 			content_t thiscontent = n.getContent();
 			if(n_minus_x.getContent() == thiscontent)
 				is_rail_x[0] = true;
@@ -1294,12 +1294,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
 			AtlasPointer ap = tile.texture;
-			
+
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			float d = (float)BS/64;
-			
+
 			char g=-1;
 			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
 				g=1; //Object is at a slope
@@ -1337,7 +1337,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, -1)
 			};
 			TileSpec tiles[6];
-			
+
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1356,7 +1356,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				aabb3f box = *i;
 				box.MinEdge += pos;
 				box.MaxEdge += pos;
-				
+
 				f32 temp;
 				if (box.MinEdge.X > box.MaxEdge.X)
 				{

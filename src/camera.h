@@ -137,7 +137,7 @@ private:
 
 	// draw control
 	MapDrawControl& m_draw_control;
-	
+
 	IGameDef *m_gamedef;
 
 	// Absolute camera position

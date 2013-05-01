@@ -226,11 +226,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
-	
+
 	v2s32 size(screensize.X, screensize.Y);
 
 	core::rect<s32> rect(
@@ -262,7 +262,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 
 	//v2s32 center(size.X/2, size.Y/2);
 	v2s32 c800(size.X/2-400, size.Y/2-270);
-	
+
 	m_topleft_client = c800 + v2s32(90, 70+50+30);
 	m_size_client = v2s32(620, 270);
 
@@ -277,7 +277,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 
 	m_topleft_server = m_topleft_client + v2s32(0, m_size_client.Y+20);
-	
+
 	// Tabs
 	{
 		core::rect<s32> rect(0, 0, m_size_client.X, 30);
@@ -303,7 +303,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->setActiveTab(m_data->selected_tab);
 
 	}
-	
+
 	if(m_data->selected_tab == TAB_SINGLEPLAYER)
 	{
 		// HYBRID
@@ -879,9 +879,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			video::SColor yellow(255, 255, 255, 0);
 			core::rect<s32> rect(0, 0, 450, 260);
 			rect += m_topleft_client + v2s32(168, 5);
-			
+
 			irr::gui::IGUIListBox *list = Environment->addListBox(rect, this);
-			
+
 			list->addItem(L"Core Developers");
 			list->setItemOverrideColor(list->getItemCount() - 1, yellow);
 			for (int i = 0; i != ARRAYLEN(contrib_core_strs); i++)
@@ -909,7 +909,7 @@ void GUIMainMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	/*video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);*/
 
@@ -1379,7 +1379,7 @@ void GUIMainMenu::deleteWorld(const std::vector<std::string> &paths)
 	m_data->only_refresh = true;
 	quitMenu();
 }
-	
+
 int GUIMainMenu::getTab()
 {
 	gui::IGUIElement *e = getElementFromId(GUI_ID_TAB_CONTROL);
@@ -1426,7 +1426,7 @@ void GUIMainMenu::updateGuiServerList()
 			text += (*i)["name"].asString();
 		else
 			text += (*i)["address"].asString() + ":" + (*i)["port"].asString();
-		
+
 		serverlist->addItem(narrow_to_wide(text).c_str());
 	}
 }

@@ -37,7 +37,7 @@ BiomeDefManager::BiomeDefManager() {
 
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
-	
+
 	b->id    = 0;
 	b->name  = "Default";
 	b->flags = 0;
@@ -59,7 +59,7 @@ BiomeDefManager::BiomeDefManager() {
 BiomeDefManager::~BiomeDefManager() {
 	//if (biomecache)
 	//	delete[] biomecache;
-	
+
 	for (size_t i = 0; i != biomes.size(); i++)
 		delete biomes[i];
 }
@@ -98,12 +98,12 @@ void BiomeDefManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map) {
 
 void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
 	Biome *b;
-	
+
 	biome_registration_finished = true;
-	
+
 	for (size_t i = 0; i != biomes.size(); i++) {
 		b = biomes[i];
-		
+
 		if (b->c_top == CONTENT_IGNORE) {
 			b->c_top = ndef->getId(b->top_nodename);
 			if (b->c_top == CONTENT_IGNORE) {
@@ -113,7 +113,7 @@ void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
 				b->top_depth = 0;
 			}
 		}
-		
+
 		if (b->c_filler == CONTENT_IGNORE) {
 			b->c_filler = ndef->getId(b->filler_nodename);
 			if (b->c_filler == CONTENT_IGNORE) {
@@ -133,7 +133,7 @@ void BiomeDefManager::addBiome(Biome *b) {
 		delete b;
 		return;
 	}
-	
+
 	size_t nbiomes = biomes.size();
 	if (nbiomes >= 0xFF) {
 		errorstream << "BiomeDefManager: too many biomes, dropping " << b->name << std::endl;
@@ -165,6 +165,6 @@ Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
 			biome_closest = b;
 		}
 	}
-	
+
 	return biome_closest ? biome_closest : biomes[0];
 }

@@ -258,7 +258,7 @@ public:
 	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
-	
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
@@ -275,7 +275,7 @@ public:
 			return newitem;
 		return list->addItem(newitem);
 	}
-	
+
 private:
 	// -1 if not found
 	const s32 getListIndex(const std::string &name) const;

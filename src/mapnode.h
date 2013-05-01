@@ -42,7 +42,7 @@ typedef u16 content_t;
 
 	Anything that stores MapNodes doesn't have to preserve parameters
 	associated with this material.
-	
+
 	Doesn't create faces with anything and is considered being
 	out-of-map in the game map.
 */
@@ -97,7 +97,7 @@ struct MapNode
 		- Uhh... well, most blocks have light or nothing in here.
 	*/
 	u8 param1;
-	
+
 	/*
 		The second parameter. Initialized to 0.
 		E.g. direction for torches and flowing water.
@@ -108,14 +108,14 @@ struct MapNode
 	{
 		*this = n;
 	}
-	
+
 	MapNode(content_t content=CONTENT_AIR, u8 a_param1=0, u8 a_param2=0)
 	{
 		param0 = content;
 		param1 = a_param1;
 		param2 = a_param2;
 	}
-	
+
 	// Create directly from a nodename
 	// If name is unknown, sets CONTENT_IGNORE
 	MapNode(INodeDefManager *ndef, const std::string &name,
@@ -127,7 +127,7 @@ struct MapNode
 				&& param1 == other.param1
 				&& param2 == other.param2);
 	}
-	
+
 	// To be used everywhere
 	content_t getContent() const
 	{
@@ -153,11 +153,11 @@ struct MapNode
 	{
 		param2 = p;
 	}
-	
+
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
-	
+
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
@@ -200,7 +200,7 @@ struct MapNode
 	static u32 serializedLength(u8 version);
 	void serialize(u8 *dest, u8 version);
 	void deSerialize(u8 *source, u8 version);
-	
+
 	// Serializes or deserializes a list of nodes in bulk format (first the
 	// content of all nodes, then the param1 of all nodes, then the param2
 	// of all nodes).

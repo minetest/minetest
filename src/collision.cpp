@@ -453,7 +453,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				pos_f += speed_f * nearest_dtime;
 				dtime -= nearest_dtime;
 			}
-			
+
 			bool is_collision = true;
 			if(is_unloaded[nearest_boxindex])
 				is_collision = false;
@@ -566,7 +566,7 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 {
 	//TimeTaker tt("collisionMovePrecise");
     ScopeProfiler sp(g_profiler, "collisionMovePrecise avg", SPT_AVG);
-	
+
 	collisionMoveResult final_result;
 
 	// If there is no speed, there are no collisions

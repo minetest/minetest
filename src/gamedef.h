@@ -51,10 +51,10 @@ public:
 	virtual ITextureSource* getTextureSource()=0;
 
 	virtual IShaderSource* getShaderSource()=0;
-	
+
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
-	
+
 	// Only usable on the client
 	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
@@ -62,11 +62,11 @@ public:
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
 	virtual IRollbackReportSink* getRollbackReportSink(){return NULL;}
-	
+
 	// Used on the client
 	virtual bool checkLocalPrivilege(const std::string &priv)
 	{ return false; }
-	
+
 	// Shorthands
 	IItemDefManager* idef(){return getItemDefManager();}
 	INodeDefManager* ndef(){return getNodeDefManager();}

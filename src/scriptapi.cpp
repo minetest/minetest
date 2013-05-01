@@ -628,7 +628,7 @@ static int l_register_biome(lua_State *L)
 		verbosestream << "register_biome: BiomeDefManager not active" << std::endl;
 		return 0;
 	}
-	
+
 	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
 					"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
@@ -657,9 +657,9 @@ static int l_register_ore(lua_State *L)
 {
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
-	
+
 	EmergeManager *emerge = get_server(L)->getEmergeManager();
-	
+
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);	
 	Ore *ore = createOre(oretype);
@@ -668,7 +668,7 @@ static int l_register_ore(lua_State *L)
 			<< oretype << " not implemented";
 		return 0;
 	}
-	
+
 	ore->ore_name       = getstringfield_default(L, index, "ore", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
@@ -683,18 +683,18 @@ static int l_register_ore(lua_State *L)
 	lua_getfield(L, index, "noise_params");
 	ore->np = read_noiseparams(L, -1);
 	lua_pop(L, 1);
-	
+
 	ore->noise = NULL;
-	
+
 	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
 		errorstream << "register_ore: clust_scarcity and clust_num_ores"
 			" must be greater than 0" << std::endl;
 		delete ore;
 		return 0;
 	}
-	
+
 	emerge->ores.push_back(ore);
-	
+
 	verbosestream << "register_ore: ore '" << ore->ore_name
 		<< "' registered" << std::endl;
 	return 0;

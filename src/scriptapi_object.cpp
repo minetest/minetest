@@ -744,18 +744,18 @@ int ObjectRef::l_hud_add(lua_State *L)
 		return 0;
 
 	HudElement *elem = new HudElement;
-	
+
 	elem->type = (HudElementType)getenumfield(L, 2, "hud_elem_type",
 								es_HudElementType, HUD_ELEM_TEXT);
-	
+
 	lua_getfield(L, 2, "position");
 	elem->pos = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
-	
+
 	lua_getfield(L, 2, "scale");
 	elem->scale = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
-	
+
 	elem->name   = getstringfield_default(L, 2, "name", "");
 	elem->text   = getstringfield_default(L, 2, "text", "");
 	elem->number = getintfield_default(L, 2, "number", 0);
@@ -791,7 +791,7 @@ int ObjectRef::l_hud_remove(lua_State *L)
 	u32 id = -1;
 	if (!lua_isnil(L, 2))
 		id = lua_tonumber(L, 2);
-	
+
 	if (!get_server(L)->hudRemove(player, id))
 		return 0;
 
@@ -810,7 +810,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
 	if (id >= player->hud.size())
 		return 0;
-		
+
 	HudElementStat stat = HUD_STAT_NUMBER;
 	if (!lua_isnil(L, 3)) {
 		int statint;
@@ -818,12 +818,12 @@ int ObjectRef::l_hud_change(lua_State *L)
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
 				(HudElementStat)statint : HUD_STAT_NUMBER;
 	}
-	
+
 	void *value = NULL;
 	HudElement *e = player->hud[id];
 	if (!e)
 		return 0;
-	
+
 	switch (stat) {
 		case HUD_STAT_POS:
 			e->pos = read_v2f(L, 4);
@@ -877,34 +877,34 @@ int ObjectRef::l_hud_get(lua_State *L)
 	u32 id = lua_tonumber(L, -1);
 	if (id >= player->hud.size())
 		return 0;
-	
+
 	HudElement *e = player->hud[id];
 	if (!e)
 		return 0;
-	
+
 	lua_newtable(L);
-	
+
 	lua_pushstring(L, es_HudElementType[(u8)e->type].str);
 	lua_setfield(L, -2, "type");
-	
+
 	push_v2f(L, e->pos);
 	lua_setfield(L, -2, "position");
-	
+
 	lua_pushstring(L, e->name.c_str());
 	lua_setfield(L, -2, "name");
-	
+
 	push_v2f(L, e->scale);
 	lua_setfield(L, -2, "scale");
-	
+
 	lua_pushstring(L, e->text.c_str());
 	lua_setfield(L, -2, "text");
-	
+
 	lua_pushnumber(L, e->number);
 	lua_setfield(L, -2, "number");
-	
+
 	lua_pushnumber(L, e->item);
 	lua_setfield(L, -2, "item");
-	
+
 	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
 
@@ -922,7 +922,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 	u32 flags = 0;
 	u32 mask  = 0;
 	bool flag;
-	
+
 	const EnumString *esp = es_HudBuiltinElement;
 	for (int i = 0; esp[i].str; i++) {
 		if (getboolfield(L, 2, esp[i].str, flag)) {

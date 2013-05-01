@@ -348,7 +348,7 @@ void setboolfield(lua_State *L, int table,
 u32 getflagsfield(lua_State *L, int table,
 		const char *fieldname, FlagDesc *flagdesc) {
 	std::string flagstring;
-	
+
 	flagstring = getstringfield_default(L, table, fieldname, "");
 	return readFlagString(flagstring, flagdesc);
 }

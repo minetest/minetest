@@ -108,7 +108,7 @@ public:
 	{
 		m_speed = speed;
 	}
-	
+
 	void accelerateHorizontal(v3f target_speed, f32 max_increase);
 	void accelerateVertical(v3f target_speed, f32 max_increase);
 
@@ -209,7 +209,7 @@ public:
 	bool is_climbing;
 	bool swimming_vertical;
 	bool camera_barely_in_ceiling;
-	
+
 	u8 light;
 
 	Inventory inventory;
@@ -237,17 +237,17 @@ public:
 	float hurt_tilt_strength;
 
 	u16 peer_id;
-	
+
 	std::string inventory_formspec;
-	
+
 	PlayerControl control;
 	PlayerControl getPlayerControl()
 	{
 		return control;
 	}
-	
+
 	u32 keyPressed;
-	
+
 	std::vector<HudElement *> hud;
 	u32 hud_flags;
 
@@ -277,7 +277,7 @@ public:
 	void setPlayerSAO(PlayerSAO *sao)
 	{ m_sao = sao; }
 	void setPosition(const v3f &position);
-	
+
 private:
 	PlayerSAO *m_sao;
 };

@@ -155,12 +155,12 @@ class TestCAO : public ClientActiveObject
 public:
 	TestCAO(IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~TestCAO();
-	
+
 	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
-	
+
 	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -205,9 +205,9 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 {
 	if(m_node != NULL)
 		return;
-	
+
 	//video::IVideoDriver* driver = smgr->getVideoDriver();
-	
+
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 	video::SColor c(255,255,255,255);
@@ -299,12 +299,12 @@ class ItemCAO : public ClientActiveObject
 public:
 	ItemCAO(IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~ItemCAO();
-	
+
 	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_ITEM;
 	}
-	
+
 	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -321,12 +321,12 @@ public:
 	void processMessage(const std::string &data);
 
 	void initialize(const std::string &data);
-	
+
 	core::aabbox3d<f32>* getSelectionBox()
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
-	
+
 	std::string infoText()
 		{return m_infotext;}
 
@@ -370,9 +370,9 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 {
 	if(m_node != NULL)
 		return;
-	
+
 	//video::IVideoDriver* driver = smgr->getVideoDriver();
-	
+
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 	video::SColor c(255,255,255,255);
@@ -482,7 +482,7 @@ void ItemCAO::updateTexture()
 				<<": error deSerializing itemstring \""
 				<<m_itemstring<<std::endl;
 	}
-	
+
 	// Set meshbuffer texture
 	m_node->getMaterial(0).setTexture(0, texture);
 }
@@ -527,7 +527,7 @@ void ItemCAO::processMessage(const std::string &data)
 void ItemCAO::initialize(const std::string &data)
 {
 	infostream<<"ItemCAO: Got init data"<<std::endl;
-	
+
 	{
 		std::istringstream is(data, std::ios::binary);
 		// version
@@ -540,7 +540,7 @@ void ItemCAO::initialize(const std::string &data)
 		// itemstring
 		m_itemstring = deSerializeString(is);
 	}
-	
+
 	updateNodePos();
 	updateInfoText();
 }
@@ -702,7 +702,7 @@ public:
 
 		pos_translator.init(m_position);
 		updateNodePos();
-		
+
 		if(m_is_player){
 			Player *player = m_env->getPlayer(m_name.c_str());
 			if(player && player->isLocal()){
@@ -851,12 +851,12 @@ public:
 
 		if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
 			return;
-		
+
 		m_visuals_expired = false;
 
 		if(!m_prop.is_visible || m_is_local_player)
 			return;
-	
+
 		//video::IVideoDriver* driver = smgr->getVideoDriver();
 
 		if(m_prop.visual == "sprite"){
@@ -939,7 +939,7 @@ public:
 			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 			mesh->drop();
-			
+
 			m_meshnode->setScale(v3f(m_prop.visual_size.X,
 					m_prop.visual_size.Y,
 					m_prop.visual_size.X));
@@ -980,7 +980,7 @@ public:
 				IItemDefManager *idef = m_gamedef->idef();
 				ItemStack item(m_prop.textures[0], 1, 0, "", idef);
 				scene::IMesh *item_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
-				
+
 				// Copy mesh to be able to set unique vertex colors
 				scene::IMeshManipulator *manip =
 						irr->getVideoDriver()->getMeshManipulator();
@@ -988,7 +988,7 @@ public:
 
 				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 				mesh->drop();
-				
+
 				m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
 						m_prop.visual_size.Y/2,
 						m_prop.visual_size.X/2));
@@ -1000,7 +1000,7 @@ public:
 					<<"\" not supported"<<std::endl;
 		}
 		updateTextures("");
-		
+
 		scene::ISceneNode *node = NULL;
 		if(m_spritenode)
 			node = m_spritenode;
@@ -1027,7 +1027,7 @@ public:
 	{
 		m_visuals_expired = true;
 	}
-		
+
 	void updateLight(u8 light_at_pos)
 	{
 		u8 li = decode_light(light_at_pos);
@@ -1157,7 +1157,7 @@ public:
 				m_position = p_pos;
 				m_velocity = p_velocity;
 				m_acceleration = p_acceleration;
-				
+
 				bool is_end_position = moveresult.collides;
 				pos_translator.update(m_position, is_end_position, dtime);
 				pos_translator.translate(dtime);
@@ -1221,7 +1221,7 @@ public:
 
 			int row = m_tx_basepos.Y;
 			int col = m_tx_basepos.X;
-			
+
 			if(m_tx_select_horiz_by_yawpitch)
 			{
 				if(cam_to_entity.Y > 0.75)
@@ -1245,7 +1245,7 @@ public:
 						col += 4;
 				}
 			}
-			
+
 			// Animation goes downwards
 			row += m_anim_frame;
 
@@ -1379,7 +1379,7 @@ public:
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 					buf->getMaterial().setTexture(0,
 							tsrc->getTextureRaw(tname));
-					
+
 					// This allows setting per-material colors. However, until a real lighting
 					// system is added, the code below will have no effect. Once MineTest
 					// has directional lighting, it should work automatically.
@@ -1457,7 +1457,7 @@ public:
 			}
 		}
 	}
-	
+
 	void updateAttachments()
 	{
 		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
@@ -1624,7 +1624,7 @@ public:
 			m_selection_box = m_prop.collisionbox;
 			m_selection_box.MinEdge *= BS;
 			m_selection_box.MaxEdge *= BS;
-				
+
 			m_tx_size.X = 1.0 / m_prop.spritediv.X;
 			m_tx_size.Y = 1.0 / m_prop.spritediv.Y;
 
@@ -1632,7 +1632,7 @@ public:
 				m_initial_tx_basepos_set = true;
 				m_tx_basepos = m_prop.initial_sprite_basepos;
 			}
-			
+
 			expireVisuals();
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
@@ -1675,7 +1675,7 @@ public:
 			int num_frames = readU16(is);
 			float framelength = readF1000(is);
 			bool select_horiz_by_yawpitch = readU8(is);
-			
+
 			m_tx_basepos = p;
 			m_anim_num_frames = num_frames;
 			m_anim_framelength = framelength;
@@ -1735,7 +1735,7 @@ public:
 		{
 			/*s16 damage =*/ readS16(is);
 			s16 result_hp = readS16(is);
-			
+
 			m_hp = result_hp;
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS)
@@ -1749,7 +1749,7 @@ public:
 			}
 		}
 	}
-	
+
 	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
 			float time_from_last_punch=1000000)
 	{
@@ -1782,10 +1782,10 @@ public:
 				m_reset_textures_timer += 0.05 * result.damage;
 			updateTextures("^[brighten");
 		}
-		
+
 		return false;
 	}
-	
+
 	std::string debugInfoText()
 	{
 		std::ostringstream os(std::ios::binary);

@@ -91,7 +91,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	noise_terrain_persist = new Noise(params->np_terrain_persist, seed, csize.X, csize.Z);
 	noise_height_select   = new Noise(params->np_height_select,   seed, csize.X, csize.Z);
 	noise_ridge           = new Noise(params->np_ridge, seed, csize.X, csize.Y, csize.Z);
-	
+
 	// Biome noise
 	noise_heat     = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
 	noise_humidity = new Noise(bmgr->np_humidity, seed, csize.X, csize.Z);	
@@ -107,7 +107,7 @@ MapgenV7::~MapgenV7() {
 	delete noise_ridge;
 	delete noise_heat;
 	delete noise_humidity;
-	
+
 	delete[] ridge_heightmap;
 	delete[] heightmap;
 	delete[] biomemap;
@@ -119,7 +119,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 	float heat      = NoisePerlin2D(bmgr->np_heat, p.X, p.Y, seed);
 	float humidity  = NoisePerlin2D(bmgr->np_humidity, p.X, p.Y, seed);
 	Biome *b = bmgr->getBiome(heat, humidity, groundlevel);
-	
+
 	s16 y = groundlevel;
 	if (y > water_level) {
 		int iters = 1024; // don't even bother iterating more than 1024 times..
@@ -144,12 +144,12 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
 		   data->blockpos_requested.Y <= data->blockpos_max.Y &&
 		   data->blockpos_requested.Z <= data->blockpos_max.Z);
-			
+
 	this->generating = true;
 	this->vm   = data->vmanip;	
 	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
-	
+
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
 	v3s16 blockpos_full_min = blockpos_min - v3s16(1, 1, 1);
@@ -166,7 +166,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 
 	// Calculate height map
 	s16 stone_surface_max_y = calcHeightMap();
-	
+
 	// Calculate biomes
 	BiomeNoiseInput binput;
 	binput.mapsize       = v2s16(csize.X, csize.Z);
@@ -174,17 +174,17 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	binput.humidity_map  = noise_humidity->result;
 	binput.height_map    = heightmap;
 	bmgr->calcBiomes(&binput, biomemap);
-	
+
 	c_stone           = ndef->getId("mapgen_stone");
 	c_dirt            = ndef->getId("mapgen_dirt");
 	c_dirt_with_grass = ndef->getId("mapgen_dirt_with_grass");
 	c_sand            = ndef->getId("mapgen_sand");
 	c_water_source    = ndef->getId("mapgen_water_source");
 	c_lava_source     = ndef->getId("mapgen_lava_source");
-	
+
 	generateTerrain();
 	carveRidges();
-	
+
 	generateCaves(stone_surface_max_y);
 	addTopNodes();
 
@@ -197,11 +197,11 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 		Ore *ore = emerge->ores[i];
 		ore->placeOre(this, blockseed + i, node_min, node_max);
 	}
-	
+
 	//printf("makeChunk: %dms\n", t.stop());
-	
+
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
-	
+
 	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
@@ -216,29 +216,29 @@ void MapgenV7::calculateNoise() {
 	int x = node_min.X;
 	int y = node_min.Y;
 	int z = node_min.Z;
-	
+
 	noise_terrain_mod->perlinMap2D(x, z);
-	
+
 	noise_height_select->perlinMap2D(x, z);
 	noise_height_select->transformNoiseMap();
-	
+
 	noise_terrain_persist->perlinMap2D(x, z);
 	float *persistmap = noise_terrain_persist->result;
 	for (int i = 0; i != csize.X * csize.Z; i++)
 		persistmap[i] = abs(persistmap[i]);
-	
+
 	noise_terrain_base->perlinMap2DModulated(x, z, persistmap);
 	noise_terrain_base->transformNoiseMap();
-	
+
 	noise_terrain_alt->perlinMap2DModulated(x, z, persistmap);
 	noise_terrain_alt->transformNoiseMap();
-	
+
 	noise_ridge->perlinMap3D(x, y, z);
-	
+
 	noise_heat->perlinMap2D(x, z);
-	
+
 	noise_humidity->perlinMap2D(x, z);
-	
+
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 
@@ -247,7 +247,7 @@ Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
 	float heat      = NoisePerlin2D(bmgr->np_heat, p.X, p.Z, seed);
 	float humidity  = NoisePerlin2D(bmgr->np_humidity, p.X, p.Z, seed);
 	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Z);
-	
+
 	return bmgr->getBiome(heat, humidity, groundlevel);
 }
 
@@ -285,7 +285,7 @@ void MapgenV7::carveRivers() {
 	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
 	MapNode n_stone(c_stone);
 	u32 index = 0;
-	
+
 	int river_depth = 4;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
@@ -297,16 +297,16 @@ void MapgenV7::carveRivers() {
 		float height = terrain_river * (1 - abs(terrain_mod)) *
 						noise_terrain_river->np->scale;
 		height = log(height * height); //log(h^3) is pretty interesting for terrain
-		
+
 		s16 y = heightmap[index];
 		if (height < 1.0 && y > river_depth &&
 			y - river_depth >= node_min.Y && y <= node_max.Y) {
-			
+
 			for (s16 ry = y; ry != y - river_depth; ry--) {
 				u32 vi = vm->m_area.index(x, ry, z);
 				vm->m_data[vi] = n_air;
 			}
-			
+
 			u32 vi = vm->m_area.index(x, y - river_depth, z);
 			vm->m_data[vi] = n_water_source;
 		}
@@ -318,19 +318,19 @@ void MapgenV7::carveRivers() {
 int MapgenV7::calcHeightMap() {
 	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
 	u32 index = 0;
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		float surface_height = baseTerrainLevelFromMap(index);
 		s16 surface_y = (s16)surface_height;
-		
+
 		heightmap[index]       = surface_y; 
 		ridge_heightmap[index] = surface_y;
-		
+
 		if (surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
 	}
-		
+
 	return stone_surface_max_y;
 }
 
@@ -341,12 +341,12 @@ void MapgenV7::generateTerrain() {
 
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		s16 surface_y = heightmap[index];
 		Biome *biome = bmgr->biomes[biomemap[index]];
-		
+
 		u32 i = vm->m_area.index(x, node_min.Y, z);
 		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
@@ -368,10 +368,10 @@ void MapgenV7::generateTerrain() {
 void MapgenV7::carveRidges() {
 	if (node_max.Y <= water_level)
 		return;
-		
+
 	MapNode n_air(CONTENT_AIR);
 	u32 index = 0;
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 		u32 vi = vm->m_area.index(node_min.X, y, z);
@@ -380,7 +380,7 @@ void MapgenV7::carveRidges() {
 			// which are interesting but not desirable for gameplay
 			if (y <= water_level)
 				continue;
-				
+
 			if (noise_ridge->result[index] * (float)(y * y) < 15.0)
 				continue;
 
@@ -396,7 +396,7 @@ void MapgenV7::carveRidges() {
 /*
 void MapgenV7::testBiomes() {
 	u32 index = 0;
-	
+
 	for (s16 z = node_min.Z; z <= node_min.Z; z++)
 	for (s16 x = node_min.X; x <= node_min.X; x++) {;
 		Biome *b = bmgr->getBiome(heat, humidity, 0);
@@ -415,10 +415,10 @@ void MapgenV7::addTopNodes() {
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = bmgr->biomes[biomemap[index]];
-		
+
 		//////////////////// First, add top nodes below the ridge
 		s16 y = ridge_heightmap[index];
-		
+
 		// This cutoff is good enough, but not perfect.
 		// It will cut off potentially placed top nodes at chunk boundaries
 		if (y < node_min.Y)
@@ -430,7 +430,7 @@ void MapgenV7::addTopNodes() {
 			if (ndef->get(c).walkable)
 				continue;
 		}
-		
+
 		// N.B.  It is necessary to search downward since range_heightmap[i]
 		// might not be the actual height, just the lowest part in the chunk
 		// where a ridge had been carved
@@ -458,7 +458,7 @@ void MapgenV7::addTopNodes() {
 					vm->m_data[i] = MapNode(c_dirt_with_grass);
 			}
 		}
-		
+
 		//////////////////// Now, add top nodes on top of the ridge
 		y = heightmap[index];
 		if (y > node_max.Y) {

@@ -118,7 +118,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 	};
-	
+
 	struct FieldSpec
 	{
 		FieldSpec()
@@ -162,7 +162,7 @@ public:
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
 	}
-	
+
 	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
@@ -180,7 +180,7 @@ public:
 		Remove and re-add (or reposition) stuff
 	*/
 	void regenerateGui(v2u32 screensize);
-	
+
 	ItemSpec getItemAtPos(v2s32 p) const;
 	void drawList(const ListDrawSpec &s, int phase);
 	void drawSelectedItem();
@@ -189,7 +189,7 @@ public:
 
 	void acceptInput();
 	bool OnEvent(const SEvent& event);
-	
+
 protected:
 	v2s32 getBasePos() const
 	{
@@ -199,7 +199,7 @@ protected:
 	v2s32 padding;
 	v2s32 spacing;
 	v2s32 imgsize;
-	
+
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
@@ -218,7 +218,7 @@ protected:
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
 	bool m_selected_dragging;
-	
+
 	// WARNING: BLACK MAGIC
 	// Used to guess and keep up with some special things the server can do.
 	// If name is "", no guess exists.

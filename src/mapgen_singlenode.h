@@ -23,10 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 
 struct MapgenSinglenodeParams : public MapgenParams {
-	
+
 	MapgenSinglenodeParams() {
 	}
-	
+
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
@@ -35,7 +35,7 @@ class MapgenSinglenode : public Mapgen {
 public:
 	MapgenSinglenode(int mapgenid, MapgenSinglenodeParams *params);
 	~MapgenSinglenode();
-	
+
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 };
@@ -44,7 +44,7 @@ struct MapgenFactorySinglenode : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
 		return new MapgenSinglenode(mgid, (MapgenSinglenodeParams *)params);
 	};
-	
+
 	MapgenParams *createMapgenParams() {
 		return new MapgenSinglenodeParams();
 	};

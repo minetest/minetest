@@ -292,13 +292,13 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 inline std::string unescape_string(std::string &s)
 {
 	std::string res;
-	
+
 	for (size_t i = 0; i <= s.length(); i++) {
 		if (s[i] == '\\')
 			i++;
 		res += s[i];
 	}
-	
+
 	return res;
 }
 

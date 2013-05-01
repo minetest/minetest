@@ -38,7 +38,7 @@ void debugstreams_init(bool disable_stderr, const char *filename)
 
 	if(filename)
 		g_debugstreams[1] = fopen(filename, "a");
-		
+
 	if(g_debugstreams[1])
 	{
 		fprintf(g_debugstreams[1], "\n\n-------------\n");
@@ -70,7 +70,7 @@ void assert_fail(const char *assertion, const char *file,
 			"%s:%d: %s: Assertion '%s' failed.\n",
 			(unsigned long)get_current_thread_id(),
 			file, line, function, assertion);
-	
+
 	debug_stacks_print();
 
 	if(g_debugstreams[1])
@@ -211,10 +211,10 @@ DebugStacker::DebugStacker(const char *text)
 DebugStacker::~DebugStacker()
 {
 	JMutexAutoLock lock(g_debug_stacks_mutex);
-	
+
 	if(m_overflowed == true)
 		return;
-	
+
 	m_stack->stack_i--;
 
 	if(m_stack->stack_i == 0)

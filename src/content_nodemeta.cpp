@@ -76,7 +76,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 			inv->getList("0")->setName("main");
 		}
 		assert(inv->getList("main") && !inv->getList("0"));
-		
+
 		meta->setString("formspec","size[8,9]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
@@ -93,7 +93,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 			inv->getList("0")->setName("main");
 		}
 		assert(inv->getList("main") && !inv->getList("0"));
-		
+
 		meta->setString("formspec","size[8,9]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
