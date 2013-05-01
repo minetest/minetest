@@ -75,6 +75,7 @@ struct MapgenParams {
 	
 	virtual bool readParams(Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) {};
+	virtual ~MapgenParams() {};
 };
 
 class Mapgen {
@@ -94,6 +95,7 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data) {};
 	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
+	virtual ~Mapgen() {};
 
 	//Legacy functions for Farmesh (pending removal)
 	static bool get_have_beach(u64 seed, v2s16 p2d);
@@ -105,6 +107,7 @@ struct MapgenFactory {
 	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
+	virtual ~MapgenFactory() {};
 };
 
 enum OreType {
@@ -144,6 +147,7 @@ public:
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
+	virtual ~Ore() {};
 };
 
 class OreScatter : public Ore {
