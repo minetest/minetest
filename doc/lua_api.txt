@@ -912,6 +912,9 @@ minetest.get_modnames() -> list of installed mods
 minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 minetest.is_singleplayer()
+minetest.get_version()
+^ Returns 4 values: full version string, major version, minor version, patch version
+^ the latter three are returned as numbers
 
 minetest.debug(line)
 ^ Always printed to stderr and logfile (print() is redirected here)
