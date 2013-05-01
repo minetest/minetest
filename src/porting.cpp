@@ -195,7 +195,7 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 						pnumber, NULL) == 0;
 
 #elif defined(_AIX)
-	
+
 	return bindprocessor(BINDTHREAD, (tid_t)tid, pnumber) == 0;
 
 #elif defined(__hpux) || defined(hpux)
@@ -204,11 +204,11 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 
 	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP,
 									&answer, pnumber, tid) == 0;
-	
+
 #elif defined(__APPLE__)
 
 	struct thread_affinity_policy tapol;
-	
+
 	thread_port_t threadport = pthread_mach_thread_np(tid);
 	tapol.affinity_tag = pnumber + 1;
 	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY,
@@ -233,21 +233,21 @@ bool threadSetPriority(threadid_t tid, int prio) {
 
 	CloseHandle(hThread);
 	return success;
-	
+
 #else
 
 	struct sched_param sparam;
 	int policy;
-	
+
 	if (pthread_getschedparam(tid, &policy, &sparam) != 0)
 		return false;
-		
+
 	int min = sched_get_priority_min(policy);
 	int max = sched_get_priority_max(policy);
 
 	sparam.sched_priority = min + prio * (max - min) / THREAD_PRIORITY_HIGHEST;
 	return pthread_setschedparam(tid, policy, &sparam) == 0;
-	
+
 #endif
 }
 

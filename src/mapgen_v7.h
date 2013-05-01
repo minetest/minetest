@@ -36,7 +36,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams *np_terrain_persist;
 	NoiseParams *np_height_select;
 	NoiseParams *np_ridge;
-	
+
 	MapgenV7Params() {
 		np_terrain_base    = &nparams_v7_def_terrain_base;
 		np_terrain_alt     = &nparams_v7_def_terrain_alt;
@@ -45,7 +45,7 @@ struct MapgenV7Params : public MapgenParams {
 		np_height_select   = &nparams_v7_def_height_select;
 		np_ridge           = &nparams_v7_def_ridge;
 	}
-	
+
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
@@ -64,22 +64,22 @@ public:
 	v3s16 node_max;
 	v3s16 full_node_min;
 	v3s16 full_node_max;
-	
+
 	s16 *heightmap;
 	s16 *ridge_heightmap;
 	u8 *biomemap;
-	
+
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_mod;
 	Noise *noise_terrain_persist;
 	Noise *noise_height_select;
-	
+
 	Noise *noise_ridge;
-	
+
 	Noise *noise_heat;
 	Noise *noise_humidity;
-	
+
 	content_t c_stone;
 	content_t c_dirt;
 	content_t c_dirt_with_grass;
@@ -93,7 +93,7 @@ public:
 
 	MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge);
 	~MapgenV7();
-	
+
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 	Biome *getBiomeAtPoint(v3s16 p);
@@ -102,14 +102,14 @@ public:
 	float baseTerrainLevelFromMap(int index);
 	void calculateNoise();
 	int calcHeightMap();
-	
+
 	void generateTerrain();
 	void carveRidges();
 	//void carveRivers(); //experimental
-	
+
 	void testBiomes();
 	void addTopNodes();
-	
+
 	void generateCaves(int max_stone_y);
 };
 
@@ -117,7 +117,7 @@ struct MapgenFactoryV7 : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
 		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
 	};
-	
+
 	MapgenParams *createMapgenParams() {
 		return new MapgenV7Params();
 	};

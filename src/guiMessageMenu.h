@@ -32,7 +32,7 @@ public:
 			IMenuManager *menumgr,
 			std::wstring message_text);
 	~GUIMessageMenu();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -50,7 +50,7 @@ public:
 	{
 		return m_status;
 	}
-	
+
 private:
 	std::wstring m_message_text;
 	bool m_status;

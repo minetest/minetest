@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 	Use this for logging everything.
-	
+
 	If you need to explicitly print something, use dstream or cout or cerr.
 */
 

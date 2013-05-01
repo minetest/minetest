@@ -44,7 +44,7 @@ public:
 	u8 id;
 	std::string name;
 	u32 flags;
-	
+
 	std::string top_nodename;
 	std::string filler_nodename;
 
@@ -53,7 +53,7 @@ public:
 
 	content_t c_filler;
 	s16 filler_height;
-	
+
 	s16 height_min;
 	s16 height_max;
 	float heat_point;
@@ -77,7 +77,7 @@ public:
 
 	BiomeDefManager();
 	~BiomeDefManager();
-	
+
 	Biome *createBiome(BiomeTerrainType btt);
 	void  calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map);
 	Biome *getBiome(float heat, float humidity, s16 y);

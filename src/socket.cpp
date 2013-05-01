@@ -178,12 +178,12 @@ UDPSocket::UDPSocket()
 {
 	if(g_sockets_initialized == false)
 		throw SocketException("Sockets not initialized");
-	
+
     m_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	
+
 	if(DP)
 	dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::UDPSocket()"<<std::endl;
-	
+
     if(m_handle <= 0)
     {
 		throw SocketException("Failed to create socket");
@@ -384,7 +384,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 		//dstream<<"Select reported no data in m_handle"<<std::endl;
 		return false;
 	}
-	
+
 	// There is data
 	//dstream<<"Select reported data in m_handle"<<std::endl;
 	return true;

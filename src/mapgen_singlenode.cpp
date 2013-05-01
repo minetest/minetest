@@ -63,7 +63,7 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	this->generating = true;
 	this->vm   = data->vmanip;	
 	this->ndef = data->nodedef;
-			
+
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
 
@@ -74,9 +74,9 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	content_t c_node = ndef->getId("mapgen_singlenode");
 	if (c_node == CONTENT_IGNORE)
 		c_node = CONTENT_AIR;
-	
+
 	MapNode n_node(c_node);
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 		u32 i = vm->m_area.index(node_min.X, y, z);
@@ -93,7 +93,7 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	// Calculate lighting
 	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-	
+
 	this->generating = false;
 }
 

@@ -50,18 +50,18 @@ public:
 
 	void update(float m_time_of_day, float time_brightness,
 			float direct_brightness, bool sunlight_seen);
-	
+
 	float getBrightness(){ return m_brightness; }
 	video::SColor getBgColor(){ return m_bgcolor; }
 	video::SColor getSkyColor(){ return m_skycolor; }
-	
+
 	bool getCloudsVisible(){ return m_clouds_visible; }
 	video::SColorf getCloudColor(){ return m_cloudcolor_f; }
 
 private:
 	core::aabbox3d<f32> Box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
-	
+
 	bool m_first_update;
 	float m_time_of_day;
 	float m_time_brightness;

@@ -53,13 +53,13 @@ u32 readFlagString(std::string str, FlagDesc *flagdesc) {
 	u32 result = 0;
 	char *s = &str[0];
 	char *flagstr, *strpos = NULL;
-	
+
 	while ((flagstr = strtok_r(s, ",", &strpos))) {
 		s = NULL;
-		
+
 		while (*flagstr == ' ' || *flagstr == '\t')
 			flagstr++;
-		
+
 		for (int i = 0; flagdesc[i].name; i++) {
 			if (!strcasecmp(flagstr, flagdesc[i].name)) {
 				result |= flagdesc[i].flag;
@@ -67,24 +67,24 @@ u32 readFlagString(std::string str, FlagDesc *flagdesc) {
 			}
 		}
 	}
-	
+
 	return result;
 }
 
 std::string writeFlagString(u32 flags, FlagDesc *flagdesc) {
 	std::string result;
-	
+
 	for (int i = 0; flagdesc[i].name; i++) {
 		if (flags & flagdesc[i].flag) {
 			result += flagdesc[i].name;
 			result += ", ";
 		}
 	}
-	
+
 	size_t len = result.length();
 	if (len >= 2)
 		result.erase(len - 2, 2);
-	
+
 	return result;
 }
 
@@ -108,7 +108,7 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) {
 		}
 		t++;
 	}
-	
+
 	*lasts = t;
 	return s;
 }

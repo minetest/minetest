@@ -38,7 +38,7 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr, IRespawnInitiator *respawner);
 	~GUIDeathScreen();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff

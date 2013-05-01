@@ -39,14 +39,14 @@ public:
 			ConfirmDest *dest,
 			std::wstring message_text);
 	~GUIConfirmMenu();
-	
+
 	void removeChildren();
 	// Remove and re-add (or reposition) stuff
 	void regenerateGui(v2u32 screensize);
 	void drawMenu();
 	void acceptInput(bool answer);
 	bool OnEvent(const SEvent& event);
-	
+
 private:
 	ConfirmDest *m_dest;
 	std::wstring m_message_text;

@@ -72,7 +72,7 @@ struct MapgenParams {
 		chunksize   = 5;
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
-	
+
 	virtual bool readParams(Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) {};
 };
@@ -132,14 +132,14 @@ public:
 	float nthresh;      // threshhold for noise at which an ore is placed 
 	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
-	
+
 	Ore() {
 		ore     = CONTENT_IGNORE;
 		wherein = CONTENT_IGNORE;
 		np      = NULL;
 		noise   = NULL;
 	}
-	
+
 	void resolveNodeNames(INodeDefManager *ndef);
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,

@@ -62,7 +62,7 @@ private:
 
 	// list of world mods (flattened)
 	std::map<std::string, ModSpec> m_worldmods;
-	
+
 	// for each mod, the set of mods depending on it
 	std::multimap<std::string, std::string> m_reverse_depends;
 

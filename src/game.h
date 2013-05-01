@@ -98,7 +98,7 @@ public:
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
-	
+
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
 
@@ -114,7 +114,7 @@ public:
 	virtual bool getRightReleased() = 0;
 	virtual void resetLeftReleased() = 0;
 	virtual void resetRightReleased() = 0;
-	
+
 	virtual s32 getMouseWheel() = 0;
 
 	virtual void step(float dtime) {};

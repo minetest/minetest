@@ -77,9 +77,9 @@ public:
 	std::list<Player*> getPlayers();
 	std::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
-	
+
 	u32 getDayNightRatio();
-	
+
 	// 0-23999
 	virtual void setTimeOfDay(u32 time)
 	{
@@ -97,7 +97,7 @@ public:
 
 	void setTimeOfDaySpeed(float speed)
 	{ m_time_of_day_speed = speed; }
-	
+
 	float getTimeOfDaySpeed()
 	{ return m_time_of_day_speed; }
 
@@ -125,7 +125,7 @@ class ActiveBlockModifier
 public:
 	ActiveBlockModifier(){};
 	virtual ~ActiveBlockModifier(){};
-	
+
 	// Set of contents to trigger on
 	virtual std::set<std::string> getTriggerContents()=0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
@@ -235,7 +235,7 @@ public:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
-	
+
 	/*
 		Add an active object as a static object to the corresponding
 		MapBlock.
@@ -244,7 +244,7 @@ public:
 		(note:  not used, pending removal from engine)
 	*/
 	//bool addActiveObjectAsStatic(ServerActiveObject *object);
-	
+
 	/*
 		Find out what new objects have been added to
 		inside a radius around a position
@@ -260,7 +260,7 @@ public:
 	void getRemovedActiveObjects(v3s16 pos, s16 radius,
 			std::set<u16> &current_objects,
 			std::set<u16> &removed_objects);
-	
+
 	/*
 		Get the next message emitted by some active object.
 		Returns a message with id=0 if no messages are available.
@@ -288,16 +288,16 @@ public:
 	// Script-aware node setters
 	bool setNode(v3s16 p, const MapNode &n);
 	bool removeNode(v3s16 p);
-	
+
 	// Find all active objects inside a radius around a point
 	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
-	
+
 	// Clear all objects, loading and going through every MapBlock
 	void clearAllObjects();
-	
+
 	// This makes stuff happen
 	void step(f32 dtime);
-	
+
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
@@ -319,17 +319,17 @@ private:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
-	
+
 	/*
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
-	
+
 	/*
 		Convert stored objects from block to active
 	*/
 	void activateObjects(MapBlock *block, u32 dtime_s);
-	
+
 	/*
 		Convert objects that are not in active blocks to static.
 
@@ -344,7 +344,7 @@ private:
 	/*
 		Member variables
 	*/
-	
+
 	// The map
 	ServerMap *m_map;
 	// Lua state
@@ -427,7 +427,7 @@ public:
 
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
-	
+
 	/*
 		ClientSimpleObjects
 	*/
@@ -437,7 +437,7 @@ public:
 	/*
 		ActiveObjects
 	*/
-	
+
 	ClientActiveObject* getActiveObject(u16 id);
 
 	/*
@@ -464,11 +464,11 @@ public:
 	/*
 		Client likes to call these
 	*/
-	
+
 	// Get all nearby objects
 	void getActiveObjects(v3f origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
-	
+
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
@@ -480,7 +480,7 @@ public:
 	{ m_player_names.push_back(name); }
 	void removePlayerName(std::string name)
 	{ m_player_names.remove(name); }
-	
+
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;

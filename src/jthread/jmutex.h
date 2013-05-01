@@ -79,15 +79,15 @@ public:
 	Event() {
 		hEvent = CreateEvent(NULL, 0, 0, NULL);
 	}
-	
+
 	~Event() {
 		CloseHandle(hEvent);
 	}
-	
+
 	void wait() {
 		WaitForSingleObject(hEvent, INFINITE); 
 	}
-	
+
 	void signal() {
 		SetEvent(hEvent);
 	}
@@ -104,15 +104,15 @@ public:
 	Event() {
 		sem_init(&sem, 0, 0);
 	}
-	
+
 	~Event() {
 		sem_destroy(&sem);
 	}
-	
+
 	void wait() {
 		sem_wait(&sem);
 	}
-	
+
 	void signal() {
 		sem_post(&sem);
 	}

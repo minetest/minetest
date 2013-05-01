@@ -35,7 +35,7 @@ template<typename Value>
 class UniqueQueue
 {
 public:
-	
+
 	/*
 		Does nothing if value is already queued.
 		Return value:
@@ -51,7 +51,7 @@ public:
 		// Add
 		m_map[value] = 0;
 		m_list.push_back(value);
-		
+
 		return true;
 	}
 
@@ -84,14 +84,14 @@ public:
 		m_mutex.Init();
 		assert(m_mutex.IsInitialized());
 	}
-	
+
 	void set(const Key &name, const Value &value)
 	{
 		JMutexAutoLock lock(m_mutex);
 
 		m_values[name] = value;
 	}
-	
+
 	bool get(const Key &name, Value *result)
 	{
 		JMutexAutoLock lock(m_mutex);
@@ -101,10 +101,10 @@ public:
 
 		if(n == m_values.end())
 			return false;
-		
+
 		if(result != NULL)
 			*result = n->second;
-			
+
 		return true;
 	}
 
@@ -146,7 +146,7 @@ public:
 		m_mutex.Init();
 		assert(m_mutex.IsInitialized());
 	}
-	
+
 	// Returns true if found
 	bool getValue(u32 id, T &value)
 	{
@@ -158,7 +158,7 @@ public:
 		value = m_id_to_value[id-1];
 		return true;
 	}
-	
+
 	// If id exists for value, returns the id.
 	// Otherwise generates an id for the value.
 	u32 getId(const T &value)
@@ -197,7 +197,7 @@ public:
 		m_list.push_back(t);
 		++m_list_size;
 	}
-	
+
 	T pop_front()
 	{
 		if(m_list.empty())

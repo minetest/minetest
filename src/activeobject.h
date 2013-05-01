@@ -49,7 +49,7 @@ public:
 		m_id(id)
 	{
 	}
-	
+
 	u16 getId()
 	{
 		return m_id;

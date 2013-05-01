@@ -42,10 +42,10 @@ class NodeMetadata
 public:
 	NodeMetadata(IGameDef *gamedef);
 	~NodeMetadata();
-	
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	void clear();
 
 	// Generic key/value store
@@ -99,7 +99,7 @@ public:
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is, IGameDef *gamedef);
-	
+
 	// Get pointer to data
 	NodeMetadata* get(v3s16 p);
 	// Deletes data
@@ -108,7 +108,7 @@ public:
 	void set(v3s16 p, NodeMetadata *d);
 	// Deletes all
 	void clear();
-	
+
 private:
 	std::map<v3s16, NodeMetadata*> m_data;
 };

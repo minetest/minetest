@@ -198,7 +198,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		
+
 	}catch(SerializationError &e) {};
 }
 
@@ -236,7 +236,7 @@ public:
 		m_main_thread = get_current_thread_id();
 		m_driver = NULL;
 #endif
-	
+
 		clear();
 	}
 	virtual ~CItemDefManager()
@@ -573,7 +573,7 @@ public:
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
 			assert(def.tool_capabilities != NULL);
-		
+
 		if(m_item_definitions.count(def.name) == 0)
 			m_item_definitions[def.name] = new ItemDefinition(def);
 		else

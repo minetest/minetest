@@ -45,17 +45,17 @@ public:
 	PseudoRandom random;
 	v3s16 csize;
 	s16 water_level;
-	
+
 	NoiseParams *np_rarity;
 	NoiseParams *np_wetness;
 	NoiseParams *np_density;
-	
+
 	content_t cid_water_source;
 	content_t cid_cobble;
 	content_t cid_mossycobble;
 	content_t cid_torch;
 	content_t cid_cobblestair;
-	
+
 	//RoomWalker
 	v3s16 m_pos;
 	v3s16 m_dir;
@@ -64,7 +64,7 @@ public:
 	void generate(ManualMapVoxelManipulator *vm, u32 bseed,
 				  v3s16 full_node_min, v3s16 full_node_max);
 	//void generate(v3s16 full_node_min, v3s16 full_node_max, u32 bseed);
-	
+
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);
 	void makeCorridor(v3s16 doorplace, v3s16 doordir,
@@ -76,7 +76,7 @@ public:
 	bool findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir);
 	bool findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 			v3s16 &result_doordir, v3s16 &result_roomplace);
-			
+
 	void randomizeDir()
 	{
 		m_dir = rand_ortho_dir(random);

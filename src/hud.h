@@ -103,24 +103,24 @@ public:
 	v2s32 displaycenter;
 	s32 hotbar_imagesize;
 	s32 hotbar_itemcount;
-	
+
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
 	bool use_crosshair_image;
-	
+
 	Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 		gui::IGUIFont *font, u32 text_height, IGameDef *gamedef,
 		LocalPlayer *player, Inventory *inventory);
-	
+
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 					 std::string texture, s32 count, v2s32 offset);
-	
+
 	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
 	void resizeHotbar();
-	
+
 	void drawCrosshair();
 	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
 };

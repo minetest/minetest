@@ -521,7 +521,7 @@ public:
 		for (ItemGroupList::const_iterator i = def.groups.begin();
 			i != def.groups.end(); ++i) {
 			std::string group_name = i->first;
-			
+
 			std::map<std::string, GroupItems>::iterator
 				j = m_group_to_items.find(group_name);
 			if (j == m_group_to_items.end()) {

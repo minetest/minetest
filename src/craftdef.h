@@ -360,7 +360,7 @@ public:
 			IGameDef *gamedef) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef) const=0;
-	
+
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
 

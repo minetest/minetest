@@ -45,12 +45,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#define _WIN32_WINNT 0x0500
 	#endif
 	#include <windows.h>
-	
+
 	#define sleep_ms(x) Sleep(x)
 #else
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
-	
+
 	#if (defined(linux) || defined(__linux)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
@@ -71,7 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#endif
 
 	#define sleep_ms(x) usleep(x*1000)
-	
+
 	#define THREAD_PRIORITY_LOWEST       0
 	#define THREAD_PRIORITY_BELOW_NORMAL 1
 	#define THREAD_PRIORITY_NORMAL       2
@@ -154,17 +154,17 @@ bool threadSetPriority(threadid_t tid, int prio);
 */
 #ifdef _WIN32 // Windows
 	#include <windows.h>
-	
+
 	inline u32 getTimeS()
 	{
 		return GetTickCount() / 1000;
 	}
-	
+
 	inline u32 getTimeMs()
 	{
 		return GetTickCount();
 	}
-	
+
 	inline u32 getTimeUs()
 	{
 		LARGE_INTEGER freq, t;
@@ -172,7 +172,7 @@ bool threadSetPriority(threadid_t tid, int prio);
 		QueryPerformanceCounter(&t);
 		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000.0);
 	}
-	
+
 	inline u32 getTimeNs()
 	{
 		LARGE_INTEGER freq, t;
@@ -180,39 +180,39 @@ bool threadSetPriority(threadid_t tid, int prio);
 		QueryPerformanceCounter(&t);
 		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000000.0);
 	}
-	
+
 #else // Posix
 	#include <sys/time.h>
 	#include <time.h>
-	
+
 	inline u32 getTimeS()
 	{
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
 		return tv.tv_sec;
 	}
-	
+
 	inline u32 getTimeMs()
 	{
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
 		return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 	}
-	
+
 	inline u32 getTimeUs()
 	{
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
 		return tv.tv_sec * 1000000 + tv.tv_usec;
 	}
-	
+
 	inline u32 getTimeNs()
 	{
 		struct timespec ts;
 		clock_gettime(CLOCK_REALTIME, &ts);
 		return ts.tv_sec * 1000000000 + ts.tv_nsec;
 	}
-	
+
 	/*#include <sys/timeb.h>
 	inline u32 getTimeMs()
 	{

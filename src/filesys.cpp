@@ -119,7 +119,7 @@ Cleanup:
 	//for(unsigned int i=0; i<listing.size(); i++){
 	//	infostream<<listing[i].name<<(listing[i].dir?" (dir)":" (file)")<<std::endl;
 	//}
-	
+
 	return listing;
 }
 
@@ -306,11 +306,11 @@ bool RecursiveDelete(std::string path)
 	/*
 		Execute the 'rm' command directly, by fork() and execve()
 	*/
-	
+
 	infostream<<"Removing \""<<path<<"\""<<std::endl;
 
 	//return false;
-	
+
 	pid_t child_pid = fork();
 
 	if(child_pid == 0)
@@ -328,9 +328,9 @@ bool RecursiveDelete(std::string path)
 
 		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
 				<<argv[2]<<"'"<<std::endl;
-		
+
 		execv(argv[0], argv);
-		
+
 		// Execv shouldn't return. Failed.
 		_exit(1);
 	}

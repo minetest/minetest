@@ -215,7 +215,7 @@ struct TileSpec
 	{
 		return !(*this == other);
 	}
-	
+
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
@@ -256,14 +256,14 @@ struct TileSpec
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
-	
+
 	// NOTE: Deprecated, i guess?
 	void setTexturePos(u8 tx_, u8 ty_, u8 tw_, u8 th_)
 	{
 		texture.pos = v2f((float)tx_/256.0, (float)ty_/256.0);
 		texture.size = v2f(((float)tw_ + 1.0)/256.0, ((float)th_ + 1.0)/256.0);
 	}
-	
+
 	AtlasPointer texture;
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;

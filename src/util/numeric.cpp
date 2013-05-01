@@ -148,7 +148,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
-	
+
 	// Block center position
 	v3f blockpos(
 			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
@@ -167,7 +167,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 
 	if(distance_ptr)
 		*distance_ptr = d;
-	
+
 	// If block is very close, it is always in sight
 	if(d < 1.44*1.44*MAP_BLOCKSIZE*BS/2)
 		return true;
@@ -178,16 +178,16 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 
 	// Maximum radius of a block
 	f32 block_max_radius = 0.5*1.44*1.44*MAP_BLOCKSIZE*BS;
-	
+
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
 	if(d < block_max_radius)
 		return true;
-	
+
 	// Cosine of the angle between the camera direction
 	// and the block direction (camera_dir is an unit vector)
 	f32 cosangle = dforward / d;
-	
+
 	// Compensate for the size of the block
 	// (as the block has to be shown even if it's a bit off FOV)
 	// This is an estimate, plus an arbitary factor

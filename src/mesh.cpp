@@ -365,7 +365,7 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
 	if(mesh == NULL)
 		return;
-	
+
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j=0; j<mc; j++)
 	{
@@ -386,7 +386,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 {
 	if(mesh == NULL)
 		return;
-	
+
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j=0; j<mc; j++)
 	{

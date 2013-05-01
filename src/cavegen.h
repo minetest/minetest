@@ -44,22 +44,22 @@ public:
 	s16 max_stone_y;
 	v3s16 node_min;
 	v3s16 node_max;
-	
+
 	v3f orp;  // starting point, relative to caved space
 	v3s16 of; // absolute coordinates of caved space
 	v3s16 ar; // allowed route area
 	s16 rs;   // tunnel radius size
 	v3f main_direction;
-	
+
 	s16 route_y_min;
 	s16 route_y_max;
-	
+
 	PseudoRandom *ps;
 	PseudoRandom *ps2;
-	
+
 	content_t c_water_source;
 	content_t c_lava_source;
-	
+
 	int water_level;
 
 	CaveV6() {}
@@ -88,21 +88,21 @@ public:
 	s16 max_stone_y;
 	v3s16 node_min;
 	v3s16 node_max;
-	
+
 	v3f orp;  // starting point, relative to caved space
 	v3s16 of; // absolute coordinates of caved space
 	v3s16 ar; // allowed route area
 	s16 rs;   // tunnel radius size
 	v3f main_direction;
-	
+
 	s16 route_y_min;
 	s16 route_y_max;
-	
+
 	PseudoRandom *ps;
-	
+
 	content_t c_water_source;
 	content_t c_lava_source;
-	
+
 	int water_level;
 
 	CaveV7() {}

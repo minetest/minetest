@@ -64,22 +64,22 @@ public:
 	virtual bool isLocalPlayer(){return false;}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
-	
+
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}
-	
+
 	// Process a message sent by the server side object
 	virtual void processMessage(const std::string &data){}
 
 	virtual std::string infoText() {return "";}
 	virtual std::string debugInfoText() {return "";}
-	
+
 	/*
 		This takes the return value of
 		ServerActiveObject::getClientInitializationData
 	*/
 	virtual void initialize(const std::string &data){}
-	
+
 	// Create a certain type of ClientActiveObject
 	static ClientActiveObject* create(u8 type, IGameDef *gamedef,
 			ClientEnvironment *env);

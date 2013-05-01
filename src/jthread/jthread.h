@@ -62,12 +62,12 @@ private:
 	HANDLE threadhandle;
 #else // pthread type threads
 	static void *TheThread(void *param);
-	
+
 	pthread_t threadid;
 #endif // WIN32
 	void *retval;
 	bool running;
-	
+
 	JMutex runningmutex;
 	JMutex continuemutex,continuemutex2;
 	bool mutexinit;

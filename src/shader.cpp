@@ -598,7 +598,7 @@ void ShaderSource::onSetConstants(video::IMaterialRendererServices *services,
 		setter->onSetConstants(services, is_highlevel);
 	}
 }
- 
+
 ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		video::IShaderConstantSetCallBack *callback,
 		SourceShaderCache *sourcecache)

@@ -55,7 +55,7 @@ void BanManager::load()
 		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
-	
+
 	for(;;)
 	{
 		if(is.eof() || is.good() == false)
@@ -77,7 +77,7 @@ void BanManager::save()
 	JMutexAutoLock lock(m_mutex);
 	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
 	std::ofstream os(m_banfilepath.c_str(), std::ios::binary);
-	
+
 	if(os.good() == false)
 	{
 		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
@@ -153,7 +153,7 @@ void BanManager::remove(const std::string &ip_or_name)
 	}
 	m_modified = true;
 }
-	
+
 
 bool BanManager::isModified()
 {

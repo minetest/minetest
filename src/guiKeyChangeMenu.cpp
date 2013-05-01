@@ -104,7 +104,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
 	v2s32 size(620, 430);
-	
+
 	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
 							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
 							screensize.Y / 2 + size.Y / 2);
@@ -150,7 +150,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		else
 			offset += v2s32(0, 25);
 	}
-	
+
 	{
 		s32 option_x = offset.X + 10;
 		s32 option_y = offset.Y;
@@ -198,7 +198,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		delete[] text;
 	}
 	changeCtype("C");
-	
+
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -268,7 +268,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		changeCtype("");
 		bool prefer_character = shift_down;
 		KeyPress kp(event.KeyInput, prefer_character);
-		
+
 		bool shift_went_down = false;
 		if(!shift_down &&
 				(event.KeyInput.Key == irr::KEY_SHIFT ||

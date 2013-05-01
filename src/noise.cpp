@@ -545,7 +545,7 @@ float *Noise::perlinMap2DModulated(float x, float y, float *persist_map) {
 	y /= np->spread.Y;
 
 	memset(result, 0, sizeof(float) * sx * sy);
-	
+
 	float *g = new float[sx * sy];
 	for (index = 0; index != sx * sy; index++)
 		g[index] = 1.0;
@@ -566,7 +566,7 @@ float *Noise::perlinMap2DModulated(float x, float y, float *persist_map) {
 
 		f *= 2.0;
 	}
-	
+
 	delete[] g;
 	return result;
 }

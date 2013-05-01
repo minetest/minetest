@@ -112,12 +112,12 @@ class MapBlock /*: public NodeContainer*/
 public:
 	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
 	~MapBlock();
-	
+
 	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
-	
+
 	Map * getParent()
 	{
 		return m_parent;
@@ -149,7 +149,7 @@ public:
 		assert(isDummy());
 		reallocate();
 	}
-	
+
 	// m_modified methods
 	void raiseModified(u32 mod, const std::string &reason="unknown")
 	{
@@ -186,7 +186,7 @@ public:
 		m_modified_reason = "none";
 		m_modified_reason_too_long = false;
 	}
-	
+
 	// is_underground getter/setter
 	bool getIsUnderground()
 	{
@@ -239,12 +239,12 @@ public:
 	{
 		return m_pos;
 	}
-		
+
 	v3s16 getPosRelative()
 	{
 		return m_pos * MAP_BLOCKSIZE;
 	}
-		
+
 	core::aabbox3d<s16> getBox()
 	{
 		return core::aabbox3d<s16>(getPosRelative(),
@@ -256,7 +256,7 @@ public:
 	/*
 		Regular MapNode get-setters
 	*/
-	
+
 	bool isValidPosition(v3s16 p)
 	{
 		if(data == NULL)
@@ -275,12 +275,12 @@ public:
 		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
 	}
-	
+
 	MapNode getNode(v3s16 p)
 	{
 		return getNode(p.X, p.Y, p.Z);
 	}
-	
+
 	MapNode getNodeNoEx(v3s16 p)
 	{
 		try{
@@ -289,7 +289,7 @@ public:
 			return MapNode(CONTENT_IGNORE);
 		}
 	}
-	
+
 	void setNode(s16 x, s16 y, s16 z, MapNode & n)
 	{
 		if(data == NULL)
@@ -300,7 +300,7 @@ public:
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
 		raiseModified(MOD_STATE_WRITE_NEEDED, "setNode");
 	}
-	
+
 	void setNode(v3s16 p, MapNode & n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
@@ -316,12 +316,12 @@ public:
 			throw InvalidPositionException();
 		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
 	}
-	
+
 	MapNode getNodeNoCheck(v3s16 p)
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z);
 	}
-	
+
 	void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
 	{
 		if(data == NULL)
@@ -329,7 +329,7 @@ public:
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
 		raiseModified(MOD_STATE_WRITE_NEEDED, "setNodeNoCheck");
 	}
-	
+
 	void setNodeNoCheck(v3s16 p, MapNode & n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
@@ -355,7 +355,7 @@ public:
 	// See comments in mapblock.cpp
 	bool propagateSunlight(std::set<v3s16> & light_sources,
 			bool remove_light=false, bool *black_air_left=NULL);
-	
+
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
 	// Copies data from VoxelManipulator getPosRelative()
@@ -383,7 +383,7 @@ public:
 	/*
 		Miscellaneous stuff
 	*/
-	
+
 	/*
 		Tries to measure ground level.
 		Return value:
@@ -415,7 +415,7 @@ public:
 	{
 		return m_disk_timestamp;
 	}
-	
+
 	/*
 		See m_usage_timer
 	*/
@@ -447,7 +447,7 @@ public:
 	{
 		return m_refcount;
 	}
-	
+
 	/*
 		Node Timers
 	*/
@@ -471,7 +471,7 @@ public:
 	/*
 		Serialization
 	*/
-	
+
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
 	void serialize(std::ostream &os, u8 version, bool disk);
@@ -513,11 +513,11 @@ public:
 	MapBlockMesh *mesh;
 	//JMutex mesh_mutex;
 #endif
-	
+
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
-	
+
 private:
 	/*
 		Private member variables
@@ -529,7 +529,7 @@ private:
 	v3s16 m_pos;
 
 	IGameDef *m_gamedef;
-	
+
 	/*
 		If NULL, block is a dummy block.
 		Dummy blocks are used for caching not-found-on-disk blocks.
@@ -563,13 +563,13 @@ private:
 		If this is true, lighting might be wrong or right.
 	*/
 	bool m_lighting_expired;
-	
+
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	bool m_day_night_differs_expired;
 
 	bool m_generated;
-	
+
 	/*
 		When block is removed from active blocks, this is set to gametime.
 		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.

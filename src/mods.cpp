@@ -105,7 +105,7 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 			std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 			result.reserve(result.size() + content.size());
 			result.insert(result.end(),content.begin(),content.end());
-			
+
 		} 
 		else //not a modpack
 		{

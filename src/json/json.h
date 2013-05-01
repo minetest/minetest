@@ -27,7 +27,7 @@ The MIT License is about as close to Public Domain as a license can get, and is
 described in clear, concise terms at:
 
    http://en.wikipedia.org/wiki/MIT_License
-   
+
 The full text of the MIT License follows:
 
 ========================================================================
@@ -1607,7 +1607,7 @@ namespace Json {
                        Location end, 
                        CommentPlacement placement );
       void skipCommentTokens( Token &token );
-   
+
       typedef std::stack<Value *> Nodes;
       Nodes nodes_;
       Errors errors_;

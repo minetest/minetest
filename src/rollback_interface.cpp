@@ -102,10 +102,10 @@ void RollbackAction::fromStream(std::istream &is) throw(SerializationError)
 		is.putback(c);
 		throw SerializationError("RollbackAction: starting [ not found");
 	}
-	
+
 	std::string id;
 	std::getline(is, id, ' ');
-	
+
 	if(id == "set_node")
 	{
 		c = is.get();

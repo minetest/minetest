@@ -127,7 +127,7 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 		menu->drop();
 		delete[] text;
 	}
-	
+
 
 	// find missing mods (mentioned in world.mt, but not installed)
 	std::set<std::string> missing_mods;
@@ -158,7 +158,7 @@ void GUIConfigureWorld::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
@@ -173,7 +173,7 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
@@ -183,7 +183,7 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 			screensize.X/2 + 580/2,
 			screensize.Y/2 + 300/2
 	);
-	
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
@@ -594,7 +594,7 @@ void GUIConfigureWorld::adjustSidebar()
 		m_enabled_checkbox->setVisible(false);
 		return;
 	} 
-	
+
     // a modpack is not enabled/disabled by itself, only its cotnents
     // are. so we show show enable/disable all buttons, but hide the
     // checkbox

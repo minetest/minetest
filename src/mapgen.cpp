@@ -81,7 +81,7 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 			wherein = CONTENT_AIR;
 		}
 	}
-	
+
 	if (wherein == CONTENT_IGNORE) {
 		wherein = ndef->getId(wherein_name);
 		if (wherein == CONTENT_IGNORE) {
@@ -104,9 +104,9 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 		return;
 
 	resolveNodeNames(mg->ndef);
-	
+
 	int ymin, ymax;
-	
+
 	if (in_range & ORE_RANGE_MIRROR) {
 		ymin = MYMAX(nmin.Y, -height_max);
 		ymax = MYMIN(nmax.Y, -height_min);
@@ -116,7 +116,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	}
 	if (clust_size >= ymax - ymin + 1)
 		return;
-	
+
 	nmin.Y = ymin;
 	nmax.Y = ymax;
 	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
@@ -139,16 +139,16 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
 		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
-		
+
 		if (np && (NoisePerlin3D(np, x0, y0, z0, seed) < nthresh))
 			continue;
-		
+
 		for (int z1 = 0; z1 != csize; z1++)
 		for (int y1 = 0; y1 != csize; y1++)
 		for (int x1 = 0; x1 != csize; x1++) {
 			if (pr.range(1, orechance) != 1)
 				continue;
-			
+
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
 			if (vm->m_data[i].getContent() == wherein)
 				vm->m_data[i] = n_ore;
@@ -161,10 +161,10 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed + 4234);
 	MapNode n_ore(ore, 0, ore_param2);
-	
+
 	int max_height = clust_size;
 	int y_start = pr.range(nmin.Y, nmax.Y - max_height);
-	
+
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
 		int sz = nmax.Z - nmin.Z + 1;
@@ -172,14 +172,14 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 	}
 	noise->seed = seed + y_start;
 	noise->perlinMap2D(nmin.X, nmin.Z);
-	
+
 	int index = 0;
 	for (int z = nmin.Z; z <= nmax.Z; z++)
 	for (int x = nmin.X; x <= nmax.X; x++) {
 		float noiseval = noise->result[index++];
 		if (noiseval < nthresh)
 			continue;
-			
+
 		int height = max_height * (1. / pr.range(1, 3));
 		int y0 = y_start + np->scale * noiseval; //pr.range(1, 3) - 1;
 		int y1 = y0 + height;
@@ -187,7 +187,7 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			u32 i = vm->m_area.index(x, y, z);
 			if (!vm->m_area.contains(i))
 				continue;
-				
+
 			if (vm->m_data[i].getContent() == wherein)
 				vm->m_data[i] = n_ore;
 		}
@@ -202,11 +202,11 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 x = nmin.X; x <= nmax.X; x++) {
 			wasliquid = true;
-			
+
 			u32 i = vm->m_area.index(x, nmax.Y, z);
 			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
 				isliquid = ndef->get(vm->m_data[i]).isLiquid();
-				
+
 				// there was a change between liquid and nonliquid, add to queue
 				if (isliquid != wasliquid)
 					trans_liquid->push_back(v3s16(x, y, z));
@@ -236,7 +236,7 @@ void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
 void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 	if (light <= 1 || !a.contains(p))
 		return;
-		
+
 	u32 vi = vm->m_area.index(p);
 	MapNode &nn = vm->m_data[vi];
 
@@ -244,9 +244,9 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 	// should probably compare masked, but doesn't seem to make a difference
 	if (light <= nn.param1 || !ndef->get(nn).light_propagates)
 		return;
-	
+
 	nn.param1 = light;
-	
+
 	lightSpread(a, p + v3s16(0, 0, 1), light);
 	lightSpread(a, p + v3s16(0, 1, 0), light);
 	lightSpread(a, p + v3s16(1, 0, 0), light);
@@ -286,7 +286,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	// now spread the sunlight and light up any sources
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
@@ -296,11 +296,11 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 				if (n.getContent() == CONTENT_IGNORE ||
 					!ndef->get(n).light_propagates)
 					continue;
-				
+
 				u8 light_produced = ndef->get(n).light_source & 0x0F;
 				if (light_produced)
 					n.param1 = light_produced;
-				
+
 				u8 light = n.param1 & 0x0F;
 				if (light) {
 					lightSpread(a, v3s16(x,     y,     z + 1), light);
@@ -313,7 +313,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	//printf("updateLighting: %dms\n", t.stop());
 }
 
@@ -325,7 +325,7 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 	bool sunlight = !block_is_underground;
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	
+
 	for (int i = 0; i < 2; i++) {
 		enum LightBank bank = banks[i];
 		std::set<v3s16> light_sources;
@@ -371,7 +371,7 @@ bool MapgenV6Params::readParams(Settings *settings) {
 void MapgenV6Params::writeParams(Settings *settings) {
 	settings->setFloat("mgv6_freq_desert", freq_desert);
 	settings->setFloat("mgv6_freq_beach",  freq_beach);
-	
+
 	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
 	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
 	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
@@ -393,7 +393,7 @@ bool MapgenV7Params::readParams(Settings *settings) {
 	np_terrain_persist = settings->getNoiseParams("mgv7_np_terrain_persist");
 	np_height_select   = settings->getNoiseParams("mgv7_np_height_select");
 	np_ridge           = settings->getNoiseParams("mgv7_np_ridge");
-	
+
 	bool success =
 		np_terrain_base    && np_terrain_alt   && np_terrain_mod &&
 		np_terrain_persist && np_height_select && np_ridge;

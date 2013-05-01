@@ -254,7 +254,7 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 		server["clients_max"]	= g_settings->get("max_users");
 		if (uptime >=1) server["uptime"] = (int)uptime;
 		if (gameid!="") server["gameid"] = gameid;
-		
+
 	}
 	if(server["action"] == "start")
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;

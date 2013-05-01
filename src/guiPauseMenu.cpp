@@ -92,7 +92,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
@@ -102,7 +102,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 			screensize.X/2 + 580/2,
 			screensize.Y/2 + 300/2
 	);
-	
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
@@ -186,7 +186,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
 		rect = rect + v2s32(size.X/2 - 90 - rect.getWidth(), size.Y/2-rect.getHeight()/2);
-	
+
 		v2u32 max_texture_size;
 		{
 			video::IVideoDriver* driver = Environment->getVideoDriver();
@@ -197,7 +197,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		os<<"Minetest\n";
 		os<<BUILD_INFO<<"\n";
 		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
-	
+
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
 	changeCtype("C");
@@ -209,7 +209,7 @@ void GUIPauseMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
@@ -275,7 +275,7 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			}
 		}
 	}
-	
+
 	return Parent ? Parent->OnEvent(event) : false;
 }
 

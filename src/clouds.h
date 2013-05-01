@@ -43,7 +43,7 @@ public:
 	virtual void OnRegisterSceneNode();
 
 	virtual void render();
-	
+
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
 	{
 		return m_box;
@@ -58,7 +58,7 @@ public:
 	{
 		return m_material;
 	}
-	
+
 	/*
 		Other stuff
 	*/

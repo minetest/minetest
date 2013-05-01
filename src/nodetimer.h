@@ -39,10 +39,10 @@ public:
 	NodeTimer(f32 timeout_, f32 elapsed_):
 		timeout(timeout_), elapsed(elapsed_) {}
 	~NodeTimer() {}
-	
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	f32 timeout;
 	f32 elapsed;
 };
@@ -56,10 +56,10 @@ class NodeTimerList
 public:
 	NodeTimerList() {}
 	~NodeTimerList() {}
-	
+
 	void serialize(std::ostream &os, u8 map_format_version) const;
 	void deSerialize(std::istream &is, u8 map_format_version);
-	
+
 	// Get timer
 	NodeTimer get(v3s16 p){
 		std::map<v3s16, NodeTimer>::iterator n = m_data.find(p);

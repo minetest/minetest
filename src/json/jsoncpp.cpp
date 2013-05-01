@@ -27,7 +27,7 @@ The MIT License is about as close to Public Domain as a license can get, and is
 described in clear, concise terms at:
 
    http://en.wikipedia.org/wiki/MIT_License
-   
+
 The full text of the MIT License follows:
 
 ========================================================================
@@ -101,7 +101,7 @@ static inline std::string
 codePointToUTF8(unsigned int cp)
 {
    std::string result;
-   
+
    // based on description from http://en.wikipedia.org/wiki/UTF-8
 
    if (cp <= 0x7f) 
@@ -347,7 +347,7 @@ Reader::parse( const char *beginDoc, const char *endDoc,
    while ( !nodes_.empty() )
       nodes_.pop();
    nodes_.push( &root );
-   
+
    bool successful = readValue();
    Token token;
    skipCommentTokens( token );
@@ -672,7 +672,7 @@ Reader::readObject( Token &/*tokenStart*/ )
          return true;
       if ( tokenName.type_ != tokenString )
          break;
-      
+
       name = "";
       if ( !decodeString( tokenName, name ) )
          return recoverFromError( tokenObjectEnd );
