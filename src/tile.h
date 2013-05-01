@@ -162,6 +162,7 @@ IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
+	TILE_MATERIAL_ALPHA,
 	TILE_MATERIAL_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_LIQUID_OPAQUE,
 };
@@ -222,6 +223,9 @@ struct TileSpec
 		case TILE_MATERIAL_BASIC:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
+		case TILE_MATERIAL_ALPHA:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			break;
@@ -233,11 +237,15 @@ struct TileSpec
 	}
 	void applyMaterialOptionsWithShaders(video::SMaterial &material,
 			const video::E_MATERIAL_TYPE &basic,
-			const video::E_MATERIAL_TYPE &liquid) const
+			const video::E_MATERIAL_TYPE &liquid,
+			const video::E_MATERIAL_TYPE &alpha) const
 	{
 		switch(material_type){
 		case TILE_MATERIAL_BASIC:
 			material.MaterialType = basic;
+			break;
+		case TILE_MATERIAL_ALPHA:
+			material.MaterialType = alpha;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = liquid;

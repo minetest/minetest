@@ -202,6 +202,9 @@ private:
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
 
+	// hud_set_flags(self, flags)
+	static int l_hud_set_flags(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

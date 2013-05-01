@@ -329,6 +329,7 @@ Look for examples in games/minimal or games/minetest_game.
 - liquid
 - flowingliquid
 - glasslike
+- glasslike_framed
 - allfaces
 - allfaces_optional
 - torchlike
@@ -409,6 +410,12 @@ ranging in value from 0 to 1.
 The name field is not yet used, but should contain a description of what the HUD element represents.
 The direction field is the direction in which something is drawn.
 0 draws from left to right, 1 draws from right to left, 2 draws from top to bottom, and 3 draws from bottom to top.
+The alignment field specifies how the item will be aligned. It ranges from -1 to 1,
+with 0 being the center, -1 is moved to the left/up, and 1 is to the right/down. Fractional
+values can be used.
+The offset field specifies a pixel offset from the position. Contrary to position,
+the offset is not scaled to screen size. This allows for some precisely-positioned
+items in the HUD.
 Below are the specific uses for fields in each type; fields not listed for that type are ignored.
 
 Note: Future revisions to the HUD API may be incompatible; the HUD API is still in the experimental stages.
@@ -418,6 +425,8 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
 	- scale: The scale of the image, with 1 being the original texture size.
              Only the X coordinate scale is used.
     - text: The name of the texture that is displayed.
+    - alignment: The alignment of the image.
+    - offset: offset in pixels from position.
 - text
     Displays text on the HUD.
     - scale: Defines the bounding rectangle of the text.
@@ -425,12 +434,15 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
     - text: The text to be displayed in the HUD element.
     - number: An integer containing the RGB value of the color used to draw the text.
               Specify 0xFFFFFF for white text, 0xFF0000 for red, and so on.
+    - alignment: The alignment of the text.
+    - offset: offset in pixels from position.
 - statbar
     Displays a horizontal bar made up of half-images.
     - text: The name of the texture that is used.
     - number: The number of half-textures that are displayed.
               If odd, will end with a vertically center-split texture.
     - direction
+    - offset: offset in pixels from position.
 - inventory
     - text: The name of the inventory list to be displayed.
     - number: Number of items in the inventory to be displayed.
@@ -900,6 +912,11 @@ minetest.get_modnames() -> list of installed mods
 minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 minetest.is_singleplayer()
+minetest.features
+^ table containing API feature flags: {foo=true, bar=true}
+minetest.has_feature(arg) -> bool, missing_features
+^ arg: string or table in format {foo=true, bar=true}
+^ missing_features: {foo=true, bar=true}
 
 minetest.debug(line)
 ^ Always printed to stderr and logfile (print() is redirected here)
@@ -991,10 +1008,12 @@ minetest.auth_reload()
 ^ These call the authentication handler
 minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 ^ A quickhand for checking privileges
+minetest.get_player_ip(name) -> IP address string
 
 Chat:
 minetest.chat_send_all(text)
-minetest.chat_send_player(name, text)
+minetest.chat_send_player(name, text, prepend)
+^ prepend: optional, if it is set to false "Server -!- " will not be prepended to the message
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
@@ -1420,6 +1439,10 @@ Player-only: (no-op for other objects)
 - hud_change(id, stat, value): change a value of a previously added HUD element
   ^ element stat values: position, name, scale, text, number, item, dir
 - hud_get(id): gets the HUD element definition structure of the specified ID
+- hud_set_flags(flags): sets specified HUD flags to true/false
+  ^ flags: (is visible) hotbar, healthbar, crosshair, wielditem
+  ^ pass a table containing a true/false value of each flag to be set or unset
+  ^ if a flag is nil, the flag is not modified
 
 InvRef: Reference to an inventory
 methods:
@@ -1636,6 +1659,7 @@ Node definition (register_node)
     ^ Special textures of node; used rarely (old field name: special_materials)
     ^ List can be shortened to needed length
     alpha = 255,
+    use_texture_alpha = false, -- Use texture's alpha channel
     post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
     paramtype = "none", -- See "Nodes"
     paramtype2 = "none", -- See "Nodes"
@@ -1857,4 +1881,8 @@ HUD Definition (hud_add, hud_get)
     ^ Selected item in inventory.  0 for no item selected.
     direction = 0,
     ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+    alignment = {x=0, y=0},
+    ^ See "HUD Element Types"
+    offset = {x=0, y=0},
+    ^ See "HUD Element Types"
 }

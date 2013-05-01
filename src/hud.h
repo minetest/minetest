@@ -31,6 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
+#define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
+#define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
+#define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
+#define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
+
 class Player;
 
 enum HudElementType {
@@ -47,7 +52,9 @@ enum HudElementStat {
 	HUD_STAT_TEXT,
 	HUD_STAT_NUMBER,
 	HUD_STAT_ITEM,
-	HUD_STAT_DIR
+	HUD_STAT_DIR,
+	HUD_STAT_ALIGN,
+	HUD_STAT_OFFSET
 };
 
 struct HudElement {
@@ -59,6 +66,8 @@ struct HudElement {
 	u32 number;
 	u32 item;
 	u32 dir;
+	v2f align;
+	v2f offset;
 };
 
 
@@ -72,8 +81,6 @@ inline u32 hud_get_free_id(Player *player) {
 }
 
 #ifndef SERVER
-
-#include <deque>
 
 #include <IGUIFont.h>
 
@@ -90,7 +97,8 @@ public:
 	IGameDef *gamedef;
 	LocalPlayer *player;
 	Inventory *inventory;
-	
+	ITextureSource *tsrc;
+
 	v2u32 screensize;
 	v2s32 displaycenter;
 	s32 hotbar_imagesize;
@@ -98,6 +106,7 @@ public:
 	
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
+	bool use_crosshair_image;
 	
 	Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 		gui::IGUIFont *font, u32 text_height, IGameDef *gamedef,
@@ -106,7 +115,8 @@ public:
 	void drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+					 std::string texture, s32 count, v2s32 offset);
 	
 	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
 	void resizeHotbar();

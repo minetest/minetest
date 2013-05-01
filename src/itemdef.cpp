@@ -247,7 +247,8 @@ public:
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
-			cc->wield_mesh->drop();
+			if (cc->wield_mesh)
+				cc->wield_mesh->drop();
 			delete cc;
 		}
 
