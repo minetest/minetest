@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-10 23:52+0200\n"
-"Last-Translator: Me Moala <moala@online.fr>\n"
+"PO-Revision-Date: 2013-05-01 16:24+0200\n"
+"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -395,7 +395,7 @@ msgstr "Changer"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Mot de passe incorrect !"
+msgstr "Les mots de passe ne correspondent pas !"
 
 #: src/guiPauseMenu.cpp:123
 msgid "Continue"
