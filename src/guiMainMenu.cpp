@@ -53,12 +53,12 @@ const wchar_t *contrib_core_strs[] = {
 	L"Ilya Zhuravlev (thexyz) <xyz@minetest.net>",
 	L"Lisa Milne (darkrose) <lisa@ltmnet.com>",
 	L"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>",
-	L"proller <proler@gmail.com>"
+	L"proller <proler@gmail.com>",
+	L"sfan5 <sfan5@live.de>"
 };
 
 const wchar_t *contrib_active_strs[] = {
 	L"kahrl <kahrl@gmx.net>",
-	L"sfan5 <sfan5@live.de>",
 	L"sapier <sapier@gmx.net>",
 	L"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
 	L"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
