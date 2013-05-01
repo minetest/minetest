@@ -1006,7 +1006,7 @@ minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 minetest.get_player_ip(name) -> IP address string
 
 Chat:
-minetest.chat_send_all(text)
+minetest.chat_send_all(text, prepend)
 minetest.chat_send_player(name, text, prepend)
 ^ prepend: optional, if it is set to false "Server -!- " will not be prepended to the message
 
