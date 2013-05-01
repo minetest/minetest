@@ -91,4 +91,10 @@ function minetest.pos_to_string(pos)
 	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 end
 
+minetest.chat_send_all = function(text, prepend)
+	local pls = minetest.get_connected_players()
+	for _, pl in pairs(pls) do
+		minetest.chat_send_player(pl:get_player_name(), text, prepend)
+	end
+end
 
