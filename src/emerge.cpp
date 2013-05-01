@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
 	registerMapgen("v6", new MapgenFactoryV6());
-	//registerMapgen("v7", new MapgenFactoryV7());
+	registerMapgen("v7", new MapgenFactoryV7());
 	registerMapgen("indev", new MapgenFactoryIndev());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
 

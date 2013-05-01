@@ -675,7 +675,7 @@ minetest.register_chatcommand("msg", {
 		if found then
 			if minetest.env:get_player_by_name(sendto) then
 				minetest.log("action", "PM from "..name.." to "..sendto..": "..message)
-				minetest.chat_send_player(sendto, "PM from "..name..": "..message)
+				minetest.chat_send_player(sendto, "PM from "..name..": "..message, false)
 				minetest.chat_send_player(name, "Message sent")
 			else
 				minetest.chat_send_player(name, "The player "..sendto.." is not online")

@@ -3616,6 +3616,8 @@ void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 	writeU32(os, form->number);
 	writeU32(os, form->item);
 	writeU32(os, form->dir);
+	writeV2F1000(os, form->align);
+	writeV2F1000(os, form->offset);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3650,6 +3652,8 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 	switch (stat) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
+		case HUD_STAT_ALIGN:
+		case HUD_STAT_OFFSET:
 			writeV2F1000(os, *(v2f *)value);
 			break;
 		case HUD_STAT_NAME:
@@ -3663,6 +3667,22 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 			writeU32(os, *(u32 *)value);
 			break;
 	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUD_SET_FLAGS);
+	writeU32(os, flags);
+	writeU32(os, mask);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4602,12 +4622,15 @@ void Server::saveConfig()
 		g_settings->updateConfigFile(m_path_config.c_str());
 }
 
-void Server::notifyPlayer(const char *name, const std::wstring msg)
+void Server::notifyPlayer(const char *name, const std::wstring msg, const bool prepend = true)
 {
 	Player *player = m_env->getPlayer(name);
 	if(!player)
 		return;
-	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
+	if (prepend)
+		SendChatMessage(player->peer_id, std::wstring(L"Server -!- ")+msg);
+	else
+		SendChatMessage(player->peer_id, msg);
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec, const std::string &formname)
@@ -4654,6 +4677,14 @@ bool Server::hudChange(Player *player, u32 id, HudElementStat stat, void *data) 
 		return false;
 
 	SendHUDChange(player->peer_id, id, stat, data);
+	return true;
+}
+
+bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
+	if (!player)
+		return false;
+
+	SendHUDSetFlags(player->peer_id, flags, mask);
 	return true;
 }
 
@@ -4951,36 +4982,28 @@ v3f findSpawnPos(ServerMap &map)
 	{
 		s32 range = 1 + i;
 		// We're going to try to throw the player to this position
-		v2s16 nodepos2d = v2s16(-range + (myrand()%(range*2)),
-				-range + (myrand()%(range*2)));
-		//v2s16 sectorpos = getNodeSectorPos(nodepos2d);
-		// Get ground height at point (fallbacks to heightmap function)
-		s16 groundheight = map.findGroundLevel(nodepos2d);
-		// Don't go underwater
-		if(groundheight <= water_level)
-		{
-			//infostream<<"-> Underwater"<<std::endl;
-			continue;
-		}
-		// Don't go to high places
-		if(groundheight > water_level + 6)
-		{
-			//infostream<<"-> Underwater"<<std::endl;
-			continue;
-		}
+		v2s16 nodepos2d = v2s16(
+				-range + (myrand() % (range * 2)),
+				-range + (myrand() % (range * 2)));
 
-		nodepos = v3s16(nodepos2d.X, groundheight-2, nodepos2d.Y);
+		// Get ground height at point
+		s16 groundheight = map.findGroundLevel(nodepos2d);
+		if (groundheight <= water_level) // Don't go underwater
+			continue;
+		if (groundheight > water_level + 6) // Don't go to high places
+			continue;
+
+		nodepos = v3s16(nodepos2d.X, groundheight, nodepos2d.Y);
 		bool is_good = false;
 		s32 air_count = 0;
-		for(s32 i=0; i<10; i++){
+		for (s32 i = 0; i < 10; i++) {
 			v3s16 blockpos = getNodeBlockPos(nodepos);
 			map.emergeBlock(blockpos, true);
-			MapNode n = map.getNodeNoEx(nodepos);
-			if(n.getContent() == CONTENT_AIR){
+			content_t c = map.getNodeNoEx(nodepos).getContent();
+			if (c == CONTENT_AIR || c == CONTENT_IGNORE) {
 				air_count++;
-				if(air_count >= 2){
+				if (air_count >= 2){
 					is_good = true;
-					nodepos.Y -= 1;
 					break;
 				}
 			}

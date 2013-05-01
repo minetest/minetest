@@ -34,6 +34,7 @@ struct EnumString es_DrawType[] =
 	{NDT_LIQUID, "liquid"},
 	{NDT_FLOWINGLIQUID, "flowingliquid"},
 	{NDT_GLASSLIKE, "glasslike"},
+	{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
 	{NDT_ALLFACES, "allfaces"},
 	{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 	{NDT_TORCHLIKE, "torchlike"},

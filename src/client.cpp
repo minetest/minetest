@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IMeshCache.h"
 #include "util/serialize.h"
 #include "config.h"
+#include "util/directiontables.h"
 
 #if USE_CURL
 #include <curl/curl.h>
@@ -2054,6 +2055,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u32 number       = readU32(is);
 		u32 item         = readU32(is);
 		u32 dir          = readU32(is);
+		v2f align        = readV2F1000(is);
+		v2f offset       = readV2F1000(is);
 
 		ClientEvent event;
 		event.type = CE_HUDADD;
@@ -2066,6 +2069,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudadd.number = number;
 		event.hudadd.item   = item;
 		event.hudadd.dir    = dir;
+		event.hudadd.align  = new v2f(align);
+		event.hudadd.offset = new v2f(offset);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUDRM)
@@ -2092,7 +2097,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u32 id  = readU32(is);
 		u8 stat = (HudElementStat)readU8(is);
 		
-		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE)
+		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
+			stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 			v2fdata = readV2F1000(is);
 		else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
 			sdata = deSerializeString(is);
@@ -2107,6 +2113,20 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudchange.sdata   = new std::string(sdata);
 		event.hudchange.data    = intdata;
 		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_HUD_SET_FLAGS)
+	{	
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		u32 flags = readU32(is);
+		u32 mask  = readU32(is);
+		
+		player->hud_flags &= ~mask;
+		player->hud_flags |= flags;
 	}
 	else
 	{
@@ -2719,21 +2739,14 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool 
 	}
 	catch(InvalidPositionException &e){}
 	// Leading edge
-	try{
-		v3s16 p = blockpos + v3s16(-1,0,0);
-		addUpdateMeshTask(p, false, urgent);
+	for (int i=0;i<6;i++)
+	{
+		try{
+			v3s16 p = blockpos + g_6dirs[i];
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
 	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,-1,0);
-		addUpdateMeshTask(p, false, urgent);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,-1);
-		addUpdateMeshTask(p, false, urgent);
-	}
-	catch(InvalidPositionException &e){}
 }
 
 void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)

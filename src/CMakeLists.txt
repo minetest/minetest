@@ -248,6 +248,7 @@ set(common_SRCS
 	mapgen_singlenode.cpp
 	treegen.cpp
 	dungeongen.cpp
+	cavegen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
 	collision.cpp

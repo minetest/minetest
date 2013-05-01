@@ -154,9 +154,6 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 	// This should always apply, otherwise there are glitches
 	assert(d > pos_max_d);
 
-	float player_radius = BS*0.30;
-	float player_height = BS*1.55;
-	
 	// Maximum distance over border for sneaking
 	f32 sneak_max = BS*0.4;
 
@@ -184,24 +181,12 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		}
 	}
 
-	/*
-		Calculate player collision box (new and old)
-	*/
-	core::aabbox3d<f32> playerbox(
-		-player_radius,
-		0.0,
-		-player_radius,
-		player_radius,
-		player_height,
-		player_radius
-	);
-
 	float player_stepheight = touching_ground ? (BS*0.6) : (BS*0.2);
 
 	v3f accel_f = v3f(0,0,0);
 
 	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
-			pos_max_d, playerbox, player_stepheight, dtime,
+			pos_max_d, m_collisionbox, player_stepheight, dtime,
 			position, m_speed, accel_f);
 
 	/*

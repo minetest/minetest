@@ -94,6 +94,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_HUD_ADD
 		TOCLIENT_HUD_RM
 		TOCLIENT_HUD_CHANGE
+		TOCLIENT_HUD_BUILTIN_ENABLE
 */
 
 #define LATEST_PROTOCOL_VERSION 20
@@ -452,15 +453,17 @@ enum ToClientCommand
 		u32 number
 		u32 item
 		u32 dir
+		v2f1000 align
+		v2f1000 offset
 	*/
 
-	TOCLIENT_HUDRM = 0x50,
+	TOCLIENT_HUDRM = 0x4a,
 	/*
 		u16 command
 		u32 id
 	*/
 
-	TOCLIENT_HUDCHANGE = 0x51,
+	TOCLIENT_HUDCHANGE = 0x4b,
 	/*
 		u16 command
 		u32 id
@@ -469,6 +472,13 @@ enum ToClientCommand
 		 u32 len
 		 u8[len] data |
 		 u32 data]
+	*/
+
+	TOCLIENT_HUD_SET_FLAGS = 0x4c,
+	/*
+		u16 command
+		u32 flags
+		u32 mask
 	*/
 };
 

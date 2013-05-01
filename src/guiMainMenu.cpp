@@ -57,6 +57,7 @@ const wchar_t *contrib_core_strs[] = {
 };
 
 const wchar_t *contrib_active_strs[] = {
+	L"kahrl <kahrl@gmx.net>",
 	L"sfan5 <sfan5@live.de>",
 	L"sapier <sapier@gmx.net>",
 	L"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
@@ -69,7 +70,6 @@ const wchar_t *contrib_active_strs[] = {
 };
 
 const wchar_t *contrib_previous_strs[] = {
-	L"kahrl <kahrl@gmx.net>",
 	L"Giuseppe Bilotta (Oblomov) <giuseppe.bilotta@gmail.com>",
 	L"Jonathan Neuschafer <j.neuschaefer@gmx.net>",
 	L"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>",

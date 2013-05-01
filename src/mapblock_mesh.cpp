@@ -1099,6 +1099,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			getShader("test_shader_1").material;
 	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
 			getShader("test_shader_2").material;
+	video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
+			getShader("test_shader_3").material;
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1174,7 +1176,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture.atlas);
 		if(enable_shaders)
-			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2);
+			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
 		else
 			p.tile.applyMaterialOptions(material);
 

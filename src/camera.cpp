@@ -263,6 +263,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
 		// Amplify according to the intensity of the impact
 		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
+
+		fall_bobbing *= g_settings->getFloat("fall_bobbing_amount");
 	}
 
 	// Set head node transformation

@@ -45,6 +45,8 @@ Hud::Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 	hotbar_imagesize = 48;
 	hotbar_itemcount = 8;
 	
+	tsrc = gamedef->getTextureSource();
+	
 	v3f crosshair_color = g_settings->getV3F("crosshair_color");
 	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
 	u32 cross_g = rangelim(myround(crosshair_color.Y), 0, 255);
@@ -57,6 +59,8 @@ Hud::Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
 	u32 sbox_b = rangelim(myround(selectionbox_color.Z), 0, 255);
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
+	
+	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 }
 
 
@@ -175,8 +179,7 @@ void Hud::drawLuaElements() {
 		v2s32 pos(e->pos.X * screensize.X, e->pos.Y * screensize.Y);
 		switch (e->type) {
 			case HUD_ELEM_IMAGE: {
-				video::ITexture *texture =
-					gamedef->getTextureSource()->getTextureRaw(e->text);
+				video::ITexture *texture = tsrc->getTextureRaw(e->text);
 				if (!texture)
 					continue;
 
@@ -186,6 +189,10 @@ void Hud::drawLuaElements() {
 				core::rect<s32> rect(0, 0, imgsize.Width  * e->scale.X,
 									       imgsize.Height * e->scale.X);
 				rect += pos;
+				v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
+				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
+				rect += offset;
+				rect += v2s32(e->offset.X, e->offset.Y);
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -195,11 +202,17 @@ void Hud::drawLuaElements() {
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				font->draw(narrow_to_wide(e->text).c_str(), size + pos, color);
+				std::wstring text = narrow_to_wide(e->text);
+				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
+				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
+				             (e->align.Y - 1.0) * (textsize.Height / 2));
+				v2s32 offs(e->offset.X, e->offset.Y);
+				font->draw(text.c_str(), size + pos + offset + offs, color);
 				break; }
-			case HUD_ELEM_STATBAR:
-				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number);
-				break;
+			case HUD_ELEM_STATBAR: {
+				v2s32 offs(e->offset.X, e->offset.Y);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs);
+				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
 				drawItem(pos, hotbar_imagesize, e->number, inv, e->item, e->dir);
@@ -212,12 +225,11 @@ void Hud::drawLuaElements() {
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count) {
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset) {
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
-	video::ITexture *stat_texture =
-		gamedef->getTextureSource()->getTextureRaw(texture);
+	video::ITexture *stat_texture = tsrc->getTextureRaw(texture);
 	if (!stat_texture)
 		return;
 		
@@ -226,6 +238,8 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 	v2s32 p = pos;
 	if (corner & HUD_CORNER_LOWER)
 		p -= srcd.Height;
+
+	p += offset;
 
 	v2s32 steppos;
 	switch (drawdir) {
@@ -276,17 +290,32 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem) {
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
 	
-	drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
-	drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
-				"heart.png", halfheartcount);
+	if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)
+		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
+	if (player->hud_flags & HUD_FLAG_HEALTHBAR_VISIBLE)
+		drawStatbar(pos - v2s32(0, 4), HUD_CORNER_LOWER, HUD_DIR_LEFT_RIGHT,
+				"heart.png", halfheartcount, v2s32(0, 0));
 }
 
 
 void Hud::drawCrosshair() {
-	driver->draw2DLine(displaycenter - v2s32(10, 0),
-			displaycenter + v2s32(10, 0), crosshair_argb);
-	driver->draw2DLine(displaycenter - v2s32(0, 10),
-			displaycenter + v2s32(0, 10), crosshair_argb);
+	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE))
+		return;
+		
+	if (use_crosshair_image) {
+		video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+		v2u32 size  = crosshair->getOriginalSize();
+		v2s32 lsize = v2s32(displaycenter.X - (size.X / 2),
+							displaycenter.Y - (size.Y / 2));
+		driver->draw2DImage(crosshair, lsize,
+				core::rect<s32>(0, 0, size.X, size.Y),
+				0, crosshair_argb, true);
+	} else {
+		driver->draw2DLine(displaycenter - v2s32(10, 0),
+				displaycenter + v2s32(10, 0), crosshair_argb);
+		driver->draw2DLine(displaycenter - v2s32(0, 10),
+				displaycenter + v2s32(0, 10), crosshair_argb);
+	}
 }
 
 

@@ -47,6 +47,17 @@ struct EnumString es_HudElementStat[] =
 	{HUD_STAT_NUMBER, "number"},
 	{HUD_STAT_ITEM,   "item"},
 	{HUD_STAT_DIR,    "direction"},
+	{HUD_STAT_ALIGN,  "alignment"},
+	{HUD_STAT_OFFSET, "offset"},
+	{0, NULL},
+};
+
+struct EnumString es_HudBuiltinElement[] =
+{
+	{HUD_FLAG_HOTBAR_VISIBLE,    "hotbar"},
+	{HUD_FLAG_HEALTHBAR_VISIBLE, "healthbar"},
+	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
+	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
 	{0, NULL},
 };
 
@@ -751,6 +762,14 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->item   = getintfield_default(L, 2, "item", 0);
 	elem->dir    = getintfield_default(L, 2, "direction", 0);
 
+	lua_getfield(L, 2, "alignment");
+	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "offset");
+	elem->offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
 	u32 id = get_server(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {
 		delete elem;
@@ -788,15 +807,17 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = -1;
-	if (!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-	
-	HudElementStat stat = (HudElementStat)getenumfield(L, 3, "stat",
-								es_HudElementStat, HUD_STAT_NUMBER);
-	
+	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
 	if (id >= player->hud.size())
 		return 0;
+		
+	HudElementStat stat = HUD_STAT_NUMBER;
+	if (!lua_isnil(L, 3)) {
+		int statint;
+		std::string statstr = lua_tostring(L, 3);
+		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
+				(HudElementStat)statint : HUD_STAT_NUMBER;
+	}
 	
 	void *value = NULL;
 	HudElement *e = player->hud[id];
@@ -831,8 +852,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 		case HUD_STAT_DIR:
 			e->dir = lua_tonumber(L, 4);
 			value = &e->dir;
+		case HUD_STAT_ALIGN:
+			e->align = read_v2f(L, 4);
+			value = &e->align;
+		case HUD_STAT_OFFSET:
+			e->offset = read_v2f(L, 4);
+			value = &e->offset;
 	}
-	
+
 	get_server(L)->hudChange(player, id, stat, value);
 
 	lua_pushboolean(L, true);
@@ -881,6 +908,32 @@ int ObjectRef::l_hud_get(lua_State *L)
 	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
 
+	return 1;
+}
+
+// hud_set_flags(self, flags)
+int ObjectRef::l_hud_set_flags(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	u32 flags = 0;
+	u32 mask  = 0;
+	bool flag;
+	
+	const EnumString *esp = es_HudBuiltinElement;
+	for (int i = 0; esp[i].str; i++) {
+		if (getboolfield(L, 2, esp[i].str, flag)) {
+			flags |= esp[i].num * flag;
+			mask  |= esp[i].num;
+		}
+	}
+	if (!get_server(L)->hudSetFlags(player, flags, mask))
+		return 0;
+
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -994,8 +1047,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
-	//luamethod(ObjectRef, hud_lock_next_bar),
-	//luamethod(ObjectRef, hud_unlock_bar),
+	luamethod(ObjectRef, hud_set_flags),
 	{0,0}
 };
 

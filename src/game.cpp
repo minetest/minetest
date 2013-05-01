@@ -2106,6 +2106,8 @@ void the_game(
 						delete event.hudadd.name;
 						delete event.hudadd.scale;
 						delete event.hudadd.text;
+						delete event.hudadd.align;
+						delete event.hudadd.offset;
 						continue;
 					}
 					
@@ -2118,6 +2120,8 @@ void the_game(
 					e->number = event.hudadd.number;
 					e->item   = event.hudadd.item;
 					e->dir    = event.hudadd.dir;
+					e->align  = *event.hudadd.align;
+					e->offset = *event.hudadd.offset;
 					
 					if (id == nhudelem)
 						player->hud.push_back(e);
@@ -2128,6 +2132,8 @@ void the_game(
 					delete event.hudadd.name;
 					delete event.hudadd.scale;
 					delete event.hudadd.text;
+					delete event.hudadd.align;
+					delete event.hudadd.offset;
 				}
 				else if (event.type == CE_HUDRM)
 				{
@@ -2168,6 +2174,12 @@ void the_game(
 							break;
 						case HUD_STAT_DIR:
 							e->dir = event.hudchange.data;
+							break;
+						case HUD_STAT_ALIGN:
+							e->align = *event.hudchange.v2fdata;
+							break;
+						case HUD_STAT_OFFSET:
+							e->offset = *event.hudchange.v2fdata;
 							break;
 					}
 					
@@ -3058,7 +3070,7 @@ void the_game(
 		/*
 			Wielded tool
 		*/
-		if(show_hud)
+		if(show_hud && (player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE))
 		{
 			// Warning: This clears the Z buffer.
 			camera.drawWieldedTool();

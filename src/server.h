@@ -456,7 +456,7 @@ public:
 	}
 
 	// Envlock and conlock should be locked when calling this
-	void notifyPlayer(const char *name, const std::wstring msg);
+	void notifyPlayer(const char *name, const std::wstring msg, const bool prepend);
 	void notifyPlayers(const std::wstring msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
@@ -540,6 +540,7 @@ public:
 	u32 hudAdd(Player *player, HudElement *element);
 	bool hudRemove(Player *player, u32 id);
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
+	bool hudSetFlags(Player *player, u32 flags, u32 mask);
 	
 private:
 
@@ -583,6 +584,8 @@ private:
 	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
+	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
+	
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

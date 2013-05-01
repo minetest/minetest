@@ -1472,6 +1472,11 @@ std::string PlayerSAO::getPropertyPacket()
 }
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) {
-	//player collision handling is already done clientside no need to do it twice
-	return false;
+	//update collision box
+	*toset = m_player->getCollisionbox();
+
+	toset->MinEdge += m_base_position;
+	toset->MaxEdge += m_base_position;
+
+	return true;
 }
