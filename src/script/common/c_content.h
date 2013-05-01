@@ -53,11 +53,13 @@ struct NodeBox;
 struct ContentFeatures;
 struct TileDef;
 class Server;
+class CraftDefinition;
 struct DigParams;
 struct HitParams;
 struct EnumString;
 struct NoiseParams;
 class DecoSchematic;
+struct CraftReplacements;
 
 
 ContentFeatures    read_content_features         (lua_State *L, int index);
@@ -110,6 +112,18 @@ NodeBox            read_nodebox              (lua_State *L, int index);
 void               read_groups               (lua_State *L,
                                               int index,
                                               std::map<std::string, int> &result);
+
+bool               readCraftRecipeShaped     (lua_State *L,
+                                              int index,
+                                              int &width,
+                                              std::vector<std::string> &recipe);
+bool               readCraftRecipeShapeless  (lua_State *L,
+                                              int index,
+                                              std::vector<std::string> &recipe);
+bool               readCraftReplacements     (lua_State *L,
+                                              int index,
+                                              CraftReplacements &replacements);
+CraftDefinition*   read_craft                (lua_State *L,int index);
 
 //TODO rename to "read_enum_field"
 int                getenumfield              (lua_State *L,

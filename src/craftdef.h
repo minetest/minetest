@@ -119,6 +119,14 @@ public:
 	CraftDefinition(){}
 	virtual ~CraftDefinition(){}
 
+	bool operator ==(const CraftDefinition &other) const
+	{
+		if (this->dump() != other.dump())
+			return false;
+
+		return true;
+	}
+
 	void serialize(std::ostream &os) const;
 	static CraftDefinition* deSerialize(std::istream &is);
 
@@ -387,6 +395,7 @@ public:
 	// Add a crafting definition.
 	// After calling this, the pointer belongs to the manager.
 	virtual void registerCraft(CraftDefinition *def)=0;
+	virtual void removeCraft(CraftDefinition *def)=0;
 	// Delete all crafting definitions
 	virtual void clear()=0;
 
