@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-18 15:28+0100\n"
-"Last-Translator: LS-Steeef \n"
+"PO-Revision-Date: 2013-05-01 22:18+0200\n"
+"Last-Translator: Sfan5 . <sfan5@live.de>\n"
 "Language-Team: \n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.5\n"
-"Language: dutch\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/guiConfigureWorld.cpp:125
 msgid ""
@@ -24,7 +25,7 @@ msgid ""
 msgstr ""
 "Let op: Nog niet alle mods zijn geconfigueerd. \n"
 "De mods zullen automatisch worden ingeschakeld als je de configuratie "
-"bewaard."
+"bewaard. "
 
 #: src/guiConfigureWorld.cpp:144
 msgid ""
@@ -32,7 +33,7 @@ msgid ""
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
 "LEt op: Sommige ingestelde mods zijn vermist.\n"
-"Hun instellingen worden verwijderd als je de configuratie opslaat."
+"Hun instellingen worden verwijderd als je de configuratie opslaat. "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
@@ -65,11 +66,11 @@ msgstr "Bewaar"
 
 #: src/guiConfigureWorld.cpp:394
 msgid "Configuration saved.  "
-msgstr "Instellingen bewaard."
+msgstr "Instellingen bewaard. "
 
 #: src/guiConfigureWorld.cpp:402
 msgid "Warning: Configuration not consistent.  "
-msgstr "Waarschuwing: Instellingen niet consistent."
+msgstr "Waarschuwing: Instellingen niet consistent. "
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
@@ -102,7 +103,7 @@ msgstr "Respawn"
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
-"Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item."
+"Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item"
 
 #: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
 #: src/guiTextInputMenu.cpp:131
@@ -199,11 +200,11 @@ msgstr "Print stacks"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "Kan geen nieuwe wereld aanmaken: de naam bevat onjuiste tekens."
+msgstr "Kan geen nieuwe wereld aanmaken: de naam bevat onjuiste tekens"
 
 #: src/guiMainMenu.cpp:101
 msgid "Cannot create world: A world by this name already exists"
-msgstr "Kan geen nieuwe wereld aanmaken: De naam bestaat al."
+msgstr "Kan geen nieuwe wereld aanmaken: De naam bestaat al"
 
 #: src/guiMainMenu.cpp:283
 msgid "Singleplayer"
@@ -243,7 +244,7 @@ msgstr "Instellingen"
 
 #: src/guiMainMenu.cpp:369 src/keycode.cpp:248
 msgid "Play"
-msgstr "Speel!"
+msgstr "Speel"
 
 #: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
 msgid "Creative Mode"
@@ -359,7 +360,7 @@ msgstr "IP-adres nodig."
 
 #: src/guiMainMenu.cpp:1102
 msgid "Cannot delete world: Nothing selected"
-msgstr "Kan niets verwijderen: Geen wereld geselecteerd."
+msgstr "Kan niets verwijderen: Geen wereld geselecteerd"
 
 #: src/guiMainMenu.cpp:1117
 msgid "Files to be deleted"
@@ -445,7 +446,7 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr "Volume:"
+msgstr "Volume: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
@@ -757,7 +758,7 @@ msgstr "Geen wereld en adres geselecteerd. Niks te doen."
 
 #: src/main.cpp:1850
 msgid "Could not find or load game \""
-msgstr "Kan niet de game laden of vinden."
+msgstr "Kan niet de game laden of vinden \""
 
 #: src/main.cpp:1864
 msgid "Invalid gamespec."
