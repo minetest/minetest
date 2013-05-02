@@ -39,6 +39,7 @@ struct MainMenuData
 	// These are in the native format of the gui elements
 	// Generic
 	int selected_tab;
+	std::string selected_game;
 	// Client options
 	std::string servername;
 	std::string serverdescription;
@@ -78,6 +79,7 @@ struct MainMenuData
 	MainMenuData():
 		// Generic
 		selected_tab(0),
+		selected_game("minetest"),
 		// Client opts
 		fancy_trees(false),
 		smooth_lighting(false),
@@ -127,6 +129,8 @@ private:
 	gui::IGUIElement* parent;
 	s32 id;
 	IMenuManager *menumgr;
+
+	std::vector<int> m_world_indices;
 
 	bool m_is_regenerating;
 	v2s32 m_topleft_client;
