@@ -1795,6 +1795,7 @@ int main(int argc, char *argv[])
 						continue;
 					}
 					g_settings->set("selected_world_path", path);
+					g_settings->set("selected_mainmenu_game", menudata.create_world_gameid);
 					continue;
 				}
 
