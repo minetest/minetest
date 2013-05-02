@@ -1093,6 +1093,7 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
+minetest.remove_craft(recipe)
 minetest.register_ore(ore definition)
 minetest.register_decoration(decoration definition)
 
