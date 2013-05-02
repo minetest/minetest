@@ -1274,7 +1274,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				} else {
 					CreateWorldDest *dest = new CreateWorldDestMainMenu(this);
 					GUICreateWorld *menu = new GUICreateWorld(env, parent, -1,
-							menumgr, dest, games);
+							menumgr, dest, games, m_data->selected_game);
 					menu->drop();
 				}
 				return true;
