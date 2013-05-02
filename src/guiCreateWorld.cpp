@@ -42,13 +42,22 @@ GUICreateWorld::GUICreateWorld(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		CreateWorldDest *dest,
-		const std::vector<SubgameSpec> &games
+		const std::vector<SubgameSpec> &games,
+		const std::string &initial_game
 ):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_dest(dest),
-	m_games(games)
+	m_games(games),
+	m_initial_game_i(0)
 {
 	assert(games.size() > 0);
+
+	for(size_t i=0; i<games.size(); i++){
+		if(games[i].id == initial_game){
+			m_initial_game_i = i;
+			break;
+		}
+	}
 }
 
 GUICreateWorld::~GUICreateWorld()
@@ -151,7 +160,7 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 			os<<L"]";
 			e->addItem(os.str().c_str());
 		}
-		e->setSelected(0);
+		e->setSelected(m_initial_game_i);
 	}
 	changeCtype("");
 	{

@@ -912,6 +912,11 @@ minetest.get_modnames() -> list of installed mods
 minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 minetest.is_singleplayer()
+minetest.features
+^ table containing API feature flags: {foo=true, bar=true}
+minetest.has_feature(arg) -> bool, missing_features
+^ arg: string or table in format {foo=true, bar=true}
+^ missing_features: {foo=true, bar=true}
 
 minetest.debug(line)
 ^ Always printed to stderr and logfile (print() is redirected here)
