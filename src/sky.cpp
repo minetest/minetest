@@ -14,6 +14,8 @@
 //! constructor
 Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlayer* player):
 		scene::ISceneNode(parent, mgr, id),
+		m_visible(true),
+		m_fallback_bg_color(255,255,255,255),
 		m_first_update(true),
 		m_brightness(0.5),
 		m_cloud_brightness(0.5),
@@ -77,6 +79,9 @@ const core::aabbox3d<f32>& Sky::getBoundingBox() const
 //! renders the node.
 void Sky::render()
 {
+	if(!m_visible)
+		return;
+
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	scene::ICameraSceneNode* camera = SceneManager->getActiveCamera();
 

@@ -1337,6 +1337,8 @@ void the_game(
 
 	Sky *sky = NULL;
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1, client.getEnv().getLocalPlayer());
+
+	scene::ISceneNode* skybox = NULL;
 	
 	/*
 		A copy of the local inventory
@@ -2461,6 +2463,40 @@ void the_game(
 					delete event.hudchange.v3fdata;
 					delete event.hudchange.v2fdata;
 					delete event.hudchange.sdata;
+				}
+				else if (event.type == CE_SET_SKY)
+				{
+					sky->setVisible(false);
+					if(skybox){
+						skybox->drop();
+						skybox = NULL;
+					}
+					// Handle according to type
+					if(*event.set_sky.type == "regular"){
+						sky->setVisible(true);
+					}
+					else if(*event.set_sky.type == "skybox" &&
+							event.set_sky.params->size() == 6){
+						sky->setFallbackBgColor(*event.set_sky.bgcolor);
+						skybox = smgr->addSkyBoxSceneNode(
+								tsrc->getTexture((*event.set_sky.params)[0]),
+								tsrc->getTexture((*event.set_sky.params)[1]),
+								tsrc->getTexture((*event.set_sky.params)[2]),
+								tsrc->getTexture((*event.set_sky.params)[3]),
+								tsrc->getTexture((*event.set_sky.params)[4]),
+								tsrc->getTexture((*event.set_sky.params)[5]));
+					}
+					// Handle everything else as plain color
+					else {
+						if(*event.set_sky.type != "plain")
+							infostream<<"Unknown sky type: "
+									<<(*event.set_sky.type)<<std::endl;
+						sky->setFallbackBgColor(*event.set_sky.bgcolor);
+					}
+
+					delete event.set_sky.bgcolor;
+					delete event.set_sky.type;
+					delete event.set_sky.params;
 				}
 			}
 		}

@@ -53,11 +53,21 @@ public:
 			float direct_brightness, bool sunlight_seen);
 	
 	float getBrightness(){ return m_brightness; }
-	video::SColor getBgColor(){ return m_bgcolor; }
-	video::SColor getSkyColor(){ return m_skycolor; }
+
+	video::SColor getBgColor(){
+		return m_visible ? m_bgcolor : m_fallback_bg_color;
+	}
+	video::SColor getSkyColor(){
+		return m_visible ? m_skycolor : m_fallback_bg_color;
+	}
 	
-	bool getCloudsVisible(){ return m_clouds_visible; }
+	bool getCloudsVisible(){ return m_clouds_visible && m_visible; }
 	video::SColorf getCloudColor(){ return m_cloudcolor_f; }
+
+	void setVisible(bool visible){ m_visible = visible; }
+	void setFallbackBgColor(const video::SColor &fallback_bg_color){
+		m_fallback_bg_color = fallback_bg_color;
+	}
 
 private:
 	core::aabbox3d<f32> Box;
@@ -98,6 +108,8 @@ private:
 		return result;
 	}
 
+	bool m_visible;
+	video::SColor m_fallback_bg_color; // Used when m_visible=false
 	bool m_first_update;
 	float m_time_of_day;
 	float m_time_brightness;

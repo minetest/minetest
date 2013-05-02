@@ -1090,6 +1090,45 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
+// set_sky(self, bgcolor, type, list)
+int ObjectRef::l_set_sky(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	video::SColor bgcolor(255,255,255,255);
+	if (!lua_isnil(L, 2))
+		bgcolor = readARGB8(L, 2);
+
+	std::string type = luaL_checkstring(L, 3);
+
+	std::vector<std::string> params;
+	if (lua_istable(L, 4)) {
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0) {
+			// key at index -2 and value at index -1
+			if (lua_isstring(L, -1))
+				params.push_back(lua_tostring(L, -1));
+			else
+				params.push_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+
+	if (type == "skybox" && params.size() != 6)
+		throw LuaError(L, "skybox expects 6 textures");
+
+	if (!getServer(L)->setSky(player, bgcolor, type, params))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1207,5 +1246,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
 	luamethod(ObjectRef, hud_set_hotbar_image),
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
+	luamethod(ObjectRef, set_sky),
 	{0,0}
 };

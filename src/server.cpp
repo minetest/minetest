@@ -3271,6 +3271,26 @@ void Server::SendHUDSetParam(u16 peer_id, u16 param, const std::string &value)
 	m_clients.send(peer_id, 0, data, true);
 }
 
+void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
+		const std::string &type, const std::vector<std::string> &params)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_SET_SKY);
+	writeARGB8(os, bgcolor);
+	os<<serializeString(type);
+	writeU16(os, params.size());
+	for(size_t i=0; i<params.size(); i++)
+		os<<serializeString(params[i]);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_clients.send(peer_id, 0, data, true);
+}
+
 void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4433,6 +4453,16 @@ void Server::hudSetHotbarSelectedImage(Player *player, std::string name) {
 		return;
 
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
+}
+
+bool Server::setSky(Player *player, const video::SColor &bgcolor,
+		const std::string &type, const std::vector<std::string> &params)
+{
+	if (!player)
+		return false;
+
+	SendSetSky(player->peer_id, bgcolor, type, params);
+	return true;
 }
 
 void Server::notifyPlayers(const std::wstring msg)

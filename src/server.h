@@ -319,6 +319,9 @@ public:
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
+			
+	bool setSky(Player *player, const video::SColor &bgcolor,
+			const std::string &type, const std::vector<std::string> &params);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
@@ -355,7 +358,9 @@ private:
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
-
+	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
+			const std::string &type, const std::vector<std::string> &params);
+	
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

@@ -507,6 +507,18 @@ enum ToClientCommand
 		u16 command
 		u16 breath
 	*/
+
+	TOCLIENT_SET_SKY = 0x4f,
+	/*
+		u16 command
+		u8[4] color (ARGB)
+		u8 len
+		u8[len] type
+		u16 count
+		foreach count:
+			u8 len
+			u8[len] param
+	*/
 };
 
 enum ToServerCommand

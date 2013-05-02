@@ -1812,6 +1812,14 @@ Player-only: (no-op for other objects)
   ^ sets background image for hotbar
 - hud_set_hotbar_selected_image(texturename)
   ^ sets image for selected item of hotbar
+- set_sky(bgcolor, type, {texture names})
+  ^ bgcolor: {r=0...255, g=0...255, b=0...255} or nil, defaults to white
+  ^ Available types:
+    - "regular": Uses 0 textures, bgcolor ignored
+    - "skybox": Uses 6 textures, bgcolor used
+    - "plain": Uses 0 textures, bgcolor used
+  ^ Note: currently does not work directly in on_joinplayer; use
+          minetest.after(0) in there.
 
 InvRef: Reference to an inventory
 methods:
