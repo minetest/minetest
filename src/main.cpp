@@ -1501,8 +1501,10 @@ int main(int argc, char *argv[])
 					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
 				if(g_settings->exists("selected_serverlist"))
 					menudata.selected_serverlist = g_settings->getS32("selected_serverlist");
-				if(g_settings->exists("selected_mainmenu_game"))
+				if(g_settings->exists("selected_mainmenu_game")){
 					menudata.selected_game = g_settings->get("selected_mainmenu_game");
+					menudata.selected_game_name = findSubgame(menudata.selected_game).name;
+				}
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));

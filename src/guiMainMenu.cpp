@@ -258,9 +258,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
 		std::string t = "Minetest " VERSION_STRING;
-		if(m_data->selected_game != ""){
+		if(m_data->selected_game_name != ""){
 			t += "/";
-			t += m_data->selected_game;
+			t += m_data->selected_game_name;
 		}
 		Environment->addStaticText(narrow_to_wide(t).c_str(),
 				rect, false, true, this, -1);
@@ -1356,6 +1356,8 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 					eid <= GUI_ID_GAME_BUTTON_MAX){
 				m_data->selected_game =
 						m_data->games[eid - GUI_ID_GAME_BUTTON_FIRST].id;
+				m_data->selected_game_name =
+						m_data->games[eid - GUI_ID_GAME_BUTTON_FIRST].name;
 				regenerateGui(m_screensize_old);
 			}
 		}

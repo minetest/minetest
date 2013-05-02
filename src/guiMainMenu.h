@@ -40,6 +40,7 @@ struct MainMenuData
 	// Generic
 	int selected_tab;
 	std::string selected_game;
+	std::string selected_game_name;
 	// Client options
 	std::string servername;
 	std::string serverdescription;
@@ -80,6 +81,7 @@ struct MainMenuData
 		// Generic
 		selected_tab(0),
 		selected_game("minetest"),
+		selected_game_name("Minetest"),
 		// Client opts
 		fancy_trees(false),
 		smooth_lighting(false),
