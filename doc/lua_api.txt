@@ -120,6 +120,17 @@ depends.txt:
   List of mods that have to be loaded before loading this mod.
   A single line contains a single modname.
 
+  Optional dependencies can be defined by appending a question mark
+  to a single modname. Their meaning is that if the specified mod
+  is missing, that does not prevent this mod from being loaded.
+
+optdepends.txt:
+  An alternative way of specifying optional dependencies.
+  Like depends.txt, a single line contains a single modname.
+
+  NOTE: This file exists for compatibility purposes only and
+  support for it will be removed from the engine by the end of 2013.
+
 init.lua:
   The main Lua script. Running this script should register everything it
   wants to register. Subsequent execution depends on minetest calling the

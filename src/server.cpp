@@ -707,11 +707,11 @@ Server::Server(
 
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
-	std::list<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if(!modconf.isConsistent())	
 	{
-		for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		{
 			ModSpec mod = *it;
@@ -745,7 +745,7 @@ Server::Server(
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
 			it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
-	for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())

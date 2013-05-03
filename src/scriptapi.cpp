@@ -76,8 +76,7 @@ bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 {
 	ModNameStorer modnamestorer(L, modname);
 
-	if(!string_allowed(modname, "abcdefghijklmnopqrstuvwxyz"
-			"0123456789_")){
+	if(!string_allowed(modname, MODNAME_ALLOWED_CHARS)){
 		errorstream<<"Error loading mod \""<<modname
 				<<"\": modname does not follow naming conventions: "
 				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
