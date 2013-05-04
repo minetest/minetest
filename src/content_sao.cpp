@@ -673,8 +673,14 @@ int LuaEntitySAO::punch(v3f dir,
 	{
 		setHP(getHP() - result.damage);
 		
+
+		std::string punchername = "nil";
+
+		if ( puncher != 0 )
+			punchername = puncher->getDescription();
+
 		actionstream<<getDescription()<<" punched by "
-				<<puncher->getDescription()<<", damage "<<result.damage
+				<<punchername<<", damage "<<result.damage
 				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
 		
 		{
@@ -1307,8 +1313,13 @@ int PlayerSAO::punch(v3f dir,
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
 			time_from_last_punch);
 
+	std::string punchername = "nil";
+
+	if ( puncher != 0 )
+		punchername = puncher->getDescription();
+
 	actionstream<<"Player "<<m_player->getName()<<" punched by "
-			<<puncher->getDescription()<<", damage "<<hitparams.hp
+			<<punchername<<", damage "<<hitparams.hp
 			<<" HP"<<std::endl;
 
 	setHP(getHP() - hitparams.hp);
