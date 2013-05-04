@@ -53,7 +53,7 @@ std::vector<ServerListSpec> getLocal()
 	std::string liststring;
 	if(fs::PathExists(path))
 	{
-		std::ifstream istream(path.c_str(), std::ios::binary);
+		std::ifstream istream(path.c_str());
 		if(istream.is_open())
 		{
 			std::ostringstream ostream;
