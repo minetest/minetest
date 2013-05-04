@@ -97,16 +97,12 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string game_name = getGameName(game_path);
 	if(game_name == "")
 		game_name = id;
-	std::string menubackground_path;
-	std::string menuoverlay_path;
 	std::string menuicon_path;
 #ifndef SERVER
-	menubackground_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "background.png");
-	menuoverlay_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "overlay.png");
 	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
 	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menubackground_path, menuoverlay_path, menuicon_path);
+			menuicon_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)

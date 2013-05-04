@@ -612,15 +612,53 @@ private:
 	bool rightreleased;
 };
 
-void drawMenuBackground(video::IVideoDriver* driver, const SubgameSpec *spec)
+struct MenuTextures
+{
+	std::string current_gameid;
+	video::ITexture *background;
+	video::ITexture *overlay;
+	video::ITexture *header;
+	video::ITexture *footer;
+
+	MenuTextures():
+		background(NULL),
+		overlay(NULL),
+		header(NULL),
+		footer(NULL)
+	{}
+
+	static video::ITexture* getMenuTexture(const std::string &tname,
+			video::IVideoDriver* driver, const SubgameSpec *spec)
+	{
+		std::string path;
+		// eg. minetest_menu_background.png (for texture packs)
+		std::string pack_tname = spec->id + "_menu_" + tname + ".png";
+		path = getTexturePath(pack_tname);
+		if(path != "")
+			return driver->getTexture(path.c_str());
+		// eg. games/minetest_game/menu/background.png
+		path = getImagePath(spec->path + DIR_DELIM + "menu" + DIR_DELIM + tname + ".png");
+		if(path != "")
+			return driver->getTexture(path.c_str());
+		return NULL;
+	}
+
+	void update(video::IVideoDriver* driver, const SubgameSpec *spec)
+	{
+		if(spec->id == current_gameid)
+			return;
+		current_gameid = spec->id;
+		background = getMenuTexture("background", driver, spec);
+		overlay = getMenuTexture("overlay", driver, spec);
+		header = getMenuTexture("header", driver, spec);
+		footer = getMenuTexture("footer", driver, spec);
+	}
+};
+
+void drawMenuBackground(video::IVideoDriver* driver, const MenuTextures &menutextures)
 {
 	v2u32 screensize = driver->getScreenSize();
-
-	/* Figure out background texture */
-	video::ITexture *texture = NULL;
-	if(spec && spec->menubackground_path != ""){
-		texture = driver->getTexture(spec->menubackground_path.c_str());
-	}
+	video::ITexture *texture = menutextures.background;
 
 	/* If no texture, draw background of solid color */
 	if(!texture){
@@ -638,15 +676,10 @@ void drawMenuBackground(video::IVideoDriver* driver, const SubgameSpec *spec)
 		NULL, NULL, true);
 }
 
-void drawMenuOverlay(video::IVideoDriver* driver, const SubgameSpec *spec)
+void drawMenuOverlay(video::IVideoDriver* driver, const MenuTextures &menutextures)
 {
 	v2u32 screensize = driver->getScreenSize();
-
-	/* Figure out overlay texture */
-	video::ITexture *texture = NULL;
-	if(spec && spec->menuoverlay_path != ""){
-		texture = driver->getTexture(spec->menuoverlay_path.c_str());
-	}
+	video::ITexture *texture = menutextures.overlay;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -658,6 +691,66 @@ void drawMenuOverlay(video::IVideoDriver* driver, const SubgameSpec *spec)
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
+}
+
+void drawMenuHeader(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	video::ITexture *texture = menutextures.header;
+
+	/* If no texture, draw nothing */
+	if(!texture)
+		return;
+
+	f32 mult = (((f32)screensize.Width / 2)) /
+		((f32)texture->getOriginalSize().Width);
+
+	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
+			((f32)texture->getOriginalSize().Height) * mult);
+
+	// Don't draw the header is there isn't enough room
+	s32 free_space = (((s32)screensize.Height)-320)/2;
+	if (free_space > splashsize.Y) {
+		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
+		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
+			((free_space/2)-splashsize.Y/2)+10);
+
+		video::SColor bgcolor(255,50,50,50);
+
+		driver->draw2DImage(texture, splashrect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+			core::dimension2di(texture->getSize())),
+			NULL, NULL, true);
+	}
+}
+
+void drawMenuFooter(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	video::ITexture *texture = menutextures.footer;
+
+	/* If no texture, draw nothing */
+	if(!texture)
+		return;
+
+	f32 mult = (((f32)screensize.Width)) /
+		((f32)texture->getOriginalSize().Width);
+
+	v2s32 footersize(((f32)texture->getOriginalSize().Width) * mult,
+			((f32)texture->getOriginalSize().Height) * mult);
+
+	// Don't draw the footer if there isn't enough room
+	s32 free_space = (((s32)screensize.Height)-320)/2;
+	if (free_space > footersize.Y) {
+		core::rect<s32> rect(0,0,footersize.X,footersize.Y);
+		rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
+		rect -= v2s32(footersize.X/2, 0);
+
+		driver->draw2DImage(texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+			core::dimension2di(texture->getSize())),
+			NULL, NULL, true);
+	}
 }
 
 static const SubgameSpec* getMenuGame(const MainMenuData &menudata)
@@ -1567,6 +1660,9 @@ int main(int argc, char *argv[])
 				}
 				const SubgameSpec *menugame = getMenuGame(menudata);
 
+				MenuTextures menutextures;
+				menutextures.update(driver, menugame);
+
 				if(skip_main_menu == false)
 				{
 					video::IVideoDriver* driver = device->getVideoDriver();
@@ -1578,7 +1674,7 @@ int main(int argc, char *argv[])
 							break;
 						driver->beginScene(true, true,
 								video::SColor(255,128,128,128));
-						drawMenuBackground(driver, menugame);
+						drawMenuBackground(driver, menutextures);
 						guienv->drawAll();
 						driver->endScene();
 						// On some computers framerate doesn't seem to be
@@ -1628,18 +1724,17 @@ int main(int argc, char *argv[])
 
 						// Game can be selected in the menu
 						menugame = getMenuGame(menudata);
+						menutextures.update(driver, menugame);
 						// Clouds for the main menu
 						bool cloud_menu_background = g_settings->getBool("menu_clouds");
 						if(menugame){
 							// If game has regular background and no overlay, don't use clouds
-							if(cloud_menu_background &&
-									menugame->menuoverlay_path.empty() &&
-									!menugame->menubackground_path.empty()){
+							if(cloud_menu_background && menutextures.background &&
+									!menutextures.overlay){
 								cloud_menu_background = false;
 							}
 							// If game game has overlay and no regular background, always draw clouds
-							else if(menugame->menubackground_path.empty() &&
-									!menugame->menuoverlay_path.empty()){
+							else if(menutextures.overlay && !menutextures.background){
 								cloud_menu_background = true;
 							}
 						}
@@ -1663,9 +1758,13 @@ int main(int argc, char *argv[])
 							clouds->step(dtime*3); 
 							clouds->render();
 							smgr->drawAll();
-							drawMenuOverlay(driver, menugame);
+							drawMenuOverlay(driver, menutextures);
+							drawMenuHeader(driver, menutextures);
+							drawMenuFooter(driver, menutextures);
 						} else {
-							drawMenuBackground(driver, menugame);
+							drawMenuBackground(driver, menutextures);
+							drawMenuHeader(driver, menutextures);
+							drawMenuFooter(driver, menutextures);
 						}
 
 						guienv->drawAll();
