@@ -480,6 +480,14 @@ enum ToClientCommand
 		u32 flags
 		u32 mask
 	*/
+
+	TOCLIENT_HUD_SET_PARAM = 0x4d,
+	/*
+		u16 command
+		u16 param
+		u16 len
+		u8[len] value
+	*/
 };
 
 enum ToServerCommand

@@ -978,6 +978,23 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 	return 1;
 }
 
+// hud_set_hotbar_itemcount(self, hotbar_itemcount)
+int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	s32 hotbar_itemcount = lua_tonumber(L, 2);
+
+	if (!STACK_TO_SERVER(L)->hudSetHotbarItemcount(player, hotbar_itemcount))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1089,6 +1106,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_set_flags),
+	luamethod(ObjectRef, hud_set_hotbar_itemcount),
 	{0,0}
 };
 
