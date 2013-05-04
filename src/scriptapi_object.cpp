@@ -182,21 +182,30 @@ int ObjectRef::l_moveto(lua_State *L)
 int ObjectRef::l_punch(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
-	ObjectRef *puncher_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
-	ServerActiveObject *puncher = getobject(puncher_ref);
 	if(co == NULL) return 0;
-	if(puncher == NULL) return 0;
-	v3f dir;
-	if(lua_type(L, 5) != LUA_TTABLE)
+
+	ServerActiveObject *puncher = 0;
+	v3f dir(0,0,0);
+
+	if (!lua_isnil(L,2)) {
+		ObjectRef *puncher_ref = checkobject(L, 2);
+		puncher = getobject(puncher_ref);
+		if(puncher == NULL) return 0;
+
 		dir = co->getBasePosition() - puncher->getBasePosition();
-	else
-		dir = read_v3f(L, 5);
+	}
+
 	float time_from_last_punch = 1000000;
 	if(lua_isnumber(L, 3))
 		time_from_last_punch = lua_tonumber(L, 3);
+
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
+
+	if(lua_type(L, 5) == LUA_TTABLE)
+		dir = read_v3f(L, 5);
 	dir.normalize();
+
 	// Do it
 	co->punch(dir, &toolcap, puncher, time_from_last_punch);
 	return 0;
