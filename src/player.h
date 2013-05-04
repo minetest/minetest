@@ -250,6 +250,7 @@ public:
 	
 	std::vector<HudElement *> hud;
 	u32 hud_flags;
+	s32 hud_hotbar_itemcount;
 
 protected:
 	IGameDef *m_gamedef;

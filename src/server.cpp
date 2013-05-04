@@ -3687,6 +3687,22 @@ void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendHUDSetParam(u16 peer_id, u16 param, const std::string &value)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUD_SET_PARAM);
+	writeU16(os, param);
+	os<<serializeString(value);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(std::map<u16, RemoteClient*>::iterator
@@ -4681,6 +4697,18 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 		return false;
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
+	return true;
+}
+
+bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
+	if (!player)
+		return false;
+	if (hotbar_itemcount <= 0 || hotbar_itemcount > HUD_HOTBAR_ITEMCOUNT_MAX)
+		return false;
+
+	std::ostringstream os(std::ios::binary);
+	writeS32(os, hotbar_itemcount);
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
 }
 
