@@ -1987,7 +1987,7 @@ void the_game(
 		{
 			s32 wheel = input->getMouseWheel();
 			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
-					hud.hotbar_itemcount-1);
+					player->hud_hotbar_itemcount-1);
 
 			if(wheel < 0)
 			{
@@ -2011,7 +2011,7 @@ void the_game(
 			const KeyPress *kp = NumberKey + (i + 1) % 10;
 			if(input->wasKeyDown(*kp))
 			{
-				if(i < PLAYER_INVENTORY_SIZE && i < hud.hotbar_itemcount)
+				if(i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount)
 				{
 					new_playeritem = i;
 

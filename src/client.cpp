@@ -2136,6 +2136,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		player->hud_flags &= ~mask;
 		player->hud_flags |= flags;
 	}
+	else if(command == TOCLIENT_HUD_SET_PARAM)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		u16 param         = readU16(is);
+		std::string value = deSerializeString(is);
+
+		if(param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4){
+			s32 hotbar_itemcount = readS32((u8*) value.c_str());
+			if(hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX)
+				player->hud_hotbar_itemcount = hotbar_itemcount;
+		}
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

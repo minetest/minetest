@@ -1399,6 +1399,8 @@ Player-only: (no-op for other objects)
   ^ flags: (is visible) hotbar, healthbar, crosshair, wielditem
   ^ pass a table containing a true/false value of each flag to be set or unset
   ^ if a flag is nil, the flag is not modified
+- hud_set_hotbar_itemcount(count): sets number of items in builtin hotbar
+  ^ count: number of items, must be between 1 and 23
 
 InvRef: Reference to an inventory
 methods:
