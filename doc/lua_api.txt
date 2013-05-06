@@ -1980,6 +1980,15 @@ Item definition (register_node, register_craftitem, register_tool)
         eg. itemstack:take_item(); return itemstack
     ^ Otherwise, the function is free to do what it wants.
     ^ The default functions handle regular use cases.
+    after_use = func(itemstack, user, node, digparams),
+    ^  default: nil
+    ^ If defined, should return an itemstack and will be called instead of
+      wearing out the tool. If returns nil, does nothing.
+      If after_use doesn't exist, it is the same as:
+        function(itemstack, user, node, digparams)
+          itemstack:add_wear(digparams.wear)
+          return itemstack
+        end
 }
 
 Tile definition:
