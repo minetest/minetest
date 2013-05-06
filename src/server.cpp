@@ -2223,6 +2223,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->control.sneak = (bool)(keyPressed&64);
 		player->control.LMB = (bool)(keyPressed&128);
 		player->control.RMB = (bool)(keyPressed&256);
+		player->control.shld = (bool)(keyPressed&512);
 
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
