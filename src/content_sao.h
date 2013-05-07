@@ -74,6 +74,7 @@ public:
 	v3f getAcceleration();
 	void setYaw(float yaw);
 	float getYaw();
+	void rotateYaw(float yaw, float speed);
 	void setTextureMod(const std::string &mod);
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
@@ -92,6 +93,8 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
+	float m_dest_yaw;
+	float m_rotate_yaw_speed;
 	ItemGroupList m_armor_groups;
 	
 	bool m_properties_sent;

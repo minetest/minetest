@@ -46,7 +46,9 @@ std::string gob_cmd_update_position(
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
-	f32 update_interval
+	f32 update_interval,
+	f32 m_yaw_dest,
+	f32 m_rotate_yaw_speed
 );
 
 std::string gob_cmd_set_texture_mod(const std::string &mod);

@@ -141,6 +141,9 @@ private:
 	// getyaw(self)
 	static int l_getyaw(lua_State *L);
 
+	// setyaw(self, radians, speed)
+	static int l_rotate_yaw(lua_State *L);
+
 	// settexturemod(self, mod)
 	static int l_settexturemod(lua_State *L);
 

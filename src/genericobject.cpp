@@ -43,7 +43,9 @@ std::string gob_cmd_update_position(
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
-	f32 update_interval
+	f32 update_interval,
+	f32 m_yaw_dest,
+	f32 m_rotate_yaw_speed
 ){
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -62,6 +64,10 @@ std::string gob_cmd_update_position(
 	writeU8(os, is_movement_end);
 	// update_interval (for interpolation)
 	writeF1000(os, update_interval);
+	// m_yaw_dest (for continuous rotation)
+	writeF1000(os, m_yaw_dest);
+	// m_rotate_yaw_speed
+	writeF1000(os, m_rotate_yaw_speed);
 	return os.str();
 }
 

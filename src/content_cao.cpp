@@ -573,6 +573,8 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
+	float m_dest_yaw;
+	float m_rotate_yaw_speed;
 	s16 m_hp;
 	SmoothTranslator pos_translator;
 	// Spritesheet/animation stuff
@@ -618,6 +620,8 @@ public:
 		m_velocity(v3f(0,0,0)),
 		m_acceleration(v3f(0,0,0)),
 		m_yaw(0),
+		m_dest_yaw(0),
+		m_rotate_yaw_speed(0),
 		m_hp(1),
 		m_tx_size(1,1),
 		m_tx_basepos(0,0),
@@ -669,7 +673,7 @@ public:
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version == 1) // In PROTOCOL_VERSION 14
+		if(version == 1 || version == 2) // In PROTOCOL_VERSION 14
 		{
 			m_name = deSerializeString(is);
 			m_is_player = readU8(is);
@@ -677,6 +681,11 @@ public:
 			m_position = readV3F1000(is);
 			m_yaw = readF1000(is);
 			m_hp = readS16(is);
+			if (version == 2)
+			{
+				m_dest_yaw = readF1000(is);
+				m_rotate_yaw_speed = readF1000(is);
+			}
 			num_messages = readU8(is);
 		}
 		else if(version == 0) // In PROTOCOL_VERSION 13
@@ -1206,6 +1215,28 @@ public:
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
+		// Automatic rotation overrides continues rotation
+		if(getParent() == NULL && m_rotate_yaw_speed != 0 && fabs(m_prop.automatic_rotate) < 0.001){
+			float target_yaw = m_yaw + dtime * m_rotate_yaw_speed;
+			if ((m_rotate_yaw_speed > 0 && m_yaw < m_dest_yaw
+				&& target_yaw > m_dest_yaw) || (m_rotate_yaw_speed < 0 
+				&& m_yaw > m_dest_yaw && target_yaw < m_dest_yaw)
+				|| (m_rotate_yaw_speed > 0 && m_yaw < m_dest_yaw + 360
+				&& target_yaw > m_dest_yaw + 360))
+			{
+				// destination yaw is reached
+				m_yaw = m_dest_yaw;
+				m_rotate_yaw_speed = 0;
+			}
+			else
+			{
+				m_yaw = target_yaw;
+			}
+			updateNodePos();
+		}
+
+		if (m_yaw > 360) m_yaw -= 360;
+		if (m_yaw < 0  ) m_yaw += 360;
 	}
 
 	void updateTexturePos()
@@ -1647,6 +1678,8 @@ public:
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
+			m_dest_yaw = readF1000(is);
+			m_rotate_yaw_speed = readF1000(is);
 
 			// Place us a bit higher if we're physical, to not sink into
 			// the ground due to sucky collision detection...

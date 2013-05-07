@@ -517,6 +517,20 @@ int ObjectRef::l_getyaw(lua_State *L)
 	return 1;
 }
 
+// rotate_yaw(self, radians, speed)
+// speed in radians per second
+int ObjectRef::l_rotate_yaw(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if(co == NULL) return 0;
+	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	float speed = luaL_checknumber(L, 3) * core::RADTODEG;
+	// Do it
+	co->rotateYaw(yaw, speed);
+	return 1;
+}
+
 // settexturemod(self, mod)
 int ObjectRef::l_settexturemod(lua_State *L)
 {
@@ -1027,6 +1041,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, getacceleration),
 	luamethod(ObjectRef, setyaw),
 	luamethod(ObjectRef, getyaw),
+	luamethod(ObjectRef, rotate_yaw),
 	luamethod(ObjectRef, settexturemod),
 	luamethod(ObjectRef, setsprite),
 	luamethod(ObjectRef, get_entity_name),

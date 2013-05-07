@@ -360,6 +360,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
 	m_yaw(0),
+	m_dest_yaw(0),
+	m_rotate_yaw_speed(0),
 	m_properties_sent(true),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
@@ -512,7 +514,30 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					* dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
 		}
+
+		// Automatic rotation overrides continues rotation
+		// Perform this also on the server to make getyaw() work
+		if(fabs(m_prop.automatic_rotate) < 0.001){
+			float target_yaw = m_yaw + dtime * m_rotate_yaw_speed;
+			if ((m_rotate_yaw_speed > 0 && m_yaw < m_dest_yaw
+				&& target_yaw > m_dest_yaw) || (m_rotate_yaw_speed < 0 
+				&& m_yaw > m_dest_yaw && target_yaw < m_dest_yaw)
+				|| (m_rotate_yaw_speed > 0 && m_yaw < m_dest_yaw + 360
+				&& target_yaw > m_dest_yaw + 360))
+			{
+				// destination yaw is reached
+				m_yaw = m_dest_yaw;
+				m_rotate_yaw_speed = 0;
+			}
+			else
+			{
+				m_yaw = target_yaw;
+			}
+		}
 	}
+
+	if (m_yaw > 360) m_yaw -= 360;
+	if (m_yaw < 0  ) m_yaw += 360;
 
 	if(m_registered){
 		lua_State *L = m_env->getLua();
@@ -827,6 +852,12 @@ float LuaEntitySAO::getYaw()
 	return m_yaw;
 }
 
+void LuaEntitySAO::rotateYaw(float yaw, float speed)
+{
+	m_dest_yaw = yaw;
+	m_rotate_yaw_speed = speed;
+}
+
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
 	std::string str = gob_cmd_set_texture_mod(mod);
@@ -882,7 +913,9 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_yaw,
 		do_interpolate,
 		is_movement_end,
-		update_interval
+		update_interval,
+		m_dest_yaw,
+		m_rotate_yaw_speed
 	);
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, str);
@@ -1179,7 +1212,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_player->getYaw(),
 			true,
 			false,
-			update_interval
+			update_interval,
+			0,
+			0
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);

@@ -1418,6 +1418,9 @@ LuaEntitySAO-only: (no-op for other objects)
 - getacceleration() -> {x=num, y=num, z=num}
 - setyaw(radians)
 - getyaw() -> radians
+- rotate_yaw(radians, speed)
+  ^ Rotate to radians continously
+  ^ with speed in radians/second (positive/negative for direction)
 - settexturemod(mod)
 - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -           select_horiz_by_yawpitch=false)
