@@ -30,13 +30,17 @@ This game is not finished
 
 Default Controls
 -----------------
-- WASD: Move
-- Space: Jump
-- E: Go down
-- Shift: Sneak
-- Q: Drop item
-- I: Open inventory
-- Mouse: Turn/look
+- WASD: move
+- Space: jump/climb
+- Shift: sneak/go down
+- Q: drop item
+- I: inventory
+- Mouse: turn/look
+- Mouse left: dig/punch
+- Mouse right: place/use
+- Mouse wheel: select item
+- Esc: pause menu
+- T: chat
 - Settable in the configuration file, see the section below.
 
 Paths
