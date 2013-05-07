@@ -71,7 +71,14 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 
 	m_digging_anim(0),
 	m_digging_button(-1),
-	m_dummymesh(createCubeMesh(v3f(1,1,1)))
+
+	m_dummymesh(createCubeMesh(v3f(1,1,1))),
+
+	hand_anim_time(0),
+	is_hand_anim(false),
+	hand_anim_changed(false),
+	wieldslot(55),
+	wieldname("")
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -141,6 +148,10 @@ void Camera::step(f32 dtime)
 		if(m_view_bobbing_fall <= 0)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
 	}
+
+	hand_anim_time += dtime;
+	if(hand_anim_time > 10)
+		hand_anim_time = 10;
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -352,6 +363,20 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	v3f wield_position = v3f(55, -35, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	if(is_hand_anim && hand_anim_time < 0.5) {
+		wield_position.Y += pow((hand_anim_time-0.25)*4, 2)*60 - 60;
+		if(not hand_anim_changed
+			&& hand_anim_time > 0.25) {
+			IItemDefManager *idef = m_gamedef->idef();
+			scene::IMesh *wield_mesh = idef->getWieldMesh(wieldname, m_gamedef);
+			if(wield_mesh){m_wieldnode->setVisible(true);}
+			else{m_wieldnode->setVisible(false);}
+			m_wieldnode->setMesh(wield_mesh);
+			hand_anim_changed = true;
+		}
+	} else {
+		is_hand_anim = false;
+	}
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
@@ -560,18 +585,19 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, u16 player_select)
 {
-	IItemDefManager *idef = m_gamedef->idef();
-	scene::IMesh *wield_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
-	if(wield_mesh)
-	{
-		m_wieldnode->setMesh(wield_mesh);
-		m_wieldnode->setVisible(true);
-	}
-	else
-	{
-		m_wieldnode->setVisible(false);
+	if(player_select != wieldslot || item.getDefinition(m_gamedef->idef()).name != wieldname) {
+		wieldslot = player_select;
+		wieldname = item.getDefinition(m_gamedef->idef()).name;
+		// Delay changing of the mesh for the anim
+		if(is_hand_anim && (hand_anim_time < 0.5)) {
+			hand_anim_time = 0.1f;
+		} else {
+			hand_anim_time = 0.0f;
+		}
+		is_hand_anim = true;
+		hand_anim_changed = false;
 	}
 }
 
