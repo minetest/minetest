@@ -502,6 +502,7 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
               If odd, will end with a vertically center-split texture.
     - direction
     - offset: offset in pixels from position.
+    - scale: If used, will force the full-image size to this value (for texturepacks).
 - inventory
     - text: The name of the inventory list to be displayed.
     - number: Number of items in the inventory to be displayed.

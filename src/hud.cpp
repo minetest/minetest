@@ -265,7 +265,7 @@ void Hud::drawLuaElements() {
 				break; }
 			case HUD_ELEM_STATBAR: {
 				v2s32 offs(e->offset.X, e->offset.Y);
-				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs, e->scale);
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
@@ -306,15 +306,21 @@ void Hud::drawLuaElements() {
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset) {
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s32 count, v2s32 offset, v2f size) {
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
 	video::ITexture *stat_texture = tsrc->getTexture(texture);
 	if (!stat_texture)
 		return;
-		
-	core::dimension2di srcd(stat_texture->getOriginalSize());
+
+	core::dimension2di srcd;
+	if(size == v2f()) {
+		srcd = stat_texture->getOriginalSize();
+	} else {
+		srcd.Height = size.Y;
+		srcd.Width = size.X;
+	}
 
 	v2s32 p = pos;
 	if (corner & HUD_CORNER_LOWER)
