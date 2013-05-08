@@ -168,16 +168,16 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
 		wchar_t* text = wgettext("Default Controls:\n"
-				"- WASD: Walk\n"
-				"- Mouse left: dig/hit\n"
+				"- WASD: move\n"
+				"- Space: jump/climb\n"
+				"- Shift: sneak/go down\n"
+				"- Q: drop item\n"
+				"- I: inventory\n"
+				"- Mouse: turn/look\n"
+				"- Mouse left: dig/punch\n"
 				"- Mouse right: place/use\n"
 				"- Mouse wheel: select item\n"
-				"- 0...9: select item\n"
-				"- Shift: sneak\n"
-				"- R: Toggle viewing all loaded chunks\n"
-				"- I: Inventory menu\n"
-				"- ESC: This menu\n"
-				"- T: Chat\n"
+				"- T: chat\n"
 				);
 		Environment->addStaticText(text, rect, false, true, this, 258);
 		delete[] text;

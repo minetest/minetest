@@ -407,14 +407,26 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				delete[] text;
 				menu->drop();
 
-				ModConfiguration modconf(m_wspec.path);
-				if(!modconf.isConsistent())
+				try
 				{
-					wchar_t* text = wgettext("Warning: Configuration not consistent.  ");
+					ModConfiguration modconf(m_wspec.path);
+					if(!modconf.isConsistent())
+					{
+						wchar_t* text = wgettext("Warning: Configuration not consistent.  ");
+						GUIMessageMenu *menu =
+							new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
+										 text );
+						delete[] text;
+						menu->drop();
+					}
+				}
+				catch(ModError &err)
+				{
+					errorstream<<err.what()<<std::endl;
+					std::wstring text = narrow_to_wide(err.what()) + wgettext("\nCheck debug.txt for details.");
 					GUIMessageMenu *menu =
 						new GUIMessageMenu(Environment, Parent, -1, m_menumgr, 
-										 text );
-					delete[] text;
+									 text );
 					menu->drop();
 				}
 
