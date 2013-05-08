@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 19:56+0100\n"
-"PO-Revision-Date: 2013-04-21 10:01+0200\n"
+"PO-Revision-Date: 2013-05-08 11:06+0200\n"
 "Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -484,7 +484,6 @@ msgid "Return"
 msgstr "Вернуться"
 
 #: src/keycode.cpp:224
-#, fuzzy
 msgid "Tab"
 msgstr "Tab"
 
@@ -513,7 +512,6 @@ msgid "Pause"
 msgstr "Пауза"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Shift"
 msgstr "Shift"
 
@@ -522,12 +520,10 @@ msgid "Convert"
 msgstr "Преобразовать"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Escape"
 msgstr "Escape"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Final"
 msgstr "Конец"
 
@@ -537,9 +533,8 @@ msgid "Junja"
 msgstr "Junja"
 
 #: src/keycode.cpp:226
-#, fuzzy
 msgid "Kanji"
-msgstr "Kanji"
+msgstr "Кандзи"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
