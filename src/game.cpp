@@ -395,11 +395,15 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 /*
 	Draws a screen with a single text on it.
 	Text will be removed when the screen is drawn the next time.
+	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
+	With drawsmgr, you can for example draw clouds
 */
 /*gui::IGUIStaticText **/
 void draw_load_screen(const std::wstring &text,
-		video::IVideoDriver* driver, gui::IGUIFont* font)
+		IrrlichtDevice* device, gui::IGUIFont* font,
+		int percent=-1, bool drawsmgr=false)
 {
+	video::IVideoDriver* driver = device->getVideoDriver();
 	v2u32 screensize = driver->getScreenSize();
 	const wchar_t *loadingtext = text.c_str();
 	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
@@ -411,7 +415,28 @@ void draw_load_screen(const std::wstring &text,
 			loadingtext, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	driver->beginScene(true, true, video::SColor(255,0,0,0));
+	if (drawsmgr)
+	{
+		driver->beginScene(true, true, video::SColor(255,140,186,250));
+		scene::ISceneManager* smgr = device->getSceneManager();
+		smgr->drawAll();
+	}
+	else
+		driver->beginScene(true, true, video::SColor(255,0,0,0));
+	if (percent >= 0 && percent <= 100) // draw progress bar
+	{
+		core::vector2d<s32> barsize(256,32);
+		core::rect<s32> barrect(center-barsize/2, center+barsize/2);
+		driver->draw2DRectangle(video::SColor(255,255,255,255),barrect, NULL); // border
+		driver->draw2DRectangle(video::SColor(255,0,0,0), core::rect<s32> (
+				barrect.UpperLeftCorner+1,
+				barrect.LowerRightCorner-1), NULL); // black inside the bar
+		driver->draw2DRectangle(video::SColor(255,128,128,128), core::rect<s32> (
+				barrect.UpperLeftCorner+1,
+				core::vector2d<s32>(
+					barrect.LowerRightCorner.X-(barsize.X-1)+percent*(barsize.X-2)/100,
+					barrect.LowerRightCorner.Y-1)), NULL); // the actual progress
+	}
 	guienv->drawAll();
 	driver->endScene();
 	
@@ -882,7 +907,7 @@ void the_game(
 		Draw "Loading" screen
 	*/
 
-	draw_load_screen(L"Loading...", driver, font);
+	draw_load_screen(L"Loading...", device, font);
 	
 	// Create texture source
 	IWritableTextureSource *tsrc = createTextureSource(device);
@@ -939,7 +964,7 @@ void the_game(
 	*/
 
 	if(address == ""){
-		draw_load_screen(L"Creating server...", driver, font);
+		draw_load_screen(L"Creating server...", device, font);
 		infostream<<"Creating server"<<std::endl;
 		server = new Server(map_dir, configpath, gamespec,
 				simple_singleplayer_mode);
@@ -952,7 +977,7 @@ void the_game(
 		Create client
 	*/
 
-	draw_load_screen(L"Creating client...", driver, font);
+	draw_load_screen(L"Creating client...", device, font);
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
@@ -963,7 +988,7 @@ void the_game(
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
 			
-	draw_load_screen(L"Resolving address...", driver, font);
+	draw_load_screen(L"Resolving address...", device, font);
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
@@ -1028,7 +1053,7 @@ void the_game(
 			ss<<L"Connecting to server... (press Escape to cancel)\n";
 			std::wstring animation = L"/-\\|";
 			ss<<animation[(int)(time_counter/0.2)%4];
-			draw_load_screen(ss.str(), driver, font);
+			draw_load_screen(ss.str(), device, font);
 			
 			// Delay a bit
 			sleep_ms(1000*frametime);
@@ -1059,6 +1084,23 @@ void the_game(
 		float frametime = 0.033;
 		float time_counter = 0.0;
 		input->clear();
+		
+		scene::ISceneManager* smgr = device->getSceneManager();
+		Clouds *clouds = 0;
+		if (g_settings->getBool("menu_clouds"))
+		{
+			// add clouds
+			clouds = new Clouds(smgr->getRootSceneNode(),
+					smgr, -1, rand(), 100);
+			clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+
+			// A camera to see the clouds
+			scene::ICameraSceneNode* camera;
+			camera = smgr->addCameraSceneNode(0,
+						v3f(0,0,0), v3f(0, 60, 100));
+			camera->setFarValue(10000);
+		}
+		
 		while(device->run())
 		{
 			// Update client and server
@@ -1087,20 +1129,29 @@ void the_game(
 			
 			// Display status
 			std::wostringstream ss;
-			ss<<L"Waiting content... (press Escape to cancel)\n";
-
-			ss<<(client.itemdefReceived()?L"[X]":L"[  ]");
-			ss<<L" Item definitions\n";
-			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
-			ss<<L" Node definitions\n";
-			ss<<L"["<<(int)(client.mediaReceiveProgress()*100+0.5)<<L"%] ";
-			ss<<L" Media\n";
-
-			draw_load_screen(ss.str(), driver, font);
+			if (!client.itemdefReceived())
+				ss << L"Item definitions...";
+			else if (!client.nodedefReceived())
+				ss << L"Node definitions...";
+			else
+				ss << L"Media (" << (int)(client.mediaReceiveProgress()*100+0.5) << L"%)...";
+			
+			if (clouds != 0)
+			{
+				clouds->step(frametime*3); 
+				clouds->render();
+			}
+			
+			draw_load_screen(ss.str(), device, font, client.mediaReceiveProgress()*100+0.5, clouds!=0);
 			
 			// Delay a bit
 			sleep_ms(1000*frametime);
 			time_counter += frametime;
+		}
+		if (clouds != 0)
+		{
+			smgr->addToDeletionQueue(clouds);
+			clouds->drop();
 		}
 	}
 
@@ -3227,7 +3278,7 @@ void the_game(
 	*/
 	{
 		/*gui::IGUIStaticText *gui_shuttingdowntext = */
-		draw_load_screen(L"Shutting down stuff...", driver, font);
+		draw_load_screen(L"Shutting down stuff...", device, font);
 		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
 		driver->endScene();
