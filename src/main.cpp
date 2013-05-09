@@ -936,6 +936,8 @@ int main(int argc, char *argv[])
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 #ifndef SERVER
+	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
+			_("Show available video modes"))));
 	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
 	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
@@ -1035,7 +1037,7 @@ int main(int argc, char *argv[])
 		print_worldspecs(worldspecs, dstream);
 		return 0;
 	}
-	
+
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
@@ -1415,10 +1417,63 @@ int main(int argc, char *argv[])
 	}
 
 	/*
-		Create device and exit if creation failed
+		List video modes if requested
 	*/
 
 	MyEventReceiver receiver;
+
+	if(cmd_args.getFlag("videomodes")){
+		IrrlichtDevice *nulldevice;
+
+		SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+		params.DriverType    = video::EDT_NULL;
+		params.WindowSize    = core::dimension2d<u32>(640, 480);
+		params.Bits          = 24;
+		params.AntiAlias     = fsaa;
+		params.Fullscreen    = false;
+		params.Stencilbuffer = false;
+		params.Vsync         = vsync;
+		params.EventReceiver = &receiver;
+
+		nulldevice = createDeviceEx(params);
+
+		if(nulldevice == 0)
+			return 1;
+
+		dstream<<_("Available video modes (WxHxD):")<<std::endl;
+
+		video::IVideoModeList *videomode_list =
+				nulldevice->getVideoModeList();
+
+		if(videomode_list == 0){
+			nulldevice->drop();
+			return 1;
+		}
+
+		s32 videomode_count = videomode_list->getVideoModeCount();
+		core::dimension2d<u32> videomode_res;
+		s32 videomode_depth;
+		for (s32 i = 0; i < videomode_count; ++i){
+			videomode_res = videomode_list->getVideoModeResolution(i);
+			videomode_depth = videomode_list->getVideoModeDepth(i);
+			dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+					<<"x"<<videomode_depth<<std::endl;
+		}
+
+		dstream<<_("Active video mode (WxHxD):")<<std::endl;
+		videomode_res = videomode_list->getDesktopResolution();
+		videomode_depth = videomode_list->getDesktopDepth();
+		dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+				<<"x"<<videomode_depth<<std::endl;
+
+		nulldevice->drop();
+
+		return 0;
+	}
+
+	/*
+		Create device and exit if creation failed
+	*/
 
 	IrrlichtDevice *device;
 
