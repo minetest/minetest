@@ -88,6 +88,10 @@ Settings *g_settings = &main_settings;
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 
+// Menu clouds are created later
+Clouds *g_menuclouds = 0;
+irr::scene::ISceneManager *g_menucloudsmgr = 0;
+
 /*
 	Debug streams
 */
@@ -1569,6 +1573,19 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255,96,134,49));
 #endif
 
+
+	// Create the menu clouds
+	if (!g_menucloudsmgr)
+		g_menucloudsmgr = smgr->createNewSceneManager();
+	if (!g_menuclouds)
+		g_menuclouds = new Clouds(g_menucloudsmgr->getRootSceneNode(),
+			g_menucloudsmgr, -1, rand(), 100);
+	g_menuclouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+	scene::ICameraSceneNode* camera;
+	camera = g_menucloudsmgr->addCameraSceneNode(0,
+				v3f(0,0,0), v3f(0, 60, 100));
+	camera->setFarValue(10000);
+
 	/*
 		GUI stuff
 	*/
@@ -1744,18 +1761,6 @@ int main(int argc, char *argv[])
 								&g_menumgr, &menudata, g_gamecallback);
 					menu->allowFocusRemoval(true);
 
-					// Always create clouds because they may or may not be
-					// needed based on the game selected
-					Clouds *clouds = new Clouds(smgr->getRootSceneNode(),
-							smgr, -1, rand(), 100);
-					clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
-
-					// A camera to see the clouds
-					scene::ICameraSceneNode* camera;
-					camera = smgr->addCameraSceneNode(0,
-								v3f(0,0,0), v3f(0, 60, 100));
-					camera->setFarValue(10000);
-
 					if(error_message != L"")
 					{
 						verbosestream<<"error_message = "
@@ -1796,7 +1801,7 @@ int main(int argc, char *argv[])
 						}
 
 						// Time calc for the clouds
-						f32 dtime; // in seconds
+						f32 dtime=0; // in seconds
 						if (cloud_menu_background) {
 							u32 time = device->getTimer()->getTime();
 							if(time > lasttime)
@@ -1811,9 +1816,9 @@ int main(int argc, char *argv[])
 
 						if (cloud_menu_background) {
 							// *3 otherwise the clouds would move very slowly
-							clouds->step(dtime*3); 
-							clouds->render();
-							smgr->drawAll();
+							g_menuclouds->step(dtime*3); 
+							g_menuclouds->render();
+							g_menucloudsmgr->drawAll();
 							drawMenuOverlay(driver, menutextures);
 							drawMenuHeader(driver, menutextures);
 							drawMenuFooter(driver, menutextures);
@@ -1856,8 +1861,6 @@ int main(int argc, char *argv[])
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
-					clouds->drop();
-					smgr->clear();
 				}
 
 				playername = wide_to_narrow(menudata.name);
@@ -2018,6 +2021,7 @@ int main(int argc, char *argv[])
 				gamespec,
 				simple_singleplayer_mode
 			);
+			smgr->clear();
 
 		} //try
 		catch(con::PeerNotFoundException &e)
@@ -2047,6 +2051,10 @@ int main(int argc, char *argv[])
 			break;
 		}
 	} // Menu-game loop
+	
+	
+	g_menuclouds->drop();
+	g_menucloudsmgr->drop();
 	
 	delete input;
 
