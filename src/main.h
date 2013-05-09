@@ -28,6 +28,10 @@ extern Settings *g_settings;
 class Profiler;
 extern Profiler *g_profiler;
 
+// Menu clouds
+class Clouds;
+extern Clouds *g_menuclouds;
+
 // Debug streams
 
 #include <fstream>
@@ -38,6 +42,7 @@ extern std::ostream *dout_client_ptr;
 extern std::ostream *derr_client_ptr;
 extern std::ostream *dout_server_ptr;
 extern std::ostream *derr_server_ptr;
+
 
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
