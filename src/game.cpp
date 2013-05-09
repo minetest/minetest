@@ -401,7 +401,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 /*gui::IGUIStaticText **/
 void draw_load_screen(const std::wstring &text,
 		IrrlichtDevice* device, gui::IGUIFont* font,
-		int percent=-1, bool drawsmgr=false)
+		float dtime=0 ,int percent=0, bool clouds=true)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	v2u32 screensize = driver->getScreenSize();
@@ -415,8 +415,11 @@ void draw_load_screen(const std::wstring &text,
 			loadingtext, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	if (drawsmgr)
+	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
+	if (cloud_menu_background)
 	{
+		g_menuclouds->step(dtime*3); 
+		g_menuclouds->render();
 		driver->beginScene(true, true, video::SColor(255,140,186,250));
 		scene::ISceneManager* smgr = device->getSceneManager();
 		smgr->drawAll();
@@ -907,7 +910,7 @@ void the_game(
 		Draw "Loading" screen
 	*/
 
-	draw_load_screen(L"Loading...", device, font);
+	draw_load_screen(wgettext("Loading..."), device, font);
 	
 	// Create texture source
 	IWritableTextureSource *tsrc = createTextureSource(device);
@@ -964,7 +967,7 @@ void the_game(
 	*/
 
 	if(address == ""){
-		draw_load_screen(L"Creating server...", device, font);
+		draw_load_screen(wgettext("Creating server..."), device, font,0,0);
 		infostream<<"Creating server"<<std::endl;
 		server = new Server(map_dir, configpath, gamespec,
 				simple_singleplayer_mode);
@@ -977,7 +980,7 @@ void the_game(
 		Create client
 	*/
 
-	draw_load_screen(L"Creating client...", device, font);
+	draw_load_screen(wgettext("Creating client..."), device, font,0,25);
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
@@ -988,7 +991,7 @@ void the_game(
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
 			
-	draw_load_screen(L"Resolving address...", device, font);
+	draw_load_screen(wgettext("Resolving address..."), device, font,50);
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
@@ -1049,11 +1052,7 @@ void the_game(
 			}
 			
 			// Display status
-			std::wostringstream ss;
-			ss<<L"Connecting to server... (press Escape to cancel)\n";
-			std::wstring animation = L"/-\\|";
-			ss<<animation[(int)(time_counter/0.2)%4];
-			draw_load_screen(ss.str(), device, font);
+			draw_load_screen(wgettext("Connecting to server..."), device, font, frametime, 75);
 			
 			// Delay a bit
 			sleep_ms(1000*frametime);
@@ -1074,6 +1073,11 @@ void the_game(
 		// Break out of client scope
 		break;
 	}
+	/*
+		The screen below will be seen for a really short time,
+		but that way the progress doesn't stop at 75%.
+	*/
+	draw_load_screen(wgettext("Connected!"), device, font, 0, 100);
 	
 	/*
 		Wait until content has been received
@@ -1086,13 +1090,8 @@ void the_game(
 		input->clear();
 		
 		scene::ISceneManager* smgr = device->getSceneManager();
-		Clouds *clouds = 0;
 		if (g_settings->getBool("menu_clouds"))
 		{
-			// add clouds
-			clouds = new Clouds(smgr->getRootSceneNode(),
-					smgr, -1, rand(), 100);
-			clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
 
 			// A camera to see the clouds
 			scene::ICameraSceneNode* camera;
@@ -1129,31 +1128,31 @@ void the_game(
 			
 			// Display status
 			std::wostringstream ss;
+			int progress=0;
 			if (!client.itemdefReceived())
-				ss << L"Item definitions...";
-			else if (!client.nodedefReceived())
-				ss << L"Node definitions...";
-			else
-				ss << L"Media (" << (int)(client.mediaReceiveProgress()*100+0.5) << L"%)...";
-			
-			if (clouds != 0)
 			{
-				clouds->step(frametime*3); 
-				clouds->render();
+				ss << wgettext("Item definitions...");
+				progress = 0;
+			}
+			else if (!client.nodedefReceived())
+			{
+				ss << wgettext("Node definitions...");
+				progress = 25;
+			}
+			else
+			{
+				ss << wgettext("Media...");
+				progress = 50+client.mediaReceiveProgress()*50+0.5;
 			}
 			
-			draw_load_screen(ss.str(), device, font, client.mediaReceiveProgress()*100+0.5, clouds!=0);
+			draw_load_screen(ss.str(), device, font, frametime, progress);
 			
 			// Delay a bit
 			sleep_ms(1000*frametime);
 			time_counter += frametime;
 		}
-		if (clouds != 0)
-		{
-			smgr->addToDeletionQueue(clouds);
-			clouds->drop();
-		}
 	}
+	smgr->addToDeletionQueue(g_menuclouds);
 
 	if(!got_content){
 		if(error_message == L"" && !content_aborted){
@@ -3278,7 +3277,7 @@ void the_game(
 	*/
 	{
 		/*gui::IGUIStaticText *gui_shuttingdowntext = */
-		draw_load_screen(L"Shutting down stuff...", device, font);
+		draw_load_screen(wgettext("Shutting down stuff..."), device, font, 0, -1, false);
 		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
 		driver->endScene();

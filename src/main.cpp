@@ -88,6 +88,9 @@ Settings *g_settings = &main_settings;
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 
+// Menu clouds are created when needed
+Clouds *g_menuclouds = 0;
+
 /*
 	Debug streams
 */
@@ -1746,9 +1749,9 @@ int main(int argc, char *argv[])
 
 					// Always create clouds because they may or may not be
 					// needed based on the game selected
-					Clouds *clouds = new Clouds(smgr->getRootSceneNode(),
+					g_menuclouds = new Clouds(smgr->getRootSceneNode(),
 							smgr, -1, rand(), 100);
-					clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+					g_menuclouds->update(v2f(0, 0), video::SColor(255,200,200,255));
 
 					// A camera to see the clouds
 					scene::ICameraSceneNode* camera;
@@ -1811,8 +1814,8 @@ int main(int argc, char *argv[])
 
 						if (cloud_menu_background) {
 							// *3 otherwise the clouds would move very slowly
-							clouds->step(dtime*3); 
-							clouds->render();
+							g_menuclouds->step(dtime*3); 
+							g_menuclouds->render();
 							smgr->drawAll();
 							drawMenuOverlay(driver, menutextures);
 							drawMenuHeader(driver, menutextures);
@@ -1856,8 +1859,6 @@ int main(int argc, char *argv[])
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
-					clouds->drop();
-					smgr->clear();
 				}
 
 				playername = wide_to_narrow(menudata.name);
@@ -2018,6 +2019,8 @@ int main(int argc, char *argv[])
 				gamespec,
 				simple_singleplayer_mode
 			);
+			g_menuclouds->drop();
+			smgr->clear();
 
 		} //try
 		catch(con::PeerNotFoundException &e)
