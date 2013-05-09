@@ -1462,6 +1462,7 @@ int main(int argc, char *argv[])
 	{
 		dstream<<"Running speed tests"<<std::endl;
 		SpeedTests();
+		device->drop();
 		return 0;
 	}
 	
