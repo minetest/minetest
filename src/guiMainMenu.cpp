@@ -483,16 +483,20 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				{
 					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
-					Environment->addStaticText(wgettext("Favorites:"),
+					wchar_t* text = wgettext("Favorites:");
+					Environment->addStaticText(text,
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+					delete[] text;
 				}
 			} else {
 				m_data->servers = ServerList::getOnline();
 				{
 					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
-					Environment->addStaticText(wgettext("Public Server List:"),
+					wchar_t* text = wgettext("Public Server List:");
+					Environment->addStaticText(text,
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+					delete[] text;
 				}
 			}
 #else
@@ -500,8 +504,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			{
 				core::rect<s32> rect(0, 0, 390, 20);
 				rect += m_topleft_client + v2s32(50, 10);
-				Environment->addStaticText(wgettext("Favorites:"),
+				wchar_t* text = wgettext("Favorites:");
+				Environment->addStaticText(text,
 					rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				delete[] text;
 			}
 #endif
 			updateGuiServerList();
@@ -1372,9 +1378,11 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				readInput(&cur);
 				if (getTab() == TAB_MULTIPLAYER && cur.address == L"")
 				{
+					wchar_t* text = wgettext("Address required.");
 					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Address required."))
+							text)
 							)->drop();
+					delete[] text;
 					return true;
 				}
 				acceptInput();
