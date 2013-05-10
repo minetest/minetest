@@ -223,7 +223,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 	}
 	if(m_need_to_get_new_sneak_node)
 	{
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS);
+		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS); 
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0*BS;
 		// If already seeking from some node, compare to it.
@@ -242,7 +242,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		for(s16 z=-1; z<=1; z++)
 		{
 			v3s16 p = pos_i_bottom + v3s16(x,0,z);
-			v3f pf = intToFloat(p, BS);
+			v3f pf = intToFloat(p, BS/2);
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
 			f32 max_axis_distance_f = MYMAX(
@@ -250,7 +250,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 					fabs(player_p2df.Y-node_p2df.Y));
 					
 			if(distance_f > min_distance_f ||
-					max_axis_distance_f > 0.5*BS + sneak_max + 0.1*BS)
+					max_axis_distance_f > 0.5*BS/2 + sneak_max + 0.1*BS/2)
 				continue;
 
 			try{
@@ -281,6 +281,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		*/
 		if(sneak_node_found && control.sneak)
 			touching_ground = true;
+
 	}
 	
 	/*
