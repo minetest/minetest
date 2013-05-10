@@ -1035,15 +1035,26 @@ void the_game(
 	bool could_connect = false;
 	bool connect_aborted = false;
 	try{
-		float frametime = 0.033;
 		float time_counter = 0.0;
 		input->clear();
+		float fps_max = g_settings->getFloat("fps_max");
+		bool cloud_menu_background = g_settings->getBool("menu_clouds");
+		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
+			f32 dtime=0; // in seconds
+			if (cloud_menu_background) {
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					dtime = (time - lasttime) / 1000.0;
+				else
+					dtime = 0;
+				lasttime = time;
+			}
 			// Update client and server
-			client.step(frametime);
+			client.step(dtime);
 			if(server != NULL)
-				server->step(frametime);
+				server->step(dtime);
 			
 			// End condition
 			if(client.connectedAndInitialized()){
@@ -1066,13 +1077,35 @@ void the_game(
 			// Display status
 			{
 				wchar_t* text = wgettext("Connecting to server...");
-				draw_load_screen(text, device, font, frametime, 100);
+				draw_load_screen(text, device, font, dtime, 100);
 				delete[] text;
 			}
 			
-			// Delay a bit
-			sleep_ms(1000*frametime);
-			time_counter += frametime;
+			// On some computers framerate doesn't seem to be
+			// automatically limited
+			if (cloud_menu_background) {
+				// Time of frame without fps limit
+				float busytime;
+				u32 busytime_u32;
+				// not using getRealTime is necessary for wine
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					busytime_u32 = time - lasttime;
+				else
+					busytime_u32 = 0;
+				busytime = busytime_u32 / 1000.0;
+
+				// FPS limiter
+				u32 frametime_min = 1000./fps_max;
+
+				if(busytime_u32 < frametime_min) {
+					u32 sleeptime = frametime_min - busytime_u32;
+					device->sleep(sleeptime);
+				}
+			} else {
+				sleep_ms(25);
+			}
+			time_counter += dtime;
 		}
 	}
 	catch(con::PeerNotFoundException &e)
@@ -1096,16 +1129,26 @@ void the_game(
 	bool got_content = false;
 	bool content_aborted = false;
 	{
-		float frametime = 0.033;
 		float time_counter = 0.0;
 		input->clear();
-		
+		float fps_max = g_settings->getFloat("fps_max");
+		bool cloud_menu_background = g_settings->getBool("menu_clouds");
+		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
+			f32 dtime=0; // in seconds
+			if (cloud_menu_background) {
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					dtime = (time - lasttime) / 1000.0;
+				else
+					dtime = 0;
+				lasttime = time;
+			}
 			// Update client and server
-			client.step(frametime);
+			client.step(dtime);
 			if(server != NULL)
-				server->step(frametime);
+				server->step(dtime);
 			
 			// End condition
 			if(client.texturesReceived() &&
@@ -1145,12 +1188,34 @@ void the_game(
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
 			}
 			wchar_t* text = wgettext(ss.str().c_str());
-			draw_load_screen(text, device, font, frametime, progress);
+			draw_load_screen(text, device, font, dtime, progress);
 			delete[] text;
 			
-			// Delay a bit
-			sleep_ms(1000*frametime);
-			time_counter += frametime;
+			// On some computers framerate doesn't seem to be
+			// automatically limited
+			if (cloud_menu_background) {
+				// Time of frame without fps limit
+				float busytime;
+				u32 busytime_u32;
+				// not using getRealTime is necessary for wine
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					busytime_u32 = time - lasttime;
+				else
+					busytime_u32 = 0;
+				busytime = busytime_u32 / 1000.0;
+
+				// FPS limiter
+				u32 frametime_min = 1000./fps_max;
+
+				if(busytime_u32 < frametime_min) {
+					u32 sleeptime = frametime_min - busytime_u32;
+					device->sleep(sleeptime);
+				}
+			} else {
+				sleep_ms(25);
+			}
+			time_counter += dtime;
 		}
 	}
 
