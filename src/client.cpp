@@ -2555,6 +2555,9 @@ void Client::inventoryAction(InventoryAction *a)
 		Predict some local inventory changes
 	*/
 	a->clientApply(this, this);
+
+	// Remove it
+	delete a;
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(
