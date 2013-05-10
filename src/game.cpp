@@ -429,7 +429,7 @@ void draw_load_screen(const std::wstring &text,
 		core::vector2d<s32> barsize(256,32);
 		core::rect<s32> barrect(center-barsize/2, center+barsize/2);
 		driver->draw2DRectangle(video::SColor(255,255,255,255),barrect, NULL); // border
-		driver->draw2DRectangle(video::SColor(255,0,0,0), core::rect<s32> (
+		driver->draw2DRectangle(video::SColor(255,64,64,64), core::rect<s32> (
 				barrect.UpperLeftCorner+1,
 				barrect.LowerRightCorner-1), NULL); // black inside the bar
 		driver->draw2DRectangle(video::SColor(255,128,128,128), core::rect<s32> (
