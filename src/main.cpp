@@ -2063,6 +2063,8 @@ int main(int argc, char *argv[])
 	*/
 	device->drop();
 
+	delete font;
+
 #endif // !SERVER
 	
 	// Update configuration file
