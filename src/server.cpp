@@ -5077,6 +5077,9 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 			getPlayerEffectivePrivs(player->getName()),
 			isSingleplayer());
 
+	/* Clean up old HUD elements from previous sessions */
+	player->hud.clear();
+
 	/* Add object to environment */
 	m_env->addActiveObject(playersao);
 
