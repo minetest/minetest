@@ -2039,7 +2039,7 @@ int main(int argc, char *argv[])
 			error_message = narrow_to_wide(narrow_message);
 		}
 #endif
-
+		
 		// If no main menu, show error and exit
 		if(skip_main_menu)
 		{

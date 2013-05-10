@@ -47,6 +47,7 @@ extern std::ostream *derr_client_ptr;
 extern std::ostream *dout_server_ptr;
 extern std::ostream *derr_server_ptr;
 
+
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
 #define dout_client (*dout_client_ptr)
