@@ -3334,6 +3334,8 @@ void the_game(
 		clouds->drop();
 	if (gui_chat_console)
 		gui_chat_console->drop();
+	if (sky)
+		sky->drop();
 	clear_particles();
 	
 	/*
