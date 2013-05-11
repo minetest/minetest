@@ -4074,7 +4074,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
 
-	/*infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+	/*actionstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<":  \tpacket size: "<<replysize<<std::endl;*/
 
 	/*
@@ -4092,9 +4092,7 @@ void Server::SendBlocks(float dtime)
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
-	std::vector<PrioritySortedBlockTransfer> queue;
-
-	s32 total_sending = 0;
+	std::vector<PrioritySortedBlockTransfer> bigqueue;
 
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
@@ -4111,28 +4109,20 @@ void Server::SendBlocks(float dtime)
 			if(!client->definitions_sent)
 				continue;
 
-			total_sending += client->SendingCount();
-
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 
+			std::vector<PrioritySortedBlockTransfer> queue;
 			client->GetNextBlocks(this, dtime, queue);
+			std::sort(queue.begin(), queue.end());
+			if(queue.size() > 0)
+				bigqueue.push_back(queue[0]);
 		}
 	}
 
-	// Sort.
-	// Lowest priority number comes first.
-	// Lowest is most important.
-	std::sort(queue.begin(), queue.end());
-
-	for(u32 i=0; i<queue.size(); i++)
+	for(u32 i=0; i<bigqueue.size(); i++)
 	{
-		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings->getS32
-				("max_simultaneous_block_sends_server_total"))
-			break;
-
-		PrioritySortedBlockTransfer q = queue[i];
+		PrioritySortedBlockTransfer q = bigqueue[i];
 
 		MapBlock *block = NULL;
 		try
@@ -4149,8 +4139,6 @@ void Server::SendBlocks(float dtime)
 		SendBlockNoLock(q.peer_id, block, client->serialization_version);
 
 		client->SentBlock(q.pos);
-
-		total_sending++;
 	}
 }
 
