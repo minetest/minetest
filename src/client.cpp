@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "settings.h"
 #include "profiler.h"
+#include "gettext.h"
 #include "log.h"
 #include "nodemetadata.h"
 #include "nodedef.h"
@@ -2847,6 +2848,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 		size_t size = names.size();
 		size_t count = 0;
 		int percent = 0;
+		wchar_t* text = wgettext("Item textures...");
 		for(std::set<std::string>::const_iterator
 				i = names.begin(); i != names.end(); ++i){
 			// Asking for these caches the result
@@ -2855,8 +2857,9 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 			count++;
 			percent = count*100/size;
 			if (count%50 == 0) // only update every 50 item
-				draw_load_screen(L"Item textures...",device,font,0,percent);
+				draw_load_screen(text,device,font,0,percent);
 		}
+		delete[] text;
 	}
 
 	// Start mesh update thread after setting up content definitions
