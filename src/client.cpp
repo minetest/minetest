@@ -2804,7 +2804,10 @@ ClientEvent Client::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
-void Client::afterContentReceived()
+void draw_load_screen(const std::wstring &text,
+		IrrlichtDevice* device, gui::IGUIFont* font,
+		float dtime=0 ,int percent=0, bool clouds=true);
+void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
@@ -2839,12 +2842,20 @@ void Client::afterContentReceived()
 	if(g_settings->getBool("preload_item_visuals"))
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
+		draw_load_screen(L"Item textures...",device,font,0,0);
 		std::set<std::string> names = m_itemdef->getAll();
+		size_t size = names.size();
+		size_t count = 0;
+		int percent = 0;
 		for(std::set<std::string>::const_iterator
 				i = names.begin(); i != names.end(); ++i){
 			// Asking for these caches the result
 			m_itemdef->getInventoryTexture(*i, this);
 			m_itemdef->getWieldMesh(*i, this);
+			count++;
+			percent = count*100/size;
+			if (count%50 == 0) // only update every 50 item
+				draw_load_screen(L"Item textures...",device,font,0,percent);
 		}
 	}
 
