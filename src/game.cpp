@@ -1232,7 +1232,7 @@ void the_game(
 		After all content has been received:
 		Update cached textures, meshes and materials
 	*/
-	client.afterContentReceived();
+	client.afterContentReceived(device,font);
 
 	/*
 		Create the camera node
