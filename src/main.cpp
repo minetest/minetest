@@ -663,12 +663,14 @@ private:
 struct MenuTextures
 {
 	std::string current_gameid;
+	bool global_textures;
 	video::ITexture *background;
 	video::ITexture *overlay;
 	video::ITexture *header;
 	video::ITexture *footer;
 
 	MenuTextures():
+		global_textures(false),
 		background(NULL),
 		overlay(NULL),
 		header(NULL),
@@ -678,28 +680,49 @@ struct MenuTextures
 	static video::ITexture* getMenuTexture(const std::string &tname,
 			video::IVideoDriver* driver, const SubgameSpec *spec)
 	{
-		std::string path;
-		// eg. minetest_menu_background.png (for texture packs)
-		std::string pack_tname = spec->id + "_menu_" + tname + ".png";
-		path = getTexturePath(pack_tname);
-		if(path != "")
-			return driver->getTexture(path.c_str());
-		// eg. games/minetest_game/menu/background.png
-		path = getImagePath(spec->path + DIR_DELIM + "menu" + DIR_DELIM + tname + ".png");
-		if(path != "")
-			return driver->getTexture(path.c_str());
+		if(spec){
+			std::string path;
+			// eg. minetest_menu_background.png (for texture packs)
+			std::string pack_tname = spec->id + "_menu_" + tname + ".png";
+			path = getTexturePath(pack_tname);
+			if(path != "")
+				return driver->getTexture(path.c_str());
+			// eg. games/minetest_game/menu/background.png
+			path = getImagePath(spec->path + DIR_DELIM + "menu" + DIR_DELIM + tname + ".png");
+			if(path != "")
+				return driver->getTexture(path.c_str());
+		} else {
+			std::string path;
+			// eg. menu_background.png
+			std::string pack_tname = "menu_" + tname + ".png";
+			path = getTexturePath(pack_tname);
+			if(path != "")
+				return driver->getTexture(path.c_str());
+		}
 		return NULL;
 	}
 
-	void update(video::IVideoDriver* driver, const SubgameSpec *spec)
+	void update(video::IVideoDriver* driver, const SubgameSpec *spec, int tab)
 	{
-		if(spec->id == current_gameid)
-			return;
-		current_gameid = spec->id;
-		background = getMenuTexture("background", driver, spec);
-		overlay = getMenuTexture("overlay", driver, spec);
-		header = getMenuTexture("header", driver, spec);
-		footer = getMenuTexture("footer", driver, spec);
+		if(tab == TAB_SINGLEPLAYER){
+			if(spec->id == current_gameid)
+				return;
+			current_gameid = spec->id;
+			global_textures = false;
+			background = getMenuTexture("background", driver, spec);
+			overlay = getMenuTexture("overlay", driver, spec);
+			header = getMenuTexture("header", driver, spec);
+			footer = getMenuTexture("footer", driver, spec);
+		} else {
+			if(global_textures)
+				return;
+			current_gameid = "";
+			global_textures = true;
+			background = getMenuTexture("background", driver, NULL);
+			overlay = getMenuTexture("overlay", driver, NULL);
+			header = getMenuTexture("header", driver, NULL);
+			footer = getMenuTexture("footer", driver, NULL);
+		}
 	}
 };
 
@@ -1778,7 +1801,7 @@ int main(int argc, char *argv[])
 				const SubgameSpec *menugame = getMenuGame(menudata);
 
 				MenuTextures menutextures;
-				menutextures.update(driver, menugame);
+				menutextures.update(driver, menugame, menudata.selected_tab);
 
 				if(skip_main_menu == false)
 				{
@@ -1839,7 +1862,7 @@ int main(int argc, char *argv[])
 
 						// Game can be selected in the menu
 						menugame = getMenuGame(menudata);
-						menutextures.update(driver, menugame);
+						menutextures.update(driver, menugame, menu->getTab());
 						// Clouds for the main menu
 						bool cloud_menu_background = g_settings->getBool("menu_clouds");
 						if(menugame){

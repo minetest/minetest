@@ -34,6 +34,15 @@ enum {
 	SERVERLIST_PUBLIC,
 };
 
+enum
+{
+	TAB_SINGLEPLAYER=0,
+	TAB_MULTIPLAYER,
+	TAB_ADVANCED,
+	TAB_SETTINGS,
+	TAB_CREDITS
+};
+
 struct MainMenuData
 {
 	// These are in the native format of the gui elements
