@@ -1,0 +1,11 @@
+set(SCRIPT_CPP_API_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/s_base.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_entity.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_env.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_inventory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_item.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_node.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_nodemeta.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_player.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/scriptapi.cpp
+	PARENT_SCOPE)

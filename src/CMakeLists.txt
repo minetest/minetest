@@ -206,6 +206,8 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
+add_subdirectory(script)
+
 set(common_SRCS
 	rollback_interface.cpp
 	rollback.cpp
@@ -222,22 +224,6 @@ set(common_SRCS
 	itemdef.cpp
 	nodedef.cpp
 	object_properties.cpp
-	scriptapi_types.cpp
-	scriptapi_common.cpp
-	scriptapi_content.cpp
-	scriptapi_craft.cpp
-	scriptapi_node.cpp
-	scriptapi_item.cpp
-	scriptapi_env.cpp
-	scriptapi_nodetimer.cpp
-	scriptapi_noise.cpp
-	scriptapi_entity.cpp
-	scriptapi_object.cpp
-	scriptapi_nodemeta.cpp
-	scriptapi_inventory.cpp
-	scriptapi_particles.cpp
-	scriptapi.cpp
-	script.cpp
 	log.cpp
 	content_sao.cpp
 	emerge.cpp
@@ -289,6 +275,7 @@ set(common_SRCS
 	util/pointedthing.cpp
 	util/string.cpp
 	util/timetaker.cpp
+	${SCRIPT_SRCS}
 )
 
 # This gives us the icon
@@ -375,6 +362,7 @@ include_directories(
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
+	${PROJECT_SOURCE_DIR}/script
 )
 
 if(USE_FREETYPE)
@@ -502,7 +490,7 @@ else()
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")

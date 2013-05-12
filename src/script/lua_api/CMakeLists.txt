@@ -1,0 +1,13 @@
+set(SCRIPT_LUA_API_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/l_base.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_craft.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_env.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_inventory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_item.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/luaapi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_nodemeta.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_nodetimer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_noise.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_object.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_particles.cpp
+	PARENT_SCOPE)
