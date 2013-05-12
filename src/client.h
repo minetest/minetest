@@ -385,7 +385,7 @@ public:
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
 	
-	void afterContentReceived();
+	void afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font);
 
 	float getRTT(void);
 
