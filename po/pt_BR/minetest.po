@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-04-23 17:34+0200\n"
+"PO-Revision-Date: 2013-05-13 20:26+0200\n"
 "Last-Translator: Frederico Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: LANGUAGE <contato@ejweb.com.br>\n"
 "Language: pt_BR\n"
@@ -20,31 +20,31 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr ""
+msgstr "Texturas dos itens..."
 
 #: src/game.cpp:912
 msgid "Loading..."
-msgstr ""
+msgstr "Carregando..."
 
 #: src/game.cpp:972
 msgid "Creating server...."
-msgstr ""
+msgstr "Criando o servidor..."
 
 #: src/game.cpp:988
 msgid "Creating client..."
-msgstr ""
+msgstr "Criando o cliente..."
 
 #: src/game.cpp:1003
 msgid "Resolving address..."
-msgstr ""
+msgstr "Resolvendo os endereços..."
 
 #: src/game.cpp:1079
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Conectando ao servidor..."
 
 #: src/game.cpp:3348
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Desligando tudo..."
 
 #: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
@@ -468,6 +468,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Controles padrão:\n"
+"- WASD: mover\n"
+"- Espaço: pular/escalar\n"
+"- Shift: esgueirar/descer\n"
+"- Q: descartar o item\n"
+"- I: inventário\n"
+"- Mouse: virar/olhar\n"
+"- Botão esq. do mouse: cavar/atingir\n"
+"- Botão dir. do mouse: colocar/usar\n"
+"- Roda do mouse: selecionar item\n"
+"- T: bate-papo\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
