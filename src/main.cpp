@@ -76,6 +76,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "quicktune.h"
 #include "serverlist.h"
+#include "sound.h"
+#include "sound_openal.h"
 
 /*
 	Settings.
@@ -87,6 +89,10 @@ Settings *g_settings = &main_settings;
 // Global profiler
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
+
+// Menu clouds are created later
+Clouds *g_menuclouds = 0;
+irr::scene::ISceneManager *g_menucloudsmgr = 0;
 
 /*
 	Debug streams
@@ -196,7 +202,49 @@ u32 getTime(TimePrecision prec) {
 		return 0;
 	return g_timegetter->getTime(prec);
 }
+#endif
 
+//Client side main menu music fetcher
+#ifndef SERVER
+class MenuMusicFetcher: public OnDemandSoundFetcher
+{
+	std::set<std::string> m_fetched;
+public:
+
+	void fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::string> &dst_datas)
+	{
+		if(m_fetched.count(name))
+			return;
+		m_fetched.insert(name);
+		std::string base;
+		base = porting::path_share + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
+		base = porting::path_user + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
+		}
+};
 #endif
 
 class StderrLogOutput: public ILogOutput
@@ -612,122 +660,181 @@ private:
 	bool rightreleased;
 };
 
-//Draw the tiled menu background
-void drawMenuBackground(video::IVideoDriver* driver) {
-	core::dimension2d<u32> screensize = driver->getScreenSize();
+struct MenuTextures
+{
+	std::string current_gameid;
+	bool global_textures;
+	video::ITexture *background;
+	video::ITexture *overlay;
+	video::ITexture *header;
+	video::ITexture *footer;
 
-	std::string path = getTexturePath("menubg.png");
-	if (path[0]) {
-		static const video::ITexture *bgtexture =
-			driver->getTexture(path.c_str());
+	MenuTextures():
+		global_textures(false),
+		background(NULL),
+		overlay(NULL),
+		header(NULL),
+		footer(NULL)
+	{}
 
-		if (bgtexture) {
-			s32 scaledsize = 128;
-		
-			// The important difference between destsize and screensize is
-			// that destsize is rounded to whole scaled pixels.
-			// These formulas use component-wise multiplication and division of v2u32.
-			v2u32 texturesize = bgtexture->getSize();
-			v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
-			v2u32 destsize = scaledsize * sourcesize / texturesize;
-		
-			// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
-			driver->draw2DImage(bgtexture,
-				core::rect<s32>(0, 0, destsize.X, destsize.Y),
-				core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-				NULL, NULL, true);
+	static video::ITexture* getMenuTexture(const std::string &tname,
+			video::IVideoDriver* driver, const SubgameSpec *spec)
+	{
+		if(spec){
+			std::string path;
+			// eg. minetest_menu_background.png (for texture packs)
+			std::string pack_tname = spec->id + "_menu_" + tname + ".png";
+			path = getTexturePath(pack_tname);
+			if(path != "")
+				return driver->getTexture(path.c_str());
+			// eg. games/minetest_game/menu/background.png
+			path = getImagePath(spec->path + DIR_DELIM + "menu" + DIR_DELIM + tname + ".png");
+			if(path != "")
+				return driver->getTexture(path.c_str());
+		} else {
+			std::string path;
+			// eg. menu_background.png
+			std::string pack_tname = "menu_" + tname + ".png";
+			path = getTexturePath(pack_tname);
+			if(path != "")
+				return driver->getTexture(path.c_str());
 		}
+		return NULL;
+	}
+
+	void update(video::IVideoDriver* driver, const SubgameSpec *spec, int tab)
+	{
+		if(tab == TAB_SINGLEPLAYER){
+			if(spec->id == current_gameid)
+				return;
+			current_gameid = spec->id;
+			global_textures = false;
+			background = getMenuTexture("background", driver, spec);
+			overlay = getMenuTexture("overlay", driver, spec);
+			header = getMenuTexture("header", driver, spec);
+			footer = getMenuTexture("footer", driver, spec);
+		} else {
+			if(global_textures)
+				return;
+			current_gameid = "";
+			global_textures = true;
+			background = getMenuTexture("background", driver, NULL);
+			overlay = getMenuTexture("overlay", driver, NULL);
+			header = getMenuTexture("header", driver, NULL);
+			footer = getMenuTexture("footer", driver, NULL);
+		}
+	}
+};
+
+void drawMenuBackground(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
+	v2u32 screensize = driver->getScreenSize();
+	video::ITexture *texture = menutextures.background;
+
+	/* If no texture, draw background of solid color */
+	if(!texture){
+		video::SColor color(255,80,58,37);
+		core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
+		driver->draw2DRectangle(color, rect, NULL);
+		return;
+	}
+
+	/* Draw background texture */
+	v2u32 sourcesize = texture->getSize();
+	driver->draw2DImage(texture,
+		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
+		NULL, NULL, true);
+}
+
+void drawMenuOverlay(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
+	v2u32 screensize = driver->getScreenSize();
+	video::ITexture *texture = menutextures.overlay;
+
+	/* If no texture, draw nothing */
+	if(!texture)
+		return;
+
+	/* Draw overlay texture */
+	v2u32 sourcesize = texture->getSize();
+	driver->draw2DImage(texture,
+		core::rect<s32>(0, 0, screensize.X, screensize.Y),
+		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
+		NULL, NULL, true);
+}
+
+void drawMenuHeader(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+	video::ITexture *texture = menutextures.header;
+
+	/* If no texture, draw nothing */
+	if(!texture)
+		return;
+
+	f32 mult = (((f32)screensize.Width / 2)) /
+		((f32)texture->getOriginalSize().Width);
+
+	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
+			((f32)texture->getOriginalSize().Height) * mult);
+
+	// Don't draw the header is there isn't enough room
+	s32 free_space = (((s32)screensize.Height)-320)/2;
+	if (free_space > splashsize.Y) {
+		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
+		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
+			((free_space/2)-splashsize.Y/2)+10);
+
+		video::SColor bgcolor(255,50,50,50);
+
+		driver->draw2DImage(texture, splashrect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+			core::dimension2di(texture->getSize())),
+			NULL, NULL, true);
 	}
 }
 
-//Draw the footer at the bottom of the window
-void drawMenuFooter(video::IVideoDriver* driver, bool clouds) {
+void drawMenuFooter(video::IVideoDriver* driver, const MenuTextures &menutextures)
+{
 	core::dimension2d<u32> screensize = driver->getScreenSize();
-	std::string path = getTexturePath(clouds ?
-						"menufooter_clouds.png" : "menufooter.png");
-	if (path[0]) {
-		static const video::ITexture *footertexture =
-			driver->getTexture(path.c_str());
+	video::ITexture *texture = menutextures.footer;
 
-		if (footertexture) {
-			f32 mult = (((f32)screensize.Width)) /
-				((f32)footertexture->getOriginalSize().Width);
+	/* If no texture, draw nothing */
+	if(!texture)
+		return;
 
-			v2s32 footersize(((f32)footertexture->getOriginalSize().Width) * mult,
-					((f32)footertexture->getOriginalSize().Height) * mult);
+	f32 mult = (((f32)screensize.Width)) /
+		((f32)texture->getOriginalSize().Width);
 
-			// Don't draw the footer if there isn't enough room
-			s32 free_space = (((s32)screensize.Height)-320)/2;
-			if (free_space > footersize.Y) {
-				core::rect<s32> rect(0,0,footersize.X,footersize.Y);
-				rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
-				rect -= v2s32(footersize.X/2, 0);
+	v2s32 footersize(((f32)texture->getOriginalSize().Width) * mult,
+			((f32)texture->getOriginalSize().Height) * mult);
 
-				driver->draw2DImage(footertexture, rect,
-					core::rect<s32>(core::position2d<s32>(0,0),
-					core::dimension2di(footertexture->getSize())),
-					NULL, NULL, true);
-			}
-		}
+	// Don't draw the footer if there isn't enough room
+	s32 free_space = (((s32)screensize.Height)-320)/2;
+	if (free_space > footersize.Y) {
+		core::rect<s32> rect(0,0,footersize.X,footersize.Y);
+		rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
+		rect -= v2s32(footersize.X/2, 0);
+
+		driver->draw2DImage(texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+			core::dimension2di(texture->getSize())),
+			NULL, NULL, true);
 	}
 }
 
-// Draw the Header over the main menu
-void drawMenuHeader(video::IVideoDriver* driver) {
-	core::dimension2d<u32> screensize = driver->getScreenSize();
-
-	std::string path = getTexturePath("menuheader.png");
-	if (path[0]) {
-		static const video::ITexture *splashtexture =
-		driver->getTexture(path.c_str());
-
-		if(splashtexture) {
-			f32 mult = (((f32)screensize.Width / 2)) /
-				((f32)splashtexture->getOriginalSize().Width);
-
-			v2s32 splashsize(((f32)splashtexture->getOriginalSize().Width) * mult,
-					((f32)splashtexture->getOriginalSize().Height) * mult);
-
-			// Don't draw the header is there isn't enough room
-			s32 free_space = (((s32)screensize.Height)-320)/2;
-			if (free_space > splashsize.Y) {
-				core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
-				splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
-					((free_space/2)-splashsize.Y/2)+10);
-
-				video::SColor bgcolor(255,50,50,50);
-
-				driver->draw2DImage(splashtexture, splashrect,
-					core::rect<s32>(core::position2d<s32>(0,0),
-					core::dimension2di(splashtexture->getSize())),
-					NULL, NULL, true);
-			}
+static const SubgameSpec* getMenuGame(const MainMenuData &menudata)
+{
+	for(size_t i=0; i<menudata.games.size(); i++){
+		if(menudata.games[i].id == menudata.selected_game){
+			return &menudata.games[i];
 		}
 	}
+	return NULL;
 }
 
-// Draw the Splash over the clouds and under the main menu
-void drawMenuSplash(video::IVideoDriver* driver) {
-	core::dimension2d<u32> screensize = driver->getScreenSize();
-	std::string path = getTexturePath("menusplash.png");
-	if (path[0]) {
-		static const video::ITexture *splashtexture =
-			driver->getTexture(path.c_str());
-
-		if(splashtexture) {
-			core::rect<s32> splashrect(0, 0, screensize.Width, screensize.Height);
-
-			video::SColor bgcolor(255,50,50,50);
-
-			driver->draw2DImage(splashtexture, splashrect,
-				core::rect<s32>(core::position2d<s32>(0,0),
-				core::dimension2di(splashtexture->getSize())),
-				NULL, NULL, true);
-		}
-	}
-}
-
-#endif
+#endif // !SERVER
 
 // These are defined global so that they're not optimized too much.
 // Can't change them to volatile.
@@ -900,6 +1007,8 @@ int main(int argc, char *argv[])
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 #ifndef SERVER
+	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
+			_("Show available video modes"))));
 	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));
 	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
@@ -999,7 +1108,7 @@ int main(int argc, char *argv[])
 		print_worldspecs(worldspecs, dstream);
 		return 0;
 	}
-	
+
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
@@ -1379,10 +1488,63 @@ int main(int argc, char *argv[])
 	}
 
 	/*
-		Create device and exit if creation failed
+		List video modes if requested
 	*/
 
 	MyEventReceiver receiver;
+
+	if(cmd_args.getFlag("videomodes")){
+		IrrlichtDevice *nulldevice;
+
+		SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+		params.DriverType    = video::EDT_NULL;
+		params.WindowSize    = core::dimension2d<u32>(640, 480);
+		params.Bits          = 24;
+		params.AntiAlias     = fsaa;
+		params.Fullscreen    = false;
+		params.Stencilbuffer = false;
+		params.Vsync         = vsync;
+		params.EventReceiver = &receiver;
+
+		nulldevice = createDeviceEx(params);
+
+		if(nulldevice == 0)
+			return 1;
+
+		dstream<<_("Available video modes (WxHxD):")<<std::endl;
+
+		video::IVideoModeList *videomode_list =
+				nulldevice->getVideoModeList();
+
+		if(videomode_list == 0){
+			nulldevice->drop();
+			return 1;
+		}
+
+		s32 videomode_count = videomode_list->getVideoModeCount();
+		core::dimension2d<u32> videomode_res;
+		s32 videomode_depth;
+		for (s32 i = 0; i < videomode_count; ++i){
+			videomode_res = videomode_list->getVideoModeResolution(i);
+			videomode_depth = videomode_list->getVideoModeDepth(i);
+			dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+					<<"x"<<videomode_depth<<std::endl;
+		}
+
+		dstream<<_("Active video mode (WxHxD):")<<std::endl;
+		videomode_res = videomode_list->getDesktopResolution();
+		videomode_depth = videomode_list->getDesktopDepth();
+		dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+				<<"x"<<videomode_depth<<std::endl;
+
+		nulldevice->drop();
+
+		return 0;
+	}
+
+	/*
+		Create device and exit if creation failed
+	*/
 
 	IrrlichtDevice *device;
 
@@ -1426,6 +1588,7 @@ int main(int argc, char *argv[])
 	{
 		dstream<<"Running speed tests"<<std::endl;
 		SpeedTests();
+		device->drop();
 		return 0;
 	}
 	
@@ -1476,6 +1639,19 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255,128,128,128));
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255,96,134,49));
 #endif
+
+
+	// Create the menu clouds
+	if (!g_menucloudsmgr)
+		g_menucloudsmgr = smgr->createNewSceneManager();
+	if (!g_menuclouds)
+		g_menuclouds = new Clouds(g_menucloudsmgr->getRootSceneNode(),
+			g_menucloudsmgr, -1, rand(), 100);
+	g_menuclouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+	scene::ICameraSceneNode* camera;
+	camera = g_menucloudsmgr->addCameraSceneNode(0,
+				v3f(0,0,0), v3f(0, 60, 100));
+	camera->setFarValue(10000);
 
 	/*
 		GUI stuff
@@ -1558,6 +1734,10 @@ int main(int argc, char *argv[])
 					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
 				if(g_settings->exists("selected_serverlist"))
 					menudata.selected_serverlist = g_settings->getS32("selected_serverlist");
+				if(g_settings->exists("selected_mainmenu_game")){
+					menudata.selected_game = g_settings->get("selected_mainmenu_game");
+					menudata.selected_game_name = findSubgame(menudata.selected_game).name;
+				}
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
@@ -1611,6 +1791,17 @@ int main(int argc, char *argv[])
 				}
 				// Copy worldspecs to menu
 				menudata.worlds = worldspecs;
+				// Get game listing
+				menudata.games = getAvailableGames();
+				// If selected game doesn't exist, take first from list
+				if(findSubgame(menudata.selected_game).id == "" &&
+						!menudata.games.empty()){
+					menudata.selected_game = menudata.games[0].id;
+				}
+				const SubgameSpec *menugame = getMenuGame(menudata);
+
+				MenuTextures menutextures;
+				menutextures.update(driver, menugame, menudata.selected_tab);
 
 				if(skip_main_menu == false)
 				{
@@ -1623,7 +1814,7 @@ int main(int argc, char *argv[])
 							break;
 						driver->beginScene(true, true,
 								video::SColor(255,128,128,128));
-						drawMenuBackground(driver);
+						drawMenuBackground(driver, menutextures);
 						guienv->drawAll();
 						driver->endScene();
 						// On some computers framerate doesn't seem to be
@@ -1636,22 +1827,6 @@ int main(int argc, char *argv[])
 							new GUIMainMenu(guienv, guiroot, -1, 
 								&g_menumgr, &menudata, g_gamecallback);
 					menu->allowFocusRemoval(true);
-
-					// Clouds for the main menu
-					bool cloud_menu_background = false;
-					Clouds *clouds = NULL;
-					if (g_settings->getBool("menu_clouds")) {
-						cloud_menu_background = true;
-						clouds = new Clouds(smgr->getRootSceneNode(),
-											smgr, -1, rand(), 100);
-						clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
-
-						// A camera to see the clouds
-						scene::ICameraSceneNode* camera;
-						camera = smgr->addCameraSceneNode(0,
-									v3f(0,0,0), v3f(0, 60, 100));
-						camera->setFarValue(10000);
-					}
 
 					if(error_message != L"")
 					{
@@ -1668,6 +1843,16 @@ int main(int argc, char *argv[])
 					// Time is in milliseconds, for clouds
 					u32 lasttime = device->getTimer()->getTime();
 
+					MenuMusicFetcher soundfetcher;
+					ISoundManager *sound = NULL;
+					sound = createOpenALSoundManager(&soundfetcher);
+					if(!sound)
+						sound = &dummySoundManager;
+					SimpleSoundSpec spec;
+					spec.name = "main_menu";
+					spec.gain = 1;
+					s32 handle = sound->playSound(spec, true);
+
 					infostream<<"Created main menu"<<std::endl;
 
 					while(device->run() && kill == false)
@@ -1675,8 +1860,25 @@ int main(int argc, char *argv[])
 						if(menu->getStatus() == true)
 							break;
 
+						// Game can be selected in the menu
+						menugame = getMenuGame(menudata);
+						menutextures.update(driver, menugame, menu->getTab());
+						// Clouds for the main menu
+						bool cloud_menu_background = g_settings->getBool("menu_clouds");
+						if(menugame){
+							// If game has regular background and no overlay, don't use clouds
+							if(cloud_menu_background && menutextures.background &&
+									!menutextures.overlay){
+								cloud_menu_background = false;
+							}
+							// If game game has overlay and no regular background, always draw clouds
+							else if(menutextures.overlay && !menutextures.background){
+								cloud_menu_background = true;
+							}
+						}
+
 						// Time calc for the clouds
-						f32 dtime; // in seconds
+						f32 dtime=0; // in seconds
 						if (cloud_menu_background) {
 							u32 time = device->getTimer()->getTime();
 							if(time > lasttime)
@@ -1691,15 +1893,16 @@ int main(int argc, char *argv[])
 
 						if (cloud_menu_background) {
 							// *3 otherwise the clouds would move very slowly
-							clouds->step(dtime*3); 
-							clouds->render();
-							smgr->drawAll();
-							drawMenuSplash(driver);
-							drawMenuFooter(driver, true);
-							drawMenuHeader(driver);
+							g_menuclouds->step(dtime*3); 
+							g_menuclouds->render();
+							g_menucloudsmgr->drawAll();
+							drawMenuOverlay(driver, menutextures);
+							drawMenuHeader(driver, menutextures);
+							drawMenuFooter(driver, menutextures);
 						} else {
-							drawMenuBackground(driver);
-							drawMenuFooter(driver, false);
+							drawMenuBackground(driver, menutextures);
+							drawMenuHeader(driver, menutextures);
+							drawMenuFooter(driver, menutextures);
 						}
 
 						guienv->drawAll();
@@ -1731,14 +1934,15 @@ int main(int argc, char *argv[])
 							sleep_ms(25);
 						}
 					}
-					
+					sound->stopSound(handle);
+					if(sound != &dummySoundManager){
+						delete sound;
+						sound = NULL;
+					}
+
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
-					if (cloud_menu_background) {
-						clouds->drop();
-						smgr->clear();
-					}
 				}
 
 				playername = wide_to_narrow(menudata.name);
@@ -1755,6 +1959,7 @@ int main(int argc, char *argv[])
 				// Save settings
 				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
 				g_settings->setS32("selected_serverlist", menudata.selected_serverlist);
+				g_settings->set("selected_mainmenu_game", menudata.selected_game);
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
@@ -1832,6 +2037,7 @@ int main(int argc, char *argv[])
 						continue;
 					}
 					g_settings->set("selected_world_path", path);
+					g_settings->set("selected_mainmenu_game", menudata.create_world_gameid);
 					continue;
 				}
 
@@ -1897,6 +2103,7 @@ int main(int argc, char *argv[])
 				gamespec,
 				simple_singleplayer_mode
 			);
+			smgr->clear();
 
 		} //try
 		catch(con::PeerNotFoundException &e)
@@ -1927,12 +2134,18 @@ int main(int argc, char *argv[])
 		}
 	} // Menu-game loop
 	
+	
+	g_menuclouds->drop();
+	g_menucloudsmgr->drop();
+	
 	delete input;
 
 	/*
 		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
+
+	delete font;
 
 #endif // !SERVER
 	

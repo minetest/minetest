@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
+#ifndef SERVER
+#include "tile.h" // getImagePath
+#endif
 #include "util/string.h"
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
@@ -94,7 +97,12 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string game_name = getGameName(game_path);
 	if(game_name == "")
 		game_name = id;
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name);
+	std::string menuicon_path;
+#ifndef SERVER
+	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
+#endif
+	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
+			menuicon_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)

@@ -707,11 +707,11 @@ Server::Server(
 
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
-	std::list<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if(!modconf.isConsistent())	
 	{
-		for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		{
 			ModSpec mod = *it;
@@ -745,7 +745,7 @@ Server::Server(
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
 			it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
-	for(std::list<ModSpec>::iterator it = unsatisfied_mods.begin();
+	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
@@ -2980,12 +2980,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				playersao->setWieldedItem(item);
 			}
 
-			// If item has node placement prediction, always send the above
-			// node to make sure the client knows what exactly happened
+			// If item has node placement prediction, always send the
+			// blocks to make sure the client knows what exactly happened
 			if(item.getDefinition(m_itemdef).node_placement_prediction != ""){
 				RemoteClient *client = getClient(peer_id);
 				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
 				client->SetBlockNotSent(blockpos);
+				v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+				if(blockpos2 != blockpos){
+					client->SetBlockNotSent(blockpos2);
+				}
 			}
 		} // action == 3
 
@@ -5072,6 +5076,9 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
 			getPlayerEffectivePrivs(player->getName()),
 			isSingleplayer());
+
+	/* Clean up old HUD elements from previous sessions */
+	player->hud.clear();
 
 	/* Add object to environment */
 	m_env->addActiveObject(playersao);

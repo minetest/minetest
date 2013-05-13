@@ -77,7 +77,7 @@ static bool replace_ext(std::string &path, const char *ext)
 
 	If failed, return "".
 */
-static std::string getImagePath(std::string path)
+std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
 	const char *extensions[] = {

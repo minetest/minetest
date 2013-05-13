@@ -24,9 +24,74 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "settings.h"
 #include "strfnd.h"
+#include <cctype>
 
-std::map<std::string, ModSpec> getModsInPath(std::string path)
+static bool parseDependsLine(std::istream &is,
+		std::string &dep, std::set<char> &symbols)
 {
+	std::getline(is, dep);
+	dep = trim(dep);
+	symbols.clear();
+	size_t pos = dep.size();
+	while(pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)){
+		// last character is a symbol, not part of the modname
+		symbols.insert(dep[pos-1]);
+		--pos;
+	}
+	dep = trim(dep.substr(0, pos));
+	return dep != "";
+}
+
+void parseModContents(ModSpec &spec)
+{
+	// NOTE: this function works in mutual recursion with getModsInPath
+
+	spec.depends.clear();
+	spec.optdepends.clear();
+	spec.is_modpack = false;
+	spec.modpack_content.clear();
+
+	// Handle modpacks (defined by containing modpack.txt)
+	std::ifstream modpack_is((spec.path+DIR_DELIM+"modpack.txt").c_str());
+	if(modpack_is.good()){ //a modpack, recursively get the mods in it
+		modpack_is.close(); // We don't actually need the file
+		spec.is_modpack = true;
+		spec.modpack_content = getModsInPath(spec.path, true);
+
+		// modpacks have no dependencies; they are defined and
+		// tracked separately for each mod in the modpack
+	}
+	else{ // not a modpack, parse the dependencies
+		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
+		while(is.good()){
+			std::string dep;
+			std::set<char> symbols;
+			if(parseDependsLine(is, dep, symbols)){
+				if(symbols.count('?') != 0){
+					spec.optdepends.insert(dep);
+				}
+				else{
+					spec.depends.insert(dep);
+				}
+			}
+		}
+
+		// FIXME: optdepends.txt is deprecated
+		// remove this code at some point in the future
+		std::ifstream is2((spec.path+DIR_DELIM+"optdepends.txt").c_str());
+		while(is2.good()){
+			std::string dep;
+			std::set<char> symbols;
+			if(parseDependsLine(is2, dep, symbols))
+				spec.optdepends.insert(dep);
+		}
+	}
+}
+
+std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack)
+{
+	// NOTE: this function works in mutual recursion with parseModContents
+
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
 	for(u32 j=0; j<dirlist.size(); j++){
@@ -39,36 +104,32 @@ std::map<std::string, ModSpec> getModsInPath(std::string path)
 			continue;
 		std::string modpath = path + DIR_DELIM + modname;
 
-		// Handle modpacks (defined by containing modpack.txt)
-		std::ifstream modpack_is((modpath+DIR_DELIM+"modpack.txt").c_str(),
-					std::ios_base::binary);
-		if(modpack_is.good()) //a modpack, recursively get the mods in it
-		{
-			modpack_is.close(); // We don't actually need the file
-			ModSpec spec(modname,modpath);
-			spec.modpack_content = getModsInPath(modpath);
-			spec.is_modpack = true;
-			result.insert(std::make_pair(modname,spec));
-		}
-		else // not a modpack, add the modspec
-		{
-			std::set<std::string> depends;
-			std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
-				std::ios_base::binary);
-			while(is.good())
-			{
-				std::string dep;
-				std::getline(is, dep);
-				dep = trim(dep);	
-				if(dep != "")
-					depends.insert(dep);
-			}
-
-			ModSpec spec(modname, modpath, depends);
-			result.insert(std::make_pair(modname,spec));
-		}
+		ModSpec spec(modname, modpath);
+		spec.part_of_modpack = part_of_modpack;
+		parseModContents(spec);
+		result.insert(std::make_pair(modname, spec));
 	}
 	return result;
+}
+
+ModSpec findCommonMod(const std::string &modname)
+{
+	// Try to find in {$user,$share}/games/common/$modname
+	std::vector<std::string> find_paths;
+	find_paths.push_back(porting::path_user + DIR_DELIM + "games" +
+			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+	find_paths.push_back(porting::path_share + DIR_DELIM + "games" +
+			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
+	for(u32 i=0; i<find_paths.size(); i++){
+		const std::string &try_path = find_paths[i];
+		if(fs::PathExists(try_path)){
+			ModSpec spec(modname, try_path);
+			parseModContents(spec);
+			return spec;
+		}
+	}
+	// Failed to find mod
+	return ModSpec();
 }
 
 std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods)
@@ -109,109 +170,18 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 		} 
 		else //not a modpack
 		{
-			// infostream << "inserting mod " << mod.name << std::endl;
 			result.push_back(mod);
 		}
 	}
 	return result;
-}
-
-std::vector<ModSpec> filterMods(std::vector<ModSpec> mods,
-								std::set<std::string> exclude_mod_names)
-{
-	std::vector<ModSpec> result;
-	for(std::vector<ModSpec>::iterator it = mods.begin();
-		it != mods.end(); ++it)
-	{
-		ModSpec& mod = *it;
-		if(exclude_mod_names.count(mod.name) == 0)
-			result.push_back(mod);
-	}	
-	return result;
-}
-
-void ModConfiguration::addModsInPathFiltered(std::string path, std::set<std::string> exclude_mods)
-{
-	addMods(filterMods(flattenMods(getModsInPath(path)),exclude_mods));
-}
-
-
-void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
-{
-	// Step 1: remove mods in sorted_mods from unmet dependencies
-	// of new_mods. new mods without unmet dependencies are
-	// temporarily stored in satisfied_mods
-	std::vector<ModSpec> satisfied_mods;
-	for(std::vector<ModSpec>::iterator it = m_sorted_mods.begin();
-		it != m_sorted_mods.end(); ++it)
-	{
-		ModSpec mod = *it;
-		for(std::vector<ModSpec>::iterator it_new = new_mods.begin();
-			it_new != new_mods.end(); ++it_new)
-		{
-			ModSpec& mod_new = *it_new;
-			//infostream << "erasing dependency " << mod.name << " from " << mod_new.name << std::endl;
-			mod_new.unsatisfied_depends.erase(mod.name);
-		}
-	}
-
-	// split new mods into satisfied and unsatisfied
-	for(std::vector<ModSpec>::iterator it = new_mods.begin();
-		it != new_mods.end(); ++it)
-	{
-		ModSpec mod_new = *it;
-		if(mod_new.unsatisfied_depends.empty())
-			satisfied_mods.push_back(mod_new);
-		else
-			m_unsatisfied_mods.push_back(mod_new);
-	}
-
-	// Step 2: mods without unmet dependencies can be appended to
-	// the sorted list.
-	while(!satisfied_mods.empty())
-	{
-		ModSpec mod = satisfied_mods.back();
-		m_sorted_mods.push_back(mod);
-		satisfied_mods.pop_back();
-		for(std::list<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-			it != m_unsatisfied_mods.end(); )
-		{
-			ModSpec& mod2 = *it;
-			mod2.unsatisfied_depends.erase(mod.name);
-			if(mod2.unsatisfied_depends.empty())
-			{
-				satisfied_mods.push_back(mod2);
-				it = m_unsatisfied_mods.erase(it);
-			}
-			else
-				++it;
-		}	
-	}
-}
-
-// If failed, returned modspec has name==""
-static ModSpec findCommonMod(const std::string &modname)
-{
-	// Try to find in {$user,$share}/games/common/$modname
-	std::vector<std::string> find_paths;
-	find_paths.push_back(porting::path_user + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
-	find_paths.push_back(porting::path_share + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
-	for(u32 i=0; i<find_paths.size(); i++){
-		const std::string &try_path = find_paths[i];
-		if(fs::PathExists(try_path))
-			return ModSpec(modname, try_path);
-	}
-	// Failed to find mod
-	return ModSpec();
 }
 
 ModConfiguration::ModConfiguration(std::string worldpath)
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
-	// Add common mods without dependency handling
+	// Add common mods
+	std::map<std::string, ModSpec> common_mods;
 	std::vector<std::string> inexistent_common_mods;
 	Settings gameconf;
 	if(getGameConfig(gamespec.path, gameconf)){
@@ -225,7 +195,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 				if(spec.name.empty())
 					inexistent_common_mods.push_back(modname);
 				else
-					m_sorted_mods.push_back(spec);
+					common_mods.insert(std::make_pair(modname, spec));
 			}
 		}
 	}
@@ -238,10 +208,11 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 		s += " could not be found.";
 		throw ModError(s);
 	}
+	addMods(flattenMods(common_mods));
 
-	// Add all world mods and all game mods
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
+	// Add all game mods and all world mods
 	addModsInPath(gamespec.gamemods_path);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods");
 
 	// check world.mt file for mods explicitely declared to be
 	// loaded or not by a load_mod_<modname> = ... line.
@@ -264,7 +235,155 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 		}
 	}
 
-	for(std::set<std::string>::const_iterator i = gamespec.addon_mods_paths.begin();
-			i != gamespec.addon_mods_paths.end(); ++i)
-		addModsInPathFiltered((*i),exclude_mod_names);
+	// Collect all mods in gamespec.addon_mods_paths,
+	// excluding those in the set exclude_mod_names
+	std::vector<ModSpec> addon_mods;
+	for(std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
+			it_path != gamespec.addon_mods_paths.end(); ++it_path)
+	{
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
+		for(std::vector<ModSpec>::iterator it = addon_mods_in_path.begin();
+			it != addon_mods_in_path.end(); ++it)
+		{
+			ModSpec& mod = *it;
+			if(exclude_mod_names.count(mod.name) == 0)
+				addon_mods.push_back(mod);
+		}
+	}
+
+	addMods(addon_mods);
+
+	// report on name conflicts
+	if(!m_name_conflicts.empty()){
+		std::string s = "Unresolved name conflicts for mods ";
+		for(std::set<std::string>::const_iterator it = m_name_conflicts.begin();
+				it != m_name_conflicts.end(); ++it)
+		{
+			if(it != m_name_conflicts.begin()) s += ", ";
+			s += std::string("\"") + (*it) + "\"";
+		}
+		s += ".";
+		throw ModError(s);
+	}
+
+	// get the mods in order
+	resolveDependencies();
+}
+
+void ModConfiguration::addModsInPath(std::string path)
+{
+	addMods(flattenMods(getModsInPath(path)));
+}
+
+void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
+{
+	// Maintain a map of all existing m_unsatisfied_mods.
+	// Keys are mod names and values are indices into m_unsatisfied_mods.
+	std::map<std::string, u32> existing_mods;
+	for(u32 i = 0; i < m_unsatisfied_mods.size(); ++i){
+		existing_mods[m_unsatisfied_mods[i].name] = i;
+	}
+
+	// Add new mods
+	for(int want_from_modpack = 1; want_from_modpack >= 0; --want_from_modpack){
+		// First iteration:
+		// Add all the mods that come from modpacks
+		// Second iteration:
+		// Add all the mods that didn't come from modpacks
+		
+		std::set<std::string> seen_this_iteration;
+
+		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
+				it != new_mods.end(); ++it){
+			const ModSpec &mod = *it;
+			if(mod.part_of_modpack != want_from_modpack)
+				continue;
+			if(existing_mods.count(mod.name) == 0){
+				// GOOD CASE: completely new mod.
+				m_unsatisfied_mods.push_back(mod);
+				existing_mods[mod.name] = m_unsatisfied_mods.size() - 1;
+			}
+			else if(seen_this_iteration.count(mod.name) == 0){
+				// BAD CASE: name conflict in different levels.
+				u32 oldindex = existing_mods[mod.name];
+				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
+				errorstream<<"WARNING: Mod name conflict detected: \""
+					<<mod.name<<"\""<<std::endl
+					<<"Will not load: "<<oldmod.path<<std::endl
+					<<"Overridden by: "<<mod.path<<std::endl;
+				m_unsatisfied_mods[oldindex] = mod;
+
+				// If there was a "VERY BAD CASE" name conflict
+				// in an earlier level, ignore it.
+				m_name_conflicts.erase(mod.name);
+			}
+			else{
+				// VERY BAD CASE: name conflict in the same level.
+				u32 oldindex = existing_mods[mod.name];
+				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
+				errorstream<<"WARNING: Mod name conflict detected: \""
+					<<mod.name<<"\""<<std::endl
+					<<"Will not load: "<<oldmod.path<<std::endl
+					<<"Will not load: "<<mod.path<<std::endl;
+				m_unsatisfied_mods[oldindex] = mod;
+				m_name_conflicts.insert(mod.name);
+			}
+			seen_this_iteration.insert(mod.name);
+		}
+	}
+}
+
+void ModConfiguration::resolveDependencies()
+{
+	// Step 1: Compile a list of the mod names we're working with
+	std::set<std::string> modnames;
+	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+		it != m_unsatisfied_mods.end(); ++it){
+		modnames.insert((*it).name);
+	}
+
+	// Step 2: get dependencies (including optional dependencies)
+	// of each mod, split mods into satisfied and unsatisfied
+	std::list<ModSpec> satisfied;
+	std::list<ModSpec> unsatisfied;
+	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it){
+		ModSpec mod = *it;
+		mod.unsatisfied_depends = mod.depends;
+		// check which optional dependencies actually exist
+		for(std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
+				it_optdep != mod.optdepends.end(); ++it_optdep){
+			std::string optdep = *it_optdep;
+			if(modnames.count(optdep) != 0)
+				mod.unsatisfied_depends.insert(optdep);
+		}
+		// if a mod has no depends it is initially satisfied
+		if(mod.unsatisfied_depends.empty())
+			satisfied.push_back(mod);
+		else
+			unsatisfied.push_back(mod);
+	}
+
+	// Step 3: mods without unmet dependencies can be appended to
+	// the sorted list.
+	while(!satisfied.empty()){
+		ModSpec mod = satisfied.back();
+		m_sorted_mods.push_back(mod);
+		satisfied.pop_back();
+		for(std::list<ModSpec>::iterator it = unsatisfied.begin();
+				it != unsatisfied.end(); ){
+			ModSpec& mod2 = *it;
+			mod2.unsatisfied_depends.erase(mod.name);
+			if(mod2.unsatisfied_depends.empty()){
+				satisfied.push_back(mod2);
+				it = unsatisfied.erase(it);
+			}
+			else{
+				++it;
+			}
+		}	
+	}
+
+	// Step 4: write back list of unsatisfied mods
+	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }

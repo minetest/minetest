@@ -1,11 +1,11 @@
 -- Minetest: builtin/features.lua
 
 minetest.features = {
-	"glasslike_framed" = true,
-	"nodebox_as_selectionbox" = true,
-	"chat_send_player_param3" = true,
-	"get_all_craft_recipes_works" = true,
-	"use_texture_alpha" = true,
+	glasslike_framed = true,
+	nodebox_as_selectionbox = true,
+	chat_send_player_param3 = true,
+	get_all_craft_recipes_works = true,
+	use_texture_alpha = true,
 }
 
 function minetest.has_feature(arg)

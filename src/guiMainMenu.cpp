@@ -53,12 +53,12 @@ const wchar_t *contrib_core_strs[] = {
 	L"Ilya Zhuravlev (thexyz) <xyz@minetest.net>",
 	L"Lisa Milne (darkrose) <lisa@ltmnet.com>",
 	L"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>",
-	L"proller <proler@gmail.com>"
+	L"proller <proler@gmail.com>",
+	L"sfan5 <sfan5@live.de>"
 };
 
 const wchar_t *contrib_active_strs[] = {
 	L"kahrl <kahrl@gmx.net>",
-	L"sfan5 <sfan5@live.de>",
 	L"sapier <sapier@gmx.net>",
 	L"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
 	L"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
@@ -162,15 +162,8 @@ enum
 	GUI_ID_SERVERLIST_TOGGLE,
 	GUI_ID_SERVERLIST_DELETE,
 	GUI_ID_SERVERLIST_TITLE,
-};
-
-enum
-{
-	TAB_SINGLEPLAYER=0,
-	TAB_MULTIPLAYER,
-	TAB_ADVANCED,
-	TAB_SETTINGS,
-	TAB_CREDITS
+	GUI_ID_GAME_BUTTON_FIRST = 130,
+	GUI_ID_GAME_BUTTON_MAX = 150,
 };
 
 GUIMainMenu::GUIMainMenu(gui::IGUIEnvironment* env,
@@ -255,8 +248,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
-		Environment->addStaticText(narrow_to_wide(
-				"Minetest " VERSION_STRING).c_str(),
+		std::string t = "Minetest " VERSION_STRING;
+		if(m_data->selected_game_name != "" &&
+				m_data->selected_tab == TAB_SINGLEPLAYER){
+			t += "/";
+			t += m_data->selected_game_name;
+		}
+		Environment->addStaticText(narrow_to_wide(t).c_str(),
 				rect, false, true, this, -1);
 	}
 
@@ -342,11 +340,17 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			gui::IGUIListBox *e = Environment->addListBox(rect, this,
 					GUI_ID_WORLD_LISTBOX);
 			e->setDrawBackground(true);
-			for(std::vector<WorldSpec>::const_iterator i = m_data->worlds.begin();
-					i != m_data->worlds.end(); i++){
-				e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
+			m_world_indices.clear();
+			for(size_t wi = 0; wi < m_data->worlds.size(); wi++){
+				const WorldSpec &spec = m_data->worlds[wi];
+				if(spec.gameid == m_data->selected_game){
+					//e->addItem(narrow_to_wide(spec.name+" ["+spec.gameid+"]").c_str());
+					e->addItem(narrow_to_wide(spec.name).c_str());
+					m_world_indices.push_back(wi);
+					if(m_data->selected_world == (int)wi)
+						e->setSelected(m_world_indices.size()-1);
+				}
 			}
-			e->setSelected(m_data->selected_world);
 			Environment->setFocus(e);
 		}
 		// Delete world button
@@ -416,6 +420,26 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			delete[] text;
 		}
 		changeCtype("C");
+
+		/* Add game selection buttons */
+		video::IVideoDriver* driver = Environment->getVideoDriver();
+		for(size_t i=0; i<m_data->games.size(); i++){
+			const SubgameSpec *spec = &m_data->games[i];
+			v2s32 p(8 + i*(48+8), screensize.Y - (48+8));
+			core::rect<s32> rect(0, 0, 48, 48);
+			rect += p;
+			video::ITexture *bgtexture = NULL;
+			if(spec->menuicon_path != "")
+				bgtexture = driver->getTexture(spec->menuicon_path.c_str());
+			gui::IGUIButton *b = Environment->addButton(rect, this,
+					GUI_ID_GAME_BUTTON_FIRST+i, narrow_to_wide(wrap_rows(spec->id, 4)).c_str());
+			if(bgtexture){
+				b->setImage(bgtexture);
+				b->setText(L"");
+				b->setDrawBorder(false);
+				b->setUseAlphaChannel(true);
+			}
+		}
 	}
 	else if(m_data->selected_tab == TAB_MULTIPLAYER)
 	{
@@ -471,16 +495,20 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				{
 					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
-					Environment->addStaticText(wgettext("Favorites:"),
+					wchar_t* text = wgettext("Favorites:");
+					Environment->addStaticText(text,
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+					delete[] text;
 				}
 			} else {
 				m_data->servers = ServerList::getOnline();
 				{
 					core::rect<s32> rect(0, 0, 390, 20);
 					rect += m_topleft_client + v2s32(50, 10);
-					Environment->addStaticText(wgettext("Public Server List:"),
+					wchar_t* text = wgettext("Public Server List:");
+					Environment->addStaticText(text,
 						rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+					delete[] text;
 				}
 			}
 #else
@@ -488,8 +516,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			{
 				core::rect<s32> rect(0, 0, 390, 20);
 				rect += m_topleft_client + v2s32(50, 10);
-				Environment->addStaticText(wgettext("Favorites:"),
+				wchar_t* text = wgettext("Favorites:");
+				Environment->addStaticText(text,
 					rect, false, true, this, GUI_ID_SERVERLIST_TITLE);
+				delete[] text;
 			}
 #endif
 			updateGuiServerList();
@@ -714,9 +744,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			gui::IGUIListBox *e = Environment->addListBox(rect, this,
 					GUI_ID_WORLD_LISTBOX);
 			e->setDrawBackground(true);
-			for(std::vector<WorldSpec>::const_iterator i = m_data->worlds.begin();
-					i != m_data->worlds.end(); i++){
-				e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
+			m_world_indices.clear();
+			for(size_t wi = 0; wi < m_data->worlds.size(); wi++){
+				const WorldSpec &spec = m_data->worlds[wi];
+				e->addItem(narrow_to_wide(spec.name+" ["+spec.gameid+"]").c_str());
+				m_world_indices.push_back(wi);
 			}
 			e->setSelected(m_data->selected_world);
 		}
@@ -909,7 +941,9 @@ void GUIMainMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
+	/* Draw menu background */
+
 	/*video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);*/
 
@@ -975,6 +1009,8 @@ void GUIMainMenu::drawMenu()
 				NULL, NULL, true);
 		}
 	}
+
+	/* Draw UI elements */
 
 	gui::IGUIElement::draw();
 }
@@ -1100,8 +1136,13 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
-		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
-			dst->selected_world = ((gui::IGUIListBox*)e)->getSelected();
+		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX){
+			int list_i = ((gui::IGUIListBox*)e)->getSelected();
+			if(list_i == -1)
+				dst->selected_world = -1;
+			else
+				dst->selected_world = m_world_indices[list_i];
+		}
 	}
 	{
 		ServerListSpec server =
@@ -1221,7 +1262,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_CREATE_WORLD_BUTTON: {
-				std::vector<SubgameSpec> games = getAvailableGames();
+				const std::vector<SubgameSpec> &games = m_data->games;
 				if(games.size() == 0){
 					wchar_t* text = wgettext("Cannot create world: No games found");
 					GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
@@ -1232,7 +1273,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				} else {
 					CreateWorldDest *dest = new CreateWorldDestMainMenu(this);
 					GUICreateWorld *menu = new GUICreateWorld(env, parent, -1,
-							menumgr, dest, games);
+							menumgr, dest, games, m_data->selected_game);
 					menu->drop();
 				}
 				return true;
@@ -1308,6 +1349,16 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			}
 			#endif
 			}
+			/* Game buttons */
+			int eid = event.GUIEvent.Caller->getID();
+			if(eid >= GUI_ID_GAME_BUTTON_FIRST &&
+					eid <= GUI_ID_GAME_BUTTON_MAX){
+				m_data->selected_game =
+						m_data->games[eid - GUI_ID_GAME_BUTTON_FIRST].id;
+				m_data->selected_game_name =
+						m_data->games[eid - GUI_ID_GAME_BUTTON_FIRST].name;
+				regenerateGui(m_screensize_old);
+			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
 		{
@@ -1318,15 +1369,21 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				readInput(&cur);
 				if (getTab() == TAB_MULTIPLAYER && cur.address == L"")
 				{
+					wchar_t* text = wgettext("Address required.");
 					(new GUIMessageMenu(env, parent, -1, menumgr,
-							wgettext("Address required."))
+							text)
 							)->drop();
+					delete[] text;
 					return true;
 				}
 				acceptInput();
 				quitMenu();
 				return true;
 			}
+		}
+		if(event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED)
+		{
+			readInput(m_data);
 		}
 		if(event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN)
 		{

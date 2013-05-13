@@ -38,7 +38,8 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			CreateWorldDest *dest,
-			const std::vector<SubgameSpec> &games);
+			const std::vector<SubgameSpec> &games,
+			const std::string &initial_game);
 	~GUICreateWorld();
 	
 	void removeChildren();
@@ -56,6 +57,7 @@ public:
 private:
 	CreateWorldDest *m_dest;
 	std::vector<SubgameSpec> m_games;
+	int m_initial_game_i;
 };
 
 #endif

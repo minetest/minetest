@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <exception>
 #include <list>
 
+#define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
+
 class ModError : public std::exception
 {
 public:
@@ -53,33 +55,38 @@ struct ModSpec
 	std::string path;
 	//if normal mod:
 	std::set<std::string> depends;
+	std::set<std::string> optdepends;
 	std::set<std::string> unsatisfied_depends;
 
+	bool part_of_modpack;
 	bool is_modpack;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
-	ModSpec(const std::string name_="", const std::string path_="",
-			const std::set<std::string> depends_=std::set<std::string>()):
+	ModSpec(const std::string name_="", const std::string path_=""):
 		name(name_),
 		path(path_),
-		depends(depends_),
-		unsatisfied_depends(depends_),
-		is_modpack(false),	
-		modpack_content()	
+		depends(),
+		optdepends(),
+		unsatisfied_depends(),
+		part_of_modpack(false),
+		is_modpack(false),
+		modpack_content()
 	{}
 };
 
-std::map<std::string,ModSpec> getModsInPath(std::string path);
+// Retrieves depends, optdepends, is_modpack and modpack_content
+void parseModContents(ModSpec &mod);
+
+std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
+
+// If failed, returned modspec has name==""
+ModSpec findCommonMod(const std::string &modname);
 
 // expands modpack contents, but does not replace them.
 std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods);
 
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(std::map<std::string,ModSpec> mods);
-
-// removes Mods mentioned in exclude_mod_names
-std::vector<ModSpec> filterMods(std::vector<ModSpec> mods,
-								std::set<std::string> exclude_mod_names);
 
 // a ModConfiguration is a subset of installed mods, expected to have
 // all dependencies fullfilled, so it can be used as a list of mods to
@@ -89,25 +96,12 @@ class ModConfiguration
 public:
 	ModConfiguration():
 		m_unsatisfied_mods(),
-		m_sorted_mods()
+		m_sorted_mods(),
+		m_name_conflicts()
 	{}
 
 		
 	ModConfiguration(std::string worldpath);
-
-	// adds all mods in the given path. used for games, modpacks
-	// and world-specific mods (worldmods-folders)
-	void addModsInPath(std::string path)
-	{
-		addMods(flattenMods(getModsInPath(path)));
-	}
-
-	// adds all mods in the given path whose name does not appear
-	// in the exclude_mods set. 
-	void addModsInPathFiltered(std::string path, std::set<std::string> exclude_mods);
-
-	// adds all mods in the set.
-	void addMods(std::vector<ModSpec> mods);
 
 	// checks if all dependencies are fullfilled.
 	bool isConsistent()
@@ -120,23 +114,43 @@ public:
 		return m_sorted_mods;
 	}
 
-	std::list<ModSpec> getUnsatisfiedMods()
+	std::vector<ModSpec> getUnsatisfiedMods()
 	{
 		return m_unsatisfied_mods;
 	}
 
 private:
+	// adds all mods in the given path. used for games, modpacks
+	// and world-specific mods (worldmods-folders)
+	void addModsInPath(std::string path);
 
-	// mods with unmet dependencies. This is a list and not a
-	// vector because we want easy removal of elements at every
-	// position.
-	std::list<ModSpec> m_unsatisfied_mods;
+	// adds all mods in the set.
+	void addMods(std::vector<ModSpec> new_mods);
+
+	// move mods from m_unsatisfied_mods to m_sorted_mods
+	// in an order that satisfies dependencies
+	void resolveDependencies();
+
+	// mods with unmet dependencies. Before dependencies are resolved,
+	// this is where all mods are stored. Afterwards this contains
+	// only the ones with really unsatisfied dependencies.
+	std::vector<ModSpec> m_unsatisfied_mods;
 
 	// list of mods sorted such that they can be loaded in the
 	// given order with all dependencies being fullfilled. I.e.,
 	// every mod in this list has only dependencies on mods which
 	// appear earlier in the vector.
 	std::vector<ModSpec> m_sorted_mods;
+
+	// set of mod names for which an unresolved name conflict
+	// exists. A name conflict happens when two or more mods
+	// at the same level have the same name but different paths.
+	// Levels (mods in higher levels override mods in lower levels):
+	// 1. common mod in modpack; 2. common mod;
+	// 3. game mod in modpack; 4. game mod;
+	// 5. world mod in modpack; 6. world mod;
+	// 7. addon mod in modpack; 8. addon mod.
+	std::set<std::string> m_name_conflicts;
 
 };
 

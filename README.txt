@@ -30,13 +30,17 @@ This game is not finished
 
 Default Controls
 -----------------
-- WASD: Move
-- Space: Jump
-- E: Go down
-- Shift: Sneak
-- Q: Drop item
-- I: Open inventory
-- Mouse: Turn/look
+- WASD: move
+- Space: jump/climb
+- Shift: sneak/go down
+- Q: drop item
+- I: inventory
+- Mouse: turn/look
+- Mouse left: dig/punch
+- Mouse right: place/use
+- Mouse wheel: select item
+- Esc: pause menu
+- T: chat
 - Settable in the configuration file, see the section below.
 
 Paths
@@ -277,7 +281,7 @@ the Free Software Foundation; either version 2.1 of the License, or
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
