@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-04-25 14:30+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"PO-Revision-Date: 2013-05-13 18:39+0200\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -20,31 +20,31 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr ""
+msgstr "Inventarbilder..."
 
 #: src/game.cpp:912
 msgid "Loading..."
-msgstr ""
+msgstr "Lädt..."
 
 #: src/game.cpp:972
 msgid "Creating server...."
-msgstr ""
+msgstr "Erstelle Server..."
 
 #: src/game.cpp:988
 msgid "Creating client..."
-msgstr ""
+msgstr "Erstelle Client..."
 
 #: src/game.cpp:1003
 msgid "Resolving address..."
-msgstr ""
+msgstr "Löse Adresse auf..."
 
 #: src/game.cpp:1079
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Verbinde zum Server..."
 
 #: src/game.cpp:3348
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Fahre runter..."
 
 #: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
@@ -467,6 +467,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Standard Tastaturebelegung:\n"
+"- WASD: Bewegen\n"
+"- Leertaste: Springen/Klettern\n"
+"- Umschalt: Kriechen/herunterklettern\n"
+"- Q: Item droppen\n"
+"- I: Inventar\n"
+"- Maus: drehen/umschauen\n"
+"- Maus links: Abbauen/Schlagen\n"
+"- Maus rechts: Platzieren/Benutzen\n"
+"- Mausrad: Item auswählen\n"
+"- T: Chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
