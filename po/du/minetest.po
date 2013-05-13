@@ -7,17 +7,53 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-30 19:56+0100\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
 "PO-Revision-Date: 2013-04-18 15:28+0100\n"
 "Last-Translator: LS-Steeef \n"
 "Language-Team: \n"
+"Language: dutch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
-"Language: dutch\n"
 
-#: src/guiConfigureWorld.cpp:125
+#: src/client.cpp:2846
+msgid "Item textures..."
+msgstr ""
+
+#: src/game.cpp:912
+msgid "Loading..."
+msgstr ""
+
+#: src/game.cpp:972
+msgid "Creating server...."
+msgstr ""
+
+#: src/game.cpp:988
+msgid "Creating client..."
+msgstr ""
+
+#: src/game.cpp:1003
+msgid "Resolving address..."
+msgstr ""
+
+#: src/game.cpp:1079
+msgid "Connecting to server..."
+msgstr ""
+
+#: src/game.cpp:3348
+msgid "Shutting down stuff..."
+msgstr ""
+
+#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Check debug.txt for details."
+
+#: src/guiConfigureWorld.cpp:123
 msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
@@ -26,7 +62,7 @@ msgstr ""
 "De mods zullen automatisch worden ingeschakeld als je de configuratie "
 "bewaard."
 
-#: src/guiConfigureWorld.cpp:144
+#: src/guiConfigureWorld.cpp:143
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
@@ -38,56 +74,56 @@ msgstr ""
 msgid "enabled"
 msgstr "ingeschakeld"
 
-#: src/guiConfigureWorld.cpp:215
+#: src/guiConfigureWorld.cpp:218
 msgid "Enable All"
 msgstr "Allen inschakelen"
 
-#: src/guiConfigureWorld.cpp:222
+#: src/guiConfigureWorld.cpp:227
 msgid "Disable All"
 msgstr "Allen uitschakelen"
 
-#: src/guiConfigureWorld.cpp:228
+#: src/guiConfigureWorld.cpp:235
 msgid "depends on:"
 msgstr "heeft nodig:"
 
-#: src/guiConfigureWorld.cpp:240
+#: src/guiConfigureWorld.cpp:248
 msgid "is required by:"
 msgstr "is benodigd voor:"
 
-#: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
-#: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
+#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
+#: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Annuleer"
 
-#: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
+#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Bewaar"
 
-#: src/guiConfigureWorld.cpp:394
+#: src/guiConfigureWorld.cpp:403
 msgid "Configuration saved.  "
 msgstr "Instellingen bewaard."
 
-#: src/guiConfigureWorld.cpp:402
+#: src/guiConfigureWorld.cpp:415
 msgid "Warning: Configuration not consistent.  "
 msgstr "Waarschuwing: Instellingen niet consistent."
 
-#: src/guiConfirmMenu.cpp:120
+#: src/guiConfirmMenu.cpp:119
 msgid "Yes"
 msgstr "Ja"
 
-#: src/guiConfirmMenu.cpp:126
+#: src/guiConfirmMenu.cpp:127
 msgid "No"
 msgstr "Nee"
 
-#: src/guiCreateWorld.cpp:116
+#: src/guiCreateWorld.cpp:125
 msgid "World name"
 msgstr "Naam wereld"
 
-#: src/guiCreateWorld.cpp:135
+#: src/guiCreateWorld.cpp:145
 msgid "Game"
 msgstr "Spel"
 
-#: src/guiCreateWorld.cpp:159
+#: src/guiCreateWorld.cpp:169
 msgid "Create"
 msgstr "Maak aan"
 
@@ -104,96 +140,96 @@ msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
 "Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item."
 
-#: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
-#: src/guiTextInputMenu.cpp:131
+#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:130
 msgid "Proceed"
 msgstr "Volgende"
 
-#: src/guiKeyChangeMenu.cpp:114
+#: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr "Sneltoetsen."
 
-#: src/guiKeyChangeMenu.cpp:151
+#: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
 msgstr "\"Use\" = Omlaag klimmen"
 
-#: src/guiKeyChangeMenu.cpp:164
+#: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Dubbelklik op \"jump\" om te vliegen"
 
-#: src/guiKeyChangeMenu.cpp:269
+#: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
 msgstr "Toets is al in gebruik"
 
-#: src/guiKeyChangeMenu.cpp:347
+#: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
 msgstr "druk op"
 
-#: src/guiKeyChangeMenu.cpp:372
+#: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
 msgstr "Vooruit"
 
-#: src/guiKeyChangeMenu.cpp:373
+#: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
 msgstr "Achteruit"
 
-#: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
 msgstr "Links"
 
-#: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
 msgstr "Rechts"
 
-#: src/guiKeyChangeMenu.cpp:376
+#: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
 msgstr "Gebruikwn"
 
-#: src/guiKeyChangeMenu.cpp:377
+#: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
 msgstr "Springen"
 
-#: src/guiKeyChangeMenu.cpp:378
+#: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
 msgstr "Kruipen"
 
-#: src/guiKeyChangeMenu.cpp:379
+#: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
 msgstr "Weggooien"
 
-#: src/guiKeyChangeMenu.cpp:380
+#: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
 msgstr "Rugzak"
 
-#: src/guiKeyChangeMenu.cpp:381
+#: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
 msgstr "Chat"
 
-#: src/guiKeyChangeMenu.cpp:382
+#: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
 msgstr "Opdracht"
 
-#: src/guiKeyChangeMenu.cpp:383
+#: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
 msgstr "Console"
 
-#: src/guiKeyChangeMenu.cpp:384
+#: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
 msgstr "Vliegen aan/uit"
 
-#: src/guiKeyChangeMenu.cpp:385
+#: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
 msgstr "Snel bewegen aan/uit"
 
-#: src/guiKeyChangeMenu.cpp:386
+#: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
 msgstr "Noclip aan/uit"
 
-#: src/guiKeyChangeMenu.cpp:387
+#: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
 msgstr "Range instellen"
 
-#: src/guiKeyChangeMenu.cpp:388
+#: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
 msgstr "Print stacks"
 
@@ -201,179 +237,179 @@ msgstr "Print stacks"
 msgid "Cannot create world: Name contains invalid characters"
 msgstr "Kan geen nieuwe wereld aanmaken: de naam bevat onjuiste tekens."
 
-#: src/guiMainMenu.cpp:101
+#: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
 msgstr "Kan geen nieuwe wereld aanmaken: De naam bestaat al."
 
-#: src/guiMainMenu.cpp:283
+#: src/guiMainMenu.cpp:285
 msgid "Singleplayer"
 msgstr "Singleplayer"
 
-#: src/guiMainMenu.cpp:284
+#: src/guiMainMenu.cpp:288
 msgid "Multiplayer"
 msgstr "Multiplayer"
 
-#: src/guiMainMenu.cpp:285
+#: src/guiMainMenu.cpp:291
 msgid "Advanced"
 msgstr "Geavanceerd"
 
-#: src/guiMainMenu.cpp:286
+#: src/guiMainMenu.cpp:294
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/guiMainMenu.cpp:287
+#: src/guiMainMenu.cpp:297
 msgid "Credits"
 msgstr "Credits"
 
-#: src/guiMainMenu.cpp:317
+#: src/guiMainMenu.cpp:330
 msgid "Select World:"
 msgstr "Selecteer Wereld:"
 
-#: src/guiMainMenu.cpp:339 src/guiMainMenu.cpp:511 src/keycode.cpp:229
+#: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: src/guiMainMenu.cpp:346
+#: src/guiMainMenu.cpp:369
 msgid "New"
 msgstr "Nieuw"
 
-#: src/guiMainMenu.cpp:354
+#: src/guiMainMenu.cpp:379
 msgid "Configure"
 msgstr "Instellingen"
 
-#: src/guiMainMenu.cpp:369 src/keycode.cpp:248
+#: src/guiMainMenu.cpp:396 src/keycode.cpp:248
 msgid "Play"
 msgstr "Speel!"
 
-#: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
+#: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
 msgid "Creative Mode"
 msgstr "Creative Modus"
 
-#: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
+#: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
 msgid "Enable Damage"
 msgstr "Schade inschakelen"
 
-#: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
+#: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
 msgid "Name/Password"
 msgstr "Naam/Wachtwoord"
 
-#: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
+#: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
 msgid "Favorites:"
 msgstr "Favourieten:"
 
-#: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
+#: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
 msgid "Public Server List:"
 msgstr "Publieke Server lijst:"
 
-#: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
+#: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
 msgid "Address/Port"
 msgstr "IP-Adres/Poort"
 
-#: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
+#: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
 msgid "Show Public"
 msgstr "Publieke server"
 
-#: src/guiMainMenu.cpp:501 src/guiMainMenu.cpp:1193
+#: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
 msgid "Show Favorites"
 msgstr "Favourieten"
 
-#: src/guiMainMenu.cpp:521
+#: src/guiMainMenu.cpp:591
 msgid "Connect"
 msgstr "Verbinden"
 
-#: src/guiMainMenu.cpp:591
+#: src/guiMainMenu.cpp:668
 msgid "Leave address blank to start a local server."
 msgstr "Laat het adres leeg om een lokale server te starten."
 
-#: src/guiMainMenu.cpp:600
+#: src/guiMainMenu.cpp:678
 msgid "Start Game / Connect"
 msgstr "Start het spel / Verbind"
 
-#: src/guiMainMenu.cpp:632
+#: src/guiMainMenu.cpp:716
 msgid "Public"
 msgstr "Publiek"
 
-#: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
+#: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
 msgid "Delete world"
 msgstr "Verwijder wereld"
 
-#: src/guiMainMenu.cpp:647
+#: src/guiMainMenu.cpp:735
 msgid "Create world"
 msgstr "Maak wereld aan"
 
-#: src/guiMainMenu.cpp:681
+#: src/guiMainMenu.cpp:773
 msgid "Fancy trees"
 msgstr "Mooie bomen"
 
-#: src/guiMainMenu.cpp:687
+#: src/guiMainMenu.cpp:781
 msgid "Smooth Lighting"
 msgstr "Mooie verlichting"
 
-#: src/guiMainMenu.cpp:693
+#: src/guiMainMenu.cpp:789
 msgid "3D Clouds"
 msgstr "3D wolken"
 
-#: src/guiMainMenu.cpp:699
+#: src/guiMainMenu.cpp:797
 msgid "Opaque water"
 msgstr "Doorzichtig water"
 
-#: src/guiMainMenu.cpp:709
+#: src/guiMainMenu.cpp:809
 msgid "Mip-Mapping"
 msgstr "Mip-Mapping"
 
-#: src/guiMainMenu.cpp:716
+#: src/guiMainMenu.cpp:818
 msgid "Anisotropic Filtering"
 msgstr "Bi-Linear Filtering"
 
-#: src/guiMainMenu.cpp:723
+#: src/guiMainMenu.cpp:827
 msgid "Bi-Linear Filtering"
 msgstr "Bi-Linear Filtering"
 
-#: src/guiMainMenu.cpp:730
+#: src/guiMainMenu.cpp:836
 msgid "Tri-Linear Filtering"
 msgstr "Tri-Linear Filtering"
 
-#: src/guiMainMenu.cpp:738
+#: src/guiMainMenu.cpp:846
 msgid "Shaders"
 msgstr "Shaders"
 
-#: src/guiMainMenu.cpp:745
+#: src/guiMainMenu.cpp:855
 msgid "Preload item visuals"
 msgstr "Preload item visuals"
 
-#: src/guiMainMenu.cpp:752
+#: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
 msgstr "Enable Particles"
 
-#: src/guiMainMenu.cpp:759
+#: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
 msgstr "Finite liquid"
 
-#: src/guiMainMenu.cpp:769
+#: src/guiMainMenu.cpp:885
 msgid "Change keys"
 msgstr "Sneltoetsen veranderen"
 
-#: src/guiMainMenu.cpp:1084
+#: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
 msgid "Address required."
 msgstr "IP-adres nodig."
 
-#: src/guiMainMenu.cpp:1102
+#: src/guiMainMenu.cpp:1231
 msgid "Cannot delete world: Nothing selected"
 msgstr "Kan niets verwijderen: Geen wereld geselecteerd."
 
-#: src/guiMainMenu.cpp:1117
+#: src/guiMainMenu.cpp:1246
 msgid "Files to be deleted"
 msgstr "Deze bestanden worden verwijderd"
 
-#: src/guiMainMenu.cpp:1133
+#: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
 msgstr "Kan geen wereld aanmaken: Geen games gevonden"
 
-#: src/guiMainMenu.cpp:1149
+#: src/guiMainMenu.cpp:1286
 msgid "Cannot configure world: Nothing selected"
 msgstr "Kan instellingen niet aanpassen: Niets geselecteerd"
 
-#: src/guiMainMenu.cpp:1256
+#: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
 msgstr "Niet alle bestanden zijn verwijderd"
 
@@ -381,73 +417,62 @@ msgstr "Niet alle bestanden zijn verwijderd"
 msgid "Old Password"
 msgstr "Huidig wachtwoord"
 
-#: src/guiPasswordChange.cpp:125
+#: src/guiPasswordChange.cpp:126
 msgid "New Password"
 msgstr "Nieuw wachtwoord"
 
-#: src/guiPasswordChange.cpp:141
+#: src/guiPasswordChange.cpp:143
 msgid "Confirm Password"
 msgstr "Herhaal wachtwoord"
 
-#: src/guiPasswordChange.cpp:158
+#: src/guiPasswordChange.cpp:161
 msgid "Change"
 msgstr "Veranderen"
 
-#: src/guiPasswordChange.cpp:167
+#: src/guiPasswordChange.cpp:170
 msgid "Passwords do not match!"
 msgstr "Wachtwoorden zijn niet gelijk!"
 
-#: src/guiPauseMenu.cpp:123
+#: src/guiPauseMenu.cpp:122
 msgid "Continue"
 msgstr "Volgende"
 
-#: src/guiPauseMenu.cpp:132
+#: src/guiPauseMenu.cpp:133
 msgid "Change Password"
 msgstr "Verander wachtwoord"
 
-#: src/guiPauseMenu.cpp:140
+#: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
 msgstr "Volume"
 
-#: src/guiPauseMenu.cpp:147
+#: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
 msgstr "Exit naar menu"
 
-#: src/guiPauseMenu.cpp:154
+#: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
 msgstr "Afsluiten"
 
-#: src/guiPauseMenu.cpp:161
+#: src/guiPauseMenu.cpp:170
 msgid ""
 "Default Controls:\n"
-"- WASD: Walk\n"
-"- Mouse left: dig/hit\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
 "- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
-"- 0...9: select item\n"
-"- Shift: sneak\n"
-"- R: Toggle viewing all loaded chunks\n"
-"- I: Inventory menu\n"
-"- ESC: This menu\n"
-"- T: Chat\n"
+"- T: chat\n"
 msgstr ""
-"Default Besturing:\n"
-"- WASD: Lopen\n"
-"- Linkermuisknop: Graaf/Sla\n"
-"- Rechtmuisknop: Plaats/Gebruik\n"
-"- Muiswiel: selecteer item\n"
-"- 0...9: selecteer item\n"
-"- Shift: kruipen\n"
-"- R: Toggle viewing all loaded chunks\n"
-"- I: Rugzak\n"
-"- ESC: Menu\n"
-"- T: Chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
 msgstr "Volume:"
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:122
 msgid "Exit"
 msgstr "Exit"
 
@@ -743,34 +768,51 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1506
+#: src/main.cpp:1680
 msgid "Main Menu"
 msgstr "Hoofdmenu"
 
-#: src/main.cpp:1830
+#: src/main.cpp:2035
 msgid "Failed to initialize world"
 msgstr "Laden van wereld is mislukt"
 
-#: src/main.cpp:1842
+#: src/main.cpp:2048
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Geen wereld en adres geselecteerd. Niks te doen."
 
-#: src/main.cpp:1850
+#: src/main.cpp:2056
 msgid "Could not find or load game \""
 msgstr "Kan niet de game laden of vinden."
 
-#: src/main.cpp:1864
+#: src/main.cpp:2070
 msgid "Invalid gamespec."
 msgstr "Onjuiste gamespec."
 
-#: src/main.cpp:1904
+#: src/main.cpp:2111
 msgid "Connection error (timed out?)"
 msgstr "Connection error (timed out?)"
 
-#: src/main.cpp:1915
-msgid ""
-"\n"
-"Check debug.txt for details."
-msgstr ""
-"\n"
-"Check debug.txt for details."
+#~ msgid ""
+#~ "Default Controls:\n"
+#~ "- WASD: Walk\n"
+#~ "- Mouse left: dig/hit\n"
+#~ "- Mouse right: place/use\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- 0...9: select item\n"
+#~ "- Shift: sneak\n"
+#~ "- R: Toggle viewing all loaded chunks\n"
+#~ "- I: Inventory menu\n"
+#~ "- ESC: This menu\n"
+#~ "- T: Chat\n"
+#~ msgstr ""
+#~ "Default Besturing:\n"
+#~ "- WASD: Lopen\n"
+#~ "- Linkermuisknop: Graaf/Sla\n"
+#~ "- Rechtmuisknop: Plaats/Gebruik\n"
+#~ "- Muiswiel: selecteer item\n"
+#~ "- 0...9: selecteer item\n"
+#~ "- Shift: kruipen\n"
+#~ "- R: Toggle viewing all loaded chunks\n"
+#~ "- I: Rugzak\n"
+#~ "- ESC: Menu\n"
+#~ "- T: Chat\n"

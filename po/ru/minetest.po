@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-30 19:56+0100\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
 "PO-Revision-Date: 2013-05-08 11:06+0200\n"
 "Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
@@ -15,20 +15,56 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/guiConfigureWorld.cpp:125
+#: src/client.cpp:2846
+msgid "Item textures..."
+msgstr ""
+
+#: src/game.cpp:912
+msgid "Loading..."
+msgstr ""
+
+#: src/game.cpp:972
+msgid "Creating server...."
+msgstr ""
+
+#: src/game.cpp:988
+msgid "Creating client..."
+msgstr ""
+
+#: src/game.cpp:1003
+msgid "Resolving address..."
+msgstr ""
+
+#: src/game.cpp:1079
+msgid "Connecting to server..."
+msgstr ""
+
+#: src/game.cpp:3348
+msgid "Shutting down stuff..."
+msgstr ""
+
+#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Подробная информация в debug.txt."
+
+#: src/guiConfigureWorld.cpp:123
 msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
 "Предупреждение: Некоторые моды еще не настроены.\n"
-"Их стандартные настройки будут установлены, когда вы сохраните конфигурацию. "
-" "
+"Их стандартные настройки будут установлены, когда вы сохраните "
+"конфигурацию.  "
 
-#: src/guiConfigureWorld.cpp:144
+#: src/guiConfigureWorld.cpp:143
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
@@ -40,56 +76,56 @@ msgstr ""
 msgid "enabled"
 msgstr "включено"
 
-#: src/guiConfigureWorld.cpp:215
+#: src/guiConfigureWorld.cpp:218
 msgid "Enable All"
 msgstr "Включить Всё"
 
-#: src/guiConfigureWorld.cpp:222
+#: src/guiConfigureWorld.cpp:227
 msgid "Disable All"
 msgstr "Отключить Всё"
 
-#: src/guiConfigureWorld.cpp:228
+#: src/guiConfigureWorld.cpp:235
 msgid "depends on:"
 msgstr "зависит от:"
 
-#: src/guiConfigureWorld.cpp:240
+#: src/guiConfigureWorld.cpp:248
 msgid "is required by:"
 msgstr "требуется для:"
 
-#: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
-#: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
+#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
+#: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Отменить"
 
-#: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
+#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/guiConfigureWorld.cpp:394
+#: src/guiConfigureWorld.cpp:403
 msgid "Configuration saved.  "
 msgstr "Настройки сохранены.  "
 
-#: src/guiConfigureWorld.cpp:402
+#: src/guiConfigureWorld.cpp:415
 msgid "Warning: Configuration not consistent.  "
 msgstr "Предупреждение: Неверная конфигурация.  "
 
-#: src/guiConfirmMenu.cpp:120
+#: src/guiConfirmMenu.cpp:119
 msgid "Yes"
 msgstr "Да"
 
-#: src/guiConfirmMenu.cpp:126
+#: src/guiConfirmMenu.cpp:127
 msgid "No"
 msgstr "Нет"
 
-#: src/guiCreateWorld.cpp:116
+#: src/guiCreateWorld.cpp:125
 msgid "World name"
 msgstr "Название мира"
 
-#: src/guiCreateWorld.cpp:135
+#: src/guiCreateWorld.cpp:145
 msgid "Game"
 msgstr "Игра"
 
-#: src/guiCreateWorld.cpp:159
+#: src/guiCreateWorld.cpp:169
 msgid "Create"
 msgstr "Создать"
 
@@ -105,98 +141,98 @@ msgstr "Возродиться"
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
 
-#: src/guiFormSpecMenu.cpp:607 src/guiMessageMenu.cpp:109
-#: src/guiTextInputMenu.cpp:131
+#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:130
 msgid "Proceed"
 msgstr "Продолжить"
 
-#: src/guiKeyChangeMenu.cpp:114
+#: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
 "Сочетания клавиш. (Если это меню сломалось, удалите настройки из minetest."
 "conf)"
 
-#: src/guiKeyChangeMenu.cpp:151
+#: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
 msgstr "\"Использовать\" = вниз"
 
-#: src/guiKeyChangeMenu.cpp:164
+#: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Двойной прыжок = летать"
 
-#: src/guiKeyChangeMenu.cpp:269
+#: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
 msgstr "Клавиша уже используется"
 
-#: src/guiKeyChangeMenu.cpp:347
+#: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
 msgstr "нажмите клавишу"
 
-#: src/guiKeyChangeMenu.cpp:372
+#: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
 msgstr "Вперед"
 
-#: src/guiKeyChangeMenu.cpp:373
+#: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
 msgstr "Назад"
 
-#: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
 msgstr "Влево"
 
-#: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
 msgstr "Вправо"
 
-#: src/guiKeyChangeMenu.cpp:376
+#: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
 msgstr "Использовать"
 
-#: src/guiKeyChangeMenu.cpp:377
+#: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
 msgstr "Прыжок"
 
-#: src/guiKeyChangeMenu.cpp:378
+#: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
 msgstr "Красться"
 
-#: src/guiKeyChangeMenu.cpp:379
+#: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
 msgstr "Бросить"
 
-#: src/guiKeyChangeMenu.cpp:380
+#: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
 msgstr "Инвентарь"
 
-#: src/guiKeyChangeMenu.cpp:381
+#: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
 msgstr "Чат"
 
-#: src/guiKeyChangeMenu.cpp:382
+#: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
 msgstr "Команда"
 
-#: src/guiKeyChangeMenu.cpp:383
+#: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
 msgstr "Консоль"
 
-#: src/guiKeyChangeMenu.cpp:384
+#: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
 msgstr "Полёт"
 
-#: src/guiKeyChangeMenu.cpp:385
+#: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
 msgstr "Ускорение"
 
-#: src/guiKeyChangeMenu.cpp:386
+#: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
 msgstr "Включить noclip"
 
-#: src/guiKeyChangeMenu.cpp:387
+#: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
 msgstr "Зона видимости"
 
-#: src/guiKeyChangeMenu.cpp:388
+#: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
 msgstr "Печать стеков"
 
@@ -204,180 +240,180 @@ msgstr "Печать стеков"
 msgid "Cannot create world: Name contains invalid characters"
 msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
 
-#: src/guiMainMenu.cpp:101
+#: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
 msgstr "Невозможно создать мир: Мир под таким названием уже существует"
 
-#: src/guiMainMenu.cpp:283
+#: src/guiMainMenu.cpp:285
 msgid "Singleplayer"
 msgstr "Одиночная игра"
 
-#: src/guiMainMenu.cpp:284
+#: src/guiMainMenu.cpp:288
 msgid "Multiplayer"
 msgstr "Сетевая игра"
 
-#: src/guiMainMenu.cpp:285
+#: src/guiMainMenu.cpp:291
 msgid "Advanced"
 msgstr "Дополнительно"
 
-#: src/guiMainMenu.cpp:286
+#: src/guiMainMenu.cpp:294
 msgid "Settings"
 msgstr "Настройки"
 
-#: src/guiMainMenu.cpp:287
+#: src/guiMainMenu.cpp:297
 msgid "Credits"
 msgstr "Благодарности"
 
-#: src/guiMainMenu.cpp:317
+#: src/guiMainMenu.cpp:330
 msgid "Select World:"
 msgstr "Выберите Мир:"
 
-#: src/guiMainMenu.cpp:339 src/guiMainMenu.cpp:511 src/keycode.cpp:229
+#: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Удалить"
 
-#: src/guiMainMenu.cpp:346
+#: src/guiMainMenu.cpp:369
 msgid "New"
 msgstr "Новый"
 
-#: src/guiMainMenu.cpp:354
+#: src/guiMainMenu.cpp:379
 msgid "Configure"
 msgstr "Настроить"
 
-#: src/guiMainMenu.cpp:369 src/keycode.cpp:248
+#: src/guiMainMenu.cpp:396 src/keycode.cpp:248
 msgid "Play"
 msgstr "Играть"
 
-#: src/guiMainMenu.cpp:380 src/guiMainMenu.cpp:619
+#: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
 msgid "Creative Mode"
 msgstr "Режим Создания"
 
-#: src/guiMainMenu.cpp:386 src/guiMainMenu.cpp:625
+#: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
 msgid "Enable Damage"
 msgstr "Включить урон"
 
-#: src/guiMainMenu.cpp:406 src/guiMainMenu.cpp:541
+#: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
 msgid "Name/Password"
 msgstr "Имя/Пароль"
 
-#: src/guiMainMenu.cpp:442 src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:1184
+#: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
 msgid "Favorites:"
 msgstr "Избранное:"
 
-#: src/guiMainMenu.cpp:450 src/guiMainMenu.cpp:1194
+#: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
 msgid "Public Server List:"
 msgstr "Список Публичных Серверов:"
 
-#: src/guiMainMenu.cpp:470 src/guiMainMenu.cpp:568
+#: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
 msgid "Address/Port"
 msgstr "Адрес/Порт"
 
-#: src/guiMainMenu.cpp:497 src/guiMainMenu.cpp:1183
+#: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
 msgid "Show Public"
 msgstr "Публичные"
 
-#: src/guiMainMenu.cpp:501 src/guiMainMenu.cpp:1193
+#: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
 msgid "Show Favorites"
 msgstr "Избранные"
 
-#: src/guiMainMenu.cpp:521
+#: src/guiMainMenu.cpp:591
 msgid "Connect"
 msgstr "Подключиться"
 
-#: src/guiMainMenu.cpp:591
+#: src/guiMainMenu.cpp:668
 msgid "Leave address blank to start a local server."
 msgstr "Оставьте адрес пустым для запуска локального сервера."
 
-#: src/guiMainMenu.cpp:600
+#: src/guiMainMenu.cpp:678
 msgid "Start Game / Connect"
 msgstr "Начать игру/Подключиться"
 
-#: src/guiMainMenu.cpp:632
+#: src/guiMainMenu.cpp:716
 msgid "Public"
 msgstr "Публичные"
 
-#: src/guiMainMenu.cpp:640 src/guiMainMenu.cpp:1113
+#: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
 msgid "Delete world"
 msgstr "Удалить мир"
 
-#: src/guiMainMenu.cpp:647
+#: src/guiMainMenu.cpp:735
 msgid "Create world"
 msgstr "Создать мир"
 
-#: src/guiMainMenu.cpp:681
+#: src/guiMainMenu.cpp:773
 msgid "Fancy trees"
 msgstr "Красивые деревья"
 
-#: src/guiMainMenu.cpp:687
+#: src/guiMainMenu.cpp:781
 msgid "Smooth Lighting"
 msgstr "Мягкое Освещение"
 
-#: src/guiMainMenu.cpp:693
+#: src/guiMainMenu.cpp:789
 msgid "3D Clouds"
 msgstr "3D Облака"
 
-#: src/guiMainMenu.cpp:699
+#: src/guiMainMenu.cpp:797
 msgid "Opaque water"
 msgstr "Непрозрачная вода"
 
-#: src/guiMainMenu.cpp:709
+#: src/guiMainMenu.cpp:809
 msgid "Mip-Mapping"
 msgstr "Mip-текстурирование"
 
-#: src/guiMainMenu.cpp:716
+#: src/guiMainMenu.cpp:818
 msgid "Anisotropic Filtering"
 msgstr "Анизотропная Фильтрация"
 
-#: src/guiMainMenu.cpp:723
+#: src/guiMainMenu.cpp:827
 msgid "Bi-Linear Filtering"
 msgstr "Билинейная Фильтрация"
 
-#: src/guiMainMenu.cpp:730
+#: src/guiMainMenu.cpp:836
 msgid "Tri-Linear Filtering"
 msgstr "Трилинейная Фильтрация"
 
-#: src/guiMainMenu.cpp:738
+#: src/guiMainMenu.cpp:846
 msgid "Shaders"
 msgstr "Шейдеры"
 
-#: src/guiMainMenu.cpp:745
+#: src/guiMainMenu.cpp:855
 #, fuzzy
 msgid "Preload item visuals"
 msgstr "Кэшировать предметы"
 
-#: src/guiMainMenu.cpp:752
+#: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
 msgstr "Включить Частицы"
 
-#: src/guiMainMenu.cpp:759
+#: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
 msgstr "Конечные жидкости"
 
-#: src/guiMainMenu.cpp:769
+#: src/guiMainMenu.cpp:885
 msgid "Change keys"
 msgstr "Смена управления"
 
-#: src/guiMainMenu.cpp:1084
+#: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
 msgid "Address required."
 msgstr "Нужно ввести адрес."
 
-#: src/guiMainMenu.cpp:1102
+#: src/guiMainMenu.cpp:1231
 msgid "Cannot delete world: Nothing selected"
 msgstr "Невозможно удалить мир: Ничего не выбрано"
 
-#: src/guiMainMenu.cpp:1117
+#: src/guiMainMenu.cpp:1246
 msgid "Files to be deleted"
 msgstr "Следующие файлы будут удалены"
 
-#: src/guiMainMenu.cpp:1133
+#: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
 msgstr "Невозможно создать мир: Ни одной игры не найдено"
 
-#: src/guiMainMenu.cpp:1149
+#: src/guiMainMenu.cpp:1286
 msgid "Cannot configure world: Nothing selected"
 msgstr "Невозможно настроить мир: ничего не выбрано"
 
-#: src/guiMainMenu.cpp:1256
+#: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
 msgstr "Ошибка при удалении файлов мира"
 
@@ -385,73 +421,62 @@ msgstr "Ошибка при удалении файлов мира"
 msgid "Old Password"
 msgstr "Старый Пароль"
 
-#: src/guiPasswordChange.cpp:125
+#: src/guiPasswordChange.cpp:126
 msgid "New Password"
 msgstr "Новый Пароль"
 
-#: src/guiPasswordChange.cpp:141
+#: src/guiPasswordChange.cpp:143
 msgid "Confirm Password"
 msgstr "Подтверждение Пароля"
 
-#: src/guiPasswordChange.cpp:158
+#: src/guiPasswordChange.cpp:161
 msgid "Change"
 msgstr "Изменить"
 
-#: src/guiPasswordChange.cpp:167
+#: src/guiPasswordChange.cpp:170
 msgid "Passwords do not match!"
 msgstr "Пароли не совпадают!"
 
-#: src/guiPauseMenu.cpp:123
+#: src/guiPauseMenu.cpp:122
 msgid "Continue"
 msgstr "Продолжить"
 
-#: src/guiPauseMenu.cpp:132
+#: src/guiPauseMenu.cpp:133
 msgid "Change Password"
 msgstr "Изменить Пароль"
 
-#: src/guiPauseMenu.cpp:140
+#: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
 msgstr "Громкость Звука"
 
-#: src/guiPauseMenu.cpp:147
+#: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
 msgstr "Выход в Меню"
 
-#: src/guiPauseMenu.cpp:154
+#: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
 msgstr "Выход в ОС"
 
-#: src/guiPauseMenu.cpp:161
+#: src/guiPauseMenu.cpp:170
 msgid ""
 "Default Controls:\n"
-"- WASD: Walk\n"
-"- Mouse left: dig/hit\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
 "- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
-"- 0...9: select item\n"
-"- Shift: sneak\n"
-"- R: Toggle viewing all loaded chunks\n"
-"- I: Inventory menu\n"
-"- ESC: This menu\n"
-"- T: Chat\n"
+"- T: chat\n"
 msgstr ""
-"Управление по умолчанию:\n"
-"- WASD: перемещение\n"
-"- ЛКМ: копать/ударить\n"
-"- ПКМ: поставить/использовать\n"
-"- Колесо мыши: выбор предмета\n"
-"- 0...9: выбор предмета\n"
-"- Shift: красться\n"
-"- R: смотреть далеко\n"
-"- I: инвентарь\n"
-"- ESC: это меню\n"
-"- T: чат\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
 msgstr "Громкость Звука: "
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:122
 msgid "Exit"
 msgstr "Выход"
 
@@ -754,35 +779,52 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Масштаб"
 
-#: src/main.cpp:1506
+#: src/main.cpp:1680
 msgid "Main Menu"
 msgstr "Главное Меню"
 
-#: src/main.cpp:1830
+#: src/main.cpp:2035
 msgid "Failed to initialize world"
 msgstr "Ошибка при инициализации мира"
 
-#: src/main.cpp:1842
+#: src/main.cpp:2048
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Не выбран мир и не введен адрес."
 
-#: src/main.cpp:1850
+#: src/main.cpp:2056
 msgid "Could not find or load game \""
 msgstr "Невозможно найти или загрузить игру \""
 
-#: src/main.cpp:1864
+#: src/main.cpp:2070
 #, fuzzy
 msgid "Invalid gamespec."
 msgstr "Неправильная конфигурация игры."
 
-#: src/main.cpp:1904
+#: src/main.cpp:2111
 msgid "Connection error (timed out?)"
 msgstr "Ошибка соединения (таймаут пинга?)"
 
-#: src/main.cpp:1915
-msgid ""
-"\n"
-"Check debug.txt for details."
-msgstr ""
-"\n"
-"Подробная информация в debug.txt."
+#~ msgid ""
+#~ "Default Controls:\n"
+#~ "- WASD: Walk\n"
+#~ "- Mouse left: dig/hit\n"
+#~ "- Mouse right: place/use\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- 0...9: select item\n"
+#~ "- Shift: sneak\n"
+#~ "- R: Toggle viewing all loaded chunks\n"
+#~ "- I: Inventory menu\n"
+#~ "- ESC: This menu\n"
+#~ "- T: Chat\n"
+#~ msgstr ""
+#~ "Управление по умолчанию:\n"
+#~ "- WASD: перемещение\n"
+#~ "- ЛКМ: копать/ударить\n"
+#~ "- ПКМ: поставить/использовать\n"
+#~ "- Колесо мыши: выбор предмета\n"
+#~ "- 0...9: выбор предмета\n"
+#~ "- Shift: красться\n"
+#~ "- R: смотреть далеко\n"
+#~ "- I: инвентарь\n"
+#~ "- ESC: это меню\n"
+#~ "- T: чат\n"
