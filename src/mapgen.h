@@ -139,6 +139,7 @@ public:
 		np      = NULL;
 		noise   = NULL;
 	}
+	virtual ~Ore() {}
 	
 	void resolveNodeNames(INodeDefManager *ndef);
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
