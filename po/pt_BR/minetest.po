@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-05-13 20:26+0200\n"
+"PO-Revision-Date: 2013-05-15 18:58+0200\n"
 "Last-Translator: Frederico Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: LANGUAGE <contato@ejweb.com.br>\n"
 "Language: pt_BR\n"
@@ -137,8 +137,7 @@ msgstr "Reviver"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
-"Botão esquerdo: Move todos os items, Botão direito: Move somente um item"
+msgstr "Botão esq.: Move todos os itens, Botão dir.: Move um item"
 
 #: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:130
