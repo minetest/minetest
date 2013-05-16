@@ -2145,7 +2145,9 @@ int main(int argc, char *argv[])
 	*/
 	device->drop();
 
-	delete font;
+#if USE_FREETYPE
+	font->drop();
+#endif
 
 #endif // !SERVER
 	
