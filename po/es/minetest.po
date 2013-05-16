@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-04-03 17:22+0200\n"
+"PO-Revision-Date: 2013-05-16 14:51+0200\n"
 "Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -20,31 +20,31 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr ""
+msgstr "Texturas de objetos..."
 
 #: src/game.cpp:912
 msgid "Loading..."
-msgstr ""
+msgstr "Cargando..."
 
 #: src/game.cpp:972
 msgid "Creating server...."
-msgstr ""
+msgstr "Creando servidor..."
 
 #: src/game.cpp:988
 msgid "Creating client..."
-msgstr ""
+msgstr "Creando cliente..."
 
 #: src/game.cpp:1003
 msgid "Resolving address..."
-msgstr ""
+msgstr "Resolviendo dirección..."
 
 #: src/game.cpp:1079
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Conectando al servidor..."
 
 #: src/game.cpp:3348
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Apagando cosas..."
 
 #: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
@@ -469,6 +469,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Controles Pred.:\n"
+"- WASD: moverse\n"
+"- Espacio: saltar/subir\n"
+"- Mayús.: puntillas/bajar\n"
+"- Q: soltar objeto\n"
+"- I: inventario\n"
+"- Ratón: girar/mirar\n"
+"- Ratón izq.: cavar/golpear\n"
+"- Ratón der.: colocar/usar\n"
+"- Rueda ratón: elegir objeto\n"
+"- T: conversar\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
