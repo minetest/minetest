@@ -159,40 +159,41 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// Block position relative to camera
 	v3f blockpos_relative = blockpos - camera_pos;
 
-	// Distance in camera direction (+=front, -=back)
-	f32 dforward = blockpos_relative.dotProduct(camera_dir);
-
 	// Total distance
 	f32 d = blockpos_relative.getLength();
 
 	if(distance_ptr)
 		*distance_ptr = d;
 	
-	// If block is very close, it is always in sight
-	if(d < 1.44*1.44*MAP_BLOCKSIZE*BS/2)
-		return true;
-
 	// If block is far away, it's not in sight
 	if(d > range)
 		return false;
 
-	// Maximum radius of a block
-	f32 block_max_radius = 0.5*1.44*1.44*MAP_BLOCKSIZE*BS;
+	// Maximum radius of a block.  The magic number is
+	// sqrt(3.0) / 2.0 in literal form.
+	f32 block_max_radius = 0.866025403784 * MAP_BLOCKSIZE * BS;
 	
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
 	if(d < block_max_radius)
 		return true;
-	
+
+	// Adjust camera position, for purposes of computing the angle,
+	// such that a block that has any portion visible with the
+	// current camera position will have the center visible at the
+	// adjusted postion
+	f32 adjdist = block_max_radius / cos((M_PI - camera_fov) / 2);
+
+	// Block position relative to adjusted camera
+	v3f blockpos_adj = blockpos - (camera_pos - camera_dir * adjdist);
+
+	// Distance in camera direction (+=front, -=back)
+	f32 dforward = blockpos_adj.dotProduct(camera_dir);
+
 	// Cosine of the angle between the camera direction
 	// and the block direction (camera_dir is an unit vector)
-	f32 cosangle = dforward / d;
+	f32 cosangle = dforward / blockpos_adj.getLength();
 	
-	// Compensate for the size of the block
-	// (as the block has to be shown even if it's a bit off FOV)
-	// This is an estimate, plus an arbitary factor
-	cosangle += block_max_radius / d * 0.5;
-
 	// If block is not in the field of view, skip it
 	if(cosangle < cos(camera_fov / 2))
 		return false;
