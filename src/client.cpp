@@ -350,6 +350,11 @@ Client::~Client()
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
+	while(!m_mesh_update_thread.m_queue_out.empty()) {
+		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+		delete r.mesh;
+	}
+
 
 	delete m_inventory_from_server;
 
@@ -757,6 +762,8 @@ void Client::step(float dtime)
 
 				// Replace with the new mesh
 				block->mesh = r.mesh;
+			} else {
+				delete r.mesh;
 			}
 			if(r.ack_block_to_server)
 			{
