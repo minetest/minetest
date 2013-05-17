@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-05-01 16:24+0200\n"
+"PO-Revision-Date: 2013-05-17 19:20+0200\n"
 "Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
@@ -20,31 +20,31 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr ""
+msgstr "Textures d'objets..."
 
 #: src/game.cpp:912
 msgid "Loading..."
-msgstr ""
+msgstr "Chargement..."
 
 #: src/game.cpp:972
 msgid "Creating server...."
-msgstr ""
+msgstr "Création du serveur..."
 
 #: src/game.cpp:988
 msgid "Creating client..."
-msgstr ""
+msgstr "Création du client..."
 
 #: src/game.cpp:1003
 msgid "Resolving address..."
-msgstr ""
+msgstr "Résolution de l'adresse..."
 
 #: src/game.cpp:1079
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Connexion au serveur..."
 
 #: src/game.cpp:3348
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Quitter le jeu..."
 
 #: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
@@ -468,6 +468,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Contrôles:\n"
+"- ZQSD : se déplacer\n"
+"- Espace : sauter/grimper\n"
+"- Maj. : marcher prudemment/descendre\n"
+"- A : lâcher l'objet en main\n"
+"- I : inventaire\n"
+"- Souris : tourner/regarder\n"
+"- Souris gauche : creuser/attaquer\n"
+"- Souris droite : placer/utiliser\n"
+"- Molette souris : sélectionner objet\n"
+"- T : parler"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
