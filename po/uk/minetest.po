@@ -51,7 +51,7 @@ msgstr ""
 msgid ""
 "\n"
 "Check debug.txt for details."
-msgstr "Деталі у файлі debug.txt."
+msgstr "\nДеталі у файлі debug.txt."
 
 #: src/guiConfigureWorld.cpp:123
 msgid ""
