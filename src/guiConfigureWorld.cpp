@@ -116,40 +116,18 @@ GUIConfigureWorld::GUIConfigureWorld(gui::IGUIEnvironment* env,
 		// mod_names
 		if(!mod.is_modpack &&
 		   mod_names.count(modname) == 0)
-			m_new_mod_names.insert(modname);
+			m_settings.setBool("load_mod_"+modname, false);
 	}
-	if(!m_new_mod_names.empty())
-	{
-		wchar_t* text = wgettext("Warning: Some mods are not configured yet.\n"
-				"They will be enabled by default when you save the configuration.  ");
-		GUIMessageMenu *menu = 
-			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, text);
-		menu->drop();
-		delete[] text;
-	}
-	
-
 	// find missing mods (mentioned in world.mt, but not installed)
-	std::set<std::string> missing_mods;
 	for(std::set<std::string>::iterator it = mod_names.begin();
 		it != mod_names.end(); ++it)
 	{
 		std::string modname = *it;
 		if(m_addonmods.count(modname) == 0)
-			missing_mods.insert(modname);
+			m_settings.remove("load_mod_"+modname);
 	}
-	if(!missing_mods.empty())
-	{
-		wchar_t* text = wgettext("Warning: Some configured mods are missing.\n"
-				"Their setting will be removed when you save the configuration.  ");
-		GUIMessageMenu *menu = 
-			new GUIMessageMenu(Environment, Parent, -1, m_menumgr, text);
-		delete[] text;
-		for(std::set<std::string>::iterator it = missing_mods.begin();
-			it != missing_mods.end(); ++it)
-			m_settings.remove("load_mod_"+(*it));
-		menu->drop();
-	}	
+	std::string worldmtfile = m_wspec.path+DIR_DELIM+"world.mt";
+	m_settings.updateConfigFile(worldmtfile.c_str());
 }
 
 void GUIConfigureWorld::drawMenu()
@@ -388,11 +366,6 @@ bool GUIConfigureWorld::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_SAVE: {
-				for(std::set<std::string>::iterator it = m_new_mod_names.begin();
-					it!= m_new_mod_names.end(); ++it)
-				{
-					m_settings.setBool("load_mod_"+(*it),true);
-				}
 				std::string worldmtfile = m_wspec.path+DIR_DELIM+"world.mt";
 				m_settings.updateConfigFile(worldmtfile.c_str());
 
@@ -558,22 +531,14 @@ void GUIConfigureWorld::buildTreeView(std::map<std::string, ModSpec> mods,
 			buildTreeView(mod.modpack_content, new_node);
 		else
 		{
-			// set icon for node: ? for new mods, x for disabled mods,
-			// checkmark for enabled mods
-			if(m_new_mod_names.count(modname) > 0)
-			{
-				new_node->setIcon(QUESTIONMARK_STR);
-			}
+			// set icon for node: x for disabled mods, checkmark for enabled mods
+			bool mod_enabled = false;
+			if(m_settings.exists("load_mod_"+modname))
+				mod_enabled = m_settings.getBool("load_mod_"+modname);
+			if(mod_enabled)
+				new_node->setIcon(CHECKMARK_STR);
 			else
-			{
-				bool mod_enabled = true;
-				if(m_settings.exists("load_mod_"+modname))
-					mod_enabled = m_settings.getBool("load_mod_"+modname);
-				if(mod_enabled)
-					new_node->setIcon(CHECKMARK_STR);
-				else 
-					new_node->setIcon(CROSS_STR);
-			}
+				new_node->setIcon(CROSS_STR);
 		}
 	}
 }
@@ -690,7 +655,6 @@ void GUIConfigureWorld::enableMod(std::string modname)
 		m_nodes.find(modname);
 	if(it != m_nodes.end())
 		(*it).second->setIcon(CHECKMARK_STR);
-	m_new_mod_names.erase(modname);
 	//also enable all dependencies
 	for(std::set<std::string>::iterator it=mspec.depends.begin();
 		it != mspec.depends.end(); ++it)
@@ -715,7 +679,6 @@ void GUIConfigureWorld::disableMod(std::string modname)
 		m_nodes.find(modname);
  	if(it != m_nodes.end())
 		(*it).second->setIcon(CROSS_STR);
-	m_new_mod_names.erase(modname);
 	//also disable all mods that depend on this one
 	std::pair<std::multimap<std::string, std::string>::iterator, 
 			  std::multimap<std::string, std::string>::iterator > rdep = 

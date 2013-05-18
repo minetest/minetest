@@ -69,9 +69,6 @@ private:
 	// the settings in the world.mt file
 	Settings m_settings;
 
-	// mods that are installed but not mentioned in world.mt file
-	std::set<std::string> m_new_mod_names;
-
 	// maps modnames to nodes in m_treeview
 	std::map<std::string,gui::IGUITreeViewNode*> m_nodes;
 

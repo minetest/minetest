@@ -60,9 +60,9 @@ Mod load path
 -------------
 Generic:
   $path_share/games/gameid/mods/
-  $path_share/mods/gameid/
+  $path_share/mods/
   $path_user/games/gameid/mods/
-  $path_user/mods/gameid/ <-- User-installed mods
+  $path_user/mods/ <-- User-installed mods
   $worldpath/worldmods/
 
 In a run-in-place version (eg. the distributed windows version):
