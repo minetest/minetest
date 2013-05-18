@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-04-19 16:10+0200\n"
+"PO-Revision-Date: 2013-05-18 16:22+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -20,31 +20,31 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr ""
+msgstr "物品材质..."
 
 #: src/game.cpp:912
 msgid "Loading..."
-msgstr ""
+msgstr "载入中..."
 
 #: src/game.cpp:972
 msgid "Creating server...."
-msgstr ""
+msgstr "正在建立服务器...."
 
 #: src/game.cpp:988
 msgid "Creating client..."
-msgstr ""
+msgstr "正在建立客户端..."
 
 #: src/game.cpp:1003
 msgid "Resolving address..."
-msgstr ""
+msgstr "正在解析地址..."
 
 #: src/game.cpp:1079
 msgid "Connecting to server..."
-msgstr ""
+msgstr "正在连接服务器..."
 
 #: src/game.cpp:3348
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "关闭中......"
 
 #: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
@@ -466,6 +466,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+" 默认控制：\n"
+"W/A/S/D: 移动\n"
+"空格: 跳/爬\n"
+"Shift: 潜行/向下\n"
+"Q: 丢物品\n"
+"I: 物品栏\n"
+"鼠标:转身/环顾\n"
+"鼠标左键: 挖\n"
+"鼠标右键: 放/使用\n"
+"鼠标滚轮: 选择物品\n"
+"T: 聊天\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
