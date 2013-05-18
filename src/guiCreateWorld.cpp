@@ -34,6 +34,7 @@ enum
 {
 	GUI_ID_NAME_INPUT = 101,
 	GUI_ID_GAME_LISTBOX,
+	GUI_ID_SEED_INPUT,
 	GUI_ID_CREATE,
 	GUI_ID_CANCEL
 };
@@ -87,11 +88,16 @@ void GUICreateWorld::removeChildren()
 void GUICreateWorld::regenerateGui(v2u32 screensize)
 {
 	std::wstring name = L"";
+	std::wstring seed = L"";
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 		if(e != NULL)
 			name = e->getText();
+
+		gui::IGUIElement *e2 = getElementFromId(GUI_ID_SEED_INPUT);
+		if(e2 != NULL)
+			seed = e2->getText();
 	}
 
 	/*
@@ -162,10 +168,24 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 		}
 		e->setSelected(m_initial_game_i);
 	}
+	{
+		core::rect<s32> rect(0, 0, 100, 20);
+		rect += v2s32(0, 130) + topleft;
+		wchar_t* text = wgettext("World seed");
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		delete[] text;
+	}
+	{
+		core::rect<s32> rect(0, 0, 300, 30);
+		rect = rect + v2s32(100, 130) + topleft;
+		gui::IGUIElement *e = 
+		Environment->addEditBox(name.c_str(), rect, true, this, GUI_ID_SEED_INPUT);
+		Environment->setFocus(e);
+	}
 	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
-		rect = rect + v2s32(170, 140) + topleft;
+		rect = rect + v2s32(170, 180) + topleft;
 		wchar_t* text = wgettext("Create");
 		Environment->addButton(rect, this, GUI_ID_CREATE,
 			text);
@@ -173,7 +193,7 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
-		rect = rect + v2s32(300, 140) + topleft;
+		rect = rect + v2s32(300, 180) + topleft;
 		wchar_t* text = wgettext("Cancel");
 		Environment->addButton(rect, this, GUI_ID_CANCEL,
 			text);
@@ -211,8 +231,14 @@ void GUICreateWorld::acceptInput()
 			if(e != NULL)
 				name = e->getText();
 		}
+		std::wstring seed;
+		{
+			gui::IGUIElement *e2 = getElementFromId(GUI_ID_SEED_INPUT);
+			if(e2 != NULL)
+				seed = e2->getText();
+		}
 		if(selected != -1 && name != L"")
-			m_dest->accepted(name, m_games[selected].id);
+			m_dest->accepted(name, seed, m_games[selected].id);
 		delete m_dest;
 		m_dest = NULL;
 	}

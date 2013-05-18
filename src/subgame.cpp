@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h" // getImagePath
 #endif
 #include "util/string.h"
+#include "sha1.h"
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
@@ -233,7 +234,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool initializeWorld(const std::string &path, const std::string &gameid)
+bool initializeWorld(const std::string &path, const std::string &gameid, const std::string &seed)
 {
 	infostream<<"Initializing world at "<<path<<std::endl;
 	// Create world.mt if does not already exist
@@ -243,6 +244,20 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 		fs::CreateAllDirs(path);
 		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
 		of<<"gameid = "<<gameid<<"\n";
+	}
+	if(seed == "") return true;
+	u64* seed_;
+	SHA1* h = new SHA1();
+	h->addBytes(seed.c_str(), seed.length());
+	seed_ = (u64*) h->getDigest();
+	delete h;
+	std::string mapmeta_path = path + DIR_DELIM + "map_meta.txt";
+	if(!fs::PathExists(mapmeta_path)){
+		infostream<<"Creating map_meta.txt ("<<mapmeta_path<<")"<<std::endl;
+		fs::CreateAllDirs(path);
+		std::ofstream of(mapmeta_path.c_str(), std::ios::binary);
+		of<<"seed = "<<seed_[0]<<"\n";
+		of<<"[end_of_params]";
 	}
 	return true;
 }

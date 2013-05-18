@@ -78,6 +78,7 @@ struct MainMenuData
 	// Actions
 	std::wstring create_world_name;
 	std::string create_world_gameid;
+	std::string create_world_seed;
 	bool only_refresh;
 
 	int selected_serverlist;
@@ -126,7 +127,7 @@ public:
 	bool getStatus()
 	{ return m_accepted; }
 	bool OnEvent(const SEvent& event);
-	void createNewWorld(std::wstring name, std::string gameid);
+	void createNewWorld(std::wstring name, std::string seed, std::string gameid);
 	void deleteWorld(const std::vector<std::string> &paths);
 	int getTab();
 	void displayMessageMenu(std::wstring msg);

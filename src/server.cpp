@@ -702,7 +702,7 @@ Server::Server(
 	m_rollback = createRollbackManager(rollback_path, this);
 
 	// Create world if it doesn't exist
-	if(!initializeWorld(m_path_world, m_gamespec.id))
+	if(!initializeWorld(m_path_world, m_gamespec.id, ""))
 		throw ServerError("Failed to initialize world");
 
 	ModConfiguration modconf(m_path_world);
