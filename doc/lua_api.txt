@@ -50,12 +50,8 @@ where gameid is unique to each game.
 
 The game directory contains the file game.conf, which contains these fields:
   name = <Human-readable full name of the game>
-  common_mods = <Comma-separated list of common mods>
 eg.
   name = Minetest
-  common_mods = bucket, default, doors, fire, stairs
-
-Common mods are loaded from the pseudo-game "common".
 
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
