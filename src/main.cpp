@@ -1845,7 +1845,9 @@ int main(int argc, char *argv[])
 
 					MenuMusicFetcher soundfetcher;
 					ISoundManager *sound = NULL;
+#if USE_SOUND
 					sound = createOpenALSoundManager(&soundfetcher);
+#endif
 					if(!sound)
 						sound = &dummySoundManager;
 					SimpleSoundSpec spec;
