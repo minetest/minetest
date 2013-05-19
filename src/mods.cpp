@@ -247,8 +247,11 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 			ModSpec& mod = *it;
 			if(include_mod_names.count(mod.name) != 0)
 				addon_mods.push_back(mod);
+			else
+				worldmt_settings.setBool("load_mod_" + mod.name, false);
 		}
 	}
+	worldmt_settings.updateConfigFile(worldmt.c_str());
 
 	addMods(addon_mods);
 
