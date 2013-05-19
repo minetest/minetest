@@ -145,7 +145,7 @@ if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
 endif()
 if(RUN_IN_PLACE)
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/minetest/mods_here.txt" DESTINATION "${SHAREDIR}/mods/minetest")
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/mods_here.txt" DESTINATION "${SHAREDIR}/mods")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/all/textures_here.txt" DESTINATION "${SHAREDIR}/textures/all")
 endif()
 
