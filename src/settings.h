@@ -577,15 +577,15 @@ public:
 		return (isdigit(val[0])) ? stoi(val) : readFlagString(val, flagdesc);
 	}
 
-	template <class T> T *getStruct(std::string name, std::string format)
+	bool getStruct(std::string name, std::string format, void *out, size_t olen)
 	{
-		size_t len = sizeof(T);
+		size_t len = olen;
 		std::vector<std::string *> strs_alloced;
 		std::string *str;
 		std::string valstr = get(name);
 		char *s = &valstr[0];
-		T *buf = new T;
-		char *bufpos = (char *)buf;
+		char *buf = new char[len];
+		char *bufpos = buf;
 		char *f, *snext;
 		size_t pos;
 
@@ -608,7 +608,7 @@ public:
 				case 'i':
 					if (width == 16) {
 						bufpos += PADDING(bufpos, u16);
-						if ((bufpos - (char *)buf) + sizeof(u16) <= len) {
+						if ((bufpos - buf) + sizeof(u16) <= len) {
 							if (is_unsigned)
 								*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
 							else
@@ -617,7 +617,7 @@ public:
 						bufpos += sizeof(u16);
 					} else if (width == 32) {
 						bufpos += PADDING(bufpos, u32);
-						if ((bufpos - (char *)buf) + sizeof(u32) <= len) {
+						if ((bufpos - buf) + sizeof(u32) <= len) {
 							if (is_unsigned)
 								*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
 							else
@@ -626,7 +626,7 @@ public:
 						bufpos += sizeof(u32);
 					} else if (width == 64) {
 						bufpos += PADDING(bufpos, u64);
-						if ((bufpos - (char *)buf) + sizeof(u64) <= len) {
+						if ((bufpos - buf) + sizeof(u64) <= len) {
 							if (is_unsigned)
 								*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
 							else
@@ -642,7 +642,7 @@ public:
 						*snext++ = 0;
 
 					bufpos += PADDING(bufpos, bool);
-					if ((bufpos - (char *)buf) + sizeof(bool) <= len)
+					if ((bufpos - buf) + sizeof(bool) <= len)
 						*(bool *)bufpos = is_yes(std::string(s));
 					bufpos += sizeof(bool);
 
@@ -650,7 +650,7 @@ public:
 					break;
 				case 'f':
 					bufpos += PADDING(bufpos, float);
-					if ((bufpos - (char *)buf) + sizeof(float) <= len)
+					if ((bufpos - buf) + sizeof(float) <= len)
 						*(float *)bufpos = strtof(s, &s);
 					bufpos += sizeof(float);
 
@@ -674,7 +674,7 @@ public:
 					while ((pos = str->find("\\\"", pos)) != std::string::npos)
 						str->erase(pos, 1);
 
-					if ((bufpos - (char *)buf) + sizeof(std::string *) <= len)
+					if ((bufpos - buf) + sizeof(std::string *) <= len)
 						*(std::string **)bufpos = str;
 					bufpos += sizeof(std::string *);
 					strs_alloced.push_back(str);
@@ -690,7 +690,7 @@ public:
 					if (width == 2) {
 						bufpos += PADDING(bufpos, v2f);
 
-						if ((bufpos - (char *)buf) + sizeof(v2f) <= len) {
+						if ((bufpos - buf) + sizeof(v2f) <= len) {
 						v2f *v = (v2f *)bufpos;
 							v->X = strtof(s, &s);
 							s++;
@@ -700,7 +700,7 @@ public:
 						bufpos += sizeof(v2f);
 					} else if (width == 3) {
 						bufpos += PADDING(bufpos, v3f);
-						if ((bufpos - (char *)buf) + sizeof(v3f) <= len) {
+						if ((bufpos - buf) + sizeof(v3f) <= len) {
 							v3f *v = (v3f *)bufpos;
 							v->X = strtof(s, &s);
 							s++;
@@ -720,20 +720,21 @@ public:
 			if (s && *s == ',')
 				s++;
 
-			if ((size_t)(bufpos - (char *)buf) > len) //error, buffer too small
+			if ((size_t)(bufpos - buf) > len) //error, buffer too small
 				goto fail;
 		}
 
 		if (f && *f) { //error, mismatched number of fields and values
 fail:
-			for (unsigned int i = 0; i != strs_alloced.size(); i++)
+			for (size_t i = 0; i != strs_alloced.size(); i++)
 				delete strs_alloced[i];
-			delete buf;
-			//delete[] buf;
-			buf = NULL;
+			delete[] buf;
+			return false;
 		}
 
-		return buf;
+		memcpy(out, buf, olen);
+		delete[] buf;
+		return true;
 	}
 
 	bool setStruct(std::string name, std::string format, void *value)

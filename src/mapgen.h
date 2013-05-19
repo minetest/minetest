@@ -74,7 +74,8 @@ struct MapgenParams {
 	}
 	
 	virtual bool readParams(Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) {};
+	virtual void writeParams(Settings *settings) = 0;
+	virtual ~MapgenParams() {}
 };
 
 class Mapgen {
@@ -85,6 +86,8 @@ public:
 	int id;
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
+
+	virtual ~Mapgen() {}
 
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 	void setLighting(v3s16 nmin, v3s16 nmax, u8 light);
@@ -105,6 +108,7 @@ struct MapgenFactory {
 	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
+	virtual ~MapgenFactory() {}
 };
 
 enum OreType {
@@ -140,6 +144,8 @@ public:
 		noise   = NULL;
 	}
 	
+	virtual ~Ore();
+	
 	void resolveNodeNames(INodeDefManager *ndef);
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
@@ -147,11 +153,13 @@ public:
 };
 
 class OreScatter : public Ore {
+	~OreScatter() {}
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 class OreSheet : public Ore {
+	~OreSheet() {}
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };

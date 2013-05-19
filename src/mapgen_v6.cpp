@@ -80,18 +80,18 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 
 	this->ystride = csize.X; //////fix this
 
-	np_cave        = params->np_cave;
-	np_humidity    = params->np_humidity;
-	np_trees       = params->np_trees;
-	np_apple_trees = params->np_apple_trees;
+	np_cave        = &params->np_cave;
+	np_humidity    = &params->np_humidity;
+	np_trees       = &params->np_trees;
+	np_apple_trees = &params->np_apple_trees;
 
-	noise_terrain_base   = new Noise(params->np_terrain_base,   seed, csize.X, csize.Y);
-	noise_terrain_higher = new Noise(params->np_terrain_higher, seed, csize.X, csize.Y);
-	noise_steepness      = new Noise(params->np_steepness,      seed, csize.X, csize.Y);
-	noise_height_select  = new Noise(params->np_height_select,  seed, csize.X, csize.Y);
-	noise_mud            = new Noise(params->np_mud,            seed, csize.X, csize.Y);
-	noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
-	noise_biome          = new Noise(params->np_biome,          seed, csize.X, csize.Y);
+	noise_terrain_base   = new Noise(&params->np_terrain_base,   seed, csize.X, csize.Y);
+	noise_terrain_higher = new Noise(&params->np_terrain_higher, seed, csize.X, csize.Y);
+	noise_steepness      = new Noise(&params->np_steepness,      seed, csize.X, csize.Y);
+	noise_height_select  = new Noise(&params->np_height_select,  seed, csize.X, csize.Y);
+	noise_mud            = new Noise(&params->np_mud,            seed, csize.X, csize.Y);
+	noise_beach          = new Noise(&params->np_beach,          seed, csize.X, csize.Y);
+	noise_biome          = new Noise(&params->np_biome,          seed, csize.X, csize.Y);
 }
 
 

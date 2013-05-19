@@ -30,21 +30,23 @@ extern NoiseParams nparams_v7_def_height_select;
 extern NoiseParams nparams_v7_def_ridge;
 
 struct MapgenV7Params : public MapgenParams {
-	NoiseParams *np_terrain_base;
-	NoiseParams *np_terrain_alt;
-	NoiseParams *np_terrain_mod;
-	NoiseParams *np_terrain_persist;
-	NoiseParams *np_height_select;
-	NoiseParams *np_ridge;
+	NoiseParams np_terrain_base;
+	NoiseParams np_terrain_alt;
+	NoiseParams np_terrain_mod;
+	NoiseParams np_terrain_persist;
+	NoiseParams np_height_select;
+	NoiseParams np_ridge;
 	
 	MapgenV7Params() {
-		np_terrain_base    = &nparams_v7_def_terrain_base;
-		np_terrain_alt     = &nparams_v7_def_terrain_alt;
-		np_terrain_mod     = &nparams_v7_def_terrain_mod;
-		np_terrain_persist = &nparams_v7_def_terrain_persist;
-		np_height_select   = &nparams_v7_def_height_select;
-		np_ridge           = &nparams_v7_def_ridge;
+		np_terrain_base    = nparams_v7_def_terrain_base;
+		np_terrain_alt     = nparams_v7_def_terrain_alt;
+		np_terrain_mod     = nparams_v7_def_terrain_mod;
+		np_terrain_persist = nparams_v7_def_terrain_persist;
+		np_height_select   = nparams_v7_def_height_select;
+		np_ridge           = nparams_v7_def_ridge;
 	}
+	
+	~MapgenV7Params() {}
 	
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);

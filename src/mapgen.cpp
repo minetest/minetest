@@ -71,6 +71,12 @@ Ore *createOre(OreType type) {
 }
 
 
+Ore::~Ore() {
+	delete np;
+	delete noise;
+}
+
+
 void Ore::resolveNodeNames(INodeDefManager *ndef) {
 	if (ore == CONTENT_IGNORE) {
 		ore = ndef->getId(ore_name);
@@ -347,23 +353,18 @@ bool MapgenV6Params::readParams(Settings *settings) {
 	freq_desert = settings->getFloat("mgv6_freq_desert");
 	freq_beach  = settings->getFloat("mgv6_freq_beach");
 
-	np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
-	np_terrain_higher = settings->getNoiseParams("mgv6_np_terrain_higher");
-	np_steepness      = settings->getNoiseParams("mgv6_np_steepness");
-	np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
-	np_mud            = settings->getNoiseParams("mgv6_np_mud");
-	np_beach          = settings->getNoiseParams("mgv6_np_beach");
-	np_biome          = settings->getNoiseParams("mgv6_np_biome");
-	np_cave           = settings->getNoiseParams("mgv6_np_cave");
-	np_humidity       = settings->getNoiseParams("mgv6_np_humidity");
-	np_trees          = settings->getNoiseParams("mgv6_np_trees");
-	np_apple_trees    = settings->getNoiseParams("mgv6_np_apple_trees");
-
-	bool success =
-		np_terrain_base  && np_terrain_higher && np_steepness &&
-		np_height_select && np_trees          && np_mud       &&
-		np_beach         && np_biome          && np_cave      &&
-		np_humidity      && np_apple_trees;
+	bool success = 
+		settings->getNoiseParams("mgv6_np_terrain_base",   np_terrain_base)   &&
+		settings->getNoiseParams("mgv6_np_terrain_higher", np_terrain_higher) &&
+		settings->getNoiseParams("mgv6_np_steepness",      np_steepness)      &&
+		settings->getNoiseParams("mgv6_np_height_select",  np_height_select)  &&
+		settings->getNoiseParams("mgv6_np_mud",            np_mud)            &&
+		settings->getNoiseParams("mgv6_np_beach",          np_beach)          &&
+		settings->getNoiseParams("mgv6_np_biome",          np_biome)          &&
+		settings->getNoiseParams("mgv6_np_cave",           np_cave)           &&
+		settings->getNoiseParams("mgv6_np_humidity",       np_humidity)       &&
+		settings->getNoiseParams("mgv6_np_trees",          np_trees)          &&
+		settings->getNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
 	return success;
 }
 
@@ -387,16 +388,13 @@ void MapgenV6Params::writeParams(Settings *settings) {
 
 
 bool MapgenV7Params::readParams(Settings *settings) {
-	np_terrain_base    = settings->getNoiseParams("mgv7_np_terrain_base");
-	np_terrain_alt     = settings->getNoiseParams("mgv7_np_terrain_alt");
-	np_terrain_mod     = settings->getNoiseParams("mgv7_np_terrain_mod");
-	np_terrain_persist = settings->getNoiseParams("mgv7_np_terrain_persist");
-	np_height_select   = settings->getNoiseParams("mgv7_np_height_select");
-	np_ridge           = settings->getNoiseParams("mgv7_np_ridge");
-	
-	bool success =
-		np_terrain_base    && np_terrain_alt   && np_terrain_mod &&
-		np_terrain_persist && np_height_select && np_ridge;
+	bool success = 
+		settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base)    &&
+		settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt)     &&
+		settings->getNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod)     &&
+		settings->getNoiseParams("mgv7_np_terrain_persist", np_terrain_persist) &&
+		settings->getNoiseParams("mgv7_np_height_select",   np_height_select)   &&
+		settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
 	return success;
 }
 

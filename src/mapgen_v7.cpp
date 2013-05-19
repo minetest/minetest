@@ -85,12 +85,12 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	// Terrain noise
-	noise_terrain_base    = new Noise(params->np_terrain_base,    seed, csize.X, csize.Z);
-	noise_terrain_alt     = new Noise(params->np_terrain_alt,     seed, csize.X, csize.Z);
-	noise_terrain_mod     = new Noise(params->np_terrain_mod,     seed, csize.X, csize.Z);
-	noise_terrain_persist = new Noise(params->np_terrain_persist, seed, csize.X, csize.Z);
-	noise_height_select   = new Noise(params->np_height_select,   seed, csize.X, csize.Z);
-	noise_ridge           = new Noise(params->np_ridge, seed, csize.X, csize.Y, csize.Z);
+	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
+	noise_terrain_alt     = new Noise(&params->np_terrain_alt,     seed, csize.X, csize.Z);
+	noise_terrain_mod     = new Noise(&params->np_terrain_mod,     seed, csize.X, csize.Z);
+	noise_terrain_persist = new Noise(&params->np_terrain_persist, seed, csize.X, csize.Z);
+	noise_height_select   = new Noise(&params->np_height_select,   seed, csize.X, csize.Z);
+	noise_ridge           = new Noise(&params->np_ridge, seed, csize.X, csize.Y, csize.Z);
 	
 	// Biome noise
 	noise_heat     = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
