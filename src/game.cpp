@@ -1042,7 +1042,7 @@ void the_game(
 		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
-			f32 dtime=0; // in seconds
+			f32 dtime = 0.033; // in seconds
 			if (cloud_menu_background) {
 				u32 time = device->getTimer()->getTime();
 				if(time > lasttime)
@@ -1136,7 +1136,7 @@ void the_game(
 		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
-			f32 dtime=0; // in seconds
+			f32 dtime = 0.033; // in seconds
 			if (cloud_menu_background) {
 				u32 time = device->getTimer()->getTime();
 				if(time > lasttime)
