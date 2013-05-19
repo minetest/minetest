@@ -220,7 +220,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	Settings worldmt_settings;
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> exclude_mod_names;
+	std::set<std::string> include_mod_names;
 	for(std::vector<std::string>::iterator it = names.begin(); 
 		it != names.end(); ++it)
 	{	
@@ -229,14 +229,13 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 		// explicitely excluded. if mod is not mentioned at all, it is
 		// enabled. So by default, all installed mods are enabled.
 		if (name.compare(0,9,"load_mod_") == 0 &&
-			!worldmt_settings.getBool(name))
+			worldmt_settings.getBool(name))
 		{
-			exclude_mod_names.insert(name.substr(9));
+			include_mod_names.insert(name.substr(9));
 		}
 	}
 
-	// Collect all mods in gamespec.addon_mods_paths,
-	// excluding those in the set exclude_mod_names
+	// Collect all mods that are also in include_mod_names
 	std::vector<ModSpec> addon_mods;
 	for(std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
 			it_path != gamespec.addon_mods_paths.end(); ++it_path)
@@ -246,7 +245,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 			it != addon_mods_in_path.end(); ++it)
 		{
 			ModSpec& mod = *it;
-			if(exclude_mod_names.count(mod.name) == 0)
+			if(include_mod_names.count(mod.name) != 0)
 				addon_mods.push_back(mod);
 		}
 	}

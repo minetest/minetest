@@ -727,19 +727,13 @@ Server::Server(
 	std::string worldmt = m_path_world + DIR_DELIM + "world.mt";
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> exclude_mod_names;
 	std::set<std::string> load_mod_names;
 	for(std::vector<std::string>::iterator it = names.begin(); 
 		it != names.end(); ++it)
 	{	
 		std::string name = *it;  
-		if (name.compare(0,9,"load_mod_")==0)
-		{
-			if(worldmt_settings.getBool(name))
-				load_mod_names.insert(name.substr(9));
-			else			
-				exclude_mod_names.insert(name.substr(9));
-		}
+		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
+			load_mod_names.insert(name.substr(9));
 	}
 	// complain about mods declared to be loaded, but not found
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
