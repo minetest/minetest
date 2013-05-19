@@ -349,7 +349,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 
 void *EmergeThread::Thread() {
 	ThreadStarted();
-	log_register_thread("EmergeThread" + id);
+	log_register_thread("EmergeThread" + itos(id));
 	DSTACK(__FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
