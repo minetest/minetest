@@ -84,17 +84,14 @@ void NoiseIndev::transformNoiseMapFarScale(float xx, float yy, float zz) {
 MapgenIndev::MapgenIndev(int mapgenid, MapgenIndevParams *params, EmergeManager *emerge) 
 	: MapgenV6(mapgenid, params, emerge)
 {
-        noiseindev_terrain_base   = new NoiseIndev(params->npindev_terrain_base,   seed, csize.X, csize.Z);
-        noiseindev_terrain_higher = new NoiseIndev(params->npindev_terrain_higher, seed, csize.X, csize.Z);
-        noiseindev_steepness      = new NoiseIndev(params->npindev_steepness,      seed, csize.X, csize.Z);
-//        noise_height_select  = new Noise(params->np_height_select,  seed, csize.X, csize.Y);
-//        noise_trees          = new Noise(params->np_trees,          seed, csize.X, csize.Y);
-        noiseindev_mud            = new NoiseIndev(params->npindev_mud,            seed, csize.X, csize.Z);
-//        noise_beach          = new Noise(params->np_beach,          seed, csize.X, csize.Y);
-        noiseindev_float_islands1  = new NoiseIndev(params->npindev_float_islands1,  seed, csize.X, csize.Y, csize.Z);
-        noiseindev_float_islands2  = new NoiseIndev(params->npindev_float_islands2,  seed, csize.X, csize.Y, csize.Z);
-        noiseindev_float_islands3  = new NoiseIndev(params->npindev_float_islands3,  seed, csize.X, csize.Z);
-        noiseindev_biome          = new NoiseIndev(params->npindev_biome,          seed, csize.X, csize.Z);
+	noiseindev_terrain_base    = new NoiseIndev(&params->npindev_terrain_base,   seed, csize.X, csize.Z);
+	noiseindev_terrain_higher  = new NoiseIndev(&params->npindev_terrain_higher, seed, csize.X, csize.Z);
+	noiseindev_steepness       = new NoiseIndev(&params->npindev_steepness,      seed, csize.X, csize.Z);
+	noiseindev_mud             = new NoiseIndev(&params->npindev_mud,            seed, csize.X, csize.Z);
+	noiseindev_float_islands1  = new NoiseIndev(&params->npindev_float_islands1, seed, csize.X, csize.Y, csize.Z);
+	noiseindev_float_islands2  = new NoiseIndev(&params->npindev_float_islands2, seed, csize.X, csize.Y, csize.Z);
+	noiseindev_float_islands3  = new NoiseIndev(&params->npindev_float_islands3, seed, csize.X, csize.Z);
+	noiseindev_biome           = new NoiseIndev(&params->npindev_biome,          seed, csize.X, csize.Z);
 }
 
 MapgenIndev::~MapgenIndev() {
@@ -170,46 +167,41 @@ void MapgenIndev::calculateNoise() {
 }
 
 bool MapgenIndevParams::readParams(Settings *settings) {
-        freq_desert = settings->getFloat("mgv6_freq_desert");
-        freq_beach  = settings->getFloat("mgv6_freq_beach");
+	freq_desert = settings->getFloat("mgv6_freq_desert");
+	freq_beach  = settings->getFloat("mgv6_freq_beach");
 
-        npindev_terrain_base   = settings->getNoiseIndevParams("mgindev_np_terrain_base");
-        npindev_terrain_higher = settings->getNoiseIndevParams("mgindev_np_terrain_higher");
-        npindev_steepness      = settings->getNoiseIndevParams("mgindev_np_steepness");
-        np_height_select  = settings->getNoiseParams("mgv6_np_height_select");
-        np_trees          = settings->getNoiseParams("mgv6_np_trees");
-        npindev_mud            = settings->getNoiseIndevParams("mgindev_np_mud");
-        np_beach          = settings->getNoiseParams("mgv6_np_beach");
-        npindev_biome     = settings->getNoiseIndevParams("mgindev_np_biome");
-        np_cave           = settings->getNoiseParams("mgv6_np_cave");
-        npindev_float_islands1  = settings->getNoiseIndevParams("mgindev_np_float_islands1");
-        npindev_float_islands2  = settings->getNoiseIndevParams("mgindev_np_float_islands2");
-        npindev_float_islands3  = settings->getNoiseIndevParams("mgindev_np_float_islands3");
-
-        bool success =
-                npindev_terrain_base  && npindev_terrain_higher && npindev_steepness &&
-                np_height_select && np_trees          && npindev_mud       &&
-                np_beach         && np_biome          && np_cave &&
-                npindev_float_islands1 && npindev_float_islands2 && npindev_float_islands3;
-        return success;
+	bool success = 
+		settings->getNoiseIndevParams("mgindev_np_terrain_base",   npindev_terrain_base)   &&
+		settings->getNoiseIndevParams("mgindev_np_terrain_higher", npindev_terrain_higher) &&
+		settings->getNoiseIndevParams("mgindev_np_steepness",      npindev_steepness)      &&
+		settings->getNoiseParams("mgv6_np_height_select",          np_height_select)       &&
+		settings->getNoiseParams("mgv6_np_trees",                  np_trees)               &&
+		settings->getNoiseIndevParams("mgindev_np_mud",            npindev_mud)            &&
+		settings->getNoiseParams("mgv6_np_beach",                  np_beach)               &&
+		settings->getNoiseIndevParams("mgindev_np_biome",          npindev_biome)          &&
+		settings->getNoiseParams("mgv6_np_cave",                   np_cave)                &&
+		settings->getNoiseIndevParams("mgindev_np_float_islands1", npindev_float_islands1) &&
+		settings->getNoiseIndevParams("mgindev_np_float_islands2", npindev_float_islands2) &&
+		settings->getNoiseIndevParams("mgindev_np_float_islands3", npindev_float_islands3);
+	return success;
 }
 
 void MapgenIndevParams::writeParams(Settings *settings) {
-        settings->setFloat("mgv6_freq_desert", freq_desert);
-        settings->setFloat("mgv6_freq_beach",  freq_beach);
+	settings->setFloat("mgv6_freq_desert", freq_desert);
+	settings->setFloat("mgv6_freq_beach",  freq_beach);
 
-        settings->setNoiseIndevParams("mgindev_np_terrain_base",   npindev_terrain_base);
-        settings->setNoiseIndevParams("mgindev_np_terrain_higher", npindev_terrain_higher);
-        settings->setNoiseIndevParams("mgindev_np_steepness",      npindev_steepness);
-        settings->setNoiseParams("mgv6_np_height_select",  np_height_select);
-        settings->setNoiseParams("mgv6_np_trees",          np_trees);
-        settings->setNoiseIndevParams("mgindev_np_mud",            npindev_mud);
-        settings->setNoiseParams("mgv6_np_beach",          np_beach);
-        settings->setNoiseIndevParams("mgindev_np_biome",          npindev_biome);
-        settings->setNoiseParams("mgv6_np_cave",           np_cave);
-        settings->setNoiseIndevParams("mgindev_np_float_islands1",  npindev_float_islands1);
-        settings->setNoiseIndevParams("mgindev_np_float_islands2",  npindev_float_islands2);
-        settings->setNoiseIndevParams("mgindev_np_float_islands3",  npindev_float_islands3);
+	settings->setNoiseIndevParams("mgindev_np_terrain_base",   npindev_terrain_base);
+	settings->setNoiseIndevParams("mgindev_np_terrain_higher", npindev_terrain_higher);
+	settings->setNoiseIndevParams("mgindev_np_steepness",      npindev_steepness);
+	settings->setNoiseParams("mgv6_np_height_select",          np_height_select);
+	settings->setNoiseParams("mgv6_np_trees",                  np_trees);
+	settings->setNoiseIndevParams("mgindev_np_mud",            npindev_mud);
+	settings->setNoiseParams("mgv6_np_beach",                  np_beach);
+	settings->setNoiseIndevParams("mgindev_np_biome",          npindev_biome);
+	settings->setNoiseParams("mgv6_np_cave",                   np_cave);
+	settings->setNoiseIndevParams("mgindev_np_float_islands1", npindev_float_islands1);
+	settings->setNoiseIndevParams("mgindev_np_float_islands2", npindev_float_islands2);
+	settings->setNoiseIndevParams("mgindev_np_float_islands3", npindev_float_islands3);
 }
 
 

@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapgenSinglenodeParams : public MapgenParams {
 	
-	MapgenSinglenodeParams() {
-	}
+	MapgenSinglenodeParams() {}
+	~MapgenSinglenodeParams() {}
 	
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);
