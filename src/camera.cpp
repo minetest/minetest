@@ -588,7 +588,8 @@ void Camera::wield(const ItemStack &item, u16 playeritem)
 	IItemDefManager *idef = m_gamedef->idef();
 	std::string itemname = item.getDefinition(idef).name;
 	m_wield_mesh_next = idef->getWieldMesh(itemname, m_gamedef);
-	if(playeritem != m_previous_playeritem) {
+	if(playeritem != m_previous_playeritem &&
+			!(m_previous_itemname == "" && itemname == "")) {
 		m_previous_playeritem = playeritem;
 		m_previous_itemname = itemname;
 		if(m_wield_change_timer >= 0.125)
