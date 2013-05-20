@@ -288,10 +288,10 @@ void Map::unspreadLight(enum LightBank bank,
 			continue;
 
 		// Calculate relative position in block
-		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
+		//v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
 
 		// Get node straight from the block
-		MapNode n = block->getNode(relpos);
+		//MapNode n = block->getNode(relpos);
 
 		u8 oldlight = j->second;
 
@@ -937,7 +937,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	*/
 
 	v3s16 toppos = p + v3s16(0,1,0);
-	v3s16 bottompos = p + v3s16(0,-1,0);
+	//v3s16 bottompos = p + v3s16(0,-1,0);
 
 	bool node_under_sunlight = true;
 	std::set<v3s16> light_sources;
@@ -1246,7 +1246,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		// Get the brightest neighbour node and propagate light from it
 		v3s16 n2p = getBrightestNeighbour(bank, p);
 		try{
-			MapNode n2 = getNode(n2p);
+			//MapNode n2 = getNode(n2p);
 			lightNeighbors(bank, n2p, modified_blocks);
 		}
 		catch(InvalidPositionException &e)
@@ -2831,7 +2831,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	sector = new ServerMapSector(this, p2d, m_gamedef);
 
 	// Sector position on map in nodes
-	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
+	//v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
 	/*
 		Insert to container

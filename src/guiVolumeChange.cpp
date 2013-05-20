@@ -96,7 +96,6 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 
 	v2s32 size = rect.getSize();
 	v2s32 topleft_client(40, 0);
-	v2s32 size_client = size - v2s32(40, 0);
 	int volume=(int)(g_settings->getFloat("sound_volume")*100);
 	/*
 		Add stuff

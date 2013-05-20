@@ -87,7 +87,7 @@ class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
-class HudElement;
+struct HudElement;
 
 class Player
 {

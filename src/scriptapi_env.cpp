@@ -227,7 +227,6 @@ int EnvRef::l_get_node_light(lua_State *L)
 		time_of_day = 24000.0 * lua_tonumber(L, 3);
 	time_of_day %= 24000;
 	u32 dnr = time_to_daynight_ratio(time_of_day, true);
-	MapNode n = env->getMap().getNodeNoEx(pos);
 	try{
 		MapNode n = env->getMap().getNode(pos);
 		INodeDefManager *ndef = env->getGameDef()->ndef();
@@ -373,7 +372,7 @@ int EnvRef::l_add_item(lua_State *L)
 	ServerEnvironment *env = o->m_env;
 	if(env == NULL) return 0;
 	// pos
-	v3f pos = checkFloatPos(L, 2);
+	//v3f pos = checkFloatPos(L, 2);
 	// item
 	ItemStack item = read_item(L, 3);
 	if(item.empty() || !item.isKnown(get_server(L)->idef()))

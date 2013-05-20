@@ -147,7 +147,7 @@ v3s16 check_v3s16(lua_State *L, int index)
 
 video::SColor readARGB8(lua_State *L, int index)
 {
-	video::SColor color;
+	video::SColor color(0);
 	luaL_checktype(L, index, LUA_TTABLE);
 	lua_getfield(L, index, "a");
 	if(lua_isnumber(L, -1))

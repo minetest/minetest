@@ -165,8 +165,6 @@ void GUIConfigureWorld::regenerateGui(v2u32 screensize)
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = rect.getSize();
-
 	v2s32 topleft = v2s32(10, 10);
 
 	/*

@@ -910,7 +910,6 @@ void ServerEnvironment::clearAllObjects()
 		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			continue;
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();
 		// Delete static object if block is loaded
 		if(obj->m_static_exists){
 			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
@@ -1031,8 +1030,6 @@ void ServerEnvironment::step(float dtime)
 			// Ignore disconnected players
 			if(player->peer_id == 0)
 				continue;
-
-			v3f playerpos = player->getPosition();
 			
 			// Move
 			player->move(dtime, *m_map, 100*BS);
@@ -2072,8 +2069,6 @@ void ClientEnvironment::step(float dtime)
 		*/
 		
 		{
-			v3f lplayerpos = lplayer->getPosition();
-			
 			// Apply physics
 			if(free_move == false && is_climbing == false)
 			{
@@ -2197,7 +2192,6 @@ void ClientEnvironment::step(float dtime)
 			i != m_players.end(); ++i)
 	{
 		Player *player = *i;
-		v3f playerpos = player->getPosition();
 		
 		/*
 			Handle non-local players
