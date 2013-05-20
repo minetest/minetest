@@ -2169,7 +2169,7 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
 		MapNode n2 = m_map->getNodeNoEx(p2);
 		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_map->getNodeNoEx(p2);
+		MapNode n3 = m_map->getNodeNoEx(p3);
 
 		u32 damage_per_second = 0;
 		damage_per_second = MYMAX(damage_per_second,
