@@ -1987,7 +1987,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		event.spawn_particle.expirationtime = expirationtime;
 		event.spawn_particle.size = size;
-		event.add_particlespawner.collisiondetection =
+		event.spawn_particle.collisiondetection =
 				collisiondetection;
 		event.spawn_particle.texture = new std::string(texture);
 
