@@ -375,8 +375,6 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	v3s16 blockpos = data->blockpos_requested;
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	v3s16 blockpos_full_min = blockpos_min - v3s16(1,1,1);
-	v3s16 blockpos_full_max = blockpos_max + v3s16(1,1,1);
 
 	// Area of central chunk
 	node_min = blockpos_min*MAP_BLOCKSIZE;

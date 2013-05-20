@@ -152,8 +152,6 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	v3s16 blockpos_full_min = blockpos_min - v3s16(1, 1, 1);
-	v3s16 blockpos_full_max = blockpos_max + v3s16(1, 1, 1);
 	node_min = blockpos_min * MAP_BLOCKSIZE;
 	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;

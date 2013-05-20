@@ -464,7 +464,7 @@ struct TestCompress: public TestBase
 			std::string str_decompressed = os_decompressed.str();
 			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
 					" equal (output: %u, input: %u)",
-					str_decompressed.size(), data_in.size());
+					(unsigned int)str_decompressed.size(), (unsigned int)data_in.size());
 			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
 				UTEST(str_decompressed[i] == data_in[i],
 						"index out[%i]=%i differs from in[%i]=%i",

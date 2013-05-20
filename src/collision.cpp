@@ -298,7 +298,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			f32 distance = speed_f.getLength();
 			std::vector<DistanceSortedActiveObject> clientobjects;
 			c_env->getActiveObjects(pos_f,distance * 1.5,clientobjects);
-			for (int i=0; i < clientobjects.size(); i++)
+			for (size_t i=0; i < clientobjects.size(); i++)
 			{
 				if ((self == 0) || (self != clientobjects[i].obj)) {
 					objects.push_back((ActiveObject*)clientobjects[i].obj);
