@@ -147,12 +147,13 @@ void Camera::step(f32 dtime)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
 	}
 
+	bool was_under_zero = m_wield_change_timer < 0;
 	if(m_wield_change_timer < 0.125)
 		m_wield_change_timer += dtime;
 	if(m_wield_change_timer > 0.125)
 		m_wield_change_timer = 0.125;
 
-	if(m_wield_change_timer >= 0 && m_wield_change_timer - dtime < 0) {
+	if(m_wield_change_timer >= 0 && was_under_zero) {
 		if(m_wield_mesh_next) {
 			m_wieldnode->setMesh(m_wield_mesh_next);
 			m_wieldnode->setVisible(true);
