@@ -847,7 +847,7 @@ void nodePlacementPrediction(Client &client,
 					<<") - Name not known"<<std::endl;
 			return;
 		}
-		// Predict param2
+		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
 		if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED){
 			v3s16 dir = nodepos - neighbourpos;
@@ -859,8 +859,33 @@ void nodePlacementPrediction(Client &client,
 				param2 = dir.Z < 0 ? 5 : 4;
 			}
 		}
-		// TODO: Facedir prediction
-		// TODO: If predicted node is in attached_node group, check attachment
+		if(nodedef->get(id).param_type_2 == CPT2_FACEDIR){
+			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
+			if(abs(dir.X) > abs(dir.Z)){
+				param2 = dir.X < 0 ? 3 : 1;
+			} else {
+				param2 = dir.Z < 0 ? 2 : 0;
+			}
+		}
+		assert(param2 >= 0 && param2 <= 5);
+		//Check attachment if node is in group attached_node
+		if(((ItemGroupList) nodedef->get(id).groups)["attached_node"] != 0){
+			static v3s16 wallmounted_dirs[8] = {
+				v3s16(0,1,0),
+				v3s16(0,-1,0),
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			v3s16 pp;
+			if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED)
+				pp = p + wallmounted_dirs[param2];
+			else
+				pp = p + v3s16(0,-1,0);
+			if(!nodedef->get(map.getNode(pp)).walkable)
+				return;
+		}
 		// Add node to client map
 		MapNode n(id, 0, param2);
 		try{
