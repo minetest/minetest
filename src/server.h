@@ -43,8 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-struct LuaState;
-typedef struct lua_State lua_State;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
@@ -52,7 +50,9 @@ class EventManager;
 class PlayerSAO;
 class IRollbackManager;
 class EmergeManager;
-//struct HudElement;
+//struct HudElement; ?????????
+class ScriptApi;
+
 
 class ServerError : public std::exception
 {
@@ -384,7 +384,7 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	std::list<PlayerInfo> getPlayerInfo();
+	//std::list<PlayerInfo> getPlayerInfo();
 
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
@@ -492,8 +492,8 @@ public:
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
 
-	// Envlock and conlock should be locked when using Lua
-	lua_State *getLua(){ return m_lua; }
+	// Envlock and conlock should be locked when using scriptapi
+	ScriptApi *getScriptIface(){ return m_script; }
 
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
@@ -746,7 +746,7 @@ private:
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	lua_State *m_lua;
+	ScriptApi *m_script;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;

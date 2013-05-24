@@ -24,3 +24,31 @@ minetest.add_to_creative_inventory = function(itemstring)
 	minetest.log('info', "WARNING: minetest.add_to_creative_inventory: This function is deprecated and does nothing.")
 end
 
+--
+-- EnvRef
+--
+minetest.env = {}
+local envref_deprecation_message_printed = false
+setmetatable(minetest.env, {
+	__index = function(table, key)
+		if not envref_deprecation_message_printed then
+			minetest.log("info", "WARNING: minetest.env:[...] is deprecated and should be replaced with minetest.[...]")
+			envref_deprecation_message_printed = true
+		end
+		local func = minetest[key]
+		if type(func) == "function" then
+			rawset(table, key, function(self, ...)
+				return func(unpack(arg))
+			end)
+		else
+			rawset(table, key, nil)
+		end
+		return rawget(table, key)
+	end
+})
+minetest.env.add_rat = function(self, ...)
+	minetest.log("info", "minetest.env:add_rat(): C++ mobs have been removed. Doing nothing.")
+end
+minetest.env.add_firefly = function(self, ...)
+	minetest.log("info", "minetest.env:add_firefly(): C++ mobs have been removed. Doing nothing.")
+end
