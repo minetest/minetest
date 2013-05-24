@@ -43,7 +43,7 @@ end
 function minetest.get_connected_players()
 	-- This could be optimized a bit, but leave that for later
 	local list = {}
-	for _, obj in pairs(minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
+	for _, obj in pairs(minetest.get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
 		if obj:is_player() then
 			table.insert(list, obj)
 		end

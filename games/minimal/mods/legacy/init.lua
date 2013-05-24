@@ -79,14 +79,12 @@ minetest.register_craftitem(":rat", {
 	description = "Rat",
 	inventory_image = "rat.png",
 	on_drop = function(item, dropper, pos)
-		minetest.env:add_rat(pos)
 		item:take_item()
 		return item
 	end,
 	on_place = function(item, dropped, pointed)
 		pos = minetest.get_pointed_thing_position(pointed, true)
 		if pos ~= nil then
-			minetest.env:add_rat(pos)
 			item:take_item()
 			return item
 		end
@@ -103,14 +101,12 @@ minetest.register_craftitem(":firefly", {
 	description = "Firefly",
 	inventory_image = "firefly.png",
 	on_drop = function(item, dropper, pos)
-		minetest.env:add_firefly(pos)
 		item:take_item()
 		return item
 	end,
 	on_place = function(item, dropped, pointed)
 		pos = minetest.get_pointed_thing_position(pointed, true)
 		if pos ~= nil then
-			minetest.env:add_firefly(pos)
 			item:take_item()
 			return item
 		end

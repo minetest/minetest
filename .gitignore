@@ -32,6 +32,11 @@ src/CMakeFiles/*
 src/Makefile
 src/cmake_config.h
 src/cmake_install.cmake
+src/script/CMakeFiles/*
+src/script/common/CMakeFiles/*
+src/script/cpp_api/CMakeFiles/*
+src/script/lua_api/CMakeFiles/*
+src/util/CMakeFiles/*
 src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
