@@ -46,9 +46,3 @@ setmetatable(minetest.env, {
 		return rawget(table, key)
 	end
 })
-minetest.env.add_rat = function(self, ...)
-	minetest.log("info", "minetest.env:add_rat(): C++ mobs have been removed. Doing nothing.")
-end
-minetest.env.add_firefly = function(self, ...)
-	minetest.log("info", "minetest.env:add_firefly(): C++ mobs have been removed. Doing nothing.")
-end
