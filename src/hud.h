@@ -46,7 +46,7 @@ enum HudElementType {
 };
 
 enum HudElementStat {
-	HUD_STAT_POS,
+	HUD_STAT_POS = 0,
 	HUD_STAT_NAME,
 	HUD_STAT_SCALE,
 	HUD_STAT_TEXT,
