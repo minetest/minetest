@@ -110,6 +110,9 @@ private:
 	// set_animation(self, frame_range, frame_speed, frame_blend)
 	static int l_set_animation(lua_State *L);
 
+	// set_animation_speed(self, frame_speed)
+	static int l_set_animation_speed(lua_State *L);
+
 	// set_bone_position(self, std::string bone, v3f position, v3f rotation)
 	static int l_set_bone_position(lua_State *L);
 

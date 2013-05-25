@@ -581,8 +581,8 @@ private:
 	bool m_initial_tx_basepos_set;
 	bool m_tx_select_horiz_by_yawpitch;
 	v2f m_animation_range;
-	int m_animation_speed;
-	int m_animation_blend;
+	f32 m_animation_speed;
+	f32 m_animation_blend;
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
@@ -1439,6 +1439,13 @@ public:
 		m_animated_meshnode->setTransitionTime(m_animation_blend);
 	}
 
+	void updateAnimationSpeed()
+	{
+		if(m_animated_meshnode == NULL)
+			return;
+		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+	}
+
 	void updateBonePosition()
 	{
 		if(!m_bone_position.size() || m_animated_meshnode == NULL)
@@ -1703,6 +1710,11 @@ public:
 			m_animation_blend = readF1000(is);
 
 			updateAnimation();
+		}
+		else if(cmd == GENERIC_CMD_SET_ANIMATION_SPEED)
+		{
+			m_animation_speed = readF1000(is);
+			updateAnimationSpeed();
 		}
 		else if(cmd == GENERIC_CMD_SET_BONE_POSITION)
 		{

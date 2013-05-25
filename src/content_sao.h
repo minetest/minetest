@@ -63,6 +63,7 @@ public:
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setAnimationSpeed(float frame_speed);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
@@ -106,6 +107,7 @@ private:
 	float m_animation_speed;
 	float m_animation_blend;
 	bool m_animation_sent;
+	bool m_animation_speed_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position;
 	bool m_bone_position_sent;

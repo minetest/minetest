@@ -156,6 +156,8 @@ public:
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
 	{}
+	virtual void setAnimationSpeed(float frame_speed)
+	{}
 	virtual void setBonePosition(std::string bone, v3f position, v3f rotation)
 	{}
 	virtual void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
