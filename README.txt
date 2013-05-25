@@ -259,6 +259,20 @@ distribution.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
+Authors of media files
+-----------------------
+Everything not listed in here:
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+BlockMen:
+  textures/base/pack/menuheader.png
+
+erlehmann:
+  misc/minetest-icon-24x24.png
+  misc/minetest-icon.ico
+  misc/minetest-icon.svg
+  textures/base/pack/logo.png
+
 License of Minetest source code
 -------------------------------
 
