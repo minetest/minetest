@@ -1701,6 +1701,13 @@ methods:
 - get2dMap_flat(pos) -> Flat <size.x * size.y> element array of 2d noise values starting at pos={x=,y=}
 - get3dMap_flat(pos) -> Same as get2dMap_flat, but 3d noise
 
+SHA1: A SHA1 Hash interface
+- Can be created via SHA1()
+methods:
+- add_bytes(str): add bytes to hash
+- get_digest(): return binary digest
+- get_hexdigest(): return hexadecimal digest
+
 VoxelManip: An interface to the MapVoxelManipulator for Lua
 - Can be created via VoxelManip()
 - Also minetest.get_voxel_manip()
