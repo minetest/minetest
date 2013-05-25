@@ -2241,6 +2241,8 @@ void the_game(
 					if (current_formspec == 0)
 					{
 						/* Create menu */
+						/* Note: FormspecFormSource and TextDestPlayerInventory
+						 * are deleted by guiFormSpecMenu                     */
 						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
 						current_textdest = new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 						GUIFormSpecMenu *menu =
@@ -2253,6 +2255,7 @@ void the_game(
 					}
 					else
 					{
+						assert(current_textdest != 0);
 						/* update menu */
 						current_textdest->setFormName(*(event.show_formspec.formname));
 						current_formspec->setForm(*(event.show_formspec.formspec));
