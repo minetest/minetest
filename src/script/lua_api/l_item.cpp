@@ -227,7 +227,7 @@ int LuaItemStack::l_add_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	ItemStack newitem = read_item(L,-2, STACK_TO_SERVER(L));
+	ItemStack newitem = read_item(L,-1, STACK_TO_SERVER(L));
 	ItemStack leftover = item.addItem(newitem, STACK_TO_SERVER(L)->idef());
 	create(L, leftover);
 	return 1;
