@@ -416,9 +416,18 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 
 	std::string type = checkstringfield(L, 1, "type");
 
-	if(type != "pos"){
-		NO_MAP_LOCK_REQUIRED;
+	if(type == "node"){
+		lua_getfield(L, 1, "pos");
+		v3s16 pos = check_v3s16(L, -1);
+		loc.setNodeMeta(pos);
 
+		if(getServer(L)->getInventory(loc) != NULL)
+			InvRef::create(L, loc);
+		else
+			lua_pushnil(L);
+		return 1;
+	} else {
+		NO_MAP_LOCK_REQUIRED;
 		if(type == "player"){
 			std::string name = checkstringfield(L, 1, "name");
 			loc.setPlayer(name);
@@ -431,22 +440,9 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
-
-		return 1;
+		return 1;	
+		// END NO_MAP_LOCK_REQUIRED;
 	}
-	else {
-		if(type == "node"){
-				lua_getfield(L, 1, "pos");
-				v3s16 pos = check_v3s16(L, -1);
-				loc.setNodeMeta(pos);
-		}
-		if(getServer(L)->getInventory(loc) != NULL)
-			InvRef::create(L, loc);
-		else
-			lua_pushnil(L);
-		return 1;
-	}
-
 }
 
 // create_detached_inventory_raw(name)
