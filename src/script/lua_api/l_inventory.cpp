@@ -121,6 +121,9 @@ int InvRef::l_set_size(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	int newsize = luaL_checknumber(L, 3);
 	Inventory *inv = getinv(L, ref);
+	if(inv == NULL){
+		return 0;
+	}
 	if(newsize == 0){
 		inv->deleteList(listname);
 		reportInventoryChange(L, ref);
@@ -144,6 +147,9 @@ int InvRef::l_set_width(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	int newwidth = luaL_checknumber(L, 3);
 	Inventory *inv = getinv(L, ref);
+	if(inv == NULL){
+		return 0;
+	}
 	InventoryList *list = inv->getList(listname);
 	if(list){
 		list->setWidth(newwidth);
@@ -195,7 +201,11 @@ int InvRef::l_get_list(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
-	push_inventory_list(inv, listname, L);
+	if(inv){
+		push_inventory_list(inv, listname, L);
+	} else {
+		lua_pushnil(L);
+	}
 	return 1;
 }
 
@@ -206,6 +216,9 @@ int InvRef::l_set_list(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
+	if(inv == NULL){
+		return 0;
+	}
 	InventoryList *list = inv->getList(listname);
 	if(list)
 		read_inventory_list(inv, listname, L, 3,
