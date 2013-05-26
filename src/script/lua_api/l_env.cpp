@@ -550,7 +550,7 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	GET_ENV_PTR;
 
 	// read position 1 from lua
-	v3f pos1 = checkFloatPos(L, 2);
+	v3f pos1 = checkFloatPos(L, 1);
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 	//read step size from lua
@@ -566,14 +566,14 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3s16 pos1                  = read_v3s16(L, 2);
-	v3s16 pos2                  = read_v3s16(L, 3);
-	unsigned int searchdistance = luaL_checkint(L, 4);
-	unsigned int max_jump       = luaL_checkint(L, 5);
-	unsigned int max_drop       = luaL_checkint(L, 6);
+	v3s16 pos1                  = read_v3s16(L, 1);
+	v3s16 pos2                  = read_v3s16(L, 2);
+	unsigned int searchdistance = luaL_checkint(L, 3);
+	unsigned int max_jump       = luaL_checkint(L, 4);
+	unsigned int max_drop       = luaL_checkint(L, 5);
 	algorithm algo              = A_PLAIN_NP;
-	if(! lua_isnil(L, 7)) {
-		std::string algorithm       = luaL_checkstring(L,7);
+	if(! lua_isnil(L, 6)) {
+		std::string algorithm       = luaL_checkstring(L,6);
 
 		if (algorithm == "A*")
 			algo = A_PLAIN;
@@ -680,6 +680,8 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(get_perlin_map);
 	retval &= API_FCT(clear_objects);
 	retval &= API_FCT(spawn_tree);
+	retval &= API_FCT(find_path);
+	retval &= API_FCT(line_of_sight);
 
 	return retval;
 }
