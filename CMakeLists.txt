@@ -28,6 +28,13 @@ else()
 	set(RUN_IN_PLACE 0 CACHE BOOL "Run directly in source directory structure")
 endif()
 
+# RUN_IN_PLACE is exported as a #define value, ensure it's 1/0 instead of ON/OFF
+if(RUN_IN_PLACE)
+	set(RUN_IN_PLACE 1)
+else()
+	set(RUN_IN_PLACE 0)
+endif()
+
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
 if(WIN32)
 	set(BUILD_SERVER 0 CACHE BOOL "Build server")
