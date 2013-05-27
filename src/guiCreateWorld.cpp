@@ -135,6 +135,9 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 		evt.EventType = EET_KEY_INPUT_EVENT;
 		evt.KeyInput.Key = KEY_END;
 		evt.KeyInput.PressedDown = true;
+		evt.KeyInput.Char = 0;
+		evt.KeyInput.Control = 0;
+		evt.KeyInput.Shift = 0;
 		e->OnEvent(evt);
 	}
 	{
