@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-05-29 01:32+0200\n"
-"Last-Translator: manuel duarte <ffrogger0@yahoo.com>\n"
+"PO-Revision-Date: 2013-05-29 01:59+0200\n"
+"Last-Translator: manuel joaquim <ffrogger0@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: src/client.cpp:2846
 msgid "Item textures..."
-msgstr "Texturas dos itens"
+msgstr "Texturas dos itens..."
 
 #: src/game.cpp:912
 msgid "Loading..."
@@ -52,23 +52,23 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Verifique debug.txt para mais detalhes."
+"Consulte debug.txt para mais detalhes."
 
 #: src/guiConfigureWorld.cpp:123
 msgid ""
 "Warning: Some mods are not configured yet.\n"
 "They will be enabled by default when you save the configuration.  "
 msgstr ""
-"Alerta: Alguns mods ainda não estão configurados.\n"
-"Eles vão ser ativos por predefinição quando guardar a configuração.  "
+"Atenção: Alguns mods ainda não estão configurados.\n"
+"Eles vão ser ativados por predefinição quando guardar a configuração.  "
 
 #: src/guiConfigureWorld.cpp:143
 msgid ""
 "Warning: Some configured mods are missing.\n"
 "Their setting will be removed when you save the configuration.  "
 msgstr ""
-"Alerta: Alguns mods configurados estão em falta.\n"
-"As definições vão ser removidas quando gravar a configuração.  "
+"Atenção: Alguns mods configurados estão em falta.\n"
+"As suas definições vão ser removidas quando gravar a configuração.  "
 
 #: src/guiConfigureWorld.cpp:208
 msgid "enabled"
@@ -105,7 +105,7 @@ msgstr "Configuração gravada.  "
 
 #: src/guiConfigureWorld.cpp:415
 msgid "Warning: Configuration not consistent.  "
-msgstr "Alerta: Configuração não compativel.  "
+msgstr "Atenção: Configuração não compatível.  "
 
 #: src/guiConfirmMenu.cpp:119
 msgid "Yes"
@@ -129,15 +129,15 @@ msgstr "Criar"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "Estás morto."
+msgstr "Morreste."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Renascer"
+msgstr "Reaparecer"
 
 #: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr "Botão esq.: Mover todos os items, Botão dir.: Mover um item"
+msgstr "Botão esq.: Mover todos os itens, Botão dir.: Mover um item"
 
 #: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:130
@@ -146,15 +146,15 @@ msgstr "Continuar"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Teclas. (Se este menu estragar-se, remova as linhas do minetest.conf)"
+msgstr "Teclas. (Se este menu se estragar, remova as linhas do minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr "\"Use\" = ir para baixo"
+msgstr "\"Use\" = descer"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Duas vezes \"saltar\" para ativar vôo"
+msgstr "Carregue duas vezes em \"saltar\" para ativar o vôo"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
@@ -162,7 +162,7 @@ msgstr "Tecla já em uso"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
-msgstr "pressione tecla"
+msgstr "pressione a tecla"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
@@ -170,7 +170,7 @@ msgstr "Avançar"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
-msgstr "Para trás"
+msgstr "Recuar"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
@@ -194,7 +194,7 @@ msgstr "Agachar"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
-msgstr "Dropar"
+msgstr "Largar"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
@@ -202,7 +202,7 @@ msgstr "Inventário"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr "CHAT"
+msgstr "Conversa"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
@@ -214,15 +214,15 @@ msgstr "Consola"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
-msgstr "Ativar vôo"
+msgstr "Ativar/Desativar vôo"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
-msgstr "Ativar correr"
+msgstr "Ativar/Desativar correr"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
-msgstr "Ativar noclip"
+msgstr "Ativar/Desativar noclip"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
@@ -234,11 +234,11 @@ msgstr "Imprimir stacks"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
-msgstr "Não foi possível criar mundo: Nome com carácteres inválidos"
+msgstr "Não foi possível criar mundo: Nome com caracteres inválidos"
 
 #: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
-msgstr "Não foi possivel criar mundo: Mundo com este nome já existente"
+msgstr "Não foi possível criar mundo: Já existe um mundo com este nome"
 
 #: src/guiMainMenu.cpp:285
 msgid "Singleplayer"
@@ -246,7 +246,7 @@ msgstr "Um Jogador"
 
 #: src/guiMainMenu.cpp:288
 msgid "Multiplayer"
-msgstr "Multijogador"
+msgstr "Multiplayer"
 
 #: src/guiMainMenu.cpp:291
 msgid "Advanced"
@@ -298,7 +298,7 @@ msgstr "Favoritos:"
 
 #: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
 msgid "Public Server List:"
-msgstr "Lista de servidor públicos:"
+msgstr "Lista de servidores públicos:"
 
 #: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
 msgid "Address/Port"
@@ -314,7 +314,7 @@ msgstr "Mostrar Favoritos"
 
 #: src/guiMainMenu.cpp:591
 msgid "Connect"
-msgstr "Conectar"
+msgstr "Ligar"
 
 #: src/guiMainMenu.cpp:668
 msgid "Leave address blank to start a local server."
@@ -358,7 +358,7 @@ msgstr "Mip-Mapping"
 
 #: src/guiMainMenu.cpp:818
 msgid "Anisotropic Filtering"
-msgstr "Filtro Anisotropico"
+msgstr "Filtro Anisotrópico"
 
 #: src/guiMainMenu.cpp:827
 msgid "Bi-Linear Filtering"
@@ -374,11 +374,11 @@ msgstr "Sombras"
 
 #: src/guiMainMenu.cpp:855
 msgid "Preload item visuals"
-msgstr "Precarregamento dos items"
+msgstr "Pré-carregamento dos itens"
 
 #: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
-msgstr "Ativar Particulas"
+msgstr "Ativar Partículas"
 
 #: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
@@ -402,11 +402,11 @@ msgstr "Ficheiros para eliminar"
 
 #: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
-msgstr "Não foi possivel criar mundo: Jogos não detectados"
+msgstr "Não foi possível criar mundo: Não foram detectados jogos"
 
 #: src/guiMainMenu.cpp:1286
 msgid "Cannot configure world: Nothing selected"
-msgstr "Não foi possivel configurar mundo: Nada seleccionado"
+msgstr "Não foi possível configurar mundo: Nada seleccionado"
 
 #: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
@@ -450,7 +450,7 @@ msgstr "Sair para Menu"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr "Sair para SO"
+msgstr "Sair para o sistema"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -476,7 +476,7 @@ msgstr ""
 "- Clique esquerdo: cavar/bater\n"
 "- Clique direito: colocar/utilizar\n"
 "- Roda do rato: seleccionar item\n"
-"- T: conversação"
+"- T: conversação\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
@@ -544,7 +544,7 @@ msgstr "Pausa"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr "SHIFT"
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -576,15 +576,15 @@ msgstr "Aceitar"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr "END"
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr "HOME"
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr "MODE Change"
+msgstr "Mode Change"
 
 #: src/keycode.cpp:227
 msgid "Next"
@@ -608,7 +608,7 @@ msgstr "Executar"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr "PRINT"
+msgstr "Print"
 
 #: src/keycode.cpp:228
 msgid "Select"
@@ -624,7 +624,7 @@ msgstr "Ajuda"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr "INSERT"
+msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
