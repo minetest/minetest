@@ -3185,48 +3185,56 @@ void ServerMap::prepareBlock(MapBlock *block) {
 	}
 }
 
-s16 ServerMap::findGroundLevel(v2s16 p2d)
+/**
+ * Get the ground level by searching for a non CONTENT_AIR node in a column from top to bottom
+ */
+s16 ServerMap::findGroundLevel(v2s16 p2d, bool cacheBlocks)
 {
-#if 0
-	/*
-		Uh, just do something random...
-	*/
-	// Find existing map from top to down
-	s16 max=63;
-	s16 min=-64;
-	v3s16 p(p2d.X, max, p2d.Y);
-	for(; p.Y>min; p.Y--)
+	
+	s16 level;
+
+	// The reference height is the original mapgen height
+	s16 referenceHeight = m_emerge->getGroundLevelAtPoint(p2d);
+	s16 maxSearchHeight =  63 + referenceHeight;
+	s16 minSearchHeight = -63 + referenceHeight;
+	v3s16 probePosition(p2d.X, maxSearchHeight, p2d.Y);
+	v3s16 blockPosition = getNodeBlockPos(probePosition);
+	v3s16 prevBlockPosition = blockPosition;
+
+	// Cache the block to be inspected.
+	if(cacheBlocks) {
+		emergeBlock(blockPosition, true);
+	}
+
+	// Probes the nodes in the given column
+	for(; probePosition.Y > minSearchHeight; probePosition.Y--)
 	{
-		MapNode n = getNodeNoEx(p);
-		if(n.getContent() != CONTENT_IGNORE)
+		if(cacheBlocks) {
+			// Calculate the block position of the given node
+			blockPosition = getNodeBlockPos(probePosition); 
+
+			// If the node is in an different block, cache it
+			if(blockPosition != prevBlockPosition) {
+				emergeBlock(blockPosition, true);
+				prevBlockPosition = blockPosition;
+			}
+		}
+
+		MapNode node = getNodeNoEx(probePosition);
+		if (node.getContent() != CONTENT_IGNORE &&
+		    node.getContent() != CONTENT_AIR) {
 			break;
-	}
-	if(p.Y == min)
-		goto plan_b;
-	// If this node is not air, go to plan b
-	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
-		goto plan_b;
-	// Search existing walkable and return it
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
-			return p.Y;
+		}
 	}
 
-	// Move to plan b
-plan_b:
-#endif
+	// Could not determine the ground. Use map generator noise functions.
+	if(probePosition.Y == minSearchHeight) {
+		level = referenceHeight; 
+	} else {
+		level = probePosition.Y;
+	}
 
-	/*
-		Determine from map generator noise functions
-	*/
-
-	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
 	return level;
-
-	//double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
-	//return (s16)level;
 }
 
 bool ServerMap::loadFromFolders() {
