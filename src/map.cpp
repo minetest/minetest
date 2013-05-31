@@ -1755,7 +1755,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		//relax up
-		if (relax && p0.Y <= water_level && liquid_levels[D_TOP] == 0 &&
+		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) && liquid_levels[D_TOP] == 0 &&
 			liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE &&
 			total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level-
 			(can_liquid_same_level - relax) &&

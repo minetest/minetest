@@ -191,9 +191,48 @@ public:
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
-		if (map->transforming_liquid_size() < 500)
-			map->transforming_liquid_add(p);
+		if (map->transforming_liquid_size() > 500)
+			return;
+		map->transforming_liquid_add(p);
 		//if ((*map).m_transforming_liquid.size() < 500) (*map).m_transforming_liquid.push_back(p);
+	}
+};
+
+class LiquidDropABM : public ActiveBlockModifier
+{
+private:
+	std::set<std::string> contents;
+
+public:
+	LiquidDropABM(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+		std::set<content_t> liquids;
+		nodemgr->getIds("group:liquid", liquids);
+		for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
+			contents.insert(nodemgr->get(*k).liquid_alternative_source);
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{ return contents; }
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 20.0; }
+	virtual u32 getTriggerChance()
+	{ return 10; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n) 
+	{
+		ServerMap *map = &env->getServerMap();
+		if (map->transforming_liquid_size() > 500)
+			return;
+		//todo: look around except top
+		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
+		if (n_below.getContent() != CONTENT_AIR)
+			return;
+		map->transforming_liquid_add(p);
 	}
 };
 
@@ -202,6 +241,8 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 	env->addActiveBlockModifier(new GrowGrassABM());
 	env->addActiveBlockModifier(new RemoveGrassABM());
 	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM(env, nodedef));
-	if (g_settings->getBool("liquid_finite"))
+	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
+		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
+	}
 }
