@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "sound_openal.h"
 #endif
 #include "event_manager.h"
+#include <iomanip>
 #include <list>
 #include "util/directiontables.h"
 
@@ -2961,21 +2962,20 @@ void the_game(
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
 			
-			char temptext[300];
-			snprintf(temptext, 300, "%s ("
-					"R: range_all=%i"
-					")"
-					" drawtime=%.0f, dtime_jitter = % .1f %%"
-					", v_range = %.1f, RTT = %.3f",
-					program_name_and_version,
-					draw_control.range_all,
-					drawtime_avg,
-					dtime_jitter1_max_fraction * 100.0,
-					draw_control.wanted_range,
-					client.getRTT()
-					);
-			
-			guitext->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::fixed
+				<<program_name_and_version
+				<<" (R: range_all="<<draw_control.range_all<<")"
+				<<std::setprecision(0)
+				<<" drawtime = "<<drawtime_avg
+				<<std::setprecision(1)
+				<<", dtime_jitter = "
+				<<(dtime_jitter1_max_fraction * 100.0)<<" %"
+				<<std::setprecision(1)
+				<<", v_range = "<<draw_control.wanted_range
+				<<std::setprecision(3)
+				<<", RTT = "<<client.getRTT();
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else if(show_hud || show_chat)
@@ -2990,17 +2990,15 @@ void the_game(
 		
 		if(show_debug)
 		{
-			char temptext[300];
-			snprintf(temptext, 300,
-					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %llu)",
-					player_position.X/BS,
-					player_position.Y/BS,
-					player_position.Z/BS,
-					wrapDegrees_0_360(camera_yaw),
-					(unsigned long long)client.getMapSeed());
-
-			guitext2->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::setprecision(1)<<std::fixed
+				<<"(" <<(player_position.X/BS)
+				<<", "<<(player_position.Y/BS)
+				<<", "<<(player_position.Z/BS)
+				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
+				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<")";
+			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
 		}
 		else
