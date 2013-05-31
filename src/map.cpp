@@ -3091,7 +3091,6 @@ s16 ServerMap::findGroundLevel(v2s16 p2d, bool cacheBlocks)
 
 	// Cache the block to be inspected.
 	if(cacheBlocks) {
-		printf("Caching blocks\n");
 		emergeBlock(blockPosition, true);
 	}
 
