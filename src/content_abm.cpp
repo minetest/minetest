@@ -191,7 +191,8 @@ public:
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
-		if (map->transforming_liquid_size() > 500) return;
+		if (map->transforming_liquid_size() > 500)
+			return;
 		map->transforming_liquid_add(p);
 		//if ((*map).m_transforming_liquid.size() < 500) (*map).m_transforming_liquid.push_back(p);
 	}
@@ -214,9 +215,9 @@ public:
 	{ return contents; }
 	virtual std::set<std::string> getRequiredNeighbors()
 	{
-		std::set<std::string> neibhours;
-		neibhours.insert("mapgen_air");
-		return neibhours; 
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		return neighbors; 
 	}
 	virtual float getTriggerInterval()
 	{ return 20.0; }
@@ -225,10 +226,12 @@ public:
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n) 
 	{
 		ServerMap *map = &env->getServerMap();
-		if (map->transforming_liquid_size() > 500) return;
+		if (map->transforming_liquid_size() > 500)
+			return;
 		//todo: look around except top
 		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
-		if (n_below.getContent() != CONTENT_AIR) return;
+		if (n_below.getContent() != CONTENT_AIR)
+			return;
 		map->transforming_liquid_add(p);
 	}
 };
