@@ -37,6 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h>
+
 enum ValueType
 {
 	VALUETYPE_STRING,
@@ -767,19 +770,19 @@ fail:
 					if (width == 16) {
 						bufpos += PADDING(bufpos, u16);
 						nprinted = snprintf(sbuf + pos, sbuflen,
-									is_unsigned ? "%u, " : "%d, ",
+									is_unsigned ? "%" PRIu16 ", " : "%" PRId16 ", ",
 									*((u16 *)bufpos));
 						bufpos += sizeof(u16);
 					} else if (width == 32) {
 						bufpos += PADDING(bufpos, u32);
 						nprinted = snprintf(sbuf + pos, sbuflen,
-									is_unsigned ? "%u, " : "%d, ",
+									is_unsigned ? "%" PRIu32 ", " : "%" PRId32 ", ",
 									*((u32 *)bufpos));
 						bufpos += sizeof(u32);
 					} else if (width == 64) {
 						bufpos += PADDING(bufpos, u64);
 						nprinted = snprintf(sbuf + pos, sbuflen,
-									is_unsigned ? "%llu, " : "%lli, ",
+									is_unsigned ? "%" PRIu64 ", " : "%" PRId64 ", ",
 									(unsigned long long)*((u64 *)bufpos));
 						bufpos += sizeof(u64);
 					}

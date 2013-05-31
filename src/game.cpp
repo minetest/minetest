@@ -69,6 +69,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/directiontables.h"
 
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h>
+
 /*
 	Text input system
 */
@@ -2993,7 +2996,7 @@ void the_game(
 			char temptext[300];
 			snprintf(temptext, 300,
 					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %llu)",
+					" (yaw = %.1f) (seed = %" PRIu64 ")",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
