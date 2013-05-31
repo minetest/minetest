@@ -212,6 +212,12 @@ public:
 	}
 	virtual std::set<std::string> getTriggerContents()
 	{ return contents; }
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neibhours;
+		neibhours.insert("mapgen_air");
+		return neibhours; 
+	}
 	virtual float getTriggerInterval()
 	{ return 20.0; }
 	virtual u32 getTriggerChance()
