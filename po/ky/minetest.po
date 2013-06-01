@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-05-18 14:59+0200\n"
+"PO-Revision-Date: 2013-06-01 18:09+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ky\n"
@@ -52,7 +52,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Толугураак маалымат үчүн debug.txt файлын текшериңиз."
+"Толугураак маалымат үчүн, debug.txt'ти текшериңиз."
 
 #: src/guiConfigureWorld.cpp:123
 msgid ""
@@ -780,7 +780,7 @@ msgstr "Башкы меню"
 
 #: src/main.cpp:2035
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Дүйнөнү инициалдаштыруу катасы"
 
 #: src/main.cpp:2048
 msgid "No world selected and no address provided. Nothing to do."
