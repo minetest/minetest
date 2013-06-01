@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "sound_openal.h"
 #endif
 #include "event_manager.h"
+#include <iomanip>
 #include <list>
 #include "util/directiontables.h"
 
@@ -132,6 +133,10 @@ struct TextDestPlayerInventory : public TextDest
 	void gotText(std::map<std::string, std::string> fields)
 	{
 		m_client->sendInventoryFields(m_formname, fields);
+	}
+
+	void setFormName(std::string formname) {
+		m_formname = formname;
 	}
 
 	Client *m_client;
@@ -847,7 +852,7 @@ void nodePlacementPrediction(Client &client,
 					<<") - Name not known"<<std::endl;
 			return;
 		}
-		// Predict param2
+		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
 		if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED){
 			v3s16 dir = nodepos - neighbourpos;
@@ -859,8 +864,33 @@ void nodePlacementPrediction(Client &client,
 				param2 = dir.Z < 0 ? 5 : 4;
 			}
 		}
-		// TODO: Facedir prediction
-		// TODO: If predicted node is in attached_node group, check attachment
+		if(nodedef->get(id).param_type_2 == CPT2_FACEDIR){
+			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
+			if(abs(dir.X) > abs(dir.Z)){
+				param2 = dir.X < 0 ? 3 : 1;
+			} else {
+				param2 = dir.Z < 0 ? 2 : 0;
+			}
+		}
+		assert(param2 >= 0 && param2 <= 5);
+		//Check attachment if node is in group attached_node
+		if(((ItemGroupList) nodedef->get(id).groups)["attached_node"] != 0){
+			static v3s16 wallmounted_dirs[8] = {
+				v3s16(0,1,0),
+				v3s16(0,-1,0),
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			v3s16 pp;
+			if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED)
+				pp = p + wallmounted_dirs[param2];
+			else
+				pp = p + v3s16(0,-1,0);
+			if(!nodedef->get(map.getNode(pp)).walkable)
+				return;
+		}
 		// Add node to client map
 		MapNode n(id, 0, param2);
 		try{
@@ -895,6 +925,7 @@ void the_game(
 )
 {
 	FormspecFormSource* current_formspec = 0;
+	TextDestPlayerInventory* current_textdest = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -1042,7 +1073,7 @@ void the_game(
 		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
-			f32 dtime=0; // in seconds
+			f32 dtime = 0.033; // in seconds
 			if (cloud_menu_background) {
 				u32 time = device->getTimer()->getTime();
 				if(time > lasttime)
@@ -1136,7 +1167,7 @@ void the_game(
 		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
-			f32 dtime=0; // in seconds
+			f32 dtime = 0.033; // in seconds
 			if (cloud_menu_background) {
 				u32 time = device->getTimer()->getTime();
 				if(time > lasttime)
@@ -1962,7 +1993,7 @@ void the_game(
 		{
 			s32 wheel = input->getMouseWheel();
 			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
-					hud.hotbar_itemcount-1);
+					player->hud_hotbar_itemcount-1);
 
 			if(wheel < 0)
 			{
@@ -1986,7 +2017,7 @@ void the_game(
 			const KeyPress *kp = NumberKey + (i + 1) % 10;
 			if(input->wasKeyDown(*kp))
 			{
-				if(i < PLAYER_INVENTORY_SIZE && i < hud.hotbar_itemcount)
+				if(i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount)
 				{
 					new_playeritem = i;
 
@@ -2211,19 +2242,23 @@ void the_game(
 					if (current_formspec == 0)
 					{
 						/* Create menu */
+						/* Note: FormspecFormSource and TextDestPlayerInventory
+						 * are deleted by guiFormSpecMenu                     */
 						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
-
+						current_textdest = new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
 										&client, gamedef);
 						menu->setFormSource(current_formspec);
-						menu->setTextDest(new TextDestPlayerInventory(&client,*(event.show_formspec.formname)));
+						menu->setTextDest(current_textdest);
 						menu->drop();
 					}
 					else
 					{
+						assert(current_textdest != 0);
 						/* update menu */
+						current_textdest->setFormName(*(event.show_formspec.formname));
 						current_formspec->setForm(*(event.show_formspec.formspec));
 					}
 					delete(event.show_formspec.formspec);
@@ -2927,21 +2962,20 @@ void the_game(
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
 			
-			char temptext[300];
-			snprintf(temptext, 300, "%s ("
-					"R: range_all=%i"
-					")"
-					" drawtime=%.0f, dtime_jitter = % .1f %%"
-					", v_range = %.1f, RTT = %.3f",
-					program_name_and_version,
-					draw_control.range_all,
-					drawtime_avg,
-					dtime_jitter1_max_fraction * 100.0,
-					draw_control.wanted_range,
-					client.getRTT()
-					);
-			
-			guitext->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::fixed
+				<<program_name_and_version
+				<<" (R: range_all="<<draw_control.range_all<<")"
+				<<std::setprecision(0)
+				<<" drawtime = "<<drawtime_avg
+				<<std::setprecision(1)
+				<<", dtime_jitter = "
+				<<(dtime_jitter1_max_fraction * 100.0)<<" %"
+				<<std::setprecision(1)
+				<<", v_range = "<<draw_control.wanted_range
+				<<std::setprecision(3)
+				<<", RTT = "<<client.getRTT();
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else if(show_hud || show_chat)
@@ -2956,17 +2990,15 @@ void the_game(
 		
 		if(show_debug)
 		{
-			char temptext[300];
-			snprintf(temptext, 300,
-					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %llu)",
-					player_position.X/BS,
-					player_position.Y/BS,
-					player_position.Z/BS,
-					wrapDegrees_0_360(camera_yaw),
-					(unsigned long long)client.getMapSeed());
-
-			guitext2->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::setprecision(1)<<std::fixed
+				<<"(" <<(player_position.X/BS)
+				<<", "<<(player_position.Y/BS)
+				<<", "<<(player_position.Z/BS)
+				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
+				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<")";
+			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
 		}
 		else
@@ -3084,7 +3116,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item);
+			camera.wield(item, client.getPlayerItem());
 		}
 
 		/*

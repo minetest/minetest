@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
-#include "scriptapi.h"
+#include "cpp_api/scriptapi.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings, g_profiler
@@ -320,10 +320,10 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 	ServerEnvironment
 */
 
-ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
+ServerEnvironment::ServerEnvironment(ServerMap *map, ScriptApi *scriptIface,
 		IGameDef *gamedef, IBackgroundBlockEmerger *emerger):
 	m_map(map),
-	m_lua(L),
+	m_script(scriptIface),
 	m_gamedef(gamedef),
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
@@ -826,7 +826,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 				i != elapsed_timers.end(); i++){
 			n = block->getNodeNoEx(i->first);
 			v3s16 p = i->first + block->getPosRelative();
-			if(scriptapi_node_on_timer(m_lua,p,n,i->second.elapsed))
+			if(m_script->node_on_timer(p,n,i->second.elapsed))
 				block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 		}
 	}
@@ -847,17 +847,17 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	MapNode n_old = m_map->getNodeNoEx(p);
 	// Call destructor
 	if(ndef->get(n_old).has_on_destruct)
-		scriptapi_node_on_destruct(m_lua, p, n_old);
+		m_script->node_on_destruct(p, n_old);
 	// Replace node
 	bool succeeded = m_map->addNodeWithEvent(p, n);
 	if(!succeeded)
 		return false;
 	// Call post-destructor
 	if(ndef->get(n_old).has_after_destruct)
-		scriptapi_node_after_destruct(m_lua, p, n_old);
+		m_script->node_after_destruct(p, n_old);
 	// Call constructor
 	if(ndef->get(n).has_on_construct)
-		scriptapi_node_on_construct(m_lua, p, n);
+		m_script->node_on_construct(p, n);
 	return true;
 }
 
@@ -867,7 +867,7 @@ bool ServerEnvironment::removeNode(v3s16 p)
 	MapNode n_old = m_map->getNodeNoEx(p);
 	// Call destructor
 	if(ndef->get(n_old).has_on_destruct)
-		scriptapi_node_on_destruct(m_lua, p, n_old);
+		m_script->node_on_destruct(p, n_old);
 	// Replace with air
 	// This is slightly optimized compared to addNodeWithEvent(air)
 	bool succeeded = m_map->removeNodeWithEvent(p);
@@ -875,7 +875,7 @@ bool ServerEnvironment::removeNode(v3s16 p)
 		return false;
 	// Call post-destructor
 	if(ndef->get(n_old).has_after_destruct)
-		scriptapi_node_after_destruct(m_lua, p, n_old);
+		m_script->node_after_destruct(p, n_old);
 	// Air doesn't require constructor
 	return true;
 }
@@ -910,7 +910,6 @@ void ServerEnvironment::clearAllObjects()
 		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			continue;
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();
 		// Delete static object if block is loaded
 		if(obj->m_static_exists){
 			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
@@ -931,7 +930,7 @@ void ServerEnvironment::clearAllObjects()
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		scriptapi_rm_object_reference(m_lua, obj);
+		m_script->removeObjectReference(obj);
 
 		// Delete active object
 		if(obj->environmentDeletes())
@@ -1031,8 +1030,6 @@ void ServerEnvironment::step(float dtime)
 			// Ignore disconnected players
 			if(player->peer_id == 0)
 				continue;
-
-			v3f playerpos = player->getPosition();
 			
 			// Move
 			player->move(dtime, *m_map, 100*BS);
@@ -1162,7 +1159,7 @@ void ServerEnvironment::step(float dtime)
 						i != elapsed_timers.end(); i++){
 					n = block->getNodeNoEx(i->first);
 					p = i->first + block->getPosRelative();
-					if(scriptapi_node_on_timer(m_lua,p,n,i->second.elapsed))
+					if(m_script->node_on_timer(p,n,i->second.elapsed))
 						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 				}
 			}
@@ -1216,7 +1213,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Step script environment (run global on_step())
 	*/
-	scriptapi_environment_step(m_lua, dtime);
+	m_script->environment_Step(dtime);
 
 	/*
 		Step active objects
@@ -1510,7 +1507,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			<<std::endl;
 	
 	// Register reference in scripting api (must be done before post-init)
-	scriptapi_add_object_reference(m_lua, object);
+	m_script->addObjectReference(object);
 	// Post-initialize object
 	object->addedToEnvironment(dtime_s);
 	
@@ -1598,7 +1595,7 @@ void ServerEnvironment::removeRemovedObjects()
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		scriptapi_rm_object_reference(m_lua, obj);
+		m_script->removeObjectReference(obj);
 
 		// Delete
 		if(obj->environmentDeletes())
@@ -1904,7 +1901,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
-		scriptapi_rm_object_reference(m_lua, obj);
+		m_script->removeObjectReference(obj);
 
 		// Delete active object
 		if(obj->environmentDeletes())
@@ -2072,8 +2069,6 @@ void ClientEnvironment::step(float dtime)
 		*/
 		
 		{
-			v3f lplayerpos = lplayer->getPosition();
-			
 			// Apply physics
 			if(free_move == false && is_climbing == false)
 			{
@@ -2174,7 +2169,7 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
 		MapNode n2 = m_map->getNodeNoEx(p2);
 		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_map->getNodeNoEx(p2);
+		MapNode n3 = m_map->getNodeNoEx(p3);
 
 		u32 damage_per_second = 0;
 		damage_per_second = MYMAX(damage_per_second,
@@ -2197,7 +2192,6 @@ void ClientEnvironment::step(float dtime)
 			i != m_players.end(); ++i)
 	{
 		Player *player = *i;
-		v3f playerpos = player->getPosition();
 		
 		/*
 			Handle non-local players

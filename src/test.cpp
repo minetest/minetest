@@ -464,7 +464,7 @@ struct TestCompress: public TestBase
 			std::string str_decompressed = os_decompressed.str();
 			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
 					" equal (output: %u, input: %u)",
-					str_decompressed.size(), data_in.size());
+					(unsigned int)str_decompressed.size(), (unsigned int)data_in.size());
 			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
 				UTEST(str_decompressed[i] == data_in[i],
 						"index out[%i]=%i differs from in[%i]=%i",
@@ -1772,6 +1772,10 @@ void run_tests()
 		TEST(TestConnection);
 		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 	}
+
+	delete idef;
+	delete ndef;
+
 	if(tests_failed == 0){
 		infostream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
 		infostream<<"run_tests() passed."<<std::endl;
@@ -1781,7 +1785,5 @@ void run_tests()
 		errorstream<<"run_tests() aborting."<<std::endl;
 		abort();
 	}
-	delete idef;
-	delete ndef;
 }
 

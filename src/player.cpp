@@ -81,6 +81,8 @@ Player::Player(IGameDef *gamedef):
 
 	hud_flags = HUD_FLAG_HOTBAR_VISIBLE | HUD_FLAG_HEALTHBAR_VISIBLE |
 			 HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE;
+
+	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
 }
 
 Player::~Player()

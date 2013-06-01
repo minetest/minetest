@@ -24,3 +24,25 @@ minetest.add_to_creative_inventory = function(itemstring)
 	minetest.log('info', "WARNING: minetest.add_to_creative_inventory: This function is deprecated and does nothing.")
 end
 
+--
+-- EnvRef
+--
+minetest.env = {}
+local envref_deprecation_message_printed = false
+setmetatable(minetest.env, {
+	__index = function(table, key)
+		if not envref_deprecation_message_printed then
+			minetest.log("info", "WARNING: minetest.env:[...] is deprecated and should be replaced with minetest.[...]")
+			envref_deprecation_message_printed = true
+		end
+		local func = minetest[key]
+		if type(func) == "function" then
+			rawset(table, key, function(self, ...)
+				return func(unpack({...}))
+			end)
+		else
+			rawset(table, key, nil)
+		end
+		return rawget(table, key)
+	end
+})

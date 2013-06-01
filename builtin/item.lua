@@ -129,9 +129,9 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	end
 
 	local under = pointed_thing.under
-	local oldnode_under = minetest.env:get_node_or_nil(under)
+	local oldnode_under = minetest.get_node_or_nil(under)
 	local above = pointed_thing.above
-	local oldnode_above = minetest.env:get_node_or_nil(above)
+	local oldnode_above = minetest.get_node_or_nil(above)
 
 	if not oldnode_under or not oldnode_above then
 		minetest.log("info", placer:get_player_name() .. " tried to place"
@@ -163,7 +163,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	minetest.log("action", placer:get_player_name() .. " places node "
 		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 	
-	local oldnode = minetest.env:get_node(place_to)
+	local oldnode = minetest.get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = 0}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
@@ -197,7 +197,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	end
 
 	-- Add node and update
-	minetest.env:add_node(place_to, newnode)
+	minetest.add_node(place_to, newnode)
 
 	local take_item = true
 
@@ -232,7 +232,7 @@ function minetest.item_place_object(itemstack, placer, pointed_thing)
 	local pos = minetest.get_pointed_thing_position(pointed_thing, true)
 	if pos ~= nil then
 		local item = itemstack:take_item()
-		minetest.env:add_item(pos, item)
+		minetest.add_item(pos, item)
 	end
 	return itemstack
 end
@@ -241,7 +241,7 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 	-- Call on_rightclick if the pointed node defines it
 	if pointed_thing.type == "node" and placer and
 			not placer:get_player_control().sneak then
-		local n = minetest.env:get_node(pointed_thing.under)
+		local n = minetest.get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
 			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack
@@ -258,7 +258,7 @@ function minetest.item_drop(itemstack, dropper, pos)
 	if dropper.get_player_name then
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
-		local obj = minetest.env:add_item(p, itemstack)
+		local obj = minetest.add_item(p, itemstack)
 		if obj then
 			v.x = v.x*2
 			v.y = v.y*2 + 1
@@ -266,7 +266,7 @@ function minetest.item_drop(itemstack, dropper, pos)
 			obj:setvelocity(v)
 		end
 	else
-		minetest.env:add_item(pos, itemstack)
+		minetest.add_item(pos, itemstack)
 	end
 	return ItemStack("")
 end
@@ -304,7 +304,7 @@ function minetest.handle_node_drops(pos, drops, digger)
 					y = pos.y + math.random()/2-0.25,
 					z = pos.z + math.random()/2-0.25,
 				}
-				minetest.env:add_item(p, left)
+				minetest.add_item(p, left)
 			end
 		end
 	end
@@ -340,11 +340,11 @@ function minetest.node_dig(pos, node, digger)
 
 	local oldmetadata = nil
 	if def.after_dig_node then
-		oldmetadata = minetest.env:get_meta(pos):to_table()
+		oldmetadata = minetest.get_meta(pos):to_table()
 	end
 
 	-- Remove node and update
-	minetest.env:remove_node(pos)
+	minetest.remove_node(pos)
 	
 	-- Run callback
 	if def.after_dig_node then

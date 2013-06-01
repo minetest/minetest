@@ -350,6 +350,11 @@ Client::~Client()
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
+	while(!m_mesh_update_thread.m_queue_out.empty()) {
+		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+		delete r.mesh;
+	}
+
 
 	delete m_inventory_from_server;
 
@@ -757,6 +762,8 @@ void Client::step(float dtime)
 
 				// Replace with the new mesh
 				block->mesh = r.mesh;
+			} else {
+				delete r.mesh;
 			}
 			if(r.ack_block_to_server)
 			{
@@ -1980,7 +1987,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		event.spawn_particle.expirationtime = expirationtime;
 		event.spawn_particle.size = size;
-		event.add_particlespawner.collisiondetection =
+		event.spawn_particle.collisiondetection =
 				collisiondetection;
 		event.spawn_particle.texture = new std::string(texture);
 
@@ -2128,6 +2135,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		player->hud_flags &= ~mask;
 		player->hud_flags |= flags;
+	}
+	else if(command == TOCLIENT_HUD_SET_PARAM)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		u16 param         = readU16(is);
+		std::string value = deSerializeString(is);
+
+		if(param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4){
+			s32 hotbar_itemcount = readS32((u8*) value.c_str());
+			if(hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX)
+				player->hud_hotbar_itemcount = hotbar_itemcount;
+		}
 	}
 	else
 	{

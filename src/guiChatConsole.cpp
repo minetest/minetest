@@ -121,7 +121,9 @@ GUIChatConsole::GUIChatConsole(
 
 GUIChatConsole::~GUIChatConsole()
 {
-	delete m_font;
+#if USE_FREETYPE
+	m_font->drop();
+#endif
 }
 
 void GUIChatConsole::openConsole(f32 height)

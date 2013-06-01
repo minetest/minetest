@@ -34,8 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "script.h"
-#include "scriptapi.h"
+#include "script/cpp_api/scriptapi.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "craftdef.h"
@@ -646,7 +645,7 @@ Server::Server(
 	m_rollback_sink_enabled(true),
 	m_enable_rollback_recording(false),
 	m_emerge(NULL),
-	m_lua(NULL),
+	m_script(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -727,19 +726,13 @@ Server::Server(
 	std::string worldmt = m_path_world + DIR_DELIM + "world.mt";
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> exclude_mod_names;
 	std::set<std::string> load_mod_names;
 	for(std::vector<std::string>::iterator it = names.begin(); 
 		it != names.end(); ++it)
 	{	
 		std::string name = *it;  
-		if (name.compare(0,9,"load_mod_")==0)
-		{
-			if(worldmt_settings.getBool(name))
-				load_mod_names.insert(name.substr(9));
-			else			
-				exclude_mod_names.insert(name.substr(9));
-		}
+		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
+			load_mod_names.insert(name.substr(9));
 	}
 	// complain about mods declared to be loaded, but not found
 	for(std::vector<ModSpec>::iterator it = m_mods.begin();
@@ -767,14 +760,14 @@ Server::Server(
 	// Initialize scripting
 
 	infostream<<"Server: Initializing Lua"<<std::endl;
-	m_lua = script_init();
-	assert(m_lua);
-	// Export API
-	scriptapi_export(m_lua, this);
+
+	m_script = new ScriptApi(this);
+
+
 	// Load and run builtin.lua
 	infostream<<"Server: Loading builtin.lua [\""
 			<<builtinpath<<"\"]"<<std::endl;
-	bool success = scriptapi_loadmod(m_lua, builtinpath, "__builtin");
+	bool success = m_script->loadMod(builtinpath, "__builtin");
 	if(!success){
 		errorstream<<"Server: Failed to load and run "
 				<<builtinpath<<std::endl;
@@ -795,7 +788,7 @@ Server::Server(
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
 		infostream<<"  ["<<padStringRight(mod.name, 12)<<"] [\""
 				<<scriptpath<<"\"]"<<std::endl;
-		bool success = scriptapi_loadmod(m_lua, scriptpath, mod.name);
+		bool success = m_script->loadMod(scriptpath, mod.name);
 		if(!success){
 			errorstream<<"Server: Failed to load and run "
 					<<scriptpath<<std::endl;
@@ -811,12 +804,12 @@ Server::Server(
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_lua, this, this);
+	m_env = new ServerEnvironment(servermap, m_script, this, this);
 	
 	m_emerge->initMapgens(servermap->getMapgenParams());
 
 	// Give environment reference to scripting api
-	scriptapi_add_environment(m_lua, m_env);
+	m_script->initializeEnvironment(m_env);
 
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
@@ -880,7 +873,7 @@ Server::~Server()
 		/*
 			Execute script shutdown hooks
 		*/
-		scriptapi_on_shutdown(m_lua);
+		m_script->on_shutdown();
 	}
 
 	{
@@ -933,7 +926,7 @@ Server::~Server()
 
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
-	script_deinit(m_lua);
+	delete m_script;
 
 	// Delete detached inventories
 	{
@@ -1950,7 +1943,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		std::string checkpwd; // Password hash to check against
-		bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+		bool has_auth = m_script->getAuth(playername, &checkpwd, NULL);
 
 		// If no authentication info exists for user, create it
 		if(!has_auth){
@@ -1970,10 +1963,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if (raw_default_password.length() == 0)
 				initial_password = given_password;
 
-			scriptapi_create_auth(m_lua, playername, initial_password);
+			m_script->createAuth(playername, initial_password);
 		}
 
-		has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+		has_auth = m_script->getAuth(playername, &checkpwd, NULL);
 
 		if(!has_auth){
 			SendAccessDenied(m_con, peer_id, L"Not allowed to login");
@@ -2475,7 +2468,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::wstring name = narrow_to_wide(player->getName());
 
 		// Run script hook
-		bool ate = scriptapi_on_chat_message(m_lua, player->getName(),
+		bool ate = m_script->on_chat_message(player->getName(),
 				wide_to_narrow(message));
 		// If script ate the message, don't proceed
 		if(ate)
@@ -2607,7 +2600,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string playername = player->getName();
 
 		std::string checkpwd;
-		scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+		m_script->getAuth(playername, &checkpwd, NULL);
 
 		if(oldpwd != checkpwd)
 		{
@@ -2617,7 +2610,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		bool success = scriptapi_set_password(m_lua, playername, newpwd);
+		bool success = m_script->setPassword(playername, newpwd);
 		if(success){
 			actionstream<<player->getName()<<" changes password"<<std::endl;
 			SendChatMessage(peer_id, L"Password change successful.");
@@ -2821,7 +2814,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
-					scriptapi_node_on_punch(m_lua, p_under, n, playersao);
+					m_script->node_on_punch(p_under, n, playersao);
 				// Cheat prevention
 				playersao->noCheatDigStart(p_under);
 			}
@@ -2931,7 +2924,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/* Actually dig node */
 
 				if(is_valid_dig && n.getContent() != CONTENT_IGNORE)
-					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
+					m_script->node_on_dig(p_under, n, playersao);
 
 				// Send unusual result (that is, node not being removed)
 				if(m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
@@ -2971,7 +2964,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Do stuff
 				pointed_object->rightClick(playersao);
 			}
-			else if(scriptapi_item_on_place(m_lua,
+			else if(m_script->item_OnPlace(
 					item, playersao, pointed))
 			{
 				// Placement was handled in lua
@@ -3003,7 +2996,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			actionstream<<player->getName()<<" uses "<<item.name
 					<<", pointing at "<<pointed.dump()<<std::endl;
 
-			if(scriptapi_item_on_use(m_lua,
+			if(m_script->item_OnUse(
 					item, playersao, pointed))
 			{
 				// Apply returned ItemStack
@@ -3062,8 +3055,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Check the target node for rollback data; leave others unnoticed
 		RollbackNode rn_old(&m_env->getMap(), p, this);
 
-		scriptapi_node_on_receive_fields(m_lua, p, formname, fields,
-				playersao);
+		m_script->node_on_receive_fields(p, formname, fields,playersao);
 
 		// Report rollback data
 		RollbackNode rn_new(&m_env->getMap(), p, this);
@@ -3087,7 +3079,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			fields[fieldname] = fieldvalue;
 		}
 
-		scriptapi_on_player_receive_fields(m_lua, playersao, formname, fields);
+		m_script->on_playerReceiveFields(playersao, formname, fields);
 	}
 	else
 	{
@@ -3194,46 +3186,46 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 	}
 }
 
-std::list<PlayerInfo> Server::getPlayerInfo()
-{
-	DSTACK(__FUNCTION_NAME);
-	JMutexAutoLock envlock(m_env_mutex);
-	JMutexAutoLock conlock(m_con_mutex);
-
-	std::list<PlayerInfo> list;
-
-	std::list<Player*> players = m_env->getPlayers();
-
-	std::list<Player*>::iterator i;
-	for(i = players.begin();
-			i != players.end(); ++i)
-	{
-		PlayerInfo info;
-
-		Player *player = *i;
-
-		try{
-			// Copy info from connection to info struct
-			info.id = player->peer_id;
-			info.address = m_con.GetPeerAddress(player->peer_id);
-			info.avg_rtt = m_con.GetPeerAvgRTT(player->peer_id);
-		}
-		catch(con::PeerNotFoundException &e)
-		{
-			// Set dummy peer info
-			info.id = 0;
-			info.address = Address(0,0,0,0,0);
-			info.avg_rtt = 0.0;
-		}
-
-		snprintf(info.name, PLAYERNAME_SIZE, "%s", player->getName());
-		info.position = player->getPosition();
-
-		list.push_back(info);
-	}
-
-	return list;
-}
+//std::list<PlayerInfo> Server::getPlayerInfo()
+//{
+//	DSTACK(__FUNCTION_NAME);
+//	JMutexAutoLock envlock(m_env_mutex);
+//	JMutexAutoLock conlock(m_con_mutex);
+//
+//	std::list<PlayerInfo> list;
+//
+//	std::list<Player*> players = m_env->getPlayers();
+//
+//	std::list<Player*>::iterator i;
+//	for(i = players.begin();
+//			i != players.end(); ++i)
+//	{
+//		PlayerInfo info;
+//
+//		Player *player = *i;
+//
+//		try{
+//			// Copy info from connection to info struct
+//			info.id = player->peer_id;
+//			info.address = m_con.GetPeerAddress(player->peer_id);
+//			info.avg_rtt = m_con.GetPeerAvgRTT(player->peer_id);
+//		}
+//		catch(con::PeerNotFoundException &e)
+//		{
+//			// Set dummy peer info
+//			info.id = 0;
+//			info.address = Address(0,0,0,0,0);
+//			info.avg_rtt = 0.0;
+//		}
+//
+//		snprintf(info.name, PLAYERNAME_SIZE, "%s", player->getName());
+//		info.position = player->getPosition();
+//
+//		list.push_back(info);
+//	}
+//
+//	return list;
+//}
 
 
 void Server::peerAdded(con::Peer *peer)
@@ -3695,6 +3687,22 @@ void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendHUDSetParam(u16 peer_id, u16 param, const std::string &value)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_HUD_SET_PARAM);
+	writeU16(os, param);
+	os<<serializeString(value);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(std::map<u16, RemoteClient*>::iterator
@@ -3758,7 +3766,7 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 		return;
 
 	std::set<std::string> privs;
-	scriptapi_get_auth(m_lua, player->getName(), NULL, &privs);
+	m_script->getAuth(player->getName(), NULL, &privs);
 
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_PRIVILEGES);
@@ -4478,7 +4486,7 @@ void Server::DiePlayer(u16 peer_id)
 	playersao->setHP(0);
 
 	// Trigger scripted stuff
-	scriptapi_on_dieplayer(m_lua, playersao);
+	m_script->on_dieplayer(playersao);
 
 	SendPlayerHP(peer_id);
 	SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
@@ -4497,7 +4505,7 @@ void Server::RespawnPlayer(u16 peer_id)
 
 	playersao->setHP(PLAYER_MAX_HP);
 
-	bool repositioned = scriptapi_on_respawnplayer(m_lua, playersao);
+	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
 		playersao->setPos(pos);
@@ -4577,7 +4585,7 @@ std::wstring Server::getStatusString()
 std::set<std::string> Server::getPlayerEffectivePrivs(const std::string &name)
 {
 	std::set<std::string> privs;
-	scriptapi_get_auth(m_lua, name, NULL, &privs);
+	m_script->getAuth(name, NULL, &privs);
 	return privs;
 }
 
@@ -4689,6 +4697,18 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 		return false;
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
+	return true;
+}
+
+bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
+	if (!player)
+		return false;
+	if (hotbar_itemcount <= 0 || hotbar_itemcount > HUD_HOTBAR_ITEMCOUNT_MAX)
+		return false;
+
+	std::ostringstream os(std::ios::binary);
+	writeS32(os, hotbar_itemcount);
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
 }
 
@@ -5085,9 +5105,9 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 
 	/* Run scripts */
 	if(newplayer)
-		scriptapi_on_newplayer(m_lua, playersao);
+		m_script->on_newplayer(playersao);
 
-	scriptapi_on_joinplayer(m_lua, playersao);
+	m_script->on_joinplayer(playersao);
 
 	return playersao;
 }
@@ -5182,7 +5202,7 @@ void Server::handlePeerChange(PeerChange &c)
 				PlayerSAO *playersao = player->getPlayerSAO();
 				assert(playersao);
 
-				scriptapi_on_leaveplayer(m_lua, playersao);
+				m_script->on_leaveplayer(playersao);
 
 				playersao->disconnected();
 			}

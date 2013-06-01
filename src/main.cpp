@@ -1845,7 +1845,9 @@ int main(int argc, char *argv[])
 
 					MenuMusicFetcher soundfetcher;
 					ISoundManager *sound = NULL;
+#if USE_SOUND
 					sound = createOpenALSoundManager(&soundfetcher);
+#endif
 					if(!sound)
 						sound = &dummySoundManager;
 					SimpleSoundSpec spec;
@@ -1939,6 +1941,9 @@ int main(int argc, char *argv[])
 						delete sound;
 						sound = NULL;
 					}
+
+					// Save controls status
+					menu->readInput(&menudata);
 
 					infostream<<"Dropping main menu"<<std::endl;
 
@@ -2145,7 +2150,9 @@ int main(int argc, char *argv[])
 	*/
 	device->drop();
 
-	delete font;
+#if USE_FREETYPE
+	font->drop();
+#endif
 
 #endif // !SERVER
 	

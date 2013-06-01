@@ -71,7 +71,12 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 
 	m_digging_anim(0),
 	m_digging_button(-1),
-	m_dummymesh(createCubeMesh(v3f(1,1,1)))
+	m_dummymesh(createCubeMesh(v3f(1,1,1))),
+
+	m_wield_change_timer(0.125),
+	m_wield_mesh_next(NULL),
+	m_previous_playeritem(-1),
+	m_previous_itemname("")
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -140,6 +145,22 @@ void Camera::step(f32 dtime)
 		m_view_bobbing_fall -= 3 * dtime;
 		if(m_view_bobbing_fall <= 0)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
+	}
+
+	bool was_under_zero = m_wield_change_timer < 0;
+	if(m_wield_change_timer < 0.125)
+		m_wield_change_timer += dtime;
+	if(m_wield_change_timer > 0.125)
+		m_wield_change_timer = 0.125;
+
+	if(m_wield_change_timer >= 0 && was_under_zero) {
+		if(m_wield_mesh_next) {
+			m_wieldnode->setMesh(m_wield_mesh_next);
+			m_wieldnode->setVisible(true);
+		} else {
+			m_wieldnode->setVisible(false);
+		}
+		m_wield_mesh_next = NULL;
 	}
 
 	if (m_view_bobbing_state != 0)
@@ -342,8 +363,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
-	// WTF is this? It can't be right
-	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
+	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
@@ -352,6 +372,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	v3f wield_position = v3f(55, -35, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	if(m_wield_change_timer < 0)
+		wield_position.Y -= 40 + m_wield_change_timer*320;
+	else
+		wield_position.Y -= 40 - m_wield_change_timer*320;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
@@ -560,18 +584,34 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, u16 playeritem)
 {
 	IItemDefManager *idef = m_gamedef->idef();
-	scene::IMesh *wield_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
-	if(wield_mesh)
-	{
-		m_wieldnode->setMesh(wield_mesh);
-		m_wieldnode->setVisible(true);
-	}
-	else
-	{
-		m_wieldnode->setVisible(false);
+	std::string itemname = item.getDefinition(idef).name;
+	m_wield_mesh_next = idef->getWieldMesh(itemname, m_gamedef);
+	if(playeritem != m_previous_playeritem &&
+			!(m_previous_itemname == "" && itemname == "")) {
+		m_previous_playeritem = playeritem;
+		m_previous_itemname = itemname;
+		if(m_wield_change_timer >= 0.125)
+			m_wield_change_timer = -0.125;
+		else if(m_wield_change_timer > 0) {
+			m_wield_change_timer = -m_wield_change_timer;
+		}
+	} else {
+		if(m_wield_mesh_next) {
+			m_wieldnode->setMesh(m_wield_mesh_next);
+			m_wieldnode->setVisible(true);
+		} else {
+			m_wieldnode->setVisible(false);
+		}
+		m_wield_mesh_next = NULL;
+		if(m_previous_itemname != itemname) {
+			m_previous_itemname = itemname;
+			m_wield_change_timer = 0;
+		}
+		else
+			m_wield_change_timer = 0.125;
 	}
 }
 
