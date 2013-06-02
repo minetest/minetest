@@ -254,6 +254,10 @@
 #max_block_send_distance = 10
 # From how far blocks are generated for clients (value * 16 nodes)
 #max_block_generate_distance = 6
+# Number of extra blocks that can be loaded by /clearobjects at once
+# This is a trade-off between sqlite transaction overhead and
+# memory consumption (4096=100MB, as a rule of thumb)
+#max_clearobjects_extra_loaded_blocks = 4096
 # Interval of sending time of day to clients
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged

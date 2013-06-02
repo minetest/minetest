@@ -945,6 +945,16 @@ void ServerEnvironment::clearAllObjects()
 		m_active_objects.erase(*i);
 	}
 
+	// Get list of loaded blocks
+	std::list<v3s16> loaded_blocks;
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Listing all loaded blocks"<<std::endl;
+	m_map->listAllLoadedBlocks(loaded_blocks);
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Done listing all loaded blocks: "
+			<<loaded_blocks.size()<<std::endl;
+
+	// Get list of loadable blocks
 	std::list<v3s16> loadable_blocks;
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Listing all loadable blocks"<<std::endl;
@@ -953,6 +963,20 @@ void ServerEnvironment::clearAllObjects()
 			<<"Done listing all loadable blocks: "
 			<<loadable_blocks.size()
 			<<", now clearing"<<std::endl;
+
+	// Grab a reference on each loaded block to avoid unloading it
+	for(std::list<v3s16>::iterator i = loaded_blocks.begin();
+			i != loaded_blocks.end(); ++i)
+	{
+		v3s16 p = *i;
+		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		assert(block);
+		block->refGrab();
+	}
+
+	// Remove objects in all loadable blocks
+	u32 unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+	unload_interval = MYMAX(unload_interval, 1);
 	u32 report_interval = loadable_blocks.size() / 10;
 	u32 num_blocks_checked = 0;
 	u32 num_blocks_cleared = 0;
@@ -987,7 +1011,22 @@ void ServerEnvironment::clearAllObjects()
 					<<" in "<<num_blocks_cleared<<" blocks ("
 					<<percent<<"%)"<<std::endl;
 		}
+		if(num_blocks_checked % unload_interval == 0){
+			m_map->unloadUnreferencedBlocks();
+		}
 	}
+	m_map->unloadUnreferencedBlocks();
+
+	// Drop references that were added above
+	for(std::list<v3s16>::iterator i = loaded_blocks.begin();
+			i != loaded_blocks.end(); ++i)
+	{
+		v3s16 p = *i;
+		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		assert(block);
+		block->refDrop();
+	}
+
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
 			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
