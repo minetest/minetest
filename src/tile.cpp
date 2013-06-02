@@ -440,6 +440,10 @@ private:
 
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
+
+	// Textures that have been overwritten with other ones
+	// but can't be deleted because the ITexture* might still be used
+	std::list<video::ITexture*> m_texture_trash;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
@@ -484,6 +488,16 @@ TextureSource::~TextureSource()
 			iter->atlas_img->drop();
 	}
 	m_atlaspointer_cache.clear();
+
+	for (std::list<video::ITexture*>::iterator iter =
+			m_texture_trash.begin(); iter != m_texture_trash.end();
+			iter++)
+	{
+		video::ITexture *t = *iter;
+
+		//cleanup trashed texture
+		driver->removeTexture(t);
+	}
 
 	infostream << "~TextureSource() "<< textures_before << "/"
 			<< driver->getTextureCount() << std::endl;
@@ -870,7 +884,7 @@ void TextureSource::rebuildImagesAndTextures()
 		sap->intsize = img->getDimension();
 
 		if (t_old != 0)
-			driver->removeTexture(t_old);
+			m_texture_trash.push_back(t_old);
 	}
 }
 
