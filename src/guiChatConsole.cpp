@@ -56,6 +56,7 @@ GUIChatConsole::GUIChatConsole(
 	m_screensize(v2u32(0,0)),
 	m_animate_time_old(0),
 	m_open(false),
+	m_close_on_enter(false),
 	m_height(0),
 	m_desired_height(0),
 	m_desired_height_fraction(0.0),
@@ -151,10 +152,22 @@ void GUIChatConsole::closeConsoleAtOnce()
 	recalculateConsolePosition();
 }
 
+void GUIChatConsole::closeConsoleOnEnter(bool close) {
+	m_close_on_enter = close;
+}
+
 f32 GUIChatConsole::getDesiredHeight() const
 {
 	return m_desired_height_fraction;
 }
+
+void GUIChatConsole::replaceAndAddToHistory(std::wstring line)
+{
+	ChatPrompt& prompt = m_chat_backend->getPrompt();
+	prompt.addToHistory(prompt.getLine());
+	prompt.replace(line);
+}
+
 
 void GUIChatConsole::setCursor(
 	bool visible, bool blinking, f32 blink_speed, f32 relative_height)
@@ -389,6 +402,9 @@ void GUIChatConsole::drawPrompt()
 
 bool GUIChatConsole::OnEvent(const SEvent& event)
 {
+
+	ChatPrompt& prompt = m_chat_backend->getPrompt();
+
 	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// Key input
@@ -399,13 +415,16 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 
 			// inhibit open so the_game doesn't reopen immediately
 			m_open_inhibited = 50;
+			m_close_on_enter = false;
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_ESCAPE)
 		{
 			closeConsoleAtOnce();
 			Environment->removeFocus(this);
-			// the_game will open the pause menu
+			m_close_on_enter = false;
+			// inhibit open so the_game doesn't reopen immediately
+			m_open_inhibited = 1; // so the ESCAPE button doesn't open the "pause menu"
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_PRIOR)
@@ -420,22 +439,28 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
-			std::wstring text = m_chat_backend->getPrompt().submit();
+			prompt.addToHistory(prompt.getLine());
+			std::wstring text = prompt.replace(L"");
 			m_client->typeChatMessage(text);
+			if (m_close_on_enter) {
+				closeConsoleAtOnce();
+				Environment->removeFocus(this);
+				m_close_on_enter = false;
+			}
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_UP)
 		{
 			// Up pressed
 			// Move back in history
-			m_chat_backend->getPrompt().historyPrev();
+			prompt.historyPrev();
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_DOWN)
 		{
 			// Down pressed
 			// Move forward in history
-			m_chat_backend->getPrompt().historyNext();
+			prompt.historyNext();
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_LEFT)
@@ -446,7 +471,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				scope);
@@ -460,7 +485,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				scope);
@@ -470,7 +495,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Home pressed
 			// move to beginning of line
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -480,7 +505,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// End pressed
 			// move to end of line
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -494,7 +519,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				scope);
@@ -508,7 +533,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				scope);
@@ -518,7 +543,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Ctrl-U pressed
 			// kill line to left end
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -528,7 +553,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Ctrl-K pressed
 			// kill line to right end
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -540,12 +565,12 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			// Nick completion
 			std::list<std::string> names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
-			m_chat_backend->getPrompt().nickCompletion(names, backwards);
+			prompt.nickCompletion(names, backwards);
 			return true;
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
 		{
-			m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			prompt.input(event.KeyInput.Char);
 			return true;
 		}
 	}
