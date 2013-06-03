@@ -146,14 +146,17 @@ public:
 	void input(wchar_t ch);
 	void input(const std::wstring &str);
 
-	// Submit, clear and return current line
-	std::wstring submit();
+	// Add a string to the history
+	void addToHistory(std::wstring line);
+
+	// Get current line
+	std::wstring getLine();
 
 	// Clear the current line
 	void clear();
 
 	// Replace the current line with the given text
-	void replace(std::wstring line);
+	std::wstring replace(std::wstring line);
 
 	// Select previous command from history
 	void historyPrev();
