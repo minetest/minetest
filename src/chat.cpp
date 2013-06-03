@@ -417,20 +417,18 @@ void ChatPrompt::input(const std::wstring &str)
 	m_nick_completion_end = 0;
 }
 
-std::wstring ChatPrompt::submit()
+void ChatPrompt::addToHistory(std::wstring line)
 {
-	std::wstring line = m_line;
-	m_line.clear();
 	if (!line.empty())
 		m_history.push_back(line);
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
-	m_view = 0;
-	m_cursor = 0;
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
-	return line;
+}
+
+std::wstring ChatPrompt::getLine()
+{
+	return m_line;
 }
 
 void ChatPrompt::clear()
@@ -442,13 +440,15 @@ void ChatPrompt::clear()
 	m_nick_completion_end = 0;
 }
 
-void ChatPrompt::replace(std::wstring line)
+std::wstring ChatPrompt::replace(std::wstring line)
 {
+	std::wstring old_line = m_line;
 	m_line =  line;
 	m_view = m_cursor = line.size();
 	clampView();
 	m_nick_completion_start = 0;
 	m_nick_completion_end = 0;
+	return old_line;
 }
 
 void ChatPrompt::historyPrev()

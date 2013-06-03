@@ -176,19 +176,6 @@ struct LocalFormspecHandler : public TextDest {
 			}
 		}
 
-		if (m_formname == "MT_CHAT_MENU") {
-			assert(m_client != 0);
-
-			if ((fields.find("btn_send") != fields.end()) ||
-					(fields.find("quit") != fields.end())) {
-				StringMap::const_iterator it = fields.find("f_text");
-				if (it != fields.end())
-					m_client->typeChatMessage(utf8_to_wide(it->second));
-
-				return;
-			}
-		}
-
 		if (m_formname == "MT_DEATH_SCREEN") {
 			assert(m_client != 0);
 
@@ -1097,27 +1084,6 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
 #endif
 
-static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
-		InventoryManager *invmgr, IGameDef *gamedef,
-		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		Client *client, std::string text)
-{
-	std::string formspec =
-		FORMSPEC_VERSION_STRING
-		SIZE_TAG
-		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;" + strgettext("Proceed") + "]"
-		;
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_CHAT_MENU", client);
-
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst, NULL);
-}
-
 static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device, Client *client)
@@ -1548,7 +1514,7 @@ protected:
 
 	void dropSelectedItem();
 	void openInventory();
-	void openConsole();
+	void openConsole(float height, const wchar_t *line=NULL);
 	void toggleFreeMove(float *statustext_time);
 	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
 	void toggleFast(float *statustext_time);
@@ -2683,16 +2649,16 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
-		show_pause_menu(&current_formspec, client, gamedef, texture_src, device,
-				simple_singleplayer_mode);
+		if (!gui_chat_console->isOpenInhibited()) {
+			show_pause_menu(&current_formspec, client, gamedef,
+					texture_src, device, simple_singleplayer_mode);
+		}
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CHAT])) {
-		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
-				client, "");
+		openConsole(0.2, L"");
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CMD])) {
-		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
-				client, "/");
+		openConsole(0.2, L"/");
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CONSOLE])) {
-		openConsole();
+		openConsole(1);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FREEMOVE])) {
 		toggleFreeMove(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])) {
@@ -2727,15 +2693,15 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		decreaseViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
 		toggleFullViewRange(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT])) {
 		quicktune->next();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV])) {
 		quicktune->prev();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC])) {
 		quicktune->inc();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC])) {
 		quicktune->dec();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
 		// Print debug stacks
 		dstream << "-----------------------------------------"
 		        << std::endl;
@@ -2835,11 +2801,14 @@ void Game::openInventory()
 }
 
 
-void Game::openConsole()
+void Game::openConsole(float height, const wchar_t *line)
 {
 	if (!gui_chat_console->isOpenInhibited()) {
-		// Open up to over half of the screen
-		gui_chat_console->openConsole(0.6);
+		gui_chat_console->openConsole(height);
+		if (line) {
+			gui_chat_console->setCloseOnEnter(true);
+			gui_chat_console->replaceAndAddToHistory(line);
+		}
 		guienv->setFocus(gui_chat_console);
 	}
 }

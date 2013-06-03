@@ -51,10 +51,15 @@ public:
 	void closeConsole();
 	// Close the console immediately, without animation.
 	void closeConsoleAtOnce();
+	// Set whether to close the console after the user presses enter.
+	void setCloseOnEnter(bool close) { m_close_on_enter = close; }
 
 	// Return the desired height (fraction of screen size)
 	// Zero if the console is closed or getting closed
 	f32 getDesiredHeight() const;
+
+	// Replace actual line when adding the actual to the history (if there is any)
+	void replaceAndAddToHistory(std::wstring line);
 
 	// Change how the cursor looks
 	void setCursor(
@@ -95,6 +100,8 @@ private:
 
 	// should the console be opened or closed?
 	bool m_open;
+	// should it close after you press enter?
+	bool m_close_on_enter;
 	// current console height [pixels]
 	s32 m_height;
 	// desired height [pixels]
