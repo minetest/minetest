@@ -279,6 +279,12 @@ public:
 	void timerUpdate(float dtime, float unload_timeout,
 			std::list<v3s16> *unloaded_blocks=NULL);
 
+	/*
+		Unloads all blocks with a zero refCount().
+		Saves modified blocks before unloading on MAPTYPE_SERVER.
+	*/
+	void unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks=NULL);
+
 	// Deletes sectors and their blocks from memory
 	// Takes cache into account
 	// If deleted sector is in sector cache, clears cache
@@ -433,8 +439,8 @@ public:
 	void endSave();
 
 	void save(ModifiedState save_level);
-	//void loadAll();
 	void listAllLoadableBlocks(std::list<v3s16> &dst);
+	void listAllLoadedBlocks(std::list<v3s16> &dst);
 	// Saves map seed and possibly other stuff
 	void saveMapMeta();
 	void loadMapMeta();
