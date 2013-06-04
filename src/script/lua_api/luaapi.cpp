@@ -178,9 +178,9 @@ int ModApiBasic::l_register_biome(lua_State *L)
 	b->flags = 0; //reserved
 	b->c_top = CONTENT_IGNORE;
 	b->c_filler = CONTENT_IGNORE;
+	verbosestream << "register_biome: " << b->name << std::endl;
 	bmgr->addBiome(b);
 
-	verbosestream << "register_biome: " << b->name << std::endl;
 	return 0;
 }
 
