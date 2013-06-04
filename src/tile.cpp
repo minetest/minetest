@@ -364,14 +364,14 @@ public:
 	// Gets a separate texture
 	video::ITexture* getTextureRaw(const std::string &name)
 	{
-		AtlasPointer ap = getTexture(name + "^[forcesingle");
+		AtlasPointer ap = getTexture(name + m_forcesingle_suffix);
 		return ap.atlas;
 	}
 
 	// Gets a separate texture atlas pointer
 	AtlasPointer getTextureRawAP(const AtlasPointer &ap)
 	{
-		return getTexture(getTextureName(ap.id) + "^[forcesingle");
+		return getTexture(getTextureName(ap.id) + m_forcesingle_suffix);
 	}
 
 	// Returns a pointer to the irrlicht device
@@ -437,9 +437,14 @@ private:
 	// Main texture atlas. This is filled at startup and is then not touched.
 	video::IImage *m_main_atlas_image;
 	video::ITexture *m_main_atlas_texture;
+	std::string m_forcesingle_suffix;
 
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
+
+	// Textures that have been overwritten with other ones
+	// but can't be deleted because the ITexture* might still be used
+	std::list<video::ITexture*> m_texture_trash;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
@@ -484,6 +489,16 @@ TextureSource::~TextureSource()
 			iter->atlas_img->drop();
 	}
 	m_atlaspointer_cache.clear();
+
+	for (std::list<video::ITexture*>::iterator iter =
+			m_texture_trash.begin(); iter != m_texture_trash.end();
+			iter++)
+	{
+		video::ITexture *t = *iter;
+
+		//cleanup trashed texture
+		driver->removeTexture(t);
+	}
 
 	infostream << "~TextureSource() "<< textures_before << "/"
 			<< driver->getTextureCount() << std::endl;
@@ -870,7 +885,7 @@ void TextureSource::rebuildImagesAndTextures()
 		sap->intsize = img->getDimension();
 
 		if (t_old != 0)
-			driver->removeTexture(t_old);
+			m_texture_trash.push_back(t_old);
 	}
 }
 
@@ -1123,6 +1138,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 			<<atlaspath<<std::endl;
 	fs::RecursiveDelete(atlaspath);
 	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
+
+	m_forcesingle_suffix = "^[forcesingle";
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
