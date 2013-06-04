@@ -364,14 +364,14 @@ public:
 	// Gets a separate texture
 	video::ITexture* getTextureRaw(const std::string &name)
 	{
-		AtlasPointer ap = getTexture(name + "^[forcesingle");
+		AtlasPointer ap = getTexture(name + m_forcesingle_suffix);
 		return ap.atlas;
 	}
 
 	// Gets a separate texture atlas pointer
 	AtlasPointer getTextureRawAP(const AtlasPointer &ap)
 	{
-		return getTexture(getTextureName(ap.id) + "^[forcesingle");
+		return getTexture(getTextureName(ap.id) + m_forcesingle_suffix);
 	}
 
 	// Returns a pointer to the irrlicht device
@@ -437,6 +437,7 @@ private:
 	// Main texture atlas. This is filled at startup and is then not touched.
 	video::IImage *m_main_atlas_image;
 	video::ITexture *m_main_atlas_texture;
+	std::string m_forcesingle_suffix;
 
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
@@ -1137,6 +1138,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 			<<atlaspath<<std::endl;
 	fs::RecursiveDelete(atlaspath);
 	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
+
+	m_forcesingle_suffix = "^[forcesingle";
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
