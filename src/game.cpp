@@ -2250,6 +2250,7 @@ void the_game(
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
 										&client, gamedef);
+						gui_chat_console->closeConsoleAtOnce(); // close the console for avoiding glitches
 						menu->setFormSource(current_formspec);
 						menu->setTextDest(current_textdest);
 						menu->drop();
