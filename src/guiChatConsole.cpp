@@ -134,6 +134,11 @@ void GUIChatConsole::openConsole(f32 height)
 	reformatConsole();
 }
 
+bool GUIChatConsole::isOpen() const
+{
+	return m_open;
+}
+
 bool GUIChatConsole::isOpenInhibited() const
 {
 	return m_open_inhibited > 0;
