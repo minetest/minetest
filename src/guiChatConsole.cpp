@@ -550,7 +550,13 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
 		{
-			m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#if (defined(linux) || defined(__linux))
+				wchar_t wc = L'_';
+				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
+				m_chat_backend->getPrompt().input(wc);
+			#else
+				m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#endif
 			return true;
 		}
 	}
