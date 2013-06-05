@@ -1201,6 +1201,24 @@ video::IImage* generate_image_from_scratch(std::string name,
 	return baseimg;
 }
 
+//lowest common multiple, used by [map
+int gcd(int a, int b)
+{
+	for (;;)
+	{
+		if (a == 0) return b;
+		b %= a;
+		if (b == 0) return a;
+		a %= b;
+	}
+}
+int lcm(int a, int b)
+{
+	int temp = gcd(a, b);
+	return temp ? (a / temp * b) : 0;
+}
+//
+
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		IrrlichtDevice *device, SourceImageCache *sourcecache)
 {
@@ -1440,6 +1458,79 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 							NULL);*/
 					blit_with_alpha(img2, baseimg, v2s32(0,0), pos_base, dim);
 					img2->drop();
+				}
+				else
+				{
+					infostream<<"img==NULL"<<std::endl;
+				}
+			}
+		}
+		/*
+			[map:X1,Y1,X2,Y2=filename:X1,Y1,X2,Y2=filename2
+			Creates a uv map regardless of the size of the parts
+			Takes coordinates in fractions of the base image
+		*/
+		else if(part_of_name.substr(0,4) == "[map")
+		{
+			Strfnd sf(part_of_name);
+			sf.next(":");
+
+			if(baseimg == NULL)
+			{
+				baseimg = driver->createImage(video::ECF_A8R8G8B8,
+						core::dimension2d<u32>(1,1));
+				baseimg->fill(video::SColor(0, 0, 0, 0));
+				/*
+				errorstream<<"generate_image(): baseimg==NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+				*/
+			}
+
+			while(sf.atend() == false)
+			{
+				core::dimension2d<u32> basedim = baseimg->getDimension();
+				core::vector2d<s32> topos, topos2;
+				topos.X  = floor(stof(sf.next(",")) * basedim.Width);
+				topos.Y  = floor(stof(sf.next(",")) * basedim.Height);
+				topos2.X = ceil(stof(sf.next(",")) * basedim.Width);
+				topos2.Y = ceil(stof(sf.next("=")) * basedim.Height);
+				core::dimension2d<u32> todim = core::dimension2d<u32>(
+						topos2.X-topos.X,topos2.Y-topos.Y);
+				std::string filename = sf.next(":");
+				video::IImage *img = sourcecache->getOrLoad(filename, device);
+				if(img)
+				{
+					core::dimension2d<u32> fromdim = img->getDimension();
+					infostream<<"Mapping "<<fromdim.Width<<"x"<<fromdim.Height
+							<<" \""<<filename
+							<<"\" from ("<<topos.X<<","<<topos.Y<<")"
+							<<"to ("<<topos.X+todim.Width<<","<<topos.Y+todim.Height<<")"
+							<<" of "<<todim.Width<<"x"<<todim.Height
+							<<std::endl;
+					core::dimension2d<u32> newdim = core::dimension2d<u32>(
+							lcm(fromdim.Width, todim.Width),
+							lcm(fromdim.Height, todim.Height));
+					video::IImage *img2 =
+							driver->createImage(video::ECF_A8R8G8B8, newdim);
+					img->copyToScaling(img2);
+					img->drop();
+					basedim.Width *= newdim.Width/todim.Width;
+					basedim.Height *= newdim.Height/todim.Height;
+					video::IImage *baseimg2 =
+							driver->createImage(video::ECF_A8R8G8B8, basedim);
+					baseimg->copyToScaling(baseimg2);
+					baseimg->drop();
+					baseimg = baseimg2;
+					topos.X *= newdim.Width/todim.Width;
+					topos.Y *= newdim.Height/todim.Height;
+					blit_with_alpha(img2, baseimg2, v2s32(0,0), topos, newdim);
+					img2->drop();
+					infostream<<"Mapped "<<newdim.Width<<"x"<<newdim.Height
+							<<" to "<<topos.X<<"x"<<topos.Y
+							<<" of "<<basedim.Width<<"x"<<basedim.Height
+							<<std::endl;
 				}
 				else
 				{
