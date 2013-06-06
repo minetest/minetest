@@ -2036,7 +2036,7 @@ int main(int argc, char *argv[])
 							"worlds" + DIR_DELIM
 							+ wide_to_narrow(menudata.create_world_name);
 					// Create world if it doesn't exist
-					if(!initializeWorld(path, menudata.create_world_gameid)){
+					if(!initializeWorld(path, menudata.create_world_gameid, menudata.create_world_seed)){
 						error_message = wgettext("Failed to initialize world");
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;

@@ -99,7 +99,7 @@ struct WorldSpec
 std::vector<WorldSpec> getAvailableWorlds();
 
 // Create world directory and world.mt if they don't exist
-bool initializeWorld(const std::string &path, const std::string &gameid);
+bool initializeWorld(const std::string &path, const std::string &gameid, const std::string &seed);
 
 #endif
 

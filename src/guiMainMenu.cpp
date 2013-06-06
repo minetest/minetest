@@ -84,7 +84,7 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 	CreateWorldDestMainMenu(GUIMainMenu *menu):
 		m_menu(menu)
 	{}
-	void accepted(std::wstring name, std::string gameid)
+	void accepted(std::wstring name, std::wstring seed, std::string gameid)
 	{
 		std::string name_narrow = wide_to_narrow(name);
 		if(!string_allowed_blacklist(name_narrow, WORLDNAME_BLACKLISTED_CHARS))
@@ -106,7 +106,8 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 				return;
 			}
 		}
-		m_menu->createNewWorld(name, gameid);
+		std::string seed_narrow = wide_to_narrow(seed);
+		m_menu->createNewWorld(name, seed_narrow, gameid);
 	}
 	GUIMainMenu *m_menu;
 };
@@ -1410,13 +1411,14 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-void GUIMainMenu::createNewWorld(std::wstring name, std::string gameid)
+void GUIMainMenu::createNewWorld(std::wstring name, std::string seed, std::string gameid)
 {
 	if(name == L"")
 		return;
 	acceptInput();
 	m_data->create_world_name = name;
 	m_data->create_world_gameid = gameid;
+	m_data->create_world_seed = seed;
 	quitMenu();
 }
 

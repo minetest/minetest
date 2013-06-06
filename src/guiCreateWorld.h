@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct CreateWorldDest
 {
-	virtual void accepted(std::wstring name, std::string gameid) = 0;
+	virtual void accepted(std::wstring name, std::wstring seed, std::string gameid) = 0;
 	virtual ~CreateWorldDest() {};
 };
 
