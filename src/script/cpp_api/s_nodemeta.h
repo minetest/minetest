@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_item.h"
 #include "irr_v3d.h"
 
-class ItemStack;
+struct ItemStack;
 
 class ScriptApiNodemeta
 		: virtual public ScriptApiBase,
