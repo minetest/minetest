@@ -1684,6 +1684,10 @@ void the_game(
 		{
 			input->clear();
 		}
+		if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen())
+		{
+			gui_chat_console->closeConsoleAtOnce();
+		}
 
 		// Input handler step() (used by the random input generator)
 		input->step(dtime);
