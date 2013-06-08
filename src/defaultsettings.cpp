@@ -209,6 +209,7 @@ void set_default_settings(Settings *settings)
 
 	//liquid stuff
 	settings->setDefault("liquid_finite", "false");
+	settings->setDefault("liquid_loop_max", "1000");
 	settings->setDefault("liquid_update", "1.0");
 	settings->setDefault("liquid_relax", "2");
 	settings->setDefault("liquid_fast_flood", "1");
