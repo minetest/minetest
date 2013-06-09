@@ -57,7 +57,7 @@ function dump(o, dumped)
 		dumped[o] = true
 		local t = {}
 		for k,v in pairs(o) do
-			t[#t+1] = "" .. k .. " = " .. dump(v, dumped)
+			t[#t+1] = "" .. dump(k, dumped) .. " = " .. dump(v, dumped)
 		end
 		return "{" .. table.concat(t, ", ") .. "}"
 	elseif type(o) == "boolean" then
