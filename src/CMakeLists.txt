@@ -208,6 +208,7 @@ configure_file(
 
 add_subdirectory(script)
 add_subdirectory(util)
+add_subdirectory(minizip)
 
 set(common_SRCS
 	rollback_interface.cpp
@@ -272,6 +273,7 @@ set(common_SRCS
 	pathfinder.cpp
 	${SCRIPT_SRCS}
 	${UTIL_SRCS}
+	${MINIZIP_SRCS}
 )
 
 # This gives us the icon
@@ -312,7 +314,6 @@ set(minetest_SRCS
 	clientobject.cpp
 	chat.cpp
 	hud.cpp
-	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
@@ -322,15 +323,15 @@ set(minetest_SRCS
 	guiVolumeChange.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
-	guiCreateWorld.cpp
-	guiConfigureWorld.cpp
-	guiConfirmMenu.cpp
 	client.cpp
 	filecache.cpp
 	tile.cpp
 	shader.cpp
 	game.cpp
 	main.cpp
+	guiEngine.cpp
+	guiLuaApi.cpp
+	guiFileSelectMenu.cpp
 )
 
 if(USE_FREETYPE)
@@ -487,7 +488,7 @@ else()
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
