@@ -22,6 +22,26 @@ if (CURL_FOUND AND ENABLE_CURL)
 	set(USE_CURL 1)
 endif(CURL_FOUND AND ENABLE_CURL)
 
+option(ENABLE_ARCHIVE "Enable archive support for extracting tar.* compressed mods" 1)
+
+if (NOT ENABLE_ARCHIVE)
+	mark_as_advanced(CLEAR ARCHIVE_LIBRARY ARCHIVE_INCLUDE_DIR ARCHIVE_DLL)
+endif(NOT ENABLE_ARCHIVE)
+
+if( ENABLE_ARCHIVE )
+	set(ARCHIVE_LIBRARY "" CACHE FILEPATH "path to libarchive lib")
+	set(ARCHIVE_INCLUDE_DIR "" CACHE PATH "path to libarchive includes")
+	set(ARCHIVE_DLL "" CACHE FILEPATH "path to libarchive dll")
+	find_package(Archive)
+endif( ENABLE_ARCHIVE )
+set(USE_ARCHIVE 0)
+if (ARCHIVE_FOUND AND ENABLE_ARCHIVE)
+	message(STATUS "archive (tar.gz/tar.bz2/...) support enabled")
+	set(USE_ARCHIVE 1)
+else()
+	message(STATUS "archive (tar.gz/tar.bz2/...) support DISABLED")
+endif(ARCHIVE_FOUND AND ENABLE_ARCHIVE)
+
 # user-visible option to enable/disable gettext usage
 OPTION(ENABLE_GETTEXT "Use GetText for internationalization" 0)
 
@@ -376,6 +396,12 @@ if(USE_CURL)
 	)
 endif(USE_CURL)
 
+if (USE_ARCHIVE)
+	include_directories(
+		${ARCHIVE_INCLUDE_DIR}
+	)
+endif(USE_ARCHIVE)
+
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 if(BUILD_CLIENT)
@@ -412,6 +438,12 @@ if(BUILD_CLIENT)
 			${CGUITTFONT_LIBRARY}
 		)
 	endif(USE_FREETYPE)
+	if (USE_ARCHIVE)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${ARCHIVE_LIBRARY}
+		)
+	endif(USE_ARCHIVE)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)

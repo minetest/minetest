@@ -12,6 +12,7 @@
 #define USE_GETTEXT 0
 #define USE_SOUND 0
 #define USE_CURL 0
+#define USE_ARCHIVE 0
 #define USE_FREETYPE 0
 #define STATIC_SHAREDIR ""
 #define BUILD_INFO "non-cmake"
@@ -36,6 +37,8 @@
 	#define STATIC_SHAREDIR CMAKE_STATIC_SHAREDIR
 	#undef BUILD_INFO
 	#define BUILD_INFO CMAKE_BUILD_INFO
+	#undef USE_ARCHIVE
+	#define USE_ARCHIVE CMAKE_USE_ARCHIVE
 #endif
 
 #endif

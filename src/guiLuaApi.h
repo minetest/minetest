@@ -171,7 +171,9 @@ private:
 
 	static int l_extract_zip(lua_State *L);
 
-
+#if USE_ARCHIVE
+	static int l_extract_archive(lua_State *L);
+#endif
 };
 
 #endif

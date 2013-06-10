@@ -56,6 +56,20 @@ function modmgr.extract(modfile)
 			
 			return tempfolder
 		end
+	else
+		if type(engine.extract_archive) == "function" then
+			local tempfolder = os.tempfolder()
+			
+			if tempfolder ~= nil and
+				tempfodler ~= "" then
+				engine.create_dir(tempfolder)
+				engine.extract_archive(modfile.name,tempfolder)
+				
+				return tempfolder
+			end
+		else
+			print("Libarchive support not compiled in")
+		end
 	end
 end
 
@@ -588,8 +602,8 @@ function modmgr.handle_modmgr_buttons(fields)
 		local modpath = modmgr.extract(modfile)
 		
 		if modpath == nil then
-			gamedata.errormessage = "Install Mod: file: " .. file.name ..
-				"\nInstall Mod: unsupported filetype \"" .. file.type .. "\""
+			gamedata.errormessage = "Install Mod: file: " .. modfile.name ..
+				"\nInstall Mod: unsupported filetype \"" .. modfile.type .. "\""
 			return
 		end
 		

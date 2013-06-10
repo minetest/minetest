@@ -34,6 +34,15 @@ extern "C" {
 #include "guiLuaApi.h"
 #include "guiEngine.h"
 
+#if USE_ARCHIVE
+#include <archive.h>
+#include <archive_entry.h>
+
+#ifdef _WIN32
+#include <direct.h>
+#endif
+#endif
+
 #include "minizip/unzip.h"
 
 #define MINIZIP_BUFFERSIZE 8192
@@ -94,6 +103,10 @@ void guiLuaApi::initialize(lua_State* L,GUIEngine* engine)
 	retval &= API_FCT(get_scriptdir);
 	retval &= API_FCT(show_file_open_dialog);
 	retval &= API_FCT(get_version);
+
+#if USE_ARCHIVE
+	retval &= API_FCT(extract_archive);
+#endif
 
 	if (!retval) {
 		//TODO show error
@@ -782,6 +795,111 @@ int guiLuaApi::l_copy_dir(lua_State *L) {
 	lua_pushboolean(L,false);
 	return 1;
 }
+#if USE_ARCHIVE
+/******************************************************************************/
+#define ERRORCLEANUP                       \
+	archive_read_finish(a);                \
+	archive_write_finish(t);               \
+	chdir(origcwd);                        \
+	lua_pushboolean(L,false);              \
+	return 1;
+
+int guiLuaApi::l_extract_archive(lua_State *L) {
+	const char *archive = luaL_checkstring(L, 1);
+	const char *destination = luaL_checkstring(L, 2);
+
+	char origcwd[PATH_MAX];
+#ifdef _WIN32
+	_getcwd( origcwd, PATH_MAX );
+#else
+	getcwd( origcwd, PATH_MAX );
+#endif
+
+	fs::CreateAllDirs(destination);
+
+	chdir(destination);
+
+	std::string absolute_destination = fs::AbsolutePath(destination);
+
+	if (guiLuaApi::isMinetestPath(absolute_destination)) {
+		struct archive* a = archive_read_new();
+		struct archive* t = archive_write_disk_new();
+		struct archive_entry* entry;
+		int retval;
+
+
+		archive_read_support_compression_all(a);
+		archive_read_support_format_all(a);
+
+		archive_write_disk_set_options(t, ARCHIVE_EXTRACT_TIME);
+		archive_write_disk_set_options(t,ARCHIVE_EXTRACT_SECURE_NODOTDOT);
+
+		retval = archive_read_open_filename(a, archive, 16384);
+		if (retval != ARCHIVE_OK) {
+			ERRORCLEANUP
+		}
+
+		retval = archive_read_next_header(a, &entry);
+		if (retval != ARCHIVE_OK) {
+			ERRORCLEANUP
+		}
+
+		for (;;) {
+			retval = archive_read_next_header(a, &entry);
+
+			if (retval == ARCHIVE_EOF)
+				break;
+
+			retval = archive_write_header(t,entry);
+
+			if (retval != ARCHIVE_OK) {
+				fprintf(stderr, "%s\n", archive_error_string(t));
+				ERRORCLEANUP
+			}
+
+			if (archive_entry_size(entry) > 0) {
+				int lret;
+				const void* buffer;
+				size_t datasize;
+				off_t offset;
+
+				for (;;) {
+					lret = archive_read_data_block(a,&buffer,&datasize, &offset);
+					if (lret == ARCHIVE_EOF)
+						break;
+					if (lret != ARCHIVE_OK) {
+						fprintf(stderr, "%s\n", archive_error_string(t));
+						ERRORCLEANUP
+					}
+
+					lret = archive_write_data_block(t,buffer,datasize,offset);
+					if (lret != ARCHIVE_OK) {
+						fprintf(stderr, "%s\n", archive_error_string(t));
+						ERRORCLEANUP
+					}
+				}
+			}
+			retval = archive_write_finish_entry(t);
+
+			if (retval == ARCHIVE_OK) {
+				continue;
+			}
+			ERRORCLEANUP
+		}
+
+		archive_read_finish(a);
+		archive_write_finish(t);
+		chdir(origcwd);
+		lua_pushboolean(L,true);
+		return 1;
+	}
+
+	chdir(origcwd);
+	lua_pushboolean(L,false);
+	return 1;
+}
+#undef ERRORCLEANUP
+#endif
 
 /******************************************************************************/
 int guiLuaApi::l_extract_zip(lua_State *L) {
