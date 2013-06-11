@@ -1308,8 +1308,8 @@ public:
 					}
 
 					// Set material flags and texture
-					m_animated_meshnode->setMaterialTexture(i, texture);
 					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+					material.TextureLayer[0].Texture = texture;
 					material.setFlag(video::EMF_LIGHTING, false);
 					material.setFlag(video::EMF_BILINEAR_FILTER, false);
 
