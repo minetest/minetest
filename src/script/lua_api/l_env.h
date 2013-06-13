@@ -38,6 +38,10 @@ private:
 
 	static int l_add_node(lua_State *L);
 
+	// minetest.set_node_group( { {pos1, node1}, {pos2, node2} } )
+	// pos = {x=num, y=num, z=num}
+	static int l_set_node_group(lua_State *L);
+
 	// minetest.remove_node(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_remove_node(lua_State *L);
