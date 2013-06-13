@@ -48,6 +48,10 @@ void main(void)
 	if(gl_Normal.y <= 0.5)
 		color *= 0.6;
 		//color *= 0.7;
+	// Also make sides not facing the sun / moon darker
+	if(gl_Normal.z <= -0.5 || gl_Normal.z >= 0.5)
+		color *= 0.6;
+
 	color = sqrt(color); // Linear -> SRGB
 
 	color.a = gl_Color.a;
