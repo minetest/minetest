@@ -1380,6 +1380,7 @@ void the_game(
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
+	guitext_profiler->setWordWrap(true);
 	
 	/*
 		Some statistics are collected in these
