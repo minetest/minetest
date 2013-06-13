@@ -91,6 +91,8 @@
 #client_unload_unused_data_timeout = 600
 # Whether to fog out the end of the visible area
 #enable_fog = true
+# Whether to show the client debug info (has the same effect as hitting F5)
+#show_debug = false
 # Enable a bit lower water surface; disable for speed (not quite optimized)
 #new_style_water = false
 # Max liquids processed per step
