@@ -2706,7 +2706,12 @@ void the_game(
 					gamedef->event()->put(e);
 				}
 
-				dig_time += dtime;
+				if(dig_time_complete < 100000.0)
+					dig_time += dtime;
+				else {
+					dig_time = 0;
+					client.setCrack(-1, nodepos);
+				}
 
 				camera.setDigging(0);  // left click animation
 			}
