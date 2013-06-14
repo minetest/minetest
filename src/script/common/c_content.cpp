@@ -123,6 +123,7 @@ void read_object_properties(lua_State *L, int index,
 	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
 
 	getboolfield(L, -1, "physical", prop->physical);
+	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
 	getfloatfield(L, -1, "weight", prop->weight);
 

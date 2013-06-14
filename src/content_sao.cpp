@@ -68,6 +68,10 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return false;
+	}
+
 private:
 };
 
@@ -137,6 +141,10 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset) {
+		return false;
+	}
+
+	bool collideWithObjects() {
 		return false;
 	}
 
@@ -325,6 +333,9 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return false;
+	}
 
 private:
 	std::string m_itemstring;
@@ -500,7 +511,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			v3f p_acceleration = m_acceleration;
 			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
 					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration,this);
+					p_pos, p_velocity, p_acceleration,
+					this, m_prop.collideWithObjects);
 			// Apply results
 			m_base_position = p_pos;
 			m_velocity = p_velocity;
@@ -903,6 +915,10 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
 	}
 
 	return false;
+}
+
+bool LuaEntitySAO::collideWithObjects(){
+	return m_prop.collideWithObjects;
 }
 
 /*
@@ -1494,5 +1510,9 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
 
+	return true;
+}
+
+bool PlayerSAO::collideWithObjects(){
 	return true;
 }

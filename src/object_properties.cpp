@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ObjectProperties::ObjectProperties():
 	hp_max(1),
 	physical(false),
+	collideWithObjects(true),
 	weight(5),
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
 	visual("sprite"),
@@ -49,6 +50,7 @@ std::string ObjectProperties::dump()
 	std::ostringstream os(std::ios::binary);
 	os<<"hp_max="<<hp_max;
 	os<<", physical="<<physical;
+	os<<", collideWithObjects="<<collideWithObjects;
 	os<<", weight="<<weight;
 	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
 	os<<", visual="<<visual;
@@ -97,6 +99,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	for(u32 i=0; i<colors.size(); i++){
 		writeARGB8(os, colors[i]);
 	}
+	writeU8(os, collideWithObjects);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -129,6 +132,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			for(u32 i=0; i<color_count; i++){
 				colors.push_back(readARGB8(is));
 			}
+			collideWithObjects = readU8(is);
 		}catch(SerializationError &e){}
 	}
 	else

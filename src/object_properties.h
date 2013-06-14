@@ -31,6 +31,7 @@ struct ObjectProperties
 	// Values are BS=1
 	s16 hp_max;
 	bool physical;
+	bool collideWithObjects;
 	float weight;
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;

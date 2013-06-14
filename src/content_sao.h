@@ -79,6 +79,7 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset);
+	bool collideWithObjects();
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -238,6 +239,7 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset);
+	bool collideWithObjects();
 
 private:
 	std::string getPropertyPacket();
