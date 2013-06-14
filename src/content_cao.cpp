@@ -661,6 +661,10 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return m_prop.collideWithObjects;
+	}
+
 	void initialize(const std::string &data)
 	{
 		infostream<<"GenericCAO: Got init data"<<std::endl;
@@ -1152,7 +1156,8 @@ public:
 				v3f p_acceleration = m_acceleration;
 				moveresult = collisionMoveSimple(env,env->getGameDef(),
 						pos_max_d, box, stepheight, dtime,
-						p_pos, p_velocity, p_acceleration,this);
+						p_pos, p_velocity, p_acceleration,
+						this, m_prop.collideWithObjects);
 				// Apply results
 				m_position = p_pos;
 				m_velocity = p_velocity;
