@@ -475,7 +475,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 120, 30);
 			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 90);
 			gui::IGUIEditBox *e =
-			Environment->addEditBox(L"", rect, true, this, 264);
+                        Environment->addEditBox(m_data->password.c_str(), rect, true, this, 264);
 			e->setPasswordBox(true);
 			if(m_data->name != L"" && m_data->address != L"")
 				Environment->setFocus(e);
