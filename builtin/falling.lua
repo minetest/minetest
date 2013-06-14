@@ -7,6 +7,7 @@
 minetest.register_entity("__builtin:falling_node", {
 	initial_properties = {
 		physical = true,
+		collide_with_objects = false,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 		visual = "wielditem",
 		textures = {},

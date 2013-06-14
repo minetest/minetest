@@ -1812,6 +1812,7 @@ Object Properties
 {
     hp_max = 1,
     physical = true,
+    collide_with_objects = true, -- collide with other objects if physical=true
     weight = 5,
     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
     visual = "cube"/"sprite"/"upright_sprite"/"mesh",

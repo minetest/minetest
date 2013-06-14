@@ -12,6 +12,7 @@ minetest.register_entity("__builtin:item", {
 	initial_properties = {
 		hp_max = 1,
 		physical = true,
+		collide_with_objects = false,
 		collisionbox = {-0.17,-0.17,-0.17, 0.17,0.17,0.17},
 		visual = "sprite",
 		visual_size = {x=0.5, y=0.5},

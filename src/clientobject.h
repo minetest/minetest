@@ -56,6 +56,7 @@ public:
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
 	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
 	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
+	virtual bool collideWithObjects(){return false;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
 	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}

@@ -196,7 +196,9 @@ bool wouldCollideWithCeiling(
 collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f, v3f &accel_f,ActiveObject* self)
+		v3f &pos_f, v3f &speed_f,
+		v3f &accel_f,ActiveObject* self,
+		bool collideWithObjects)
 {
 	Map *map = &env->getMap();
 	//TimeTaker tt("collisionMoveSimple");
@@ -287,6 +289,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 	} // tt2
 
+	if(collideWithObjects)
 	{
 		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
@@ -334,7 +337,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (object != NULL)
 			{
 				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox))
+				if (object->getCollisionBox(&object_collisionbox) &&
+						object->collideWithObjects())
 				{
 					cboxes.push_back(object_collisionbox);
 					is_unloaded.push_back(false);
