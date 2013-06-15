@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <string.h>
 #include "log.h"
+#include <stdio.h>
 
 namespace fs
 {
@@ -207,6 +208,19 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 	}
 }
 
+std::string AbsolutePath(std::string path) {
+	char* retval;
+	char resolved_path[_MAX_PATH];
+	retval = _fullpath(resolved_path,path.c_str(),_MAX_PATH);
+	if (retval != 0) {
+		std::string return_val = resolved_path;
+		return return_val;
+	}
+	else {
+		return "";
+	}
+}
+
 #else // POSIX
 
 #include <sys/types.h>
@@ -215,6 +229,26 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdlib.h>
+
+#ifndef linux
+#include <limits.h>
+#else
+#include <linux/limits.h>
+#endif
+
+std::string AbsolutePath(std::string path) {
+	char* retval;
+	char resolved_path[PATH_MAX];
+	retval = realpath(path.c_str(),resolved_path);
+	if (retval != 0) {
+		std::string return_val = resolved_path;
+		return return_val;
+	}
+	else {
+		return "";
+	}
+}
 
 std::vector<DirListNode> GetDirListing(std::string pathstring)
 {
@@ -429,6 +463,68 @@ bool CreateAllDirs(std::string path)
 		if(!CreateDir(tocreate[i]))
 			return false;
 	return true;
+}
+
+bool CopyDir(std::string source,std::string target)
+{
+	if (PathExists(source)) {
+		if (!PathExists(target)) {
+			fs::CreateAllDirs(target);
+		}
+		bool retval = true;
+		std::vector<DirListNode> content = fs::GetDirListing(source);
+
+		for (unsigned int i=0;i< content.size(); i++) {
+			if (content[i].dir) {
+				if (!fs::CopyDir(source + DIR_DELIM + content[i].name ,
+								target + DIR_DELIM + content[i].name)) {
+					retval = false;
+				}
+			}
+			else {
+				FILE* sourcefile =
+						fopen(
+								std::string(source + DIR_DELIM + content[i].name)
+								.c_str(),"r");
+
+				if (sourcefile != NULL) {
+					FILE* destinationfile =
+						fopen(
+								std::string(target + DIR_DELIM + content[i].name)
+								.c_str(),"w");
+					if (destinationfile != NULL) {
+						int total = 0;
+						char* readbuffer[1024];
+						while (!feof(sourcefile)) {
+							int read = fread(readbuffer,1,sizeof(readbuffer),sourcefile);
+
+							if (read > 0) {
+								fwrite(readbuffer,1,read,destinationfile);
+							}
+							total += read;
+						}
+						infostream << "copied "<< total << " bytes from " <<
+							source << DIR_DELIM << content[i].name << " to " <<
+							target << DIR_DELIM << content[i].name << std::endl;
+						fclose(destinationfile);
+						destinationfile = 0;
+					}
+					else {
+						retval = false;
+					}
+					fclose(sourcefile);
+					sourcefile = 0;
+				}
+				else {
+					retval = false;
+				}
+			}
+		}
+		return retval;
+	}
+	else {
+		return false;
+	}
 }
 
 } // namespace fs

@@ -361,3 +361,6 @@
 
 # Float islands starts from height, 0 to disable
 #mgindev_float_islands = 500
+#main_menu_game_mgr = 0
+#main_menu_mod_mgr = 0
+
