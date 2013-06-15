@@ -1199,7 +1199,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 
 	translateMesh(m_mesh, intToFloat(data->m_blockpos * MAP_BLOCKSIZE, BS));
-	m_mesh->recalculateBoundingBox(); // translateMesh already does this
 
 	if(m_mesh)
 	{
