@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
 #include "guiFormSpecMenu.h"
-#include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
 #include "tool.h"
 #include "guiChatConsole.h"
@@ -1746,33 +1745,42 @@ void the_game(
 		}
 		else if(input->wasKeyDown(EscapeKey))
 		{
-			infostream<<"the_game: "
-					<<"Launching pause menu"<<std::endl;
-			// It will delete itself by itself
-			(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
-					&g_menumgr, simple_singleplayer_mode))->drop();
+			if (!gui_chat_console->isOpenInhibited())
+			{
+				infostream<<"the_game: "
+						<<"Launching pause menu"<<std::endl;
+				// It will delete itself by itself
+				(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
+						&g_menumgr, simple_singleplayer_mode))->drop();
 
-			// Move mouse cursor on top of the disconnect button
-			if(simple_singleplayer_mode)
-				input->setMousePos(displaycenter.X, displaycenter.Y+0);
-			else
-				input->setMousePos(displaycenter.X, displaycenter.Y+25);
+				// Move mouse cursor on top of the disconnect button
+				if(simple_singleplayer_mode)
+					input->setMousePos(displaycenter.X, displaycenter.Y+0);
+				else
+					input->setMousePos(displaycenter.X, displaycenter.Y+25);
+			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
-			TextDest *dest = new TextDestChat(&client);
-
-			(new GUITextInputMenu(guienv, guiroot, -1,
-					&g_menumgr, dest,
-					L""))->drop();
+			if (!gui_chat_console->isOpenInhibited())
+			{
+				// Open up to over half of the screen
+				gui_chat_console->openConsole(0.6);
+				gui_chat_console->closeConsoleOnEnter(true);
+				gui_chat_console->replaceAndAddToHistory(L"");
+				guienv->setFocus(gui_chat_console);
+			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
 		{
-			TextDest *dest = new TextDestChat(&client);
-
-			(new GUITextInputMenu(guienv, guiroot, -1,
-					&g_menumgr, dest,
-					L"/"))->drop();
+			if (!gui_chat_console->isOpenInhibited())
+			{
+				// Open up to over half of the screen
+				gui_chat_console->openConsole(0.6);
+				gui_chat_console->closeConsoleOnEnter(true);
+				gui_chat_console->replaceAndAddToHistory(L"/");
+				guienv->setFocus(gui_chat_console);
+			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_console")))
 		{
@@ -2722,26 +2730,8 @@ void the_game(
 				repeat_rightclick_timer = 0;
 				infostream<<"Ground right-clicked"<<std::endl;
 				
-				// Sign special case, at least until formspec is properly implemented.
-				// Deprecated?
-				if(meta && meta->getString("formspec") == "hack:sign_text_input" 
-						&& !random_input
-						&& !input->isKeyDown(getKeySetting("keymap_sneak")))
-				{
-					infostream<<"Launching metadata text input"<<std::endl;
-					
-					// Get a new text for it
-
-					TextDest *dest = new TextDestNodeMetadata(nodepos, &client);
-
-					std::wstring wtext = narrow_to_wide(meta->getString("text"));
-
-					(new GUITextInputMenu(guienv, guiroot, -1,
-							&g_menumgr, dest,
-							wtext))->drop();
-				}
 				// If metadata provides an inventory view, activate it
-				else if(meta && meta->getString("formspec") != "" && !random_input
+				if(meta && meta->getString("formspec") != "" && !random_input
 						&& !input->isKeyDown(getKeySetting("keymap_sneak")))
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;

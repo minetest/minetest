@@ -315,7 +315,6 @@ set(minetest_SRCS
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
-	guiTextInputMenu.cpp
 	guiFormSpecMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
