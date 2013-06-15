@@ -59,7 +59,7 @@ void MeshMakeData::fill(MapBlock *block)
 	m_blockpos = block->getPos();
 
 	v3s16 blockpos_nodes = m_blockpos*MAP_BLOCKSIZE;
-	
+
 	/*
 		Copy data
 	*/
@@ -84,7 +84,7 @@ void MeshMakeData::fill(MapBlock *block)
 			Copy neighbors. This is lightning fast.
 			Copying only the borders would be *very* slow.
 		*/
-		
+
 		// Get map
 		Map *map = block->getParent();
 
@@ -102,7 +102,7 @@ void MeshMakeData::fill(MapBlock *block)
 void MeshMakeData::fillSingleNode(MapNode *node)
 {
 	m_blockpos = v3s16(0,0,0);
-	
+
 	v3s16 blockpos_nodes = v3s16(0,0,0);
 	VoxelArea area(blockpos_nodes-v3s16(1,1,1)*MAP_BLOCKSIZE,
 			blockpos_nodes+v3s16(1,1,1)*MAP_BLOCKSIZE*2-v3s16(1,1,1));
@@ -278,7 +278,7 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 
 	if(light_count == 0)
 		return 255;
-	
+
 	light /= light_count;
 
 	// Boost brightness around light sources
@@ -326,7 +326,7 @@ u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
 	else              assert(corner.Y == -1);
 	if(corner.Z == 1) p.Z += 1;
 	else              assert(corner.Z == -1);
-	
+
 	return getSmoothLight(p, data);
 }
 
@@ -448,7 +448,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
-	
+
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
 
@@ -574,7 +574,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
-	
+
 	dest.push_back(face);
 }
 
@@ -595,16 +595,16 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 
 	if(m1 == CONTENT_IGNORE || m2 == CONTENT_IGNORE)
 		return 0;
-	
+
 	bool contents_differ = (m1 != m2);
-	
+
 	const ContentFeatures &f1 = ndef->get(m1);
 	const ContentFeatures &f2 = ndef->get(m2);
 
 	// Contents don't differ for different forms of same liquid
 	if(f1.sameLiquid(f2))
 		contents_differ = false;
-	
+
 	u8 c1 = f1.solidness;
 	u8 c2 = f2.solidness;
 
@@ -613,12 +613,12 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 
 	if(makes_face == false)
 		return 0;
-	
+
 	if(c1 == 0)
 		c1 = f1.visual_solidness;
 	if(c2 == 0)
 		c2 = f2.visual_solidness;
-	
+
 	if(c1 == c2){
 		*equivalent = true;
 		// If same solidness, liquid takes precense
@@ -627,7 +627,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 		if(f2.isLiquid())
 			return 2;
 	}
-	
+
 	if(c1 > c2)
 		return 1;
 	else
@@ -682,7 +682,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	assert(facedir <= 23);
 	static const u16 dir_to_tile[24 * 16] =
 	{
-		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation  
+		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
 		   0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
 		   0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
 		   0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
@@ -702,23 +702,24 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		   0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
 		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
 		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
-		   
-		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19  
+
+		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19
 		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
-		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,  
-		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,  
-		
+		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,
+		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,
+
 		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
-		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,  
-		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,  
-		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2   
-		   
+		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
+		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
+		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
+
 	};
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
 	spec.rotation=dir_to_tile[tile_index + 1];
-	std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-	spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+	//std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+	//spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture.id);
 	return spec;
 }
 
@@ -744,7 +745,7 @@ static void getTileInfo(
 	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
 	TileSpec tile0 = getNodeTile(n0, p, face_dir, data);
 	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, data);
-	
+
 	// This is hackish
 	bool equivalent = false;
 	u8 mf = face_contents(n0.getContent(), n1.getContent(),
@@ -757,7 +758,7 @@ static void getTileInfo(
 	}
 
 	makes_face = true;
-	
+
 	if(mf == 1)
 	{
 		tile = tile0;
@@ -772,7 +773,7 @@ static void getTileInfo(
 		face_dir_corrected = -face_dir;
 		light_source = ndef->get(n1).light_source;
 	}
-	
+
 	// eg. water and glass
 	if(equivalent)
 		tile.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
@@ -793,7 +794,7 @@ static void getTileInfo(
 					vertex_dirs[i], data);
 		}
 	}
-	
+
 	return;
 }
 
@@ -812,16 +813,16 @@ static void updateFastFaceRow(
 		std::vector<FastFace> &dest)
 {
 	v3s16 p = startpos;
-	
+
 	u16 continuous_tiles_count = 0;
-	
+
 	bool makes_face = false;
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	u8 light_source = 0;
-	getTileInfo(data, p, face_dir, 
+	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
 			lights, tile, light_source);
 
@@ -829,27 +830,27 @@ static void updateFastFaceRow(
 	{
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
-		
+
 		v3s16 p_next;
-		
+
 		bool next_makes_face = false;
 		v3s16 next_p_corrected;
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0,0,0,0};
 		TileSpec next_tile;
 		u8 next_light_source = 0;
-		
+
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
 		if(j != MAP_BLOCKSIZE - 1)
 		{
 			p_next = p + translate_dir;
-			
+
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
 					next_tile, next_light_source);
-			
+
 			if(next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
@@ -889,7 +890,7 @@ static void updateFastFaceRow(
 		}
 
 		continuous_tiles_count++;
-		
+
 		// This is set to true if the texture doesn't allow more tiling
 		bool end_of_texture = false;
 		/*
@@ -902,10 +903,10 @@ static void updateFastFaceRow(
 			if(tile.texture.tiled <= continuous_tiles_count)
 				end_of_texture = true;
 		}
-		
+
 		// Do this to disable tiling textures
 		//end_of_texture = true; //DEBUG
-		
+
 		if(next_is_different || end_of_texture)
 		{
 			/*
@@ -933,11 +934,11 @@ static void updateFastFaceRow(
 				{
 					scale.Z = continuous_tiles_count;
 				}
-				
+
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						sp, face_dir_corrected, scale, light_source,
 						dest);
-				
+
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
 				for(int i=1; i<continuous_tiles_count; i++){
 					g_profiler->avg("Meshgen: faces drawn by tiling", 1);
@@ -945,7 +946,7 @@ static void updateFastFaceRow(
 			}
 
 			continuous_tiles_count = 0;
-			
+
 			makes_face = next_makes_face;
 			p_corrected = next_p_corrected;
 			face_dir_corrected = next_face_dir_corrected;
@@ -956,7 +957,7 @@ static void updateFastFaceRow(
 			tile = next_tile;
 			light_source = next_light_source;
 		}
-		
+
 		p = p_next;
 	}
 }
@@ -1060,12 +1061,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 
 			const u16 indices[] = {0,1,2,2,3,0};
 			const u16 indices_alternate[] = {0,1,3,2,3,1};
-			
+
 			if(f.tile.texture.atlas == NULL)
 				continue;
 
 			const u16 *indices_p = indices;
-			
+
 			/*
 				Revert triangles for nicer looking gradient if vertices
 				1 and 3 have same color or 0 and 2 have different color.
@@ -1074,7 +1075,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			if(f.vertices[0].Color.getRed() != f.vertices[2].Color.getRed()
 					|| f.vertices[1].Color.getRed() == f.vertices[3].Color.getRed())
 				indices_p = indices_alternate;
-			
+
 			collector.append(f.tile, f.vertices, 4, indices_p, 6);
 		}
 	}
@@ -1088,7 +1089,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 
 	mapblock_mesh_generate_special(data, collector);
-	
+
 
 	/*
 		Convert MeshCollector to SMesh
@@ -1221,7 +1222,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			the hardware buffer and then delete the mesh
 		*/
 	}
-	
+
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
 
 	// Check if animation is required for this mesh
@@ -1267,7 +1268,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 		m_last_crack = crack;
 	}
-	
+
 	// Texture animation
 	for(std::map<u32, TileSpec>::iterator
 			i = m_animation_tiles.begin();
