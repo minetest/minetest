@@ -72,7 +72,7 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 	retval &= API_FCT(get_ban_list);
 	retval &= API_FCT(get_ban_description);
 	retval &= API_FCT(ban_player);
-	retval &= API_FCT(unban_player_of_ip);
+	retval &= API_FCT(unban_player_or_ip);
 	retval &= API_FCT(get_password_hash);
 	retval &= API_FCT(notify_authentication_modified);
 
@@ -353,7 +353,7 @@ int ModApiBasic::l_ban_player(lua_State *L)
 }
 
 // unban_player_or_ip()
-int ModApiBasic::l_unban_player_of_ip(lua_State *L)
+int ModApiBasic::l_unban_player_or_ip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char * ip_or_name = luaL_checkstring(L, 1);

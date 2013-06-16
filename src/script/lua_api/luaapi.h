@@ -85,7 +85,7 @@ private:
 	static int l_ban_player(lua_State *L);
 
 	// unban_player_or_ip()
-	static int l_unban_player_of_ip(lua_State *L);
+	static int l_unban_player_or_ip(lua_State *L);
 
 	// show_formspec(playername,formname,formspec)
 	static int l_show_formspec(lua_State *L);
