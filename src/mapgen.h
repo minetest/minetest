@@ -86,9 +86,15 @@ public:
 	int id;
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
+	s16 *heightmap;
+	u8 *biomemap;
 
+	Mapgen();
 	virtual ~Mapgen() {}
 
+	s16 findGroundLevelFull(v2s16 p2d);
+	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
+	void updateHeightmap(v3s16 nmin, v3s16 nmax);
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 	void setLighting(v3s16 nmin, v3s16 nmax, u8 light);
 	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
@@ -165,6 +171,91 @@ class OreSheet : public Ore {
 };
 
 Ore *createOre(OreType type);
+
+
+enum DecorationType {
+	DECO_SIMPLE,
+	DECO_SCHEMATIC,
+	DECO_LSYSTEM
+};
+
+#if 0
+struct CutoffData {
+	VoxelArea a;
+	Decoration *deco;
+	//v3s16 p;
+	//v3s16 size;
+	//s16 height;
+	
+	CutoffData(s16 x, s16 y, s16 z, s16 h) {
+		p = v3s16(x, y, z);
+		height = h;
+	}
+};
+#endif
+
+class Decoration {
+public:
+	int mapseed;
+	std::string place_on_name;
+	content_t c_place_on;
+	s16 divlen;
+	float fill_ratio;
+	NoiseParams *np;
+	
+	std::set<u8> biomes;
+	//std::list<CutoffData> cutoffs;
+	//JMutex cutoff_mutex;
+
+	virtual ~Decoration();
+	
+	virtual void resolveNodeNames(INodeDefManager *ndef);
+	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
+						s16 start_y, v3s16 p) = 0;
+	virtual int getHeight() = 0;
+	virtual std::string getName() = 0;
+};
+
+class DecoSimple : public Decoration {
+public:
+	std::string deco_name;
+	std::string spawnby_name;
+	content_t c_deco;
+	content_t c_spawnby;
+	s16 deco_height;
+	s16 deco_height_max;
+	s16 nspawnby;
+	
+	std::vector<std::string> decolist_names;
+	std::vector<content_t> c_decolist;
+
+	~DecoSimple() {}
+	
+	void resolveNodeNames(INodeDefManager *ndef);
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
+						s16 start_y, v3s16 p);
+	virtual int getHeight();
+	virtual std::string getName();
+};
+
+/*
+class DecoSchematic : public Decoration {
+public:
+	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+*/
+
+/*
+class DecoLSystem : public Decoration {
+public:
+	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+*/
+
+Decoration *createDecoration(DecorationType type);
 
 #endif
 

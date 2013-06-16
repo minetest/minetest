@@ -132,7 +132,6 @@ public:
 	virtual float baseTerrainLevelFromMap(v2s16 p);
 	virtual float baseTerrainLevelFromMap(int index);
 
-	s16 find_ground_level(v2s16 p2d);
 	s16 find_stone_level(v2s16 p2d);
 	bool block_is_underground(u64 seed, v3s16 blockpos);
 	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);

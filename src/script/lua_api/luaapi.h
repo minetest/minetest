@@ -45,9 +45,6 @@ private:
 	// get_server_status()
 	static int l_get_server_status(lua_State *L);
 
-	// register_biome_groups({frequencies})
-	static int l_register_biome_groups(lua_State *L);
-
 	// register_biome({lots of stuff})
 	static int l_register_biome(lua_State *L);
 
@@ -130,9 +127,15 @@ private:
 	// rollback_revert_actions_by(actor, seconds) -> bool, log messages
 	static int l_rollback_revert_actions_by(lua_State *L);
 
+	// register_ore(oredesc)
 	static int l_register_ore(lua_State *L);
+	
+	// register_decoration(deco)
+	static int l_register_decoration(lua_State *L);
 
 	static struct EnumString es_OreType[];
+	static struct EnumString es_DecorationType[];
+
 };
 
 

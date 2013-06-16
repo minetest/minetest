@@ -101,6 +101,10 @@ EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i < ores.size(); i++)
 		delete ores[i];
 	ores.clear();
+
+	for (unsigned int i = 0; i < decorations.size(); i++)
+		delete decorations[i];
+	decorations.clear();
 	
 	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
 			iter != mglist.end(); iter ++) {
