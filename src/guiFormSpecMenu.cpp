@@ -698,7 +698,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 		bool selected = m_selected_item
 			&& m_invmgr->getInventory(m_selected_item->inventoryloc) == inv
 			&& m_selected_item->listname == s.listname
-			&& m_selected_item->i == i;
+			&& m_selected_item->i == item_i;
 		bool hovering = rect.isPointInside(m_pointer);
 
 		if(phase == 0)
