@@ -2264,6 +2264,7 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 	
+	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
 	for(std::map<u16, ClientActiveObject*>::iterator
 			i = m_active_objects.begin();
@@ -2293,6 +2294,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step and handle simple objects
 	*/
+	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
 	for(std::list<ClientSimpleObject*>::iterator
 			i = m_simple_objects.begin(); i != m_simple_objects.end();)
 	{
