@@ -912,11 +912,20 @@ void GUIFormSpecMenu::drawMenu()
 
 void GUIFormSpecMenu::updateSelectedItem()
 {
+	// If the selected stack has become empty for some reason, deselect it.
+	// If the selected stack has become inaccessible, deselect it.
+	// If the selected stack has become smaller, adjust m_selected_amount.
+	ItemStack selected = verifySelectedItem();
+
 	// WARNING: BLACK MAGIC
 	// See if there is a stack suited for our current guess.
 	// If such stack does not exist, clear the guess.
-	if(m_selected_content_guess.name != "")
-	{
+	if(m_selected_content_guess.name != "" &&
+			selected.name == m_selected_content_guess.name &&
+			selected.count == m_selected_content_guess.count){
+		// Selected item fits the guess. Skip the black magic.
+	}
+	else if(m_selected_content_guess.name != ""){
 		bool found = false;
 		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
 			const ListDrawSpec &s = m_inventorylists[i];
@@ -934,23 +943,12 @@ void GUIFormSpecMenu::updateSelectedItem()
 				if(stack.name == m_selected_content_guess.name &&
 						stack.count == m_selected_content_guess.count){
 					found = true;
-					if(m_selected_item){
-						// If guessed stack is already selected, all is fine
-						if(m_selected_item->inventoryloc == s.inventoryloc &&
-								m_selected_item->listname == s.listname &&
-								m_selected_item->i == (s32)item_i &&
-								m_selected_amount == stack.count){
-							break;
-						}
-						delete m_selected_item;
-						m_selected_item = NULL;
-					}
 					infostream<<"Client: Changing selected content guess to "
 							<<s.inventoryloc.dump()<<" "<<s.listname
 							<<" "<<item_i<<std::endl;
+					delete m_selected_item;
 					m_selected_item = new ItemSpec(s.inventoryloc, s.listname, item_i);
 					m_selected_amount = stack.count;
-					break;
 				}
 			}
 		}
@@ -958,35 +956,6 @@ void GUIFormSpecMenu::updateSelectedItem()
 			infostream<<"Client: Discarding selected content guess: "
 					<<m_selected_content_guess.getItemString()<<std::endl;
 			m_selected_content_guess.name = "";
-		}
-	}
-	// If the selected stack has become empty for some reason, deselect it.
-	// If the selected stack has become smaller, adjust m_selected_amount.
-	if(m_selected_item)
-	{
-		bool selection_valid = false;
-		if(m_selected_item->isValid())
-		{
-			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-			if(inv)
-			{
-				InventoryList *list = inv->getList(m_selected_item->listname);
-				if(list && (u32) m_selected_item->i < list->getSize())
-				{
-					ItemStack stack = list->getItem(m_selected_item->i);
-					if(m_selected_amount > stack.count)
-						m_selected_amount = stack.count;
-					if(!stack.empty())
-						selection_valid = true;
-				}
-			}
-		}
-		if(!selection_valid)
-		{
-			delete m_selected_item;
-			m_selected_item = NULL;
-			m_selected_amount = 0;
-			m_selected_dragging = false;
 		}
 	}
 
@@ -1017,12 +986,43 @@ void GUIFormSpecMenu::updateSelectedItem()
 	// If craftresult is selected, keep the whole stack selected
 	if(m_selected_item && m_selected_item->listname == "craftresult")
 	{
-		Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-		assert(inv);
-		InventoryList *list = inv->getList(m_selected_item->listname);
-		assert(list);
-		m_selected_amount = list->getItem(m_selected_item->i).count;
+		m_selected_amount = verifySelectedItem().count;
 	}
+}
+
+ItemStack GUIFormSpecMenu::verifySelectedItem()
+{
+	// If the selected stack has become empty for some reason, deselect it.
+	// If the selected stack has become inaccessible, deselect it.
+	// If the selected stack has become smaller, adjust m_selected_amount.
+	// Return the selected stack.
+
+	if(m_selected_item)
+	{
+		if(m_selected_item->isValid())
+		{
+			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
+			if(inv)
+			{
+				InventoryList *list = inv->getList(m_selected_item->listname);
+				if(list && (u32) m_selected_item->i < list->getSize())
+				{
+					ItemStack stack = list->getItem(m_selected_item->i);
+					if(m_selected_amount > stack.count)
+						m_selected_amount = stack.count;
+					if(!stack.empty())
+						return stack;
+				}
+			}
+		}
+
+		// selection was not valid
+		delete m_selected_item;
+		m_selected_item = NULL;
+		m_selected_amount = 0;
+		m_selected_dragging = false;
+	}
+	return ItemStack();
 }
 
 void GUIFormSpecMenu::acceptInput()
