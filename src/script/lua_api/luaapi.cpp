@@ -683,7 +683,7 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 
 	deco->c_place_on    = CONTENT_IGNORE;
 	deco->place_on_name = getstringfield_default(L, index, "place_on", "ignore");
-	deco->divlen        = getintfield_default(L, index, "divlen", 8);
+	deco->sidelen       = getintfield_default(L, index, "sidelen", 8);
 	deco->fill_ratio    = getfloatfield_default(L, index, "fill_ratio", 0.02);
 	
 	lua_getfield(L, index, "noise_params");
@@ -749,8 +749,8 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 			break; }
 	}
 	
-	if (deco->divlen <= 0) {
-		errorstream << "register_decoration: divlen must be "
+	if (deco->sidelen <= 0) {
+		errorstream << "register_decoration: sidelen must be "
 			"greater than 0" << std::endl;
 		delete deco;
 		return 0;

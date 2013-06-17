@@ -1875,8 +1875,9 @@ Decoration definition (register_decoration)
     deco_type = "simple", -- See "Decoration types"
     place_on = "default:dirt_with_grass",
     ^ Node that decoration can be placed on
-    divlen = 8,
-    ^ Number of divisions made in the chunk being generated
+    sidelen = 8,
+    ^ Size of divisions made in the chunk being generated.
+    ^ If the chunk size is not evenly divisible by sidelen, sidelen is made equal to the chunk size.
     fill_ratio = 0.02,
     ^ Ratio of the area to be uniformly filled by the decoration.
     ^ Used only if noise_params is not specified.

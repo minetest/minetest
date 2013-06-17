@@ -199,7 +199,7 @@ public:
 	int mapseed;
 	std::string place_on_name;
 	content_t c_place_on;
-	s16 divlen;
+	s16 sidelen;
 	float fill_ratio;
 	NoiseParams *np;
 	
