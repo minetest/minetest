@@ -370,6 +370,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_animation_speed(0),
 	m_animation_blend(0),
 	m_animation_sent(false),
+	m_animation_speed_sent(true),
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
 	m_attachment_sent(false)
@@ -549,6 +550,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(m_animation_sent == false){
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
+	if(m_animation_speed_sent == false){
+		m_animation_speed_sent = true;
+		std::string str = gob_cmd_update_animation_speed(m_animation_speed);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -762,6 +771,12 @@ void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
 	m_animation_sent = false;
+}
+
+void LuaEntitySAO::setAnimationSpeed(float frame_speed)
+{
+	m_animation_speed = frame_speed;
+	m_animation_speed_sent = false;
 }
 
 void LuaEntitySAO::setBonePosition(std::string bone, v3f position, v3f rotation)

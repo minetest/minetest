@@ -392,6 +392,26 @@ int ObjectRef::l_set_animation(lua_State *L)
 	return 0;
 }
 
+// set_animation_speed(self, frame_speed)
+int ObjectRef::l_set_animation_speed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if(co == NULL) return 0;
+
+	// Do it
+	if(!lua_isnil(L, 2)) {
+		float frame_speed = lua_tonumber(L, 2);
+		co->setAnimationSpeed(frame_speed);
+		lua_pushboolean(L,true);
+	}
+	else {
+		lua_pushboolean(L,false);
+	}
+	return 1;
+}
+
 // set_bone_position(self, std::string bone, v3f position, v3f rotation)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
@@ -1074,6 +1094,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_armor_groups),
 	luamethod(ObjectRef, set_physics_override),
 	luamethod(ObjectRef, set_animation),
+	luamethod(ObjectRef, set_animation_speed),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, set_detach),
