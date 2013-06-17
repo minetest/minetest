@@ -109,8 +109,6 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	if (!in_range)
 		return;
 
-	resolveNodeNames(mg->ndef);
-
 	int ymin, ymax;
 	if (in_range & ORE_RANGE_MIRROR) {
 		ymin = MYMAX(nmin.Y, -height_max);
@@ -226,8 +224,6 @@ void Decoration::resolveNodeNames(INodeDefManager *ndef) {
 
 
 void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
-	resolveNodeNames(mg->ndef);
-
 	PseudoRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
