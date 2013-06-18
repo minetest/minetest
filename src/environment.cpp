@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "event.h"
 #endif
 #include "daynightratio.h"
 #include "map.h"
@@ -2190,8 +2191,11 @@ void ClientEnvironment::step(float dtime)
 		{
 			f32 damage_f = (speed - tolerance)/BS * post_factor;
 			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0)
+			if(damage != 0){
 				damageLocalPlayer(damage, true);
+				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
+				m_gamedef->event()->put(e);
+			}
 		}
 	}
 	
@@ -2260,6 +2264,7 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 	
+	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
 	for(std::map<u16, ClientActiveObject*>::iterator
 			i = m_active_objects.begin();
@@ -2289,6 +2294,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step and handle simple objects
 	*/
+	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
 	for(std::list<ClientSimpleObject*>::iterator
 			i = m_simple_objects.begin(); i != m_simple_objects.end();)
 	{

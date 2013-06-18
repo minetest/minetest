@@ -2401,6 +2401,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			setInventoryModified(da->from_inv);
 
+			/*
+				Disable dropping items out of craftpreview
+			*/
+			if(da->from_list == "craftpreview")
+			{
+				infostream<<"Ignoring IDropAction from "
+						<<(da->from_inv.dump())<<":"<<da->from_list
+						<<" because src is "<<da->from_list<<std::endl;
+				delete a;
+				return;
+			}
+
 			// Disallow dropping items if not allowed to interact
 			if(!checkPriv(player->getName(), "interact"))
 			{

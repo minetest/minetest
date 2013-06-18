@@ -239,7 +239,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgv7_np_terrain_mod",      "0, 1, (350, 350, 350), 85039, 5, 0.6");
 	settings->setDefault("mgv7_np_terrain_persist",  "0, 1, (500, 500, 500), 539, 3, 0.6");
 	settings->setDefault("mgv7_np_height_select",    "0.5, 0.5, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv7_np_ridge",            "0.5, 1, (100, 100, 100), 6467, 4, 0.75");
+	settings->setDefault("mgv7_np_ridge",            "0, 1, (100, 100, 100), 6467, 4, 0.75");
 
 	settings->setDefault("mgindev_np_terrain_base",   "-4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10");
 	settings->setDefault("mgindev_np_terrain_higher", "20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10");

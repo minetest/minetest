@@ -186,6 +186,7 @@ public:
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
+	ItemStack verifySelectedItem();
 
 	void acceptInput();
 	bool OnEvent(const SEvent& event);

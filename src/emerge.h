@@ -87,6 +87,7 @@ public:
 	//Mapgen-related structures
 	BiomeDefManager *biomedef;
 	std::vector<Ore *> ores;
+	std::vector<Decoration *> decorations;
 
 	EmergeManager(IGameDef *gamedef);
 	~EmergeManager();

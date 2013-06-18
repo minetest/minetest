@@ -79,7 +79,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 	this->freq_beach  = params->freq_beach;
 
 	this->ystride = csize.X; //////fix this
-
+	
 	np_cave        = &params->np_cave;
 	np_humidity    = &params->np_humidity;
 	np_trees       = &params->np_trees;
@@ -108,23 +108,6 @@ MapgenV6::~MapgenV6() {
 
 //////////////////////// Some helper functions for the map generator
 
-// Returns Y one under area minimum if not found
-s16 MapgenV6::find_ground_level(v2s16 p2d) {
-	v3s16 em = vm->m_area.getExtent();
-	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
-	s16 y_nodes_min = vm->m_area.MinEdge.Y;
-	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
-	s16 y;
-	
-	for (y = y_nodes_max; y >= y_nodes_min; y--) {
-		MapNode &n = vm->m_data[i];
-		if(ndef->get(n).walkable)
-			break;
-
-		vm->m_area.add_y(em, i, -1);
-	}
-	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
-}
 
 // Returns Y one under area minimum if not found
 s16 MapgenV6::find_stone_level(v2s16 p2d) {
@@ -462,6 +445,12 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate some trees, and add grass, if a jungle
 	if (flags & MG_TREES)
 		placeTreesAndJungleGrass();
+	
+	// Generate the registered decorations
+	for (unsigned int i = 0; i != emerge->decorations.size(); i++) {
+		Decoration *deco = emerge->decorations[i];
+		deco->placeDeco(this, blockseed + i, node_min, node_max);
+	}
 
 	// Generate the registered ores
 	for (unsigned int i = 0; i != emerge->ores.size(); i++) {
@@ -849,7 +838,7 @@ void MapgenV6::placeTreesAndJungleGrass() {
 				s16 x = grassrandom.range(p2d_min.X, p2d_max.X);
 				s16 z = grassrandom.range(p2d_min.Y, p2d_max.Y);
 				
-				s16 y = find_ground_level(v2s16(x, z)); ////////////////optimize this!
+				s16 y = findGroundLevelFull(v2s16(x, z)); ////////////////optimize this!
 				if (y < water_level || y < node_min.Y || y > node_max.Y)
 					continue;
 				
@@ -866,7 +855,7 @@ void MapgenV6::placeTreesAndJungleGrass() {
 		for (u32 i = 0; i < tree_count; i++) {
 			s16 x = myrand_range(p2d_min.X, p2d_max.X);
 			s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
-			s16 y = find_ground_level(v2s16(x, z)); ////////////////////optimize this!
+			s16 y = findGroundLevelFull(v2s16(x, z)); ////////////////////optimize this!
 			// Don't make a tree under water level
 			// Don't make a tree so high that it doesn't fit
 			if(y < water_level || y > node_max.Y - 6)

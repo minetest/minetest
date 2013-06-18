@@ -87,7 +87,7 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 			wherein = CONTENT_AIR;
 		}
 	}
-	
+
 	if (wherein == CONTENT_IGNORE) {
 		wherein = ndef->getId(wherein_name);
 		if (wherein == CONTENT_IGNORE) {
@@ -109,10 +109,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	if (!in_range)
 		return;
 
-	resolveNodeNames(mg->ndef);
-	
 	int ymin, ymax;
-	
 	if (in_range & ORE_RANGE_MIRROR) {
 		ymin = MYMAX(nmin.Y, -height_max);
 		ymax = MYMIN(nmax.Y, -height_min);
@@ -122,7 +119,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	}
 	if (clust_size >= ymax - ymin + 1)
 		return;
-	
+
 	nmin.Y = ymin;
 	nmax.Y = ymax;
 	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
@@ -130,7 +127,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 
 
 void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax) {
+						  u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed);
 	MapNode n_ore(ore, 0, ore_param2);
 
@@ -145,16 +142,16 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
 		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
-		
+ 
 		if (np && (NoisePerlin3D(np, x0, y0, z0, seed) < nthresh))
 			continue;
-		
+
 		for (int z1 = 0; z1 != csize; z1++)
 		for (int y1 = 0; y1 != csize; y1++)
 		for (int x1 = 0; x1 != csize; x1++) {
 			if (pr.range(1, orechance) != 1)
 				continue;
-			
+
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
 			if (vm->m_data[i].getContent() == wherein)
 				vm->m_data[i] = n_ore;
@@ -167,10 +164,10 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed + 4234);
 	MapNode n_ore(ore, 0, ore_param2);
-	
+
 	int max_height = clust_size;
 	int y_start = pr.range(nmin.Y, nmax.Y - max_height);
-	
+
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
 		int sz = nmax.Z - nmin.Z + 1;
@@ -178,14 +175,14 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 	}
 	noise->seed = seed + y_start;
 	noise->perlinMap2D(nmin.X, nmin.Z);
-	
+
 	int index = 0;
 	for (int z = nmin.Z; z <= nmax.Z; z++)
 	for (int x = nmin.X; x <= nmax.X; x++) {
 		float noiseval = noise->result[index++];
 		if (noiseval < nthresh)
 			continue;
-			
+
 		int height = max_height * (1. / pr.range(1, 3));
 		int y0 = y_start + np->scale * noiseval; //pr.range(1, 3) - 1;
 		int y1 = y0 + height;
@@ -193,11 +190,330 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			u32 i = vm->m_area.index(x, y, z);
 			if (!vm->m_area.contains(i))
 				continue;
-				
+
 			if (vm->m_data[i].getContent() == wherein)
 				vm->m_data[i] = n_ore;
 		}
 	}
+}
+
+
+Decoration *createDecoration(DecorationType type) {
+	switch (type) {
+		case DECO_SIMPLE:
+			return new DecoSimple;
+		//case DECO_SCHEMATIC:
+		//	return new DecoSchematic;
+		//case DECO_LSYSTEM:
+		//	return new DecoLSystem;
+		default:
+			return NULL;
+	}
+}
+
+
+Decoration::~Decoration() {
+	delete np;
+}
+
+
+void Decoration::resolveNodeNames(INodeDefManager *ndef) {
+	if (c_place_on == CONTENT_IGNORE)
+		c_place_on = ndef->getId(place_on_name);
+}
+
+
+void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
+	PseudoRandom ps(blockseed + 53);
+	int carea_size = nmax.X - nmin.X + 1;
+
+	// Divide area into parts
+	if (carea_size % sidelen) {
+		errorstream << "Decoration::placeDeco: chunk size is not divisible by "
+			"sidelen; setting sidelen to " << carea_size << std::endl;
+		sidelen = carea_size;
+	}
+	
+	s16 divlen = carea_size / sidelen;
+	int area = sidelen * sidelen;
+
+	for (s16 z0 = 0; z0 < divlen; z0++)
+	for (s16 x0 = 0; x0 < divlen; x0++) {
+		v2s16 p2d_center( // Center position of part of division
+			nmin.X + sidelen / 2 + sidelen * x0,
+			nmin.Z + sidelen / 2 + sidelen * z0
+		);
+		v2s16 p2d_min( // Minimum edge of part of division
+			nmin.X + sidelen * x0,
+			nmin.Z + sidelen * z0
+		);
+		v2s16 p2d_max( // Maximum edge of part of division
+			nmin.X + sidelen + sidelen * x0 - 1,
+			nmin.Z + sidelen + sidelen * z0 - 1
+		);
+
+		// Amount of decorations
+		float nval = np ?
+			NoisePerlin2D(np, p2d_center.X, p2d_center.Y, mapseed) :
+			fill_ratio;
+		u32 deco_count = area * MYMAX(nval, 0.f);
+
+		for (u32 i = 0; i < deco_count; i++) {
+			s16 x = ps.range(p2d_min.X, p2d_max.X);
+			s16 z = ps.range(p2d_min.Y, p2d_max.Y);
+
+			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
+			
+			s16 y = mg->heightmap ? 
+					mg->heightmap[mapindex] :
+					mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+					
+			if (y < nmin.Y || y > nmax.Y)
+				continue;
+
+			int height = getHeight();
+			int max_y = nmax.Y + MAP_BLOCKSIZE;
+			if (y + 1 + height > max_y) {
+				continue;
+#if 0
+				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
+				//add to queue
+				JMutexAutoLock cutofflock(cutoff_mutex);
+				cutoffs.push_back(CutoffData(x, y, z, height));
+#endif
+			}
+
+			if (mg->biomemap) {
+				std::set<u8>::iterator iter;
+				
+				if (biomes.size()) {
+					iter = biomes.find(mg->biomemap[mapindex]);
+					if (iter == biomes.end())
+						continue;
+				}
+			}
+
+			generate(mg, &ps, max_y, 0, v3s16(x, y, z));
+		}
+	}
+}
+
+
+#if 0
+void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
+	PseudoRandom pr(blockseed + 53);
+	std::vector<CutoffData> handled_cutoffs;
+	
+	// Copy over the cutoffs we're interested in so we don't needlessly hold a lock
+	{
+		JMutexAutoLock cutofflock(cutoff_mutex);
+		for (std::list<CutoffData>::iterator i = cutoffs.begin();
+			i != cutoffs.end(); ++i) {
+			CutoffData cutoff = *i;
+			v3s16 p    = cutoff.p;
+			s16 height = cutoff.height;
+			if (p.X < nmin.X || p.X > nmax.X ||
+				p.Z < nmin.Z || p.Z > nmax.Z)
+				continue;
+			if (p.Y + height < nmin.Y || p.Y > nmax.Y)
+				continue;
+			
+			handled_cutoffs.push_back(cutoff);
+		}
+	}
+	
+	// Generate the cutoffs
+	for (size_t i = 0; i != handled_cutoffs.size(); i++) {
+		v3s16 p    = handled_cutoffs[i].p;
+		s16 height = handled_cutoffs[i].height;
+		
+		if (p.Y + height > nmax.Y) {
+			//printf("Decoration at (%d %d %d) cut off again!\n", p.X, p.Y, p.Z);
+			cuttoffs.push_back(v3s16(p.X, p.Y, p.Z));
+		}
+		
+		generate(mg, &pr, nmax.Y, nmin.Y - p.Y, v3s16(p.X, nmin.Y, p.Z));
+	}
+	
+	// Remove cutoffs that were handled from the cutoff list
+	{
+		JMutexAutoLock cutofflock(cutoff_mutex);
+		for (std::list<CutoffData>::iterator i = cutoffs.begin();
+			i != cutoffs.end(); ++i) {
+			
+			for (size_t j = 0; j != handled_cutoffs.size(); j++) {
+				CutoffData coff = *i;
+				if (coff.p == handled_cutoffs[j].p)
+					i = cutoffs.erase(i);
+			}
+		}
+	}	
+}
+#endif
+
+
+void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
+	Decoration::resolveNodeNames(ndef);
+	
+	if (c_deco == CONTENT_IGNORE) {
+		c_deco = ndef->getId(deco_name);
+		if (c_deco == CONTENT_IGNORE) {
+			errorstream << "DecoSimple::resolveNodeNames: decoration node '"
+				<< deco_name << "' not defined";
+			c_deco = CONTENT_AIR;
+		}
+	}
+	if (c_spawnby == CONTENT_IGNORE) {
+		c_spawnby = ndef->getId(spawnby_name);
+		if (c_spawnby == CONTENT_IGNORE) {
+			errorstream << "DecoSimple::resolveNodeNames: spawnby node '"
+				<< deco_name << "' not defined";
+			nspawnby = -1;
+			c_spawnby = CONTENT_AIR;
+		}
+	}
+	
+	if (c_decolist.size())
+		return;
+	
+	for (size_t i = 0; i != decolist_names.size(); i++) {		
+		content_t c = ndef->getId(decolist_names[i]);
+		if (c == CONTENT_IGNORE) {
+			errorstream << "DecoSimple::resolveNodeNames: decolist node '"
+				<< decolist_names[i] << "' not defined";
+			c = CONTENT_AIR;
+		}
+		c_decolist.push_back(c);
+	}
+}
+
+
+void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, s16 start_y, v3s16 p) {
+	ManualMapVoxelManipulator *vm = mg->vm;
+
+	u32 vi = vm->m_area.index(p);
+	if (vm->m_data[vi].getContent() != c_place_on &&
+		c_place_on != CONTENT_IGNORE)
+		return;
+		
+	if (nspawnby != -1) {
+		int nneighs = 0;
+		v3s16 dirs[8] = { // a Moore neighborhood
+			v3s16( 0, 0,  1),
+			v3s16( 0, 0, -1),
+			v3s16( 1, 0,  0),
+			v3s16(-1, 0,  0),
+			v3s16( 1, 0,  1),
+			v3s16(-1, 0,  1),
+			v3s16(-1, 0, -1),
+			v3s16( 1, 0, -1)
+		};
+		
+		for (int i = 0; i != 8; i++) {
+			u32 index = vm->m_area.index(p + dirs[i]);
+			if (vm->m_area.contains(index) &&
+				vm->m_data[index].getContent() == c_spawnby)
+				nneighs++;
+		}
+		
+		if (nneighs < nspawnby)
+			return;
+	}
+	
+	size_t ndecos = c_decolist.size();
+	content_t c_place = ndecos ? c_decolist[pr->range(0, ndecos - 1)] : c_deco;
+
+	s16 height = (deco_height_max > 0) ?
+		pr->range(deco_height, deco_height_max) : deco_height;
+
+	height = MYMIN(height, max_y - p.Y);
+	
+	v3s16 em = vm->m_area.getExtent();
+	for (int i = start_y; i < height; i++) {
+		vm->m_area.add_y(em, vi, 1);
+		
+		content_t c = vm->m_data[vi].getContent();
+		if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+			break;
+		
+		vm->m_data[vi] = MapNode(c_place);
+	}
+}
+
+
+int DecoSimple::getHeight() {
+	return (deco_height_max > 0) ? deco_height_max : deco_height;
+}
+
+
+std::string DecoSimple::getName() {
+	return deco_name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+Mapgen::Mapgen() {
+	seed        = 0;
+	water_level = 0;
+	generating  = false;
+	id          = -1;
+	vm          = NULL;
+	ndef        = NULL;
+	heightmap   = NULL;
+	biomemap    = NULL;
+}
+
+
+// Returns Y one under area minimum if not found
+s16 Mapgen::findGroundLevelFull(v2s16 p2d) {
+	v3s16 em = vm->m_area.getExtent();
+	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
+	s16 y_nodes_min = vm->m_area.MinEdge.Y;
+	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
+	s16 y;
+	
+	for (y = y_nodes_max; y >= y_nodes_min; y--) {
+		MapNode &n = vm->m_data[i];
+		if (ndef->get(n).walkable)
+			break;
+
+		vm->m_area.add_y(em, i, -1);
+	}
+	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
+}
+
+
+s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax) {
+	v3s16 em = vm->m_area.getExtent();
+	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
+	s16 y;
+	
+	for (y = ymax; y >= ymin; y--) {
+		MapNode &n = vm->m_data[i];
+		if (ndef->get(n).walkable)
+			break;
+
+		vm->m_area.add_y(em, i, -1);
+	}
+	return y;
+}
+
+
+void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
+	if (!heightmap)
+		return;
+	
+	//TimeTaker t("Mapgen::updateHeightmap", NULL, PRECISION_MICRO);
+	int index = 0;
+	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
+		for (s16 x = nmin.X; x <= nmax.X; x++) {
+			s16 y = findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+			heightmap[index++] = y;
+		}
+	}
+	//printf("updateHeightmap: %dus\n", t.stop());
 }
 
 
@@ -208,11 +524,11 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 x = nmin.X; x <= nmax.X; x++) {
 			wasliquid = true;
-			
+
 			u32 i = vm->m_area.index(x, nmax.Y, z);
 			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
 				isliquid = ndef->get(vm->m_data[i]).isLiquid();
-				
+
 				// there was a change between liquid and nonliquid, add to queue
 				if (isliquid != wasliquid)
 					trans_liquid->push_back(v3s16(x, y, z));
@@ -242,7 +558,7 @@ void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
 void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 	if (light <= 1 || !a.contains(p))
 		return;
-		
+
 	u32 vi = vm->m_area.index(p);
 	MapNode &nn = vm->m_data[vi];
 
@@ -250,9 +566,9 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 	// should probably compare masked, but doesn't seem to make a difference
 	if (light <= nn.param1 || !ndef->get(nn).light_propagates)
 		return;
-	
+
 	nn.param1 = light;
-	
+
 	lightSpread(a, p + v3s16(0, 0, 1), light);
 	lightSpread(a, p + v3s16(0, 1, 0), light);
 	lightSpread(a, p + v3s16(1, 0, 0), light);
@@ -282,7 +598,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 				continue;
 			}
 			vm->m_area.add_y(em, i, -1);
-
+ 
 			for (int y = a.MaxEdge.Y; y >= a.MinEdge.Y; y--) {
 				MapNode &n = vm->m_data[i];
 				if (!ndef->get(n).sunlight_propagates)
@@ -292,7 +608,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	// now spread the sunlight and light up any sources
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
@@ -302,11 +618,11 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 				if (n.getContent() == CONTENT_IGNORE ||
 					!ndef->get(n).light_propagates)
 					continue;
-				
+
 				u8 light_produced = ndef->get(n).light_source & 0x0F;
 				if (light_produced)
 					n.param1 = light_produced;
-				
+
 				u8 light = n.param1 & 0x0F;
 				if (light) {
 					lightSpread(a, v3s16(x,     y,     z + 1), light);
@@ -319,7 +635,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	//printf("updateLighting: %dms\n", t.stop());
 }
 
@@ -331,24 +647,24 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 	bool sunlight = !block_is_underground;
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	
+
 	for (int i = 0; i < 2; i++) {
 		enum LightBank bank = banks[i];
 		std::set<v3s16> light_sources;
 		std::map<v3s16, u8> unlight_from;
 
 		voxalgo::clearLightAndCollectSources(*vm, a, bank, ndef,
-                                        light_sources, unlight_from);
+											 light_sources, unlight_from);
 		voxalgo::propagateSunlight(*vm, a, sunlight, light_sources, ndef);
 
 		vm->unspreadLight(bank, unlight_from, light_sources, ndef);
 		vm->spreadLight(bank, light_sources, ndef);
 	}
 }
-
-
+ 
+ 
 //////////////////////// Mapgen V6 parameter read/write
-
+ 
 bool MapgenV6Params::readParams(Settings *settings) {
 	freq_desert = settings->getFloat("mgv6_freq_desert");
 	freq_beach  = settings->getFloat("mgv6_freq_beach");
@@ -367,12 +683,12 @@ bool MapgenV6Params::readParams(Settings *settings) {
 		settings->getNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
 	return success;
 }
-
-
+ 
+ 
 void MapgenV6Params::writeParams(Settings *settings) {
 	settings->setFloat("mgv6_freq_desert", freq_desert);
 	settings->setFloat("mgv6_freq_beach",  freq_beach);
-	
+ 
 	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
 	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
 	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
@@ -411,7 +727,6 @@ void MapgenV7Params::writeParams(Settings *settings) {
 
 /////////////////////////////////// legacy static functions for farmesh
 
-
 s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
 	//just need to return something
 	s16 level = 5;
@@ -421,9 +736,9 @@ s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
 
 bool Mapgen::get_have_beach(u64 seed, v2s16 p2d) {
 	double sandnoise = noise2d_perlin(
-			0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
-			seed+59420, 3, 0.50);
-
+				0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
+				seed+59420, 3, 0.50);
+ 
 	return (sandnoise > 0.15);
 }
 

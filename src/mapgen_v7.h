@@ -67,9 +67,7 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 	
-	s16 *heightmap;
 	s16 *ridge_heightmap;
-	u8 *biomemap;
 	
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
