@@ -445,6 +445,12 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate some trees, and add grass, if a jungle
 	if (flags & MG_TREES)
 		placeTreesAndJungleGrass();
+	
+	// Generate the registered decorations
+	for (unsigned int i = 0; i != emerge->decorations.size(); i++) {
+		Decoration *deco = emerge->decorations[i];
+		deco->placeDeco(this, blockseed + i, node_min, node_max);
+	}
 
 	// Generate the registered ores
 	for (unsigned int i = 0; i != emerge->ores.size(); i++) {

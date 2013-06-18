@@ -421,17 +421,22 @@ void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, s16 start_y, 
 	}
 	
 	size_t ndecos = c_decolist.size();
-	content_t c = ndecos ? c_decolist[pr->range(0, ndecos - 1)] : c_deco;
+	content_t c_place = ndecos ? c_decolist[pr->range(0, ndecos - 1)] : c_deco;
 
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
 
 	height = MYMIN(height, max_y - p.Y);
-
+	
 	v3s16 em = vm->m_area.getExtent();
 	for (int i = start_y; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
-		vm->m_data[vi] = MapNode(c);
+		
+		content_t c = vm->m_data[vi].getContent();
+		if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+			break;
+		
+		vm->m_data[vi] = MapNode(c_place);
 	}
 }
 
