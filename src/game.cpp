@@ -2589,7 +2589,8 @@ void the_game(
 				Handle digging
 			*/
 			
-			if(nodig_delay_timer <= 0.0 && input->getLeftState())
+			if(nodig_delay_timer <= 0.0 && input->getLeftState()
+					&& client.checkPrivilege("interact"))
 			{
 				if(!digging)
 				{
@@ -2716,8 +2717,10 @@ void the_game(
 				camera.setDigging(0);  // left click animation
 			}
 
-			if(input->getRightClicked() ||
-					repeat_rightclick_timer >= g_settings->getFloat("repeat_rightclick_time"))
+			if((input->getRightClicked() ||
+					repeat_rightclick_timer >=
+						g_settings->getFloat("repeat_rightclick_time")) &&
+					client.checkPrivilege("interact"))
 			{
 				repeat_rightclick_timer = 0;
 				infostream<<"Ground right-clicked"<<std::endl;
