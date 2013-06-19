@@ -62,6 +62,7 @@ struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_HEALTHBAR_VISIBLE, "healthbar"},
 	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
 	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
+	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
 	{0, NULL},
 };
 

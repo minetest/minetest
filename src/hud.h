@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
 #define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
 #define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
+#define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 
@@ -122,7 +123,7 @@ public:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 					 std::string texture, s32 count, v2s32 offset);
 	
-	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem);
+	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, s32 breath);
 	void resizeHotbar();
 	
 	void drawCrosshair();

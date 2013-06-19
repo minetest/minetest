@@ -2680,6 +2680,13 @@ u16 Client::getHP()
 	return player->hp;
 }
 
+u16 Client::getBreath()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->breath;
+}
+
 bool Client::getChatMessage(std::wstring &message)
 {
 	if(m_chat_queue.size() == 0)
