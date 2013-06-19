@@ -101,6 +101,10 @@ EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i < ores.size(); i++)
 		delete ores[i];
 	ores.clear();
+
+	for (unsigned int i = 0; i < decorations.size(); i++)
+		delete decorations[i];
+	decorations.clear();
 	
 	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
 			iter != mglist.end(); iter ++) {
@@ -119,9 +123,13 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 		return;
 	
 	biomedef->resolveNodeNames(ndef);
+	for (size_t i = 0; i != ores.size(); i++)
+		ores[i]->resolveNodeNames(ndef);
+	for (size_t i = 0; i != decorations.size(); i++)
+		decorations[i]->resolveNodeNames(ndef);
 	
 	this->params = mgparams;
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (size_t i = 0; i != emergethread.size(); i++) {
 		mg = createMapgen(params->mg_name, 0, params);
 		if (!mg) {
 			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;

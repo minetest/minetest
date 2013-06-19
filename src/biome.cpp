@@ -168,3 +168,13 @@ Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
 	
 	return biome_closest ? biome_closest : biomes[0];
 }
+
+
+u8 BiomeDefManager::getBiomeIdByName(const char *name) {
+	for (size_t i = 0; i != biomes.size(); i++) {
+		if (!strcasecmp(name, biomes[i]->name.c_str()))
+			return i;
+	}
+	
+	return 0;
+}

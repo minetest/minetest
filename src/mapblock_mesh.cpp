@@ -717,8 +717,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
 	spec.rotation=dir_to_tile[tile_index + 1];
-	std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-	spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture.id);
 	return spec;
 }
 
@@ -1200,7 +1199,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 
 	translateMesh(m_mesh, intToFloat(data->m_blockpos * MAP_BLOCKSIZE, BS));
-	m_mesh->recalculateBoundingBox(); // translateMesh already does this
 
 	if(m_mesh)
 	{

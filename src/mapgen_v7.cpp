@@ -52,7 +52,7 @@ NoiseParams nparams_v7_def_terrain_persist =
 NoiseParams nparams_v7_def_height_select =
 	{0.5, 0.5, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
 NoiseParams nparams_v7_def_ridge =
-	{0.5, 1.0, v3f(100.0, 100.0, 100.0), 6467, 4, 0.75};
+	{0, 1.0, v3f(100.0, 100.0, 100.0), 6467, 4, 0.75};
 /*
 NoiseParams nparams_v6_def_beach =
 	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
@@ -121,15 +121,19 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 	Biome *b = bmgr->getBiome(heat, humidity, groundlevel);
 	
 	s16 y = groundlevel;
-	if (y > water_level) {
-		int iters = 1024; // don't even bother iterating more than 1024 times..
-		while (iters--) {
-			float ridgenoise = NoisePerlin3D(noise_ridge->np, p.X, y, p.Y, seed);
-			if (ridgenoise * (float)(y * y) < 15.0)
-				break;
-			y--;
-		}
+	int iters = 1024; // don't even bother iterating more than 64 times..
+	while (iters--) {
+		if (y <= water_level)
+			break;
+		
+		float ridgenoise = NoisePerlin3D(noise_ridge->np, p.X, y, p.Y, seed);
+		if (ridgenoise * (float)(y * y) < 15.0)
+			break;
+			
+		y--;
 	}
+	if (iters == 0)
+		printf("iters exhausted at %d %d\n", p.X, p.Y);
 
 	return y + b->top_depth;
 }
@@ -182,13 +186,22 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	generateTerrain();
 	carveRidges();
+
+	if (flags & MG_CAVES)
+		generateCaves(stone_surface_max_y);
 	
-	generateCaves(stone_surface_max_y);
 	addTopNodes();
+	
+	updateHeightmap(node_min, node_max);
 
 	if (flags & MG_DUNGEONS) {
 		DungeonGen dgen(ndef, data->seed, water_level);
 		dgen.generate(vm, blockseed, full_node_min, full_node_max);
+	}
+
+	for (size_t i = 0; i != emerge->decorations.size(); i++) {
+		Decoration *deco = emerge->decorations[i];
+		deco->placeDeco(this, blockseed + i, node_min, node_max);
 	}
 
 	for (size_t i = 0; i != emerge->ores.size(); i++) {
