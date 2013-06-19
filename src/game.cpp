@@ -834,7 +834,7 @@ public:
 	}
 };
 
-void nodePlacementPrediction(Client &client,
+bool nodePlacementPrediction(Client &client,
 		const ItemDefinition &playeritem_def,
 		v3s16 nodepos, v3s16 neighbourpos)
 {
@@ -854,7 +854,7 @@ void nodePlacementPrediction(Client &client,
 			if(nodedef->get(n_under).buildable_to)
 				p = nodepos;
 			else if (!nodedef->get(map.getNode(p)).buildable_to)
-				return;
+				return false;
 		}catch(InvalidPositionException &e){}
 		// Find id of predicted node
 		content_t id;
@@ -864,7 +864,7 @@ void nodePlacementPrediction(Client &client,
 					<<playeritem_def.name<<" (places "
 					<<prediction
 					<<") - Name not known"<<std::endl;
-			return;
+			return false;
 		}
 		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
@@ -903,13 +903,14 @@ void nodePlacementPrediction(Client &client,
 			else
 				pp = p + v3s16(0,-1,0);
 			if(!nodedef->get(map.getNode(pp)).walkable)
-				return;
+				return false;
 		}
 		// Add node to client map
 		MapNode n(id, 0, param2);
 		try{
 			// This triggers the required mesh update too
 			client.addNode(p, n);
+			return true;
 		}catch(InvalidPositionException &e){
 			errorstream<<"Node placement prediction failed for "
 					<<playeritem_def.name<<" (places "
@@ -917,6 +918,7 @@ void nodePlacementPrediction(Client &client,
 					<<") - Position not loaded"<<std::endl;
 		}
 	}
+	return false;
 }
 
 
@@ -2774,13 +2776,17 @@ void the_game(
 					
 					// If the wielded item has node placement prediction,
 					// make that happen
-					nodePlacementPrediction(client,
+					bool placed = nodePlacementPrediction(client,
 							playeritem_def,
 							nodepos, neighbourpos);
 					
 					// Read the sound
-					soundmaker.m_player_rightpunch_sound =
-							playeritem_def.sound_place;
+					if(placed)
+						soundmaker.m_player_rightpunch_sound =
+								playeritem_def.sound_place;
+					else
+						soundmaker.m_player_rightpunch_sound =
+								SimpleSoundSpec();
 				}
 			}
 		}
