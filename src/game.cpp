@@ -3310,7 +3310,7 @@ void the_game(
 		if (show_hud)
 		{
 			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getPlayerItem(), client.getBreath());
 		}
 
 		/*

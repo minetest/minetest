@@ -232,6 +232,7 @@ public:
 	float physics_override_gravity;
 
 	u16 hp;
+	u16 breath;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;

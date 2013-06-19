@@ -2227,7 +2227,45 @@ void ClientEnvironment::step(float dtime)
 			damageLocalPlayer(damage_per_second, true);
 		}
 	}
-	
+
+	/*
+		Drowning
+	*/
+	if(m_drowning_interval.step(dtime, 2.0))
+	{
+		v3f pf = lplayer->getPosition();
+
+		// head
+		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n = m_map->getNodeNoEx(p);
+		ContentFeatures c = m_gamedef->ndef()->get(n);
+
+		if(c.isLiquid() && c.drowning){
+			if(lplayer->breath > 10)
+				lplayer->breath = 11;
+			if(lplayer->breath > 0)
+				lplayer->breath -= 1;
+		}
+
+		if(lplayer->breath == 0){
+			damageLocalPlayer(1, true);
+		}
+	}
+	if(m_breathing_interval.step(dtime, 0.5))
+	{
+		v3f pf = lplayer->getPosition();
+
+		// head
+		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n = m_map->getNodeNoEx(p);
+		ContentFeatures c = m_gamedef->ndef()->get(n);
+
+		if(!c.isLiquid() || !c.drowning){
+			if(lplayer->breath <= 10)
+				lplayer->breath += 1;
+		}
+	}
+
 	/*
 		Stuff that can be done in an arbitarily large dtime
 	*/
