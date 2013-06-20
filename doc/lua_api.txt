@@ -1018,7 +1018,6 @@ minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
 minetest.setting_save() -> nil, save all settings to config file
-minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
 minetest.notify_authentication_modified(name)
@@ -1292,15 +1291,6 @@ minetest.object_refs
 ^ List of object references, indexed by active object id
 minetest.luaentities
 ^ List of lua entities, indexed by active object id
-
-Deprecated but defined for backwards compatibility:
-minetest.digprop_constanttime(time)
-minetest.digprop_stonelike(toughness)
-minetest.digprop_dirtlike(toughness)
-minetest.digprop_gravellike(toughness)
-minetest.digprop_woodlike(toughness)
-minetest.digprop_leaveslike(toughness)
-minetest.digprop_glasslike(toughness)
 
 Class reference
 ----------------
