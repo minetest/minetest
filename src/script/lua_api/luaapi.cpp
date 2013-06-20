@@ -105,13 +105,31 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 	return retval;
 }
 
-// debug(text)
+// debug(...)
 // Writes a line to dstream
 int ModApiBasic::l_debug(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string text = lua_tostring(L, 1);
-	dstream << text << std::endl;
+	// Handle multiple parameters to behave like standard lua print()
+	int n = lua_gettop(L);
+	lua_getglobal(L, "tostring");
+	for(int i = 1; i <= n; i++){
+		/*
+			Call tostring(i-th argument).
+			This is what print() does, and it behaves a bit
+			differently from directly calling lua_tostring.
+		*/
+		lua_pushvalue(L, -1);  /* function to be called */
+		lua_pushvalue(L, i);   /* value to print */
+		lua_call(L, 1, 1);
+		const char *s = lua_tostring(L, -1);
+		if(i>1)
+			dstream << "\t";
+		if(s)
+			dstream << s;
+		lua_pop(L, 1);
+	}
+	dstream << std::endl;
 	return 0;
 }
 
