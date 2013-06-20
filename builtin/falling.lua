@@ -53,27 +53,27 @@ minetest.register_entity("__builtin:falling_node", {
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
-		local bcn = minetest.env:get_node(bcp)
+		local bcn = minetest.get_node(bcp)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[bcn.name] and
 				minetest.registered_nodes[bcn.name].walkable then
 			if minetest.registered_nodes[bcn.name].buildable_to then
-				minetest.env:remove_node(bcp)
+				minetest.remove_node(bcp)
 				return
 			end
 			local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 			-- Check what's here
-			local n2 = minetest.env:get_node(np)
+			local n2 = minetest.get_node(np)
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
 			if n2.name ~= "air" and (not minetest.registered_nodes[n2.name] or
 					minetest.registered_nodes[n2.name].liquidtype == "none") then
 				local drops = minetest.get_node_drops(n2.name, "")
-				minetest.env:remove_node(np)
+				minetest.remove_node(np)
 				-- Add dropped items
 				local _, dropped_item
 				for _, dropped_item in ipairs(drops) do
-					minetest.env:add_item(np, dropped_item)
+					minetest.add_item(np, dropped_item)
 				end
 				-- Run script hook
 				local _, callback
@@ -82,7 +82,7 @@ minetest.register_entity("__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			minetest.env:add_node(np, {name=self.nodename})
+			minetest.add_node(np, {name=self.nodename})
 			self.object:remove()
 			nodeupdate(np)
 		else
@@ -92,20 +92,20 @@ minetest.register_entity("__builtin:falling_node", {
 })
 
 function spawn_falling_node(p, nodename)
-	obj = minetest.env:add_entity(p, "__builtin:falling_node")
+	obj = minetest.add_entity(p, "__builtin:falling_node")
 	obj:get_luaentity():set_node(nodename)
 end
 
 function drop_attached_node(p)
-	local nn = minetest.env:get_node(p).name
-	minetest.env:remove_node(p)
+	local nn = minetest.get_node(p).name
+	minetest.remove_node(p)
 	for _,item in ipairs(minetest.get_node_drops(nn, "")) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
 			z = p.z + math.random()/2 - 0.25,
 		}
-		minetest.env:add_item(pos, item)
+		minetest.add_item(pos, item)
 	end
 end
 
@@ -130,7 +130,7 @@ function check_attached_node(p, n)
 		d.y = -1
 	end
 	local p2 = {x=p.x+d.x, y=p.y+d.y, z=p.z+d.z}
-	local nn = minetest.env:get_node(p2).name
+	local nn = minetest.get_node(p2).name
 	local def2 = minetest.registered_nodes[nn]
 	if def2 and not def2.walkable then
 		return false
@@ -143,10 +143,10 @@ end
 --
 
 function nodeupdate_single(p, delay)
-	n = minetest.env:get_node(p)
+	n = minetest.get_node(p)
 	if minetest.get_node_group(n.name, "falling_node") ~= 0 then
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
-		n_bottom = minetest.env:get_node(p_bottom)
+		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
@@ -154,7 +154,7 @@ function nodeupdate_single(p, delay)
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
 			else
-				minetest.env:remove_node(p)
+				minetest.remove_node(p)
 				spawn_falling_node(p, n.name)
 				nodeupdate(p)
 			end

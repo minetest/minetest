@@ -121,6 +121,9 @@ GUIChatConsole::GUIChatConsole(
 
 GUIChatConsole::~GUIChatConsole()
 {
+#if USE_FREETYPE
+	m_font->drop();
+#endif
 }
 
 void GUIChatConsole::openConsole(f32 height)
@@ -129,6 +132,11 @@ void GUIChatConsole::openConsole(f32 height)
 	m_desired_height_fraction = height;
 	m_desired_height = height * m_screensize.Y;
 	reformatConsole();
+}
+
+bool GUIChatConsole::isOpen() const
+{
+	return m_open;
 }
 
 bool GUIChatConsole::isOpenInhibited() const
@@ -542,7 +550,13 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
 		{
-			m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#if (defined(linux) || defined(__linux))
+				wchar_t wc = L'_';
+				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
+				m_chat_backend->getPrompt().input(wc);
+			#else
+				m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#endif
 			return true;
 		}
 	}

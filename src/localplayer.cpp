@@ -73,6 +73,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 	if(isAttached)
 	{
 		setPosition(overridePosition);
+		m_sneak_node_exists = false;
 		return;
 	}
 
@@ -85,6 +86,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 	{
         position += m_speed * dtime;
 		setPosition(position);
+		m_sneak_node_exists = false;
 		return;
 	}
 

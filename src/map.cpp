@@ -288,10 +288,10 @@ void Map::unspreadLight(enum LightBank bank,
 			continue;
 
 		// Calculate relative position in block
-		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
+		//v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
 
 		// Get node straight from the block
-		MapNode n = block->getNode(relpos);
+		//MapNode n = block->getNode(relpos);
 
 		u8 oldlight = j->second;
 
@@ -937,7 +937,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	*/
 
 	v3s16 toppos = p + v3s16(0,1,0);
-	v3s16 bottompos = p + v3s16(0,-1,0);
+	//v3s16 bottompos = p + v3s16(0,-1,0);
 
 	bool node_under_sunlight = true;
 	std::set<v3s16> light_sources;
@@ -1246,7 +1246,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		// Get the brightest neighbour node and propagate light from it
 		v3s16 n2p = getBrightestNeighbour(bank, p);
 		try{
-			MapNode n2 = getNode(n2p);
+			//MapNode n2 = getNode(n2p);
 			lightNeighbors(bank, n2p, modified_blocks);
 		}
 		catch(InvalidPositionException &e)
@@ -1510,6 +1510,11 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	}
 }
 
+void Map::unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks)
+{
+	timerUpdate(0.0, -1.0, unloaded_blocks);
+}
+
 void Map::deleteSectors(std::list<v2s16> &list)
 {
 	for(std::list<v2s16>::iterator j = list.begin();
@@ -1755,7 +1760,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		//relax up
-		if (relax && p0.Y <= water_level && liquid_levels[D_TOP] == 0 &&
+		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) && liquid_levels[D_TOP] == 0 &&
 			liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE &&
 			total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level-
 			(can_liquid_same_level - relax) &&
@@ -2831,7 +2836,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	sector = new ServerMapSector(this, p2d, m_gamedef);
 
 	// Sector position on map in nodes
-	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
+	//v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
 	/*
 		Insert to container
@@ -3404,6 +3409,26 @@ void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
 			v3s16 p = getIntegerAsBlock(block_i);
 			//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;
+			dst.push_back(p);
+		}
+	}
+}
+
+void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
+{
+	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
+		si != m_sectors.end(); ++si)
+	{
+		MapSector *sector = si->second;
+
+		std::list<MapBlock*> blocks;
+		sector->getBlocks(blocks);
+
+		for(std::list<MapBlock*>::iterator i = blocks.begin();
+				i != blocks.end(); ++i)
+		{
+			MapBlock *block = (*i);
+			v3s16 p = block->getPos();
 			dst.push_back(p);
 		}
 	}

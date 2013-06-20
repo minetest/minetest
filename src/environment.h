@@ -50,6 +50,7 @@ class IGameDef;
 class Map;
 class ServerMap;
 class ClientMap;
+class ScriptApi;
 
 class Environment
 {
@@ -190,7 +191,7 @@ public:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef,
+	ServerEnvironment(ServerMap *map, ScriptApi *iface, IGameDef *gamedef,
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
@@ -198,8 +199,9 @@ public:
 
 	ServerMap & getServerMap();
 
-	lua_State* getLua()
-		{ return m_lua; }
+	//TODO find way to remove this fct!
+	ScriptApi* getScriptIface()
+		{ return m_script; }
 
 	IGameDef *getGameDef()
 		{ return m_gamedef; }
@@ -348,7 +350,7 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	lua_State *m_lua;
+	ScriptApi* m_script;
 	// Game definition
 	IGameDef *m_gamedef;
 	// Background block emerger (the server, in practice)
@@ -492,6 +494,8 @@ private:
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
+	IntervalLimiter m_drowning_interval;
+	IntervalLimiter m_breathing_interval;
 	std::list<std::string> m_player_names;
 };
 

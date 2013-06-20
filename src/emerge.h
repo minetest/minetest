@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	infostream << "EmergeThread: " x << std::endl; }
 
 class Mapgen;
-class MapgenParams;
-class MapgenFactory;
+struct MapgenParams;
+struct MapgenFactory;
 class Biome;
 class BiomeDefManager;
 class EmergeThread;
@@ -87,6 +87,7 @@ public:
 	//Mapgen-related structures
 	BiomeDefManager *biomedef;
 	std::vector<Ore *> ores;
+	std::vector<Decoration *> decorations;
 
 	EmergeManager(IGameDef *gamedef);
 	~EmergeManager();

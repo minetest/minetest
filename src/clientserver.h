@@ -91,10 +91,10 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 	PROTOCOL_VERSION 19:
 		GENERIC_CMD_SET_PHYSICS_OVERRIDE
 	PROTOCOL_VERSION 20:
-		TOCLIENT_HUD_ADD
-		TOCLIENT_HUD_RM
-		TOCLIENT_HUD_CHANGE
-		TOCLIENT_HUD_BUILTIN_ENABLE
+		TOCLIENT_HUDADD
+		TOCLIENT_HUDRM
+		TOCLIENT_HUDCHANGE
+		TOCLIENT_HUD_SET_FLAGS
 */
 
 #define LATEST_PROTOCOL_VERSION 20
@@ -479,6 +479,14 @@ enum ToClientCommand
 		u16 command
 		u32 flags
 		u32 mask
+	*/
+
+	TOCLIENT_HUD_SET_PARAM = 0x4d,
+	/*
+		u16 command
+		u16 param
+		u16 len
+		u8[len] value
 	*/
 };
 

@@ -117,7 +117,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, u16 playeritem);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -178,6 +178,12 @@ private:
 
 	//dummymesh for camera
 	irr::scene::IAnimatedMesh* m_dummymesh;
+
+	// Animation when changing wielded item
+	f32 m_wield_change_timer;
+	scene::IMesh *m_wield_mesh_next;
+	u16 m_previous_playeritem;
+	std::string m_previous_itemname;
 };
 
 #endif

@@ -211,6 +211,7 @@ void ContentFeatures::reset()
 	liquid_alternative_source = "";
 	liquid_viscosity = 0;
 	liquid_renewable = true;
+	drowning = true;
 	light_source = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();
@@ -279,6 +280,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, rightclickable);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
+	writeU8(os, drowning);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -343,6 +345,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
+		drowning = readU8(is);
 	}catch(SerializationError &e) {};
 }
 

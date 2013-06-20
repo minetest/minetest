@@ -43,8 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-struct LuaState;
-typedef struct lua_State lua_State;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
@@ -52,7 +50,9 @@ class EventManager;
 class PlayerSAO;
 class IRollbackManager;
 class EmergeManager;
-//struct HudElement;
+//struct HudElement; ?????????
+class ScriptApi;
+
 
 class ServerError : public std::exception
 {
@@ -384,7 +384,7 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	std::list<PlayerInfo> getPlayerInfo();
+	//std::list<PlayerInfo> getPlayerInfo();
 
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
@@ -492,8 +492,8 @@ public:
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
 
-	// Envlock and conlock should be locked when using Lua
-	lua_State *getLua(){ return m_lua; }
+	// Envlock and conlock should be locked when using scriptapi
+	ScriptApi *getScriptIface(){ return m_script; }
 
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
@@ -541,6 +541,7 @@ public:
 	bool hudRemove(Player *player, u32 id);
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(Player *player, u32 flags, u32 mask);
+	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
 	
 private:
 
@@ -585,6 +586,7 @@ private:
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
+	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
@@ -746,7 +748,7 @@ private:
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	lua_State *m_lua;
+	ScriptApi *m_script;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;

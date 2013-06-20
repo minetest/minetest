@@ -52,7 +52,7 @@ NoiseParams nparams_v7_def_terrain_persist =
 NoiseParams nparams_v7_def_height_select =
 	{0.5, 0.5, v3f(250.0, 250.0, 250.0), 4213, 5, 0.69};
 NoiseParams nparams_v7_def_ridge =
-	{0.5, 1.0, v3f(100.0, 100.0, 100.0), 6467, 4, 0.75};
+	{0, 1.0, v3f(100.0, 100.0, 100.0), 6467, 4, 0.75};
 /*
 NoiseParams nparams_v6_def_beach =
 	{0.0, 1.0, v3f(250.0, 250.0, 250.0), 59420, 3, 0.50};
@@ -78,19 +78,19 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	this->water_level = params->water_level;
 	this->flags   = params->flags;
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
-//	this->ystride = csize.X; //////fix this
+	this->ystride = csize.X; //////fix this
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	// Terrain noise
-	noise_terrain_base    = new Noise(params->np_terrain_base,    seed, csize.X, csize.Z);
-	noise_terrain_alt     = new Noise(params->np_terrain_alt,     seed, csize.X, csize.Z);
-	noise_terrain_mod     = new Noise(params->np_terrain_mod,     seed, csize.X, csize.Z);
-	noise_terrain_persist = new Noise(params->np_terrain_persist, seed, csize.X, csize.Z);
-	noise_height_select   = new Noise(params->np_height_select,   seed, csize.X, csize.Z);
-	noise_ridge           = new Noise(params->np_ridge, seed, csize.X, csize.Y, csize.Z);
+	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
+	noise_terrain_alt     = new Noise(&params->np_terrain_alt,     seed, csize.X, csize.Z);
+	noise_terrain_mod     = new Noise(&params->np_terrain_mod,     seed, csize.X, csize.Z);
+	noise_terrain_persist = new Noise(&params->np_terrain_persist, seed, csize.X, csize.Z);
+	noise_height_select   = new Noise(&params->np_height_select,   seed, csize.X, csize.Z);
+	noise_ridge           = new Noise(&params->np_ridge, seed, csize.X, csize.Y, csize.Z);
 	
 	// Biome noise
 	noise_heat     = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
@@ -121,15 +121,19 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 	Biome *b = bmgr->getBiome(heat, humidity, groundlevel);
 	
 	s16 y = groundlevel;
-	if (y > water_level) {
-		int iters = 1024; // don't even bother iterating more than 1024 times..
-		while (iters--) {
-			float ridgenoise = NoisePerlin3D(noise_ridge->np, p.X, y, p.Y, seed);
-			if (ridgenoise * (float)(y * y) < 15.0)
-				break;
-			y--;
-		}
+	int iters = 1024; // don't even bother iterating more than 64 times..
+	while (iters--) {
+		if (y <= water_level)
+			break;
+		
+		float ridgenoise = NoisePerlin3D(noise_ridge->np, p.X, y, p.Y, seed);
+		if (ridgenoise * (float)(y * y) < 15.0)
+			break;
+			
+		y--;
 	}
+	if (iters == 0)
+		printf("iters exhausted at %d %d\n", p.X, p.Y);
 
 	return y + b->top_depth;
 }
@@ -152,8 +156,6 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	v3s16 blockpos_full_min = blockpos_min - v3s16(1, 1, 1);
-	v3s16 blockpos_full_max = blockpos_max + v3s16(1, 1, 1);
 	node_min = blockpos_min * MAP_BLOCKSIZE;
 	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
@@ -184,14 +186,22 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	generateTerrain();
 	carveRidges();
+
+	if (flags & MG_CAVES)
+		generateCaves(stone_surface_max_y);
 	
-	generateCaves(stone_surface_max_y);
 	addTopNodes();
-	//v3s16 central_area_size = node_max - node_min + v3s16(1,1,1);
+	
+	updateHeightmap(node_min, node_max);
 
 	if (flags & MG_DUNGEONS) {
 		DungeonGen dgen(ndef, data->seed, water_level);
 		dgen.generate(vm, blockseed, full_node_min, full_node_max);
+	}
+
+	for (size_t i = 0; i != emerge->decorations.size(); i++) {
+		Decoration *deco = emerge->decorations[i];
+		deco->placeDeco(this, blockseed + i, node_min, node_max);
 	}
 
 	for (size_t i = 0; i != emerge->ores.size(); i++) {
@@ -452,7 +462,8 @@ void MapgenV7::addTopNodes() {
 				vm->m_area.add_y(em, i, 1);
 			}
 			// If dirt, grow grass on it.
-			if (vm->m_data[i].getContent() == CONTENT_AIR) {
+			if (y > water_level - 10 &&
+				vm->m_data[i].getContent() == CONTENT_AIR) {
 				vm->m_area.add_y(em, i, -1);
 				if (vm->m_data[i].getContent() == c_dirt)
 					vm->m_data[i] = MapNode(c_dirt_with_grass);
@@ -489,7 +500,8 @@ void MapgenV7::addTopNodes() {
 				vm->m_area.add_y(em, i, 1);
 			}
 			// If dirt, grow grass on it.
-			if (vm->m_data[i].getContent() == CONTENT_AIR) {
+			if (y > water_level - 10 &&
+				vm->m_data[i].getContent() == CONTENT_AIR) {
 				vm->m_area.add_y(em, i, -1);
 				if (vm->m_data[i].getContent() == c_dirt)
 					vm->m_data[i] = MapNode(c_dirt_with_grass);
@@ -502,22 +514,22 @@ void MapgenV7::addTopNodes() {
 #include "mapgen_v6.h"
 void MapgenV7::generateCaves(int max_stone_y) {
 	PseudoRandom ps(blockseed + 21343);
-	PseudoRandom ps2(blockseed + 1032);
 
 	int volume_nodes = (node_max.X - node_min.X + 1) *
-					   (node_max.Y - node_min.Y + 1) * MAP_BLOCKSIZE;
+					   (node_max.Y - node_min.Y + 1) *
+					   (node_max.Z - node_min.Z + 1);
 	float cave_amount = NoisePerlin2D(&nparams_v6_def_cave,
 								node_min.X, node_min.Y, seed);
-	
-	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 50000;
+
+	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 250000;
 	for (u32 i = 0; i < caves_count; i++) {
-		CaveV6 cave(this, &ps, &ps2, false, c_water_source, c_lava_source);
+		CaveV7 cave(this, &ps, false);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
-	
-	u32 bruises_count = (ps.range(1, 6) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
+
+	u32 bruises_count = (ps.range(1, 8) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
 	for (u32 i = 0; i < bruises_count; i++) {
-		CaveV6 cave(this, &ps, &ps2, true, c_water_source, c_lava_source);
+		CaveV7 cave(this, &ps, true);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}	
 }

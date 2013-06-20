@@ -717,8 +717,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
 	spec.rotation=dir_to_tile[tile_index + 1];
-	std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
-	spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture.id);
 	return spec;
 }
 
@@ -1200,7 +1199,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 
 	translateMesh(m_mesh, intToFloat(data->m_blockpos * MAP_BLOCKSIZE, BS));
-	m_mesh->recalculateBoundingBox(); // translateMesh already does this
 
 	if(m_mesh)
 	{
@@ -1338,11 +1336,19 @@ void MeshCollector::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices)
 {
+	if(numIndices > 65535)
+	{
+		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
+		return;
+	}
+
 	PreMeshBuffer *p = NULL;
 	for(u32 i=0; i<prebuffers.size(); i++)
 	{
 		PreMeshBuffer &pp = prebuffers[i];
 		if(pp.tile != tile)
+			continue;
+		if(pp.indices.size() + numIndices > 65535)
 			continue;
 
 		p = &pp;
@@ -1361,11 +1367,6 @@ void MeshCollector::append(const TileSpec &tile,
 	for(u32 i=0; i<numIndices; i++)
 	{
 		u32 j = indices[i] + vertex_count;
-		if(j > 65535)
-		{
-			dstream<<"FIXME: Meshbuffer ran out of indices"<<std::endl;
-			// NOTE: Fix is to just add an another MeshBuffer
-		}
 		p->indices.push_back(j);
 	}
 	for(u32 i=0; i<numVertices; i++)

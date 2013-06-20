@@ -32,8 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "settings.h"
-#include "script.h"
-#include "scriptapi.h"
+#include "cpp_api/scriptapi.h"
 #include "profiler.h"
 #include "log.h"
 #include "nodedef.h"
@@ -104,6 +103,10 @@ EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i < ores.size(); i++)
 		delete ores[i];
 	ores.clear();
+
+	for (unsigned int i = 0; i < decorations.size(); i++)
+		delete decorations[i];
+	decorations.clear();
 	
 	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
 			iter != mglist.end(); iter ++) {
@@ -122,9 +125,13 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 		return;
 	
 	biomedef->resolveNodeNames(ndef);
+	for (size_t i = 0; i != ores.size(); i++)
+		ores[i]->resolveNodeNames(ndef);
+	for (size_t i = 0; i != decorations.size(); i++)
+		decorations[i]->resolveNodeNames(ndef);
 	
 	this->params = mgparams;
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (size_t i = 0; i != emergethread.size(); i++) {
 		mg = createMapgen(params->mg_name, 0, params);
 		if (!mg) {
 			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
@@ -351,7 +358,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 
 void *EmergeThread::Thread() {
 	ThreadStarted();
-	log_register_thread("EmergeThread" + id);
+	log_register_thread("EmergeThread" + itos(id));
 	DSTACK(__FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
@@ -420,7 +427,7 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						scriptapi_environment_on_generated(m_server->m_lua,
+						SERVER_TO_SA(m_server)->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 

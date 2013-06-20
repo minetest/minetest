@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "settings.h"
 #include "profiler.h"
+#include "gettext.h"
 #include "log.h"
 #include "nodemetadata.h"
 #include "nodedef.h"
@@ -349,6 +350,11 @@ Client::~Client()
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
+	while(!m_mesh_update_thread.m_queue_out.empty()) {
+		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+		delete r.mesh;
+	}
+
 
 	delete m_inventory_from_server;
 
@@ -756,6 +762,8 @@ void Client::step(float dtime)
 
 				// Replace with the new mesh
 				block->mesh = r.mesh;
+			} else {
+				delete r.mesh;
 			}
 			if(r.ack_block_to_server)
 			{
@@ -1979,7 +1987,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		event.spawn_particle.expirationtime = expirationtime;
 		event.spawn_particle.size = size;
-		event.add_particlespawner.collisiondetection =
+		event.spawn_particle.collisiondetection =
 				collisiondetection;
 		event.spawn_particle.texture = new std::string(texture);
 
@@ -2127,6 +2135,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		player->hud_flags &= ~mask;
 		player->hud_flags |= flags;
+	}
+	else if(command == TOCLIENT_HUD_SET_PARAM)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		u16 param         = readU16(is);
+		std::string value = deSerializeString(is);
+
+		if(param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4){
+			s32 hotbar_itemcount = readS32((u8*) value.c_str());
+			if(hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX)
+				player->hud_hotbar_itemcount = hotbar_itemcount;
+		}
 	}
 	else
 	{
@@ -2555,6 +2580,9 @@ void Client::inventoryAction(InventoryAction *a)
 		Predict some local inventory changes
 	*/
 	a->clientApply(this, this);
+
+	// Remove it
+	delete a;
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(
@@ -2650,6 +2678,13 @@ u16 Client::getHP()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
+}
+
+u16 Client::getBreath()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->breath;
 }
 
 bool Client::getChatMessage(std::wstring &message)
@@ -2801,7 +2836,10 @@ ClientEvent Client::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
-void Client::afterContentReceived()
+void draw_load_screen(const std::wstring &text,
+		IrrlichtDevice* device, gui::IGUIFont* font,
+		float dtime=0 ,int percent=0, bool clouds=true);
+void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
@@ -2836,13 +2874,23 @@ void Client::afterContentReceived()
 	if(g_settings->getBool("preload_item_visuals"))
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
+		wchar_t* text = wgettext("Item textures...");
+		draw_load_screen(text,device,font,0,0);
 		std::set<std::string> names = m_itemdef->getAll();
+		size_t size = names.size();
+		size_t count = 0;
+		int percent = 0;
 		for(std::set<std::string>::const_iterator
 				i = names.begin(); i != names.end(); ++i){
 			// Asking for these caches the result
 			m_itemdef->getInventoryTexture(*i, this);
 			m_itemdef->getWieldMesh(*i, this);
+			count++;
+			percent = count*100/size;
+			if (count%50 == 0) // only update every 50 item
+				draw_load_screen(text,device,font,0,percent);
 		}
+		delete[] text;
 	}
 
 	// Start mesh update thread after setting up content definitions

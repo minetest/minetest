@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "log.h"
 #include "environment.h"
-#include "scriptapi.h"
+#include "cpp_api/scriptapi.h"
 #include "serverobject.h"
 #include "main.h"  // for g_settings
 #include "settings.h"
@@ -226,9 +226,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			to_inv.type == InventoryLocation::DETACHED &&
 			from_inv.name == to_inv.name)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		src_can_take_count = scriptapi_detached_inventory_allow_move(
-				L, from_inv.name, from_list, from_i,
+		src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowMove(
+				from_inv.name, from_list, from_i,
 				to_list, to_i, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
 	}
@@ -237,20 +236,18 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// Destination is detached
 		if(to_inv.type == InventoryLocation::DETACHED)
 		{
-			lua_State *L = player->getEnv()->getLua();
 			ItemStack src_item = list_from->getItem(from_i);
 			src_item.count = try_take_count;
-			dst_can_put_count = scriptapi_detached_inventory_allow_put(
-					L, to_inv.name, to_list, to_i, src_item, player);
+			dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
+					to_inv.name, to_list, to_i, src_item, player);
 		}
 		// Source is detached
 		if(from_inv.type == InventoryLocation::DETACHED)
 		{
-			lua_State *L = player->getEnv()->getLua();
 			ItemStack src_item = list_from->getItem(from_i);
 			src_item.count = try_take_count;
-			src_can_take_count = scriptapi_detached_inventory_allow_take(
-					L, from_inv.name, from_list, from_i, src_item, player);
+			src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
+					from_inv.name, from_list, from_i, src_item, player);
 		}
 	}
 
@@ -262,9 +259,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			to_inv.type == InventoryLocation::NODEMETA &&
 			from_inv.p == to_inv.p)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		src_can_take_count = scriptapi_nodemeta_inventory_allow_move(
-				L, from_inv.p, from_list, from_i,
+		src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowMove(
+				from_inv.p, from_list, from_i,
 				to_list, to_i, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
 	}
@@ -273,20 +269,18 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// Destination is nodemeta
 		if(to_inv.type == InventoryLocation::NODEMETA)
 		{
-			lua_State *L = player->getEnv()->getLua();
 			ItemStack src_item = list_from->getItem(from_i);
 			src_item.count = try_take_count;
-			dst_can_put_count = scriptapi_nodemeta_inventory_allow_put(
-					L, to_inv.p, to_list, to_i, src_item, player);
+			dst_can_put_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
+					to_inv.p, to_list, to_i, src_item, player);
 		}
 		// Source is nodemeta
 		if(from_inv.type == InventoryLocation::NODEMETA)
 		{
-			lua_State *L = player->getEnv()->getLua();
 			ItemStack src_item = list_from->getItem(from_i);
 			src_item.count = try_take_count;
-			src_can_take_count = scriptapi_nodemeta_inventory_allow_take(
-					L, from_inv.p, from_list, from_i, src_item, player);
+			src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
+					from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
 
@@ -412,9 +406,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			to_inv.type == InventoryLocation::DETACHED &&
 			from_inv.name == to_inv.name)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		scriptapi_detached_inventory_on_move(
-				L, from_inv.name, from_list, from_i,
+		PLAYER_TO_SA(player)->detached_inventory_OnMove(
+				from_inv.name, from_list, from_i,
 				to_list, to_i, count, player);
 	}
 	else
@@ -422,16 +415,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// Destination is detached
 		if(to_inv.type == InventoryLocation::DETACHED)
 		{
-			lua_State *L = player->getEnv()->getLua();
-			scriptapi_detached_inventory_on_put(
-					L, to_inv.name, to_list, to_i, src_item, player);
+			PLAYER_TO_SA(player)->detached_inventory_OnPut(
+					to_inv.name, to_list, to_i, src_item, player);
 		}
 		// Source is detached
 		if(from_inv.type == InventoryLocation::DETACHED)
 		{
-			lua_State *L = player->getEnv()->getLua();
-			scriptapi_detached_inventory_on_take(
-					L, from_inv.name, from_list, from_i, src_item, player);
+			PLAYER_TO_SA(player)->detached_inventory_OnTake(
+					from_inv.name, from_list, from_i, src_item, player);
 		}
 	}
 
@@ -442,25 +433,22 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			to_inv.type == InventoryLocation::NODEMETA &&
 			from_inv.p == to_inv.p)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		scriptapi_nodemeta_inventory_on_move(
-				L, from_inv.p, from_list, from_i,
+		PLAYER_TO_SA(player)->nodemeta_inventory_OnMove(
+				from_inv.p, from_list, from_i,
 				to_list, to_i, count, player);
 	}
 	else{
 		// Destination is nodemeta
 		if(to_inv.type == InventoryLocation::NODEMETA)
 		{
-			lua_State *L = player->getEnv()->getLua();
-			scriptapi_nodemeta_inventory_on_put(
-					L, to_inv.p, to_list, to_i, src_item, player);
+			PLAYER_TO_SA(player)->nodemeta_inventory_OnPut(
+					to_inv.p, to_list, to_i, src_item, player);
 		}
 		// Source is nodemeta
 		else if(from_inv.type == InventoryLocation::NODEMETA)
 		{
-			lua_State *L = player->getEnv()->getLua();
-			scriptapi_nodemeta_inventory_on_take(
-					L, from_inv.p, from_list, from_i, src_item, player);
+			PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
+					from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
 	
@@ -563,21 +551,19 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Source is detached
 	if(from_inv.type == InventoryLocation::DETACHED)
 	{
-		lua_State *L = player->getEnv()->getLua();
 		ItemStack src_item = list_from->getItem(from_i);
 		src_item.count = take_count;
-		src_can_take_count = scriptapi_detached_inventory_allow_take(
-				L, from_inv.name, from_list, from_i, src_item, player);
+		src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
+				from_inv.name, from_list, from_i, src_item, player);
 	}
 
 	// Source is nodemeta
 	if(from_inv.type == InventoryLocation::NODEMETA)
 	{
-		lua_State *L = player->getEnv()->getLua();
 		ItemStack src_item = list_from->getItem(from_i);
 		src_item.count = take_count;
-		src_can_take_count = scriptapi_nodemeta_inventory_allow_take(
-				L, from_inv.p, from_list, from_i, src_item, player);
+		src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
+				from_inv.p, from_list, from_i, src_item, player);
 	}
 
 	if(src_can_take_count != -1 && src_can_take_count < take_count)
@@ -590,7 +576,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Drop the item
 	ItemStack item1 = list_from->getItem(from_i);
 	item1.count = take_count;
-	if(scriptapi_item_on_drop(player->getEnv()->getLua(), item1, player,
+	if(PLAYER_TO_SA(player)->item_OnDrop(item1, player,
 				player->getBasePosition() + v3f(0,1,0)))
 	{
 		actually_dropped_count = take_count - item1.count;
@@ -627,17 +613,15 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Source is detached
 	if(from_inv.type == InventoryLocation::DETACHED)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		scriptapi_detached_inventory_on_take(
-				L, from_inv.name, from_list, from_i, src_item, player);
+		PLAYER_TO_SA(player)->detached_inventory_OnTake(
+				from_inv.name, from_list, from_i, src_item, player);
 	}
 
 	// Source is nodemeta
 	if(from_inv.type == InventoryLocation::NODEMETA)
 	{
-		lua_State *L = player->getEnv()->getLua();
-		scriptapi_nodemeta_inventory_on_take(
-				L, from_inv.p, from_list, from_i, src_item, player);
+		PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
+				from_inv.p, from_list, from_i, src_item, player);
 	}
 
 	/*

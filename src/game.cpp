@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "sound_openal.h"
 #endif
 #include "event_manager.h"
+#include <iomanip>
 #include <list>
 #include "util/directiontables.h"
 
@@ -132,6 +133,10 @@ struct TextDestPlayerInventory : public TextDest
 	void gotText(std::map<std::string, std::string> fields)
 	{
 		m_client->sendInventoryFields(m_formname, fields);
+	}
+
+	void setFormName(std::string formname) {
+		m_formname = formname;
 	}
 
 	Client *m_client;
@@ -395,11 +400,14 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 /*
 	Draws a screen with a single text on it.
 	Text will be removed when the screen is drawn the next time.
+	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 /*gui::IGUIStaticText **/
 void draw_load_screen(const std::wstring &text,
-		video::IVideoDriver* driver, gui::IGUIFont* font)
+		IrrlichtDevice* device, gui::IGUIFont* font,
+		float dtime=0 ,int percent=0, bool clouds=true)
 {
+	video::IVideoDriver* driver = device->getVideoDriver();
 	v2u32 screensize = driver->getScreenSize();
 	const wchar_t *loadingtext = text.c_str();
 	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
@@ -411,7 +419,30 @@ void draw_load_screen(const std::wstring &text,
 			loadingtext, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	driver->beginScene(true, true, video::SColor(255,0,0,0));
+	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
+	if (cloud_menu_background)
+	{
+		g_menuclouds->step(dtime*3);
+		g_menuclouds->render();
+		driver->beginScene(true, true, video::SColor(255,140,186,250));
+		g_menucloudsmgr->drawAll();
+	}
+	else
+		driver->beginScene(true, true, video::SColor(255,0,0,0));
+	if (percent >= 0 && percent <= 100) // draw progress bar
+	{
+		core::vector2d<s32> barsize(256,32);
+		core::rect<s32> barrect(center-barsize/2, center+barsize/2);
+		driver->draw2DRectangle(video::SColor(255,255,255,255),barrect, NULL); // border
+		driver->draw2DRectangle(video::SColor(255,64,64,64), core::rect<s32> (
+				barrect.UpperLeftCorner+1,
+				barrect.LowerRightCorner-1), NULL); // black inside the bar
+		driver->draw2DRectangle(video::SColor(255,128,128,128), core::rect<s32> (
+				barrect.UpperLeftCorner+1,
+				core::vector2d<s32>(
+					barrect.LowerRightCorner.X-(barsize.X-1)+percent*(barsize.X-2)/100,
+					barrect.LowerRightCorner.Y-1)), NULL); // the actual progress
+	}
 	guienv->drawAll();
 	driver->endScene();
 	
@@ -698,6 +729,18 @@ public:
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
+	static void playerDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+	}
+
+	static void playerFallingDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+	}
+
 	void registerReceiver(MtEventManager *mgr)
 	{
 		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
@@ -706,6 +749,8 @@ public:
 		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
 		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
 		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
+		mgr->reg("PlayerDamage", SoundMaker::playerDamage, this);
+		mgr->reg("PlayerFallingDamage", SoundMaker::playerFallingDamage, this);
 	}
 
 	void step(float dtime)
@@ -789,6 +834,94 @@ public:
 	}
 };
 
+bool nodePlacementPrediction(Client &client,
+		const ItemDefinition &playeritem_def,
+		v3s16 nodepos, v3s16 neighbourpos)
+{
+	std::string prediction = playeritem_def.node_placement_prediction;
+	INodeDefManager *nodedef = client.ndef();
+	ClientMap &map = client.getEnv().getClientMap();
+
+	if(prediction != "" && !nodedef->get(map.getNode(nodepos)).rightclickable)
+	{
+		verbosestream<<"Node placement prediction for "
+				<<playeritem_def.name<<" is "
+				<<prediction<<std::endl;
+		v3s16 p = neighbourpos;
+		// Place inside node itself if buildable_to
+		try{
+			MapNode n_under = map.getNode(nodepos);
+			if(nodedef->get(n_under).buildable_to)
+				p = nodepos;
+			else if (!nodedef->get(map.getNode(p)).buildable_to)
+				return false;
+		}catch(InvalidPositionException &e){}
+		// Find id of predicted node
+		content_t id;
+		bool found = nodedef->getId(prediction, id);
+		if(!found){
+			errorstream<<"Node placement prediction failed for "
+					<<playeritem_def.name<<" (places "
+					<<prediction
+					<<") - Name not known"<<std::endl;
+			return false;
+		}
+		// Predict param2 for facedir and wallmounted nodes
+		u8 param2 = 0;
+		if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED){
+			v3s16 dir = nodepos - neighbourpos;
+			if(abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))){
+				param2 = dir.Y < 0 ? 1 : 0;
+			} else if(abs(dir.X) > abs(dir.Z)){
+				param2 = dir.X < 0 ? 3 : 2;
+			} else {
+				param2 = dir.Z < 0 ? 5 : 4;
+			}
+		}
+		if(nodedef->get(id).param_type_2 == CPT2_FACEDIR){
+			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
+			if(abs(dir.X) > abs(dir.Z)){
+				param2 = dir.X < 0 ? 3 : 1;
+			} else {
+				param2 = dir.Z < 0 ? 2 : 0;
+			}
+		}
+		assert(param2 >= 0 && param2 <= 5);
+		//Check attachment if node is in group attached_node
+		if(((ItemGroupList) nodedef->get(id).groups)["attached_node"] != 0){
+			static v3s16 wallmounted_dirs[8] = {
+				v3s16(0,1,0),
+				v3s16(0,-1,0),
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			v3s16 pp;
+			if(nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED)
+				pp = p + wallmounted_dirs[param2];
+			else
+				pp = p + v3s16(0,-1,0);
+			if(!nodedef->get(map.getNode(pp)).walkable)
+				return false;
+		}
+		// Add node to client map
+		MapNode n(id, 0, param2);
+		try{
+			// This triggers the required mesh update too
+			client.addNode(p, n);
+			return true;
+		}catch(InvalidPositionException &e){
+			errorstream<<"Node placement prediction failed for "
+					<<playeritem_def.name<<" (places "
+					<<prediction
+					<<") - Position not loaded"<<std::endl;
+		}
+	}
+	return false;
+}
+
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -808,6 +941,7 @@ void the_game(
 )
 {
 	FormspecFormSource* current_formspec = 0;
+	TextDestPlayerInventory* current_textdest = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -821,7 +955,11 @@ void the_game(
 		Draw "Loading" screen
 	*/
 
-	draw_load_screen(L"Loading...", driver, font);
+	{
+		wchar_t* text = wgettext("Loading...");
+		draw_load_screen(text, device, font,0,0);
+		delete[] text;
+	}
 	
 	// Create texture source
 	IWritableTextureSource *tsrc = createTextureSource(device);
@@ -878,7 +1016,9 @@ void the_game(
 	*/
 
 	if(address == ""){
-		draw_load_screen(L"Creating server...", driver, font);
+		wchar_t* text = wgettext("Creating server....");
+		draw_load_screen(text, device, font,0,25);
+		delete[] text;
 		infostream<<"Creating server"<<std::endl;
 		server = new Server(map_dir, configpath, gamespec,
 				simple_singleplayer_mode);
@@ -891,7 +1031,11 @@ void the_game(
 		Create client
 	*/
 
-	draw_load_screen(L"Creating client...", driver, font);
+	{
+		wchar_t* text = wgettext("Creating client...");
+		draw_load_screen(text, device, font,0,50);
+		delete[] text;
+	}
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
@@ -901,8 +1045,12 @@ void the_game(
 	
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
-			
-	draw_load_screen(L"Resolving address...", driver, font);
+	
+	{
+		wchar_t* text = wgettext("Resolving address...");
+		draw_load_screen(text, device, font,0,75);
+		delete[] text;
+	}
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
@@ -934,15 +1082,26 @@ void the_game(
 	bool could_connect = false;
 	bool connect_aborted = false;
 	try{
-		float frametime = 0.033;
 		float time_counter = 0.0;
 		input->clear();
+		float fps_max = g_settings->getFloat("fps_max");
+		bool cloud_menu_background = g_settings->getBool("menu_clouds");
+		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
+			f32 dtime = 0.033; // in seconds
+			if (cloud_menu_background) {
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					dtime = (time - lasttime) / 1000.0;
+				else
+					dtime = 0;
+				lasttime = time;
+			}
 			// Update client and server
-			client.step(frametime);
+			client.step(dtime);
 			if(server != NULL)
-				server->step(frametime);
+				server->step(dtime);
 			
 			// End condition
 			if(client.connectedAndInitialized()){
@@ -963,15 +1122,37 @@ void the_game(
 			}
 			
 			// Display status
-			std::wostringstream ss;
-			ss<<L"Connecting to server... (press Escape to cancel)\n";
-			std::wstring animation = L"/-\\|";
-			ss<<animation[(int)(time_counter/0.2)%4];
-			draw_load_screen(ss.str(), driver, font);
+			{
+				wchar_t* text = wgettext("Connecting to server...");
+				draw_load_screen(text, device, font, dtime, 100);
+				delete[] text;
+			}
 			
-			// Delay a bit
-			sleep_ms(1000*frametime);
-			time_counter += frametime;
+			// On some computers framerate doesn't seem to be
+			// automatically limited
+			if (cloud_menu_background) {
+				// Time of frame without fps limit
+				float busytime;
+				u32 busytime_u32;
+				// not using getRealTime is necessary for wine
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					busytime_u32 = time - lasttime;
+				else
+					busytime_u32 = 0;
+				busytime = busytime_u32 / 1000.0;
+
+				// FPS limiter
+				u32 frametime_min = 1000./fps_max;
+
+				if(busytime_u32 < frametime_min) {
+					u32 sleeptime = frametime_min - busytime_u32;
+					device->sleep(sleeptime);
+				}
+			} else {
+				sleep_ms(25);
+			}
+			time_counter += dtime;
 		}
 	}
 	catch(con::PeerNotFoundException &e)
@@ -995,15 +1176,26 @@ void the_game(
 	bool got_content = false;
 	bool content_aborted = false;
 	{
-		float frametime = 0.033;
 		float time_counter = 0.0;
 		input->clear();
+		float fps_max = g_settings->getFloat("fps_max");
+		bool cloud_menu_background = g_settings->getBool("menu_clouds");
+		u32 lasttime = device->getTimer()->getTime();
 		while(device->run())
 		{
+			f32 dtime = 0.033; // in seconds
+			if (cloud_menu_background) {
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					dtime = (time - lasttime) / 1000.0;
+				else
+					dtime = 0;
+				lasttime = time;
+			}
 			// Update client and server
-			client.step(frametime);
+			client.step(dtime);
 			if(server != NULL)
-				server->step(frametime);
+				server->step(dtime);
 			
 			// End condition
 			if(client.texturesReceived() &&
@@ -1025,21 +1217,52 @@ void the_game(
 			}
 			
 			// Display status
-			std::wostringstream ss;
-			ss<<L"Waiting content... (press Escape to cancel)\n";
-
-			ss<<(client.itemdefReceived()?L"[X]":L"[  ]");
-			ss<<L" Item definitions\n";
-			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
-			ss<<L" Node definitions\n";
-			ss<<L"["<<(int)(client.mediaReceiveProgress()*100+0.5)<<L"%] ";
-			ss<<L" Media\n";
-
-			draw_load_screen(ss.str(), driver, font);
+			std::ostringstream ss;
+			int progress=0;
+			if (!client.itemdefReceived())
+			{
+				ss << "Item definitions...";
+				progress = 0;
+			}
+			else if (!client.nodedefReceived())
+			{
+				ss << "Node definitions...";
+				progress = 25;
+			}
+			else
+			{
+				ss << "Media...";
+				progress = 50+client.mediaReceiveProgress()*50+0.5;
+			}
+			wchar_t* text = wgettext(ss.str().c_str());
+			draw_load_screen(text, device, font, dtime, progress);
+			delete[] text;
 			
-			// Delay a bit
-			sleep_ms(1000*frametime);
-			time_counter += frametime;
+			// On some computers framerate doesn't seem to be
+			// automatically limited
+			if (cloud_menu_background) {
+				// Time of frame without fps limit
+				float busytime;
+				u32 busytime_u32;
+				// not using getRealTime is necessary for wine
+				u32 time = device->getTimer()->getTime();
+				if(time > lasttime)
+					busytime_u32 = time - lasttime;
+				else
+					busytime_u32 = 0;
+				busytime = busytime_u32 / 1000.0;
+
+				// FPS limiter
+				u32 frametime_min = 1000./fps_max;
+
+				if(busytime_u32 < frametime_min) {
+					u32 sleeptime = frametime_min - busytime_u32;
+					device->sleep(sleeptime);
+				}
+			} else {
+				sleep_ms(25);
+			}
+			time_counter += dtime;
 		}
 	}
 
@@ -1056,7 +1279,7 @@ void the_game(
 		After all content has been received:
 		Update cached textures, meshes and materials
 	*/
-	client.afterContentReceived();
+	client.afterContentReceived(device,font);
 
 	/*
 		Create the camera node
@@ -1159,6 +1382,7 @@ void the_game(
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
+	guitext_profiler->setWordWrap(true);
 	
 	/*
 		Some statistics are collected in these
@@ -1477,6 +1701,10 @@ void the_game(
 		{
 			input->clear();
 		}
+		if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen())
+		{
+			gui_chat_console->closeConsoleAtOnce();
+		}
 
 		// Input handler step() (used by the random input generator)
 		input->step(dtime);
@@ -1786,7 +2014,7 @@ void the_game(
 		{
 			s32 wheel = input->getMouseWheel();
 			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
-					hud.hotbar_itemcount-1);
+					player->hud_hotbar_itemcount-1);
 
 			if(wheel < 0)
 			{
@@ -1810,7 +2038,7 @@ void the_game(
 			const KeyPress *kp = NumberKey + (i + 1) % 10;
 			if(input->wasKeyDown(*kp))
 			{
-				if(i < PLAYER_INVENTORY_SIZE && i < hud.hotbar_itemcount)
+				if(i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount)
 				{
 					new_playeritem = i;
 
@@ -1885,7 +2113,8 @@ void the_game(
 				if(input->isKeyDown(irr::KEY_RIGHT))
 					dx += dtime * keyspeed;*/
 				
-				float d = 0.2;
+				float d = g_settings->getFloat("mouse_sensitivity");
+				d = rangelim(d, 0.01, 100.0);
 				camera_yaw -= dx*d;
 				camera_pitch += dy*d;
 				if(camera_pitch < -89.5) camera_pitch = -89.5;
@@ -1990,6 +2219,9 @@ void the_game(
 					player->hurt_tilt_timer = 1.5;
 					player->hurt_tilt_strength = event.player_damage.amount/2;
 					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 2.0, 10.0);
+
+					MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
+					gamedef->event()->put(e);
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{
@@ -2034,19 +2266,23 @@ void the_game(
 					if (current_formspec == 0)
 					{
 						/* Create menu */
+						/* Note: FormspecFormSource and TextDestPlayerInventory
+						 * are deleted by guiFormSpecMenu                     */
 						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
-
+						current_textdest = new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
 										&client, gamedef);
 						menu->setFormSource(current_formspec);
-						menu->setTextDest(new TextDestPlayerInventory(&client,*(event.show_formspec.formname)));
+						menu->setTextDest(current_textdest);
 						menu->drop();
 					}
 					else
 					{
+						assert(current_textdest != 0);
 						/* update menu */
+						current_textdest->setFormName(*(event.show_formspec.formname));
 						current_formspec->setForm(*(event.show_formspec.formspec));
 					}
 					delete(event.show_formspec.formspec);
@@ -2198,17 +2434,15 @@ void the_game(
 			- Can it point to liquids?
 		*/
 		ItemStack playeritem;
-		bool playeritem_usable = false;
-		bool playeritem_liquids_pointable = false;
 		{
 			InventoryList *mlist = local_inventory.getList("main");
 			if(mlist != NULL)
 			{
 				playeritem = mlist->getItem(client.getPlayerItem());
-				playeritem_usable = playeritem.getDefinition(itemdef).usable;
-				playeritem_liquids_pointable = playeritem.getDefinition(itemdef).liquids_pointable;
 			}
 		}
+		const ItemDefinition &playeritem_def =
+				playeritem.getDefinition(itemdef);
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef);
 		
@@ -2267,7 +2501,7 @@ void the_game(
 				// input
 				&client, player_position, camera_direction,
 				camera_position, shootline, d,
-				playeritem_liquids_pointable, !ldown_for_dig,
+				playeritem_def.liquids_pointable, !ldown_for_dig,
 				// output
 				hilightboxes,
 				selected_object);
@@ -2327,7 +2561,7 @@ void the_game(
 		else
 			repeat_rightclick_timer = 0;
 
-		if(playeritem_usable && input->getLeftState())
+		if(playeritem_def.usable && input->getLeftState())
 		{
 			if(input->getLeftClicked())
 				client.interact(4, pointed);
@@ -2357,7 +2591,8 @@ void the_game(
 				Handle digging
 			*/
 			
-			if(nodig_delay_timer <= 0.0 && input->getLeftState())
+			if(nodig_delay_timer <= 0.0 && input->getLeftState()
+					&& client.checkPrivilege("interact"))
 			{
 				if(!digging)
 				{
@@ -2474,13 +2709,20 @@ void the_game(
 					gamedef->event()->put(e);
 				}
 
-				dig_time += dtime;
+				if(dig_time_complete < 100000.0)
+					dig_time += dtime;
+				else {
+					dig_time = 0;
+					client.setCrack(-1, nodepos);
+				}
 
 				camera.setDigging(0);  // left click animation
 			}
 
-			if(input->getRightClicked() ||
-					repeat_rightclick_timer >= g_settings->getFloat("repeat_rightclick_time"))
+			if((input->getRightClicked() ||
+					repeat_rightclick_timer >=
+						g_settings->getFloat("repeat_rightclick_time")) &&
+					client.checkPrivilege("interact"))
 			{
 				repeat_rightclick_timer = 0;
 				infostream<<"Ground right-clicked"<<std::endl;
@@ -2534,46 +2776,17 @@ void the_game(
 					
 					// If the wielded item has node placement prediction,
 					// make that happen
-					const ItemDefinition &def =
-							playeritem.getDefinition(itemdef);
-					if(def.node_placement_prediction != ""
-							&& !nodedef->get(map.getNode(nodepos)).rightclickable)
-					do{ // breakable
-						verbosestream<<"Node placement prediction for "
-								<<playeritem.name<<" is "
-								<<def.node_placement_prediction<<std::endl;
-						v3s16 p = neighbourpos;
-						// Place inside node itself if buildable_to
-						try{
-							MapNode n_under = map.getNode(nodepos);
-							if(nodedef->get(n_under).buildable_to)
-								p = nodepos;
-						}catch(InvalidPositionException &e){}
-						// Find id of predicted node
-						content_t id;
-						bool found =
-							nodedef->getId(def.node_placement_prediction, id);
-						if(!found){
-							errorstream<<"Node placement prediction failed for "
-									<<playeritem.name<<" (places "
-									<<def.node_placement_prediction
-									<<") - Name not known"<<std::endl;
-							break;
-						}
-						MapNode n(id);
-						try{
-							// This triggers the required mesh update too
-							client.addNode(p, n);
-						}catch(InvalidPositionException &e){
-							errorstream<<"Node placement prediction failed for "
-									<<playeritem.name<<" (places "
-									<<def.node_placement_prediction
-									<<") - Position not loaded"<<std::endl;
-						}
-					}while(0);
+					bool placed = nodePlacementPrediction(client,
+							playeritem_def,
+							nodepos, neighbourpos);
 					
 					// Read the sound
-					soundmaker.m_player_rightpunch_sound = def.sound_place;
+					if(placed)
+						soundmaker.m_player_rightpunch_sound =
+								playeritem_def.sound_place;
+					else
+						soundmaker.m_player_rightpunch_sound =
+								SimpleSoundSpec();
 				}
 			}
 		}
@@ -2785,21 +2998,20 @@ void the_game(
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
 			
-			char temptext[300];
-			snprintf(temptext, 300, "%s ("
-					"R: range_all=%i"
-					")"
-					" drawtime=%.0f, dtime_jitter = % .1f %%"
-					", v_range = %.1f, RTT = %.3f",
-					program_name_and_version,
-					draw_control.range_all,
-					drawtime_avg,
-					dtime_jitter1_max_fraction * 100.0,
-					draw_control.wanted_range,
-					client.getRTT()
-					);
-			
-			guitext->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::fixed
+				<<program_name_and_version
+				<<" (R: range_all="<<draw_control.range_all<<")"
+				<<std::setprecision(0)
+				<<" drawtime = "<<drawtime_avg
+				<<std::setprecision(1)
+				<<", dtime_jitter = "
+				<<(dtime_jitter1_max_fraction * 100.0)<<" %"
+				<<std::setprecision(1)
+				<<", v_range = "<<draw_control.wanted_range
+				<<std::setprecision(3)
+				<<", RTT = "<<client.getRTT();
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else if(show_hud || show_chat)
@@ -2814,17 +3026,15 @@ void the_game(
 		
 		if(show_debug)
 		{
-			char temptext[300];
-			snprintf(temptext, 300,
-					"(% .1f, % .1f, % .1f)"
-					" (yaw = %.1f) (seed = %llu)",
-					player_position.X/BS,
-					player_position.Y/BS,
-					player_position.Z/BS,
-					wrapDegrees_0_360(camera_yaw),
-					(unsigned long long)client.getMapSeed());
-
-			guitext2->setText(narrow_to_wide(temptext).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<std::setprecision(1)<<std::fixed
+				<<"(" <<(player_position.X/BS)
+				<<", "<<(player_position.Y/BS)
+				<<", "<<(player_position.Z/BS)
+				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
+				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<")";
+			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
 		}
 		else
@@ -2942,7 +3152,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item);
+			camera.wield(item, client.getPlayerItem());
 		}
 
 		/*
@@ -3109,7 +3319,7 @@ void the_game(
 		if (show_hud)
 		{
 			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getPlayerItem(), client.getBreath());
 		}
 
 		/*
@@ -3193,6 +3403,8 @@ void the_game(
 		clouds->drop();
 	if (gui_chat_console)
 		gui_chat_console->drop();
+	if (sky)
+		sky->drop();
 	clear_particles();
 	
 	/*
@@ -3201,7 +3413,9 @@ void the_game(
 	*/
 	{
 		/*gui::IGUIStaticText *gui_shuttingdowntext = */
-		draw_load_screen(L"Shutting down stuff...", driver, font);
+		wchar_t* text = wgettext("Shutting down stuff...");
+		draw_load_screen(text, device, font, 0, -1, false);
+		delete[] text;
 		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
 		driver->endScene();

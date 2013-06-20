@@ -261,7 +261,7 @@ minetest.register_chatcommand("teleport", {
 			}
 			for _, d in ipairs(tries) do
 				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = minetest.env:get_node(p)
+				local n = minetest.get_node(p)
 				if not minetest.registered_nodes[n.name].walkable then
 					return p, true
 				end
@@ -272,7 +272,7 @@ minetest.register_chatcommand("teleport", {
 		local teleportee = nil
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		teleportee = minetest.env:get_player_by_name(name)
+		teleportee = minetest.get_player_by_name(name)
 		if teleportee and p.x and p.y and p.z then
 			minetest.chat_send_player(name, "Teleporting to ("..p.x..", "..p.y..", "..p.z..")")
 			teleportee:setpos(p)
@@ -283,9 +283,9 @@ minetest.register_chatcommand("teleport", {
 		local p = nil
 		local target_name = nil
 		target_name = string.match(param, "^([^ ]+)$")
-		teleportee = minetest.env:get_player_by_name(name)
+		teleportee = minetest.get_player_by_name(name)
 		if target_name then
-			local target = minetest.env:get_player_by_name(target_name)
+			local target = minetest.get_player_by_name(target_name)
 			if target then
 				p = target:getpos()
 			end
@@ -303,7 +303,7 @@ minetest.register_chatcommand("teleport", {
 			local teleportee_name = nil
 			teleportee_name, p.x, p.y, p.z = string.match(param, "^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 			if teleportee_name then
-				teleportee = minetest.env:get_player_by_name(teleportee_name)
+				teleportee = minetest.get_player_by_name(teleportee_name)
 			end
 			if teleportee and p.x and p.y and p.z then
 				minetest.chat_send_player(name, "Teleporting "..teleportee_name.." to ("..p.x..", "..p.y..", "..p.z..")")
@@ -317,10 +317,10 @@ minetest.register_chatcommand("teleport", {
 			local target_name = nil
 			teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
 			if teleportee_name then
-				teleportee = minetest.env:get_player_by_name(teleportee_name)
+				teleportee = minetest.get_player_by_name(teleportee_name)
 			end
 			if target_name then
-				local target = minetest.env:get_player_by_name(target_name)
+				local target = minetest.get_player_by_name(target_name)
 				if target then
 					p = target:getpos()
 				end
@@ -402,7 +402,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		minetest.chat_send_player(giver, 'error: cannot give an unknown item')
 		return
 	end
-	local receiverref = minetest.env:get_player_by_name(receiver)
+	local receiverref = minetest.get_player_by_name(receiver)
 	if receiverref == nil then
 		minetest.chat_send_player(giver, receiver..' is not a known player')
 		return
@@ -466,14 +466,14 @@ minetest.register_chatcommand("spawnentity", {
 			return
 		end
 		print('/spawnentity invoked, entityname="'..entityname..'"')
-		local player = minetest.env:get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if player == nil then
 			print("Unable to spawn entity, player is nil")
 			return true -- Handled chat message
 		end
 		local p = player:getpos()
 		p.y = p.y + 1
-		minetest.env:add_entity(p, entityname)
+		minetest.add_entity(p, entityname)
 		minetest.chat_send_player(name, '"'..entityname
 				..'" spawned.');
 	end,
@@ -483,7 +483,7 @@ minetest.register_chatcommand("pulverize", {
 	description = "delete item in hand",
 	privs = {},
 	func = function(name, param)
-		local player = minetest.env:get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if player == nil then
 			print("Unable to pulverize, player is nil")
 			return true -- Handled chat message
@@ -533,7 +533,7 @@ minetest.register_chatcommand("rollback_check", {
 			if act_p.x ~= pos.x or act_p.y ~= pos.y or act_p.z ~= pos.z then
 				nodedesc = minetest.pos_to_string(act_p)
 			end
-			local nodename = minetest.env:get_node(act_p).name
+			local nodename = minetest.get_node(act_p).name
 			minetest.chat_send_player(name, "Last actor on "..nodedesc..
 					" was "..actor..", "..dump(act_seconds)..
 					"s ago (node is now "..nodename..")")
@@ -598,7 +598,7 @@ minetest.register_chatcommand("time", {
 		if newtime == nil then
 			minetest.chat_send_player(name, "Invalid time")
 		else
-			minetest.env:set_timeofday((newtime % 24000) / 24000)
+			minetest.set_timeofday((newtime % 24000) / 24000)
 			minetest.chat_send_player(name, "Time of day changed.")
 			minetest.log("action", name .. " sets time " .. newtime)
 		end
@@ -625,7 +625,7 @@ minetest.register_chatcommand("ban", {
 			minetest.chat_send_player(name, "Ban list: " .. minetest.get_ban_list())
 			return
 		end
-		if not minetest.env:get_player_by_name(param) then
+		if not minetest.get_player_by_name(param) then
 			minetest.chat_send_player(name, "No such player")
 			return
 		end
@@ -660,7 +660,7 @@ minetest.register_chatcommand("clearobjects", {
 	func = function(name, param)
 		minetest.log("action", name .. " clears all objects")
 		minetest.chat_send_all("Clearing all objects.  This may take long.  You may experience a timeout.  (by " .. name .. ")")
-		minetest.env:clear_objects()
+		minetest.clear_objects()
 		minetest.log("action", "object clearing done")
 		minetest.chat_send_all("*** Cleared all objects.")
 	end,
@@ -673,7 +673,7 @@ minetest.register_chatcommand("msg", {
 	func = function(name, param)
 		local found, _, sendto, message = param:find("^([^%s]+)%s(.+)$")
 		if found then
-			if minetest.env:get_player_by_name(sendto) then
+			if minetest.get_player_by_name(sendto) then
 				minetest.log("action", "PM from "..name.." to "..sendto..": "..message)
 				minetest.chat_send_player(sendto, "PM from "..name..": "..message, false)
 				minetest.chat_send_player(name, "Message sent")

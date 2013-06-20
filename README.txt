@@ -9,10 +9,9 @@ and contributors (see source file comments and the version control log)
 In case you downloaded the source code:
 ---------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download these projects too:
-  https://github.com/minetest/common/
+contained, you probably want to download the minetest_game project too:
   https://github.com/minetest/minetest_game/
-See the README.txt in them.
+See the README.txt in it.
 
 Further documentation
 ----------------------
@@ -30,13 +29,17 @@ This game is not finished
 
 Default Controls
 -----------------
-- WASD: Move
-- Space: Jump
-- E: Go down
-- Shift: Sneak
-- Q: Drop item
-- I: Open inventory
-- Mouse: Turn/look
+- WASD: move
+- Space: jump/climb
+- Shift: sneak/go down
+- Q: drop item
+- I: inventory
+- Mouse: turn/look
+- Mouse left: dig/punch
+- Mouse right: place/use
+- Mouse wheel: select item
+- Esc: pause menu
+- T: chat
 - Settable in the configuration file, see the section below.
 
 Paths
@@ -88,13 +91,6 @@ $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd minetest-minetest-286edd4 (or similar)
 
-Download common (needed for minetest_game and some others)
-$ cd games/
-$ wget https://github.com/minetest/common/tarball/master -O common.tar.gz
-$ tar xf common.tar.gz
-$ mv minetest-common-* common
-$ cd ..
-
 Download minetest_game (otherwise only the "Minimal development test" game is available)
 $ cd games/
 $ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
@@ -120,7 +116,7 @@ $ ./minetest
 Compiling on Windows:
 ---------------------
 - This section is outdated. In addition to what is described here:
-  - In addition to minetest, you need to download common and minetest_game.
+  - In addition to minetest, you need to download minetest_game.
   - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 - You need:
@@ -263,6 +259,20 @@ distribution.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
+Authors of media files
+-----------------------
+Everything not listed in here:
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+BlockMen:
+  textures/base/pack/menuheader.png
+
+erlehmann:
+  misc/minetest-icon-24x24.png
+  misc/minetest-icon.ico
+  misc/minetest-icon.svg
+  textures/base/pack/logo.png
+
 License of Minetest source code
 -------------------------------
 
@@ -277,7 +287,7 @@ the Free Software Foundation; either version 2.1 of the License, or
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,

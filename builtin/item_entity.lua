@@ -3,7 +3,7 @@
 function minetest.spawn_item(pos, item)
 	-- Take item in any format
 	local stack = ItemStack(item)
-	local obj = minetest.env:add_entity(pos, "__builtin:item")
+	local obj = minetest.add_entity(pos, "__builtin:item")
 	obj:get_luaentity():set_item(stack:to_string())
 	return obj
 end
@@ -83,7 +83,7 @@ minetest.register_entity("__builtin:item", {
 	on_step = function(self, dtime)
 		local p = self.object:getpos()
 		p.y = p.y - 0.3
-		local nn = minetest.env:get_node(p).name
+		local nn = minetest.get_node(p).name
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
 		if not minetest.registered_nodes[nn] or minetest.registered_nodes[nn].walkable and v.y == 0 then

@@ -87,7 +87,7 @@ class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
-class HudElement;
+struct HudElement;
 
 class Player
 {
@@ -232,6 +232,7 @@ public:
 	float physics_override_gravity;
 
 	u16 hp;
+	u16 breath;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
@@ -250,6 +251,7 @@ public:
 	
 	std::vector<HudElement *> hud;
 	u32 hud_flags;
+	s32 hud_hotbar_itemcount;
 
 protected:
 	IGameDef *m_gamedef;

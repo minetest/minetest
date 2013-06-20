@@ -35,6 +35,17 @@ class IGameDef;
 */
 
 /*
+	Find out the full path of an image by trying different filename
+	extensions.
+
+	If failed, return "".
+
+	TODO: Should probably be moved out from here, because things needing
+	      this function do not need anything else from this header
+*/
+std::string getImagePath(std::string path);
+
+/*
 	Gets the path to a texture by first checking if the texture exists
 	in texture_path and if not, using the data path.
 
