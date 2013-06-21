@@ -1,6 +1,7 @@
-Minetest Lua Modding API Reference 0.4.6
+Minetest Lua Modding API Reference 0.4.7
 ========================================
-More information at http://c55.me/minetest/
+More information at http://www.minetest.net/
+Developer Wiki: http://dev.minetest.net/
 
 Introduction
 -------------
@@ -408,6 +409,18 @@ Currently supported flags:  absheight
  - absheight
     Also produce this same ore between the height range of -height_max and -height_min.
     Useful for having ore in sky realms without having to duplicate ore entries.
+
+Decoration types
+-------------------
+The varying types of decorations that can be placed.
+The default value is simple, and is currently the only type supported.
+
+- simple
+    Creates a 1xHx1 column of a specified node (or a random node from a list, if a decoration
+    list is specified).  Can specify a certain node it must spawn next to, such as water or lava,
+    for example.  Can also generate a decoration of random height between a specified lower and
+    upper bound.  This type of decoration is intended for placement of grass, flowers, cacti,
+    papyrus, and so on.
 
 HUD element types
 -------------------
@@ -945,6 +958,7 @@ minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
 minetest.register_ore(ore definition)
+minetest.register_decoration(decoration definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
@@ -1004,7 +1018,6 @@ minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
 minetest.setting_save() -> nil, save all settings to config file
-minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
 minetest.notify_authentication_modified(name)
@@ -1278,15 +1291,6 @@ minetest.object_refs
 ^ List of object references, indexed by active object id
 minetest.luaentities
 ^ List of lua entities, indexed by active object id
-
-Deprecated but defined for backwards compatibility:
-minetest.digprop_constanttime(time)
-minetest.digprop_stonelike(toughness)
-minetest.digprop_dirtlike(toughness)
-minetest.digprop_gravellike(toughness)
-minetest.digprop_woodlike(toughness)
-minetest.digprop_leaveslike(toughness)
-minetest.digprop_glasslike(toughness)
 
 Class reference
 ----------------
@@ -1696,6 +1700,7 @@ Node definition (register_node)
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing
+    drowning = true, -- Player will drown in these
     two or more sources nearly?
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
@@ -1834,7 +1839,7 @@ Recipe for register_craft (furnace fuel)
 
 Ore definition (register_ore)
 {
-    ore_type = "scatter" -- See "Ore types"
+    ore_type = "scatter", -- See "Ore types"
     ore = "default:stone_with_coal",
     wherein = "default:stone",
     clust_scarcity = 8*8*8,
@@ -1854,6 +1859,41 @@ Ore definition (register_ore)
     noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
     ^ NoiseParams structure describing the perlin noise used for ore distribution.
     ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
+}
+
+Decoration definition (register_decoration)
+{
+    deco_type = "simple", -- See "Decoration types"
+    place_on = "default:dirt_with_grass",
+    ^ Node that decoration can be placed on
+    sidelen = 8,
+    ^ Size of divisions made in the chunk being generated.
+    ^ If the chunk size is not evenly divisible by sidelen, sidelen is made equal to the chunk size.
+    fill_ratio = 0.02,
+    ^ Ratio of the area to be uniformly filled by the decoration.
+    ^ Used only if noise_params is not specified.
+    noise_params = {offset=0, scale=.45, spread={x=100, y=100, z=100}, seed=354, octaves=3, persist=0.7},
+    ^ NoiseParams structure describing the perlin noise used for decoration distribution.
+    ^ The result of this is multiplied by the 2d area of the division being decorated.
+    biomes = {"Oceanside", "Hills", "Plains"},
+    ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
+    ^ and ignored if the Mapgen being used does not support biomes.
+
+    ----- Simple-type parameters
+    decoration = "default:grass",
+    ^ The node name used as the decoration.
+    ^ If instead a list of strings, a randomly selected node from the list is placed as the decoration.
+    height = 1,
+    ^ Number of nodes high the decoration is made.
+    ^ If height_max is not 0, this is the lower bound of the randomly selected height.
+    height_max = 0,
+    ^ Number of nodes the decoration can be at maximum.
+    ^ If absent, the parameter 'height' is used as a constant.
+    spawn_by = "default:water",
+    ^ Node that the decoration only spawns next to, in a 1-node square radius.
+    num_spawn_by = 1,
+    ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
+    ^ If absent or -1, decorations occur next to any nodes.
 }
 
 Chatcommand definition (register_chatcommand)

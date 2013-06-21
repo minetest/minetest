@@ -1452,7 +1452,7 @@ struct TestConnection: public TestBase
 		// Server should not have added client yet
 		UASSERT(hand_server.count == 0);
 		
-		sleep_ms(50);
+		sleep_ms(100);
 
 		try
 		{

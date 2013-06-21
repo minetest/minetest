@@ -219,6 +219,7 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Is liquid renewable (new liquid source will be created between 2 existing)
 	bool liquid_renewable;
+	bool drowning;
 	// Amount of light the node emits
 	u8 light_source;
 	u32 damage_per_second;

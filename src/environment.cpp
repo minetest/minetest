@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "event.h"
 #endif
 #include "daynightratio.h"
 #include "map.h"
@@ -945,6 +946,16 @@ void ServerEnvironment::clearAllObjects()
 		m_active_objects.erase(*i);
 	}
 
+	// Get list of loaded blocks
+	std::list<v3s16> loaded_blocks;
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Listing all loaded blocks"<<std::endl;
+	m_map->listAllLoadedBlocks(loaded_blocks);
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Done listing all loaded blocks: "
+			<<loaded_blocks.size()<<std::endl;
+
+	// Get list of loadable blocks
 	std::list<v3s16> loadable_blocks;
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Listing all loadable blocks"<<std::endl;
@@ -953,6 +964,20 @@ void ServerEnvironment::clearAllObjects()
 			<<"Done listing all loadable blocks: "
 			<<loadable_blocks.size()
 			<<", now clearing"<<std::endl;
+
+	// Grab a reference on each loaded block to avoid unloading it
+	for(std::list<v3s16>::iterator i = loaded_blocks.begin();
+			i != loaded_blocks.end(); ++i)
+	{
+		v3s16 p = *i;
+		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		assert(block);
+		block->refGrab();
+	}
+
+	// Remove objects in all loadable blocks
+	u32 unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+	unload_interval = MYMAX(unload_interval, 1);
 	u32 report_interval = loadable_blocks.size() / 10;
 	u32 num_blocks_checked = 0;
 	u32 num_blocks_cleared = 0;
@@ -987,7 +1012,22 @@ void ServerEnvironment::clearAllObjects()
 					<<" in "<<num_blocks_cleared<<" blocks ("
 					<<percent<<"%)"<<std::endl;
 		}
+		if(num_blocks_checked % unload_interval == 0){
+			m_map->unloadUnreferencedBlocks();
+		}
 	}
+	m_map->unloadUnreferencedBlocks();
+
+	// Drop references that were added above
+	for(std::list<v3s16>::iterator i = loaded_blocks.begin();
+			i != loaded_blocks.end(); ++i)
+	{
+		v3s16 p = *i;
+		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		assert(block);
+		block->refDrop();
+	}
+
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
 			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
@@ -2151,8 +2191,11 @@ void ClientEnvironment::step(float dtime)
 		{
 			f32 damage_f = (speed - tolerance)/BS * post_factor;
 			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0)
+			if(damage != 0){
 				damageLocalPlayer(damage, true);
+				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
+				m_gamedef->event()->put(e);
+			}
 		}
 	}
 	
@@ -2184,7 +2227,45 @@ void ClientEnvironment::step(float dtime)
 			damageLocalPlayer(damage_per_second, true);
 		}
 	}
-	
+
+	/*
+		Drowning
+	*/
+	if(m_drowning_interval.step(dtime, 2.0))
+	{
+		v3f pf = lplayer->getPosition();
+
+		// head
+		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n = m_map->getNodeNoEx(p);
+		ContentFeatures c = m_gamedef->ndef()->get(n);
+
+		if(c.isLiquid() && c.drowning){
+			if(lplayer->breath > 10)
+				lplayer->breath = 11;
+			if(lplayer->breath > 0)
+				lplayer->breath -= 1;
+		}
+
+		if(lplayer->breath == 0){
+			damageLocalPlayer(1, true);
+		}
+	}
+	if(m_breathing_interval.step(dtime, 0.5))
+	{
+		v3f pf = lplayer->getPosition();
+
+		// head
+		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n = m_map->getNodeNoEx(p);
+		ContentFeatures c = m_gamedef->ndef()->get(n);
+
+		if(!c.isLiquid() || !c.drowning){
+			if(lplayer->breath <= 10)
+				lplayer->breath += 1;
+		}
+	}
+
 	/*
 		Stuff that can be done in an arbitarily large dtime
 	*/
@@ -2221,6 +2302,7 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 	
+	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
 	for(std::map<u16, ClientActiveObject*>::iterator
 			i = m_active_objects.begin();
@@ -2250,6 +2332,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step and handle simple objects
 	*/
+	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
 	for(std::list<ClientSimpleObject*>::iterator
 			i = m_simple_objects.begin(); i != m_simple_objects.end();)
 	{

@@ -175,6 +175,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_simultaneous_block_sends_server_total", "20");
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("max_block_generate_distance", "7");
+	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_send_interval", "5");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
@@ -208,6 +209,7 @@ void set_default_settings(Settings *settings)
 
 	//liquid stuff
 	settings->setDefault("liquid_finite", "false");
+	settings->setDefault("liquid_loop_max", "1000");
 	settings->setDefault("liquid_update", "1.0");
 	settings->setDefault("liquid_relax", "2");
 	settings->setDefault("liquid_fast_flood", "1");
@@ -238,7 +240,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgv7_np_terrain_mod",      "0, 1, (350, 350, 350), 85039, 5, 0.6");
 	settings->setDefault("mgv7_np_terrain_persist",  "0, 1, (500, 500, 500), 539, 3, 0.6");
 	settings->setDefault("mgv7_np_height_select",    "0.5, 0.5, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv7_np_ridge",            "0.5, 1, (100, 100, 100), 6467, 4, 0.75");
+	settings->setDefault("mgv7_np_ridge",            "0, 1, (100, 100, 100), 6467, 4, 0.75");
 
 	settings->setDefault("mgindev_np_terrain_base",   "-4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10");
 	settings->setDefault("mgindev_np_terrain_higher", "20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10");

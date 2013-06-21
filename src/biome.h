@@ -84,6 +84,7 @@ public:
 
 	void addBiome(Biome *b);
 	void resolveNodeNames(INodeDefManager *ndef);
+	u8 getBiomeIdByName(const char *name);
 };
 
 #endif

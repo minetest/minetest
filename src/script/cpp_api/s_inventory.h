@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 
-class ItemStack;
+struct ItemStack;
 
 class ScriptApiDetached
 		: virtual public ScriptApiBase

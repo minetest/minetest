@@ -23,10 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
 
-class PointedThing;
-class ItemStack;
+struct PointedThing;
+struct ItemStack;
 class ServerActiveObject;
-class ItemDefinition;
+struct ItemDefinition;
 class LuaItemStack;
 class ModApiItemMod;
 

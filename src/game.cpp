@@ -729,6 +729,18 @@ public:
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
+	static void playerDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+	}
+
+	static void playerFallingDamage(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+	}
+
 	void registerReceiver(MtEventManager *mgr)
 	{
 		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
@@ -737,6 +749,8 @@ public:
 		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
 		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
 		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
+		mgr->reg("PlayerDamage", SoundMaker::playerDamage, this);
+		mgr->reg("PlayerFallingDamage", SoundMaker::playerFallingDamage, this);
 	}
 
 	void step(float dtime)
@@ -820,7 +834,7 @@ public:
 	}
 };
 
-void nodePlacementPrediction(Client &client,
+bool nodePlacementPrediction(Client &client,
 		const ItemDefinition &playeritem_def,
 		v3s16 nodepos, v3s16 neighbourpos)
 {
@@ -840,7 +854,7 @@ void nodePlacementPrediction(Client &client,
 			if(nodedef->get(n_under).buildable_to)
 				p = nodepos;
 			else if (!nodedef->get(map.getNode(p)).buildable_to)
-				return;
+				return false;
 		}catch(InvalidPositionException &e){}
 		// Find id of predicted node
 		content_t id;
@@ -850,7 +864,7 @@ void nodePlacementPrediction(Client &client,
 					<<playeritem_def.name<<" (places "
 					<<prediction
 					<<") - Name not known"<<std::endl;
-			return;
+			return false;
 		}
 		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
@@ -889,13 +903,14 @@ void nodePlacementPrediction(Client &client,
 			else
 				pp = p + v3s16(0,-1,0);
 			if(!nodedef->get(map.getNode(pp)).walkable)
-				return;
+				return false;
 		}
 		// Add node to client map
 		MapNode n(id, 0, param2);
 		try{
 			// This triggers the required mesh update too
 			client.addNode(p, n);
+			return true;
 		}catch(InvalidPositionException &e){
 			errorstream<<"Node placement prediction failed for "
 					<<playeritem_def.name<<" (places "
@@ -903,6 +918,7 @@ void nodePlacementPrediction(Client &client,
 					<<") - Position not loaded"<<std::endl;
 		}
 	}
+	return false;
 }
 
 
@@ -1366,6 +1382,7 @@ void the_game(
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
+	guitext_profiler->setWordWrap(true);
 	
 	/*
 		Some statistics are collected in these
@@ -1683,6 +1700,10 @@ void the_game(
 				|| guienv->hasFocus(gui_chat_console))
 		{
 			input->clear();
+		}
+		if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen())
+		{
+			gui_chat_console->closeConsoleAtOnce();
 		}
 
 		// Input handler step() (used by the random input generator)
@@ -2198,6 +2219,9 @@ void the_game(
 					player->hurt_tilt_timer = 1.5;
 					player->hurt_tilt_strength = event.player_damage.amount/2;
 					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 2.0, 10.0);
+
+					MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
+					gamedef->event()->put(e);
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{
@@ -2567,7 +2591,8 @@ void the_game(
 				Handle digging
 			*/
 			
-			if(nodig_delay_timer <= 0.0 && input->getLeftState())
+			if(nodig_delay_timer <= 0.0 && input->getLeftState()
+					&& client.checkPrivilege("interact"))
 			{
 				if(!digging)
 				{
@@ -2684,13 +2709,20 @@ void the_game(
 					gamedef->event()->put(e);
 				}
 
-				dig_time += dtime;
+				if(dig_time_complete < 100000.0)
+					dig_time += dtime;
+				else {
+					dig_time = 0;
+					client.setCrack(-1, nodepos);
+				}
 
 				camera.setDigging(0);  // left click animation
 			}
 
-			if(input->getRightClicked() ||
-					repeat_rightclick_timer >= g_settings->getFloat("repeat_rightclick_time"))
+			if((input->getRightClicked() ||
+					repeat_rightclick_timer >=
+						g_settings->getFloat("repeat_rightclick_time")) &&
+					client.checkPrivilege("interact"))
 			{
 				repeat_rightclick_timer = 0;
 				infostream<<"Ground right-clicked"<<std::endl;
@@ -2744,13 +2776,17 @@ void the_game(
 					
 					// If the wielded item has node placement prediction,
 					// make that happen
-					nodePlacementPrediction(client,
+					bool placed = nodePlacementPrediction(client,
 							playeritem_def,
 							nodepos, neighbourpos);
 					
 					// Read the sound
-					soundmaker.m_player_rightpunch_sound =
-							playeritem_def.sound_place;
+					if(placed)
+						soundmaker.m_player_rightpunch_sound =
+								playeritem_def.sound_place;
+					else
+						soundmaker.m_player_rightpunch_sound =
+								SimpleSoundSpec();
 				}
 			}
 		}
@@ -3283,7 +3319,7 @@ void the_game(
 		if (show_hud)
 		{
 			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getPlayerItem(), client.getBreath());
 		}
 
 		/*

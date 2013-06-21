@@ -43,6 +43,14 @@ struct EnumString ModApiBasic::es_OreType[] =
 	{0, NULL},
 };
 
+struct EnumString ModApiBasic::es_DecorationType[] =
+{
+	{DECO_SIMPLE,    "simple"},
+	{DECO_SCHEMATIC, "schematic"},
+	{DECO_LSYSTEM,   "lsystem"},
+	{0, NULL},
+};
+
 
 ModApiBasic::ModApiBasic() : ModApiBase() {
 }
@@ -72,7 +80,7 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 	retval &= API_FCT(get_ban_list);
 	retval &= API_FCT(get_ban_description);
 	retval &= API_FCT(ban_player);
-	retval &= API_FCT(unban_player_of_ip);
+	retval &= API_FCT(unban_player_or_ip);
 	retval &= API_FCT(get_password_hash);
 	retval &= API_FCT(notify_authentication_modified);
 
@@ -92,17 +100,36 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 	retval &= API_FCT(rollback_revert_actions_by);
 
 	retval &= API_FCT(register_ore);
+	retval &= API_FCT(register_decoration);
 
 	return retval;
 }
 
-// debug(text)
+// debug(...)
 // Writes a line to dstream
 int ModApiBasic::l_debug(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string text = lua_tostring(L, 1);
-	dstream << text << std::endl;
+	// Handle multiple parameters to behave like standard lua print()
+	int n = lua_gettop(L);
+	lua_getglobal(L, "tostring");
+	for(int i = 1; i <= n; i++){
+		/*
+			Call tostring(i-th argument).
+			This is what print() does, and it behaves a bit
+			differently from directly calling lua_tostring.
+		*/
+		lua_pushvalue(L, -1);  /* function to be called */
+		lua_pushvalue(L, i);   /* value to print */
+		lua_call(L, 1, 1);
+		const char *s = lua_tostring(L, -1);
+		if(i>1)
+			dstream << "\t";
+		if(s)
+			dstream << s;
+		lua_pop(L, 1);
+	}
+	dstream << std::endl;
 	return 0;
 }
 
@@ -162,29 +189,27 @@ int ModApiBasic::l_register_biome(lua_State *L)
 	}
 
 	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
-	"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
+				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
 
-	b->name = getstringfield_default(L, index, "name", "");
-	b->top_nodename = getstringfield_default(L, index, "top_node", "");
-	b->top_depth = getintfield_default(L, index, "top_depth", 0);
+	b->name            = getstringfield_default(L, index, "name", "");
+	b->top_nodename    = getstringfield_default(L, index, "top_node", "");
+	b->top_depth       = getintfield_default(L, index, "top_depth", 0);
 	b->filler_nodename = getstringfield_default(L, index, "filler_node", "");
-	b->filler_height = getintfield_default(L, index, "filler_height", 0);
-	b->height_min = getintfield_default(L, index, "height_min", 0);
-	b->height_max = getintfield_default(L, index, "height_max", 0);
-	b->heat_point = getfloatfield_default(L, index, "heat_point", 0.);
-	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->filler_height   = getintfield_default(L, index, "filler_height", 0);
+	b->height_min      = getintfield_default(L, index, "height_min", 0);
+	b->height_max      = getintfield_default(L, index, "height_max", 0);
+	b->heat_point      = getfloatfield_default(L, index, "heat_point", 0.);
+	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
 
-	b->flags = 0; //reserved
-	b->c_top = CONTENT_IGNORE;
+	b->flags    = 0; //reserved
+	b->c_top    = CONTENT_IGNORE;
 	b->c_filler = CONTENT_IGNORE;
+	verbosestream << "register_biome: " << b->name << std::endl;
 	bmgr->addBiome(b);
 
-	verbosestream << "register_biome: " << b->name << std::endl;
 	return 0;
 }
-
-
 
 // setting_set(name, value)
 int ModApiBasic::l_setting_set(lua_State *L)
@@ -353,7 +378,7 @@ int ModApiBasic::l_ban_player(lua_State *L)
 }
 
 // unban_player_or_ip()
-int ModApiBasic::l_unban_player_of_ip(lua_State *L)
+int ModApiBasic::l_unban_player_or_ip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char * ip_or_name = luaL_checkstring(L, 1);
@@ -649,5 +674,112 @@ int ModApiBasic::l_register_ore(lua_State *L)
 		<< "' registered" << std::endl;
 	return 0;
 }
+
+// register_decoration({lots of stuff})
+int ModApiBasic::l_register_decoration(lua_State *L)
+{
+	int index = 1;
+	luaL_checktype(L, index, LUA_TTABLE);
+	
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	BiomeDefManager *bdef = emerge->biomedef;
+
+	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
+				"deco_type", es_DecorationType, -1);
+	if (decotype == -1) {
+		errorstream << "register_decoration: unrecognized "
+			"decoration placement type";
+		return 0;
+	}
+	
+	Decoration *deco = createDecoration(decotype);
+	if (!deco) {
+		errorstream << "register_decoration: decoration placement type "
+			<< decotype << " not implemented";
+		return 0;
+	}
+
+	deco->c_place_on    = CONTENT_IGNORE;
+	deco->place_on_name = getstringfield_default(L, index, "place_on", "ignore");
+	deco->sidelen       = getintfield_default(L, index, "sidelen", 8);
+	deco->fill_ratio    = getfloatfield_default(L, index, "fill_ratio", 0.02);
+	
+	lua_getfield(L, index, "noise_params");
+	deco->np = read_noiseparams(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "biomes");
+	if (lua_istable(L, -1)) {
+		lua_pushnil(L);
+		while (lua_next(L, -2)) {
+			const char *s = lua_tostring(L, -1);
+			u8 biomeid = bdef->getBiomeIdByName(s);
+			if (biomeid)
+				deco->biomes.insert(biomeid);
+
+			lua_pop(L, 1);
+		}
+		lua_pop(L, 1);
+	}
+	
+	switch (decotype) {
+		case DECO_SIMPLE: {
+			DecoSimple *dsimple = (DecoSimple *)deco;
+			dsimple->c_deco     = CONTENT_IGNORE;
+			dsimple->c_spawnby  = CONTENT_IGNORE;
+			dsimple->spawnby_name    = getstringfield_default(L, index, "spawn_by", "air");
+			dsimple->deco_height     = getintfield_default(L, index, "height", 1);
+			dsimple->deco_height_max = getintfield_default(L, index, "height_max", 0);
+			dsimple->nspawnby        = getintfield_default(L, index, "num_spawn_by", -1);
+			
+			lua_getfield(L, index, "decoration");
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2)) {
+					const char *s = lua_tostring(L, -1);
+					std::string str(s);
+					dsimple->decolist_names.push_back(str);
+
+					lua_pop(L, 1);
+				}
+			} else if (lua_isstring(L, -1)) {
+				dsimple->deco_name  = std::string(lua_tostring(L, -1));
+			} else {
+				dsimple->deco_name = std::string("air");
+			}
+			lua_pop(L, 1);
+			
+			if (dsimple->deco_height <= 0) {
+				errorstream << "register_decoration: simple decoration height"
+					" must be greater than 0" << std::endl;
+				delete dsimple;
+				return 0;
+			}
+
+			break; }
+		case DECO_SCHEMATIC: {
+			//DecoSchematic *decoschematic = (DecoSchematic *)deco;
+			
+			break; }
+		case DECO_LSYSTEM: {
+			//DecoLSystem *decolsystem = (DecoLSystem *)deco;
+		
+			break; }
+	}
+	
+	if (deco->sidelen <= 0) {
+		errorstream << "register_decoration: sidelen must be "
+			"greater than 0" << std::endl;
+		delete deco;
+		return 0;
+	}
+	
+	emerge->decorations.push_back(deco);
+
+	verbosestream << "register_decoration: decoration '" << deco->getName()
+		<< "' registered" << std::endl;
+	return 0;
+}
+
 
 ModApiBasic modapibasic_prototype;

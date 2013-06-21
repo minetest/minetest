@@ -1510,6 +1510,11 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	}
 }
 
+void Map::unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks)
+{
+	timerUpdate(0.0, -1.0, unloaded_blocks);
+}
+
 void Map::deleteSectors(std::list<v2s16> &list)
 {
 	for(std::list<v2s16>::iterator j = list.begin();
@@ -1646,10 +1651,12 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
+	u16 loop_max = g_settings->getU16("liquid_loop_max");
+
 	while (m_transforming_liquid.size() > 0)
 	{
 		// This should be done here so that it is done when continue is used
-		if (loopcount >= initial_size || loopcount >= 1000)
+		if (loopcount >= initial_size || loopcount >= loop_max)
 			break;
 		loopcount++;
 		/*
@@ -1988,10 +1995,12 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
+	u16 loop_max = g_settings->getU16("liquid_loop_max");
+
 	while(m_transforming_liquid.size() != 0)
 	{
 		// This should be done here so that it is done when continue is used
-		if(loopcount >= initial_size || loopcount >= 10000)
+		if(loopcount >= initial_size || loopcount >= loop_max)
 			break;
 		loopcount++;
 
@@ -3404,6 +3413,26 @@ void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
 			v3s16 p = getIntegerAsBlock(block_i);
 			//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;
+			dst.push_back(p);
+		}
+	}
+}
+
+void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
+{
+	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
+		si != m_sectors.end(); ++si)
+	{
+		MapSector *sector = si->second;
+
+		std::list<MapBlock*> blocks;
+		sector->getBlocks(blocks);
+
+		for(std::list<MapBlock*>::iterator i = blocks.begin();
+				i != blocks.end(); ++i)
+		{
+			MapBlock *block = (*i);
+			v3s16 p = block->getPos();
 			dst.push_back(p);
 		}
 	}
