@@ -179,7 +179,7 @@ void Player::serialize(std::ostream &os)
 	inventory.serialize(os);
 }
 
-void Player::deSerialize(std::istream &is)
+void Player::deSerialize(std::istream &is, std::string playername)
 {
 	Settings args;
 	
@@ -187,7 +187,7 @@ void Player::deSerialize(std::istream &is)
 	{
 		if(is.eof())
 			throw SerializationError
-					("Player::deSerialize(): PlayerArgsEnd not found");
+					(("Player::deSerialize(): PlayerArgsEnd of player \"" + playername + "\" not found").c_str());
 		std::string line;
 		std::getline(is, line);
 		std::string trimmedline = trim(line);
