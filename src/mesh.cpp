@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mesh.h"
 #include "log.h"
+#include "main.h" // g_settings
+#include "settings.h"
 #include <cassert>
 #include <iostream>
 #include <IAnimatedMesh.h>
@@ -455,7 +457,9 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 	scene::IMeshSceneNode* meshnode = smgr->addMeshSceneNode(mesh, NULL, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
 	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
-	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
+	meshnode->setMaterialFlag(video::EMF_TRILINEAR_FILTER, g_settings->getBool("trilinear_filter"));
+	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, g_settings->getBool("bilinear_filter"));
+	meshnode->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, g_settings->getBool("anisotropic_filter"));
 
 	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
 			camera_position, camera_lookat);
