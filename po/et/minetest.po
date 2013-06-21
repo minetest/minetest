@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 00:07+0000\n"
-"PO-Revision-Date: 2013-04-03 17:02+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"PO-Revision-Date: 2013-06-21 15:47+0200\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
@@ -780,7 +780,7 @@ msgstr "Pole valitud ei maailma ega IP aadressi. Pole midagi teha."
 
 #: src/main.cpp:2061
 msgid "Could not find or load game \""
-msgstr "Ei leia ega suuda jätkata mängu."
+msgstr "Ei leia ega suuda jätkata mängu \""
 
 #: src/main.cpp:2075
 msgid "Invalid gamespec."
