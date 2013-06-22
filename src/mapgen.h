@@ -45,8 +45,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // nodes isn't the specified node
 #define OREFLAG_NODEISNT  0x04 // not yet implemented
 
+/////////////////// Decoration flags
+#define DECO_PLACE_CENTER_X 1
+#define DECO_PLACE_CENTER_Y 2
+#define DECO_PLACE_CENTER_Z 4
+
 extern FlagDesc flagdesc_mapgen[];
 extern FlagDesc flagdesc_ore[];
+extern FlagDesc flagdesc_deco_schematic[];
 
 class BiomeDefManager;
 class Biome;
@@ -57,6 +63,7 @@ class VoxelManipulator;
 class INodeDefManager;
 struct BlockMakeData;
 class VoxelArea;
+class Map;
 
 struct MapgenParams {
 	std::string mg_name;
@@ -207,6 +214,7 @@ public:
 	//std::list<CutoffData> cutoffs;
 	//JMutex cutoff_mutex;
 
+	Decoration();
 	virtual ~Decoration();
 	
 	virtual void resolveNodeNames(INodeDefManager *ndef);
@@ -241,12 +249,36 @@ public:
 	virtual std::string getName();
 };
 
-/*
 class DecoSchematic : public Decoration {
 public:
-	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	std::string filename;
+	
+	std::vector<std::string> *node_names;
+	std::vector<content_t> c_nodes;
+
+	u32 flags;
+	v3s16 size;
+	MapNode *schematic;
+
+	DecoSchematic();
+	~DecoSchematic();
+	
+	void resolveNodeNames(INodeDefManager *ndef);
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
+						s16 start_y, v3s16 p);
+	virtual int getHeight();
+	virtual std::string getName();
+	
+	bool loadSchematicFile();
+	void saveSchematicFile(INodeDefManager *ndef);
+	
+	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
+	void placeStructure(Map *map, v3s16 p);
+	void applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0);
 };
-*/
+
+void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
+					std::vector<content_t> *usednodes);
 
 /*
 class DecoLSystem : public Decoration {

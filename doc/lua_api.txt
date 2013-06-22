@@ -421,6 +421,32 @@ The default value is simple, and is currently the only type supported.
     for example.  Can also generate a decoration of random height between a specified lower and
     upper bound.  This type of decoration is intended for placement of grass, flowers, cacti,
     papyrus, and so on.
+- schematic
+    Copies a box of MapNodes from a specified schematic file (or raw description).  Can specify a
+    probability of a node randomly appearing when placed.  This decoration type is intended to be used
+    for multi-node sized discrete structures, such as trees, cave spikes, rocks, and so on.
+
+Schematic specifier
+--------------------
+    A schematic specifier identifies a schematic by either a filename to a Minetest Schematic file (.mts)
+or through raw data supplied through Lua, in the form of a table.  This table must specify two fields:
+ - The 'size' field is a 3d vector containing the dimensions of the provided schematic.
+ - The 'data' field is a flat table of MapNodes making up the schematic, in the order of [z [y [x]]].
+In the bulk MapNode data, param1, instead of the typical light values, instead represents the 
+probability of that node appearing in the structure.  It is an integer with a value from 0-255; 0 means
+that node will always appear.  If the probability value p is non-zero, then there is a
+(p / 256 * 100)% chance that node will appear when the schematic is placed on the map.
+Important note: Node aliases cannot be used for a raw schematic provided when registering as a decoration.
+
+Schematic attributes
+-----------------
+Currently supported flags:  place_center_x, place_center_y, place_center_z
+ - place_center_x
+    Placement of this decoration is centered along the X axis.
+ - place_center_y
+    Placement of this decoration is centered along the Y axis.
+ - place_center_z
+    Placement of this decoration is centered along the Z axis.
 
 HUD element types
 -------------------
@@ -1018,6 +1044,7 @@ minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
 minetest.setting_save() -> nil, save all settings to config file
+minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
 minetest.notify_authentication_modified(name)
@@ -1248,6 +1275,21 @@ minetest.delete_particlespawner(id, player)
 ^ If playername is specified, only deletes on the player's client,
 ^ otherwise on all clients
 
+Schematics:
+minetest.create_schematic(p1, p2, probability_list, filename)
+^ Create a schematic from the volume of map specified by the box formed by p1 and p2.
+^ Apply the specified probability values to the specified nodes in probability_list.
+   ^ probability_list is an array of tables containing two fields, pos and prob.
+   ^ pos is the 3d vector specifying the absolute coordinates of the node being modified,
+   ^ and prob is the integer value from 0 to 255 of the probability (see: Schematic specifier).
+   ^ If there are two or more entries with the same pos value, the last occuring in the array is used.
+   ^ If pos is not inside the box formed by p1 and p2, it is ignored.
+   ^ If probability_list is nil, no probabilities are applied.
+^ Saves schematic in the Minetest Schematic format to filename.
+
+minetest.place_schematic(pos, schematic)
+^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
+
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
@@ -1291,6 +1333,15 @@ minetest.object_refs
 ^ List of object references, indexed by active object id
 minetest.luaentities
 ^ List of lua entities, indexed by active object id
+
+Deprecated but defined for backwards compatibility:
+minetest.digprop_constanttime(time)
+minetest.digprop_stonelike(toughness)
+minetest.digprop_dirtlike(toughness)
+minetest.digprop_gravellike(toughness)
+minetest.digprop_woodlike(toughness)
+minetest.digprop_leaveslike(toughness)
+minetest.digprop_glasslike(toughness)
 
 Class reference
 ----------------
@@ -1700,7 +1751,6 @@ Node definition (register_node)
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing
-    drowning = true, -- Player will drown in these
     two or more sources nearly?
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
@@ -1894,6 +1944,16 @@ Decoration definition (register_decoration)
     num_spawn_by = 1,
     ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
     ^ If absent or -1, decorations occur next to any nodes.
+
+    ----- Schematic-type parameters
+    schematic = "foobar.mts",
+    ^ If schematic is a string, it is the filepath relative to the current working directory of the
+    ^ specified Minetest schematic file.
+    ^  - OR -, could instead be a table containing two fields, size and data:
+    schematic = {size = {x=4, y=6, z=4}, data = { {"cobble", 0, 0}, {"dirt_with_grass", 0, 0}, ...}},
+    ^ See 'Schematic specifier' for details.
+    flags = "place_center_x, place_center_z",
+    ^ Flags for schematic decorations.  See 'Schematic attributes'.
 }
 
 Chatcommand definition (register_chatcommand)

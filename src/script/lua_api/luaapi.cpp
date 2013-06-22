@@ -101,6 +101,8 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 
 	retval &= API_FCT(register_ore);
 	retval &= API_FCT(register_decoration);
+	retval &= API_FCT(create_schematic);
+	retval &= API_FCT(place_schematic);
 
 	return retval;
 }
@@ -680,7 +682,7 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 {
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
-	
+
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	BiomeDefManager *bdef = emerge->biomedef;
 
@@ -701,8 +703,14 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 
 	deco->c_place_on    = CONTENT_IGNORE;
 	deco->place_on_name = getstringfield_default(L, index, "place_on", "ignore");
-	deco->sidelen       = getintfield_default(L, index, "sidelen", 8);
 	deco->fill_ratio    = getfloatfield_default(L, index, "fill_ratio", 0.02);
+	deco->sidelen       = getintfield_default(L, index, "sidelen", 8);
+	if (deco->sidelen <= 0) {
+		errorstream << "register_decoration: sidelen must be "
+			"greater than 0" << std::endl;
+		delete deco;
+		return 0;
+	}
 	
 	lua_getfield(L, index, "noise_params");
 	deco->np = read_noiseparams(L, -1);
@@ -743,7 +751,7 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 					lua_pop(L, 1);
 				}
 			} else if (lua_isstring(L, -1)) {
-				dsimple->deco_name  = std::string(lua_tostring(L, -1));
+				dsimple->deco_name = std::string(lua_tostring(L, -1));
 			} else {
 				dsimple->deco_name = std::string("air");
 			}
@@ -758,27 +766,111 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 
 			break; }
 		case DECO_SCHEMATIC: {
-			//DecoSchematic *decoschematic = (DecoSchematic *)deco;
+			DecoSchematic *dschem = (DecoSchematic *)deco;
+			dschem->flags = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
 			
+			lua_getfield(L, index, "schematic");
+			if (!read_schematic(L, -1, dschem, getServer(L))) {
+				delete dschem;
+				return 0;
+			}
+			lua_pop(L, -1);
+			
+			if (!dschem->filename.empty() && !dschem->loadSchematicFile()) {
+				errorstream << "register_decoration: failed to load schematic file '"
+					<< dschem->filename << "'" << std::endl;
+				delete dschem;
+				return 0;
+			}
 			break; }
 		case DECO_LSYSTEM: {
 			//DecoLSystem *decolsystem = (DecoLSystem *)deco;
 		
 			break; }
 	}
-	
-	if (deco->sidelen <= 0) {
-		errorstream << "register_decoration: sidelen must be "
-			"greater than 0" << std::endl;
-		delete deco;
-		return 0;
-	}
-	
+
 	emerge->decorations.push_back(deco);
 
 	verbosestream << "register_decoration: decoration '" << deco->getName()
 		<< "' registered" << std::endl;
 	return 0;
+}
+
+// create_schematic(p1, p2, probability_list, filename)
+int ModApiBasic::l_create_schematic(lua_State *L)
+{
+	DecoSchematic dschem;
+
+	Map *map = &(getEnv(L)->getMap());
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+
+	v3s16 p1 = read_v3s16(L, 1);
+	v3s16 p2 = read_v3s16(L, 2);
+	sortBoxVerticies(p1, p2);
+	
+	std::vector<std::pair<v3s16, u8> > probability_list;
+	if (lua_istable(L, 3)) {
+		lua_pushnil(L);
+		while (lua_next(L, 3)) {
+			if (lua_istable(L, -1)) {
+				lua_getfield(L, -1, "pos");
+				v3s16 pos = read_v3s16(L, -1);
+				lua_pop(L, 1);
+				
+				int prob = getintfield_default(L, -1, "prob", 0);
+				if (prob < 0 || prob >= UCHAR_MAX) {
+					errorstream << "create_schematic: probability value of "
+						<< prob << " at " << PP(pos) << " out of range" << std::endl;
+				} else {
+					probability_list.push_back(std::make_pair(pos, (u8)prob));
+				}
+			}
+
+			lua_pop(L, 1);
+		}
+	}
+	
+	dschem.filename = std::string(lua_tostring(L, 4));
+
+	if (!dschem.getSchematicFromMap(map, p1, p2)) {
+		errorstream << "create_schematic: failed to get schematic "
+			"from map" << std::endl;
+		return 0;
+	}
+	
+	dschem.applyProbabilities(&probability_list, p1);
+	
+	dschem.saveSchematicFile(ndef);
+	actionstream << "create_schematic: saved schematic file '" << dschem.filename << "'." << std::endl;
+
+	return 1;
+}
+
+
+// place_schematic(p, schematic)
+int ModApiBasic::l_place_schematic(lua_State *L)
+{
+	DecoSchematic dschem;
+
+	Map *map = &(getEnv(L)->getMap());
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+
+	v3s16 p = read_v3s16(L, 1);
+	if (!read_schematic(L, 2, &dschem, getServer(L)))
+		return 0;
+
+	if (!dschem.filename.empty()) {
+		if (!dschem.loadSchematicFile()) {
+			errorstream << "place_schematic: failed to load schematic file '"
+				<< dschem.filename << "'" << std::endl;
+			return 0;
+		}
+		dschem.resolveNodeNames(ndef);
+	}
+	
+	dschem.placeStructure(map, p);
+
+	return 1;
 }
 
 

@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
+#include "util/serialize.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -53,6 +54,12 @@ FlagDesc flagdesc_ore[] = {
 	{NULL,                   0}
 };
 
+FlagDesc flagdesc_deco_schematic[] = {
+	{"place_center_x", DECO_PLACE_CENTER_X},
+	{"place_center_y", DECO_PLACE_CENTER_Y},
+	{"place_center_z", DECO_PLACE_CENTER_Z},
+	{NULL,             0}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -198,17 +205,28 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+
+
 Decoration *createDecoration(DecorationType type) {
 	switch (type) {
 		case DECO_SIMPLE:
 			return new DecoSimple;
-		//case DECO_SCHEMATIC:
-		//	return new DecoSchematic;
+		case DECO_SCHEMATIC:
+			return new DecoSchematic;
 		//case DECO_LSYSTEM:
 		//	return new DecoLSystem;
 		default:
 			return NULL;
 	}
+}
+
+
+Decoration::Decoration() {
+	mapseed    = 0;
+	np         = NULL;
+	fill_ratio = 0;
+	sidelen    = 1;
 }
 
 
@@ -352,6 +370,9 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 #endif
 
 
+///////////////////////////////////////////////////////////////////////////////
+
+
 void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 	Decoration::resolveNodeNames(ndef);
 	
@@ -359,7 +380,7 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 		c_deco = ndef->getId(deco_name);
 		if (c_deco == CONTENT_IGNORE) {
 			errorstream << "DecoSimple::resolveNodeNames: decoration node '"
-				<< deco_name << "' not defined";
+				<< deco_name << "' not defined" << std::endl;
 			c_deco = CONTENT_AIR;
 		}
 	}
@@ -367,7 +388,7 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 		c_spawnby = ndef->getId(spawnby_name);
 		if (c_spawnby == CONTENT_IGNORE) {
 			errorstream << "DecoSimple::resolveNodeNames: spawnby node '"
-				<< deco_name << "' not defined";
+				<< deco_name << "' not defined" << std::endl;
 			nspawnby = -1;
 			c_spawnby = CONTENT_AIR;
 		}
@@ -380,7 +401,7 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 		content_t c = ndef->getId(decolist_names[i]);
 		if (c == CONTENT_IGNORE) {
 			errorstream << "DecoSimple::resolveNodeNames: decolist node '"
-				<< decolist_names[i] << "' not defined";
+				<< decolist_names[i] << "' not defined" << std::endl;
 			c = CONTENT_AIR;
 		}
 		c_decolist.push_back(c);
@@ -388,7 +409,8 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 }
 
 
-void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, s16 start_y, v3s16 p) {
+void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
+						s16 start_y, v3s16 p) {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
 	u32 vi = vm->m_area.index(p);
@@ -448,6 +470,291 @@ int DecoSimple::getHeight() {
 
 std::string DecoSimple::getName() {
 	return deco_name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+DecoSchematic::DecoSchematic() {
+	node_names = NULL;
+	schematic  = NULL;
+	flags      = 0;
+	size       = v3s16(0, 0, 0);
+}
+
+
+DecoSchematic::~DecoSchematic() {
+	delete node_names;
+	delete []schematic;
+}
+
+
+void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
+	Decoration::resolveNodeNames(ndef);
+	
+	if (filename.empty())
+		return;
+	
+	if (!node_names) {
+		errorstream << "DecoSchematic::resolveNodeNames: node name list was "
+			"not created" << std::endl;
+		return;
+	}
+	
+	for (size_t i = 0; i != node_names->size(); i++) {
+		content_t c = ndef->getId(node_names->at(i));
+		if (c == CONTENT_IGNORE) {
+			errorstream << "DecoSchematic::resolveNodeNames: node '"
+				<< node_names->at(i) << "' not defined" << std::endl;
+			c = CONTENT_AIR;
+		}
+		c_nodes.push_back(c);
+	}
+		
+	for (int i = 0; i != size.X * size.Y * size.Z; i++)
+		schematic[i].setContent(c_nodes[schematic[i].getContent()]);
+	
+	delete node_names;
+	node_names = NULL;
+}
+
+
+void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
+							s16 start_y, v3s16 p) {
+	ManualMapVoxelManipulator *vm = mg->vm;
+
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (size.X + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (size.Y + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (size.Z + 1) / 2;
+		
+	u32 vi = vm->m_area.index(p);
+	if (vm->m_data[vi].getContent() != c_place_on &&
+		c_place_on != CONTENT_IGNORE)
+		return;
+	
+	u32 i = 0;
+	for (s16 z = 0; z != size.Z; z++)
+	for (s16 y = 0; y != size.Y; y++) {
+		vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
+		for (s16 x = 0; x != size.X; x++, i++, vi++) {
+			if (!vm->m_area.contains(vi))
+				continue;
+				
+			content_t c = vm->m_data[vi].getContent();
+			if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+				continue;
+				
+			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
+				continue;
+			
+			vm->m_data[vi] = schematic[i];
+			vm->m_data[vi].param1 = 0;
+		}
+	}
+}
+
+
+int DecoSchematic::getHeight() {
+	return size.Y;
+}
+
+
+std::string DecoSchematic::getName() {
+	return filename;
+}
+
+
+void DecoSchematic::placeStructure(Map *map, v3s16 p) {
+	assert(schematic != NULL);
+	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (size.X + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (size.Y + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (size.Z + 1) / 2;
+		
+	v3s16 bp1 = getNodeBlockPos(p);
+	v3s16 bp2 = getNodeBlockPos(p + size - v3s16(1,1,1));
+	vm->initialEmerge(bp1, bp2);
+
+	u32 i = 0;
+	for (s16 z = 0; z != size.Z; z++)
+	for (s16 y = 0; y != size.Y; y++) {
+		u32 vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
+		for (s16 x = 0; x != size.X; x++, i++, vi++) {
+			if (!vm->m_area.contains(vi))
+				continue;
+			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
+				continue;
+			
+			vm->m_data[vi] = schematic[i];
+			vm->m_data[vi].param1 = 0;
+		}
+	}
+	
+	std::map<v3s16, MapBlock *> lighting_modified_blocks;
+	std::map<v3s16, MapBlock *> modified_blocks;
+	vm->blitBackAll(&modified_blocks);
+	
+	// TODO: Optimize this by using Mapgen::calcLighting() instead
+	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
+	map->updateLighting(lighting_modified_blocks, modified_blocks);
+
+	MapEditEvent event;
+	event.type = MEET_OTHER;
+	for (std::map<v3s16, MapBlock *>::iterator
+		it = modified_blocks.begin();
+		it != modified_blocks.end(); ++it)
+		event.modified_blocks.insert(it->first);
+		
+	map->dispatchEvent(&event);
+}
+
+
+bool DecoSchematic::loadSchematicFile() {
+	std::ifstream is(filename.c_str(), std::ios_base::binary);
+
+	u32 signature = readU32(is);
+	if (signature != 'MTSM') {
+		errorstream << "loadSchematicFile: invalid schematic "
+			"file" << std::endl;
+		return false;
+	}
+	
+	u16 version = readU16(is);
+	if (version != 1) {
+		errorstream << "loadSchematicFile: unsupported schematic "
+			"file version" << std::endl;
+		return false;
+	}
+
+	size = readV3S16(is);
+	int nodecount = size.X * size.Y * size.Z;
+	
+	u16 nidmapcount = readU16(is);
+	
+	node_names = new std::vector<std::string>;
+	for (int i = 0; i != nidmapcount; i++) {
+		std::string name = deSerializeString(is);
+		node_names->push_back(name);
+	}
+
+	delete schematic;
+	schematic = new MapNode[nodecount];
+	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST, schematic,
+				nodecount, 2, 2, true);
+				
+	return true;
+}
+
+
+/*
+	Minetest Schematic File Format
+
+	All values are stored in big-endian byte order.
+	[u32] signature: 'MTSM'
+	[u16] version: 1
+	[u16] size X
+	[u16] size Y
+	[u16] size Z
+	[Name-ID table] Name ID Mapping Table
+		[u16] name-id count
+		For each name-id mapping:
+			[u16] name length
+			[u8[]] name
+	ZLib deflated {
+	For each node in schematic:  (for z, y, x)
+		[u16] content
+	For each node in schematic:
+		[u8] probability of occurance (param1)
+	For each node in schematic:
+		[u8] param2
+	}
+*/
+void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
+	std::ofstream os(filename.c_str(), std::ios_base::binary);
+
+	writeU32(os, 'MTSM'); // signature
+	writeU16(os, 1);      // version
+	writeV3S16(os, size); // schematic size
+	
+	std::vector<content_t> usednodes;
+	int nodecount = size.X * size.Y * size.Z;
+	build_nnlist_and_update_ids(schematic, nodecount, &usednodes);
+	
+	u16 numids = usednodes.size();
+	writeU16(os, numids); // name count
+	for (int i = 0; i != numids; i++)
+		os << serializeString(ndef->get(usednodes[i]).name); // node names
+		
+	// compressed bulk node data
+	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST, schematic,
+				nodecount, 2, 2, true);
+}
+
+
+void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
+						std::vector<content_t> *usednodes) {
+	std::map<content_t, content_t> nodeidmap;
+	content_t numids = 0;
+	
+	for (u32 i = 0; i != nodecount; i++) {
+		content_t id;
+		content_t c = nodes[i].getContent();
+
+		std::map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		if (it == nodeidmap.end()) {
+			id = numids;
+			numids++;
+
+			usednodes->push_back(c);
+			nodeidmap.insert(std::make_pair(c, id));
+		} else {
+			id = it->second;
+		}
+		nodes[i].setContent(id);
+	}
+}
+
+
+bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
+	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+
+	v3s16 bp1 = getNodeBlockPos(p1);
+	v3s16 bp2 = getNodeBlockPos(p2);
+	vm->initialEmerge(bp1, bp2);
+	
+	size = p2 - p1 + 1;
+	schematic = new MapNode[size.X * size.Y * size.Z];
+	
+	u32 i = 0;
+	for (s16 z = p1.Z; z <= p2.Z; z++)
+	for (s16 y = p1.Y; y <= p2.Y; y++) {
+		u32 vi = vm->m_area.index(p1.X, y, z);
+		for (s16 x = p1.X; x <= p2.X; x++, i++, vi++) {
+			schematic[i] = vm->m_data[vi];
+			schematic[i].param1 = 0;
+		}
+	}
+
+	delete vm;
+	return true;
+}
+
+
+void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0) {
+	for (size_t i = 0; i != plist->size(); i++) {
+		v3s16 p = (*plist)[i].first - p0;
+		int index = p.Z * (size.Y * size.X) + p.Y * size.X + p.X;
+		if (index < size.Z * size.Y * size.X)
+			schematic[index].param1 = (*plist)[i].second;
+	}
 }
 
 
