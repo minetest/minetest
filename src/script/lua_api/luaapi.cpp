@@ -674,7 +674,7 @@ int ModApiBasic::l_register_ore(lua_State *L)
 
 	verbosestream << "register_ore: ore '" << ore->ore_name
 		<< "' registered" << std::endl;
-	return 0;
+	return 1;
 }
 
 // register_decoration({lots of stuff})
@@ -793,7 +793,7 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 
 	verbosestream << "register_decoration: decoration '" << deco->getName()
 		<< "' registered" << std::endl;
-	return 0;
+	return 1;
 }
 
 // create_schematic(p1, p2, probability_list, filename)
@@ -841,7 +841,8 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 	dschem.applyProbabilities(&probability_list, p1);
 	
 	dschem.saveSchematicFile(ndef);
-	actionstream << "create_schematic: saved schematic file '" << dschem.filename << "'." << std::endl;
+	actionstream << "create_schematic: saved schematic file '"
+		<< dschem.filename << "'." << std::endl;
 
 	return 1;
 }

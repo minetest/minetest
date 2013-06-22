@@ -1334,15 +1334,6 @@ minetest.object_refs
 minetest.luaentities
 ^ List of lua entities, indexed by active object id
 
-Deprecated but defined for backwards compatibility:
-minetest.digprop_constanttime(time)
-minetest.digprop_stonelike(toughness)
-minetest.digprop_dirtlike(toughness)
-minetest.digprop_gravellike(toughness)
-minetest.digprop_woodlike(toughness)
-minetest.digprop_leaveslike(toughness)
-minetest.digprop_glasslike(toughness)
-
 Class reference
 ----------------
 NodeMetaRef: Node metadata - reference extra data and functionality stored
@@ -1751,6 +1742,7 @@ Node definition (register_node)
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing
+    drowning = true, -- Player will drown in these 
     two or more sources nearly?
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
@@ -1950,7 +1942,14 @@ Decoration definition (register_decoration)
     ^ If schematic is a string, it is the filepath relative to the current working directory of the
     ^ specified Minetest schematic file.
     ^  - OR -, could instead be a table containing two fields, size and data:
-    schematic = {size = {x=4, y=6, z=4}, data = { {"cobble", 0, 0}, {"dirt_with_grass", 0, 0}, ...}},
+    schematic = {
+        size = {x=4, y=6, z=4},
+        data = {
+            {name="cobble", param1=0, param2=0},
+            {name="dirt_with_grass", param1=0, param2=0},
+             ...
+        }
+    },
     ^ See 'Schematic specifier' for details.
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.

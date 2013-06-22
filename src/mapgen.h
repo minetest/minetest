@@ -221,8 +221,7 @@ public:
 	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
-						s16 start_y, v3s16 p) = 0;
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 	virtual std::string getName() = 0;
 };
@@ -243,8 +242,7 @@ public:
 	~DecoSimple() {}
 	
 	void resolveNodeNames(INodeDefManager *ndef);
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
-						s16 start_y, v3s16 p);
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
 };
@@ -264,8 +262,7 @@ public:
 	~DecoSchematic();
 	
 	void resolveNodeNames(INodeDefManager *ndef);
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
-						s16 start_y, v3s16 p);
+	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
 	

@@ -311,7 +311,7 @@ void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 				}
 			}
 
-			generate(mg, &ps, max_y, 0, v3s16(x, y, z));
+			generate(mg, &ps, max_y, v3s16(x, y, z));
 		}
 	}
 }
@@ -409,8 +409,7 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 }
 
 
-void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
-						s16 start_y, v3s16 p) {
+void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
 	u32 vi = vm->m_area.index(p);
@@ -451,7 +450,7 @@ void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
 	height = MYMIN(height, max_y - p.Y);
 	
 	v3s16 em = vm->m_area.getExtent();
-	for (int i = start_y; i < height; i++) {
+	for (int i = 0; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
 		
 		content_t c = vm->m_data[vi].getContent();
@@ -520,8 +519,7 @@ void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
 }
 
 
-void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y,
-							s16 start_y, v3s16 p) {
+void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
 	if (flags & DECO_PLACE_CENTER_X)
