@@ -880,7 +880,7 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 /******************************************************************************/
 void pathfinder::build_path(std::vector<v3s16>& path,v3s16 pos, int level) {
 	level ++;
-	if (level > 1000) {
+	if (level > 700) {
 		ERROR_TARGET
 		<< LVL "Pathfinder: path is too long aborting" << std::endl;
 		return;
