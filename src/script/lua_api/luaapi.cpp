@@ -674,7 +674,7 @@ int ModApiBasic::l_register_ore(lua_State *L)
 
 	verbosestream << "register_ore: ore '" << ore->ore_name
 		<< "' registered" << std::endl;
-	return 1;
+	return 0;
 }
 
 // register_decoration({lots of stuff})
@@ -793,7 +793,7 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 
 	verbosestream << "register_decoration: decoration '" << deco->getName()
 		<< "' registered" << std::endl;
-	return 1;
+	return 0;
 }
 
 // create_schematic(p1, p2, probability_list, filename)
@@ -808,7 +808,7 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 	v3s16 p2 = read_v3s16(L, 2);
 	sortBoxVerticies(p1, p2);
 	
-	std::vector<std::pair<v3s16, u8> > probability_list;
+	std::vector<std::pair<v3s16, s16> > probability_list;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3)) {
@@ -817,12 +817,12 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 				v3s16 pos = read_v3s16(L, -1);
 				lua_pop(L, 1);
 				
-				int prob = getintfield_default(L, -1, "prob", 0);
-				if (prob < 0 || prob >= UCHAR_MAX) {
+				s16 prob = getintfield_default(L, -1, "prob", 0);
+				if (prob < -1 || prob >= UCHAR_MAX) {
 					errorstream << "create_schematic: probability value of "
 						<< prob << " at " << PP(pos) << " out of range" << std::endl;
 				} else {
-					probability_list.push_back(std::make_pair(pos, (u8)prob));
+					probability_list.push_back(std::make_pair(pos, prob));
 				}
 			}
 

@@ -542,6 +542,9 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 			if (!vm->m_area.contains(vi))
 				continue;
 				
+			if (schematic[i].getContent() == CONTENT_IGNORE)
+				continue;
+				
 			content_t c = vm->m_data[vi].getContent();
 			if (c != CONTENT_AIR && c != CONTENT_IGNORE)
 				continue;
@@ -588,6 +591,10 @@ void DecoSchematic::placeStructure(Map *map, v3s16 p) {
 		for (s16 x = 0; x != size.X; x++, i++, vi++) {
 			if (!vm->m_area.contains(vi))
 				continue;
+				
+			if (schematic[i].getContent() == CONTENT_IGNORE)
+				continue;
+				
 			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
 				continue;
 			
@@ -746,12 +753,17 @@ bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
 }
 
 
-void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0) {
+void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, s16> > *plist, v3s16 p0) {
 	for (size_t i = 0; i != plist->size(); i++) {
 		v3s16 p = (*plist)[i].first - p0;
 		int index = p.Z * (size.Y * size.X) + p.Y * size.X + p.X;
-		if (index < size.Z * size.Y * size.X)
-			schematic[index].param1 = (*plist)[i].second;
+		if (index < size.Z * size.Y * size.X) {
+			s16 prob = (*plist)[i].second;
+			if (prob != -1)
+				schematic[index].param1 = prob;
+			else
+				schematic[index].setContent(CONTENT_IGNORE);
+		}
 	}
 }
 

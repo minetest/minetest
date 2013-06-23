@@ -271,7 +271,7 @@ public:
 	
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 	void placeStructure(Map *map, v3s16 p);
-	void applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0);
+	void applyProbabilities(std::vector<std::pair<v3s16, s16> > *plist, v3s16 p0);
 };
 
 void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
