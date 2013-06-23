@@ -94,7 +94,7 @@ public:
 	MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge);
 	~MapgenV7();
 	
-	void makeChunk(BlockMakeData *data);
+	virtual void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 	Biome *getBiomeAtPoint(v3s16 p);
 
@@ -103,7 +103,7 @@ public:
 	void calculateNoise();
 	int calcHeightMap();
 	
-	void generateTerrain();
+	virtual void generateTerrain();
 	void carveRidges();
 	//void carveRivers(); //experimental
 	
