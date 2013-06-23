@@ -368,11 +368,6 @@
 # Float islands starts from height, 0 to disable
 #mgindev_float_islands = 500
 
-# Params for math mapgen in json format. generators supported: sphere, mandelbox, mandelsponge
-#mg_math = {"generator":"sphere"}
-#some possible params:
-#mg_math = {"generator":"mandelsponge", "size":1000, "distance":0.01, "center":{"x":5,"y":-100,"z":42}, "invert":1, "scale":0.001, "iterations":10}
-
 # Enable/disable IPv6
 #enable_ipv6 = true
 # Enable/disable running an IPv6 server.  An IPv6 server may be restricted

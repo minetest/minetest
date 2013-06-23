@@ -150,7 +150,7 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 
 bool MapgenMathParams::readParams(Settings *settings) {
 	//params = settings->getJson("mg_math");
-
+	// can be counfigured from here. 
 	std::string value = "{}";
 	    //"{\"generator\":\"mandelsponge\"}";
 	    //"{\"generator\":\"mandelbox\"}";
