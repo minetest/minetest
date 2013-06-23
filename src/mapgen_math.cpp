@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 #include "emerge.h"
-
+#include "biome.h"
 
 // can use ported lib from http://mandelbulber.googlecode.com/svn/trunk/src
 //#include "mandelbulber/fractal.h"
@@ -152,6 +152,9 @@ bool MapgenMathParams::readParams(Settings *settings) {
 	//params = settings->getJson("mg_math");
 
 	std::string value = "{}";
+	    //"{\"generator\":\"mandelsponge\"}";
+	    //"{\"generator\":\"mandelbox\"}";
+	    //"{\"generator\":\"sphere\"}";
 	Json::Reader reader;
 	if (!reader.parse( value, params ) ) {
 		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
@@ -180,7 +183,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 
 	func = &sphere;
 
-	if (params["generator"].empty()) params["generator"] = "sphere";
+	if (params["generator"].empty()) params["generator"] = "mandelbox";
 	if (params["generator"].asString() == "mandelsponge") {
 		if (!size) size = (MAP_GENERATION_LIMIT - 1000) / 2;
 		if (!iterations) iterations = 10;
@@ -207,7 +210,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 		//center=v3f(2,-size/4,2);
 		//size = 10000;
 		//center=v3f(size/2,-size*0.9,size/2);
-		if(params["center"].empty())center = v3f(2, -size * 0.9, 2);
+		if(params["center"].empty())center = v3f(size * 0.3, -size * 0.6, size * 0.5);
 		func = &mandelbox;
 	} else if (params["generator"].asString() == "sphere") {
 		if(params["invert"].empty()) invert = 0;
@@ -219,11 +222,11 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 		//size = 1000;scale = 1;center = v3f(2,-size-2,2);
 	}
 
-	if(!iterations) iterations = 10;
+	if (!iterations) iterations = 10;
 	if (!size) size = 1000;
 	if (!scale) scale = (double)1 / size;
 	if (!distance)  distance = scale;
-	if(params["center"].empty() && !center.getLength()) center = v3f(3, -size + (-5 - (-invert * 10)), 3);
+	if (params["center"].empty() && !center.getLength()) center = v3f(3, -size + (-5 - (-invert * 10)), 3);
 	//size ||= params["size"].empty()?1000:params["size"].asDouble(); // = max_r
 
 }
@@ -234,49 +237,12 @@ MapgenMath::~MapgenMath() {
 
 //////////////////////// Map generator
 
-
-/*
-void MapgenMath::makeChunk(BlockMakeData *data) {
-	assert(data->vmanip);
-	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-	       data->blockpos_requested.Y >= data->blockpos_min.Y &&
-	       data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-	       data->blockpos_requested.Y <= data->blockpos_max.Y &&
-	       data->blockpos_requested.Z <= data->blockpos_max.Z);
-
-	this->generating = true;
-	this->vm   = data->vmanip;
-	this->ndef = data->nodedef;
-
-	v3s16 blockpos_min = data->blockpos_min;
-	v3s16 blockpos_max = data->blockpos_max;
-
-	v3s16 node_min = blockpos_min * MAP_BLOCKSIZE;
-	v3s16 node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	generateTerrain();
-        //MapgenV7::
-	addTopNodes();
-	// Add top and bottom side of water to transforming_liquid queue
-	updateLiquid(&data->transforming_liquid, node_min, node_max);
-
-	// Calculate lighting
-//	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-//				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-
-	this->generating = false;
-}
-*/
-
 void MapgenMath::generateTerrain() {
-	content_t c_node = ndef->getId("mapgen_stone");
-	if (c_node == CONTENT_IGNORE)
-		c_node = CONTENT_AIR;
 
-	MapNode n_node(c_node, LIGHT_SUN);
-	MapNode a_node(CONTENT_AIR, LIGHT_SUN);
-
+	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source, LIGHT_SUN);
+	MapNode n_stone(c_stone, LIGHT_SUN);
+	u32 index = 0;
+	v3s16 em = vm->m_area.getExtent();
 
 #if 1
 
@@ -287,10 +253,14 @@ void MapgenMath::generateTerrain() {
 	            << " N=" << (*func)(vec0.X, vec0.Y, vec0.Z, distance, iterations)
 	            << " Sc=" << scale << " gen=" << params["generator"].asString() << " J=" << Json::FastWriter().write(params) << std::endl;
 	*/
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
-			u32 i = vm->m_area.index(node_min.X, y, z);
-			for (s16 x = node_min.X; x <= node_max.X; x++) {
+	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
+		for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+			s16 surface_y = heightmap[index];
+			Biome *biome = bmgr->biomes[biomemap[index]];
+			//u32 i = vm->m_area.index(node_min.X, y, z);
+			u32 i = vm->m_area.index(x, node_min.Y, z);
+
+			for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 				v3f vec = (v3f(x, y, z) - center) * scale ;
 				//double d = mandelsponge(vec.X, vec.Y, vec.Z, distance, iterations);
 				//double d = mandelbox(vec.X, vec.Y, vec.Z, distance, iterations);
@@ -298,13 +268,20 @@ void MapgenMath::generateTerrain() {
 				//bool d = vec.getLength() < size; //sphere
 				if ((!invert && d > 0) || (invert && d == 0)  ) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-						vm->m_data[i] = n_node;
+						//vm->m_data[i] = n_node;
+						vm->m_data[i] = (y > water_level + biome->filler_height) ?
+						                MapNode(biome->c_filler) : n_stone;
+
+				} else if (y <= water_level) {
+					vm->m_data[i] = n_water_source;
 				} else {
-					vm->m_data[i] = a_node;
+					vm->m_data[i] = n_air;
 				}
-				i++;
+				//i++;
+				vm->m_area.add_y(em, i, 1);
 			}
 		}
+	}
 #endif
 
 
@@ -381,9 +358,9 @@ void MapgenMath::generateTerrain() {
 				//<< std::endl;
 				if ((!invert && d > 0) || (invert && d == 0)/*&& vec.getLength() - d > tresh*/ ) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-						vm->m_data[i] = n_node;
+						vm->m_data[i] = n_stone;
 				} else {
-					vm->m_data[i] = a_node;
+					vm->m_data[i] = n_air;
 				}
 				i++;
 			}
