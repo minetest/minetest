@@ -251,7 +251,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgindev_np_float_islands3", "0,    1,   (256, 256, 256), 6412,  2, 0.5,  1,   0.5");
 	settings->setDefault("mgindev_np_biome",          "0,    1,   (250, 250, 250), 9130,  3, 0.50, 1,   10");
 	settings->setDefault("mgindev_float_islands", "500");
-	
+
+	settings->setDefault("mgmath_generator", "mandelbox");
+
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");

@@ -94,11 +94,10 @@ double mandelbox(double x, double y, double z, double d, int nn = 10) {
 
 }
 
-double mandelsponge(double x, double y, double z, double d, int MI = 10) {
+double mengersponge(double x, double y, double z, double d, int MI = 10) {
 
 	double r = x * x + y * y + z * z;
 	double scale = 3;
-	//double MI = 10;
 	int i = 0;
 
 
@@ -150,15 +149,14 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 
 bool MapgenMathParams::readParams(Settings *settings) {
 	//params = settings->getJson("mg_math");
-	// can be counfigured from here. 
+	// can be counfigured from here.
 	std::string value = "{}";
-	    //"{\"generator\":\"mandelsponge\"}";
-	    //"{\"generator\":\"mandelbox\"}";
-	    //"{\"generator\":\"sphere\"}";
 	Json::Reader reader;
 	if (!reader.parse( value, params ) ) {
 		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
 	}
+
+	if (params["generator"].empty()) params["generator"] = settings->get("mgmath_generator");
 
 	return true;
 }
@@ -166,6 +164,7 @@ bool MapgenMathParams::readParams(Settings *settings) {
 
 void MapgenMathParams::writeParams(Settings *settings) {
 	//settings->setJson("mg_math", params);
+	settings->set("mgmath_generator", params["generator"].asString());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,7 +183,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 	func = &sphere;
 
 	if (params["generator"].empty()) params["generator"] = "mandelbox";
-	if (params["generator"].asString() == "mandelsponge") {
+	if (params["generator"].asString() == "mengersponge") {
 		if (!size) size = (MAP_GENERATION_LIMIT - 1000) / 2;
 		if (!iterations) iterations = 10;
 		if (!distance) distance = 0.0003;
@@ -193,7 +192,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 		//if (!scale) scale = 0.01; //10/size;//sqrt3 * bd4;
 		//center=v3f(-size/3,-size/3+(-2*-invert),2);
 		center = v3f(-size, -size, -size);
-		func = &mandelsponge;
+		func = &mengersponge;
 	} else if (params["generator"].asString() == "mandelbox") {
 		/*
 			size = MAP_GENERATION_LIMIT - 1000;
@@ -249,35 +248,26 @@ void MapgenMath::generateTerrain() {
 	/* debug
 	v3f vec0 = (v3f(node_min.X, node_min.Y, node_min.Z) - center) * scale ;
 	errorstream << " X=" << node_min.X << " Y=" << node_min.Y << " Z=" << node_min.Z
-	            //<< " N="<< mandelsponge(vec0.X, vec0.Y, vec0.Z, distance, iterations)
+	            //<< " N="<< mengersponge(vec0.X, vec0.Y, vec0.Z, distance, iterations)
 	            << " N=" << (*func)(vec0.X, vec0.Y, vec0.Z, distance, iterations)
 	            << " Sc=" << scale << " gen=" << params["generator"].asString() << " J=" << Json::FastWriter().write(params) << std::endl;
 	*/
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-			s16 surface_y = heightmap[index];
 			Biome *biome = bmgr->biomes[biomemap[index]];
-			//u32 i = vm->m_area.index(node_min.X, y, z);
 			u32 i = vm->m_area.index(x, node_min.Y, z);
-
 			for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 				v3f vec = (v3f(x, y, z) - center) * scale ;
-				//double d = mandelsponge(vec.X, vec.Y, vec.Z, distance, iterations);
-				//double d = mandelbox(vec.X, vec.Y, vec.Z, distance, iterations);
 				double d = (*func)(vec.X, vec.Y, vec.Z, distance, iterations);
-				//bool d = vec.getLength() < size; //sphere
 				if ((!invert && d > 0) || (invert && d == 0)  ) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-						//vm->m_data[i] = n_node;
 						vm->m_data[i] = (y > water_level + biome->filler_height) ?
 						                MapNode(biome->c_filler) : n_stone;
-
 				} else if (y <= water_level) {
 					vm->m_data[i] = n_water_source;
 				} else {
 					vm->m_data[i] = n_air;
 				}
-				//i++;
 				vm->m_area.add_y(em, i, 1);
 			}
 		}
