@@ -373,3 +373,9 @@
 # Enable/disable running an IPv6 server.  An IPv6 server may be restricted
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
+
+#main_menu_game_mgr = 0
+#main_menu_mod_mgr = 0
+#modstore_download_url = http://forum.minetest.net/media/
+#modstore_listmods_url = http://forum.minetest.net/mmdb/mods/
+#modstore_details_url  = http://forum.minetest.net/mmdb/mod/*/

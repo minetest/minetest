@@ -883,6 +883,15 @@ background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Position and size units are inventory slots
 ^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
 
+pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]
+^ Textual password style field; will be sent to server when a button is clicked
+^ x and y position the field relative to the top left of the menu
+^ w and h are the size of the field
+^ fields are a set height, but will be vertically centred on h
+^ Position and size units are inventory slots
+^ name is the name of the field as returned in fields to on_receive_fields
+^ label, if not blank, will be text printed on the top left above the field
+
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
 ^ x and y position the field relative to the top left of the menu
@@ -910,6 +919,12 @@ label[<X>,<Y>;<label>]
 ^ label is the text on the label
 ^ Position and size units are inventory slots
 
+vertlabel[<X>,<Y>;<label>]
+^ Textual label drawn verticaly
+^ x and y work as per field
+^ label is the text on the label
+^ Position and size units are inventory slots
+
 button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Clickable button. When clicked, fields will be sent.
 ^ x, y and name work as per field
@@ -922,6 +937,13 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ image is the filename of an image
 ^ Position and size units are inventory slots
 
+image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>]
+^ x, y, w, h, and name work as per button
+^ image is the filename of an image
+^ Position and size units are inventory slots
+^ noclip true meand imagebutton doesn't need to be within specified formsize
+^ drawborder draw button bodrer or not
+
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
 ^ item name is the registered name of an item/node,
@@ -933,6 +955,42 @@ button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
 
 image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
+
+textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
+^Scrollabel itemlist showing arbitrary text elements
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ listelements can be prepended by #colorkey (see colorkeys), 
+^    if you want a listelement to start with # write ##
+^ name fieldname sent to server on doubleclick value is current selected element
+
+tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<draw_border>]
+^ show a tabHEADER at specific position (ignores formsize)
+^ x and y position the itemlist relative to the top left of the menu
+^ name fieldname data is transfered to lua
+^ caption 1... name shown on top of tab
+^ current_tab index of selected tab 1...
+^ transparent (optional) show transparent
+^ draw_border (optional) draw border
+
+box[<X>,<Y>;<W>,<H>;<colorkey>]
+^ simple colored semitransparent box
+^ x and y position the box relative to the top left of the menu
+^ w and h are the size of box
+^ colorkey (see colorkeys)
+
+Available colorkeys:
+- YLW yellow
+- GRN green
+- LIM lime
+- ORN orange
+- RED red
+- BLU blue
+- CYN cyan
+- BLK black
+- BRN brown
+- WHT white
+- GRY grey
 
 Inventory location:
 

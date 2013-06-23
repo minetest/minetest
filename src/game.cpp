@@ -208,33 +208,6 @@ public:
 	Client *m_client;
 };
 
-class FormspecFormSource: public IFormSource
-{
-public:
-	FormspecFormSource(std::string formspec,FormspecFormSource** game_formspec)
-	{
-		m_formspec = formspec;
-		m_game_formspec = game_formspec;
-	}
-
-	~FormspecFormSource()
-	{
-		*m_game_formspec = 0;
-	}
-
-	void setForm(std::string formspec) {
-		m_formspec = formspec;
-	}
-
-	std::string getForm()
-	{
-		return m_formspec;
-	}
-
-	std::string m_formspec;
-	FormspecFormSource** m_game_formspec;
-};
-
 /*
 	Check if a node is pointable
 */

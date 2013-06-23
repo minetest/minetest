@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mods.h"
+#include "main.h"
 #include "filesys.h"
 #include "strfnd.h"
 #include "log.h"
@@ -25,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "strfnd.h"
 #include <cctype>
+#include "convert_json.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -389,3 +391,29 @@ void ModConfiguration::resolveDependencies()
 	// Step 4: write back list of unsatisfied mods
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }
+
+#if USE_CURL
+Json::Value getModstoreUrl(std::string url)
+{
+	struct curl_slist *chunk = NULL;
+
+	bool special_http_header = true;
+
+	try{
+		special_http_header = g_settings->getBool("modstore_disable_special_http_header");
+	}
+	catch(SettingNotFoundException &e) {
+	}
+
+	if (special_http_header)
+		chunk = curl_slist_append(chunk, "Accept: application/vnd.minetest.mmdb-v1+json");
+
+	Json::Value retval = fetchJsonValue(url,chunk);
+
+	if (chunk != NULL)
+		curl_slist_free_all(chunk);
+
+	return retval;
+}
+
+#endif
