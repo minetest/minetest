@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 #include "porting.h"
-#include "json/json.h"
+//#include "json/json.h" // for json config values
 #include <list>
 #include <map>
 #include <set>
@@ -891,6 +891,7 @@ fail:
 		set(name, os.str());
 	}
 
+/*
 	Json::Value getJson(std::string name)
 	{
 		Json::Value root;
@@ -908,6 +909,7 @@ fail:
 		Json::FastWriter writer;
 		set(name, value.empty() ? "{}" : writer.write( value ));
 	}
+*/
 
 	void clear()
 	{

@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_MATH_HEADER
 
 #include "mapgen.h"
+#include "mapgen_v7.h"
 #include "json/json.h"
 
-struct MapgenMathParams : public MapgenParams {
+struct MapgenMathParams : public MapgenV7Params {
 
 	MapgenMathParams() {
 	}
@@ -34,14 +35,16 @@ struct MapgenMathParams : public MapgenParams {
 	void writeParams(Settings *settings);
 };
 
-class MapgenMath : public Mapgen {
+class MapgenMath : public MapgenV7 {
 	public:
-		MapgenMath(int mapgenid, MapgenMathParams *params);
-		~MapgenMath();
-
 		MapgenMathParams * mg_params;
 
-		void makeChunk(BlockMakeData *data);
+		MapgenMath(int mapgenid, MapgenMathParams *mg_params, EmergeManager *emerge);
+		~MapgenMath();
+
+
+		//void makeChunk(BlockMakeData *data);
+		void generateTerrain();
 		int getGroundLevelAtPoint(v2s16 p);
 
 		bool invert;
@@ -56,7 +59,7 @@ class MapgenMath : public Mapgen {
 
 struct MapgenFactoryMath : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenMath(mgid, (MapgenMathParams *)params);
+		return new MapgenMath(mgid, (MapgenMathParams *)params, emerge);
 	};
 
 	MapgenParams *createMapgenParams() {

@@ -149,18 +149,25 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 //////////////////////// Mapgen Singlenode parameter read/write
 
 bool MapgenMathParams::readParams(Settings *settings) {
-	params = settings->getJson("mg_math");
+	//params = settings->getJson("mg_math");
+
+	std::string value = "{}";
+	Json::Reader reader;
+	if (!reader.parse( value, params ) ) {
+		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
+	}
+
 	return true;
 }
 
 
 void MapgenMathParams::writeParams(Settings *settings) {
-	settings->setJson("mg_math", params);
+	//settings->setJson("mg_math", params);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_) {
+MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
 	mg_params = params_;
 
 	Json::Value & params = mg_params->params;
@@ -228,7 +235,7 @@ MapgenMath::~MapgenMath() {
 //////////////////////// Map generator
 
 
-
+/*
 void MapgenMath::makeChunk(BlockMakeData *data) {
 	assert(data->vmanip);
 	assert(data->nodedef);
@@ -248,7 +255,21 @@ void MapgenMath::makeChunk(BlockMakeData *data) {
 
 	v3s16 node_min = blockpos_min * MAP_BLOCKSIZE;
 	v3s16 node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	generateTerrain();
+        //MapgenV7::
+	addTopNodes();
+	// Add top and bottom side of water to transforming_liquid queue
+	updateLiquid(&data->transforming_liquid, node_min, node_max);
 
+	// Calculate lighting
+//	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+//				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+
+	this->generating = false;
+}
+*/
+
+void MapgenMath::generateTerrain() {
 	content_t c_node = ndef->getId("mapgen_stone");
 	if (c_node == CONTENT_IGNORE)
 		c_node = CONTENT_AIR;
@@ -288,7 +309,7 @@ void MapgenMath::makeChunk(BlockMakeData *data) {
 
 
 #if 0
-// mandelbulber
+// mandelbulber, unfinished but works
 	sFractal par;
 	par.doubles.N = 10;
 
@@ -371,14 +392,6 @@ void MapgenMath::makeChunk(BlockMakeData *data) {
 
 #endif
 
-	// Add top and bottom side of water to transforming_liquid queue
-	updateLiquid(&data->transforming_liquid, node_min, node_max);
-
-	// Calculate lighting
-//	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-//				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-
-	this->generating = false;
 }
 
 int MapgenMath::getGroundLevelAtPoint(v2s16 p) {

@@ -252,7 +252,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgindev_np_biome",          "0,    1,   (250, 250, 250), 9130,  3, 0.50, 1,   10");
 	settings->setDefault("mgindev_float_islands", "500");
 
-	settings->setDefault("mg_math", "");
+	//settings->setDefault("mg_math", ""); // planned as complex json struct
 	
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
