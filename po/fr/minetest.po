@@ -147,7 +147,7 @@ msgstr "OK"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Affectation des touches"
+msgstr "Raccourcis"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
@@ -163,7 +163,7 @@ msgstr "Touche déjà utilisée"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
-msgstr "appuyez sur la touche"
+msgstr "appuyez sur une touche"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
@@ -203,7 +203,7 @@ msgstr "Inventaire"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr "Parler"
+msgstr "Messagerie"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
@@ -235,8 +235,7 @@ msgstr "Imprimer stacks"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
-msgstr ""
-"Impossible de créer le monde : le nom contient des caractères invalides"
+msgstr "Impossible de créer le monde : le nom contient des caractères invalides"
 
 #: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
@@ -288,7 +287,7 @@ msgstr "Mode créatif"
 
 #: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
 msgid "Enable Damage"
-msgstr "Activer blessures"
+msgstr "Activer les dégats"
 
 #: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
 msgid "Name/Password"
@@ -380,7 +379,7 @@ msgstr "Précharger les visuels d'objets"
 
 #: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
-msgstr "Particules"
+msgstr "Activer les Particules"
 
 #: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
@@ -478,7 +477,7 @@ msgstr ""
 "- Souris gauche : creuser/attaquer\n"
 "- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
-"- T : parler\n"
+"- T : discuter\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
@@ -506,7 +505,7 @@ msgstr "Bouton X 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Retour arrière"
+msgstr "Retour en arrière"
 
 #: src/keycode.cpp:224
 msgid "Clear"

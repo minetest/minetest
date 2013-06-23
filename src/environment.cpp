@@ -399,7 +399,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
 	for(u32 i=0; i<player_files.size(); i++)
 	{
-		if(player_files[i].dir)
+		if(player_files[i].dir || player_files[i].name[0] == '.')
 			continue;
 		
 		// Full path to this file
@@ -417,7 +417,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is);
+			testplayer.deSerialize(is, player_files[i].name);
 		}
 
 		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
@@ -529,7 +529,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is);
+			testplayer.deSerialize(is, player_files[i].name);
 		}
 
 		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
@@ -563,7 +563,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			player->deSerialize(is);
+			player->deSerialize(is, player_files[i].name);
 		}
 
 		if(newplayer)

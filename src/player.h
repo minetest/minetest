@@ -197,7 +197,7 @@ public:
 		deSerialize stops reading exactly at the right point.
 	*/
 	void serialize(std::ostream &os);
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, std::string playername);
 
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface

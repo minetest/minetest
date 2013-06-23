@@ -271,7 +271,8 @@ Client::Client(
 		IWritableItemDefManager *itemdef,
 		IWritableNodeDefManager *nodedef,
 		ISoundManager *sound,
-		MtEventManager *event
+		MtEventManager *event,
+		bool ipv6
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -287,7 +288,7 @@ Client::Client(
 		device->getSceneManager(),
 		tsrc, this, device
 	),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
+	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_playeritem(0),

@@ -20,7 +20,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SOCKET_HEADER
 #define SOCKET_HEADER
 
+#ifdef _WIN32
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
+#endif
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+#else
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+#endif
+
 #include <ostream>
+#include <string.h>
+#include "irrlichttypes.h"
 #include "exceptions.h"
 
 extern bool socket_enable_debug_output;
@@ -55,35 +72,48 @@ public:
 void sockets_init();
 void sockets_cleanup();
 
+class IPv6AddressBytes
+{
+public:
+	u8 bytes[16];
+	IPv6AddressBytes() { memset(bytes, 0, 16); }
+};
+
 class Address
 {
 public:
 	Address();
-	Address(unsigned int address, unsigned short port);
-	Address(unsigned int a, unsigned int b,
-			unsigned int c, unsigned int d,
-			unsigned short port);
+	Address(u32 address, u16 port);
+	Address(u8 a, u8 b, u8 c, u8 d, u16 port);
+	Address(const IPv6AddressBytes * ipv6_bytes, u16 port);
 	bool operator==(Address &address);
 	bool operator!=(Address &address);
 	void Resolve(const char *name);
-	unsigned int getAddress() const;
+	struct sockaddr_in getAddress() const;
 	unsigned short getPort() const;
-	void setAddress(unsigned int address);
-	void setAddress(unsigned int a, unsigned int b,
-			unsigned int c, unsigned int d);
+	void setAddress(u32 address);
+	void setAddress(u8 a, u8 b, u8 c, u8 d);
+	void setAddress(const IPv6AddressBytes * ipv6_bytes);
+	struct sockaddr_in6 getAddress6() const;
+	int getFamily() const;
+	bool isIPv6() const;
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
-	void print() const;
 	std::string serializeString() const;
 private:
-	unsigned int m_address;
-	unsigned short m_port;
+	unsigned int m_addr_family;
+	union
+	{
+		struct sockaddr_in  ipv4;
+		struct sockaddr_in6 ipv6;
+	} m_address;
+	u16 m_port; // Port is separate from sockaddr structures
 };
 
 class UDPSocket
 {
 public:
-	UDPSocket();
+	UDPSocket(bool ipv6);
 	~UDPSocket();
 	void Bind(unsigned short port);
 	//void Close();
@@ -98,6 +128,7 @@ public:
 private:
 	int m_handle;
 	int m_timeout_ms;
+	int m_addr_family;
 };
 
 #endif

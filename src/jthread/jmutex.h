@@ -31,7 +31,7 @@
 
 #if (defined(WIN32) || defined(_WIN32_WCE))
 	#ifndef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0500
+		#define _WIN32_WINNT 0x0501
 	#endif
 	#ifndef _WIN32_WCE
 		#include <process.h>

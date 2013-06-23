@@ -47,10 +47,10 @@ BiomeDefManager::BiomeDefManager() {
 	b->c_filler      = b->c_top;
 	b->filler_height = MAP_GENERATION_LIMIT;
 
-	b->height_min      = -MAP_GENERATION_LIMIT;
-	b->height_max      = MAP_GENERATION_LIMIT;
-	b->heat_point      = 0.0;
-	b->humidity_point  = 0.0;
+	b->height_min     = -MAP_GENERATION_LIMIT;
+	b->height_max     = MAP_GENERATION_LIMIT;
+	b->heat_point     = 0.0;
+	b->humidity_point = 0.0;
 
 	biomes.push_back(b);
 }
@@ -156,8 +156,8 @@ Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
 		if (y > b->height_max || y < b->height_min)
 			continue;
 
-		float d_heat      = heat     - b->heat_point;
-		float d_humidity  = humidity - b->humidity_point;
+		float d_heat     = heat     - b->heat_point;
+		float d_humidity = humidity - b->humidity_point;
 		float dist = (d_heat * d_heat) +
 					 (d_humidity * d_humidity);
 		if (dist < dist_min) {
