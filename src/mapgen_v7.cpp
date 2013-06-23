@@ -132,8 +132,6 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 			
 		y--;
 	}
-	if (iters == 0)
-		printf("iters exhausted at %d %d\n", p.X, p.Y);
 
 	return y + b->top_depth;
 }
@@ -442,7 +440,7 @@ void MapgenV7::addTopNodes() {
 				continue;
 		}
 		
-		// N.B.  It is necessary to search downward since range_heightmap[i]
+		// N.B.  It is necessary to search downward since ridge_heightmap[i]
 		// might not be the actual height, just the lowest part in the chunk
 		// where a ridge had been carved
 		u32 i = vm->m_area.index(x, y, z);

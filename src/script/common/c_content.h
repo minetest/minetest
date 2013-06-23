@@ -57,6 +57,7 @@ struct DigParams;
 struct HitParams;
 struct EnumString;
 struct NoiseParams;
+class DecoSchematic;
 
 
 ContentFeatures    read_content_features         (lua_State *L, int index);
@@ -138,6 +139,10 @@ bool               string_to_enum            (const EnumString *spec,
                                               const std::string &str);
 
 NoiseParams*       read_noiseparams          (lua_State *L, int index);
+
+bool               read_schematic            (lua_State *L, int index,
+                                              DecoSchematic *dschem,
+                                              Server *server);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

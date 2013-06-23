@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Causes the socket class to deliberately drop random packets.
 // This disables unit testing of socket and connection.
 #define INTERNET_SIMULATOR 0
+#define INTERNET_SIMULATOR_PACKET_LOSS 10 // 10 = easy, 4 = hard
 
 #define CONNECTION_TIMEOUT 30
 

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tool.h"
 #include "server.h"
+#include "mapgen.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -921,4 +922,52 @@ NoiseParams *read_noiseparams(lua_State *L, int index)
 	np->persist = getfloatfield_default(L, index, "persist", 0.0);
 
 	return np;
+}
+
+/******************************************************************************/
+bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *server) {
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	INodeDefManager *ndef = server->getNodeDefManager();
+
+	if (lua_istable(L, index)) {
+		lua_getfield(L, index, "size");
+		v3s16 size = read_v3s16(L, -1);
+		lua_pop(L, 1);
+		
+		int numnodes = size.X * size.Y * size.Z;
+		MapNode *schemdata = new MapNode[numnodes];
+		int i = 0;
+		
+		lua_getfield(L, index, "data");
+		luaL_checktype(L, -1, LUA_TTABLE);
+		
+		lua_pushnil(L);
+		while (lua_next(L, -2)) {
+			if (i < numnodes)
+				schemdata[i] = readnode(L, -1, ndef);
+			
+			i++;
+			lua_pop(L, 1);
+		}
+		
+		dschem->size      = size;
+		dschem->schematic = schemdata;
+		
+		if (i != numnodes) {
+			errorstream << "read_schematic: incorrect number of "
+				"nodes provided in raw schematic data (got " << i <<
+				", expected " << numnodes << ")." << std::endl;
+			return false;
+		}
+	} else if (lua_isstring(L, index)) {
+		dschem->filename = std::string(lua_tostring(L, index));
+	} else {
+		errorstream << "read_schematic: missing schematic "
+			"filename or raw schematic data" << std::endl;
+		return false;
+	}
+	
+	return true;
 }

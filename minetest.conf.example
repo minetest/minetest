@@ -367,3 +367,9 @@
 
 # Float islands starts from height, 0 to disable
 #mgindev_float_islands = 500
+
+# Enable/disable IPv6
+#enable_ipv6 = true
+# Enable/disable running an IPv6 server.  An IPv6 server may be restricted
+# to IPv6 clients, depending on system configuration.
+#ipv6_server = false
