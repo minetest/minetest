@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "log.h"
 #include "json/json.h"
+#include "convert_json.h"
 #if USE_CURL
 #include <curl/curl.h>
 #endif
@@ -68,35 +69,22 @@ std::vector<ServerListSpec> getLocal()
 
 
 #if USE_CURL
-
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
-
-
 std::vector<ServerListSpec> getOnline()
 {
-	std::string liststring;
-	CURL *curl;
+	Json::Value root = fetchJsonValue((g_settings->get("serverlist_url")+"/list").c_str(),0);
 
-	curl = curl_easy_init();
-	if (curl)
-	{
-		CURLcode res;
+	std::vector<ServerListSpec> serverlist;
 
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+"/list").c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
-
-		res = curl_easy_perform(curl);
-		if (res != CURLE_OK)
-			errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" not found (internet connection?)"<<std::endl;
-		curl_easy_cleanup(curl);
+	if (root.isArray()) {
+		for (unsigned int i = 0; i < root.size(); i++)
+		{
+			if (root[i].isObject()) {
+				serverlist.push_back(root[i]);
+			}
+		}
 	}
-	return ServerList::deSerializeJson(liststring);
+
+	return serverlist;
 }
 
 #endif
@@ -187,30 +175,6 @@ std::string serialize(std::vector<ServerListSpec> serverlist)
 		liststring += "\n";
 	}
 	return liststring;
-}
-
-std::vector<ServerListSpec> deSerializeJson(std::string liststring)
-{
-	std::vector<ServerListSpec> serverlist;
-	Json::Value root;
-	Json::Reader reader;
-	std::istringstream stream(liststring);
-	if (!liststring.size()) {
-		return serverlist;
-	}
-	if (!reader.parse( stream, root ) )
-	{
-		errorstream  << "Failed to parse server list " << reader.getFormattedErrorMessages();
-		return serverlist;
-	}
-	if (root["list"].isArray())
-	    for (unsigned int i = 0; i < root["list"].size(); i++)
-	{
-		if (root["list"][i].isObject()) {
-			serverlist.push_back(root["list"][i]);
-		}
-	}
-	return serverlist;
 }
 
 std::string serializeJson(std::vector<ServerListSpec> serverlist)

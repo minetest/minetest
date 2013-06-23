@@ -29,6 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <exception>
 #include <list>
+#include "json/json.h"
+#include "config.h"
+
+#if USE_CURL
+#include <curl/curl.h>
+#endif
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -152,6 +158,68 @@ private:
 	// 7. addon mod in modpack; 8. addon mod.
 	std::set<std::string> m_name_conflicts;
 
+};
+
+#if USE_CURL
+Json::Value getModstoreUrl(std::string url);
+#else
+inline Json::Value getModstoreUrl(std::string url) {
+	return Json::Value();
+}
+#endif
+
+struct ModLicenseInfo {
+	int id;
+	std::string shortinfo;
+	std::string url;
+};
+
+struct ModAuthorInfo {
+	int id;
+	std::string username;
+};
+
+struct ModStoreMod {
+	int id;
+	std::string title;
+	std::string basename;
+	ModAuthorInfo author;
+	float rating;
+	bool valid;
+};
+
+struct ModStoreCategoryInfo {
+	int id;
+	std::string name;
+};
+
+struct ModStoreVersionEntry {
+	int id;
+	std::string date;
+	std::string file;
+	bool approved;
+	//ugly version number
+	int mtversion;
+};
+
+struct ModStoreModDetails {
+	/* version_set?? */
+	std::vector<ModStoreCategoryInfo> categories;
+	ModAuthorInfo author;
+	ModLicenseInfo license;
+	int id;
+	std::string title;
+	std::string basename;
+	std::string description;
+	std::string repository;
+	float rating;
+	std::vector<std::string> depends;
+	std::vector<std::string> softdeps;
+
+	std::string download_url;
+	std::string screenshot_url;
+	std::vector<ModStoreVersionEntry> versions;
+	bool valid;
 };
 
 #endif

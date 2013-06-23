@@ -256,6 +256,11 @@ void set_default_settings(Settings *settings)
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
+
+	settings->setDefault("modstore_download_url", "http://forum.minetest.net/media/");
+	settings->setDefault("modstore_listmods_url", "http://forum.minetest.net/mmdb/mods/");
+	settings->setDefault("modstore_details_url", "http://forum.minetest.net/mmdb/mod/*/");
+
 }
 
 void override_default_settings(Settings *settings, Settings *from)
