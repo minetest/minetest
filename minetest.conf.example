@@ -325,7 +325,7 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently v6, indev and singlenode are supported.
+# Name of map generator to be used.  Currently supported: v6, indev, singlenode, math
 #mg_name = v6
 # Water level of map.
 #water_level = 1
@@ -367,6 +367,9 @@
 
 # Float islands starts from height, 0 to disable
 #mgindev_float_islands = 500
+
+# Math mapgen generator: sphere, mandelbox, mengersponge      dont forget to lower water_level = -30000
+#mgmath_generator = mandelbox
 
 # Enable/disable IPv6
 #enable_ipv6 = true
