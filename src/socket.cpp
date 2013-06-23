@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "socket.h"
 
 #ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
 	// Without this some of the network functions are not found on mingw
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
@@ -46,27 +48,30 @@ typedef int socket_t;
 
 #include "constants.h"
 #include "debug.h"
+#include "settings.h"
+#include "main.h" // for g_settings
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+#include <sstream>
 #include "util/string.h"
 #include "util/numeric.h"
 
+// Set to true to enable verbose debug output
 bool socket_enable_debug_output = false;
-#define DP socket_enable_debug_output
-// This is prepended to everything printed here
-#define DPS ""
 
 bool g_sockets_initialized = false;
 
+// Initialize sockets
 void sockets_init()
 {
 #ifdef _WIN32
+	// Windows needs sockets to be initialized before use
 	WSADATA WsaData;
 	if(WSAStartup( MAKEWORD(2,2), &WsaData ) != NO_ERROR)
 		throw SocketException("WSAStartup failed");
-#else
 #endif
 	g_sockets_initialized = true;
 }
@@ -74,34 +79,57 @@ void sockets_init()
 void sockets_cleanup()
 {
 #ifdef _WIN32
+	// On Windows, cleanup sockets after use
 	WSACleanup();
 #endif
 }
 
+/*
+	Address
+*/
+
 Address::Address()
 {
-	m_address = 0;
+	m_addr_family = 0;
+	memset(&m_address, 0, sizeof m_address);
 	m_port = 0;
 }
 
-Address::Address(unsigned int address, unsigned short port)
+Address::Address(u32 address, u16 port)
 {
-	m_address = address;
-	m_port = port;
+	setAddress(address);
+	setPort(port);
 }
 
-Address::Address(unsigned int a, unsigned int b,
-		unsigned int c, unsigned int d,
-		unsigned short port)
+Address::Address(u8 a, u8 b, u8 c, u8 d, u16 port)
 {
-	m_address = (a<<24) | (b<<16) | ( c<<8) | d;
-	m_port = port;
+	setAddress(a, b, c, d);
+	setPort(port);
 }
 
+Address::Address(const IPv6AddressBytes * ipv6_bytes, u16 port)
+{
+	setAddress(ipv6_bytes);
+	setPort(port);
+}
+
+// Equality (address family, address and port must be equal)
 bool Address::operator==(Address &address)
 {
-	return (m_address == address.m_address
-			&& m_port == address.m_port);
+	if(address.m_addr_family != m_addr_family || address.m_port != m_port)
+		return false;
+	else if(m_addr_family == AF_INET)
+	{
+		return m_address.ipv4.sin_addr.s_addr ==
+		       address.m_address.ipv4.sin_addr.s_addr;
+	}
+	else if(m_addr_family == AF_INET6)
+	{
+		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
+		              address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
+	}
+	else
+		return false;
 }
 
 bool Address::operator!=(Address &address)
@@ -111,105 +139,183 @@ bool Address::operator!=(Address &address)
 
 void Address::Resolve(const char *name)
 {
-	struct addrinfo *resolved;
-	int e = getaddrinfo(name, NULL, NULL, &resolved);
+	struct addrinfo *resolved, hints;
+	memset(&hints, 0, sizeof(hints));
+	
+	// Setup hints
+	hints.ai_socktype = 0;
+	hints.ai_protocol = 0;
+	hints.ai_flags    = 0;
+	if(g_settings->getBool("enable_ipv6"))
+	{
+		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
+		hints.ai_family = AF_UNSPEC;
+	}
+	else
+	{
+		hints.ai_family = AF_INET;
+	}
+	
+	// Do getaddrinfo()
+	int e = getaddrinfo(name, NULL, &hints, &resolved);
 	if(e != 0)
+		throw ResolveError(gai_strerror(e));
+
+	// Copy data
+	if(resolved->ai_family == AF_INET)
+	{
+		struct sockaddr_in *t = (struct sockaddr_in *) resolved->ai_addr;
+		m_addr_family = AF_INET;
+		m_address.ipv4 = *t;
+	}
+	else if(resolved->ai_family == AF_INET6)
+	{
+		struct sockaddr_in6 *t = (struct sockaddr_in6 *) resolved->ai_addr;
+		m_addr_family = AF_INET6;
+		m_address.ipv6 = *t;
+	}
+	else
+	{
+		freeaddrinfo(resolved);
 		throw ResolveError("");
-	/*
-		FIXME: This is an ugly hack; change the whole class
-		to store the address as sockaddr
-	*/
-	struct sockaddr_in *t = (struct sockaddr_in*)resolved->ai_addr;
-	m_address = ntohl(t->sin_addr.s_addr);
+	}
 	freeaddrinfo(resolved);
 }
 
+// IP address -> textual representation
 std::string Address::serializeString() const
 {
-	unsigned int a, b, c, d;
-	a = (m_address & 0xFF000000)>>24;
-	b = (m_address & 0x00FF0000)>>16;
-	c = (m_address & 0x0000FF00)>>8;
-	d = (m_address & 0x000000FF);
-	return itos(a)+"."+itos(b)+"."+itos(c)+"."+itos(d);
+	if(m_addr_family == AF_INET)
+	{
+		u8 a, b, c, d, addr;
+		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
+		a = (addr & 0xFF000000) >> 24;
+		b = (addr & 0x00FF0000) >> 16;
+		c = (addr & 0x0000FF00) >> 8;
+		d = (addr & 0x000000FF);
+		return itos(a) + "." + itos(b) + "." + itos(c) + "." + itos(d);
+	}
+	else if(m_addr_family == AF_INET6)
+	{
+		std::ostringstream os;
+		for(int i = 0; i < 16; i += 2)
+		{
+			u16 section =
+				(m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
+				(m_address.ipv6.sin6_addr.s6_addr[i + 1]);
+			os << std::hex << section;
+			if(i < 14)
+				os << ":";
+		}
+		return os.str();
+	}
+	else
+		return std::string("");
 }
 
-unsigned int Address::getAddress() const
+struct sockaddr_in Address::getAddress() const
 {
-	return m_address;
+	return m_address.ipv4; // NOTE: NO PORT INCLUDED, use getPort()
 }
 
-unsigned short Address::getPort() const
+struct sockaddr_in6 Address::getAddress6() const
+{
+	return m_address.ipv6; // NOTE: NO PORT INCLUDED, use getPort()
+}
+
+u16 Address::getPort() const
 {
 	return m_port;
 }
 
-void Address::setAddress(unsigned int address)
+int Address::getFamily() const
 {
-	m_address = address;
+	return m_addr_family;
 }
 
-void Address::setAddress(unsigned int a, unsigned int b,
-		unsigned int c, unsigned int d)
+bool Address::isIPv6() const
 {
-	m_address = (a<<24) | (b<<16) | ( c<<8) | d;
+	return m_addr_family == AF_INET6;
 }
 
-void Address::setPort(unsigned short port)
+void Address::setAddress(u32 address)
+{
+	m_addr_family = AF_INET;
+	m_address.ipv4.sin_family = AF_INET;
+	m_address.ipv4.sin_addr.s_addr = htonl(address);
+}
+
+void Address::setAddress(u8 a, u8 b, u8 c, u8 d)
+{
+	m_addr_family = AF_INET;
+	m_address.ipv4.sin_family = AF_INET;
+	u32 addr = htonl((a << 24) | (b << 16) | (c << 8) | d);
+	m_address.ipv4.sin_addr.s_addr = addr;
+}
+
+void Address::setAddress(const IPv6AddressBytes * ipv6_bytes)
+{
+	m_addr_family = AF_INET6;
+	m_address.ipv6.sin6_family = AF_INET6;
+	if(ipv6_bytes)
+		memcpy(m_address.ipv6.sin6_addr.s6_addr, ipv6_bytes->bytes, 16);
+	else
+		memset(m_address.ipv6.sin6_addr.s6_addr, 0, 16);
+}
+
+void Address::setPort(u16 port)
 {
 	m_port = port;
 }
 
 void Address::print(std::ostream *s) const
 {
-	(*s)<<((m_address>>24)&0xff)<<"."
-			<<((m_address>>16)&0xff)<<"."
-			<<((m_address>>8)&0xff)<<"."
-			<<((m_address>>0)&0xff)<<":"
-			<<m_port;
+	if(m_addr_family == AF_INET6)
+	{
+		(*s) << "[" << serializeString() << "]:" << m_port;
+	}
+	else
+	{
+		(*s) << serializeString() << ":" << m_port;
+	}
 }
 
-void Address::print() const
-{
-	print(&dstream);
-}
+/*
+	UDPSocket
+*/
 
-UDPSocket::UDPSocket()
+UDPSocket::UDPSocket(bool ipv6)
 {
 	if(g_sockets_initialized == false)
 		throw SocketException("Sockets not initialized");
-	
-    m_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	
-	if(DP)
-	dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::UDPSocket()"<<std::endl;
-	
-    if(m_handle <= 0)
-    {
-		throw SocketException("Failed to create socket");
-    }
 
-/*#ifdef _WIN32
-	DWORD nonblocking = 0;
-	if(ioctlsocket(m_handle, FIONBIO, &nonblocking) != 0)
+	// Use IPv6 if specified
+	m_addr_family = ipv6 ? AF_INET6 : AF_INET;
+	m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
+	
+	if(socket_enable_debug_output)
 	{
-		throw SocketException("Failed set non-blocking mode");
+		dstream << "UDPSocket(" << (int) m_handle
+		        << ")::UDPSocket(): ipv6 = "
+		        << (ipv6 ? "true" : "false")
+		        << std::endl;
 	}
-#else
-	int nonblocking = 0;
-	if(fcntl(m_handle, F_SETFL, O_NONBLOCK, nonblocking) == -1)
+
+	if(m_handle <= 0)
 	{
-		throw SocketException("Failed set non-blocking mode");
+		throw SocketException("Failed to create socket");
 	}
-#endif*/
 
 	setTimeoutMs(0);
 }
 
 UDPSocket::~UDPSocket()
 {
-	if(DP)
-	dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::~UDPSocket()"<<std::endl;
+	if(socket_enable_debug_output)
+	{
+		dstream << "UDPSocket( " << (int) m_handle << ")::~UDPSocket()"
+		        << std::endl;
+	}
 
 #ifdef _WIN32
 	closesocket(m_handle);
@@ -218,111 +324,175 @@ UDPSocket::~UDPSocket()
 #endif
 }
 
-void UDPSocket::Bind(unsigned short port)
+void UDPSocket::Bind(u16 port)
 {
-	if(DP)
-	dstream<<DPS<<"UDPSocket("<<(int)m_handle
-			<<")::Bind(): port="<<port<<std::endl;
+	if(socket_enable_debug_output)
+	{
+		dstream << "UDPSocket(" << (int) m_handle << ")::Bind(): "
+		        << "port=" << port << std::endl;
+	}
 
-    sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(port);
+	if(m_addr_family == AF_INET6)
+	{
+		struct sockaddr_in6 address;
+		address.sin6_family = AF_INET6;
+		address.sin6_addr   = in6addr_any;
+		address.sin6_port   = htons(port);
 
-    if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
-    {
-#ifndef DISABLE_ERRNO
-		dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
-#endif
-		throw SocketException("Failed to bind socket");
-    }
+		if(bind(m_handle, (const struct sockaddr *) &address,
+		        sizeof(struct sockaddr_in6)) < 0)
+		{
+			dstream << (int) m_handle << ": Bind failed: "
+			        << strerror(errno) << std::endl;
+			throw SocketException("Failed to bind socket");
+		}
+	}
+	else
+	{
+		struct sockaddr_in address;
+		address.sin_family      = AF_INET;
+		address.sin_addr.s_addr = INADDR_ANY;
+		address.sin_port        = htons(port);
+
+		if(bind(m_handle, (const struct sockaddr *) &address,
+		        sizeof(struct sockaddr_in)) < 0)
+		{
+			dstream << (int) m_handle << ": Bind failed: "
+			        << strerror(errno) << std::endl;
+			throw SocketException("Failed to bind socket");
+		}
+	}
 }
 
 void UDPSocket::Send(const Address & destination, const void * data, int size)
 {
-	bool dumping_packet = false;
-	if(INTERNET_SIMULATOR)
-		dumping_packet = (myrand()%10==0); //easy
-		//dumping_packet = (myrand()%4==0); // hard
+	bool dumping_packet = false; // for INTERNET_SIMULATOR
 
-	if(DP){
-		/*dstream<<DPS<<"UDPSocket("<<(int)m_handle
-				<<")::Send(): destination=";*/
-		dstream<<DPS;
-		dstream<<(int)m_handle<<" -> ";
-		destination.print();
-		dstream<<", size="<<size<<", data=";
-		for(int i=0; i<size && i<20; i++){
-			if(i%2==0) DEBUGPRINT(" ");
-			unsigned int a = ((const unsigned char*)data)[i];
+	if(INTERNET_SIMULATOR)
+		dumping_packet = (myrand() % INTERNET_SIMULATOR_PACKET_LOSS == 0);
+
+	if(socket_enable_debug_output)
+	{
+		// Print packet destination and size
+		dstream << (int) m_handle << " -> ";
+		destination.print(&dstream);
+		dstream << ", size=" << size;
+		
+		// Print packet contents
+		dstream << ", data=";
+		for(int i = 0; i < size && i < 20; i++)
+		{
+			if(i % 2 == 0)
+				DEBUGPRINT(" ");
+			unsigned int a = ((const unsigned char *) data)[i];
 			DEBUGPRINT("%.2X", a);
 		}
-		if(size>20)
-			dstream<<"...";
+		
+		if(size > 20)
+			dstream << "...";
+		
 		if(dumping_packet)
-			dstream<<" (DUMPED BY INTERNET_SIMULATOR)";
-		dstream<<std::endl;
-	}
-	else if(dumping_packet)
-	{
-		// Lol let's forget it
-		dstream<<"UDPSocket::Send(): "
-				"INTERNET_SIMULATOR: dumping packet."
-				<<std::endl;
+			dstream << " (DUMPED BY INTERNET_SIMULATOR)";
+		
+		dstream << std::endl;
 	}
 
 	if(dumping_packet)
+	{
+		// Lol let's forget it
+		dstream << "UDPSocket::Send(): "
+				   "INTERNET_SIMULATOR: dumping packet."
+				<< std::endl;
 		return;
+	}
 
-	sockaddr_in address;
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = htonl(destination.getAddress());
-	address.sin_port = htons(destination.getPort());
+	if(destination.getFamily() != m_addr_family)
+		throw SendFailedException("Address family mismatch");
 
-	int sent = sendto(m_handle, (const char*)data, size,
-		0, (sockaddr*)&address, sizeof(sockaddr_in));
+	int sent;
+	if(m_addr_family == AF_INET6)
+	{
+		struct sockaddr_in6 address = destination.getAddress6();
+		address.sin6_port = htons(destination.getPort());
+		sent = sendto(m_handle, (const char *) data, size,
+			0, (struct sockaddr *) &address, sizeof(struct sockaddr_in6));
+	}
+	else
+	{
+		struct sockaddr_in address = destination.getAddress();
+		address.sin_port = htons(destination.getPort());
+		sent = sendto(m_handle, (const char *) data, size,
+			0, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
+	}
 
-    if(sent != size)
-    {
+	if(sent != size)
+	{
 		throw SendFailedException("Failed to send packet");
-    }
+	}
 }
 
 int UDPSocket::Receive(Address & sender, void * data, int size)
 {
+	// Return on timeout
 	if(WaitData(m_timeout_ms) == false)
 	{
 		return -1;
 	}
 
-	sockaddr_in address;
-	socklen_t address_len = sizeof(address);
+	int received;
+	if(m_addr_family == AF_INET6)
+	{
+		struct sockaddr_in6 address;
+		socklen_t address_len = sizeof(address);
 
-	int received = recvfrom(m_handle, (char*)data,
-			size, 0, (sockaddr*)&address, &address_len);
+		received = recvfrom(m_handle, (char *) data,
+				size, 0, (struct sockaddr *) &address, &address_len);
 
-	if(received < 0)
-		return -1;
+		if(received < 0)
+			return -1;
 
-	unsigned int address_ip = ntohl(address.sin_addr.s_addr);
-	unsigned int address_port = ntohs(address.sin_port);
+		u16 address_port = ntohs(address.sin6_port);
+		IPv6AddressBytes bytes;
+		memcpy(bytes.bytes, address.sin6_addr.s6_addr, 16);
+		sender = Address(&bytes, address_port);
+	}
+	else
+	{
+		struct sockaddr_in address;
+		socklen_t address_len = sizeof(address);
 
-	sender = Address(address_ip, address_port);
+		received = recvfrom(m_handle, (char *) data,
+				size, 0, (struct sockaddr *) &address, &address_len);
 
-	if(DP){
-		//dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::Receive(): sender=";
-		dstream<<DPS<<(int)m_handle<<" <- ";
-		sender.print();
-		//dstream<<", received="<<received<<std::endl;
-		dstream<<", size="<<received<<", data=";
-		for(int i=0; i<received && i<20; i++){
-			if(i%2==0) DEBUGPRINT(" ");
-			unsigned int a = ((const unsigned char*)data)[i];
+		if(received < 0)
+			return -1;
+
+		u32 address_ip = ntohl(address.sin_addr.s_addr);
+		u16 address_port = ntohs(address.sin_port);
+
+		sender = Address(address_ip, address_port);
+	}
+
+	if(socket_enable_debug_output)
+	{
+		// Print packet sender and size
+		dstream << (int) m_handle << " <- ";
+		sender.print(&dstream);
+		dstream << ", size=" << received;
+		
+		// Print packet contents
+		dstream << ", data=";
+		for(int i = 0; i < received && i < 20; i++)
+		{
+			if(i % 2 == 0)
+				DEBUGPRINT(" ");
+			unsigned int a = ((const unsigned char *) data)[i];
 			DEBUGPRINT("%.2X", a);
 		}
-		if(received>20)
-			dstream<<"...";
-		dstream<<std::endl;
+		if(received > 20)
+			dstream << "...";
+		
+		dstream << std::endl;
 	}
 
 	return received;
@@ -351,42 +521,39 @@ bool UDPSocket::WaitData(int timeout_ms)
 	struct timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = timeout_ms * 1000;
+
 	// select()
 	result = select(m_handle+1, &readset, NULL, NULL, &tv);
 
-	if(result == 0){
-		// Timeout
-		/*dstream<<"Select timed out (timeout_ms="
-				<<timeout_ms<<")"<<std::endl;*/
+	if(result == 0)
 		return false;
-	}
-	else if(result < 0 && errno == EINTR){
+	else if(result < 0 && errno == EINTR)
 		return false;
-	}
-	else if(result < 0){
-		// Error
-#ifndef DISABLE_ERRNO
-		dstream<<(int)m_handle<<": Select failed: "<<strerror(errno)<<std::endl;
-#endif
+	else if(result < 0)
+	{
+		dstream << (int) m_handle << ": Select failed: "
+		        << strerror(errno) << std::endl;
+
 #ifdef _WIN32
 		int e = WSAGetLastError();
-		dstream<<(int)m_handle<<": WSAGetLastError()="<<e<<std::endl;
-		if(e == 10004 /*=WSAEINTR*/)
+		dstream << (int) m_handle << ": WSAGetLastError()="
+		        << e << std::endl;
+		if(e == 10004 /* = WSAEINTR */)
 		{
-			dstream<<"WARNING: Ignoring WSAEINTR."<<std::endl;
+			dstream << "WARNING: Ignoring WSAEINTR." << std::endl;
 			return false;
 		}
 #endif
+
 		throw SocketException("Select failed");
 	}
-	else if(FD_ISSET(m_handle, &readset) == false){
+	else if(FD_ISSET(m_handle, &readset) == false)
+	{
 		// No data
-		//dstream<<"Select reported no data in m_handle"<<std::endl;
 		return false;
 	}
 	
 	// There is data
-	//dstream<<"Select reported data in m_handle"<<std::endl;
 	return true;
 }
 

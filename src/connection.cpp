@@ -520,10 +520,12 @@ void Peer::reportRTT(float rtt)
 	Connection
 */
 
-Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout):
+Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+		bool ipv6):
 	m_protocol_id(protocol_id),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
+	m_socket(ipv6),
 	m_peer_id(0),
 	m_bc_peerhandler(NULL),
 	m_bc_receive_timeout(0),
@@ -535,10 +537,11 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout):
 }
 
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
-		PeerHandler *peerhandler):
+		bool ipv6, PeerHandler *peerhandler):
 	m_protocol_id(protocol_id),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
+	m_socket(ipv6),
 	m_peer_id(0),
 	m_bc_peerhandler(peerhandler),
 	m_bc_receive_timeout(0),

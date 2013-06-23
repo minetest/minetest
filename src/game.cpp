@@ -1039,12 +1039,6 @@ void the_game(
 	infostream<<"Creating client"<<std::endl;
 	
 	MapDrawControl draw_control;
-
-	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, shsrc, itemdef, nodedef, sound, &eventmgr);
-	
-	// Client acts as our GameDef
-	IGameDef *gamedef = &client;
 	
 	{
 		wchar_t* text = wgettext("Resolving address...");
@@ -1054,18 +1048,39 @@ void the_game(
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
+		{
 			//connect_address.Resolve("localhost");
-			connect_address.setAddress(127,0,0,1);
+			if(g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"))
+			{
+				IPv6AddressBytes addr_bytes;
+				addr_bytes.bytes[15] = 1;
+				connect_address.setAddress(&addr_bytes);
+			}
+			else
+			{
+				connect_address.setAddress(127,0,0,1);
+			}
+		}
 		else
 			connect_address.Resolve(address.c_str());
 	}
 	catch(ResolveError &e)
 	{
-		error_message = L"Couldn't resolve address";
+		error_message = L"Couldn't resolve address: " + narrow_to_wide(e.what());
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 		// Break out of client scope
 		break;
 	}
+	
+	/*
+		Create client
+	*/
+	Client client(device, playername.c_str(), password, draw_control,
+		tsrc, shsrc, itemdef, nodedef, sound, &eventmgr,
+		connect_address.isIPv6());
+	
+	// Client acts as our GameDef
+	IGameDef *gamedef = &client;
 
 	/*
 		Attempt to connect to the server
