@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "strfnd.h"
 #include <iostream>
+#include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "log.h"
 
 namespace fs
@@ -30,11 +32,9 @@ namespace fs
 
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
-#include <stdio.h>
 #include <malloc.h>
 #include <tchar.h> 
 #include <wchar.h> 
-#include <stdio.h>
 
 #define BUFSIZE MAX_PATH
 
@@ -145,6 +145,11 @@ bool IsDir(std::string path)
 			(attr & FILE_ATTRIBUTE_DIRECTORY));
 }
 
+bool IsDirDelimiter(char c)
+{
+	return c == '/' || c == '\\';
+}
+
 bool RecursiveDelete(std::string path)
 {
 	infostream<<"Recursively deleting \""<<path<<"\""<<std::endl;
@@ -207,11 +212,26 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 	}
 }
 
+std::string TempPath()
+{
+	DWORD bufsize = GetTempPath(0, "");
+	if(bufsize == 0){
+		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
+		return "";
+	}
+	std::vector<char> buf(bufsize);
+	DWORD len = GetTempPath(bufsize, &buf[0]);
+	if(len == 0 || len > bufsize){
+		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
+		return "";
+	}
+	return std::string(buf.begin(), buf.begin() + len);
+}
+
 #else // POSIX
 
 #include <sys/types.h>
 #include <dirent.h>
-#include <errno.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -301,6 +321,11 @@ bool IsDir(std::string path)
 	return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
 }
 
+bool IsDirDelimiter(char c)
+{
+	return c == '/';
+}
+
 bool RecursiveDelete(std::string path)
 {
 	/*
@@ -364,6 +389,20 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 	}
 }
 
+std::string TempPath()
+{
+	/*
+		Should the environment variables TMPDIR, TMP and TEMP
+		and the macro P_tmpdir (if defined by stdio.h) be checked
+		before falling back on /tmp?
+
+		Probably not, because this function is intended to be
+		compatible with lua's os.tmpname which under the default
+		configuration hardcodes mkstemp("/tmp/lua_XXXXXX").
+	*/
+	return std::string(DIR_DELIM) + "tmp";
+}
+
 #endif
 
 void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
@@ -414,21 +453,235 @@ bool RecursiveDeleteContent(std::string path)
 bool CreateAllDirs(std::string path)
 {
 
-	size_t pos;
 	std::vector<std::string> tocreate;
 	std::string basepath = path;
 	while(!PathExists(basepath))
 	{
 		tocreate.push_back(basepath);
-		pos = basepath.rfind(DIR_DELIM_C);
-		if(pos == std::string::npos)
+		basepath = RemoveLastPathComponent(basepath);
+		if(basepath.empty())
 			break;
-		basepath = basepath.substr(0,pos);
 	}
 	for(int i=tocreate.size()-1;i>=0;i--)
 		if(!CreateDir(tocreate[i]))
 			return false;
 	return true;
+}
+
+bool CopyFileContents(std::string source, std::string target)
+{
+	FILE *sourcefile = fopen(source.c_str(), "rb");
+	if(sourcefile == NULL){
+		errorstream<<source<<": can't open for reading: "
+			<<strerror(errno)<<std::endl;
+		return false;
+	}
+
+	FILE *targetfile = fopen(target.c_str(), "wb");
+	if(targetfile == NULL){
+		errorstream<<target<<": can't open for writing: "
+			<<strerror(errno)<<std::endl;
+		fclose(sourcefile);
+		return false;
+	}
+
+	size_t total = 0;
+	bool retval = true;
+	bool done = false;
+	char readbuffer[BUFSIZ];
+	while(!done){
+		size_t readbytes = fread(readbuffer, 1,
+				sizeof(readbuffer), sourcefile);
+		total += readbytes;
+		if(ferror(sourcefile)){
+			errorstream<<source<<": IO error: "
+				<<strerror(errno)<<std::endl;
+			retval = false;
+			done = true;
+		}
+		if(readbytes > 0){
+			fwrite(readbuffer, 1, readbytes, targetfile);
+		}
+		if(feof(sourcefile) || ferror(sourcefile)){
+			// flush destination file to catch write errors
+			// (e.g. disk full)
+			fflush(targetfile);
+			done = true;
+		}
+		if(ferror(targetfile)){
+			errorstream<<target<<": IO error: "
+					<<strerror(errno)<<std::endl;
+			retval = false;
+			done = true;
+		}
+	}
+	infostream<<"copied "<<total<<" bytes from "
+		<<source<<" to "<<target<<std::endl;
+	fclose(sourcefile);
+	fclose(targetfile);
+	return retval;
+}
+
+bool CopyDir(std::string source, std::string target)
+{
+	if(PathExists(source)){
+		if(!PathExists(target)){
+			fs::CreateAllDirs(target);
+		}
+		bool retval = true;
+		std::vector<DirListNode> content = fs::GetDirListing(source);
+
+		for(unsigned int i=0; i < content.size(); i++){
+			std::string sourcechild = source + DIR_DELIM + content[i].name;
+			std::string targetchild = target + DIR_DELIM + content[i].name;
+			if(content[i].dir){
+				if(!fs::CopyDir(sourcechild, targetchild)){
+					retval = false;
+				}
+			}
+			else {
+				if(!fs::CopyFileContents(sourcechild, targetchild)){
+					retval = false;
+				}
+			}
+		}
+		return retval;
+	}
+	else {
+		return false;
+	}
+}
+
+bool PathStartsWith(std::string path, std::string prefix)
+{
+	size_t pathsize = path.size();
+	size_t pathpos = 0;
+	size_t prefixsize = prefix.size();
+	size_t prefixpos = 0;
+	for(;;){
+		bool delim1 = pathpos == pathsize
+			|| IsDirDelimiter(path[pathpos]);
+		bool delim2 = prefixpos == prefixsize
+			|| IsDirDelimiter(prefix[prefixpos]);
+
+		if(delim1 != delim2)
+			return false;
+
+		if(delim1){
+			while(pathpos < pathsize &&
+					IsDirDelimiter(path[pathpos]))
+				++pathpos;
+			while(prefixpos < prefixsize &&
+					IsDirDelimiter(prefix[prefixpos]))
+				++prefixpos;
+			if(prefixpos == prefixsize)
+				return true;
+			if(pathpos == pathsize)
+				return false;
+		}
+		else{
+			size_t len = 0;
+			do{
+				char pathchar = path[pathpos+len];
+				char prefixchar = prefix[prefixpos+len];
+				if(FILESYS_CASE_INSENSITIVE){
+					pathchar = tolower(pathchar);
+					prefixchar = tolower(prefixchar);
+				}
+				if(pathchar != prefixchar)
+					return false;
+				++len;
+			} while(pathpos+len < pathsize
+					&& !IsDirDelimiter(path[pathpos+len])
+					&& prefixpos+len < prefixsize
+					&& !IsDirDelimiter(
+						prefix[prefixsize+len]));
+			pathpos += len;
+			prefixpos += len;
+		}
+	}
+}
+
+std::string RemoveLastPathComponent(std::string path,
+		std::string *removed, int count)
+{
+	if(removed)
+		*removed = "";
+
+	size_t remaining = path.size();
+
+	for(int i = 0; i < count; ++i){
+		// strip a dir delimiter
+		while(remaining != 0 && IsDirDelimiter(path[remaining-1]))
+			remaining--;
+		// strip a path component
+		size_t component_end = remaining;
+		while(remaining != 0 && !IsDirDelimiter(path[remaining-1]))
+			remaining--;
+		size_t component_start = remaining;
+		// strip a dir delimiter
+		while(remaining != 0 && IsDirDelimiter(path[remaining-1]))
+			remaining--;
+		if(removed){
+			std::string component = path.substr(component_start,
+					component_end - component_start);
+			if(i)
+				*removed = component + DIR_DELIM + *removed;
+			else
+				*removed = component;
+		}
+	}
+	return path.substr(0, remaining);
+}
+
+std::string RemoveRelativePathComponents(std::string path)
+{
+	size_t pos = path.size();
+	size_t dotdot_count = 0;
+	while(pos != 0){
+		size_t component_with_delim_end = pos;
+		// skip a dir delimiter
+		while(pos != 0 && IsDirDelimiter(path[pos-1]))
+			pos--;
+		// strip a path component
+		size_t component_end = pos;
+		while(pos != 0 && !IsDirDelimiter(path[pos-1]))
+			pos--;
+		size_t component_start = pos;
+
+		std::string component = path.substr(component_start,
+				component_end - component_start);
+		bool remove_this_component = false;
+		if(component == "."){
+			remove_this_component = true;
+		}
+		else if(component == ".."){
+			remove_this_component = true;
+			dotdot_count += 1;
+		}
+		else if(dotdot_count != 0){
+			remove_this_component = true;
+			dotdot_count -= 1;
+		}
+
+		if(remove_this_component){
+			while(pos != 0 && IsDirDelimiter(path[pos-1]))
+				pos--;
+			path = path.substr(0, pos) + DIR_DELIM +
+				path.substr(component_with_delim_end,
+						std::string::npos);
+			pos++;
+		}
+	}
+
+	if(dotdot_count > 0)
+		return "";
+
+	// remove trailing dir delimiters
+	pos = path.size();
+	while(pos != 0 && IsDirDelimiter(path[pos-1]))
+		pos--;
+	return path.substr(0, pos);
 }
 
 } // namespace fs

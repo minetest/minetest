@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GUIINVENTORYMENU_HEADER
 #define GUIINVENTORYMENU_HEADER
 
+#include <utility>
+
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "inventorymanager.h"
@@ -28,6 +30,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class InventoryManager;
+
+typedef enum {
+	f_Button,
+	f_ListBox,
+	f_TabHeader,
+	f_CheckBox,
+	f_DropDown,
+	f_Unknown
+} FormspecFieldType;
 
 struct TextDest
 {
@@ -113,10 +124,19 @@ class GUIFormSpecMenu : public GUIModalMenu
 			pos(a_pos),
 			geom(a_geom)
 		{
+			scale = true;
+		}
+		ImageDrawSpec(const std::string &a_name,
+				v2s32 a_pos):
+			name(a_name),
+			pos(a_pos)
+		{
+			scale = false;
 		}
 		std::string name;
 		v2s32 pos;
 		v2s32 geom;
+		bool scale;
 	};
 	
 	struct FieldSpec
@@ -131,7 +151,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			fid(id)
 		{
 			send = false;
-			is_button = false;
+			ftype = f_Unknown;
 			is_exit = false;
 			tooltip="";
 		}
@@ -140,10 +160,22 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::wstring fdefault;
 		int fid;
 		bool send;
-		bool is_button;
+		FormspecFieldType ftype;
 		bool is_exit;
 		core::rect<s32> rect;
 		std::string tooltip;
+	};
+
+	struct BoxDrawSpec {
+		BoxDrawSpec(v2s32 a_pos, v2s32 a_geom,irr::video::SColor a_color):
+			pos(a_pos),
+			geom(a_geom),
+			color(a_color)
+		{
+		}
+		v2s32 pos;
+		v2s32 geom;
+		irr::video::SColor color;
 	};
 
 public:
@@ -153,6 +185,7 @@ public:
 			InventoryManager *invmgr,
 			IGameDef *gamedef
 			);
+
 	~GUIFormSpecMenu();
 
 	void setFormSpec(const std::string &formspec_string,
@@ -175,6 +208,20 @@ public:
 		m_text_dst = text_dst;
 	}
 
+	void allowClose(bool value)
+	{
+		m_allowclose = value;
+	}
+
+	void useGettext(bool value) {
+		m_use_gettext = true;
+	}
+
+	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
+		m_lock = lock;
+		m_lockscreensize = basescreensize;
+	}
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -188,18 +235,21 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput();
+	void acceptInput(int evttype=-1);
 	bool OnEvent(const SEvent& event);
 	
+	int getListboxIndex(std::string listboxname);
+
 protected:
 	v2s32 getBasePos() const
 	{
-		return padding + AbsoluteRect.UpperLeftCorner;
+			return padding + offset + AbsoluteRect.UpperLeftCorner;
 	}
 
 	v2s32 padding;
 	v2s32 spacing;
 	v2s32 imgsize;
+	v2s32 offset;
 	
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
@@ -214,7 +264,10 @@ protected:
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
 	std::vector<ImageDrawSpec> m_itemimages;
+	std::vector<BoxDrawSpec> m_boxes;
 	std::vector<FieldSpec> m_fields;
+	std::vector<std::pair<FieldSpec,gui::IGUIListBox*> > m_listboxes;
+	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
 
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
@@ -228,6 +281,74 @@ protected:
 
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
+
+	bool m_allowclose;
+	bool m_use_gettext;
+	bool m_lock;
+	v2u32 m_lockscreensize;
+private:
+	typedef struct {
+		v2s32 size;
+		s32 helptext_h;
+		core::rect<s32> rect;
+		v2s32 basepos;
+		int bp_set;
+		v2u32 screensize;
+		std::map<std::wstring,int> listbox_selections;
+	} parserData;
+
+	std::vector<video::ITexture *> m_Textures;
+
+	void parseElement(parserData* data,std::string element);
+
+	void parseSize(parserData* data,std::string element);
+	void parseList(parserData* data,std::string element);
+	void parseCheckbox(parserData* data,std::string element);
+	void parseImage(parserData* data,std::string element);
+	void parseItemImage(parserData* data,std::string element);
+	void parseButton(parserData* data,std::string element,std::string typ);
+	void parseBackground(parserData* data,std::string element);
+	void parseTextList(parserData* data,std::string element);
+	void parseDropDown(parserData* data,std::string element);
+	void parsePwdField(parserData* data,std::string element);
+	void parseField(parserData* data,std::string element,std::string type);
+	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
+	void parseTextArea(parserData* data,std::vector<std::string>& parts,std::string type);
+	void parseLabel(parserData* data,std::string element);
+	void parseVertLabel(parserData* data,std::string element);
+	void parseImageButton(parserData* data,std::string element,std::string type);
+	void parseItemImageButton(parserData* data,std::string element);
+	void parseTabHeader(parserData* data,std::string element);
+	void parseBox(parserData* data,std::string element);
+
+	irr::video::SColor getColor(std::string color,bool& valid_color);
+};
+
+class FormspecFormSource: public IFormSource
+{
+public:
+	FormspecFormSource(std::string formspec,FormspecFormSource** game_formspec)
+	{
+		m_formspec = formspec;
+		m_game_formspec = game_formspec;
+	}
+
+	~FormspecFormSource()
+	{
+		*m_game_formspec = 0;
+	}
+
+	void setForm(std::string formspec) {
+		m_formspec = formspec;
+	}
+
+	std::string getForm()
+	{
+		return m_formspec;
+	}
+
+	std::string m_formspec;
+	FormspecFormSource** m_game_formspec;
 };
 
 #endif

@@ -3237,17 +3237,18 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 {
 	unsigned int x, y;
 	int r;
-	size_t spos = dirname.rfind(DIR_DELIM_C) + 1;
-	assert(spos != std::string::npos);
-	if(dirname.size() - spos == 8)
+	std::string component;
+	fs::RemoveLastPathComponent(dirname, &component, 1);
+	if(component.size() == 8)
 	{
 		// Old layout
-		r = sscanf(dirname.substr(spos).c_str(), "%4x%4x", &x, &y);
+		r = sscanf(component.c_str(), "%4x%4x", &x, &y);
 	}
-	else if(dirname.size() - spos == 3)
+	else if(component.size() == 3)
 	{
 		// New layout
-		r = sscanf(dirname.substr(spos-4).c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
+		fs::RemoveLastPathComponent(dirname, &component, 2);
+		r = sscanf(component.c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
 		if(x&0x800) x|=0xF000;
 		if(y&0x800) y|=0xF000;
