@@ -341,7 +341,7 @@ public:
 		cc->inventory_texture = NULL;
 		if(def->inventory_image != "")
 		{
-			cc->inventory_texture = tsrc->getTextureRaw(def->inventory_image);
+			cc->inventory_texture = tsrc->getTexture(def->inventory_image);
 		}
 		else if(def->type == ITEM_NODE)
 		{
@@ -365,7 +365,7 @@ public:
 				imagename = def->inventory_image;
 
 			cc->wield_mesh = createExtrudedMesh(
-					tsrc->getTextureRaw(imagename),
+					tsrc->getTexture(imagename),
 					driver,
 					def->wield_scale * v3f(40.0, 40.0, 4.0));
 			if(cc->wield_mesh == NULL)
@@ -446,7 +446,7 @@ public:
 				if(cc->inventory_texture == NULL)
 				{
 					cc->inventory_texture =
-						tsrc->getTextureRaw(f.tiledef[0].name);
+						tsrc->getTexture(f.tiledef[0].name);
 				}
 			}
 			else

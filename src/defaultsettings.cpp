@@ -94,7 +94,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "true");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("enable_texture_atlas", "false");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");

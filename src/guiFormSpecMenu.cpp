@@ -519,7 +519,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			if(type == "image_button_exit")
 				spec.is_exit = true;
 			
-			video::ITexture *texture = m_gamedef->tsrc()->getTextureRaw(fimage);
+			video::ITexture *texture = m_gamedef->tsrc()->getTexture(fimage);
 			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
 			e->setUseAlphaChannel(true);
 			e->setImage(texture);
@@ -805,7 +805,7 @@ void GUIFormSpecMenu::drawMenu()
 	{
 		const ImageDrawSpec &spec = m_backgrounds[i];
 		video::ITexture *texture =
-				m_gamedef->tsrc()->getTextureRaw(spec.name);
+				m_gamedef->tsrc()->getTexture(spec.name);
 		// Image size on screen
 		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
 		// Image rectangle on screen
@@ -825,7 +825,7 @@ void GUIFormSpecMenu::drawMenu()
 	{
 		const ImageDrawSpec &spec = m_images[i];
 		video::ITexture *texture =
-				m_gamedef->tsrc()->getTextureRaw(spec.name);
+				m_gamedef->tsrc()->getTexture(spec.name);
 		// Image size on screen
 		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
 		// Image rectangle on screen

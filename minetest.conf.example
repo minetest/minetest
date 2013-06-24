@@ -112,9 +112,6 @@
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true
-# Enable combining mainly used textures to a bigger one for improved speed
-# disable if it causes graphics glitches.
-#enable_texture_atlas = false
 # Path to texture directory. All textures are first searched from here.
 #texture_path = 
 # Video back-end.
