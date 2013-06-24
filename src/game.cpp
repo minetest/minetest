@@ -1232,26 +1232,28 @@ void the_game(
 			}
 			
 			// Display status
-			std::ostringstream ss;
 			int progress=0;
 			if (!client.itemdefReceived())
 			{
-				ss << "Item definitions...";
+				wchar_t* text = wgettext("Item definitions...");
 				progress = 0;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
 			else if (!client.nodedefReceived())
 			{
-				ss << "Node definitions...";
+				wchar_t* text = wgettext("Node definitions...");
 				progress = 25;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
 			else
 			{
-				ss << "Media...";
+				wchar_t* text = wgettext("Media...");
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
-			wchar_t* text = wgettext(ss.str().c_str());
-			draw_load_screen(text, device, font, dtime, progress);
-			delete[] text;
 			
 			// On some computers framerate doesn't seem to be
 			// automatically limited

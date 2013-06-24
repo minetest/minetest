@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"POT-Creation-Date: 2013-06-24 00:07+0000\n"
 "PO-Revision-Date: 2013-05-16 14:51+0200\n"
 "Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,48 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2846
+#: src/client.cpp:2877
 msgid "Item textures..."
 msgstr "Texturas de objetos..."
 
-#: src/game.cpp:912
+#: src/game.cpp:959
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: src/game.cpp:972
+#: src/game.cpp:1019
 msgid "Creating server...."
 msgstr "Creando servidor..."
 
-#: src/game.cpp:988
+#: src/game.cpp:1035
 msgid "Creating client..."
 msgstr "Creando cliente..."
 
-#: src/game.cpp:1003
+#: src/game.cpp:1050
 msgid "Resolving address..."
 msgstr "Resolviendo dirección..."
 
-#: src/game.cpp:1079
+#: src/game.cpp:1126
 msgid "Connecting to server..."
 msgstr "Conectando al servidor..."
 
-#: src/game.cpp:3348
+#: src/game.cpp:1223
+#, fuzzy
+msgid "Item definitions..."
+msgstr "Texturas de objetos..."
+
+#: src/game.cpp:1230
+msgid "Node definitions..."
+msgstr ""
+
+#: src/game.cpp:1237
+msgid "Media..."
+msgstr ""
+
+#: src/game.cpp:3418
 msgid "Shutting down stuff..."
 msgstr "Apagando cosas..."
 
-#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
+#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -54,56 +67,40 @@ msgstr ""
 "\n"
 "Consulta debug.txt para obtener más detalles."
 
-#: src/guiConfigureWorld.cpp:123
-msgid ""
-"Warning: Some mods are not configured yet.\n"
-"They will be enabled by default when you save the configuration.  "
-msgstr ""
-"ADVERTENCIA: Algunos mods no están aún configurados.\n"
-"Se habilitarán de forma predeterminada al guardar la configuración.  "
-
-#: src/guiConfigureWorld.cpp:143
-msgid ""
-"Warning: Some configured mods are missing.\n"
-"Their setting will be removed when you save the configuration.  "
-msgstr ""
-"ADVERTENCIA: Algunos mods configurados faltan.\n"
-"Su ajuste se quitará al guardar la configuración.  "
-
-#: src/guiConfigureWorld.cpp:208
+#: src/guiConfigureWorld.cpp:184
 msgid "enabled"
 msgstr "Activado"
 
-#: src/guiConfigureWorld.cpp:218
+#: src/guiConfigureWorld.cpp:194
 msgid "Enable All"
 msgstr "Activar todos"
 
-#: src/guiConfigureWorld.cpp:227
+#: src/guiConfigureWorld.cpp:203
 msgid "Disable All"
 msgstr "Desactivar todos"
 
-#: src/guiConfigureWorld.cpp:235
+#: src/guiConfigureWorld.cpp:211
 msgid "depends on:"
 msgstr "Dependencias:"
 
-#: src/guiConfigureWorld.cpp:248
+#: src/guiConfigureWorld.cpp:224
 msgid "is required by:"
 msgstr "es requerido por:"
 
-#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
+#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
 #: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
+#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Guardar"
 
-#: src/guiConfigureWorld.cpp:403
+#: src/guiConfigureWorld.cpp:374
 msgid "Configuration saved.  "
 msgstr "Configuración guardada.  "
 
-#: src/guiConfigureWorld.cpp:415
+#: src/guiConfigureWorld.cpp:386
 msgid "Warning: Configuration not consistent.  "
 msgstr "ADVERTENCIA: La configuración no corresponde.  "
 
@@ -115,15 +112,15 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
-#: src/guiCreateWorld.cpp:125
+#: src/guiCreateWorld.cpp:123
 msgid "World name"
 msgstr "Nombre del mundo"
 
-#: src/guiCreateWorld.cpp:145
+#: src/guiCreateWorld.cpp:146
 msgid "Game"
 msgstr "Juego"
 
-#: src/guiCreateWorld.cpp:169
+#: src/guiCreateWorld.cpp:170
 msgid "Create"
 msgstr "Crear"
 
@@ -135,13 +132,13 @@ msgstr "Has muerto."
 msgid "Respawn"
 msgstr "Revivir"
 
-#: src/guiFormSpecMenu.cpp:582
+#: src/guiFormSpecMenu.cpp:585
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
 "Click izquierdo: Mover todos los objetos. Click derecho: Mover un objeto."
 
-#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:130
+#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
 msgstr "Continuar"
 
@@ -415,23 +412,23 @@ msgstr "No se puede configurar el mundo: Ninguno seleccionado"
 msgid "Failed to delete all world files"
 msgstr "No se pudo eliminar todos los archivos del mundo"
 
-#: src/guiPasswordChange.cpp:108
+#: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "Contraseña anterior"
 
-#: src/guiPasswordChange.cpp:126
+#: src/guiPasswordChange.cpp:125
 msgid "New Password"
 msgstr "Nueva contraseña"
 
-#: src/guiPasswordChange.cpp:143
+#: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
 msgstr "Confirmar contraseña"
 
-#: src/guiPasswordChange.cpp:161
+#: src/guiPasswordChange.cpp:160
 msgid "Change"
 msgstr "Cambiar"
 
-#: src/guiPasswordChange.cpp:170
+#: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
 msgstr "¡Las contraseñas no coinciden!"
 
@@ -481,11 +478,11 @@ msgstr ""
 "- Rueda ratón: elegir objeto\n"
 "- T: conversar\n"
 
-#: src/guiVolumeChange.cpp:108
+#: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
 msgstr "Volúmen del Sonido: "
 
-#: src/guiVolumeChange.cpp:122
+#: src/guiVolumeChange.cpp:121
 msgid "Exit"
 msgstr "Salir"
 
@@ -785,24 +782,24 @@ msgstr "Zoom"
 msgid "Main Menu"
 msgstr "Menú Principal"
 
-#: src/main.cpp:2035
+#: src/main.cpp:2040
 msgid "Failed to initialize world"
 msgstr "Fallo al iniciar el mundo"
 
-#: src/main.cpp:2048
+#: src/main.cpp:2053
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
 "No se seleccionó mundo y no se ha especificado una dirección. Nada que hacer."
 
-#: src/main.cpp:2056
+#: src/main.cpp:2061
 msgid "Could not find or load game \""
 msgstr "No se puede encontrar o cargar el juego \""
 
-#: src/main.cpp:2070
+#: src/main.cpp:2075
 msgid "Invalid gamespec."
 msgstr "Juego especificado no válido."
 
-#: src/main.cpp:2111
+#: src/main.cpp:2116
 msgid "Connection error (timed out?)"
 msgstr "Error de conexión (¿tiempo agotado?)"
 
@@ -830,3 +827,17 @@ msgstr "Error de conexión (¿tiempo agotado?)"
 #~ "- I: Inventario \n"
 #~ "- ESC: Este Menu\n"
 #~ "- T: Conversar\n"
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "ADVERTENCIA: Algunos mods configurados faltan.\n"
+#~ "Su ajuste se quitará al guardar la configuración.  "
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "ADVERTENCIA: Algunos mods no están aún configurados.\n"
+#~ "Se habilitarán de forma predeterminada al guardar la configuración.  "

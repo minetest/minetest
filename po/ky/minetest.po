@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"POT-Creation-Date: 2013-06-24 00:07+0000\n"
 "PO-Revision-Date: 2013-06-01 18:09+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,48 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2846
+#: src/client.cpp:2877
 msgid "Item textures..."
 msgstr "Буюм текстуралары..."
 
-#: src/game.cpp:912
+#: src/game.cpp:959
 msgid "Loading..."
 msgstr "Жүктөлүүдө..."
 
-#: src/game.cpp:972
+#: src/game.cpp:1019
 msgid "Creating server...."
 msgstr "Сервер жаратылууда...."
 
-#: src/game.cpp:988
+#: src/game.cpp:1035
 msgid "Creating client..."
 msgstr "Клиент жаратылууда..."
 
-#: src/game.cpp:1003
+#: src/game.cpp:1050
 msgid "Resolving address..."
 msgstr "Дареги чечилүүдө..."
 
-#: src/game.cpp:1079
+#: src/game.cpp:1126
 msgid "Connecting to server..."
 msgstr "Серверге туташтырылууда..."
 
-#: src/game.cpp:3348
+#: src/game.cpp:1223
+#, fuzzy
+msgid "Item definitions..."
+msgstr "Буюм текстуралары..."
+
+#: src/game.cpp:1230
+msgid "Node definitions..."
+msgstr ""
+
+#: src/game.cpp:1237
+msgid "Media..."
+msgstr ""
+
+#: src/game.cpp:3418
 msgid "Shutting down stuff..."
 msgstr "Оюн өчүрүлүүдө..."
 
-#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
+#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -54,52 +67,40 @@ msgstr ""
 "\n"
 "Толугураак маалымат үчүн, debug.txt'ти текшериңиз."
 
-#: src/guiConfigureWorld.cpp:123
-msgid ""
-"Warning: Some mods are not configured yet.\n"
-"They will be enabled by default when you save the configuration.  "
-msgstr ""
-
-#: src/guiConfigureWorld.cpp:143
-msgid ""
-"Warning: Some configured mods are missing.\n"
-"Their setting will be removed when you save the configuration.  "
-msgstr ""
-
-#: src/guiConfigureWorld.cpp:208
+#: src/guiConfigureWorld.cpp:184
 msgid "enabled"
 msgstr "күйгүзүлгөн"
 
-#: src/guiConfigureWorld.cpp:218
+#: src/guiConfigureWorld.cpp:194
 msgid "Enable All"
 msgstr "Баарын күйгүзүү"
 
-#: src/guiConfigureWorld.cpp:227
+#: src/guiConfigureWorld.cpp:203
 msgid "Disable All"
 msgstr "Баарын өчүрүү"
 
-#: src/guiConfigureWorld.cpp:235
+#: src/guiConfigureWorld.cpp:211
 msgid "depends on:"
 msgstr "көз карандылыктары:"
 
-#: src/guiConfigureWorld.cpp:248
+#: src/guiConfigureWorld.cpp:224
 msgid "is required by:"
 msgstr "талап кылынганы:"
 
-#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
+#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
 #: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Жокко чыгаруу"
 
-#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
+#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Сактоо"
 
-#: src/guiConfigureWorld.cpp:403
+#: src/guiConfigureWorld.cpp:374
 msgid "Configuration saved.  "
 msgstr "Конфигурация сакталды.  "
 
-#: src/guiConfigureWorld.cpp:415
+#: src/guiConfigureWorld.cpp:386
 msgid "Warning: Configuration not consistent.  "
 msgstr "Эскертүү: Туура эмес конфигурация.  "
 
@@ -111,15 +112,15 @@ msgstr "Ооба"
 msgid "No"
 msgstr "Жок"
 
-#: src/guiCreateWorld.cpp:125
+#: src/guiCreateWorld.cpp:123
 msgid "World name"
 msgstr "Дүйнө аты"
 
-#: src/guiCreateWorld.cpp:145
+#: src/guiCreateWorld.cpp:146
 msgid "Game"
 msgstr "Оюн"
 
-#: src/guiCreateWorld.cpp:169
+#: src/guiCreateWorld.cpp:170
 msgid "Create"
 msgstr "Жаратуу"
 
@@ -131,12 +132,12 @@ msgstr "Сиз өлдүңүз."
 msgid "Respawn"
 msgstr "Кайтадан жаралуу"
 
-#: src/guiFormSpecMenu.cpp:582
+#: src/guiFormSpecMenu.cpp:585
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
 
-#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:130
+#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
 msgstr "Улантуу"
 
@@ -408,23 +409,23 @@ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе т�
 msgid "Failed to delete all world files"
 msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
 
-#: src/guiPasswordChange.cpp:108
+#: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "Эски сырсөз"
 
-#: src/guiPasswordChange.cpp:126
+#: src/guiPasswordChange.cpp:125
 msgid "New Password"
 msgstr "Жаңы сырсөз"
 
-#: src/guiPasswordChange.cpp:143
+#: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
 msgstr "Сырсөздү аныктоо"
 
-#: src/guiPasswordChange.cpp:161
+#: src/guiPasswordChange.cpp:160
 msgid "Change"
 msgstr "Өзгөртүү"
 
-#: src/guiPasswordChange.cpp:170
+#: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
 msgstr "Сырсөздөр дал келген жок!"
 
@@ -474,11 +475,11 @@ msgstr ""
 "- Чычкан дөңгөлөгү: буюмду тандоо\n"
 "- T: маек\n"
 
-#: src/guiVolumeChange.cpp:108
+#: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
 msgstr "Үн көлөмү: "
 
-#: src/guiVolumeChange.cpp:122
+#: src/guiVolumeChange.cpp:121
 msgid "Exit"
 msgstr "Чыгуу"
 
@@ -778,23 +779,23 @@ msgstr "Масштаб"
 msgid "Main Menu"
 msgstr "Башкы меню"
 
-#: src/main.cpp:2035
+#: src/main.cpp:2040
 msgid "Failed to initialize world"
 msgstr "Дүйнөнү инициалдаштыруу катасы"
 
-#: src/main.cpp:2048
+#: src/main.cpp:2053
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Дүйнө тандалган жок жана дареги киргизилген жок. Кылууга эч нерсе жок."
 
-#: src/main.cpp:2056
+#: src/main.cpp:2061
 msgid "Could not find or load game \""
 msgstr "Оюнду табуу же жүктөө мүмкүн эмес \""
 
-#: src/main.cpp:2070
+#: src/main.cpp:2075
 msgid "Invalid gamespec."
 msgstr ""
 
-#: src/main.cpp:2111
+#: src/main.cpp:2116
 msgid "Connection error (timed out?)"
 msgstr "Туташтыруу катасы (убактыңыз өтүп кеттиби?)"
 
