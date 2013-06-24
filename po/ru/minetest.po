@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"POT-Creation-Date: 2013-06-24 00:07+0000\n"
 "PO-Revision-Date: 2013-05-08 11:06+0200\n"
 "Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
@@ -19,35 +19,47 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2846
+#: src/client.cpp:2877
 msgid "Item textures..."
 msgstr ""
 
-#: src/game.cpp:912
+#: src/game.cpp:959
 msgid "Loading..."
 msgstr ""
 
-#: src/game.cpp:972
+#: src/game.cpp:1019
 msgid "Creating server...."
 msgstr ""
 
-#: src/game.cpp:988
+#: src/game.cpp:1035
 msgid "Creating client..."
 msgstr ""
 
-#: src/game.cpp:1003
+#: src/game.cpp:1050
 msgid "Resolving address..."
 msgstr ""
 
-#: src/game.cpp:1079
+#: src/game.cpp:1126
 msgid "Connecting to server..."
 msgstr ""
 
-#: src/game.cpp:3348
+#: src/game.cpp:1223
+msgid "Item definitions..."
+msgstr ""
+
+#: src/game.cpp:1230
+msgid "Node definitions..."
+msgstr ""
+
+#: src/game.cpp:1237
+msgid "Media..."
+msgstr ""
+
+#: src/game.cpp:3418
 msgid "Shutting down stuff..."
 msgstr ""
 
-#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
+#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -55,57 +67,40 @@ msgstr ""
 "\n"
 "Подробная информация в debug.txt."
 
-#: src/guiConfigureWorld.cpp:123
-msgid ""
-"Warning: Some mods are not configured yet.\n"
-"They will be enabled by default when you save the configuration.  "
-msgstr ""
-"Предупреждение: Некоторые моды еще не настроены.\n"
-"Их стандартные настройки будут установлены, когда вы сохраните "
-"конфигурацию.  "
-
-#: src/guiConfigureWorld.cpp:143
-msgid ""
-"Warning: Some configured mods are missing.\n"
-"Their setting will be removed when you save the configuration.  "
-msgstr ""
-"Предупреждение: Некоторые моды не найдены.\n"
-"Их настройки будут удалены, когда вы сохраните конфигурацию.  "
-
-#: src/guiConfigureWorld.cpp:208
+#: src/guiConfigureWorld.cpp:184
 msgid "enabled"
 msgstr "включено"
 
-#: src/guiConfigureWorld.cpp:218
+#: src/guiConfigureWorld.cpp:194
 msgid "Enable All"
 msgstr "Включить Всё"
 
-#: src/guiConfigureWorld.cpp:227
+#: src/guiConfigureWorld.cpp:203
 msgid "Disable All"
 msgstr "Отключить Всё"
 
-#: src/guiConfigureWorld.cpp:235
+#: src/guiConfigureWorld.cpp:211
 msgid "depends on:"
 msgstr "зависит от:"
 
-#: src/guiConfigureWorld.cpp:248
+#: src/guiConfigureWorld.cpp:224
 msgid "is required by:"
 msgstr "требуется для:"
 
-#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
+#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
 #: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Отменить"
 
-#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
+#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/guiConfigureWorld.cpp:403
+#: src/guiConfigureWorld.cpp:374
 msgid "Configuration saved.  "
 msgstr "Настройки сохранены.  "
 
-#: src/guiConfigureWorld.cpp:415
+#: src/guiConfigureWorld.cpp:386
 msgid "Warning: Configuration not consistent.  "
 msgstr "Предупреждение: Неверная конфигурация.  "
 
@@ -117,15 +112,15 @@ msgstr "Да"
 msgid "No"
 msgstr "Нет"
 
-#: src/guiCreateWorld.cpp:125
+#: src/guiCreateWorld.cpp:123
 msgid "World name"
 msgstr "Название мира"
 
-#: src/guiCreateWorld.cpp:145
+#: src/guiCreateWorld.cpp:146
 msgid "Game"
 msgstr "Игра"
 
-#: src/guiCreateWorld.cpp:169
+#: src/guiCreateWorld.cpp:170
 msgid "Create"
 msgstr "Создать"
 
@@ -137,12 +132,12 @@ msgstr "Вы умерли."
 msgid "Respawn"
 msgstr "Возродиться"
 
-#: src/guiFormSpecMenu.cpp:582
+#: src/guiFormSpecMenu.cpp:585
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
 
-#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:130
+#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
 msgstr "Продолжить"
 
@@ -417,23 +412,23 @@ msgstr "Невозможно настроить мир: ничего не выб
 msgid "Failed to delete all world files"
 msgstr "Ошибка при удалении файлов мира"
 
-#: src/guiPasswordChange.cpp:108
+#: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "Старый Пароль"
 
-#: src/guiPasswordChange.cpp:126
+#: src/guiPasswordChange.cpp:125
 msgid "New Password"
 msgstr "Новый Пароль"
 
-#: src/guiPasswordChange.cpp:143
+#: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
 msgstr "Подтверждение Пароля"
 
-#: src/guiPasswordChange.cpp:161
+#: src/guiPasswordChange.cpp:160
 msgid "Change"
 msgstr "Изменить"
 
-#: src/guiPasswordChange.cpp:170
+#: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
 msgstr "Пароли не совпадают!"
 
@@ -472,11 +467,11 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 
-#: src/guiVolumeChange.cpp:108
+#: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
 msgstr "Громкость Звука: "
 
-#: src/guiVolumeChange.cpp:122
+#: src/guiVolumeChange.cpp:121
 msgid "Exit"
 msgstr "Выход"
 
@@ -783,24 +778,24 @@ msgstr "Масштаб"
 msgid "Main Menu"
 msgstr "Главное Меню"
 
-#: src/main.cpp:2035
+#: src/main.cpp:2040
 msgid "Failed to initialize world"
 msgstr "Ошибка при инициализации мира"
 
-#: src/main.cpp:2048
+#: src/main.cpp:2053
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Не выбран мир и не введен адрес."
 
-#: src/main.cpp:2056
+#: src/main.cpp:2061
 msgid "Could not find or load game \""
 msgstr "Невозможно найти или загрузить игру \""
 
-#: src/main.cpp:2070
+#: src/main.cpp:2075
 #, fuzzy
 msgid "Invalid gamespec."
 msgstr "Неправильная конфигурация игры."
 
-#: src/main.cpp:2111
+#: src/main.cpp:2116
 msgid "Connection error (timed out?)"
 msgstr "Ошибка соединения (таймаут пинга?)"
 
@@ -828,3 +823,18 @@ msgstr "Ошибка соединения (таймаут пинга?)"
 #~ "- I: инвентарь\n"
 #~ "- ESC: это меню\n"
 #~ "- T: чат\n"
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды не найдены.\n"
+#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды еще не настроены.\n"
+#~ "Их стандартные настройки будут установлены, когда вы сохраните "
+#~ "конфигурацию.  "
