@@ -70,7 +70,7 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 	//(this should be more than the maximum radius of the tunnel)
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
 	s16 insure = 10;
-	s16 more = max_spread_amount - max_tunnel_diameter / 2 - insure;
+	s16 more = MYMAX(max_spread_amount - max_tunnel_diameter / 2 - insure, 1);
 	ar += v3s16(1,0,1) * more * 2;
 	of -= v3s16(1,0,1) * more;
 
