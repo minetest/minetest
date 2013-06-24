@@ -320,12 +320,6 @@ Client::Client(
 	m_playerpos_send_timer = 0.0;
 	m_ignore_damage_timer = 0.0;
 
-	// Build main texture atlas, now that the GameDef exists (that is, us)
-	if(g_settings->getBool("enable_texture_atlas"))
-		m_tsrc->buildMainAtlas(this);
-	else
-		infostream<<"Not building texture atlas."<<std::endl;
-	
 	/*
 		Add local player
 	*/
@@ -2854,11 +2848,6 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();
-
-	// Update texture atlas
-	infostream<<"- Updating texture atlas"<<std::endl;
-	if(g_settings->getBool("enable_texture_atlas"))
-		m_tsrc->buildMainAtlas(this);
 
 	// Rebuild shaders
 	m_shsrc->rebuildShaders();

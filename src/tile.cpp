@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include <ICameraSceneNode.h>
 #include "log.h"
-#include "mapnode.h" // For texture atlas making
-#include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
 #include "util/string.h"
 #include "util/container.h"
@@ -165,31 +163,23 @@ std::string getTexturePath(const std::string &filename)
 }
 
 /*
-	An internal variant of AtlasPointer with more data.
-	(well, more like a wrapper)
+	Stores internal information about a texture.
 */
 
-struct SourceAtlasPointer
+struct TextureInfo
 {
 	std::string name;
-	AtlasPointer a;
-	video::IImage *atlas_img; // The source image of the atlas
-	// Integer variants of position and size
-	v2s32 intpos;
-	v2u32 intsize;
+	video::ITexture *texture;
+	video::IImage *img; // The source image
 
-	SourceAtlasPointer(
+	TextureInfo(
 			const std::string &name_,
-			AtlasPointer a_=AtlasPointer(0, NULL),
-			video::IImage *atlas_img_=NULL,
-			v2s32 intpos_=v2s32(0,0),
-			v2u32 intsize_=v2u32(0,0)
+			video::ITexture *texture_=NULL,
+			video::IImage *img_=NULL
 		):
 		name(name_),
-		a(a_),
-		atlas_img(atlas_img_),
-		intpos(intpos_),
-		intsize(intsize_)
+		texture(texture_),
+		img(img_)
 	{
 	}
 };
@@ -307,7 +297,7 @@ public:
 
 		Example case #2:
 		- Assume a texture with the id 1 exists, and has the name
-		  "stone.png^mineral1" and is specified as a part of some atlas.
+		  "stone.png^mineral_coal.png".
 		- Now getNodeTile() stumbles upon a node which uses
 		  texture id 1, and determines that MATERIAL_FLAG_CRACK
 		  must be applied to the tile
@@ -315,7 +305,7 @@ public:
 		  has received the current crack level 0 from the client. It
 		  finds out the name of the texture with getTextureName(1),
 		  appends "^crack0" to it and gets a new texture id with
-		  getTextureId("stone.png^mineral1^crack0").
+		  getTextureId("stone.png^mineral_coal.png^crack0").
 
 	*/
 	
@@ -354,25 +344,9 @@ public:
 		and not found in cache, the call is queued to the main thread
 		for processing.
 	*/
-	AtlasPointer getTexture(u32 id);
-	
-	AtlasPointer getTexture(const std::string &name)
-	{
-		return getTexture(getTextureId(name));
-	}
-	
-	// Gets a separate texture
-	video::ITexture* getTextureRaw(const std::string &name)
-	{
-		AtlasPointer ap = getTexture(name + m_forcesingle_suffix);
-		return ap.atlas;
-	}
+	video::ITexture* getTexture(u32 id);
 
-	// Gets a separate texture atlas pointer
-	AtlasPointer getTextureRawAP(const AtlasPointer &ap)
-	{
-		return getTexture(getTextureName(ap.id) + m_forcesingle_suffix);
-	}
+	video::ITexture* getTexture(const std::string &name, u32 *id);
 
 	// Returns a pointer to the irrlicht device
 	virtual IrrlichtDevice* getDevice()
@@ -380,10 +354,6 @@ public:
 		return m_device;
 	}
 
-	// Update new texture pointer and texture coordinates to an
-	// AtlasPointer based on it's texture id
-	void updateAP(AtlasPointer &ap);
- 
 	bool isKnownSourceImage(const std::string &name)
 	{
 		bool is_known = false;
@@ -407,10 +377,6 @@ public:
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
-
-	// Build the main texture atlas which contains most of the
-	// textures.
-	void buildMainAtlas(class IGameDef *gamedef);
 	
 private:
 	
@@ -428,17 +394,12 @@ private:
 
 	// A texture id is index in this array.
 	// The first position contains a NULL texture.
-	std::vector<SourceAtlasPointer> m_atlaspointer_cache;
+	std::vector<TextureInfo> m_textureinfo_cache;
 	// Maps a texture name to an index in the former.
 	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
-	JMutex m_atlaspointer_cache_mutex;
+	JMutex m_textureinfo_cache_mutex;
 	
-	// Main texture atlas. This is filled at startup and is then not touched.
-	video::IImage *m_main_atlas_image;
-	video::ITexture *m_main_atlas_texture;
-	std::string m_forcesingle_suffix;
-
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
 
@@ -453,18 +414,16 @@ IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
 }
 
 TextureSource::TextureSource(IrrlichtDevice *device):
-		m_device(device),
-		m_main_atlas_image(NULL),
-		m_main_atlas_texture(NULL)
+		m_device(device)
 {
 	assert(m_device);
 	
-	m_atlaspointer_cache_mutex.Init();
+	m_textureinfo_cache_mutex.Init();
 	
 	m_main_thread = get_current_thread_id();
 	
-	// Add a NULL AtlasPointer as the first index, named ""
-	m_atlaspointer_cache.push_back(SourceAtlasPointer(""));
+	// Add a NULL TextureInfo as the first index, named ""
+	m_textureinfo_cache.push_back(TextureInfo(""));
 	m_name_to_id[""] = 0;
 }
 
@@ -474,21 +433,19 @@ TextureSource::~TextureSource()
 
 	unsigned int textures_before = driver->getTextureCount();
 
-	for (std::vector<SourceAtlasPointer>::iterator iter =
-			m_atlaspointer_cache.begin();  iter != m_atlaspointer_cache.end();
-			iter++)
+	for (std::vector<TextureInfo>::iterator iter =
+			m_textureinfo_cache.begin();
+			iter != m_textureinfo_cache.end(); iter++)
 	{
-		video::ITexture *t = driver->getTexture(iter->name.c_str());
-
 		//cleanup texture
-		if (t)
-			driver->removeTexture(t);
+		if (iter->texture)
+			driver->removeTexture(iter->texture);
 
 		//cleanup source image
-		if (iter->atlas_img)
-			iter->atlas_img->drop();
+		if (iter->img)
+			iter->img->drop();
 	}
-	m_atlaspointer_cache.clear();
+	m_textureinfo_cache.clear();
 
 	for (std::list<video::ITexture*>::iterator iter =
 			m_texture_trash.begin(); iter != m_texture_trash.end();
@@ -512,7 +469,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 		/*
 			See if texture already exists
 		*/
-		JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+		JMutexAutoLock lock(m_textureinfo_cache_mutex);
 		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
 		if(n != m_name_to_id.end())
@@ -591,8 +548,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 /*
 	Generates an image from a full string like
 	"stone.png^mineral_coal.png^[crack0".
-
-	This is used by buildMainAtlas().
 */
 video::IImage* generate_image_from_scratch(std::string name,
 		IrrlichtDevice *device, SourceImageCache *sourcecache);
@@ -625,7 +580,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		See if texture already exists
 	*/
 	{
-		JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+		JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
 		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
@@ -693,13 +648,11 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	// If a base image was found, copy it to baseimg
 	if(base_image_id != 0)
 	{
-		JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+		JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
-		SourceAtlasPointer ap = m_atlaspointer_cache[base_image_id];
-
-		video::IImage *image = ap.atlas_img;
+		TextureInfo *ti = &m_textureinfo_cache[base_image_id];
 		
-		if(image == NULL)
+		if(ti->img == NULL)
 		{
 			infostream<<"getTextureIdDirect(): WARNING: NULL image in "
 					<<"cache: \""<<base_image_name<<"\""
@@ -707,17 +660,14 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		}
 		else
 		{
-			core::dimension2d<u32> dim = ap.intsize;
+			core::dimension2d<u32> dim = ti->img->getDimension();
 
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 
-			core::position2d<s32> pos_to(0,0);
-			core::position2d<s32> pos_from = ap.intpos;
-			
-			image->copyTo(
+			ti->img->copyTo(
 					baseimg, // target
 					v2s32(0,0), // position in target
-					core::rect<s32>(pos_from, dim) // from
+					core::rect<s32>(v2s32(0,0), dim) // from
 			);
 
 			/*infostream<<"getTextureIdDirect(): Loaded \""
@@ -759,19 +709,11 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		Add texture to caches (add NULL textures too)
 	*/
 
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 	
-	u32 id = m_atlaspointer_cache.size();
-	AtlasPointer ap(id);
-	ap.atlas = t;
-	ap.pos = v2f(0,0);
-	ap.size = v2f(1,1);
-	ap.tiled = 0;
-	core::dimension2d<u32> baseimg_dim(0,0);
-	if(baseimg)
-		baseimg_dim = baseimg->getDimension();
-	SourceAtlasPointer nap(name, ap, baseimg, v2s32(0,0), baseimg_dim);
-	m_atlaspointer_cache.push_back(nap);
+	u32 id = m_textureinfo_cache.size();
+	TextureInfo ti(name, t, baseimg);
+	m_textureinfo_cache.push_back(ti);
 	m_name_to_id[name] = id;
 
 	/*infostream<<"getTextureIdDirect(): "
@@ -782,34 +724,36 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 
 std::string TextureSource::getTextureName(u32 id)
 {
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	if(id >= m_atlaspointer_cache.size())
+	if(id >= m_textureinfo_cache.size())
 	{
 		errorstream<<"TextureSource::getTextureName(): id="<<id
-				<<" >= m_atlaspointer_cache.size()="
-				<<m_atlaspointer_cache.size()<<std::endl;
+				<<" >= m_textureinfo_cache.size()="
+				<<m_textureinfo_cache.size()<<std::endl;
 		return "";
 	}
 	
-	return m_atlaspointer_cache[id].name;
+	return m_textureinfo_cache[id].name;
 }
 
-
-AtlasPointer TextureSource::getTexture(u32 id)
+video::ITexture* TextureSource::getTexture(u32 id)
 {
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	if(id >= m_atlaspointer_cache.size())
-		return AtlasPointer(0, NULL);
-	
-	return m_atlaspointer_cache[id].a;
+	if(id >= m_textureinfo_cache.size())
+		return NULL;
+
+	return m_textureinfo_cache[id].texture;
 }
 
-void TextureSource::updateAP(AtlasPointer &ap)
+video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 {
-	AtlasPointer ap2 = getTexture(ap.id);
-	ap = ap2;
+	u32 actual_id = getTextureId(name);
+	if(id){
+		*id = actual_id;
+	}
+	return getTexture(actual_id);
 }
 
 void TextureSource::processQueue()
@@ -849,297 +793,27 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	
 void TextureSource::rebuildImagesAndTextures()
 {
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-
-	/*// Oh well... just clear everything, they'll load sometime.
-	m_atlaspointer_cache.clear();
-	m_name_to_id.clear();*/
+	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	
-	// Remove source images from textures to disable inheriting textures
-	// from existing textures
-	/*for(u32 i=0; i<m_atlaspointer_cache.size(); i++){
-		SourceAtlasPointer *sap = &m_atlaspointer_cache[i];
-		sap->atlas_img->drop();
-		sap->atlas_img = NULL;
-	}*/
-	
+
 	// Recreate textures
-	for(u32 i=0; i<m_atlaspointer_cache.size(); i++){
-		SourceAtlasPointer *sap = &m_atlaspointer_cache[i];
+	for(u32 i=0; i<m_textureinfo_cache.size(); i++){
+		TextureInfo *ti = &m_textureinfo_cache[i];
 		video::IImage *img =
-			generate_image_from_scratch(sap->name, m_device, &m_sourcecache);
+			generate_image_from_scratch(ti->name, m_device, &m_sourcecache);
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
 		if(img)
-			t = driver->addTexture(sap->name.c_str(), img);
-		video::ITexture *t_old = sap->a.atlas;
+			t = driver->addTexture(ti->name.c_str(), img);
+		video::ITexture *t_old = ti->texture;
 		// Replace texture
-		sap->a.atlas = t;
-		sap->a.pos = v2f(0,0);
-		sap->a.size = v2f(1,1);
-		sap->a.tiled = 0;
-		sap->atlas_img = img;
-		sap->intpos = v2s32(0,0);
-		sap->intsize = img->getDimension();
+		ti->texture = t;
+		ti->img = img;
 
 		if (t_old != 0)
 			m_texture_trash.push_back(t_old);
 	}
-}
-
-void TextureSource::buildMainAtlas(class IGameDef *gamedef) 
-{
-	assert(gamedef->tsrc() == this);
-	INodeDefManager *ndef = gamedef->ndef();
-
-	infostream<<"TextureSource::buildMainAtlas()"<<std::endl;
-
-	//return; // Disable (for testing)
-	
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
-
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-
-	// Create an image of the right size
-	core::dimension2d<u32> max_dim = driver->getMaxTextureSize();
-	core::dimension2d<u32> atlas_dim(2048,2048);
-	atlas_dim.Width  = MYMIN(atlas_dim.Width,  max_dim.Width);
-	atlas_dim.Height = MYMIN(atlas_dim.Height, max_dim.Height);
-	video::IImage *atlas_img =
-			driver->createImage(video::ECF_A8R8G8B8, atlas_dim);
-	//assert(atlas_img);
-	if(atlas_img == NULL)
-	{
-		errorstream<<"TextureSource::buildMainAtlas(): Failed to create atlas "
-				"image; not building texture atlas."<<std::endl;
-		return;
-	}
-
-	/*
-		Grab list of stuff to include in the texture atlas from the
-		main content features
-	*/
-
-	std::set<std::string> sourcelist;
-
-	for(u16 j=0; j<MAX_CONTENT+1; j++)
-	{
-		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
-			continue;
-		const ContentFeatures &f = ndef->get(j);
-		for(u32 i=0; i<6; i++)
-		{
-			std::string name = f.tiledef[i].name;
-			sourcelist.insert(name);
-		}
-	}
-	
-	infostream<<"Creating texture atlas out of textures: ";
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-		infostream<<"\""<<name<<"\" ";
-	}
-	infostream<<std::endl;
-
-	// Padding to disallow texture bleeding
-	// (16 needed if mipmapping is used; otherwise less will work too)
-	s32 padding = 16;
-	s32 column_padding = 16;
-	s32 column_width = 256; // Space for 16 pieces of 16x16 textures
-
-	/*
-		First pass: generate almost everything
-	*/
-	core::position2d<s32> pos_in_atlas(0,0);
-	
-	pos_in_atlas.X = column_padding;
-	pos_in_atlas.Y = padding;
-
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-
-		// Generate image by name
-		video::IImage *img2 = generate_image_from_scratch(name, m_device,
-				&m_sourcecache);
-		if(img2 == NULL)
-		{
-			errorstream<<"TextureSource::buildMainAtlas(): "
-					<<"Couldn't generate image \""<<name<<"\""<<std::endl;
-			continue;
-		}
-
-		core::dimension2d<u32> dim = img2->getDimension();
-
-		// Don't add to atlas if image is too large
-		core::dimension2d<u32> max_size_in_atlas(64,64);
-		if(dim.Width > max_size_in_atlas.Width
-		|| dim.Height > max_size_in_atlas.Height)
-		{
-			infostream<<"TextureSource::buildMainAtlas(): Not adding "
-					<<"\""<<name<<"\" because image is large"<<std::endl;
-			continue;
-		}
-
-		// Wrap columns and stop making atlas if atlas is full
-		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
-		{
-			if(pos_in_atlas.X > (s32)atlas_dim.Width - column_width - column_padding){
-				errorstream<<"TextureSource::buildMainAtlas(): "
-						<<"Atlas is full, not adding more textures."
-						<<std::endl;
-				break;
-			}
-			pos_in_atlas.Y = padding;
-			pos_in_atlas.X += column_width + column_padding*2;
-		}
-		
-		/*infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
-				<<"\" to texture atlas"<<std::endl;*/
-
-		// Tile it a few times in the X direction
-		u16 xwise_tiling = column_width / dim.Width;
-		if(xwise_tiling > 16) // Limit to 16 (more gives no benefit)
-			xwise_tiling = 16;
-		for(u32 j=0; j<xwise_tiling; j++)
-		{
-			// Copy the copy to the atlas
-			/*img2->copyToWithAlpha(atlas_img,
-					pos_in_atlas + v2s32(j*dim.Width,0),
-					core::rect<s32>(v2s32(0,0), dim),
-					video::SColor(255,255,255,255),
-					NULL);*/
-			img2->copyTo(atlas_img,
-					pos_in_atlas + v2s32(j*dim.Width,0),
-					core::rect<s32>(v2s32(0,0), dim),
-					NULL);
-		}
-
-		// Copy the borders a few times to disallow texture bleeding
-		for(u32 side=0; side<2; side++) // top and bottom
-		for(s32 y0=0; y0<padding; y0++)
-		for(s32 x0=0; x0<(s32)xwise_tiling*(s32)dim.Width; x0++)
-		{
-			s32 dst_y;
-			s32 src_y;
-			if(side==0)
-			{
-				dst_y = y0 + pos_in_atlas.Y + dim.Height;
-				src_y = pos_in_atlas.Y + dim.Height - 1;
-			}
-			else
-			{
-				dst_y = -y0 + pos_in_atlas.Y-1;
-				src_y = pos_in_atlas.Y;
-			}
-			s32 x = x0 + pos_in_atlas.X;
-			video::SColor c = atlas_img->getPixel(x, src_y);
-			atlas_img->setPixel(x,dst_y,c);
-		}
-
-		for(u32 side=0; side<2; side++) // left and right
-		for(s32 x0=0; x0<column_padding; x0++)
-		for(s32 y0=-padding; y0<(s32)dim.Height+padding; y0++)
-		{
-			s32 dst_x;
-			s32 src_x;
-			if(side==0)
-			{
-				dst_x = x0 + pos_in_atlas.X + dim.Width*xwise_tiling;
-				src_x = pos_in_atlas.X + dim.Width*xwise_tiling - 1;
-			}
-			else
-			{
-				dst_x = -x0 + pos_in_atlas.X-1;
-				src_x = pos_in_atlas.X;
-			}
-			s32 y = y0 + pos_in_atlas.Y;
-			s32 src_y = MYMAX((int)pos_in_atlas.Y, MYMIN((int)pos_in_atlas.Y + (int)dim.Height - 1, y));
-			s32 dst_y = y;
-			video::SColor c = atlas_img->getPixel(src_x, src_y);
-			atlas_img->setPixel(dst_x,dst_y,c);
-		}
-
-		img2->drop();
-
-		/*
-			Add texture to caches
-		*/
-		
-		bool reuse_old_id = false;
-		u32 id = m_atlaspointer_cache.size();
-		// Check old id without fetching a texture
-		std::map<std::string, u32>::iterator n;
-		n = m_name_to_id.find(name);
-		// If it exists, we will replace the old definition
-		if(n != m_name_to_id.end()){
-			id = n->second;
-			reuse_old_id = true;
-			/*infostream<<"TextureSource::buildMainAtlas(): "
-					<<"Replacing old AtlasPointer"<<std::endl;*/
-		}
-
-		// Create AtlasPointer
-		AtlasPointer ap(id);
-		ap.atlas = NULL; // Set on the second pass
-		ap.pos = v2f((float)pos_in_atlas.X/(float)atlas_dim.Width,
-				(float)pos_in_atlas.Y/(float)atlas_dim.Height);
-		ap.size = v2f((float)dim.Width/(float)atlas_dim.Width,
-				(float)dim.Width/(float)atlas_dim.Height);
-		ap.tiled = xwise_tiling;
-
-		// Create SourceAtlasPointer and add to containers
-		SourceAtlasPointer nap(name, ap, atlas_img, pos_in_atlas, dim);
-		if(reuse_old_id)
-			m_atlaspointer_cache[id] = nap;
-		else
-			m_atlaspointer_cache.push_back(nap);
-		m_name_to_id[name] = id;
-			
-		// Increment position
-		pos_in_atlas.Y += dim.Height + padding * 2;
-	}
-
-	/*
-		Make texture
-	*/
-	video::ITexture *t = driver->addTexture("__main_atlas__", atlas_img);
-	assert(t);
-
-	/*
-		Second pass: set texture pointer in generated AtlasPointers
-	*/
-	for(std::set<std::string>::iterator
-			i = sourcelist.begin();
-			i != sourcelist.end(); ++i)
-	{
-		std::string name = *i;
-		if(m_name_to_id.find(name) == m_name_to_id.end())
-			continue;
-		u32 id = m_name_to_id[name];
-		//infostream<<"id of name "<<name<<" is "<<id<<std::endl;
-		m_atlaspointer_cache[id].a.atlas = t;
-	}
-
-	/*
-		Write image to file so that it can be inspected
-	*/
-	/*std::string atlaspath = porting::path_user
-			+ DIR_DELIM + "generated_texture_atlas.png";
-	infostream<<"Removing and writing texture atlas for inspection to "
-			<<atlaspath<<std::endl;
-	fs::RecursiveDelete(atlaspath);
-	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
-
-	m_forcesingle_suffix = "^[forcesingle";
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
@@ -1286,30 +960,10 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				<<std::endl;*/
 		
 		/*
-			This is the simplest of all; it just adds stuff to the
-			name so that a separate texture is created.
-
-			It is used to make textures for stuff that doesn't want
-			to implement getting the texture from a bigger texture
-			atlas.
-		*/
-		if(part_of_name == "[forcesingle")
-		{
-			// If base image is NULL, create a random color
-			if(baseimg == NULL)
-			{
-				core::dimension2d<u32> dim(1,1);
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
-				assert(baseimg);
-				baseimg->setPixel(0,0, video::SColor(255,myrand()%256,
-						myrand()%256,myrand()%256));
-			}
-		}
-		/*
 			[crackN
 			Adds a cracking texture
 		*/
-		else if(part_of_name.substr(0,6) == "[crack")
+		if(part_of_name.substr(0,6) == "[crack")
 		{
 			if(baseimg == NULL)
 			{

@@ -178,7 +178,7 @@ void Hud::drawLuaElements() {
 		v2s32 pos(e->pos.X * screensize.X, e->pos.Y * screensize.Y);
 		switch (e->type) {
 			case HUD_ELEM_IMAGE: {
-				video::ITexture *texture = tsrc->getTextureRaw(e->text);
+				video::ITexture *texture = tsrc->getTexture(e->text);
 				if (!texture)
 					continue;
 
@@ -228,7 +228,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
 	
-	video::ITexture *stat_texture = tsrc->getTextureRaw(texture);
+	video::ITexture *stat_texture = tsrc->getTexture(texture);
 	if (!stat_texture)
 		return;
 		
@@ -306,7 +306,7 @@ void Hud::drawCrosshair() {
 		return;
 		
 	if (use_crosshair_image) {
-		video::ITexture *crosshair = tsrc->getTextureRaw("crosshair.png");
+		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
 		v2s32 lsize = v2s32(displaycenter.X - (size.X / 2),
 							displaycenter.Y - (size.Y / 2));
