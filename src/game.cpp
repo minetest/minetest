@@ -1345,7 +1345,7 @@ void the_game(
 	*/
 	int crack_animation_length = 5;
 	{
-		video::ITexture *t = tsrc->getTextureRaw("crack_anylength.png");
+		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
 		crack_animation_length = size.Y / size.X;
 	}
@@ -2312,7 +2312,7 @@ void the_game(
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					AtlasPointer ap =
+					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
 
 					new Particle(gamedef, smgr, player, client.getEnv(),
@@ -2321,12 +2321,15 @@ void the_game(
 						*event.spawn_particle.acc,
 						 event.spawn_particle.expirationtime,
 						 event.spawn_particle.size,
-						 event.spawn_particle.collisiondetection, ap);
+						 event.spawn_particle.collisiondetection,
+						 texture,
+						 v2f(0.0, 0.0),
+						 v2f(1.0, 1.0));
 				}
 				else if(event.type == CE_ADD_PARTICLESPAWNER)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					AtlasPointer ap =
+					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
 
 					new ParticleSpawner(gamedef, smgr, player,
@@ -2343,7 +2346,7 @@ void the_game(
 						 event.add_particlespawner.minsize,
 						 event.add_particlespawner.maxsize,
 						 event.add_particlespawner.collisiondetection,
-						 ap,
+						 texture,
 						 event.add_particlespawner.id);
 				}
 				else if(event.type == CE_DELETE_PARTICLESPAWNER)

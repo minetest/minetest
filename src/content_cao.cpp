@@ -223,7 +223,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("rat.png"));
+	buf->getMaterial().setTexture(0, tsrc->getTexture("rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -393,7 +393,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	// Initialize with a generated placeholder texture
-	buf->getMaterial().setTexture(0, tsrc->getTextureRaw(""));
+	buf->getMaterial().setTexture(0, tsrc->getTexture(""));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -864,7 +864,7 @@ public:
 			m_spritenode = smgr->addBillboardSceneNode(
 					NULL, v2f(1, 1), v3f(0,0,0), -1);
 			m_spritenode->setMaterialTexture(0,
-					tsrc->getTextureRaw("unknown_node.png"));
+					tsrc->getTexture("unknown_node.png"));
 			m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 			m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -1273,7 +1273,7 @@ public:
 					texturestring = m_prop.textures[0];
 				texturestring += mod;
 				m_spritenode->setMaterialTexture(0,
-						tsrc->getTextureRaw(texturestring));
+						tsrc->getTexture(texturestring));
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1300,7 +1300,7 @@ public:
 					if(texturestring == "")
 						continue; // Empty texture string means don't modify that material
 					texturestring += mod;
-					video::ITexture* texture = tsrc->getTextureRaw(texturestring);
+					video::ITexture* texture = tsrc->getTexture(texturestring);
 					if(!texture)
 					{
 						errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
@@ -1338,20 +1338,15 @@ public:
 					if(m_prop.textures.size() > i)
 						texturestring = m_prop.textures[i];
 					texturestring += mod;
-					AtlasPointer ap = tsrc->getTexture(texturestring);
 
-					// Get the tile texture and atlas transformation
-					video::ITexture* atlas = ap.atlas;
-					v2f pos = ap.pos;
-					v2f size = ap.size;
 
 					// Set material flags and texture
 					video::SMaterial& material = m_meshnode->getMaterial(i);
 					material.setFlag(video::EMF_LIGHTING, false);
 					material.setFlag(video::EMF_BILINEAR_FILTER, false);
-					material.setTexture(0, atlas);
-					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
-					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+					material.setTexture(0,
+							tsrc->getTexture(texturestring));
+					material.getTextureMatrix(0).makeIdentity();
 
 					// This allows setting per-material colors. However, until a real lighting
 					// system is added, the code below will have no effect. Once MineTest
@@ -1378,7 +1373,7 @@ public:
 					tname += mod;
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 					buf->getMaterial().setTexture(0,
-							tsrc->getTextureRaw(tname));
+							tsrc->getTexture(tname));
 					
 					// This allows setting per-material colors. However, until a real lighting
 					// system is added, the code below will have no effect. Once MineTest
@@ -1403,7 +1398,7 @@ public:
 					tname += mod;
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
 					buf->getMaterial().setTexture(0,
-							tsrc->getTextureRaw(tname));
+							tsrc->getTexture(tname));
 
 					// This allows setting per-material colors. However, until a real lighting
 					// system is added, the code below will have no effect. Once MineTest
