@@ -185,11 +185,41 @@ void Address::Resolve(const char *name)
 // IP address -> textual representation
 std::string Address::serializeString() const
 {
+// windows XP doesnt have inet_ntop, maybe use better func
+#ifdef _WIN32
+	if(m_addr_family == AF_INET)
+	{
+		u8 a, b, c, d, addr;
+		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
+		a = (addr & 0xFF000000) >> 24;
+		b = (addr & 0x00FF0000) >> 16;
+		c = (addr & 0x0000FF00) >> 8;
+		d = (addr & 0x000000FF);
+		return itos(a) + "." + itos(b) + "." + itos(c) + "." + itos(d);
+	}
+	else if(m_addr_family == AF_INET6)
+	{
+		std::ostringstream os;
+		for(int i = 0; i < 16; i += 2)
+		{
+			u16 section =
+			(m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
+			(m_address.ipv6.sin6_addr.s6_addr[i + 1]);
+			os << std::hex << section;
+			if(i < 14)
+				os << ":";
+		}
+		return os.str();
+	}
+	else
+		return std::string("");
+#else
 	char str[INET6_ADDRSTRLEN];
 	if (inet_ntop(m_addr_family, (m_addr_family == AF_INET) ? (void*)&(m_address.ipv4.sin_addr) : (void*)&(m_address.ipv6.sin6_addr), str, INET6_ADDRSTRLEN) == NULL) {
-	    return std::string("");
+		return std::string("");
 	}
 	return std::string(str);
+#endif
 }
 
 struct sockaddr_in Address::getAddress() const
