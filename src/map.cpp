@@ -2596,7 +2596,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	// Add the area
 	{
 		//TimeTaker timer("initBlockMake() initialEmerge");
-		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
+		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max, false);
 	}
 	
 	// Ensure none of the blocks to be generated were marked as containing CONTENT_IGNORE
@@ -4202,8 +4202,8 @@ void ManualMapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 	VoxelManipulator::emerge(a, caller_id);
 }
 
-void ManualMapVoxelManipulator::initialEmerge(
-		v3s16 blockpos_min, v3s16 blockpos_max)
+void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
+						v3s16 blockpos_max, bool load_if_inexistent)
 {
 	TimeTaker timer1("initialEmerge", &emerge_time);
 
@@ -4255,18 +4255,28 @@ void ManualMapVoxelManipulator::initialEmerge(
 
 		if(block_data_inexistent)
 		{
-			flags |= VMANIP_BLOCK_DATA_INEXIST;
 			
-			/*
-				Mark area inexistent
-			*/
-			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-			// Fill with VOXELFLAG_INEXISTENT
-			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-			for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-			{
-				s32 i = m_area.index(a.MinEdge.X,y,z);
-				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+			if (load_if_inexistent) {
+				ServerMap *svrmap = (ServerMap *)m_map;
+				block = svrmap->emergeBlock(p, false);
+				if (block == NULL)
+					block = svrmap->createBlock(p);
+				else
+					block->copyTo(*this);
+			} else {
+				flags |= VMANIP_BLOCK_DATA_INEXIST;
+				
+				/*
+					Mark area inexistent
+				*/
+				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
+				// Fill with VOXELFLAG_INEXISTENT
+				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+				{
+					s32 i = m_area.index(a.MinEdge.X,y,z);
+					memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+				}
 			}
 		}
 		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
