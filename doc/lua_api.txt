@@ -1052,7 +1052,6 @@ minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
 minetest.setting_save() -> nil, save all settings to config file
-minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
 minetest.notify_authentication_modified(name)
@@ -1115,6 +1114,8 @@ minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
 ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 minetest.get_perlin(seeddiff, octaves, persistence, scale)
 ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
+minetest.get_voxel_manip()
+^ Return voxel manipulator object
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1,pos2,stepsize) ->true/false
@@ -1306,6 +1307,10 @@ minetest.get_item_group(name, group) -> rating
 ^ Get rating of a group of an item. (0 = not in group)
 minetest.get_node_group(name, group) -> rating
 ^ Deprecated: An alias for the former.
+minetest.get_content_id(name) -> integer
+^ Gets the internal content ID of name
+minetest.get_name_from_content_id(content_id) -> string
+^ Gets the name of the content with that content ID
 minetest.serialize(table) -> string
 ^ Convert a table containing tables, strings, numbers, booleans and nils
   into string form readable by minetest.deserialize
@@ -1521,6 +1526,23 @@ PerlinNoise: A perlin noise generator
 methods:
 - get2d(pos) -> 2d noise value at pos={x=,y=}
 - get3d(pos) -> 3d noise value at pos={x=,y=,z=}
+
+VoxelManip: An interface to the MapVoxelManipulator for Lua
+- Can be created via VoxelManip()
+- Also minetest.get_voxel_manip()
+methods:
+- read_chunk(p1, p2):  Read a chunk of map containing the region formed by p1 and p2.
+  ^ returns raw node data, actual emerged p1, actual emerged p2
+  ^ raw node data is in the form of a table mapping indicies to node content ids
+- write_chunk(data):  Write back the data 
+- update_map():  Update map after writing chunk.
+  ^ To be used only by VoxelManip objects created by the mod itself; not VoxelManips passed to callbacks
+- set_lighting(p1, p2, light):  Set the lighting in the region formed by p1 and p2 to light
+  ^ light is a table containing two integer fields ranging from 0 to 15, day and night
+  ^ To be used only by VoxelManip objects passed to a callback; otherwise, set lighting will be ignored
+- calc_lighting(p1, p2):  Calculate lighting in the region formed by p1 and p2
+  ^ To be used only by VoxelManip objects passed to a callback; otherwise, calculated lighting will be ignored
+- update_liquids():  Update liquid flow
 
 Registered entities
 --------------------

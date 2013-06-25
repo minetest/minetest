@@ -337,6 +337,7 @@ public:
 	s32 transforming_liquid_size();
 
 protected:
+	friend class LuaVoxelManip;
 
 	std::ostream &m_dout; // A bit deprecated, could be removed
 

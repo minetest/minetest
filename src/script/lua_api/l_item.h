@@ -140,10 +140,12 @@ class ModApiItemMod
 public:
 	ModApiItemMod();
 
-	bool Initialize(lua_State *L,int top);
+	bool Initialize(lua_State *L, int top);
 
 	static int l_register_item_raw(lua_State *L);
 	static int l_register_alias_raw(lua_State *L);
+	static int l_get_content_id(lua_State *L);
+	static int l_get_name_from_content_id(lua_State *L);
 };
 
 
