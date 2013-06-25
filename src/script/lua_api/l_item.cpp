@@ -457,12 +457,40 @@ int ModApiItemMod::l_register_alias_raw(lua_State *L)
 	return 0; /* number of results */
 }
 
+// get_content_id(name)
+int ModApiItemMod::l_get_content_id(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name = luaL_checkstring(L, 1);
+
+	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
+	content_t c = ndef->getId(name);
+	
+	lua_pushnumber(L, c);
+	return 1; /* number of results */
+}
+
+// get_name_from_content_id(name)
+int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	content_t c = luaL_checkint(L, 1);
+
+	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
+	const char *name = ndef->get(c).name.c_str();
+	
+	lua_pushstring(L, name);
+	return 1; /* number of results */
+}
+
 bool ModApiItemMod::Initialize(lua_State *L,int top) {
 
 	bool retval = true;
 
 	retval &= API_FCT(register_item_raw);
 	retval &= API_FCT(register_alias_raw);
+	retval &= API_FCT(get_content_id);
+	retval &= API_FCT(get_name_from_content_id);
 
 	LuaItemStack::Register(L);
 

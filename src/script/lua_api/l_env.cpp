@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/scriptapi.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_env.h"
+#include "lua_api/l_vmanip.h"
 #include "environment.h"
 #include "server.h"
 #include "daynightratio.h"
@@ -533,6 +534,21 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 	return 1;
 }
 
+// minetest.get_voxel_manip()
+// returns voxel manipulator
+int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	Map *map = &(env->getMap());
+	LuaVoxelManip *vm = new LuaVoxelManip(map);
+	
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = vm;
+	luaL_getmetatable(L, "VoxelManip");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
 // minetest.clear_objects()
 // clear all objects in the environment
 int ModApiEnvMod::l_clear_objects(lua_State *L)
@@ -554,8 +570,8 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 	//read step size from lua
-	if(lua_isnumber(L, 3))
-	stepsize = lua_tonumber(L, 3);
+	if (lua_isnumber(L, 3))
+		stepsize = lua_tonumber(L, 3);
 
 	return (env->line_of_sight(pos1,pos2,stepsize));
 }
@@ -572,8 +588,8 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	unsigned int max_jump       = luaL_checkint(L, 4);
 	unsigned int max_drop       = luaL_checkint(L, 5);
 	algorithm algo              = A_PLAIN_NP;
-	if(! lua_isnil(L, 6)) {
-		std::string algorithm       = luaL_checkstring(L,6);
+	if (!lua_isnil(L, 6)) {
+		std::string algorithm = luaL_checkstring(L,6);
 
 		if (algorithm == "A*")
 			algo = A_PLAIN;
@@ -678,6 +694,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(find_nodes_in_area);
 	retval &= API_FCT(get_perlin);
 	retval &= API_FCT(get_perlin_map);
+	retval &= API_FCT(get_voxel_manip);
 	retval &= API_FCT(clear_objects);
 	retval &= API_FCT(spawn_tree);
 	retval &= API_FCT(find_path);

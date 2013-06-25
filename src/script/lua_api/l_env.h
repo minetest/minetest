@@ -109,6 +109,10 @@ private:
 	// minetest.get_perlin_map(noiseparams, size)
 	// returns world-specific PerlinNoiseMap
 	static int l_get_perlin_map(lua_State *L);
+	
+	// minetest.get_voxel_manip()
+	// returns world-specific voxel manipulator
+	static int l_get_voxel_manip(lua_State *L);
 
 	// minetest.clear_objects()
 	// clear all objects in the environment

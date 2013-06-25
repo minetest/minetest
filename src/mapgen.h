@@ -108,8 +108,8 @@ public:
 	void calcLighting(v3s16 nmin, v3s16 nmax);
 	void calcLightingOld(v3s16 nmin, v3s16 nmax);
 
-	virtual void makeChunk(BlockMakeData *data) {};
-	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
+	virtual void makeChunk(BlockMakeData *data) {}
+	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
 	//Legacy functions for Farmesh (pending removal)
 	static bool get_have_beach(u64 seed, v2s16 p2d);
