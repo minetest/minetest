@@ -555,7 +555,8 @@ public:
 
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
-	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max);
+	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
+						bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks);
