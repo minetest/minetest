@@ -35,7 +35,7 @@ class INodeDefManager;
 	- Tile = TileSpec at some side of a node of some content type
 */
 typedef u16 content_t;
-#define MAX_CONTENT 0xfff
+#define MAX_CONTENT 0xfffe
 
 /*
 	Ignored node.

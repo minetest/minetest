@@ -265,6 +265,8 @@ class INodeDefManager
 public:
 	INodeDefManager(){}
 	virtual ~INodeDefManager(){}
+	// Get last/highest id of node definitions
+	virtual content_t getLastId() const=0;
 	// Get node definition
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
@@ -284,6 +286,9 @@ public:
 	IWritableNodeDefManager(){}
 	virtual ~IWritableNodeDefManager(){}
 	virtual IWritableNodeDefManager* clone()=0;
+	
+	// Get last/highest id of node definitions
+	virtual content_t getLastId() const=0;
 	// Get node definition
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;

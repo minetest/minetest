@@ -361,11 +361,8 @@ public:
 		m_name_id_mapping.clear();
 		m_name_id_mapping_with_aliases.clear();
 
-		for(u16 i=0; i<=MAX_CONTENT; i++)
-		{
-			ContentFeatures &f = m_content_features[i];
-			f.reset(); // Reset to defaults
-		}
+		std::vector<ContentFeatures> tmp_clear;
+		tmp_clear.swap(m_content_features);
 
 		// Set CONTENT_AIR
 		{
@@ -381,7 +378,7 @@ public:
 			f.buildable_to = true;
 			// Insert directly into containers
 			content_t c = CONTENT_AIR;
-			m_content_features[c] = f;
+			setDirectly(c, f);
 			addNameIdMapping(c, f.name);
 		}
 		// Set CONTENT_IGNORE
@@ -399,17 +396,24 @@ public:
 			f.buildable_to = true;
 			// Insert directly into containers
 			content_t c = CONTENT_IGNORE;
-			m_content_features[c] = f;
+			setDirectly(c, f);
 			addNameIdMapping(c, f.name);
 		}
 	}
 	// CONTENT_IGNORE = not found
 	content_t getFreeId()
 	{
-		for(u32 i=0; i<=0xffff; i++){
+		for(u16 i=0; i<=getLastId(); i++){
 			const ContentFeatures &f = m_content_features[i];
 			if(f.name == "")
 				return i;
+		}
+		if(getLastId()+1 < MAX_CONTENT){
+			u16 i = getLastId()+1;
+			ContentFeatures f;
+			f.reset(); 
+			m_content_features.push_back(f);
+			return i;
 		}
 		return CONTENT_IGNORE;
 	}
@@ -423,15 +427,19 @@ public:
 	virtual IWritableNodeDefManager* clone()
 	{
 		CNodeDefManager *mgr = new CNodeDefManager();
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		for(u16 i=0; i<=getLastId(); i++)
 		{
 			mgr->set(i, get(i));
 		}
 		return mgr;
 	}
+	virtual content_t getLastId() const
+	{
+		return m_content_features.size()-1;
+	}
 	virtual const ContentFeatures& get(content_t c) const
 	{
-		assert(c <= MAX_CONTENT);
+		assert(c <= getLastId());
 		return m_content_features[c];
 	}
 	virtual const ContentFeatures& get(const MapNode &n) const
@@ -478,7 +486,7 @@ public:
 				result.insert((*j).first);
 		}
 #else	// Old version, takes about ~150-200us at -O1
-		for(u16 id=0; id<=MAX_CONTENT; id++)
+		for(u16 id=0; id<=getLastId(); id++)
 		{
 			const ContentFeatures &f = m_content_features[id];
 			if(f.name == "") // Quickly discard undefined nodes
@@ -500,7 +508,7 @@ public:
 	{
 		verbosestream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
-		assert(c <= MAX_CONTENT);
+		assert(c <= getLastId());
 		// Don't allow redefining CONTENT_IGNORE (but allow air)
 		if(def.name == "ignore" || c == CONTENT_IGNORE){
 			infostream<<"registerNode: WARNING: Ignoring "
@@ -586,7 +594,7 @@ public:
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
 
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		for(u16 i=0; i<=getLastId(); i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
 
@@ -762,7 +770,7 @@ public:
 		writeU8(os, 1); // version
 		u16 count = 0;
 		std::ostringstream os2(std::ios::binary);
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		for(u16 i=0; i<=getLastId(); i++)
 		{
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 				continue;
@@ -798,14 +806,15 @@ public:
 			/*// Do not deserialize special types
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 				continue;*/
-			ContentFeatures *f = &m_content_features[i];
+			ContentFeatures f;
 			// Read it from the string wrapper
 			std::string wrapper = deSerializeString(is2);
 			std::istringstream wrapper_is(wrapper, std::ios::binary);
-			f->deSerialize(wrapper_is);
-			verbosestream<<"deserialized "<<f->name<<std::endl;
-			if(f->name != "")
-				addNameIdMapping(i, f->name);
+			f.deSerialize(wrapper_is);
+			verbosestream<<"deserialized "<<f.name<<std::endl;
+			if(f.name != "")
+				addNameIdMapping(i, f.name);
+			setDirectly(i, f);
 		}
 	}
 private:
@@ -814,9 +823,23 @@ private:
 		m_name_id_mapping.set(i, name);
 		m_name_id_mapping_with_aliases.insert(std::make_pair(name, i));
 	}
+	//Allows direction insertion into a specified position used when setting air and ignore after clear
+	void setDirectly(content_t pos, ContentFeatures f)
+	{
+		assert(pos-1 <= MAX_CONTENT);
+		u16 size = m_content_features.size();
+		if(pos <= size-1) {
+			m_content_features[pos] = f;
+		} else {
+			ContentFeatures r;
+			r.reset(); 
+			m_content_features.resize(pos+1,r);
+			m_content_features[pos] = f;
+		}
+	}
 private:
 	// Features indexed by id
-	ContentFeatures m_content_features[MAX_CONTENT+1];
+	std::vector<ContentFeatures> m_content_features;
 	// A mapping for fast converting back and forth between names and ids
 	NameIdMapping m_name_id_mapping;
 	// Like m_name_id_mapping, but only from names to ids, and includes
