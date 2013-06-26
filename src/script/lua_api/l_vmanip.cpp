@@ -33,7 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int LuaVoxelManip::gc_object(lua_State *L)
 {
 	LuaVoxelManip *o = *(LuaVoxelManip **)(lua_touserdata(L, 1));
-	delete o;
+	if (o->do_gc)
+		delete o;
 	
 	return 0;
 }
@@ -82,7 +83,6 @@ int LuaVoxelManip::l_write_chunk(lua_State *L)
 		vm->m_data[i].setContent(c);
 
 		lua_pop(L, 1);
-		
 	}
 
 	vm->blitBackAll(&o->modified_blocks);
@@ -182,6 +182,12 @@ int LuaVoxelManip::l_update_map(lua_State *L)
 	mblocks->clear();
 
 	return 0;	
+}
+
+LuaVoxelManip::LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool dogc)
+{
+	this->vm    = mmvm;
+	this->do_gc = dogc;
 }
 
 LuaVoxelManip::LuaVoxelManip(Map *map)

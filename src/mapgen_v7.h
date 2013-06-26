@@ -58,7 +58,6 @@ public:
 	BiomeDefManager *bmgr;
 
 	int ystride;
-	v3s16 csize;
 	u32 flags;
 	bool lighting;
 	bool ridges;

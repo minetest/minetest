@@ -1116,6 +1116,8 @@ minetest.get_perlin(seeddiff, octaves, persistence, scale)
 ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 minetest.get_voxel_manip()
 ^ Return voxel manipulator object
+minetest.get_mapgen_object(objectname)
+^ Return requested mapgen object if available (see Mapgen objects)
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1,pos2,stepsize) ->true/false
@@ -1543,6 +1545,35 @@ methods:
 - calc_lighting(p1, p2):  Calculate lighting in the region formed by p1 and p2
   ^ To be used only by VoxelManip objects passed to a callback; otherwise, calculated lighting will be ignored
 - update_liquids():  Update liquid flow
+
+Mapgen objects
+---------------
+A mapgen object is a construct used in map generation.  Mapgen objects can be used by an on_generate 
+callback to speed up operations by avoiding unnecessary recalculations; these can be retrieved using the 
+minetest.get_mapgen_object() function.  If the requested Mapgen object is unavailable, or 
+get_mapgen_object() was called outside of an on_generate() callback, nil is returned.
+
+The following Mapgen objects are currently available:
+
+- voxelmanip
+    This returns four values; the VoxelManip object to be used, the voxel data, minimum emerge position, 
+and maximum emerged position.  All mapgens support this object.
+
+- heightmap
+    Returns an array containing the y coordinates of the ground levels of nodes in the most recently 
+generated chunk by the current mapgen.
+
+- biomemap
+    Returns an array containing the biome IDs of nodes in the most recently generated chunk by the 
+current mapgen.
+
+- heatmap
+    Returns an array containing the temperature values of nodes in the most recently generated chunk by 
+the current mapgen.
+
+- humiditymap
+    Returns an array containing the humidity values of nodes in the most recently generated chunk by the 
+current mapgen.
 
 Registered entities
 --------------------

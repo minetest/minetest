@@ -144,6 +144,16 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 }
 
 
+Mapgen *EmergeManager::getCurrentMapgen() {
+	for (unsigned int i = 0; i != emergethread.size(); i++) {
+		if (emergethread[i]->IsSameThread())
+			return emergethread[i]->mapgen;
+	}
+	
+	return NULL;
+}
+
+
 bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate) {
 	std::map<v3s16, BlockEmergeData *>::const_iterator iter;
 	BlockEmergeData *bedata;

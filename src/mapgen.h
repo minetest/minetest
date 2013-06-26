@@ -93,8 +93,10 @@ public:
 	int id;
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
+	
 	s16 *heightmap;
 	u8 *biomemap;
+	v3s16 csize;
 
 	Mapgen();
 	virtual ~Mapgen() {}
@@ -122,6 +124,14 @@ struct MapgenFactory {
 								 EmergeManager *emerge) = 0;
 	virtual MapgenParams *createMapgenParams() = 0;
 	virtual ~MapgenFactory() {}
+};
+
+enum MapgenObject {
+	MGOBJ_VMANIP,
+	MGOBJ_HEIGHTMAP,
+	MGOBJ_BIOMEMAP,
+	MGOBJ_HEATMAP,
+	MGOBJ_HUMIDMAP
 };
 
 enum OreType {

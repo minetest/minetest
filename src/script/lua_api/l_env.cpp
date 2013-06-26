@@ -35,11 +35,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_noise.h"
 #include "treegen.h"
 #include "pathfinder.h"
+#include "emerge.h"
+#include "mapgen_v7.h"
 
 
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
 				if( env == NULL) return 0
+				
+struct EnumString ModApiEnvMod::es_MapgenObject[] =
+{
+	{MGOBJ_VMANIP,    "voxelmanip"},
+	{MGOBJ_HEIGHTMAP, "heightmap"},
+	{MGOBJ_BIOMEMAP,  "biomemap"},
+	{MGOBJ_HEATMAP,   "heatmap"},
+	{MGOBJ_HUMIDMAP,  "humiditymap"},
+	{0, NULL},
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
@@ -541,12 +557,99 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 	GET_ENV_PTR;
 
 	Map *map = &(env->getMap());
-	LuaVoxelManip *vm = new LuaVoxelManip(map);
+	LuaVoxelManip *o = new LuaVoxelManip(map);
 	
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = vm;
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, "VoxelManip");
 	lua_setmetatable(L, -2);
 	return 1;
+}
+
+// minetest.get_mapgen_object(objectname)
+// returns the requested object used during map generation
+int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
+{
+	const char *mgobjstr = lua_tostring(L, 1);
+	
+	int mgobjint;
+	if (!string_to_enum(es_MapgenObject, mgobjint, mgobjstr ? mgobjstr : ""))
+		return 0;
+		
+	enum MapgenObject mgobj = (MapgenObject)mgobjint;
+
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	Mapgen *mg = emerge->getCurrentMapgen();
+	
+	size_t maplen = mg->csize.X * mg->csize.Z;
+	
+	int nargs = 1;
+	
+	switch (mgobj) {
+		case MGOBJ_VMANIP: {
+			ManualMapVoxelManipulator *vm = mg->vm;
+			
+			// VoxelManip object
+			LuaVoxelManip *o = new LuaVoxelManip(vm, false);
+			*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+			luaL_getmetatable(L, "VoxelManip");
+			lua_setmetatable(L, -2);
+			
+			// VoxelManip data
+			int volume = vm->m_area.getVolume();
+			lua_newtable(L);
+			for (int i = 0; i != volume; i++) {
+				lua_Number cid = vm->m_data[i].getContent();
+				lua_pushnumber(L, cid);
+				lua_rawseti(L, -2, i + 1);
+			}
+			
+			// emerged min pos
+			push_v3s16(L, vm->m_area.MinEdge);
+
+			// emerged max pos
+			push_v3s16(L, vm->m_area.MaxEdge);
+			
+			nargs = 4;
+			
+			break; }
+		case MGOBJ_HEIGHTMAP: {
+			if (!mg->heightmap)
+				return 0;
+			
+			lua_newtable(L);
+			for (size_t i = 0; i != maplen; i++) {
+				lua_pushinteger(L, mg->heightmap[i]);
+				lua_rawseti(L, -2, i + 1);
+			}
+			break; }
+		case MGOBJ_BIOMEMAP: {
+			if (!mg->heightmap)
+				return 0;
+			
+			lua_newtable(L);
+			for (size_t i = 0; i != maplen; i++) {
+				lua_pushinteger(L, mg->biomemap[i]);
+				lua_rawseti(L, -2, i + 1);
+			}
+			break; }
+		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
+		case MGOBJ_HUMIDMAP:
+			MapgenV7 *mgv7 = (MapgenV7 *)mg;
+
+			float *arr = (mgobj == MGOBJ_HEATMAP) ? 
+				mgv7->noise_heat->result : mgv7->noise_humidity->result;
+			if (!arr)
+				return 0;
+			
+			lua_newtable(L);
+			for (size_t i = 0; i != maplen; i++) {
+				lua_pushnumber(L, arr[i]);
+				lua_rawseti(L, -2, i + 1);
+			}
+			break; }
+	}
+	
+	return nargs;
 }
 
 // minetest.clear_objects()
@@ -695,6 +798,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(get_perlin);
 	retval &= API_FCT(get_perlin_map);
 	retval &= API_FCT(get_voxel_manip);
+	retval &= API_FCT(get_mapgen_object);
 	retval &= API_FCT(clear_objects);
 	retval &= API_FCT(spawn_tree);
 	retval &= API_FCT(find_path);
