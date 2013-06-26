@@ -113,6 +113,10 @@ private:
 	// minetest.get_voxel_manip()
 	// returns world-specific voxel manipulator
 	static int l_get_voxel_manip(lua_State *L);
+	
+	// minetest.get_mapgen_object(objectname)
+	// returns the requested object used during map generation
+	static int l_get_mapgen_object(lua_State *L);
 
 	// minetest.clear_objects()
 	// clear all objects in the environment
@@ -127,7 +131,9 @@ private:
 	// minetest.find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
-
+	
+	static struct EnumString es_MapgenObject[];
+	
 public:
 	bool Initialize(lua_State *L, int top);
 };

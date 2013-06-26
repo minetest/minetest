@@ -93,6 +93,7 @@ public:
 	~EmergeManager();
 
 	void initMapgens(MapgenParams *mgparams);
+	Mapgen *getCurrentMapgen();
 	Mapgen *createMapgen(std::string mgname, int mgid,
 						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
@@ -111,6 +112,7 @@ public:
 
 class EmergeThread : public SimpleThread
 {
+public:
 	Server *m_server;
 	ServerMap *map;
 	EmergeManager *emerge;
@@ -118,7 +120,6 @@ class EmergeThread : public SimpleThread
 	bool enable_mapgen_debug_info;
 	int id;
 	
-public:
 	Event qevent;
 	std::queue<v3s16> blockqueue;
 	

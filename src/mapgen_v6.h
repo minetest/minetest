@@ -84,7 +84,6 @@ public:
 	EmergeManager *emerge;
 
 	int ystride;
-	v3s16 csize;
 	u32 flags;
 
 	u32 blockseed;

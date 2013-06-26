@@ -466,7 +466,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
 	content_t c = ndef->getId(name);
 	
-	lua_pushnumber(L, c);
+	lua_pushinteger(L, c);
 	return 1; /* number of results */
 }
 
