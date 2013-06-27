@@ -1034,6 +1034,9 @@ minetest.register_on_player_receive_fields(func(player, formname, fields))
 ^ Called when a button is pressed in player's inventory form
 ^ Newest functions are called first
 ^ If function returns true, remaining functions are not called
+minetest.register_on_mapgen_init(func(MapgenParams))
+^ Called just before the map generator is initialized but before the environment is initialized
+^ MapgenParams consists of a table with the fields mgname, seed, water_level, and flags
 
 Other registration functions:
 minetest.register_chatcommand(cmd, chatcommand definition)
@@ -1118,6 +1121,14 @@ minetest.get_voxel_manip()
 ^ Return voxel manipulator object
 minetest.get_mapgen_object(objectname)
 ^ Return requested mapgen object if available (see Mapgen objects)
+minetest.set_mapgen_params(MapgenParams)
+^ Set map generation parameters
+^ Function can *only* be called within a minetest.on_mapgen_init() callback
+^ Takes a table as an argument with the fields mgname, seed, water_level, flags, and flagmask.
+^ Leave field unset to leave that parameter unchanged
+^ flagmask field must be set to all mapgen flags that are being modified
+^ flags contains only the flags that are being set
+^ flags and flagmask are in the same format and have the same options as 'mgflags' in minetest.conf
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1,pos2,stepsize) ->true/false

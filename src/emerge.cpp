@@ -59,6 +59,10 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	this->biomedef = new BiomeDefManager();
 	this->params   = NULL;
 	
+	this->luaoverride_params = NULL;
+	this->luaoverride_params_modified = 0;
+	this->luaoverride_flagmask = 0;
+	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	queuemutex.Init();
@@ -124,12 +128,37 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 	if (mapgen.size())
 		return;
 	
+	// Resolve names of nodes for things that were registered
+	// (at this point, the registration period is over)
 	biomedef->resolveNodeNames(ndef);
+	
 	for (size_t i = 0; i != ores.size(); i++)
 		ores[i]->resolveNodeNames(ndef);
+		
 	for (size_t i = 0; i != decorations.size(); i++)
 		decorations[i]->resolveNodeNames(ndef);
 	
+	// Apply mapgen parameter overrides from Lua
+	if (luaoverride_params) {
+		if (luaoverride_params_modified & MGPARAMS_SET_MGNAME)
+			mgparams->mg_name = luaoverride_params->mg_name;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_SEED)
+			mgparams->seed = luaoverride_params->seed;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_WATER_LEVEL)
+			mgparams->water_level = luaoverride_params->water_level;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_FLAGS) {
+			mgparams->flags &= ~luaoverride_flagmask;
+			mgparams->flags |= luaoverride_params->flags;
+		}
+		
+		delete luaoverride_params;
+		luaoverride_params = NULL;
+	}
+	
+	// Create the mapgens
 	this->params = mgparams;
 	for (size_t i = 0; i != emergethread.size(); i++) {
 		mg = createMapgen(params->mg_name, 0, params);

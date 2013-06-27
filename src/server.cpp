@@ -807,7 +807,12 @@ Server::Server(
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
 	m_env = new ServerEnvironment(servermap, m_script, this, this);
 	
-	m_emerge->initMapgens(servermap->getMapgenParams());
+	// Run some callbacks after the MG params have been set up but before activation
+	MapgenParams *mgparams = servermap->getMapgenParams();
+	m_script->environment_OnMapgenInit(mgparams);
+	
+	// Initialize mapgens
+	m_emerge->initMapgens(mgparams);
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);

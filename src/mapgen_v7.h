@@ -59,7 +59,6 @@ public:
 
 	int ystride;
 	u32 flags;
-	bool lighting;
 	bool ridges;
 
 	u32 blockseed;

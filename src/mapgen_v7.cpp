@@ -77,7 +77,6 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	this->seed     = (int)params->seed;
 	this->water_level = params->water_level;
 	this->flags    = params->flags;
-	this->lighting = 1;
 	this->ridges   = 1;
 
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
@@ -215,9 +214,9 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 	
-	if (this->lighting)
+	if (!(flags & MG_NOLIGHT))
 		calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+					 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 	//			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
 

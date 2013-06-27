@@ -44,6 +44,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"v6_jungles",     MGV6_JUNGLES},
 	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
+	{"nolight",        MG_NOLIGHT},
 	{NULL,             0}
 };
 
