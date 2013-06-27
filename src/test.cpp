@@ -1295,6 +1295,7 @@ struct TestSocket: public TestBase
 		const int port = 30003;
 
 		// IPv6 socket test
+		if(sockets_use_ipv6())
 		{
 			UDPSocket socket6(true);
 			socket6.Bind(port);

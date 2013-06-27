@@ -71,6 +71,7 @@ public:
 
 void sockets_init();
 void sockets_cleanup();
+bool sockets_use_ipv6();
 
 class IPv6AddressBytes
 {

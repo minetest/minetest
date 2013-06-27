@@ -58,10 +58,12 @@ typedef int socket_t;
 #include <sstream>
 #include "util/string.h"
 #include "util/numeric.h"
+#include "porting.h"
 
 // Set to true to enable verbose debug output
 bool socket_enable_debug_output = false;
 
+static bool ipv6_enabled_and_works = false;
 bool g_sockets_initialized = false;
 
 // Initialize sockets
@@ -74,6 +76,47 @@ void sockets_init()
 		throw SocketException("WSAStartup failed");
 #endif
 	g_sockets_initialized = true;
+	
+	// Test IPv6
+	if(g_settings->getBool("enable_ipv6"))
+	{
+		try
+		{
+			const int port = 30003;
+			
+			// Setup socket and send test
+			UDPSocket socket(true);
+			socket.Bind(port);
+			const char sendbuffer[] = "IPv6 socket test";
+			IPv6AddressBytes bytes;
+			bytes.bytes[15] = 1;
+			socket.Send(Address(&bytes, port), sendbuffer, sizeof(sendbuffer));
+			
+			sleep_ms(50);
+			
+			// Try to receive
+			char rcvbuffer[256];
+			memset(rcvbuffer, 0, sizeof(rcvbuffer));
+			Address sender;
+			int bytes_read = socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
+			if(bytes_read < 0)
+				throw SocketException("Failed to receive");
+			
+			ipv6_enabled_and_works = true;
+		}
+		catch(SocketException & ex)
+		{
+			dstream << "IPv6 test: " << ex.what() << std::endl;
+		}
+		catch(SendFailedException & ex)
+		{
+			dstream << "IPv6 test: " << ex.what() << std::endl;
+		}
+		
+		if(!ipv6_enabled_and_works)
+			dstream << "WARNING: IPv6 is enabled, but doesn't appear "
+			           "to be working" << std::endl;
+	}
 }
 
 void sockets_cleanup()
@@ -82,6 +125,11 @@ void sockets_cleanup()
 	// On Windows, cleanup sockets after use
 	WSACleanup();
 #endif
+}
+
+bool sockets_use_ipv6()
+{
+	return ipv6_enabled_and_works;
 }
 
 /*
@@ -146,7 +194,7 @@ void Address::Resolve(const char *name)
 	hints.ai_socktype = 0;
 	hints.ai_protocol = 0;
 	hints.ai_flags    = 0;
-	if(g_settings->getBool("enable_ipv6"))
+	if(sockets_use_ipv6())
 	{
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;

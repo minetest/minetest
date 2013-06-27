@@ -1050,7 +1050,7 @@ void the_game(
 		if(address == "")
 		{
 			//connect_address.Resolve("localhost");
-			if(g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"))
+			if(sockets_use_ipv6() && g_settings->getBool("ipv6_server"))
 			{
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
