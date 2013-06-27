@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_JUNGLES     0x08
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
+#define MG_NOLIGHT       0x40
 
 /////////////////// Ore generation flags
 // Use absolute value of height to determine ore placement
@@ -80,8 +81,8 @@ struct MapgenParams {
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
 	
-	virtual bool readParams(Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) = 0;
+	virtual bool readParams(Settings *settings) { return true; }
+	virtual void writeParams(Settings *settings) {}
 	virtual ~MapgenParams() {}
 };
 

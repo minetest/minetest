@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 
 class ServerEnvironment;
+struct MapgenParams;
 
 class ScriptApiEnv
 		: virtual public ScriptApiBase
@@ -33,6 +34,8 @@ public:
 	void environment_Step(float dtime);
 	// After generating a piece of map
 	void environment_OnGenerated(v3s16 minp, v3s16 maxp,u32 blockseed);
+	// After initializing mapgens
+	void environment_OnMapgenInit(MapgenParams *mgparams);
 
 	void initializeEnvironment(ServerEnvironment *env);
 };

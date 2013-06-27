@@ -652,6 +652,59 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 	return nargs;
 }
 
+// minetest.set_mapgen_params(params)
+// set mapgen parameters
+int ModApiEnvMod::l_set_mapgen_params(lua_State *L)
+{
+	if (!lua_istable(L, 1))
+		return 0;
+
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	if (emerge->mapgen.size())
+		return 0;
+	
+	MapgenParams *oparams = new MapgenParams;
+	u32 paramsmodified = 0;
+	u32 flagmask = 0;
+	
+	lua_getfield(L, 1, "mgname");
+	if (lua_isstring(L, -1)) {
+		oparams->mg_name = std::string(lua_tostring(L, -1));
+		paramsmodified |= MGPARAMS_SET_MGNAME;
+	}
+	
+	lua_getfield(L, 1, "seed");
+	if (lua_isnumber(L, -1)) {
+		oparams->seed = lua_tointeger(L, -1);
+		paramsmodified |= MGPARAMS_SET_SEED;
+	}
+	
+	lua_getfield(L, 1, "water_level");
+	if (lua_isnumber(L, -1)) {
+		oparams->water_level = lua_tointeger(L, -1);
+		paramsmodified |= MGPARAMS_SET_WATER_LEVEL;
+	}
+
+	lua_getfield(L, 1, "flags");
+	if (lua_isstring(L, -1)) {
+		std::string flagstr = std::string(lua_tostring(L, -1));
+		oparams->flags = readFlagString(flagstr, flagdesc_mapgen);
+		paramsmodified |= MGPARAMS_SET_FLAGS;
+	
+		lua_getfield(L, 1, "flagmask");
+		if (lua_isstring(L, -1)) {
+			flagstr = std::string(lua_tostring(L, -1));
+			flagmask = readFlagString(flagstr, flagdesc_mapgen);
+		}
+	}
+	
+	emerge->luaoverride_params          = oparams;
+	emerge->luaoverride_params_modified = paramsmodified;
+	emerge->luaoverride_flagmask        = flagmask;
+	
+	return 0;
+}
+
 // minetest.clear_objects()
 // clear all objects in the environment
 int ModApiEnvMod::l_clear_objects(lua_State *L)
@@ -799,6 +852,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(get_perlin_map);
 	retval &= API_FCT(get_voxel_manip);
 	retval &= API_FCT(get_mapgen_object);
+	retval &= API_FCT(set_mapgen_params);
 	retval &= API_FCT(clear_objects);
 	retval &= API_FCT(spawn_tree);
 	retval &= API_FCT(find_path);

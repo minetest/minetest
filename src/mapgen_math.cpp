@@ -171,8 +171,8 @@ void MapgenMathParams::writeParams(Settings *settings) {
 
 MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
 	mg_params = params_;
-	this->lighting = 0;
-	this->ridges   = 0;
+	this->flags |= MG_NOLIGHT;
+	this->ridges = 0;
 
 	Json::Value & params = mg_params->params;
 	invert = params["invert"].empty() ? 1 : params["invert"].asBool(); //params["invert"].empty()?1:params["invert"].asBool();

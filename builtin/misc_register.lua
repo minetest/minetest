@@ -307,6 +307,7 @@ end
 
 minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
 minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
+minetest.registered_on_mapgen_inits, minetest.register_on_mapgen_init = make_registration()
 minetest.registered_on_shutdown, minetest.register_on_shutdown = make_registration()
 minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
 minetest.registered_on_placenodes, minetest.register_on_placenode = make_registration()

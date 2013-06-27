@@ -24,6 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include "util/thread.h"
 
+#define MGPARAMS_SET_MGNAME      1
+#define MGPARAMS_SET_SEED        2
+#define MGPARAMS_SET_WATER_LEVEL 4
+#define MGPARAMS_SET_FLAGS       8
+
 #define BLOCK_EMERGE_ALLOWGEN (1<<0)
 
 #define EMERGE_DBG_OUT(x) \
@@ -78,6 +83,10 @@ public:
 	u16 qlimit_total;
 	u16 qlimit_diskonly;
 	u16 qlimit_generate;
+	
+	MapgenParams *luaoverride_params;
+	u32 luaoverride_params_modified;
+	u32 luaoverride_flagmask;
 	
 	//block emerge queue data structures
 	JMutex queuemutex;

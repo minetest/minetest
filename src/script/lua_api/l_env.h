@@ -117,6 +117,10 @@ private:
 	// minetest.get_mapgen_object(objectname)
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
+	
+	// minetest.set_mapgen_params(params)
+	// set mapgen parameters
+	static int l_set_mapgen_params(lua_State *L);
 
 	// minetest.clear_objects()
 	// clear all objects in the environment

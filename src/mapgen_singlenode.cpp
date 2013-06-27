@@ -42,6 +42,7 @@ void MapgenSinglenodeParams::writeParams(Settings *settings) {
 ///////////////////////////////////////////////////////////////////////////////
 
 MapgenSinglenode::MapgenSinglenode(int mapgenid, MapgenSinglenodeParams *params) {
+	flags = params->flags;
 }
 
 
@@ -91,8 +92,9 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	updateLiquid(&data->transforming_liquid, node_min, node_max);
 
 	// Calculate lighting
-	calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-				 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+	if (!(flags & MG_NOLIGHT))
+		calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+					 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	
 	this->generating = false;
 }

@@ -331,7 +331,7 @@
 #water_level = 1
 # Size of chunks to be generated.
 #chunksize = 5
-# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend, v6_jungles, dungeons
+# Map generation attributes.  Currently supported: trees, caves, flat, v6_biome_blend, v6_jungles, dungeons, nolight
 #mg_flags = trees, caves, v6_biome_blend
 # How large deserts and beaches are
 #mgv6_freq_desert = 0.45
