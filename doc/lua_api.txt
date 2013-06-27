@@ -1529,6 +1529,15 @@ methods:
 - get2d(pos) -> 2d noise value at pos={x=,y=}
 - get3d(pos) -> 3d noise value at pos={x=,y=,z=}
 
+PerlinNoiseMap: A fast, bulk perlin noise generator
+- Can be created via PerlinNoiseMap(noiseparams, size)
+- Also minetest.get_perlin_map(noiseparams, size)
+methods:
+- get2dMap(pos) -> <size.x>X<size.y> 2d array of 2d noise values starting at pos={x=,y=}
+- get3dMap(pos) -> <size.x>X<size.y>X<size.z> 3d array of 3d noise values starting at pos={x=,y=,z=}
+- get2dMap_flat(pos) -> Flat <size.x * size.y> element array of 2d noise values starting at pos={x=,y=}
+- get3dMap_flat(pos) -> Same as get2dMap_flat, but 3d noise
+
 VoxelManip: An interface to the MapVoxelManipulator for Lua
 - Can be created via VoxelManip()
 - Also minetest.get_voxel_manip()
