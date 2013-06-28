@@ -594,22 +594,13 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 			luaL_getmetatable(L, "VoxelManip");
 			lua_setmetatable(L, -2);
 			
-			// VoxelManip data
-			int volume = vm->m_area.getVolume();
-			lua_newtable(L);
-			for (int i = 0; i != volume; i++) {
-				lua_Number cid = vm->m_data[i].getContent();
-				lua_pushnumber(L, cid);
-				lua_rawseti(L, -2, i + 1);
-			}
-			
 			// emerged min pos
 			push_v3s16(L, vm->m_area.MinEdge);
 
 			// emerged max pos
 			push_v3s16(L, vm->m_area.MaxEdge);
 			
-			nargs = 4;
+			nargs = 3;
 			
 			break; }
 		case MGOBJ_HEIGHTMAP: {

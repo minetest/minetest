@@ -43,8 +43,11 @@ private:
 
 	static int gc_object(lua_State *L);
 
-	static int l_read_chunk(lua_State *L);
-	static int l_write_chunk(lua_State *L);
+	static int l_read_from_map(lua_State *L);
+	static int l_get_data(lua_State *L);
+	static int l_set_data(lua_State *L);
+	static int l_write_to_map(lua_State *L);
+
 	static int l_update_map(lua_State *L);
 	static int l_update_liquids(lua_State *L);
 	static int l_calc_lighting(lua_State *L);

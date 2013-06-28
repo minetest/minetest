@@ -39,41 +39,51 @@ int LuaVoxelManip::gc_object(lua_State *L)
 	return 0;
 }
 
-int LuaVoxelManip::l_read_chunk(lua_State *L)
+int LuaVoxelManip::l_read_from_map(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
 	
 	v3s16 bp1 = getNodeBlockPos(read_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(read_v3s16(L, 3));
 	sortBoxVerticies(bp1, bp2);
-	ManualMapVoxelManipulator *vm = o->vm;
+	
 	vm->initialEmerge(bp1, bp2);
 	
-	v3s16 emerged_p1 = vm->m_area.MinEdge;
-	v3s16 emerged_p2 = vm->m_area.MaxEdge;
+	push_v3s16(L, vm->m_area.MinEdge);
+	push_v3s16(L, vm->m_area.MaxEdge);
+	
+	return 2;
+}
+
+int LuaVoxelManip::l_get_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
 	
 	int volume = vm->m_area.getVolume();
 	
 	lua_newtable(L);
 	for (int i = 0; i != volume; i++) {
-		lua_Number cid = vm->m_data[i].getContent();
-		lua_pushnumber(L, cid);
+		lua_Integer cid = vm->m_data[i].getContent();
+		lua_pushinteger(L, cid);
 		lua_rawseti(L, -2, i + 1);
 	}
 	
-	push_v3s16(L, emerged_p1);
-	push_v3s16(L, emerged_p2);
-	
-	return 3;
+	return 1;
 }
 
-int LuaVoxelManip::l_write_chunk(lua_State *L)
+int LuaVoxelManip::l_set_data(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+	
 	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+	
 	if (!lua_istable(L, 2))
 		return 0;
-	
-	ManualMapVoxelManipulator *vm = o->vm;
 	
 	int volume = vm->m_area.getVolume();
 	for (int i = 0; i != volume; i++) {
@@ -84,10 +94,18 @@ int LuaVoxelManip::l_write_chunk(lua_State *L)
 
 		lua_pop(L, 1);
 	}
+		
+	return 0;
+}
+
+int LuaVoxelManip::l_write_to_map(lua_State *L)
+{
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
 
 	vm->blitBackAll(&o->modified_blocks);
-	
-	return 0;
+
+	return 0;	
 }
 
 int LuaVoxelManip::l_update_liquids(lua_State *L)
@@ -258,8 +276,10 @@ void LuaVoxelManip::Register(lua_State *L)
 
 const char LuaVoxelManip::className[] = "VoxelManip";
 const luaL_reg LuaVoxelManip::methods[] = {
-	luamethod(LuaVoxelManip, read_chunk),
-	luamethod(LuaVoxelManip, write_chunk),
+	luamethod(LuaVoxelManip, read_from_map),
+	luamethod(LuaVoxelManip, get_data),
+	luamethod(LuaVoxelManip, set_data),
+	luamethod(LuaVoxelManip, write_to_map),
 	luamethod(LuaVoxelManip, update_map),
 	luamethod(LuaVoxelManip, update_liquids),
 	luamethod(LuaVoxelManip, calc_lighting),
