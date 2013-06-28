@@ -88,7 +88,7 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	int volume = vm->m_area.getVolume();
 	for (int i = 0; i != volume; i++) {
 		lua_rawgeti(L, 2, i + 1);
-		content_t c = lua_tonumber(L, -1);
+		content_t c = lua_tointeger(L, -1);
 		
 		vm->m_data[i].setContent(c);
 
@@ -224,7 +224,11 @@ int LuaVoxelManip::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	
-	Map *map = &(get_scriptapi(L)->getEnv()->getMap());
+	Environment *env = get_scriptapi(L)->getEnv();
+	if (!env)
+		return 0;
+		
+	Map *map = &(env->getMap());
 	LuaVoxelManip *o = new LuaVoxelManip(map);
 	
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

@@ -579,6 +579,8 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	Mapgen *mg = emerge->getCurrentMapgen();
+	if (!mg)
+		return 0;
 	
 	size_t maplen = mg->csize.X * mg->csize.Z;
 	
@@ -614,7 +616,7 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 			}
 			break; }
 		case MGOBJ_BIOMEMAP: {
-			if (!mg->heightmap)
+			if (!mg->biomemap)
 				return 0;
 			
 			lua_newtable(L);
@@ -625,6 +627,9 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 			break; }
 		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
 		case MGOBJ_HUMIDMAP:
+			if (strcmp(emerge->params->mg_name.c_str(), "v7"))
+				return 0;
+			
 			MapgenV7 *mgv7 = (MapgenV7 *)mg;
 
 			float *arr = (mgobj == MGOBJ_HEATMAP) ? 
