@@ -44,7 +44,12 @@ Player::Player(IGameDef *gamedef):
 	m_yaw(0),
 	m_speed(0,0,0),
 	m_position(0,0,0),
-	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30)
+	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30),
+	m_last_pitch(0),
+	m_last_yaw(0),
+	m_last_pos(0,0,0),
+	m_last_hp(PLAYER_MAX_HP),
+	m_last_inventory(gamedef->idef())
 {
 	updateName("<not set>");
 	inventory.clear();
@@ -53,6 +58,7 @@ Player::Player(IGameDef *gamedef):
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
+	m_last_inventory = inventory;
 
 	// Can be redefined via Lua
 	inventory_formspec = "size[8,7.5]"
@@ -224,6 +230,9 @@ void Player::deSerialize(std::istream &is, std::string playername)
 			inventory.getList("craftresult")->changeItem(0, ItemStack());
 		}
 	}
+
+	// Set m_last_*
+	checkModified();
 }
 
 /*

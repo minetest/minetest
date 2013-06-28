@@ -199,6 +199,23 @@ public:
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, std::string playername);
 
+	bool checkModified()
+	{
+		if(m_last_hp != hp || m_last_pitch != m_pitch ||
+				m_last_pos != m_position || m_last_yaw != m_yaw ||
+				!(inventory == m_last_inventory))
+		{
+			m_last_hp = hp;
+			m_last_pitch = m_pitch;
+			m_last_pos = m_position;
+			m_last_yaw = m_yaw;
+			m_last_inventory = inventory;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
 	bool in_liquid;
@@ -262,6 +279,12 @@ protected:
 	v3f m_speed;
 	v3f m_position;
 	core::aabbox3d<f32> m_collisionbox;
+
+	f32 m_last_pitch;
+	f32 m_last_yaw;
+	v3f m_last_pos;
+	u16 m_last_hp;
+	Inventory m_last_inventory;
 };
 
 
