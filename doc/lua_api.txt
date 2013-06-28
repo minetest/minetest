@@ -1123,7 +1123,7 @@ minetest.get_mapgen_object(objectname)
 ^ Return requested mapgen object if available (see Mapgen objects)
 minetest.set_mapgen_params(MapgenParams)
 ^ Set map generation parameters
-^ Function can *only* be called within a minetest.on_mapgen_init() callback
+^ Function cannot be called after the registration period; only initialization and on_mapgen_init
 ^ Takes a table as an argument with the fields mgname, seed, water_level, flags, and flagmask.
 ^ Leave field unset to leave that parameter unchanged
 ^ flagmask field must be set to all mapgen flags that are being modified

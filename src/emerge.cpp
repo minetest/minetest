@@ -59,9 +59,9 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	this->biomedef = new BiomeDefManager();
 	this->params   = NULL;
 	
-	this->luaoverride_params = NULL;
+	this->luaoverride_params          = NULL;
 	this->luaoverride_params_modified = 0;
-	this->luaoverride_flagmask = 0;
+	this->luaoverride_flagmask        = 0;
 	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
