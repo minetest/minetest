@@ -562,6 +562,26 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 	return *this;
 }
 
+bool InventoryList::operator == (const InventoryList &other)
+{
+	if(m_size != other.m_size)
+		return false;
+	if(m_width != other.m_width)
+		return false;
+	if(m_name != other.m_name)
+		return false;
+	for(u32 i=0; i<m_items.size(); i++)
+	{
+		ItemStack s1 = m_items[i];
+		ItemStack s2 = other.m_items[i];
+		if(s1.name != s2.name || s1.wear!= s2.wear || s1.count != s2.count ||
+				s1.metadata != s2.metadata)
+			return false;
+	}
+
+	return true;
+}
+
 const std::string &InventoryList::getName() const
 {
 	return m_name;
@@ -853,6 +873,19 @@ Inventory & Inventory::operator = (const Inventory &other)
 		}
 	}
 	return *this;
+}
+
+bool Inventory::operator == (const Inventory &other)
+{
+	if(m_lists.size() != other.m_lists.size())
+		return false;
+
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		if(m_lists[i] != other.m_lists[i])
+			return false;
+	}
+	return true;
 }
 
 void Inventory::serialize(std::ostream &os) const

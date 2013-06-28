@@ -434,6 +434,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		//infostream<<"Found matching player, overwriting."<<std::endl;
 
 		// OK, found. Save player there.
+		if(player->checkModified())
 		{
 			// Open file and serialize
 			std::ofstream os(path.c_str(), std::ios_base::binary);
@@ -443,6 +444,8 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				continue;
 			}
 			player->serialize(os);
+			saved_players.insert(player);
+		} else {
 			saved_players.insert(player);
 		}
 	}
