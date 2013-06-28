@@ -126,8 +126,7 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 	return v3f(0,0,0);
 }
 
-void RemoteClient::GetNextBlocks(Server *server, float dtime,
-		std::vector<PrioritySortedBlockTransfer> &dest)
+PrioritySortedBlockTransfer RemoteClient::GetNextBlocks(Server *server, float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -137,14 +136,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
 	m_nearest_unsent_reset_timer += dtime;
+	
+	PrioritySortedBlockTransfer deft((float)-5, v3s16(0,0,0), -1);
 
 	if(m_nothing_to_send_pause_timer >= 0)
-		return;
+		return deft;
 
 	Player *player = server->m_env->getPlayer(peer_id);
 	// This can happen sometimes; clients and players are not in perfect sync.
 	if(player == NULL)
-		return;
+		return deft;
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 
@@ -195,27 +196,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//infostream<<"d_start="<<d_start<<std::endl;
 
-	/*
-		next time d will be continued from the d from which the nearest
-		unsent block was found this time.
-
-		This is because not necessarily any of the blocks found this
-		time are actually sent.
-	*/
-	s32 new_nearest_unsent_d = -1;
-
 	s16 d_max = g_settings->getS16("max_block_send_distance");
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 
 	//infostream<<"Starting from "<<d_start<<std::endl;
 
-	s32 nearest_emerged_d = -1;
-	s32 nearest_emergefull_d = -1;
-	s32 nearest_sent_d = -1;
-	bool queue_is_full = false;
-
-	s16 d;
-	for(d = d_start; d <= d_max; d++)
+	for(s16 d = d_start; d <= d_max; d++)
 	{
 		/*errorstream<<"checking d="<<d<<" for "
 				<<server->getPlayerName(peer_id)<<std::endl;*/
@@ -256,9 +242,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 					generate = false;*/
 
-				// Limit the send area vertically to 1/2
+				/*// Limit the send area vertically to 1/2
 				if(abs(p.Y - center.Y) > d_max / 2)
-					continue;
+					continue;*/
 			}
 
 			//infostream<<"d="<<d<<std::endl;
@@ -319,20 +305,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
-#if 0
-				/*
-					If block is not close, don't send it unless it is near
-					ground level.
-
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
-				*/
-				if(d >= 4)
-				{
-					if(block->getDayNightDiff() == false)
-						continue;
-				}
-#endif
 			}
 
 			/*
@@ -395,11 +367,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					<<server->getPlayerName(peer_id)<<std::endl;*/
 
 			PrioritySortedBlockTransfer q((float)d, p, peer_id);
-
-			dest.push_back(q);
-			return;
+			return q;
 		}
 	}
+	return deft;
 }
 
 void RemoteClient::GotBlock(v3s16 p)
@@ -3961,11 +3932,9 @@ void Server::SendBlocks(float dtime)
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 
-			std::vector<PrioritySortedBlockTransfer> queue;
-			client->GetNextBlocks(this, dtime, queue);
-			std::sort(queue.begin(), queue.end());
-			if(queue.size() > 0)
-				bigqueue.push_back(queue[0]);
+			PrioritySortedBlockTransfer psbt = client->GetNextBlocks(this, dtime);
+			if(psbt.priority != -5)
+				bigqueue.push_back(psbt);
 		}
 	}
 
