@@ -1572,6 +1572,16 @@ methods:
   ^ will be ignored
 - update_liquids():  Update liquid flow
 
+VoxelArea: A helper class for voxel areas
+- Can be created via VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}
+- Coordinates are *inclusive*, like most other things in Minetest
+methods:
+- getExtent():  returns a 3d vector containing the size of the area formed by MinEdge and MaxEdge
+- getVolume():  returns the volume of the area formed by MinEdge and MaxEdge
+- index(x, y, z):  returns the index of an absolute position in a flat array starting at 1
+  ^ useful for things like VoxelManip, raw Schematic specifiers, PerlinNoiseMap:get2d/3dMap, and so on
+- indexp(p):  same as above, except takes a vector
+
 Mapgen objects
 ---------------
 A mapgen object is a construct used in map generation.  Mapgen objects can be used by an on_generate 

@@ -25,4 +25,4 @@ dofile(minetest.get_modpath("__builtin").."/static_spawn.lua")
 dofile(minetest.get_modpath("__builtin").."/detached_inventory.lua")
 dofile(minetest.get_modpath("__builtin").."/falling.lua")
 dofile(minetest.get_modpath("__builtin").."/features.lua")
-
+dofile(minetest.get_modpath("__builtin").."/voxelarea.lua")
