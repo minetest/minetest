@@ -114,6 +114,59 @@ int ModApiEnvMod::l_add_node(lua_State *L)
 	return l_set_node(L);
 }
 
+// minetest.set_node( { {pos1, node1}, {pos2, node2} } )
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_set_node_group(lua_State *L)
+{
+	GET_ENV_PTR;
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+
+	if(!lua_istable(L, 1))
+		return 0;
+
+	lua_pushnil(L);
+	while(lua_next(L, 1) != 0){
+		// key at index -2 and value at index -1
+		if(!lua_istable(L, -1))
+			return 0;
+
+		v3s16 pos;
+		MapNode n;
+
+		lua_pushnil(L);
+		while(lua_next(L, -2) != 0){
+			// key at index -2 and value at index -1
+			if(!lua_istable(L, -1))
+				return 0;
+
+			int id = lua_tonumber(L, -2);
+			switch (id) {
+				case 1: {
+					// pos
+					pos = read_v3s16(L, -1);
+					break;
+				}
+				case 2: {
+					// node
+					n = readnode(L, -1, ndef);
+					break;
+				}
+				default:
+					break;
+			}
+			lua_pop(L, 1);
+		}
+
+		// Do it
+		env->setNode(pos, n);
+
+		lua_pop(L, 1);
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // minetest.remove_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_remove_node(lua_State *L)
@@ -827,6 +880,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 
 	retval &= API_FCT(set_node);
 	retval &= API_FCT(add_node);
+	retval &= API_FCT(set_node_group);
 	retval &= API_FCT(add_item);
 	retval &= API_FCT(remove_node);
 	retval &= API_FCT(get_node);
