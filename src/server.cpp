@@ -126,8 +126,7 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 	return v3f(0,0,0);
 }
 
-void RemoteClient::GetNextBlocks(Server *server, float dtime,
-		std::vector<PrioritySortedBlockTransfer> &dest)
+PrioritySortedBlockTransfer RemoteClient::GetNextBlocks(Server *server, float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -137,22 +136,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
 	m_nearest_unsent_reset_timer += dtime;
+	
+	PrioritySortedBlockTransfer deft((float)-5, v3s16(0,0,0), -1);
 
 	if(m_nothing_to_send_pause_timer >= 0)
-		return;
+		return deft;
 
 	Player *player = server->m_env->getPlayer(peer_id);
 	// This can happen sometimes; clients and players are not in perfect sync.
 	if(player == NULL)
-		return;
-
-	// Won't send anything if already sending
-	if(m_blocks_sending.size() >= g_settings->getU16
-			("max_simultaneous_block_sends_per_client"))
-	{
-		//infostream<<"Not sending any blocks, Queue full."<<std::endl;
-		return;
-	}
+		return deft;
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 
@@ -194,7 +187,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	if(m_nearest_unsent_reset_timer > 20.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
-		m_nearest_unsent_d = 0;
 		//infostream<<"Resetting m_nearest_unsent_d for "
 		//		<<server->getPlayerName(peer_id)<<std::endl;
 	}
@@ -204,72 +196,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//infostream<<"d_start="<<d_start<<std::endl;
 
-	u16 max_simul_sends_setting = g_settings->getU16
-			("max_simultaneous_block_sends_per_client");
-	u16 max_simul_sends_usually = max_simul_sends_setting;
-
-	/*
-		Check the time from last addNode/removeNode.
-
-		Decrease send rate if player is building stuff.
-	*/
-	m_time_from_building += dtime;
-	if(m_time_from_building < g_settings->getFloat(
-				"full_block_send_enable_min_time_from_building"))
-	{
-		max_simul_sends_usually
-			= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
-	}
-
-	/*
-		Number of blocks sending + number of blocks selected for sending
-	*/
-	u32 num_blocks_selected = m_blocks_sending.size();
-
-	/*
-		next time d will be continued from the d from which the nearest
-		unsent block was found this time.
-
-		This is because not necessarily any of the blocks found this
-		time are actually sent.
-	*/
-	s32 new_nearest_unsent_d = -1;
-
 	s16 d_max = g_settings->getS16("max_block_send_distance");
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 
-	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
-	if(d_max > d_start + max_d_increment_at_time)
-		d_max = d_start + max_d_increment_at_time;
-	/*if(d_max_gen > d_start+2)
-		d_max_gen = d_start+2;*/
-
 	//infostream<<"Starting from "<<d_start<<std::endl;
 
-	s32 nearest_emerged_d = -1;
-	s32 nearest_emergefull_d = -1;
-	s32 nearest_sent_d = -1;
-	bool queue_is_full = false;
-
-	s16 d;
-	for(d = d_start; d <= d_max; d++)
+	for(s16 d = d_start; d <= d_max; d++)
 	{
 		/*errorstream<<"checking d="<<d<<" for "
 				<<server->getPlayerName(peer_id)<<std::endl;*/
 		//infostream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
-
-		/*
-			If m_nearest_unsent_d was changed by the EmergeThread
-			(it can change it to 0 through SetBlockNotSent),
-			update our d to it.
-			Else update m_nearest_unsent_d
-		*/
-		/*if(m_nearest_unsent_d != last_nearest_unsent_d)
-		{
-			d = m_nearest_unsent_d;
-			last_nearest_unsent_d = m_nearest_unsent_d;
-		}*/
 
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
@@ -282,28 +218,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		for(li=list.begin(); li!=list.end(); ++li)
 		{
 			v3s16 p = *li + center;
-
-			/*
-				Send throttling
-				- Don't allow too many simultaneous transfers
-				- EXCEPT when the blocks are very close
-
-				Also, don't send blocks that are already flying.
-			*/
-
-			// Start with the usual maximum
-			u16 max_simul_dynamic = max_simul_sends_usually;
-
-			// If block is very close, allow full maximum
-			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
-				max_simul_dynamic = max_simul_sends_setting;
-
-			// Don't select too many blocks for sending
-			if(num_blocks_selected >= max_simul_dynamic)
-			{
-				queue_is_full = true;
-				goto queue_full_break;
-			}
 
 			// Don't send blocks that are currently being transferred
 			if(m_blocks_sending.find(p) != m_blocks_sending.end())
@@ -328,42 +242,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 					generate = false;*/
 
-				// Limit the send area vertically to 1/2
+				/*// Limit the send area vertically to 1/2
 				if(abs(p.Y - center.Y) > d_max / 2)
-					continue;
+					continue;*/
 			}
-
-#if 0
-			/*
-				If block is far away, don't generate it unless it is
-				near ground level.
-			*/
-			if(d >= 4)
-			{
-	#if 1
-				// Block center y in nodes
-				f32 y = (f32)(p.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
-				// Don't generate if it's very high or very low
-				if(y < -64 || y > 64)
-					generate = false;
-	#endif
-	#if 0
-				v2s16 p2d_nodes_center(
-					MAP_BLOCKSIZE*p.X,
-					MAP_BLOCKSIZE*p.Z);
-
-				// Get ground height in nodes
-				s16 gh = server->m_env->getServerMap().findGroundLevel(
-						p2d_nodes_center);
-
-				// If differs a lot, don't generate
-				if(fabs(gh - y) > MAP_BLOCKSIZE*2)
-					generate = false;
-					// Actually, don't even send it
-					//continue;
-	#endif
-			}
-#endif
 
 			//infostream<<"d="<<d<<std::endl;
 #if 1
@@ -371,9 +253,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
 				FOV setting. The default of 72 degrees is fine.
+				
+				Make this 90 to make things better
 			*/
 
-			float camera_fov = (72.0*M_PI/180) * 4./3.;
+			float camera_fov = (90.0*M_PI/180) * 4./3.;
 			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
 			{
 				continue;
@@ -419,29 +303,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					block_is_invalid = true;
 				}*/
 
-#if 0
-				v2s16 p2d(p.X, p.Z);
-				ServerMap *map = (ServerMap*)(&server->m_env->getMap());
-				v2s16 chunkpos = map->sector_to_chunk(p2d);
-				if(map->chunkNonVolatile(chunkpos) == false)
-					block_is_invalid = true;
-#endif
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
-#if 1
-				/*
-					If block is not close, don't send it unless it is near
-					ground level.
-
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
-				*/
-				if(d >= 4)
-				{
-					if(block->getDayNightDiff() == false)
-						continue;
-				}
-#endif
 			}
 
 			/*
@@ -490,21 +353,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				}
 			*/
 
-				if (server->m_emerge->enqueueBlockEmerge(peer_id, p, generate)) {
-					if (nearest_emerged_d == -1)
-						nearest_emerged_d = d;
-				} else {
-					if (nearest_emergefull_d == -1)
-						nearest_emergefull_d = d;
-					goto queue_full_break;
-				}
-				
+				server->m_emerge->enqueueBlockEmerge(peer_id, p, generate);
+
 				// get next one.
 				continue;
 			}
-
-			if(nearest_sent_d == -1)
-				nearest_sent_d = d;
 
 			/*
 				Add block to send queue
@@ -514,43 +367,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					<<server->getPlayerName(peer_id)<<std::endl;*/
 
 			PrioritySortedBlockTransfer q((float)d, p, peer_id);
-
-			dest.push_back(q);
-
-			num_blocks_selected += 1;
+			return q;
 		}
 	}
-queue_full_break:
-
-	//infostream<<"Stopped at "<<d<<std::endl;
-
-	// If nothing was found for sending and nothing was queued for
-	// emerging, continue next time browsing from here
-	if(nearest_emerged_d != -1){
-		new_nearest_unsent_d = nearest_emerged_d;
-	} else if(nearest_emergefull_d != -1){
-		new_nearest_unsent_d = nearest_emergefull_d;
-	} else {
-		if(d > g_settings->getS16("max_block_send_distance")){
-			new_nearest_unsent_d = 0;
-			m_nothing_to_send_pause_timer = 2.0;
-			/*infostream<<"GetNextBlocks(): d wrapped around for "
-					<<server->getPlayerName(peer_id)
-					<<"; setting to 0 and pausing"<<std::endl;*/
-		} else {
-			if(nearest_sent_d != -1)
-				new_nearest_unsent_d = nearest_sent_d;
-			else
-				new_nearest_unsent_d = d;
-		}
-	}
-
-	if(new_nearest_unsent_d != -1)
-		m_nearest_unsent_d = new_nearest_unsent_d;
-
-	/*timer_result = timer.stop(true);
-	if(timer_result != 0)
-		infostream<<"GetNextBlocks timeout: "<<timer_result<<" (!=0)"<<std::endl;*/
+	return deft;
 }
 
 void RemoteClient::GotBlock(v3s16 p)
@@ -4074,7 +3894,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
 
-	/*infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+	/*actionstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<":  \tpacket size: "<<replysize<<std::endl;*/
 
 	/*
@@ -4092,9 +3912,7 @@ void Server::SendBlocks(float dtime)
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
-	std::vector<PrioritySortedBlockTransfer> queue;
-
-	s32 total_sending = 0;
+	std::vector<PrioritySortedBlockTransfer> bigqueue;
 
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
@@ -4111,28 +3929,18 @@ void Server::SendBlocks(float dtime)
 			if(!client->definitions_sent)
 				continue;
 
-			total_sending += client->SendingCount();
-
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 
-			client->GetNextBlocks(this, dtime, queue);
+			PrioritySortedBlockTransfer psbt = client->GetNextBlocks(this, dtime);
+			if(psbt.priority != -5)
+				bigqueue.push_back(psbt);
 		}
 	}
 
-	// Sort.
-	// Lowest priority number comes first.
-	// Lowest is most important.
-	std::sort(queue.begin(), queue.end());
-
-	for(u32 i=0; i<queue.size(); i++)
+	for(u32 i=0; i<bigqueue.size(); i++)
 	{
-		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings->getS32
-				("max_simultaneous_block_sends_server_total"))
-			break;
-
-		PrioritySortedBlockTransfer q = queue[i];
+		PrioritySortedBlockTransfer q = bigqueue[i];
 
 		MapBlock *block = NULL;
 		try
@@ -4149,8 +3957,6 @@ void Server::SendBlocks(float dtime)
 		SendBlockNoLock(q.peer_id, block, client->serialization_version);
 
 		client->SentBlock(q.pos);
-
-		total_sending++;
 	}
 }
 

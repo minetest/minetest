@@ -273,8 +273,7 @@ public:
 		Environment should be locked when this is called.
 		dtime is used for resetting send radius at slow interval
 	*/
-	void GetNextBlocks(Server *server, float dtime,
-			std::vector<PrioritySortedBlockTransfer> &dest);
+	PrioritySortedBlockTransfer GetNextBlocks(Server *server, float dtime);
 
 	void GotBlock(v3s16 p);
 
