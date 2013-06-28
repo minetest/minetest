@@ -1553,17 +1553,23 @@ VoxelManip: An interface to the MapVoxelManipulator for Lua
 - Can be created via VoxelManip()
 - Also minetest.get_voxel_manip()
 methods:
-- read_chunk(p1, p2):  Read a chunk of map containing the region formed by p1 and p2.
-  ^ returns raw node data, actual emerged p1, actual emerged p2
-  ^ raw node data is in the form of a table mapping indicies to node content ids
-- write_chunk(data):  Write back the data 
-- update_map():  Update map after writing chunk.
-  ^ To be used only by VoxelManip objects created by the mod itself; not VoxelManips passed to callbacks
+- read_from_map(p1, p2):  Reads a chunk of map from the map containing the region formed by p1 and p2.
+  ^ returns actual emerged pmin, actual emerged pmax
+- write_to_map():  Writes the data loaded from the VoxelManip back to the map.
+  ^ important: data must be set using VoxelManip:set_data before calling this
+- get_data():  Gets the data read into the VoxelManip object
+  ^ returns raw node data is in the form of an array of node content ids
+- set_data(data):  Sets the data contents of the VoxelManip object
+- update_map():  Update map after writing chunk back to map.
+  ^ To be used only by VoxelManip objects created by the mod itself; not a VoxelManip that was 
+  ^ retrieved from minetest.get_mapgen_object
 - set_lighting(p1, p2, light):  Set the lighting in the region formed by p1 and p2 to light
   ^ light is a table containing two integer fields ranging from 0 to 15, day and night
-  ^ To be used only by VoxelManip objects passed to a callback; otherwise, set lighting will be ignored
+  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object; otherwise, set lighting will
+  ^ be ignored
 - calc_lighting(p1, p2):  Calculate lighting in the region formed by p1 and p2
-  ^ To be used only by VoxelManip objects passed to a callback; otherwise, calculated lighting will be ignored
+  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object; otherwise, calculated lighting 
+  ^ will be ignored
 - update_liquids():  Update liquid flow
 
 Mapgen objects
