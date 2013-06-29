@@ -925,7 +925,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 
 	std::set<std::string> sourcelist;
 
-	for(u16 j=0; j<MAX_CONTENT+1; j++)
+	for(u16 j=0; j<=ndef->getLastId(); j++)
 	{
 		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
 			continue;
