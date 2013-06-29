@@ -44,3 +44,19 @@ function VoxelArea:indexp(p)
 	return math.floor(i)
 end
 
+function VoxelArea:contains(x, y, z)
+	return (x >= self.MinEdge.x) and (x <= self.MaxEdge.x) and
+		   (y >= self.MinEdge.y) and (y <= self.MaxEdge.y) and
+		   (z >= self.MinEdge.z) and (z <= self.MaxEdge.z)
+end
+
+function VoxelArea:containsp(p)
+	return (p.x >= self.MinEdge.x) and (p.x <= self.MaxEdge.x) and
+		   (p.y >= self.MinEdge.y) and (p.y <= self.MaxEdge.y) and
+		   (p.z >= self.MinEdge.z) and (p.z <= self.MaxEdge.z)
+end
+
+function VoxelArea:containsi(i)
+	return (i >= 1) and (i <= self:getVolume())
+end
+
