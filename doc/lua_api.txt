@@ -1592,8 +1592,8 @@ get_mapgen_object() was called outside of an on_generate() callback, nil is retu
 The following Mapgen objects are currently available:
 
 - voxelmanip
-    This returns four values; the VoxelManip object to be used, the voxel data, minimum emerge position, 
-and maximum emerged position.  All mapgens support this object.
+    This returns three values; the VoxelManip object to be used, minimum and maximum emerged position, in that 
+order.  All mapgens support this object.
 
 - heightmap
     Returns an array containing the y coordinates of the ground levels of nodes in the most recently 
