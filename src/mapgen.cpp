@@ -943,12 +943,12 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 
 				u8 light = n.param1 & 0x0F;
 				if (light) {
-					lightSpread(a, v3s16(x,     y,     z + 1), light);
-					lightSpread(a, v3s16(x,     y + 1, z    ), light);
-					lightSpread(a, v3s16(x + 1, y,     z    ), light);
-					lightSpread(a, v3s16(x,     y,     z - 1), light);
-					lightSpread(a, v3s16(x,     y - 1, z    ), light);
-					lightSpread(a, v3s16(x - 1, y,     z    ), light);
+					lightSpread(a, v3s16(x,     y,     z + 1), light - 1);
+					lightSpread(a, v3s16(x,     y + 1, z    ), light - 1);
+					lightSpread(a, v3s16(x + 1, y,     z    ), light - 1);
+					lightSpread(a, v3s16(x,     y,     z - 1), light - 1);
+					lightSpread(a, v3s16(x,     y - 1, z    ), light - 1);
+					lightSpread(a, v3s16(x - 1, y,     z    ), light - 1);
 				}
 			}
 		}
