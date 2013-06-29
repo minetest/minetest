@@ -408,7 +408,7 @@ public:
 			if(f.name == "")
 				return i;
 		}
-		if(getLastId()+1 < MAX_CONTENT){
+		if(m_content_features.size() <= MAX_CONTENT-1){
 			u16 i = getLastId()+1;
 			ContentFeatures f;
 			f.reset(); 
@@ -508,7 +508,7 @@ public:
 	{
 		verbosestream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
-		assert(c <= getLastId());
+		assert(c <= MAX_CONTENT);
 		// Don't allow redefining CONTENT_IGNORE (but allow air)
 		if(def.name == "ignore" || c == CONTENT_IGNORE){
 			infostream<<"registerNode: WARNING: Ignoring "
@@ -524,7 +524,7 @@ public:
 					<<def.name<<"\" as different id"<<std::endl;
 			return;
 		}
-		m_content_features[c] = def;
+		setDirectly(c, def);
 		if(def.name != "")
 			addNameIdMapping(c, def.name);
 
@@ -807,6 +807,7 @@ public:
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 				continue;*/
 			ContentFeatures f;
+			f.reset();
 			// Read it from the string wrapper
 			std::string wrapper = deSerializeString(is2);
 			std::istringstream wrapper_is(wrapper, std::ios::binary);
@@ -823,12 +824,12 @@ private:
 		m_name_id_mapping.set(i, name);
 		m_name_id_mapping_with_aliases.insert(std::make_pair(name, i));
 	}
-	//Allows direction insertion into a specified position used when setting air and ignore after clear
+	//Allows direction insertion into a specified position
+	//If the vector is too small it is resized
 	void setDirectly(content_t pos, ContentFeatures f)
 	{
 		assert(pos-1 <= MAX_CONTENT);
-		u16 size = m_content_features.size();
-		if(pos <= size-1) {
+		if(pos <= getLastId()) {
 			m_content_features[pos] = f;
 		} else {
 			ContentFeatures r;
