@@ -829,7 +829,7 @@ private:
 	void setDirectly(content_t pos, ContentFeatures f)
 	{
 		assert(pos-1 <= MAX_CONTENT);
-		if(pos <= getLastId()) {
+		if(pos+1 <= m_content_features.size()) {
 			m_content_features[pos] = f;
 		} else {
 			ContentFeatures r;
