@@ -415,6 +415,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				if (type == "textarea")
 				{
 					e->setMultiLine(true);
+					e->setWordWrap(true);
 					e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 				} else {
 					irr::SEvent evt;
