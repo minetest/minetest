@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int LuaVoxelManip::gc_object(lua_State *L)
 {
 	LuaVoxelManip *o = *(LuaVoxelManip **)(lua_touserdata(L, 1));
-	if (o->do_gc)
+	if (!o->is_mapgen_vm)
 		delete o;
 	
 	return 0;
@@ -111,10 +111,12 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 int LuaVoxelManip::l_update_liquids(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
+	if (!o->is_mapgen_vm)
+		return 0;
 	
-	ManualMapVoxelManipulator *vm = o->vm;
 	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
 	Map *map = &(get_scriptapi(L)->getEnv()->getMap());
+	ManualMapVoxelManipulator *vm = o->vm;
 
 	Mapgen mg;
 	mg.vm   = vm;
@@ -131,20 +133,20 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3s16 p1 = read_v3s16(L, 2);
-	v3s16 p2 = read_v3s16(L, 3);
-	sortBoxVerticies(p1, p2);
-	
-	ManualMapVoxelManipulator *vm = o->vm;
+	if (!o->is_mapgen_vm)
+		return 0;
+		
 	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
 	EmergeManager *emerge = STACK_TO_SERVER(L)->getEmergeManager();
-	
+	ManualMapVoxelManipulator *vm = o->vm;
+
 	Mapgen mg;
 	mg.vm          = vm;
 	mg.ndef        = ndef;
 	mg.water_level = emerge->params->water_level;
 	
-	mg.calcLighting(p1, p2);
+	mg.calcLighting(vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE,
+					vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE);
 
 	return 0;
 }
@@ -154,23 +156,24 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3s16 p1 = read_v3s16(L, 2);
-	v3s16 p2 = read_v3s16(L, 3);
-	sortBoxVerticies(p1, p2);
+	if (!o->is_mapgen_vm)
+		return 0;
 	
-	u8 light;
-	if (!lua_istable(L, 4))
+	if (!lua_istable(L, 2))
 		return 0;
 
-	light  = getintfield_default(L, 4, "day", 0);
-	light |= getintfield_default(L, 4, "night", 0);
+	u8 light;
+	light  = (getintfield_default(L, 4, "day",   0) & 0x0F);
+	light |= (getintfield_default(L, 4, "night", 0) & 0x0F) << 8;
 	
 	ManualMapVoxelManipulator *vm = o->vm;
 	
 	Mapgen mg;
 	mg.vm = vm;
 	
-	mg.setLighting(p1, p2, light);
+	mg.setLighting(vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE,
+				   vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE,
+				   light);
 
 	return 0;
 }
@@ -178,6 +181,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 int LuaVoxelManip::l_update_map(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
+	if (o->is_mapgen_vm)
+		return 0;
 	
 	// TODO: Optimize this by using Mapgen::calcLighting() instead
 	std::map<v3s16, MapBlock *> lighting_mblocks;
@@ -202,15 +207,16 @@ int LuaVoxelManip::l_update_map(lua_State *L)
 	return 0;	
 }
 
-LuaVoxelManip::LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool dogc)
+LuaVoxelManip::LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool is_mg_vm)
 {
-	this->vm    = mmvm;
-	this->do_gc = dogc;
+	this->vm           = mmvm;
+	this->is_mapgen_vm = is_mg_vm;
 }
 
 LuaVoxelManip::LuaVoxelManip(Map *map)
 {
-	vm = new ManualMapVoxelManipulator(map);
+	this->vm = new ManualMapVoxelManipulator(map);
+	this->is_mapgen_vm = false;
 }
 
 LuaVoxelManip::~LuaVoxelManip()
