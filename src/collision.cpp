@@ -32,7 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 
 // float error is 10 - 9.96875 = 0.03125
-#define COLL_ZERO 0.032
+//#define COLL_ZERO 0.032 // broken unit tests
+#define COLL_ZERO 0
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
