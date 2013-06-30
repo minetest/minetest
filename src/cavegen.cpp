@@ -231,6 +231,11 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 
 				u32 i = vm->m_area.index(p);
 
+				content_t c = vm->m_data[i].getContent();
+				// Don't replace water or lava
+				if (c == c_water_source || c == c_lava_source)
+					continue;
+
 				if (large_cave) {
 					int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 					int full_ymax = node_max.Y + MAP_BLOCKSIZE;
@@ -243,12 +248,6 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 						vm->m_data[i] = airnode;
 					}
 				} else {
-					// Don't replace air or water or lava or ignore
-					content_t c = vm->m_data[i].getContent();
-					if (c == CONTENT_IGNORE || c == CONTENT_AIR ||
-						c == c_water_source || c == c_lava_source)
-						continue;
-
 					vm->m_data[i] = airnode;
 					vm->m_flags[i] |= VMANIP_FLAG_CAVE;
 				}
