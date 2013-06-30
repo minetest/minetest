@@ -16,7 +16,7 @@ See the README.txt in it.
 Further documentation
 ----------------------
 - Website: http://minetest.net/
-- Wiki: http://wiki.minetest.com/
+- Wiki: http://wiki.minetest.net/
 - Developer wiki: http://dev.minetest.net/
 - Forum: http://forum.minetest.net/
 - Github: https://github.com/minetest/minetest/
