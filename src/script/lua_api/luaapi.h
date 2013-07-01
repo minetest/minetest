@@ -136,11 +136,12 @@ private:
 	// create_schematic(p1, p2, filename)
 	static int l_create_schematic(lua_State *L);
 	
-	// place_schematic(p, filename)
+	// place_schematic(p, filename, rotation)
 	static int l_place_schematic(lua_State *L);
 
 	static struct EnumString es_OreType[];
 	static struct EnumString es_DecorationType[];
+	static struct EnumString es_Rotation[];
 
 };
 

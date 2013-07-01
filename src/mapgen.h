@@ -258,6 +258,14 @@ public:
 	virtual std::string getName();
 };
 
+enum Rotation {
+	ROTATE_0,
+	ROTATE_90,
+	ROTATE_180,
+	ROTATE_270,
+	ROTATE_RAND,
+};
+
 class DecoSchematic : public Decoration {
 public:
 	std::string filename;
@@ -266,6 +274,7 @@ public:
 	std::vector<content_t> c_nodes;
 
 	u32 flags;
+	Rotation rotation;
 	v3s16 size;
 	MapNode *schematic;
 
@@ -276,6 +285,9 @@ public:
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
+	
+	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
+					int rot, bool force_placement);
 	
 	bool loadSchematicFile();
 	void saveSchematicFile(INodeDefManager *ndef);
