@@ -51,6 +51,16 @@ struct EnumString ModApiBasic::es_DecorationType[] =
 	{0, NULL},
 };
 
+struct EnumString ModApiBasic::es_Rotation[] =
+{
+	{ROTATE_0,    "0"},
+	{ROTATE_90,   "90"},
+	{ROTATE_180,  "180"},
+	{ROTATE_270,  "270"},
+	{ROTATE_RAND, "random"},
+	{0, NULL},
+};
+
 
 ModApiBasic::ModApiBasic() : ModApiBase() {
 }
@@ -767,7 +777,9 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 			break; }
 		case DECO_SCHEMATIC: {
 			DecoSchematic *dschem = (DecoSchematic *)deco;
-			dschem->flags = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
+			dschem->flags    = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
+			dschem->rotation = (Rotation)getenumfield(L, index,
+								"rotation", es_Rotation, ROTATE_0);
 			
 			lua_getfield(L, index, "schematic");
 			if (!read_schematic(L, -1, dschem, getServer(L))) {
@@ -848,7 +860,7 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 }
 
 
-// place_schematic(p, schematic)
+// place_schematic(p, schematic, rotation)
 int ModApiBasic::l_place_schematic(lua_State *L)
 {
 	DecoSchematic dschem;
@@ -859,6 +871,12 @@ int ModApiBasic::l_place_schematic(lua_State *L)
 	v3s16 p = read_v3s16(L, 1);
 	if (!read_schematic(L, 2, &dschem, getServer(L)))
 		return 0;
+		
+	Rotation rot = ROTATE_0;
+	if (lua_isstring(L, 3))
+		string_to_enum(es_Rotation, (int &)rot, std::string(lua_tostring(L, 3)));
+		
+	dschem.rotation = rot;
 
 	if (!dschem.filename.empty()) {
 		if (!dschem.loadSchematicFile()) {

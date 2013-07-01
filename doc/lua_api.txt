@@ -1309,8 +1309,10 @@ minetest.create_schematic(p1, p2, probability_list, filename)
    ^ If probability_list is nil, no probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic)
+minetest.place_schematic(pos, schematic, rotation)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
+^ Rotation can be "0", "90", "180", "270", or "random".
+^ If the rotation parameter is omitted, the schematic is not rotated.
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -2048,6 +2050,8 @@ Decoration definition (register_decoration)
     ^ See 'Schematic specifier' for details.
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
+    rotation = "90" --rotate schematic 90 degrees on placement
+    ^ Rotation can be "0", "90", "180", "270", or "random".
 }
 
 Chatcommand definition (register_chatcommand)

@@ -535,28 +535,10 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 		c_place_on != CONTENT_IGNORE)
 		return;
 	
-	u32 i = 0;
-	for (s16 z = 0; z != size.Z; z++)
-	for (s16 y = 0; y != size.Y; y++) {
-		vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
-		for (s16 x = 0; x != size.X; x++, i++, vi++) {
-			if (!vm->m_area.contains(vi))
-				continue;
-				
-			if (schematic[i].getContent() == CONTENT_IGNORE)
-				continue;
-				
-			content_t c = vm->m_data[vi].getContent();
-			if (c != CONTENT_AIR && c != CONTENT_IGNORE)
-				continue;
-				
-			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
-				continue;
-			
-			vm->m_data[vi] = schematic[i];
-			vm->m_data[vi].param1 = 0;
-		}
-	}
+	Rotation rot = (rotation == ROTATE_RAND) ?
+		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+	
+	blitToVManip(p, vm, rot, false);
 }
 
 
@@ -570,32 +552,58 @@ std::string DecoSchematic::getName() {
 }
 
 
-void DecoSchematic::placeStructure(Map *map, v3s16 p) {
-	assert(schematic != NULL);
-	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
+								int rot, bool force_placement) {
+	int xstride = 1;
+	int ystride = size.X;
+	int zstride = size.X * size.Y;
 
-	if (flags & DECO_PLACE_CENTER_X)
-		p.X -= (size.X + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (size.Y + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Z)
-		p.Z -= (size.Z + 1) / 2;
-		
-	v3s16 bp1 = getNodeBlockPos(p);
-	v3s16 bp2 = getNodeBlockPos(p + size - v3s16(1,1,1));
-	vm->initialEmerge(bp1, bp2);
+	s16 sx = size.X;
+	s16 sy = size.Y;
+	s16 sz = size.Z;
 
-	u32 i = 0;
-	for (s16 z = 0; z != size.Z; z++)
-	for (s16 y = 0; y != size.Y; y++) {
-		u32 vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
-		for (s16 x = 0; x != size.X; x++, i++, vi++) {
+	int i_start, i_step_x, i_step_z;
+	switch (rot) {
+		case ROTATE_90:
+			i_start  = sx - 1;
+			i_step_x = zstride;
+			i_step_z = -xstride;
+			SWAP(s16, sx, sz);
+			break;
+		case ROTATE_180:
+			i_start  = zstride * (sz - 1) + sx - 1;
+			i_step_x = -xstride;
+			i_step_z = -zstride;
+			break;
+		case ROTATE_270:
+			i_start  = zstride * (sz - 1);
+			i_step_x = -zstride;
+			i_step_z = xstride;
+			SWAP(s16, sx, sz);
+			break;
+		default:
+			i_start  = 0;
+			i_step_x = xstride;
+			i_step_z = zstride;
+	}
+	
+	for (s16 z = 0; z != sz; z++)
+	for (s16 y = 0; y != sy; y++) {
+		u32 i = z * i_step_z + y * ystride + i_start;
+		for (s16 x = 0; x != sx; x++, i += i_step_x) {
+			u32 vi = vm->m_area.index(p.X + x, p.Y + y, p.Z + z);
 			if (!vm->m_area.contains(vi))
 				continue;
 				
 			if (schematic[i].getContent() == CONTENT_IGNORE)
 				continue;
-				
+
+			if (!force_placement) {
+				content_t c = vm->m_data[vi].getContent();
+				if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+					continue;
+			}
+			
 			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
 				continue;
 			
@@ -603,6 +611,31 @@ void DecoSchematic::placeStructure(Map *map, v3s16 p) {
 			vm->m_data[vi].param1 = 0;
 		}
 	}
+}
+
+
+void DecoSchematic::placeStructure(Map *map, v3s16 p) {
+	assert(schematic != NULL);
+	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+
+	Rotation rot = (rotation == ROTATE_RAND) ?
+		(Rotation)myrand_range(ROTATE_0, ROTATE_270) : rotation;
+	
+	v3s16 s = (rot == ROTATE_90 || rot == ROTATE_270) ?
+				v3s16(size.Z, size.Y, size.X) : size;
+
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (s.X + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (s.Y + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (s.Z + 1) / 2;
+		
+	v3s16 bp1 = getNodeBlockPos(p);
+	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1,1,1));
+	vm->initialEmerge(bp1, bp2);
+	
+	blitToVManip(p, vm, rot, true);
 	
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;
