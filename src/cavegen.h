@@ -75,6 +75,8 @@ public:
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
 
+	NoiseParams *np_caveliquids;
+
 	s16 min_tunnel_diameter;
 	s16 max_tunnel_diameter;
 	u16 tunnel_routepoints;
