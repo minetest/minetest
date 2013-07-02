@@ -488,7 +488,7 @@ bool GUIEngine::setTexture(texture_layer layer,std::string texturepath) {
 		m_textures[layer] = 0;
 	}
 
-	if (texturepath == "")
+	if ((texturepath == "") || !fs::PathExists(texturepath))
 		return false;
 
 	m_textures[layer] = driver->getTexture(texturepath.c_str());

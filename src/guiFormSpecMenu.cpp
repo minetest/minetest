@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h" // ITextureSource
 #include "util/string.h"
 #include "util/numeric.h"
+#include "filesys.h"
 
 #include "gettext.h"
 
@@ -1165,8 +1166,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		if (m_gamedef != 0)
 			texture = m_gamedef->tsrc()->getTexture(image_name);
 		else {
-			texture = Environment->getVideoDriver()->getTexture(image_name.c_str());
-			m_Textures.push_back(texture);
+			if (fs::PathExists(image_name)) {
+				texture = Environment->getVideoDriver()->getTexture(image_name.c_str());
+				m_Textures.push_back(texture);
+			}
 		}
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
