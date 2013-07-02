@@ -449,7 +449,8 @@ public:
 						tsrc->getTextureRaw(f.tiledef[0].name);
 				}
 			}
-			else
+
+			if(cc->inventory_texture != NULL)
 			{
 				if (m_driver == 0)
 					m_driver = driver;
