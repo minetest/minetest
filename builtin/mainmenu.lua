@@ -783,10 +783,10 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 
 	local world_doubleclick = false
 
-	if fields["worlds"] ~= nil then
-		local event = explode_textlist_event(fields["worlds"])
+	if fields["sp_worlds"] ~= nil then
+		local event = explode_textlist_event(fields["sp_worlds"])
 		
-		if event.typ == "DBL" then
+		if event.typ == "DCL" then
 			world_doubleclick = true
 		end
 	end
