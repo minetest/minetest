@@ -180,6 +180,16 @@ public:
 		return m_name;
 	}
 
+	u32 getLastOnline()
+	{
+		return last_online;
+	}
+
+	virtual	void setLastOnline( u32 lo ) 
+	{
+		last_online = lo;
+	}
+
 	core::aabbox3d<f32> getCollisionbox() {
 		return m_collisionbox;
 	}
@@ -269,6 +279,7 @@ public:
 	std::vector<HudElement *> hud;
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+	u32 last_online;
 
 protected:
 	IGameDef *m_gamedef;
@@ -283,7 +294,7 @@ protected:
 	f32 m_last_pitch;
 	f32 m_last_yaw;
 	v3f m_last_pos;
-	u16 m_last_hp;
+	u16 m_last_hp;	
 	Inventory m_last_inventory;
 };
 

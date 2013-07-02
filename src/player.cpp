@@ -38,6 +38,7 @@ Player::Player(IGameDef *gamedef):
 	hp(PLAYER_MAX_HP),
 	breath(-1),
 	peer_id(PEER_ID_INEXISTENT),
+	last_online(0),
 // protected
 	m_gamedef(gamedef),
 	m_pitch(0),
@@ -50,6 +51,7 @@ Player::Player(IGameDef *gamedef):
 	m_last_pos(0,0,0),
 	m_last_hp(PLAYER_MAX_HP),
 	m_last_inventory(gamedef->idef())
+	
 {
 	updateName("<not set>");
 	inventory.clear();
@@ -177,6 +179,7 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("last_online",last_online);
 
 	args.writeLines(os);
 
@@ -212,6 +215,12 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
+	}
+
+	try{
+		last_online = args.getS32("last_online");
+	} catch ( SettingNotFoundException &e ){
+		last_online = time(NULL);
 	}
 
 	inventory.deSerialize(is);

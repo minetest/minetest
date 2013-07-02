@@ -237,6 +237,7 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset);
+	int getLastOnline();
 
 private:
 	std::string getPropertyPacket();
