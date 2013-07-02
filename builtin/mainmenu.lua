@@ -148,8 +148,10 @@ function menu.update_gametype()
 		
 		menu.game_last_check = menu.last_game
 	else
-		menu.game_last_check = menu.last_game
-		menu.reset_gametype()
+		if menu.game_last_check ~= menu.last_game then
+			menu.game_last_check = menu.last_game
+			menu.reset_gametype()
+		end
 	end
 end
 
@@ -1108,7 +1110,7 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 engine.button_handler = function(fields)
-	print("Buttonhandler: tab: " .. tabbuilder.current_tab .. " fields: " .. dump(fields))
+	--print("Buttonhandler: tab: " .. tabbuilder.current_tab .. " fields: " .. dump(fields))
 	
 	if fields["btn_error_confirm"] then
 		gamedata.errormessage = nil
@@ -1155,7 +1157,6 @@ engine.button_handler = function(fields)
 	
 	if not tabbuilder.skipformupdate then
 		--update menu
-		print("updating menu:" .. tabbuilder.current_tab)
 		update_menu()
 	else
 		tabbuilder.skipformupdate = false
