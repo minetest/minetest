@@ -2161,6 +2161,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			actionstream<<player->getName()<<" ["<<addr_s<<"] "<<" joins game. List of players: "
 					<<os.str()<<std::endl;
+			player->setLastOnline(time(NULL));
 		}
 
 		return;

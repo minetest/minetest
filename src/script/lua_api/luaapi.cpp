@@ -77,6 +77,7 @@ bool ModApiBasic::Initialize(lua_State* L,int top) {
 
 	retval &= API_FCT(get_player_privs);
 	retval &= API_FCT(get_player_ip);
+	retval &= API_FCT(get_player_last_online);
 	retval &= API_FCT(get_ban_list);
 	retval &= API_FCT(get_ban_description);
 	retval &= API_FCT(ban_player);
@@ -333,6 +334,23 @@ int ModApiBasic::l_get_player_ip(lua_State *L)
 		lua_pushnil(L); // error
 		return 1;
 	}
+}
+
+// get_player_last_online()
+int ModApiBasic::l_get_player_last_online(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char * name = luaL_checkstring(L, 1);
+	Player *player = getEnv(L)->getPlayer(name);
+	if ( player == NULL )
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+
+	lua_pushnumber(L,(double)player->getLastOnline());
+
+	return 1;
 }
 
 // get_ban_list()
