@@ -1163,7 +1163,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		//if there's no gamedef specified try to get direct
 		//TODO check for possible texture leak
 		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTextureRaw(image_name);
+			texture = m_gamedef->tsrc()->getTexture(image_name);
 		else {
 			texture = Environment->getVideoDriver()->getTexture(image_name.c_str());
 			m_Textures.push_back(texture);
@@ -1611,8 +1611,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 	
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
-		u32 item_i = i + s.start_item_i;
-		if(item_i >= ilist->getSize())
+		s32 item_i = i + s.start_item_i;
+		if(item_i >= (s32) ilist->getSize())
 			break;
 		s32 x = (i%s.geom.X) * spacing.X;
 		s32 y = (i/s.geom.X) * spacing.Y;
@@ -1734,7 +1734,7 @@ void GUIFormSpecMenu::drawMenu()
 		video::ITexture *texture = 0;
 
 		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTextureRaw(spec.name);
+			texture = m_gamedef->tsrc()->getTexture(spec.name);
 		else
 		{
 			texture = driver->getTexture(spec.name.c_str());
@@ -1784,7 +1784,7 @@ void GUIFormSpecMenu::drawMenu()
 		video::ITexture *texture = 0;
 
 		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTextureRaw(spec.name);
+			texture = m_gamedef->tsrc()->getTexture(spec.name);
 		else
 		{
 			texture = driver->getTexture(spec.name.c_str());
