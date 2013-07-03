@@ -591,10 +591,16 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.handle_multiplayer_buttons(fields)
+	
+	if  fields["te_name"] ~= nil then
+		gamedata.playername = fields["te_name"]
+		engine.setting_set("name", fields["te_name"])
+	end
+
 	if fields["favourites"] ~= nil then
 		local event = explode_textlist_event(fields["favourites"])
 		if event.typ == "DCL" then
-			gamedata.address = menu.favorites[event.index].name
+			--gamedata.address = menu.favorites[event.index].name
 			if gamedata.address == nil then
 				gamedata.address = menu.favorites[event.index].address
 			end
@@ -665,11 +671,14 @@ function tabbuilder.handle_server_buttons(fields)
 
 	local world_doubleclick = false
 
-	if fields["worlds"] ~= nil then
-		local event = explode_textlist_event(fields["worlds"])
+	if fields["srv_worlds"] ~= nil then
+		local event = explode_textlist_event(fields["srv_worlds"])
 		
-		if event.typ == "DBL" then
+		if event.typ == "DCL" then
 			world_doubleclick = true
+		end
+		if event.typ == "CHG" then
+			engine.setting_set("main_menu_last_world_idx",engine.get_textlist_index("srv_worlds"))
 		end
 	end
 	
@@ -708,7 +717,7 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["world_delete"] ~= nil then
 		local selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 then
-			menu.last_world = engine.get_textlist_index("worlds")
+			menu.last_world = engine.get_textlist_index("srv_worlds")
 			if menu.lastworld() ~= nil and
 				menu.lastworld().name ~= nil and
 				menu.lastworld().name ~= "" then
@@ -800,6 +809,10 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		
 		if event.typ == "DCL" then
 			world_doubleclick = true
+		end
+		
+		if event.typ == "CHG" then
+			engine.setting_set("main_menu_singleplayer_world_idx",engine.get_textlist_index("sp_worlds"))
 		end
 	end
 	
@@ -949,6 +962,7 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_multiplayer()
+
 	local retval =
 		"vertlabel[0,-0.25;CLIENT]" ..
 		"label[1,-0.25;Favorites:]"..
@@ -972,13 +986,19 @@ function tabbuilder.tab_multiplayer()
 		end
 	end
 
-	retval = retval .. ";1]"
+	retval = retval .. ";0]"
 
 	return retval
 end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_server()
+	local index = engine.setting_get("main_menu_last_world_idx")
+	
+	if index == nil then
+		index = 0
+	end
+	
 	local retval = 
 		"button[4,4.15;2.6,0.5;world_delete;Delete]" ..
 		"button[6.5,4.15;2.8,0.5;world_create;New]" ..
@@ -1006,7 +1026,7 @@ function tabbuilder.tab_server()
 		end
 	end
 				
-	retval = retval .. ";" .. menu.last_world .. "]"
+	retval = retval .. ";" .. index .. "]"
 		
 	return retval
 end
@@ -1185,6 +1205,17 @@ engine.event_handler = function(event)
 			update_menu()
 		else
 			engine.close()
+		end
+	end
+	
+	if event == "KeyEnter" or
+		event == "EditBoxEnter" then
+		if tabbuilder.current_tab == "singleplayer" then
+			engine.button_handler({play="play"})
+		end
+		
+		if tabbuilder.current_tab == "server" then
+			engine.button_handler({start_server="start_server"})
 		end
 	end
 end

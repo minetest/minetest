@@ -2526,53 +2526,43 @@ irr::video::SColor GUIFormSpecMenu::getColor(std::string color,bool& valid_color
 		valid_color = true;
 		return irr::video::SColor(255,255,255,0);
 	}
-
-	if (color == "GRN") {
+	else if (color == "GRN") {
 		valid_color = true;
 		return irr::video::SColor(255,34,249,34);
 	}
-
-	if (color == "LIM") {
+	else if (color == "LIM") {
 		valid_color = true;
 		return irr::video::SColor(255,50,205,50);
 	}
-
-	if (color == "RED") {
+	else if (color == "RED") {
 		valid_color = true;
 		return irr::video::SColor(255,255,0,0);
 	}
-
-	if (color == "ORN") {
+	else if (color == "ORN") {
 		valid_color = true;
 		return irr::video::SColor(255,255,140,0);
 	}
-
-	if (color == "BLU") {
+	else if (color == "BLU") {
 		valid_color = true;
 		return irr::video::SColor(255,0,0,255);
 	}
-
-	if (color == "CYN") {
+	else if (color == "CYN") {
 		valid_color = true;
 		return irr::video::SColor(255,0,255,255);
 	}
-
-	if (color == "BLK") {
+	else if (color == "BLK") {
 		valid_color = true;
 		return irr::video::SColor(255,0,0,0);
 	}
-
-	if (color == "BRN") {
+	else if (color == "BRN") {
 		valid_color = true;
 		return irr::video::SColor(255,139,69,19);
 	}
-
-	if (color == "WHT") {
+	else if (color == "WHT") {
 		valid_color = true;
 		return irr::video::SColor(255,255,255,255);
 	}
-
-	if (color == "GRY") {
+	else if (color == "GRY") {
 		valid_color = true;
 		return irr::video::SColor(255,205,201,201);
 	}
