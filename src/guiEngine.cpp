@@ -299,6 +299,8 @@ GUIEngine::~GUIEngine()
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver != 0);
+	
+	//TODO: clean up m_menu here
 
 	lua_close(m_engineluastack);
 
@@ -309,8 +311,9 @@ GUIEngine::~GUIEngine()
 		if (m_textures[i] != 0)
 			driver->removeTexture(m_textures[i]);
 	}
-
-	m_cloud.clouds->drop();
+	
+	if (m_cloud.clouds)
+		m_cloud.clouds->drop();
 }
 
 /******************************************************************************/

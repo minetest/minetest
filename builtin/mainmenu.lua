@@ -437,6 +437,22 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.dialog_create_world()
+	local mapgens = {"v6", "v7", "indev", "singlenode", "math"}
+
+	local current_mg = engine.setting_get("mg_name")
+
+	local mglist = ""
+	local selindex = 1
+	local i = 1
+	for k,v in pairs(mapgens) do
+		if current_mg == v then
+			selindex = i
+		end
+		i = i + 1
+		mglist = mglist .. v .. ","
+	end
+	mglist = mglist:sub(1, -2)
+
 	local retval = 
 		"label[2,0;World name]"..
 		"label[2,1;Mapgen]"..
@@ -444,7 +460,7 @@ function tabbuilder.dialog_create_world()
 		"label[2,2;Game]"..
 		"button[5,4.5;2.6,0.5;world_create_confirm;Create]" ..
 		"button[7.5,4.5;2.8,0.5;world_create_cancel;Cancel]" ..
-		"dropdown[4.2,1;6.3;dd_mapgen;v6,v7,indev,singlenode,math;1]" .. --TODO read from minetest
+		"dropdown[4.2,1;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 		"textlist[4.2,1.9;5.8,2.3;games;" ..
 		gamemgr.gamelist() ..
 		";" .. menu.last_game .. ";true]"
@@ -534,16 +550,12 @@ function tabbuilder.handle_create_world_buttons(fields)
 				for i=1,#worldlist,1 do
 					if worldlist[i].name == worldname then
 						index = i
-						print("found new world index: " .. index)
 						break
 					end
 				end
-				
-				if tabbuilder.current_tab == "singleplayer" then
-					engine.setting_set("main_menu_singleplayer_world_idx",index)
-				else
-					menu.last_world = index
-				end
+
+				engine.setting_set("main_menu_singleplayer_world_idx", index)
+				menu.last_world = index
 			end
 		else
 			gamedata.errormessage = "No worldname given or no game selected"
@@ -805,7 +817,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		if selected > 0 then
 			gamedata.selected_world	= menu.filtered_index_to_plain(selected)
 			gamedata.singleplayer	= true
-			
+
 			engine.setting_set("main_menu_tab",tabbuilder.current_tab)
 			engine.setting_set("main_menu_singleplayer_world_idx",selected)
 			
@@ -1023,7 +1035,7 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_singleplayer()
 	local index = engine.setting_get("main_menu_singleplayer_world_idx")
-	
+
 	if index == nil then
 		index = 0
 	end
