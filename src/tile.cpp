@@ -239,7 +239,7 @@ public:
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
-	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *m_device)
+	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
 	{
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -247,7 +247,7 @@ public:
 			n->second->grab(); // Grab for caller
 			return n->second;
 		}
-		video::IVideoDriver* driver = m_device->getVideoDriver();
+		video::IVideoDriver* driver = device->getVideoDriver();
 		std::string path = getTexturePath(name.c_str());
 		if(path == ""){
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
