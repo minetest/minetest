@@ -831,6 +831,9 @@ public:
 		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
+		
+		int layer = 1;
+		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
 	}
 };
 
