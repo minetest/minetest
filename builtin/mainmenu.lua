@@ -113,6 +113,40 @@ function cleanup_path(temppath)
 	return temppath
 end
 
+function menu.set_texture(identifier,gamedetails)
+	local texture_set = false
+	if menu.texturepack ~= nil then
+		local path = menu.basetexturedir .. 
+						gamedetails.id .. "_menu_" .. identifier .. ".png"
+		
+		if engine.set_background(identifier,path) then
+			texture_set = true
+		end
+	end
+	
+	if not texture_set then
+		local path = gamedetails.path .. DIR_DELIM .."menu" .. 
+									 DIR_DELIM .. identifier .. ".png"
+		if engine.set_background(identifier,path) then
+			texture_set = true
+		end
+	end
+	
+	if not texture_set then
+		local path = menu.basetexturedir .. DIR_DELIM .."menu_" .. 
+										identifier .. ".png"
+		if engine.set_background(identifier,path) then
+			texture_set = true
+		end
+	end
+	
+	if not texture_set then
+		local path = menu.defaulttexturedir .. DIR_DELIM .."menu_" .. 
+										identifier .. ".png"
+		engine.set_background(identifier,path)
+	end
+end
+
 --------------------------------------------------------------------------------
 function menu.update_gametype()
 	if (menu.game_last_check == nil or
@@ -123,28 +157,33 @@ function menu.update_gametype()
 		engine.set_topleft_text(gamedetails.name)
 		
 		--background
-		local path_background_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
-												 DIR_DELIM .. "background.png"
-		if engine.set_background("background",path_background_texture) then
-			engine.set_clouds(false)
-		else
+		local background_set = false
+		if menu.texturepack ~= nil then
+			local path_background_texture = menu.basetexturedir .. 
+										gamedetails.id .. "_menu_background.png"
+			
+			if engine.set_background("background",path_background_texture) then
+				background_set = true
+				engine.set_clouds(false)
+			end
+		end
+		
+		if not background_set then
+			local path_background_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
+										 DIR_DELIM .. "background.png"
+			if engine.set_background("background",path_background_texture) then
+				background_set = true
+				engine.set_clouds(false)
+			end
+		end
+		
+		if not background_set then
 			engine.set_clouds(true)
 		end
 		
-		--overlay
-		local path_overlay_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
-												 DIR_DELIM .. "overlay.png"
-		engine.set_background("overlay",path_overlay_texture)
-		
-		--header
-		local path_overlay_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
-												 DIR_DELIM .. "header.png"
-		engine.set_background("header",path_overlay_texture)
-		
-		--footer
-		local path_overlay_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
-												 DIR_DELIM .. "footer.png"
-		engine.set_background("footer",path_overlay_texture)
+		menu.set_texture("overlay",gamedetails)
+		menu.set_texture("header",gamedetails)
+		menu.set_texture("footer",gamedetails)
 		
 		menu.game_last_check = menu.last_game
 	else
@@ -324,9 +363,16 @@ function menu.init()
 	end
 	
 	
-	menu.basetexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
+	menu.defaulttexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
 						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
 						DIR_DELIM .. "pack" .. DIR_DELIM
+	menu.basetexturedir = menu.defaulttexturedir
+	
+	menu.texturepack = engine.setting_get("texture_path")
+	
+	if menu.texturepack ~= nil then
+		menu.basetexturedir = menu.texturepack .. DIR_DELIM
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -389,26 +435,27 @@ end
 
 --------------------------------------------------------------------------------
 function menubar.refresh()
-	menubar.formspec = "box[-2,7.625;15.75,1.75;BLK]"
+	menubar.formspec = "box[-0.3,5.625;12.4,1.3;BLK]" ..
+					   "box[-0.3,5.6;12.4,0.05;WHT]"
 	menubar.buttons = {}
 
-	local button_base = -1.8
+	local button_base = -0.25
 	
 	local maxbuttons = #gamemgr.games
 	
-	if maxbuttons > 12 then
-		maxbuttons = 12
+	if maxbuttons > 10 then
+		maxbuttons = 10
 	end
 	
 	for i=1,maxbuttons,1 do
 
 		local btn_name = "menubar_btn_" .. gamemgr.games[i].id
-		local buttonpos = button_base + (i-1) * 1.3
+		local buttonpos = button_base + (i-1) * 1.245
 		if gamemgr.games[i].menuicon_path ~= nil and
 			gamemgr.games[i].menuicon_path ~= "" then
 
 			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",7.9;1.3,1.3;"  ..
+				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;"  ..
 				gamemgr.games[i].menuicon_path .. ";" .. btn_name .. ";;true;false]"
 		else
 		
@@ -422,7 +469,7 @@ function menubar.refresh()
 				text = text .. "\n" .. part3
 			end
 			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",7.9;1.3,1.3;;" ..btn_name ..
+				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;;" ..btn_name ..
 				";" .. text .. ";true;true]"
 		end
 		
@@ -1081,7 +1128,7 @@ function tabbuilder.tab_credits()
 	return	"vertlabel[0,-0.5;CREDITS]" ..
 			"label[0.5,3;Minetest " .. engine.get_version() .. "]" ..
 			"label[0.5,3.3;http://minetest.net]" .. 
-			"image[0.5,1;" .. menu.basetexturedir .. "logo.png]" ..
+			"image[0.5,1;" .. menu.defaulttexturedir .. "logo.png]" ..
 			"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
 			"#YLWCore Developers," ..
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
