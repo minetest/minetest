@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+#include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "main.h" // for g_settings
 #include "filesys.h"
@@ -238,7 +239,7 @@ public:
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
-	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
+	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *m_device)
 	{
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -246,7 +247,7 @@ public:
 			n->second->grab(); // Grab for caller
 			return n->second;
 		}
-		video::IVideoDriver* driver = device->getVideoDriver();
+		video::IVideoDriver* driver = m_device->getVideoDriver();
 		std::string path = getTexturePath(name.c_str());
 		if(path == ""){
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
@@ -378,6 +379,22 @@ public:
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
 	
+	// Render a mesh to a texture.
+	// Returns NULL if render-to-texture failed.
+	// Shall be called from the main thread.
+	video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params);
+	
+	// Generates an image from a full string like
+	// "stone.png^mineral_coal.png^[crack0".
+	// Shall be called from the main thread.
+	video::IImage* generateImageFromScratch(std::string name);
+
+	// Generate image based on a string like "stone.png" or "[crack0".
+	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
+	// Shall be called from the main thread.
+	bool generateImage(std::string part_of_name, video::IImage *& baseimg);
+
 private:
 	
 	// The id of the thread that is allowed to use irrlicht directly
@@ -406,6 +423,11 @@ private:
 	// Textures that have been overwritten with other ones
 	// but can't be deleted because the ITexture* might still be used
 	std::list<video::ITexture*> m_texture_trash;
+
+	// Cached settings needed for making textures from meshes
+	bool m_setting_trilinear_filter;
+	bool m_setting_bilinear_filter;
+	bool m_setting_anisotropic_filter;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
@@ -425,6 +447,13 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 	// Add a NULL TextureInfo as the first index, named ""
 	m_textureinfo_cache.push_back(TextureInfo(""));
 	m_name_to_id[""] = 0;
+	
+	// Cache some settings
+	// Note: Since this is only done once, the game must be restarted
+	// for these settings to take effect
+	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
+	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
+	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
@@ -537,20 +566,6 @@ u32 parseImageTransform(const std::string& s);
 core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
 // Apply transform to image data
 void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
-
-/*
-	Generate image based on a string like "stone.png" or "[crack0".
-	if baseimg is NULL, it is created. Otherwise stuff is made on it.
-*/
-bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		IrrlichtDevice *device, SourceImageCache *sourcecache);
-
-/*
-	Generates an image from a full string like
-	"stone.png^mineral_coal.png^[crack0".
-*/
-video::IImage* generate_image_from_scratch(std::string name,
-		IrrlichtDevice *device, SourceImageCache *sourcecache);
 
 /*
 	This method generates all the textures
@@ -685,7 +700,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 
 	// Generate image according to part of name
-	if(!generate_image(last_part_of_name, baseimg, m_device, &m_sourcecache))
+	if(!generateImage(last_part_of_name, baseimg))
 	{
 		errorstream<<"getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
@@ -790,7 +805,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
 	m_source_image_existence.set(name, true);
 }
-	
+
 void TextureSource::rebuildImagesAndTextures()
 {
 	JMutexAutoLock lock(m_textureinfo_cache_mutex);
@@ -800,8 +815,7 @@ void TextureSource::rebuildImagesAndTextures()
 	// Recreate textures
 	for(u32 i=0; i<m_textureinfo_cache.size(); i++){
 		TextureInfo *ti = &m_textureinfo_cache[i];
-		video::IImage *img =
-			generate_image_from_scratch(ti->name, m_device, &m_sourcecache);
+		video::IImage *img = generateImageFromScratch(ti->name);
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
 		if(img)
@@ -816,13 +830,90 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
-video::IImage* generate_image_from_scratch(std::string name,
-		IrrlichtDevice *device, SourceImageCache *sourcecache)
+video::ITexture* TextureSource::generateTextureFromMesh(
+		const TextureFromMeshParams &params)
 {
-	/*infostream<<"generate_image_from_scratch(): "
+	video::IVideoDriver *driver = m_device->getVideoDriver();
+	assert(driver);
+
+	if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
+	{
+		static bool warned = false;
+		if(!warned)
+		{
+			errorstream<<"TextureSource::generateTextureFromMesh(): "
+				<<"EVDF_RENDER_TO_TARGET not supported."<<std::endl;
+			warned = true;
+		}
+		return NULL;
+	}
+
+	// Create render target texture
+	video::ITexture *rtt = driver->addRenderTargetTexture(
+			params.dim, params.rtt_texture_name.c_str(),
+			video::ECF_A8R8G8B8);
+	if(rtt == NULL)
+	{
+		errorstream<<"TextureSource::generateTextureFromMesh(): "
+			<<"addRenderTargetTexture returned NULL."<<std::endl;
+		return NULL;
+	}
+
+	// Set render target
+	driver->setRenderTarget(rtt, false, true, video::SColor(0,0,0,0));
+
+	// Get a scene manager
+	scene::ISceneManager *smgr_main = m_device->getSceneManager();
+	assert(smgr_main);
+	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
+	assert(smgr);
+
+	scene::IMeshSceneNode* meshnode = smgr->addMeshSceneNode(params.mesh, NULL, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
+	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
+	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
+	meshnode->setMaterialFlag(video::EMF_TRILINEAR_FILTER, m_setting_trilinear_filter);
+	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, m_setting_bilinear_filter);
+	meshnode->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, m_setting_anisotropic_filter);
+
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
+			params.camera_position, params.camera_lookat);
+	// second parameter of setProjectionMatrix (isOrthogonal) is ignored
+	camera->setProjectionMatrix(params.camera_projection_matrix, false);
+
+	smgr->setAmbientLight(params.ambient_light);
+	smgr->addLightSceneNode(0,
+			params.light_position,
+			params.light_color,
+			params.light_radius);
+
+	// Render scene
+	driver->beginScene(true, true, video::SColor(0,0,0,0));
+	smgr->drawAll();
+	driver->endScene();
+
+	// NOTE: The scene nodes should not be dropped, otherwise
+	//       smgr->drop() segfaults
+	/*cube->drop();
+	camera->drop();
+	light->drop();*/
+	// Drop scene manager
+	smgr->drop();
+
+	// Unset render target
+	driver->setRenderTarget(0, false, true, 0);
+
+	if(params.delete_texture_on_shutdown)
+		m_texture_trash.push_back(rtt);
+
+	return rtt;
+}
+
+video::IImage* TextureSource::generateImageFromScratch(std::string name)
+{
+	/*infostream<<"generateImageFromScratch(): "
 			"\""<<name<<"\""<<std::endl;*/
-	
-	video::IVideoDriver* driver = device->getVideoDriver();
+
+	video::IVideoDriver *driver = m_device->getVideoDriver();
 	assert(driver);
 
 	/*
@@ -835,12 +926,6 @@ video::IImage* generate_image_from_scratch(std::string name,
 
 	// Find last meta separator in name
 	s32 last_separator_position = name.find_last_of(separator);
-	//if(last_separator_position == std::npos)
-	//	last_separator_position = -1;
-
-	/*infostream<<"generate_image_from_scratch(): "
-			<<"last_separator_position="<<last_separator_position
-			<<std::endl;*/
 
 	/*
 		If separator was found, construct the base name and make the
@@ -851,11 +936,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 	{
 		// Construct base name
 		base_image_name = name.substr(0, last_separator_position);
-		/*infostream<<"generate_image_from_scratch(): Calling itself recursively"
-				" to get base image of \""<<name<<"\" = \""
-                <<base_image_name<<"\""<<std::endl;*/
-		baseimg = generate_image_from_scratch(base_image_name, device,
-				sourcecache);
+		baseimg = generateImageFromScratch(base_image_name);
 	}
 	
 	/*
@@ -864,12 +945,11 @@ video::IImage* generate_image_from_scratch(std::string name,
 	*/
 
 	std::string last_part_of_name = name.substr(last_separator_position+1);
-	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 	
 	// Generate image according to part of name
-	if(!generate_image(last_part_of_name, baseimg, device, sourcecache))
+	if(!generateImage(last_part_of_name, baseimg))
 	{
-		errorstream<<"generate_image_from_scratch(): "
+		errorstream<<"generateImageFromScratch(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
 		return NULL;
@@ -878,23 +958,22 @@ video::IImage* generate_image_from_scratch(std::string name,
 	return baseimg;
 }
 
-bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		IrrlichtDevice *device, SourceImageCache *sourcecache)
+bool TextureSource::generateImage(std::string part_of_name, video::IImage *& baseimg)
 {
-	video::IVideoDriver* driver = device->getVideoDriver();
+	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver);
 
 	// Stuff starting with [ are special commands
 	if(part_of_name.size() == 0 || part_of_name[0] != '[')
 	{
-		video::IImage *image = sourcecache->getOrLoad(part_of_name, device);
+		video::IImage *image = m_sourcecache.getOrLoad(part_of_name, m_device);
 
 		if(image == NULL)
 		{
 			if(part_of_name != ""){
-				errorstream<<"generate_image(): Could not load image \""
+				errorstream<<"generateImage(): Could not load image \""
 						<<part_of_name<<"\""<<" while building texture"<<std::endl;
-				errorstream<<"generate_image(): Creating a dummy"
+				errorstream<<"generateImage(): Creating a dummy"
 						<<" image for \""<<part_of_name<<"\""<<std::endl;
 			}
 
@@ -955,7 +1034,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	{
 		// A special texture modification
 
-		/*infostream<<"generate_image(): generating special "
+		/*infostream<<"generateImage(): generating special "
 				<<"modification \""<<part_of_name<<"\""
 				<<std::endl;*/
 		
@@ -967,7 +1046,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generateImage(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -996,8 +1075,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				It is an image with a number of cracking stages
 				horizontally tiled.
 			*/
-			video::IImage *img_crack = sourcecache->getOrLoad(
-					"crack_anylength.png", device);
+			video::IImage *img_crack = m_sourcecache.getOrLoad(
+					"crack_anylength.png", m_device);
 		
 			if(img_crack && progression >= 0)
 			{
@@ -1080,7 +1159,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
-				video::IImage *img = sourcecache->getOrLoad(filename, device);
+				video::IImage *img = m_sourcecache.getOrLoad(filename, m_device);
 				if(img)
 				{
 					core::dimension2d<u32> dim = img->getDimension();
@@ -1111,7 +1190,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generateImage(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1130,7 +1209,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generateImage(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1155,7 +1234,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generateImage(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1212,7 +1291,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generateImage(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1240,7 +1319,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				errorstream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generateImage(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1254,12 +1333,12 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			std::string imagename_right = sf.next("{");
 
 			// Generate images for the faces of the cube
-			video::IImage *img_top = generate_image_from_scratch(
-					imagename_top, device, sourcecache);
-			video::IImage *img_left = generate_image_from_scratch(
-					imagename_left, device, sourcecache);
-			video::IImage *img_right = generate_image_from_scratch(
-					imagename_right, device, sourcecache);
+			video::IImage *img_top =
+				generateImageFromScratch(imagename_top);
+			video::IImage *img_left =
+				generateImageFromScratch(imagename_left);
+			video::IImage *img_right =
+				generateImageFromScratch(imagename_right);
 			assert(img_top && img_left && img_right);
 
 			// Create textures from images
@@ -1288,31 +1367,25 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			cube->getMeshBuffer(4)->getMaterial().setTexture(0, texture_left);
 			cube->getMeshBuffer(5)->getMaterial().setTexture(0, texture_left);
 
-			core::dimension2d<u32> dim(64,64);
-			std::string rtt_texture_name = part_of_name + "_RTT";
-
-			v3f camera_position(0, 1.0, -1.5);
-			camera_position.rotateXZBy(45);
-			v3f camera_lookat(0, 0, 0);
-			core::CMatrix4<f32> camera_projection_matrix;
+			TextureFromMeshParams params;
+			params.mesh = cube;
+			params.dim.set(64, 64);
+			params.rtt_texture_name = part_of_name + "_RTT";
+			// We will delete the rtt texture ourselves
+			params.delete_texture_on_shutdown = false;
+			params.camera_position.set(0, 1.0, -1.5);
+			params.camera_position.rotateXZBy(45);
+			params.camera_lookat.set(0, 0, 0);
 			// Set orthogonal projection
-			camera_projection_matrix.buildProjectionMatrixOrthoLH(
+			params.camera_projection_matrix.buildProjectionMatrixOrthoLH(
 					1.65, 1.65, 0, 100);
 
-			video::SColorf ambient_light(0.2,0.2,0.2);
-			v3f light_position(10, 100, -50);
-			video::SColorf light_color(0.5,0.5,0.5);
-			f32 light_radius = 1000;
-
-			video::ITexture *rtt = generateTextureFromMesh(
-					cube, device, dim, rtt_texture_name,
-					camera_position,
-					camera_lookat,
-					camera_projection_matrix,
-					ambient_light,
-					light_position,
-					light_color,
-					light_radius);
+			params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
+			params.light_position.set(10, 100, -50);
+			params.light_color.set(1.0, 0.5, 0.5, 0.5);
+			params.light_radius = 1000;
+			
+			video::ITexture *rtt = generateTextureFromMesh(params);
 			
 			// Drop mesh
 			cube->drop();
@@ -1324,19 +1397,18 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			
 			if(rtt == NULL)
 			{
-				baseimg = generate_image_from_scratch(
-						imagename_top, device, sourcecache);
+				baseimg = generateImageFromScratch(imagename_top);
 				return true;
 			}
 
 			// Create image of render target
-			video::IImage *image = driver->createImage(rtt, v2s32(0,0), dim);
+			video::IImage *image = driver->createImage(rtt, v2s32(0,0), params.dim);
 			assert(image);
 
-			//cleanup texture
+			// Cleanup texture
 			driver->removeTexture(rtt);
 
-			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, params.dim);
 
 			if(image)
 			{
@@ -1358,7 +1430,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			if(baseimg == NULL)
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
-			video::IImage *img = sourcecache->getOrLoad(filename, device);
+			video::IImage *img = m_sourcecache.getOrLoad(filename, m_device);
 			if(img)
 			{
 				core::dimension2d<u32> dim = img->getDimension();
@@ -1392,7 +1464,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 frame_index = stoi(sf.next(":"));
 
 			if(baseimg == NULL){
-				errorstream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generateImage(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1404,7 +1476,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8,
 					frame_size);
 			if(!img){
-				errorstream<<"generate_image(): Could not create image "
+				errorstream<<"generateImage(): Could not create image "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1426,7 +1498,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		}
 		else
 		{
-			errorstream<<"generate_image(): Invalid "
+			errorstream<<"generateImage(): Invalid "
 					" modification: \""<<part_of_name<<"\""<<std::endl;
 		}
 	}

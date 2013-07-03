@@ -58,6 +58,25 @@ std::string getImagePath(std::string path);
 std::string getTexturePath(const std::string &filename);
 
 /*
+	ITextureSource::generateTextureFromMesh parameters
+*/
+namespace irr {namespace scene {class IMesh;}}
+struct TextureFromMeshParams
+{
+	scene::IMesh *mesh;
+	core::dimension2d<u32> dim;
+	std::string rtt_texture_name;
+	bool delete_texture_on_shutdown;
+	v3f camera_position;
+	v3f camera_lookat;
+	core::CMatrix4<f32> camera_projection_matrix;
+	video::SColorf ambient_light;
+	v3f light_position;
+	video::SColorf light_color;
+	f32 light_radius;
+};
+
+/*
 	TextureSource creates and caches textures.
 */
 
@@ -78,6 +97,8 @@ public:
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	virtual video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -100,6 +121,8 @@ public:
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
+	virtual video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
