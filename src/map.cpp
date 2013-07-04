@@ -1653,6 +1653,8 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 
 	u16 loop_max = g_settings->getU16("liquid_loop_max");
 
+	//if (m_transforming_liquid.size() > 0) errorstream << "Liquid queue size="<<m_transforming_liquid.size()<<std::endl;
+
 	while (m_transforming_liquid.size() > 0)
 	{
 		// This should be done here so that it is done when continue is used
@@ -1771,7 +1773,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		// prevent lakes in air above unloaded blocks
-		if (liquid_levels[D_TOP] == 0 && (p0.Y > water_level || !fast_flood) && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE) {
+		if (liquid_levels[D_TOP] == 0 && (p0.Y > water_level) && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE && !(loopcount % 3)) {
 			--total_level;
 		}
 
@@ -1794,11 +1796,16 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			if (!neighbors[ii].l)
 				continue;
 			liquid_levels_want[ii] = want_level;
-			if (liquid_levels_want[ii] < LIQUID_LEVEL_SOURCE && total_level > 0
-				&& liquid_levels[ii] > liquid_levels_want[ii]
-				) {
-				++liquid_levels_want[ii];
-				--total_level;
+			if (liquid_levels_want[ii] < LIQUID_LEVEL_SOURCE && total_level > 0) {
+				if (loopcount % 3 || liquid_levels[ii] <= 0){
+					if (liquid_levels[ii] > liquid_levels_want[ii]) {
+						++liquid_levels_want[ii];
+						--total_level;
+					}
+				} else if (neighbors[ii].l > 0){
+						++liquid_levels_want[ii];
+						--total_level;
+				}
 			}
 		}
 
