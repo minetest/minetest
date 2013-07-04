@@ -4,7 +4,7 @@
 install:
  cpan JSON JSON::XS
  touch list_full list
- chmod a+rw list_full list
+ chmod a+rw list_full list log.log
 
 freebsd:
  www/fcgiwrap www/nginx
@@ -50,10 +50,18 @@ use warnings "NONFATAL" => "all";
 no warnings qw(uninitialized);
 use utf8;
 use Socket;
+BEGIN {
+    if ($Socket::VERSION ge '2.008') {
+        eval qq{use Socket qw(getaddrinfo getnameinfo NI_NUMERICHOST NIx_NOSERV)}; # >5.16
+    } else {
+        eval qq{use Socket6 qw(getaddrinfo getnameinfo NI_NUMERICHOST NIx_NOSERV)}; # <5.16
+    }
+};
 use Time::HiRes qw(time sleep);
-use IO::Socket::INET;
+use IO::Socket::IP;
 use JSON;
 use Net::Ping;
+#use Data::Dumper;
 our $root_path;
 ($ENV{'SCRIPT_FILENAME'} || $0) =~ m|^(.+)[/\\].+?$|;    #v0w
 $root_path = $1 . '/' if $1;
@@ -63,6 +71,7 @@ our %config = (
     #debug        => 1,
     list_full    => $root_path . 'list_full',
     list_pub     => $root_path . 'list',
+    log          => $root_path . 'log.log',
     time_purge   => 86400 * 30,
     time_alive   => 650,
     source_check => 1,
@@ -109,6 +118,12 @@ sub file_rewrite(;$@) {
     print $fh @_;
 }
 
+sub printlog(;@) {
+    #local $_ = shift;
+    return unless open my $fh, '>>', $config{log};
+    print $fh (join ' ', @_), "\n";
+}
+
 sub file_read ($) {
     open my $f, '<', $_[0] or return;
     local $/ = undef;
@@ -120,7 +135,7 @@ sub file_read ($) {
 sub read_json {
     my $ret = {};
     eval { $ret = JSON->new->utf8->relaxed(1)->decode(${ref $_[0] ? $_[0] : file_read($_[0]) or \''} || '{}'); };    #'mc
-    warn "json error [$@] on [", ${ref $_[0] ? $_[0] : \$_[0]}, "]" if $@;
+    printlog "json error [$@] on [", ${ref $_[0] ? $_[0] : \$_[0]}, "]" if $@;
     $ret;
 }
 
@@ -133,16 +148,6 @@ sub printu (@) {
     }
 }
 
-sub name_to_ip_noc($) {
-    my ($name) = @_;
-    unless ($name =~ /^\d+\.\d+\.\d+\.\d+$/) {
-        local $_ = (gethostbyname($name))[4];
-        return ($name, 1) unless length($_) == 4;
-        $name = inet_ntoa($_);
-    }
-    return $name;
-}
-
 sub float {
     return ($_[0] < 8 and $_[0] - int($_[0]))
       ? sprintf('%.' . ($_[0] < 1 ? 3 : ($_[0] < 3 ? 2 : 1)) . 'f', $_[0])
@@ -152,11 +157,11 @@ sub float {
 
 sub mineping ($$) {
     my ($addr, $port) = @_;
-    warn "mineping($addr, $port)" if $config{debug};
+    printlog "mineping($addr, $port)" if $config{debug};
     my $data;
     my $time = time;
     eval {
-        my $socket = IO::Socket::INET->new(
+        my $socket = IO::Socket::IP->new(
             'PeerAddr' => $addr,
             'PeerPort' => $port,
             'Proto'    => 'udp',
@@ -171,7 +176,7 @@ sub mineping ($$) {
     } or return 0;
     return 0 unless length $data;
     $time = float(time - $time);
-    warn "recvd: ", length $data, " [$time]" if $config{debug};
+    printlog "recvd: ", length $data, " [$time]" if $config{debug};
     return $time;
 }
 
@@ -189,18 +194,22 @@ sub request (;$) {
         if (%$param) {
             s/^false$// for values %$param;
             $param->{ip} = $r->{REMOTE_ADDR};
+            $param->{ip} =~ s/^::ffff://;
             for (@{$config{blacklist}}) {
                 return if $param->{ip} ~~ $_;
             }
             $param->{address} ||= $param->{ip};
-            if ($config{source_check} and name_to_ip_noc($param->{address}) ne $param->{ip} and !($param->{ip} ~~ $config{trusted})) {
-                warn("bad address [$param->{address}] ne [$param->{ip}]") if $config{debug};
-                return;
+            if ($config{source_check}) {
+                (my $err, local @_) = getaddrinfo($param->{address});
+                my $addrs = [ map{(getnameinfo($_->{addr}, NI_NUMERICHOST, NIx_NOSERV))[1]} @_];
+                if (!($param->{ip} ~~ $addrs) and !($param->{ip} ~~ $config{trusted})) {
+                    printlog("bad address (", @$addrs, ")[$param->{address}] ne [$param->{ip}] [$err]") if $config{debug};
+                    return;
+                }
             }
             $param->{port} ||= 30000;
             $param->{key} = "$param->{ip}:$param->{port}";
             $param->{off} = time if $param->{action} ~~ 'delete';
-
             if ($config{ping} and $param->{action} ne 'delete') {
                 if ($config{mineping}) {
                     $param->{ping} = mineping($param->{ip}, $param->{port});
@@ -209,15 +218,15 @@ sub request (;$) {
                     $ping->service_check(0);
                     my ($pingret, $duration, $ip) = $ping->ping($param->{address});
                     if ($ip ne $param->{ip} and !($param->{ip} ~~ $config{trusted})) {
-                        warn "strange ping ip [$ip] != [$param->{ip}]" if $config{debug};
+                        printlog "strange ping ip [$ip] != [$param->{ip}]" if $config{debug};
                         return if $config{source_check} and !($param->{ip} ~~ $config{trusted});
                     }
                     $param->{ping} = $duration if $pingret;
-                    warn " PING t=$config{ping_timeout}, $param->{address}:$param->{port} = ( $pingret, $duration, $ip )" if $config{debug};
+                    printlog " PING t=$config{ping_timeout}, $param->{address}:$param->{port} = ( $pingret, $duration, $ip )" if $config{debug};
                 }
             }
             my $list = read_json($config{list_full}) || {};
-            warn "readed[$config{list_full}] list size=", scalar @{$list->{list}};
+            printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}};
             my $listk = {map { $_->{key} => $_ } @{$list->{list}}};
             my $old = $listk->{$param->{key}};
             $param->{time} = $old->{time} if $param->{off};
@@ -227,18 +236,20 @@ sub request (;$) {
             $param->{first} ||= $old->{first} || $old->{time} || $param->{time};
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
+            $param->{mods} ||= $old->{mods};
             delete $param->{action};
             $listk->{$param->{key}} = $param;
+            #printlog Dumper $param;
             $list->{list} = [grep { $_->{time} > time - $config{time_purge} } values %$listk];
             file_rewrite($config{list_full}, JSON->new->encode($list));
-            warn "writed[$config{list_full}] list size=", scalar @{$list->{list}};
+            printlog "writed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
             $list->{list} = [
                 sort { $b->{clients} <=> $a->{clients} || $a->{start} <=> $b->{start} }
                   grep { $_->{time} > time - $config{time_alive} and !$_->{off} and (!$config{ping} or !$config{pingable} or $_->{ping}) }
                   @{$list->{list}}
             ];
             file_rewrite($config{list_pub}, JSON->new->encode($list));
-            warn "writed[$config{list_pub}] list size=", scalar @{$list->{list}};
+            printlog "writed[$config{list_pub}] list size=", scalar @{$list->{list}} if $config{debug};
         }
     };
     return [200, ["Content-type", "application/json"], [JSON->new->encode({})]], $after;

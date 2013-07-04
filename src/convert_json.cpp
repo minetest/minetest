@@ -59,7 +59,7 @@ Json::Value                 fetchJsonValue(const std::string url,
 
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK)
-			errorstream<<"Jsonreader: "<< url <<" not found (internet connection?)"<<std::endl;
+			errorstream<<"Jsonreader: "<< url <<" not found (" << curl_easy_strerror(res) << ")" <<std::endl;
 		curl_easy_cleanup(curl);
 	}
 
