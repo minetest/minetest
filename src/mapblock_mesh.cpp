@@ -1072,12 +1072,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		Also store animation info
 	*/
 	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
 			getShader("test_shader_1").material;
 	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
 			getShader("test_shader_2").material;
 	video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
 			getShader("test_shader_3").material;
+	video::E_MATERIAL_TYPE bumpmaps1 = m_gamedef->getShaderSource()->
+			getShader("bumpmaps_solids").material;
+	video::E_MATERIAL_TYPE bumpmaps2 = m_gamedef->getShaderSource()->
+			getShader("bumpmaps_liquids").material;
+
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1154,8 +1160,33 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.MaterialType
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture);
-		if(enable_shaders)
-			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
+		if (enable_shaders)
+			{
+				if (enable_bumpmapping)
+					{
+						ITextureSource *tsrc = data->m_gamedef->tsrc();
+						std::string basename,normal,replace;
+						replace = "_normal.png";
+						basename = tsrc->getTextureName(p.tile.texture_id);
+						unsigned pos = basename.find(".");
+						normal = basename.substr (0, pos) + replace;
+						if (tsrc->isKnownSourceImage(normal))
+							{
+								// look for image extension and replace it 
+								for(std::string::size_type i = 0; (i = basename.find(".", i)) != std::string::npos;)
+									{
+										basename.replace(i, 4, replace);
+										i += replace.length();
+									}
+								material.setTexture(1, tsrc->getTexture(basename));		
+								p.tile.applyMaterialOptionsWithShaders(material, bumpmaps1,bumpmaps2, shadermat3);
+							}
+						else 
+							p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
+					}
+				else 		
+						p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);	
+			}
 		else
 			p.tile.applyMaterialOptions(material);
 
@@ -1217,6 +1248,9 @@ MapBlockMesh::~MapBlockMesh()
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
 {
+	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+	
 	if(!m_has_animation)
 	{
 		m_animation_force_timer = 100000;
@@ -1271,6 +1305,19 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 		// Set the texture
 		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
+		if (enable_shaders && enable_bumpmapping)
+			{
+				std::string basename,normal;
+				basename = tsrc->getTextureName(tile.texture_id);
+				unsigned pos;
+				pos = basename.find(".");
+				normal = basename.substr (0, pos);
+				normal += "_normal.png";
+				os.str("");
+				os<<normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
+				if (tsrc->isKnownSourceImage(normal))
+					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+			}
 	}
 
 	// Day-night transition
