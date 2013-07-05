@@ -585,8 +585,10 @@ void ShaderSource::rebuildShaders()
 	// Recreate shaders
 	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
-		*info = generate_shader(info->name, m_device,
-				m_shader_callback, &m_sourcecache);
+		if(info->name != ""){
+			*info = generate_shader(info->name, m_device,
+					m_shader_callback, &m_sourcecache);
+		}
 	}
 }
 
