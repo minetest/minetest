@@ -182,7 +182,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			errorstream
 				<< "GUIEngine::GUIEngine unable to load builtin menu"
 				<< std::endl;
-			return;
+			assert("no future without mainmenu" == 0);
 		}
 	}
 
