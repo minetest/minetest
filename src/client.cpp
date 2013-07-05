@@ -2850,6 +2850,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	m_tsrc->rebuildImagesAndTextures();
 
 	// Rebuild shaders
+	infostream<<"- Rebuilding shaders"<<std::endl;
 	m_shsrc->rebuildShaders();
 
 	// Update node aliases
