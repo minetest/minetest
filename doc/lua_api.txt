@@ -974,7 +974,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 ^ index to be selected within textlist
 ^ true/false draw transparent background
 
-tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<draw_border>]
+tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
 ^ x and y position the itemlist relative to the top left of the menu
 ^ name fieldname data is transfered to lua

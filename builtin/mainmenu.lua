@@ -50,7 +50,11 @@ function render_favourite(spec)
 		details = details .. " "
 	end
 	
-	text = text .. ":" .. spec.port:trim()
+	if spec.port ~= nil then
+		text = text .. ":" .. spec.port:trim()
+	else
+		text = text .. ":??"
+	end
 	
 	return text
 end
@@ -297,7 +301,7 @@ function menu.filtered_game_list()
 			end
 			
 			retval = retval .. menu.worldlist[i].name .. 
-						" [[" .. menu.worldlist[i].gameid .. "]]"
+						" \\[" .. menu.worldlist[i].gameid .. "\\]"
 		end
 	end
 	
@@ -575,15 +579,30 @@ function tabbuilder.handle_create_world_buttons(fields)
 		
 		if gameindex > 0 and
 			worldname ~= "" then
-			engine.setting_set("mg_name",fields["dd_mapgen"])
-			local message = engine.create_world(worldname,gameindex)
+			menu.worldlist = engine.get_worlds()
 			
-			menu.last_game = gameindex
-			engine.setting_set("main_menu_last_game_idx",gameindex)
+			local found = false
+			for i=1,#menu.worldlist,1 do
+				if worldlist[i].name == worldname then
+					found = true
+					break
+				end
+			end
+			
+			local message = nil
+			
+			if not found then
+				engine.setting_set("mg_name",fields["dd_mapgen"])
+				message = engine.create_world(worldname,gameindex)
+			else
+				message = "A world named \"" .. worldname .. "\" already exists"
+			end
 			
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
+				menu.last_game = gameindex
+				engine.setting_set("main_menu_last_game_idx",gameindex)
 				menu.worldlist = engine.get_worlds()
 				
 				local worldlist = menu.worldlist
@@ -639,9 +658,13 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.handle_multiplayer_buttons(fields)
 	
-	if  fields["te_name"] ~= nil then
+	if fields["te_name"] ~= nil then
 		gamedata.playername = fields["te_name"]
 		engine.setting_set("name", fields["te_name"])
+	end
+	
+	if fields["te_pwd"] ~= nil then
+		gamedata.password = fields["te_pwd"]
 	end
 
 	if fields["favourites"] ~= nil then
@@ -653,7 +676,9 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			end
 			gamedata.port = menu.favorites[event.index].port
 			gamedata.playername		= fields["te_name"]
-			gamedata.password		= fields["te_pwd"]
+			if fields["te_pwd"] ~= nil then
+				gamedata.password		= fields["te_pwd"]
+			end
 			gamedata.selected_world = 0
 			
 			if gamedata.address ~= nil and
@@ -702,12 +727,15 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	end
 
 	if fields["btn_mp_connect"] ~= nil then
+		
 		gamedata.playername		= fields["te_name"]
-		gamedata.password		= fields["te_pwd"]
+		if fields["te_pwd"] ~= nil then
+			gamedata.password		= fields["te_pwd"]
+		end
 		gamedata.address		= fields["te_address"]
 		gamedata.port			= fields["te_port"]
 		gamedata.selected_world = 0
-
+		
 		engine.start()
 		return
 	end
@@ -736,15 +764,39 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["cb_enable_damage"] then
 		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
 	end
+	
+	
+	--this is required for enter button connect
+	if fields["te_serverport"] ~= nil then
+		gamedata.port = fields["te_serverport"]
+	end
+	
+	if fields["te_playername"] ~= nil then
+		gamedata.playername = fields["te_playername"]
+	end
+	
+	if fields["te_passwd"] ~= nil then
+		gamedata.password = fields["te_passwd"]
+	end
 
 	if fields["start_server"] ~= nil or
 		world_doubleclick then
 		local selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 then
-			gamedata.playername		= fields["te_playername"]
-			gamedata.password		= fields["te_pwd"]
+			
+			if fields["te_playername"] ~= nil then
+				gamedata.playername		= fields["te_playername"]
+			end
+			
+			if fields["te_passwd"] ~= nil then
+				gamedata.password		= fields["te_passwd"]
+			end
+			
+			if fields["te_serverport"] then
+				gamedata.port			= fields["te_serverport"]
+			end
+			
 			gamedata.address		= ""
-			gamedata.port			= fields["te_serverport"]
 			gamedata.selected_world	= selected
 			
 			engine.setting_set("main_menu_tab",tabbuilder.current_tab)
@@ -1065,11 +1117,11 @@ function tabbuilder.tab_server()
 	
 	if #menu.worldlist > 0 then
 		retval = retval .. menu.worldlist[1].name .. 
-						" [[" .. menu.worldlist[1].gameid .. "]]"
+						" \\[" .. menu.worldlist[1].gameid .. "\\]"
 				
 		for i=2,#menu.worldlist,1 do
 			retval = retval .. "," .. menu.worldlist[i].name .. 
-						" [[" .. menu.worldlist[i].gameid .. "]]"
+						" \\[" .. menu.worldlist[i].gameid .. "\\]"
 		end
 	end
 				
@@ -1263,6 +1315,15 @@ engine.event_handler = function(event)
 		
 		if tabbuilder.current_tab == "server" then
 			engine.button_handler({start_server="start_server"})
+		end
+		
+		if tabbuilder.current_tab == "multiplayer" then
+			engine.button_handler(
+				{
+					btn_mp_connect	= "btn_mp_connect",
+					te_address		= engine.setting_get("address"),
+					te_name			= engine.setting_get("name")
+				})
 		end
 	end
 end

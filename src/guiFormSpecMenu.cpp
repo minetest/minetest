@@ -243,28 +243,25 @@ std::vector<std::string> split(const std::string &s, char delim, bool escape=fal
 	else {
 		std::string current = "";
 		current += s.c_str()[0];
-		bool last_was_delim = false;
+		bool last_was_escape = false;
 		for(unsigned int i=1; i < s.size(); i++) {
-			if (last_was_delim) {
-				if (s.c_str()[i] == delim) {
-					current += s.c_str()[i];
-					last_was_delim = false;
-				}
-				else {
-					tokens.push_back(current);
-
-					current = "";
-					current += s.c_str()[i];
-					last_was_delim = false;
-				}
+			if (last_was_escape) {
+				current += '\\';
+				current += s.c_str()[i];
+				last_was_escape = false;
 			}
 			else {
 				if (s.c_str()[i] == delim) {
-					last_was_delim = true;
+					tokens.push_back(current);
+					current = "";
+					last_was_escape = false;
+				}
+				else if (s.c_str()[i] == '\\'){
+					last_was_escape = true;
 				}
 				else {
-					last_was_delim = false;
 					current += s.c_str()[i];
+					last_was_escape = false;
 				}
 			}
 		}
@@ -659,11 +656,13 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 		for (unsigned int i=0; i < items.size(); i++) {
 			if (items[i].c_str()[0] == '#') {
 				if (items[i].c_str()[1] == '#') {
-					e->addItem(narrow_to_wide(items[i]).c_str() +1);
+					e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
 				}
 				else {
-					std::wstring toadd = narrow_to_wide(items[i].c_str() + 4);
 					std::string color = items[i].substr(1,3);
+					std::wstring toadd =
+						narrow_to_wide(unescape_string(items[i]).c_str() + 4);
+
 
 					e->addItem(toadd.c_str());
 
@@ -676,7 +675,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				}
 			}
 			else {
-			e->addItem(narrow_to_wide(items[i]).c_str());
+				e->addItem(narrow_to_wide(unescape_string(items[i])).c_str());
 			}
 		}
 
@@ -1359,8 +1358,19 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
 
 	std::vector<std::string> parts = split(element,'[', true);
 
-	if (parts.size() != 2)
+	// ugly workaround to keep compatibility
+	if (parts.size() > 2) {
+		if (trim(parts[0]) == "image") {
+			for (unsigned int i=2;i< parts.size(); i++) {
+				parts[1] += "[" + parts[i];
+			}
+		}
+		else { return; }
+	}
+
+	if (parts.size() < 2) {
 		return;
+	}
 
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
