@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 00:07+0000\n"
-"PO-Revision-Date: 2013-06-01 13:22+0200\n"
-"Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"PO-Revision-Date: 2013-07-06 14:28+0200\n"
+"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -377,7 +377,7 @@ msgstr "Précharger les visuels d'objets"
 
 #: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
-msgstr "Activer les Particules"
+msgstr "Activer les particules"
 
 #: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
