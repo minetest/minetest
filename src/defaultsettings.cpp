@@ -235,12 +235,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
 	settings->setDefault("mgv6_np_apple_trees",    "0, 1, (100, 100, 100), 342902, 3, 0.45");
 
-	settings->setDefault("mgv7_np_terrain_base",     "0, 80, (250, 250, 250), 82341, 5, 0.6");
-	settings->setDefault("mgv7_np_terrain_alt",      "0, 20, (250, 250, 250), 5934, 5, 0.6");
-	settings->setDefault("mgv7_np_terrain_mod",      "0, 1, (350, 350, 350), 85039, 5, 0.6");
-	settings->setDefault("mgv7_np_terrain_persist",  "0, 1, (500, 500, 500), 539, 3, 0.6");
-	settings->setDefault("mgv7_np_height_select",    "0.5, 0.5, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv7_np_ridge",            "0, 1, (100, 100, 100), 6467, 4, 0.75");
+	settings->setDefault("mgv7_np_terrain_base",     "4, 70, (300, 300, 300), 82341, 6, 0.7");
+	settings->setDefault("mgv7_np_terrain_alt",      "4, 25, (600, 600, 600), 5934, 5, 0.6");
+	settings->setDefault("mgv7_np_terrain_persist",  "0.6, 0.1, (500, 500, 500), 539, 3, 0.6");
+	settings->setDefault("mgv7_np_height_select",    "-0.5, 1, (250, 250, 250), 4213, 5, 0.69");
+	settings->setDefault("mgv7_np_filler_depth",     "0, 1.2, (150, 150, 150), 261, 4, 0.7");	
+	settings->setDefault("mgv7_np_mount_height",     "100, 30, (500, 500, 500), 72449, 4, 0.6");
+	settings->setDefault("mgv7_np_ridge_uwater",     "0, 1, (500, 500, 500), 85039, 4, 0.6");
+	settings->setDefault("mgv7_np_mountain",         "0, 1, (250, 350, 250), 5333, 5, 0.68");
+	settings->setDefault("mgv7_np_ridge",            "0, 1, (100, 120, 100), 6467, 4, 0.75");
 
 	settings->setDefault("mgindev_np_terrain_base",   "-4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10");
 	settings->setDefault("mgindev_np_terrain_higher", "20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10");

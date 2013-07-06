@@ -43,9 +43,9 @@ BiomeDefManager::BiomeDefManager() {
 	b->flags = 0;
 
 	b->c_top         = CONTENT_AIR;
-	b->top_depth     = 0;
-	b->c_filler      = b->c_top;
-	b->filler_height = MAP_GENERATION_LIMIT;
+	b->depth_top     = 0;
+	b->c_filler      = CONTENT_AIR;
+	b->depth_filler  = 0;
 
 	b->height_min     = -MAP_GENERATION_LIMIT;
 	b->height_max     = MAP_GENERATION_LIMIT;
@@ -101,27 +101,42 @@ void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
 	
 	biome_registration_finished = true;
 	
-	for (size_t i = 0; i != biomes.size(); i++) {
+	for (size_t i = 1; i < biomes.size(); i++) {
 		b = biomes[i];
-		
+
+		b->c_top = ndef->getId(b->nname_top);
 		if (b->c_top == CONTENT_IGNORE) {
-			b->c_top = ndef->getId(b->top_nodename);
-			if (b->c_top == CONTENT_IGNORE) {
-				errorstream << "BiomeDefManager::resolveNodeNames: node '"
-					<< b->top_nodename << "' not defined" << std::endl;
-				b->c_top = CONTENT_AIR;
-				b->top_depth = 0;
-			}
+			errorstream << "BiomeDefManager::resolveNodeNames: node '"
+				<< b->nname_top << "' not defined" << std::endl;
+			b->c_top     = CONTENT_AIR;
+			b->depth_top = 0;
+		}
+	
+		b->c_filler = ndef->getId(b->nname_filler);
+		if (b->c_filler == CONTENT_IGNORE) {
+			errorstream << "BiomeDefManager::resolveNodeNames: node '"
+				<< b->nname_filler << "' not defined" << std::endl;
+			b->c_filler     = CONTENT_AIR;
+			b->depth_filler = 0;
 		}
 		
-		if (b->c_filler == CONTENT_IGNORE) {
-			b->c_filler = ndef->getId(b->filler_nodename);
-			if (b->c_filler == CONTENT_IGNORE) {
-				errorstream << "BiomeDefManager::resolveNodeNames: node '"
-					<< b->filler_nodename << "' not defined" << std::endl;
-				b->c_filler = CONTENT_AIR;
-				b->filler_height = MAP_GENERATION_LIMIT;
-			}
+		b->c_water = ndef->getId(b->nname_water);
+		if (b->c_water == CONTENT_IGNORE) {
+			errorstream << "BiomeDefManager::resolveNodeNames: node '"
+				<< b->nname_water << "' not defined" << std::endl;
+			b->c_water = CONTENT_AIR;
+		}
+		
+		b->c_dust = ndef->getId(b->nname_dust);
+		if (b->c_dust == CONTENT_IGNORE) {
+			errorstream << "BiomeDefManager::resolveNodeNames: node '"
+				<< b->nname_dust << "' not defined" << std::endl;
+		}
+		
+		b->c_dust_water = ndef->getId(b->nname_dust_water);
+		if (b->c_dust_water == CONTENT_IGNORE) {
+			errorstream << "BiomeDefManager::resolveNodeNames: node '"
+				<< b->nname_dust_water << "' not defined" << std::endl;
 		}
 	}
 }

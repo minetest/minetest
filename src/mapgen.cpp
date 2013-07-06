@@ -291,7 +291,7 @@ void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 				continue;
 
 			int height = getHeight();
-			int max_y = nmax.Y + MAP_BLOCKSIZE;
+			int max_y = nmax.Y;// + MAP_BLOCKSIZE - 1;
 			if (y + 1 + height > max_y) {
 				continue;
 #if 0
@@ -859,9 +859,16 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
 	//TimeTaker t("Mapgen::updateHeightmap", NULL, PRECISION_MICRO);
 	int index = 0;
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 x = nmin.X; x <= nmax.X; x++) {
+		for (s16 x = nmin.X; x <= nmax.X; x++, index++) {
 			s16 y = findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
-			heightmap[index++] = y;
+
+			// if the values found are out of range, trust the old heightmap
+			if (y == nmax.Y && heightmap[index] > nmax.Y)
+				continue;
+			if (y == nmin.Y - 1 && heightmap[index] < nmin.Y)
+				continue;
+				
+			heightmap[index] = y;
 		}
 	}
 	//printf("updateHeightmap: %dus\n", t.stop());
@@ -1060,9 +1067,12 @@ bool MapgenV7Params::readParams(Settings *settings) {
 	bool success = 
 		settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base)    &&
 		settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt)     &&
-		settings->getNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod)     &&
 		settings->getNoiseParams("mgv7_np_terrain_persist", np_terrain_persist) &&
 		settings->getNoiseParams("mgv7_np_height_select",   np_height_select)   &&
+		settings->getNoiseParams("mgv7_np_filler_depth",    np_filler_depth)    &&
+		settings->getNoiseParams("mgv7_np_mount_height",    np_mount_height)    &&
+		settings->getNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater)    &&
+		settings->getNoiseParams("mgv7_np_mountain",        np_mountain)        &&
 		settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
 	return success;
 }
@@ -1071,9 +1081,12 @@ bool MapgenV7Params::readParams(Settings *settings) {
 void MapgenV7Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
-	settings->setNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod);
 	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
 	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->setNoiseParams("mgv7_np_filler_depth",    np_filler_depth);
+	settings->setNoiseParams("mgv7_np_mount_height",    np_mount_height);
+	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
+	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }
 

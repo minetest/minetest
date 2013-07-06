@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 #define MG_NOLIGHT       0x40
+#define MGV7_MOUNTAINS   0x80
+#define MGV7_RIDGES      0x100
 
 /////////////////// Ore generation flags
 // Use absolute value of height to determine ore placement
