@@ -960,7 +960,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^Scrollabel itemlist showing arbitrary text elements
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
-^ listelements can be prepended by #colorkey (see colorkeys), 
+^ listelements can be prepended by #RRGGBB in hexadecimal format
 ^    if you want a listelement to start with # write ##
 ^ name fieldname sent to server on doubleclick value is current selected element
 
@@ -973,24 +973,12 @@ tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<dr
 ^ transparent (optional) show transparent
 ^ draw_border (optional) draw border
 
-box[<X>,<Y>;<W>,<H>;<colorkey>]
+box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ colorkey (see colorkeys)
+^ color in hexadecimal format RRGGBB
 
-Available colorkeys:
-- YLW yellow
-- GRN green
-- LIM lime
-- ORN orange
-- RED red
-- BLU blue
-- CYN cyan
-- BLK black
-- BRN brown
-- WHT white
-- GRY grey
 
 Inventory location:
 

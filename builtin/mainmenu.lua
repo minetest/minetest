@@ -389,7 +389,7 @@ end
 
 --------------------------------------------------------------------------------
 function menubar.refresh()
-	menubar.formspec = "box[-2,7.625;15.75,1.75;BLK]"
+	menubar.formspec = "box[-2,7.625;15.75,1.75;000000]"
 	menubar.buttons = {}
 
 	local button_base = -1.8

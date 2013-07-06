@@ -321,7 +321,7 @@ private:
 	void parseTabHeader(parserData* data,std::string element);
 	void parseBox(parserData* data,std::string element);
 
-	irr::video::SColor getColor(std::string color,bool& valid_color);
+	bool parseColor(std::string color, irr::video::SColor& outcolor);
 };
 
 class FormspecFormSource: public IFormSource

@@ -663,15 +663,13 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				}
 				else {
 					std::wstring toadd = narrow_to_wide(items[i].c_str() + 4);
-					std::string color = items[i].substr(1,3);
+					std::string color = items[i].substr(1,6);
 
 					e->addItem(toadd.c_str());
 
-					bool valid_color = true;
+					irr::video::SColor toset;
 
-					irr::video::SColor toset = getColor(color,valid_color);
-
-					if (valid_color)
+					if (parseColor(color,toset))
 						e->setItemOverrideColor(i,toset);
 				}
 			}
@@ -1335,11 +1333,9 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-		bool valid_color = false;
+		irr::video::SColor color;
 
-		irr::video::SColor color = getColor(color_str,valid_color);
-
-		if (valid_color) {
+		if (parseColor(color_str,color)) {
 			BoxDrawSpec spec(pos,geom,color);
 
 			m_boxes.push_back(spec);
@@ -2520,65 +2516,22 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-irr::video::SColor GUIFormSpecMenu::getColor(std::string color,bool& valid_color) {
+bool GUIFormSpecMenu::parseColor(std::string color, irr::video::SColor& outcolor) {
+	outcolor = irr::video::SColor(0,0,0,0);
 
-	if (color == "YLW") {
-		valid_color = true;
-		return irr::video::SColor(255,255,255,0);
-	}
+	if(color.size() != 6) return false;
+	if(!string_allowed(color, "0123456789abcdefABCDEF")) return false;
 
-	if (color == "GRN") {
-		valid_color = true;
-		return irr::video::SColor(255,34,249,34);
-	}
+	unsigned int r, g, b;
+	std::istringstream iss("");
+	iss.str(color.substr(0, 1));
+	iss >> std::hex >> r;
+	iss.str(color.substr(2, 1));
+	iss >> std::hex >> g;
+	iss.str(color.substr(4, 1));
+	iss >> std::hex >> b;
 
-	if (color == "LIM") {
-		valid_color = true;
-		return irr::video::SColor(255,50,205,50);
-	}
-
-	if (color == "RED") {
-		valid_color = true;
-		return irr::video::SColor(255,255,0,0);
-	}
-
-	if (color == "ORN") {
-		valid_color = true;
-		return irr::video::SColor(255,255,140,0);
-	}
-
-	if (color == "BLU") {
-		valid_color = true;
-		return irr::video::SColor(255,0,0,255);
-	}
-
-	if (color == "CYN") {
-		valid_color = true;
-		return irr::video::SColor(255,0,255,255);
-	}
-
-	if (color == "BLK") {
-		valid_color = true;
-		return irr::video::SColor(255,0,0,0);
-	}
-
-	if (color == "BRN") {
-		valid_color = true;
-		return irr::video::SColor(255,139,69,19);
-	}
-
-	if (color == "WHT") {
-		valid_color = true;
-		return irr::video::SColor(255,255,255,255);
-	}
-
-	if (color == "GRY") {
-		valid_color = true;
-		return irr::video::SColor(255,205,201,201);
-	}
-
-	valid_color = false;
-
-	return irr::video::SColor(0,0,0,0);
+	outcolor = irr::video::SColor(255,r,g,b);
+	return true;
 }
 
