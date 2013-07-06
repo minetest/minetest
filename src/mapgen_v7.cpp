@@ -427,19 +427,19 @@ void MapgenV7::generateMountainTerrain() {
 		return;
 		
 	MapNode n_stone(c_stone);
-	u32 index = 0;
+	u32 j = 0;
 	
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 		u32 vi = vm->m_area.index(node_min.X, y, z);
 		for (s16 x = node_min.X; x <= node_max.X; x++) {
-			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
+			int index = (z - node_min.Z) * csize.X + (x - node_min.X);
 
-			if (getMountainTerrainFromMap(index, j, y))
+			if (getMountainTerrainFromMap(j, index, y))
 				vm->m_data[vi] = n_stone;
 				
 			vi++;
-			index++;
+			j++;
 		}
 	}
 }
@@ -517,7 +517,9 @@ void MapgenV7::generateBiomes() {
 			// boundary, but the chunk above has not been generated yet
 			if (y == node_max.Y && c_above == CONTENT_IGNORE &&
 				y == heightmap[index] && c == c_stone) {
-				int j = z * zstride + y * ystride + x;
+				int j = (z - node_min.Z) * zstride +
+						(y - node_min.Y) * ystride +
+						(x - node_min.X);
 				have_air = !getMountainTerrainFromMap(j, index, y);
 			}
 			
