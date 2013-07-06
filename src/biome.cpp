@@ -41,11 +41,21 @@ BiomeDefManager::BiomeDefManager() {
 	b->id    = 0;
 	b->name  = "Default";
 	b->flags = 0;
+	
+	b->depth_top    = 0;
+	b->depth_filler = 0;
 
-	b->c_top         = CONTENT_AIR;
-	b->depth_top     = 0;
-	b->c_filler      = CONTENT_AIR;
-	b->depth_filler  = 0;
+	b->nname_top        = "air";
+	b->nname_filler     = "air";
+	b->nname_water      = "mapgen_water_source";
+	b->nname_dust       = "air";
+	b->nname_dust_water = "mapgen_water_source";
+
+	b->c_top        = CONTENT_IGNORE;
+	b->c_filler     = CONTENT_IGNORE;
+	b->c_water      = CONTENT_IGNORE;
+	b->c_dust       = CONTENT_IGNORE;
+	b->c_dust_water = CONTENT_IGNORE;
 
 	b->height_min     = -MAP_GENERATION_LIMIT;
 	b->height_max     = MAP_GENERATION_LIMIT;
@@ -101,7 +111,7 @@ void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
 	
 	biome_registration_finished = true;
 	
-	for (size_t i = 1; i < biomes.size(); i++) {
+	for (size_t i = 0; i < biomes.size(); i++) {
 		b = biomes[i];
 
 		b->c_top = ndef->getId(b->nname_top);
