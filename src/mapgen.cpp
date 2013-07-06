@@ -660,7 +660,7 @@ bool DecoSchematic::loadSchematicFile() {
 	std::ifstream is(filename.c_str(), std::ios_base::binary);
 
 	u32 signature = readU32(is);
-	if (signature != 'MTSM') {
+	if (signature != MTSCHEM_FILE_SIGNATURE) {
 		errorstream << "loadSchematicFile: invalid schematic "
 			"file" << std::endl;
 		return false;
@@ -719,7 +719,7 @@ bool DecoSchematic::loadSchematicFile() {
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 	std::ofstream os(filename.c_str(), std::ios_base::binary);
 
-	writeU32(os, 'MTSM'); // signature
+	writeU32(os, MTSCHEM_FILE_SIGNATURE); // signature
 	writeU16(os, 1);      // version
 	writeV3S16(os, size); // schematic size
 	

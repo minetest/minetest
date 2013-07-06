@@ -260,6 +260,8 @@ public:
 	virtual std::string getName();
 };
 
+#define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
+
 enum Rotation {
 	ROTATE_0,
 	ROTATE_90,
