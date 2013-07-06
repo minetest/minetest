@@ -280,15 +280,17 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 
 		// img1 is in the texture's color format, convert to 8-bit ARGB
 		video::IImage *img2 = driver->createImage(video::ECF_A8R8G8B8, size);
-		if (img2 != NULL)
+		if (img2 == NULL)
 		{
-			img1->copyTo(img2);
-
-			mesh = extrudeARGB(size.Width, size.Height, (u8*) img2->lock());
-			img2->unlock();
-			img2->drop();
+			img1->drop();
+			return NULL;
 		}
+
+		img1->copyTo(img2);
 		img1->drop();
+		mesh = extrudeARGB(size.Width, size.Height, (u8*) img2->lock());
+		img2->unlock();
+		img2->drop();
 	}
 
 	// Set default material
