@@ -643,7 +643,7 @@ function tabbuilder.handle_delete_world_buttons(fields)
 	
 	if fields["world_delete_confirm"] then
 		if menu.last_world > 0 and 
-			menu.last_world < #menu.worldlist then
+			menu.last_world <= #menu.worldlist then
 			engine.delete_world(menu.last_world)
 			menu.worldlist = engine.get_worlds()
 			menu.last_world = 1
