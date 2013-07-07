@@ -273,3 +273,4 @@ function modstore.get_details(modid)
 	modstore.details_cache[modid] = retval
 	return retval
 end
+

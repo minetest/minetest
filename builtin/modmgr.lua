@@ -399,15 +399,20 @@ function modmgr.dialog_configure_world()
 		local worldmodidx = modmgr.get_worldmod_idx()
 		modname = modmgr.global_mods[worldmodidx]
 
-		if modname:find("<MODPACK>") ~= nil then
-			modname = modname:sub(0,modname:find("<") -2)
-			modpack_selected = true
+		if modname ~= nil then
+		
+			if modname:find("<MODPACK>") ~= nil then
+				modname = modname:sub(0,modname:find("<") -2)
+				modpack_selected = true
+			end
+		
+			local parts = modmgr.global_mods[worldmodidx]:split(DIR_DELIM)
+			shortname = parts[#parts]
+		
+			modfolder = engine.get_modpath() .. DIR_DELIM .. modname
+		else
+			modname = ""
 		end
-		
-		local parts = modmgr.global_mods[worldmodidx]:split(DIR_DELIM)
-		shortname = parts[#parts]
-		
-		modfolder = engine.get_modpath() .. DIR_DELIM .. modname
 	end
 
 	local worldspec = engine.get_worlds()[modmgr.world_config_selected_world]

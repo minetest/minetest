@@ -297,7 +297,16 @@ private:
 		std::map<std::wstring,int> listbox_selections;
 	} parserData;
 
+	typedef struct {
+		bool key_up;
+		bool key_down;
+		bool key_enter;
+		bool key_escape;
+	} fs_key_pendig;
+
 	std::vector<video::ITexture *> m_Textures;
+
+	fs_key_pendig current_keys_pending;
 
 	void parseElement(parserData* data,std::string element);
 
@@ -321,7 +330,7 @@ private:
 	void parseTabHeader(parserData* data,std::string element);
 	void parseBox(parserData* data,std::string element);
 
-	bool parseColor(std::string color, irr::video::SColor& outcolor);
+	bool parseColor(std::string color, irr::video::SColor& outcolor); 
 };
 
 class FormspecFormSource: public IFormSource

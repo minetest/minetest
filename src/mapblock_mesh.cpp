@@ -1069,10 +1069,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 
 	/*
 		Convert MeshCollector to SMesh
-		Also store animation info
 	*/
-	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+	bool enable_shaders = g_settings->getBool("enable_shaders");
 	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
 			getShader("test_shader_1").material;
 	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
