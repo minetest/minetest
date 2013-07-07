@@ -31,7 +31,12 @@ function vector.length(v)
 end
 
 function vector.normalize(v)
-	return vector.divide(v, vector.length(v))
+	local len = vector.length(v)
+	if len == 0 then
+		return vector.new()
+	else
+		return vector.divide(v, len)
+	end
 end
 
 function vector.round(v)
