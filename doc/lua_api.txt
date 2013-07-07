@@ -960,11 +960,21 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^Scrollabel itemlist showing arbitrary text elements
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
 ^ listelements can be prepended by #colorkey (see colorkeys), 
 ^    if you want a listelement to start with # write ##
-^ name fieldname sent to server on doubleclick value is current selected element
 
-tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<draw_border>]
+textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
+^Scrollabel itemlist showing arbitrary text elements
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
+^ listelements can be prepended by #colorkey (see colorkeys), 
+^    if you want a listelement to start with # write ##
+^ index to be selected within textlist
+^ true/false draw transparent background
+
+tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
 ^ x and y position the itemlist relative to the top left of the menu
 ^ name fieldname data is transfered to lua
@@ -979,6 +989,14 @@ box[<X>,<Y>;<W>,<H>;<colorkey>]
 ^ w and h are the size of box
 ^ colorkey (see colorkeys)
 
+dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
+^ show a dropdown field
+^ x and y position of dropdown
+^ width of dropdown
+^ fieldname data is transfered to lua
+^ items to be shown in dropdown
+^ index of currently selected dropdown item
+
 Available colorkeys:
 - YLW yellow
 - GRN green
@@ -991,6 +1009,9 @@ Available colorkeys:
 - BRN brown
 - WHT white
 - GRY grey
+
+Note: do NOT use a element name starting with "key_" those names are reserved to
+pass key press events to formspec! 
 
 Inventory location:
 
