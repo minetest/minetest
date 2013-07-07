@@ -1063,7 +1063,7 @@ function tabbuilder.tab_credits()
 			"label[0.5,3.3;http://minetest.net]" .. 
 			"image[0.5,1;" .. menu.basetexturedir .. "logo.png]" ..
 			"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
-			"#YLWCore Developers," ..
+			"#FFFF00Core Developers," ..
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
 			"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
 			"PilzAdam <pilzadam@minetest.net>," ..
@@ -1074,17 +1074,17 @@ function tabbuilder.tab_credits()
 			"sfan5 <sfan5@live.de>,"..
 			"kahrl <kahrl@gmx.net>,"..
 			","..
-			"#YLWActive Contributors," ..
+			"#FFFF00Active Contributors," ..
 			"sapier,"..
 			"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
 			"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
 			"Jeija <jeija@mesecons.net>,"..
 			"MirceaKitsune <mirceakitsune@gmail.com>,"..
-			"ShadowNinja"..
-			"dannydark <the_skeleton_of_a_child@yahoo.co.uk>"..
+			"ShadowNinja,"..
+			"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
 			"0gb.us <0gb.us@0gb.us>,"..
 			"," ..
-			"#YLWPrevious Contributors," ..
+			"#FFFF00Previous Contributors," ..
 			"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
 			"Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
 			"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
