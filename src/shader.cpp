@@ -624,7 +624,6 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		}
 	}
 
-	// 0 = off, 1 = assembly shaders only, 2 = highlevel or assembly
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	if(!enable_shaders)
 		return shaderinfo;
@@ -778,24 +777,4 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 		}
 	}
 
-	if(enable_shaders){
-		// Look for assembly shaders
-		if(drivertype == video::EDT_DIRECT3D8){
-			// Direct3D 8 assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "d3d8_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "d3d8_pixel.asm");
-		}
-		else if(drivertype == video::EDT_DIRECT3D9){
-			// Direct3D 9 assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "d3d9_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "d3d9_pixel.asm");
-		}
-		else if(drivertype == video::EDT_OPENGL){
-			// OpenGL assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "opengl_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.asm");
-		}
-		if(vertex_program != "" || pixel_program != "")
-			return;
-	}
 }
