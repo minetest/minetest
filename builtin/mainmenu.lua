@@ -52,12 +52,6 @@ function render_favourite(spec)
 		details = details .. " "
 	end
 	
-	if spec.port ~= nil then
-		text = text .. ":" .. spec.port:trim()
-	else
-		text = text .. ":??"
-	end
-	
 	return text
 end
 
@@ -118,6 +112,8 @@ function cleanup_path(temppath)
 	
 	return temppath
 end
+
+--------------------------------------------------------------------------------
 
 function menu.set_texture(identifier,gamedetails)
 	local texture_set = false
@@ -696,10 +692,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		end
 		
 		if event.typ == "CHG" then
-			local address = menu.favorites[event.index].name
-			if address == nil then
-				address = menu.favorites[event.index].address
-			end
+			local address = menu.favorites[event.index].address
 			local port = menu.favorites[event.index].port
 			
 			if address ~= nil and
@@ -1137,8 +1130,7 @@ function tabbuilder.tab_multiplayer()
 			retval = retval .. "," .. render_favourite(menu.favorites[i])
 		end
 	end
-	
-	print("cfav: " .. dump(menu.fav_selected))
+
 	if menu.fav_selected ~= nil then
 		retval = retval .. ";" .. menu.fav_selected .. "]"
 	else
@@ -1181,9 +1173,10 @@ function tabbuilder.tab_server()
 			retval = retval .. "," .. menu.worldlist[i].name .. 
 						" \\[" .. menu.worldlist[i].gameid .. "\\]"
 		end
+		retval = retval .. ";" .. index .. "]"
+	else
+		retval = retval .. ";0]"
 	end
-				
-	retval = retval .. ";" .. index .. "]"
 		
 	return retval
 end
@@ -1213,7 +1206,8 @@ end
 function tabbuilder.tab_singleplayer()
 	local index = engine.setting_get("main_menu_singleplayer_world_idx")
 
-	if index == nil then
+	if index == nil or
+		#menu.filtered_game_list_raw() == 0 then
 		index = 0
 	end
 
