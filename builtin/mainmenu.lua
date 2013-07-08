@@ -585,7 +585,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 			
 			local found = false
 			for i=1,#menu.worldlist,1 do
-				if worldlist[i].name == worldname then
+				if menu.worldlist[i].name == worldname then
 					found = true
 					break
 				end
