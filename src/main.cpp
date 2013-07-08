@@ -1667,7 +1667,8 @@ int main(int argc, char *argv[])
 				}
 				
 				// Set world path to selected one
-				if(menudata.selected_world != -1){
+				if ((menudata.selected_world >= 0) &&
+					(menudata.selected_world < worldspecs.size())) {
 					worldspec = worldspecs[menudata.selected_world];
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;
