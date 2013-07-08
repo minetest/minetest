@@ -507,8 +507,7 @@ Representations of simple things
 --------------------------------
 Position/vector:
   {x=num, y=num, z=num}
-Currently the API does not provide any helper functions for addition,
-subtraction and whatever; you can define those that you need yourself.
+For helper functions see "Vector helpers".
 
 pointed_thing:
   {type="nothing"}
