@@ -237,6 +237,8 @@ Decoration::~Decoration() {
 
 
 void Decoration::resolveNodeNames(INodeDefManager *ndef) {
+	this->ndef = ndef;
+	
 	if (c_place_on == CONTENT_IGNORE)
 		c_place_on = ndef->getId(place_on_name);
 }
@@ -553,7 +555,7 @@ std::string DecoSchematic::getName() {
 
 
 void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
-								int rot, bool force_placement) {
+								Rotation rot, bool force_placement) {
 	int xstride = 1;
 	int ystride = size.X;
 	int zstride = size.X * size.Y;
@@ -594,7 +596,7 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 			u32 vi = vm->m_area.index(p.X + x, p.Y + y, p.Z + z);
 			if (!vm->m_area.contains(vi))
 				continue;
-				
+			
 			if (schematic[i].getContent() == CONTENT_IGNORE)
 				continue;
 
@@ -609,6 +611,9 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 			
 			vm->m_data[vi] = schematic[i];
 			vm->m_data[vi].param1 = 0;
+			
+			if (rot)
+				vm->m_data[vi].rotateAlongYAxis(ndef, rot);
 		}
 	}
 }
