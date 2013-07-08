@@ -117,7 +117,7 @@ end
 
 function menu.set_texture(identifier,gamedetails)
 	local texture_set = false
-	if menu.texturepack ~= nil then
+	if menu.texturepack ~= nil and gamedetails ~= nil then
 		local path = menu.basetexturedir .. 
 						gamedetails.id .. "_menu_" .. identifier .. ".png"
 		
@@ -126,7 +126,7 @@ function menu.set_texture(identifier,gamedetails)
 		end
 	end
 	
-	if not texture_set then
+	if not texture_set and gamedetails ~= nil then
 		local path = gamedetails.path .. DIR_DELIM .."menu" .. 
 									 DIR_DELIM .. identifier .. ".png"
 		if engine.set_background(identifier,path) then
@@ -199,11 +199,19 @@ end
 --------------------------------------------------------------------------------
 function menu.reset_gametype()
 	menu.game_last_check = nil
-	engine.set_clouds(true)
-	engine.set_background("background","")
-	engine.set_background("overlay",menu.basetexturedir .. "menu_overlay.png")
-	engine.set_background("header",menu.basetexturedir .. "menu_header.png")
-	engine.set_background("footer",menu.basetexturedir .. "menu_footer.png")
+	
+	local path_background_texture = menu.basetexturedir .. "menu_background.png"
+			
+	if engine.set_background("background",path_background_texture) then
+		background_set = true
+		engine.set_clouds(false)
+	else
+		engine.set_clouds(true)
+	end 
+
+	menu.set_texture("overlay",nil)
+	menu.set_texture("header",nil)
+	menu.set_texture("footer",nil)
 	engine.set_topleft_text("")
 end
 
