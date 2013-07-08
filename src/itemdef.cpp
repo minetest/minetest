@@ -389,7 +389,7 @@ public:
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
 			video::SColor c(255, 255, 255, 255);
-			if(g_settings->getS32("enable_shaders") != 0)
+			if(g_settings->getBool("enable_shaders"))
 				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
 			setMeshColor(node_mesh, c);
 

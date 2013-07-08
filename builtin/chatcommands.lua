@@ -272,6 +272,9 @@ minetest.register_chatcommand("teleport", {
 		local teleportee = nil
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
 		teleportee = minetest.get_player_by_name(name)
 		if teleportee and p.x and p.y and p.z then
 			minetest.chat_send_player(name, "Teleporting to ("..p.x..", "..p.y..", "..p.z..")")
@@ -302,6 +305,9 @@ minetest.register_chatcommand("teleport", {
 			local p = {}
 			local teleportee_name = nil
 			teleportee_name, p.x, p.y, p.z = string.match(param, "^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+			p.x = tonumber(p.x)
+			p.y = tonumber(p.y)
+			p.z = tonumber(p.z)
 			if teleportee_name then
 				teleportee = minetest.get_player_by_name(teleportee_name)
 			end

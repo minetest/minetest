@@ -797,7 +797,8 @@ void Client::step(float dtime)
 			all_stopped &= !(*thread)->IsRunning();
 			while (!(*thread)->m_file_data.empty()) {
 				std::pair <std::string, std::string> out = (*thread)->m_file_data.pop_front();
-				++m_media_received_count;
+				if(m_media_received_count < m_media_count)
+					m_media_received_count++;
 
 				bool success = loadMedia(out.second, out.first);
 				if(success){
@@ -1731,14 +1732,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_MEDIA)
 	{
-		if (m_media_count == 0)
-			return;
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-
-		// Mesh update thread must be stopped while
-		// updating content definitions
-		assert(!m_mesh_update_thread.IsRunning());
 
 		/*
 			u16 command
@@ -1754,11 +1749,31 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		*/
 		int num_bunches = readU16(is);
 		int bunch_i = readU16(is);
-		int num_files = readU32(is);
+		u32 num_files = readU32(is);
 		infostream<<"Client: Received files: bunch "<<bunch_i<<"/"
 				<<num_bunches<<" files="<<num_files
 				<<" size="<<datasize<<std::endl;
-		for(int i=0; i<num_files; i++){
+
+		// Check total and received media count
+		assert(m_media_received_count <= m_media_count);
+		if (num_files > m_media_count - m_media_received_count) {
+			errorstream<<"Client: Received more files than requested:"
+				<<" total count="<<m_media_count
+				<<" total received="<<m_media_received_count
+				<<" bunch "<<bunch_i<<"/"<<num_bunches
+				<<" files="<<num_files
+				<<" size="<<datasize<<std::endl;
+			num_files = m_media_count - m_media_received_count;
+		}
+		if (num_files == 0)
+			return;
+
+		// Mesh update thread must be stopped while
+		// updating content definitions
+		assert(!m_mesh_update_thread.IsRunning());
+
+		for(u32 i=0; i<num_files; i++){
+			assert(m_media_received_count < m_media_count);
 			m_media_received_count++;
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);

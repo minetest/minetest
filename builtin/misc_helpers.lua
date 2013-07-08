@@ -91,4 +91,14 @@ function minetest.pos_to_string(pos)
 	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 end
 
+function math.hypot(x, y)
+	local t
+	x = math.abs(x)
+	y = math.abs(y)
+	t = math.min(x, y)
+	x = math.max(x, y)
+	if x == 0 then return 0 end
+	t = t / x
+	return x * math.sqrt(1 + t * t)
+end
 

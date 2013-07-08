@@ -111,8 +111,6 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 int LuaVoxelManip::l_update_liquids(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
-	if (!o->is_mapgen_vm)
-		return 0;
 	
 	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
 	Map *map = &(get_scriptapi(L)->getEnv()->getMap());

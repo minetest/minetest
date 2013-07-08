@@ -164,6 +164,10 @@ struct TestUtilities: public TestBase
 		UASSERT(is_yes("YeS") == true);
 		UASSERT(is_yes("") == false);
 		UASSERT(is_yes("FAlse") == false);
+		UASSERT(is_yes("-1") == true);
+		UASSERT(is_yes("0") == false);
+		UASSERT(is_yes("1") == true);
+		UASSERT(is_yes("2") == true);
 		const char *ends[] = {"abc", "c", "bc", NULL};
 		UASSERT(removeStringEnd("abc", ends) == "");
 		UASSERT(removeStringEnd("bc", ends) == "b");

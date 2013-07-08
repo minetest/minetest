@@ -171,6 +171,10 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_use_gettext(false),
 	m_lock(false)
 {
+	current_keys_pending.key_down = false;
+	current_keys_pending.key_up = false;
+	current_keys_pending.key_enter = false;
+
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -243,28 +247,25 @@ std::vector<std::string> split(const std::string &s, char delim, bool escape=fal
 	else {
 		std::string current = "";
 		current += s.c_str()[0];
-		bool last_was_delim = false;
+		bool last_was_escape = false;
 		for(unsigned int i=1; i < s.size(); i++) {
-			if (last_was_delim) {
-				if (s.c_str()[i] == delim) {
-					current += s.c_str()[i];
-					last_was_delim = false;
-				}
-				else {
-					tokens.push_back(current);
-
-					current = "";
-					current += s.c_str()[i];
-					last_was_delim = false;
-				}
+			if (last_was_escape) {
+				current += '\\';
+				current += s.c_str()[i];
+				last_was_escape = false;
 			}
 			else {
 				if (s.c_str()[i] == delim) {
-					last_was_delim = true;
+					tokens.push_back(current);
+					current = "";
+					last_was_escape = false;
+				}
+				else if (s.c_str()[i] == '\\'){
+					last_was_escape = true;
 				}
 				else {
-					last_was_delim = false;
 					current += s.c_str()[i];
+					last_was_escape = false;
 				}
 			}
 		}
@@ -659,33 +660,33 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 		for (unsigned int i=0; i < items.size(); i++) {
 			if (items[i].c_str()[0] == '#') {
 				if (items[i].c_str()[1] == '#') {
-					e->addItem(narrow_to_wide(items[i]).c_str() +1);
+					e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
 				}
 				else {
-					std::wstring toadd = narrow_to_wide(items[i].c_str() + 4);
-					std::string color = items[i].substr(1,3);
+					std::string color = items[i].substr(1,6);
+					std::wstring toadd =
+						narrow_to_wide(unescape_string(items[i]).c_str() + 7);
+
 
 					e->addItem(toadd.c_str());
 
-					bool valid_color = true;
+					irr::video::SColor toset;
 
-					irr::video::SColor toset = getColor(color,valid_color);
-
-					if (valid_color)
+					if (parseColor(color, toset))
 						e->setItemOverrideColor(i,toset);
 				}
 			}
 			else {
-			e->addItem(narrow_to_wide(items[i]).c_str());
+				e->addItem(narrow_to_wide(unescape_string(items[i])).c_str());
 			}
 		}
-
-		if (str_initial_selection != "")
-			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		if (data->listbox_selections.find(fname_w) != data->listbox_selections.end()) {
 			e->setSelected(data->listbox_selections[fname_w]);
 		}
+
+		if (str_initial_selection != "")
+			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
 		m_fields.push_back(spec);
@@ -1335,11 +1336,9 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-		bool valid_color = false;
+		irr::video::SColor color;
 
-		irr::video::SColor color = getColor(color_str,valid_color);
-
-		if (valid_color) {
+		if (parseColor(color_str, color)) {
 			BoxDrawSpec spec(pos,geom,color);
 
 			m_boxes.push_back(spec);
@@ -1359,8 +1358,19 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
 
 	std::vector<std::string> parts = split(element,'[', true);
 
-	if (parts.size() != 2)
+	// ugly workaround to keep compatibility
+	if (parts.size() > 2) {
+		if (trim(parts[0]) == "image") {
+			for (unsigned int i=2;i< parts.size(); i++) {
+				parts[1] += "[" + parts[i];
+			}
+		}
+		else { return; }
+	}
+
+	if (parts.size() < 2) {
 		return;
+	}
 
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
@@ -2014,6 +2024,26 @@ void GUIFormSpecMenu::acceptInput(int eventtype)
 	{
 		std::map<std::string, std::string> fields;
 
+		if (current_keys_pending.key_down) {
+			fields["key_down"] = "true";
+			current_keys_pending.key_down = false;
+		}
+
+		if (current_keys_pending.key_up) {
+			fields["key_up"] = "true";
+			current_keys_pending.key_up = false;
+		}
+
+		if (current_keys_pending.key_enter) {
+			fields["key_enter"] = "true";
+			current_keys_pending.key_enter = false;
+		}
+
+		if (current_keys_pending.key_escape) {
+			fields["key_escape"] = "true";
+			current_keys_pending.key_escape = false;
+		}
+
 		for(u32 i=0; i<m_fields.size(); i++)
 		{
 			const FieldSpec &s = m_fields[i];
@@ -2105,16 +2135,38 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				m_text_dst->gotText(narrow_to_wide("MenuQuit"));
 			return true;
 		}
-		if(event.KeyInput.Key==KEY_RETURN && event.KeyInput.PressedDown)
-		{
-			acceptInput();
+		if (event.KeyInput.PressedDown &&
+			(event.KeyInput.Key==KEY_RETURN ||
+			 event.KeyInput.Key==KEY_UP ||
+			 event.KeyInput.Key==KEY_DOWN)
+			) {
 
-			if (m_allowclose)
-				quitMenu();
-			else
-				m_text_dst->gotText(narrow_to_wide("KeyEnter"));
+
+			switch (event.KeyInput.Key) {
+				case KEY_RETURN:
+					if (m_allowclose) {
+						acceptInput();
+						quitMenu();
+					}
+					else
+						current_keys_pending.key_enter = true;
+					break;
+				case KEY_UP:
+					current_keys_pending.key_up = true;
+					break;
+				case KEY_DOWN:
+					current_keys_pending.key_down = true;
+					break;
+				break;
+				default:
+					//can't happen at all!
+					assert("reached a source line that can't ever been reached" == 0);
+					break;
+			}
+			acceptInput();
 			return true;
 		}
+
 	}
 	if(event.EventType==EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event != EMIE_MOUSE_MOVED)
@@ -2481,11 +2533,15 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		{
 			if(event.GUIEvent.Caller->getID() > 257)
 			{
-				acceptInput();
-				if (m_allowclose)
+
+				if (m_allowclose) {
+					acceptInput();
 					quitMenu();
-				else
-					m_text_dst->gotText(narrow_to_wide("EditBoxEnter"));
+				}
+				else {
+					current_keys_pending.key_enter = true;
+					acceptInput();
+				}
 				// quitMenu deallocates menu
 				return true;
 			}
@@ -2520,65 +2576,18 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-irr::video::SColor GUIFormSpecMenu::getColor(std::string color,bool& valid_color) {
+bool GUIFormSpecMenu::parseColor(std::string color, irr::video::SColor& outcolor) {
+	outcolor = irr::video::SColor(0,0,0,0);
 
-	if (color == "YLW") {
-		valid_color = true;
-		return irr::video::SColor(255,255,255,0);
-	}
+	if (!string_allowed(color, "0123456789abcdefABCDEF"))
+		return false;
 
-	if (color == "GRN") {
-		valid_color = true;
-		return irr::video::SColor(255,34,249,34);
-	}
+	u32 color_value;
+	std::istringstream iss(color);
+	iss >> std::hex >> color_value;
+	
+	outcolor = irr::video::SColor(color_value);
 
-	if (color == "LIM") {
-		valid_color = true;
-		return irr::video::SColor(255,50,205,50);
-	}
-
-	if (color == "RED") {
-		valid_color = true;
-		return irr::video::SColor(255,255,0,0);
-	}
-
-	if (color == "ORN") {
-		valid_color = true;
-		return irr::video::SColor(255,255,140,0);
-	}
-
-	if (color == "BLU") {
-		valid_color = true;
-		return irr::video::SColor(255,0,0,255);
-	}
-
-	if (color == "CYN") {
-		valid_color = true;
-		return irr::video::SColor(255,0,255,255);
-	}
-
-	if (color == "BLK") {
-		valid_color = true;
-		return irr::video::SColor(255,0,0,0);
-	}
-
-	if (color == "BRN") {
-		valid_color = true;
-		return irr::video::SColor(255,139,69,19);
-	}
-
-	if (color == "WHT") {
-		valid_color = true;
-		return irr::video::SColor(255,255,255,255);
-	}
-
-	if (color == "GRY") {
-		valid_color = true;
-		return irr::video::SColor(255,205,201,201);
-	}
-
-	valid_color = false;
-
-	return irr::video::SColor(0,0,0,0);
+	outcolor.setAlpha(255);
+	return true;
 }
-

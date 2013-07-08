@@ -507,8 +507,7 @@ Representations of simple things
 --------------------------------
 Position/vector:
   {x=num, y=num, z=num}
-Currently the API does not provide any helper functions for addition,
-subtraction and whatever; you can define those that you need yourself.
+For helper functions see "Vector helpers".
 
 pointed_thing:
   {type="nothing"}
@@ -960,11 +959,21 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^Scrollabel itemlist showing arbitrary text elements
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
 ^ listelements can be prepended by #colorkey (see colorkeys), 
 ^    if you want a listelement to start with # write ##
-^ name fieldname sent to server on doubleclick value is current selected element
 
-tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<draw_border>]
+textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
+^Scrollabel itemlist showing arbitrary text elements
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
+^ listelements can be prepended by #RRGGBB in hexadecimal format
+^    if you want a listelement to start with # write ##
+^ index to be selected within textlist
+^ true/false draw transparent background
+
+tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
 ^ x and y position the itemlist relative to the top left of the menu
 ^ name fieldname data is transfered to lua
@@ -973,24 +982,23 @@ tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>;<current_tab>;<transparent>;<dr
 ^ transparent (optional) show transparent
 ^ draw_border (optional) draw border
 
-box[<X>,<Y>;<W>,<H>;<colorkey>]
+box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
 ^ colorkey (see colorkeys)
 
-Available colorkeys:
-- YLW yellow
-- GRN green
-- LIM lime
-- ORN orange
-- RED red
-- BLU blue
-- CYN cyan
-- BLK black
-- BRN brown
-- WHT white
-- GRY grey
+dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
+^ show a dropdown field
+^ x and y position of dropdown
+^ width of dropdown
+^ fieldname data is transfered to lua
+^ items to be shown in dropdown
+^ index of currently selected dropdown item
+^ color in hexadecimal format RRGGBB
+
+Note: do NOT use a element name starting with "key_" those names are reserved to
+pass key press events to formspec! 
 
 Inventory location:
 
@@ -1000,12 +1008,41 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
+Vector helpers
+---------------
+vector.new([x[, y, z]]) -> vector
+ ^ x is a table or the x position.
+vector.direction(p1, p2) -> vector
+vector.distance(p1, p2) -> number
+vector.length(v) -> number
+vector.normalize(v) -> vector
+vector.round(v) -> vector
+vector.equal(v1, v2) -> bool
+vector.add(v, x) -> vector
+ ^ x can be annother vector or a number
+vector.subtract(v, x) -> vector
+vector.multiply(v, x) -> vector
+vector.divide(v, x) -> vector
+
+You can also use Lua operators on vectors.
+For example:
+	v1 = vector.new()
+	v1 = v1 + 5
+	v2 = vector.new(v1)
+	v1 = v1 * v2
+	if v1 == v2 then
+		error("Math broke")
+	end
+
 Helper functions
 -----------------
 dump2(obj, name="_", dumped={})
 ^ Return object serialized as a string, handles reference loops
 dump(obj, dumped={})
 ^ Return object serialized as a string
+math.hypot(x, y)
+^ Get the hypotenuse of a triangle with legs x and y.
+  Usefull for distance calculation.
 string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()

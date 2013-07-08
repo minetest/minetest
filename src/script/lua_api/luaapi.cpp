@@ -204,19 +204,33 @@ int ModApiBasic::l_register_biome(lua_State *L)
 				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
 
-	b->name            = getstringfield_default(L, index, "name", "");
-	b->top_nodename    = getstringfield_default(L, index, "top_node", "");
-	b->top_depth       = getintfield_default(L, index, "top_depth", 0);
-	b->filler_nodename = getstringfield_default(L, index, "filler_node", "");
-	b->filler_height   = getintfield_default(L, index, "filler_height", 0);
-	b->height_min      = getintfield_default(L, index, "height_min", 0);
-	b->height_max      = getintfield_default(L, index, "height_max", 0);
-	b->heat_point      = getfloatfield_default(L, index, "heat_point", 0.);
-	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->name         = getstringfield_default(L, index, "name",
+												"<no name>");
+	b->nname_top    = getstringfield_default(L, index, "node_top",
+												"mapgen_dirt_with_grass");
+	b->nname_filler = getstringfield_default(L, index, "node_filler",
+												"mapgen_dirt");
+	b->nname_water  = getstringfield_default(L, index, "node_water",
+												"mapgen_water_source");
+	b->nname_dust   = getstringfield_default(L, index, "node_dust",
+												"air");
+	b->nname_dust_water = getstringfield_default(L, index, "node_dust_water",
+												"mapgen_water_source");
+	
+	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
+	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
+	b->height_min     = getintfield_default(L, index, "height_min",   0);
+	b->height_max     = getintfield_default(L, index, "height_max",   0);
+	b->heat_point     = getfloatfield_default(L, index, "heat_point",     0.);
+	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
 
-	b->flags    = 0; //reserved
-	b->c_top    = CONTENT_IGNORE;
-	b->c_filler = CONTENT_IGNORE;
+	b->flags        = 0; //reserved
+	b->c_top        = CONTENT_IGNORE;
+	b->c_filler     = CONTENT_IGNORE;
+	b->c_water      = CONTENT_IGNORE;
+	b->c_dust       = CONTENT_IGNORE;
+	b->c_dust_water = CONTENT_IGNORE;
+	
 	verbosestream << "register_biome: " << b->name << std::endl;
 	bmgr->addBiome(b);
 
