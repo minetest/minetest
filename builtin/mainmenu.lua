@@ -1,3 +1,5 @@
+os.setlocale("C", "numeric")
+
 local scriptpath = engine.get_scriptdir()
 
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
