@@ -28,6 +28,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <sstream>
 
+static const Rotation wallmounted_to_rot[] = {
+	ROTATE_0, ROTATE_180, ROTATE_90, ROTATE_270
+};
+static const u8 rot_to_wallmounted[] = {
+	2, 4, 3, 5
+};
+
+
 /*
 	MapNode
 */
@@ -129,6 +137,24 @@ v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
 	case 3: return v3s16(-1,0,0);
 	case 4: return v3s16(0,0,1);
 	case 5: return v3s16(0,0,-1);
+	}
+}
+
+void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot) {
+	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
+
+	if (cpt2 == CPT2_FACEDIR) {
+		u8 newrot = param2 & 3;
+		param2 &= ~3;
+		param2 |= (newrot + rot) & 3;
+	} else if (cpt2 == CPT2_WALLMOUNTED) {
+		u8 wmountface = (param2 & 7);
+		if (wmountface <= 1)
+			return;
+			
+		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
+		param2 &= ~7;
+		param2 |= rot_to_wallmounted[(oldrot + rot) & 3];
 	}
 }
 
