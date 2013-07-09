@@ -827,6 +827,10 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["cb_enable_damage"] then
 		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
 	end
+
+	if fields["cb_server_announce"] then
+		engine.setting_setbool("server_announce",tabbuilder.tobool(fields["cb_server_announce"]))
+	end
 	
 	
 	if fields["start_server"] ~= nil or
@@ -1175,9 +1179,11 @@ function tabbuilder.tab_server()
 		dump(engine.setting_getbool("creative_mode")) .. "]"..
 		"checkbox[0.5,0.7;cb_enable_damage;Enable Damage;" ..
 		dump(engine.setting_getbool("enable_damage")) .. "]"..
-		"field[0.8,2.2;3,0.5;te_playername;Name;" ..
+		"checkbox[0.5,1.15;cb_server_announce;Public;" ..
+		dump(engine.setting_getbool("server_announce")) .. "]"..
+		"field[0.8,3.2;3,0.5;te_playername;Name;" ..
 		engine.setting_get("name") .. "]" ..
-		"pwdfield[0.8,3.2;3,0.5;te_passwd;Password]" ..
+		"pwdfield[0.8,4.2;3,0.5;te_passwd;Password]" ..
 		"field[0.8,5.2;3,0.5;te_serverport;Server Port;30000]" ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;"
 	
