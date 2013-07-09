@@ -15,7 +15,7 @@ function render_favourite(spec)
 	local text = ""
 	
 	if spec.name ~= nil then
-		text = text .. spec.name:trim()
+		text = text .. fs_escape_string(spec.name):trim()
 		
 		if spec.description ~= nil then
 			--TODO make sure there's no invalid chat in spec.description
@@ -704,9 +704,9 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		end
 		
 		if event.typ == "CHG" then
-			local address = menu.favorites[event.index].name
+			local address = menu.favorites[event.index].address
 			if address == nil then
-				address = menu.favorites[event.index].address
+				address = menu.favorites[event.index].name
 			end
 			local port = menu.favorites[event.index].port
 			
@@ -732,9 +732,9 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			fav_idx = fav_idx +1
 		end end
 		
-		local address = menu.favorites[fav_idx].name
+		local address = menu.favorites[fav_idx].address
 		if address == nil then
-			address = menu.favorites[fav_idx].address
+			address = menu.favorites[fav_idx].name
 		end
 		local port = menu.favorites[fav_idx].port
 		
@@ -1146,13 +1146,11 @@ function tabbuilder.tab_multiplayer()
 		end
 	end
 	
-	print("cfav: " .. dump(menu.fav_selected))
 	if menu.fav_selected ~= nil then
 		retval = retval .. ";" .. menu.fav_selected .. "]"
 	else
 		retval = retval .. ";0]"
 	end
-
 	return retval
 end
 
