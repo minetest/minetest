@@ -622,7 +622,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 				
 				local worldlist = menu.worldlist
 				
-				if tabbuilder.current_tab == "singleplayer" then
+				if engine.setting_get("main_menu_tab") == "singleplayer" then
 					worldlist = menu.filtered_game_list_raw()
 				end
 				
@@ -634,8 +634,11 @@ function tabbuilder.handle_create_world_buttons(fields)
 						break
 					end
 				end
-
-				engine.setting_set("main_menu_singleplayer_world_idx", index)
+				if engine.setting_get("main_menu_tab") == "singleplayer" then
+					engine.setting_set("main_menu_singleplayer_world_idx", index)
+				else
+					engine.setting_set("main_menu_last_world_idx", index)
+				end
 				menu.last_world = index
 			end
 		else
