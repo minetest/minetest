@@ -15,7 +15,7 @@ function render_favourite(spec)
 	local text = ""
 	
 	if spec.name ~= nil then
-		text = text .. spec.name:trim()
+		text = text .. fs_escape_string(spec.name:trim())
 		
 		if spec.description ~= nil then
 			--TODO make sure there's no invalid chat in spec.description
@@ -50,12 +50,6 @@ function render_favourite(spec)
 		details = details .. "P"
 	else
 		details = details .. " "
-	end
-	
-	if spec.port ~= nil then
-		text = text .. ":" .. spec.port:trim()
-	else
-		text = text .. ":??"
 	end
 	
 	return text
@@ -118,6 +112,8 @@ function cleanup_path(temppath)
 	
 	return temppath
 end
+
+--------------------------------------------------------------------------------
 
 function menu.set_texture(identifier,gamedetails)
 	local texture_set = false
@@ -696,6 +692,11 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			end
 			gamedata.selected_world = 0
 			
+			if menu.favorites ~= nil then
+				gamedata.servername = menu.favorites[event.index].name
+				gamedata.serverdescription = menu.favorites[event.index].description
+			end
+			
 			if gamedata.address ~= nil and
 				gamedata.port ~= nil then
 				
@@ -704,10 +705,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		end
 		
 		if event.typ == "CHG" then
-			local address = menu.favorites[event.index].name
-			if address == nil then
-				address = menu.favorites[event.index].address
-			end
+			local address = menu.favorites[event.index].address
 			local port = menu.favorites[event.index].port
 			
 			if address ~= nil and
@@ -757,7 +755,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		else
 			menu.favorites = engine.get_favorites("local")
 		end
-		
+		menu.fav_selected = nil
 		return
 	end
 
@@ -765,6 +763,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		local current_favourite = engine.get_textlist_index("favourites")
 		engine.delete_favorite(current_favourite)
 		menu.favorites = engine.get_favorites()
+		menu.fav_selected = nil
 		
 		engine.setting_set("address","")
 		engine.setting_get("port","")
@@ -779,6 +778,20 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		gamedata.password		= fields["te_pwd"]
 		gamedata.address		= fields["te_address"]
 		gamedata.port			= fields["te_port"]
+		
+		local fav_idx = engine.get_textlist_index("favourites")
+		
+		if fav_idx > 0 and fav_idx <= #menu.favorites and
+			menu.favorites[fav_idx].address == fields["te_address"] and
+			menu.favorites[fav_idx].port == fields["te_port"] then
+			
+			gamedata.servername			= menu.favorites[fav_idx].name
+			gamedata.serverdescription	= menu.favorites[fav_idx].description
+		else
+			gamedata.servername = ""
+			gamedata.serverdescription = ""
+		end
+
 		gamedata.selected_world = 0
 		
 		engine.start()
@@ -1134,12 +1147,18 @@ function tabbuilder.tab_multiplayer()
 		"label[9,0;Name/Password]" ..
 		"field[1.25,5.25;5.5,0.5;te_address;;" ..engine.setting_get("address") .."]" ..
 		"field[6.75,5.25;2.25,0.5;te_port;;" ..engine.setting_get("port") .."]" ..
-		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;Delete]" ..
+		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
+		dump(engine.setting_getbool("public_serverlist")) .. "]"
+		
+	if not engine.setting_getbool("public_serverlist") then
+		retval = retval .. 
+		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;Delete]"
+	end
+	
+	retval = retval ..
 		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
 		"field[9.25,1;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
 		"pwdfield[9.25,1.75;2.5,0.5;te_pwd;]" ..
-		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
-		dump(engine.setting_getbool("public_serverlist")) .. "]" ..
 		"textlist[1,0.35;7.5,3.35;favourites;"
 
 	if #menu.favorites > 0 then
@@ -1149,8 +1168,7 @@ function tabbuilder.tab_multiplayer()
 			retval = retval .. "," .. render_favourite(menu.favorites[i])
 		end
 	end
-	
-	print("cfav: " .. dump(menu.fav_selected))
+
 	if menu.fav_selected ~= nil then
 		retval = retval .. ";" .. menu.fav_selected .. "]"
 	else
@@ -1195,9 +1213,10 @@ function tabbuilder.tab_server()
 			retval = retval .. "," .. menu.worldlist[i].name .. 
 						" \\[" .. menu.worldlist[i].gameid .. "\\]"
 		end
+		retval = retval .. ";" .. index .. "]"
+	else
+		retval = retval .. ";0]"
 	end
-				
-	retval = retval .. ";" .. index .. "]"
 		
 	return retval
 end
@@ -1227,7 +1246,8 @@ end
 function tabbuilder.tab_singleplayer()
 	local index = engine.setting_get("main_menu_singleplayer_world_idx")
 
-	if index == nil then
+	if index == nil or
+		#menu.filtered_game_list_raw() == 0 then
 		index = 0
 	end
 
