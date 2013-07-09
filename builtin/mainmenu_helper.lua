@@ -77,11 +77,9 @@ function fs_escape_string(text)
 			text = newtext
 		end
 		
-		text = string.gsub(text,"\\","\\\\")
-		text = string.gsub(text,"%]","\\]")
-		text = string.gsub(text,"%[","\\[")
-		text = string.gsub(text,";","\\;")
-		text = string.gsub(text,",","\\,")
+		text = text:gsub("%[","\\%[")
+		text = text:gsub("]","\\]")
+		text = text:gsub(";","\\;")
 	end
 	return text
 end
