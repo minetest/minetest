@@ -691,6 +691,8 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 				gamedata.password		= fields["te_pwd"]
 			end
 			gamedata.selected_world = 0
+			gamedata.servername = menu.favourites[event.index].name
+			gamedata.serverdescription = menu.favourites[event.index].description
 			
 			if menu.favorites ~= nil then
 				gamedata.servername = menu.favorites[event.index].name
