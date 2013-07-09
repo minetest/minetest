@@ -15,7 +15,7 @@ function render_favourite(spec)
 	local text = ""
 	
 	if spec.name ~= nil then
-		text = text .. spec.name:trim()
+		text = text .. fs_escape_string(spec.name:trim())
 		
 		if spec.description ~= nil then
 			--TODO make sure there's no invalid chat in spec.description
@@ -691,6 +691,8 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 				gamedata.password		= fields["te_pwd"]
 			end
 			gamedata.selected_world = 0
+			gamedata.servername = menu.favourites[event.index].name
+			gamedata.serverdescription = menu.favourites[event.index].description
 			
 			if gamedata.address ~= nil and
 				gamedata.port ~= nil then
@@ -772,6 +774,20 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		gamedata.password		= fields["te_pwd"]
 		gamedata.address		= fields["te_address"]
 		gamedata.port			= fields["te_port"]
+		
+		local fav_idx = engine.get_textlist_index("favourites")
+		
+		if fav_idx > 0 and fav_idx <= #menu.favorites and
+			menu.favorites[fav_idx].address == fields["te_address"] and
+			menu.favorites[fav_idx].port == fields["te_port"] then
+			
+			gamedata.servername			= menu.favorites[fav_idx].name
+			gamedata.serverdescription	= menu.favorites[fav_idx].description
+		else
+			gamedata.servername = ""
+			gamedata.serverdescription = ""
+		end
+
 		gamedata.selected_world = 0
 		
 		engine.start()
@@ -1127,12 +1143,18 @@ function tabbuilder.tab_multiplayer()
 		"label[9,0;Name/Password]" ..
 		"field[1.25,5.25;5.5,0.5;te_address;;" ..engine.setting_get("address") .."]" ..
 		"field[6.75,5.25;2.25,0.5;te_port;;" ..engine.setting_get("port") .."]" ..
-		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;Delete]" ..
+		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
+		dump(engine.setting_getbool("public_serverlist")) .. "]"
+		
+	if not engine.setting_getbool("public_serverlist") then
+		retval = retval .. 
+		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;Delete]"
+	end
+	
+	retval = retval ..
 		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
 		"field[9.25,1;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
 		"pwdfield[9.25,1.75;2.5,0.5;te_pwd;]" ..
-		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
-		dump(engine.setting_getbool("public_serverlist")) .. "]" ..
 		"textlist[1,0.35;7.5,3.35;favourites;"
 
 	if #menu.favorites > 0 then

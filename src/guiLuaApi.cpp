@@ -197,12 +197,14 @@ int guiLuaApi::l_start(lua_State *L)
 	bool valid = false;
 
 
-	engine->m_data->selected_world	= getIntegerData(L, "selected_world",valid) -1;
+	engine->m_data->selected_world		= getIntegerData(L, "selected_world",valid) -1;
 	engine->m_data->simple_singleplayer_mode = getBoolData(L,"singleplayer",valid);
-	engine->m_data->name			= getTextData(L,"playername");
-	engine->m_data->password		= getTextData(L,"password");
-	engine->m_data->address			= getTextData(L,"address");
-	engine->m_data->port			= getTextData(L,"port");
+	engine->m_data->name				= getTextData(L,"playername");
+	engine->m_data->password			= getTextData(L,"password");
+	engine->m_data->address				= getTextData(L,"address");
+	engine->m_data->port				= getTextData(L,"port");
+	engine->m_data->serverdescription	= getTextData(L,"serverdescription");
+	engine->m_data->servername			= getTextData(L,"servername");
 
 	//close menu next time
 	engine->m_startgame = true;
