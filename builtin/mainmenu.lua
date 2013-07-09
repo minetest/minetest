@@ -755,7 +755,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		else
 			menu.favorites = engine.get_favorites("local")
 		end
-		
+		menu.fav_selected = nil
 		return
 	end
 
@@ -763,6 +763,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 		local current_favourite = engine.get_textlist_index("favourites")
 		engine.delete_favorite(current_favourite)
 		menu.favorites = engine.get_favorites()
+		menu.fav_selected = nil
 		
 		engine.setting_set("address","")
 		engine.setting_get("port","")
