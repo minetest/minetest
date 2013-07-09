@@ -2612,20 +2612,6 @@ void the_game(
 					if(tp)
 						params = getDigParams(nodedef->get(n).groups, tp);
 				}
-				
-				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
-				if(sound_dig.exists()){
-					if(sound_dig.name == "__group"){
-						if(params.main_group != ""){
-							soundmaker.m_player_leftpunch_sound.gain = 0.5;
-							soundmaker.m_player_leftpunch_sound.name =
-									std::string("default_dig_") +
-											params.main_group;
-						}
-					} else{
-						soundmaker.m_player_leftpunch_sound = sound_dig;
-					}
-				}
 
 				float dig_time_complete = 0.0;
 
@@ -2656,6 +2642,20 @@ void the_game(
 				else
 				{
 					dig_index = crack_animation_length;
+				}
+
+				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
+				if(sound_dig.exists() && params.diggable){
+					if(sound_dig.name == "__group"){
+						if(params.main_group != ""){
+							soundmaker.m_player_leftpunch_sound.gain = 0.5;
+							soundmaker.m_player_leftpunch_sound.name =
+									std::string("default_dig_") +
+											params.main_group;
+						}
+					} else{
+						soundmaker.m_player_leftpunch_sound = sound_dig;
+					}
 				}
 
 				// Don't show cracks if not diggable
