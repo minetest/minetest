@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static const Rotation wallmounted_to_rot[] = {
 	ROTATE_0, ROTATE_180, ROTATE_90, ROTATE_270
 };
+
 static const u8 rot_to_wallmounted[] = {
 	2, 4, 3, 5
 };
@@ -154,7 +155,7 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot) {
 			
 		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
 		param2 &= ~7;
-		param2 |= rot_to_wallmounted[(oldrot + rot) & 3];
+		param2 |= rot_to_wallmounted[(oldrot - rot) & 3];
 	}
 }
 

@@ -121,7 +121,7 @@ end
 
 function menu.set_texture(identifier,gamedetails)
 	local texture_set = false
-	if menu.texturepack ~= nil then
+	if menu.texturepack ~= nil and gamedetails ~= nil then
 		local path = menu.basetexturedir .. 
 						gamedetails.id .. "_menu_" .. identifier .. ".png"
 		
@@ -130,7 +130,7 @@ function menu.set_texture(identifier,gamedetails)
 		end
 	end
 	
-	if not texture_set then
+	if not texture_set and gamedetails ~= nil then
 		local path = gamedetails.path .. DIR_DELIM .."menu" .. 
 									 DIR_DELIM .. identifier .. ".png"
 		if engine.set_background(identifier,path) then
@@ -203,11 +203,19 @@ end
 --------------------------------------------------------------------------------
 function menu.reset_gametype()
 	menu.game_last_check = nil
-	engine.set_clouds(true)
-	engine.set_background("background","")
-	engine.set_background("overlay",menu.basetexturedir .. "menu_overlay.png")
-	engine.set_background("header",menu.basetexturedir .. "menu_header.png")
-	engine.set_background("footer",menu.basetexturedir .. "menu_footer.png")
+	
+	local path_background_texture = menu.basetexturedir .. "menu_background.png"
+			
+	if engine.set_background("background",path_background_texture) then
+		background_set = true
+		engine.set_clouds(false)
+	else
+		engine.set_clouds(true)
+	end 
+
+	menu.set_texture("overlay",nil)
+	menu.set_texture("header",nil)
+	menu.set_texture("footer",nil)
 	engine.set_topleft_text("")
 end
 
@@ -332,6 +340,10 @@ function menu.filtered_index_to_plain(filtered_index)
 	
 	local temp_idx = 0
 	
+	if menu.worldlist == nil then
+		return -1
+	end
+	
 	for i=1,#menu.worldlist,1 do
 		if menu.worldlist[i].gameid == current_game.id then
 			temp_idx = temp_idx +1
@@ -417,6 +429,10 @@ end
 function menu.update_last_game(world_idx)
 	if gamedata.selected_world <= #menu.worldlist then
 		local world = menu.worldlist[gamedata.selected_world]
+		
+		if world == nil then
+			return
+		end
 		
 		for i=1,#gamemgr.games,1 do		
 			if gamemgr.games[i].id == world.gameid then
@@ -574,7 +590,8 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.handle_create_world_buttons(fields)
 	
-	if fields["world_create_confirm"] then
+	if fields["world_create_confirm"] or
+		fields["key_enter"] then
 		
 		local worldname = fields["te_world_name"]
 		local gameindex = engine.get_textlist_index("games")
