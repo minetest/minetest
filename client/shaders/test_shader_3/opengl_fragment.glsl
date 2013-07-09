@@ -1,13 +1,15 @@
 
 uniform sampler2D myTexture;
 uniform float fogDistance;
+uniform float wieldLight;
 
 varying vec3 vPosition;
 
 void main (void)
 {
 	vec4 col = texture2D(myTexture, vec2(gl_TexCoord[0]));
-	col *= gl_Color;
+	float light = max((wieldLight/2.0)/vPosition.z, 0.0);
+	col *= min(gl_Color+vec4(light), 1.0);
 	float a = col.a;
 	col = col * col; // SRGB -> Linear
 	col *= 1.8;

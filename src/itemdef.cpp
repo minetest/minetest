@@ -65,6 +65,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	inventory_image = def.inventory_image;
 	wield_image = def.wield_image;
 	wield_scale = def.wield_scale;
+	wield_light = def.wield_light;
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
@@ -100,6 +101,7 @@ void ItemDefinition::reset()
 	inventory_image = "";
 	wield_image = "";
 	wield_scale = v3f(1.0, 1.0, 1.0);
+	wield_light = 0;
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
@@ -153,6 +155,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	if(protocol_version > 20){
 		writeF1000(os, range);
+		writeU8(os, wield_light);
 	}
 }
 
@@ -188,6 +191,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
+	wield_light = 0;
 	if(version == 1){
 		// We cant be sure that node_placement_prediction is send in version 1
 		try{
@@ -204,6 +208,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	}
 	if(version == 3) {
 		range = readF1000(is);
+		wield_light = readU8(is);
 	}
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.

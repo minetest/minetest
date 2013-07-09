@@ -765,14 +765,16 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	Client *m_client;
+	Inventory *m_local_inventory;
 
 public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range, Client *client):
+			f32 *fog_range, Client *client, Inventory *local_inventory):
 		m_sky(sky),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
-		m_client(client)
+		m_client(client),
+		m_local_inventory(local_inventory)
 	{}
 	~GameGlobalShaderConstantSetter() {}
 
@@ -812,6 +814,18 @@ public:
 #else
 		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer, 1);
 #endif
+		ItemStack playeritem;
+		{
+			InventoryList *mlist = m_local_inventory->getList("main");
+			if(mlist != NULL)
+			{
+				playeritem = mlist->getItem(m_client->getPlayerItem());
+			}
+		}
+		irr::f32 wieldLight = 0;
+		if (g_settings->getBool("disable_wieldlight") == false)
+			wieldLight = (irr::f32)m_client->idef()->get(playeritem.name).wield_light;
+		services->setPixelShaderConstant("wieldLight", &wieldLight, 1);
 	}
 };
 
@@ -1429,7 +1443,7 @@ void the_game(
 		Shader constants
 	*/
 	shsrc->addGlobalConstantSetter(new GameGlobalShaderConstantSetter(
-			sky, &force_fog_off, &fog_range, &client));
+			sky, &force_fog_off, &fog_range, &client, &local_inventory));
 
 	/*
 		Main loop

@@ -172,6 +172,8 @@
 #enable_shaders = 2
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
+# Set to true to disable wield light (enabled by default, requires shaders)
+#disable_wieldlight = false
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25

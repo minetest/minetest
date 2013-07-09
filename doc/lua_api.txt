@@ -1907,6 +1907,9 @@ Item definition (register_node, register_craftitem, register_tool)
     inventory_image = "default_tool_steelaxe.png",
     wield_image = "",
     wield_scale = {x=1,y=1,z=1},
+    wield_light = 0,
+    ^ Amount of light emitted by item when wielded (requires shaders).
+    ^ This value should be the same as light_source for nodes.
     stack_max = 99,
     range = 4.0,
     liquids_pointable = false,

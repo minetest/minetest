@@ -61,7 +61,10 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 		def.wield_scale = check_v3f(L, -1);
 	}
 	lua_pop(L, 1);
-
+	
+	def.wield_light = getintfield_default(L, index,
+			"wield_light", def.wield_light);
+	
 	def.stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
 	if(def.stack_max == 0)
 		def.stack_max = 1;

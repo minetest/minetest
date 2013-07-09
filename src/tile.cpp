@@ -886,10 +886,16 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 			params.light_color,
 			params.light_radius);
 
+	// Wield light shouldn't be used here
+	bool disable_wieldlight = g_settings->getBool("disable_wieldlight");
+	g_settings->setBool("disable_wieldlight", true);
+
 	// Render scene
 	driver->beginScene(true, true, video::SColor(0,0,0,0));
 	smgr->drawAll();
 	driver->endScene();
+	
+	g_settings->setBool("disable_wieldlight", disable_wieldlight);
 
 	// NOTE: The scene nodes should not be dropped, otherwise
 	//       smgr->drop() segfaults
