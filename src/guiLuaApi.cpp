@@ -809,7 +809,7 @@ int guiLuaApi::l_get_modpath(lua_State *L)
 {
 	//TODO this path may be controversial!
 	std::string modpath
-			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "mods" + DIR_DELIM);
+			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
 	lua_pushstring(L, modpath.c_str());
 	return 1;
 }
