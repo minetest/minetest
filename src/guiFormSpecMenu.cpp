@@ -1010,7 +1010,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 }
 
 void GUIFormSpecMenu::parseField(parserData* data,std::string element,std::string type) {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element,';',true);
 
 	if (parts.size() == 3) {
 		parseSimpleField(data,parts);

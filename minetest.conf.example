@@ -206,6 +206,8 @@
 #server_url = http://minetest.net
 # Automaticaly report to masterserver
 #server_announce = 0
+# Announce to this masterserver. if you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net
+#serverlist_url = servers.minetest.net
 # Default game (default when creating a new world)
 #default_game = minetest
 # World directory (everything in the world is stored here)
