@@ -49,8 +49,12 @@ function success(r) {
         h += '<tr class="mts_row">';
         h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
         h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + s.clients_top : '') + '</td>';
-        h += '<td class="mts_version">' + e(s.version) + ' ' + e(s.gameid);
+        var mods;
         if (s.mods && jQuery.isArray(s.mods)) {
+            mods = 1;
+        }
+        h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid);
+        if (mods) {
             h += '<div class="mts_mods">Mods:<br/>';
             for (m in s.mods) {
                 h += s.mods[m] + '<br/>';
