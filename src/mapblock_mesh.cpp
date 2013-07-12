@@ -1156,38 +1156,41 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.MaterialType
-				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture);
-		if (enable_shaders)
-			{
-				if (enable_bumpmapping)
-					{
-						ITextureSource *tsrc = data->m_gamedef->tsrc();
-						std::string basename,normal,replace;
-						replace = "_normal.png";
-						basename = tsrc->getTextureName(p.tile.texture_id);
-						unsigned pos = basename.find(".");
-						normal = basename.substr (0, pos) + replace;
-						if (tsrc->isKnownSourceImage(normal))
-							{
-								// look for image extension and replace it 
-								for(std::string::size_type i = 0; (i = basename.find(".", i)) != std::string::npos;)
-									{
-										basename.replace(i, 4, replace);
-										i += replace.length();
-									}
-								material.setTexture(1, tsrc->getTexture(basename));		
-								p.tile.applyMaterialOptionsWithShaders(material, bumpmaps1,bumpmaps2, shadermat3);
-							}
-						else 
-							p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
+	
+		if (enable_shaders) {
+			video::E_MATERIAL_TYPE smat1 = shadermat1;
+			video::E_MATERIAL_TYPE smat2 = shadermat2;
+			video::E_MATERIAL_TYPE smat3 = shadermat3;
+			
+			if (enable_bumpmapping) {
+				ITextureSource *tsrc = data->m_gamedef->tsrc();
+				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
+
+				std::string normal_ext = "_normal.png";
+				size_t pos = fname_base.find(".");
+				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
+				
+				if (tsrc->isKnownSourceImage(fname_normal)) {
+					// look for image extension and replace it 
+					size_t i = 0;
+					while ((i = fname_base.find(".", i)) != std::string::npos) {
+						fname_base.replace(i, 4, normal_ext);
+						i += normal_ext.length();
 					}
-				else 		
-						p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);	
+					
+					material.setTexture(1, tsrc->getTexture(fname_base));
+					
+					smat1 = bumpmaps1;
+					smat2 = bumpmaps2;
+				}
 			}
-		else
+			
+			p.tile.applyMaterialOptionsWithShaders(material, smat1, smat2, smat3);
+		} else {
 			p.tile.applyMaterialOptions(material);
+		}
 
 		// Create meshbuffer
 
