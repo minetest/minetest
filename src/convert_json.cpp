@@ -111,6 +111,7 @@ std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist) {
 				}
 			}
 			else {
+				errorstream << "readModStoreList: missing id" << std::endl;
 				toadd.valid = false;
 			}
 
@@ -119,6 +120,7 @@ std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist) {
 				toadd.title = modlist[i]["title"].asString();
 			}
 			else {
+				errorstream << "readModStoreList: missing title" << std::endl;
 				toadd.valid = false;
 			}
 
@@ -127,6 +129,7 @@ std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist) {
 				toadd.basename = modlist[i]["basename"].asString();
 			}
 			else {
+				errorstream << "readModStoreList: missing basename" << std::endl;
 				toadd.valid = false;
 			}
 
@@ -166,6 +169,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 				}
 			}
 			else {
+				errorstream << "readModStoreModDetails: missing version_set id" << std::endl;
 				retval.valid = false;
 			}
 
@@ -179,6 +183,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 				toadd.file = details["version_set"][i]["file"].asString();
 			}
 			else {
+				errorstream << "readModStoreModDetails: missing version_set file" << std::endl;
 				retval.valid = false;
 			}
 
@@ -196,6 +201,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	}
 
 	if (retval.versions.size() < 1) {
+		errorstream << "readModStoreModDetails: not a single version specified!" << std::endl;
 		retval.valid = false;
 	}
 
@@ -215,12 +221,14 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 				}
 			}
 			else {
+				errorstream << "readModStoreModDetails: missing categories id" << std::endl;
 				retval.valid = false;
 			}
 			if (details["categories"][i]["title"].asString().size()) {
 				toadd.name = details["categories"][i]["title"].asString();
 			}
 			else {
+				errorstream << "readModStoreModDetails: missing categories title" << std::endl;
 				retval.valid = false;
 			}
 
@@ -245,10 +253,12 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 				retval.author.id = numbervalue;
 			}
 			else {
+				errorstream << "readModStoreModDetails: missing author id (convert)" << std::endl;
 				retval.valid = false;
 			}
 		}
 		else {
+			errorstream << "readModStoreModDetails: missing author id" << std::endl;
 			retval.valid = false;
 		}
 
@@ -256,10 +266,12 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 			retval.author.username = details["author"]["username"].asString();
 		}
 		else {
+			errorstream << "readModStoreModDetails: missing author username" << std::endl;
 			retval.valid = false;
 		}
 	}
 	else {
+		errorstream << "readModStoreModDetails: missing author" << std::endl;
 		retval.valid = false;
 	}
 
@@ -276,6 +288,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 			}
 		}
 		else {
+			errorstream << "readModStoreModDetails: missing license id" << std::endl;
 			retval.valid = false;
 		}
 
@@ -283,6 +296,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 			retval.license.shortinfo = details["license"]["short"].asString();
 		}
 		else {
+			errorstream << "readModStoreModDetails: missing license short" << std::endl;
 			retval.valid = false;
 		}
 
@@ -290,6 +304,39 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 			retval.license.url = details["license"]["link"].asString();
 		}
 
+	}
+
+	//titlepic
+	if (details["titlepic"].isObject()) {
+		if (details["titlepic"]["id"].asString().size()) {
+
+			const char* id_raw = details["titlepic"]["id"].asString().c_str();
+			char* endptr = 0;
+			int numbervalue = strtol(id_raw,&endptr,10);
+
+			if ((*id_raw != 0) && (*endptr == 0)) {
+				retval.titlepic.id = numbervalue;
+			}
+		}
+
+		if (details["titlepic"]["file"].asString().size()) {
+			retval.titlepic.file = details["titlepic"]["file"].asString();
+		}
+
+		if (details["titlepic"]["desc"].asString().size()) {
+			retval.titlepic.description = details["titlepic"]["desc"].asString();
+		}
+
+		if (details["titlepic"]["mod"].asString().size()) {
+
+			const char* mod_raw = details["titlepic"]["mod"].asString().c_str();
+			char* endptr = 0;
+			int numbervalue = strtol(mod_raw,&endptr,10);
+
+			if ((*mod_raw != 0) && (*endptr == 0)) {
+				retval.titlepic.mod = numbervalue;
+			}
+		}
 	}
 
 	//id
@@ -304,6 +351,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 		}
 	}
 	else {
+		errorstream << "readModStoreModDetails: missing id" << std::endl;
 		retval.valid = false;
 	}
 
@@ -312,6 +360,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 		retval.title = details["title"].asString();
 	}
 	else {
+		errorstream << "readModStoreModDetails: missing title" << std::endl;
 		retval.valid = false;
 	}
 
@@ -320,6 +369,7 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 		retval.basename = details["basename"].asString();
 	}
 	else {
+		errorstream << "readModStoreModDetails: missing basename" << std::endl;
 		retval.valid = false;
 	}
 

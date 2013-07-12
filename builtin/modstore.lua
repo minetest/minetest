@@ -216,10 +216,12 @@ function modstore.getmodlist(list)
 			if details.screenshot_url ~= nil and
 				details.screenshot_url ~= "" then
 				if list.data[i].texturename == nil then
-					print("downloading screenshot: " .. details.screenshot_url)
+					local fullurl = engine.setting_get("modstore_download_url") ..
+								details.screenshot_url
+					print("downloading screenshot: " .. fullurl)
 					local filename = os.tempfolder()
 					
-					if engine.download_file(details.screenshot_url,filename) then
+					if engine.download_file(fullurl,filename) then
 						list.data[i].texturename = filename
 					end
 				end
@@ -238,7 +240,7 @@ function modstore.getmodlist(list)
 			
 			--description
 			local descriptiony = screenshot_ypos + 0.5
-			retval = retval .. "textarea[3," .. descriptiony .. ";6.5,1.6;;" .. 
+			retval = retval .. "textarea[3," .. descriptiony .. ";6.5,1.55;;" .. 
 				fs_escape_string(details.description) .. ";]"
 			--rating
 			local ratingy = screenshot_ypos + 0.6
