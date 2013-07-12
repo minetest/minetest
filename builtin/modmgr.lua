@@ -444,11 +444,9 @@ function modmgr.dialog_configure_world()
 		retval = retval ..
 			"label[0,0.45;Mod:]" ..
 			"label[0.75,0.45;" .. modname .. "]" ..
-			"label[0,1.5;depends on:]" ..
-			"textlist[0,2;5,2;world_config_depends;" ..
-			modmgr.get_dependencys(modfolder) .. ";0]" ..
-			"label[0,4;depends on:]" ..
-			"textlist[0,4.5;5,2;world_config_is_required;;0]"
+			"label[0,1.5;Depends:]" ..
+			"textlist[0,2;5,4.25;world_config_depends;" ..
+			modmgr.get_dependencys(modfolder) .. ";0]"
 	
 		if modpack_selected then
 			retval = retval ..
