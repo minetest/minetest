@@ -12,7 +12,7 @@ local tabbuilder = {}
 local menubar = {}
 
 --------------------------------------------------------------------------------
-function render_favourite(spec)
+function render_favourite(spec,render_details)
 	local text = ""
 	
 	if spec.name ~= nil then
@@ -26,6 +26,10 @@ function render_favourite(spec)
 		if spec.address ~= nil then
 			text = text .. spec.address:trim()
 		end
+	end
+	
+	if not render_details then
+		return text
 	end
 	
 	local details = ""
@@ -1081,11 +1085,13 @@ function tabbuilder.tab_multiplayer()
 		";]" ..
 		"textlist[1,0.35;7.5,3.35;favourites;"
 
+	local render_details = engine.setting_getbool("public_serverlist")
+
 	if #menu.favorites > 0 then
-		retval = retval .. render_favourite(menu.favorites[1])
+		retval = retval .. render_favourite(menu.favorites[1],render_details)
 		
 		for i=2,#menu.favorites,1 do
-			retval = retval .. "," .. render_favourite(menu.favorites[i])
+			retval = retval .. "," .. render_favourite(menu.favorites[i],render_details)
 		end
 	end
 
