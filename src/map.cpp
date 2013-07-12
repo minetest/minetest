@@ -2186,6 +2186,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			update the current node
 		 */
+		MapNode n00 = n0;
 		//bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
 		if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
@@ -2223,8 +2224,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL) {
 			modified_blocks[blockpos] =  block;
-			// If node emits light, MapBlock requires lighting update
-			if(nodemgr->get(n0).light_source != 0)
+			// If new or old node emits light, MapBlock requires lighting update
+			if(nodemgr->get(n0).light_source != 0 ||
+					nodemgr->get(n00).light_source != 0)
 				lighting_modified_blocks[block->getPos()] = block;
 		}
 
