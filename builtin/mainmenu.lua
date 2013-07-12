@@ -12,48 +12,53 @@ local tabbuilder = {}
 local menubar = {}
 
 --------------------------------------------------------------------------------
-function render_favourite(spec)
+function render_favourite(spec,render_details)
 	local text = ""
 	
 	if spec.name ~= nil then
 		text = text .. fs_escape_string(spec.name:trim())
 		
-		if spec.description ~= nil then
-			--TODO make sure there's no invalid chat in spec.description
-			text = text .. " (" .. fs_escape_string(spec.description) .. ")"
-		end
+--		if spec.description ~= nil and
+--			fs_escape_string(spec.description):trim() ~= "" then
+--			text = text .. " (" .. fs_escape_string(spec.description) .. ")"
+--		end
 	else
 		if spec.address ~= nil then
 			text = text .. spec.address:trim()
 		end
 	end
 	
+	if not render_details then
+		return text
+	end
+	
 	local details = ""
 	if spec.password == true then
-		details = " *"
+		details = details .. "*"
 	else
-		details = "  "
+		details = details .. "_"
 	end
 	
 	if spec.creative then
 		details = details .. "C"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
 	
 	if spec.damage then
 		details = details .. "D"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
 	
 	if spec.pvp then
 		details = details .. "P"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
+	details = details .. "  "
 	
-	return text
+	return fs_escape_string(details) .. text
 end
 
 --------------------------------------------------------------------------------
@@ -626,16 +631,18 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	if fields["favourites"] ~= nil then
 		local event = explode_textlist_event(fields["favourites"])
 		if event.typ == "DCL" then
-			--gamedata.address = menu.favorites[event.index].name
-			if gamedata.address == nil then
-				gamedata.address = menu.favorites[event.index].address
-			end
+			gamedata.address = menu.favorites[event.index].address
 			gamedata.port = menu.favorites[event.index].port
 			gamedata.playername		= fields["te_name"]
 			if fields["te_pwd"] ~= nil then
 				gamedata.password		= fields["te_pwd"]
 			end
 			gamedata.selected_world = 0
+			
+			if menu.favorites ~= nil then
+				gamedata.servername = menu.favorites[event.index].name
+				gamedata.serverdescription = menu.favorites[event.index].description
+			end
 			
 			if menu.favorites ~= nil then
 				gamedata.servername = menu.favorites[event.index].name
@@ -675,10 +682,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			fav_idx = fav_idx +1
 		end end
 		
-		local address = menu.favorites[fav_idx].name
-		if address == nil then
-			address = menu.favorites[fav_idx].address
-		end
+		local address = menu.favorites[fav_idx].address
 		local port = menu.favorites[fav_idx].port
 		
 		if address ~= nil and
@@ -1070,13 +1074,24 @@ function tabbuilder.tab_multiplayer()
 		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
 		"field[9.25,1;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
 		"pwdfield[9.25,1.75;2.5,0.5;te_pwd;]" ..
+		"textarea[9.25,2.25;2.5,2.75;;"
+	if menu.fav_selected ~= nil and 
+		menu.favorites[menu.fav_selected].description ~= nil then
+		retval = retval .. 
+			fs_escape_string(menu.favorites[menu.fav_selected].description,true)
+	end
+	
+	retval = retval .. 
+		";]" ..
 		"textlist[1,0.35;7.5,3.35;favourites;"
 
+	local render_details = engine.setting_getbool("public_serverlist")
+
 	if #menu.favorites > 0 then
-		retval = retval .. render_favourite(menu.favorites[1])
+		retval = retval .. render_favourite(menu.favorites[1],render_details)
 		
 		for i=2,#menu.favorites,1 do
-			retval = retval .. "," .. render_favourite(menu.favorites[i])
+			retval = retval .. "," .. render_favourite(menu.favorites[i],render_details)
 		end
 	end
 

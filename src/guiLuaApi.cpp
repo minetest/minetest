@@ -807,9 +807,8 @@ int guiLuaApi::l_set_topleft_text(lua_State *L)
 /******************************************************************************/
 int guiLuaApi::l_get_modpath(lua_State *L)
 {
-	//TODO this path may be controversial!
 	std::string modpath
-			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "mods" + DIR_DELIM);
+			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
 	lua_pushstring(L, modpath.c_str());
 	return 1;
 }
@@ -818,7 +817,7 @@ int guiLuaApi::l_get_modpath(lua_State *L)
 int guiLuaApi::l_get_gamepath(lua_State *L)
 {
 	std::string gamepath
-			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "games"	+ DIR_DELIM);
+			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "games" + DIR_DELIM);
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
@@ -1009,7 +1008,7 @@ bool guiLuaApi::isMinetestPath(std::string path) {
 		return true;
 
 	/* mods */
-	if (fs::PathStartsWith(path,fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "mods")))
+	if (fs::PathStartsWith(path,fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "mods")))
 		return true;
 
 	/* worlds */

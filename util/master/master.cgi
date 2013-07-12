@@ -152,7 +152,6 @@ sub float {
     return ($_[0] < 8 and $_[0] - int($_[0]))
       ? sprintf('%.' . ($_[0] < 1 ? 3 : ($_[0] < 3 ? 2 : 1)) . 'f', $_[0])
       : int($_[0]);
-
 }
 
 sub mineping ($$) {
@@ -236,7 +235,7 @@ sub request (;$) {
             $param->{first} ||= $old->{first} || $old->{time} || $param->{time};
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
-            $param->{mods} ||= $old->{mods};
+            $param->{mods} ||= $old->{mods} unless $param->{action} ~~ 'start';
             delete $param->{action};
             $listk->{$param->{key}} = $param;
             #printlog Dumper $param;
