@@ -1922,6 +1922,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
+		if(!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0)
+		{
+			actionstream<<"Server: Player with an invalid name "
+					<<"tried to connect from "<<addr_s<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Name is not allowed");
+			return;
+		}
+
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
 				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
 
