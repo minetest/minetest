@@ -18,10 +18,10 @@ function render_favourite(spec)
 	if spec.name ~= nil then
 		text = text .. fs_escape_string(spec.name:trim())
 		
-		if spec.description ~= nil then
-			--TODO make sure there's no invalid chat in spec.description
-			text = text .. " (" .. fs_escape_string(spec.description) .. ")"
-		end
+--		if spec.description ~= nil and
+--			fs_escape_string(spec.description):trim() ~= "" then
+--			text = text .. " (" .. fs_escape_string(spec.description) .. ")"
+--		end
 	else
 		if spec.address ~= nil then
 			text = text .. spec.address:trim()
@@ -627,10 +627,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	if fields["favourites"] ~= nil then
 		local event = explode_textlist_event(fields["favourites"])
 		if event.typ == "DCL" then
-			--gamedata.address = menu.favorites[event.index].name
-			if gamedata.address == nil then
-				gamedata.address = menu.favorites[event.index].address
-			end
+			gamedata.address = menu.favorites[event.index].address
 			gamedata.port = menu.favorites[event.index].port
 			gamedata.playername		= fields["te_name"]
 			if fields["te_pwd"] ~= nil then
@@ -681,10 +678,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			fav_idx = fav_idx +1
 		end end
 		
-		local address = menu.favorites[fav_idx].name
-		if address == nil then
-			address = menu.favorites[fav_idx].address
-		end
+		local address = menu.favorites[fav_idx].address
 		local port = menu.favorites[fav_idx].port
 		
 		if address ~= nil and
@@ -1076,6 +1070,15 @@ function tabbuilder.tab_multiplayer()
 		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
 		"field[9.25,1;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
 		"pwdfield[9.25,1.75;2.5,0.5;te_pwd;]" ..
+		"textarea[9.25,2.25;2.5,2.75;;"
+	if menu.fav_selected ~= nil and 
+		menu.favorites[menu.fav_selected].description ~= nil then
+		retval = retval .. 
+			fs_escape_string(menu.favorites[menu.fav_selected].description,true)
+	end
+	
+	retval = retval .. 
+		";]" ..
 		"textlist[1,0.35;7.5,3.35;favourites;"
 
 	if #menu.favorites > 0 then
