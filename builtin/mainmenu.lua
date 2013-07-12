@@ -642,6 +642,11 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 				gamedata.serverdescription = menu.favorites[event.index].description
 			end
 			
+			if menu.favorites ~= nil then
+				gamedata.servername = menu.favorites[event.index].name
+				gamedata.serverdescription = menu.favorites[event.index].description
+			end
+			
 			if gamedata.address ~= nil and
 				gamedata.port ~= nil then
 				
