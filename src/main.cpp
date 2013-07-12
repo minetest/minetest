@@ -1654,7 +1654,7 @@ int main(int argc, char *argv[])
 					current_playername = "singleplayer";
 					current_password = "";
 					current_address = "";
-					current_port = 30011;
+					current_port = myrand_range(49152, 65535);
 				}
 				else if (address != "")
 				{
