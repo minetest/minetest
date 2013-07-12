@@ -459,10 +459,8 @@ function modmgr.dialog_configure_world()
 				"checkbox[0,0.8;cb_mod_enabled;enabled;"
 			
 			if modmgr.worldconfig.global_mods[shortname] then
-				print("checkbox " .. shortname .. " enabled")
 				retval = retval .. "true"
 			else
-				print("checkbox " .. shortname .. " disabled")
 				retval = retval .. "false"
 			end
 			
@@ -516,7 +514,7 @@ function modmgr.get_dependencys(modfolder)
 		end
 		dependencyfile:close()
 	else
-		print(filename .. " not found")
+		print("Modmgr:" .. filename .. " not found")
 	end
 
 	return toadd
@@ -546,10 +544,8 @@ function modmgr.get_worldconfig(worldpath)
 			else
 				local key = parts[1]:trim():sub(10)
 				if parts[2]:trim() == "true" then
-					print("found enabled mod: >" .. key .. "<")
 					worldconfig.global_mods[key] = true
 				else
-					print("found disabled mod: >" .. key .. "<")
 					worldconfig.global_mods[key] = false
 				end
 			end
@@ -557,13 +553,12 @@ function modmgr.get_worldconfig(worldpath)
 		end
 		worldfile:close()
 	else
-		print(filename .. " not found")
+		print("Modmgr: " .. filename .. " not found")
 	end
 	
 	--read gamemods
 	local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. worldconfig.id .. DIR_DELIM .. "mods"
 	
-	print("reading game mods from: " .. dump(gamemodpath))
 	get_mods(gamemodpath,worldconfig.game_mods)
 
 	return worldconfig
@@ -642,7 +637,9 @@ function modmgr.installmod(modfilename,basename)
 		
 		if clean_path ~= nil then
 			local targetpath = engine.get_modpath() .. DIR_DELIM .. clean_path
-			engine.copy_dir(basefolder.path,targetpath)
+			if not engine.copy_dir(basefolder.path,targetpath) then
+				gamedata.errormessage = "Failed to install " .. basename .. " to " .. targetpath
+			end
 		else
 			gamedata.errormessage = "Install Mod: unable to find suitable foldername for modpack " 
 				.. modfilename
