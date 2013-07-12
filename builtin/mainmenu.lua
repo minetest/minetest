@@ -30,30 +30,31 @@ function render_favourite(spec)
 	
 	local details = ""
 	if spec.password == true then
-		details = " *"
+		details = details .. "*"
 	else
-		details = "  "
+		details = details .. "_"
 	end
 	
 	if spec.creative then
 		details = details .. "C"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
 	
 	if spec.damage then
 		details = details .. "D"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
 	
 	if spec.pvp then
 		details = details .. "P"
 	else
-		details = details .. " "
+		details = details .. "_"
 	end
+	details = details .. "  "
 	
-	return text
+	return fs_escape_string(details) .. text
 end
 
 --------------------------------------------------------------------------------
