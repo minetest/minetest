@@ -1054,7 +1054,7 @@ function tabbuilder.tab_multiplayer()
 		"vertlabel[0,-0.25;CLIENT]" ..
 		"label[1,-0.25;Favorites:]"..
 		"label[1,4.25;Address/Port]"..
-		"label[9,0;Name/Password]" ..
+		"label[9,2.75;Name/Password]" ..
 		"field[1.25,5.25;5.5,0.5;te_address;;" ..engine.setting_get("address") .."]" ..
 		"field[6.75,5.25;2.25,0.5;te_port;;" ..engine.setting_get("port") .."]" ..
 		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
@@ -1067,9 +1067,9 @@ function tabbuilder.tab_multiplayer()
 	
 	retval = retval ..
 		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
-		"field[9.25,1;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
-		"pwdfield[9.25,1.75;2.5,0.5;te_pwd;]" ..
-		"textarea[9.25,2.25;2.5,2.75;;"
+		"field[9.3,3.75;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
+		"pwdfield[9.3,4.5;2.5,0.5;te_pwd;]" ..
+		"textarea[9.3,0.25;2.5,2.75;;"
 	if menu.fav_selected ~= nil and 
 		menu.favorites[menu.fav_selected].description ~= nil then
 		retval = retval .. 
