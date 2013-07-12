@@ -250,7 +250,7 @@ void * MediaFetchThread::Thread()
 			m_file_data.push_back(make_pair(i->name, data));
 		} else {
 			m_failed.push_back(*i);
-			infostream << "cURL request failed for " << i->name << std::endl;
+			infostream << "cURL request failed for " << i->name << " (" << curl_easy_strerror(res) << ")"<< std::endl;
 		}
 		curl_easy_cleanup(curl);
 	}

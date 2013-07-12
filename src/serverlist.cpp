@@ -194,34 +194,40 @@ std::string serializeJson(std::vector<ServerListSpec> serverlist)
 #if USE_CURL
 static size_t ServerAnnounceCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-    return 0;
     //((std::string*)userp)->append((char*)contents, size * nmemb);
-    //return size * nmemb;
+    return size * nmemb;
 }
-void sendAnnounce(std::string action, u16 clients, double uptime, std::string gameid) {
+void sendAnnounce(std::string action, u16 clients, double uptime, std::string gameid, std::vector<ModSpec> m_mods) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
 	server["port"] = g_settings->get("port");
-        if (action != "del") {
+	server["address"]	= g_settings->get("server_address");
+	if (action != "delete") {
 		server["name"]		= g_settings->get("server_name");
 		server["description"]	= g_settings->get("server_description");
-		server["address"]	= g_settings->get("server_address");
 		server["version"]	= VERSION_STRING;
 		server["url"]		= g_settings->get("server_url");
 		server["creative"]	= g_settings->get("creative_mode");
 		server["damage"]	= g_settings->get("enable_damage");
 		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
 		server["password"]	= g_settings->getBool("disallow_empty_password");
 		server["pvp"]		= g_settings->getBool("enable_pvp");
 		server["clients"]	= clients;
 		server["clients_max"]	= g_settings->get("max_users");
 		if (uptime >=1) server["uptime"] = (int)uptime;
 		if (gameid!="") server["gameid"] = gameid;
-		
 	}
-	if(server["action"] == "start")
+
+	if(server["action"] == "start") {
+		server["mods"] = Json::Value(Json::arrayValue);
+		for(std::vector<ModSpec>::iterator m = m_mods.begin(); m != m_mods.end(); m++) {
+			server["mods"].append(m->name);
+		}
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
+	}
+
 	Json::StyledWriter writer;
 	CURL *curl;
 	curl = curl_easy_init();
@@ -236,8 +242,8 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 1);
 		res = curl_easy_perform(curl);
-		//if (res != CURLE_OK)
-		//	errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" not found (internet connection?)"<<std::endl;
+		if (res != CURLE_OK)
+			errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" error ("<<curl_easy_strerror(res)<<")"<<std::endl;
 		curl_easy_cleanup(curl);
 	}
 

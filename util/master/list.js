@@ -45,17 +45,28 @@ function success(r) {
     for (var i = 0; i < r.list.length; ++i) {
         var s = r.list[i];
         if (!s) continue;
+        if (/:/.test(s.address)) s.address = '[' + s.address + ']';
         h += '<tr class="mts_row">';
         h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
         h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + s.clients_top : '') + '</td>';
-        h += '<td class="mts_version">' + e(s.version) + ' ' + e(s.gameid) + '</td>';
+        h += '<td class="mts_version">' + e(s.version) + ' ' + e(s.gameid);
+        if (s.mods && jQuery.isArray(s.mods)) {
+            h += '<div class="mts_mods">Mods:<br/>';
+            for (m in s.mods) {
+                h += s.mods[m] + '<br/>';
+            }
+            h += '</div>';
+        }
+
+        h += '</td>';
+
         h += '<td class="mts_url">';
         if (s.url) h += '<a href="' + e(s.url) + '">';
         h += e(s.name || s.url);
         if (s.url) h += '</a>';
         h += '</td>';
         h += '<td class="mts_description">' + e(s.description) + '</td>';
-        h += '<td class="mts_flags">' + e(s.password ? 'Pwd ' : '') + (s.creative ? 'Cre ' : '') + (s.damage ? 'Dmg ' : '') + (s.pvp ? 'Pvp ' : '') + (s.dedicated ? 'Ded ' : '') + '</td>';
+        h += '<td class="mts_flags">' + e(s.password ? 'Pwd ' : '') + (s.creative ? 'Cre ' : '') + (s.damage ? 'Dmg ' : '') + (s.pvp ? 'Pvp ' : '') + (s.dedicated ? 'Ded ' : '') + (s.rollback ? 'Rol ' : '') + '</td>';
         if (!s.start || s.start < 0) s.start = 0;
         h += '<td class="mts_time">' + (s.uptime ? human_time(s.uptime, 1) : s.start ? human_time(s.start) : '') + '</td>';
         h += '<td class="mts_ping">' + (s.ping ? parseFloat(s.ping).toFixed(3) * 1000 : '') + '</td>';

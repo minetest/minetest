@@ -533,7 +533,7 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 			res = curl_easy_perform(curl);
 			if (res != CURLE_OK) {
 				errorstream << "File at url \"" << url
-					<<"\" not found (internet connection?)" <<std::endl;
+					<<"\" not found (" << curl_easy_strerror(res) << ")" <<std::endl;
 				retval = false;
 			}
 			fclose(targetfile);
