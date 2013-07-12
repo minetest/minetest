@@ -430,6 +430,10 @@ int guiLuaApi::l_get_modstore_details(lua_State *L)
 			lua_pushstring(L,current_mod.versions[0].file.c_str());
 			lua_settable(L, top);
 
+			lua_pushstring(L,"screenshot_url");
+			lua_pushstring(L,current_mod.titlepic.file.c_str());
+			lua_settable(L, top);
+
 			lua_pushstring(L,"license");
 			lua_pushstring(L,current_mod.license.shortinfo.c_str());
 			lua_settable(L, top);

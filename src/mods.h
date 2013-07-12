@@ -202,11 +202,19 @@ struct ModStoreVersionEntry {
 	int mtversion;
 };
 
+struct ModStoreTitlePic {
+	int id;
+	std::string file;
+	std::string description;
+	int mod;
+};
+
 struct ModStoreModDetails {
 	/* version_set?? */
 	std::vector<ModStoreCategoryInfo> categories;
 	ModAuthorInfo author;
 	ModLicenseInfo license;
+	ModStoreTitlePic titlepic;
 	int id;
 	std::string title;
 	std::string basename;
