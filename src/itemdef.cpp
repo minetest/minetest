@@ -519,7 +519,8 @@ public:
 
 		// Add the four builtin items:
 		//   "" is the hand
-		//   "unknown" is returned whenever an undefined item is accessed
+		//   "unknown" is returned whenever an undefined item
+		//     is accessed (is also the unknown node)
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
@@ -530,6 +531,7 @@ public:
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
+		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 

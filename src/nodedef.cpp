@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 #include "nameidmapping.h"
+#include "util/numeric.h"
 #include "util/serialize.h"
 //#include "profiler.h" // For TimeTaker
 
@@ -361,13 +362,26 @@ class CNodeDefManager: public IWritableNodeDefManager
 public:
 	void clear()
 	{
+		m_content_features.clear();
 		m_name_id_mapping.clear();
 		m_name_id_mapping_with_aliases.clear();
+		m_group_to_items.clear();
+		m_next_id = 0;
 
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		u32 initial_length = 0;
+		initial_length = MYMAX(initial_length, CONTENT_UNKNOWN + 1);
+		initial_length = MYMAX(initial_length, CONTENT_AIR + 1);
+		initial_length = MYMAX(initial_length, CONTENT_IGNORE + 1);
+		m_content_features.resize(initial_length);
+
+		// Set CONTENT_UNKNOWN
 		{
-			ContentFeatures &f = m_content_features[i];
-			f.reset(); // Reset to defaults
+			ContentFeatures f;
+			f.name = "unknown";
+			// Insert directly into containers
+			content_t c = CONTENT_UNKNOWN;
+			m_content_features[c] = f;
+			addNameIdMapping(c, f.name);
 		}
 
 		// Set CONTENT_AIR
@@ -387,6 +401,7 @@ public:
 			m_content_features[c] = f;
 			addNameIdMapping(c, f.name);
 		}
+
 		// Set CONTENT_IGNORE
 		{
 			ContentFeatures f;
@@ -406,16 +421,6 @@ public:
 			addNameIdMapping(c, f.name);
 		}
 	}
-	// CONTENT_IGNORE = not found
-	content_t getFreeId()
-	{
-		for(u32 i=0; i<=0xffff; i++){
-			const ContentFeatures &f = m_content_features[i];
-			if(f.name == "")
-				return i;
-		}
-		return CONTENT_IGNORE;
-	}
 	CNodeDefManager()
 	{
 		clear();
@@ -426,16 +431,15 @@ public:
 	virtual IWritableNodeDefManager* clone()
 	{
 		CNodeDefManager *mgr = new CNodeDefManager();
-		for(u16 i=0; i<=MAX_CONTENT; i++)
-		{
-			mgr->set(i, get(i));
-		}
+		*mgr = *this;
 		return mgr;
 	}
 	virtual const ContentFeatures& get(content_t c) const
 	{
-		assert(c <= MAX_CONTENT);
-		return m_content_features[c];
+		if(c < m_content_features.size())
+			return m_content_features[c];
+		else
+			return m_content_features[CONTENT_UNKNOWN];
 	}
 	virtual const ContentFeatures& get(const MapNode &n) const
 	{
@@ -468,7 +472,6 @@ public:
 		}
 		std::string group = name.substr(6);
 
-#if 1	// Optimized version, takes less than 1 microsecond at -O1
 		std::map<std::string, GroupItems>::const_iterator
 			i = m_group_to_items.find(group);
 		if (i == m_group_to_items.end())
@@ -480,50 +483,67 @@ public:
 			if ((*j).second != 0)
 				result.insert((*j).first);
 		}
-#else	// Old version, takes about ~150-200us at -O1
-		for(u16 id=0; id<=MAX_CONTENT; id++)
-		{
-			const ContentFeatures &f = m_content_features[id];
-			if(f.name == "") // Quickly discard undefined nodes
-				continue;
-			if(itemgroup_get(f.groups, group) != 0)
-				result.insert(id);
-		}
-#endif
 		//printf("getIds: %dus\n", t.stop());
 	}
 	virtual const ContentFeatures& get(const std::string &name) const
 	{
-		content_t id = CONTENT_IGNORE;
+		content_t id = CONTENT_UNKNOWN;
 		getId(name, id);
 		return get(id);
 	}
-	// IWritableNodeDefManager
-	virtual void set(content_t c, const ContentFeatures &def)
+	// returns CONTENT_IGNORE if no free ID found
+	content_t allocateId()
 	{
-		verbosestream<<"registerNode: registering content id \""<<c
-				<<"\": name=\""<<def.name<<"\""<<std::endl;
-		assert(c <= MAX_CONTENT);
-		// Don't allow redefining CONTENT_IGNORE (but allow air)
-		if(def.name == "ignore" || c == CONTENT_IGNORE){
-			infostream<<"registerNode: WARNING: Ignoring "
+		for(content_t id = m_next_id;
+				id >= m_next_id; // overflow?
+				++id){
+			while(id >= m_content_features.size()){
+				m_content_features.push_back(ContentFeatures());
+			}
+			const ContentFeatures &f = m_content_features[id];
+			if(f.name == ""){
+				m_next_id = id + 1;
+				return id;
+			}
+		}
+		// If we arrive here, an overflow occurred in id.
+		// That means no ID was found
+		return CONTENT_IGNORE;
+	}
+	// IWritableNodeDefManager
+	virtual content_t set(const std::string &name,
+			const ContentFeatures &def)
+	{
+		assert(name != "");
+		assert(name == def.name);
+
+		// Don't allow redefining ignore (but allow air and unknown)
+		if(name == "ignore"){
+			infostream<<"NodeDefManager: WARNING: Ignoring "
 					<<"CONTENT_IGNORE redefinition"<<std::endl;
-			return;
+			return CONTENT_IGNORE;
 		}
-		// Check that the special contents are not redefined as different id
-		// because it would mess up everything
-		if((def.name == "ignore" && c != CONTENT_IGNORE) ||
-			(def.name == "air" && c != CONTENT_AIR)){
-			errorstream<<"registerNode: IGNORING ERROR: "
-					<<"trying to register built-in type \""
-					<<def.name<<"\" as different id"<<std::endl;
-			return;
+
+		content_t id = CONTENT_IGNORE;
+		bool found = m_name_id_mapping.getId(name, id);  // ignore aliases
+		if(!found){
+			// Get new id
+			id = allocateId();
+			if(id == CONTENT_IGNORE){
+				infostream<<"NodeDefManager: WARNING: Absolute "
+						<<"limit reached"<<std::endl;
+				return CONTENT_IGNORE;
+			}
+			assert(id != CONTENT_IGNORE);
+			addNameIdMapping(id, name);
 		}
-		m_content_features[c] = def;
-		if(def.name != "")
-			addNameIdMapping(c, def.name);
+		m_content_features[id] = def;
+		verbosestream<<"NodeDefManager: registering content id \""<<id
+				<<"\": name=\""<<def.name<<"\""<<std::endl;
 
 		// Add this content to the list of all groups it belongs to
+		// FIXME: This should remove a node from groups it no longer
+		// belongs to when a node is re-registered
 		for (ItemGroupList::const_iterator i = def.groups.begin();
 			i != def.groups.end(); ++i) {
 			std::string group_name = i->first;
@@ -531,28 +551,13 @@ public:
 			std::map<std::string, GroupItems>::iterator
 				j = m_group_to_items.find(group_name);
 			if (j == m_group_to_items.end()) {
-				m_group_to_items[group_name].push_back(std::make_pair(c, i->second));
+				m_group_to_items[group_name].push_back(
+						std::make_pair(id, i->second));
 			} else {
 				GroupItems &items = j->second;
-				items.push_back(std::make_pair(c, i->second));
+				items.push_back(std::make_pair(id, i->second));
 			}
 		}
-	}
-	virtual content_t set(const std::string &name,
-			const ContentFeatures &def)
-	{
-		assert(name == def.name);
-		u16 id = CONTENT_IGNORE;
-		bool found = m_name_id_mapping.getId(name, id);  // ignore aliases
-		if(!found){
-			// Get some id
-			id = getFreeId();
-			if(id == CONTENT_IGNORE)
-				return CONTENT_IGNORE;
-			if(name != "")
-				addNameIdMapping(id, name);
-		}
-		set(id, def);
 		return id;
 	}
 	virtual content_t allocateDummy(const std::string &name)
@@ -589,7 +594,7 @@ public:
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
 
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		for(u32 i=0; i<m_content_features.size(); i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
 
@@ -766,9 +771,10 @@ public:
 		writeU8(os, 1); // version
 		u16 count = 0;
 		std::ostringstream os2(std::ios::binary);
-		for(u16 i=0; i<=MAX_CONTENT; i++)
+		for(u32 i=0; i<m_content_features.size(); i++)
 		{
-			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
+			if(i == CONTENT_IGNORE || i == CONTENT_AIR
+					|| i == CONTENT_UNKNOWN)
 				continue;
 			ContentFeatures *f = &m_content_features[i];
 			if(f->name == "")
@@ -779,6 +785,8 @@ public:
 			std::ostringstream wrapper_os(std::ios::binary);
 			f->serialize(wrapper_os, protocol_version);
 			os2<<serializeString(wrapper_os.str());
+
+			assert(count + 1 > count); // must not overflow
 			count++;
 		}
 		writeU16(os, count);
@@ -792,24 +800,43 @@ public:
 			throw SerializationError("unsupported NodeDefinitionManager version");
 		u16 count = readU16(is);
 		std::istringstream is2(deSerializeLongString(is), std::ios::binary);
+		ContentFeatures f;
 		for(u16 n=0; n<count; n++){
 			u16 i = readU16(is2);
-			if(i > MAX_CONTENT){
-				errorstream<<"ContentFeatures::deSerialize(): "
-						<<"Too large content id: "<<i<<std::endl;
-				continue;
-			}
-			/*// Do not deserialize special types
-			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
-				continue;*/
-			ContentFeatures *f = &m_content_features[i];
+
 			// Read it from the string wrapper
 			std::string wrapper = deSerializeString(is2);
 			std::istringstream wrapper_is(wrapper, std::ios::binary);
-			f->deSerialize(wrapper_is);
-			verbosestream<<"deserialized "<<f->name<<std::endl;
-			if(f->name != "")
-				addNameIdMapping(i, f->name);
+			f.deSerialize(wrapper_is);
+
+			// Check error conditions
+			if(i == CONTENT_IGNORE || i == CONTENT_AIR
+					|| i == CONTENT_UNKNOWN){
+				infostream<<"NodeDefManager::deSerialize(): WARNING: "
+					<<"not changing builtin node "<<i
+					<<std::endl;
+				continue;
+			}
+			if(f.name == ""){
+				infostream<<"NodeDefManager::deSerialize(): WARNING: "
+					<<"received empty name"<<std::endl;
+				continue;
+			}
+			u16 existing_id;
+			bool found = m_name_id_mapping.getId(f.name, existing_id);  // ignore aliases
+			if(found && i != existing_id){
+				infostream<<"NodeDefManager::deSerialize(): WARNING: "
+					<<"already defined with different ID: "
+					<<f.name<<std::endl;
+				continue;
+			}
+
+			// All is ok, add node definition with the requested ID
+			if(i >= m_content_features.size())
+				m_content_features.resize((u32)(i) + 1);
+			m_content_features[i] = f;
+			addNameIdMapping(i, f.name);
+			verbosestream<<"deserialized "<<f.name<<std::endl;
 		}
 	}
 private:
@@ -820,7 +847,7 @@ private:
 	}
 private:
 	// Features indexed by id
-	ContentFeatures m_content_features[MAX_CONTENT+1];
+	std::vector<ContentFeatures> m_content_features;
 	// A mapping for fast converting back and forth between names and ids
 	NameIdMapping m_name_id_mapping;
 	// Like m_name_id_mapping, but only from names to ids, and includes
@@ -831,6 +858,8 @@ private:
 	// that belong to it.  Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
 	std::map<std::string, GroupItems> m_group_to_items;
+	// Next possibly free id
+	content_t m_next_id;
 };
 
 IWritableNodeDefManager* createNodeDefManager()
