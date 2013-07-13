@@ -259,8 +259,9 @@ public:
 	{
 		std::set<std::string> neighbors;
 		neighbors.insert("mapgen_air");
-		neighbors.insert("default:ice");
-		neighbors.insert("default:snow");
+		//neighbors.insert("default:ice");
+		//neighbors.insert("default:snow");
+		neighbors.insert("group:melts");
 		return neighbors; 
 	}
 	virtual float getTriggerInterval()
@@ -281,19 +282,18 @@ public:
 	}
 };
 
-class LiquidMelt : public ActiveBlockModifier
+class LiquidMeltWeather : public ActiveBlockModifier
 {
 private:
 
 public:
-	LiquidMelt(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	LiquidMeltWeather(ServerEnvironment *env, INodeDefManager *nodemgr) 
 	{
 	}
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("default:ice");
-		s.insert("default:snow");
+		s.insert("group:melts");
 		return s;
 	}
 	virtual std::set<std::string> getRequiredNeighbors()
@@ -307,7 +307,7 @@ public:
 	virtual float getTriggerInterval()
 	{ return 10.0; }
 	virtual u32 getTriggerChance()
-	{ return 100; }
+	{ return 30; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
@@ -322,6 +322,44 @@ public:
 	}
 };
 
+class LiquidMeltHot : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidMeltHot(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("group:melts");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("group:igniter");
+		neighbors.insert("default:torch");
+		neighbors.insert("default:furnace_active");
+		neighbors.insert("group:hot");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 2.0; }
+	virtual u32 getTriggerChance()
+	{ return 2; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
+		map->addNodeWithEvent(p, n);
+	}
+};
+
+
+
 
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
@@ -331,9 +369,10 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
+		env->addActiveBlockModifier(new LiquidMeltHot(env, nodedef));
 		if (g_settings->getBool("weather")) {
 			env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
-			env->addActiveBlockModifier(new LiquidMelt(env, nodedef));
+			env->addActiveBlockModifier(new LiquidMeltWeather(env, nodedef));
 		}
 	}
 }
