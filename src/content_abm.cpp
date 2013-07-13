@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h" // For treegen::make_tree
 #include "main.h" // for g_settings
 #include "map.h"
+#include "cpp_api/scriptapi.h"
 #include "log.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -259,8 +260,6 @@ public:
 	{
 		std::set<std::string> neighbors;
 		neighbors.insert("mapgen_air");
-		//neighbors.insert("default:ice");
-		//neighbors.insert("default:snow");
 		neighbors.insert("group:melts");
 		return neighbors; 
 	}
@@ -318,6 +317,7 @@ public:
 			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
 			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
 			map->addNodeWithEvent(p, n);
+			env->getScriptIface()->node_falling_update(p);
 		}
 	}
 };
@@ -355,10 +355,9 @@ public:
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
 		map->addNodeWithEvent(p, n);
+		env->getScriptIface()->node_falling_update(p);
 	}
 };
-
-
 
 
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
