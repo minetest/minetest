@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "environment.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -484,8 +485,8 @@ public:
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
 
-	float getHeat(v3s16 p);
-	float getHumidity(v3s16 p);
+	float getHeat(ServerEnvironment *env, v3s16 p);
+	float getHumidity(ServerEnvironment *env, v3s16 p);
 
 private:
 	// Seed used for all kinds of randomness in generation

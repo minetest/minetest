@@ -266,13 +266,13 @@ public:
 	virtual float getTriggerInterval()
 	{ return 10.0; }
 	virtual u32 getTriggerChance()
-	{ return 20; }
+	{ return 100; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		
-		float heat = map->getHeat(p);
+		float heat = map->getHeat(env, p);
 		if (heat<0 && (heat<50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
 			//errorstream<< "HE="<< heat << " R="<< ((myrand_range(-40, heat))<-30) <<std::endl;
 			n.setContent(n.getContent() == ndef->getId("water_source") ? ndef->getId("default:ice") : ndef->getId("default:snow"));
@@ -307,13 +307,13 @@ public:
 	virtual float getTriggerInterval()
 	{ return 10.0; }
 	virtual u32 getTriggerChance()
-	{ return 20; }
+	{ return 100; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		
-		float heat = map->getHeat(p); 
+		float heat = map->getHeat(env, p); 
 		if (heat>0 && (heat>40 || ((myrand_range(heat, 40))>30))) {
 			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
 			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
@@ -331,7 +331,9 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
-		env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
-		env->addActiveBlockModifier(new LiquidMelt(env, nodedef));
+		if (g_settings->getBool("weather")) {
+			env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
+			env->addActiveBlockModifier(new LiquidMelt(env, nodedef));
+		}
 	}
 }

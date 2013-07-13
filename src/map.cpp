@@ -4037,13 +4037,15 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
-float ServerMap::getHeat(v3s16 p)
+float ServerMap::getHeat(ServerEnvironment *env, v3s16 p)
 {
-    float heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z, m_emerge->params->seed);
+    float heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->m_game_time/10, p.Z, m_emerge->params->seed);
+    //errorstream<<" gt="<<env->m_game_time<<" hadd="<<int((p.Y / -333))<<"heat="<<heat<<std::endl;
+    heat += (p.Y / -333); // upper=colder, lower=hotter
     return heat;
 }
 
-float ServerMap::getHumidity(v3s16 p)
+float ServerMap::getHumidity(ServerEnvironment *env, v3s16 p)
 {
     float humidity = NoisePerlin2D(m_emerge->biomedef->np_humidity, p.X, p.Z, m_emerge->params->seed);
     return humidity;
