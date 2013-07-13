@@ -1485,3 +1485,9 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 
 	return true;
 }
+
+int PlayerSAO::getLastOnline()
+{
+	return m_player->last_online;
+}
+

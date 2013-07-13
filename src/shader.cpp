@@ -362,7 +362,7 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 	Load shader programs
 */
 void load_shaders(std::string name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
+		video::E_DRIVER_TYPE drivertype, s32 enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel);
 
@@ -585,10 +585,8 @@ void ShaderSource::rebuildShaders()
 	// Recreate shaders
 	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
-		if(info->name != ""){
-			*info = generate_shader(info->name, m_device,
-					m_shader_callback, &m_sourcecache);
-		}
+		*info = generate_shader(info->name, m_device,
+				m_shader_callback, &m_sourcecache);
 	}
 }
 
@@ -624,8 +622,9 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		}
 	}
 
-	bool enable_shaders = g_settings->getBool("enable_shaders");
-	if(!enable_shaders)
+	// 0 = off, 1 = assembly shaders only, 2 = highlevel or assembly
+	s32 enable_shaders = g_settings->getS32("enable_shaders");
+	if(enable_shaders <= 0)
 		return shaderinfo;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -747,7 +746,7 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 }
 
 void load_shaders(std::string name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
+		video::E_DRIVER_TYPE drivertype, s32 enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel)
 {
@@ -756,7 +755,7 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 	geometry_program = "";
 	is_highlevel = false;
 
-	if(enable_shaders){
+	if(enable_shaders >= 2){
 		// Look for high level shaders
 		if(drivertype == video::EDT_DIRECT3D9){
 			// Direct3D 9: HLSL
@@ -777,4 +776,24 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 		}
 	}
 
+	if(enable_shaders >= 1){
+		// Look for assembly shaders
+		if(drivertype == video::EDT_DIRECT3D8){
+			// Direct3D 8 assembly shaders
+			vertex_program = sourcecache->getOrLoad(name, "d3d8_vertex.asm");
+			pixel_program = sourcecache->getOrLoad(name, "d3d8_pixel.asm");
+		}
+		else if(drivertype == video::EDT_DIRECT3D9){
+			// Direct3D 9 assembly shaders
+			vertex_program = sourcecache->getOrLoad(name, "d3d9_vertex.asm");
+			pixel_program = sourcecache->getOrLoad(name, "d3d9_pixel.asm");
+		}
+		else if(drivertype == video::EDT_OPENGL){
+			// OpenGL assembly shaders
+			vertex_program = sourcecache->getOrLoad(name, "opengl_vertex.asm");
+			pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.asm");
+		}
+		if(vertex_program != "" || pixel_program != "")
+			return;
+	}
 }

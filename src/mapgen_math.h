@@ -42,7 +42,7 @@ class MapgenMath : public MapgenV7 {
 		MapgenMath(int mapgenid, MapgenMathParams *mg_params, EmergeManager *emerge);
 		~MapgenMath();
 
-		int generateTerrain();
+		void generateTerrain();
 		int getGroundLevelAtPoint(v2s16 p);
 
 		bool invert;

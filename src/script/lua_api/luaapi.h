@@ -72,6 +72,9 @@ private:
 	// get_player_ip()
 	static int l_get_player_ip(lua_State *L);
 
+	// get_player_last_online()
+	static int l_get_player_last_online(lua_State *L);
+
 	// get_ban_list()
 	static int l_get_ban_list(lua_State *L);
 
@@ -136,12 +139,11 @@ private:
 	// create_schematic(p1, p2, filename)
 	static int l_create_schematic(lua_State *L);
 	
-	// place_schematic(p, filename, rotation)
+	// place_schematic(p, filename)
 	static int l_place_schematic(lua_State *L);
 
 	static struct EnumString es_OreType[];
 	static struct EnumString es_DecorationType[];
-	static struct EnumString es_Rotation[];
 
 };
 

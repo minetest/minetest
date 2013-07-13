@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "util/container.h" // UniqueQueue
 #include "gamedef.h"
-#include "nodedef.h"
 #include "mapnode.h"
 #include "noise.h"
 #include "settings.h"
@@ -37,8 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
 #define MG_NOLIGHT       0x40
-#define MGV7_MOUNTAINS   0x80
-#define MGV7_RIDGES      0x100
 
 /////////////////// Ore generation flags
 // Use absolute value of height to determine ore placement
@@ -64,6 +61,7 @@ class EmergeManager;
 class MapBlock;
 class ManualMapVoxelManipulator;
 class VoxelManipulator;
+class INodeDefManager;
 struct BlockMakeData;
 class VoxelArea;
 class Map;
@@ -216,8 +214,6 @@ struct CutoffData {
 
 class Decoration {
 public:
-	INodeDefManager *ndef;
-	
 	int mapseed;
 	std::string place_on_name;
 	content_t c_place_on;
@@ -262,8 +258,6 @@ public:
 	virtual std::string getName();
 };
 
-#define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
-
 class DecoSchematic : public Decoration {
 public:
 	std::string filename;
@@ -272,7 +266,6 @@ public:
 	std::vector<content_t> c_nodes;
 
 	u32 flags;
-	Rotation rotation;
 	v3s16 size;
 	MapNode *schematic;
 
@@ -283,9 +276,6 @@ public:
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
-	
-	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
-					Rotation rot, bool force_placement);
 	
 	bool loadSchematicFile();
 	void saveSchematicFile(INodeDefManager *ndef);

@@ -36,7 +36,7 @@ class LuaVoxelManip
 private:
 	ManualMapVoxelManipulator *vm;
 	std::map<v3s16, MapBlock *> modified_blocks;
-	bool is_mapgen_vm;
+	bool do_gc;
 
 	static const char className[];
 	static const luaL_reg methods[];
@@ -54,7 +54,7 @@ private:
 	static int l_set_lighting(lua_State *L);
 
 public:
-	LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool is_mapgen_vm);
+	LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool dogc);
 	LuaVoxelManip(Map *map);
 	~LuaVoxelManip();
 

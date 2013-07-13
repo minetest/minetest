@@ -45,20 +45,14 @@ public:
 	std::string name;
 	u32 flags;
 	
-	std::string nname_top;
-	std::string nname_filler;
-	std::string nname_water;
-	std::string nname_dust;
-	std::string nname_dust_water;
+	std::string top_nodename;
+	std::string filler_nodename;
 
 	content_t c_top;
+	s16 top_depth;
+
 	content_t c_filler;
-	content_t c_water;
-	content_t c_dust;
-	content_t c_dust_water;
-	
-	s16 depth_top;
-	s16 depth_filler;
+	s16 filler_height;
 	
 	s16 height_min;
 	s16 height_max;

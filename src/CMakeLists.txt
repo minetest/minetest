@@ -271,7 +271,6 @@ set(common_SRCS
 	staticobject.cpp
 	serverlist.cpp
 	pathfinder.cpp
-	convert_json.cpp
 	${SCRIPT_SRCS}
 	${UTIL_SRCS}
 )
@@ -314,6 +313,7 @@ set(minetest_SRCS
 	clientobject.cpp
 	chat.cpp
 	hud.cpp
+	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
@@ -323,16 +323,15 @@ set(minetest_SRCS
 	guiVolumeChange.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
+	guiCreateWorld.cpp
+	guiConfigureWorld.cpp
+	guiConfirmMenu.cpp
 	client.cpp
 	filecache.cpp
 	tile.cpp
 	shader.cpp
 	game.cpp
 	main.cpp
-	guiEngine.cpp
-	guiLuaApi.cpp
-	guiFileSelectMenu.cpp
-	convert_json.cpp
 )
 
 if(USE_FREETYPE)

@@ -1237,7 +1237,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id, m_mods);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -1922,15 +1922,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		if(!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0)
-		{
-			actionstream<<"Server: Player with an invalid name "
-					<<"tried to connect from "<<addr_s<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Name is not allowed");
-			return;
-		}
-
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
 				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
 
@@ -2170,6 +2161,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			actionstream<<player->getName()<<" ["<<addr_s<<"] "<<" joins game. List of players: "
 					<<os.str()<<std::endl;
+			player->setLastOnline(time(NULL));
 		}
 
 		return;

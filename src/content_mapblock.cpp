@@ -99,6 +99,7 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
+	v2f t;
 	for(int i = 0; i < tilecount; i++)
 				{
 				switch (tiles[i].rotation)
@@ -118,43 +119,49 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
 					break;
 				case 4: //FXR90
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
+					for (int x = 0; x < 4; x++)
 						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
-					}
+
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
 					break;
 				case 5: //FXR270
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
+					for (int x = 0; x < 4; x++)
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
-					}
+					t=vertices[i*4].TCoords;
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
 					break;
 				case 6: //FYR90
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
+					for (int x = 0; x < 4; x++)
 						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
-					}
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
 					break;
 				case 7: //FYR270
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
+					for (int x = 0; x < 4; x++)
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
-					}
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
 					break;
 				case 8: //FX
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
-					}
+					tiles[i].texture.pos.Y += tiles[i].texture.size.Y;
+					tiles[i].texture.size.Y *= -1;
 					break;
 				case 9: //FY
-					for (int x = 0; x < 4; x++){
-						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
-					}
+					tiles[i].texture.pos.X += tiles[i].texture.size.X;
+					tiles[i].texture.size.X *= -1;
 					break;
 				default:
 					break;
 				}
 			}
+		for(s32 j=0; j<24; j++)
+	{
+		int tileindex = MYMIN(j/4, tilecount-1);
+		vertices[j].TCoords *= tiles[tileindex].texture.size;
+		vertices[j].TCoords += tiles[tileindex].texture.pos;
+	}
 	u16 indices[] = {0,1,2,2,3,0};
 	// Add to mesh collector
 	for(s32 j=0; j<24; j+=4)
@@ -211,6 +218,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			*/
 			TileSpec tile_liquid = f.special_tiles[0];
 			TileSpec tile_liquid_bfculled = getNodeTile(n, p, v3s16(0,0,0), data);
+			AtlasPointer &pa_liquid = tile_liquid.texture;
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
@@ -272,10 +280,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,0,BS/2,0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,0,BS/2,0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2,0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
 				};
 
 				/*
@@ -347,10 +359,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,0),
+				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+						pa_liquid.x0(), pa_liquid.y1()),
+				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+						pa_liquid.x1(), pa_liquid.y1()),
+				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+						pa_liquid.x1(), pa_liquid.y0()),
+				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+						pa_liquid.x0(), pa_liquid.y0()),
 			};
 
 			v3f offset(p.X*BS, p.Y*BS + (-0.5+node_liquid_level)*BS, p.Z*BS);
@@ -370,6 +386,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			*/
 			TileSpec tile_liquid = f.special_tiles[0];
 			TileSpec tile_liquid_bfculled = f.special_tiles[1];
+			AtlasPointer &pa_liquid = tile_liquid.texture;
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
@@ -549,10 +566,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
 				};
 				
 				/*
@@ -626,10 +647,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y1()),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+							pa_liquid.x1(), pa_liquid.y0()),
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+							pa_liquid.x0(), pa_liquid.y0()),
 				};
 				
 				// To get backface culling right, the vertices need to go
@@ -700,6 +725,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		case NDT_GLASSLIKE:
 		{
 			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
+			AtlasPointer ap = tile.texture;
 
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
@@ -715,10 +741,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				// The face at Z+
 				video::S3DVertex vertices[4] = {
-					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
 				};
 				
 				// Rotations in the g_6dirs format
@@ -880,6 +910,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			TileSpec tile_leaves = getNodeTile(n, p,
 					v3s16(0,0,0), data);
+			AtlasPointer pa_leaves = tile_leaves.texture;
 
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
@@ -914,16 +945,22 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
+			AtlasPointer ap = tile.texture;
+
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
+						ap.x0(), ap.y1()),
+				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c,
+						ap.x0(), ap.y0()),
 			};
 
 			for(s32 i=0; i<4; i++)
@@ -953,6 +990,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+			AtlasPointer ap = tile.texture;
 
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
@@ -961,10 +999,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 0,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
 			};
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
@@ -995,6 +1037,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+			AtlasPointer ap = tile.texture;
 			
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
@@ -1003,12 +1046,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 0,1),
-					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 1,1),
+					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
+						ap.x0(), ap.y1()),
+					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
+						ap.x1(), ap.y1()),
 					video::S3DVertex( BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 1,0),
+						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
+						ap.x1(), ap.y0()),
 					video::S3DVertex(-BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 0,0),
+						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
+						ap.x0(), ap.y0()),
 				};
 
 				if(j == 0)
@@ -1041,13 +1088,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			// A hack to put wood the right way around in the posts
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
-			std::string texturestring_rot = tsrc->getTextureName(
-					tile.texture_id) + "^[transformR90";
 			TileSpec tile_rot = tile;
-			tile_rot.texture = tsrc->getTexture(
-					texturestring_rot,
-					&tile_rot.texture_id);
-			
+			tile_rot.texture = tsrc->getTexture(tsrc->getTextureName(
+					tile.texture.id) + "^[transformR90");
+					
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1297,6 +1341,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
+			AtlasPointer ap = tile.texture;
+			
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
@@ -1308,10 +1354,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			video::S3DVertex vertices[4] =
 			{
-					video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,g*BS/2+d,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,g*BS/2+d,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+							ap.x0(), ap.y1()),
+					video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+							ap.x1(), ap.y1()),
+					video::S3DVertex(BS/2,g*BS/2+d,BS/2, 0,0,0, c,
+							ap.x1(), ap.y0()),
+					video::S3DVertex(-BS/2,g*BS/2+d,BS/2, 0,0,0, c,
+							ap.x0(), ap.y0()),
 			};
 
 			for(s32 i=0; i<4; i++)

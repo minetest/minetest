@@ -312,6 +312,7 @@ public:
 
 	/*
 		Update tile textures to latest return values of TextueSource.
+		Call after updating the texture atlas of a TextureSource.
 	*/
 	virtual void updateTextures(ITextureSource *tsrc)=0;
 
