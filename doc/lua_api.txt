@@ -507,8 +507,7 @@ Representations of simple things
 --------------------------------
 Position/vector:
   {x=num, y=num, z=num}
-Currently the API does not provide any helper functions for addition,
-subtraction and whatever; you can define those that you need yourself.
+For helper functions see "Vector helpers".
 
 pointed_thing:
   {type="nothing"}
@@ -883,6 +882,15 @@ background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Position and size units are inventory slots
 ^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
 
+pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]
+^ Textual password style field; will be sent to server when a button is clicked
+^ x and y position the field relative to the top left of the menu
+^ w and h are the size of the field
+^ fields are a set height, but will be vertically centred on h
+^ Position and size units are inventory slots
+^ name is the name of the field as returned in fields to on_receive_fields
+^ label, if not blank, will be text printed on the top left above the field
+
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
 ^ x and y position the field relative to the top left of the menu
@@ -910,6 +918,12 @@ label[<X>,<Y>;<label>]
 ^ label is the text on the label
 ^ Position and size units are inventory slots
 
+vertlabel[<X>,<Y>;<label>]
+^ Textual label drawn verticaly
+^ x and y work as per field
+^ label is the text on the label
+^ Position and size units are inventory slots
+
 button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Clickable button. When clicked, fields will be sent.
 ^ x, y and name work as per field
@@ -921,6 +935,13 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ x, y, w, h, and name work as per button
 ^ image is the filename of an image
 ^ Position and size units are inventory slots
+
+image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>]
+^ x, y, w, h, and name work as per button
+^ image is the filename of an image
+^ Position and size units are inventory slots
+^ noclip true meand imagebutton doesn't need to be within specified formsize
+^ drawborder draw button bodrer or not
 
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
@@ -934,6 +955,51 @@ button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
 image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
 
+textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
+^Scrollabel itemlist showing arbitrary text elements
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
+^ listelements can be prepended by #colorkey (see colorkeys), 
+^    if you want a listelement to start with # write ##
+
+textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
+^Scrollabel itemlist showing arbitrary text elements
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ name fieldname sent to server on doubleclick value is current selected element
+^ listelements can be prepended by #RRGGBB in hexadecimal format
+^    if you want a listelement to start with # write ##
+^ index to be selected within textlist
+^ true/false draw transparent background
+
+tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
+^ show a tabHEADER at specific position (ignores formsize)
+^ x and y position the itemlist relative to the top left of the menu
+^ name fieldname data is transfered to lua
+^ caption 1... name shown on top of tab
+^ current_tab index of selected tab 1...
+^ transparent (optional) show transparent
+^ draw_border (optional) draw border
+
+box[<X>,<Y>;<W>,<H>;<color>]
+^ simple colored semitransparent box
+^ x and y position the box relative to the top left of the menu
+^ w and h are the size of box
+^ colorkey (see colorkeys)
+
+dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
+^ show a dropdown field
+^ x and y position of dropdown
+^ width of dropdown
+^ fieldname data is transfered to lua
+^ items to be shown in dropdown
+^ index of currently selected dropdown item
+^ color in hexadecimal format RRGGBB
+
+Note: do NOT use a element name starting with "key_" those names are reserved to
+pass key press events to formspec! 
+
 Inventory location:
 
 - "context": Selected node metadata (deprecated: "current_name")
@@ -942,12 +1008,41 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
+Vector helpers
+---------------
+vector.new([x[, y, z]]) -> vector
+ ^ x is a table or the x position.
+vector.direction(p1, p2) -> vector
+vector.distance(p1, p2) -> number
+vector.length(v) -> number
+vector.normalize(v) -> vector
+vector.round(v) -> vector
+vector.equal(v1, v2) -> bool
+vector.add(v, x) -> vector
+ ^ x can be annother vector or a number
+vector.subtract(v, x) -> vector
+vector.multiply(v, x) -> vector
+vector.divide(v, x) -> vector
+
+You can also use Lua operators on vectors.
+For example:
+	v1 = vector.new()
+	v1 = v1 + 5
+	v2 = vector.new(v1)
+	v1 = v1 * v2
+	if v1 == v2 then
+		error("Math broke")
+	end
+
 Helper functions
 -----------------
 dump2(obj, name="_", dumped={})
 ^ Return object serialized as a string, handles reference loops
 dump(obj, dumped={})
 ^ Return object serialized as a string
+math.hypot(x, y)
+^ Get the hypotenuse of a triangle with legs x and y.
+  Usefull for distance calculation.
 string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
@@ -1309,8 +1404,10 @@ minetest.create_schematic(p1, p2, probability_list, filename)
    ^ If probability_list is nil, no probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic)
+minetest.place_schematic(pos, schematic, rotation)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
+^ Rotation can be "0", "90", "180", "270", or "random".
+^ If the rotation parameter is omitted, the schematic is not rotated.
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -1563,13 +1660,11 @@ methods:
 - update_map():  Update map after writing chunk back to map.
   ^ To be used only by VoxelManip objects created by the mod itself; not a VoxelManip that was 
   ^ retrieved from minetest.get_mapgen_object
-- set_lighting(p1, p2, light):  Set the lighting in the region formed by p1 and p2 to light
-  ^ light is a table containing two integer fields ranging from 0 to 15, day and night
-  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object; otherwise, set lighting will
-  ^ be ignored
-- calc_lighting(p1, p2):  Calculate lighting in the region formed by p1 and p2
-  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object; otherwise, calculated lighting 
-  ^ will be ignored
+- set_lighting(light):  Set the lighting within the VoxelManip
+  ^ light is a table, {day=<0...15>, night=<0...15>}
+  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
+- calc_lighting():  Calculate lighting within the VoxelManip
+  ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
 - update_liquids():  Update liquid flow
 
 VoxelArea: A helper class for voxel areas
@@ -1581,6 +1676,13 @@ methods:
 - index(x, y, z):  returns the index of an absolute position in a flat array starting at 1
   ^ useful for things like VoxelManip, raw Schematic specifiers, PerlinNoiseMap:get2d/3dMap, and so on
 - indexp(p):  same as above, except takes a vector
+- position(i):  returns the absolute position vector corresponding to index i
+- contains(x, y, z):  check if (x,y,z) is inside area formed by MinEdge and MaxEdge
+- containsp(p):  same as above, except takes a vector
+- containsi(i):  same as above, except takes an index
+- iter(minx, miny, minz, maxx, maxy, maxz):  returns an iterator that returns indices
+  ^ from (minx,miny,minz) to (maxx,maxy,maxz) in the order of [z [y [x]]]
+- iterp(minp, maxp):  same as above, except takes a vector
 
 Mapgen objects
 ---------------
@@ -1592,8 +1694,8 @@ get_mapgen_object() was called outside of an on_generate() callback, nil is retu
 The following Mapgen objects are currently available:
 
 - voxelmanip
-    This returns four values; the VoxelManip object to be used, the voxel data, minimum emerge position, 
-and maximum emerged position.  All mapgens support this object.
+    This returns three values; the VoxelManip object to be used, minimum and maximum emerged position, in that 
+order.  All mapgens support this object.
 
 - heightmap
     Returns an array containing the y coordinates of the ground levels of nodes in the most recently 
@@ -2050,6 +2152,8 @@ Decoration definition (register_decoration)
     ^ See 'Schematic specifier' for details.
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
+    rotation = "90" --rotate schematic 90 degrees on placement
+    ^ Rotation can be "0", "90", "180", "270", or "random".
 }
 
 Chatcommand definition (register_chatcommand)

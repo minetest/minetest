@@ -228,9 +228,12 @@ public:
 		ServerMap *map = &env->getServerMap();
 		if (map->transforming_liquid_size() > 500)
 			return;
-		//todo: look around except top
-		MapNode n_below = map->getNodeNoEx(p - v3s16(0, 1, 0));
-		if (n_below.getContent() != CONTENT_AIR)
+		if (	   map->getNodeNoEx(p - v3s16(0,  1, 0 )).getContent() != CONTENT_AIR  // below
+			&& map->getNodeNoEx(p - v3s16(1,  0, 0 )).getContent() != CONTENT_AIR  // right
+			&& map->getNodeNoEx(p - v3s16(-1, 0, 0 )).getContent() != CONTENT_AIR  // left
+			&& map->getNodeNoEx(p - v3s16(0,  0, 1 )).getContent() != CONTENT_AIR  // back 
+			&& map->getNodeNoEx(p - v3s16(0,  0, -1)).getContent() != CONTENT_AIR  // front
+		)
 			return;
 		map->transforming_liquid_add(p);
 	}

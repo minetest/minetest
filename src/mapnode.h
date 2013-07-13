@@ -62,6 +62,17 @@ enum LightBank
 };
 
 /*
+	Simple rotation enum.
+*/
+enum Rotation {
+	ROTATE_0,
+	ROTATE_90,
+	ROTATE_180,
+	ROTATE_270,
+	ROTATE_RAND,
+};
+
+/*
 	Masks for MapNode.param2 of flowing liquids
  */
 #define LIQUID_LEVEL_MASK 0x07
@@ -181,6 +192,8 @@ struct MapNode
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
+	
+	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX)

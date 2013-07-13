@@ -311,12 +311,9 @@ function minetest.handle_node_drops(pos, drops, digger)
 end
 
 function minetest.node_dig(pos, node, digger)
-	minetest.debug("node_dig")
-
 	local def = ItemStack({name=node.name}):get_definition()
 	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
 	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
-		minetest.debug("not diggable")
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
@@ -330,10 +327,12 @@ function minetest.node_dig(pos, node, digger)
 	local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
 	-- Wear out tool
-	local tp = wielded:get_tool_capabilities()
-	local dp = minetest.get_dig_params(def.groups, tp)
-	wielded:add_wear(dp.wear)
-	digger:set_wielded_item(wielded)
+	if not minetest.setting_getbool("creative_mode") then
+		local tp = wielded:get_tool_capabilities()
+		local dp = minetest.get_dig_params(def.groups, tp)
+		wielded:add_wear(dp.wear)
+		digger:set_wielded_item(wielded)
+	end
 	
 	-- Handle drops
 	minetest.handle_node_drops(pos, drops, digger)

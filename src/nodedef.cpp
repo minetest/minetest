@@ -674,7 +674,9 @@ public:
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
 				// Texture
-				f->tiles[j].texture = tsrc->getTexture(tiledef[j].name);
+				f->tiles[j].texture = tsrc->getTexture(
+						tiledef[j].name,
+						&f->tiles[j].texture_id);
 				// Alpha
 				f->tiles[j].alpha = f->alpha;
 				// Material type
@@ -689,10 +691,9 @@ public:
 				if(f->tiles[j].material_flags &
 						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
 				{
-					// Get raw texture size to determine frame count by
+					// Get texture size to determine frame count by
 					// aspect ratio
-					video::ITexture *t = tsrc->getTextureRaw(tiledef[j].name);
-					v2u32 size = t->getOriginalSize();
+					v2u32 size = f->tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
 							(float)tiledef[j].animation.aspect_w *
 							(float)tiledef[j].animation.aspect_h;
@@ -715,8 +716,9 @@ public:
 			// Special tiles (fill in f->special_tiles[])
 			for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
 				// Texture
-				f->special_tiles[j].texture =
-						tsrc->getTexture(f->tiledef_special[j].name);
+				f->special_tiles[j].texture = tsrc->getTexture(
+						f->tiledef_special[j].name,
+						&f->special_tiles[j].texture_id);
 				// Alpha
 				f->special_tiles[j].alpha = f->alpha;
 				// Material type
@@ -731,10 +733,9 @@ public:
 				if(f->special_tiles[j].material_flags &
 						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
 				{
-					// Get raw texture size to determine frame count by
+					// Get texture size to determine frame count by
 					// aspect ratio
-					video::ITexture *t = tsrc->getTextureRaw(f->tiledef_special[j].name);
-					v2u32 size = t->getOriginalSize();
+					v2u32 size = f->special_tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
 							(float)f->tiledef_special[j].animation.aspect_w *
 							(float)f->tiledef_special[j].animation.aspect_h;

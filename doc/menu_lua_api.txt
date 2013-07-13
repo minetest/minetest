@@ -1,0 +1,163 @@
+Minetest Lua Mainmenu API Reference 0.4.6
+========================================
+
+Introduction
+-------------
+The main menu is defined as a formspec by Lua in builtin/mainmenu.lua
+Description of formspec language to show your menu is in lua_api.txt
+
+Callbacks
+---------
+engine.buttonhandler(fields): called when a button is pressed.
+^ fields = {name1 = value1, name2 = value2, ...}
+engine.event_handler(event)
+^ event: "MenuQuit", "KeyEnter", "ExitButton" or "EditBoxEnter"
+
+Gamedata
+--------
+The "gamedata" table is read when calling engine.start(). It should contain:
+{
+	playername     = <name>,
+	password       = <password>,
+	address        = <IP/adress>,
+	port           = <port>,
+	selected_world = <index>, -- 0 for client mode
+	singleplayer   = <true/false>,
+}
+
+Functions
+---------
+engine.start()
+engine.close()
+
+Filesystem:
+engine.get_scriptdir()
+^ returns directory of script
+engine.get_modpath()
+^ returns path to global modpath
+engine.get_modstore_details(modid)
+^ modid numeric id of mod in modstore
+^ returns {
+	id			= <numeric id of mod in modstore>,
+	title		= <human readable title>,
+	basename	= <basename for mod>,
+	description = <description of mod>,
+	author		= <author of mod>,
+	download_url= <best match download url>,
+	license		= <short description of license>,
+	rating		= <float value of current rating>
+}
+engine.get_modstore_list()
+^ returns {
+	[1] = {
+		id		 = <numeric id of mod in modstore>,
+		title	 = <human readable title>,
+		basename = <basename for mod>
+	}
+}
+engine.get_gamepath()
+^ returns path to global gamepath
+engine.get_dirlist(path,onlydirs)
+^ path to get subdirs from
+^ onlydirs should result contain only dirs?
+^ returns list of folders within path
+engine.create_dir(absolute_path)
+^ absolute_path to directory to create (needs to be absolute)
+^ returns true/false
+engine.delete_dir(absolute_path)
+^ absolute_path to directory to delete (needs to be absolute)
+^ returns true/false
+engine.copy_dir(source,destination,keep_soure)
+^ source folder
+^ destination folder
+^ keep_source DEFAULT true --> if set to false source is deleted after copying
+^ returns true/false
+engine.extract_zip(zipfile,destination) [unzip within path required]
+^ zipfile to extract
+^ destination folder to extract to
+^ returns true/false
+engine.download_file(url,target)
+^ url to download
+^ target to store to
+^ returns true/false
+engine.get_version()
+^ returns current minetest version
+
+GUI:
+engine.update_formspec(formspec)
+- engine.set_background(type, texturepath)
+^ type: "background", "overlay", "header" or "footer"
+engine.set_clouds(<true/false>)
+engine.set_topleft_text(text)
+
+Games:
+engine.get_game(index)
+^ returns {
+	id               = <id>,
+	path             = <full path to game>,
+	gamemods_path    = <path>,
+	name             = <name of game>,
+	menuicon_path    = <full path to menuicon>,
+	DEPRECATED:
+	addon_mods_paths = {[1] = <path>,},
+}
+engine.get_games() -> table of all games in upper format
+
+Favorites:
+engine.get_favorites(location) -> list of favorites
+^ location: "local" or "online"
+^ returns {
+	[1] = {
+	clients       = <number of clients/nil>,
+	clients_max   = <maximum number of clients/nil>,
+	version       = <server version/nil>,
+	password      = <true/nil>,
+	creative      = <true/nil>,
+	damage        = <true/nil>,
+	pvp           = <true/nil>,
+	description   = <server description/nil>,
+	name          = <server name/nil>,
+	address       = <address of server/nil>,
+	port          = <port>
+	},
+}
+engine.delete_favorite(id, location) -> success
+
+Settings:
+engine.setting_set(name, value)
+engine.setting_get(name) -> string or nil
+engine.setting_setbool(name, value)
+engine.setting_getbool(name) -> bool or nil
+
+Worlds:
+engine.get_worlds() -> list of worlds
+^ returns {
+	[1] = {
+	path   = <full path to world>,
+	name   = <name of world>,
+	gameid = <gameid of world>,
+	},
+}
+engine.create_world(worldname, gameid)
+engine.delete_world(index)
+
+
+UI:
+engine.get_textlist_index(textlistname) -> index
+engine.show_keys_menu()
+engine.file_open_dialog(formname,caption)
+^ shows a file open dialog
+^ formname is base name of dialog response returned in fields
+^     -if dialog was accepted "_accepted" 
+^^       will be added to fieldname containing the path
+^     -if dialog was canceled "_cancelled" 
+^        will be added to fieldname value is set to formname itself
+^ returns nil or selected file/folder
+
+Helpers:
+dump(obj, dumped={})
+^ Return object serialized as a string
+string:split(separator)
+^ eg. string:split("a,b", ",") == {"a","b"}
+string:trim()
+^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"

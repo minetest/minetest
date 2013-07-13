@@ -44,6 +44,22 @@ function VoxelArea:indexp(p)
 	return math.floor(i)
 end
 
+function VoxelArea:position(i)
+	local p = {}
+ 
+	i = i - 1
+
+	p.z = math.floor(i / self.zstride) + self.MinEdge.z
+	i = i % self.zstride
+
+	p.y = math.floor(i / self.ystride) + self.MinEdge.y
+	i = i % self.ystride
+
+	p.x = math.floor(i) + self.MinEdge.x
+
+	return p
+end
+
 function VoxelArea:contains(x, y, z)
 	return (x >= self.MinEdge.x) and (x <= self.MaxEdge.x) and
 		   (y >= self.MinEdge.y) and (y <= self.MaxEdge.y) and
@@ -60,3 +76,28 @@ function VoxelArea:containsi(i)
 	return (i >= 1) and (i <= self:getVolume())
 end
 
+function VoxelArea:iter(minx, miny, minz, maxx, maxy, maxz)
+	local i = self:index(minx, miny, minz) - 1
+	local last = self:index(maxx, maxy, maxz)
+	local ystride = self.ystride
+	local zstride = self.zstride
+	local yoff = (last+1) % ystride
+	local zoff = (last+1) % zstride
+	local ystridediff = (i - last) % ystride
+	local zstridediff = (i - last) % zstride
+	return function()
+		i = i + 1
+		if i % zstride == zoff then
+			i = i + zstridediff
+		elseif i % ystride == yoff then
+			i = i + ystridediff
+		end
+		if i <= last then
+			return i
+		end
+	end
+end
+
+function VoxelArea:iterp(minp, maxp)
+	return self:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z)
+end

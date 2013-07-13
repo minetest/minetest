@@ -591,7 +591,7 @@ int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
 			ManualMapVoxelManipulator *vm = mg->vm;
 			
 			// VoxelManip object
-			LuaVoxelManip *o = new LuaVoxelManip(vm, false);
+			LuaVoxelManip *o = new LuaVoxelManip(vm, true);
 			*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 			luaL_getmetatable(L, "VoxelManip");
 			lua_setmetatable(L, -2);
