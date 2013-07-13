@@ -163,7 +163,7 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 		const NodeBox &nodebox, INodeDefManager *nodemgr)
 {
 	std::vector<aabb3f> boxes;
-	if(nodebox.type == NODEBOX_FIXED)
+	if(nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED)
 	{
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr);
@@ -174,6 +174,11 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 				i != fixed.end(); i++)
 		{
 			aabb3f box = *i;
+
+			if (nodebox.type == NODEBOX_LEVELED) {
+				box.MaxEdge.Y = -BS/2 + BS*((float)1/LEVELED_MAX) * n.getLevel(nodemgr);
+			}
+
 			switch (axisdir)
 			{
 			case 0:
@@ -352,6 +357,24 @@ std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	return transformNodeBox(*this, f.selection_box, nodemgr);
+}
+
+u8 MapNode::getLevel(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	if(f.liquid_type == LIQUID_SOURCE)
+		return LIQUID_LEVEL_SOURCE;
+	if (f.param_type_2 == CPT2_FLOWINGLIQUID)
+		return getParam2() & LIQUID_LEVEL_MASK;
+	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 setted
+		return getParam2() & LIQUID_LEVEL_MASK;
+	if(f.leveled || f.param_type_2 == CPT2_LEVELED) {
+		 u8 level = getParam2() & LEVELED_MASK;
+		 if(level) return level;
+		 if(f.leveled > LEVELED_MAX) return LEVELED_MAX;
+		 return f.leveled; //default
+	}
+	return 0;
 }
 
 u32 MapNode::serializedLength(u8 version)
