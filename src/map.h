@@ -50,8 +50,8 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
+class ScriptApi;
 struct BlockMakeData;
-
 
 /*
 	MapEditEvent
@@ -303,8 +303,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks);
+	void transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	void transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata

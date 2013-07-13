@@ -1164,7 +1164,7 @@ void Server::AsyncRunStep()
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
 		std::map<v3s16, MapBlock*> modified_blocks;
-		m_env->getMap().transformLiquids(modified_blocks);
+		m_env->getMap().transformLiquids(m_script, modified_blocks);
 #if 0
 		/*
 			Update lighting

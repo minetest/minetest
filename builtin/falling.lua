@@ -13,11 +13,11 @@ minetest.register_entity("__builtin:falling_node", {
 		visual_size = {x=0.667, y=0.667},
 	},
 
-	nodename = "",
+	node = {},
 
-	set_node = function(self, nodename)
-		self.nodename = nodename
-		local stack = ItemStack(nodename)
+	set_node = function(self, n)
+		self.node = n
+		local stack = ItemStack(self.node.name)
 		local itemtable = stack:to_table()
 		local itemname = nil
 		if itemtable then
@@ -31,43 +31,57 @@ minetest.register_entity("__builtin:falling_node", {
 		end
 		prop = {
 			is_visible = true,
-			textures = {nodename},
+			textures = {self.node.name},
 		}
 		self.object:set_properties(prop)
 	end,
 
 	get_staticdata = function(self)
-		return self.nodename
+		return self.node.name
 	end,
 
 	on_activate = function(self, staticdata)
-		self.nodename = staticdata
+		--self.node.name = staticdata
 		self.object:set_armor_groups({immortal=1})
 		--self.object:setacceleration({x=0, y=-10, z=0})
-		self:set_node(self.nodename)
+		self:set_node({name=staticdata})
 	end,
 
 	on_step = function(self, dtime)
 		-- Set gravity
-		self.object:setacceleration({x=0, y=-10, z=0})
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
 		local bcn = minetest.get_node(bcp)
+		local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
+		local n2 = minetest.get_node(np)
+--print('step' .. self.nodename .. ' accell '.. self.object:getacceleration().y .. ' veloc='.. self.object:getvelocity().y);
+		local force = 0
+		if minetest.registered_nodes[self.node.name] and self.object:getacceleration().y == -10 and self.object:getvelocity().y < 0.1 and self.object:getvelocity().y > -0.1  and minetest.registered_nodes[self.node.name].liquidtype ~= "none" then
+--		    force = 1
+--print('force! on '..bcn.name)
+    		end
+		self.object:setacceleration({x=0, y=-10, z=0})
 		-- Note: walkable is in the node definition, not in item groups
-		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable then
-			if minetest.registered_nodes[bcn.name].buildable_to then
+		if minetest.registered_nodes[bcn.name] and minetest.registered_nodes[self.node.name] and 
+				(force > 0 or (minetest.registered_nodes[bcn.name].walkable 
+				    or (minetest.registered_nodes[bcn.name].liquidtype ~= "none"
+					and minetest.registered_nodes[self.node.name].liquidtype ~= "none"))) then
+			if minetest.registered_nodes[bcn.name].buildable_to and 
+				--not 
+				    (minetest.registered_nodes[bcn.name].liquidtype == "none"
+					and minetest.registered_nodes[self.node.name].liquidtype == "none")
+			then
 				minetest.remove_node(bcp)
+--print('remove and return ' .. bcn.name .. ' bldto='.. (minetest.registered_nodes[bcn.name].buildable_to and 'tr' or 'fl') .. ' liq='.. (minetest.registered_nodes[bcn.name].liquidtype) )
 				return
 			end
-			local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 			-- Check what's here
-			local n2 = minetest.get_node(np)
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
 			if n2.name ~= "air" and (not minetest.registered_nodes[n2.name] or
-					minetest.registered_nodes[n2.name].liquidtype == "none") then
+					(minetest.registered_nodes[n2.name].liquidtype == "none" and
+					 minetest.registered_nodes[bcn.name].liquidtype == "none")) then
 				local drops = minetest.get_node_drops(n2.name, "")
 				minetest.remove_node(np)
 				-- Add dropped items
@@ -82,18 +96,32 @@ minetest.register_entity("__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			minetest.add_node(np, {name=self.nodename})
+			minetest.add_node(np, self.node)
 			self.object:remove()
-			nodeupdate(np)
+			if force == 0 then
+				nodeupdate(np)
+				if minetest.registered_nodes[self.node.name].liquidtype ~= "none" then
+					minetest.transforming_liquid_add(np)
+				end
+			end
+--print('dropped ' .. self.node.name .. ' f='..force);
 		else
+			if not minetest.registered_nodes[bcn.name] and minetest.registered_nodes[self.node.name].liquidtype ~= "none" then
+--print("unreg " .. bcn.name)
+				minetest.remove_node(np)
+			minetest.add_node(np, self.node)
+			self.object:remove()
+			-- nodeupdate(np)
+			end
 			-- Do nothing
 		end
 	end
 })
 
-function spawn_falling_node(p, nodename)
+--function spawn_falling_node(p, nodename)
+function spawn_falling_node(p, n)
 	obj = minetest.add_entity(p, "__builtin:falling_node")
-	obj:get_luaentity():set_node(nodename)
+	obj:get_luaentity():set_node(n)
 end
 
 function drop_attached_node(p)
@@ -148,16 +176,23 @@ function nodeupdate_single(p, delay)
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
 		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
-		if minetest.registered_nodes[n_bottom.name] and
+		if n_bottom.name ~= "ignore" and minetest.registered_nodes[n_bottom.name] and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
-					minetest.registered_nodes[n_bottom.name].buildable_to) then
+					((minetest.registered_nodes[n_bottom.name].buildable_to) and 
+						(minetest.registered_nodes[n.name].liquidtype ~= "none" and
+							minetest.registered_nodes[n_bottom.name].liquidtype == "none"))) then
+		    if minetest.registered_nodes[n.name].liquidtype ~= "none" and minetest.registered_nodes[n_bottom.name].liquidtype ~= "none" then
+			-- Two liquids, skipping
+		    else
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
 			else
+--print('spawn ' .. n.name .. ' bottom=' .. n_bottom.name .. ' breg=' .. (minetest.registered_nodes[n_bottom.name] and 'yeah' or 'nope'))
 				minetest.remove_node(p)
-				spawn_falling_node(p, n.name)
+				spawn_falling_node(p, n)
 				nodeupdate(p)
 			end
+		    end
 		end
 	end
 	

@@ -226,6 +226,7 @@ public:
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n) 
 	{
 		ServerMap *map = &env->getServerMap();
+errorstream << "abm s=" << map->transforming_liquid_size()<<" "<<PP(p)<< std::endl;
 		if (map->transforming_liquid_size() > 500)
 			return;
 		if (	   map->getNodeNoEx(p - v3s16(0,  1, 0 )).getContent() != CONTENT_AIR  // below
