@@ -235,7 +235,7 @@ sub request (;$) {
             $param->{first} ||= $old->{first} || $old->{time} || $param->{time};
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
-            $param->{mods} ||= $old->{mods} unless $param->{action} ~~ 'start';
+            $param->{mods} ||= $old->{mods} if $old->{mods} and !($param->{action} ~~ 'start');
             delete $param->{action};
             $listk->{$param->{key}} = $param;
             #printlog Dumper $param;

@@ -51,7 +51,7 @@ function success(r) {
         h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + s.clients_top : '') + '</td>';
         var mods;
         if (s.mods && jQuery.isArray(s.mods)) {
-            mods = 1;
+            mods = s.mods.length;
         }
         h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid);
         if (mods) {
