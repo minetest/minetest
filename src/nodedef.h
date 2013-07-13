@@ -300,8 +300,6 @@ public:
 	// If not found, returns the features of CONTENT_IGNORE
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 
-	// Register node definition
-	virtual void set(content_t c, const ContentFeatures &def)=0;
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t set(const std::string &name,

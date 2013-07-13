@@ -70,20 +70,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	A few item and node definitions for those tests that need them
 */
 
-#define CONTENT_STONE 0
-#define CONTENT_GRASS 0x800
-#define CONTENT_TORCH 100
+static content_t CONTENT_STONE;
+static content_t CONTENT_GRASS;
+static content_t CONTENT_TORCH;
 
 void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *ndef)
 {
-	content_t i;
 	ItemDefinition itemdef;
 	ContentFeatures f;
 
 	/*
 		Stone
 	*/
-	i = CONTENT_STONE;
 	itemdef = ItemDefinition();
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:stone";
@@ -99,12 +97,11 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 		f.tiledef[i].name = "default_stone.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
-	ndef->set(i, f);
+	CONTENT_STONE = ndef->set(f.name, f);
 
 	/*
 		Grass
 	*/
-	i = CONTENT_GRASS;
 	itemdef = ItemDefinition();
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:dirt_with_grass";
@@ -122,12 +119,11 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
-	ndef->set(i, f);
+	CONTENT_GRASS = ndef->set(f.name, f);
 
 	/*
 		Torch (minimal definition for lighting tests)
 	*/
-	i = CONTENT_TORCH;
 	itemdef = ItemDefinition();
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:torch";
@@ -138,7 +134,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	f.sunlight_propagates = true;
 	f.light_source = LIGHT_MAX-1;
 	idef->registerItem(itemdef);
-	ndef->set(i, f);
+	CONTENT_TORCH = ndef->set(f.name, f);
 }
 
 struct TestBase
