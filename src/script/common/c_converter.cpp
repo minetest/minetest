@@ -226,10 +226,8 @@ bool getstringfield(lua_State *L, int table,
 	if(lua_isstring(L, -1)){
 		size_t len = 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
-		if (ptr) {
-			result.assign(ptr, len);
-			got = true;
-		}
+		result.assign(ptr, len);
+		got = true;
 	}
 	lua_pop(L, 1);
 	return got;

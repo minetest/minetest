@@ -208,6 +208,33 @@ public:
 	Client *m_client;
 };
 
+class FormspecFormSource: public IFormSource
+{
+public:
+	FormspecFormSource(std::string formspec,FormspecFormSource** game_formspec)
+	{
+		m_formspec = formspec;
+		m_game_formspec = game_formspec;
+	}
+
+	~FormspecFormSource()
+	{
+		*m_game_formspec = 0;
+	}
+
+	void setForm(std::string formspec) {
+		m_formspec = formspec;
+	}
+
+	std::string getForm()
+	{
+		return m_formspec;
+	}
+
+	std::string m_formspec;
+	FormspecFormSource** m_game_formspec;
+};
+
 /*
 	Check if a node is pointable
 */
@@ -804,10 +831,6 @@ public:
 		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
-		
-		// Normal map texture layer
-		int layer = 1;
-		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
 	}
 };
 
@@ -1209,28 +1232,26 @@ void the_game(
 			}
 			
 			// Display status
+			std::ostringstream ss;
 			int progress=0;
 			if (!client.itemdefReceived())
 			{
-				wchar_t* text = wgettext("Item definitions...");
+				ss << "Item definitions...";
 				progress = 0;
-				draw_load_screen(text, device, font, dtime, progress);
-				delete[] text;
 			}
 			else if (!client.nodedefReceived())
 			{
-				wchar_t* text = wgettext("Node definitions...");
+				ss << "Node definitions...";
 				progress = 25;
-				draw_load_screen(text, device, font, dtime, progress);
-				delete[] text;
 			}
 			else
 			{
-				wchar_t* text = wgettext("Media...");
+				ss << "Media...";
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
-				draw_load_screen(text, device, font, dtime, progress);
-				delete[] text;
 			}
+			wchar_t* text = wgettext(ss.str().c_str());
+			draw_load_screen(text, device, font, dtime, progress);
+			delete[] text;
 			
 			// On some computers framerate doesn't seem to be
 			// automatically limited
@@ -1322,7 +1343,7 @@ void the_game(
 	*/
 	int crack_animation_length = 5;
 	{
-		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
+		video::ITexture *t = tsrc->getTextureRaw("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
 		crack_animation_length = size.Y / size.X;
 	}
@@ -2289,7 +2310,7 @@ void the_game(
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					video::ITexture *texture =
+					AtlasPointer ap =
 						gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
 
 					new Particle(gamedef, smgr, player, client.getEnv(),
@@ -2298,15 +2319,12 @@ void the_game(
 						*event.spawn_particle.acc,
 						 event.spawn_particle.expirationtime,
 						 event.spawn_particle.size,
-						 event.spawn_particle.collisiondetection,
-						 texture,
-						 v2f(0.0, 0.0),
-						 v2f(1.0, 1.0));
+						 event.spawn_particle.collisiondetection, ap);
 				}
 				else if(event.type == CE_ADD_PARTICLESPAWNER)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					video::ITexture *texture =
+					AtlasPointer ap =
 						gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
 
 					new ParticleSpawner(gamedef, smgr, player,
@@ -2323,7 +2341,7 @@ void the_game(
 						 event.add_particlespawner.minsize,
 						 event.add_particlespawner.maxsize,
 						 event.add_particlespawner.collisiondetection,
-						 texture,
+						 ap,
 						 event.add_particlespawner.id);
 				}
 				else if(event.type == CE_DELETE_PARTICLESPAWNER)
@@ -2612,6 +2630,20 @@ void the_game(
 					if(tp)
 						params = getDigParams(nodedef->get(n).groups, tp);
 				}
+				
+				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
+				if(sound_dig.exists()){
+					if(sound_dig.name == "__group"){
+						if(params.main_group != ""){
+							soundmaker.m_player_leftpunch_sound.gain = 0.5;
+							soundmaker.m_player_leftpunch_sound.name =
+									std::string("default_dig_") +
+											params.main_group;
+						}
+					} else{
+						soundmaker.m_player_leftpunch_sound = sound_dig;
+					}
+				}
 
 				float dig_time_complete = 0.0;
 
@@ -2642,20 +2674,6 @@ void the_game(
 				else
 				{
 					dig_index = crack_animation_length;
-				}
-
-				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
-				if(sound_dig.exists() && params.diggable){
-					if(sound_dig.name == "__group"){
-						if(params.main_group != ""){
-							soundmaker.m_player_leftpunch_sound.gain = 0.5;
-							soundmaker.m_player_leftpunch_sound.name =
-									std::string("default_dig_") +
-											params.main_group;
-						}
-					} else{
-						soundmaker.m_player_leftpunch_sound = sound_dig;
-					}
 				}
 
 				// Don't show cracks if not diggable

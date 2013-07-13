@@ -31,10 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // g_profiler
 #include "profiler.h"
 
-// float error is 10 - 9.96875 = 0.03125
-//#define COLL_ZERO 0.032 // broken unit tests
-#define COLL_ZERO 0
-
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
@@ -45,9 +41,9 @@ int axisAlignedCollision(
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
-	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
-	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
+	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X);
+	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y);
+	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z);
 
 	aabb3f relbox(
 			movingbox.MinEdge.X - staticbox.MinEdge.X,
@@ -64,9 +60,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.X / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
 				return 0;
 		}
 		else if(relbox.MinEdge.X > xsize)
@@ -80,9 +76,9 @@ int axisAlignedCollision(
 		{
 			dtime = (xsize - relbox.MinEdge.X) / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
 				return 0;
 		}
 		else if(relbox.MaxEdge.X < 0)
@@ -99,9 +95,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Y / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
 				return 1;
 		}
 		else if(relbox.MinEdge.Y > ysize)
@@ -115,9 +111,9 @@ int axisAlignedCollision(
 		{
 			dtime = (ysize - relbox.MinEdge.Y) / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
 				return 1;
 		}
 		else if(relbox.MaxEdge.Y < 0)
@@ -134,9 +130,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Z / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
 				return 2;
 		}
 		//else if(relbox.MinEdge.Z > zsize)
@@ -150,9 +146,9 @@ int axisAlignedCollision(
 		{
 			dtime = (zsize - relbox.MinEdge.Z) / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
 				return 2;
 		}
 		//else if(relbox.MaxEdge.Z < 0)

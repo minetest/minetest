@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 00:07+0000\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
 "PO-Revision-Date: 2013-05-01 22:18+0200\n"
 "Last-Translator: Sfan5 . <sfan5@live.de>\n"
 "Language-Team: \n"
@@ -18,47 +18,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2877
+#: src/client.cpp:2846
 msgid "Item textures..."
 msgstr ""
 
-#: src/game.cpp:959
+#: src/game.cpp:912
 msgid "Loading..."
 msgstr ""
 
-#: src/game.cpp:1019
+#: src/game.cpp:972
 msgid "Creating server...."
 msgstr ""
 
-#: src/game.cpp:1035
+#: src/game.cpp:988
 msgid "Creating client..."
 msgstr ""
 
-#: src/game.cpp:1050
+#: src/game.cpp:1003
 msgid "Resolving address..."
 msgstr ""
 
-#: src/game.cpp:1126
+#: src/game.cpp:1079
 msgid "Connecting to server..."
 msgstr ""
 
-#: src/game.cpp:1223
-msgid "Item definitions..."
-msgstr ""
-
-#: src/game.cpp:1230
-msgid "Node definitions..."
-msgstr ""
-
-#: src/game.cpp:1237
-msgid "Media..."
-msgstr ""
-
-#: src/game.cpp:3418
+#: src/game.cpp:3348
 msgid "Shutting down stuff..."
 msgstr ""
 
-#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
+#: src/game.cpp:3378 src/guiConfigureWorld.cpp:426
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -66,40 +54,57 @@ msgstr ""
 "\n"
 "Check debug.txt for details."
 
-#: src/guiConfigureWorld.cpp:184
+#: src/guiConfigureWorld.cpp:123
+msgid ""
+"Warning: Some mods are not configured yet.\n"
+"They will be enabled by default when you save the configuration.  "
+msgstr ""
+"Let op: Nog niet alle mods zijn geconfigueerd. \n"
+"De mods zullen automatisch worden ingeschakeld als je de configuratie "
+"bewaard. "
+
+#: src/guiConfigureWorld.cpp:143
+msgid ""
+"Warning: Some configured mods are missing.\n"
+"Their setting will be removed when you save the configuration.  "
+msgstr ""
+"LEt op: Sommige ingestelde mods zijn vermist.\n"
+"Hun instellingen worden verwijderd als je de configuratie opslaat. "
+
+#: src/guiConfigureWorld.cpp:208
 msgid "enabled"
 msgstr "ingeschakeld"
 
-#: src/guiConfigureWorld.cpp:194
+#: src/guiConfigureWorld.cpp:218
 msgid "Enable All"
 msgstr "Allen inschakelen"
 
-#: src/guiConfigureWorld.cpp:203
+#: src/guiConfigureWorld.cpp:227
 msgid "Disable All"
 msgstr "Allen uitschakelen"
 
-#: src/guiConfigureWorld.cpp:211
+#: src/guiConfigureWorld.cpp:235
 msgid "depends on:"
 msgstr "heeft nodig:"
 
-#: src/guiConfigureWorld.cpp:224
+#: src/guiConfigureWorld.cpp:248
 msgid "is required by:"
 msgstr "is benodigd voor:"
 
-#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
+#: src/guiConfigureWorld.cpp:270 src/guiCreateWorld.cpp:177
 #: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Annuleer"
 
-#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
+#: src/guiConfigureWorld.cpp:277 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Bewaar"
 
-#: src/guiConfigureWorld.cpp:374
+#: src/guiConfigureWorld.cpp:403
 msgid "Configuration saved.  "
 msgstr "Instellingen bewaard. "
 
-#: src/guiConfigureWorld.cpp:386
+#: src/guiConfigureWorld.cpp:415
 msgid "Warning: Configuration not consistent.  "
 msgstr "Waarschuwing: Instellingen niet consistent. "
 
@@ -111,15 +116,15 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nee"
 
-#: src/guiCreateWorld.cpp:123
+#: src/guiCreateWorld.cpp:125
 msgid "World name"
 msgstr "Naam wereld"
 
-#: src/guiCreateWorld.cpp:146
+#: src/guiCreateWorld.cpp:145
 msgid "Game"
 msgstr "Spel"
 
-#: src/guiCreateWorld.cpp:170
+#: src/guiCreateWorld.cpp:169
 msgid "Create"
 msgstr "Maak aan"
 
@@ -131,13 +136,13 @@ msgstr "Je bent gestorven."
 msgid "Respawn"
 msgstr "Respawn"
 
-#: src/guiFormSpecMenu.cpp:585
+#: src/guiFormSpecMenu.cpp:582
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
 "Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item"
 
-#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:133
+#: src/guiFormSpecMenu.cpp:608 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:130
 msgid "Proceed"
 msgstr "Volgende"
 
@@ -409,23 +414,23 @@ msgstr "Kan instellingen niet aanpassen: Niets geselecteerd"
 msgid "Failed to delete all world files"
 msgstr "Niet alle bestanden zijn verwijderd"
 
-#: src/guiPasswordChange.cpp:107
+#: src/guiPasswordChange.cpp:108
 msgid "Old Password"
 msgstr "Huidig wachtwoord"
 
-#: src/guiPasswordChange.cpp:125
+#: src/guiPasswordChange.cpp:126
 msgid "New Password"
 msgstr "Nieuw wachtwoord"
 
-#: src/guiPasswordChange.cpp:142
+#: src/guiPasswordChange.cpp:143
 msgid "Confirm Password"
 msgstr "Herhaal wachtwoord"
 
-#: src/guiPasswordChange.cpp:160
+#: src/guiPasswordChange.cpp:161
 msgid "Change"
 msgstr "Veranderen"
 
-#: src/guiPasswordChange.cpp:169
+#: src/guiPasswordChange.cpp:170
 msgid "Passwords do not match!"
 msgstr "Wachtwoorden zijn niet gelijk!"
 
@@ -464,11 +469,11 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 
-#: src/guiVolumeChange.cpp:107
+#: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
 msgstr "Volume: "
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:122
 msgid "Exit"
 msgstr "Exit"
 
@@ -768,23 +773,23 @@ msgstr "Zoom"
 msgid "Main Menu"
 msgstr "Hoofdmenu"
 
-#: src/main.cpp:2040
+#: src/main.cpp:2035
 msgid "Failed to initialize world"
 msgstr "Laden van wereld is mislukt"
 
-#: src/main.cpp:2053
+#: src/main.cpp:2048
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Geen wereld en adres geselecteerd. Niks te doen."
 
-#: src/main.cpp:2061
+#: src/main.cpp:2056
 msgid "Could not find or load game \""
 msgstr "Kan niet de game laden of vinden \""
 
-#: src/main.cpp:2075
+#: src/main.cpp:2070
 msgid "Invalid gamespec."
 msgstr "Onjuiste gamespec."
 
-#: src/main.cpp:2116
+#: src/main.cpp:2111
 msgid "Connection error (timed out?)"
 msgstr "Connection error (timed out?)"
 
@@ -812,18 +817,3 @@ msgstr "Connection error (timed out?)"
 #~ "- I: Rugzak\n"
 #~ "- ESC: Menu\n"
 #~ "- T: Chat\n"
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "LEt op: Sommige ingestelde mods zijn vermist.\n"
-#~ "Hun instellingen worden verwijderd als je de configuratie opslaat. "
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Let op: Nog niet alle mods zijn geconfigueerd. \n"
-#~ "De mods zullen automatisch worden ingeschakeld als je de configuratie "
-#~ "bewaard. "

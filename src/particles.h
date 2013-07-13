@@ -42,9 +42,7 @@ class Particle : public scene::ISceneNode
 		float expirationtime,
 		float size,
 		bool collisiondetection,
-		video::ITexture *texture,
-		v2f texpos,
-		v2f texsize
+		AtlasPointer texture
 	);
 	~Particle();
 
@@ -83,13 +81,16 @@ private:
 	core::aabbox3d<f32> m_box;
 	core::aabbox3d<f32> m_collisionbox;
 	video::SMaterial m_material;
-	v2f m_texpos;
-	v2f m_texsize;
 	v3f m_pos;
 	v3f m_velocity;
 	v3f m_acceleration;
+	float tex_x0;
+	float tex_x1;
+	float tex_y0;
+	float tex_y1;
 	LocalPlayer *m_player;
 	float m_size;
+	AtlasPointer m_ap;
 	u8 m_light;
 	bool m_collisiondetection;
 };
@@ -108,7 +109,7 @@ class ParticleSpawner
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection,
-		video::ITexture *texture,
+		AtlasPointer ap,
 		u32 id);
 
 	~ParticleSpawner();
@@ -135,7 +136,7 @@ class ParticleSpawner
 	float m_maxexptime;
 	float m_minsize;
 	float m_maxsize;
-	video::ITexture *m_texture;
+	AtlasPointer m_ap;
 	std::vector<float> m_spawntimes;
 	bool m_collisiondetection;
 };

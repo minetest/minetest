@@ -57,9 +57,7 @@ Particle::Particle(
 	float expirationtime,
 	float size,
 	bool collisiondetection,
-	video::ITexture *texture,
-	v2f texpos,
-	v2f texsize
+	AtlasPointer ap
 ):
 	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
 {
@@ -72,9 +70,8 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.setTexture(0, texture);
-	m_texpos = texpos;
-	m_texsize = texsize;
+	m_material.setTexture(0, ap.atlas);
+	m_ap = ap;
 
 
 	// Particle related
@@ -183,19 +180,14 @@ void Particle::updateLight(ClientEnvironment &env)
 void Particle::updateVertices()
 {
 	video::SColor c(255, m_light, m_light, m_light);
-	f32 tx0 = m_texpos.X;
-	f32 tx1 = m_texpos.X + m_texsize.X;
-	f32 ty0 = m_texpos.Y;
-	f32 ty1 = m_texpos.Y + m_texsize.Y;
-
 	m_vertices[0] = video::S3DVertex(-m_size/2,-m_size/2,0, 0,0,0,
-			c, tx0, ty1);
+			c, m_ap.x0(), m_ap.y1());
 	m_vertices[1] = video::S3DVertex(m_size/2,-m_size/2,0, 0,0,0,
-			c, tx1, ty1);
+			c, m_ap.x1(), m_ap.y1());
 	m_vertices[2] = video::S3DVertex(m_size/2,m_size/2,0, 0,0,0,
-			c, tx1, ty0);
+			c, m_ap.x1(), m_ap.y0());
 	m_vertices[3] = video::S3DVertex(-m_size/2,m_size/2,0, 0,0,0,
-			c, tx0, ty0);
+			c ,m_ap.x0(), m_ap.y0());
 
 	for(u16 i=0; i<4; i++)
 	{
@@ -256,19 +248,19 @@ void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 {
 	// Texture
 	u8 texid = myrand_range(0,5);
-	video::ITexture *texture = tiles[texid].texture;
-
-	// Only use first frame of animated texture
-	f32 ymax = 1;
-	if(tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-		ymax /= tiles[texid].animation_frame_count;
-
+	AtlasPointer ap = tiles[texid].texture;
 	float size = rand()%64/512.;
 	float visual_size = BS*size;
-	v2f texsize(size*2, ymax*size*2);
-	v2f texpos;
-	texpos.X = ((rand()%64)/64.-texsize.X);
-	texpos.Y = ymax*((rand()%64)/64.-texsize.Y);
+	float texsize = size*2;
+
+	float x1 = ap.x1();
+	float y1 = ap.y1();
+
+	ap.size.X = (ap.x1() - ap.x0()) * texsize;
+	ap.size.Y = (ap.x1() - ap.x0()) * texsize;
+
+	ap.pos.X = ap.x0() + (x1 - ap.x0()) * ((rand()%64)/64.-texsize);
+	ap.pos.Y = ap.y0() + (y1 - ap.y0()) * ((rand()%64)/64.-texsize);
 
 	// Physics
 	v3f velocity(	(rand()%100/50.-1)/1.5,
@@ -293,9 +285,7 @@ void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 		rand()%100/100., // expiration time
 		visual_size,
 		true,
-		texture,
-		texpos,
-		texsize);
+		ap);
 }
 
 /*
@@ -306,7 +296,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, video::ITexture *texture, u32 id)
+	bool collisiondetection, AtlasPointer ap, u32 id)
 {
 	m_gamedef = gamedef;
 	m_smgr = smgr;
@@ -324,7 +314,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_minsize = minsize;
 	m_maxsize = maxsize;
 	m_collisiondetection = collisiondetection;
-	m_texture = texture;
+	m_ap = ap;
 	m_time = 0;
 
 	for (u16 i = 0; i<=m_amount; i++)
@@ -372,9 +362,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment &env)
 					exptime,
 					size,
 					m_collisiondetection,
-					m_texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					m_ap);
 				m_spawntimes.erase(i);
 			}
 			else
@@ -410,9 +398,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment &env)
 					exptime,
 					size,
 					m_collisiondetection,
-					m_texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					m_ap);
 			}
 		}
 	}

@@ -1436,8 +1436,7 @@ SharedBuffer<u8> Connection::processPacket(Channel *channel,
 	else if(type == TYPE_RELIABLE)
 	{
 		// Recursive reliable packets not allowed
-		if(reliable)
-			throw InvalidIncomingDataException("Found nested reliable packets");
+		assert(reliable == false);
 
 		if(packetdata.getSize() < RELIABLE_HEADER_SIZE)
 			throw InvalidIncomingDataException

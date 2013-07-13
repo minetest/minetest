@@ -17,18 +17,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __CONVERT_JSON_H__
-#define __CONVERT_JSON_H__
+#ifndef GUICONFIRMMENU_HEADER
+#define GUICONFIRMMENU_HEADER
 
-#include "json/json.h"
+#include "irrlichttypes_extrabloated.h"
+#include "modalMenu.h"
+#include <string>
 
-struct ModStoreMod;
-struct ModStoreModDetails;
+struct ConfirmDest
+{
+	virtual void answer(bool answer) = 0;
+	virtual ~ConfirmDest() {};
+};
 
-std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist);
-ModStoreModDetails          readModStoreModDetails(Json::Value& details);
-
-Json::Value                 fetchJsonValue(const std::string url,
-													struct curl_slist *chunk);
+class GUIConfirmMenu : public GUIModalMenu
+{
+public:
+	GUIConfirmMenu(gui::IGUIEnvironment* env,
+			gui::IGUIElement* parent, s32 id,
+			IMenuManager *menumgr,
+			ConfirmDest *dest,
+			std::wstring message_text);
+	~GUIConfirmMenu();
+	
+	void removeChildren();
+	// Remove and re-add (or reposition) stuff
+	void regenerateGui(v2u32 screensize);
+	void drawMenu();
+	void acceptInput(bool answer);
+	bool OnEvent(const SEvent& event);
+	
+private:
+	ConfirmDest *m_dest;
+	std::wstring m_message_text;
+};
 
 #endif
+

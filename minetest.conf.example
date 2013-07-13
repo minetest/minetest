@@ -8,7 +8,7 @@
 # Uncomment settings by removing the preceding #.
 #
 # Further documentation:
-# http://wiki.minetest.net/
+# http://wiki.minetest.com/
 #
 # NOTE: This file might not be up-to-date, refer to the
 #       defaultsettings.cpp file for an up-to-date list:
@@ -112,6 +112,9 @@
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true
+# Enable combining mainly used textures to a bigger one for improved speed
+# disable if it causes graphics glitches.
+#enable_texture_atlas = false
 # Path to texture directory. All textures are first searched from here.
 #texture_path = 
 # Video back-end.
@@ -172,8 +175,6 @@
 # (1: low level shaders; not implemented)
 # 2: enable high level shaders
 #enable_shaders = 2
-# Set to true to enable textures bumpmapping. Requires shaders enabled.
-#enable_bumpmapping = false
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
@@ -206,8 +207,6 @@
 #server_url = http://minetest.net
 # Automaticaly report to masterserver
 #server_announce = 0
-# Announce to this masterserver. if you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net
-#serverlist_url = servers.minetest.net
 # Default game (default when creating a new world)
 #default_game = minetest
 # World directory (everything in the world is stored here)
@@ -377,9 +376,3 @@
 # Enable/disable running an IPv6 server.  An IPv6 server may be restricted
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
-
-#main_menu_game_mgr = 0
-#main_menu_mod_mgr = 0
-#modstore_download_url = http://forum.minetest.net/media/
-#modstore_listmods_url = http://forum.minetest.net/mmdb/mods/
-#modstore_details_url  = http://forum.minetest.net/mmdb/mod/*/
