@@ -1243,6 +1243,8 @@ minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)
 ^ algorithm: A*_noprefetch(default), A*, Dijkstra
 minetest.spawn_tree (pos, {treedef})
 ^ spawns L-System tree at given pos with definition in treedef table
+minetest.transforming_liquid_add (pos)
+^ add node to liquid update queue
 
 Inventory:
 minetest.get_inventory(location) -> InvRef

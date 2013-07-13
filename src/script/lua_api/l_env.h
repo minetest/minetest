@@ -135,6 +135,9 @@ private:
 	// minetest.find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
+
+	// minetest.transforming_liquid_add(pos)
+	static int l_transforming_liquid_add(lua_State *L);
 	
 	static struct EnumString es_MapgenObject[];
 	

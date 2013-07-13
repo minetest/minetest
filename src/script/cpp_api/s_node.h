@@ -49,6 +49,7 @@ public:
 			const std::string &formname,
 			const std::map<std::string, std::string> &fields,
 			ServerActiveObject *sender);
+	void node_falling_update(v3s16 p);
 public:
 	static struct EnumString es_DrawType[];
 	static struct EnumString es_ContentParamType[];
