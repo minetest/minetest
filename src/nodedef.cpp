@@ -50,7 +50,7 @@ void NodeBox::serialize(std::ostream &os) const
 	writeU8(os, 1); // version
 	writeU8(os, type);
 
-	if(type == NODEBOX_FIXED)
+	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
 	{
 		writeU16(os, fixed.size());
 		for(std::vector<aabb3f>::const_iterator
@@ -82,7 +82,7 @@ void NodeBox::deSerialize(std::istream &is)
 
 	type = (enum NodeBoxType)readU8(is);
 
-	if(type == NODEBOX_FIXED)
+	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
 	{
 		u16 fixed_count = readU16(is);
 		while(fixed_count--)
@@ -206,6 +206,7 @@ void ContentFeatures::reset()
 	climbable = false;
 	buildable_to = false;
 	rightclickable = true;
+	leveled = 0;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
@@ -281,6 +282,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
 	writeU8(os, drowning);
+	writeU8(os, leveled);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -346,6 +348,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
 		drowning = readU8(is);
+		leveled = readU8(is);
 	}catch(SerializationError &e) {};
 }
 

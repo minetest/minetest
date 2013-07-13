@@ -87,6 +87,10 @@ enum Rotation {
 
 #define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
+// mask for param2, now as for liquid
+#define LEVELED_MASK 0x07
+#define LEVELED_MAX LEVELED_MASK
+
 /*
 	This is the stuff what the whole world consists of.
 */
@@ -205,6 +209,9 @@ struct MapNode
 		Gets list of selection boxes
 	*/
 	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
+
+	/* Liquid helpers */
+	u8 getLevel(INodeDefManager *nodemgr) const;
 
 	/*
 		Serialization functions
