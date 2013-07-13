@@ -483,6 +483,10 @@ public:
 
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
+
+	float getHeat(v3s16 p);
+	float getHumidity(v3s16 p);
+
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;

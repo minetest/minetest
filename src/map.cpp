@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen_v6.h"
 #include "mapgen_indev.h"
+#include "biome.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -3860,7 +3861,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 				<<" (SerializationError). "
 				<<"what()="<<e.what()
 				<<std::endl;
-				//" Ignoring. A new one will be generated.
+				// Ignoring. A new one will be generated.
 		assert(0);
 
 		// TODO: Backup file; name is in fullpath.
@@ -4035,6 +4036,19 @@ void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
 }
+
+float ServerMap::getHeat(v3s16 p)
+{
+    float heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z, m_emerge->params->seed);
+    return heat;
+}
+
+float ServerMap::getHumidity(v3s16 p)
+{
+    float humidity = NoisePerlin2D(m_emerge->biomedef->np_humidity, p.X, p.Z, m_emerge->params->seed);
+    return humidity;
+}
+
 
 /*
 	MapVoxelManipulator

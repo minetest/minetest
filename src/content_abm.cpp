@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h" // For treegen::make_tree
 #include "main.h" // for g_settings
 #include "map.h"
+#include "log.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -239,6 +240,89 @@ public:
 	}
 };
 
+class LiquidFreeze : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidFreeze(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("water_flowing");
+		s.insert("water_source");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		neighbors.insert("default:ice");
+		neighbors.insert("default:snow");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 20; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		
+		float heat = map->getHeat(p);
+		if (heat<0 && (heat<50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
+			//errorstream<< "HE="<< heat << " R="<< ((myrand_range(-40, heat))<-30) <<std::endl;
+			n.setContent(n.getContent() == ndef->getId("water_source") ? ndef->getId("default:ice") : ndef->getId("default:snow"));
+			map->addNodeWithEvent(p, n);
+		}
+	}
+};
+
+class LiquidMelt : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidMelt(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("default:ice");
+		s.insert("default:snow");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		neighbors.insert("water_flowing");
+		neighbors.insert("water_source");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 20; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		
+		float heat = map->getHeat(p); 
+		if (heat>0 && (heat>40 || ((myrand_range(heat, 40))>30))) {
+			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
+			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
+			map->addNodeWithEvent(p, n);
+		}
+	}
+};
+
+
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
 	env->addActiveBlockModifier(new GrowGrassABM());
@@ -247,5 +331,7 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
+		env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
+		env->addActiveBlockModifier(new LiquidMelt(env, nodedef));
 	}
 }
