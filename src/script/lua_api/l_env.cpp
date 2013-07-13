@@ -820,6 +820,17 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	return 1;
 }
 
+
+// minetest.transforming_liquid_add(pos)
+int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 p0 = read_v3s16(L, 1);
+	env->getMap().transforming_liquid_add(p0);
+	return 1;
+}
+
 bool ModApiEnvMod::Initialize(lua_State *L,int top)
 {
 
@@ -853,6 +864,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(spawn_tree);
 	retval &= API_FCT(find_path);
 	retval &= API_FCT(line_of_sight);
+	retval &= API_FCT(transforming_liquid_add);
 
 	return retval;
 }
