@@ -148,6 +148,7 @@ function nodeupdate_single(p, delay)
 		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
+				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			if delay then
