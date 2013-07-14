@@ -10,6 +10,7 @@ dofile(scriptpath .. DIR_DELIM .. "gamemgr.lua")
 local menu = {}
 local tabbuilder = {}
 local menubar = {}
+local worldlist = nil
 
 --------------------------------------------------------------------------------
 function render_favourite(spec,render_details)
@@ -166,7 +167,7 @@ function menu.update_gametype()
 		
 		local gamedetails = menu.lastgame()
 		engine.set_topleft_text(gamedetails.name)
-		worldlist.set_gamefilter(gamedetails.id)
+		filterlist.set_filtercriteria(worldlist,gamedetails.id)
 		
 		--background
 		local background_set = false
@@ -208,7 +209,7 @@ end
 
 --------------------------------------------------------------------------------
 function menu.reset_gametype()
-	worldlist.set_gamefilter(nil)
+	filterlist.set_filtercriteria(worldlist,nil)
 	menu.game_last_check = nil
 	
 	local path_background_texture = menu.basetexturedir .. "menu_background.png"
@@ -246,6 +247,27 @@ end
 function init_globals()
 	--init gamedata
 	gamedata.worldindex = 0
+	
+	worldlist = filterlist.create(
+					engine.get_worlds,
+					compare_worlds,
+					function(element,uid)
+						if element.name == uid then
+							return true
+						end
+						return false
+					end, --unique id compare fct
+					function(element,gameid)
+						if element.gameid == gameid then
+							return true
+						end
+						return false
+					end --filter fct
+					)
+					
+	filterlist.add_sort_mechanism(worldlist,"alphabetic",sort_worlds_alphabetic)
+	filterlist.set_sortmode(worldlist,"alphabetic")
+					
 end
 
 --------------------------------------------------------------------------------
@@ -309,7 +331,7 @@ end
 function menu.render_world_list()
 	local retval = ""
 	
-	local current_worldlist = worldlist.get_list()
+	local current_worldlist = filterlist.get_list(worldlist)
 	
 	for i,v in ipairs(current_worldlist) do
 		if retval ~= "" then
@@ -371,7 +393,7 @@ end
 --------------------------------------------------------------------------------
 function menu.update_last_game()
 
-	local current_world = worldlist.get_raw_world(
+	local current_world = filterlist.get_raw_element(worldlist,
 							engine.setting_get("mainmenu_last_selected_world")
 							)
 							
@@ -397,17 +419,17 @@ function menu.handle_key_up_down(fields,textlist,settingname)
 		if oldidx > 1 then
 			local newidx = oldidx -1
 			engine.setting_set(settingname,
-				worldlist.get_engine_index(newidx))
+				filterlist.get_engine_index(worldlist,newidx))
 		end
 	end
 	
 	if fields["key_down"] then
 		local oldidx = engine.get_textlist_index(textlist)
 		
-		if oldidx < worldlist.size() then
+		if oldidx < filterlist.size(worldlist) then
 			local newidx = oldidx + 1
 			engine.setting_set(settingname,
-				worldlist.get_engine_index(newidx))
+				filterlist.get_engine_index(worldlist,newidx))
 		end
 	end
 end
@@ -508,7 +530,7 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.dialog_delete_world()
-	return	"label[2,2;Delete World \"" .. worldlist.get_raw_list()[menu.world_to_del].name .. "\"?]"..
+	return	"label[2,2;Delete World \"" .. filterlist.get_raw_list(worldlist)[menu.world_to_del].name .. "\"?]"..
 			"button[3.5,4.2;2.6,0.5;world_delete_confirm;Yes]" ..
 			"button[6,4.2;2.8,0.5;world_delete_cancel;No]"
 end
@@ -570,7 +592,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 			
 			local message = nil
 			
-			if not worldlist.exists(worldname) then
+			if not filterlist.uid_exists(worldlist,worldname) then
 				engine.setting_set("mg_name",fields["dd_mapgen"])
 				message = engine.create_world(worldname,gameindex)
 			else
@@ -583,9 +605,9 @@ function tabbuilder.handle_create_world_buttons(fields)
 				menu.last_game = gameindex
 				engine.setting_set("main_menu_last_game_idx",gameindex)
 				
-				worldlist.refresh()
+				filterlist.refresh(worldlist)
 				engine.setting_set("mainmenu_last_selected_world",
-									worldlist.engine_index_by_name(worldname))
+									filterlist.engine_index_by_uid(worldlist,worldname))
 			end
 		else
 			gamedata.errormessage = "No worldname given or no game selected"
@@ -608,10 +630,10 @@ function tabbuilder.handle_delete_world_buttons(fields)
 	
 	if fields["world_delete_confirm"] then
 		if menu.world_to_del > 0 and 
-			menu.world_to_del <= #worldlist.get_raw_list() then
+			menu.world_to_del <= #filterlist.get_raw_list(worldlist) then
 			engine.delete_world(menu.world_to_del)
 			menu.world_to_del = 0
-			worldlist.refresh()
+			filterlist.refresh(worldlist)
 		end
 	end
 	
@@ -756,7 +778,7 @@ function tabbuilder.handle_server_buttons(fields)
 		end
 		if event.typ == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
-				worldlist.get_engine_index(engine.get_textlist_index("srv_worlds")))
+				filterlist.get_engine_index(worldlist,engine.get_textlist_index("srv_worlds")))
 		end
 	end
 	
@@ -783,7 +805,7 @@ function tabbuilder.handle_server_buttons(fields)
 			gamedata.password		= fields["te_passwd"]
 			gamedata.port			= fields["te_serverport"]
 			gamedata.address		= ""
-			gamedata.selected_world	= worldlist.get_engine_index(selected)
+			gamedata.selected_world	= filterlist.get_engine_index(worldlist,selected)
 			
 			menu.update_last_game(gamedata.selected_world)
 			engine.start()
@@ -799,12 +821,12 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["world_delete"] ~= nil then
 		local selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 and
-			selected <= worldlist.size() then
-			local world = worldlist.get_list()[selected]
+			selected <= filterlist.size(worldlist) then
+			local world = filterlist.get_list(worldlist)[selected]
 			if world ~= nil and
 				world.name ~= nil and
 				world.name ~= "" then
-				menu.world_to_del = worldlist.get_engine_index(selected)
+				menu.world_to_del = filterlist.get_engine_index(worldlist,selected)
 				tabbuilder.current_tab = "dialog_delete_world"
 				tabbuilder.is_dialog = true
 				tabbuilder.show_buttons = false
@@ -817,7 +839,7 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["world_configure"] ~= nil then
 		selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 then
-			modmgr.world_config_selected_world = worldlist.get_engine_index(selected)
+			modmgr.world_config_selected_world = filterlist.get_engine_index(worldlist,selected)
 			if modmgr.init_worldconfig() then
 				tabbuilder.current_tab = "dialog_configure_world"
 				tabbuilder.is_dialog = true
@@ -897,7 +919,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		
 		if event.typ == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
-				worldlist.get_engine_index(engine.get_textlist_index("sp_worlds")))
+				filterlist.get_engine_index(worldlist,engine.get_textlist_index("sp_worlds")))
 		end
 	end
 	
@@ -916,7 +938,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		fields["key_enter"] then
 		local selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 then
-			gamedata.selected_world	= worldlist.get_engine_index(selected)
+			gamedata.selected_world	= filterlist.get_engine_index(worldlist,selected)
 			gamedata.singleplayer	= true
 			
 			menu.update_last_game(gamedata.selected_world)
@@ -934,12 +956,12 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	if fields["world_delete"] ~= nil then
 		local selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 and
-			selected <= worldlist.size() then
-			local world = worldlist.get_list()[selected]
+			selected <= filterlist.size(worldlist) then
+			local world = filterlist.get_list(worldlist)[selected]
 			if world ~= nil and
 				world.name ~= nil and
 				world.name ~= "" then
-				menu.world_to_del = worldlist.get_engine_index(selected)
+				menu.world_to_del = filterlist.get_engine_index(worldlist,selected)
 				tabbuilder.current_tab = "dialog_delete_world"
 				tabbuilder.is_dialog = true
 				tabbuilder.show_buttons = false
@@ -952,7 +974,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	if fields["world_configure"] ~= nil then
 		selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 then
-			modmgr.world_config_selected_world = worldlist.get_engine_index(selected)
+			modmgr.world_config_selected_world = filterlist.get_engine_index(worldlist,selected)
 			if modmgr.init_worldconfig() then
 				tabbuilder.current_tab = "dialog_configure_world"
 				tabbuilder.is_dialog = true
@@ -1102,7 +1124,7 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_server()
 
-	local index = worldlist.get_current_index(
+	local index = filterlist.get_current_index(worldlist,
 				tonumber(engine.setting_get("mainmenu_last_selected_world"))
 				)
 	
@@ -1154,7 +1176,7 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_singleplayer()
 	
-	local index = worldlist.get_current_index(
+	local index = filterlist.get_current_index(worldlist,
 				tonumber(engine.setting_get("mainmenu_last_selected_world"))
 				)
 
@@ -1300,6 +1322,7 @@ engine.event_handler = function(event)
 			tabbuilder.is_dialog = false
 			tabbuilder.show_buttons = true
 			tabbuilder.current_tab = engine.setting_get("main_menu_tab")
+			menu.update_gametype()
 			update_menu()
 		else
 			engine.close()
@@ -1313,7 +1336,6 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 init_globals()
-worldlist.init()
 menu.init()
 tabbuilder.init()
 menubar.refresh()

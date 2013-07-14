@@ -1,80 +1,105 @@
-worldlist = {}
+--------------------------------------------------------------------------------
+-- Generic implementation of a filter/sortable list                           --
+--------------------------------------------------------------------------------
+filterlist = {}
 
 --------------------------------------------------------------------------------
-function worldlist.refresh()
-	worldlist.m_raw_worldlist = engine.get_worlds()
-	worldlist.process()
+function filterlist.refresh(this)
+	this.m_raw_list = this.m_raw_list_fct()
+	filterlist.process(this)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.init()
-	worldlist.m_gamefilter = nil
-	worldlist.m_sortmode = "alphabetic"
+function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct)
 
-	worldlist.m_processed_worldlist = nil
-	worldlist.m_raw_worldlist = engine.get_worlds()
+	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
+	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
+	
+	local this = {}
+	
+	this.m_raw_list_fct  = raw_fct
+	this.m_compare_fct   = compare_fct
+	this.m_filter_fct    = filter_fct
+	this.m_uid_match_fct = uid_match_fct
+	
+	this.m_filtercriteria = nil
+	
+	this.m_sortmode = "none"
+	this.m_sort_list = {}
+	
+	
 
-	worldlist.process()
+	this.m_processed_list = nil
+	this.m_raw_list = this.m_raw_list_fct()
+
+	filterlist.process(this)
+	
+	return this
 end
 
 --------------------------------------------------------------------------------
-function worldlist.set_gamefilter(gameid)
-	if gameid == worldlist.m_gamefilter then
+function filterlist.add_sort_mechanism(this,name,fct)
+	this.m_sort_list[name] = fct
+end
+
+--------------------------------------------------------------------------------
+function filterlist.set_filtercriteria(this,criteria)
+	if criteria == this.m_filtercriteria then
 		return
 	end
-	worldlist.m_gamefilter = gameid
-	worldlist.process()
+	this.m_filtercriteria = criteria
+	filterlist.process(this)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_gamefilter()
-	return worldlist.m_gamefilter
+function filterlist.get_filtercriteria(this)
+	return this.m_filtercriteria
 end
 
 --------------------------------------------------------------------------------
 --supported sort mode "alphabetic|none"
-function worldlist.set_sortmode(mode)
-	if (mode == worldlist.m_sortmode) then
+function filterlist.set_sortmode(this,mode)
+	if (mode == this.m_sortmode) then
 		return
 	end
-	worldlist.m_sortmode = mode
-	worldlist.process()
+	this.m_sortmode = mode
+	filterlist.process(this)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_list()
-	return worldlist.m_processed_worldlist
+function filterlist.get_list(this)
+	return this.m_processed_list
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_raw_list()
-	return worldlist.m_raw_worldlist
+function filterlist.get_raw_list(this)
+	return this.m_raw_list
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_raw_world(idx)
+function filterlist.get_raw_element(this,idx)
 	if type(idx) ~= "number" then
 		idx = tonumber(idx)
 	end
 	
-	if idx ~= nil and idx > 0 and idx < #worldlist.m_raw_worldlist then
-		return worldlist.m_raw_worldlist[idx]
+	if idx ~= nil and idx > 0 and idx < #this.m_raw_list then
+		return this.m_raw_list[idx]
 	end
 	
 	return nil
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_engine_index(worldlistindex)
-	assert(worldlist.m_processed_worldlist ~= nil)
+function filterlist.get_engine_index(this,listindex)
+	assert(this.m_processed_list ~= nil)
 	
-	if worldlistindex ~= nil and worldlistindex > 0 and
-		worldlistindex <= #worldlist.m_processed_worldlist then
-		local entry = worldlist.m_processed_worldlist[worldlistindex]
+	if listindex ~= nil and listindex > 0 and
+		listindex <= #this.m_processed_list then
+		local entry = this.m_processed_list[listindex]
 		
-		for i,v in ipairs(worldlist.m_raw_worldlist) do
+		for i,v in ipairs(this.m_raw_list) do
 		
-			if worldlist.compare(v,entry) then
+			if this.m_compare_fct(v,entry) then
 				return i
 			end
 		end
@@ -84,16 +109,16 @@ function worldlist.get_engine_index(worldlistindex)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.get_current_index(worldlistindex)
-	assert(worldlist.m_processed_worldlist ~= nil)
+function filterlist.get_current_index(this,listindex)
+	assert(this.m_processed_list ~= nil)
 	
-	if worldlistindex ~= nil and worldlistindex > 0 and
-		worldlistindex <= #worldlist.m_raw_worldlist then
-		local entry = worldlist.m_raw_worldlist[worldlistindex]
+	if listindex ~= nil and listindex > 0 and
+		listindex <= #this.m_raw_list then
+		local entry = this.m_raw_list[listindex]
 		
-		for i,v in ipairs(worldlist.m_processed_worldlist) do
+		for i,v in ipairs(this.m_processed_list) do
 		
-			if worldlist.compare(v,entry) then
+			if this.m_compare_fct(v,entry) then
 				return i
 			end
 		end
@@ -103,37 +128,82 @@ function worldlist.get_current_index(worldlistindex)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.process()
-	assert(worldlist.m_raw_worldlist ~= nil)
+function filterlist.process(this)
+	assert(this.m_raw_list ~= nil)
 
-	if worldlist.m_sortmode == "none" and 
-	   worldlist.m_gamefilter == nil then
-		worldlist.m_processed_worldlist = worldlist.m_raw_worldlist
+	if this.m_sortmode == "none" and
+		this.m_filtercriteria == nil then
+		this.m_processed_list = this.m_raw_list
 		return
 	end
 	
-	worldlist.m_processed_worldlist = {}
+	this.m_processed_list = {}
 	
-	for i,v in ipairs(worldlist.m_raw_worldlist) do
+	for i,v in ipairs(this.m_raw_list) do
 	
-		if worldlist.m_gamefilter == nil or 
-			v.gameid == worldlist.m_gamefilter then
-			table.insert(worldlist.m_processed_worldlist,v)
+		if this.m_filtercriteria == nil or 
+			this.m_filter_fct(v,this.m_filtercriteria) then
+			table.insert(this.m_processed_list,v)
 		end
 	end
 	
-	if worldlist.m_sortmode == "none" then
+	if this.m_sortmode == "none" then
 		return
 	end
 	
-	if worldlist.m_sortmode == "alphabetic" then
-		worldlist.sort_alphabetic()
+	if this.m_sort_list[this.m_sortmode] ~= nil and 
+		type(this.m_sort_list[this.m_sortmode]) == "function" then
+		
+		this.m_sort_list[this.m_sortmode](this)
 	end
-
 end
 
 --------------------------------------------------------------------------------
-function worldlist.compare(world1,world2)
+function filterlist.size(this)
+	if this.m_processed_list == nil then
+		return 0
+	end
+	
+	return #this.m_processed_list
+end
+
+--------------------------------------------------------------------------------
+function filterlist.uid_exists_raw(this,uid)
+	for i,v in ipairs(this.m_raw_list) do
+		if this.m_uid_match_fct(v,uid) then
+			return true
+		end
+	end
+	return false
+end
+
+--------------------------------------------------------------------------------
+function filterlist.engine_index_by_uid(this, uid)
+	local elementcount = 0
+	local elementidx = 0
+	for i,v in ipairs(this.m_raw_list) do
+		if this.m_uid_match_fct(v,uid) then
+			elementcount = elementcount +1
+			elementidx = i
+		end
+	end
+	
+	
+	-- If there are more elements than one with same name uid can't decide which
+	-- one is meant. This shouldn't be possible but just for sure.
+	if elementcount > 1 then
+		elementidx=0
+	end
+
+	return elementidx
+end
+
+--------------------------------------------------------------------------------
+-- COMMON helper functions                                                    --
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+function compare_worlds(world1,world2)
 
 	if world1.path ~= world2.path then
 		return false
@@ -151,50 +221,9 @@ function worldlist.compare(world1,world2)
 end
 
 --------------------------------------------------------------------------------
-function worldlist.size()
-	if worldlist.m_processed_worldlist == nil then
-		return 0
-	end
-	
-	return #worldlist.m_processed_worldlist
-end
+function sort_worlds_alphabetic(this) 
 
---------------------------------------------------------------------------------
-function worldlist.exists(worldname)
-	for i,v in ipairs(worldlist.m_raw_worldlist) do
-		if v.name == worldname then
-			return true
-		end
-	end
-	return false
-end
-
-
---------------------------------------------------------------------------------
-function worldlist.engine_index_by_name(worldname)
-	local worldcount = 0
-	local worldidx = 0
-	for i,v in ipairs(worldlist.m_raw_worldlist) do
-		if v.name == worldname then
-			worldcount = worldcount +1
-			worldidx = i
-		end
-	end
-	
-	
-	-- If there are more worlds than one with same name we can't decide which
-	-- one is meant. This shouldn't be possible but just for sure.
-	if worldcount > 1 then
-		worldidx=0
-	end
-
-	return worldidx
-end
-
---------------------------------------------------------------------------------
-function worldlist.sort_alphabetic() 
-
-	table.sort(worldlist.m_processed_worldlist, function(a, b) 
+	table.sort(this.m_processed_list, function(a, b) 
 			local n1 = a.name 
 			local n2 = b.name 
 			local count = math.min(#n1, #n2) 
