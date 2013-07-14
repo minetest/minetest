@@ -55,8 +55,10 @@ minetest.register_entity("__builtin:falling_node", {
 		local bcn = minetest.get_node(bcp)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable then
-			if minetest.registered_nodes[bcn.name].buildable_to then
+				minetest.registered_nodes[bcn.name].walkable or
+				(minetest.get_node_group(self.node.name, "float") ~= 0 and minetest.registered_nodes[bcn.name].liquidtype ~= "none")
+			then
+			if minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
 			end
