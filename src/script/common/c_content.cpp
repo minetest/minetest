@@ -389,6 +389,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// the slowest possible
 	f.liquid_viscosity = getintfield_default(L, index,
 			"liquid_viscosity", f.liquid_viscosity);
+	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
+
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
 	getboolfield(L, index, "drowning", f.drowning);
 	// Amount of light the node emits

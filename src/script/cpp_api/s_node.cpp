@@ -50,6 +50,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_FLOWINGLIQUID, "flowingliquid"},
 		{CPT2_FACEDIR, "facedir"},
 		{CPT2_WALLMOUNTED, "wallmounted"},
+		{CPT2_LEVELED, "leveled"},
 		{0, NULL},
 	};
 
@@ -73,6 +74,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_REGULAR, "regular"},
 		{NODEBOX_FIXED, "fixed"},
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
+		{NODEBOX_LEVELED, "leveled"},
 		{0, NULL},
 	};
 

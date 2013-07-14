@@ -56,13 +56,15 @@ enum ContentParamType2
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
+	// Block level like FLOWINGLIQUID
+	CPT2_LEVELED,
 };
 
 enum LiquidType
 {
 	LIQUID_NONE,
 	LIQUID_FLOWING,
-	LIQUID_SOURCE
+	LIQUID_SOURCE,
 };
 
 enum NodeBoxType
@@ -70,6 +72,7 @@ enum NodeBoxType
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box(es)
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
+	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
 };
 
 struct NodeBox
@@ -207,6 +210,8 @@ struct ContentFeatures
 	bool buildable_to;
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
+	// Flowing liquid or snow, value = default level
+	u8 leveled;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
