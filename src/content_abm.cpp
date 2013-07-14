@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h" // For treegen::make_tree
 #include "main.h" // for g_settings
 #include "map.h"
+#include "cpp_api/scriptapi.h"
+#include "log.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -239,6 +241,135 @@ public:
 	}
 };
 
+class LiquidFreeze : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidFreeze(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("default:water_flowing");
+		s.insert("default:water_source");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		neighbors.insert("group:melts");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 50; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		
+		float heat = map->getHeat(env, p);
+		if (heat<-1 && (heat<-50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
+		content_t c_water_source = ndef->getId("default:water_source");
+		// todo: any block not water and not ignore
+		if (	   map->getNodeNoEx(p - v3s16(0,  1, 0 )).getContent() != c_water_source  // below
+			|| map->getNodeNoEx(p - v3s16(1,  0, 0 )).getContent() != c_water_source  // right
+			|| map->getNodeNoEx(p - v3s16(-1, 0, 0 )).getContent() != c_water_source  // left
+			|| map->getNodeNoEx(p - v3s16(0,  0, 1 )).getContent() != c_water_source  // back 
+			|| map->getNodeNoEx(p - v3s16(0,  0, -1)).getContent() != c_water_source  // front
+		) {
+			//errorstream<< "HE="<< heat << " R="<< ((myrand_range(-40, heat))<-30) <<std::endl;
+			n.setContent(n.getContent() == c_water_source ? ndef->getId("default:ice") : ndef->getId("default:snow"));
+			map->addNodeWithEvent(p, n);
+		    }
+		}
+	}
+};
+
+class LiquidMeltWeather : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidMeltWeather(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("group:melts");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("mapgen_air");
+		neighbors.insert("default:water_flowing");
+		neighbors.insert("default:water_source");
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 10; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		
+		float heat = map->getHeat(env, p); 
+		if (heat>1 && (heat>40 || ((myrand_range(heat, 40))>30))) {
+			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
+			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("default:water_flowing") : ndef->getId("default:water_source"));
+			map->addNodeWithEvent(p, n);
+			env->getScriptIface()->node_falling_update(p);
+		}
+	}
+};
+
+class LiquidMeltHot : public ActiveBlockModifier
+{
+private:
+
+public:
+	LiquidMeltHot(ServerEnvironment *env, INodeDefManager *nodemgr) 
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("group:melts");
+		return s;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		std::set<std::string> neighbors;
+		neighbors.insert("group:igniter");
+		neighbors.insert("default:torch");
+		neighbors.insert("default:furnace_active");
+		neighbors.insert("group:hot");
+		neighbors.insert("default:water_flowing"); // todo: lower chance
+		return neighbors; 
+	}
+	virtual float getTriggerInterval()
+	{ return 2.0; }
+	virtual u32 getTriggerChance()
+	{ return 2; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+	{
+		ServerMap *map = &env->getServerMap();
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("default:water_flowing") : ndef->getId("default:water_source"));
+		map->addNodeWithEvent(p, n);
+		env->getScriptIface()->node_falling_update(p);
+	}
+};
+
+
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 {
 	env->addActiveBlockModifier(new GrowGrassABM());
@@ -247,5 +378,10 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
+		env->addActiveBlockModifier(new LiquidMeltHot(env, nodedef));
+		if (g_settings->getBool("weather")) {
+			env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
+			env->addActiveBlockModifier(new LiquidMeltWeather(env, nodedef));
+		}
 	}
 }

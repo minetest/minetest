@@ -212,6 +212,7 @@ struct MapNode
 
 	/* Liquid helpers */
 	u8 getLevel(INodeDefManager *nodemgr) const;
+	u8 addLevel(INodeDefManager *nodemgr, u8 add = 1);
 
 	/*
 		Serialization functions

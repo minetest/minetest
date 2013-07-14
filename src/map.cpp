@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen_v6.h"
 #include "mapgen_indev.h"
+#include "biome.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -3860,7 +3861,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 				<<" (SerializationError). "
 				<<"what()="<<e.what()
 				<<std::endl;
-				//" Ignoring. A new one will be generated.
+				// Ignoring. A new one will be generated.
 		assert(0);
 
 		// TODO: Backup file; name is in fullpath.
@@ -4035,6 +4036,49 @@ void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
 }
+
+float ServerMap::getHeat(ServerEnvironment *env, v3s16 p)
+{
+    float heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->m_game_time/10, p.Z, m_emerge->params->seed);
+    //errorstream<<" gt="<<env->m_game_time<<" hadd="<<int((p.Y / -333))<<"heat="<<heat<<std::endl;
+    heat += (p.Y / -333); // upper=colder, lower=hotter
+    // todo: -5 at night, +5 at sun
+    return heat;
+}
+
+float ServerMap::getHumidity(ServerEnvironment *env, v3s16 p)
+{
+    float humidity = NoisePerlin3D(m_emerge->biomedef->np_humidity, p.X, env->m_game_time/10, p.Z, m_emerge->params->seed);
+    return humidity;
+}
+
+u8 ServerMap::getRain(ServerEnvironment *env, v3s16 p)
+{
+    float heat = getHeat(env, p);
+    if (heat<0) return 0;
+    float humidity = getHumidity(env, p);
+    if (humidity>90) return 1; // todo strength 0..255
+    return 0;
+}
+
+u8 ServerMap::getSnow(ServerEnvironment *env, v3s16 p)
+{
+    float heat = getHeat(env, p);
+    if (heat>0) return 0;
+    float humidity = getHumidity(env, p);
+    if (humidity>90) return 1; // todo strength 0..255
+    return 0;
+}
+
+u8 ServerMap::getFog(ServerEnvironment *env, v3s16 p)
+{
+    float heat = getHeat(env, p);
+    if (heat>-2 || heat<15) return 0;
+    float humidity = getHumidity(env, p);
+    if (humidity>60) return 1; // todo strength 0..255
+    return 0;
+}
+
 
 /*
 	MapVoxelManipulator

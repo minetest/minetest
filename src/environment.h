@@ -303,6 +303,10 @@ public:
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
+	// Time from the beginning of the game in seconds.
+	// Incremented in step().
+	u32 m_game_time;
+
 private:
 
 	/*
@@ -369,9 +373,6 @@ private:
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	int m_active_block_interval_overload_skip;
-	// Time from the beginning of the game in seconds.
-	// Incremented in step().
-	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
 	std::list<ABMWithState> m_abms;

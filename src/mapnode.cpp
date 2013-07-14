@@ -377,6 +377,34 @@ u8 MapNode::getLevel(INodeDefManager *nodemgr) const
 	return 0;
 }
 
+u8 MapNode::addLevel(INodeDefManager *nodemgr, u8 add)
+{
+	u8 level = getLevel(nodemgr);
+	u8 rest = 0;
+	if (add == 0) level = 1;
+	level += add;
+	const ContentFeatures &f = nodemgr->get(*this);
+	if (f.param_type_2 == CPT2_FLOWINGLIQUID || f.liquid_type == LIQUID_FLOWING || f.liquid_type == LIQUID_SOURCE) {
+		if (level > LIQUID_LEVEL_MAX) {
+			rest = LIQUID_LEVEL_MAX - level;
+		}
+		if (level == LIQUID_LEVEL_MAX) {
+			setContent(nodemgr->getId(f.liquid_alternative_source));
+		} else {
+			setContent(nodemgr->getId(f.liquid_alternative_flowing));
+		}
+		setParam2(level & LIQUID_LEVEL_MASK);
+		return rest;
+	} else if (f.leveled || f.param_type_2 == CPT2_LEVELED) {
+		if (level > LEVELED_MAX) {
+			rest = LEVELED_MAX - level;
+		}
+		setParam2(level & LEVELED_MASK);
+		return rest;
+	}
+	return 0;
+}
+
 u32 MapNode::serializedLength(u8 version)
 {
 	if(!ser_ver_supported(version))

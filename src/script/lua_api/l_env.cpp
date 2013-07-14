@@ -263,6 +263,35 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	return 1;
 }
 
+// minetest.get_node_level(pos)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_get_node_level(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = env->getMap().getNodeNoEx(pos);
+	lua_pushnumber(L, n.getLevel(env->getGameDef()->ndef()));
+	return 1;
+}
+
+// minetest.add_node_level(pos, level)
+// pos = {x=num, y=num, z=num}
+// level: 0..8
+int ModApiEnvMod::l_add_node_level(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	u8 level = 1;
+	if(lua_isnumber(L, 2))
+		level =  lua_tonumber(L, 2);
+	MapNode n = env->getMap().getNodeNoEx(pos);
+	lua_pushnumber(L, n.addLevel(env->getGameDef()->ndef(), level));
+	return 1;
+}
+
+
 // minetest.get_meta(pos)
 int ModApiEnvMod::l_get_meta(lua_State *L)
 {
@@ -820,6 +849,17 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	return 1;
 }
 
+
+// minetest.transforming_liquid_add(pos)
+int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 p0 = read_v3s16(L, 1);
+	env->getMap().transforming_liquid_add(p0);
+	return 1;
+}
+
 bool ModApiEnvMod::Initialize(lua_State *L,int top)
 {
 
@@ -835,6 +875,8 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(place_node);
 	retval &= API_FCT(dig_node);
 	retval &= API_FCT(punch_node);
+	retval &= API_FCT(get_node_level);
+	retval &= API_FCT(add_node_level);
 	retval &= API_FCT(add_entity);
 	retval &= API_FCT(get_meta);
 	retval &= API_FCT(get_node_timer);
@@ -853,6 +895,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(spawn_tree);
 	retval &= API_FCT(find_path);
 	retval &= API_FCT(line_of_sight);
+	retval &= API_FCT(transforming_liquid_add);
 
 	return retval;
 }
