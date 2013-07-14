@@ -273,7 +273,7 @@ public:
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		
 		float heat = map->getHeat(env, p);
-		if (heat<0 && (heat<50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
+		if (heat<-1 && (heat<-50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
 		content_t c_water_source = ndef->getId("default:water_source");
 		// todo: any block not water and not ignore
 		if (	   map->getNodeNoEx(p - v3s16(0,  1, 0 )).getContent() != c_water_source  // below
@@ -322,7 +322,7 @@ public:
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		
 		float heat = map->getHeat(env, p); 
-		if (heat>0 && (heat>40 || ((myrand_range(heat, 40))>30))) {
+		if (heat>1 && (heat>40 || ((myrand_range(heat, 40))>30))) {
 			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
 			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("default:water_flowing") : ndef->getId("default:water_source"));
 			map->addNodeWithEvent(p, n);

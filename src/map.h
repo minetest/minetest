@@ -487,6 +487,9 @@ public:
 
 	float getHeat(ServerEnvironment *env, v3s16 p);
 	float getHumidity(ServerEnvironment *env, v3s16 p);
+	u8 getRain(ServerEnvironment *env, v3s16 p);
+	u8 getSnow(ServerEnvironment *env, v3s16 p);
+	u8 getFog(ServerEnvironment *env, v3s16 p);
 
 private:
 	// Seed used for all kinds of randomness in generation

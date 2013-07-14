@@ -67,6 +67,14 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_punch_node(lua_State *L);
 
+	// minetest.get_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_level(lua_State *L);
+
+	// minetest.add_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_node_level(lua_State *L);
+
 	// minetest.get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
