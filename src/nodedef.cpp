@@ -454,6 +454,7 @@ public:
 		result = i->second;
 		return true;
 	}
+	// returns CONTENT_IGNORE if not found
 	virtual content_t getId(const std::string &name) const
 	{
 		content_t id = CONTENT_IGNORE;
