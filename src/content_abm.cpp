@@ -252,8 +252,8 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		std::set<std::string> s;
-		s.insert("water_flowing");
-		s.insert("water_source");
+		s.insert("default:water_flowing");
+		s.insert("default:water_source");
 		return s;
 	}
 	virtual std::set<std::string> getRequiredNeighbors()
@@ -266,7 +266,7 @@ public:
 	virtual float getTriggerInterval()
 	{ return 10.0; }
 	virtual u32 getTriggerChance()
-	{ return 100; }
+	{ return 50; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
@@ -274,9 +274,18 @@ public:
 		
 		float heat = map->getHeat(env, p);
 		if (heat<0 && (heat<50 || ((myrand_range(-50, heat))<-40))) { //heater = rare
+		content_t c_water_source = ndef->getId("default:water_source");
+		// todo: any block not water and not ignore
+		if (	   map->getNodeNoEx(p - v3s16(0,  1, 0 )).getContent() != c_water_source  // below
+			|| map->getNodeNoEx(p - v3s16(1,  0, 0 )).getContent() != c_water_source  // right
+			|| map->getNodeNoEx(p - v3s16(-1, 0, 0 )).getContent() != c_water_source  // left
+			|| map->getNodeNoEx(p - v3s16(0,  0, 1 )).getContent() != c_water_source  // back 
+			|| map->getNodeNoEx(p - v3s16(0,  0, -1)).getContent() != c_water_source  // front
+		) {
 			//errorstream<< "HE="<< heat << " R="<< ((myrand_range(-40, heat))<-30) <<std::endl;
-			n.setContent(n.getContent() == ndef->getId("water_source") ? ndef->getId("default:ice") : ndef->getId("default:snow"));
+			n.setContent(n.getContent() == c_water_source ? ndef->getId("default:ice") : ndef->getId("default:snow"));
 			map->addNodeWithEvent(p, n);
+		    }
 		}
 	}
 };
@@ -299,14 +308,14 @@ public:
 	{
 		std::set<std::string> neighbors;
 		neighbors.insert("mapgen_air");
-		neighbors.insert("water_flowing");
-		neighbors.insert("water_source");
+		neighbors.insert("default:water_flowing");
+		neighbors.insert("default:water_source");
 		return neighbors; 
 	}
 	virtual float getTriggerInterval()
 	{ return 10.0; }
 	virtual u32 getTriggerChance()
-	{ return 30; }
+	{ return 10; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		ServerMap *map = &env->getServerMap();
@@ -315,7 +324,7 @@ public:
 		float heat = map->getHeat(env, p); 
 		if (heat>0 && (heat>40 || ((myrand_range(heat, 40))>30))) {
 			//errorstream<< "ME="<< heat << " R="<< (((myrand_range(heat, 40))>30)) <<std::endl;
-			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
+			n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("default:water_flowing") : ndef->getId("default:water_source"));
 			map->addNodeWithEvent(p, n);
 			env->getScriptIface()->node_falling_update(p);
 		}
@@ -343,6 +352,7 @@ public:
 		neighbors.insert("default:torch");
 		neighbors.insert("default:furnace_active");
 		neighbors.insert("group:hot");
+		neighbors.insert("default:water_flowing"); // todo: lower chance
 		return neighbors; 
 	}
 	virtual float getTriggerInterval()
@@ -353,7 +363,7 @@ public:
 	{
 		ServerMap *map = &env->getServerMap();
 		INodeDefManager *ndef = env->getGameDef()->ndef();
-		n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("water_flowing") : ndef->getId("water_source"));
+		n.setContent(n.getContent() == ndef->getId("default:snow") ? ndef->getId("default:water_flowing") : ndef->getId("default:water_source"));
 		map->addNodeWithEvent(p, n);
 		env->getScriptIface()->node_falling_update(p);
 	}
