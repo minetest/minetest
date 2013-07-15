@@ -7,7 +7,7 @@ mt_color_blue  = "#0000DD"
 mt_color_green = "#00DD00"
 mt_color_dark_green = "#003300"
 
-dofile(scriptpath .. DIR_DELIM .. "mainmenu_worldlist.lua")
+dofile(scriptpath .. DIR_DELIM .. "filterlist.lua")
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
 dofile(scriptpath .. DIR_DELIM .. "modstore.lua")
 dofile(scriptpath .. DIR_DELIM .. "gamemgr.lua")
@@ -430,7 +430,7 @@ function menu.handle_key_up_down(fields,textlist,settingname)
 		if oldidx > 1 then
 			local newidx = oldidx -1
 			engine.setting_set(settingname,
-				filterlist.get_engine_index(worldlist,newidx))
+				filterlist.get_raw_index(worldlist,newidx))
 		end
 	end
 	
@@ -440,7 +440,7 @@ function menu.handle_key_up_down(fields,textlist,settingname)
 		if oldidx < filterlist.size(worldlist) then
 			local newidx = oldidx + 1
 			engine.setting_set(settingname,
-				filterlist.get_engine_index(worldlist,newidx))
+				filterlist.get_raw_index(worldlist,newidx))
 		end
 	end
 end
@@ -618,7 +618,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 				
 				filterlist.refresh(worldlist)
 				engine.setting_set("mainmenu_last_selected_world",
-									filterlist.engine_index_by_uid(worldlist,worldname))
+									filterlist.raw_index_by_uid(worldlist,worldname))
 			end
 		else
 			gamedata.errormessage = "No worldname given or no game selected"
@@ -789,7 +789,7 @@ function tabbuilder.handle_server_buttons(fields)
 		end
 		if event.typ == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
-				filterlist.get_engine_index(worldlist,engine.get_textlist_index("srv_worlds")))
+				filterlist.get_raw_index(worldlist,engine.get_textlist_index("srv_worlds")))
 		end
 	end
 	
@@ -816,7 +816,7 @@ function tabbuilder.handle_server_buttons(fields)
 			gamedata.password		= fields["te_passwd"]
 			gamedata.port			= fields["te_serverport"]
 			gamedata.address		= ""
-			gamedata.selected_world	= filterlist.get_engine_index(worldlist,selected)
+			gamedata.selected_world	= filterlist.get_raw_index(worldlist,selected)
 			
 			menu.update_last_game(gamedata.selected_world)
 			engine.start()
@@ -837,7 +837,7 @@ function tabbuilder.handle_server_buttons(fields)
 			if world ~= nil and
 				world.name ~= nil and
 				world.name ~= "" then
-				menu.world_to_del = filterlist.get_engine_index(worldlist,selected)
+				menu.world_to_del = filterlist.get_raw_index(worldlist,selected)
 				tabbuilder.current_tab = "dialog_delete_world"
 				tabbuilder.is_dialog = true
 				tabbuilder.show_buttons = false
@@ -850,7 +850,7 @@ function tabbuilder.handle_server_buttons(fields)
 	if fields["world_configure"] ~= nil then
 		selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 then
-			modmgr.world_config_selected_world = filterlist.get_engine_index(worldlist,selected)
+			modmgr.world_config_selected_world = filterlist.get_raw_index(worldlist,selected)
 			if modmgr.init_worldconfig() then
 				tabbuilder.current_tab = "dialog_configure_world"
 				tabbuilder.is_dialog = true
@@ -930,7 +930,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		
 		if event.typ == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
-				filterlist.get_engine_index(worldlist,engine.get_textlist_index("sp_worlds")))
+				filterlist.get_raw_index(worldlist,engine.get_textlist_index("sp_worlds")))
 		end
 	end
 	
@@ -949,7 +949,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 		fields["key_enter"] then
 		local selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 then
-			gamedata.selected_world	= filterlist.get_engine_index(worldlist,selected)
+			gamedata.selected_world	= filterlist.get_raw_index(worldlist,selected)
 			gamedata.singleplayer	= true
 			
 			menu.update_last_game(gamedata.selected_world)
@@ -972,7 +972,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 			if world ~= nil and
 				world.name ~= nil and
 				world.name ~= "" then
-				menu.world_to_del = filterlist.get_engine_index(worldlist,selected)
+				menu.world_to_del = filterlist.get_raw_index(worldlist,selected)
 				tabbuilder.current_tab = "dialog_delete_world"
 				tabbuilder.is_dialog = true
 				tabbuilder.show_buttons = false
@@ -985,7 +985,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	if fields["world_configure"] ~= nil then
 		selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 then
-			modmgr.world_config_selected_world = filterlist.get_engine_index(worldlist,selected)
+			modmgr.world_config_selected_world = filterlist.get_raw_index(worldlist,selected)
 			if modmgr.init_worldconfig() then
 				tabbuilder.current_tab = "dialog_configure_world"
 				tabbuilder.is_dialog = true
