@@ -257,6 +257,8 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("mgmath_generator", "mandelbox");
 
+	settings->setDefault("curl_timeout", "5000");
+
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
