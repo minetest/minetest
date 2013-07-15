@@ -44,6 +44,9 @@ function render_favourite(spec,render_details)
 		return text
 	end
 	
+
+
+	
 	local details = ""
 	if spec.password == true then
 		details = details .. "*"
@@ -68,9 +71,17 @@ function render_favourite(spec,render_details)
 	else
 		details = details .. "_"
 	end
-	details = details .. "  "
+	details = details .. " "
 	
-	return fs_escape_string(details) .. text
+	local playercount = ""
+	
+	if spec.clients ~= nil and
+		spec.clients_max ~= nil then
+		playercount = string.format("%03d",spec.clients) .. "/" ..
+						string.format("%03d",spec.clients_max) .. " "
+	end
+	
+	return playercount .. fs_escape_string(details) ..  text
 end
 
 --------------------------------------------------------------------------------

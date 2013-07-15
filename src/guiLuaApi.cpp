@@ -556,7 +556,7 @@ int guiLuaApi::l_get_favorites(lua_State *L)
 
 		if (servers[i]["clients_max"].asString().size()) {
 
-			const char* clients_max_raw = servers[i]["clients"].asString().c_str();
+			const char* clients_max_raw = servers[i]["clients_max"].asString().c_str();
 			char* endptr = 0;
 			int numbervalue = strtol(clients_max_raw,&endptr,10);
 
