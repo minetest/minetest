@@ -90,7 +90,7 @@ function filterlist.get_raw_element(this,idx)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_engine_index(this,listindex)
+function filterlist.get_raw_index(this,listindex)
 	assert(this.m_processed_list ~= nil)
 	
 	if listindex ~= nil and listindex > 0 and
@@ -177,7 +177,7 @@ function filterlist.uid_exists_raw(this,uid)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.engine_index_by_uid(this, uid)
+function filterlist.raw_index_by_uid(this, uid)
 	local elementcount = 0
 	local elementidx = 0
 	for i,v in ipairs(this.m_raw_list) do

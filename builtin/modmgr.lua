@@ -973,7 +973,7 @@ function modmgr.mod_exists(basename)
 		modmgr.refresh_globals()
 	end
 
-	if filterlist.engine_index_by_uid(modmgr.global_mods,basename) > 0 then
+	if filterlist.raw_index_by_uid(modmgr.global_mods,basename) > 0 then
 		return true
 	end
 	
