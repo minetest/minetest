@@ -2,6 +2,11 @@ os.setlocale("C", "numeric")
 
 local scriptpath = engine.get_scriptdir()
 
+mt_color_grey  = "#AAAAAA"
+mt_color_blue  = "#0000DD"
+mt_color_green = "#00DD00"
+mt_color_dark_green = "#003300"
+
 dofile(scriptpath .. DIR_DELIM .. "mainmenu_worldlist.lua")
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
 dofile(scriptpath .. DIR_DELIM .. "modstore.lua")
@@ -27,6 +32,12 @@ function render_favourite(spec,render_details)
 		if spec.address ~= nil then
 			text = text .. spec.address:trim()
 		end
+	end
+	
+	if spec.port ~= nil and
+		spec.port ~= 30000 then
+		
+		text = text .. ":" .. spec.port
 	end
 	
 	if not render_details then
