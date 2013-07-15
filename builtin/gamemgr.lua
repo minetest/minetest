@@ -108,13 +108,15 @@ function gamemgr.handle_edit_game_buttons(fields)
 	if fields["btn_add_mod_to_game"] ~= nil then
 		local modindex = engine.get_textlist_index("mods_available")
 		
-		if modindex > 0 and
-			modindex <= #modmgr.global_mods then
+		local mod = modmgr.get_global_mod(modindex)
+		if mod ~= nil then
 			
-			local sourcepath = 
-				engine.get_modpath() .. DIR_DELIM .. modmgr.global_mods[modindex]
+			local sourcepath = mod.path
 			
-			gamemgr.add_mod(current_game,sourcepath)
+			if not gamemgr.add_mod(current_game,sourcepath) then
+				gamedata.errormessage = "Gamemgr: Unable to copy mod: " .. 
+									mod.name .. " to game: " .. current_game.id
+			end
 		end
 	end
 	
@@ -128,8 +130,10 @@ function gamemgr.add_mod(gamespec,sourcepath)
 		
 		local modname = get_last_folder(sourcepath)
 		
-		engine.copy_dir(sourcepath,gamespec.gamemods_path .. DIR_DELIM .. modname);
+		return engine.copy_dir(sourcepath,gamespec.gamemods_path .. DIR_DELIM .. modname);
 	end
+	
+	return false
 end
 
 --------------------------------------------------------------------------------
@@ -141,16 +145,10 @@ function gamemgr.delete_mod(gamespec,modindex)
 		
 		if modindex > 0 and
 			#game_mods >= modindex then
-			
-			local modname = game_mods[modindex]
-	
-			if modname:find("<MODPACK>") ~= nil then
-				modname = modname:sub(0,modname:find("<") -2)
-			end
 
-			local modpath = gamespec.gamemods_path .. DIR_DELIM .. modname
-			if modpath:sub(0,gamespec.gamemods_path:len()) == gamespec.gamemods_path then
-				engine.delete_dir(modpath)
+			if game_mods[modindex].path:sub(0,gamespec.gamemods_path:len()) 
+					== gamespec.gamemods_path then
+				engine.delete_dir(game_mods[modindex].path)
 			end
 		end
 	end
@@ -170,7 +168,7 @@ function gamemgr.get_game_mods(gamespec)
 			if retval ~= "" then
 				retval = retval..","
 			end
-			retval = retval .. game_mods[i]
+			retval = retval .. game_mods[i].name
 		end 
 	end
 	return retval
@@ -250,7 +248,7 @@ function gamemgr.dialog_edit_game()
 			
 		retval = retval .. 
 			"textlist[7,0.5;4.5,4.3;mods_available;"
-			.. modmgr.get_mods_list() .. ";0]"
+			.. modmgr.render_modlist() .. ";0]"
 
 		retval = retval ..
 			"button[0.55,4.95;4.7,0.5;btn_remove_mod_from_game;Remove selected mod]"
