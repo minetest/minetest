@@ -5,12 +5,12 @@ filterlist = {}
 
 --------------------------------------------------------------------------------
 function filterlist.refresh(this)
-	this.m_raw_list = this.m_raw_list_fct()
+	this.m_raw_list = this.m_raw_list_fct(this.m_fetch_param)
 	filterlist.process(this)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct)
+function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_param)
 
 	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
 	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
@@ -23,14 +23,13 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct)
 	this.m_uid_match_fct = uid_match_fct
 	
 	this.m_filtercriteria = nil
+	this.m_fetch_param = fetch_param
 	
 	this.m_sortmode = "none"
 	this.m_sort_list = {}
-	
-	
 
 	this.m_processed_list = nil
-	this.m_raw_list = this.m_raw_list_fct()
+	this.m_raw_list = this.m_raw_list_fct(this.m_fetch_param)
 
 	filterlist.process(this)
 	
@@ -44,7 +43,8 @@ end
 
 --------------------------------------------------------------------------------
 function filterlist.set_filtercriteria(this,criteria)
-	if criteria == this.m_filtercriteria then
+	if criteria == this.m_filtercriteria and
+		type(criteria) ~= "table" then
 		return
 	end
 	this.m_filtercriteria = criteria
@@ -139,8 +139,7 @@ function filterlist.process(this)
 	
 	this.m_processed_list = {}
 	
-	for i,v in ipairs(this.m_raw_list) do
-	
+	for k,v in pairs(this.m_raw_list) do
 		if this.m_filtercriteria == nil or 
 			this.m_filter_fct(v,this.m_filtercriteria) then
 			table.insert(this.m_processed_list,v)

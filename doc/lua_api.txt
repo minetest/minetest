@@ -997,6 +997,13 @@ dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ index of currently selected dropdown item
 ^ color in hexadecimal format RRGGBB
 
+checkbox[<X>,<Y>;<name>;<label>;<selected>]
+^ show a checkbox
+^ x and y position of checkbox
+^ name fieldname data is transfered to lua
+^ label to be shown left of checkbox
+^ selected (optional) true/false
+
 Note: do NOT use a element name starting with "key_" those names are reserved to
 pass key press events to formspec! 
 

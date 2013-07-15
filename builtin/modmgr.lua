@@ -16,27 +16,31 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-function get_mods(path,retval,basefolder)
+function get_mods(path,retval,modpack)
 
 	local mods = engine.get_dirlist(path,true)
-			
 	for i=1,#mods,1 do
-		local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
-		local modpackfile,error = io.open(filename,"r")
+		local toadd = {}
+		local modpackfile = nil
 		
-		local name = mods[i]
-		if basefolder ~= nil and
-			basefolder ~= "" then
-			name = basefolder .. DIR_DELIM .. mods[i]
+		toadd.name		= mods[i]
+		toadd.path		= path .. DIR_DELIM .. mods[i] .. DIR_DELIM
+		if modpack ~= nil and
+			modpack ~= "" then
+			toadd.modpack	= modpack
+		else
+			local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
+			local error = nil
+			modpackfile,error = io.open(filename,"r")
 		end
 			
 		if modpackfile ~= nil then
 			modpackfile:close()
-			table.insert(retval,name .. " <MODPACK>")
-			get_mods(path .. DIR_DELIM .. name,retval,name)
+			toadd.is_modpack = true
+			table.insert(retval,toadd)
+			get_mods(path .. DIR_DELIM .. mods[i],retval,mods[i])
 		else
-
-			table.insert(retval,name)
+			table.insert(retval,toadd)
 		end
 	end
 end
@@ -175,49 +179,6 @@ function modmgr.parse_dofile_line(modpath,line)
 end
 
 --------------------------------------------------------------------------------
-function modmgr.update_global_mods()
-	local modpath = engine.get_modpath()
-	modmgr.global_mods = {}
-	if modpath ~= nil and
-		modpath ~= "" then
-		get_mods(modpath,modmgr.global_mods)
-	end
-end
-
---------------------------------------------------------------------------------
-function modmgr.get_mods_list()
-	local toadd = ""
-	
-	modmgr.update_global_mods()
-	
-	if modmgr.global_mods ~= nil then
-		for i=1,#modmgr.global_mods,1 do
-			if toadd ~= "" then
-				toadd = toadd..","
-			end
-			toadd = toadd .. modmgr.global_mods[i]
-		end 
-	end
-	
-	return toadd
-end
-
---------------------------------------------------------------------------------
-function modmgr.mod_exists(basename)
-	modmgr.update_global_mods()
-	
-	if modmgr.global_mods ~= nil then
-		for i=1,#modmgr.global_mods,1 do
-			if modmgr.global_mods[i] == basename then
-				return true
-			end
-		end
-	end
-	
-	return false
-end
-
---------------------------------------------------------------------------------
 function modmgr.identify_modname(modpath,filename)
 	local testfile = io.open(modpath .. DIR_DELIM .. filename,"r")
 	if testfile ~= nil then
@@ -258,6 +219,11 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.tab()
+
+	if modmgr.global_mods == nil then
+		modmgr.refresh_globals()
+	end
+
 	if modmgr.selected_mod == nil then
 		modmgr.selected_mod = 1
 	end
@@ -266,28 +232,29 @@ function modmgr.tab()
 		"vertlabel[0,-0.25;MODS]" ..
 		"label[0.8,-0.25;Installed Mods:]" ..
 		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
-		modmgr.get_mods_list() .. 
+		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
 		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;Install]" ..
 		"button[3,4.85;2,0.5;btn_mod_mgr_download;Download]"
 		
-	if #modmgr.global_mods >= modmgr.selected_mod and
-		modmgr.global_mods[modmgr.selected_mod]:find("<MODPACK>") then
-		retval = retval .. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;Rename]"
+	local selected_mod = nil
+		
+	if filterlist.size(modmgr.global_mods) >= modmgr.selected_mod then
+		selected_mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	end
 	
-	if #modmgr.global_mods >= modmgr.selected_mod then
-		local modpath = engine.get_modpath()
-		--show dependencys
-		if modmgr.global_mods[modmgr.selected_mod]:find("<MODPACK>") == nil then
+	if selected_mod ~= nil then
+		if selected_mod.is_modpack then
+			retval = retval .. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;Rename]"
+		else
+		--show dependencies
 			retval = retval .. 
 				"label[6,1.9;Depends:]" ..
 				"textlist[6,2.4;5.7,2;deplist;"
 				
-			toadd = modmgr.get_dependencys(modpath .. DIR_DELIM .. 
-						modmgr.global_mods[modmgr.selected_mod])
+			toadd = modmgr.get_dependencies(selected_mod.path)
 			
 			retval = retval .. toadd .. ";0;true,false]"
 			
@@ -302,13 +269,12 @@ end
 --------------------------------------------------------------------------------
 function modmgr.dialog_rename_modpack()
 
-	local modname = modmgr.global_mods[modmgr.selected_mod]
-	modname = modname:sub(0,modname:find("<") -2)
+	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
 	
 	local retval = 
 		"label[1.75,1;Rename Modpack:]"..
 		"field[4.5,1.4;6,0.5;te_modpack_name;;" ..
-		modname ..
+		mod.name ..
 		"]" ..
 		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;Accept]" ..
 		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;Cancel]"
@@ -318,10 +284,7 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.precheck()
-	if modmgr.global_mods == nil then
-		modmgr.update_global_mods()
-	end
-	
+
 	if modmgr.world_config_selected_world == nil then
 		modmgr.world_config_selected_world = 1
 	end
@@ -333,53 +296,61 @@ function modmgr.precheck()
 	if modmgr.hide_gamemods == nil then
 		modmgr.hide_gamemods = true
 	end
-end
-
---------------------------------------------------------------------------------
-function modmgr.get_worldmod_idx()
-	if not modmgr.hide_gamemods then
-		return modmgr.world_config_selected_mod - #modmgr.worldconfig.game_mods
-	else
-		return modmgr.world_config_selected_mod
+	
+	if modmgr.hide_modpackcontents == nil then
+		modmgr.hide_modpackcontents = true
 	end
 end
 
 --------------------------------------------------------------------------------
-function modmgr.is_gamemod()
-	if not modmgr.hide_gamemods then
-		if modmgr.world_config_selected_mod <= #modmgr.worldconfig.game_mods then
-			return true
-		else
-			return false
-		end
-	else
-		return false
-	end
-end
-
---------------------------------------------------------------------------------
-function modmgr.render_worldmodlist()
+function modmgr.render_modlist(render_list)
 	local retval = ""
 	
-	for i=1,#modmgr.global_mods,1 do
-		local parts = modmgr.global_mods[i]:split(DIR_DELIM)
-		local shortname = parts[#parts]
-		if modmgr.worldconfig.global_mods[shortname] then
-			retval = retval .. "#22F922" .. modmgr.global_mods[i] .. ","
-		else
-			retval = retval .. modmgr.global_mods[i] .. ","
+	if render_list == nil then
+		if modmgr.global_mods == nil then
+			modmgr.refresh_globals()
 		end
+		render_list = modmgr.global_mods
 	end
 	
-	return retval
-end
-
---------------------------------------------------------------------------------
-function modmgr.render_gamemodlist()
-	local retval = ""
-	for i=1,#modmgr.worldconfig.game_mods,1 do
-		retval = retval ..
-			"#0000FF" .. modmgr.worldconfig.game_mods[i] .. ","
+	local list = filterlist.get_list(render_list)
+	local last_modpack = nil
+	
+	for i,v in ipairs(list) do
+		if retval ~= "" then
+			retval = retval ..","
+		end
+		
+		if v.is_modpack then
+			local rawlist = filterlist.get_raw_list(render_list)
+			
+			local all_enabled = true
+			for j=1,#rawlist,1 do
+				if rawlist[j].modpack == list[i].name and
+					rawlist[j].enabled ~= true then
+						all_enabled = false
+						break
+				end
+			end
+			
+			if all_enabled == false then
+				retval = retval .. mt_color_grey
+			else
+				retval = retval .. mt_color_dark_green
+			end
+		end
+		
+		if v.typ == "game_mod" then
+			retval = retval .. mt_color_blue
+		else
+			if v.enabled then
+				retval = retval .. mt_color_green
+			end
+		end
+		if v.modpack  ~= nil then
+			retval = retval .. "    "
+		end
+		retval = retval .. v.name
 	end
 	
 	return retval
@@ -389,82 +360,43 @@ end
 function modmgr.dialog_configure_world()
 	modmgr.precheck()
 	
-	local modpack_selected = false
-	local gamemod_selected = modmgr.is_gamemod()
-	local modname = ""
-	local modfolder = ""
-	local shortname = ""
-	
-	if not gamemod_selected then
-		local worldmodidx = modmgr.get_worldmod_idx()
-		modname = modmgr.global_mods[worldmodidx]
-
-		if modname ~= nil then
-		
-			if modname:find("<MODPACK>") ~= nil then
-				modname = modname:sub(0,modname:find("<") -2)
-				modpack_selected = true
-			end
-		
-			local parts = modmgr.global_mods[worldmodidx]:split(DIR_DELIM)
-			shortname = parts[#parts]
-		
-			modfolder = engine.get_modpath() .. DIR_DELIM .. modname
-		else
-			modname = ""
-		end
-	end
-
 	local worldspec = engine.get_worlds()[modmgr.world_config_selected_world]
+	local mod = filterlist.get_list(modmgr.modlist)[modmgr.world_config_selected_mod]
 	
 	local retval =
 		"size[11,6.5]" ..
 		"label[1.5,-0.25;World: " .. worldspec.name .. "]"
 		
 	if modmgr.hide_gamemods then
-		retval = retval .. "checkbox[5.5,6.15;cb_hide_gamemods;Hide Game;true]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;true]"
 	else
-		retval = retval .. "checkbox[5.5,6.15;cb_hide_gamemods;Hide Game;false]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;false]"
+	end
+	
+	if modmgr.hide_modpackcontents then
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;true]"
+	else
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;false]"
+	end
+	
+	if mod == nil then
+		mod = {name=""}
 	end
 	retval = retval ..
+		"label[0,0.45;Mod:]" ..
+		"label[0.75,0.45;" .. mod.name .. "]" ..
+		"label[0,1;Depends:]" ..
+		"textlist[0,1.5;5,4.25;world_config_depends;" ..
+		modmgr.get_dependencies(mod.path) .. ";0]" ..
 		"button[9.25,6.35;2,0.5;btn_config_world_save;Save]" ..
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]" ..
-		"textlist[5.5,-0.25;5.5,6.5;world_config_modlist;"
+		"button[5.5,-0.125;5.75,0.5;btn_all_mods;Enable all Mods]" ..
+		"textlist[5.5,0.5;5.5,5.75;world_config_modlist;"
 		
 
-	if not modmgr.hide_gamemods then
-		retval = retval .. modmgr.render_gamemodlist()
-	end
-	
-	retval = retval .. modmgr.render_worldmodlist()	
+	retval = retval .. modmgr.render_modlist(modmgr.modlist)
 
 	retval = retval .. ";" .. modmgr.world_config_selected_mod .."]"
-	
-	if not gamemod_selected then
-		retval = retval ..
-			"label[0,0.45;Mod:]" ..
-			"label[0.75,0.45;" .. modname .. "]" ..
-			"label[0,1.5;Depends:]" ..
-			"textlist[0,2;5,4.25;world_config_depends;" ..
-			modmgr.get_dependencys(modfolder) .. ";0]"
-	
-		if modpack_selected then
-			retval = retval ..
-				"button[-0.05,1.05;2,0.5;btn_cfgw_enable_all;Enable All]" ..
-				"button[3.25,1.05;2,0.5;btn_cfgw_disable_all;Disable All]"
-		else
-			retval = retval .. 
-				"checkbox[0,0.8;cb_mod_enabled;enabled;"
-			
-			if modmgr.worldconfig.global_mods[shortname] then
-				retval = retval .. "true"
-			else
-				retval = retval .. "false"
-			end
-			
-			retval = retval .. "]"
-		end
-	end
 	
 	return retval
 end
@@ -494,25 +426,25 @@ function modmgr.handle_buttons(tab,fields)
 end
 
 --------------------------------------------------------------------------------
-function modmgr.get_dependencys(modfolder)
-	local filename = modfolder ..
-				DIR_DELIM .. "depends.txt"
-
-	local dependencyfile = io.open(filename,"r")
-	
+function modmgr.get_dependencies(modfolder)
 	local toadd = ""
-	if dependencyfile then
-		local dependency = dependencyfile:read("*l")
-		while dependency do
-			if toadd ~= "" then	
-				toadd = toadd .. ","
+	if modfolder ~= nil then
+		local filename = modfolder ..
+					DIR_DELIM .. "depends.txt"
+	
+		local dependencyfile = io.open(filename,"r")
+		
+		if dependencyfile then
+			local dependency = dependencyfile:read("*l")
+			while dependency do
+				if toadd ~= "" then	
+					toadd = toadd .. ","
+				end
+				toadd = toadd .. dependency
+				dependency = dependencyfile:read()
 			end
-			toadd = toadd .. dependency
-			dependency = dependencyfile:read()
+			dependencyfile:close()
 		end
-		dependencyfile:close()
-	else
-		print("Modmgr:" .. filename .. " not found")
 	end
 
 	return toadd
@@ -666,15 +598,17 @@ function modmgr.installmod(modfilename,basename)
 	end
 	
 	engine.delete_dir(modpath)
+
+	modmgr.refresh_globals()
+
 end
 
 --------------------------------------------------------------------------------
 function modmgr.handle_rename_modpack_buttons(fields)
-	local oldname = modmgr.global_mods[modmgr.selected_mod]
-	oldname = oldname:sub(0,oldname:find("<") -2)
 	
 	if fields["dlg_rename_modpack_confirm"] ~= nil then
-		local oldpath = engine.get_modpath() .. DIR_DELIM .. oldname
+		local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
+		local oldpath = engine.get_modpath() .. DIR_DELIM .. mod.name
 		local targetpath = engine.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
 		engine.copy_dir(oldpath,targetpath,false)
 	end
@@ -690,28 +624,67 @@ function modmgr.handle_configure_world_buttons(fields)
 	if fields["world_config_modlist"] ~= nil then
 		local event = explode_textlist_event(fields["world_config_modlist"])
 		modmgr.world_config_selected_mod = event.index
+		
+		if event.typ == "DCL" then
+			local mod = filterlist.get_list(modmgr.modlist)[event.index]
+			
+			if mod.typ == "game_mod" then
+				return nil
+			end
+			
+			if not mod.is_modpack then
+				mod.enabled = not mod.enabled
+			else
+				local list = filterlist.get_raw_list(modmgr.modlist)
+				local toset = nil
+				
+				for i=1,#list,1 do
+					if list[i].modpack == mod.name then
+						if toset == nil then
+							toset = not list[i].enabled
+						end
+						
+						list[i].enabled = toset
+					end
+				end
+			end
+		end
 	end
 
-	if fields["cb_mod_enabled"] ~= nil then
-		local index = modmgr.get_worldmod_idx()
-		local modname = modmgr.global_mods[index]
-								
-		local parts = modmgr.global_mods[index]:split(DIR_DELIM)
-		local shortname = parts[#parts]
-		
-		if fields["cb_mod_enabled"] == "true" then
-			modmgr.worldconfig.global_mods[shortname] = true
-		else
-			modmgr.worldconfig.global_mods[shortname] = false
-		end
-	end
-	
 	if fields["cb_hide_gamemods"] ~= nil then
+		local current = filterlist.get_filtercriteria(modmgr.modlist)
+		
+		if current == nil then
+			current = {}
+		end
+
 		if fields["cb_hide_gamemods"] == "true" then
+			current.hide_game = true
 			modmgr.hide_gamemods = true
 		else
+			current.hide_game = false
 			modmgr.hide_gamemods = false
 		end
+		
+		filterlist.set_filtercriteria(modmgr.modlist,current)
+	end
+	
+		if fields["cb_hide_mpcontent"] ~= nil then
+		local current = filterlist.get_filtercriteria(modmgr.modlist)
+		
+		if current == nil then
+			current = {}
+		end
+
+		if fields["cb_hide_mpcontent"] == "true" then
+			current.hide_modpackcontents = true
+			modmgr.hide_modpackcontents = true
+		else
+			current.hide_modpackcontents = false
+			modmgr.hide_modpackcontents = false
+		end
+		
+		filterlist.set_filtercriteria(modmgr.modlist,current)
 	end
 	
 	if fields["btn_config_world_save"] then
@@ -724,17 +697,27 @@ function modmgr.handle_configure_world_buttons(fields)
 		
 		if worldfile then
 			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\n")
-			for key,value in pairs(modmgr.worldconfig.global_mods) do
-				if value then
-					worldfile:write("load_mod_" .. key .. " = true" .. "\n")
-				else
-					worldfile:write("load_mod_" .. key .. " = false" .. "\n")
+			
+			local rawlist = filterlist.get_raw_list(modmgr.modlist)
+			
+			for i=1,#rawlist,1 do
+			
+				if not rawlist[i].is_modpack and
+					rawlist[i].typ ~= "game_mod" then
+					if rawlist[i].enabled then
+						worldfile:write("load_mod_" .. rawlist[i].name .. " = true" .. "\n")
+					else
+						worldfile:write("load_mod_" .. rawlist[i].name .. " = false" .. "\n")
+					end
 				end
 			end
 			
 			worldfile:close()
+		else
+			print("failed to open world config file")
 		end
 		
+		modmgr.modlist = nil
 		modmgr.worldconfig = nil
 	
 		return {
@@ -755,60 +738,36 @@ function modmgr.handle_configure_world_buttons(fields)
 		}
 	end
 	
-	if fields["btn_cfgw_enable_all"] then
-		local worldmodidx = modmgr.get_worldmod_idx()
-		modname = modmgr.global_mods[worldmodidx]
-
-		modname = modname:sub(0,modname:find("<") -2)
-
-		for i=1,#modmgr.global_mods,1 do
+	if fields["btn_all_mods"] then
+		local list = filterlist.get_raw_list(modmgr.modlist)
 		
-			if modmgr.global_mods[i]:find("<MODPACK>") == nil then
-				local modpackpart = modmgr.global_mods[i]:sub(0,modname:len())
-				
-				if modpackpart == modname then
-					local parts = modmgr.global_mods[i]:split(DIR_DELIM)
-					local shortname = parts[#parts]
-					modmgr.worldconfig.global_mods[shortname] = true
-				end
+		for i=1,#list,1 do
+			if list[i].typ ~= "game_mod" and
+				not list[i].is_modpack then
+				list[i].enabled = true
 			end
 		end
 	end
 	
-	if fields["btn_cfgw_disable_all"] then
-		local worldmodidx = modmgr.get_worldmod_idx()
-		modname = modmgr.global_mods[worldmodidx]
 
-		modname = modname:sub(0,modname:find("<") -2)
-
-		for i=1,#modmgr.global_mods,1 do
-			local modpackpart = modmgr.global_mods[i]:sub(0,modname:len())
-			
-			if modpackpart == modname then
-				local parts = modmgr.global_mods[i]:split(DIR_DELIM)
-				local shortname = parts[#parts]
-				modmgr.worldconfig.global_mods[shortname] = nil
-			end
-		end
-	end
 	
 	return nil
 end
 --------------------------------------------------------------------------------
 function modmgr.handle_delete_mod_buttons(fields)
-	local modname = modmgr.global_mods[modmgr.selected_mod]
-	
-	if modname:find("<MODPACK>") ~= nil then
-		modname = modname:sub(0,modname:find("<") -2)
-	end
+	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	if fields["dlg_delete_mod_confirm"] ~= nil then
-		local oldpath = engine.get_modpath() .. DIR_DELIM .. modname
 		
-		if oldpath ~= nil and
-			oldpath ~= "" and
-			oldpath ~= engine.get_modpath() then
-			engine.delete_dir(oldpath)
+		if mod.path ~= nil and
+			mod.path ~= "" and
+			mod.path ~= engine.get_modpath() then
+			if not engine.delete_dir(mod.path) then
+				gamedata.errormessage ="Modmgr: failed to delete >" .. mod.path .. "<"
+			end
+			modmgr.refresh_globals()
+		else
+			gamedata.errormessage ="Modmgr: invalid modpath >" .. mod.path .. "<"
 		end
 	end
 	
@@ -822,14 +781,10 @@ end
 --------------------------------------------------------------------------------
 function modmgr.dialog_delete_mod()
 
-	local modname = modmgr.global_mods[modmgr.selected_mod]
-
-	if modname:find("<MODPACK>") ~= nil then
-		modname = modname:sub(0,modname:find("<") -2)
-	end
+	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	local retval = 
-		"field[1.75,1;10,3;;Are you sure you want to delete ".. modname .. "?;]"..
+		"field[1.75,1;10,3;;Are you sure you want to delete ".. mod.name .. "?;]"..
 		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;Yes]" ..
 		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;No of course not!]"
 
@@ -837,8 +792,85 @@ function modmgr.dialog_delete_mod()
 end
 
 --------------------------------------------------------------------------------
-function modmgr.init_worldconfig()
+function modmgr.preparemodlist(data)
+	local retval = {}
+	
+	local global_mods = {}
+	local game_mods = {}
+	
+	--read global mods
+	local modpath = engine.get_modpath()
 
+	if modpath ~= nil and
+		modpath ~= "" then
+		get_mods(modpath,global_mods)
+	end
+	
+	for i=1,#global_mods,1 do
+		global_mods[i].typ = "global_mod"
+		table.insert(retval,global_mods[i])
+	end
+	
+	--read game mods
+	if data.gameid ~= nil and
+		data.gameid ~= "" then
+		local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. data.gameid .. DIR_DELIM .. "mods"
+		
+		get_mods(gamemodpath,game_mods)
+	end
+	
+	for i=1,#game_mods,1 do
+		game_mods[i].typ = "game_mod"
+		table.insert(retval,game_mods[i])
+	end
+	
+	if data.worldpath == nil then
+		return retval
+	end
+	
+	--read world mod configuration
+	local filename = data.worldpath ..
+				DIR_DELIM .. "world.mt"
+
+	local worldfile = io.open(filename,"r")
+	if worldfile then
+		local dependency = worldfile:read("*l")
+		while dependency do
+			local parts = dependency:split("=")
+
+			local key = parts[1]:trim()
+
+			if key ~= "gameid" then
+				local key = parts[1]:trim():sub(10)
+				local element = nil
+				for i=1,#retval,1 do
+					if retval[i].name == key then
+						element = retval[i]
+						break
+					end
+				end
+				if element ~= nil then
+					if parts[2]:trim() == "true" then
+						element.enabled = true
+					else
+						element.enabled = false
+					end
+				else
+					print("Mod: " .. key .. " " .. dump(parts[2]) .. " but not found")
+				end
+			end
+			dependency = worldfile:read("*l")
+		end
+		worldfile:close()
+
+	end
+
+	return retval
+end
+
+--------------------------------------------------------------------------------
+function modmgr.init_worldconfig()
+	modmgr.precheck()
 	local worldspec = engine.get_worlds()[modmgr.world_config_selected_world]
 	
 	if worldspec ~= nil then
@@ -851,10 +883,64 @@ function modmgr.init_worldconfig()
 			return false
 		end
 		
+		modmgr.modlist = filterlist.create(
+						modmgr.preparemodlist, --refresh
+						modmgr.comparemod, --compare
+						function(element,uid) --uid match
+							if element.name == uid then
+								return true
+							end
+						end, 
+						function(element,criteria)
+							if criteria.hide_game and
+								element.typ == "game_mod" then
+									return false
+							end
+							
+							if criteria.hide_modpackcontents and
+								element.modpack ~= nil then
+									return false
+								end
+							return true
+						end, --filter
+						{ worldpath= worldspec.path,
+						  gameid = worldspec.gameid }
+					)
+					
+		filterlist.set_filtercriteria(modmgr.modlist, {
+									hide_game=modmgr.hide_gamemods,
+									hide_modpackcontents= modmgr.hide_modpackcontents
+									})
+		
 		return true	
 	end
 
 	return false
+end
+
+--------------------------------------------------------------------------------
+function modmgr.comparemod(elem1,elem2)
+	if elem1 == nil or elem2 == nil then
+		return false
+	end
+	if elem1.name ~= elem2.name then
+		return false
+	end
+	if elem1.is_modpack ~= elem2.is_modpack then
+		return false
+	end
+	if elem1.typ ~= elem2.typ then
+		return false
+	end
+	if elem1.modpack ~= elem2.modpack then
+		return false
+	end
+	
+	if elem1.path ~= elem2.path then
+		return false
+	end
+	
+	return true
 end
 
 --------------------------------------------------------------------------------
@@ -878,4 +964,47 @@ function modmgr.gettab(name)
 	end
 	
 	return retval
+end
+
+--------------------------------------------------------------------------------
+function modmgr.mod_exists(basename)
+
+	if modmgr.global_mods == nil then
+		modmgr.refresh_globals()
+	end
+
+	if filterlist.engine_index_by_uid(modmgr.global_mods,basename) > 0 then
+		return true
+	end
+	
+	return false
+end
+
+--------------------------------------------------------------------------------
+function modmgr.get_global_mod(idx)
+
+	if modmgr.global_mods == nil then
+		return nil
+	end
+	
+	if idx < 1 or idx > filterlist.size(modmgr.global_mods) then
+		return nil
+	end
+
+	return filterlist.get_list(modmgr.global_mods)[idx]
+end
+
+--------------------------------------------------------------------------------
+function modmgr.refresh_globals()
+	modmgr.global_mods = filterlist.create(
+					modmgr.preparemodlist, --refresh
+					modmgr.comparemod, --compare
+					function(element,uid) --uid match
+						if element.name == uid then
+							return true
+						end
+					end, 
+					nil, --filter
+					{}
+					)
 end
