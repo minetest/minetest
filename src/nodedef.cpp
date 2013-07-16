@@ -213,6 +213,7 @@ void ContentFeatures::reset()
 	liquid_alternative_source = "";
 	liquid_viscosity = 0;
 	liquid_renewable = true;
+	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = true;
 	light_source = 0;
 	damage_per_second = 0;
@@ -284,6 +285,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	// the protocol version
 	writeU8(os, drowning);
 	writeU8(os, leveled);
+	writeU8(os, liquid_range);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -350,6 +352,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// otherwise changes the protocol version
 		drowning = readU8(is);
 		leveled = readU8(is);
+		liquid_range = readU8(is);
 	}catch(SerializationError &e) {};
 }
 

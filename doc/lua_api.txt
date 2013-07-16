@@ -1947,6 +1947,7 @@ Node definition (register_node)
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing
+    liquid_range = 8, -- number of flowing nodes arround source (max. 8)
     drowning = true, -- Player will drown in these 
     two or more sources nearly?
     light_source = 0, -- Amount of light emitted by node
