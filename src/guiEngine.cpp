@@ -151,7 +151,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 
 	std::string builtin_helpers
 		= porting::path_share + DIR_DELIM + "builtin"
-			+ DIR_DELIM + "mainmenu_helper.lua";
+			+ DIR_DELIM + "misc_helpers.lua";
 
 	if (!runScript(builtin_helpers)) {
 		errorstream
