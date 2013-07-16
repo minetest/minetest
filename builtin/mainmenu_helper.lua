@@ -105,3 +105,61 @@ function explode_textlist_event(text)
 	
 	return retval
 end
+
+--------------------------------------------------------------------------------
+function get_last_folder(text,count)
+	local parts = text:split(DIR_DELIM)
+	
+	if count == nil then
+		return parts[#parts]
+	end
+	
+	local retval = ""
+	for i=1,count,1 do
+		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
+	end
+	
+	return retval
+end
+
+--------------------------------------------------------------------------------
+function cleanup_path(temppath)
+	
+	local parts = temppath:split("-")
+	temppath = ""	
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. "_"
+		end
+		temppath = temppath .. parts[i]
+	end
+	
+	parts = temppath:split(".")
+	temppath = ""	
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. "_"
+		end
+		temppath = temppath .. parts[i]
+	end
+	
+	parts = temppath:split("'")
+	temppath = ""	
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. ""
+		end
+		temppath = temppath .. parts[i]
+	end
+	
+	parts = temppath:split(" ")
+	temppath = ""	
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath
+		end
+		temppath = temppath .. parts[i]
+	end
+	
+	return temppath
+end
