@@ -7,18 +7,21 @@ mt_color_blue  = "#0000DD"
 mt_color_green = "#00DD00"
 mt_color_dark_green = "#003300"
 
+--for all other colors ask sfan5 to complete his worK!
+
 dofile(scriptpath .. DIR_DELIM .. "filterlist.lua")
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
 dofile(scriptpath .. DIR_DELIM .. "modstore.lua")
 dofile(scriptpath .. DIR_DELIM .. "gamemgr.lua")
+dofile(scriptpath .. DIR_DELIM .. "mm_textures.lua")
+dofile(scriptpath .. DIR_DELIM .. "mm_menubar.lua")
 
-local menu = {}
+menu = {}
 local tabbuilder = {}
-local menubar = {}
 local worldlist = nil
 
 --------------------------------------------------------------------------------
-function render_favourite(spec,render_details)
+function menu.render_favorite(spec,render_details)
 	local text = ""
 	
 	if spec.name ~= nil then
@@ -43,9 +46,6 @@ function render_favourite(spec,render_details)
 	if not render_details then
 		return text
 	end
-	
-
-
 	
 	local details = ""
 	if spec.password == true then
@@ -101,171 +101,6 @@ os.tempfolder = function()
 end
 
 --------------------------------------------------------------------------------
-function cleanup_path(temppath)
-	
-	local parts = temppath:split("-")
-	temppath = ""	
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-	
-	parts = temppath:split(".")
-	temppath = ""	
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-	
-	parts = temppath:split("'")
-	temppath = ""	
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. ""
-		end
-		temppath = temppath .. parts[i]
-	end
-	
-	parts = temppath:split(" ")
-	temppath = ""	
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath
-		end
-		temppath = temppath .. parts[i]
-	end
-	
-	return temppath
-end
-
---------------------------------------------------------------------------------
-
-function menu.set_texture(identifier,gamedetails)
-	local texture_set = false
-	if menu.texturepack ~= nil and gamedetails ~= nil then
-		local path = menu.basetexturedir .. 
-						gamedetails.id .. "_menu_" .. identifier .. ".png"
-		
-		if engine.set_background(identifier,path) then
-			texture_set = true
-		end
-	end
-	
-	if not texture_set and gamedetails ~= nil then
-		local path = gamedetails.path .. DIR_DELIM .."menu" .. 
-									 DIR_DELIM .. identifier .. ".png"
-		if engine.set_background(identifier,path) then
-			texture_set = true
-		end
-	end
-	
-	if not texture_set then
-		local path = menu.basetexturedir .. DIR_DELIM .."menu_" .. 
-										identifier .. ".png"
-		if engine.set_background(identifier,path) then
-			texture_set = true
-		end
-	end
-	
-	if not texture_set then
-		local path = menu.defaulttexturedir .. DIR_DELIM .."menu_" .. 
-										identifier .. ".png"
-		engine.set_background(identifier,path)
-	end
-end
-
---------------------------------------------------------------------------------
-function menu.update_gametype()
-	
-	
-	
-	if (menu.game_last_check == nil or
-		menu.game_last_check ~= menu.last_game) and
-		tabbuilder.current_tab == "singleplayer" then
-		
-		local gamedetails = menu.lastgame()
-		engine.set_topleft_text(gamedetails.name)
-		filterlist.set_filtercriteria(worldlist,gamedetails.id)
-		
-		--background
-		local background_set = false
-		if menu.texturepack ~= nil then
-			local path_background_texture = menu.basetexturedir .. 
-										gamedetails.id .. "_menu_background.png"
-			
-			if engine.set_background("background",path_background_texture) then
-				background_set = true
-				engine.set_clouds(false)
-			end
-		end
-		
-		if not background_set then
-			local path_background_texture = gamedetails.path .. DIR_DELIM .."menu" .. 
-										 DIR_DELIM .. "background.png"
-			if engine.set_background("background",path_background_texture) then
-				background_set = true
-				engine.set_clouds(false)
-			end
-		end
-		
-		if not background_set then
-			engine.set_clouds(true)
-		end
-		
-		menu.set_texture("overlay",gamedetails)
-		menu.set_texture("header",gamedetails)
-		menu.set_texture("footer",gamedetails)
-		
-		menu.game_last_check = menu.last_game
-	else
-		if menu.game_last_check ~= menu.last_game then
-			menu.game_last_check = menu.last_game
-			menu.reset_gametype()
-		end
-	end
-end
-
---------------------------------------------------------------------------------
-function menu.reset_gametype()
-	filterlist.set_filtercriteria(worldlist,nil)
-	menu.game_last_check = nil
-	
-	local path_background_texture = menu.basetexturedir .. "menu_background.png"
-			
-	if engine.set_background("background",path_background_texture) then
-		background_set = true
-		engine.set_clouds(false)
-	else
-		engine.set_clouds(true)
-	end 
-
-	menu.set_texture("overlay",nil)
-	menu.set_texture("header",nil)
-	menu.set_texture("footer",nil)
-	engine.set_topleft_text("")
-end
-
---------------------------------------------------------------------------------
-function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
-	
-	if count == nil then
-		return parts[#parts]
-	end
-	
-	local retval = ""
-	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
-	end
-	
-	return retval
-end
-
---------------------------------------------------------------------------------
 function init_globals()
 	--init gamedata
 	gamedata.worldindex = 0
@@ -290,44 +125,6 @@ function init_globals()
 	filterlist.add_sort_mechanism(worldlist,"alphabetic",sort_worlds_alphabetic)
 	filterlist.set_sortmode(worldlist,"alphabetic")
 					
-end
-
---------------------------------------------------------------------------------
-function identify_filetype(name)
-
-	if name:sub(-3):lower() == "zip" then
-		return {
-				name = name,
-				type = "zip"
-				}
-	end
-	
-	if name:sub(-6):lower() == "tar.gz" or
-		name:sub(-3):lower() == "tgz"then
-		return {
-				name = name,
-				type = "tgz"
-				}
-	end
-	
-	if name:sub(-6):lower() == "tar.bz2" then
-		return {
-				name = name,
-				type = "tbz"
-				}
-	end
-	
-	if name:sub(-2):lower() == "7z" then
-		return {
-				name = name,
-				type = "7z"
-				}
-	end
-
-	return {
-		name = name,
-		type = "ukn"
-	}
 end
 
 --------------------------------------------------------------------------------
@@ -384,17 +181,9 @@ function menu.init()
 		menu.favorites = engine.get_favorites("local")
 	end
 	
-	
 	menu.defaulttexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
-						DIR_DELIM .. "pack" .. DIR_DELIM
-	menu.basetexturedir = menu.defaulttexturedir
-	
-	menu.texturepack = engine.setting_get("texture_path")
-	
-	if menu.texturepack ~= nil then
-		menu.basetexturedir = menu.texturepack .. DIR_DELIM
-	end
+					DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+					DIR_DELIM .. "pack" .. DIR_DELIM
 end
 
 --------------------------------------------------------------------------------
@@ -453,67 +242,6 @@ function menu.handle_key_up_down(fields,textlist,settingname)
 			engine.setting_set(settingname,
 				filterlist.get_raw_index(worldlist,newidx))
 		end
-	end
-end
-
-
---------------------------------------------------------------------------------
-function menubar.handle_buttons(fields)
-	for i=1,#menubar.buttons,1 do
-		if fields[menubar.buttons[i].btn_name] ~= nil then
-			menu.last_game = menubar.buttons[i].index
-			engine.setting_set("main_menu_last_game_idx",menu.last_game)
-			menu.update_gametype()
-		end
-	end
-end
-
---------------------------------------------------------------------------------
-function menubar.refresh()
-	menubar.formspec = "box[-0.3,5.625;12.4,1.3;000000]" ..
-					   "box[-0.3,5.6;12.4,0.05;FFFFFF]"
-	menubar.buttons = {}
-
-	local button_base = -0.25
-	
-	local maxbuttons = #gamemgr.games
-	
-	if maxbuttons > 10 then
-		maxbuttons = 10
-	end
-	
-	for i=1,maxbuttons,1 do
-
-		local btn_name = "menubar_btn_" .. gamemgr.games[i].id
-		local buttonpos = button_base + (i-1) * 1.245
-		if gamemgr.games[i].menuicon_path ~= nil and
-			gamemgr.games[i].menuicon_path ~= "" then
-
-			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;"  ..
-				gamemgr.games[i].menuicon_path .. ";" .. btn_name .. ";;true;false]"
-		else
-		
-			local part1 = gamemgr.games[i].id:sub(1,5)
-			local part2 = gamemgr.games[i].id:sub(6,10)
-			local part3 = gamemgr.games[i].id:sub(11)
-			
-			local text = part1 .. "\n" .. part2
-			if part3 ~= nil and
-				part3 ~= "" then
-				text = text .. "\n" .. part3
-			end
-			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;;" ..btn_name ..
-				";" .. text .. ";true;true]"
-		end
-		
-		local toadd = {
-			btn_name = btn_name,
-			index = i,
-		}
-		
-		table.insert(menubar.buttons,toadd)
 	end
 end
 
@@ -1040,7 +768,7 @@ function tabbuilder.handle_tab_buttons(fields)
 	--handle tab changes
 	if tabbuilder.current_tab ~= tabbuilder.old_tab then
 		if tabbuilder.current_tab ~= "singleplayer" then
-			menu.reset_gametype()
+			menu.update_gametype(true)
 		end
 	end
 	
@@ -1060,7 +788,6 @@ function tabbuilder.init()
 		tabbuilder.current_tab = "singleplayer"
 		engine.setting_set("main_menu_tab",tabbuilder.current_tab)
 	end
-	
 	
 	--initialize tab buttons
 	tabbuilder.last_tab = nil
@@ -1127,10 +854,10 @@ function tabbuilder.tab_multiplayer()
 	local render_details = engine.setting_getbool("public_serverlist")
 
 	if #menu.favorites > 0 then
-		retval = retval .. render_favourite(menu.favorites[1],render_details)
+		retval = retval .. menu.render_favorite(menu.favorites[1],render_details)
 		
 		for i=2,#menu.favorites,1 do
-			retval = retval .. "," .. render_favourite(menu.favorites[i],render_details)
+			retval = retval .. "," .. menu.render_favorite(menu.favorites[i],render_details)
 		end
 	end
 
@@ -1353,14 +1080,32 @@ engine.event_handler = function(event)
 end
 
 --------------------------------------------------------------------------------
+function menu.update_gametype(reset)
+	print("updating gametype: " .. dump(reset))
+	if reset then
+		mm_texture.reset()
+		engine.set_topleft_text("")
+		filterlist.set_filtercriteria(worldlist,nil)
+	else
+		local game = menu.lastgame()
+		print("current_game = " .. dump(game))
+		mm_texture.update(tabbuilder.current_tab,game)
+		engine.set_topleft_text(game.name)
+		filterlist.set_filtercriteria(worldlist,game.id)
+	end
+end
+
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- menu startup
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 init_globals()
+mm_texture.init()
 menu.init()
 tabbuilder.init()
 menubar.refresh()
 modstore.init()
+
 
 update_menu()
