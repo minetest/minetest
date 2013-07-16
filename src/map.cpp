@@ -2166,7 +2166,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			} else
 				new_node_level = max_node_level;
 
-			if (new_node_level >= 0)
+			u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, LIQUID_LEVEL_MAX+1);
+			if (new_node_level >= (LIQUID_LEVEL_MAX+1-range))
 				new_node_content = liquid_kind;
 			else
 				new_node_content = CONTENT_AIR;
