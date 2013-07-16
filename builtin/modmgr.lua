@@ -541,8 +541,7 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.installmod(modfilename,basename)
-	local modfile = identify_filetype(modfilename)
-	
+	local modfile = modmgr.identify_filetype(modfilename)
 	local modpath = modmgr.extract(modfile)
 	
 	if modpath == nil then
@@ -1007,4 +1006,42 @@ function modmgr.refresh_globals()
 					nil, --filter
 					{}
 					)
+end
+
+--------------------------------------------------------------------------------
+function modmgr.identify_filetype(name)
+
+	if name:sub(-3):lower() == "zip" then
+		return {
+				name = name,
+				type = "zip"
+				}
+	end
+	
+	if name:sub(-6):lower() == "tar.gz" or
+		name:sub(-3):lower() == "tgz"then
+		return {
+				name = name,
+				type = "tgz"
+				}
+	end
+	
+	if name:sub(-6):lower() == "tar.bz2" then
+		return {
+				name = name,
+				type = "tbz"
+				}
+	end
+	
+	if name:sub(-2):lower() == "7z" then
+		return {
+				name = name,
+				type = "7z"
+				}
+	end
+
+	return {
+		name = name,
+		type = "ukn"
+	}
 end
