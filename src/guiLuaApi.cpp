@@ -821,7 +821,7 @@ int guiLuaApi::l_get_modpath(lua_State *L)
 int guiLuaApi::l_get_gamepath(lua_State *L)
 {
 	std::string gamepath
-			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "games" + DIR_DELIM);
+			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "games" + DIR_DELIM);
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
