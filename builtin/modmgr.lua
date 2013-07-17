@@ -151,7 +151,11 @@ function modmgr.parse_register_line(line)
 			local pos3 = item:find(":")
 			
 			if pos3 ~= nil then
-				return item:sub(1,pos3-1)
+				local retval = item:sub(1,pos3-1)
+				if retval ~= nil and
+					retval ~= "" then
+					return retval
+				end 
 			end
 		end
 	end
