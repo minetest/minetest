@@ -89,6 +89,9 @@ function mm_texture.update_game(gamedetails)
 			engine.set_clouds(true)
 	end
 	
+	mm_texture.set_game("footer",gamedetails)
+	mm_texture.set_game("header",gamedetails)
+	
 	mm_texture.gameid = gamedetails.id
 end
 
