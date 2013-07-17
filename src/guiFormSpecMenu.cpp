@@ -1151,9 +1151,16 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 
 		label = unescape_string(label);
 
+		wchar_t* wlabel = 0;
+
+		if (m_use_gettext)
+			wlabel = wgettext(label.c_str());
+		else
+			wlabel = (wchar_t*) narrow_to_wide(label.c_str()).c_str();
+
 		FieldSpec spec = FieldSpec(
 			narrow_to_wide(name.c_str()),
-			narrow_to_wide(label.c_str()),
+			wlabel,
 			narrow_to_wide(image_name.c_str()),
 			258+m_fields.size()
 		);
@@ -1182,6 +1189,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		e->setDrawBorder(drawborder);
 
 		m_fields.push_back(spec);
+		if (m_use_gettext)
+			delete[] wlabel;
 		return;
 	}
 
