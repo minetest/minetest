@@ -143,7 +143,6 @@ function modstore.handle_buttons(current_tab,fields)
 			local fullurl = engine.setting_get("modstore_download_url") ..
 								moddetails.download_url
 			local modfilename = os.tempfolder() .. ".zip"
-			print("Downloading mod from: " .. fullurl .. " to ".. modfilename)
 			
 			if engine.download_file(fullurl,modfilename) then
 			
@@ -218,7 +217,6 @@ function modstore.getmodlist(list)
 				if list.data[i].texturename == nil then
 					local fullurl = engine.setting_get("modstore_download_url") ..
 								details.screenshot_url
-					print("downloading screenshot: " .. fullurl)
 					local filename = os.tempfolder()
 					
 					if engine.download_file(fullurl,filename) then
