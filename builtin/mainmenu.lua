@@ -1081,14 +1081,12 @@ end
 
 --------------------------------------------------------------------------------
 function menu.update_gametype(reset)
-	print("updating gametype: " .. dump(reset))
 	if reset then
 		mm_texture.reset()
 		engine.set_topleft_text("")
 		filterlist.set_filtercriteria(worldlist,nil)
 	else
 		local game = menu.lastgame()
-		print("current_game = " .. dump(game))
 		mm_texture.update(tabbuilder.current_tab,game)
 		engine.set_topleft_text(game.name)
 		filterlist.set_filtercriteria(worldlist,game.id)
