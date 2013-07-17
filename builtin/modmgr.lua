@@ -393,8 +393,47 @@ function modmgr.dialog_configure_world()
 		"textlist[0,1.5;5,4.25;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
 		"button[9.25,6.35;2,0.5;btn_config_world_save;Save]" ..
-		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]" ..
-		"button[5.5,-0.125;5.75,0.5;btn_all_mods;Enable all Mods]" ..
+		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]"
+	
+	if engine.setting_get("old_style_mod_selection") == "true" then
+		local selected = engine.get_textlist_index("world_config_modlist")
+		local mod = filterlist.get_list(modmgr.modlist)[selected]
+		
+		if mod ~= nil then
+			if mod.is_modpack then
+				local rawlist = filterlist.get_raw_list(modmgr.modlist)
+				
+				local all_enabled = true
+				for j=1,#rawlist,1 do
+					if rawlist[j].modpack == mod.name and
+						rawlist[j].enabled ~= true then
+							all_enabled = false
+							break
+					end
+				end
+				
+				if all_enabled == false then
+					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;Enable MP]"
+				else
+					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;Disable MP]"
+				end
+			else
+				if mod.enabled then
+					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;true]"
+				else
+					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;false]"
+				end
+			end
+		
+		end
+		
+		retval = retval ..
+			"button[8.5,-0.125;2.5,0.5;btn_all_mods;Enable all]"
+	else
+		retval = retval ..
+		"button[5.5,-0.125;5.75,0.5;btn_all_mods;Enable all Mods]"
+	end
+		retval = retval ..
 		"textlist[5.5,0.5;5.5,5.75;world_config_modlist;"
 		
 
@@ -627,33 +666,65 @@ function modmgr.handle_configure_world_buttons(fields)
 	if fields["world_config_modlist"] ~= nil then
 		local event = explode_textlist_event(fields["world_config_modlist"])
 		modmgr.world_config_selected_mod = event.index
-		
-		if event.typ == "DCL" then
-			local mod = filterlist.get_list(modmgr.modlist)[event.index]
-			
-			if mod.typ == "game_mod" then
-				return nil
-			end
-			
-			if not mod.is_modpack then
-				mod.enabled = not mod.enabled
-			else
-				local list = filterlist.get_raw_list(modmgr.modlist)
-				local toset = nil
+
+		if engine.setting_get("old_style_mod_selection") ~= "true" then
+			if event.typ == "DCL" then
+				local mod = filterlist.get_list(modmgr.modlist)[event.index]
 				
-				for i=1,#list,1 do
-					if list[i].modpack == mod.name then
-						if toset == nil then
-							toset = not list[i].enabled
+				if mod.typ == "game_mod" then
+					return nil
+				end
+				
+				if not mod.is_modpack then
+					mod.enabled = not mod.enabled
+				else
+					local list = filterlist.get_raw_list(modmgr.modlist)
+					local toset = nil
+					
+					for i=1,#list,1 do
+						if list[i].modpack == mod.name then
+							if toset == nil then
+								toset = not list[i].enabled
+							end
+							
+							list[i].enabled = toset
 						end
-						
-						list[i].enabled = toset
 					end
 				end
 			end
 		end
 	end
-
+	
+	if engine.setting_get("old_style_mod_selection") == "true" then
+		if fields["cb_mod_enable"] ~= nil then
+			local mod = filterlist.get_list(modmgr.modlist)
+				[engine.get_textlist_index("world_config_modlist")]
+			if fields["cb_mod_enable"] == "true" then
+				mod.enabled = true
+			else
+				mod.enabled = false
+			end
+		end
+		
+		if fields["btn_mp_enable"] ~= nil or 
+			fields["btn_mp_disable"] then
+			local mod = filterlist.get_list(modmgr.modlist)
+				[engine.get_textlist_index("world_config_modlist")]
+			
+			local toset=false
+			if fields["btn_mp_enable"] ~= nil then
+				toset = true
+			end
+			local list = filterlist.get_raw_list(modmgr.modlist)
+			
+			for i=1,#list,1 do
+				if list[i].modpack == mod.name then
+					list[i].enabled = toset
+				end
+			end
+		end
+	end
+	
 	if fields["cb_hide_gamemods"] ~= nil then
 		local current = filterlist.get_filtercriteria(modmgr.modlist)
 		
