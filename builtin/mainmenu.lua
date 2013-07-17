@@ -342,7 +342,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 			
 			local message = nil
 			
-			if not filterlist.uid_exists(worldlist,worldname) then
+			if not filterlist.uid_exists_raw(worldlist,worldname) then
 				engine.setting_set("mg_name",fields["dd_mapgen"])
 				message = engine.create_world(worldname,gameindex)
 			else
@@ -613,7 +613,6 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_fancy_trees"] then
 		engine.setting_setbool("new_style_leaves",tabbuilder.tobool(fields["cb_fancy_trees"]))
 	end
-		
 	if fields["cb_smooth_lighting"] then
 		engine.setting_setbool("smooth_lighting",tabbuilder.tobool(fields["cb_smooth_lighting"]))
 	end
@@ -623,7 +622,10 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_opaque_water"] then
 		engine.setting_setbool("opaque_water",tabbuilder.tobool(fields["cb_opaque_water"]))
 	end
-			
+	if fields["old_style_modselection"] then
+		engine.setting_setbool("old_style_mod_selection",tabbuilder.tobool(fields["old_style_modselection"]))
+	end
+	
 	if fields["cb_mipmapping"] then
 		engine.setting_setbool("mip_map",tabbuilder.tobool(fields["cb_mipmapping"]))
 	end
@@ -908,6 +910,7 @@ function tabbuilder.tab_settings()
 			"checkbox[1,1.25;cb_smooth_lighting;Smooth Lighting;".. dump(engine.setting_getbool("smooth_lighting"))	.. "]"..
 			"checkbox[1,1.75;cb_3d_clouds;3D Clouds;" 			.. dump(engine.setting_getbool("enable_3d_clouds"))	.. "]"..
 			"checkbox[1,2.25;cb_opaque_water;Opaque Water;" 		.. dump(engine.setting_getbool("opaque_water"))		.. "]"..
+			"checkbox[1,2.75;old_style_modselection;Old style modmgr;" .. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"..
 			
 			"checkbox[4,0.75;cb_mipmapping;Mip-Mapping;" 		.. dump(engine.setting_getbool("mip_map"))			.. "]"..
 			"checkbox[4,1.25;cb_anisotrophic;Anisotropic Filtering;".. dump(engine.setting_getbool("anisotropic_filter"))	.. "]"..
@@ -919,7 +922,7 @@ function tabbuilder.tab_settings()
 			"checkbox[7.5,1.75;cb_particles;Enable Particles;"	.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
 			"checkbox[7.5,2.25;cb_finite_liquid;Finite Liquid;"	.. dump(engine.setting_getbool("liquid_finite"))		.. "]"..
 			
-			"button[1,3.75;2.25,0.5;btn_change_keys;Change keys]"
+			"button[1,4.25;2.25,0.5;btn_change_keys;Change keys]"
 end
 
 --------------------------------------------------------------------------------
