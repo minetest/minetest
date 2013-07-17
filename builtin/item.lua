@@ -34,8 +34,45 @@ function minetest.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
-function minetest.dir_to_facedir(dir)
-	if math.abs(dir.x) > math.abs(dir.z) then
+function minetest.dir_to_facedir(dir, is6d)
+	--account for y if requested
+	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
+
+		--from above
+		if dir.y < 0 then
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 19
+				else
+					return 13
+				end
+			else
+				if dir.z < 0 then
+					return 10
+				else
+					return 4
+				end
+			end
+
+		--from below
+		else
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 15
+				else
+					return 17
+				end
+			else
+				if dir.z < 0 then
+					return 6
+				else
+					return 8
+				end
+			end
+		end
+
+	--otherwise, place horizontally
+	elseif math.abs(dir.x) > math.abs(dir.z) then
 		if dir.x < 0 then
 			return 3
 		else
@@ -48,6 +85,27 @@ function minetest.dir_to_facedir(dir)
 			return 0
 		end
 	end
+end
+
+function minetest.facedir_to_dir(facedir)
+	--a table of possible dirs
+	return ({{x=0, y=0, z=1},
+					{x=1, y=0, z=0},
+					{x=0, y=0, z=-1},
+					{x=-1, y=0, z=0},
+					{x=0, y=-1, z=0},
+					{x=0, y=1, z=0}})
+
+					--indexed into by a table of correlating facedirs
+					[({[0]=1, 2, 3, 4, 
+						5, 2, 6, 4,
+						6, 2, 5, 4,
+						1, 5, 3, 6,
+						1, 6, 3, 5,
+						1, 4, 3, 2})
+
+						--indexed into by the facedir in question
+						[facedir]]
 end
 
 function minetest.dir_to_wallmounted(dir)

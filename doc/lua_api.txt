@@ -1270,8 +1270,10 @@ minetest.inventorycube(img1, img2, img3)
 ^ Returns a string for making an image of a cube (useful as an item image)
 minetest.get_pointed_thing_position(pointed_thing, above)
 ^ Get position of a pointed_thing (that you can get from somewhere)
-minetest.dir_to_facedir(dir)
-^ Convert a vector to a facedir value, used in param2 for paramtype2="facedir"
+minetest.dir_to_facedir(dir, is6d)
+^ Convert a vector to a facedir value, used in param2 for paramtype2="facedir"; passing something non-nil/false for the optional second parameter causes it to take the y component into account
+minetest.facedir_to_dir(facedir)
+^ Convert a facedir back into a vector aimed directly out the "back" of a node
 minetest.dir_to_wallmounted(dir)
 ^ Convert a vector to a wallmounted value, used for paramtype2="wallmounted"
 minetest.get_node_drops(nodename, toolname)
