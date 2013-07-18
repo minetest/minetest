@@ -933,15 +933,23 @@ button[<X>,<Y>;<W>,<H>;<name>;<label>]
 
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ x, y, w, h, and name work as per button
-^ image is the filename of an image
+^ texture name is the filename of an image
 ^ Position and size units are inventory slots
 
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>]
 ^ x, y, w, h, and name work as per button
-^ image is the filename of an image
+^ texture name is the filename of an image
 ^ Position and size units are inventory slots
 ^ noclip true meand imagebutton doesn't need to be within specified formsize
 ^ drawborder draw button bodrer or not
+
+image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]
+^ x, y, w, h, and name work as per button
+^ texture name is the filename of an image
+^ Position and size units are inventory slots
+^ noclip true meand imagebutton doesn't need to be within specified formsize
+^ drawborder draw button bodrer or not
+^ pressed texture name is the filename of an image on pressed state
 
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
