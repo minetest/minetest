@@ -702,6 +702,33 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
+// set_breath(self, breath)
+int ObjectRef::l_set_breath(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if(co == NULL) return 0;
+	u16 breath = luaL_checknumber(L, 2);
+	// Do it
+	co->setBreath(breath);
+	co->m_breath_not_sent = true;
+	return 0;
+}
+
+// get_breath(self)
+int ObjectRef::l_get_breath(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if(co == NULL) return 0;
+	// Do it
+	u16 breath = co->getBreath();
+	lua_pushinteger (L, breath);
+	return 1;
+}
+
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
@@ -1098,6 +1125,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_yaw),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
+	luamethod(ObjectRef, get_breath),
+	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),

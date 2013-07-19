@@ -1547,6 +1547,11 @@ Player-only: (no-op for other objects)
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
 - set_look_pitch(radians): sets look pitch
 - set_look_yaw(radians): sets look yaw
+- get_breath() : returns players breath
+- set_breath(value) : sets players breath
+    values: 0    player is drowning,
+            1-10 number of bubbles remain,
+            11   bubbles bar is not shown
 - set_inventory_formspec(formspec)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
