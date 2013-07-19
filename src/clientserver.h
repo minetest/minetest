@@ -488,6 +488,12 @@ enum ToClientCommand
 		u16 len
 		u8[len] value
 	*/
+
+	TOCLIENT_BREATH = 0x4e,
+	/*
+		u16 command
+		u16 breath
+	*/
 };
 
 enum ToServerCommand
@@ -710,6 +716,12 @@ enum ToServerCommand
 	TOSERVER_RECEIVED_MEDIA = 0x41,
 	/*
 		u16 command
+	*/
+
+	TOSERVER_BREATH = 0x42,
+	/*
+		u16 command
+		u16 breath
 	*/
 };
 

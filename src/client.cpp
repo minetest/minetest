@@ -692,9 +692,14 @@ void Client::step(float dtime)
 					m_client_event_queue.push_back(event);
 				}
 			}
+			else if(event.type == CEE_PLAYER_BREATH)
+			{
+					u16 breath = event.player_breath.amount;
+					sendBreath(breath);
+			}
 		}
 	}
-	
+
 	/*
 		Print some info
 	*/
@@ -1579,6 +1584,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			m_client_event_queue.push_back(event);
 		}
 	}
+	else if(command == TOCLIENT_BREATH)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		u16 breath = readU16(is);
+		player->setBreath(breath) ;
+	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -2359,6 +2373,20 @@ void Client::sendDamage(u8 damage)
 	Send(0, data, true);
 }
 
+void Client::sendBreath(u16 breath)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_BREATH);
+	writeU16(os, breath);
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::sendRespawn()
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2694,7 +2722,7 @@ u16 Client::getBreath()
 {
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-	return player->breath;
+	return player->getBreath();
 }
 
 bool Client::getChatMessage(std::wstring &message)

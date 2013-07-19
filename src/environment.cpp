@@ -2242,15 +2242,19 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-
-		if(c.isLiquid() && c.drowning){
-			if(lplayer->breath > 10)
-				lplayer->breath = 11;
-			if(lplayer->breath > 0)
-				lplayer->breath -= 1;
+		if(c.isLiquid() && c.drowning && lplayer->hp > 0){
+			u16 breath = lplayer->getBreath();
+			if(breath > 10){
+				breath = 11;
+			}
+			if(breath > 0){
+				breath -= 1;
+			}
+			lplayer->setBreath(breath);
+			updateLocalPlayerBreath(breath);
 		}
 
-		if(lplayer->breath == 0){
+		if(lplayer->getBreath() == 0){
 			damageLocalPlayer(1, true);
 		}
 	}
@@ -2262,10 +2266,16 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-
-		if(!c.isLiquid() || !c.drowning){
-			if(lplayer->breath <= 10)
-				lplayer->breath += 1;
+		if (!lplayer->hp){
+			lplayer->setBreath(11);
+		}
+		else if(!c.isLiquid() || !c.drowning){
+			u16 breath = lplayer->getBreath();
+			if(breath <= 10){
+				breath += 1;
+				lplayer->setBreath(breath);
+				updateLocalPlayerBreath(breath);
+			}
 		}
 	}
 
@@ -2525,6 +2535,14 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	event.type = CEE_PLAYER_DAMAGE;
 	event.player_damage.amount = damage;
 	event.player_damage.send_to_server = handle_hp;
+	m_client_event_queue.push_back(event);
+}
+
+void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
+{
+	ClientEnvEvent event;
+	event.type = CEE_PLAYER_BREATH;
+	event.player_breath.amount = breath;
 	m_client_event_queue.push_back(event);
 }
 

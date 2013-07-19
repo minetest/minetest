@@ -935,6 +935,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_moved(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
+	m_breath_not_sent(false),
 	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
@@ -1368,6 +1369,16 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+u16 PlayerSAO::getBreath() const
+{
+	return m_player->getBreath();
+}
+
+void PlayerSAO::setBreath(u16 breath)
+{
+	m_player->setBreath(breath);
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)

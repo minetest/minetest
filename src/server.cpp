@@ -1140,6 +1140,13 @@ void Server::AsyncRunStep()
 			}
 
 			/*
+				Send player breath if changed
+			*/
+			if(playersao->m_breath_not_sent){
+				SendPlayerBreath(client->peer_id);
+			}
+
+			/*
 				Send player inventories if necessary
 			*/
 			if(playersao->m_moved){
@@ -2105,6 +2112,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(g_settings->getBool("enable_damage"))
 			SendPlayerHP(peer_id);
 
+		// Send Breath
+		SendPlayerBreath(peer_id);
+
 		// Send detached inventories
 		sendDetachedInventories(peer_id);
 
@@ -2582,6 +2592,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(playersao->m_hp_not_sent)
 				SendPlayerHP(peer_id);
 		}
+	}
+	else if(command == TOSERVER_BREATH)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		u16 breath = readU16(is);
+		playersao->setBreath(breath);
 	}
 	else if(command == TOSERVER_PASSWORD)
 	{
@@ -3326,6 +3343,21 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendBreath(con::Connection &con, u16 peer_id, u16 breath)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_BREATH);
+	writeU16(os, breath);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
 void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 		const std::wstring &reason)
 {
@@ -3753,6 +3785,15 @@ void Server::SendPlayerHP(u16 peer_id)
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
 	SendHP(m_con, peer_id, playersao->getHP());
+}
+
+void Server::SendPlayerBreath(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+	playersao->m_breath_not_sent = false;
+	SendBreath(m_con, peer_id, playersao->getBreath());
 }
 
 void Server::SendMovePlayer(u16 peer_id)
