@@ -162,7 +162,8 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
-	
+	u16 getBreath() const;
+	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
@@ -282,6 +283,7 @@ public:
 	bool m_moved;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_breath_not_sent;
 	bool m_wielded_item_not_sent;
 
 	float m_physics_override_speed;

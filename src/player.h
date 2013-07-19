@@ -160,6 +160,16 @@ public:
 		return m_yaw;
 	}
 
+	u16 getBreath()
+	{
+		return m_breath;
+	}
+
+	virtual void setBreath(u16 breath)
+	{
+		m_breath = breath;
+	}
+
 	f32 getRadPitch()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
@@ -249,13 +259,12 @@ public:
 	float physics_override_gravity;
 
 	u16 hp;
-	u16 breath;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
 	u16 peer_id;
-	
+
 	std::string inventory_formspec;
 	
 	PlayerControl control;
@@ -274,6 +283,7 @@ protected:
 	IGameDef *m_gamedef;
 
 	char m_name[PLAYERNAME_SIZE];
+	u16 m_breath;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

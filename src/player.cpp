@@ -36,10 +36,10 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
-	breath(-1),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
+	m_breath(-1),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -177,11 +177,12 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("breath", m_breath);
 
 	args.writeLines(os);
 
 	os<<"PlayerArgsEnd\n";
-	
+
 	inventory.serialize(os);
 }
 
@@ -212,6 +213,11 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
+	}
+	try{
+		m_breath = args.getS32("breath");
+	}catch(SettingNotFoundException &e){
+		m_breath = 11;
 	}
 
 	inventory.deSerialize(is);

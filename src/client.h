@@ -306,6 +306,7 @@ public:
 	void sendChangePassword(const std::wstring oldpassword,
 			const std::wstring newpassword);
 	void sendDamage(u8 damage);
+	void sendBreath(u16 breath);
 	void sendRespawn();
 
 	ClientEnvironment& getEnv()
