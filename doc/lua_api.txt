@@ -1070,6 +1070,11 @@ minetest.features
 minetest.has_feature(arg) -> bool, missing_features
 ^ arg: string or table in format {foo=true, bar=true}
 ^ missing_features: {foo=true, bar=true}
+minetest.get_player_last_online(name) -> returns the last time a player was online as Unix Time
+^ name: the name of an online or offline player
+^ Unix Time is the number of seconds since Thursday, 1 January 1970 00:00:00
+^ To determine the number of days since a player has been online in Lua would be: 
+( os.time() - minetest.get_player_last_online('name') ) / 86400
 
 Logging:
 minetest.debug(line)
