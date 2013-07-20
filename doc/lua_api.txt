@@ -1868,6 +1868,7 @@ Item definition (register_node, register_craftitem, register_tool)
     wield_image = "",
     wield_scale = {x=1,y=1,z=1},
     stack_max = 99,
+    range = 4.0,
     liquids_pointable = false,
     tool_capabilities = {
         full_punch_interval = 1.0,

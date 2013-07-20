@@ -2488,7 +2488,12 @@ void the_game(
 		
 		//u32 t1 = device->getTimer()->getRealTime();
 		
-		f32 d = 4; // max. distance
+		f32 d = playeritem_def.range; // max. distance
+		f32 d_hand = itemdef->get("").range;
+		if(d < 0 && d_hand >= 0)
+			d = d_hand;
+		else if(d < 0)
+			d = 4.0;
 		core::line3d<f32> shootline(camera_position,
 				camera_position + camera_direction * BS * (d+1));
 
