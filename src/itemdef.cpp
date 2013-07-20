@@ -76,6 +76,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	sound_place = def.sound_place;
+	range = def.range;
 	return *this;
 }
 
@@ -109,6 +110,7 @@ void ItemDefinition::reset()
 	}
 	groups.clear();
 	sound_place = SimpleSoundSpec();
+	range = -1;
 
 	node_placement_prediction = "";
 }
@@ -146,6 +148,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		//serializeSimpleSoundSpec(sound_place, os);
 		os<<serializeString(sound_place.name);
 		writeF1000(os, sound_place.gain);
+		writeF1000(os, range);
 	}
 }
 
@@ -198,7 +201,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		
+		range = readF1000(is);
 	}catch(SerializationError &e) {};
 }
 
