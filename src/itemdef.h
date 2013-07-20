@@ -68,6 +68,7 @@ struct ItemDefinition
 	ToolCapabilities *tool_capabilities;
 	ItemGroupList groups;
 	SimpleSoundSpec sound_place;
+	f32 range;
 
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.

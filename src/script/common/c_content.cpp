@@ -100,6 +100,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	}
 	lua_pop(L, 1);
 
+	def.range = getfloatfield_default(L, index, "range", def.range);
+
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
