@@ -95,9 +95,14 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_HUDRM
 		TOCLIENT_HUDCHANGE
 		TOCLIENT_HUD_SET_FLAGS
+	PROTOCOL_VERSION 21:
+		TOCLIENT_BREATH
+		TOSERVER_BREATH
+		range added to ItemDefinition
+		drowning, leveled and liquid_range added to ContentFeatures
 */
 
-#define LATEST_PROTOCOL_VERSION 20
+#define LATEST_PROTOCOL_VERSION 21
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
