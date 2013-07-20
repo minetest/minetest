@@ -281,11 +281,11 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	serializeSimpleSoundSpec(sound_dig, os);
 	serializeSimpleSoundSpec(sound_dug, os);
 	writeU8(os, rightclickable);
-	// Stuff below should be moved to correct place in a version that otherwise changes
-	// the protocol version
 	writeU8(os, drowning);
 	writeU8(os, leveled);
 	writeU8(os, liquid_range);
+	// Stuff below should be moved to correct place in a version that otherwise changes
+	// the protocol version
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -345,14 +345,14 @@ void ContentFeatures::deSerialize(std::istream &is)
 	deSerializeSimpleSoundSpec(sound_dig, is);
 	deSerializeSimpleSoundSpec(sound_dug, is);
 	rightclickable = readU8(is);
+	drowning = readU8(is);
+	leveled = readU8(is);
+	liquid_range = readU8(is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
-		drowning = readU8(is);
-		leveled = readU8(is);
-		liquid_range = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
