@@ -396,10 +396,7 @@ function modmgr.dialog_configure_world()
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]"
 	
 	if engine.setting_get("old_style_mod_selection") == "true" then
-		local selected = engine.get_textlist_index("world_config_modlist")
-		local mod = filterlist.get_list(modmgr.modlist)[selected]
-		
-		if mod ~= nil then
+		if mod ~= nil and mod.name ~= "" then
 			if mod.is_modpack then
 				local rawlist = filterlist.get_raw_list(modmgr.modlist)
 				
