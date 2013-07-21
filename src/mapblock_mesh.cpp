@@ -448,7 +448,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
-	
+
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
 
@@ -460,7 +460,9 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+
 	v3s16 t;
+	u16 t1;
 	switch (tile.rotation)
 	{
 	case 0:
@@ -471,6 +473,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1=li0;
+		li0=li3;
+		li3=li2;
+		li2=li1;
+		li1=t1;
 		break;
 	case 2: //R180
 		t = vertex_dirs[0];
@@ -479,6 +486,12 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		t = vertex_dirs[1];
 		vertex_dirs[1] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li2;
+		li2 = t1;
+		t1  = li1;
+		li1 = li3;
+		li3 = t1;
 		break;
 	case 3: //R270
 		t = vertex_dirs[0];
@@ -486,6 +499,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		break;
 	case 4: //FXR90
 		t = vertex_dirs[0];
@@ -493,6 +511,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
 		y0 += h;
 		h *= -1;
 		break;
@@ -502,6 +525,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		y0 += h;
 		h *= -1;
 		break;
@@ -511,6 +539,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
 		x0 += w;
 		w *= -1;
 		break;
@@ -520,6 +553,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		x0 += w;
 		w *= -1;
 		break;
@@ -534,6 +572,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	default:
 		break;
 	}
+
 	for(u16 i=0; i<4; i++)
 	{
 		vertex_pos[i] = v3f(
@@ -551,7 +590,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_pos[i] += pos;
 	}
 
-	f32 abs_scale = 1.;
+	f32 abs_scale = 1.0;
 	if     (scale.X < 0.999 || scale.X > 1.001) abs_scale = scale.X;
 	else if(scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
 	else if(scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
@@ -574,7 +613,6 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
-	
 	dest.push_back(face);
 }
 
