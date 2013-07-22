@@ -34,13 +34,11 @@ function menu.render_favorite(spec,render_details)
 	else
 		if spec.address ~= nil then
 			text = text .. spec.address:trim()
+			
+			if spec.port ~= nil then
+				text = text .. ":" .. spec.port
+			end
 		end
-	end
-	
-	if spec.port ~= nil and
-		spec.port ~= 30000 then
-		
-		text = text .. ":" .. spec.port
 	end
 	
 	if not render_details then
