@@ -865,9 +865,9 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-int ServerEnvironment::get_surface(v3s16 basepos, int serachup, bool walkable_only) {
+int ServerEnvironment::get_surface(v3s16 basepos, int searchup, bool walkable_only) {
 
-	int max = serachup + basepos.Y;
+	int max = searchup + basepos.Y;
 
 	MapNode last_node = getMap().getNodeNoEx(basepos);
 	MapNode node = last_node;
