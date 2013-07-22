@@ -380,6 +380,6 @@
 
 #main_menu_game_mgr = 0
 #main_menu_mod_mgr = 1
-#modstore_download_url = http://forum.minetest.net/media/
-#modstore_listmods_url = http://forum.minetest.net/mmdb/mods/
-#modstore_details_url  = http://forum.minetest.net/mmdb/mod/*/
+#modstore_download_url = https://forum.minetest.net/media/
+#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
+#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
