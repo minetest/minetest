@@ -1825,6 +1825,7 @@ Object Properties
     is_visible = true,
     makes_footstep_sound = false,
     automatic_rotate = false,
+    stepheight = 0,
 }
 
 Entity definition (register_entity)

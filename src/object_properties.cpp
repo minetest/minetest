@@ -39,7 +39,8 @@ ObjectProperties::ObjectProperties():
 	initial_sprite_basepos(0,0),
 	is_visible(true),
 	makes_footstep_sound(false),
-	automatic_rotate(0)
+	automatic_rotate(0),
+	stepheight(0)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
@@ -100,6 +101,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, colors[i]);
 	}
 	writeU8(os, collideWithObjects);
+	writeF1000(os,stepheight);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -133,6 +135,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 				colors.push_back(readARGB8(is));
 			}
 			collideWithObjects = readU8(is);
+			stepheight = readF1000(is);
 		}catch(SerializationError &e){}
 	}
 	else
