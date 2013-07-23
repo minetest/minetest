@@ -17,22 +17,22 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef GUIVOLUMECHANGE_HEADER
-#define GUIVOLUMECHANGE_HEADER
+#ifndef GUISETTINGSMENU_HEADER
+#define GUISETTINGSMENU_HEADER
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "client.h"
 #include <string>
 
-class GUIVolumeChange : public GUIModalMenu
+class GUISettingsMenu : public GUIModalMenu
 {
 public:
-	GUIVolumeChange(gui::IGUIEnvironment* env,
+	GUISettingsMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			Client* client);
-	~GUIVolumeChange();
+	~GUISettingsMenu();
 	
 	void removeChildren();
 	/*

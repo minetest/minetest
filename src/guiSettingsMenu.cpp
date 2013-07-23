@@ -17,7 +17,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "guiVolumeChange.h"
+#include "guiSettingsMenu.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
@@ -34,8 +34,11 @@ const int ID_soundText1 = 263;
 const int ID_soundText2 = 264;
 const int ID_soundExitButton = 265;
 const int ID_soundSlider = 266;
+const int ID_mouseSensText1 = 267;
+const int ID_mouseSensText2 = 268;
+const int ID_mouseSensSlider = 269;
 
-GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
+GUISettingsMenu::GUISettingsMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		Client* client
@@ -45,12 +48,12 @@ GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 {
 }
 
-GUIVolumeChange::~GUIVolumeChange()
+GUISettingsMenu::~GUISettingsMenu()
 {
 	removeChildren();
 }
 
-void GUIVolumeChange::removeChildren()
+void GUISettingsMenu::removeChildren()
 {
 	{
 		gui::IGUIElement *e = getElementFromId(ID_soundText1);
@@ -72,9 +75,24 @@ void GUIVolumeChange::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(ID_mouseSensText1);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(ID_mouseSensText2);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(ID_mouseSensSlider);
+		if(e != NULL)
+			e->remove();
+	}
 }
 
-void GUIVolumeChange::regenerateGui(v2u32 screensize)
+void GUISettingsMenu::regenerateGui(v2u32 screensize)
 {
 	/*
 		Remove stuff
@@ -86,9 +104,9 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	*/
 	core::rect<s32> rect(
 			screensize.X/2 - 380/2,
-			screensize.Y/2 - 200/2,
+			screensize.Y/2 - 250/2,
 			screensize.X/2 + 380/2,
-			screensize.Y/2 + 200/2
+			screensize.Y/2 + 250/2
 	);
 	
 	DesiredRect = rect;
@@ -97,13 +115,14 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	v2s32 size = rect.getSize();
 	v2s32 topleft_client(40, 0);
 	int volume=(int)(g_settings->getFloat("sound_volume")*100);
+	int sensitivity=(int)(g_settings->getFloat("mouse_sensitivity")*100);
 	/*
 		Add stuff
 	*/
 	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 120, 20);
-		rect = rect + v2s32(size.X/2-60, size.Y/2-35);
+		rect = rect + v2s32(size.X/2-60, size.Y/2-20);
 		wchar_t* text = wgettext("Sound Volume: ");
 		Environment->addStaticText(text, rect, false,
 				true, this, ID_soundText1);
@@ -111,7 +130,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 30, 20);
-		rect = rect + v2s32(size.X/2+40, size.Y/2-35);
+		rect = rect + v2s32(size.X/2+40, size.Y/2-20);
 		Environment->addStaticText(core::stringw(volume).c_str(), rect, false,
 				true, this, ID_soundText2);
 	}
@@ -131,10 +150,32 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		e->setMax(100);
 		e->setPos(volume);
 	}
+	{
+		core::rect<s32> rect(0, 0, 120, 20);
+		rect = rect + v2s32(size.X/2-68, size.Y/2-80);
+		wchar_t* text = wgettext("Mouse Sensitivity: ");
+		Environment->addStaticText(text, rect, false,
+				true, this, ID_mouseSensText1);
+		delete[] text;
+	}
+	{
+		core::rect<s32> rect(0, 0, 30, 20);
+		rect = rect + v2s32(size.X/2+48, size.Y/2-80);
+		Environment->addStaticText(core::stringw(sensitivity).c_str(), rect, false,
+				true, this, ID_mouseSensText2);
+	}
+	{
+		core::rect<s32> rect(0, 0, 300, 20);
+		rect = rect + v2s32(size.X/2-150, size.Y/2-60);
+		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
+			rect, this, ID_mouseSensSlider);
+		e->setMax(100);
+		e->setPos(sensitivity);
+	}
 	changeCtype("");
 }
 
-void GUIVolumeChange::drawMenu()
+void GUISettingsMenu::drawMenu()
 {
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (!skin)
@@ -145,7 +186,7 @@ void GUIVolumeChange::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-bool GUIVolumeChange::OnEvent(const SEvent& event)
+bool GUISettingsMenu::OnEvent(const SEvent& event)
 {
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
@@ -175,6 +216,14 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 				g_settings->setFloat("sound_volume",(float)pos/100);
 				gui::IGUIElement *e = getElementFromId(ID_soundText2);
+				e->setText( core::stringw(pos).c_str() );
+				return true;
+			}
+		if (event.GUIEvent.Caller->getID() == ID_mouseSensSlider)
+			{
+				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+				g_settings->setFloat("mouse_sensitivity",(float)pos/100);
+				gui::IGUIElement *e = getElementFromId(ID_mouseSensText2);
 				e->setText( core::stringw(pos).c_str() );
 				return true;
 			}

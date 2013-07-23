@@ -320,7 +320,7 @@ set(minetest_SRCS
 	guiFormSpecMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
-	guiVolumeChange.cpp
+  guiSettingsMenu.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	client.cpp
