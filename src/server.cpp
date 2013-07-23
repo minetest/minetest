@@ -1745,9 +1745,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	ScopeProfiler sp(g_profiler, "Server::ProcessData");
 
+	std::string addr_s;
 	try{
 		Address address = m_con.GetPeerAddress(peer_id);
-		std::string addr_s = address.serializeString();
+		addr_s = address.serializeString();
 
 		// drop player if is ip is banned
 		if(m_banmanager.isIpBanned(addr_s)){
@@ -1768,8 +1769,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<peer_id<<" not found"<<std::endl;
 		return;
 	}
-
-	std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
 
 	u8 peer_ser_ver = getClient(peer_id)->serialization_version;
 
@@ -2178,7 +2177,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				os<<player->getName()<<" ";
 			}
 
-			actionstream<<player->getName()<<" ["<<addr_s<<"] "<<" joins game. List of players: "
+			actionstream<<player->getName()<<" ["<<addr_s<<"] "<<"joins game. List of players: "
 					<<os.str()<<std::endl;
 		}
 
