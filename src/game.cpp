@@ -2455,6 +2455,7 @@ void the_game(
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
+		v3s16 pos_i = floatToInt(player_position, BS);
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
@@ -3034,7 +3035,9 @@ void the_game(
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
-				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
+				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
+				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);

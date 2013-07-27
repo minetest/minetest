@@ -322,6 +322,8 @@ param2 is reserved for the engine when any of these are used:
     facedir modulo 4 = axisdir
     0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
     facedir's two less significant bits are rotation around the axis
+  paramtype2 == "leveled"
+  ^ The drawn node level is read from param2, like flowingliquid
 
 Nodes can also contain extra data. See "Node Metadata".
 
@@ -353,7 +355,7 @@ Node selection boxes are defined using "node boxes"
 
 The "nodebox" node drawtype allows defining visual of nodes consisting of
 arbitrary number of boxes. It allows defining stuff like stairs. Only the
-"fixed" box type is supported for these.
+"fixed" and "leveled" box type is supported for these.
 ^ Please note that this is still experimental, and may be incompatibly
   changed in the future.
 
@@ -380,6 +382,8 @@ A box is defined as:
   {x1, y1, z1, x2, y2, z2}
 A box of a regular node would look like:
   {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+
+type = "leveled" is same as "fixed", but y2 will be automaticaly setted to level from param2
 
 Ore types
 ---------------
@@ -1258,6 +1262,18 @@ minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)
 ^ algorithm: A*_noprefetch(default), A*, Dijkstra
 minetest.spawn_tree (pos, {treedef})
 ^ spawns L-System tree at given pos with definition in treedef table
+minetest.transforming_liquid_add(pos)
+^ add node to liquid update queue
+minetest.get_node_max_level(pos)
+^ get max available level for leveled node
+minetest.get_node_level(pos)
+^ get level of leveled node (water, snow)
+minetest.add_node_level(pos, level)
+^ increase level of leveled node by level, default level = 1, if totallevel > maxlevel returns rest (total-max). can be negative for decreasing
+minetest.get_heat(pos)
+^ heat at pos
+minetest.get_humidity(pos)
+^ humidity at pos
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
@@ -1965,6 +1981,8 @@ Node definition (register_node)
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing
+    freezemelt = "", -- water for snow/ice, ice/snow for water
+    leveled = 0, -- Block contain level in param2. value - default level, used for snow. Dont forget use "leveled" type nodebox
     liquid_range = 8, -- number of flowing nodes arround source (max. 8)
     drowning = true, -- Player will drown in these 
     two or more sources nearly?

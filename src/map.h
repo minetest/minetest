@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "environment.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -336,6 +337,9 @@ public:
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
 
+	virtual s16 getHeat(v3s16 p);
+	virtual s16 getHumidity(v3s16 p);
+
 protected:
 	friend class LuaVoxelManip;
 
@@ -483,6 +487,10 @@ public:
 
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
+
+	virtual s16 getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+	virtual s16 getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;

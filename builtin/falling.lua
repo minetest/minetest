@@ -14,11 +14,11 @@ minetest.register_entity("__builtin:falling_node", {
 		visual_size = {x=0.667, y=0.667},
 	},
 
-	nodename = "",
+	node = {},
 
-	set_node = function(self, nodename)
-		self.nodename = nodename
-		local stack = ItemStack(nodename)
+	set_node = function(self, node)
+		self.node = node
+		local stack = ItemStack(node.name)
 		local itemtable = stack:to_table()
 		local itemname = nil
 		if itemtable then
@@ -32,20 +32,19 @@ minetest.register_entity("__builtin:falling_node", {
 		end
 		prop = {
 			is_visible = true,
-			textures = {nodename},
+			textures = {node.name},
 		}
 		self.object:set_properties(prop)
 	end,
 
 	get_staticdata = function(self)
-		return self.nodename
+		return self.node.name
 	end,
 
 	on_activate = function(self, staticdata)
-		self.nodename = staticdata
 		self.object:set_armor_groups({immortal=1})
 		--self.object:setacceleration({x=0, y=-10, z=0})
-		self:set_node(self.nodename)
+		self:set_node({name=staticdata})
 	end,
 
 	on_step = function(self, dtime)
@@ -57,8 +56,10 @@ minetest.register_entity("__builtin:falling_node", {
 		local bcn = minetest.get_node(bcp)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable then
-			if minetest.registered_nodes[bcn.name].buildable_to then
+				minetest.registered_nodes[bcn.name].walkable or
+				(minetest.get_node_group(self.node.name, "float") ~= 0 and minetest.registered_nodes[bcn.name].liquidtype ~= "none")
+			then
+			if minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
 			end
@@ -83,7 +84,7 @@ minetest.register_entity("__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			minetest.add_node(np, {name=self.nodename})
+			minetest.add_node(np, self.node)
 			self.object:remove()
 			nodeupdate(np)
 		else
@@ -92,9 +93,9 @@ minetest.register_entity("__builtin:falling_node", {
 	end
 })
 
-function spawn_falling_node(p, nodename)
+function spawn_falling_node(p, node)
 	obj = minetest.add_entity(p, "__builtin:falling_node")
-	obj:get_luaentity():set_node(nodename)
+	obj:get_luaentity():set_node(node)
 end
 
 function drop_attached_node(p)
@@ -150,13 +151,14 @@ function nodeupdate_single(p, delay)
 		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
+				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
 			else
 				minetest.remove_node(p)
-				spawn_falling_node(p, n.name)
+				spawn_falling_node(p, n)
 				nodeupdate(p)
 			end
 		end
@@ -170,7 +172,7 @@ function nodeupdate_single(p, delay)
 	end
 end
 
-function nodeupdate(p)
+function nodeupdate(p, delay)
 	-- Round p to prevent falling entities to get stuck
 	p.x = math.floor(p.x+0.5)
 	p.y = math.floor(p.y+0.5)
@@ -179,7 +181,7 @@ function nodeupdate(p)
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, not (x==0 and y==0 and z==0))
+		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, delay or not (x==0 and y==0 and z==0))
 	end
 	end
 	end

@@ -224,6 +224,8 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Is liquid renewable (new liquid source will be created between 2 existing)
 	bool liquid_renewable;
+	// Ice for water, water for ice
+	std::string freezemelt;
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
 	bool drowning;
