@@ -1242,7 +1242,7 @@ void Server::AsyncRunStep()
 	// send masterserver announce
 	{
 		float &counter = m_masterserver_timer;
-		if((!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
+		if(!isSingleplayer() && (!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
 			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id, m_mods);
 			counter = 0.01;
