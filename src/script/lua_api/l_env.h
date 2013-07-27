@@ -67,6 +67,19 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_punch_node(lua_State *L);
 
+
+	// minetest.get_node_max_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_max_level(lua_State *L);
+
+	// minetest.get_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_level(lua_State *L);
+
+	// minetest.add_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_node_level(lua_State *L);
+
 	// minetest.get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
@@ -135,6 +148,12 @@ private:
 	// minetest.find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
+
+	// minetest.transforming_liquid_add(pos)
+	static int l_transforming_liquid_add(lua_State *L);
+
+	static int l_get_heat(lua_State *L);
+	static int l_get_humidity(lua_State *L);
 	
 	static struct EnumString es_MapgenObject[];
 	

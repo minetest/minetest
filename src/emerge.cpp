@@ -488,6 +488,14 @@ void *EmergeThread::Thread() {
 		if (block)
 			modified_blocks[p] = block;
 
+		// Update weather data in mapblock
+		for(std::map<v3s16, MapBlock *>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i) {
+			map->getHeat(m_server->m_env, MAP_BLOCKSIZE*i->first ,i->second);
+			map->getHumidity(m_server->m_env, MAP_BLOCKSIZE*i->first, i->second);
+		}
+
 		// Set the modified blocks unsent for all the clients
 		for (std::map<u16, RemoteClient*>::iterator
 			 i = m_server->m_clients.begin();

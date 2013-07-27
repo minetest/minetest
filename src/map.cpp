@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen_v6.h"
 #include "mapgen_indev.h"
+#include "biome.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1087,6 +1088,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Add neighboring liquid nodes and the node itself if it is
 		liquid (=water node was added) to transform queue.
+		note: todo: for liquid_finite enough to add only self node
 	*/
 	v3s16 dirs[7] = {
 		v3s16(0,0,0), // self
@@ -1278,6 +1280,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	/*
 		Add neighboring liquid nodes and this node to transform queue.
 		(it's vital for the node itself to get updated last.)
+		note: todo: for liquid_finite enough to add only self node
 	*/
 	v3s16 dirs[7] = {
 		v3s16(0,0,1), // back
@@ -2362,6 +2365,26 @@ void Map::removeNodeTimer(v3s16 p)
 		return;
 	}
 	block->m_node_timers.remove(p_rel);
+}
+
+s16 Map::getHeat(v3s16 p)
+{
+	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		return block->heat;
+	}
+	//errorstream << "No heat for " << p.X<<"," << p.Z << std::endl;
+	return 0;
+}
+
+s16 Map::getHumidity(v3s16 p)
+{
+	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		return block->humidity;
+	}
+	//errorstream << "No humidity for " << p.X<<"," << p.Z << std::endl;
+	return 0;
 }
 
 /*
@@ -3863,7 +3886,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 				<<" (SerializationError). "
 				<<"what()="<<e.what()
 				<<std::endl;
-				//" Ignoring. A new one will be generated.
+				// Ignoring. A new one will be generated.
 		assert(0);
 
 		// TODO: Backup file; name is in fullpath.
@@ -4037,6 +4060,63 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
+}
+
+s16 ServerMap::getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
+{
+	if(block == NULL)
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		if (env->getGameTime() - block->heat_time < 10)
+			return block->heat;
+	}
+
+	//variant 1: full random
+	//f32 heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->getGameTime()/100, p.Z, m_emerge->params->seed);
+
+	//variant 2: season change based on default heat map
+	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z, m_emerge->params->seed);
+	heat += -30; // -30 - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
+	f32 base = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
+	base /= ( 86400 * g_settings->getS16("year_days") );
+	base += (f32)p.X / 3000;
+	heat += 30 * sin(base * M_PI); // season
+
+	heat += p.Y / -333; // upper=colder, lower=hotter
+
+	// daily change, hotter at sun +4, colder at night -4
+	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); 
+
+	if(block != NULL) {
+		block->heat = heat;
+		block->heat_time = env->getGameTime();
+	}
+	return heat;
+}
+
+s16 ServerMap::getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
+{
+	if(block == NULL)
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		if (env->getGameTime() - block->humidity_time < 10)
+			return block->humidity;
+	}
+
+	f32 humidity = NoisePerlin3D(	m_emerge->biomedef->np_humidity,
+					p.X, env->getGameTime()/10, p.Z,
+					m_emerge->params->seed);
+	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
+	//todo like heat//humidity += 20 * ( sin(((f32)p.Z / 300) * M_PI) - 0.5);
+
+	if (humidity > 100) humidity = 100;
+	if (humidity < 0) humidity = 0;
+
+	if(block != NULL) {
+		block->humidity = humidity;
+		block->humidity_time = env->getGameTime();
+	}
+	return humidity;
 }
 
 /*

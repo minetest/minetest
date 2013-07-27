@@ -518,6 +518,11 @@ public:
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 	
+	s16 heat;
+	u32 heat_time;
+	s16 humidity;
+	u32 humidity_time;
+
 private:
 	/*
 		Private member variables

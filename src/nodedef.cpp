@@ -213,6 +213,7 @@ void ContentFeatures::reset()
 	liquid_alternative_source = "";
 	liquid_viscosity = 0;
 	liquid_renewable = true;
+	freezemelt = "";
 	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = true;
 	light_source = 0;

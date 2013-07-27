@@ -58,7 +58,11 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_usage_timer(0),
-		m_refcount(0)
+		m_refcount(0),
+		heat_time(0),
+		heat(0),
+		humidity_time(0),
+		humidity(0)
 {
 	data = NULL;
 	if(dummy == false)
@@ -632,6 +636,11 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 			// Node timers
 			m_node_timers.serialize(os, version);
 		}
+	} else {
+		if(version >= 26){
+			writeF1000(os, heat);
+			writeF1000(os, humidity);
+		}
 	}
 }
 
@@ -733,6 +742,11 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 					<<": Node timers (ver>=25)"<<std::endl);
 			m_node_timers.deSerialize(is, version);
+		}
+	} else {
+		if(version >= 26){
+			heat = readF1000(is);
+			humidity = readF1000(is);
 		}
 	}
 		

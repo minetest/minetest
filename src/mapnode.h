@@ -227,7 +227,9 @@ struct MapNode
 	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
 
 	/* Liquid helpers */
+	u8 getMaxLevel(INodeDefManager *nodemgr) const;
 	u8 getLevel(INodeDefManager *nodemgr) const;
+	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
 
 	/*
 		Serialization functions
