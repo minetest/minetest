@@ -178,6 +178,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_send_interval", "5");
 	settings->setDefault("time_speed", "72");
+	settings->setDefault("year_days", "30");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("server_map_save_interval", "5.3");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
@@ -214,6 +215,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("liquid_relax", "2");
 	settings->setDefault("liquid_fast_flood", "1");
 	settings->setDefault("underground_springs", "1");
+	settings->setDefault("weather", "false");
 
 	//mapgen stuff
 	settings->setDefault("mg_name", "v6");

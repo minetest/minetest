@@ -107,6 +107,8 @@
 #liquid_fast_flood = 1
 # Underground water and lava springs, its infnity sources if liquid_finite enabled
 #underground_springs = 1
+# Enable weather (cold-hot, water freeze-melt). use only with liquid_finite=1
+#weather = false
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
@@ -268,7 +270,9 @@
 # Interval of sending time of day to clients
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
-#time_speed = 96
+#time_speed = 72
+# Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year. 30 days = 10 real hours
+#year_days = 30
 #server_unload_unused_data_timeout = 29
 # Interval of saving important changes in the world
 #server_map_save_interval = 5.3

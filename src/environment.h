@@ -303,6 +303,7 @@ public:
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
+	u32 getGameTime() { return m_game_time; }
 private:
 
 	/*
