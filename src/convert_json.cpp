@@ -55,9 +55,10 @@ Json::Value                 fetchJsonValue(const std::string url,
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, g_settings->getS32("curl_timeout"));
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, g_settings->getS32("curl_timeout"));
+
 		if (chunk != 0)
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-
 
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK)
