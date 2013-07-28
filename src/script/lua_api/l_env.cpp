@@ -287,9 +287,26 @@ int ModApiEnvMod::l_get_node_level(lua_State *L)
 	return 1;
 }
 
+// minetest.set_node_level(pos, level)
+// pos = {x=num, y=num, z=num}
+// level: 0..63
+int ModApiEnvMod::l_set_node_level(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	u8 level = 1;
+	if(lua_isnumber(L, 2))
+		level = lua_tonumber(L, 2);
+	MapNode n = env->getMap().getNodeNoEx(pos);
+	lua_pushnumber(L, n.setLevel(env->getGameDef()->ndef(), level));
+	env->setNode(pos, n);
+	return 1;
+}
+
 // minetest.add_node_level(pos, level)
 // pos = {x=num, y=num, z=num}
-// level: 0..8
+// level: 0..63
 int ModApiEnvMod::l_add_node_level(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -913,6 +930,7 @@ bool ModApiEnvMod::Initialize(lua_State *L,int top)
 	retval &= API_FCT(punch_node);
 	retval &= API_FCT(get_node_max_level);
 	retval &= API_FCT(get_node_level);
+	retval &= API_FCT(set_node_level);
 	retval &= API_FCT(add_node_level);
 	retval &= API_FCT(add_entity);
 	retval &= API_FCT(get_meta);

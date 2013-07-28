@@ -59,7 +59,14 @@ minetest.register_entity("__builtin:falling_node", {
 				minetest.registered_nodes[bcn.name].walkable or
 				(minetest.get_node_group(self.node.name, "float") ~= 0 and minetest.registered_nodes[bcn.name].liquidtype ~= "none")
 			then
-			if minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
+			if minetest.registered_nodes[bcn.name].leveled and bcn.name == self.node.name then
+				local addlevel = self.node.level
+				if addlevel == nil or addlevel <= 0 then addlevel = minetest.registered_nodes[bcn.name].leveled end
+				if minetest.env:add_node_level(bcp, addlevel) == 0 then
+					self.object:remove()
+					return
+				end
+			elseif minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
 			end
@@ -152,11 +159,13 @@ function nodeupdate_single(p, delay)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
 				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
+				(n.name ~= n_bottom.name or (minetest.registered_nodes[n_bottom.name].leveled and minetest.env:get_node_level(p_bottom) < minetest.env:get_node_max_level(p_bottom))) and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
 			else
+				n.level = minetest.env:get_node_level(p)
 				minetest.remove_node(p)
 				spawn_falling_node(p, n)
 				nodeupdate(p)

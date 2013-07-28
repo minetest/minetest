@@ -1268,6 +1268,8 @@ minetest.get_node_max_level(pos)
 ^ get max available level for leveled node
 minetest.get_node_level(pos)
 ^ get level of leveled node (water, snow)
+minetest.set_node_level(pos, level)
+^ set level of leveled node, default level = 1, if totallevel > maxlevel returns rest (total-max).
 minetest.add_node_level(pos, level)
 ^ increase level of leveled node by level, default level = 1, if totallevel > maxlevel returns rest (total-max). can be negative for decreasing
 minetest.get_heat(pos)

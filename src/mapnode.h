@@ -104,7 +104,7 @@ enum Rotation {
 #define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
 // mask for param2, now as for liquid
-#define LEVELED_MASK 0x07
+#define LEVELED_MASK 0x3F
 #define LEVELED_MAX LEVELED_MASK
 
 /*
@@ -229,7 +229,9 @@ struct MapNode
 	/* Liquid helpers */
 	u8 getMaxLevel(INodeDefManager *nodemgr) const;
 	u8 getLevel(INodeDefManager *nodemgr) const;
+	u8 setLevel(INodeDefManager *nodemgr, s8 level = 1);
 	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
+	void freezeMelt(INodeDefManager *nodemgr);
 
 	/*
 		Serialization functions

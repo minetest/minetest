@@ -1717,7 +1717,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 					if (liquid_kind == CONTENT_IGNORE)
 						liquid_kind = nb.n.getContent();
 					if (nb.n.getContent() == liquid_kind) {
-						liquid_levels[i] = LIQUID_LEVEL_SOURCE;
+						liquid_levels[i] = nb.n.getLevel(nodemgr); //LIQUID_LEVEL_SOURCE;
 						nb.l = 1;
 						nb.i = (nb.n.param2 & LIQUID_INFINITY_MASK);
 					}
@@ -1731,7 +1731,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 						liquid_kind = nodemgr->getId(
 							nodemgr->get(nb.n).liquid_alternative_source);
 					if (nb.n.getContent() == liquid_kind_flowing) {
-						liquid_levels[i] = (nb.n.param2 & LIQUID_LEVEL_MASK);
+						liquid_levels[i] = nb.n.getLevel(nodemgr); //(nb.n.param2 & LIQUID_LEVEL_MASK);
 						nb.l = 1;
 					}
 					break;
@@ -1849,7 +1849,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			<< (int)liquid_levels_want[D_BOTTOM]<<std::endl;
 		*/
 
-		u8 changed = 0;
+		//u8 changed = 0;
 		for (u16 i = 0; i < 7; i++) {
 			if (liquid_levels_want[i] < 0 || !neighbors[i].l) 
 				continue;
@@ -1881,7 +1881,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				new_node_content = liquid_kind_flowing;
 			else
 				new_node_content = CONTENT_AIR;
-
+			
 			// last level must flow down on stairs
 			if (liquid_levels_want[i] != liquid_levels[i] &&
 				liquid_levels[D_TOP] <= 0 && !neighbors[D_BOTTOM].l &&
@@ -1896,10 +1896,11 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				check if anything has changed.
 				if not, just continue with the next node.
 			 */
+			/*
 			if (
 				 new_node_content == n0.getContent() 
 				&& (nodemgr->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
-				 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level 
+				 (n0.getLevel(nodemgr) == (u8)new_node_level
 				 //&& ((n0.param2 & LIQUID_FLOW_DOWN_MASK) ==
 				 //LIQUID_FLOW_DOWN_MASK) == flowing_down
 				 ))
@@ -1908,14 +1909,18 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				 (((n0.param2 & LIQUID_INFINITY_MASK) ==
 					LIQUID_INFINITY_MASK) == neighbors[i].i
 				 ))
-			   ) {
+			   )*/
+			if (liquid_levels[i] == new_node_level)
+			{
 				continue;
 			}
-			++changed;
+			
+			//++changed;
 
 			/*
 				update the current node
 			 */
+			/*
 			if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 				// set level to last 3 bits, flowing down bit to 4th bit
 				n0.param2 = (new_node_level & LIQUID_LEVEL_MASK);
@@ -1923,13 +1928,15 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				//n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 				n0.param2 = (neighbors[i].i ? LIQUID_INFINITY_MASK : 0x00);
 			}
+			*/
 			/*
 			infostream << "set node i=" <<(int)i<<" "<< PP(p0)<< " nc="
 			<<new_node_content<< " p2="<<(int)n0.param2<< " nl="
 			<<(int)new_node_level<<std::endl;
 			*/
 			
-			n0.setContent(new_node_content);
+			n0.setContent(liquid_kind_flowing);
+			n0.setLevel(nodemgr, new_node_level);
 			// Find out whether there is a suspect for this action
 			std::string suspect;
 			if(m_gamedef->rollback()){
