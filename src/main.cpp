@@ -76,8 +76,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "quicktune.h"
 #include "serverlist.h"
-#include "sound.h"
-#include "sound_openal.h"
 #include "guiEngine.h"
 
 /*
@@ -203,49 +201,6 @@ u32 getTime(TimePrecision prec) {
 		return 0;
 	return g_timegetter->getTime(prec);
 }
-#endif
-
-//Client side main menu music fetcher
-#ifndef SERVER
-class MenuMusicFetcher: public OnDemandSoundFetcher
-{
-	std::set<std::string> m_fetched;
-public:
-
-	void fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
-			std::set<std::string> &dst_datas)
-	{
-		if(m_fetched.count(name))
-			return;
-		m_fetched.insert(name);
-		std::string base;
-		base = porting::path_share + DIR_DELIM + "sounds";
-		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
-		base = porting::path_user + DIR_DELIM + "sounds";
-		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
-		}
-};
 #endif
 
 class StderrLogOutput: public ILogOutput
@@ -1711,7 +1666,7 @@ int main(int argc, char *argv[])
 				// Continue to game
 				break;
 			}
-			
+
 			// Break out of menu-game loop to shut down cleanly
 			if(device->run() == false || kill == true) {
 				g_settings->updateConfigFile(configpath.c_str());
