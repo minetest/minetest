@@ -1106,5 +1106,6 @@ tabbuilder.init()
 menubar.refresh()
 modstore.init()
 
+engine.sound_play("main_menu", true)
 
 update_menu()

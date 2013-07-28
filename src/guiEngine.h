@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "guiLuaApi.h"
 #include "guiFormSpecMenu.h"
+#include "sound.h"
 
 /******************************************************************************/
 /* Typedefs and macros                                                        */
@@ -50,6 +51,7 @@ typedef enum {
 /******************************************************************************/
 class GUIEngine;
 struct MainMenuData;
+struct SimpleSoundSpec;
 
 /******************************************************************************/
 /* declarations                                                               */
@@ -80,6 +82,30 @@ private:
 	GUIEngine* m_engine;
 };
 
+class MenuMusicFetcher: public OnDemandSoundFetcher
+{
+	std::set<std::string> m_fetched;
+public:
+
+	void fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::string> &dst_datas)
+	{
+		if(m_fetched.count(name))
+			return;
+		m_fetched.insert(name);
+		std::string base;
+		base = porting::path_share + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		int i;
+		for(i=0; i<10; i++)
+			dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+		base = porting::path_user + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		for(i=0; i<10; i++)
+			dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+		}
+};
 
 /** implementation of main menu based uppon formspecs */
 class GUIEngine {
@@ -105,6 +131,9 @@ public:
 
 	/** default destructor */
 	virtual ~GUIEngine();
+
+	s32 playSound(SimpleSoundSpec spec, bool looped);
+	void stopSound(s32 handle);
 
 protected:
 	/**
@@ -143,6 +172,8 @@ private:
 	scene::ISceneManager*	m_smgr;
 	/** pointer to data beeing transfered back to main game handling */
 	MainMenuData*			m_data;
+	/** pointer to soundmanager*/
+	ISoundManager*			m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
 	FormspecFormSource*		m_formspecgui;

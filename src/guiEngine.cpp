@@ -30,6 +30,8 @@ extern "C" {
 #include "main.h"
 #include "settings.h"
 #include "guiMainMenu.h"
+#include "sound.h"
+#include "sound_openal.h"
 
 #include "guiEngine.h"
 
@@ -84,6 +86,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_menumanager(menumgr),
 	m_smgr(smgr),
 	m_data(data),
+	m_sound_manager(NULL),
 	m_formspecgui(0),
 	m_buttonhandler(0),
 	m_menu(0),
@@ -121,6 +124,14 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		lua_settable(m_engineluastack, gamedata_idx);
 		m_data->errormessage = "";
 	}
+
+	//create soundmanager
+	MenuMusicFetcher soundfetcher;
+#if USE_SOUND
+	m_sound_manager = createOpenALSoundManager(&soundfetcher);
+#endif
+	if(!m_sound_manager)
+		m_sound_manager = &dummySoundManager;
 
 	//create topleft header
 	core::rect<s32> rect(0, 0, 500, 40);
@@ -299,7 +310,12 @@ GUIEngine::~GUIEngine()
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver != 0);
-	
+
+	if(m_sound_manager != &dummySoundManager){
+		delete m_sound_manager;
+		m_sound_manager = NULL;
+	}
+
 	//TODO: clean up m_menu here
 
 	lua_close(m_engineluastack);
@@ -570,4 +586,17 @@ void GUIEngine::setTopleftText(std::string append) {
 	}
 
 	m_irr_toplefttext->setText(narrow_to_wide(toset).c_str());
+}
+
+/******************************************************************************/
+s32 GUIEngine::playSound(SimpleSoundSpec spec, bool looped)
+{
+	s32 handle = m_sound_manager->playSound(spec, looped);
+	return handle;
+}
+
+/******************************************************************************/
+void GUIEngine::stopSound(s32 handle)
+{
+	m_sound_manager->stopSound(handle);
 }

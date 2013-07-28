@@ -82,6 +82,10 @@ engine.download_file(url,target)
 ^ returns true/false
 engine.get_version()
 ^ returns current minetest version
+engine.sound_play(spec, looped) -> handle
+^ spec = SimpleSoundSpec (see lua-api.txt)
+^ looped = bool
+engine.sound_stop(handle)
 
 GUI:
 engine.update_formspec(formspec)
