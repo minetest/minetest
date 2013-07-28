@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "util/directiontables.h"
+#include "util/mathconstants.h"
 #include "rollback_interface.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
