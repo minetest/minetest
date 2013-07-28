@@ -364,9 +364,7 @@ u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	// todo: after update in all games leave only if (f.param_type_2 ==
-	if(	   f.liquid_type == LIQUID_SOURCE 
-		|| f.liquid_type == LIQUID_FLOWING 
-		|| f.param_type_2 == CPT2_FLOWINGLIQUID)
+	if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID)
 		return LIQUID_LEVEL_MAX;
 	if(f.leveled || f.param_type_2 == CPT2_LEVELED)
 		return LEVELED_MAX;
@@ -392,12 +390,9 @@ u8 MapNode::getLevel(INodeDefManager *nodemgr) const
 	return 0;
 }
 
-u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
+u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
 {
-	s8 level = getLevel(nodemgr);
 	u8 rest = 0;
-	if (add == 0) level = 1;
-	level += add;
 	if (level < 1) {
 		setContent(CONTENT_AIR);
 		return 0;
@@ -406,8 +401,8 @@ u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
 	if (	   f.param_type_2 == CPT2_FLOWINGLIQUID
 		|| f.liquid_type == LIQUID_FLOWING
 		|| f.liquid_type == LIQUID_SOURCE) {
-		if (level >= LIQUID_LEVEL_MAX) {
-			rest = level - LIQUID_LEVEL_MAX;
+		if (level >= LIQUID_LEVEL_SOURCE) {
+			rest = level - LIQUID_LEVEL_SOURCE;
 			setContent(nodemgr->getId(f.liquid_alternative_source));
 		} else {
 			setContent(nodemgr->getId(f.liquid_alternative_flowing));
@@ -421,6 +416,31 @@ u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
 		setParam2(level & LEVELED_MASK);
 	}
 	return rest;
+}
+
+u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
+{
+	s8 level = getLevel(nodemgr);
+	if (add == 0) level = 1;
+	level += add;
+	return setLevel(nodemgr, level);
+}
+
+void MapNode::freezeMelt(INodeDefManager *ndef) {
+	u8 level_was_max = this->getMaxLevel(ndef);
+	u8 level_was = this->getLevel(ndef);
+	this->setContent(ndef->getId(ndef->get(*this).freezemelt));
+	u8 level_now_max = this->getMaxLevel(ndef);
+	if (level_was_max && level_was_max != level_now_max) {
+		u8 want = (float)level_now_max / level_was_max * level_was;
+		if (!want)
+			want = 1;
+		if (want != level_was)
+			this->setLevel(ndef, want);
+		//errorstream<<"was="<<(int)level_was<<"/"<<(int)level_was_max<<" nowm="<<(int)want<<"/"<<(int)level_now_max<< " => "<<(int)this->getLevel(ndef)<< std::endl;
+	}
+	if (this->getMaxLevel(ndef) && !this->getLevel(ndef))
+		this->addLevel(ndef);
 }
 
 u32 MapNode::serializedLength(u8 version)

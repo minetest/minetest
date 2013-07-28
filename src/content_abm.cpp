@@ -285,7 +285,7 @@ class LiquidFreeze : public ActiveBlockModifier {
 				 }
 				}
 				if (allow) {
-					n.setContent(ndef->getId(ndef->get(n).freezemelt));
+					n.freezeMelt(ndef);
 					map->addNodeWithEvent(p, n);
 				}
 			}
@@ -316,9 +316,7 @@ class LiquidMeltWeather : public ActiveBlockModifier {
 
 			float heat = map->getHeat(env, p);
 			if (heat >= 1 && (heat >= 40 || ((myrand_range(heat, 40)) >= 20))) {
-				n.setContent(ndef->getId(ndef->get(n).freezemelt));
-				if (!n.getLevel(ndef))
-					n.addLevel(ndef);
+				n.freezeMelt(ndef);
 				map->addNodeWithEvent(p, n);
 				env->getScriptIface()->node_falling_update(p);
 			}
@@ -346,14 +344,13 @@ class LiquidMeltHot : public ActiveBlockModifier {
 		virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n) {
 			ServerMap *map = &env->getServerMap();
 			INodeDefManager *ndef = env->getGameDef()->ndef();
-			n.setContent(ndef->getId(ndef->get(n).freezemelt));
-			if (!n.getLevel(ndef))
-				n.addLevel(ndef);
+			n.freezeMelt(ndef);
 			map->addNodeWithEvent(p, n);
 			env->getScriptIface()->node_falling_update(p);
 		}
 };
 
+/* too buggy, later via liquid flow code
 class LiquidMeltAround : public LiquidMeltHot {
 	public:
 		LiquidMeltAround(ServerEnvironment *env, INodeDefManager *nodemgr) 
@@ -368,7 +365,7 @@ class LiquidMeltAround : public LiquidMeltHot {
 		virtual u32 getTriggerChance()
 		{ return 60; }
 };
-
+*/
 
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
 	env->addActiveBlockModifier(new GrowGrassABM());
@@ -378,7 +375,7 @@ void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidDropABM(env, nodedef));
 		env->addActiveBlockModifier(new LiquidMeltHot(env, nodedef));
-		env->addActiveBlockModifier(new LiquidMeltAround(env, nodedef));
+		//env->addActiveBlockModifier(new LiquidMeltAround(env, nodedef));
 		if (g_settings->getBool("weather")) {
 			env->addActiveBlockModifier(new LiquidFreeze(env, nodedef));
 			env->addActiveBlockModifier(new LiquidMeltWeather(env, nodedef));
