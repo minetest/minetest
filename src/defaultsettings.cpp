@@ -141,9 +141,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_name", "");
 	settings->setDefault("server_description", "");
 
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 	settings->setDefault("font_size", "13");
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansMono.ttf"));
 	settings->setDefault("mono_font_size", "13");
 
 	// Server stuff
