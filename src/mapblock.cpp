@@ -44,6 +44,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
+		heat(0),
+		heat_time(0),
+		humidity(0),
+		humidity_time(0),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),
@@ -58,11 +62,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_usage_timer(0),
-		m_refcount(0),
-		heat_time(0),
-		heat(0),
-		humidity_time(0),
-		humidity(0)
+		m_refcount(0)
 {
 	data = NULL;
 	if(dummy == false)
