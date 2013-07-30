@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <IBoneSceneNode.h>
+#include <math.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -1209,6 +1210,11 @@ public:
 		}
 		if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001){
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
+			updateNodePos();
+		}
+
+		if (getParent() == NULL && m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
 			updateNodePos();
 		}
 	}

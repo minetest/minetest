@@ -522,6 +522,10 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					* dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
 		}
+
+		if(m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
+		}
 	}
 
 	if(m_registered){
