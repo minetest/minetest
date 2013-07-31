@@ -106,6 +106,8 @@ public:
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
 	bool use_crosshair_image;
+	bool use_hotbar_border_img;
+	bool use_hotbar_bg_img;
 	
 	Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 		gui::IGUIFont *font, u32 text_height, IGameDef *gamedef,
