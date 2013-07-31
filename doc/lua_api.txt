@@ -1832,6 +1832,7 @@ Object Properties
     is_visible = true,
     makes_footstep_sound = false,
     automatic_rotate = false,
+    automatic_face_movement_dir = false,
 }
 
 Entity definition (register_entity)
