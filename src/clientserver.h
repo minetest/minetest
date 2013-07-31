@@ -102,6 +102,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		drowning, leveled and liquid_range added to ContentFeatures
 		stepheight and collideWithObjects added to object properties
 		version, heat and humidity transfer in MapBock
+		added new property to entities automatic_face_movement_dir
 */
 
 #define LATEST_PROTOCOL_VERSION 21

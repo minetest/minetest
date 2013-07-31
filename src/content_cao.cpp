@@ -1210,6 +1210,11 @@ public:
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
+
+		if (getParent() == NULL && m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
+			updateNodePos();
+		}
 	}
 
 	void updateTexturePos()

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/scriptapi.h"
 #include "genericobject.h"
 #include "util/serialize.h"
+#include "util/mathconstants.h"
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -521,6 +522,10 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_base_position += dtime * m_velocity + 0.5 * dtime
 					* dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
+		}
+
+		if(m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
 		}
 	}
 

@@ -1863,6 +1863,7 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
+    automatic_face_movement_dir = false,
 }
 
 Entity definition (register_entity)

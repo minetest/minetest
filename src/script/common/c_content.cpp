@@ -190,6 +190,7 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	getfloatfield(L, -1, "stepheight", prop->stepheight);
 	prop->stepheight*=BS;
+	getboolfield(L, -1, "automatic_face_movement_dir", prop->automatic_face_movement_dir);
 }
 
 /******************************************************************************/
