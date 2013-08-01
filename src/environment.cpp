@@ -2243,7 +2243,7 @@ void ClientEnvironment::step(float dtime)
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
 		u8 drowning_damage = c.drowning;
-		if(c.isLiquid() && drowning_damage > 0 && lplayer->hp > 0){
+		if(drowning_damage > 0 && lplayer->hp > 0){
 			u16 breath = lplayer->getBreath();
 			if(breath > 10){
 				breath = 11;
@@ -2270,7 +2270,7 @@ void ClientEnvironment::step(float dtime)
 		if (!lplayer->hp){
 			lplayer->setBreath(11);
 		}
-		else if(!c.isLiquid() || !c.drowning){
+		else if(c.drowning == 0){
 			u16 breath = lplayer->getBreath();
 			if(breath <= 10){
 				breath += 1;
