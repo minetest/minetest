@@ -672,7 +672,6 @@ int ModApiBasic::l_register_ore(lua_State *L)
 
 	ore->ore_name       = getstringfield_default(L, index, "ore", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
-	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
@@ -680,6 +679,21 @@ int ModApiBasic::l_register_ore(lua_State *L)
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
 	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+
+	lua_getfield(L, index, "wherein");
+	if (lua_istable(L, -1)) {
+		int  i = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, i) != 0) {
+			ore->wherein_names.push_back(lua_tostring(L, -1));
+			lua_pop(L, 1);
+		}
+	} else if (lua_isstring(L, -1)) {
+		ore->wherein_names.push_back(lua_tostring(L, -1));
+	} else {
+		ore->wherein_names.push_back("");
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "noise_params");
 	ore->np = read_noiseparams(L, -1);
