@@ -49,11 +49,11 @@ msgstr "Textures d'objets..."
 
 #: src/game.cpp:1230
 msgid "Node definitions..."
-msgstr ""
+msgstr "Définition des noeuds"
 
 #: src/game.cpp:1237
 msgid "Media..."
-msgstr ""
+msgstr "Média..."
 
 #: src/game.cpp:3418
 msgid "Shutting down stuff..."
@@ -140,7 +140,7 @@ msgstr ""
 #: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
-msgstr "OK"
+msgstr "Ok"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
