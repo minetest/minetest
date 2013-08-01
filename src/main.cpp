@@ -893,7 +893,7 @@ int main(int argc, char *argv[])
 
 	// Print startup message
 	infostream<<PROJECT_NAME<<
-			" "<<_("with")<<" SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
+			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
 			<<", "<<BUILD_INFO
 			<<std::endl;
 	

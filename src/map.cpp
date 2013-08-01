@@ -3568,7 +3568,7 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 {
 	DSTACK(__FUNCTION_NAME);
 	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
 	v2s16 pos = sector->getPos();
 	std::string dir = getSectorDir(pos);
@@ -3767,7 +3767,7 @@ void ServerMap::saveBlock(MapBlock *block)
 	}
 
 	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
 	v3s16 p3d = block->getPos();
 
@@ -3875,7 +3875,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 			Save blocks loaded in old format in new format
 		*/
 
-		if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		if(version < SER_FMT_VER_HIGHEST_WRITE || save_after_load)
 		{
 			saveBlock(block);
 
@@ -3942,7 +3942,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			Save blocks loaded in old format in new format
 		*/
 
-		//if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		//if(version < SER_FMT_VER_HIGHEST_READ || save_after_load)
 		// Only save if asked to; no need to update version
 		if(save_after_load)
 			saveBlock(block);

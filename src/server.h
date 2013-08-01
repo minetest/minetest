@@ -603,7 +603,7 @@ private:
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
-	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
+	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
 
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);

@@ -556,14 +556,14 @@ void Client::step(float dtime)
 	
 			// Send TOSERVER_INIT
 			// [0] u16 TOSERVER_INIT
-			// [2] u8 SER_FMT_VER_HIGHEST
+			// [2] u8 SER_FMT_VER_HIGHEST_READ
 			// [3] u8[20] player_name
 			// [23] u8[28] password (new in some version)
 			// [51] u16 minimum supported network protocol version (added sometime)
 			// [53] u16 maximum supported network protocol version (added later than the previous one)
 			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2);
 			writeU16(&data[0], TOSERVER_INIT);
-			writeU8(&data[2], SER_FMT_VER_HIGHEST);
+			writeU8(&data[2], SER_FMT_VER_HIGHEST_READ);
 
 			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
 			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
@@ -1154,8 +1154,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		infostream<<"Client: TOCLIENT_INIT received with "
 				"deployed="<<((int)deployed&0xff)<<std::endl;
 
-		if(deployed < SER_FMT_VER_LOWEST
-				|| deployed > SER_FMT_VER_HIGHEST)
+		if(!ser_ver_supported(deployed))
 		{
 			infostream<<"Client: TOCLIENT_INIT: Server sent "
 					<<"unsupported ser_fmt_ver"<<std::endl;
@@ -1300,6 +1299,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			*/
 			//infostream<<"Updating"<<std::endl;
 			block->deSerialize(istr, ser_version, false);
+			block->deSerializeNetworkSpecific(istr);
 		}
 		else
 		{
@@ -1309,6 +1309,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//infostream<<"Creating new"<<std::endl;
 			block = new MapBlock(&m_env.getMap(), p, this);
 			block->deSerialize(istr, ser_version, false);
+			block->deSerializeNetworkSpecific(istr);
 			sector->insertBlock(block);
 		}
 

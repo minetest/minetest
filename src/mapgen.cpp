@@ -691,7 +691,7 @@ bool DecoSchematic::loadSchematicFile() {
 
 	delete schematic;
 	schematic = new MapNode[nodecount];
-	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schematic,
 				nodecount, 2, 2, true);
 				
 	return true;
@@ -738,7 +738,7 @@ void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 		os << serializeString(ndef->get(usednodes[i]).name); // node names
 		
 	// compressed bulk node data
-	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST_WRITE, schematic,
 				nodecount, 2, 2, true);
 }
 

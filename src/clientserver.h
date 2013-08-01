@@ -101,6 +101,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		range added to ItemDefinition
 		drowning, leveled and liquid_range added to ContentFeatures
 		stepheight and collideWithObjects added to object properties
+		version, heat and humidity transfer in MapBock
 */
 
 #define LATEST_PROTOCOL_VERSION 21
@@ -509,7 +510,7 @@ enum ToServerCommand
 		Sent first after connected.
 
 		[0] u16 TOSERVER_INIT
-		[2] u8 SER_FMT_VER_HIGHEST
+		[2] u8 SER_FMT_VER_HIGHEST_READ
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)
 		[51] u16 minimum supported network protocol version (added sometime)

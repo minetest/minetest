@@ -1783,7 +1783,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	if(command == TOSERVER_INIT)
 	{
 		// [0] u16 TOSERVER_INIT
-		// [2] u8 SER_FMT_VER_HIGHEST
+		// [2] u8 SER_FMT_VER_HIGHEST_READ
 		// [3] u8[20] player_name
 		// [23] u8[28] password <--- can be sent without this, from old versions
 
@@ -1796,7 +1796,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// First byte after command is maximum supported
 		// serialization version
 		u8 client_max = data[2];
-		u8 our_max = SER_FMT_VER_HIGHEST;
+		u8 our_max = SER_FMT_VER_HIGHEST_READ;
 		// Use the highest version supported by both
 		u8 deployed = std::min(client_max, our_max);
 		// If it's lower than the lowest supported, give up.
@@ -4079,7 +4079,7 @@ void Server::setBlockNotSent(v3s16 p)
 	}
 }
 
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
+void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4112,6 +4112,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 
 	std::ostringstream os(std::ios_base::binary);
 	block->serialize(os, ver, false);
+	block->serializeNetworkSpecific(os, net_proto_version);
 	std::string s = os.str();
 	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
 
@@ -4195,7 +4196,7 @@ void Server::SendBlocks(float dtime)
 
 		RemoteClient *client = getClient(q.peer_id);
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version);
+		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
 
 		client->SentBlock(q.pos);
 

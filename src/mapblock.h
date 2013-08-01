@@ -479,6 +479,9 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
+	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void deSerializeNetworkSpecific(std::istream &is);
+
 private:
 	/*
 		Private methods

@@ -612,7 +612,7 @@ struct TestCompress: public TestBase
 		fromdata[3]=1;
 		
 		std::ostringstream os(std::ios_base::binary);
-		compress(fromdata, os, SER_FMT_VER_HIGHEST);
+		compress(fromdata, os, SER_FMT_VER_HIGHEST_READ);
 
 		std::string str_out = os.str();
 		
@@ -627,7 +627,7 @@ struct TestCompress: public TestBase
 		std::istringstream is(str_out, std::ios_base::binary);
 		std::ostringstream os2(std::ios_base::binary);
 
-		decompress(is, os2, SER_FMT_VER_HIGHEST);
+		decompress(is, os2, SER_FMT_VER_HIGHEST_READ);
 		std::string str_out2 = os2.str();
 
 		infostream<<"decompress: ";
