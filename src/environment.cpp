@@ -2242,7 +2242,8 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-		if(c.isLiquid() && c.drowning && lplayer->hp > 0){
+		u8 drowning_damage = c.drowning;
+		if(c.isLiquid() && drowning_damage > 0 && lplayer->hp > 0){
 			u16 breath = lplayer->getBreath();
 			if(breath > 10){
 				breath = 11;
@@ -2254,8 +2255,8 @@ void ClientEnvironment::step(float dtime)
 			updateLocalPlayerBreath(breath);
 		}
 
-		if(lplayer->getBreath() == 0){
-			damageLocalPlayer(1, true);
+		if(lplayer->getBreath() == 0 && drowning_damage > 0){
+			damageLocalPlayer(drowning_damage, true);
 		}
 	}
 	if(m_breathing_interval.step(dtime, 0.5))
