@@ -46,10 +46,15 @@ void NodeBox::reset()
 	wall_side = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
 }
 
-void NodeBox::serialize(std::ostream &os) const
+void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 1); // version
-	writeU8(os, type);
+	int version = protocol_version >= 21 ? 2 : 1;
+	writeU8(os, version);
+
+	if (version == 1 && type == NODEBOX_LEVELED)
+		writeU8(os, NODEBOX_FIXED);
+	else
+		writeU8(os, type);
 
 	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
 	{
@@ -76,7 +81,7 @@ void NodeBox::serialize(std::ostream &os) const
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 1)
+	if(version < 1 || version > 2)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
@@ -274,8 +279,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, liquid_renewable);
 	writeU8(os, light_source);
 	writeU32(os, damage_per_second);
-	node_box.serialize(os);
-	selection_box.serialize(os);
+	node_box.serialize(os, protocol_version);
+	selection_box.serialize(os, protocol_version);
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 	serializeSimpleSoundSpec(sound_footstep, os);
@@ -918,8 +923,8 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 		writeU8(os, liquid_viscosity);
 		writeU8(os, light_source);
 		writeU32(os, damage_per_second);
-		node_box.serialize(os);
-		selection_box.serialize(os);
+		node_box.serialize(os, protocol_version);
+		selection_box.serialize(os, protocol_version);
 		writeU8(os, legacy_facedir_simple);
 		writeU8(os, legacy_wallmounted);
 		serializeSimpleSoundSpec(sound_footstep, os);
