@@ -100,6 +100,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOSERVER_BREATH
 		range added to ItemDefinition
 		drowning, leveled and liquid_range added to ContentFeatures
+		added new property to entities automatic_face_movement_dir
 */
 
 #define LATEST_PROTOCOL_VERSION 21
