@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-07-06 14:28+0200\n"
-"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
+"PO-Revision-Date: 2013-08-01 13:51+0100\n"
+"Last-Translator: RyDroid <rydroid_trans@yahoo.fr>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -385,7 +385,7 @@ msgstr "Liquides limités"
 
 #: src/guiMainMenu.cpp:885
 msgid "Change keys"
-msgstr "Changer touches"
+msgstr "Changer les touches"
 
 #: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
 msgid "Address required."
@@ -397,7 +397,7 @@ msgstr "Impossible de supprimer le monde : rien n'est sélectionné"
 
 #: src/guiMainMenu.cpp:1246
 msgid "Files to be deleted"
-msgstr "Fichiers à effacer"
+msgstr "Fichiers à supprimer"
 
 #: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
@@ -409,7 +409,7 @@ msgstr "Impossible de configurer ce monde : aucune sélection active"
 
 #: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
-msgstr "Tous les fichiers du monde n'ont pu être effacés"
+msgstr "Tous les fichiers du monde n'ont pu être supprimés"
 
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
@@ -441,7 +441,7 @@ msgstr "Changer mot de passe"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
-msgstr "Volume sonore"
+msgstr "Volume du son"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
@@ -479,11 +479,11 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
-msgstr "Volume sonore :"
+msgstr "Volume du son :"
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr "OK"
+msgstr "Quitter"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -491,7 +491,7 @@ msgstr "Bouton gauche"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Bouton milieu"
+msgstr "Bouton du milieu"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
