@@ -808,7 +808,26 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 			dschem->flags    = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
 			dschem->rotation = (Rotation)getenumfield(L, index,
 								"rotation", es_Rotation, ROTATE_0);
-			
+
+			lua_getfield(L, index, "replacements");
+			if (lua_istable(L, -1)) {
+				int i = lua_gettop(L);
+				lua_pushnil(L);
+				while (lua_next(L, i) != 0) {
+					// key at index -2 and value at index -1
+					lua_rawgeti(L, -1, 1);
+					std::string replace_from = lua_tostring(L, -1);
+					lua_pop(L, 1);
+					lua_rawgeti(L, -1, 2);
+					std::string replace_to = lua_tostring(L, -1);
+					lua_pop(L, 1);
+					dschem->replacements[replace_from] = replace_to;
+					// removes value, keeps key for next iteration
+					lua_pop(L, 1);
+				}
+			}
+			lua_pop(L, 1);
+
 			lua_getfield(L, index, "schematic");
 			if (!read_schematic(L, -1, dschem, getServer(L))) {
 				delete dschem;
@@ -888,7 +907,7 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 }
 
 
-// place_schematic(p, schematic, rotation)
+// place_schematic(p, schematic, rotation, replacement)
 int ModApiBasic::l_place_schematic(lua_State *L)
 {
 	DecoSchematic dschem;
@@ -905,6 +924,23 @@ int ModApiBasic::l_place_schematic(lua_State *L)
 		string_to_enum(es_Rotation, (int &)rot, std::string(lua_tostring(L, 3)));
 		
 	dschem.rotation = rot;
+
+	if (lua_istable(L, 4)) {
+		int index = 4;
+		lua_pushnil(L);
+		while (lua_next(L, index) != 0) {
+			// key at index -2 and value at index -1
+			lua_rawgeti(L, -1, 1);
+			std::string replace_from = lua_tostring(L, -1);
+			lua_pop(L, 1);
+			lua_rawgeti(L, -1, 2);
+			std::string replace_to = lua_tostring(L, -1);
+			lua_pop(L, 1);
+			dschem.replacements[replace_from] = replace_to;
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
 
 	if (!dschem.filename.empty()) {
 		if (!dschem.loadSchematicFile()) {

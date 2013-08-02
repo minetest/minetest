@@ -1439,10 +1439,11 @@ minetest.create_schematic(p1, p2, probability_list, filename)
    ^ If probability_list is nil, no probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic, rotation)
+minetest.place_schematic(pos, schematic, rotation, replacements)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
+^ replacements = {{"oldname", "convert_to"}, ...}
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -2129,6 +2130,7 @@ Ore definition (register_ore)
     ore_type = "scatter", -- See "Ore types"
     ore = "default:stone_with_coal",
     wherein = "default:stone",
+    ^ a list of nodenames is supported too
     clust_scarcity = 8*8*8,
     ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
     ^ This value should be *MUCH* higher than your intuition might tell you!
@@ -2196,6 +2198,7 @@ Decoration definition (register_decoration)
         }
     },
     ^ See 'Schematic specifier' for details.
+    replacements = {{"oldname", "convert_to"}, ...},
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
     rotation = "90" --rotate schematic 90 degrees on placement

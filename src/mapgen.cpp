@@ -506,7 +506,12 @@ void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
 	}
 	
 	for (size_t i = 0; i != node_names->size(); i++) {
-		content_t c = ndef->getId(node_names->at(i));
+		std::string name = node_names->at(i);
+		std::map<std::string, std::string>::iterator it;
+		it = replacements.find(name);
+		if (it != replacements.end())
+			name = it->second;
+		content_t c = ndef->getId(name);
 		if (c == CONTENT_IGNORE) {
 			errorstream << "DecoSchematic::resolveNodeNames: node '"
 				<< node_names->at(i) << "' not defined" << std::endl;

@@ -269,6 +269,7 @@ public:
 	
 	std::vector<std::string> *node_names;
 	std::vector<content_t> c_nodes;
+	std::map<std::string, std::string> replacements;
 
 	u32 flags;
 	Rotation rotation;
