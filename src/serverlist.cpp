@@ -210,8 +210,6 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 		server["url"]		= g_settings->get("server_url");
 		server["creative"]	= g_settings->get("creative_mode");
 		server["damage"]	= g_settings->get("enable_damage");
-		server["dedicated"]	= g_settings->get("server_dedicated");
-		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
 		server["password"]	= g_settings->getBool("disallow_empty_password");
 		server["pvp"]		= g_settings->getBool("enable_pvp");
 		server["clients"]	= clients;
@@ -221,6 +219,10 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 	}
 
 	if(server["action"] == "start") {
+		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
+		server["liquid_finite"]	= g_settings->getBool("liquid_finite");
+		server["mapgen"]	= g_settings->get("mg_name");
 		server["mods"] = Json::Value(Json::arrayValue);
 		for(std::vector<ModSpec>::iterator m = m_mods.begin(); m != m_mods.end(); m++) {
 			server["mods"].append(m->name);

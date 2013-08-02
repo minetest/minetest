@@ -41,7 +41,7 @@ function human_time(t, abs) {
 
 function success(r) {
     if (!r || !r.list) return;
-    var h = '<table class="mts_table"><tr class="mts_head"><th>ip[:port]</th><th>clients/max</th><th>version gameid</th><th>name</th><th>description</th><th>flags</th><th>uptime</th><th>ping</th></tr>';
+    var h = '<table class="mts_table"><tr class="mts_head"><th>ip[:port]</th><th>clients/max</th><th>version gameid mapgen</th><th>name</th><th>description</th><th>flags</th><th>uptime</th><th>ping</th></tr>';
     for (var i = 0; i < r.list.length; ++i) {
         var s = r.list[i];
         if (!s) continue;
@@ -49,13 +49,13 @@ function success(r) {
         h += '<tr class="mts_row">';
         h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
         h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + s.clients_top : '') + '</td>';
-        var mods;
+        var mods = 0;
         if (s.mods && jQuery.isArray(s.mods)) {
             mods = s.mods.length;
         }
-        h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid);
+        h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid) ' ' + e(s.mapgen);
         if (mods) {
-            h += '<div class="mts_mods">Mods:<br/>';
+            h += '<div class="mts_mods">Mods ('+mods+'):<br/>';
             for (m in s.mods) {
                 h += s.mods[m] + '<br/>';
             }
@@ -70,7 +70,15 @@ function success(r) {
         if (s.url) h += '</a>';
         h += '</td>';
         h += '<td class="mts_description">' + e(s.description) + '</td>';
-        h += '<td class="mts_flags">' + e(s.password ? 'Pwd ' : '') + (s.creative ? 'Cre ' : '') + (s.damage ? 'Dmg ' : '') + (s.pvp ? 'Pvp ' : '') + (s.dedicated ? 'Ded ' : '') + (s.rollback ? 'Rol ' : '') + '</td>';
+        h += '<td class="mts_flags">' +
+             (s.password ? 'Pwd ' : '') +
+             (s.creative ? 'Cre ' : '') +
+             (s.damage ? 'Dmg ' : '') +
+             (s.pvp ? 'Pvp ' : '') +
+             (s.dedicated ? 'Ded ' : '') +
+             (s.rollback ? 'Rol ' : '') +
+             (s.liquid_finite ? 'Liq ' : '') +
+             '</td>';
         if (!s.start || s.start < 0) s.start = 0;
         h += '<td class="mts_time">' + (s.uptime ? human_time(s.uptime, 1) : s.start ? human_time(s.start) : '') + '</td>';
         h += '<td class="mts_ping">' + (s.ping ? parseFloat(s.ping).toFixed(3) * 1000 : '') + '</td>';
