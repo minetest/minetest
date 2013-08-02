@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-25 16:52+0200\n"
-"PO-Revision-Date: 2013-08-30 22:31+0200\n"
+"PO-Revision-Date: 2013-08-30 22:33+0200\n"
 "Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -34,7 +34,7 @@ msgstr "Отменить"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
