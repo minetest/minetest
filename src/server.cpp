@@ -4273,8 +4273,7 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "media");
 		paths.push_back(mod.path + DIR_DELIM + "models");
 	}
-	std::string path_all = "textures";
-	paths.push_back(path_all + DIR_DELIM + "all");
+	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
 	// Collect media file information from paths into cache
 	for(std::list<std::string>::iterator i = paths.begin();

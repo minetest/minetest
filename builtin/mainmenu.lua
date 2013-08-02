@@ -21,6 +21,17 @@ local tabbuilder = {}
 local worldlist = nil
 
 --------------------------------------------------------------------------------
+local function filterTP(TPlist)
+	TPlist2 = {"None"}
+	for _,i in ipairs(TPlist) do
+		if i~="base" then
+			table.insert(TPlist2, i)
+		end
+	end
+	return TPlist2
+end
+
+--------------------------------------------------------------------------------
 function menu.render_favorite(spec,render_details)
 	local text = ""
 	
@@ -163,6 +174,23 @@ function menu.render_world_list()
 end
 
 --------------------------------------------------------------------------------
+function menu.render_TP_list(TPlist)
+	local retval = ""
+
+	--local current_TP = filterlist.get_list(TPlist)
+
+	for i,v in ipairs(TPlist) do
+		if retval ~= "" then
+			retval = retval ..","
+		end
+
+		retval = retval .. v
+	end
+
+	return retval
+end
+
+--------------------------------------------------------------------------------
 function menu.init()
 	--init menu data
 	gamemgr.update_gamelist()
@@ -179,8 +207,7 @@ function menu.init()
 		menu.favorites = engine.get_favorites("local")
 	end
 	
-	menu.defaulttexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-					DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+	menu.defaulttexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
 					DIR_DELIM .. "pack" .. DIR_DELIM
 end
 
@@ -305,6 +332,10 @@ function tabbuilder.gettab()
 	
 	if tabbuilder.current_tab == "settings" then
 		retval = retval .. tabbuilder.tab_settings()
+	end
+	
+	if tabbuilder.current_tab == "texture_packs" then
+		retval = retval .. tabbuilder.tab_TP()
 	end
 	
 	if tabbuilder.current_tab == "credits" then
@@ -735,6 +766,23 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 end
 
 --------------------------------------------------------------------------------
+function tabbuilder.handle_TP_buttons(fields)
+	if fields["TPs"] ~= nil then
+		local event = explode_textlist_event(fields["TPs"])
+		if event.typ == "CHG" or event.typ=="DCL" then
+			local index = engine.get_textlist_index("TPs")
+			engine.setting_set("mainmenu_last_selected_TP",
+				index)
+			local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
+			local TPname = TPlist[engine.get_textlist_index("TPs")]
+			local TPpath = engine.get_texturepath()..DIR_DELIM..TPname
+			if TPname == "None" then TPpath = "" end
+			engine.setting_set("texture_path", TPpath)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
 function tabbuilder.tab_header()
 
 	if tabbuilder.last_tab_index == nil then
@@ -798,6 +846,7 @@ function tabbuilder.init()
 	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption="Client"})
 	table.insert(tabbuilder.current_buttons,{name="server", caption="Server"})
 	table.insert(tabbuilder.current_buttons,{name="settings", caption="Settings"})
+	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption="Texture Packs"})
 	
 	if engine.setting_getbool("main_menu_game_mgr") then
 		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption="Games"})
@@ -947,6 +996,49 @@ function tabbuilder.tab_singleplayer()
 end
 
 --------------------------------------------------------------------------------
+function tabbuilder.tab_TP()
+	local TPpath = engine.setting_get("texture_path")
+	local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
+	local index = tonumber(engine.setting_get("mainmenu_last_selected_TP"))
+	if index == nil then index = 1 end
+	if TPpath == "" then
+		return	"label[4,-0.25;Select texture pack:]"..
+			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
+			"textlist[4,0.25;7.5,5.0;TPs;" ..
+			menu.render_TP_list(TPlist) ..
+			";" .. index .. "]" ..
+			menubar.formspec
+	end
+	local TPinfofile = TPpath..DIR_DELIM.."info.txt"
+	local f = io.open(TPinfofile, "r")
+	if f==nil then
+		menu.TPinfo = "No information available" 
+	else
+		menu.TPinfo = f:read("*all")
+		f:close()
+	end
+	local TPscreenfile = TPpath..DIR_DELIM.."screenshot.png"
+	local f = io.open(TPscreenfile, "r")
+	if f==nil then
+		menu.TPscreen = nil
+	else
+		menu.TPscreen = TPscreenfile
+		f:close()
+	end
+	
+	local no_screenshot = engine.get_texturepath()..DIR_DELIM.."base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
+
+	return	"label[4,-0.25;Select texture pack:]"..
+			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
+			"textlist[4,0.25;7.5,5.0;TPs;" ..
+			menu.render_TP_list(TPlist) ..
+			";" .. index .. "]" ..
+			"image[0.65,0.25;4.0,3.7;"..(menu.TPscreen or no_screenshot).."]"..
+			"textarea[1.0,3.25;3.7,1.5;;"..(menu.TPinfo or "")..";]"..
+			menubar.formspec
+end
+
+--------------------------------------------------------------------------------
 function tabbuilder.tab_credits()
 	return	"vertlabel[0,-0.5;CREDITS]" ..
 			"label[0.5,3;Minetest " .. engine.get_version() .. "]" ..
@@ -1037,6 +1129,10 @@ engine.button_handler = function(fields)
 	
 	if tabbuilder.current_tab == "singleplayer" then
 		tabbuilder.handle_singleplayer_buttons(fields)
+	end
+	
+	if tabbuilder.current_tab == "texture_packs" then
+		tabbuilder.handle_TP_buttons(fields)
 	end
 	
 	if tabbuilder.current_tab == "multiplayer" then

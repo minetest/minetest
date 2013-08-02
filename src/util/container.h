@@ -118,6 +118,11 @@ public:
 		}
 		return result;
 	}
+	
+	void clear ()
+	{
+		m_values.clear();
+	}
 
 private:
 	std::map<Key, Value> m_values;
