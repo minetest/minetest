@@ -2178,6 +2178,17 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				player->hud_hotbar_itemcount = hotbar_itemcount;
 		}
 	}
+
+	else if(command == TOSERVER_PARAMS)
+	{
+		u16 version = readU16(is);
+		if (version >= 1) {
+			u16 cloud_height = readU16(is);
+			if (cloud_height) {
+
+			}
+		}
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

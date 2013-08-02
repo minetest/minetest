@@ -730,6 +730,13 @@ enum ToServerCommand
 		u16 command
 		u16 breath
 	*/
+
+	TOSERVER_PARAMS = 0x43,
+	/*
+		u16 command
+		u16 version
+		u16 cloud_height
+	*/
 };
 
 #endif
