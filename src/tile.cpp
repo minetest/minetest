@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+#include "texture_cache.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "main.h" // for g_settings
@@ -28,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "util/string.h"
-#include "util/container.h"
 #include "util/thread.h"
 #include "util/numeric.h"
 
