@@ -218,6 +218,15 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
+	if minetest.is_protected(place_to, placer:get_player_name()) then
+		minetest.log("action", placer:get_player_name()
+				.. " tried to place " .. def.name
+				.. " at protected position "
+				.. minetest.pos_to_string(place_to))
+		minetest.record_protection_violation(place_to, placer:get_player_name())
+		return itemstack
+	end
+
 	minetest.log("action", placer:get_player_name() .. " places node "
 		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 	
@@ -374,6 +383,15 @@ function minetest.node_dig(pos, node, digger)
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
+		return
+	end
+
+	if minetest.is_protected(pos, digger:get_player_name()) then
+		minetest.log("action", digger:get_player_name()
+				.. " tried to dig " .. node.name
+				.. " at protected position "
+				.. minetest.pos_to_string(pos))
+		minetest.record_protection_violation(pos, digger:get_player_name())
 		return
 	end
 

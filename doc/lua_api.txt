@@ -1154,6 +1154,13 @@ minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))
 minetest.register_craft_predict(func(itemstack, player, old_craft_grid, craft_inv))
 ^ The same as before, except that it is called before the player crafts, to make
 ^ craft prediction, and it should not change anything.
+minetest.register_on_protection_violation(func(pos, name))
+^ Called by builtin and mods when a player violates protection at a position
+  (eg, digs a node or punches a protected entity).
+^ The registered functions can be called using minetest.record_protection_violation
+^ The provided function should check that the position is protected by the mod
+  calling this function before it prints a message, if it does, to allow for
+  multiple protection mods.
 
 Other registration functions:
 minetest.register_chatcommand(cmd, chatcommand definition)
@@ -1483,6 +1490,22 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
+minetest.is_protected(pos, name) -> bool
+^ This function should be overriden by protection mods and should be used to
+  check if a player can interact at a position.
+^ This function should call the old version of itself if the position is not
+  protected by the mod.
+^ Example:
+	local old_is_protected = minetest.is_protected
+	function minetest.is_protected(pos, name)
+		if mymod:position_protected_from(pos, name) then
+			return true
+		end
+		return old_is_protected(pos, name)
+	end
+minetest.record_protection_violation(pos, name)
+^ This function calls functions registered with
+  minetest.register_on_protection_violation.
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.
