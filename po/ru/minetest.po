@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-06-26 23:54+0200\n"
-"Last-Translator: Vladimir a <c-vld@ya.ru>\n"
+"PO-Revision-Date: 2013-08-02 20:09+0200\n"
+"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: src/client.cpp:2877
 msgid "Item textures..."
-msgstr "Текстура предметов..."
+msgstr "Текстуры предметов..."
 
 #: src/game.cpp:959
 msgid "Loading..."
@@ -467,13 +467,13 @@ msgid ""
 msgstr ""
 "Управление по умолчанию:\n"
 "- WASD: движение\n"
-"- Пробел: прыжок/лазить\n"
-"- Шифт: красться/лезть в низ\n"
+"- Пробел: прыжок/вверх\n"
+"- Shift: красться/вниз\n"
 "- Q: бросить предмет\n"
 "- I: инвентарь\n"
-"- Мышка: поворот/смотреть\n"
-"- Левая клавиша мыши: копать/удар\n"
-"- Правая клавиша мыши: поставить/использовать\n"
+"- Мышка: поворот\n"
+"- ЛКМ: копать/удар\n"
+"- ПКМ: поставить/использовать\n"
 "- Колесико мыши: выбор предмета\n"
 "- T: чат\n"
 
@@ -591,7 +591,6 @@ msgid "Next"
 msgstr "След."
 
 #: src/keycode.cpp:227
-#, fuzzy
 msgid "Prior"
 msgstr "Пред."
 
@@ -654,7 +653,7 @@ msgstr "Прав. кл. Win"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr "Сон"
+msgstr "Sleep"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
