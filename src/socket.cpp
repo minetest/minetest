@@ -92,24 +92,27 @@ void sockets_cleanup()
 Address::Address()
 {
 	m_addr_family = 0;
-	memset(&m_address, 0, sizeof m_address);
+	memset(&m_address, 0, sizeof(m_address));
 	m_port = 0;
 }
 
 Address::Address(u32 address, u16 port)
 {
+	memset(&m_address, 0, sizeof(m_address));
 	setAddress(address);
 	setPort(port);
 }
 
 Address::Address(u8 a, u8 b, u8 c, u8 d, u16 port)
 {
+	memset(&m_address, 0, sizeof(m_address));
 	setAddress(a, b, c, d);
 	setPort(port);
 }
 
 Address::Address(const IPv6AddressBytes * ipv6_bytes, u16 port)
 {
+	memset(&m_address, 0, sizeof(m_address));
 	setAddress(ipv6_bytes);
 	setPort(port);
 }
@@ -334,43 +337,44 @@ UDPSocket::~UDPSocket()
 #endif
 }
 
-void UDPSocket::Bind(u16 port)
+void UDPSocket::Bind(Address addr)
 {
-	if(socket_enable_debug_output)
-	{
-		dstream << "UDPSocket(" << (int) m_handle << ")::Bind(): "
-		        << "port=" << port << std::endl;
+	if(socket_enable_debug_output) {
+		dstream << "UDPSocket(" << (int) m_handle << ")::Bind(): ["
+		        << addr.serializeString() << "]:"
+		        << addr.getPort() << std::endl;
 	}
 
-	if(m_addr_family == AF_INET6)
-	{
+	if (addr.getFamily() != m_addr_family) {
+		char errmsg[] = "Socket and bind address families do not match";
+		errorstream << "Bind failed: " << errmsg << std::endl;
+		throw SocketException(errmsg);
+	}
+
+	if(m_addr_family == AF_INET6) {
 		struct sockaddr_in6 address;
 		memset(&address, 0, sizeof(address));
 
+		address             = addr.getAddress6();
 		address.sin6_family = AF_INET6;
-		address.sin6_addr   = in6addr_any;
-		address.sin6_port   = htons(port);
+		address.sin6_port   = htons(addr.getPort());
 
 		if(bind(m_handle, (const struct sockaddr *) &address,
-		        sizeof(struct sockaddr_in6)) < 0)
-		{
+				sizeof(struct sockaddr_in6)) < 0) {
 			dstream << (int) m_handle << ": Bind failed: "
 			        << strerror(errno) << std::endl;
 			throw SocketException("Failed to bind socket");
 		}
-	}
-	else
-	{
+	} else {
 		struct sockaddr_in address;
 		memset(&address, 0, sizeof(address));
 
-		address.sin_family      = AF_INET;
-		address.sin_addr.s_addr = INADDR_ANY;
-		address.sin_port        = htons(port);
+		address            = addr.getAddress();
+		address.sin_family = AF_INET;
+		address.sin_port   = htons(addr.getPort());
 
 		if(bind(m_handle, (const struct sockaddr *) &address,
-		        sizeof(struct sockaddr_in)) < 0)
-		{
+				sizeof(struct sockaddr_in)) < 0) {
 			dstream << (int) m_handle << ": Bind failed: "
 			        << strerror(errno) << std::endl;
 			throw SocketException("Failed to bind socket");

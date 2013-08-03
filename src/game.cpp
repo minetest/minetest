@@ -1018,7 +1018,11 @@ void the_game(
 		infostream<<"Creating server"<<std::endl;
 		server = new Server(map_dir, gamespec,
 				simple_singleplayer_mode);
-		server->start(port);
+		Address bind_addr(0,0,0,0, port);
+		if (g_settings->getBool("ipv6_server")) {
+			bind_addr.setAddress((IPv6AddressBytes*) NULL);
+		}
+		server->start(bind_addr);
 	}
 
 	do{ // Client scope (breakable do-while(0))
