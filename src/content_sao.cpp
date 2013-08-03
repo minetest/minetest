@@ -1454,8 +1454,9 @@ std::string PlayerSAO::getPropertyPacket()
 	return gob_cmd_set_properties(m_prop);
 }
 
-void PlayerSAO::checkMovementCheat()
+bool PlayerSAO::checkMovementCheat()
 {
+	bool cheated = false;
 	if(isAttached() || m_is_singleplayer ||
 			g_settings->getBool("disable_anticheat"))
 	{
@@ -1503,8 +1504,10 @@ void PlayerSAO::checkMovementCheat()
 					<<std::endl;
 			m_player->setPosition(m_last_good_position);
 			m_moved = true;
+			cheated = true;
 		}
 	}
+	return cheated;
 }
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) {

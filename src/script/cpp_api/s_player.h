@@ -34,6 +34,7 @@ public:
 	bool on_respawnplayer(ServerActiveObject *player);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player);
+	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname,

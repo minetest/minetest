@@ -2251,7 +2251,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->control.LMB = (bool)(keyPressed&128);
 		player->control.RMB = (bool)(keyPressed&256);
 
-		playersao->checkMovementCheat();
+		bool cheated = playersao->checkMovementCheat();
+		if(cheated){
+			// Call callbacks
+			m_script->on_cheat(playersao, "moved_too_fast");
+		}
 
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
@@ -2811,6 +2815,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				RemoteClient *client = getClient(peer_id);
 				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 				client->SetBlockNotSent(blockpos);
+				// Call callbacks
+				m_script->on_cheat(playersao, "interacted_too_far");
 				// Do nothing else
 				return;
 			}
@@ -2939,6 +2945,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 								<<PP(nocheat_p)<<" and completed digging "
 								<<PP(p_under)<<"; not digging."<<std::endl;
 						is_valid_dig = false;
+						// Call callbacks
+						m_script->on_cheat(playersao, "finished_unknown_dig");
 					}
 					// Get player's wielded item
 					ItemStack playeritem;
@@ -2964,6 +2972,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 								<<", which is not diggable with tool. not digging."
 								<<std::endl;
 						is_valid_dig = false;
+						// Call callbacks
+						m_script->on_cheat(playersao, "dug_unbreakable");
 					}
 					// Check digging time
 					// If already invalidated, we don't have to
@@ -2987,6 +2997,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 								<<" completed digging "<<PP(p_under)
 								<<"too fast; not digging."<<std::endl;
 						is_valid_dig = false;
+						// Call callbacks
+						m_script->on_cheat(playersao, "dug_too_fast");
 					}
 				}
 

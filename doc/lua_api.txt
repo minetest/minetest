@@ -1142,6 +1142,9 @@ minetest.register_on_joinplayer(func(ObjectRef))
 ^ Called when a player joins the game
 minetest.register_on_leaveplayer(func(ObjectRef))
 ^ Called when a player leaves the game
+minetest.register_on_cheat(func(ObjectRef, cheat))
+^ Called when a player cheats
+^ cheat: {type="moved_too_fast"/"interacted_too_far"/"finished_unknown_dig"/"dug_unbreakable"/"dug_too_fast"}
 minetest.register_on_chat_message(func(name, message))
 ^ Called always when a player says something
 minetest.register_on_player_receive_fields(func(player, formname, fields))

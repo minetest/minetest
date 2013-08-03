@@ -262,7 +262,8 @@ public:
 	{
 		return m_dig_pool;
 	}
-	void checkMovementCheat();
+	// Returns true if cheated
+	bool checkMovementCheat();
 
 	// Other
 

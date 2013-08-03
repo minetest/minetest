@@ -319,4 +319,5 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
+minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
 

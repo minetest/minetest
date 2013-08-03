@@ -81,6 +81,22 @@ void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player)
 	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
+		const std::string &cheat_type)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get minetest.registered_on_cheats
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_cheats");
+	// Call callbacks
+	objectrefGetOrCreate(player);
+	lua_newtable(L);
+	lua_pushlstring(L, cheat_type.c_str(), cheat_type.size());
+	lua_setfield(L, -2, "type");
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields)
