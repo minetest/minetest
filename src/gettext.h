@@ -83,5 +83,12 @@ inline void changeCtype(const char *l)
 	else
 		infostream<<"locale has been set to:"<<ret<<std::endl;*/
 }
+
+inline std::wstring wstrgettext(std::string text) {
+	wchar_t* wlabel = wgettext(text.c_str());
+	std::wstring out = (std::wstring)wlabel;
+	delete[] wlabel;
+	return out;
+}
 #define GETTEXT_HEADER
 #endif
