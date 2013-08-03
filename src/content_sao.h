@@ -122,6 +122,36 @@ private:
 	PlayerSAO needs some internals exposed.
 */
 
+class LagPool
+{
+	float pool;
+	float max;
+public:
+	LagPool(): pool(15), max(15)
+	{}
+	void setMax(float new_max)
+	{
+		max = new_max;
+		if(pool > new_max)
+			pool = new_max;
+	}
+	void add(float dtime)
+	{
+		pool -= dtime;
+		if(pool < 0)
+			pool = 0;
+	}
+	bool grab(float dtime)
+	{
+		if(dtime <= 0)
+			return true;
+		if(pool + dtime > max)
+			return false;
+		pool += dtime;
+		return true;
+	}
+};
+
 class PlayerSAO : public ServerActiveObject
 {
 public:
@@ -228,6 +258,11 @@ public:
 	{
 		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	}
+	LagPool& getDigPool()
+	{
+		return m_dig_pool;
+	}
+	void checkMovementCheat();
 
 	// Other
 
@@ -249,8 +284,9 @@ private:
 	Inventory *m_inventory;
 
 	// Cheat prevention
+	LagPool m_dig_pool;
+	LagPool m_move_pool;
 	v3f m_last_good_position;
-	float m_last_good_position_age;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;

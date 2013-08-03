@@ -304,6 +304,9 @@ public:
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
 	u32 getGameTime() { return m_game_time; }
+
+	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
+	float getMaxLagEstimate() { return m_max_lag_estimate; }
 private:
 
 	/*
@@ -378,6 +381,9 @@ private:
 	std::list<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
+	// Estimate for general maximum lag as determined by server.
+	// Can raise to high values like 15s with eg. map generation mods.
+	float m_max_lag_estimate;
 };
 
 #ifndef SERVER

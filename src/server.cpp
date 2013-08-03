@@ -1090,6 +1090,16 @@ void Server::AsyncRunStep()
 
 	{
 		JMutexAutoLock lock(m_env_mutex);
+		// Figure out and report maximum lag to environment
+		float max_lag = m_env->getMaxLagEstimate();
+		max_lag *= 0.9998; // Decrease slowly (about half per 5 minutes)
+		if(dtime > max_lag){
+			if(dtime > 0.1 && dtime > max_lag * 2.0)
+				infostream<<"Server: Maximum lag peaked to "<<dtime
+						<<" s"<<std::endl;
+			max_lag = dtime;
+		}
+		m_env->reportMaxLagEstimate(max_lag);
 		// Step environment
 		ScopeProfiler sp(g_profiler, "SEnv step");
 		ScopeProfiler sp2(g_profiler, "SEnv step avg", SPT_AVG);
@@ -2241,6 +2251,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->control.LMB = (bool)(keyPressed&128);
 		player->control.RMB = (bool)(keyPressed&256);
 
+		playersao->checkMovementCheat();
+
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
 				<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
@@ -2953,13 +2965,27 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 								<<std::endl;
 						is_valid_dig = false;
 					}
-					// If time is considerably too short, ignore dig
-					// Check time only for medium and slow timed digs
-					if(params.diggable && params.time > 0.3 && nocheat_t < 0.5 * params.time){
+					// Check digging time
+					// If already invalidated, we don't have to
+					if(!is_valid_dig){
+						// Well not our problem then
+					}
+					// Clean and long dig
+					else if(params.time > 2.0 && nocheat_t * 1.2 > params.time){
+						// All is good, but grab time from pool; don't care if
+						// it's actually available
+						playersao->getDigPool().grab(params.time);
+					}
+					// Short or laggy dig
+					// Try getting the time from pool
+					else if(playersao->getDigPool().grab(params.time)){
+						// All is good
+					}
+					// Dig not possible
+					else{
 						infostream<<"Server: NoCheat: "<<player->getName()
-								<<" completed digging "
-								<<PP(p_under)<<" in "<<nocheat_t<<"s; expected "
-								<<params.time<<"s; not digging."<<std::endl;
+								<<" completed digging "<<PP(p_under)
+								<<"too fast; not digging."<<std::endl;
 						is_valid_dig = false;
 					}
 				}
@@ -4617,6 +4643,8 @@ std::wstring Server::getStatusString()
 	os<<L"version="<<narrow_to_wide(VERSION_STRING);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
+	// Max lag estimate
+	os<<L", max_lag="<<m_env->getMaxLagEstimate();
 	// Information about clients
 	std::map<u16, RemoteClient*>::iterator i;
 	bool first;

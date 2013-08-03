@@ -332,7 +332,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, ScriptApi *scriptIface,
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0),
-	m_recommended_send_interval(0.1)
+	m_recommended_send_interval(0.1),
+	m_max_lag_estimate(0.1)
 {
 }
 
