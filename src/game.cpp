@@ -2456,7 +2456,8 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, dtime, busytime, screensize,
+				tool_reload_ratio);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
@@ -2875,6 +2876,7 @@ void the_game(
 		else
 		{
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
+			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
 			if(draw_control.range_all)
 				fog_range = 100000*BS;
