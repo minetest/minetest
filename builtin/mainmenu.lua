@@ -21,7 +21,7 @@ local tabbuilder = {}
 local worldlist = nil
 
 --------------------------------------------------------------------------------
-local function remove_last_folder(path)
+--[[local function remove_last_folder(path)
 	i = string.len(path)
 	while i>1 do
 		i = i-1
@@ -30,12 +30,12 @@ local function remove_last_folder(path)
 		end
 	end
 	return ""
-end
+end]]
 
 local function filterTP(TPlist)
 	TPlist2 = {"None"}
 	for _,i in ipairs(TPlist) do
-		if i~="all" and i~="base" then
+		if i~="base" then
 			table.insert(TPlist2, i)
 		end
 	end
@@ -784,10 +784,10 @@ function tabbuilder.handle_TP_buttons(fields)
 			local index = engine.get_textlist_index("TPs")
 			engine.setting_set("mainmenu_last_selected_TP",
 				index)
-			local TPlist = filterTP(engine.get_dirlist(remove_last_folder(engine.setting_get("texture_path"))))
+			local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
 			local TPname = TPlist[engine.get_textlist_index("TPs")]
-			if TPname == "None" then TPname = "all" end
-			local TPpath = remove_last_folder(engine.setting_get("texture_path"))..DIR_DELIM..TPname
+			local TPpath = engine.get_texturepath()..DIR_DELIM..TPname
+			if TPname == "None" then TPpath = "" end
 			engine.setting_set("texture_path", TPpath)
 		end
 	end
@@ -1008,10 +1008,18 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_TP()
-	if engine.setting_get("texture_path") == "" then
-		engine.setting_set("texture_path", engine.get_texturepath()..DIR_DELIM.."all")
-	end
 	local TPpath = engine.setting_get("texture_path")
+	local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
+	local index = tonumber(engine.setting_get("mainmenu_last_selected_TP"))
+	if index == nil then index = 1 end
+	if TPpath == "" then
+		return	"label[4,-0.25;Select texture pack:]"..
+			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
+			"textlist[4,0.25;7.5,5.0;TPs;" ..
+			menu.render_TP_list(TPlist) ..
+			";" .. index .. "]" ..
+			menubar.formspec
+	end
 	local TPinfofile = TPpath..DIR_DELIM.."info.txt"
 	local f = io.open(TPinfofile, "r")
 	if f==nil then
@@ -1028,9 +1036,6 @@ function tabbuilder.tab_TP()
 		menu.TPscreen = TPscreenfile
 		f:close()
 	end
-	local TPlist = filterTP(engine.get_dirlist(remove_last_folder(TPpath)))
-	local index = tonumber(engine.setting_get("mainmenu_last_selected_TP"))
-	if index == nil then index = 1 end
 	
 	local no_screenshot = engine.get_texturepath()..DIR_DELIM.."base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
 

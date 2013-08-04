@@ -14,6 +14,9 @@ tags
 /cache/
 /textures/*
 !/textures/base/
+!/textures/server/
+/textures/server/*
+!/textures/server/textures_here.txt
 !/textures/texture_packs_here.txt
 /sounds/
 /mods/*

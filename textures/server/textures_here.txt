@@ -1,0 +1,2 @@
+Put server-side textures here, those will be sent to clients.
+
