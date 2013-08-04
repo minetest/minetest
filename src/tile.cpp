@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/thread.h"
 #include "util/numeric.h"
+#include "util/container.h"
 
 /*
 	A cache from texture name to texture path
@@ -148,6 +149,11 @@ std::string getTexturePath(const std::string &filename)
 	
 	// Finally return it
 	return fullpath;
+}
+
+void clearTextureNameCache()
+{
+	g_texturename_to_path_cache.clear();
 }
 
 /*

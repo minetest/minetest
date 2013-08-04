@@ -27,12 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 #include "threads.h"
 #include <string>
-#include "util/container.h"
-
-/*
-	A cache from texture name to texture path
-*/
-extern MutexedMap<std::string, std::string> g_texturename_to_path_cache;
 
 class IGameDef;
 
@@ -62,6 +56,8 @@ std::string getImagePath(std::string path);
 	Utilizes a thread-safe cache.
 */
 std::string getTexturePath(const std::string &filename);
+
+void clearTextureNameCache();
 
 /*
 	ITextureSource::generateTextureFromMesh parameters
