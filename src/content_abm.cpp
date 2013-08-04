@@ -255,11 +255,12 @@ class LiquidFreeze : public ActiveBlockModifier {
 
 			float heat = map->getHeat(env, p);
 			//heater = rare
-			if (heat <= -1 && (heat <= -50 || ((myrand_range(-50, heat)) <= -30))) {
+			content_t c = map->getNodeNoEx(p - v3s16(0,  -1, 0 )).getContent(); // top
+			//more chance to freeze if air at top
+			if (heat <= -1 && (heat <= -50 || (myrand_range(-50, heat) <= (c == CONTENT_AIR ? -10 : -40)))) {
 				content_t c_self = n.getContent();
 				// making freeze not annoying, do not freeze random blocks in center of ocean
 				// todo: any block not water (dont freeze _source near _flowing)
-				content_t c;
 				bool allow = heat < -40;
 				// todo: make for(...)
 				if (!allow) {
@@ -315,7 +316,8 @@ class LiquidMeltWeather : public ActiveBlockModifier {
 			INodeDefManager *ndef = env->getGameDef()->ndef();
 
 			float heat = map->getHeat(env, p);
-			if (heat >= 1 && (heat >= 40 || ((myrand_range(heat, 40)) >= 20))) {
+			content_t c = map->getNodeNoEx(p - v3s16(0,  -1, 0 )).getContent(); // top
+			if (heat >= 1 && (heat >= 40 || ((myrand_range(heat, 40)) >= (c == CONTENT_AIR ? 10 : 20)))) {
 				n.freezeMelt(ndef);
 				map->addNodeWithEvent(p, n);
 				env->getScriptIface()->node_falling_update(p);
