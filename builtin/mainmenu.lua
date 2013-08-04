@@ -1006,8 +1006,7 @@ function tabbuilder.tab_TP()
 			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
 			"textlist[4,0.25;7.5,5.0;TPs;" ..
 			menu.render_TP_list(TPlist) ..
-			";" .. index .. "]" ..
-			menubar.formspec
+			";" .. index .. "]"
 	end
 	local TPinfofile = TPpath..DIR_DELIM.."info.txt"
 	local f = io.open(TPinfofile, "r")
@@ -1034,8 +1033,7 @@ function tabbuilder.tab_TP()
 			menu.render_TP_list(TPlist) ..
 			";" .. index .. "]" ..
 			"image[0.65,0.25;4.0,3.7;"..(menu.TPscreen or no_screenshot).."]"..
-			"textarea[1.0,3.25;3.7,1.5;;"..(menu.TPinfo or "")..";]"..
-			menubar.formspec
+			"textarea[1.0,3.25;3.7,1.5;;"..(menu.TPinfo or "")..";]"
 end
 
 --------------------------------------------------------------------------------
