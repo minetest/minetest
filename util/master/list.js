@@ -53,7 +53,7 @@ function success(r) {
         if (s.mods && jQuery.isArray(s.mods)) {
             mods = s.mods.length;
         }
-        h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid) ' ' + e(s.mapgen);
+        h += '<td class="mts_version' + (mods ? ' mts_ismods' : '') + '">' + e(s.version) + ' ' + e(s.gameid) + ' ' + e(s.mapgen);
         if (mods) {
             h += '<div class="mts_mods">Mods ('+mods+'):<br/>';
             for (m in s.mods) {
