@@ -33,7 +33,7 @@ local function remove_last_folder(path)
 end
 
 local function filterTP(TPlist)
-	TPlist2 = {"Default"}
+	TPlist2 = {"None"}
 	for _,i in ipairs(TPlist) do
 		if i~="all" and i~="base" then
 			table.insert(TPlist2, i)
@@ -187,14 +187,14 @@ end
 --------------------------------------------------------------------------------
 function menu.render_TP_list(TPlist)
 	local retval = ""
-	
+
 	--local current_TP = filterlist.get_list(TPlist)
-	
+
 	for i,v in ipairs(TPlist) do
 		if retval ~= "" then
 			retval = retval ..","
 		end
-		
+
 		retval = retval .. v
 	end
 
@@ -218,8 +218,7 @@ function menu.init()
 		menu.favorites = engine.get_favorites("local")
 	end
 	
-	menu.defaulttexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-					DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+	menu.defaulttexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
 					DIR_DELIM .. "pack" .. DIR_DELIM
 end
 
@@ -787,7 +786,7 @@ function tabbuilder.handle_TP_buttons(fields)
 				index)
 			local TPlist = filterTP(engine.get_dirlist(remove_last_folder(engine.setting_get("texture_path"))))
 			local TPname = TPlist[engine.get_textlist_index("TPs")]
-			if TPname == "Default" then TPname = "all" end
+			if TPname == "None" then TPname = "all" end
 			local TPpath = remove_last_folder(engine.setting_get("texture_path"))..DIR_DELIM..TPname
 			engine.setting_set("texture_path", TPpath)
 		end
@@ -1010,7 +1009,7 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_TP()
 	if engine.setting_get("texture_path") == "" then
-		engine.setting_set("texture_path", remove_last_folder(engine.get_gamepath())..DIR_DELIM.."textures"..DIR_DELIM.."all")
+		engine.setting_set("texture_path", engine.get_texturepath()..DIR_DELIM.."all")
 	end
 	local TPpath = engine.setting_get("texture_path")
 	local TPinfofile = TPpath..DIR_DELIM.."info.txt"
@@ -1033,7 +1032,7 @@ function tabbuilder.tab_TP()
 	local index = tonumber(engine.setting_get("mainmenu_last_selected_TP"))
 	if index == nil then index = 1 end
 	
-	local no_screenshot = remove_last_folder(engine.get_gamepath())..DIR_DELIM.."textures"..DIR_DELIM.."base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
+	local no_screenshot = engine.get_texturepath()..DIR_DELIM.."base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
 
 	return	"label[4,-0.25;Select texture pack:]"..
 			"vertlabel[0,-0.25;TEXTURE PACKS]" ..

@@ -69,7 +69,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <list>
 #include "util/directiontables.h"
-#include "texture_cache.h"
 
 /*
 	Text input system

@@ -14,11 +14,7 @@ tags
 /cache/
 /textures/*
 !/textures/base/
-!/textures/all/
 !/textures/texture_packs_here.txt
-/textures/all/*
-!/textures/all/info.txt
-!/textures/all/screenshot.png
 /sounds/
 /mods/*
 !/mods/minetest/

@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
-#include "texture_cache.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "main.h" // for g_settings
@@ -127,18 +126,6 @@ std::string getTexturePath(const std::string &filename)
 	std::string texture_path = g_settings->get("texture_path");
 	if(texture_path != "")
 	{
-		std::string testpath = texture_path + DIR_DELIM + filename;
-		// Check all filename extensions. Returns "" if not found.
-		fullpath = getImagePath(testpath);
-	}
-	
-	/*
-		Check from $user/textures/all
-	*/
-	if(fullpath == "")
-	{
-		std::string texture_path = porting::path_user + DIR_DELIM
-				+ "textures" + DIR_DELIM + "all";
 		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
