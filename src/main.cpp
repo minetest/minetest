@@ -1388,12 +1388,18 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
-	#if USE_FREETYPE
 	std::string font_path = g_settings->get("font_path");
-	u16 font_size = g_settings->getU16("font_size");
-	gui::IGUIFont *font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	gui::IGUIFont *font;
+	bool use_freetype = g_settings->getBool("freetype");
+	#if USE_FREETYPE
+	if (use_freetype) {
+		u16 font_size = g_settings->getU16("font_size");
+		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	} else {
+		font = guienv->getFont(font_path.c_str());
+	}
 	#else
-	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
+	font = guienv->getFont(font_path.c_str());
 	#endif
 	if(font)
 		skin->setFont(font);
@@ -1736,7 +1742,8 @@ int main(int argc, char *argv[])
 	device->drop();
 
 #if USE_FREETYPE
-	font->drop();
+	if (use_freetype)
+		font->drop();
 #endif
 
 #endif // !SERVER

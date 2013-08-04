@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "settings.h"
 #include "filesys.h"
+#include "config.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -141,10 +142,17 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_name", "");
 	settings->setDefault("server_description", "");
 
+#if USE_FREETYPE
+	settings->setDefault("freetype", "true");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
 	settings->setDefault("font_size", "13");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
 	settings->setDefault("mono_font_size", "13");
+#else
+	settings->setDefault("freetype", "false");
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
+	settings->setDefault("mono_font_path", porting::getDataPath("textures" DIR_DELIM "fontdejavusansmono.png"));
+#endif
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
