@@ -235,7 +235,10 @@ sub request (;$) {
             $param->{first} ||= $old->{first} || $old->{time} || $param->{time};
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
-            $param->{mods} ||= $old->{mods} if $old->{mods} and !($param->{action} ~~ 'start');
+            # params reported once on start, must be same as src/serverlist.cpp:~221 if(server["action"] == "start") { ...
+            for (qw(dedicated rollback liquid_finite mapgen mods)) {
+                $param->{$_} ||= $old->{$_} if $old->{$_} and !($param->{action} ~~ 'start');
+            }
             delete $param->{action};
             $listk->{$param->{key}} = $param;
             #printlog Dumper $param;
