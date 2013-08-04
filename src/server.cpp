@@ -60,6 +60,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "defaultsettings.h"
 
+class ClientNotFoundException : public BaseException
+{
+public:
+	ClientNotFoundException(const char *s):
+		BaseException(s)
+	{}
+};
+
 void * ServerThread::Thread()
 {
 	ThreadStarted();
@@ -89,6 +97,9 @@ void * ServerThread::Thread()
 		catch(con::PeerNotFoundException &e)
 		{
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
+		}
+		catch(ClientNotFoundException &e)
+		{
 		}
 		catch(con::ConnectionBindFailed &e)
 		{
@@ -1766,8 +1777,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<addr_s<<"; banned name was "
 					<<m_banmanager.getBanName(addr_s)<<std::endl;
 			// This actually doesn't seem to transfer to the client
-			SendAccessDenied(m_con, peer_id,
-					L"Your ip is banned. Banned name was "
+			DenyAccess(peer_id, L"Your ip is banned. Banned name was "
 					+narrow_to_wide(m_banmanager.getBanName(addr_s)));
 			m_con.DeletePeer(peer_id);
 			return;
@@ -1803,6 +1813,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		verbosestream<<"Server: Got TOSERVER_INIT from "
 				<<peer_id<<std::endl;
 
+		// Do not allow multiple players in simple singleplayer mode.
+		// This isn't a perfect way to do it, but will suffice for now.
+		if(m_simple_singleplayer_mode && m_clients.size() > 1){
+			infostream<<"Server: Not allowing another client to connect in"
+					<<" simple singleplayer mode"<<std::endl;
+			DenyAccess(peer_id, L"Running in simple singleplayer mode.");
+			return;
+		}
+
 		// First byte after command is maximum supported
 		// serialization version
 		u8 client_max = data[2];
@@ -1823,7 +1842,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			infostream<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
-			SendAccessDenied(m_con, peer_id, std::wstring(
+			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
 					+ narrow_to_wide(VERSION_STRING) + L"."
@@ -1871,7 +1890,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: A mismatched client tried to connect from "<<addr_s
 					<<std::endl;
-			SendAccessDenied(m_con, peer_id, std::wstring(
+			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
 					+ narrow_to_wide(VERSION_STRING) + L",\n"
@@ -1893,7 +1912,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				actionstream<<"Server: A mismatched (strict) client tried to "
 						<<"connect from "<<addr_s<<std::endl;
-				SendAccessDenied(m_con, peer_id, std::wstring(
+				DenyAccess(peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
 						+ narrow_to_wide(VERSION_STRING) + L",\n"
@@ -1924,8 +1943,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: Player with an empty name "
 					<<"tried to connect from "<<addr_s<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Empty name");
+			DenyAccess(peer_id, L"Empty name");
 			return;
 		}
 
@@ -1933,8 +1951,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: Player with an invalid name "
 					<<"tried to connect from "<<addr_s<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Name contains unallowed characters");
+			DenyAccess(peer_id, L"Name contains unallowed characters");
 			return;
 		}
 
@@ -1942,8 +1959,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: Player with an invalid name "
 					<<"tried to connect from "<<addr_s<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Name is not allowed");
+			DenyAccess(peer_id, L"Name is not allowed");
 			return;
 		}
 
@@ -1967,9 +1983,25 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if(!base64_is_valid(given_password)){
-			infostream<<"Server: "<<playername
+			actionstream<<"Server: "<<playername
 					<<" supplied invalid password hash"<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Invalid password hash");
+			DenyAccess(peer_id, L"Invalid password hash");
+			return;
+		}
+
+		// Enforce user limit.
+		// Don't enforce for users that have some admin right
+		if(m_clients.size() >= g_settings->getU16("max_users") &&
+				!checkPriv(playername, "server") &&
+				!checkPriv(playername, "ban") &&
+				!checkPriv(playername, "privs") &&
+				!checkPriv(playername, "password") &&
+				playername != g_settings->get("name"))
+		{
+			actionstream<<"Server: "<<playername<<" tried to join, but there"
+					<<" are already max_users="
+					<<g_settings->getU16("max_users")<<" players."<<std::endl;
+			DenyAccess(peer_id, L"Too many users.");
 			return;
 		}
 
@@ -1981,7 +2013,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(!isSingleplayer() &&
 					g_settings->getBool("disallow_empty_password") &&
 					std::string(given_password) == ""){
-				SendAccessDenied(m_con, peer_id, L"Empty passwords are "
+				actionstream<<"Server: "<<playername
+						<<" supplied empty password"<<std::endl;
+				DenyAccess(peer_id, L"Empty passwords are "
 						L"disallowed. Set a password and try again.");
 				return;
 			}
@@ -2000,41 +2034,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		has_auth = m_script->getAuth(playername, &checkpwd, NULL);
 
 		if(!has_auth){
-			SendAccessDenied(m_con, peer_id, L"Not allowed to login");
+			actionstream<<"Server: "<<playername<<" cannot be authenticated"
+					<<" (auth handler does not work?)"<<std::endl;
+			DenyAccess(peer_id, L"Not allowed to login");
 			return;
 		}
 
 		if(given_password != checkpwd){
-			infostream<<"Server: peer_id="<<peer_id
-					<<": supplied invalid password for "
-					<<playername<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Invalid password");
-			return;
-		}
-
-		// Do not allow multiple players in simple singleplayer mode.
-		// This isn't a perfect way to do it, but will suffice for now.
-		if(m_simple_singleplayer_mode && m_clients.size() > 1){
-			infostream<<"Server: Not allowing another client to connect in"
-					<<" simple singleplayer mode"<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Running in simple singleplayer mode.");
-			return;
-		}
-
-		// Enforce user limit.
-		// Don't enforce for users that have some admin right
-		if(m_clients.size() >= g_settings->getU16("max_users") &&
-				!checkPriv(playername, "server") &&
-				!checkPriv(playername, "ban") &&
-				!checkPriv(playername, "privs") &&
-				!checkPriv(playername, "password") &&
-				playername != g_settings->get("name"))
-		{
-			actionstream<<"Server: "<<playername<<" tried to join, but there"
-					<<" are already max_users="
-					<<g_settings->getU16("max_users")<<" players."<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Too many users.");
+			actionstream<<"Server: "<<playername<<" supplied invalid password"
+					<<" (peer_id="<<peer_id<<")"<<std::endl;
+			DenyAccess(peer_id, L"Invalid password");
 			return;
 		}
 
@@ -2046,6 +2055,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			errorstream<<"Server: peer_id="<<peer_id
 					<<": failed to emerge player"<<std::endl;
+			DenyAccess(peer_id, L"Could not allocate player. You"
+					" may need to wait for a timeout.");
 			return;
 		}
 
@@ -4232,7 +4243,11 @@ void Server::SendBlocks(float dtime)
 			continue;
 		}
 
-		RemoteClient *client = getClient(q.peer_id);
+		RemoteClient *client = getClientNoEx(q.peer_id);
+		if(!client)
+			continue;
+		if(client->denied)
+			continue;
 
 		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
 
@@ -4618,6 +4633,139 @@ void Server::RespawnPlayer(u16 peer_id)
 	}
 }
 
+void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	SendAccessDenied(m_con, peer_id, reason);
+
+	RemoteClient *client = getClientNoEx(peer_id);
+	if(client)
+		client->denied = true;
+
+	// If there are way too many clients, get rid of denied new ones immediately
+	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+		// Delete peer to stop sending it data
+		m_con.DeletePeer(peer_id);
+		// Delete client also to stop block sends and other stuff
+		DeleteClient(peer_id, CDR_DENY);
+	}
+}
+
+void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	// Error check
+	std::map<u16, RemoteClient*>::iterator n;
+	n = m_clients.find(peer_id);
+	// The client may not exist; clients are immediately removed if their
+	// access is denied, and this event occurs later then.
+	if(n == m_clients.end())
+		return;
+
+	/*
+		Mark objects to be not known by the client
+	*/
+	RemoteClient *client = n->second;
+	// Handle objects
+	for(std::set<u16>::iterator
+			i = client->m_known_objects.begin();
+			i != client->m_known_objects.end(); ++i)
+	{
+		// Get object
+		u16 id = *i;
+		ServerActiveObject* obj = m_env->getActiveObject(id);
+
+		if(obj && obj->m_known_by_count > 0)
+			obj->m_known_by_count--;
+	}
+
+	/*
+		Clear references to playing sounds
+	*/
+	for(std::map<s32, ServerPlayingSound>::iterator
+			i = m_playing_sounds.begin();
+			i != m_playing_sounds.end();)
+	{
+		ServerPlayingSound &psound = i->second;
+		psound.clients.erase(peer_id);
+		if(psound.clients.size() == 0)
+			m_playing_sounds.erase(i++);
+		else
+			i++;
+	}
+
+	Player *player = m_env->getPlayer(peer_id);
+
+	// Collect information about leaving in chat
+	std::wstring message;
+	{
+		if(player != NULL && reason != CDR_DENY)
+		{
+			std::wstring name = narrow_to_wide(player->getName());
+			message += L"*** ";
+			message += name;
+			message += L" left the game.";
+			if(reason == CDR_TIMEOUT)
+				message += L" (timed out)";
+		}
+	}
+
+	/* Run scripts and remove from environment */
+	{
+		if(player != NULL)
+		{
+			PlayerSAO *playersao = player->getPlayerSAO();
+			assert(playersao);
+
+			m_script->on_leaveplayer(playersao);
+
+			playersao->disconnected();
+		}
+	}
+
+	/*
+		Print out action
+	*/
+	{
+		if(player != NULL && reason != CDR_DENY)
+		{
+			std::ostringstream os(std::ios_base::binary);
+			for(std::map<u16, RemoteClient*>::iterator
+				i = m_clients.begin();
+				i != m_clients.end(); ++i)
+			{
+				RemoteClient *client = i->second;
+				assert(client->peer_id == i->first);
+				if(client->serialization_version == SER_FMT_VER_INVALID)
+					continue;
+				// Get player
+				Player *player = m_env->getPlayer(client->peer_id);
+				if(!player)
+					continue;
+				// Get name of player
+				os<<player->getName()<<" ";
+			}
+
+			actionstream<<player->getName()<<" "
+					<<(reason==CDR_TIMEOUT?"times out.":"leaves game.")
+					<<" List of players: "<<os.str()<<std::endl;
+		}
+	}
+
+	// Delete client
+	delete m_clients[peer_id];
+	m_clients.erase(peer_id);
+
+	// Send player info to all remaining clients
+	//SendPlayerInfos();
+
+	// Send leave chat message to all remaining clients
+	if(message.length() != 0)
+		BroadcastChatMessage(message);
+}
+
 void Server::UpdateCrafting(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4638,12 +4786,19 @@ void Server::UpdateCrafting(u16 peer_id)
 
 RemoteClient* Server::getClient(u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
-	//JMutexAutoLock lock(m_con_mutex);
+	RemoteClient *client = getClientNoEx(peer_id);
+	if(!client)
+		throw ClientNotFoundException("Client not found");
+	return client;
+}
+RemoteClient* Server::getClientNoEx(u16 peer_id)
+{
 	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
-	// A client should exist for all peers
-	assert(n != m_clients.end());
+	// The client may not exist; clients are immediately removed if their
+	// access is denied, and this event occurs later then.
+	if(n == m_clients.end())
+		return NULL;
 	return n->second;
 }
 
@@ -5249,113 +5404,7 @@ void Server::handlePeerChange(PeerChange &c)
 			Delete
 		*/
 
-		// Error check
-		std::map<u16, RemoteClient*>::iterator n;
-		n = m_clients.find(c.peer_id);
-		// The client should exist
-		assert(n != m_clients.end());
-
-		/*
-			Mark objects to be not known by the client
-		*/
-		RemoteClient *client = n->second;
-		// Handle objects
-		for(std::set<u16>::iterator
-				i = client->m_known_objects.begin();
-				i != client->m_known_objects.end(); ++i)
-		{
-			// Get object
-			u16 id = *i;
-			ServerActiveObject* obj = m_env->getActiveObject(id);
-
-			if(obj && obj->m_known_by_count > 0)
-				obj->m_known_by_count--;
-		}
-
-		/*
-			Clear references to playing sounds
-		*/
-		for(std::map<s32, ServerPlayingSound>::iterator
-				i = m_playing_sounds.begin();
-				i != m_playing_sounds.end();)
-		{
-			ServerPlayingSound &psound = i->second;
-			psound.clients.erase(c.peer_id);
-			if(psound.clients.size() == 0)
-				m_playing_sounds.erase(i++);
-			else
-				i++;
-		}
-
-		Player *player = m_env->getPlayer(c.peer_id);
-
-		// Collect information about leaving in chat
-		std::wstring message;
-		{
-			if(player != NULL)
-			{
-				std::wstring name = narrow_to_wide(player->getName());
-				message += L"*** ";
-				message += name;
-				message += L" left the game.";
-				if(c.timeout)
-					message += L" (timed out)";
-			}
-		}
-
-		/* Run scripts and remove from environment */
-		{
-			if(player != NULL)
-			{
-				PlayerSAO *playersao = player->getPlayerSAO();
-				assert(playersao);
-
-				m_script->on_leaveplayer(playersao);
-
-				playersao->disconnected();
-			}
-		}
-
-		/*
-			Print out action
-		*/
-		{
-			if(player != NULL)
-			{
-				std::ostringstream os(std::ios_base::binary);
-				for(std::map<u16, RemoteClient*>::iterator
-					i = m_clients.begin();
-					i != m_clients.end(); ++i)
-				{
-					RemoteClient *client = i->second;
-					assert(client->peer_id == i->first);
-					if(client->serialization_version == SER_FMT_VER_INVALID)
-						continue;
-					// Get player
-					Player *player = m_env->getPlayer(client->peer_id);
-					if(!player)
-						continue;
-					// Get name of player
-					os<<player->getName()<<" ";
-				}
-
-				actionstream<<player->getName()<<" "
-						<<(c.timeout?"times out.":"leaves game.")
-						<<" List of players: "
-						<<os.str()<<std::endl;
-			}
-		}
-
-		// Delete client
-		delete m_clients[c.peer_id];
-		m_clients.erase(c.peer_id);
-
-		// Send player info to all remaining clients
-		//SendPlayerInfos();
-
-		// Send leave chat message to all remaining clients
-		if(message.length() != 0)
-			BroadcastChatMessage(message);
+		DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
 
 	} // PEER_REMOVED
 	else
