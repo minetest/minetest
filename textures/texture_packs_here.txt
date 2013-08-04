@@ -1,0 +1,2 @@
+Put your texture pack folders in this folder
+

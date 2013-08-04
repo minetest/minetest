@@ -3482,6 +3482,7 @@ void the_game(
 		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
 				<< std::endl;
 	}
+	clearTextureNameCache();
 	infostream << "\tRemaining materials: "
 		<< driver-> getMaterialRendererCount ()
 		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;

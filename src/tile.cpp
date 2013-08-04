@@ -131,18 +131,6 @@ std::string getTexturePath(const std::string &filename)
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 	}
-	
-	/*
-		Check from $user/textures/all
-	*/
-	if(fullpath == "")
-	{
-		std::string texture_path = porting::path_user + DIR_DELIM
-				+ "textures" + DIR_DELIM + "all";
-		std::string testpath = texture_path + DIR_DELIM + filename;
-		// Check all filename extensions. Returns "" if not found.
-		fullpath = getImagePath(testpath);
-	}
 
 	/*
 		Check from default data directory
@@ -161,6 +149,11 @@ std::string getTexturePath(const std::string &filename)
 	
 	// Finally return it
 	return fullpath;
+}
+
+void clearTextureNameCache()
+{
+	g_texturename_to_path_cache.clear();
 }
 
 /*

@@ -57,6 +57,8 @@ std::string getImagePath(std::string path);
 */
 std::string getTexturePath(const std::string &filename);
 
+void clearTextureNameCache();
+
 /*
 	ITextureSource::generateTextureFromMesh parameters
 */

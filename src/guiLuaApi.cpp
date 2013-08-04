@@ -82,6 +82,7 @@ void guiLuaApi::initialize(lua_State* L,GUIEngine* engine)
 	retval &= API_FCT(set_topleft_text);
 	retval &= API_FCT(get_modpath);
 	retval &= API_FCT(get_gamepath);
+	retval &= API_FCT(get_texturepath);
 	retval &= API_FCT(get_dirlist);
 	retval &= API_FCT(create_dir);
 	retval &= API_FCT(delete_dir);
@@ -825,6 +826,15 @@ int guiLuaApi::l_get_gamepath(lua_State *L)
 {
 	std::string gamepath
 			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "games" + DIR_DELIM);
+	lua_pushstring(L, gamepath.c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int guiLuaApi::l_get_texturepath(lua_State *L)
+{
+	std::string gamepath
+			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "textures");
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
