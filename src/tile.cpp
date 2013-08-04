@@ -28,9 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "util/string.h"
+#include "util/container.h"
 #include "util/thread.h"
 #include "util/numeric.h"
-#include "util/container.h"
 
 /*
 	A cache from texture name to texture path
