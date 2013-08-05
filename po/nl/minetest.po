@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-13 18:26+0200\n"
-"PO-Revision-Date: 2013-06-21 15:46+0200\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2013-08-05 22:18+0200\n"
+"Last-Translator: Sasikaa Lacikaa <sasikaa@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: src/client.cpp:2877
 msgid "Item textures..."
-msgstr ""
+msgstr "Artikel texturen..."
 
 #: src/game.cpp:959
 msgid "Loading..."
