@@ -32,7 +32,6 @@ function modstore.init()
 	modstore.basetexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
 						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
 						DIR_DELIM .. "pack" .. DIR_DELIM
-	modstore.update_modlist()
 	
 	modstore.current_list = nil
 	

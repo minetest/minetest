@@ -551,6 +551,7 @@ function modmgr.handle_modmgr_buttons(fields)
 	end
 	
 	if fields["btn_mod_mgr_download"] ~= nil then
+		modstore.update_modlist()
 		retval.current_tab = "dialog_modstore_unsorted"
 		retval.is_dialog = true
 		retval.show_buttons = false
