@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapgen.h" //for BlockMakeData and EmergeManager
+#include "mapgen.h" //for MapgenParams
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"

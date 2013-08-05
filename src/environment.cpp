@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "content_sao.h"
-#include "mapgen.h"
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"

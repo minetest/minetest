@@ -956,8 +956,24 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 		
 		lua_pushnil(L);
 		while (lua_next(L, -2)) {
-			if (i < numnodes)
-				schemdata[i] = readnode(L, -1, ndef);
+			if (i < numnodes) {
+				// same as readnode, except param1 default is MTSCHEM_PROB_CONST
+				lua_getfield(L, -1, "name");
+				const char *name = luaL_checkstring(L, -1);
+				lua_pop(L, 1);
+				
+				u8 param1;
+				lua_getfield(L, -1, "param1");
+				param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
+				lua_pop(L, 1);
+	
+				u8 param2;
+				lua_getfield(L, -1, "param2");
+				param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
+				lua_pop(L, 1);
+				
+				schemdata[i] = MapNode(ndef, name, param1, param2);
+			}
 			
 			i++;
 			lua_pop(L, 1);

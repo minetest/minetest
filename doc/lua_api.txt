@@ -436,17 +436,15 @@ Schematic specifier
 or through raw data supplied through Lua, in the form of a table.  This table must specify two fields:
  - The 'size' field is a 3d vector containing the dimensions of the provided schematic.
  - The 'data' field is a flat table of MapNodes making up the schematic, in the order of [z [y [x]]].
+Important:  The default value for param1 in MapNodes here is 255, which represents "always place".
 
 In the bulk MapNode data, param1, instead of the typical light values, instead represents the 
 probability of that node appearing in the structure.
-When passed to minetest.create_schematic, probability is an integer value ranging from -1 to 255:
- - A probability value of 0 means that node will always appear.
- - A probability value of -1 means the node will never appear.
+When passed to minetest.create_schematic, probability is an integer value ranging from 0 to 255:
+ - A probability value of 0 means that node will never appear (0% chance).
+ - A probability value of 255 means the node will always appear (100% chance).
  - If the probability value p is greater than 0, then there is a (p / 256 * 100)% chance that node
    will appear when the schematic is placed on the map.
-
-If registering a structure in the raw format, however, -1 is not a valid probability value; in order to
-have a node that is not placed, it must be CONTENT_IGNORE (the name for which is "ignore").
 
 Important note: Node aliases cannot be used for a raw schematic provided when registering as a decoration.
 
@@ -1436,7 +1434,7 @@ minetest.create_schematic(p1, p2, probability_list, filename)
 ^ Apply the specified probability values to the specified nodes in probability_list.
    ^ probability_list is an array of tables containing two fields, pos and prob.
    ^ pos is the 3d vector specifying the absolute coordinates of the node being modified,
-   ^ and prob is the integer value from -1 to 255 of the probability (see: Schematic specifier).
+   ^ and prob is the integer value from 0 to 255 of the probability (see: Schematic specifier).
    ^ If there are two or more entries with the same pos value, the last occuring in the array is used.
    ^ If pos is not inside the box formed by p1 and p2, it is ignored.
    ^ If probability_list is nil, no probabilities are applied.
@@ -2195,8 +2193,8 @@ Decoration definition (register_decoration)
     schematic = {
         size = {x=4, y=6, z=4},
         data = {
-            {name="cobble", param1=0, param2=0},
-            {name="dirt_with_grass", param1=0, param2=0},
+            {name="cobble", param1=255, param2=0},
+            {name="dirt_with_grass", param1=255, param2=0},
              ...
         }
     },

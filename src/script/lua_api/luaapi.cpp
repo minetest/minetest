@@ -867,7 +867,7 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 	v3s16 p2 = read_v3s16(L, 2);
 	sortBoxVerticies(p1, p2);
 	
-	std::vector<std::pair<v3s16, s16> > probability_list;
+	std::vector<std::pair<v3s16, u8> > probability_list;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3)) {
@@ -876,13 +876,8 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 				v3s16 pos = read_v3s16(L, -1);
 				lua_pop(L, 1);
 				
-				s16 prob = getintfield_default(L, -1, "prob", 0);
-				if (prob < -1 || prob >= UCHAR_MAX) {
-					errorstream << "create_schematic: probability value of "
-						<< prob << " at " << PP(pos) << " out of range" << std::endl;
-				} else {
-					probability_list.push_back(std::make_pair(pos, prob));
-				}
+				u8 prob = getintfield_default(L, -1, "prob", 0xFF);
+				probability_list.push_back(std::make_pair(pos, prob));
 			}
 
 			lua_pop(L, 1);

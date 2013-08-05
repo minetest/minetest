@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"
-#include "mapgen.h"
 #include "nodemetadata.h"
 #include "settings.h"
 #include "log.h"
