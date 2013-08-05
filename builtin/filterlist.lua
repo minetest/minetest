@@ -239,18 +239,10 @@ end
 --------------------------------------------------------------------------------
 function sort_worlds_alphabetic(this) 
 
-	table.sort(this.m_processed_list, function(a, b) 
-			local n1 = a.name 
-			local n2 = b.name 
-			local count = math.min(#n1, #n2) 
-			
-			for i=1,count do 
-				if n1:sub(i, i):lower() < n2:sub(i, i):lower() then 
-					return true 
-				elseif n1:sub(i, i):lower() > n2:sub(i, i):lower() then 
-					return false 
-				end 
-			end 
-			return (#n1 <= #n2) 
-		end) 
+	table.sort(this.m_processed_list, function(a, b)
+		if a.name:lower() == b.name:lower() then
+			return a.name < b.name
+		end
+		return a.name:lower() < b.name:lower()
+	end)
 end
