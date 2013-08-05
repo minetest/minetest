@@ -223,6 +223,13 @@ function minetest.register_alias(name, convert_to)
 	end
 end
 
+local register_biome_raw = minetest.register_biome
+minetest.registered_biomes = {}
+function minetest.register_biome(biome)
+	minetest.registered_biomes[biome.name] = biome
+	register_biome_raw(biome)
+end
+
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 local name
