@@ -148,7 +148,7 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 //////////////////////// Mapgen Math parameter read/write
 
 bool MapgenMathParams::readParams(Settings *settings) {
-	//params = settings->getJson("mg_math");
+	params = settings->getJson("mg_math");
 	// can be counfigured from here.
 	std::string value = "{}";
 	Json::Reader reader;
@@ -156,15 +156,14 @@ bool MapgenMathParams::readParams(Settings *settings) {
 		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
 	}
 
-	if (params["generator"].empty()) params["generator"] = settings->get("mgmath_generator");
+	if (params["generator"].empty()) params["generator"] = "mengersponge";
 
 	return true;
 }
 
 
 void MapgenMathParams::writeParams(Settings *settings) {
-	//settings->setJson("mg_math", params);
-	settings->set("mgmath_generator", params["generator"].asString());
+	settings->setJson("mg_math", params);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
