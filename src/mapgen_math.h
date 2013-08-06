@@ -23,13 +23,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "mapgen_v7.h"
 #include "json/json.h"
+#include "mandelbulber/fractal.h"
 
 struct MapgenMathParams : public MapgenV7Params {
 
-	MapgenMathParams() {
+	MapgenMathParams() : par() {
 	}
 
 	Json::Value params;
+	sFractal par;
 
 	bool readParams(Settings *settings);
 	void writeParams(Settings *settings);

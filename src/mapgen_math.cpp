@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // can use ported lib from http://mandelbulber.googlecode.com/svn/trunk/src
 //#include "mandelbulber/fractal.h"
-//#include "mandelbulber/fractal.cpp"
+#include "mandelbulber/fractal.cpp"
 
 double mandelbox(double x, double y, double z, double d, int nn = 10) {
 	int s = 7;
@@ -149,15 +149,8 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 
 bool MapgenMathParams::readParams(Settings *settings) {
 	params = settings->getJson("mg_math");
-	// can be counfigured from here.
-	std::string value = "{}";
-	Json::Reader reader;
-	if (!reader.parse( value, params ) ) {
-		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
-	}
-
-	if (params["generator"].empty()) params["generator"] = "mengersponge";
-
+	if (params["generator"].empty())
+		params["generator"] = "mengersponge";
 	return true;
 }
 
@@ -238,13 +231,17 @@ MapgenMath::~MapgenMath() {
 
 int MapgenMath::generateTerrain() {
 
+	Json::Value & params = mg_params->params;
 	MapNode n_air(CONTENT_AIR, LIGHT_SUN), n_water_source(c_water_source, LIGHT_SUN);
 	MapNode n_stone(c_stone, LIGHT_SUN);
 	u32 index = 0;
 	v3s16 em = vm->m_area.getExtent();
 
-#if 1
-
+//#if 0
+if (params["generator"].asString() == "sphere" ||
+    params["generator"].asString() == "mengersponge" ||
+    params["generator"].asString() == "mandelbox"
+) {
 	/* debug
 	v3f vec0 = (v3f(node_min.X, node_min.Y, node_min.Z) - center) * scale ;
 	errorstream << " X=" << node_min.X << " Y=" << node_min.Y << " Z=" << node_min.Z
@@ -273,12 +270,14 @@ int MapgenMath::generateTerrain() {
 			}
 		}
 	}
-#endif
+//#endif
+} else {
 
 
-#if 0
+#ifdef FRACTAL_H_
 // mandelbulber, unfinished but works
-	sFractal par;
+	//sFractal par;
+	sFractal & par = mg_params->par;
 	par.doubles.N = 10;
 
 	par.doubles.power = 9.0;
@@ -291,7 +290,9 @@ int MapgenMath::generateTerrain() {
 	par.mandelbox.doubles.foldingLimit = 1.0;
 	par.mandelbox.doubles.foldingValue = 2;
 
-//ok	par.formula = mandelboxVaryScale4D; par.doubles.N = 50; scale = 5; invert = 1; //ok
+	if (params["generator"].asString() == "mandelboxVaryScale4D") {
+	par.formula = mandelboxVaryScale4D; par.doubles.N = 50; scale = 5; invert = 1; //ok
+	}
 	par.mandelbox.doubles.vary4D.scaleVary =  0.1;
 	par.mandelbox.doubles.vary4D.fold = 1;
 	par.mandelbox.doubles.vary4D.rPower = 1;
@@ -299,12 +300,17 @@ int MapgenMath::generateTerrain() {
 	par.mandelbox.doubles.vary4D.wadd = 0;
 	par.doubles.constantFactor = 1.0;
 
+	if (params["generator"].asString() == "menger_sponge") {
 	par.formula = menger_sponge; par.doubles.N = 15; invert = 0; size = 30000; center = v3f(-size / 2, -size + (-2 * -invert), 2);  scale = (double)1 / size; //ok
+	}
 
 	//double tresh = 1.5;
-	//par.formula = mandelbulb2; par.doubles.N = 10; scale = (double)1/size; invert=1; center = v3f(5,-size-5,0); //ok
-	//par.formula = hypercomplex; par.doubles.N = 20; scale = 0.0001; invert=1; center = v3f(0,-10001,0); //(double)50 / max_r;
-
+	if (params["generator"].asString() == "mandelbulb2") {
+	par.formula = mandelbulb2; par.doubles.N = 10; scale = (double)1/size; invert=1; center = v3f(5,-size-5,0); //ok
+	}
+	if (params["generator"].asString() == "hypercomplex") {
+	par.formula = hypercomplex; par.doubles.N = 20; scale = 0.0001; invert=1; center = v3f(0,-10001,0); //(double)50 / max_r;
+	}
 	//no par.formula = trig_DE; par.doubles.N = 5;  scale = (double)10; invert=1;
 
 	//no par.formula = trig_optim; scale = (double)10;  par.doubles.N = 4;
@@ -322,9 +328,12 @@ int MapgenMath::generateTerrain() {
 	//no par.formula = mandelboxVaryScale4D;
 	par.doubles.cadd = -1.3;
 	//par.formula = aexion; // ok but center
-	//par.formula = benesi; par.doubles.N = 10; center = v3f(0,0,0); invert = 0; //ok
-
-	// par.formula = bristorbrot; //ok
+	if (params["generator"].asString() == "benesi") {
+	par.formula = benesi; par.doubles.N = 10; center = v3f(0,0,0); invert = 0; //ok
+	}
+	if (params["generator"].asString() == "bristorbrot") {
+	par.formula = bristorbrot; //ok
+	}
 
 	v3f vec0(node_min.X, node_min.Y, node_min.Z);
 	vec0 = (vec0 - center) * scale ;
@@ -350,6 +359,8 @@ int MapgenMath::generateTerrain() {
 				if ((!invert && d > 0) || (invert && d == 0)/*&& vec.getLength() - d > tresh*/ ) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
 						vm->m_data[i] = n_stone;
+				} else if (y <= water_level) {
+					vm->m_data[i] = n_water_source;
 				} else {
 					vm->m_data[i] = n_air;
 				}
@@ -359,6 +370,7 @@ int MapgenMath::generateTerrain() {
 
 
 #endif
+}
 	return 0;
 }
 
