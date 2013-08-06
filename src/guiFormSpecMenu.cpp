@@ -803,8 +803,11 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
 		e->setPasswordBox(true,L'*');
 
 		irr::SEvent evt;
-		evt.KeyInput.Key = KEY_END;
-		evt.EventType = EET_KEY_INPUT_EVENT;
+		evt.EventType            = EET_KEY_INPUT_EVENT;
+		evt.KeyInput.Key         = KEY_END;
+		evt.KeyInput.Char        = 0;
+		evt.KeyInput.Control     = 0;
+		evt.KeyInput.Shift       = 0;
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 		m_fields.push_back(spec);
@@ -877,8 +880,11 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string>
 		Environment->setFocus(e);
 
 		irr::SEvent evt;
-		evt.KeyInput.Key = KEY_END;
-		evt.EventType = EET_KEY_INPUT_EVENT;
+		evt.EventType            = EET_KEY_INPUT_EVENT;
+		evt.KeyInput.Key         = KEY_END;
+		evt.KeyInput.Char        = 0;
+		evt.KeyInput.Control     = 0;
+		evt.KeyInput.Shift       = 0;
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
