@@ -864,7 +864,11 @@ function tabbuilder.init()
 		end
 	end
 	
-	menu.update_gametype()
+	if tabbuilder.current_tab ~= "singleplayer" then
+		menu.update_gametype(true)
+	else
+		menu.update_gametype()
+	end
 end
 
 --------------------------------------------------------------------------------
