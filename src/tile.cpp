@@ -555,7 +555,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 
 // Draw or overlay a crack
 static void draw_crack(video::IImage *crack, video::IImage *dst,
-		bool use_overlay, u32 frame_count, u32 progression,
+		bool use_overlay, s32 frame_count, s32 progression,
 		video::IVideoDriver *driver);
 
 // Brighten image
@@ -1058,8 +1058,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			bool use_overlay = (part_of_name[6] == 'o');
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			u32 frame_count = stoi(sf.next(":"));
-			u32 progression = stoi(sf.next(":"));
+			s32 frame_count = stoi(sf.next(":"));
+			s32 progression = stoi(sf.next(":"));
 
 			/*
 				Load crack image.
@@ -1499,7 +1499,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 }
 
 static void draw_crack(video::IImage *crack, video::IImage *dst,
-		bool use_overlay, u32 frame_count, u32 progression,
+		bool use_overlay, s32 frame_count, s32 progression,
 		video::IVideoDriver *driver)
 {
 	// Dimension of destination image
@@ -1507,11 +1507,11 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	// Dimension of original image
 	core::dimension2d<u32> dim_crack = crack->getDimension();
 	// Count of crack stages
-	u32 crack_count = dim_crack.Height / dim_crack.Width;
+	s32 crack_count = dim_crack.Height / dim_crack.Width;
 	// Limit frame_count
-	if(frame_count > dim_dst.Height)
+	if(frame_count > (s32) dim_dst.Height)
 		frame_count = dim_dst.Height;
-	if(frame_count == 0)
+	if(frame_count < 1)
 		frame_count = 1;
 	// Limit progression
 	if(progression > crack_count-1)
@@ -1543,7 +1543,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 		// Scale crack image by copying
 		crack_cropped->copyToScaling(crack_scaled);
 		// Copy or overlay crack image onto each frame
-		for(u32 i = 0; i < frame_count; ++i)
+		for(s32 i = 0; i < frame_count; ++i)
 		{
 			v2s32 dst_pos(0, dim_crack_scaled.Height * i);
 			if(use_overlay)
