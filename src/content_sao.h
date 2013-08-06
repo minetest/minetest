@@ -124,30 +124,30 @@ private:
 
 class LagPool
 {
-	float pool;
-	float max;
+	float m_pool;
+	float m_max;
 public:
-	LagPool(): pool(15), max(15)
+	LagPool(): m_pool(15), m_max(15)
 	{}
 	void setMax(float new_max)
 	{
-		max = new_max;
-		if(pool > new_max)
-			pool = new_max;
+		m_max = new_max;
+		if(m_pool > new_max)
+			m_pool = new_max;
 	}
 	void add(float dtime)
 	{
-		pool -= dtime;
-		if(pool < 0)
-			pool = 0;
+		m_pool -= dtime;
+		if(m_pool < 0)
+			m_pool = 0;
 	}
 	bool grab(float dtime)
 	{
 		if(dtime <= 0)
 			return true;
-		if(pool + dtime > max)
+		if(m_pool + dtime > m_max)
 			return false;
-		pool += dtime;
+		m_pool += dtime;
 		return true;
 	}
 };
