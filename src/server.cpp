@@ -1810,14 +1810,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		verbosestream<<"Server: Got TOSERVER_INIT from "
-				<<peer_id<<std::endl;
+		verbosestream<<"Server: Got TOSERVER_INIT from "<<addr_s<<std::endl;
 
 		// Do not allow multiple players in simple singleplayer mode.
 		// This isn't a perfect way to do it, but will suffice for now.
 		if(m_simple_singleplayer_mode && m_clients.size() > 1){
-			infostream<<"Server: Not allowing another client to connect in"
-					<<" simple singleplayer mode"<<std::endl;
+			infostream<<"Server: Not allowing another client ("<<addr_s
+					<<") to connect in simple singleplayer mode"<<std::endl;
 			DenyAccess(peer_id, L"Running in simple singleplayer mode.");
 			return;
 		}
@@ -1839,9 +1838,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: A mismatched client tried to connect from "
 					<<addr_s<<std::endl;
-			infostream<<"Server: Cannot negotiate "
-					"serialization version with peer "
-					<<peer_id<<std::endl;
+			infostream<<"Server: Cannot negotiate serialization version with "
+					<<addr_s<<std::endl;
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
@@ -1879,7 +1877,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				net_proto_version = max_net_proto_version;
 		}
 
-		verbosestream<<"Server: "<<peer_id<<" Protocol version: min: "
+		verbosestream<<"Server: "<<addr_s<<": Protocol version: min: "
 				<<min_net_proto_version<<", max: "<<max_net_proto_version
 				<<", chosen: "<<net_proto_version<<std::endl;
 
@@ -1888,8 +1886,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 				net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
 		{
-			actionstream<<"Server: A mismatched client tried to connect from "<<addr_s
-					<<std::endl;
+			actionstream<<"Server: A mismatched client tried to connect from "
+					<<addr_s<<std::endl;
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
@@ -1957,14 +1955,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0)
 		{
-			actionstream<<"Server: Player with an invalid name "
+			actionstream<<"Server: Player with the name \"singleplayer\" "
 					<<"tried to connect from "<<addr_s<<std::endl;
 			DenyAccess(peer_id, L"Name is not allowed");
 			return;
 		}
 
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
-				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
+				<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
 
 		// Get password
 		char given_password[PASSWORD_SIZE];
@@ -2041,9 +2039,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if(given_password != checkpwd){
-			actionstream<<"Server: "<<playername<<" supplied invalid password"
-					<<" (peer_id="<<peer_id<<")"<<std::endl;
-			DenyAccess(peer_id, L"Invalid password");
+			actionstream<<"Server: "<<playername<<" supplied wrong password"
+					<<std::endl;
+			DenyAccess(peer_id, L"Wrong password");
 			return;
 		}
 
@@ -2053,10 +2051,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// If failed, cancel
 		if(playersao == NULL)
 		{
-			errorstream<<"Server: peer_id="<<peer_id
-					<<": failed to emerge player"<<std::endl;
-			DenyAccess(peer_id, L"Could not allocate player. You"
-					" may need to wait for a timeout.");
+			RemotePlayer *player =
+					static_cast<RemotePlayer*>(m_env->getPlayer(playername));
+			if(player && player->peer_id != 0){
+				errorstream<<"Server: "<<playername<<": Failed to emerge player"
+						<<" (player allocated to an another client)"<<std::endl;
+				DenyAccess(peer_id, L"Another client is connected with this "
+						L"name. If your client closed unexpectedly, try again in "
+						L"a minute.");
+			} else {
+				errorstream<<"Server: "<<playername<<": Failed to emerge player"
+						<<std::endl;
+				DenyAccess(peer_id, L"Could not allocate player.");
+			}
 			return;
 		}
 
