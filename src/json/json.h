@@ -824,7 +824,7 @@ namespace Json {
 
    /** \brief Experimental and untested: represents an element of the "path" to access a node.
     */
-   class PathArgument
+   class JSON_API PathArgument
    {
    public:
       friend class Path;
@@ -857,7 +857,7 @@ namespace Json {
     * - ".%" => member name is provided as parameter
     * - ".[%]" => index is provied as parameter
     */
-   class Path
+   class JSON_API Path
    {
    public:
       Path( const std::string &path,
@@ -1233,9 +1233,10 @@ public: // overridden from ValueArrayAllocator
    /** \brief base class for Value iterators.
     *
     */
-   class ValueIteratorBase
+   class JSON_API ValueIteratorBase
    {
    public:
+      typedef std::bidirectional_iterator_tag iterator_category;
       typedef unsigned int size_t;
       typedef int difference_type;
       typedef ValueIteratorBase SelfType;
@@ -1303,10 +1304,11 @@ public: // overridden from ValueArrayAllocator
    /** \brief const iterator for object and array value.
     *
     */
-   class ValueConstIterator : public ValueIteratorBase
+   class JSON_API ValueConstIterator : public ValueIteratorBase
    {
       friend class Value;
    public:
+      typedef const Value value_type;
       typedef unsigned int size_t;
       typedef int difference_type;
       typedef const Value &reference;
@@ -1361,10 +1363,11 @@ public: // overridden from ValueArrayAllocator
 
    /** \brief Iterator for object and array value.
     */
-   class ValueIterator : public ValueIteratorBase
+   class JSON_API ValueIterator : public ValueIteratorBase
    {
       friend class Value;
    public:
+      typedef Value value_type;
       typedef unsigned int size_t;
       typedef int difference_type;
       typedef Value &reference;

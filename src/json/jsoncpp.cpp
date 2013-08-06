@@ -1411,6 +1411,7 @@ ValueIteratorBase::copy( const SelfType &other )
 {
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    current_ = other.current_;
+   isNull_ = other.isNull_;
 #else
    if ( isArray_ )
       iterator_.array_ = other.iterator_.array_;
@@ -2045,7 +2046,10 @@ Value::Value( const Value &other )
          allocated_ = true;
       }
       else
+      {
          value_.string_ = 0;
+         allocated_ = false;
+      }
       break;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    case arrayValue:
