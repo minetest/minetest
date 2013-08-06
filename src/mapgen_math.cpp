@@ -170,8 +170,7 @@ void MapgenMathParams::writeParams(Settings *settings) {
 
 MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
 	mg_params = params_;
-	this->lighting = 0;
-	this->ridges   = 0;
+	this->flags |= MG_NOLIGHT;
 
 	Json::Value & params = mg_params->params;
 	invert = params["invert"].empty() ? 1 : params["invert"].asBool(); //params["invert"].empty()?1:params["invert"].asBool();
@@ -237,7 +236,7 @@ MapgenMath::~MapgenMath() {
 
 //////////////////////// Map generator
 
-void MapgenMath::generateTerrain() {
+int MapgenMath::generateTerrain() {
 
 	MapNode n_air(CONTENT_AIR, LIGHT_SUN), n_water_source(c_water_source, LIGHT_SUN);
 	MapNode n_stone(c_stone, LIGHT_SUN);
@@ -255,16 +254,16 @@ void MapgenMath::generateTerrain() {
 	*/
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-			Biome *biome = bmgr->biomes[biomemap[index]];
+			//Biome *biome = bmgr->biomes[biomemap[index]];
 			u32 i = vm->m_area.index(x, node_min.Y, z);
 			for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 				v3f vec = (v3f(x, y, z) - center) * scale ;
 				double d = (*func)(vec.X, vec.Y, vec.Z, distance, iterations);
 				if ((!invert && d > 0) || (invert && d == 0)  ) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-						vm->m_data[i] = (y > water_level + biome->filler_height) ?
-						                MapNode(biome->c_filler) : n_stone;
-//						vm->m_data[i] = n_stone;
+	//					vm->m_data[i] = (y > water_level + biome->filler) ?
+		//				                MapNode(biome->c_filler) : n_stone;
+						vm->m_data[i] = n_stone;
 				} else if (y <= water_level) {
 					vm->m_data[i] = n_water_source;
 				} else {
@@ -360,7 +359,7 @@ void MapgenMath::generateTerrain() {
 
 
 #endif
-
+	return 0;
 }
 
 int MapgenMath::getGroundLevelAtPoint(v2s16 p) {

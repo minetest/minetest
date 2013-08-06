@@ -51,6 +51,16 @@ struct EnumString ModApiBasic::es_DecorationType[] =
 	{0, NULL},
 };
 
+struct EnumString ModApiBasic::es_Rotation[] =
+{
+	{ROTATE_0,    "0"},
+	{ROTATE_90,   "90"},
+	{ROTATE_180,  "180"},
+	{ROTATE_270,  "270"},
+	{ROTATE_RAND, "random"},
+	{0, NULL},
+};
+
 
 ModApiBasic::ModApiBasic() : ModApiBase() {
 }
@@ -194,19 +204,33 @@ int ModApiBasic::l_register_biome(lua_State *L)
 				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
 
-	b->name            = getstringfield_default(L, index, "name", "");
-	b->top_nodename    = getstringfield_default(L, index, "top_node", "");
-	b->top_depth       = getintfield_default(L, index, "top_depth", 0);
-	b->filler_nodename = getstringfield_default(L, index, "filler_node", "");
-	b->filler_height   = getintfield_default(L, index, "filler_height", 0);
-	b->height_min      = getintfield_default(L, index, "height_min", 0);
-	b->height_max      = getintfield_default(L, index, "height_max", 0);
-	b->heat_point      = getfloatfield_default(L, index, "heat_point", 0.);
-	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->name         = getstringfield_default(L, index, "name",
+												"<no name>");
+	b->nname_top    = getstringfield_default(L, index, "node_top",
+												"mapgen_dirt_with_grass");
+	b->nname_filler = getstringfield_default(L, index, "node_filler",
+												"mapgen_dirt");
+	b->nname_water  = getstringfield_default(L, index, "node_water",
+												"mapgen_water_source");
+	b->nname_dust   = getstringfield_default(L, index, "node_dust",
+												"air");
+	b->nname_dust_water = getstringfield_default(L, index, "node_dust_water",
+												"mapgen_water_source");
+	
+	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
+	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
+	b->height_min     = getintfield_default(L, index, "height_min",   0);
+	b->height_max     = getintfield_default(L, index, "height_max",   0);
+	b->heat_point     = getfloatfield_default(L, index, "heat_point",     0.);
+	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
 
-	b->flags    = 0; //reserved
-	b->c_top    = CONTENT_IGNORE;
-	b->c_filler = CONTENT_IGNORE;
+	b->flags        = 0; //reserved
+	b->c_top        = CONTENT_IGNORE;
+	b->c_filler     = CONTENT_IGNORE;
+	b->c_water      = CONTENT_IGNORE;
+	b->c_dust       = CONTENT_IGNORE;
+	b->c_dust_water = CONTENT_IGNORE;
+	
 	verbosestream << "register_biome: " << b->name << std::endl;
 	bmgr->addBiome(b);
 
@@ -648,7 +672,6 @@ int ModApiBasic::l_register_ore(lua_State *L)
 
 	ore->ore_name       = getstringfield_default(L, index, "ore", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
-	ore->wherein_name   = getstringfield_default(L, index, "wherein", "");
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
@@ -656,6 +679,21 @@ int ModApiBasic::l_register_ore(lua_State *L)
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
 	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+
+	lua_getfield(L, index, "wherein");
+	if (lua_istable(L, -1)) {
+		int  i = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, i) != 0) {
+			ore->wherein_names.push_back(lua_tostring(L, -1));
+			lua_pop(L, 1);
+		}
+	} else if (lua_isstring(L, -1)) {
+		ore->wherein_names.push_back(lua_tostring(L, -1));
+	} else {
+		ore->wherein_names.push_back("");
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "noise_params");
 	ore->np = read_noiseparams(L, -1);
@@ -767,8 +805,29 @@ int ModApiBasic::l_register_decoration(lua_State *L)
 			break; }
 		case DECO_SCHEMATIC: {
 			DecoSchematic *dschem = (DecoSchematic *)deco;
-			dschem->flags = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
-			
+			dschem->flags    = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
+			dschem->rotation = (Rotation)getenumfield(L, index,
+								"rotation", es_Rotation, ROTATE_0);
+
+			lua_getfield(L, index, "replacements");
+			if (lua_istable(L, -1)) {
+				int i = lua_gettop(L);
+				lua_pushnil(L);
+				while (lua_next(L, i) != 0) {
+					// key at index -2 and value at index -1
+					lua_rawgeti(L, -1, 1);
+					std::string replace_from = lua_tostring(L, -1);
+					lua_pop(L, 1);
+					lua_rawgeti(L, -1, 2);
+					std::string replace_to = lua_tostring(L, -1);
+					lua_pop(L, 1);
+					dschem->replacements[replace_from] = replace_to;
+					// removes value, keeps key for next iteration
+					lua_pop(L, 1);
+				}
+			}
+			lua_pop(L, 1);
+
 			lua_getfield(L, index, "schematic");
 			if (!read_schematic(L, -1, dschem, getServer(L))) {
 				delete dschem;
@@ -848,7 +907,7 @@ int ModApiBasic::l_create_schematic(lua_State *L)
 }
 
 
-// place_schematic(p, schematic)
+// place_schematic(p, schematic, rotation, replacement)
 int ModApiBasic::l_place_schematic(lua_State *L)
 {
 	DecoSchematic dschem;
@@ -859,6 +918,29 @@ int ModApiBasic::l_place_schematic(lua_State *L)
 	v3s16 p = read_v3s16(L, 1);
 	if (!read_schematic(L, 2, &dschem, getServer(L)))
 		return 0;
+		
+	Rotation rot = ROTATE_0;
+	if (lua_isstring(L, 3))
+		string_to_enum(es_Rotation, (int &)rot, std::string(lua_tostring(L, 3)));
+		
+	dschem.rotation = rot;
+
+	if (lua_istable(L, 4)) {
+		int index = 4;
+		lua_pushnil(L);
+		while (lua_next(L, index) != 0) {
+			// key at index -2 and value at index -1
+			lua_rawgeti(L, -1, 1);
+			std::string replace_from = lua_tostring(L, -1);
+			lua_pop(L, 1);
+			lua_rawgeti(L, -1, 2);
+			std::string replace_to = lua_tostring(L, -1);
+			lua_pop(L, 1);
+			dschem.replacements[replace_from] = replace_to;
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
 
 	if (!dschem.filename.empty()) {
 		if (!dschem.loadSchematicFile()) {

@@ -50,6 +50,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_FLOWINGLIQUID, "flowingliquid"},
 		{CPT2_FACEDIR, "facedir"},
 		{CPT2_WALLMOUNTED, "wallmounted"},
+		{CPT2_LEVELED, "leveled"},
 		{0, NULL},
 	};
 
@@ -73,6 +74,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_REGULAR, "regular"},
 		{NODEBOX_FIXED, "fixed"},
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
+		{NODEBOX_LEVELED, "leveled"},
 		{0, NULL},
 	};
 
@@ -231,3 +233,20 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 		scriptError("error: %s", lua_tostring(L, -1));
 }
 
+void ScriptApiNode::node_falling_update(v3s16 p)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	lua_getglobal(L, "nodeupdate");
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, 0))
+		scriptError("error: %s", lua_tostring(L, -1));
+}
+
+void ScriptApiNode::node_falling_update_single(v3s16 p)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	lua_getglobal(L, "nodeupdate_single");
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, 0))
+		scriptError("error: %s", lua_tostring(L, -1));
+}

@@ -33,6 +33,8 @@ struct MapgenSinglenodeParams : public MapgenParams {
 
 class MapgenSinglenode : public Mapgen {
 public:
+	u32 flags;
+
 	MapgenSinglenode(int mapgenid, MapgenSinglenodeParams *params);
 	~MapgenSinglenode();
 	

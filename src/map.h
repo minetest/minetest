@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "environment.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -336,7 +337,11 @@ public:
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
 
+	virtual s16 getHeat(v3s16 p);
+	virtual s16 getHumidity(v3s16 p);
+
 protected:
+	friend class LuaVoxelManip;
 
 	std::ostream &m_dout; // A bit deprecated, could be removed
 
@@ -482,6 +487,10 @@ public:
 
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
+
+	virtual s16 getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+	virtual s16 getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
@@ -554,7 +563,8 @@ public:
 
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
-	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max);
+	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
+						bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks);

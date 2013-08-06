@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include "config.h"
+#include "mods.h"
 #include "json/json.h"
 
 #ifndef SERVERLIST_HEADER
@@ -39,7 +40,7 @@ namespace ServerList
 	std::vector<ServerListSpec> deSerializeJson(std::string liststring);
 	std::string serializeJson(std::vector<ServerListSpec>);
 	#if USE_CURL
-	void sendAnnounce(std::string action = "", u16 clients = 0, double uptime = 0, std::string gameid = "");
+	void sendAnnounce(std::string action = "", u16 clients = 0, double uptime = 0, std::string gameid = "", std::vector<ModSpec> m_mods = std::vector<ModSpec>());
 	#endif
 } //ServerList namespace
 

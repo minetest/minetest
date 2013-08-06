@@ -179,6 +179,12 @@ private:
 	// set_look_yaw(self, radians)
 	static int l_set_look_yaw(lua_State *L);
 
+	// set_breath(self, breath)
+	static int l_set_breath(lua_State *L);
+
+	// get_breath(self, breath)
+	static int l_get_breath(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 

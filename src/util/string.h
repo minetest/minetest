@@ -146,7 +146,7 @@ inline std::string lowercase(const std::string &s)
 inline bool is_yes(const std::string &s)
 {
 	std::string s2 = lowercase(trim(s));
-	if(s2 == "y" || s2 == "yes" || s2 == "true" || s2 == "1")
+	if(s2 == "y" || s2 == "yes" || s2 == "true" || atoi(s2.c_str()) != 0)
 		return true;
 	return false;
 }

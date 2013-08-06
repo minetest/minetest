@@ -65,7 +65,7 @@ FarMesh::FarMesh(
 	m_materials[1].setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_materials[1].setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_materials[1].setFlag(video::EMF_FOG_ENABLE, false);
-	m_materials[1].setTexture(0, client->tsrc()->getTextureRaw("treeprop.png"));
+	m_materials[1].setTexture(0, client->tsrc()->getTexture("treeprop.png"));
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 	m_materials[1].setFlag(video::EMF_FOG_ENABLE, true);
 

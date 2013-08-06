@@ -141,6 +141,11 @@ void *JThread::GetReturnValue()
 	return val;
 }
 
+bool JThread::IsSameThread()
+{
+	return GetCurrentThreadId() == threadid;
+}
+
 #ifndef _WIN32_WCE
 UINT __stdcall JThread::TheThread(void *param)
 #else

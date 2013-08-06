@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "util/container.h" // UniqueQueue
 #include "gamedef.h"
+#include "nodedef.h"
 #include "mapnode.h"
 #include "noise.h"
 #include "settings.h"
@@ -35,6 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_JUNGLES     0x08
 #define MGV6_BIOME_BLEND 0x10
 #define MG_FLAT          0x20
+#define MG_NOLIGHT       0x40
+#define MGV7_MOUNTAINS   0x80
+#define MGV7_RIDGES      0x100
 
 /////////////////// Ore generation flags
 // Use absolute value of height to determine ore placement
@@ -60,7 +64,6 @@ class EmergeManager;
 class MapBlock;
 class ManualMapVoxelManipulator;
 class VoxelManipulator;
-class INodeDefManager;
 struct BlockMakeData;
 class VoxelArea;
 class Map;
@@ -80,8 +83,8 @@ struct MapgenParams {
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
 	
-	virtual bool readParams(Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) = 0;
+	virtual bool readParams(Settings *settings) { return true; }
+	virtual void writeParams(Settings *settings) {}
 	virtual ~MapgenParams() {}
 };
 
@@ -93,8 +96,10 @@ public:
 	int id;
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
+	
 	s16 *heightmap;
 	u8 *biomemap;
+	v3s16 csize;
 
 	Mapgen();
 	virtual ~Mapgen() {}
@@ -108,8 +113,8 @@ public:
 	void calcLighting(v3s16 nmin, v3s16 nmax);
 	void calcLightingOld(v3s16 nmin, v3s16 nmax);
 
-	virtual void makeChunk(BlockMakeData *data) {};
-	virtual int getGroundLevelAtPoint(v2s16 p) = 0;
+	virtual void makeChunk(BlockMakeData *data) {}
+	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
 	//Legacy functions for Farmesh (pending removal)
 	static bool get_have_beach(u64 seed, v2s16 p2d);
@@ -124,6 +129,14 @@ struct MapgenFactory {
 	virtual ~MapgenFactory() {}
 };
 
+enum MapgenObject {
+	MGOBJ_VMANIP,
+	MGOBJ_HEIGHTMAP,
+	MGOBJ_BIOMEMAP,
+	MGOBJ_HEATMAP,
+	MGOBJ_HUMIDMAP
+};
+
 enum OreType {
 	ORE_SCATTER,
 	ORE_SHEET,
@@ -136,9 +149,9 @@ enum OreType {
 class Ore {
 public:
 	std::string ore_name;
-	std::string wherein_name;
+	std::vector<std::string> wherein_names;
 	content_t ore;
-	content_t wherein;  // the node to be replaced
+	std::vector<content_t> wherein;  // the node to be replaced
 	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
 	s16 clust_num_ores; // how many ore nodes are in a chunk
 	s16 clust_size;     // how large (in nodes) a chunk of ore is
@@ -152,7 +165,6 @@ public:
 	
 	Ore() {
 		ore     = CONTENT_IGNORE;
-		wherein = CONTENT_IGNORE;
 		np      = NULL;
 		noise   = NULL;
 	}
@@ -203,6 +215,8 @@ struct CutoffData {
 
 class Decoration {
 public:
+	INodeDefManager *ndef;
+	
 	int mapseed;
 	std::string place_on_name;
 	content_t c_place_on;
@@ -247,14 +261,18 @@ public:
 	virtual std::string getName();
 };
 
+#define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
+
 class DecoSchematic : public Decoration {
 public:
 	std::string filename;
 	
 	std::vector<std::string> *node_names;
 	std::vector<content_t> c_nodes;
+	std::map<std::string, std::string> replacements;
 
 	u32 flags;
+	Rotation rotation;
 	v3s16 size;
 	MapNode *schematic;
 
@@ -265,6 +283,9 @@ public:
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
+	
+	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
+					Rotation rot, bool force_placement);
 	
 	bool loadSchematicFile();
 	void saveSchematicFile(INodeDefManager *ndef);

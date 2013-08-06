@@ -303,6 +303,10 @@ public:
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
+	u32 getGameTime() { return m_game_time; }
+
+	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
+	float getMaxLagEstimate() { return m_max_lag_estimate; }
 private:
 
 	/*
@@ -377,6 +381,9 @@ private:
 	std::list<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
+	// Estimate for general maximum lag as determined by server.
+	// Can raise to high values like 15s with eg. map generation mods.
+	float m_max_lag_estimate;
 };
 
 #ifndef SERVER
@@ -395,7 +402,8 @@ class ClientSimpleObject;
 enum ClientEnvEventType
 {
 	CEE_NONE,
-	CEE_PLAYER_DAMAGE
+	CEE_PLAYER_DAMAGE,
+	CEE_PLAYER_BREATH
 };
 
 struct ClientEnvEvent
@@ -408,6 +416,9 @@ struct ClientEnvEvent
 			u8 amount;
 			bool send_to_server;
 		} player_damage;
+		struct{
+			u16 amount;
+		} player_breath;
 	};
 };
 
@@ -462,6 +473,7 @@ public:
 	*/
 
 	void damageLocalPlayer(u8 damage, bool handle_hp=true);
+	void updateLocalPlayerBreath(u16 breath);
 
 	/*
 		Client likes to call these

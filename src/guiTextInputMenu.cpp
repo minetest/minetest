@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTextInputMenu.h"
 #include "debug.h"
 #include "serialization.h"
+#include "main.h" // for g_settings
+#include "settings.h"
 #include <string>
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
@@ -109,11 +111,16 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 300, 30);
 		rect = rect + v2s32(size.X/2-300/2, size.Y/2-30/2-25);
+		gui::IGUIElement *e;
 		#if USE_FREETYPE
-		gui::IGUIElement *e = (gui::IGUIElement *) new gui::intlGUIEditBox(text.c_str(), true, Environment, this, 256, rect);
-		e->drop();
+		if (g_settings->getBool("freetype")) {
+			e = (gui::IGUIElement *) new gui::intlGUIEditBox(text.c_str(), true, Environment, this, 256, rect);
+			e->drop();
+		} else {
+			e = Environment->addEditBox(text.c_str(), rect, true, this, 256);
+		}
 		#else
-		gui::IGUIElement *e = Environment->addEditBox(text.c_str(), rect, true, this, 256);
+			e = Environment->addEditBox(text.c_str(), rect, true, this, 256);
 		#endif
 		Environment->setFocus(e);
 

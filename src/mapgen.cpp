@@ -44,6 +44,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"v6_jungles",     MGV6_JUNGLES},
 	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
+	{"nolight",        MG_NOLIGHT},
 	{NULL,             0}
 };
 
@@ -90,18 +91,17 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 		if (ore == CONTENT_IGNORE) {
 			errorstream << "Ore::resolveNodeNames: ore node '"
 				<< ore_name << "' not defined";
-			ore     = CONTENT_AIR;
-			wherein = CONTENT_AIR;
+			ore = CONTENT_AIR;
+			wherein.push_back(CONTENT_AIR);
+			return;
 		}
 	}
 
-	if (wherein == CONTENT_IGNORE) {
-		wherein = ndef->getId(wherein_name);
-		if (wherein == CONTENT_IGNORE) {
-			errorstream << "Ore::resolveNodeNames: wherein node '"
-				<< wherein_name << "' not defined";
-			ore     = CONTENT_AIR;
-			wherein = CONTENT_AIR;
+	for (size_t i=0; i != wherein_names.size(); i++) {
+		std::string name = wherein_names[i];
+		content_t c = ndef->getId(name);
+		if (c != CONTENT_IGNORE) {
+			wherein.push_back(c);
 		}
 	}
 }
@@ -160,8 +160,9 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 				continue;
 
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
-			if (vm->m_data[i].getContent() == wherein)
-				vm->m_data[i] = n_ore;
+			for (size_t ii = 0; ii < wherein.size(); ii++)
+				if (vm->m_data[i].getContent() == wherein[ii])
+					vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -198,8 +199,9 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			if (!vm->m_area.contains(i))
 				continue;
 
-			if (vm->m_data[i].getContent() == wherein)
-				vm->m_data[i] = n_ore;
+			for (size_t ii = 0; ii < wherein.size(); ii++)
+				if (vm->m_data[i].getContent() == wherein[ii])
+					vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -236,6 +238,8 @@ Decoration::~Decoration() {
 
 
 void Decoration::resolveNodeNames(INodeDefManager *ndef) {
+	this->ndef = ndef;
+	
 	if (c_place_on == CONTENT_IGNORE)
 		c_place_on = ndef->getId(place_on_name);
 }
@@ -290,7 +294,7 @@ void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 				continue;
 
 			int height = getHeight();
-			int max_y = nmax.Y + MAP_BLOCKSIZE;
+			int max_y = nmax.Y;// + MAP_BLOCKSIZE - 1;
 			if (y + 1 + height > max_y) {
 				continue;
 #if 0
@@ -502,7 +506,12 @@ void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
 	}
 	
 	for (size_t i = 0; i != node_names->size(); i++) {
-		content_t c = ndef->getId(node_names->at(i));
+		std::string name = node_names->at(i);
+		std::map<std::string, std::string>::iterator it;
+		it = replacements.find(name);
+		if (it != replacements.end())
+			name = it->second;
+		content_t c = ndef->getId(name);
 		if (c == CONTENT_IGNORE) {
 			errorstream << "DecoSchematic::resolveNodeNames: node '"
 				<< node_names->at(i) << "' not defined" << std::endl;
@@ -534,28 +543,10 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 		c_place_on != CONTENT_IGNORE)
 		return;
 	
-	u32 i = 0;
-	for (s16 z = 0; z != size.Z; z++)
-	for (s16 y = 0; y != size.Y; y++) {
-		vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
-		for (s16 x = 0; x != size.X; x++, i++, vi++) {
-			if (!vm->m_area.contains(vi))
-				continue;
-				
-			if (schematic[i].getContent() == CONTENT_IGNORE)
-				continue;
-				
-			content_t c = vm->m_data[vi].getContent();
-			if (c != CONTENT_AIR && c != CONTENT_IGNORE)
-				continue;
-				
-			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
-				continue;
-			
-			vm->m_data[vi] = schematic[i];
-			vm->m_data[vi].param1 = 0;
-		}
-	}
+	Rotation rot = (rotation == ROTATE_RAND) ?
+		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+	
+	blitToVManip(p, vm, rot, false);
 }
 
 
@@ -569,39 +560,93 @@ std::string DecoSchematic::getName() {
 }
 
 
-void DecoSchematic::placeStructure(Map *map, v3s16 p) {
-	assert(schematic != NULL);
-	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
+								Rotation rot, bool force_placement) {
+	int xstride = 1;
+	int ystride = size.X;
+	int zstride = size.X * size.Y;
 
-	if (flags & DECO_PLACE_CENTER_X)
-		p.X -= (size.X + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (size.Y + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Z)
-		p.Z -= (size.Z + 1) / 2;
-		
-	v3s16 bp1 = getNodeBlockPos(p);
-	v3s16 bp2 = getNodeBlockPos(p + size - v3s16(1,1,1));
-	vm->initialEmerge(bp1, bp2);
+	s16 sx = size.X;
+	s16 sy = size.Y;
+	s16 sz = size.Z;
 
-	u32 i = 0;
-	for (s16 z = 0; z != size.Z; z++)
-	for (s16 y = 0; y != size.Y; y++) {
-		u32 vi = vm->m_area.index(p.X, p.Y + y, p.Z + z);
-		for (s16 x = 0; x != size.X; x++, i++, vi++) {
+	int i_start, i_step_x, i_step_z;
+	switch (rot) {
+		case ROTATE_90:
+			i_start  = sx - 1;
+			i_step_x = zstride;
+			i_step_z = -xstride;
+			SWAP(s16, sx, sz);
+			break;
+		case ROTATE_180:
+			i_start  = zstride * (sz - 1) + sx - 1;
+			i_step_x = -xstride;
+			i_step_z = -zstride;
+			break;
+		case ROTATE_270:
+			i_start  = zstride * (sz - 1);
+			i_step_x = -zstride;
+			i_step_z = xstride;
+			SWAP(s16, sx, sz);
+			break;
+		default:
+			i_start  = 0;
+			i_step_x = xstride;
+			i_step_z = zstride;
+	}
+	
+	for (s16 z = 0; z != sz; z++)
+	for (s16 y = 0; y != sy; y++) {
+		u32 i = z * i_step_z + y * ystride + i_start;
+		for (s16 x = 0; x != sx; x++, i += i_step_x) {
+			u32 vi = vm->m_area.index(p.X + x, p.Y + y, p.Z + z);
 			if (!vm->m_area.contains(vi))
 				continue;
-				
+			
 			if (schematic[i].getContent() == CONTENT_IGNORE)
 				continue;
-				
+
+			if (!force_placement) {
+				content_t c = vm->m_data[vi].getContent();
+				if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+					continue;
+			}
+			
 			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
 				continue;
 			
 			vm->m_data[vi] = schematic[i];
 			vm->m_data[vi].param1 = 0;
+			
+			if (rot)
+				vm->m_data[vi].rotateAlongYAxis(ndef, rot);
 		}
 	}
+}
+
+
+void DecoSchematic::placeStructure(Map *map, v3s16 p) {
+	assert(schematic != NULL);
+	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+
+	Rotation rot = (rotation == ROTATE_RAND) ?
+		(Rotation)myrand_range(ROTATE_0, ROTATE_270) : rotation;
+	
+	v3s16 s = (rot == ROTATE_90 || rot == ROTATE_270) ?
+				v3s16(size.Z, size.Y, size.X) : size;
+
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (s.X + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (s.Y + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (s.Z + 1) / 2;
+		
+	v3s16 bp1 = getNodeBlockPos(p);
+	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1,1,1));
+	vm->initialEmerge(bp1, bp2);
+	
+	blitToVManip(p, vm, rot, true);
 	
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;
@@ -626,7 +671,7 @@ bool DecoSchematic::loadSchematicFile() {
 	std::ifstream is(filename.c_str(), std::ios_base::binary);
 
 	u32 signature = readU32(is);
-	if (signature != 'MTSM') {
+	if (signature != MTSCHEM_FILE_SIGNATURE) {
 		errorstream << "loadSchematicFile: invalid schematic "
 			"file" << std::endl;
 		return false;
@@ -652,7 +697,7 @@ bool DecoSchematic::loadSchematicFile() {
 
 	delete schematic;
 	schematic = new MapNode[nodecount];
-	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schematic,
 				nodecount, 2, 2, true);
 				
 	return true;
@@ -685,7 +730,7 @@ bool DecoSchematic::loadSchematicFile() {
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 	std::ofstream os(filename.c_str(), std::ios_base::binary);
 
-	writeU32(os, 'MTSM'); // signature
+	writeU32(os, MTSCHEM_FILE_SIGNATURE); // signature
 	writeU16(os, 1);      // version
 	writeV3S16(os, size); // schematic size
 	
@@ -699,7 +744,7 @@ void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 		os << serializeString(ndef->get(usednodes[i]).name); // node names
 		
 	// compressed bulk node data
-	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST_WRITE, schematic,
 				nodecount, 2, 2, true);
 }
 
@@ -825,9 +870,16 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
 	//TimeTaker t("Mapgen::updateHeightmap", NULL, PRECISION_MICRO);
 	int index = 0;
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 x = nmin.X; x <= nmax.X; x++) {
+		for (s16 x = nmin.X; x <= nmax.X; x++, index++) {
 			s16 y = findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
-			heightmap[index++] = y;
+
+			// if the values found are out of range, trust the old heightmap
+			if (y == nmax.Y && heightmap[index] > nmax.Y)
+				continue;
+			if (y == nmin.Y - 1 && heightmap[index] < nmin.Y)
+				continue;
+				
+			heightmap[index] = y;
 		}
 	}
 	//printf("updateHeightmap: %dus\n", t.stop());
@@ -835,8 +887,10 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
 
 
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax) {
-	bool isliquid, wasliquid;
+	bool isliquid, wasliquid, rare;
 	v3s16 em  = vm->m_area.getExtent();
+	rare = g_settings->getBool("liquid_finite");
+	int rarecnt = 0;
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 x = nmin.X; x <= nmax.X; x++) {
@@ -846,8 +900,8 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
 				isliquid = ndef->get(vm->m_data[i]).isLiquid();
 
-				// there was a change between liquid and nonliquid, add to queue
-				if (isliquid != wasliquid)
+				// there was a change between liquid and nonliquid, add to queue. no need to add every with liquid_finite
+				if (isliquid != wasliquid && (!rare || !(rarecnt++ % 36)))
 					trans_liquid->push_back(v3s16(x, y, z));
 
 				wasliquid = isliquid;
@@ -942,12 +996,12 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 
 				u8 light = n.param1 & 0x0F;
 				if (light) {
-					lightSpread(a, v3s16(x,     y,     z + 1), light);
-					lightSpread(a, v3s16(x,     y + 1, z    ), light);
-					lightSpread(a, v3s16(x + 1, y,     z    ), light);
-					lightSpread(a, v3s16(x,     y,     z - 1), light);
-					lightSpread(a, v3s16(x,     y - 1, z    ), light);
-					lightSpread(a, v3s16(x - 1, y,     z    ), light);
+					lightSpread(a, v3s16(x,     y,     z + 1), light - 1);
+					lightSpread(a, v3s16(x,     y + 1, z    ), light - 1);
+					lightSpread(a, v3s16(x + 1, y,     z    ), light - 1);
+					lightSpread(a, v3s16(x,     y,     z - 1), light - 1);
+					lightSpread(a, v3s16(x,     y - 1, z    ), light - 1);
+					lightSpread(a, v3s16(x - 1, y,     z    ), light - 1);
 				}
 			}
 		}
@@ -1024,9 +1078,12 @@ bool MapgenV7Params::readParams(Settings *settings) {
 	bool success = 
 		settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base)    &&
 		settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt)     &&
-		settings->getNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod)     &&
 		settings->getNoiseParams("mgv7_np_terrain_persist", np_terrain_persist) &&
 		settings->getNoiseParams("mgv7_np_height_select",   np_height_select)   &&
+		settings->getNoiseParams("mgv7_np_filler_depth",    np_filler_depth)    &&
+		settings->getNoiseParams("mgv7_np_mount_height",    np_mount_height)    &&
+		settings->getNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater)    &&
+		settings->getNoiseParams("mgv7_np_mountain",        np_mountain)        &&
 		settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
 	return success;
 }
@@ -1035,9 +1092,12 @@ bool MapgenV7Params::readParams(Settings *settings) {
 void MapgenV7Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
-	settings->setNoiseParams("mgv7_np_terrain_mod",     np_terrain_mod);
 	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
 	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->setNoiseParams("mgv7_np_filler_depth",    np_filler_depth);
+	settings->setNoiseParams("mgv7_np_mount_height",    np_mount_height);
+	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
+	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }
 

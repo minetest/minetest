@@ -479,6 +479,9 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
+	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void deSerializeNetworkSpecific(std::istream &is);
+
 private:
 	/*
 		Private methods
@@ -518,6 +521,11 @@ public:
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 	
+	s16 heat;
+	u32 heat_time;
+	s16 humidity;
+	u32 humidity_time;
+
 private:
 	/*
 		Private member variables

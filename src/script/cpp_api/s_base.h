@@ -89,6 +89,7 @@ protected:
 	friend class NodeMetaRef;
 	friend class ModApiBase;
 	friend class ModApiEnvMod;
+	friend class LuaVoxelManip;
 
 
 	inline lua_State* getStack()

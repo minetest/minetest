@@ -100,6 +100,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	}
 	lua_pop(L, 1);
 
+	def.range = getfloatfield_default(L, index, "range", def.range);
+
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
@@ -121,6 +123,7 @@ void read_object_properties(lua_State *L, int index,
 	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
 
 	getboolfield(L, -1, "physical", prop->physical);
+	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
 	getfloatfield(L, -1, "weight", prop->weight);
 
@@ -185,6 +188,8 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "is_visible", prop->is_visible);
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
+	getfloatfield(L, -1, "stepheight", prop->stepheight);
+	prop->stepheight*=BS;
 }
 
 /******************************************************************************/
@@ -389,7 +394,12 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// the slowest possible
 	f.liquid_viscosity = getintfield_default(L, index,
 			"liquid_viscosity", f.liquid_viscosity);
+	f.liquid_range = getintfield_default(L, index,
+			"liquid_range", f.liquid_range);
+	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
+
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
+	getstringfield(L, index, "freezemelt", f.freezemelt);
 	getboolfield(L, index, "drowning", f.drowning);
 	// Amount of light the node emits
 	f.light_source = getintfield_default(L, index,

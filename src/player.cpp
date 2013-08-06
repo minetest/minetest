@@ -36,15 +36,20 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
-	breath(-1),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
+	m_breath(-1),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
 	m_position(0,0,0),
-	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30)
+	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30),
+	m_last_pitch(0),
+	m_last_yaw(0),
+	m_last_pos(0,0,0),
+	m_last_hp(PLAYER_MAX_HP),
+	m_last_inventory(gamedef->idef())
 {
 	updateName("<not set>");
 	inventory.clear();
@@ -53,6 +58,7 @@ Player::Player(IGameDef *gamedef):
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
+	m_last_inventory = inventory;
 
 	// Can be redefined via Lua
 	inventory_formspec = "size[8,7.5]"
@@ -171,11 +177,12 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("breath", m_breath);
 
 	args.writeLines(os);
 
 	os<<"PlayerArgsEnd\n";
-	
+
 	inventory.serialize(os);
 }
 
@@ -207,6 +214,11 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	}catch(SettingNotFoundException &e){
 		hp = 20;
 	}
+	try{
+		m_breath = args.getS32("breath");
+	}catch(SettingNotFoundException &e){
+		m_breath = 11;
+	}
 
 	inventory.deSerialize(is);
 
@@ -224,6 +236,9 @@ void Player::deSerialize(std::istream &is, std::string playername)
 			inventory.getList("craftresult")->changeItem(0, ItemStack());
 		}
 	}
+
+	// Set m_last_*
+	checkModified();
 }
 
 /*

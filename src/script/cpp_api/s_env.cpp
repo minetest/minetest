@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "log.h"
 #include "environment.h"
+#include "mapgen.h"
 #include "lua_api/l_env.h"
 
 extern "C" {
@@ -52,6 +53,33 @@ void ScriptApiEnv::environment_Step(float dtime)
 	lua_getfield(L, -1, "registered_globalsteps");
 	// Call callbacks
 	lua_pushnumber(L, dtime);
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiEnv::environment_OnMapgenInit(MapgenParams *mgparams)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	
+	// Get minetest.registered_on_mapgen_inits
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_mapgen_inits");
+
+	// Call callbacks
+	lua_newtable(L);
+	
+	lua_pushstring(L, mgparams->mg_name.c_str());
+	lua_setfield(L, -2, "mgname");
+	
+	lua_pushinteger(L, mgparams->seed);
+	lua_setfield(L, -2, "seed");
+	
+	lua_pushinteger(L, mgparams->water_level);
+	lua_setfield(L, -2, "water_level");
+	
+	std::string flagstr = writeFlagString(mgparams->flags, flagdesc_mapgen);
+	lua_pushstring(L, flagstr.c_str());
+	lua_setfield(L, -2, "flags");
+	
 	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 

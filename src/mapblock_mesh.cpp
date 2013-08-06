@@ -448,14 +448,21 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
-	
+
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
+
+	float x0 = 0.0;
+	float y0 = 0.0;
+	float w = 1.0;
+	float h = 1.0;
 
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+
 	v3s16 t;
+	u16 t1;
 	switch (tile.rotation)
 	{
 	case 0:
@@ -466,6 +473,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1=li0;
+		li0=li3;
+		li3=li2;
+		li2=li1;
+		li1=t1;
 		break;
 	case 2: //R180
 		t = vertex_dirs[0];
@@ -474,6 +486,12 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		t = vertex_dirs[1];
 		vertex_dirs[1] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li2;
+		li2 = t1;
+		t1  = li1;
+		li1 = li3;
+		li3 = t1;
 		break;
 	case 3: //R270
 		t = vertex_dirs[0];
@@ -481,6 +499,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		break;
 	case 4: //FXR90
 		t = vertex_dirs[0];
@@ -488,8 +511,13 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
-		tile.texture.pos.Y += tile.texture.size.Y;
-		tile.texture.size.Y *= -1;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
+		y0 += h;
+		h *= -1;
 		break;
 	case 5: //FXR270
 		t = vertex_dirs[0];
@@ -497,8 +525,13 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
-		tile.texture.pos.Y += tile.texture.size.Y;
-		tile.texture.size.Y *= -1;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
+		y0 += h;
+		h *= -1;
 		break;
 	case 6: //FYR90
 		t = vertex_dirs[0];
@@ -506,8 +539,13 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
-		tile.texture.pos.X += tile.texture.size.X;
-		tile.texture.size.X *= -1;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
+		x0 += w;
+		w *= -1;
 		break;
 	case 7: //FYR270
 		t = vertex_dirs[0];
@@ -515,20 +553,26 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
-		tile.texture.pos.X += tile.texture.size.X;
-		tile.texture.size.X *= -1;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
+		x0 += w;
+		w *= -1;
 		break;
 	case 8: //FX
-		tile.texture.pos.Y += tile.texture.size.Y;
-		tile.texture.size.Y *= -1;
+		y0 += h;
+		h *= -1;
 		break;
 	case 9: //FY
-		tile.texture.pos.X += tile.texture.size.X;
-		tile.texture.size.X *= -1;
+		x0 += w;
+		w *= -1;
 		break;
 	default:
 		break;
 	}
+
 	for(u16 i=0; i<4; i++)
 	{
 		vertex_pos[i] = v3f(
@@ -546,7 +590,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_pos[i] += pos;
 	}
 
-	f32 abs_scale = 1.;
+	f32 abs_scale = 1.0;
 	if     (scale.X < 0.999 || scale.X > 1.001) abs_scale = scale.X;
 	else if(scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
 	else if(scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
@@ -554,11 +598,6 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f normal(dir.X, dir.Y, dir.Z);
 
 	u8 alpha = tile.alpha;
-
-	float x0 = tile.texture.pos.X;
-	float y0 = tile.texture.pos.Y;
-	float w = tile.texture.size.X;
-	float h = tile.texture.size.Y;
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], normal,
 			MapBlock_LightColor(alpha, li0, light_source),
@@ -574,7 +613,6 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
-	
 	dest.push_back(face);
 }
 
@@ -645,12 +683,6 @@ TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 	if(p == data->m_crack_pos_relative)
 	{
 		spec.material_flags |= MATERIAL_FLAG_CRACK;
-		spec.texture = data->m_gamedef->tsrc()->getTextureRawAP(spec.texture);
-	}
-	// If animated, replace tile texture with one without texture atlas
-	if(spec.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-	{
-		spec.texture = data->m_gamedef->tsrc()->getTextureRawAP(spec.texture);
 	}
 	return spec;
 }
@@ -717,7 +749,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
 	spec.rotation=dir_to_tile[tile_index + 1];
-	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture.id);
+	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture_id);
 	return spec;
 }
 
@@ -889,23 +921,7 @@ static void updateFastFaceRow(
 
 		continuous_tiles_count++;
 		
-		// This is set to true if the texture doesn't allow more tiling
-		bool end_of_texture = false;
-		/*
-			If there is no texture, it can be tiled infinitely.
-			If tiled==0, it means the texture can be tiled infinitely.
-			Otherwise check tiled agains continuous_tiles_count.
-		*/
-		if(tile.texture.atlas != NULL && tile.texture.tiled != 0)
-		{
-			if(tile.texture.tiled <= continuous_tiles_count)
-				end_of_texture = true;
-		}
-		
-		// Do this to disable tiling textures
-		//end_of_texture = true; //DEBUG
-		
-		if(next_is_different || end_of_texture)
+		if(next_is_different)
 		{
 			/*
 				Create a face if there should be one
@@ -1060,7 +1076,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			const u16 indices[] = {0,1,2,2,3,0};
 			const u16 indices_alternate[] = {0,1,3,2,3,1};
 			
-			if(f.tile.texture.atlas == NULL)
+			if(f.tile.texture == NULL)
 				continue;
 
 			const u16 *indices_p = indices;
@@ -1091,15 +1107,20 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 
 	/*
 		Convert MeshCollector to SMesh
-		Also store animation info
 	*/
-	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+	bool enable_shaders = g_settings->getBool("enable_shaders");
 	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
 			getShader("test_shader_1").material;
 	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
 			getShader("test_shader_2").material;
 	video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
 			getShader("test_shader_3").material;
+	video::E_MATERIAL_TYPE bumpmaps1 = m_gamedef->getShaderSource()->
+			getShader("bumpmaps_solids").material;
+	video::E_MATERIAL_TYPE bumpmaps2 = m_gamedef->getShaderSource()->
+			getShader("bumpmaps_liquids").material;
+
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1112,12 +1133,17 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
 		{
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
-			std::string crack_basename = tsrc->getTextureName(p.tile.texture.id);
+			// Find the texture name plus ^[crack:N:
+			std::ostringstream os(std::ios::binary);
+			os<<tsrc->getTextureName(p.tile.texture_id)<<"^[crack";
 			if(p.tile.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-				crack_basename += "^[cracko";
-			else
-				crack_basename += "^[crack";
-			m_crack_materials.insert(std::make_pair(i, crack_basename));
+				os<<"o";  // use ^[cracko
+			os<<":"<<(u32)p.tile.animation_frame_count<<":";
+			m_crack_materials.insert(std::make_pair(i, os.str()));
+			// Replace tile texture with the cracked one
+			p.tile.texture = tsrc->getTexture(
+					os.str()+"0",
+					&p.tile.texture_id);
 		}
 		// - Texture animation
 		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
@@ -1137,9 +1163,11 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			}
 			// Replace tile texture with the first animation frame
 			std::ostringstream os(std::ios::binary);
-			os<<tsrc->getTextureName(p.tile.texture.id);
+			os<<tsrc->getTextureName(p.tile.texture_id);
 			os<<"^[verticalframe:"<<(int)p.tile.animation_frame_count<<":0";
-			p.tile.texture = tsrc->getTexture(os.str());
+			p.tile.texture = tsrc->getTexture(
+					os.str(),
+					&p.tile.texture_id);
 		}
 		// - Classic lighting (shaders handle this by themselves)
 		if(!enable_shaders)
@@ -1171,13 +1199,41 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.MaterialType
-				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		material.setTexture(0, p.tile.texture.atlas);
-		if(enable_shaders)
-			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
-		else
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		material.setTexture(0, p.tile.texture);
+	
+		if (enable_shaders) {
+			video::E_MATERIAL_TYPE smat1 = shadermat1;
+			video::E_MATERIAL_TYPE smat2 = shadermat2;
+			video::E_MATERIAL_TYPE smat3 = shadermat3;
+			
+			if (enable_bumpmapping) {
+				ITextureSource *tsrc = data->m_gamedef->tsrc();
+				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
+
+				std::string normal_ext = "_normal.png";
+				size_t pos = fname_base.find(".");
+				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
+				
+				if (tsrc->isKnownSourceImage(fname_normal)) {
+					// look for image extension and replace it 
+					size_t i = 0;
+					while ((i = fname_base.find(".", i)) != std::string::npos) {
+						fname_base.replace(i, 4, normal_ext);
+						i += normal_ext.length();
+					}
+					
+					material.setTexture(1, tsrc->getTexture(fname_base));
+					
+					smat1 = bumpmaps1;
+					smat2 = bumpmaps2;
+				}
+			}
+			
+			p.tile.applyMaterialOptionsWithShaders(material, smat1, smat2, smat3);
+		} else {
 			p.tile.applyMaterialOptions(material);
+		}
 
 		// Create meshbuffer
 
@@ -1237,6 +1293,9 @@ MapBlockMesh::~MapBlockMesh()
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
 {
+	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+	
 	if(!m_has_animation)
 	{
 		m_animation_force_timer = 100000;
@@ -1259,8 +1318,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			ITextureSource *tsrc = m_gamedef->getTextureSource();
 			std::ostringstream os;
 			os<<basename<<crack;
-			AtlasPointer ap = tsrc->getTexture(os.str());
-			buf->getMaterial().setTexture(0, ap.atlas);
+			u32 new_texture_id = 0;
+			video::ITexture *new_texture =
+				tsrc->getTexture(os.str(), &new_texture_id);
+			buf->getMaterial().setTexture(0, new_texture);
+
+			// If the current material is also animated,
+			// update animation info
+			std::map<u32, TileSpec>::iterator anim_iter =
+				m_animation_tiles.find(i->first);
+			if(anim_iter != m_animation_tiles.end()){
+				TileSpec &tile = anim_iter->second;
+				tile.texture = new_texture;
+				tile.texture_id = new_texture_id;
+				// force animation update
+				m_animation_frames[i->first] = -1;
+			}
 		}
 
 		m_last_crack = crack;
@@ -1287,11 +1360,23 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 		// Create new texture name from original
 		std::ostringstream os(std::ios::binary);
-		os<<tsrc->getTextureName(tile.texture.id);
+		os<<tsrc->getTextureName(tile.texture_id);
 		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 		// Set the texture
-		AtlasPointer ap = tsrc->getTexture(os.str());
-		buf->getMaterial().setTexture(0, ap.atlas);
+		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
+		if (enable_shaders && enable_bumpmapping)
+			{
+				std::string basename,normal;
+				basename = tsrc->getTextureName(tile.texture_id);
+				unsigned pos;
+				pos = basename.find(".");
+				normal = basename.substr (0, pos);
+				normal += "_normal.png";
+				os.str("");
+				os<<normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
+				if (tsrc->isKnownSourceImage(normal))
+					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+			}
 	}
 
 	// Day-night transition

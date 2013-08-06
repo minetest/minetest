@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // g_profiler
 #include "profiler.h"
 
+// float error is 10 - 9.96875 = 0.03125
+//#define COLL_ZERO 0.032 // broken unit tests
+#define COLL_ZERO 0
+
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
@@ -41,9 +45,9 @@ int axisAlignedCollision(
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X);
-	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y);
-	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z);
+	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
+	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
+	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
 
 	aabb3f relbox(
 			movingbox.MinEdge.X - staticbox.MinEdge.X,
@@ -60,9 +64,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.X / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 0;
 		}
 		else if(relbox.MinEdge.X > xsize)
@@ -76,9 +80,9 @@ int axisAlignedCollision(
 		{
 			dtime = (xsize - relbox.MinEdge.X) / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 0;
 		}
 		else if(relbox.MaxEdge.X < 0)
@@ -95,9 +99,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Y / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 1;
 		}
 		else if(relbox.MinEdge.Y > ysize)
@@ -111,9 +115,9 @@ int axisAlignedCollision(
 		{
 			dtime = (ysize - relbox.MinEdge.Y) / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 1;
 		}
 		else if(relbox.MaxEdge.Y < 0)
@@ -130,9 +134,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Z / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
 				return 2;
 		}
 		//else if(relbox.MinEdge.Z > zsize)
@@ -146,9 +150,9 @@ int axisAlignedCollision(
 		{
 			dtime = (zsize - relbox.MinEdge.Z) / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
 				return 2;
 		}
 		//else if(relbox.MaxEdge.Z < 0)
@@ -192,7 +196,9 @@ bool wouldCollideWithCeiling(
 collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f, v3f &accel_f,ActiveObject* self)
+		v3f &pos_f, v3f &speed_f,
+		v3f &accel_f,ActiveObject* self,
+		bool collideWithObjects)
 {
 	Map *map = &env->getMap();
 	//TimeTaker tt("collisionMoveSimple");
@@ -283,6 +289,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 	} // tt2
 
+	if(collideWithObjects)
 	{
 		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
@@ -330,7 +337,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (object != NULL)
 			{
 				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox))
+				if (object->getCollisionBox(&object_collisionbox) &&
+						object->collideWithObjects())
 				{
 					cboxes.push_back(object_collisionbox);
 					is_unloaded.push_back(false);

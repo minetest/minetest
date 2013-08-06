@@ -250,6 +250,8 @@ public:
 
 	bool definitions_sent;
 
+	bool denied;
+
 	RemoteClient():
 		m_time_from_building(9999),
 		m_excess_gotblocks(0)
@@ -259,6 +261,7 @@ public:
 		net_proto_version = 0;
 		pending_serialization_version = SER_FMT_VER_INVALID;
 		definitions_sent = false;
+		denied = false;
 		m_nearest_unsent_d = 0;
 		m_nearest_unsent_reset_timer = 0.0;
 		m_nothing_to_send_counter = 0;
@@ -557,6 +560,7 @@ private:
 
 	static void SendMovement(con::Connection &con, u16 peer_id);
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
+	static void SendBreath(con::Connection &con, u16 peer_id, u16 breath);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
@@ -578,6 +582,7 @@ private:
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
 	void SendPlayerHP(u16 peer_id);
+	void SendPlayerBreath(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
@@ -587,7 +592,7 @@ private:
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
-	
+
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
@@ -601,7 +606,7 @@ private:
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
-	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
+	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
 
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
@@ -656,11 +661,20 @@ private:
 
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
+	void DenyAccess(u16 peer_id, const std::wstring &reason);
+
+	enum ClientDeletionReason {
+		CDR_LEAVE,
+		CDR_TIMEOUT,
+		CDR_DENY
+	};
+	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
 
 	void UpdateCrafting(u16 peer_id);
 
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
+	RemoteClient* getClientNoEx(u16 peer_id);
 
 	// When called, environment mutex should be locked
 	std::string getPlayerName(u16 peer_id)
@@ -735,7 +749,7 @@ private:
 	std::map<u16, RemoteClient*> m_clients;
 	u16 m_clients_number; //for announcing masterserver
 
-	// Bann checking
+	// Ban checking
 	BanManager m_banmanager;
 
 	// Rollback manager (behind m_env_mutex)

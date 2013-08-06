@@ -67,6 +67,23 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_punch_node(lua_State *L);
 
+
+	// minetest.get_node_max_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_max_level(lua_State *L);
+
+	// minetest.get_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_level(lua_State *L);
+
+	// minetest.set_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_set_node_level(lua_State *L);
+
+	// minetest.add_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_node_level(lua_State *L);
+
 	// minetest.get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
@@ -109,6 +126,18 @@ private:
 	// minetest.get_perlin_map(noiseparams, size)
 	// returns world-specific PerlinNoiseMap
 	static int l_get_perlin_map(lua_State *L);
+	
+	// minetest.get_voxel_manip()
+	// returns world-specific voxel manipulator
+	static int l_get_voxel_manip(lua_State *L);
+	
+	// minetest.get_mapgen_object(objectname)
+	// returns the requested object used during map generation
+	static int l_get_mapgen_object(lua_State *L);
+	
+	// minetest.set_mapgen_params(params)
+	// set mapgen parameters
+	static int l_set_mapgen_params(lua_State *L);
 
 	// minetest.clear_objects()
 	// clear all objects in the environment
@@ -124,6 +153,14 @@ private:
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
 
+	// minetest.transforming_liquid_add(pos)
+	static int l_transforming_liquid_add(lua_State *L);
+
+	static int l_get_heat(lua_State *L);
+	static int l_get_humidity(lua_State *L);
+	
+	static struct EnumString es_MapgenObject[];
+	
 public:
 	bool Initialize(lua_State *L, int top);
 };

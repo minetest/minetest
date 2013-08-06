@@ -160,6 +160,16 @@ public:
 		return m_yaw;
 	}
 
+	u16 getBreath()
+	{
+		return m_breath;
+	}
+
+	virtual void setBreath(u16 breath)
+	{
+		m_breath = breath;
+	}
+
 	f32 getRadPitch()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
@@ -199,6 +209,23 @@ public:
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, std::string playername);
 
+	bool checkModified()
+	{
+		if(m_last_hp != hp || m_last_pitch != m_pitch ||
+				m_last_pos != m_position || m_last_yaw != m_yaw ||
+				!(inventory == m_last_inventory))
+		{
+			m_last_hp = hp;
+			m_last_pitch = m_pitch;
+			m_last_pos = m_position;
+			m_last_yaw = m_yaw;
+			m_last_inventory = inventory;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
 	bool in_liquid;
@@ -232,13 +259,12 @@ public:
 	float physics_override_gravity;
 
 	u16 hp;
-	u16 breath;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
 	u16 peer_id;
-	
+
 	std::string inventory_formspec;
 	
 	PlayerControl control;
@@ -257,11 +283,18 @@ protected:
 	IGameDef *m_gamedef;
 
 	char m_name[PLAYERNAME_SIZE];
+	u16 m_breath;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
 	core::aabbox3d<f32> m_collisionbox;
+
+	f32 m_last_pitch;
+	f32 m_last_yaw;
+	v3f m_last_pos;
+	u16 m_last_hp;
+	Inventory m_last_inventory;
 };
 
 

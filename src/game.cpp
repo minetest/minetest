@@ -208,33 +208,6 @@ public:
 	Client *m_client;
 };
 
-class FormspecFormSource: public IFormSource
-{
-public:
-	FormspecFormSource(std::string formspec,FormspecFormSource** game_formspec)
-	{
-		m_formspec = formspec;
-		m_game_formspec = game_formspec;
-	}
-
-	~FormspecFormSource()
-	{
-		*m_game_formspec = 0;
-	}
-
-	void setForm(std::string formspec) {
-		m_formspec = formspec;
-	}
-
-	std::string getForm()
-	{
-		return m_formspec;
-	}
-
-	std::string m_formspec;
-	FormspecFormSource** m_game_formspec;
-};
-
 /*
 	Check if a node is pointable
 */
@@ -831,6 +804,15 @@ public:
 		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
+		
+		// Normal map texture layer
+		int layer = 1;
+		// before 1.8 there isn't a "integer interface", only float
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
+#else
+		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer, 1);
+#endif
 	}
 };
 
@@ -1232,26 +1214,28 @@ void the_game(
 			}
 			
 			// Display status
-			std::ostringstream ss;
 			int progress=0;
 			if (!client.itemdefReceived())
 			{
-				ss << "Item definitions...";
+				wchar_t* text = wgettext("Item definitions...");
 				progress = 0;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
 			else if (!client.nodedefReceived())
 			{
-				ss << "Node definitions...";
+				wchar_t* text = wgettext("Node definitions...");
 				progress = 25;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
 			else
 			{
-				ss << "Media...";
+				wchar_t* text = wgettext("Media...");
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
+				draw_load_screen(text, device, font, dtime, progress);
+				delete[] text;
 			}
-			wchar_t* text = wgettext(ss.str().c_str());
-			draw_load_screen(text, device, font, dtime, progress);
-			delete[] text;
 			
 			// On some computers framerate doesn't seem to be
 			// automatically limited
@@ -1343,7 +1327,7 @@ void the_game(
 	*/
 	int crack_animation_length = 5;
 	{
-		video::ITexture *t = tsrc->getTextureRaw("crack_anylength.png");
+		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
 		crack_animation_length = size.Y / size.X;
 	}
@@ -2310,7 +2294,7 @@ void the_game(
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					AtlasPointer ap =
+					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
 
 					new Particle(gamedef, smgr, player, client.getEnv(),
@@ -2319,12 +2303,15 @@ void the_game(
 						*event.spawn_particle.acc,
 						 event.spawn_particle.expirationtime,
 						 event.spawn_particle.size,
-						 event.spawn_particle.collisiondetection, ap);
+						 event.spawn_particle.collisiondetection,
+						 texture,
+						 v2f(0.0, 0.0),
+						 v2f(1.0, 1.0));
 				}
 				else if(event.type == CE_ADD_PARTICLESPAWNER)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
-					AtlasPointer ap =
+					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
 
 					new ParticleSpawner(gamedef, smgr, player,
@@ -2341,7 +2328,7 @@ void the_game(
 						 event.add_particlespawner.minsize,
 						 event.add_particlespawner.maxsize,
 						 event.add_particlespawner.collisiondetection,
-						 ap,
+						 texture,
 						 event.add_particlespawner.id);
 				}
 				else if(event.type == CE_DELETE_PARTICLESPAWNER)
@@ -2469,10 +2456,12 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, dtime, busytime, screensize,
+				tool_reload_ratio);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
+		v3s16 pos_i = floatToInt(player_position, BS);
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
@@ -2506,7 +2495,12 @@ void the_game(
 		
 		//u32 t1 = device->getTimer()->getRealTime();
 		
-		f32 d = 4; // max. distance
+		f32 d = playeritem_def.range; // max. distance
+		f32 d_hand = itemdef->get("").range;
+		if(d < 0 && d_hand >= 0)
+			d = d_hand;
+		else if(d < 0)
+			d = 4.0;
 		core::line3d<f32> shootline(camera_position,
 				camera_position + camera_direction * BS * (d+1));
 
@@ -2630,20 +2624,6 @@ void the_game(
 					if(tp)
 						params = getDigParams(nodedef->get(n).groups, tp);
 				}
-				
-				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
-				if(sound_dig.exists()){
-					if(sound_dig.name == "__group"){
-						if(params.main_group != ""){
-							soundmaker.m_player_leftpunch_sound.gain = 0.5;
-							soundmaker.m_player_leftpunch_sound.name =
-									std::string("default_dig_") +
-											params.main_group;
-						}
-					} else{
-						soundmaker.m_player_leftpunch_sound = sound_dig;
-					}
-				}
 
 				float dig_time_complete = 0.0;
 
@@ -2674,6 +2654,20 @@ void the_game(
 				else
 				{
 					dig_index = crack_animation_length;
+				}
+
+				SimpleSoundSpec sound_dig = nodedef->get(n).sound_dig;
+				if(sound_dig.exists() && params.diggable){
+					if(sound_dig.name == "__group"){
+						if(params.main_group != ""){
+							soundmaker.m_player_leftpunch_sound.gain = 0.5;
+							soundmaker.m_player_leftpunch_sound.name =
+									std::string("default_dig_") +
+											params.main_group;
+						}
+					} else{
+						soundmaker.m_player_leftpunch_sound = sound_dig;
+					}
 				}
 
 				// Don't show cracks if not diggable
@@ -2882,6 +2876,7 @@ void the_game(
 		else
 		{
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
+			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
 			if(draw_control.range_all)
 				fog_range = 100000*BS;
@@ -3047,7 +3042,9 @@ void the_game(
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
-				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
+				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
+				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
@@ -3485,6 +3482,7 @@ void the_game(
 		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
 				<< std::endl;
 	}
+	clearTextureNameCache();
 	infostream << "\tRemaining materials: "
 		<< driver-> getMaterialRendererCount ()
 		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;

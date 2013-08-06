@@ -75,6 +75,8 @@ public:
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
 
+	NoiseParams *np_caveliquids;
+
 	s16 min_tunnel_diameter;
 	s16 max_tunnel_diameter;
 	u16 tunnel_routepoints;
@@ -102,6 +104,7 @@ public:
 	
 	content_t c_water_source;
 	content_t c_lava_source;
+	content_t c_ice;
 	
 	int water_level;
 

@@ -281,7 +281,7 @@ public:
 	u32 size();
 	RPBSearchResult findPacket(u16 seqnum);
 	RPBSearchResult notFound();
-	u16 getFirstSeqnum();
+	bool getFirstSeqnum(u16 *result);
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
 	void insert(BufferedPacket &p);

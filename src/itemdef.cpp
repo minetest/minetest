@@ -76,6 +76,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	sound_place = def.sound_place;
+	range = def.range;
 	return *this;
 }
 
@@ -109,6 +110,7 @@ void ItemDefinition::reset()
 	}
 	groups.clear();
 	sound_place = SimpleSoundSpec();
+	range = -1;
 
 	node_placement_prediction = "";
 }
@@ -117,8 +119,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
 	if(protocol_version <= 17)
 		writeU8(os, 1); // version
-	else
+	else if(protocol_version <= 20)
 		writeU8(os, 2); // version
+	else
+		writeU8(os, 3); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -147,6 +151,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		os<<serializeString(sound_place.name);
 		writeF1000(os, sound_place.gain);
 	}
+	if(protocol_version > 20){
+		writeF1000(os, range);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -156,7 +163,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 1 && version != 2)
+	if(version < 1 || version > 3)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -189,16 +196,18 @@ void ItemDefinition::deSerialize(std::istream &is)
 		// Set the old default sound
 		sound_place.name = "default_place_node";
 		sound_place.gain = 0.5;
-	} else if(version == 2) {
+	} else if(version >= 2) {
 		node_placement_prediction = deSerializeString(is);
 		//deserializeSimpleSoundSpec(sound_place, is);
 		sound_place.name = deSerializeString(is);
 		sound_place.gain = readF1000(is);
 	}
+	if(version == 3) {
+		range = readF1000(is);
+	}
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		
 	}catch(SerializationError &e) {};
 }
 
@@ -229,7 +238,6 @@ public:
 
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
-		m_driver = NULL;
 #endif
 		clear();
 	}
@@ -246,13 +254,6 @@ public:
 			delete cc;
 		}
 
-		if (m_driver != NULL) {
-			for (unsigned int i = 0; i < m_extruded_textures.size(); i++) {
-				m_driver->removeTexture(m_extruded_textures[i]);
-			}
-			m_extruded_textures.clear();
-		}
-		m_driver = NULL;
 #endif
 		for (std::map<std::string, ItemDefinition*>::iterator iter =
 				m_item_definitions.begin(); iter != m_item_definitions.end();
@@ -307,9 +308,6 @@ public:
 		return m_item_definitions.find(name) != m_item_definitions.end();
 	}
 #ifndef SERVER
-private:
-	static video::IVideoDriver * m_driver;
-	static std::vector<video::ITexture*> m_extruded_textures;
 public:
 	ClientCached* createClientCachedDirect(const std::string &name,
 			IGameDef *gamedef) const
@@ -341,7 +339,7 @@ public:
 		cc->inventory_texture = NULL;
 		if(def->inventory_image != "")
 		{
-			cc->inventory_texture = tsrc->getTextureRaw(def->inventory_image);
+			cc->inventory_texture = tsrc->getTexture(def->inventory_image);
 		}
 		else if(def->type == ITEM_NODE)
 		{
@@ -365,7 +363,7 @@ public:
 				imagename = def->inventory_image;
 
 			cc->wield_mesh = createExtrudedMesh(
-					tsrc->getTextureRaw(imagename),
+					tsrc->getTexture(imagename),
 					driver,
 					def->wield_scale * v3f(40.0, 40.0, 4.0));
 			if(cc->wield_mesh == NULL)
@@ -400,7 +398,7 @@ public:
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
 			video::SColor c(255, 255, 255, 255);
-			if(g_settings->getS32("enable_shaders") != 0)
+			if(g_settings->getBool("enable_shaders"))
 				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
 			setMeshColor(node_mesh, c);
 
@@ -416,45 +414,32 @@ public:
 			*/
 			if(cc->inventory_texture == NULL)
 			{
-				core::dimension2d<u32> dim(64,64);
-				std::string rtt_texture_name = "INVENTORY_"
+				TextureFromMeshParams params;
+				params.mesh = node_mesh;
+				params.dim.set(64, 64);
+				params.rtt_texture_name = "INVENTORY_"
 					+ def->name + "_RTT";
-				v3f camera_position(0, 1.0, -1.5);
-				camera_position.rotateXZBy(45);
-				v3f camera_lookat(0, 0, 0);
-				core::CMatrix4<f32> camera_projection_matrix;
+				params.delete_texture_on_shutdown = true;
+				params.camera_position.set(0, 1.0, -1.5);
+				params.camera_position.rotateXZBy(45);
+				params.camera_lookat.set(0, 0, 0);
 				// Set orthogonal projection
-				camera_projection_matrix.buildProjectionMatrixOrthoLH(
+				params.camera_projection_matrix.buildProjectionMatrixOrthoLH(
 						1.65, 1.65, 0, 100);
+				params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
+				params.light_position.set(10, 100, -50);
+				params.light_color.set(1.0, 0.5, 0.5, 0.5);
+				params.light_radius = 1000;
 
-				video::SColorf ambient_light(0.2,0.2,0.2);
-				v3f light_position(10, 100, -50);
-				video::SColorf light_color(0.5,0.5,0.5);
-				f32 light_radius = 1000;
-
-				cc->inventory_texture = generateTextureFromMesh(
-					node_mesh, device, dim, rtt_texture_name,
-					camera_position,
-					camera_lookat,
-					camera_projection_matrix,
-					ambient_light,
-					light_position,
-					light_color,
-					light_radius);
+				cc->inventory_texture =
+					tsrc->generateTextureFromMesh(params);
 
 				// render-to-target didn't work
 				if(cc->inventory_texture == NULL)
 				{
 					cc->inventory_texture =
-						tsrc->getTextureRaw(f.tiledef[0].name);
+						tsrc->getTexture(f.tiledef[0].name);
 				}
-			}
-			else
-			{
-				if (m_driver == 0)
-					m_driver = driver;
-
-				m_extruded_textures.push_back(cc->inventory_texture);
 			}
 
 			/*
@@ -543,7 +528,8 @@ public:
 
 		// Add the four builtin items:
 		//   "" is the hand
-		//   "unknown" is returned whenever an undefined item is accessed
+		//   "unknown" is returned whenever an undefined item
+		//     is accessed (is also the unknown node)
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
@@ -554,6 +540,7 @@ public:
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
+		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 
@@ -681,9 +668,3 @@ IWritableItemDefManager* createItemDefManager()
 {
 	return new CItemDefManager();
 }
-
-#ifndef SERVER
-//TODO very very very dirty hack!
-video::IVideoDriver * CItemDefManager::m_driver = 0;
-std::vector<video::ITexture*> CItemDefManager::m_extruded_textures;
-#endif

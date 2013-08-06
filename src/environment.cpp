@@ -204,7 +204,7 @@ void Environment::printPlayers(std::ostream &o)
 
 u32 Environment::getDayNightRatio()
 {
-	bool smooth = (g_settings->getS32("enable_shaders") != 0);
+	bool smooth = g_settings->getBool("enable_shaders");
 	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 
@@ -332,7 +332,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, ScriptApi *scriptIface,
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0),
-	m_recommended_send_interval(0.1)
+	m_recommended_send_interval(0.1),
+	m_max_lag_estimate(0.1)
 {
 }
 
@@ -434,6 +435,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		//infostream<<"Found matching player, overwriting."<<std::endl;
 
 		// OK, found. Save player there.
+		if(player->checkModified())
 		{
 			// Open file and serialize
 			std::ofstream os(path.c_str(), std::ios_base::binary);
@@ -443,6 +445,8 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				continue;
 			}
 			player->serialize(os);
+			saved_players.insert(player);
+		} else {
 			saved_players.insert(player);
 		}
 	}
@@ -1699,7 +1703,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > 49);
+	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
 	if(large_amount){
 		errorstream<<"suspiciously large amount of objects detected: "
 				<<block->m_static_objects.m_stored.size()<<" in "
@@ -1877,12 +1881,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				if(block->m_static_objects.m_stored.size() >= 49){
+				if(block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")){
 					errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
 							<<" statically but block "<<PP(blockpos)
 							<<" already contains "
 							<<block->m_static_objects.m_stored.size()
-							<<" (over 49) objects."
+							<<" objects."
 							<<" Forcing delete."<<std::endl;
 					force_delete = true;
 				} else {
@@ -2239,15 +2243,19 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-
-		if(c.isLiquid() && c.drowning){
-			if(lplayer->breath > 10)
-				lplayer->breath = 11;
-			if(lplayer->breath > 0)
-				lplayer->breath -= 1;
+		if(c.isLiquid() && c.drowning && lplayer->hp > 0){
+			u16 breath = lplayer->getBreath();
+			if(breath > 10){
+				breath = 11;
+			}
+			if(breath > 0){
+				breath -= 1;
+			}
+			lplayer->setBreath(breath);
+			updateLocalPlayerBreath(breath);
 		}
 
-		if(lplayer->breath == 0){
+		if(lplayer->getBreath() == 0){
 			damageLocalPlayer(1, true);
 		}
 	}
@@ -2259,10 +2267,16 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-
-		if(!c.isLiquid() || !c.drowning){
-			if(lplayer->breath <= 10)
-				lplayer->breath += 1;
+		if (!lplayer->hp){
+			lplayer->setBreath(11);
+		}
+		else if(!c.isLiquid() || !c.drowning){
+			u16 breath = lplayer->getBreath();
+			if(breath <= 10){
+				breath += 1;
+				lplayer->setBreath(breath);
+				updateLocalPlayerBreath(breath);
+			}
 		}
 	}
 
@@ -2522,6 +2536,14 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	event.type = CEE_PLAYER_DAMAGE;
 	event.player_damage.amount = damage;
 	event.player_damage.send_to_server = handle_hp;
+	m_client_event_queue.push_back(event);
+}
+
+void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
+{
+	ClientEnvEvent event;
+	event.type = CEE_PLAYER_BREATH;
+	event.player_breath.amount = breath;
 	m_client_event_queue.push_back(event);
 }
 

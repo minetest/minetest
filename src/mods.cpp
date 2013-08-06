@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mods.h"
+#include "main.h"
 #include "filesys.h"
 #include "strfnd.h"
 #include "log.h"
@@ -25,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "strfnd.h"
 #include <cctype>
+#include "convert_json.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -112,26 +114,6 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 	return result;
 }
 
-ModSpec findCommonMod(const std::string &modname)
-{
-	// Try to find in {$user,$share}/games/common/$modname
-	std::vector<std::string> find_paths;
-	find_paths.push_back(porting::path_user + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
-	find_paths.push_back(porting::path_share + DIR_DELIM + "games" +
-			DIR_DELIM + "common" + DIR_DELIM + "mods" + DIR_DELIM + modname);
-	for(u32 i=0; i<find_paths.size(); i++){
-		const std::string &try_path = find_paths[i];
-		if(fs::PathExists(try_path)){
-			ModSpec spec(modname, try_path);
-			parseModContents(spec);
-			return spec;
-		}
-	}
-	// Failed to find mod
-	return ModSpec();
-}
-
 std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods)
 {
 	std::map<std::string, ModSpec> result;
@@ -179,36 +161,6 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 ModConfiguration::ModConfiguration(std::string worldpath)
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
-
-	// Add common mods
-	std::map<std::string, ModSpec> common_mods;
-	std::vector<std::string> inexistent_common_mods;
-	Settings gameconf;
-	if(getGameConfig(gamespec.path, gameconf)){
-		if(gameconf.exists("common_mods")){
-			Strfnd f(gameconf.get("common_mods"));
-			while(!f.atend()){
-				std::string modname = trim(f.next(","));
-				if(modname.empty())
-					continue;
-				ModSpec spec = findCommonMod(modname);
-				if(spec.name.empty())
-					inexistent_common_mods.push_back(modname);
-				else
-					common_mods.insert(std::make_pair(modname, spec));
-			}
-		}
-	}
-	if(!inexistent_common_mods.empty()){
-		std::string s = "Required common mods ";
-		for(u32 i=0; i<inexistent_common_mods.size(); i++){
-			if(i != 0) s += ", ";
-			s += std::string("\"") + inexistent_common_mods[i] + "\"";
-		}
-		s += " could not be found.";
-		throw ModError(s);
-	}
-	addMods(flattenMods(common_mods));
 
 	// Add all game mods and all world mods
 	addModsInPath(gamespec.gamemods_path);
@@ -389,3 +341,29 @@ void ModConfiguration::resolveDependencies()
 	// Step 4: write back list of unsatisfied mods
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }
+
+#if USE_CURL
+Json::Value getModstoreUrl(std::string url)
+{
+	struct curl_slist *chunk = NULL;
+
+	bool special_http_header = true;
+
+	try{
+		special_http_header = g_settings->getBool("modstore_disable_special_http_header");
+	}
+	catch(SettingNotFoundException &e) {
+	}
+
+	if (special_http_header)
+		chunk = curl_slist_append(chunk, "Accept: application/vnd.minetest.mmdb-v1+json");
+
+	Json::Value retval = fetchJsonValue(url,chunk);
+
+	if (chunk != NULL)
+		curl_slist_free_all(chunk);
+
+	return retval;
+}
+
+#endif

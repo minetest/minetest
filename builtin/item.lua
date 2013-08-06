@@ -34,8 +34,45 @@ function minetest.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
-function minetest.dir_to_facedir(dir)
-	if math.abs(dir.x) > math.abs(dir.z) then
+function minetest.dir_to_facedir(dir, is6d)
+	--account for y if requested
+	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
+
+		--from above
+		if dir.y < 0 then
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 19
+				else
+					return 13
+				end
+			else
+				if dir.z < 0 then
+					return 10
+				else
+					return 4
+				end
+			end
+
+		--from below
+		else
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 15
+				else
+					return 17
+				end
+			else
+				if dir.z < 0 then
+					return 6
+				else
+					return 8
+				end
+			end
+		end
+
+	--otherwise, place horizontally
+	elseif math.abs(dir.x) > math.abs(dir.z) then
 		if dir.x < 0 then
 			return 3
 		else
@@ -48,6 +85,27 @@ function minetest.dir_to_facedir(dir)
 			return 0
 		end
 	end
+end
+
+function minetest.facedir_to_dir(facedir)
+	--a table of possible dirs
+	return ({{x=0, y=0, z=1},
+					{x=1, y=0, z=0},
+					{x=0, y=0, z=-1},
+					{x=-1, y=0, z=0},
+					{x=0, y=-1, z=0},
+					{x=0, y=1, z=0}})
+
+					--indexed into by a table of correlating facedirs
+					[({[0]=1, 2, 3, 4, 
+						5, 2, 6, 4,
+						6, 2, 5, 4,
+						1, 5, 3, 6,
+						1, 6, 3, 5,
+						1, 4, 3, 2})
+
+						--indexed into by the facedir in question
+						[facedir]]
 end
 
 function minetest.dir_to_wallmounted(dir)
@@ -311,12 +369,9 @@ function minetest.handle_node_drops(pos, drops, digger)
 end
 
 function minetest.node_dig(pos, node, digger)
-	minetest.debug("node_dig")
-
 	local def = ItemStack({name=node.name}):get_definition()
 	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
 	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
-		minetest.debug("not diggable")
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
@@ -330,10 +385,12 @@ function minetest.node_dig(pos, node, digger)
 	local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
 	-- Wear out tool
-	local tp = wielded:get_tool_capabilities()
-	local dp = minetest.get_dig_params(def.groups, tp)
-	wielded:add_wear(dp.wear)
-	digger:set_wielded_item(wielded)
+	if not minetest.setting_getbool("creative_mode") then
+		local tp = wielded:get_tool_capabilities()
+		local dp = minetest.get_dig_params(def.groups, tp)
+		wielded:add_wear(dp.wear)
+		digger:set_wielded_item(wielded)
+	end
 	
 	-- Handle drops
 	minetest.handle_node_drops(pos, drops, digger)

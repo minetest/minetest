@@ -61,15 +61,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	23: new node metadata format
 	24: 16-bit node ids and node timers (never released as stable)
 	25: Improved node timer format
+	26: Never written; read the same as 25
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 25
+#define SER_FMT_VER_HIGHEST_READ 26
+// Saved on disk version
+#define SER_FMT_VER_HIGHEST_WRITE 25
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 
-#define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST)
+#define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST_READ)
 
 /*
 	Misc. serialization functions

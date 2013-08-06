@@ -24,6 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v7.h"
 #include "cavegen.h"
 
+NoiseParams nparams_caveliquids =
+	{0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6};
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_cave) {
 	this->mg   = mg;
@@ -269,6 +275,8 @@ CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps, bool is_large_cave) {
 	this->ps = ps;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
+	this->c_ice          = mg->c_ice;
+	this->np_caveliquids = &nparams_caveliquids;
 
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;
@@ -303,7 +311,7 @@ void CaveV7::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 	// Allow a bit more
 	//(this should be more than the maximum radius of the tunnel)
 	s16 insure = 10;
-	s16 more = MAP_BLOCKSIZE - max_tunnel_diameter / 2 - insure;
+	s16 more = MYMAX(MAP_BLOCKSIZE - max_tunnel_diameter / 2 - insure, 1);
 	ar += v3s16(1,0,1) * more * 2;
 	of -= v3s16(1,0,1) * more;
 
@@ -447,8 +455,9 @@ void CaveV7::makeTunnel(bool dirswitch) {
 	bool randomize_xz = (ps->range(1, 2) == 1);
 
 	// Make a ravine every once in a while if it's long enough
-	float xylen = vec.X * vec.X + vec.Z * vec.Z;
-	bool is_ravine = (xylen > 500.0) && !large_cave && (ps->range(1, 8) == 1);
+	//float xylen = vec.X * vec.X + vec.Z * vec.Z;
+	//disable ravines for now
+	bool is_ravine = false; //(xylen > 500.0) && !large_cave && (ps->range(1, 8) == 1);
 
 	// Carve routes
 	for (float f = 0; f < 1.0; f += 1.0 / veclen)
@@ -462,10 +471,13 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
-	MapNode liquidnode = ps->range(0, 4) ? lavanode : waternode;
 	
 	v3s16 startp(orp.X, orp.Y, orp.Z);
 	startp += of;
+	
+	float nval = NoisePerlin3D(np_caveliquids, startp.X,
+							startp.Y, startp.Z, mg->seed);
+	MapNode liquidnode = nval < 0.40 ? lavanode : waternode;
 	
 	v3f fp = orp + vec * f;
 	fp.X += 0.1 * ps->range(-10, 10);
@@ -480,6 +492,7 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 	}
 	
 	bool flat_cave_floor = !large_cave && ps->range(0, 2) == 2;
+	bool should_make_cave_hole = ps->range(1, 10) == 1;
 	
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
@@ -502,15 +515,23 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
+				
+				if (!is_ravine && mg->heightmap && should_make_cave_hole) {
+					int maplen = node_max.X - node_min.X + 1;
+					int idx = (p.Z - node_min.Z) * maplen + (p.X - node_min.X);
+					if (p.Y >= mg->heightmap[idx] - 2)
+						continue;
+				}
 
 				if (vm->m_area.contains(p) == false)
 					continue;
 
 				u32 i = vm->m_area.index(p);
 				
-				// Don't replace air or water or lava
+				// Don't replace air, water, lava, or ice
 				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == c_water_source || c == c_lava_source)
+				if (c == CONTENT_AIR   || c == c_water_source ||
+					c == c_lava_source || c == c_ice)
 					continue;
 					
 				if (large_cave) {
@@ -524,6 +545,9 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 					else
 						vm->m_data[i] = airnode;
 				} else {
+					if (c == CONTENT_IGNORE)
+						continue;
+					
 					vm->m_data[i] = airnode;
 					vm->m_flags[i] |= VMANIP_FLAG_CAVE;
 				}

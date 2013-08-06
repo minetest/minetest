@@ -68,6 +68,10 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return false;
+	}
+
 private:
 };
 
@@ -137,6 +141,10 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset) {
+		return false;
+	}
+
+	bool collideWithObjects() {
 		return false;
 	}
 
@@ -325,6 +333,9 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return false;
+	}
 
 private:
 	std::string m_itemstring;
@@ -494,13 +505,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;
 			f32 pos_max_d = BS*0.25; // Distance per iteration
-			f32 stepheight = 0; // Maximum climbable step height
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
 			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
-					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration,this);
+					pos_max_d, box, m_prop.stepheight, dtime,
+					p_pos, p_velocity, p_acceleration,
+					this, m_prop.collideWithObjects);
+
 			// Apply results
 			m_base_position = p_pos;
 			m_velocity = p_velocity;
@@ -905,6 +917,10 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
 	return false;
 }
 
+bool LuaEntitySAO::collideWithObjects(){
+	return m_prop.collideWithObjects;
+}
+
 /*
 	PlayerSAO
 */
@@ -918,7 +934,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_peer_id(peer_id_),
 	m_inventory(NULL),
 	m_last_good_position(0,0,0),
-	m_last_good_position_age(0),
 	m_time_from_last_punch(0),
 	m_nocheat_dig_pos(32767, 32767, 32767),
 	m_nocheat_dig_time(0),
@@ -935,6 +950,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_moved(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
+	m_breath_not_sent(false),
 	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
@@ -985,7 +1001,6 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	m_player->setPlayerSAO(this);
 	m_player->peer_id = m_peer_id;
 	m_last_good_position = m_player->getPosition();
-	m_last_good_position_age = 0.0;
 }
 
 // Called before removing from environment
@@ -1089,6 +1104,19 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_moved = true;
 	}
 
+	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
+
+	// Set lag pool maximums based on estimated lag
+	const float LAG_POOL_MIN = 5.0;
+	float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
+	if(lag_pool_max < LAG_POOL_MIN)
+		lag_pool_max = LAG_POOL_MIN;
+	m_dig_pool.setMax(lag_pool_max);
+	m_move_pool.setMax(lag_pool_max);
+
+	// Increment cheat prevention timers
+	m_dig_pool.add(dtime);
+	m_move_pool.add(dtime);
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
@@ -1098,65 +1126,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	{
 		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_last_good_position = pos;
-		m_last_good_position_age = 0;
 		m_player->setPosition(pos);
-	}
-	else
-	{
-		if(m_is_singleplayer || g_settings->getBool("disable_anticheat"))
-		{
-			m_last_good_position = m_player->getPosition();
-			m_last_good_position_age = 0;
-		}
-		else
-		{
-			/*
-				Check player movements
-
-				NOTE: Actually the server should handle player physics like the
-				client does and compare player's position to what is calculated
-				on our side. This is required when eg. players fly due to an
-				explosion. Altough a node-based alternative might be possible
-				too, and much more lightweight.
-			*/
-
-			float player_max_speed = 0;
-			float player_max_speed_up = 0;
-			if(m_privs.count("fast") != 0){
-				// Fast speed
-				player_max_speed = BS * 20;
-				player_max_speed_up = BS * 20;
-			} else {
-				// Normal speed
-				player_max_speed = BS * 4.0;
-				player_max_speed_up = BS * 4.0;
-			}
-			// Tolerance
-			player_max_speed *= 2.5;
-			player_max_speed_up *= 2.5;
-
-			m_last_good_position_age += dtime;
-			if(m_last_good_position_age >= 1.0){
-				float age = m_last_good_position_age;
-				v3f diff = (m_player->getPosition() - m_last_good_position);
-				float d_vert = diff.Y;
-				diff.Y = 0;
-				float d_horiz = diff.getLength();
-				/*infostream<<m_player->getName()<<"'s horizontal speed is "
-						<<(d_horiz/age)<<std::endl;*/
-				if(d_horiz <= age * player_max_speed &&
-						(d_vert < 0 || d_vert < age * player_max_speed_up)){
-					m_last_good_position = m_player->getPosition();
-				} else {
-					actionstream<<"Player "<<m_player->getName()
-							<<" moved too fast; resetting position"
-							<<std::endl;
-					m_player->setPosition(m_last_good_position);
-					m_moved = true;
-				}
-				m_last_good_position_age = 0;
-			}
-		}
 	}
 
 	if(send_recommended == false)
@@ -1250,7 +1220,6 @@ void PlayerSAO::setPos(v3f pos)
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	m_last_good_position_age = 0;
 	// Force position change on client
 	m_moved = true;
 }
@@ -1262,7 +1231,6 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	m_last_good_position_age = 0;
 	// Force position change on client
 	m_moved = true;
 }
@@ -1368,6 +1336,16 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+u16 PlayerSAO::getBreath() const
+{
+	return m_player->getBreath();
+}
+
+void PlayerSAO::setBreath(u16 breath)
+{
+	m_player->setBreath(breath);
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
@@ -1476,6 +1454,62 @@ std::string PlayerSAO::getPropertyPacket()
 	return gob_cmd_set_properties(m_prop);
 }
 
+bool PlayerSAO::checkMovementCheat()
+{
+	bool cheated = false;
+	if(isAttached() || m_is_singleplayer ||
+			g_settings->getBool("disable_anticheat"))
+	{
+		m_last_good_position = m_player->getPosition();
+	}
+	else
+	{
+		/*
+			Check player movements
+
+			NOTE: Actually the server should handle player physics like the
+			client does and compare player's position to what is calculated
+			on our side. This is required when eg. players fly due to an
+			explosion. Altough a node-based alternative might be possible
+			too, and much more lightweight.
+		*/
+
+		float player_max_speed = 0;
+		float player_max_speed_up = 0;
+		if(m_privs.count("fast") != 0){
+			// Fast speed
+			player_max_speed = m_player->movement_speed_fast;
+			player_max_speed_up = m_player->movement_speed_fast;
+		} else {
+			// Normal speed
+			player_max_speed = m_player->movement_speed_walk;
+			player_max_speed_up = m_player->movement_speed_walk;
+		}
+		// Tolerance. With the lag pool we shouldn't need it.
+		//player_max_speed *= 2.5;
+		//player_max_speed_up *= 2.5;
+
+		v3f diff = (m_player->getPosition() - m_last_good_position);
+		float d_vert = diff.Y;
+		diff.Y = 0;
+		float d_horiz = diff.getLength();
+		float required_time = d_horiz/player_max_speed;
+		if(d_vert > 0 && d_vert/player_max_speed > required_time)
+			required_time = d_vert/player_max_speed;
+		if(m_move_pool.grab(required_time)){
+			m_last_good_position = m_player->getPosition();
+		} else {
+			actionstream<<"Player "<<m_player->getName()
+					<<" moved too fast; resetting position"
+					<<std::endl;
+			m_player->setPosition(m_last_good_position);
+			m_moved = true;
+			cheated = true;
+		}
+	}
+	return cheated;
+}
+
 bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 	//update collision box
 	*toset = m_player->getCollisionbox();
@@ -1485,3 +1519,8 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 
 	return true;
 }
+
+bool PlayerSAO::collideWithObjects(){
+	return true;
+}
+
