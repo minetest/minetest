@@ -2056,7 +2056,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			errorstream<<"Server: peer_id="<<peer_id
 					<<": failed to emerge player"<<std::endl;
 			DenyAccess(peer_id, L"Could not allocate player. You"
-					" may need to wait for a timeout.");
+				L" may need to wait for a timeout.");
 			return;
 		}
 

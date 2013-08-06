@@ -126,9 +126,13 @@ class LagPool
 {
 	float pool;
 	float max;
-public:
-	LagPool(): pool(15), max(15)
-	{}
+
+public: 
+	LagPool() 
+	{
+		pool = 15;
+		max = 15;
+	}	
 	void setMax(float new_max)
 	{
 		max = new_max;
