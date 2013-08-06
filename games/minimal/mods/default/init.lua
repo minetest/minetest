@@ -659,6 +659,8 @@ function default.node_sound_dirt_defaults(table)
 			{name="", gain=0.5}
 	--table.dug = table.dug or
 	--		{name="default_dirt_break", gain=0.5}
+	table.place = table.place or
+			{name="default_grass_footstep", gain=0.5}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -739,7 +741,7 @@ minetest.register_node("default:dirt_with_grass", {
 	description = "Dirt with grass",
 	tiles ={"default_grass.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
-	groups = {crumbly=3},
+	groups = {crumbly=3, soil=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_grass_footstep", gain=0.4},
@@ -750,7 +752,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	description = "Dirt with grass and footsteps",
 	tiles ={"default_grass_footsteps.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
-	groups = {crumbly=3},
+	groups = {crumbly=3, soil=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_grass_footstep", gain=0.4},
@@ -761,7 +763,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles ={"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3},
+	groups = {crumbly=3, soil=1},
 	sounds = default.node_sound_dirt_defaults(),
 })
 
@@ -999,6 +1001,7 @@ minetest.register_node("default:water_flowing", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
@@ -1022,6 +1025,7 @@ minetest.register_node("default:water_source", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "source",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
@@ -1053,6 +1057,7 @@ minetest.register_node("default:lava_flowing", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "default:lava_flowing",
 	liquid_alternative_source = "default:lava_source",
@@ -1080,6 +1085,7 @@ minetest.register_node("default:lava_source", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "source",
 	liquid_alternative_flowing = "default:lava_flowing",
 	liquid_alternative_source = "default:lava_source",
@@ -1131,14 +1137,14 @@ minetest.register_node("default:sign_wall", {
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
 	on_construct = function(pos)
-		--local n = minetest.env:get_node(pos)
-		local meta = minetest.env:get_meta(pos)
+		--local n = minetest.get_node(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", "field[text;;${text}]")
 		meta:set_string("infotext", "\"\"")
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		--print("Sign at "..minetest.pos_to_string(pos).." got "..dump(fields))
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		fields.text = fields.text or ""
 		print((sender:get_player_name() or "").." wrote \""..fields.text..
 				"\" to sign at "..minetest.pos_to_string(pos))
@@ -1156,7 +1162,7 @@ minetest.register_node("default:chest", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec",
 				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
@@ -1166,7 +1172,7 @@ minetest.register_node("default:chest", {
 		inv:set_size("main", 8*4)
 	end,
 	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
+		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
@@ -1188,13 +1194,13 @@ minetest.register_node("default:chest_locked", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
 	after_place_node = function(pos, placer)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("owner", placer:get_player_name() or "")
 		meta:set_string("infotext", "Locked Chest (owned by "..
 				meta:get_string("owner")..")")
 	end,
 	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec",
 				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
@@ -1205,12 +1211,12 @@ minetest.register_node("default:chest_locked", {
 		inv:set_size("main", 8*4)
 	end,
 	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
+		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a locked chest belonging to "..
@@ -1221,7 +1227,7 @@ minetest.register_node("default:chest_locked", {
 		return count
 	end,
     allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a locked chest belonging to "..
@@ -1232,7 +1238,7 @@ minetest.register_node("default:chest_locked", {
 		return stack:get_count()
 	end,
     allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		if not has_locked_chest_privilege(meta, player) then
 			minetest.log("action", player:get_player_name()..
 					" tried to access a locked chest belonging to "..
@@ -1273,7 +1279,7 @@ minetest.register_node("default:furnace", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", default.furnace_inactive_formspec)
 		meta:set_string("infotext", "Furnace")
 		local inv = meta:get_inventory()
@@ -1282,7 +1288,7 @@ minetest.register_node("default:furnace", {
 		inv:set_size("dst", 4)
 	end,
 	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
+		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
 		if not inv:is_empty("fuel") then
 			return false
@@ -1306,7 +1312,7 @@ minetest.register_node("default:furnace_active", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", default.furnace_inactive_formspec)
 		meta:set_string("infotext", "Furnace");
 		local inv = meta:get_inventory()
@@ -1315,7 +1321,7 @@ minetest.register_node("default:furnace_active", {
 		inv:set_size("dst", 4)
 	end,
 	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
+		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
 		if not inv:is_empty("fuel") then
 			return false
@@ -1329,16 +1335,16 @@ minetest.register_node("default:furnace_active", {
 })
 
 function hacky_swap_node(pos,name)
-	local node = minetest.env:get_node(pos)
-	local meta = minetest.env:get_meta(pos)
+	local node = minetest.get_node(pos)
+	local meta = minetest.get_meta(pos)
 	local meta0 = meta:to_table()
 	if node.name == name then
 		return
 	end
 	node.name = name
 	local meta0 = meta:to_table()
-	minetest.env:set_node(pos,node)
-	meta = minetest.env:get_meta(pos)
+	minetest.set_node(pos,node)
+	meta = minetest.get_meta(pos)
 	meta:from_table(meta0)
 end
 
@@ -1347,7 +1353,7 @@ minetest.register_abm({
 	interval = 1.0,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		for i, name in ipairs({
 				"fuel_totaltime",
 				"fuel_time",
@@ -1585,99 +1591,6 @@ minetest.register_alias("mapgen_junglegrass", "default:junglegrass")
 minetest.register_alias("mapgen_stone_with_coal", "default:stone_with_coal")
 minetest.register_alias("mapgen_stone_with_iron", "default:stone_with_iron")
 minetest.register_alias("mapgen_mese", "default:mese")
-
-minetest.register_biome_groups({
-0.35, 0.10, 0.30
-})
-
---
--- Register the biomes for the map generator
---
-minetest.register_biome({
-	group_id = 0,
-	name = "Ocean",
-	terrain_type = "liquid",
-	node_top = "default:gravel",
-	node_filler = "default:stone",
-	num_top_nodes = 4,
-	height_min = -3000,
-	height_max = 3000,
-	heat_min = -20.0,
-	heat_max = 100.0,
-	humidity_min = 0.0,
-	humidity_max = 100.0,
-	scale = 10.0,
-	offset = -10.0,
-})
-
-minetest.register_biome({
-	group_id = 1,
-	name = "Beach",
-	terrain_type = "normal",
-	node_top = "default:sand",
-	node_filler = "default:stone",
-	num_top_nodes = 5,
-	height_min = -3000,
-	height_max = 3000,
-	heat_min = 5.0,
-	heat_max = 100.0,
-	humidity_min = 0.0,
-	humidity_max = 100.0,
-	scale = 5.0,
-	offset = 5.0,
-})
-
-minetest.register_biome({
-	group_id = 1,
-	name = "Gravel Beach",
-	terrain_type = "normal",
-	node_top = "default:gravel",
-	node_filler = "default:cobble",
-	num_top_nodes = 5,
-	height_min = -3000,
-	height_max = 3000,
-	heat_min = -50.0,
-	heat_max = 5.0,
-	humidity_min = 0.0,
-	humidity_max = 100.0,
-	scale = 5.0,
-	offset = 5.0,
-})
-
-minetest.register_biome({
-	group_id = 2,
-	name = "Land",
-	terrain_type = "normal",
-	node_top = "default:dirt_with_grass",
-	node_filler = "default:stone",
-	num_top_nodes = 5,
-	height_min = -3000,
-	height_max = 3000,
-	heat_min = -50.0,
-	heat_max = 100.0,
-	humidity_min = 0.0,
-	humidity_max = 100.0,
-	scale = 12.0,
-	offset = 20.0,
-})
-
-minetest.register_biome({
-	group_id = 3,
-	name = "Hills",
-	terrain_type = "normal",
-	node_top = "default:dirt",
-	node_filler = "default:stone",
-	num_top_nodes = 3,
-	height_min = -3000,
-	height_max = 3000,
-	heat_min = -50.0,
-	heat_max = 100.0,
-	humidity_min = 0.0,
-	humidity_max = 100.0,
-	scale = 60.0,
-	offset = 20.0,
-})
-
 
 -- Support old code
 function default.spawn_falling_node(p, nodename)

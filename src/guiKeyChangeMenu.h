@@ -64,7 +64,7 @@ private:
 
 	bool resetMenu();
 
-	void add_key(int id, std::string setting_name, std::string button_name);
+	void add_key(int id, wchar_t* button_name, std::string setting_name);
 
 	bool shift_down;
 	

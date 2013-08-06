@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <set>
 #include "itemgroup.h"
+#include "sound.h"
 class IGameDef;
 struct ToolCapabilities;
 
@@ -66,6 +67,8 @@ struct ItemDefinition
 	// May be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
 	ItemGroupList groups;
+	SimpleSoundSpec sound_place;
+	f32 range;
 
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
@@ -80,7 +83,7 @@ struct ItemDefinition
 	ItemDefinition& operator=(const ItemDefinition &def);
 	~ItemDefinition();
 	void reset();
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 private:
 	void resetInitial();
@@ -109,7 +112,7 @@ public:
 		IGameDef *gamedef) const=0;
 #endif
 
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 };
 
 class IWritableItemDefManager : public IItemDefManager
@@ -146,7 +149,7 @@ public:
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)=0;
 
-	virtual void serialize(std::ostream &os)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 	virtual void deSerialize(std::istream &is)=0;
 
 	// Do stuff asked by threads that can only be done in the main thread

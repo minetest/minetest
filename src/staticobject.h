@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <string>
 #include <sstream>
+#include <list>
+#include <map>
 #include "debug.h"
 
 struct StaticObject
@@ -62,27 +64,27 @@ public:
 		}
 		else
 		{
-			if(m_active.find(id) != NULL)
+			if(m_active.find(id) != m_active.end())
 			{
 				dstream<<"ERROR: StaticObjectList::insert(): "
 						<<"id already exists"<<std::endl;
 				assert(0);
 				return;
 			}
-			m_active.insert(id, obj);
+			m_active[id] = obj;
 		}
 	}
 
 	void remove(u16 id)
 	{
 		assert(id != 0);
-		if(m_active.find(id) == NULL)
+		if(m_active.find(id) == m_active.end())
 		{
 			dstream<<"WARNING: StaticObjectList::remove(): id="<<id
 					<<" not found"<<std::endl;
 			return;
 		}
-		m_active.remove(id);
+		m_active.erase(id);
 	}
 
 	void serialize(std::ostream &os);
@@ -93,8 +95,8 @@ public:
 		from m_stored and inserted to m_active.
 		The caller directly manipulates these containers.
 	*/
-	core::list<StaticObject> m_stored;
-	core::map<u16, StaticObject> m_active;
+	std::list<StaticObject> m_stored;
+	std::map<u16, StaticObject> m_active;
 
 private:
 };

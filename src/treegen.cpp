@@ -28,15 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace treegen
 {
+
 void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef,int seed)
+		bool is_apple_tree, INodeDefManager *ndef, int seed)
 {
 	MapNode treenode(ndef->getId("mapgen_tree"));
 	MapNode leavesnode(ndef->getId("mapgen_leaves"));
 	MapNode applenode(ndef->getId("mapgen_apple"));
 
-	PseudoRandom ps(seed);
-	s16 trunk_h = ps.range(4, 5);
+	PseudoRandom pr(seed);
+	s16 trunk_h = pr.range(4, 5);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -72,9 +73,9 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 		s16 d = 1;
 
 		v3s16 p(
-			ps.range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
-			ps.range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
-			ps.range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
+			pr.range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
+			pr.range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
+			pr.range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
 		);
 
 		for(s16 z=0; z<=d; z++)
@@ -100,7 +101,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1) {
-			bool is_apple = ps.range(0,99) < 10;
+			bool is_apple = pr.range(0,99) < 10;
 			if(is_apple_tree && is_apple) {
 				vmanip.m_data[vi] = applenode;
 			} else {
@@ -111,10 +112,10 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 }
 
 // L-System tree LUA spawner
-void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition)
+void spawn_ltree(ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
-	core::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock*> modified_blocks;
 	ManualMapVoxelManipulator vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
 	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,3,1));
@@ -122,23 +123,17 @@ void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeD
 	vmanip.blitBackAll(&modified_blocks);
 
 	// update lighting
-	core::map<v3s16, MapBlock*> lighting_modified_blocks;
-	for(core::map<v3s16, MapBlock*>::Iterator
-		i = modified_blocks.getIterator();
-		i.atEnd() == false; i++)
-	{
-		lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
-	}
+	std::map<v3s16, MapBlock*> lighting_modified_blocks;
+	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
 	map->updateLighting(lighting_modified_blocks, modified_blocks);
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for(core::map<v3s16, MapBlock*>::Iterator
-		i = modified_blocks.getIterator();
-		i.atEnd() == false; i++)
+	for(std::map<v3s16, MapBlock*>::iterator
+		i = modified_blocks.begin();
+		i != modified_blocks.end(); ++i)
 	{
-		v3s16 p = i.getNode()->getKey();
-		event.modified_blocks.insert(p, true);
+		event.modified_blocks.insert(i->first);
 	}
 	map->dispatchEvent(&event);
 }
@@ -512,33 +507,48 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 	return translated;
 }
 
-#if 0
-static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
-		INodeDefManager *ndef)
+void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
+		INodeDefManager *ndef, int seed)
 {
-	MapNode treenode(ndef->getId("mapgen_jungletree"));
-	MapNode leavesnode(ndef->getId("mapgen_leaves"));
+	content_t c_tree   = ndef->getId("mapgen_jungletree");
+	content_t c_leaves = ndef->getId("mapgen_jungleleaves");
+	if (c_tree == CONTENT_IGNORE)
+		c_tree = ndef->getId("mapgen_tree");
+	if (c_leaves == CONTENT_IGNORE)
+		c_leaves = ndef->getId("mapgen_leaves");
 
+	MapNode treenode(c_tree);
+	MapNode leavesnode(c_leaves);
+
+	PseudoRandom pr(seed);
 	for(s16 x=-1; x<=1; x++)
 	for(s16 z=-1; z<=1; z++)
 	{
-		if(myrand_range(0, 2) == 0)
+		if(pr.range(0, 2) == 0)
 			continue;
 		v3s16 p1 = p0 + v3s16(x,0,z);
 		v3s16 p2 = p0 + v3s16(x,-1,z);
-		if(vmanip.m_area.contains(p2)
-				&& vmanip.m_data[vmanip.m_area.index(p2)] == CONTENT_AIR)
-			vmanip.m_data[vmanip.m_area.index(p2)] = treenode;
-		else if(vmanip.m_area.contains(p1))
-			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+		u32 vi1 = vmanip.m_area.index(p1);
+		u32 vi2 = vmanip.m_area.index(p2);
+		
+		if (vmanip.m_area.contains(p2) &&
+			vmanip.m_data[vi2].getContent() == CONTENT_AIR)
+			vmanip.m_data[vi2] = treenode;
+		else if (vmanip.m_area.contains(p1) &&
+				vmanip.m_data[vi1].getContent() == CONTENT_AIR)
+			vmanip.m_data[vi1] = treenode;
 	}
+	vmanip.m_data[vmanip.m_area.index(p0)] = treenode;
 
-	s16 trunk_h = myrand_range(8, 12);
+	s16 trunk_h = pr.range(8, 12);
 	v3s16 p1 = p0;
-	for(s16 ii=0; ii<trunk_h; ii++)
+	for (s16 ii=0; ii<trunk_h; ii++)
 	{
-		if(vmanip.m_area.contains(p1))
-			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+		if (vmanip.m_area.contains(p1)) {
+			u32 vi = vmanip.m_area.index(p1);
+			if (vmanip.m_data[vi].getContent() == CONTENT_AIR)
+				vmanip.m_data[vi] = treenode;
+		}
 		p1.Y++;
 	}
 
@@ -568,9 +578,9 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		s16 d = 1;
 
 		v3s16 p(
-			myrand_range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
-			myrand_range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
-			myrand_range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
+			pr.range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
+			pr.range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
+			pr.range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
 		);
 
 		for(s16 z=0; z<=d; z++)
@@ -591,14 +601,13 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		if(vmanip.m_area.contains(p) == false)
 			continue;
 		u32 vi = vmanip.m_area.index(p);
-		if(vmanip.m_data[vi].getContent() != CONTENT_AIR
-				&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+		if (vmanip.m_data[vi].getContent() != CONTENT_AIR &&
+			vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1)
 			vmanip.m_data[vi] = leavesnode;
 	}
 }
-#endif
 
 }; // namespace treegen

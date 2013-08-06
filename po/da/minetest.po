@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-30 20:25+0100\n"
+"POT-Creation-Date: 2013-06-24 00:07+0000\n"
 "PO-Revision-Date: 2013-02-17 00:41+0200\n"
 "Last-Translator: Rune Biskopstö Christensen <lakersforce@gmail.com>\n"
 "Language-Team: \n"
@@ -18,76 +18,108 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/guiConfigureWorld.cpp:125
-msgid ""
-"Warning: Some mods are not configured yet.\n"
-"They will be enabled by default when you save the configuration.  "
+#: src/client.cpp:2877
+msgid "Item textures..."
 msgstr ""
-"Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
-"De vil blive aktiveret som standard når du gemmer konfigurationen.  "
 
-#: src/guiConfigureWorld.cpp:144
-msgid ""
-"Warning: Some configured mods are missing.\n"
-"Their setting will be removed when you save the configuration.  "
+#: src/game.cpp:959
+msgid "Loading..."
 msgstr ""
-"Advarsel: nogle konfigurerede modifikationer mangler.\n"
-"Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
 
-#: src/guiConfigureWorld.cpp:208
+#: src/game.cpp:1019
+msgid "Creating server...."
+msgstr ""
+
+#: src/game.cpp:1035
+msgid "Creating client..."
+msgstr ""
+
+#: src/game.cpp:1050
+msgid "Resolving address..."
+msgstr ""
+
+#: src/game.cpp:1126
+msgid "Connecting to server..."
+msgstr ""
+
+#: src/game.cpp:1223
+msgid "Item definitions..."
+msgstr ""
+
+#: src/game.cpp:1230
+msgid "Node definitions..."
+msgstr ""
+
+#: src/game.cpp:1237
+msgid "Media..."
+msgstr ""
+
+#: src/game.cpp:3418
+msgid "Shutting down stuff..."
+msgstr ""
+
+#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Tjek debug.txt for detaljer."
+
+#: src/guiConfigureWorld.cpp:184
 msgid "enabled"
 msgstr "aktiveret"
 
-#: src/guiConfigureWorld.cpp:215
+#: src/guiConfigureWorld.cpp:194
 msgid "Enable All"
 msgstr "Aktivér alle"
 
-#: src/guiConfigureWorld.cpp:222
+#: src/guiConfigureWorld.cpp:203
 msgid "Disable All"
 msgstr "Deaktivér alle"
 
-#: src/guiConfigureWorld.cpp:228
+#: src/guiConfigureWorld.cpp:211
 msgid "depends on:"
 msgstr "afhænger af:"
 
-#: src/guiConfigureWorld.cpp:240
+#: src/guiConfigureWorld.cpp:224
 msgid "is required by:"
 msgstr "er påkrævet af:"
 
-#: src/guiConfigureWorld.cpp:262 src/guiCreateWorld.cpp:165
-#: src/guiKeyChangeMenu.cpp:179 src/keycode.cpp:223
+#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
+#: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Anuller"
 
-#: src/guiConfigureWorld.cpp:268 src/guiKeyChangeMenu.cpp:173
+#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Gem"
 
-#: src/guiConfigureWorld.cpp:394
+#: src/guiConfigureWorld.cpp:374
 msgid "Configuration saved.  "
 msgstr "Konfiguration gemt.  "
 
-#: src/guiConfigureWorld.cpp:402
+#: src/guiConfigureWorld.cpp:386
 msgid "Warning: Configuration not consistent.  "
 msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
 
-#: src/guiConfirmMenu.cpp:120
+#: src/guiConfirmMenu.cpp:119
 msgid "Yes"
 msgstr "Ja"
 
-#: src/guiConfirmMenu.cpp:126
+#: src/guiConfirmMenu.cpp:127
 msgid "No"
 msgstr "Nej"
 
-#: src/guiCreateWorld.cpp:116
+#: src/guiCreateWorld.cpp:123
 msgid "World name"
 msgstr "Verdens navn"
 
-#: src/guiCreateWorld.cpp:135
+#: src/guiCreateWorld.cpp:146
 msgid "Game"
 msgstr "Spil"
 
-#: src/guiCreateWorld.cpp:159
+#: src/guiCreateWorld.cpp:170
 msgid "Create"
 msgstr "Skab"
 
@@ -99,272 +131,290 @@ msgstr "Du døde."
 msgid "Respawn"
 msgstr "Genopstå"
 
-#: src/guiFormSpecMenu.cpp:572
+#: src/guiFormSpecMenu.cpp:585
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
 
-#: src/guiFormSpecMenu.cpp:597 src/guiMessageMenu.cpp:109
-#: src/guiTextInputMenu.cpp:123
+#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
 msgstr "Fortsæt"
 
-#: src/guiKeyChangeMenu.cpp:114
+#: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Tastebindinger. (Hvis denne menu fucker op, fjern elementer fra "
-"minetest.conf)"
+"Tastebindinger. (Hvis denne menu fucker op, fjern elementer fra minetest."
+"conf)"
 
-#: src/guiKeyChangeMenu.cpp:151
+#: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
 msgstr "\"Brug\" = klatre ned"
 
-#: src/guiKeyChangeMenu.cpp:164
+#: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
 msgstr ""
 "Tryk på \"hop\" hurtigt to gange for at skifte frem og tilbage mellem flyve-"
 "tilstand"
 
-#: src/guiKeyChangeMenu.cpp:269
+#: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
 msgstr "Tast allerede i brug"
 
-#: src/guiKeyChangeMenu.cpp:347
+#: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
 msgstr "Tryk på en tast"
 
-#: src/guiKeyChangeMenu.cpp:372
+#: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
 msgstr "Fremad"
 
-#: src/guiKeyChangeMenu.cpp:373
+#: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
 msgstr "Baglæns"
 
-#: src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
 msgstr "Venstre"
 
-#: src/guiKeyChangeMenu.cpp:375 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
 msgstr "Højre"
 
-#: src/guiKeyChangeMenu.cpp:376
+#: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
 msgstr "Brug"
 
-#: src/guiKeyChangeMenu.cpp:377
+#: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
 msgstr "Hop"
 
-#: src/guiKeyChangeMenu.cpp:378
+#: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
 msgstr "Snige"
 
-#: src/guiKeyChangeMenu.cpp:379
+#: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
 msgstr "Slip"
 
-#: src/guiKeyChangeMenu.cpp:380
+#: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
 msgstr "Beholdning"
 
-#: src/guiKeyChangeMenu.cpp:381
+#: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
 msgstr "Snak"
 
-#: src/guiKeyChangeMenu.cpp:382
+#: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
 msgstr "Kommando"
 
-#: src/guiKeyChangeMenu.cpp:383
+#: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
 msgstr "Konsol"
 
-#: src/guiKeyChangeMenu.cpp:384
+#: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
 msgstr "Omstil flyvning"
 
-#: src/guiKeyChangeMenu.cpp:385
+#: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
 msgstr "Omstil hurtig"
 
-#: src/guiKeyChangeMenu.cpp:386
+#: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
 msgstr "Omstil fylde"
 
-#: src/guiKeyChangeMenu.cpp:387
+#: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
 msgstr "Afstands vælg"
 
-#: src/guiKeyChangeMenu.cpp:388
+#: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
 msgstr "Udskriv stakke"
 
-#: src/guiMainMenu.cpp:55
+#: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
 msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
 
-#: src/guiMainMenu.cpp:64
+#: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
 msgstr "Kan ikke skabe verden: en verden med dette navn eksisterer allerede"
 
-#: src/guiMainMenu.cpp:245
+#: src/guiMainMenu.cpp:285
 msgid "Singleplayer"
 msgstr "Enligspiller"
 
-#: src/guiMainMenu.cpp:246
+#: src/guiMainMenu.cpp:288
 msgid "Multiplayer"
 msgstr "Flerspiller"
 
-#: src/guiMainMenu.cpp:247
+#: src/guiMainMenu.cpp:291
 msgid "Advanced"
 msgstr "Avanceret"
 
-#: src/guiMainMenu.cpp:248
+#: src/guiMainMenu.cpp:294
 msgid "Settings"
 msgstr "Indstillinger"
 
-#: src/guiMainMenu.cpp:249
+#: src/guiMainMenu.cpp:297
 msgid "Credits"
 msgstr "Skabt af"
 
-#: src/guiMainMenu.cpp:280
+#: src/guiMainMenu.cpp:330
 msgid "Select World:"
 msgstr "Vælg verden:"
 
-#: src/guiMainMenu.cpp:302 src/guiMainMenu.cpp:449 src/keycode.cpp:229
+#: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Slet"
 
-#: src/guiMainMenu.cpp:309
+#: src/guiMainMenu.cpp:369
 msgid "New"
 msgstr "Ny"
 
-#: src/guiMainMenu.cpp:317
+#: src/guiMainMenu.cpp:379
 msgid "Configure"
 msgstr "Konfigurér"
 
-#: src/guiMainMenu.cpp:332 src/keycode.cpp:248
+#: src/guiMainMenu.cpp:396 src/keycode.cpp:248
 msgid "Play"
 msgstr "Afspil"
 
-#: src/guiMainMenu.cpp:343 src/guiMainMenu.cpp:557
+#: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
 msgid "Creative Mode"
 msgstr "Kreativ tilstand"
 
-#: src/guiMainMenu.cpp:349 src/guiMainMenu.cpp:563
+#: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
 msgid "Enable Damage"
 msgstr "Aktivér skade"
 
-#: src/guiMainMenu.cpp:369 src/guiMainMenu.cpp:479
+#: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
 msgid "Name/Password"
 msgstr "Navn/kodeord"
 
-#: src/guiMainMenu.cpp:408 src/guiMainMenu.cpp:506
+#: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
+#, fuzzy
+msgid "Favorites:"
+msgstr "Vis favoritter"
+
+#: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
+msgid "Public Server List:"
+msgstr ""
+
+#: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
 msgid "Address/Port"
 msgstr "Adresse/port"
 
-#: src/guiMainMenu.cpp:435 src/guiMainMenu.cpp:1075
+#: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
 msgid "Show Public"
 msgstr "Vis offentlig"
 
-#: src/guiMainMenu.cpp:439 src/guiMainMenu.cpp:1083
+#: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
 msgid "Show Favorites"
 msgstr "Vis favoritter"
 
-#: src/guiMainMenu.cpp:459
+#: src/guiMainMenu.cpp:591
 msgid "Connect"
 msgstr "Forbind"
 
-#: src/guiMainMenu.cpp:529
+#: src/guiMainMenu.cpp:668
 msgid "Leave address blank to start a local server."
 msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
 
-#: src/guiMainMenu.cpp:538
+#: src/guiMainMenu.cpp:678
 msgid "Start Game / Connect"
 msgstr "Start spil / Forbind"
 
-#: src/guiMainMenu.cpp:570 src/guiMainMenu.cpp:1006
+#: src/guiMainMenu.cpp:716
+#, fuzzy
+msgid "Public"
+msgstr "Vis offentlig"
+
+#: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
 msgid "Delete world"
 msgstr "Slet verden"
 
-#: src/guiMainMenu.cpp:577
+#: src/guiMainMenu.cpp:735
 msgid "Create world"
 msgstr "Skab verden"
 
-#: src/guiMainMenu.cpp:611
+#: src/guiMainMenu.cpp:773
 msgid "Fancy trees"
 msgstr "\"Smarte\" træer"
 
-#: src/guiMainMenu.cpp:617
+#: src/guiMainMenu.cpp:781
 msgid "Smooth Lighting"
 msgstr "Glat belysning"
 
-#: src/guiMainMenu.cpp:623
+#: src/guiMainMenu.cpp:789
 msgid "3D Clouds"
 msgstr "3D skyer"
 
-#: src/guiMainMenu.cpp:629
+#: src/guiMainMenu.cpp:797
 msgid "Opaque water"
 msgstr "Opakt (uigennemsigtigt) vand"
 
-#: src/guiMainMenu.cpp:639
+#: src/guiMainMenu.cpp:809
 msgid "Mip-Mapping"
 msgstr "Mip-mapping"
 
-#: src/guiMainMenu.cpp:646
+#: src/guiMainMenu.cpp:818
 msgid "Anisotropic Filtering"
 msgstr "Anisotropisk filtréring"
 
-#: src/guiMainMenu.cpp:653
+#: src/guiMainMenu.cpp:827
 msgid "Bi-Linear Filtering"
 msgstr "Bi-lineær filtréring"
 
-#: src/guiMainMenu.cpp:660
+#: src/guiMainMenu.cpp:836
 msgid "Tri-Linear Filtering"
 msgstr "Tri-lineær filtréring"
 
-#: src/guiMainMenu.cpp:668
+#: src/guiMainMenu.cpp:846
 msgid "Shaders"
 msgstr "Shadere"
 
-#: src/guiMainMenu.cpp:675
+#: src/guiMainMenu.cpp:855
 msgid "Preload item visuals"
 msgstr "For-indlæs elementernes grafik"
 
-#: src/guiMainMenu.cpp:682
+#: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
 msgstr "Aktivér partikler"
 
-#: src/guiMainMenu.cpp:692
+#: src/guiMainMenu.cpp:873
+msgid "Finite liquid"
+msgstr ""
+
+#: src/guiMainMenu.cpp:885
 msgid "Change keys"
 msgstr "Skift bindinger"
 
-#: src/guiMainMenu.cpp:977
+#: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
 msgid "Address required."
 msgstr "Adresse påkrævet."
 
-#: src/guiMainMenu.cpp:995
+#: src/guiMainMenu.cpp:1231
 msgid "Cannot delete world: Nothing selected"
 msgstr "Kan ikke slette verden: ingenting valgt"
 
-#: src/guiMainMenu.cpp:1010
+#: src/guiMainMenu.cpp:1246
 msgid "Files to be deleted"
 msgstr "Filer som slettes"
 
-#: src/guiMainMenu.cpp:1026
+#: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
 msgstr "Kan ikke skabe verden: ingen spil fundet"
 
-#: src/guiMainMenu.cpp:1042
+#: src/guiMainMenu.cpp:1286
 msgid "Cannot configure world: Nothing selected"
 msgstr "Kan ikke konfigurere verden: ingenting valgt"
 
-#: src/guiMainMenu.cpp:1146
+#: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
 msgstr "Mislykkedes i at slette alle verdenens filer"
 
-#: src/guiPasswordChange.cpp:108
+#: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "Gammelt kodeord"
 
@@ -372,59 +422,60 @@ msgstr "Gammelt kodeord"
 msgid "New Password"
 msgstr "Nyt kodeord"
 
-#: src/guiPasswordChange.cpp:141
+#: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
 msgstr "Bekræft kodeord"
 
-#: src/guiPasswordChange.cpp:158
+#: src/guiPasswordChange.cpp:160
 msgid "Change"
 msgstr "Skift"
 
-#: src/guiPasswordChange.cpp:167
+#: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
 msgstr "Kodeordene er ikke ens!"
 
-#: src/guiPauseMenu.cpp:118
+#: src/guiPauseMenu.cpp:122
 msgid "Continue"
 msgstr "Fortsæt"
 
-#: src/guiPauseMenu.cpp:127
+#: src/guiPauseMenu.cpp:133
 msgid "Change Password"
 msgstr "Skift kodeord"
 
-#: src/guiPauseMenu.cpp:135
+#: src/guiPauseMenu.cpp:143
+msgid "Sound Volume"
+msgstr ""
+
+#: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
 msgstr "Afslut til menu"
 
-#: src/guiPauseMenu.cpp:142
+#: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
 msgstr "Afslut til operativsystemet"
 
-#: src/guiPauseMenu.cpp:149
+#: src/guiPauseMenu.cpp:170
 msgid ""
 "Default Controls:\n"
-"- WASD: Walk\n"
-"- Mouse left: dig/hit\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
 "- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
-"- 0...9: select item\n"
-"- Shift: sneak\n"
-"- R: Toggle viewing all loaded chunks\n"
-"- I: Inventory menu\n"
-"- ESC: This menu\n"
-"- T: Chat\n"
+"- T: chat\n"
 msgstr ""
-"Standard bindinger:\n"
-"- WASD: bevægelse\n"
-"- Venstre musetast: grav/slå\n"
-"- Højre musetast: anbring/brug\n"
-"- Musehjul: vælg genstand\n"
-"- 0...9: vælg genstand\n"
-"- Shift: snige\n"
-"- R: omstil se alle indlæste klumper\n"
-"- I: beholdning\n"
-"- ESC: denne menu\n"
-"- T: snak\n"
+
+#: src/guiVolumeChange.cpp:107
+msgid "Sound Volume: "
+msgstr ""
+
+#: src/guiVolumeChange.cpp:121
+msgid "Exit"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -721,37 +772,68 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1384
+#: src/main.cpp:1680
 msgid "Main Menu"
 msgstr "Hovedmenu"
 
-#: src/main.cpp:1633
+#: src/main.cpp:2040
 msgid "Failed to initialize world"
 msgstr "Mislykkedes i at initialisere verden"
 
-#: src/main.cpp:1645
+#: src/main.cpp:2053
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Ingen verden valgt og ingen adresse angivet. Ingen opgave at lave."
 
-#: src/main.cpp:1653
+#: src/main.cpp:2061
 msgid "Could not find or load game \""
 msgstr "Kunne ikke finde eller indlæse spil \""
 
-#: src/main.cpp:1667
+#: src/main.cpp:2075
 msgid "Invalid gamespec."
 msgstr "Ugyldig spilspecifikationer."
 
-#: src/main.cpp:1707
+#: src/main.cpp:2116
 msgid "Connection error (timed out?)"
 msgstr "Forbindelses fejl (udløbelse af tidsfrist?)"
 
-#: src/main.cpp:1718
-msgid ""
-"\n"
-"Check debug.txt for details."
-msgstr ""
-"\n"
-"Tjek debug.txt for detaljer."
+#~ msgid ""
+#~ "Default Controls:\n"
+#~ "- WASD: Walk\n"
+#~ "- Mouse left: dig/hit\n"
+#~ "- Mouse right: place/use\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- 0...9: select item\n"
+#~ "- Shift: sneak\n"
+#~ "- R: Toggle viewing all loaded chunks\n"
+#~ "- I: Inventory menu\n"
+#~ "- ESC: This menu\n"
+#~ "- T: Chat\n"
+#~ msgstr ""
+#~ "Standard bindinger:\n"
+#~ "- WASD: bevægelse\n"
+#~ "- Venstre musetast: grav/slå\n"
+#~ "- Højre musetast: anbring/brug\n"
+#~ "- Musehjul: vælg genstand\n"
+#~ "- 0...9: vælg genstand\n"
+#~ "- Shift: snige\n"
+#~ "- R: omstil se alle indlæste klumper\n"
+#~ "- I: beholdning\n"
+#~ "- ESC: denne menu\n"
+#~ "- T: snak\n"
 
 #~ msgid "Delete map"
 #~ msgstr "Slet mappen"
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle konfigurerede modifikationer mangler.\n"
+#~ "Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
+#~ "De vil blive aktiveret som standard når du gemmer konfigurationen.  "

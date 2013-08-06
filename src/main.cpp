@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "test.h"
+#include "clouds.h"
 #include "server.h"
 #include "constants.h"
 #include "porting.h"
@@ -75,6 +76,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "quicktune.h"
 #include "serverlist.h"
+#include "guiEngine.h"
 
 /*
 	Settings.
@@ -86,6 +88,10 @@ Settings *g_settings = &main_settings;
 // Global profiler
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
+
+// Menu clouds are created later
+Clouds *g_menuclouds = 0;
+irr::scene::ISceneManager *g_menucloudsmgr = 0;
 
 /*
 	Debug streams
@@ -132,7 +138,12 @@ MainGameCallback *g_gamecallback = NULL;
 u32 getTimeMs()
 {
 	/* Use imprecise system calls directly (from porting.h) */
-	return porting::getTimeMs();
+	return porting::getTime(PRECISION_MILLI);
+}
+
+u32 getTime(TimePrecision prec)
+{
+	return porting::getTime(prec);
 }
 
 #else
@@ -141,7 +152,7 @@ u32 getTimeMs()
 class TimeGetter
 {
 public:
-	virtual u32 getTime() = 0;
+	virtual u32 getTime(TimePrecision prec) = 0;
 };
 
 // A precise irrlicht one
@@ -151,11 +162,15 @@ public:
 	IrrlichtTimeGetter(IrrlichtDevice *device):
 		m_device(device)
 	{}
-	u32 getTime()
+	u32 getTime(TimePrecision prec)
 	{
-		if(m_device == NULL)
-			return 0;
-		return m_device->getTimer()->getRealTime();
+		if (prec == PRECISION_MILLI) {
+			if(m_device == NULL)
+				return 0;
+			return m_device->getTimer()->getRealTime();
+		} else {
+			return porting::getTime(prec);
+		}
 	}
 private:
 	IrrlichtDevice *m_device;
@@ -164,9 +179,9 @@ private:
 class SimpleTimeGetter: public TimeGetter
 {
 public:
-	u32 getTime()
+	u32 getTime(TimePrecision prec)
 	{
-		return porting::getTimeMs();
+		return porting::getTime(prec);
 	}
 };
 
@@ -178,9 +193,14 @@ u32 getTimeMs()
 {
 	if(g_timegetter == NULL)
 		return 0;
-	return g_timegetter->getTime();
+	return g_timegetter->getTime(PRECISION_MILLI);
 }
 
+u32 getTime(TimePrecision prec) {
+	if (g_timegetter == NULL)
+		return 0;
+	return g_timegetter->getTime(prec);
+}
 #endif
 
 class StderrLogOutput: public ILogOutput
@@ -596,54 +616,7 @@ private:
 	bool rightreleased;
 };
 
-void drawMenuBackground(video::IVideoDriver* driver)
-{
-	core::dimension2d<u32> screensize = driver->getScreenSize();
-		
-	video::ITexture *bgtexture =
-			driver->getTexture(getTexturePath("menubg.png").c_str());
-	if(bgtexture)
-	{
-		s32 scaledsize = 128;
-		
-		// The important difference between destsize and screensize is
-		// that destsize is rounded to whole scaled pixels.
-		// These formulas use component-wise multiplication and division of v2u32.
-		v2u32 texturesize = bgtexture->getSize();
-		v2u32 sourcesize = texturesize * screensize / scaledsize + v2u32(1,1);
-		v2u32 destsize = scaledsize * sourcesize / texturesize;
-		
-		// Default texture wrapping mode in Irrlicht is ETC_REPEAT.
-		driver->draw2DImage(bgtexture,
-			core::rect<s32>(0, 0, destsize.X, destsize.Y),
-			core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-			NULL, NULL, true);
-	}
-	
-	video::ITexture *logotexture =
-			driver->getTexture(getTexturePath("menulogo.png").c_str());
-	if(logotexture)
-	{
-		v2s32 logosize(logotexture->getOriginalSize().Width,
-				logotexture->getOriginalSize().Height);
-		logosize *= 4;
-
-		video::SColor bgcolor(255,50,50,50);
-		core::rect<s32> bgrect(0, screensize.Height-logosize.Y-20,
-				screensize.Width, screensize.Height);
-		driver->draw2DRectangle(bgcolor, bgrect, NULL);
-
-		core::rect<s32> rect(0,0,logosize.X,logosize.Y);
-		rect += v2s32(screensize.Width/2,screensize.Height-10-logosize.Y);
-		rect -= v2s32(logosize.X/2, 0);
-		driver->draw2DImage(logotexture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(logotexture->getSize())),
-			NULL, NULL, true);
-	}
-}
-
-#endif
+#endif // !SERVER
 
 // These are defined global so that they're not optimized too much.
 // Can't change them to volatile.
@@ -700,14 +673,14 @@ void SpeedTests()
 	}
 
 	{
-		TimeTaker timer("Testing core::map speed");
+		TimeTaker timer("Testing std::map speed");
 		
-		core::map<v2s16, f32> map1;
+		std::map<v2s16, f32> map1;
 		tempf = -324;
 		const s16 ii=300;
 		for(s16 y=0; y<ii; y++){
 			for(s16 x=0; x<ii; x++){
-				map1.insert(v2s16(x,y), tempf);
+				map1[v2s16(x,y)] =  tempf;
 				tempf += 1;
 			}
 		}
@@ -734,7 +707,7 @@ void SpeedTests()
 			}
 		}
 		// Do at least 10ms
-		while(timer.getTime() < 10);
+		while(timer.getTimerTime() < 10);
 
 		u32 dtime = timer.stop();
 		u32 per_ms = n / dtime;
@@ -788,48 +761,50 @@ int main(int argc, char *argv[])
 	*/
 	
 	// List all allowed options
-	core::map<std::string, ValueSpec> allowed_options;
-	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
-			_("Show allowed options")));
-	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
-			_("Load configuration from specified file")));
-	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			_("Set network port (UDP)")));
-	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Disable unit tests")));
-	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Enable unit tests")));
-	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
-			_("Same as --world (deprecated)")));
-	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)")));
-	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)")));
-	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
-			_("Print more information to console")));
-	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
-			_("Print even more information to console")));
-	allowed_options.insert("trace", ValueSpec(VALUETYPE_FLAG,
-			_("Print enormous amounts of information to log and console")));
-	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
-			_("Set logfile path ('' = no logging)")));
-	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
-			_("Set gameid (\"--gameid list\" prints available ones)")));
+	std::map<std::string, ValueSpec> allowed_options;
+	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
+			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
+			_("Load configuration from specified file"))));
+	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
+			_("Set network port (UDP)"))));
+	allowed_options.insert(std::make_pair("disable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Disable unit tests"))));
+	allowed_options.insert(std::make_pair("enable-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Enable unit tests"))));
+	allowed_options.insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
+			_("Same as --world (deprecated)"))));
+	allowed_options.insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
+			_("Set world path (implies local game) ('list' lists all)"))));
+	allowed_options.insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
+			_("Set world by name (implies local game)"))));
+	allowed_options.insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
+			_("Print more information to console"))));
+	allowed_options.insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
+			_("Print even more information to console"))));
+	allowed_options.insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
+			_("Print enormous amounts of information to log and console"))));
+	allowed_options.insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
+			_("Set logfile path ('' = no logging)"))));
+	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
+			_("Set gameid (\"--gameid list\" prints available ones)"))));
 #ifndef SERVER
-	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests")));
-	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			_("Address to connect to. ('' = local game)")));
-	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
-			_("Enable random user input, for testing")));
-	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			_("Run dedicated server")));
-	allowed_options.insert("name", ValueSpec(VALUETYPE_STRING,
-			_("Set player name")));
-	allowed_options.insert("password", ValueSpec(VALUETYPE_STRING,
-			_("Set password")));
-	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
-			_("Disable main menu")));
+	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
+			_("Show available video modes"))));
+	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
+			_("Run speed tests"))));
+	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
+			_("Address to connect to. ('' = local game)"))));
+	allowed_options.insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
+			_("Enable random user input, for testing"))));
+	allowed_options.insert(std::make_pair("server", ValueSpec(VALUETYPE_FLAG,
+			_("Run dedicated server"))));
+	allowed_options.insert(std::make_pair("name", ValueSpec(VALUETYPE_STRING,
+			_("Set player name"))));
+	allowed_options.insert(std::make_pair("password", ValueSpec(VALUETYPE_STRING,
+			_("Set password"))));
+	allowed_options.insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
+			_("Disable main menu"))));
 #endif
 
 	Settings cmd_args;
@@ -839,20 +814,20 @@ int main(int argc, char *argv[])
 	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
 	{
 		dstream<<_("Allowed options:")<<std::endl;
-		for(core::map<std::string, ValueSpec>::Iterator
-				i = allowed_options.getIterator();
-				i.atEnd() == false; i++)
+		for(std::map<std::string, ValueSpec>::iterator
+				i = allowed_options.begin();
+				i != allowed_options.end(); ++i)
 		{
 			std::ostringstream os1(std::ios::binary);
-			os1<<"  --"<<i.getNode()->getKey();
-			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
+			os1<<"  --"<<i->first;
+			if(i->second.type == VALUETYPE_FLAG)
 				{}
 			else
 				os1<<_(" <value>");
 			dstream<<padStringRight(os1.str(), 24);
 
-			if(i.getNode()->getValue().help != NULL)
-				dstream<<i.getNode()->getValue().help;
+			if(i->second.help != NULL)
+				dstream<<i->second.help;
 			dstream<<std::endl;
 		}
 
@@ -915,10 +890,10 @@ int main(int argc, char *argv[])
 		print_worldspecs(worldspecs, dstream);
 		return 0;
 	}
-	
+
 	// Print startup message
 	infostream<<PROJECT_NAME<<
-			" "<<_("with")<<" SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
+			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
 			<<", "<<BUILD_INFO
 			<<std::endl;
 	
@@ -953,7 +928,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		core::array<std::string> filenames;
+		std::vector<std::string> filenames;
 		filenames.push_back(porting::path_user +
 				DIR_DELIM + "minetest.conf");
 		// Legacy configuration file location
@@ -1279,6 +1254,14 @@ int main(int argc, char *argv[])
 		driverType = video::EDT_DIRECT3D9;
 	else if(driverstring == "opengl")
 		driverType = video::EDT_OPENGL;
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	else if(driverstring == "ogles1")
+		driverType = video::EDT_OGLES1;
+#endif
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+	else if(driverstring == "ogles2")
+		driverType = video::EDT_OGLES2;
+#endif
 	else
 	{
 		errorstream<<"WARNING: Invalid video_driver specified; defaulting "
@@ -1287,10 +1270,63 @@ int main(int argc, char *argv[])
 	}
 
 	/*
-		Create device and exit if creation failed
+		List video modes if requested
 	*/
 
 	MyEventReceiver receiver;
+
+	if(cmd_args.getFlag("videomodes")){
+		IrrlichtDevice *nulldevice;
+
+		SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+		params.DriverType    = video::EDT_NULL;
+		params.WindowSize    = core::dimension2d<u32>(640, 480);
+		params.Bits          = 24;
+		params.AntiAlias     = fsaa;
+		params.Fullscreen    = false;
+		params.Stencilbuffer = false;
+		params.Vsync         = vsync;
+		params.EventReceiver = &receiver;
+
+		nulldevice = createDeviceEx(params);
+
+		if(nulldevice == 0)
+			return 1;
+
+		dstream<<_("Available video modes (WxHxD):")<<std::endl;
+
+		video::IVideoModeList *videomode_list =
+				nulldevice->getVideoModeList();
+
+		if(videomode_list == 0){
+			nulldevice->drop();
+			return 1;
+		}
+
+		s32 videomode_count = videomode_list->getVideoModeCount();
+		core::dimension2d<u32> videomode_res;
+		s32 videomode_depth;
+		for (s32 i = 0; i < videomode_count; ++i){
+			videomode_res = videomode_list->getVideoModeResolution(i);
+			videomode_depth = videomode_list->getVideoModeDepth(i);
+			dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+					<<"x"<<videomode_depth<<std::endl;
+		}
+
+		dstream<<_("Active video mode (WxHxD):")<<std::endl;
+		videomode_res = videomode_list->getDesktopResolution();
+		videomode_depth = videomode_list->getDesktopDepth();
+		dstream<<videomode_res.Width<<"x"<<videomode_res.Height
+				<<"x"<<videomode_depth<<std::endl;
+
+		nulldevice->drop();
+
+		return 0;
+	}
+
+	/*
+		Create device and exit if creation failed
+	*/
 
 	IrrlichtDevice *device;
 
@@ -1334,6 +1370,7 @@ int main(int argc, char *argv[])
 	{
 		dstream<<"Running speed tests"<<std::endl;
 		SpeedTests();
+		device->drop();
 		return 0;
 	}
 	
@@ -1351,12 +1388,18 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
-	#if USE_FREETYPE
 	std::string font_path = g_settings->get("font_path");
-	u16 font_size = g_settings->getU16("font_size");
-	gui::IGUIFont *font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	gui::IGUIFont *font;
+	bool use_freetype = g_settings->getBool("freetype");
+	#if USE_FREETYPE
+	if (use_freetype) {
+		u16 font_size = g_settings->getU16("font_size");
+		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+	} else {
+		font = guienv->getFont(font_path.c_str());
+	}
 	#else
-	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
+	font = guienv->getFont(font_path.c_str());
 	#endif
 	if(font)
 		skin->setFont(font);
@@ -1385,6 +1428,19 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255,96,134,49));
 #endif
 
+
+	// Create the menu clouds
+	if (!g_menucloudsmgr)
+		g_menucloudsmgr = smgr->createNewSceneManager();
+	if (!g_menuclouds)
+		g_menuclouds = new Clouds(g_menucloudsmgr->getRootSceneNode(),
+			g_menucloudsmgr, -1, rand(), 100);
+	g_menuclouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+	scene::ICameraSceneNode* camera;
+	camera = g_menucloudsmgr->addCameraSceneNode(0,
+				v3f(0,0,0), v3f(0, 60, 100));
+	camera->setFarValue(10000);
+
 	/*
 		GUI stuff
 	*/
@@ -1409,7 +1465,9 @@ int main(int argc, char *argv[])
 	while(device->run() && kill == false)
 	{
 		// Set the window caption
-		device->setWindowCaption((std::wstring(L"Minetest [")+wgettext("Main Menu")+L"]").c_str());
+		wchar_t* text = wgettext("Main Menu");
+		device->setWindowCaption((std::wstring(L"Minetest [")+text+L"]").c_str());
+		delete[] text;
 
 		// This is used for catching disconnects
 		try
@@ -1460,65 +1518,37 @@ int main(int argc, char *argv[])
 				
 				// Initialize menu data
 				MainMenuData menudata;
-				if(g_settings->exists("selected_mainmenu_tab"))
-					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
-				menudata.address = narrow_to_wide(address);
-				menudata.name = narrow_to_wide(playername);
-				menudata.port = narrow_to_wide(itos(port));
+				menudata.kill = kill;
+				menudata.address = address;
+				menudata.name = playername;
+				menudata.port = itos(port);
+				menudata.errormessage = wide_to_narrow(error_message);
+				error_message = L"";
 				if(cmd_args.exists("password"))
-					menudata.password = narrow_to_wide(cmd_args.get("password"));
-				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
-				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
-				menudata.clouds_3d = g_settings->getBool("enable_3d_clouds");
-				menudata.opaque_water = g_settings->getBool("opaque_water");
-				menudata.mip_map = g_settings->getBool("mip_map");
-				menudata.anisotropic_filter = g_settings->getBool("anisotropic_filter");
-				menudata.bilinear_filter = g_settings->getBool("bilinear_filter");
-				menudata.trilinear_filter = g_settings->getBool("trilinear_filter");
-				menudata.enable_shaders = g_settings->getS32("enable_shaders");
-				menudata.preload_item_visuals = g_settings->getBool("preload_item_visuals");
-				menudata.enable_particles = g_settings->getBool("enable_particles");
-				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, menudata.mip_map);
-				menudata.creative_mode = g_settings->getBool("creative_mode");
-				menudata.enable_damage = g_settings->getBool("enable_damage");
+					menudata.password = cmd_args.get("password");
+
+				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
+
 				menudata.enable_public = g_settings->getBool("server_announce");
-				// Default to selecting nothing
-				menudata.selected_world = -1;
-				// Get world listing for the menu
+
 				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-				// If there is only one world, select it
-				if(worldspecs.size() == 1){
-					menudata.selected_world = 0;
-				}
-				// Otherwise try to select according to selected_world_path
-				else if(g_settings->exists("selected_world_path")){
-					std::string trypath = g_settings->get("selected_world_path");
-					for(u32 i=0; i<worldspecs.size(); i++){
-						if(worldspecs[i].path == trypath){
-							menudata.selected_world = i;
-							break;
-						}
-					}
-				}
+
 				// If a world was commanded, append and select it
 				if(commanded_world != ""){
+
 					std::string gameid = getWorldGameId(commanded_world, true);
 					std::string name = _("[--world parameter]");
 					if(gameid == ""){
 						gameid = g_settings->get("default_game");
 						name += " [new]";
 					}
-					WorldSpec spec(commanded_world, name, gameid);
-					worldspecs.push_back(spec);
-					menudata.selected_world = worldspecs.size()-1;
+					//TODO find within worldspecs and set config
 				}
-				// Copy worldspecs to menu
-				menudata.worlds = worldspecs;
 
 				if(skip_main_menu == false)
 				{
 					video::IVideoDriver* driver = device->getVideoDriver();
-					
+
 					infostream<<"Waiting for other menus"<<std::endl;
 					while(device->run() && kill == false)
 					{
@@ -1526,7 +1556,6 @@ int main(int argc, char *argv[])
 							break;
 						driver->beginScene(true, true,
 								video::SColor(255,128,128,128));
-						drawMenuBackground(driver);
 						guienv->drawAll();
 						driver->endScene();
 						// On some computers framerate doesn't seem to be
@@ -1535,81 +1564,40 @@ int main(int argc, char *argv[])
 					}
 					infostream<<"Waited for other menus"<<std::endl;
 
-					GUIMainMenu *menu =
-							new GUIMainMenu(guienv, guiroot, -1, 
-								&g_menumgr, &menudata, g_gamecallback);
-					menu->allowFocusRemoval(true);
-
-					if(error_message != L"")
-					{
-						verbosestream<<"error_message = "
-								<<wide_to_narrow(error_message)<<std::endl;
-
-						GUIMessageMenu *menu2 =
-								new GUIMessageMenu(guienv, guiroot, -1, 
-									&g_menumgr, error_message.c_str());
-						menu2->drop();
-						error_message = L"";
-					}
-
-					infostream<<"Created main menu"<<std::endl;
-
-					while(device->run() && kill == false)
-					{
-						if(menu->getStatus() == true)
-							break;
-
-						//driver->beginScene(true, true, video::SColor(255,0,0,0));
-						driver->beginScene(true, true, video::SColor(255,128,128,128));
-
-						drawMenuBackground(driver);
-
-						guienv->drawAll();
-						
-						driver->endScene();
-						
-						// On some computers framerate doesn't seem to be
-						// automatically limited
-						sleep_ms(25);
-					}
+					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata);
 					
-					infostream<<"Dropping main menu"<<std::endl;
+					delete temp;
+					//once finished you'll never end up here
+					smgr->clear();
+					kill = menudata.kill;
 
-					menu->drop();
 				}
 
-				playername = wide_to_narrow(menudata.name);
-				password = translatePassword(playername, menudata.password);
+				//update worldspecs (necessary as new world may have been created)
+				worldspecs = getAvailableWorlds();
+
+				if (menudata.name == "")
+					menudata.name = std::string("Guest") + itos(myrand_range(1000,9999));
+				else
+					playername = menudata.name;
+
+				password = translatePassword(playername, narrow_to_wide(menudata.password));
 				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
-				address = wide_to_narrow(menudata.address);
-				int newport = stoi(wide_to_narrow(menudata.port));
+				address = menudata.address;
+				int newport = stoi(menudata.port);
 				if(newport != 0)
 					port = newport;
+
 				simple_singleplayer_mode = menudata.simple_singleplayer_mode;
+
 				// Save settings
-				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
-				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
-				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
-				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
-				g_settings->set("opaque_water", itos(menudata.opaque_water));
-
-				g_settings->set("mip_map", itos(menudata.mip_map));
-				g_settings->set("anisotropic_filter", itos(menudata.anisotropic_filter));
-				g_settings->set("bilinear_filter", itos(menudata.bilinear_filter));
-				g_settings->set("trilinear_filter", itos(menudata.trilinear_filter));
-
-				g_settings->setS32("enable_shaders", menudata.enable_shaders);
-				g_settings->set("preload_item_visuals", itos(menudata.preload_item_visuals));
-				g_settings->set("enable_particles", itos(menudata.enable_particles));
-
-				g_settings->set("creative_mode", itos(menudata.creative_mode));
-				g_settings->set("enable_damage", itos(menudata.enable_damage));
-				g_settings->set("server_announce", itos(menudata.enable_public));
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
-				if(menudata.selected_world != -1)
+
+				if((menudata.selected_world >= 0) &&
+						(menudata.selected_world < worldspecs.size()))
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
 
@@ -1627,47 +1615,26 @@ int main(int argc, char *argv[])
 					current_playername = "singleplayer";
 					current_password = "";
 					current_address = "";
-					current_port = 30011;
+					current_port = myrand_range(49152, 65535);
 				}
 				else if (address != "")
 				{
 					ServerListSpec server;
 					server["name"] = menudata.servername;
-					server["address"] = wide_to_narrow(menudata.address);
-					server["port"] = wide_to_narrow(menudata.port);
+					server["address"] = menudata.address;
+					server["port"] = menudata.port;
 					server["description"] = menudata.serverdescription;
 					ServerList::insert(server);
 				}
 				
 				// Set world path to selected one
-				if(menudata.selected_world != -1){
+				if ((menudata.selected_world >= 0) &&
+					(menudata.selected_world < worldspecs.size())) {
 					worldspec = worldspecs[menudata.selected_world];
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;
 				}
-
-				// Only refresh if so requested
-				if(menudata.only_refresh){
-					infostream<<"Refreshing menu"<<std::endl;
-					continue;
-				}
 				
-				// Create new world if requested
-				if(menudata.create_world_name != L"")
-				{
-					std::string path = porting::path_user + DIR_DELIM
-							"worlds" + DIR_DELIM
-							+ wide_to_narrow(menudata.create_world_name);
-					// Create world if it doesn't exist
-					if(!initializeWorld(path, menudata.create_world_gameid)){
-						error_message = wgettext("Failed to initialize world");
-						errorstream<<wide_to_narrow(error_message)<<std::endl;
-						continue;
-					}
-					g_settings->set("selected_world_path", path);
-					continue;
-				}
-
 				// If local game
 				if(current_address == "")
 				{
@@ -1705,10 +1672,12 @@ int main(int argc, char *argv[])
 				// Continue to game
 				break;
 			}
-			
+
 			// Break out of menu-game loop to shut down cleanly
-			if(device->run() == false || kill == true)
+			if(device->run() == false || kill == true) {
+				g_settings->updateConfigFile(configpath.c_str());
 				break;
+			}
 
 			/*
 				Run game
@@ -1730,22 +1699,13 @@ int main(int argc, char *argv[])
 				gamespec,
 				simple_singleplayer_mode
 			);
+			smgr->clear();
 
 		} //try
 		catch(con::PeerNotFoundException &e)
 		{
 			error_message = wgettext("Connection error (timed out?)");
 			errorstream<<wide_to_narrow(error_message)<<std::endl;
-		}
-		catch(ServerError &e)
-		{
-			error_message = narrow_to_wide(e.what());
-			errorstream<<wide_to_narrow(error_message)<<std::endl;
-		}
-		catch(ModError &e)
-		{
-			errorstream<<e.what()<<std::endl;
-			error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
 		}
 #ifdef NDEBUG
 		catch(std::exception &e)
@@ -1769,13 +1729,22 @@ int main(int argc, char *argv[])
 			break;
 		}
 	} // Menu-game loop
-	
+
+
+	g_menuclouds->drop();
+	g_menucloudsmgr->drop();
+
 	delete input;
 
 	/*
 		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
+
+#if USE_FREETYPE
+	if (use_freetype)
+		font->drop();
+#endif
 
 #endif // !SERVER
 	

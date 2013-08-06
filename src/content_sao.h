@@ -78,6 +78,8 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	bool getCollisionBox(aabb3f *toset);
+	bool collideWithObjects();
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -100,7 +102,7 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
-	
+
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
@@ -119,6 +121,36 @@ private:
 /*
 	PlayerSAO needs some internals exposed.
 */
+
+class LagPool
+{
+	float m_pool;
+	float m_max;
+public:
+	LagPool(): m_pool(15), m_max(15)
+	{}
+	void setMax(float new_max)
+	{
+		m_max = new_max;
+		if(m_pool > new_max)
+			m_pool = new_max;
+	}
+	void add(float dtime)
+	{
+		m_pool -= dtime;
+		if(m_pool < 0)
+			m_pool = 0;
+	}
+	bool grab(float dtime)
+	{
+		if(dtime <= 0)
+			return true;
+		if(m_pool + dtime > m_max)
+			return false;
+		m_pool += dtime;
+		return true;
+	}
+};
 
 class PlayerSAO : public ServerActiveObject
 {
@@ -147,6 +179,8 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
+	void setYaw(float);
+	void setPitch(float);
 
 	/*
 		Interaction interface
@@ -159,7 +193,8 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
-	
+	u16 getBreath() const;
+	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
@@ -223,6 +258,12 @@ public:
 	{
 		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	}
+	LagPool& getDigPool()
+	{
+		return m_dig_pool;
+	}
+	// Returns true if cheated
+	bool checkMovementCheat();
 
 	// Other
 
@@ -233,6 +274,9 @@ public:
 		m_is_singleplayer = is_singleplayer;
 	}
 
+	bool getCollisionBox(aabb3f *toset);
+	bool collideWithObjects();
+
 private:
 	std::string getPropertyPacket();
 	
@@ -241,8 +285,9 @@ private:
 	Inventory *m_inventory;
 
 	// Cheat prevention
+	LagPool m_dig_pool;
+	LagPool m_move_pool;
 	v3f m_last_good_position;
-	float m_last_good_position_age;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;
@@ -251,8 +296,6 @@ private:
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
-
-
 
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
@@ -279,7 +322,13 @@ public:
 	bool m_moved;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_breath_not_sent;
 	bool m_wielded_item_not_sent;
+
+	float m_physics_override_speed;
+	float m_physics_override_jump;
+	float m_physics_override_gravity;
+	bool m_physics_override_sent;
 };
 
 #endif

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <exception>
+#include <set>
 #include "debug.h"
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
@@ -352,7 +353,7 @@ public:
 	}
 
 	// See comments in mapblock.cpp
-	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
+	bool propagateSunlight(std::set<v3s16> & light_sources,
 			bool remove_light=false, bool *black_air_left=NULL);
 	
 	// Copies data to VoxelManipulator to getPosRelative()
@@ -478,6 +479,9 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
+	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void deSerializeNetworkSpecific(std::istream &is);
+
 private:
 	/*
 		Private methods
@@ -517,6 +521,11 @@ public:
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 	
+	s16 heat;
+	u32 heat_time;
+	s16 humidity;
+	u32 humidity_time;
+
 private:
 	/*
 		Private member variables

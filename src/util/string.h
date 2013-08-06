@@ -146,7 +146,7 @@ inline std::string lowercase(const std::string &s)
 inline bool is_yes(const std::string &s)
 {
 	std::string s2 = lowercase(trim(s));
-	if(s2 == "y" || s2 == "yes" || s2 == "true" || s2 == "1")
+	if(s2 == "y" || s2 == "yes" || s2 == "true" || atoi(s2.c_str()) != 0)
 		return true;
 	return false;
 }
@@ -284,6 +284,22 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 		to += from[i];
 	}
 	return to;
+}
+
+/*
+	Removes all \\ from a string that had been escaped (FormSpec strings)
+*/
+inline std::string unescape_string(std::string &s)
+{
+	std::string res;
+	
+	for (size_t i = 0; i <= s.length(); i++) {
+		if (s[i] == '\\')
+			i++;
+		res += s[i];
+	}
+	
+	return res;
 }
 
 std::string translatePassword(std::string playername, std::wstring password);

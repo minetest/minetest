@@ -7,17 +7,18 @@
 minetest.register_entity("__builtin:falling_node", {
 	initial_properties = {
 		physical = true,
+		collide_with_objects = false,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 		visual = "wielditem",
 		textures = {},
 		visual_size = {x=0.667, y=0.667},
 	},
 
-	nodename = "",
+	node = {},
 
-	set_node = function(self, nodename)
-		self.nodename = nodename
-		local stack = ItemStack(nodename)
+	set_node = function(self, node)
+		self.node = node
+		local stack = ItemStack(node.name)
 		local itemtable = stack:to_table()
 		local itemname = nil
 		if itemtable then
@@ -31,20 +32,19 @@ minetest.register_entity("__builtin:falling_node", {
 		end
 		prop = {
 			is_visible = true,
-			textures = {nodename},
+			textures = {node.name},
 		}
 		self.object:set_properties(prop)
 	end,
 
 	get_staticdata = function(self)
-		return self.nodename
+		return self.node.name
 	end,
 
 	on_activate = function(self, staticdata)
-		self.nodename = staticdata
 		self.object:set_armor_groups({immortal=1})
 		--self.object:setacceleration({x=0, y=-10, z=0})
-		self:set_node(self.nodename)
+		self:set_node({name=staticdata})
 	end,
 
 	on_step = function(self, dtime)
@@ -53,23 +53,36 @@ minetest.register_entity("__builtin:falling_node", {
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
-		local bcn = minetest.env:get_node(bcp)
+		local bcn = minetest.get_node(bcp)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable then
+				minetest.registered_nodes[bcn.name].walkable or
+				(minetest.get_node_group(self.node.name, "float") ~= 0 and minetest.registered_nodes[bcn.name].liquidtype ~= "none")
+			then
+			if minetest.registered_nodes[bcn.name].leveled and bcn.name == self.node.name then
+				local addlevel = self.node.level
+				if addlevel == nil or addlevel <= 0 then addlevel = minetest.registered_nodes[bcn.name].leveled end
+				if minetest.env:add_node_level(bcp, addlevel) == 0 then
+					self.object:remove()
+					return
+				end
+			elseif minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
+				minetest.remove_node(bcp)
+				return
+			end
 			local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 			-- Check what's here
-			local n2 = minetest.env:get_node(np)
+			local n2 = minetest.get_node(np)
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
 			if n2.name ~= "air" and (not minetest.registered_nodes[n2.name] or
 					minetest.registered_nodes[n2.name].liquidtype == "none") then
 				local drops = minetest.get_node_drops(n2.name, "")
-				minetest.env:remove_node(np)
+				minetest.remove_node(np)
 				-- Add dropped items
 				local _, dropped_item
 				for _, dropped_item in ipairs(drops) do
-					minetest.env:add_item(np, dropped_item)
+					minetest.add_item(np, dropped_item)
 				end
 				-- Run script hook
 				local _, callback
@@ -78,29 +91,30 @@ minetest.register_entity("__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			minetest.env:add_node(np, {name=self.nodename})
+			minetest.add_node(np, self.node)
 			self.object:remove()
+			nodeupdate(np)
 		else
 			-- Do nothing
 		end
 	end
 })
 
-function spawn_falling_node(p, nodename)
-	obj = minetest.env:add_entity(p, "__builtin:falling_node")
-	obj:get_luaentity():set_node(nodename)
+function spawn_falling_node(p, node)
+	obj = minetest.add_entity(p, "__builtin:falling_node")
+	obj:get_luaentity():set_node(node)
 end
 
 function drop_attached_node(p)
-	local nn = minetest.env:get_node(p).name
-	minetest.env:remove_node(p)
+	local nn = minetest.get_node(p).name
+	minetest.remove_node(p)
 	for _,item in ipairs(minetest.get_node_drops(nn, "")) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
 			z = p.z + math.random()/2 - 0.25,
 		}
-		minetest.env:add_item(pos, item)
+		minetest.add_item(pos, item)
 	end
 end
 
@@ -125,7 +139,7 @@ function check_attached_node(p, n)
 		d.y = -1
 	end
 	local p2 = {x=p.x+d.x, y=p.y+d.y, z=p.z+d.z}
-	local nn = minetest.env:get_node(p2).name
+	local nn = minetest.get_node(p2).name
 	local def2 = minetest.registered_nodes[nn]
 	if def2 and not def2.walkable then
 		return false
@@ -137,17 +151,25 @@ end
 -- Some common functions
 --
 
-function nodeupdate_single(p)
-	n = minetest.env:get_node(p)
+function nodeupdate_single(p, delay)
+	n = minetest.get_node(p)
 	if minetest.get_node_group(n.name, "falling_node") ~= 0 then
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
-		n_bottom = minetest.env:get_node(p_bottom)
+		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
-				not minetest.registered_nodes[n_bottom.name].walkable then
-			minetest.env:remove_node(p)
-			spawn_falling_node(p, n.name)
-			nodeupdate(p)
+				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
+				(n.name ~= n_bottom.name or (minetest.registered_nodes[n_bottom.name].leveled and minetest.env:get_node_level(p_bottom) < minetest.env:get_node_max_level(p_bottom))) and
+				(not minetest.registered_nodes[n_bottom.name].walkable or 
+					minetest.registered_nodes[n_bottom.name].buildable_to) then
+			if delay then
+				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
+			else
+				n.level = minetest.env:get_node_level(p)
+				minetest.remove_node(p)
+				spawn_falling_node(p, n)
+				nodeupdate(p)
+			end
 		end
 	end
 	
@@ -159,7 +181,7 @@ function nodeupdate_single(p)
 	end
 end
 
-function nodeupdate(p)
+function nodeupdate(p, delay)
 	-- Round p to prevent falling entities to get stuck
 	p.x = math.floor(p.x+0.5)
 	p.y = math.floor(p.y+0.5)
@@ -168,8 +190,7 @@ function nodeupdate(p)
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		p2 = {x=p.x+x, y=p.y+y, z=p.z+z}
-		nodeupdate_single(p2)
+		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, delay or not (x==0 and y==0 and z==0))
 	end
 	end
 	end

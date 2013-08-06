@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
-#include <ICameraSceneNode.h>
 
 // In Irrlicht 1.8 the signature of ITexture::lock was changed from
 // (bool, u32) to (E_TEXTURE_LOCK_MODE, u32).
@@ -246,6 +245,8 @@ static scene::IAnimatedMesh* extrudeARGB(u32 twidth, u32 theight, u8 *data)
 		}
 	}
 
+	delete[] solidity;
+
 	// Add to mesh
 	scene::SMesh *mesh = new scene::SMesh();
 	mesh->addMeshBuffer(buf);
@@ -279,16 +280,17 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 
 		// img1 is in the texture's color format, convert to 8-bit ARGB
 		video::IImage *img2 = driver->createImage(video::ECF_A8R8G8B8, size);
-		if (img2 != NULL)
+		if (img2 == NULL)
 		{
-			img1->copyTo(img2);
 			img1->drop();
-
-			mesh = extrudeARGB(size.Width, size.Height, (u8*) img2->lock());
-			img2->unlock();
-			img2->drop();
+			return NULL;
 		}
+
+		img1->copyTo(img2);
 		img1->drop();
+		mesh = extrudeARGB(size.Width, size.Height, (u8*) img2->lock());
+		img2->unlock();
+		img2->drop();
 	}
 
 	// Set default material
@@ -405,80 +407,4 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 
 		}
 	}
-}
-
-video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
-		IrrlichtDevice *device,
-		core::dimension2d<u32> dim,
-		std::string texture_name,
-		v3f camera_position,
-		v3f camera_lookat,
-		core::CMatrix4<f32> camera_projection_matrix,
-		video::SColorf ambient_light,
-		v3f light_position,
-		video::SColorf light_color,
-		f32 light_radius)
-{
-	video::IVideoDriver *driver = device->getVideoDriver();
-	if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
-	{
-		static bool warned = false;
-		if(!warned)
-		{
-			errorstream<<"generateTextureFromMesh(): EVDF_RENDER_TO_TARGET"
-					" not supported."<<std::endl;
-			warned = true;
-		}
-		return NULL;
-	}
-
-	// Create render target texture
-	video::ITexture *rtt = driver->addRenderTargetTexture(
-			dim, texture_name.c_str(), video::ECF_A8R8G8B8);
-	if(rtt == NULL)
-	{
-		errorstream<<"generateTextureFromMesh(): addRenderTargetTexture"
-				" returned NULL."<<std::endl;
-		return NULL;
-	}
-
-	// Set render target
-	driver->setRenderTarget(rtt, false, true, video::SColor(0,0,0,0));
-
-	// Get a scene manager
-	scene::ISceneManager *smgr_main = device->getSceneManager();
-	assert(smgr_main);
-	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
-	assert(smgr);
-
-	scene::IMeshSceneNode* meshnode = smgr->addMeshSceneNode(mesh, NULL, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
-	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
-	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
-
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
-			camera_position, camera_lookat);
-	// second parameter of setProjectionMatrix (isOrthogonal) is ignored
-	camera->setProjectionMatrix(camera_projection_matrix, false);
-
-	smgr->setAmbientLight(ambient_light);
-	smgr->addLightSceneNode(0, light_position, light_color, light_radius);
-
-	// Render scene
-	driver->beginScene(true, true, video::SColor(0,0,0,0));
-	smgr->drawAll();
-	driver->endScene();
-
-	// NOTE: The scene nodes should not be dropped, otherwise
-	//       smgr->drop() segfaults
-	/*cube->drop();
-	camera->drop();
-	light->drop();*/
-	// Drop scene manager
-	smgr->drop();
-
-	// Unset render target
-	driver->setRenderTarget(0, false, true, 0);
-
-	return rtt;
 }

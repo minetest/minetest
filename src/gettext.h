@@ -14,6 +14,9 @@
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
+#endif
 #include <windows.h>
 #endif
 
@@ -79,6 +82,13 @@ inline void changeCtype(const char *l)
 		infostream<<"locale could not be set"<<std::endl;
 	else
 		infostream<<"locale has been set to:"<<ret<<std::endl;*/
+}
+
+inline std::wstring wstrgettext(std::string text) {
+	wchar_t* wlabel = wgettext(text.c_str());
+	std::wstring out = (std::wstring)wlabel;
+	delete[] wlabel;
+	return out;
 }
 #define GETTEXT_HEADER
 #endif

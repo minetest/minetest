@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
+#include <list>
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
@@ -35,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
+
+typedef std::list<std::pair<content_t, int> > GroupItems;
 
 enum ContentParamType
 {
@@ -53,13 +56,15 @@ enum ContentParamType2
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
+	// Block level like FLOWINGLIQUID
+	CPT2_LEVELED,
 };
 
 enum LiquidType
 {
 	LIQUID_NONE,
 	LIQUID_FLOWING,
-	LIQUID_SOURCE
+	LIQUID_SOURCE,
 };
 
 enum NodeBoxType
@@ -67,6 +72,7 @@ enum NodeBoxType
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box(es)
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
+	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
 };
 
 struct NodeBox
@@ -84,7 +90,7 @@ struct NodeBox
 	{ reset(); }
 
 	void reset();
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 };
 
@@ -119,7 +125,7 @@ struct TileDef
 		animation.length = 1.0;
 	}
 
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 };
 
@@ -138,6 +144,9 @@ enum NodeDrawType
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
 	NDT_NODEBOX,
+	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
+	                      // visible faces
+						  // uses 2 textures, one for frames, second for faces
 };
 
 #define CF_SPECIAL_COUNT 2
@@ -201,6 +210,8 @@ struct ContentFeatures
 	bool buildable_to;
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
+	// Flowing liquid or snow, value = default level
+	u8 leveled;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
@@ -213,6 +224,11 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Is liquid renewable (new liquid source will be created between 2 existing)
 	bool liquid_renewable;
+	// Ice for water, water for ice
+	std::string freezemelt;
+	// Number of flowing liquids surrounding source
+	u8 liquid_range;
+	u8 drowning;
 	// Amount of light the node emits
 	u8 light_source;
 	u32 damage_per_second;
@@ -281,15 +297,14 @@ public:
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
+	// If not found, returns CONTENT_IGNORE
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
 	virtual void getIds(const std::string &name, std::set<content_t> &result)
 			const=0;
-	// If not found, returns the features of CONTENT_IGNORE
+	// If not found, returns the features of CONTENT_UNKNOWN
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 
-	// Register node definition
-	virtual void set(content_t c, const ContentFeatures &def)=0;
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t set(const std::string &name,
@@ -305,7 +320,6 @@ public:
 
 	/*
 		Update tile textures to latest return values of TextueSource.
-		Call after updating the texture atlas of a TextureSource.
 	*/
 	virtual void updateTextures(ITextureSource *tsrc)=0;
 

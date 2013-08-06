@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <vector>
 
+class Settings;
+
 #define WORLDNAME_BLACKLISTED_CHARS "/\\"
 
 struct SubgameSpec
@@ -33,17 +35,20 @@ struct SubgameSpec
 	std::string gamemods_path; //path to mods of the game
 	std::set<std::string> addon_mods_paths; //paths to addon mods for this game
 	std::string name;
+	std::string menuicon_path;
 
 	SubgameSpec(const std::string &id_="",
 			const std::string &path_="",	
 			const std::string &gamemods_path_="",
 			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
-			const std::string &name_=""):
+			const std::string &name_="",
+			const std::string &menuicon_path_=""):
 		id(id_),
 		path(path_),
 		gamemods_path(gamemods_path_),		
 		addon_mods_paths(addon_mods_paths_),
-		name(name_)
+		name(name_),
+		menuicon_path(menuicon_path_)
 	{}
 
 	bool isValid() const
@@ -51,6 +56,11 @@ struct SubgameSpec
 		return (id != "" && path != "");
 	}
 };
+
+// minetest.conf
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
+// game.conf
+bool getGameConfig(const std::string &game_path, Settings &conf);
 
 std::string getGameName(const std::string &game_path);
 

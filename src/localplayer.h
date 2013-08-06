@@ -21,6 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LOCALPLAYER_HEADER
 
 #include "player.h"
+#include <list>
+
+class ClientEnvironment;
+
+class ClientActiveObject;
 
 class LocalPlayer : public Player
 {
@@ -32,14 +37,16 @@ public:
 	{
 		return true;
 	}
+	
+	ClientActiveObject *parent;
 
 	bool isAttached;
 
 	v3f overridePosition;
 	
-	void move(f32 dtime, Map &map, f32 pos_max_d,
-			core::list<CollisionInfo> *collision_info);
-	void move(f32 dtime, Map &map, f32 pos_max_d);
+	void move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
+			std::list<CollisionInfo> *collision_info);
+	void move(f32 dtime, ClientEnvironment *env, f32 pos_max_d);
 
 	void applyControl(float dtime);
 
@@ -51,6 +58,8 @@ public:
 	float last_pitch;
 	float last_yaw;
 	unsigned int last_keyPressed;
+
+	float camera_impact;
 
 private:
 	// This is used for determining the sneaking range

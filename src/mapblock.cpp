@@ -44,6 +44,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
+		heat(0),
+		heat_time(0),
+		humidity(0),
+		humidity_time(0),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),
@@ -168,7 +172,7 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 	if black_air_left!=NULL, it is set to true if non-sunlighted
 	air is left in block.
 */
-bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
+bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 		bool remove_light, bool *black_air_left)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -287,7 +291,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				
 				if(diminish_light(current_light) != 0)
 				{
-					light_sources.insert(pos_relative + pos, true);
+					light_sources.insert(pos_relative + pos);
 				}
 
 				if(current_light == 0 && stopped_to_solid_object)
@@ -635,6 +639,21 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 }
 
+void MapBlock::serializeNetworkSpecific(std::ostream &os, u16 net_proto_version)
+{
+	if(data == NULL)
+	{
+		throw SerializationError("ERROR: Not writing dummy block.");
+	}
+
+	if(net_proto_version >= 21){
+		int version = 1;
+		writeU8(os, version);
+		writeF1000(os, heat);
+		writeF1000(os, humidity);
+	}
+}
+
 void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 {
 	if(!ser_ver_supported(version))
@@ -738,6 +757,24 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 			<<": Done."<<std::endl);
+}
+
+void MapBlock::deSerializeNetworkSpecific(std::istream &is)
+{
+	try {
+		int version = readU8(is);
+		//if(version != 1)
+		//	throw SerializationError("unsupported MapBlock version");
+		if(version >= 1) {
+			heat = readF1000(is);
+			humidity = readF1000(is);
+		}
+	}
+	catch(SerializationError &e)
+	{
+		errorstream<<"WARNING: MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
+				<<": "<<e.what()<<std::endl;
+	}
 }
 
 /*

@@ -69,20 +69,4 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorY,
 		const video::SColor &colorZ);
 
-/*
-	Render a mesh to a texture.
-	Returns NULL if render-to-texture failed.
-*/
-video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
-		IrrlichtDevice *device,
-		core::dimension2d<u32> dim,
-		std::string texture_name,
-		v3f camera_position,
-		v3f camera_lookat,
-		core::CMatrix4<f32> camera_projection_matrix,
-		video::SColorf ambient_light,
-		v3f light_position,
-		video::SColorf light_color,
-		f32 light_radius);
-
 #endif

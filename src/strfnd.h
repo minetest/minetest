@@ -65,6 +65,25 @@ public:
 		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
         return palautus;
     }
+    
+    // Returns substr of tek up to the next occurence of plop that isn't escaped with '\'
+    std::string next_esc(std::string plop) {
+		size_t n, realp;
+		
+    	if (p >= tek.size())
+    		return "";
+		
+		realp = p;
+		do {
+			n = tek.find(plop, p);
+			if (n == std::string::npos || plop == "")
+				n = tek.length();
+			p = n + plop.length();
+		} while (n > 0 && tek[n - 1] == '\\');
+		
+		return tek.substr(realp, n - realp);
+    }
+    
 	void skip_over(std::string chars){
 		while(p < tek.size()){
 			bool is = false;
@@ -128,6 +147,24 @@ public:
 		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
         return palautus;
     }
+    
+    std::wstring next_esc(std::wstring plop) {
+		size_t n, realp;
+		
+    	if (p >= tek.size())
+    		return L"";
+		
+		realp = p;
+		do {
+			n = tek.find(plop, p);
+			if (n == std::wstring::npos || plop == L"")
+				n = tek.length();
+			p = n + plop.length();
+		} while (n > 0 && tek[n - 1] == '\\');
+		
+		return tek.substr(realp, n - realp);
+    }
+    
     bool atend(){
         if(p>=tek.size()) return true;
         return false;

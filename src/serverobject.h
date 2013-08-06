@@ -152,6 +152,8 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
+	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
+	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
 	{}
 	virtual void setBonePosition(std::string bone, v3f position, v3f rotation)
@@ -235,7 +237,7 @@ protected:
 
 private:
 	// Used for creating objects based on type
-	static core::map<u16, Factory> m_types;
+	static std::map<u16, Factory> m_types;
 };
 
 #endif

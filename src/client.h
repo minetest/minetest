@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "particles.h"
 #include "util/pointedthing.h"
+#include <algorithm>
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -142,9 +143,9 @@ public:
 
 	void * Thread();
 
-	core::list<MediaRequest> m_file_requests;
+	std::list<MediaRequest> m_file_requests;
 	MutexedQueue<std::pair<std::string, std::string> > m_file_data;
-	core::list<MediaRequest> m_failed;
+	std::list<MediaRequest> m_failed;
 	std::string m_remote_url;
 	IGameDef *m_gamedef;
 };
@@ -156,7 +157,13 @@ enum ClientEventType
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
 	CE_TEXTURES_UPDATED,
-	CE_SHOW_FORMSPEC
+	CE_SHOW_FORMSPEC,
+	CE_SPAWN_PARTICLE,
+	CE_ADD_PARTICLESPAWNER,
+	CE_DELETE_PARTICLESPAWNER,
+	CE_HUDADD,
+	CE_HUDRM,
+	CE_HUDCHANGE
 };
 
 struct ClientEvent
@@ -179,11 +186,63 @@ struct ClientEvent
 			f32 camera_point_target_z;
 		} deathscreen;
 		struct{
-			std::string* formspec;
-			std::string* formname;
+			std::string *formspec;
+			std::string *formname;
 		} show_formspec;
 		struct{
 		} textures_updated;
+		struct{
+			v3f *pos;
+			v3f *vel;
+			v3f *acc;
+			f32 expirationtime;
+			f32 size;
+			bool collisiondetection;
+			std::string *texture;
+		} spawn_particle;
+		struct{
+			u16 amount;
+			f32 spawntime;
+			v3f *minpos;
+			v3f *maxpos;
+			v3f *minvel;
+			v3f *maxvel;
+			v3f *minacc;
+			v3f *maxacc;
+			f32 minexptime;
+			f32 maxexptime;
+			f32 minsize;
+			f32 maxsize;
+			bool collisiondetection;
+			std::string *texture;
+			u32 id;
+		} add_particlespawner;
+		struct{
+			u32 id;
+		} delete_particlespawner;
+		struct{
+			u32 id;
+			u8 type;
+			v2f *pos;
+			std::string *name;
+			v2f *scale;
+			std::string *text;
+			u32 number;
+			u32 item;
+			u32 dir;
+			v2f *align;
+			v2f *offset;
+		} hudadd;
+		struct{
+			u32 id;
+		} hudrm;
+		struct{
+			u32 id;
+			HudElementStat stat;
+			v2f *v2fdata;
+			std::string *sdata;
+			u32 data;
+		} hudchange;
 	};
 };
 
@@ -204,7 +263,8 @@ public:
 			IWritableItemDefManager *itemdef,
 			IWritableNodeDefManager *nodedef,
 			ISoundManager *sound,
-			MtEventManager *event
+			MtEventManager *event,
+			bool ipv6
 	);
 	
 	~Client();
@@ -246,6 +306,7 @@ public:
 	void sendChangePassword(const std::wstring oldpassword,
 			const std::wstring newpassword);
 	void sendDamage(u8 damage);
+	void sendBreath(u16 breath);
 	void sendRespawn();
 
 	ClientEnvironment& getEnv()
@@ -282,7 +343,7 @@ public:
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 
-	core::list<std::wstring> getConnectedPlayerNames();
+	std::list<std::string> getConnectedPlayerNames();
 
 	float getAnimationTime();
 
@@ -290,6 +351,7 @@ public:
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
+	u16 getBreath();
 
 	bool checkPrivilege(const std::string &priv)
 	{ return (m_privileges.count(priv) != 0); }
@@ -326,7 +388,7 @@ public:
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
 	
-	void afterContentReceived();
+	void afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font);
 
 	float getRTT(void);
 
@@ -347,7 +409,7 @@ private:
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
 
-	void request_media(const core::list<MediaRequest> &file_requests);
+	void request_media(const std::list<MediaRequest> &file_requests);
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
@@ -377,7 +439,7 @@ private:
 	MtEventManager *m_event;
 
 	MeshUpdateThread m_mesh_update_thread;
-	core::list<MediaFetchThread*> m_media_fetch_threads;
+	std::list<MediaFetchThread*> m_media_fetch_threads;
 	ClientEnvironment m_env;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
@@ -387,7 +449,7 @@ private:
 	bool m_inventory_updated;
 	Inventory *m_inventory_from_server;
 	float m_inventory_from_server_age;
-	core::map<v3s16, bool> m_active_blocks;
+	std::set<v3s16> m_active_blocks;
 	PacketCounter m_packetcounter;
 	// Block mesh animation parameters
 	float m_animation_time;
@@ -405,7 +467,7 @@ private:
 	Queue<ClientEvent> m_client_event_queue;
 	FileCache m_media_cache;
 	// Mapping from media file name to SHA1 checksum
-	core::map<std::string, std::string> m_media_name_sha1_map;
+	std::map<std::string, std::string> m_media_name_sha1_map;
 	bool m_media_receive_started;
 	u32 m_media_count;
 	u32 m_media_received_count;

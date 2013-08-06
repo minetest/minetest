@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include <iostream>
 #include <fstream>
+#include <list>
+#include <map>
 
 namespace con
 {
@@ -142,14 +144,14 @@ SharedBuffer<u8> makeOriginalPacket(
 		SharedBuffer<u8> data);
 
 // Split data in chunks and add TYPE_SPLIT headers to them
-core::list<SharedBuffer<u8> > makeSplitPacket(
+std::list<SharedBuffer<u8> > makeSplitPacket(
 		SharedBuffer<u8> data,
 		u32 chunksize_max,
 		u16 seqnum);
 
 // Depending on size, make a TYPE_ORIGINAL or TYPE_SPLIT packet
 // Increments split_seqnum if a split packet is made
-core::list<SharedBuffer<u8> > makeAutoSplitPacket(
+std::list<SharedBuffer<u8> > makeAutoSplitPacket(
 		SharedBuffer<u8> data,
 		u32 chunksize_max,
 		u16 &split_seqnum);
@@ -167,7 +169,7 @@ struct IncomingSplitPacket
 		reliable = false;
 	}
 	// Key is chunk number, value is data without headers
-	core::map<u16, SharedBuffer<u8> > chunks;
+	std::map<u16, SharedBuffer<u8> > chunks;
 	u32 chunk_count;
 	float time; // Seconds from adding
 	bool reliable; // If true, isn't deleted on timeout
@@ -268,28 +270,29 @@ with a buffer in the receiving and transmitting end.
 	for fast access to the smallest one.
 */
 
-typedef core::list<BufferedPacket>::Iterator RPBSearchResult;
+typedef std::list<BufferedPacket>::iterator RPBSearchResult;
 
 class ReliablePacketBuffer
 {
 public:
-	
+	ReliablePacketBuffer();
 	void print();
 	bool empty();
 	u32 size();
 	RPBSearchResult findPacket(u16 seqnum);
 	RPBSearchResult notFound();
-	u16 getFirstSeqnum();
+	bool getFirstSeqnum(u16 *result);
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
 	void insert(BufferedPacket &p);
 	void incrementTimeouts(float dtime);
 	void resetTimedOuts(float timeout);
 	bool anyTotaltimeReached(float timeout);
-	core::list<BufferedPacket> getTimedOuts(float timeout);
+	std::list<BufferedPacket> getTimedOuts(float timeout);
 
 private:
-	core::list<BufferedPacket> m_list;
+	std::list<BufferedPacket> m_list;
+	u16 m_list_size;
 };
 
 /*
@@ -310,7 +313,7 @@ public:
 	
 private:
 	// Key is seqnum
-	core::map<u16, IncomingSplitPacket*> m_buf;
+	std::map<u16, IncomingSplitPacket*> m_buf;
 };
 
 class Connection;
@@ -545,8 +548,8 @@ struct ConnectionCommand
 class Connection: public SimpleThread
 {
 public:
-	Connection(u32 protocol_id, u32 max_packet_size, float timeout);
-	Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6);
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
 			PeerHandler *peerhandler);
 	~Connection();
 	void * Thread();
@@ -589,7 +592,7 @@ private:
 	void rawSend(const BufferedPacket &packet);
 	Peer* getPeer(u16 peer_id);
 	Peer* getPeerNoEx(u16 peer_id);
-	core::list<Peer*> getPeers();
+	std::list<Peer*> getPeers();
 	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.
@@ -619,7 +622,7 @@ private:
 	UDPSocket m_socket;
 	u16 m_peer_id;
 	
-	core::map<u16, Peer*> m_peers;
+	std::map<u16, Peer*> m_peers;
 	JMutex m_peers_mutex;
 
 	// Backwards compatibility

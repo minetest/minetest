@@ -41,13 +41,13 @@ function bucket.register_liquid(source, flowing, itemname, inventory_image)
 					return
 				end
 				-- Check if pointing to a liquid
-				n = minetest.env:get_node(pointed_thing.under)
+				n = minetest.get_node(pointed_thing.under)
 				if bucket.liquids[n.name] == nil then
 					-- Not a liquid
-					minetest.env:add_node(pointed_thing.above, {name=source})
+					minetest.add_node(pointed_thing.above, {name=source})
 				elseif n.name ~= source then
 					-- It's a liquid
-					minetest.env:add_node(pointed_thing.under, {name=source})
+					minetest.add_node(pointed_thing.under, {name=source})
 				end
 				return {name="bucket:bucket_empty"}
 			end
@@ -65,10 +65,10 @@ minetest.register_craftitem("bucket:bucket_empty", {
 			return
 		end
 		-- Check if pointing to a liquid source
-		n = minetest.env:get_node(pointed_thing.under)
+		n = minetest.get_node(pointed_thing.under)
 		liquiddef = bucket.liquids[n.name]
 		if liquiddef ~= nil and liquiddef.source == n.name and liquiddef.itemname ~= nil then
-			minetest.env:add_node(pointed_thing.under, {name="air"})
+			minetest.add_node(pointed_thing.under, {name="air"})
 			return {name=liquiddef.itemname}
 		end
 	end,

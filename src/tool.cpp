@@ -24,9 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/numeric.h"
 
-void ToolCapabilities::serialize(std::ostream &os) const
+void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 1); // version
+	if(protocol_version <= 17)
+		writeU8(os, 1); // version
+	else
+		writeU8(os, 2); // version
 	writeF1000(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
@@ -44,12 +47,20 @@ void ToolCapabilities::serialize(std::ostream &os) const
 			writeF1000(os, i->second);
 		}
 	}
+	if(protocol_version > 17){
+		writeU32(os, damageGroups.size());
+		for(std::map<std::string, s16>::const_iterator
+				i = damageGroups.begin(); i != damageGroups.end(); i++){
+			os<<serializeString(i->first);
+			writeS16(os, i->second);
+		}
+	}
 }
 
 void ToolCapabilities::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 1) throw SerializationError(
+	if(version != 1 && version != 2) throw SerializationError(
 			"unsupported ToolCapabilities version");
 	full_punch_interval = readF1000(is);
 	max_drop_level = readS16(is);
@@ -67,6 +78,15 @@ void ToolCapabilities::deSerialize(std::istream &is)
 			cap.times[level] = time;
 		}
 		groupcaps[name] = cap;
+	}
+	if(version == 2)
+	{
+		u32 damage_groups_size = readU32(is);
+		for(u32 i=0; i<damage_groups_size; i++){
+			std::string name = deSerializeString(is);
+			s16 rating = readS16(is);
+			damageGroups[name] = rating;
+		}
 	}
 }
 
@@ -136,28 +156,26 @@ DigParams getDigParams(const ItemGroupList &groups,
 	return getDigParams(groups, tp, 1000000);
 }
 
-HitParams getHitParams(const ItemGroupList &groups,
+HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
-	DigParams digprop = getDigParams(groups, tp,
-			time_from_last_punch);
-	
-	if(time_from_last_punch > tp->full_punch_interval)
-		time_from_last_punch = tp->full_punch_interval;
-	// Damage in hp is equivalent to nodes dug in time_from_last_punch
-	s16 hp = 0;
-	if(digprop.diggable)
-		hp = time_from_last_punch / digprop.time;
-	// Wear is the same as for digging a single node
-	s16 wear = (float)digprop.wear;
+	s16 damage = 0;
+	float full_punch_interval = tp->full_punch_interval;
 
-	return HitParams(hp, wear, digprop.main_group);
+	for(std::map<std::string, s16>::const_iterator
+			i = tp->damageGroups.begin(); i != tp->damageGroups.end(); i++){
+		s16 armor = itemgroup_get(armor_groups, i->first);
+		damage += i->second * rangelim(time_from_last_punch * full_punch_interval, 0.0, 1.0)
+				* armor / 100.0;
+	}
+
+	return HitParams(damage, 0);
 }
 
-HitParams getHitParams(const ItemGroupList &groups,
+HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp)
 {
-	return getHitParams(groups, tp, 1000000);
+	return getHitParams(armor_groups, tp, 1000000);
 }
 
 PunchDamageResult getPunchDamage(
@@ -187,7 +205,6 @@ PunchDamageResult getPunchDamage(
 		result.did_punch = true;
 		result.wear = hitparams.wear;
 		result.damage = hitparams.hp;
-		result.main_group = hitparams.main_group;
 	}
 
 	return result;

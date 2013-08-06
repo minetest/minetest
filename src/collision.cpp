@@ -23,10 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "log.h"
+#include "environment.h"
+#include "serverobject.h"
 #include <vector>
+#include <set>
 #include "util/timetaker.h"
 #include "main.h" // g_profiler
 #include "profiler.h"
+
+// float error is 10 - 9.96875 = 0.03125
+//#define COLL_ZERO 0.032 // broken unit tests
+#define COLL_ZERO 0
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
@@ -38,9 +45,9 @@ int axisAlignedCollision(
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X);
-	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y);
-	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z);
+	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
+	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
+	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
 
 	aabb3f relbox(
 			movingbox.MinEdge.X - staticbox.MinEdge.X,
@@ -57,9 +64,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.X / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 0;
 		}
 		else if(relbox.MinEdge.X > xsize)
@@ -73,9 +80,9 @@ int axisAlignedCollision(
 		{
 			dtime = (xsize - relbox.MinEdge.X) / speed.X;
 			if((relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0) &&
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 0;
 		}
 		else if(relbox.MaxEdge.X < 0)
@@ -92,9 +99,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Y / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 1;
 		}
 		else if(relbox.MinEdge.Y > ysize)
@@ -108,9 +115,9 @@ int axisAlignedCollision(
 		{
 			dtime = (ysize - relbox.MinEdge.Y) / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > 0))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
 				return 1;
 		}
 		else if(relbox.MaxEdge.Y < 0)
@@ -127,9 +134,9 @@ int axisAlignedCollision(
 		{
 			dtime = - relbox.MaxEdge.Z / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
 				return 2;
 		}
 		//else if(relbox.MinEdge.Z > zsize)
@@ -143,9 +150,9 @@ int axisAlignedCollision(
 		{
 			dtime = (zsize - relbox.MinEdge.Z) / speed.Z;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > 0) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
 					(relbox.MinEdge.Y + speed.Y * dtime < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * dtime > 0))
+					(relbox.MaxEdge.Y + speed.Y * dtime > COLL_ZERO))
 				return 2;
 		}
 		//else if(relbox.MaxEdge.Z < 0)
@@ -186,11 +193,14 @@ bool wouldCollideWithCeiling(
 }
 
 
-collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
+collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f, v3f &accel_f)
+		v3f &pos_f, v3f &speed_f,
+		v3f &accel_f,ActiveObject* self,
+		bool collideWithObjects)
 {
+	Map *map = &env->getMap();
 	//TimeTaker tt("collisionMoveSimple");
     ScopeProfiler sp(g_profiler, "collisionMoveSimple avg", SPT_AVG);
 
@@ -205,9 +215,14 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	}
 	speed_f += accel_f * dtime;
 
-    // If there is no speed, there are no collisions
+	// If there is no speed, there are no collisions
 	if(speed_f.getLength() == 0)
 		return result;
+
+	// Limit speed for avoiding hangs
+	speed_f.Y=rangelim(speed_f.Y,-5000,5000);
+	speed_f.X=rangelim(speed_f.X,-5000,5000);
+	speed_f.Z=rangelim(speed_f.Z,-5000,5000);
 
 	/*
 		Collect node boxes in movement range
@@ -215,6 +230,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	std::vector<aabb3f> cboxes;
 	std::vector<bool> is_unloaded;
 	std::vector<bool> is_step_up;
+	std::vector<bool> is_object;
 	std::vector<int> bouncy_values;
 	std::vector<v3s16> node_positions;
 	{
@@ -256,6 +272,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				is_step_up.push_back(false);
 				bouncy_values.push_back(n_bouncy_value);
 				node_positions.push_back(p);
+				is_object.push_back(false);
 			}
 		}
 		catch(InvalidPositionException &e)
@@ -267,14 +284,78 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 			is_step_up.push_back(false);
 			bouncy_values.push_back(0);
 			node_positions.push_back(p);
+			is_object.push_back(false);
 		}
 	}
 	} // tt2
+
+	if(collideWithObjects)
+	{
+		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
+		//TimeTaker tt3("collisionMoveSimple collect object boxes");
+
+		/* add object boxes to cboxes */
+
+
+		std::list<ActiveObject*> objects;
+#ifndef SERVER
+		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
+		if (c_env != 0)
+		{
+			f32 distance = speed_f.getLength();
+			std::vector<DistanceSortedActiveObject> clientobjects;
+			c_env->getActiveObjects(pos_f,distance * 1.5,clientobjects);
+			for (size_t i=0; i < clientobjects.size(); i++)
+			{
+				if ((self == 0) || (self != clientobjects[i].obj)) {
+					objects.push_back((ActiveObject*)clientobjects[i].obj);
+				}
+			}
+		}
+		else
+#endif
+		{
+			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
+			if (s_env != 0)
+			{
+				f32 distance = speed_f.getLength();
+				std::set<u16> s_objects = s_env->getObjectsInsideRadius(pos_f,distance * 1.5);
+				for (std::set<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); iter++)
+				{
+					ServerActiveObject *current = s_env->getActiveObject(*iter);
+					if ((self == 0) || (self != current)) {
+						objects.push_back((ActiveObject*)current);
+					}
+				}
+			}
+		}
+
+		for (std::list<ActiveObject*>::const_iterator iter = objects.begin();iter != objects.end(); ++iter)
+		{
+			ActiveObject *object = *iter;
+
+			if (object != NULL)
+			{
+				aabb3f object_collisionbox;
+				if (object->getCollisionBox(&object_collisionbox) &&
+						object->collideWithObjects())
+				{
+					cboxes.push_back(object_collisionbox);
+					is_unloaded.push_back(false);
+					is_step_up.push_back(false);
+					bouncy_values.push_back(0);
+					node_positions.push_back(v3s16(0,0,0));
+					is_object.push_back(true);
+				}
+			}
+		}
+	} //tt3
 
 	assert(cboxes.size() == is_unloaded.size());
 	assert(cboxes.size() == is_step_up.size());
 	assert(cboxes.size() == bouncy_values.size());
 	assert(cboxes.size() == node_positions.size());
+	assert(cboxes.size() == is_object.size());
 
 	/*
 		Collision detection
@@ -386,7 +467,12 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				is_collision = false;
 
 			CollisionInfo info;
-			info.type = COLLISION_NODE;
+			if (is_object[nearest_boxindex]) {
+				info.type = COLLISION_OBJECT;
+			}
+			else {
+				info.type = COLLISION_NODE;
+			}
 			info.node_p = node_positions[nearest_boxindex];
 			info.bouncy = bouncy;
 			info.old_speed = speed_f;

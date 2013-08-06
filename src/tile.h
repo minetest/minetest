@@ -35,6 +35,17 @@ class IGameDef;
 */
 
 /*
+	Find out the full path of an image by trying different filename
+	extensions.
+
+	If failed, return "".
+
+	TODO: Should probably be moved out from here, because things needing
+	      this function do not need anything else from this header
+*/
+std::string getImagePath(std::string path);
+
+/*
 	Gets the path to a texture by first checking if the texture exists
 	in texture_path and if not, using the data path.
 
@@ -46,67 +57,25 @@ class IGameDef;
 */
 std::string getTexturePath(const std::string &filename);
 
+void clearTextureNameCache();
+
 /*
-	Specifies a texture in an atlas.
-
-	This is used to specify single textures also.
-
-	This has been designed to be small enough to be thrown around a lot.
+	ITextureSource::generateTextureFromMesh parameters
 */
-struct AtlasPointer
+namespace irr {namespace scene {class IMesh;}}
+struct TextureFromMeshParams
 {
-	u32 id; // Texture id
-	video::ITexture *atlas; // Atlas in where the texture is
-	v2f pos; // Position in atlas
-	v2f size; // Size in atlas
-	u16 tiled; // X-wise tiling count. If 0, width of atlas is width of image.
-
-	AtlasPointer():
-		id(0),
-		atlas(NULL),
-		pos(0,0),
-		size(1,1),
-		tiled(1)
-	{}
-
-	AtlasPointer(
-			u16 id_,
-			video::ITexture *atlas_=NULL,
-			v2f pos_=v2f(0,0),
-			v2f size_=v2f(1,1),
-			u16 tiled_=1
-		):
-		id(id_),
-		atlas(atlas_),
-		pos(pos_),
-		size(size_),
-		tiled(tiled_)
-	{
-	}
-
-	bool operator==(const AtlasPointer &other) const
-	{
-		return (
-			id == other.id
-		);
-		/*return (
-			id == other.id &&
-			atlas == other.atlas &&
-			pos == other.pos &&
-			size == other.size &&
-			tiled == other.tiled
-		);*/
-	}
-
-	bool operator!=(const AtlasPointer &other) const
-	{
-		return !(*this == other);
-	}
-
-	float x0(){ return pos.X; }
-	float x1(){ return pos.X + size.X; }
-	float y0(){ return pos.Y; }
-	float y1(){ return pos.Y + size.Y; }
+	scene::IMesh *mesh;
+	core::dimension2d<u32> dim;
+	std::string rtt_texture_name;
+	bool delete_texture_on_shutdown;
+	v3f camera_position;
+	v3f camera_lookat;
+	core::CMatrix4<f32> camera_projection_matrix;
+	video::SColorf ambient_light;
+	v3f light_position;
+	video::SColorf light_color;
+	f32 light_radius;
 };
 
 /*
@@ -121,17 +90,17 @@ public:
 	virtual u32 getTextureId(const std::string &name){return 0;}
 	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
 	virtual std::string getTextureName(u32 id){return "";}
-	virtual AtlasPointer getTexture(u32 id){return AtlasPointer(0);}
-	virtual AtlasPointer getTexture(const std::string &name)
-		{return AtlasPointer(0);}
-	virtual video::ITexture* getTextureRaw(const std::string &name)
-		{return NULL;}
-	virtual AtlasPointer getTextureRawAP(const AtlasPointer &ap)
-		{return AtlasPointer(0);}
+	virtual video::ITexture* getTexture(u32 id){return NULL;}
+	virtual video::ITexture* getTexture(
+			const std::string &name, u32 *id = NULL){
+		if(id) *id = 0;
+		return NULL;
+	}
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
-	virtual void updateAP(AtlasPointer &ap){};
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	virtual video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -142,26 +111,27 @@ public:
 	virtual u32 getTextureId(const std::string &name){return 0;}
 	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
 	virtual std::string getTextureName(u32 id){return "";}
-	virtual AtlasPointer getTexture(u32 id){return AtlasPointer(0);}
-	virtual AtlasPointer getTexture(const std::string &name)
-		{return AtlasPointer(0);}
-	virtual video::ITexture* getTextureRaw(const std::string &name)
-		{return NULL;}
-	virtual IrrlichtDevice* getDevice()
-		{return NULL;}
-	virtual void updateAP(AtlasPointer &ap){};
+	virtual video::ITexture* getTexture(u32 id){return NULL;}
+	virtual video::ITexture* getTexture(
+			const std::string &name, u32 *id = NULL){
+		if(id) *id = 0;
+		return NULL;
+	}
+	virtual IrrlichtDevice* getDevice(){return NULL;}
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
-	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
+	virtual video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
+	TILE_MATERIAL_ALPHA,
 	TILE_MATERIAL_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_LIQUID_OPAQUE,
 };
@@ -177,8 +147,6 @@ enum MaterialType{
 // Animation made up by splitting the texture to vertical frames, as
 // defined by extra parameters
 #define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
-// Whether liquid shader should be used
-#define MATERIAL_FLAG_
 
 /*
 	This fully defines the looks of a tile.
@@ -187,7 +155,8 @@ enum MaterialType{
 struct TileSpec
 {
 	TileSpec():
-		texture(0),
+		texture_id(0),
+		texture(NULL),
 		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
@@ -195,17 +164,20 @@ struct TileSpec
 			MATERIAL_FLAG_BACKFACE_CULLING
 		),
 		animation_frame_count(1),
-		animation_frame_length_ms(0)
+		animation_frame_length_ms(0),
+		rotation(0)
 	{
 	}
 
 	bool operator==(const TileSpec &other) const
 	{
 		return (
-			texture == other.texture &&
+			texture_id == other.texture_id &&
+			/* texture == other.texture && */
 			alpha == other.alpha &&
 			material_type == other.material_type &&
-			material_flags == other.material_flags
+			material_flags == other.material_flags &&
+			rotation == other.rotation
 		);
 	}
 
@@ -221,6 +193,9 @@ struct TileSpec
 		case TILE_MATERIAL_BASIC:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
+		case TILE_MATERIAL_ALPHA:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			break;
@@ -232,11 +207,15 @@ struct TileSpec
 	}
 	void applyMaterialOptionsWithShaders(video::SMaterial &material,
 			const video::E_MATERIAL_TYPE &basic,
-			const video::E_MATERIAL_TYPE &liquid) const
+			const video::E_MATERIAL_TYPE &liquid,
+			const video::E_MATERIAL_TYPE &alpha) const
 	{
 		switch(material_type){
 		case TILE_MATERIAL_BASIC:
 			material.MaterialType = basic;
+			break;
+		case TILE_MATERIAL_ALPHA:
+			material.MaterialType = alpha;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = liquid;
@@ -248,14 +227,8 @@ struct TileSpec
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
 	
-	// NOTE: Deprecated, i guess?
-	void setTexturePos(u8 tx_, u8 ty_, u8 tw_, u8 th_)
-	{
-		texture.pos = v2f((float)tx_/256.0, (float)ty_/256.0);
-		texture.size = v2f(((float)tw_ + 1.0)/256.0, ((float)th_ + 1.0)/256.0);
-	}
-	
-	AtlasPointer texture;
+	u32 texture_id;
+	video::ITexture *texture;
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
 	// Material parameters
@@ -264,6 +237,7 @@ struct TileSpec
 	// Animation parameters
 	u8 animation_frame_count;
 	u16 animation_frame_length_ms;
+	u8 rotation;
 };
 
 #endif

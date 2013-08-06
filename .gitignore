@@ -4,13 +4,16 @@
 *bak*
 tags
 *.vim
+*.orig
+*.rej
 
 ## Non-static Minetest directories
 /bin/
 /games/*
 !/games/minimal/
 /cache/
-/textures/
+/textures/*
+!/textures/base/
 /sounds/
 /mods/*
 !/mods/minetest/
@@ -29,11 +32,17 @@ src/CMakeFiles/*
 src/Makefile
 src/cmake_config.h
 src/cmake_install.cmake
+src/script/CMakeFiles/*
+src/script/common/CMakeFiles/*
+src/script/cpp_api/CMakeFiles/*
+src/script/lua_api/CMakeFiles/*
+src/util/CMakeFiles/*
 src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
 src/jthread/libjthread.a
+src/json/libjson.a
 src/lua/build/
 src/lua/CMakeFiles/
 src/cguittfont/CMakeFiles/
@@ -41,11 +50,16 @@ src/cguittfont/libcguittfont.a
 src/cguittfont/cmake_install.cmake
 src/cguittfont/Makefile
 src/json/CMakeFiles/
-src/json/libjson.a
+src/json/libjsoncpp.a
+src/sqlite/CMakeFiles/*
+src/sqlite/libsqlite3.a
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 locale/
+*.cbp
+*.layout
+*.o
 

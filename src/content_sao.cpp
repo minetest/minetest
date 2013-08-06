@@ -27,11 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
 #include "player.h"
-#include "scriptapi.h"
+#include "cpp_api/scriptapi.h"
 #include "genericobject.h"
 #include "util/serialize.h"
 
-core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
 /*
 	DummyLoadSAO
@@ -62,6 +62,14 @@ public:
 	{
 		m_removed = true;
 		infostream<<"DummyLoadSAO step"<<std::endl;
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
+	}
+
+	bool collideWithObjects() {
+		return false;
 	}
 
 private:
@@ -130,6 +138,14 @@ public:
 			ActiveObjectMessage aom(getId(), false, data);
 			m_messages_out.push_back(aom);
 		}
+	}
+
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
+	}
+
+	bool collideWithObjects() {
+		return false;
 	}
 
 private:
@@ -208,8 +224,7 @@ public:
 		v3f pos_f_old = pos_f;
 		v3f accel_f = v3f(0,0,0);
 		f32 stepheight = 0;
-		IGameDef *gamedef = m_env->getGameDef();
-		moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+		moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
 				pos_max_d, box, stepheight, dtime,
 				pos_f, m_speed_f, accel_f);
 		
@@ -314,6 +329,13 @@ public:
 		return 0;
 	}
 
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
+	}
+
+	bool collideWithObjects() {
+		return false;
+	}
 
 private:
 	std::string m_itemstring;
@@ -370,15 +392,13 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	}
 	
 	// Initialize something to armor groups
-	m_armor_groups["fleshy"] = 3;
-	m_armor_groups["snappy"] = 2;
+	m_armor_groups["fleshy"] = 100;
 }
 
 LuaEntitySAO::~LuaEntitySAO()
 {
 	if(m_registered){
-		lua_State *L = m_env->getLua();
-		scriptapi_luaentity_rm(L, m_id);
+		ENV_TO_SA(m_env)->luaentity_Remove(m_id);
 	}
 }
 
@@ -387,16 +407,15 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	
 	// Create entity from name
-	lua_State *L = m_env->getLua();
-	m_registered = scriptapi_luaentity_add(L, m_id, m_init_name.c_str());
+	m_registered = ENV_TO_SA(m_env)->luaentity_Add(m_id, m_init_name.c_str());
 	
 	if(m_registered){
 		// Get properties
-		scriptapi_luaentity_get_properties(L, m_id, &m_prop);
+		ENV_TO_SA(m_env)->luaentity_GetProperties(m_id, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
-		scriptapi_luaentity_activate(L, m_id, m_init_state.c_str(), dtime_s);
+		ENV_TO_SA(m_env)->luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
 	}
 }
 
@@ -486,14 +505,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;
 			f32 pos_max_d = BS*0.25; // Distance per iteration
-			f32 stepheight = 0; // Maximum climbable step height
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			IGameDef *gamedef = m_env->getGameDef();
-			moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
-					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration);
+			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
+					pos_max_d, box, m_prop.stepheight, dtime,
+					p_pos, p_velocity, p_acceleration,
+					this, m_prop.collideWithObjects);
+
 			// Apply results
 			m_base_position = p_pos;
 			m_velocity = p_velocity;
@@ -506,8 +525,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 
 	if(m_registered){
-		lua_State *L = m_env->getLua();
-		scriptapi_luaentity_step(L, m_id, dtime);
+		ENV_TO_SA(m_env)->luaentity_Step(m_id, dtime);
 	}
 
 	if(send_recommended == false)
@@ -617,8 +635,7 @@ std::string LuaEntitySAO::getStaticData()
 	os<<serializeString(m_init_name);
 	// state
 	if(m_registered){
-		lua_State *L = m_env->getLua();
-		std::string state = scriptapi_luaentity_get_staticdata(L, m_id);
+		std::string state = ENV_TO_SA(m_env)->luaentity_GetStaticdata(m_id);
 		os<<serializeLongString(state);
 	} else {
 		os<<serializeLongString(m_init_state);
@@ -664,8 +681,14 @@ int LuaEntitySAO::punch(v3f dir,
 	{
 		setHP(getHP() - result.damage);
 		
+
+		std::string punchername = "nil";
+
+		if ( puncher != 0 )
+			punchername = puncher->getDescription();
+
 		actionstream<<getDescription()<<" punched by "
-				<<puncher->getDescription()<<", damage "<<result.damage
+				<<punchername<<", damage "<<result.damage
 				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
 		
 		{
@@ -679,8 +702,7 @@ int LuaEntitySAO::punch(v3f dir,
 			m_removed = true;
 	}
 
-	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_punch(L, m_id, puncher,
+	ENV_TO_SA(m_env)->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir);
 
 	return result.wear;
@@ -693,8 +715,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	// It's best that attachments cannot be clicked
 	if(isAttached())
 		return;
-	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_rightclick(L, m_id, clicker);
+	ENV_TO_SA(m_env)->luaentity_Rightclick(m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(v3f pos)
@@ -880,6 +901,26 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push_back(aom);
 }
 
+bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
+	if (m_prop.physical)
+	{
+		//update collision box
+		toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+		toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+
+		toset->MinEdge += m_base_position;
+		toset->MaxEdge += m_base_position;
+
+		return true;
+	}
+
+	return false;
+}
+
+bool LuaEntitySAO::collideWithObjects(){
+	return m_prop.collideWithObjects;
+}
+
 /*
 	PlayerSAO
 */
@@ -893,7 +934,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_peer_id(peer_id_),
 	m_inventory(NULL),
 	m_last_good_position(0,0,0),
-	m_last_good_position_age(0),
 	m_time_from_last_punch(0),
 	m_nocheat_dig_pos(32767, 32767, 32767),
 	m_nocheat_dig_time(0),
@@ -910,14 +950,18 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_moved(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
-	m_wielded_item_not_sent(false)
+	m_breath_not_sent(false),
+	m_wielded_item_not_sent(false),
+	m_physics_override_speed(1),
+	m_physics_override_jump(1),
+	m_physics_override_gravity(1),
+	m_physics_override_sent(false)
 {
 	assert(m_player);
 	assert(m_peer_id != 0);
 	setBasePosition(m_player->getPosition());
 	m_inventory = &m_player->inventory;
-	m_armor_groups["choppy"] = 2;
-	m_armor_groups["fleshy"] = 3;
+	m_armor_groups["fleshy"] = 100;
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
@@ -957,7 +1001,6 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	m_player->setPlayerSAO(this);
 	m_player->peer_id = m_peer_id;
 	m_last_good_position = m_player->getPosition();
-	m_last_good_position_age = 0.0;
 }
 
 // Called before removing from environment
@@ -995,7 +1038,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_player->getYaw());
 		writeS16(os, getHP());
 
-		writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
+		writeU8(os, 5 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
@@ -1003,6 +1046,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
 		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		os<<serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed, m_physics_override_jump, m_physics_override_gravity)); // 5
 	}
 	else
 	{
@@ -1060,6 +1104,19 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_moved = true;
 	}
 
+	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
+
+	// Set lag pool maximums based on estimated lag
+	const float LAG_POOL_MIN = 5.0;
+	float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
+	if(lag_pool_max < LAG_POOL_MIN)
+		lag_pool_max = LAG_POOL_MIN;
+	m_dig_pool.setMax(lag_pool_max);
+	m_move_pool.setMax(lag_pool_max);
+
+	// Increment cheat prevention timers
+	m_dig_pool.add(dtime);
+	m_move_pool.add(dtime);
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
@@ -1069,65 +1126,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	{
 		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_last_good_position = pos;
-		m_last_good_position_age = 0;
 		m_player->setPosition(pos);
-	}
-	else
-	{
-		if(m_is_singleplayer || g_settings->getBool("disable_anticheat"))
-		{
-			m_last_good_position = m_player->getPosition();
-			m_last_good_position_age = 0;
-		}
-		else
-		{
-			/*
-				Check player movements
-
-				NOTE: Actually the server should handle player physics like the
-				client does and compare player's position to what is calculated
-				on our side. This is required when eg. players fly due to an
-				explosion. Altough a node-based alternative might be possible
-				too, and much more lightweight.
-			*/
-
-			float player_max_speed = 0;
-			float player_max_speed_up = 0;
-			if(m_privs.count("fast") != 0){
-				// Fast speed
-				player_max_speed = BS * 20;
-				player_max_speed_up = BS * 20;
-			} else {
-				// Normal speed
-				player_max_speed = BS * 4.0;
-				player_max_speed_up = BS * 4.0;
-			}
-			// Tolerance
-			player_max_speed *= 2.5;
-			player_max_speed_up *= 2.5;
-
-			m_last_good_position_age += dtime;
-			if(m_last_good_position_age >= 1.0){
-				float age = m_last_good_position_age;
-				v3f diff = (m_player->getPosition() - m_last_good_position);
-				float d_vert = diff.Y;
-				diff.Y = 0;
-				float d_horiz = diff.getLength();
-				/*infostream<<m_player->getName()<<"'s horizontal speed is "
-						<<(d_horiz/age)<<std::endl;*/
-				if(d_horiz <= age * player_max_speed &&
-						(d_vert < 0 || d_vert < age * player_max_speed_up)){
-					m_last_good_position = m_player->getPosition();
-				} else {
-					actionstream<<"Player "<<m_player->getName()
-							<<" moved too fast; resetting position"
-							<<std::endl;
-					m_player->setPosition(m_last_good_position);
-					m_moved = true;
-				}
-				m_last_good_position_age = 0;
-			}
-		}
 	}
 
 	if(send_recommended == false)
@@ -1167,6 +1166,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_armor_groups_sent = true;
 		std::string str = gob_cmd_update_armor_groups(
 				m_armor_groups);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
+	if(m_physics_override_sent == false){
+		m_physics_override_sent = true;
+		std::string str = gob_cmd_update_physics_override(m_physics_override_speed, m_physics_override_jump, m_physics_override_gravity);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -1213,7 +1220,6 @@ void PlayerSAO::setPos(v3f pos)
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	m_last_good_position_age = 0;
 	// Force position change on client
 	m_moved = true;
 }
@@ -1225,8 +1231,21 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_player->setPosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	m_last_good_position_age = 0;
 	// Force position change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setYaw(float yaw)
+{
+	m_player->setYaw(yaw);
+	// Force change on client
+	m_moved = true;
+}
+
+void PlayerSAO::setPitch(float pitch)
+{
+	m_player->setPitch(pitch);
+	// Force change on client
 	m_moved = true;
 }
 
@@ -1256,8 +1275,13 @@ int PlayerSAO::punch(v3f dir,
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
 			time_from_last_punch);
 
+	std::string punchername = "nil";
+
+	if ( puncher != 0 )
+		punchername = puncher->getDescription();
+
 	actionstream<<"Player "<<m_player->getName()<<" punched by "
-			<<puncher->getDescription()<<", damage "<<hitparams.hp
+			<<punchername<<", damage "<<hitparams.hp
 			<<" HP"<<std::endl;
 
 	setHP(getHP() - hitparams.hp);
@@ -1312,6 +1336,16 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+u16 PlayerSAO::getBreath() const
+{
+	return m_player->getBreath();
+}
+
+void PlayerSAO::setBreath(u16 breath)
+{
+	m_player->setBreath(breath);
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
@@ -1418,5 +1452,75 @@ std::string PlayerSAO::getPropertyPacket()
 {
 	m_prop.is_visible = (true);
 	return gob_cmd_set_properties(m_prop);
+}
+
+bool PlayerSAO::checkMovementCheat()
+{
+	bool cheated = false;
+	if(isAttached() || m_is_singleplayer ||
+			g_settings->getBool("disable_anticheat"))
+	{
+		m_last_good_position = m_player->getPosition();
+	}
+	else
+	{
+		/*
+			Check player movements
+
+			NOTE: Actually the server should handle player physics like the
+			client does and compare player's position to what is calculated
+			on our side. This is required when eg. players fly due to an
+			explosion. Altough a node-based alternative might be possible
+			too, and much more lightweight.
+		*/
+
+		float player_max_speed = 0;
+		float player_max_speed_up = 0;
+		if(m_privs.count("fast") != 0){
+			// Fast speed
+			player_max_speed = m_player->movement_speed_fast;
+			player_max_speed_up = m_player->movement_speed_fast;
+		} else {
+			// Normal speed
+			player_max_speed = m_player->movement_speed_walk;
+			player_max_speed_up = m_player->movement_speed_walk;
+		}
+		// Tolerance. With the lag pool we shouldn't need it.
+		//player_max_speed *= 2.5;
+		//player_max_speed_up *= 2.5;
+
+		v3f diff = (m_player->getPosition() - m_last_good_position);
+		float d_vert = diff.Y;
+		diff.Y = 0;
+		float d_horiz = diff.getLength();
+		float required_time = d_horiz/player_max_speed;
+		if(d_vert > 0 && d_vert/player_max_speed > required_time)
+			required_time = d_vert/player_max_speed;
+		if(m_move_pool.grab(required_time)){
+			m_last_good_position = m_player->getPosition();
+		} else {
+			actionstream<<"Player "<<m_player->getName()
+					<<" moved too fast; resetting position"
+					<<std::endl;
+			m_player->setPosition(m_last_good_position);
+			m_moved = true;
+			cheated = true;
+		}
+	}
+	return cheated;
+}
+
+bool PlayerSAO::getCollisionBox(aabb3f *toset) {
+	//update collision box
+	*toset = m_player->getCollisionbox();
+
+	toset->MinEdge += m_base_position;
+	toset->MaxEdge += m_base_position;
+
+	return true;
+}
+
+bool PlayerSAO::collideWithObjects(){
+	return true;
 }
 

@@ -103,6 +103,10 @@ function minetest.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
+		-- Use the nodebox as selection box if it's not set manually
+		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
+			itemdef.selection_box = itemdef.node_box
+		end
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
 		minetest.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
@@ -219,6 +223,13 @@ function minetest.register_alias(name, convert_to)
 	end
 end
 
+local register_biome_raw = minetest.register_biome
+minetest.registered_biomes = {}
+function minetest.register_biome(biome)
+	minetest.registered_biomes[biome.name] = biome
+	register_biome_raw(biome)
+end
+
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 local name
@@ -249,8 +260,8 @@ minetest.register_item(":unknown", {
 
 minetest.register_node(":air", {
 	description = "Air (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -265,8 +276,8 @@ minetest.register_node(":air", {
 
 minetest.register_node(":ignore", {
 	description = "Ignore (you hacker you!)",
-	inventory_image = "unknown_block.png",
-	wield_image = "unknown_block.png",
+	inventory_image = "unknown_node.png",
+	wield_image = "unknown_node.png",
 	drawtype = "airlike",
 	paramtype = "none",
 	sunlight_propagates = false,
@@ -303,6 +314,7 @@ end
 
 minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
 minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
+minetest.registered_on_mapgen_inits, minetest.register_on_mapgen_init = make_registration()
 minetest.registered_on_shutdown, minetest.register_on_shutdown = make_registration()
 minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
 minetest.registered_on_placenodes, minetest.register_on_placenode = make_registration()
@@ -314,4 +326,5 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
+minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
 

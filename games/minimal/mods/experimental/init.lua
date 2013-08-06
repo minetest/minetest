@@ -28,10 +28,10 @@ minetest.after(1.0, switch_player_visual)
 ]]
 
 minetest.register_node("experimental:soundblock", {
-	tile_images = {"unknown_block.png", "default_tnt_bottom.png",
+	tile_images = {"unknown_node.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
-	inventory_image = minetest.inventorycube("unknown_block.png",
+	inventory_image = minetest.inventorycube("unknown_node.png",
 			"default_tnt_side.png", "default_tnt_side.png"),
 	groups = {dig_immediate=3},
 })
@@ -66,7 +66,7 @@ test_sound()
 function on_step(dtime)
 	-- print("experimental on_step")
 	--[[
-	objs = minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 10)
+	objs = minetest.get_objects_inside_radius({x=0,y=0,z=0}, 10)
 	for k, obj in pairs(objs) do
 		name = obj:get_player_name()
 		if name then
@@ -86,17 +86,17 @@ function on_step(dtime)
 	experimental.t1 = experimental.t1 + dtime
 	if experimental.t1 >= 2 then
 		experimental.t1 = experimental.t1 - 2
-		minetest.log("time of day is "..minetest.env:get_timeofday())
+		minetest.log("time of day is "..minetest.get_timeofday())
 		if experimental.day then
 			minetest.log("forcing day->night")
 			experimental.day = false
-			minetest.env:set_timeofday(0.0)
+			minetest.set_timeofday(0.0)
 		else
 			minetest.log("forcing night->day")
 			experimental.day = true
-			minetest.env:set_timeofday(0.5)
+			minetest.set_timeofday(0.5)
 		end
-		minetest.log("time of day is "..minetest.env:get_timeofday())
+		minetest.log("time of day is "..minetest.get_timeofday())
 	end
 	--]]
 end
@@ -133,8 +133,8 @@ minetest.register_node("experimental:tnt", {
 
 minetest.register_on_punchnode(function(p, node)
 	if node.name == "experimental:tnt" then
-		minetest.env:remove_node(p)
-		minetest.env:add_entity(p, "experimental:tnt")
+		minetest.remove_node(p)
+		minetest.add_entity(p, "experimental:tnt")
 		nodeupdate(p)
 	end
 end)
@@ -262,7 +262,7 @@ minetest.register_on_chat_message(function(name, message)
 			minetest.chat_send_player(name, "you don't have permission to interact")
 			return true -- Handled chat message
 		end
-		local player = minetest.env:get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if player == nil then
 			print("Unable to spawn entity, player is nil")
 			return true -- Handled chat message
@@ -270,7 +270,7 @@ minetest.register_on_chat_message(function(name, message)
 		local entityname = "experimental:dummyball"
 		local p = player:getpos()
 		p.y = p.y + 1
-		minetest.env:add_entity(p, entityname)
+		minetest.add_entity(p, entityname)
 		minetest.chat_send_player(name, '"'..entityname
 				..'" spawned.');
 		return true -- Handled chat message
@@ -323,7 +323,7 @@ end)
 minetest.register_on_generated(function(minp, maxp)
 	--print("on_generated: minp="..dump(minp).." maxp="..dump(maxp))
 	--cp = {x=(minp.x+maxp.x)/2, y=(minp.y+maxp.y)/2, z=(minp.z+maxp.z)/2}
-	--minetest.env:add_node(cp, {name="sand"})
+	--minetest.add_node(cp, {name="sand"})
 end)
 
 -- Example setting get
@@ -353,7 +353,7 @@ end)
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		print("TNT ABM action")
 		pos.y = pos.y + 1
-		minetest.env:add_node(pos, {name="papyrus"})
+		minetest.add_node(pos, {name="papyrus"})
 	end,
 })]]
 
@@ -364,7 +364,7 @@ end)
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		print("ABM: Sign text changed")
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_text("foo")
 	end,
 })]]
@@ -395,7 +395,7 @@ minetest.register_abm({
         end
        
         pos.y = pos.y + 1
-        n = minetest.env:get_node(pos)
+        n = minetest.get_node(pos)
         print(dump(n))
         if n.name ~= "air" then
             return
@@ -404,7 +404,7 @@ minetest.register_abm({
         pos.y = pos.y + 2
         ncpos = pos
         nctime = os.clock()
-        minetest.env:add_node(ncpos, {name="nyancat"})
+        minetest.add_node(ncpos, {name="nyancat"})
     end
 })
 
@@ -431,12 +431,12 @@ minetest.register_abm({
             p2 = {x = p1.x + s1[2], y = p1.y, z = p1.z + s1[3]}
             table.insert(ncold, 1, p0)
             while #ncold >= 10 do
-                minetest.env:add_node(ncold[#ncold], {name="air"})
+                minetest.add_node(ncold[#ncold], {name="air"})
                 table.remove(ncold, #ncold)
             end
-            minetest.env:add_node(p0, {name="nyancat_rainbow"})
-            minetest.env:add_node(p1, {name="nyancat", param1=s0[4]})
-            minetest.env:add_node(p2, {name="air"})
+            minetest.add_node(p0, {name="nyancat_rainbow"})
+            minetest.add_node(p1, {name="nyancat", param1=s0[4]})
+            minetest.add_node(p2, {name="air"})
             ncpos = p1
         end
     end,
@@ -448,20 +448,20 @@ minetest.register_node("experimental:tester_node_1", {
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
 	-- This was known to cause a bug in minetest.item_place_node() when used
-	-- via minetest.env:place_node(), causing a placer with no position
+	-- via minetest.place_node(), causing a placer with no position
   	paramtype2 = "facedir",
 
 	on_construct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:on_construct("..minetest.pos_to_string(pos)..")")
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("mine", "test")
-		local timer = minetest.env:get_node_timer(pos)
+		local timer = minetest.get_node_timer(pos)
 		timer:start(4, 3)
 	end,
 
     after_place_node = function(pos, placer)
 		experimental.print_to_everything("experimental:tester_node_1:after_place_node("..minetest.pos_to_string(pos)..")")
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		if meta:get_string("mine") == "test" then
 			experimental.print_to_everything("correct metadata found")
 		else
@@ -493,14 +493,14 @@ minetest.register_craftitem("experimental:tester_tool_1", {
     on_use = function(itemstack, user, pointed_thing)
 		--print(dump(pointed_thing))
 		if pointed_thing.type == "node" then
-			if minetest.env:get_node(pointed_thing.under).name == "experimental:tester_node_1" then
+			if minetest.get_node(pointed_thing.under).name == "experimental:tester_node_1" then
 				local p = pointed_thing.under
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
-				minetest.env:dig_node(p)
+				minetest.dig_node(p)
 			else
 				local p = pointed_thing.above
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
-				minetest.env:place_node(p, {name="experimental:tester_node_1"})
+				minetest.place_node(p, {name="experimental:tester_node_1"})
 			end
 		end
 	end,
@@ -556,7 +556,7 @@ minetest.register_chatcommand("test1", {
 	params = "",
 	description = "Test 1: Modify player's inventory view",
 	func = function(name, param)
-		local player = minetest.env:get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if not player then
 			return
 		end

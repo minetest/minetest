@@ -1,6 +1,7 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -31,24 +32,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "settings.h"
-#include "script.h"
-#include "scriptapi.h"
+#include "cpp_api/scriptapi.h"
 #include "profiler.h"
 #include "log.h"
 #include "nodedef.h"
 #include "biome.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
+#include "mapgen_v7.h"
+#include "mapgen_indev.h"
+#include "mapgen_singlenode.h"
+#include "mapgen_math.h"
 
 
 /////////////////////////////// Emerge Manager ////////////////////////////////
 
-EmergeManager::EmergeManager(IGameDef *gamedef, BiomeDefManager *bdef) {
+EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
 	registerMapgen("v6", new MapgenFactoryV6());
+	registerMapgen("v7", new MapgenFactoryV7());
+	registerMapgen("indev", new MapgenFactoryIndev());
+	registerMapgen("singlenode", new MapgenFactorySinglenode());
+	registerMapgen("math", new MapgenFactoryMath());
 
-	this->biomedef = bdef ? bdef : new BiomeDefManager(gamedef);
+	this->ndef     = gamedef->getNodeDefManager();
+	this->biomedef = new BiomeDefManager();
 	this->params   = NULL;
+	
+	this->luaoverride_params          = NULL;
+	this->luaoverride_params_modified = 0;
+	this->luaoverride_flagmask        = 0;
 	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
@@ -88,9 +101,24 @@ EmergeManager::~EmergeManager() {
 		delete emergethread[i];
 		delete mapgen[i];
 	}
+	emergethread.clear();
+	mapgen.clear();
+
+	for (unsigned int i = 0; i < ores.size(); i++)
+		delete ores[i];
+	ores.clear();
+
+	for (unsigned int i = 0; i < decorations.size(); i++)
+		delete decorations[i];
+	decorations.clear();
 	
+	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
+			iter != mglist.end(); iter ++) {
+		delete iter->second;
+	}
+	mglist.clear();
+
 	delete biomedef;
-	delete params;
 }
 
 
@@ -100,8 +128,39 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 	if (mapgen.size())
 		return;
 	
+	// Resolve names of nodes for things that were registered
+	// (at this point, the registration period is over)
+	biomedef->resolveNodeNames(ndef);
+	
+	for (size_t i = 0; i != ores.size(); i++)
+		ores[i]->resolveNodeNames(ndef);
+		
+	for (size_t i = 0; i != decorations.size(); i++)
+		decorations[i]->resolveNodeNames(ndef);
+	
+	// Apply mapgen parameter overrides from Lua
+	if (luaoverride_params) {
+		if (luaoverride_params_modified & MGPARAMS_SET_MGNAME)
+			mgparams->mg_name = luaoverride_params->mg_name;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_SEED)
+			mgparams->seed = luaoverride_params->seed;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_WATER_LEVEL)
+			mgparams->water_level = luaoverride_params->water_level;
+		
+		if (luaoverride_params_modified & MGPARAMS_SET_FLAGS) {
+			mgparams->flags &= ~luaoverride_flagmask;
+			mgparams->flags |= luaoverride_params->flags;
+		}
+		
+		delete luaoverride_params;
+		luaoverride_params = NULL;
+	}
+	
+	// Create the mapgens
 	this->params = mgparams;
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (size_t i = 0; i != emergethread.size(); i++) {
 		mg = createMapgen(params->mg_name, 0, params);
 		if (!mg) {
 			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
@@ -111,6 +170,16 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 		}
 		mapgen.push_back(mg);
 	}
+}
+
+
+Mapgen *EmergeManager::getCurrentMapgen() {
+	for (unsigned int i = 0; i != emergethread.size(); i++) {
+		if (emergethread[i]->IsSameThread())
+			return emergethread[i]->mapgen;
+	}
+	
+	return NULL;
 }
 
 
@@ -233,6 +302,8 @@ MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
 MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	std::string mg_name = settings->get("mg_name");
 	MapgenParams *mgparams = createMapgenParams(mg_name);
+	if (!mgparams)
+		return NULL;
 	
 	mgparams->mg_name     = mg_name;
 	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
@@ -326,7 +397,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 
 void *EmergeThread::Thread() {
 	ThreadStarted();
-	log_register_thread("EmergeThread" + id);
+	log_register_thread("EmergeThread" + itos(id));
 	DSTACK(__FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
@@ -359,7 +430,7 @@ void *EmergeThread::Thread() {
 		*/
 		BlockMakeData data;
 		MapBlock *block = NULL;
-		core::map<v3s16, MapBlock *> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		
 		if (getBlockOrStartGen(p, &block, &data, allow_generate)) {
 			{
@@ -395,7 +466,7 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						scriptapi_environment_on_generated(m_server->m_lua,
+						SERVER_TO_SA(m_server)->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 
@@ -415,13 +486,21 @@ void *EmergeThread::Thread() {
 		JMutexAutoLock lock(m_server->m_con_mutex);
 		// Add the originally fetched block to the modified list
 		if (block)
-			modified_blocks.insert(p, block);
+			modified_blocks[p] = block;
+
+		// Update weather data in mapblock
+		for(std::map<v3s16, MapBlock *>::iterator
+			i = modified_blocks.begin();
+			i != modified_blocks.end(); ++i) {
+			map->getHeat(m_server->m_env, MAP_BLOCKSIZE*i->first ,i->second);
+			map->getHumidity(m_server->m_env, MAP_BLOCKSIZE*i->first, i->second);
+		}
 
 		// Set the modified blocks unsent for all the clients
-		for (core::map<u16, RemoteClient*>::Iterator
-			 i = m_server->m_clients.getIterator();
-			 i.atEnd() == false; i++) {
-			RemoteClient *client = i.getNode()->getValue();
+		for (std::map<u16, RemoteClient*>::iterator
+			 i = m_server->m_clients.begin();
+			 i != m_server->m_clients.end(); ++i) {
+			RemoteClient *client = i->second;
 			if (modified_blocks.size() > 0) {
 				// Remove block from sent history
 				client->SetBlocksNotSent(modified_blocks);

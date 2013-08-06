@@ -22,14 +22,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
+#ifndef SERVER
+#include "tile.h" // getImagePath
+#endif
 #include "util/string.h"
+
+bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
+{
+	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
+
+bool getGameConfig(const std::string &game_path, Settings &conf)
+{
+	std::string conf_path = game_path + DIR_DELIM + "game.conf";
+	return conf.readConfigFile(conf_path.c_str());
+}
 
 std::string getGameName(const std::string &game_path)
 {
-	std::string conf_path = game_path + DIR_DELIM + "game.conf";
 	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if(!succeeded)
+	if(!getGameConfig(game_path, conf))
 		return "";
 	if(!conf.exists("name"))
 		return "";
@@ -78,13 +91,18 @@ SubgameSpec findSubgame(const std::string &id)
 	// Find mod directories
 	std::set<std::string> mods_paths;
 	if(!user_game)
-		mods_paths.insert(share + DIR_DELIM + "mods" + DIR_DELIM + id);
+		mods_paths.insert(share + DIR_DELIM + "mods");
 	if(user != share || user_game)
-		mods_paths.insert(user + DIR_DELIM + "mods" + DIR_DELIM + id);
+		mods_paths.insert(user + DIR_DELIM + "mods");
 	std::string game_name = getGameName(game_path);
 	if(game_name == "")
 		game_name = id;
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name);
+	std::string menuicon_path;
+#ifndef SERVER
+	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
+#endif
+	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
+			menuicon_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -117,6 +135,11 @@ std::set<std::string> getAvailableGameIds()
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(!dirlist[j].dir)
 				continue;
+			// If configuration file is not found or broken, ignore game
+			Settings conf;
+			if(!getGameConfig(*i + DIR_DELIM + dirlist[j].name, conf))
+				continue;
+			// Add it to result
 			const char *ends[] = {"_game", NULL};
 			std::string shorter = removeStringEnd(dirlist[j].name, ends);
 			if(shorter != "")

@@ -94,13 +94,17 @@ GUIChatConsole::GUIChatConsole(
 
 	// load the font
 	// FIXME should a custom texture_path be searched too?
-	#if USE_FREETYPE
 	std::string font_name = g_settings->get("mono_font_path");
-	u16 font_size = g_settings->getU16("mono_font_size");
-	m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
+	#if USE_FREETYPE
+	m_use_freetype = g_settings->getBool("freetype");
+	if (m_use_freetype) {
+		u16 font_size = g_settings->getU16("mono_font_size");
+		m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
+	} else {
+		m_font = env->getFont(font_name.c_str());
+	}
 	#else
-	std::string font_name = "fontdejavusansmono.png";
-	m_font = env->getFont(getTexturePath(font_name).c_str());
+	m_font = env->getFont(font_name.c_str());
 	#endif
 	if (m_font == NULL)
 	{
@@ -121,6 +125,10 @@ GUIChatConsole::GUIChatConsole(
 
 GUIChatConsole::~GUIChatConsole()
 {
+#if USE_FREETYPE
+	if (m_use_freetype)
+		m_font->drop();
+#endif
 }
 
 void GUIChatConsole::openConsole(f32 height)
@@ -129,6 +137,11 @@ void GUIChatConsole::openConsole(f32 height)
 	m_desired_height_fraction = height;
 	m_desired_height = height * m_screensize.Y;
 	reformatConsole();
+}
+
+bool GUIChatConsole::isOpen() const
+{
+	return m_open;
 }
 
 bool GUIChatConsole::isOpenInhibited() const
@@ -535,14 +548,20 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Tab or Shift-Tab pressed
 			// Nick completion
-			core::list<std::wstring> names = m_client->getConnectedPlayerNames();
+			std::list<std::string> names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
 			m_chat_backend->getPrompt().nickCompletion(names, backwards);
 			return true;
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
 		{
-			m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#if (defined(linux) || defined(__linux))
+				wchar_t wc = L'_';
+				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
+				m_chat_backend->getPrompt().input(wc);
+			#else
+				m_chat_backend->getPrompt().input(event.KeyInput.Char);
+			#endif
 			return true;
 		}
 	}

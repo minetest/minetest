@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <set>
+#include <list>
 #include "irrlichttypes_extrabloated.h"
 #include "player.h"
 #include <ostream>
@@ -49,6 +50,7 @@ class IGameDef;
 class Map;
 class ServerMap;
 class ClientMap;
+class ScriptApi;
 
 class Environment
 {
@@ -73,8 +75,8 @@ public:
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
 	Player * getNearestConnectedPlayer(v3f pos);
-	core::list<Player*> getPlayers();
-	core::list<Player*> getPlayers(bool ignore_disconnected);
+	std::list<Player*> getPlayers();
+	std::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 	
 	u32 getDayNightRatio();
@@ -102,7 +104,7 @@ public:
 
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
-	core::list<Player*> m_players;
+	std::list<Player*> m_players;
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
@@ -156,20 +158,20 @@ struct ABMWithState
 class ActiveBlockList
 {
 public:
-	void update(core::list<v3s16> &active_positions,
+	void update(std::list<v3s16> &active_positions,
 			s16 radius,
-			core::map<v3s16, bool> &blocks_removed,
-			core::map<v3s16, bool> &blocks_added);
+			std::set<v3s16> &blocks_removed,
+			std::set<v3s16> &blocks_added);
 
 	bool contains(v3s16 p){
-		return (m_list.find(p) != NULL);
+		return (m_list.find(p) != m_list.end());
 	}
 
 	void clear(){
 		m_list.clear();
 	}
 
-	core::map<v3s16, bool> m_list;
+	std::set<v3s16> m_list;
 
 private:
 };
@@ -189,7 +191,7 @@ public:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef,
+	ServerEnvironment(ServerMap *map, ScriptApi *iface, IGameDef *gamedef,
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
@@ -197,8 +199,9 @@ public:
 
 	ServerMap & getServerMap();
 
-	lua_State* getLua()
-		{ return m_lua; }
+	//TODO find way to remove this fct!
+	ScriptApi* getScriptIface()
+		{ return m_script; }
 
 	IGameDef *getGameDef()
 		{ return m_gamedef; }
@@ -249,16 +252,16 @@ public:
 		inside a radius around a position
 	*/
 	void getAddedActiveObjects(v3s16 pos, s16 radius,
-			core::map<u16, bool> &current_objects,
-			core::map<u16, bool> &added_objects);
+			std::set<u16> &current_objects,
+			std::set<u16> &added_objects);
 
 	/*
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
 	void getRemovedActiveObjects(v3s16 pos, s16 radius,
-			core::map<u16, bool> &current_objects,
-			core::map<u16, bool> &removed_objects);
+			std::set<u16> &current_objects,
+			std::set<u16> &removed_objects);
 	
 	/*
 		Get the next message emitted by some active object.
@@ -297,6 +300,13 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 	
+	//check if there's a line of sight between two positions
+	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
+
+	u32 getGameTime() { return m_game_time; }
+
+	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
+	float getMaxLagEstimate() { return m_max_lag_estimate; }
 private:
 
 	/*
@@ -344,13 +354,13 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	lua_State *m_lua;
+	ScriptApi* m_script;
 	// Game definition
 	IGameDef *m_gamedef;
 	// Background block emerger (the server, in practice)
 	IBackgroundBlockEmerger *m_emerger;
 	// Active object list
-	core::map<u16, ServerActiveObject*> m_active_objects;
+	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
 	Queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -368,9 +378,12 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-	core::list<ABMWithState> m_abms;
+	std::list<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
+	// Estimate for general maximum lag as determined by server.
+	// Can raise to high values like 15s with eg. map generation mods.
+	float m_max_lag_estimate;
 };
 
 #ifndef SERVER
@@ -389,7 +402,8 @@ class ClientSimpleObject;
 enum ClientEnvEventType
 {
 	CEE_NONE,
-	CEE_PLAYER_DAMAGE
+	CEE_PLAYER_DAMAGE,
+	CEE_PLAYER_BREATH
 };
 
 struct ClientEnvEvent
@@ -402,6 +416,9 @@ struct ClientEnvEvent
 			u8 amount;
 			bool send_to_server;
 		} player_damage;
+		struct{
+			u16 amount;
+		} player_breath;
 	};
 };
 
@@ -456,6 +473,7 @@ public:
 	*/
 
 	void damageLocalPlayer(u8 damage, bool handle_hp=true);
+	void updateLocalPlayerBreath(u16 breath);
 
 	/*
 		Client likes to call these
@@ -463,12 +481,19 @@ public:
 	
 	// Get all nearby objects
 	void getActiveObjects(v3f origin, f32 max_d,
-			core::array<DistanceSortedActiveObject> &dest);
+			std::vector<DistanceSortedActiveObject> &dest);
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
 	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+
+	std::list<std::string> getPlayerNames()
+	{ return m_player_names; }
+	void addPlayerName(std::string name)
+	{ m_player_names.push_back(name); }
+	void removePlayerName(std::string name)
+	{ m_player_names.remove(name); }
 	
 private:
 	ClientMap *m_map;
@@ -476,11 +501,14 @@ private:
 	ITextureSource *m_texturesource;
 	IGameDef *m_gamedef;
 	IrrlichtDevice *m_irr;
-	core::map<u16, ClientActiveObject*> m_active_objects;
-	core::list<ClientSimpleObject*> m_simple_objects;
+	std::map<u16, ClientActiveObject*> m_active_objects;
+	std::list<ClientSimpleObject*> m_simple_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
+	IntervalLimiter m_drowning_interval;
+	IntervalLimiter m_breathing_interval;
+	std::list<std::string> m_player_names;
 };
 
 #endif

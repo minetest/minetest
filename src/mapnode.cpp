@@ -25,8 +25,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
+#include "log.h"
 #include <string>
 #include <sstream>
+
+static const Rotation wallmounted_to_rot[] = {
+	ROTATE_0, ROTATE_180, ROTATE_90, ROTATE_270
+};
+
+static const u8 rot_to_wallmounted[] = {
+	2, 4, 3, 5
+};
+
 
 /*
 	MapNode
@@ -107,7 +117,7 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if(f.param_type_2 == CPT2_FACEDIR)
-		return getParam2() & 0x03;
+		return getParam2() & 0x1F;
 	return 0;
 }
 
@@ -132,37 +142,162 @@ v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
 	}
 }
 
+void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot) {
+	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
+
+	if (cpt2 == CPT2_FACEDIR) {
+		u8 newrot = param2 & 3;
+		param2 &= ~3;
+		param2 |= (newrot + rot) & 3;
+	} else if (cpt2 == CPT2_WALLMOUNTED) {
+		u8 wmountface = (param2 & 7);
+		if (wmountface <= 1)
+			return;
+			
+		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
+		param2 &= ~7;
+		param2 |= rot_to_wallmounted[(oldrot - rot) & 3];
+	}
+}
+
 static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 		const NodeBox &nodebox, INodeDefManager *nodemgr)
 {
 	std::vector<aabb3f> boxes;
-	if(nodebox.type == NODEBOX_FIXED)
+	if(nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED)
 	{
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr);
+		u8 axisdir = facedir>>2;
+		facedir&=0x03;
 		for(std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
 				i != fixed.end(); i++)
 		{
 			aabb3f box = *i;
-			if(facedir == 1)
-			{
-				box.MinEdge.rotateXZBy(-90);
-				box.MaxEdge.rotateXZBy(-90);
-				box.repair();
+
+			if (nodebox.type == NODEBOX_LEVELED) {
+				box.MaxEdge.Y = -BS/2 + BS*((float)1/LEVELED_MAX) * n.getLevel(nodemgr);
 			}
-			else if(facedir == 2)
+
+			switch (axisdir)
 			{
-				box.MinEdge.rotateXZBy(180);
-				box.MaxEdge.rotateXZBy(180);
-				box.repair();
+			case 0:
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXZBy(-90);
+					box.MaxEdge.rotateXZBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXZBy(180);
+					box.MaxEdge.rotateXZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXZBy(90);
+					box.MaxEdge.rotateXZBy(90);
+				}
+				break;
+			case 1: // z+
+				box.MinEdge.rotateYZBy(90);
+				box.MaxEdge.rotateYZBy(90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXYBy(90);
+					box.MaxEdge.rotateXYBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXYBy(180);
+					box.MaxEdge.rotateXYBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXYBy(-90);
+					box.MaxEdge.rotateXYBy(-90);
+				}
+				break;
+			case 2: //z-
+				box.MinEdge.rotateYZBy(-90);
+				box.MaxEdge.rotateYZBy(-90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXYBy(-90);
+					box.MaxEdge.rotateXYBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXYBy(180);
+					box.MaxEdge.rotateXYBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXYBy(90);
+					box.MaxEdge.rotateXYBy(90);
+				}
+				break;
+			case 3:  //x+
+				box.MinEdge.rotateXYBy(-90);
+				box.MaxEdge.rotateXYBy(-90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateYZBy(90);
+					box.MaxEdge.rotateYZBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateYZBy(180);
+					box.MaxEdge.rotateYZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateYZBy(-90);
+					box.MaxEdge.rotateYZBy(-90);
+				}
+				break;
+			case 4:  //x-
+				box.MinEdge.rotateXYBy(90);
+				box.MaxEdge.rotateXYBy(90);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateYZBy(-90);
+					box.MaxEdge.rotateYZBy(-90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateYZBy(180);
+					box.MaxEdge.rotateYZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateYZBy(90);
+					box.MaxEdge.rotateYZBy(90);
+				}
+				break;
+			case 5:
+				box.MinEdge.rotateXYBy(-180);
+				box.MaxEdge.rotateXYBy(-180);
+				if(facedir == 1)
+				{
+					box.MinEdge.rotateXZBy(90);
+					box.MaxEdge.rotateXZBy(90);
+				}
+				else if(facedir == 2)
+				{
+					box.MinEdge.rotateXZBy(180);
+					box.MaxEdge.rotateXZBy(180);
+				}
+				else if(facedir == 3)
+				{
+					box.MinEdge.rotateXZBy(-90);
+					box.MaxEdge.rotateXZBy(-90);
+				}
+				break;
+			default:
+				break;
 			}
-			else if(facedir == 3)
-			{
-				box.MinEdge.rotateXZBy(90);
-				box.MaxEdge.rotateXZBy(90);
-				box.repair();
-			}
+			box.repair();
 			boxes.push_back(box);
 		}
 	}
@@ -223,6 +358,89 @@ std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	return transformNodeBox(*this, f.selection_box, nodemgr);
+}
+
+u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	// todo: after update in all games leave only if (f.param_type_2 ==
+	if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID)
+		return LIQUID_LEVEL_MAX;
+	if(f.leveled || f.param_type_2 == CPT2_LEVELED)
+		return LEVELED_MAX;
+	return 0;
+}
+
+u8 MapNode::getLevel(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	// todo: after update in all games leave only if (f.param_type_2 ==
+	if(f.liquid_type == LIQUID_SOURCE)
+		return LIQUID_LEVEL_SOURCE;
+	if (f.param_type_2 == CPT2_FLOWINGLIQUID)
+		return getParam2() & LIQUID_LEVEL_MASK;
+	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 setted
+		return getParam2() & LIQUID_LEVEL_MASK;
+	if(f.leveled || f.param_type_2 == CPT2_LEVELED) {
+		 u8 level = getParam2() & LEVELED_MASK;
+		 if(level) return level;
+		 if(f.leveled > LEVELED_MAX) return LEVELED_MAX;
+		 return f.leveled; //default
+	}
+	return 0;
+}
+
+u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
+{
+	u8 rest = 0;
+	if (level < 1) {
+		setContent(CONTENT_AIR);
+		return 0;
+	}
+	const ContentFeatures &f = nodemgr->get(*this);
+	if (	   f.param_type_2 == CPT2_FLOWINGLIQUID
+		|| f.liquid_type == LIQUID_FLOWING
+		|| f.liquid_type == LIQUID_SOURCE) {
+		if (level >= LIQUID_LEVEL_SOURCE) {
+			rest = level - LIQUID_LEVEL_SOURCE;
+			setContent(nodemgr->getId(f.liquid_alternative_source));
+		} else {
+			setContent(nodemgr->getId(f.liquid_alternative_flowing));
+			setParam2(level & LIQUID_LEVEL_MASK);
+		}
+	} else if (f.leveled || f.param_type_2 == CPT2_LEVELED) {
+		if (level > LEVELED_MAX) {
+			rest = level - LEVELED_MAX;
+			level = LEVELED_MAX;
+		}
+		setParam2(level & LEVELED_MASK);
+	}
+	return rest;
+}
+
+u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
+{
+	s8 level = getLevel(nodemgr);
+	if (add == 0) level = 1;
+	level += add;
+	return setLevel(nodemgr, level);
+}
+
+void MapNode::freezeMelt(INodeDefManager *ndef) {
+	u8 level_was_max = this->getMaxLevel(ndef);
+	u8 level_was = this->getLevel(ndef);
+	this->setContent(ndef->getId(ndef->get(*this).freezemelt));
+	u8 level_now_max = this->getMaxLevel(ndef);
+	if (level_was_max && level_was_max != level_now_max) {
+		u8 want = (float)level_now_max / level_was_max * level_was;
+		if (!want)
+			want = 1;
+		if (want != level_was)
+			this->setLevel(ndef, want);
+		//errorstream<<"was="<<(int)level_was<<"/"<<(int)level_was_max<<" nowm="<<(int)want<<"/"<<(int)level_now_max<< " => "<<(int)this->getLevel(ndef)<< std::endl;
+	}
+	if (this->getMaxLevel(ndef) && !this->getLevel(ndef))
+		this->addLevel(ndef);
 }
 
 u32 MapNode::serializedLength(u8 version)

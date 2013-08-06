@@ -96,7 +96,6 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 
 	v2s32 size = rect.getSize();
 	v2s32 topleft_client(40, 0);
-	v2s32 size_client = size - v2s32(40, 0);
 	int volume=(int)(g_settings->getFloat("sound_volume")*100);
 	/*
 		Add stuff
@@ -105,8 +104,10 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 120, 20);
 		rect = rect + v2s32(size.X/2-60, size.Y/2-35);
-		Environment->addStaticText(wgettext("Sound Volume: "), rect, false,
+		wchar_t* text = wgettext("Sound Volume: ");
+		Environment->addStaticText(text, rect, false,
 				true, this, ID_soundText1);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 30, 20);
@@ -117,8 +118,10 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 80, 30);
 		rect = rect + v2s32(size.X/2-80/2, size.Y/2+55);
+		wchar_t* text = wgettext("Exit");
 		Environment->addButton(rect, this, ID_soundExitButton,
-			wgettext("Exit"));
+			text);
+		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 20);

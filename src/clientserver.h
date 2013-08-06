@@ -79,9 +79,32 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		Serialization format changes
 	PROTOCOL_VERSION 16:
 		TOCLIENT_SHOW_FORMSPEC
+	PROTOCOL_VERSION 17:
+		Serialization format change: include backface_culling flag in TileDef
+		Added rightclickable field in nodedef
+		TOCLIENT_SPAWN_PARTICLE
+		TOCLIENT_ADD_PARTICLESPAWNER
+		TOCLIENT_DELETE_PARTICLESPAWNER
+	PROTOCOL_VERSION 18:
+		damageGroups added to ToolCapabilities
+		sound_place added to ItemDefinition
+	PROTOCOL_VERSION 19:
+		GENERIC_CMD_SET_PHYSICS_OVERRIDE
+	PROTOCOL_VERSION 20:
+		TOCLIENT_HUDADD
+		TOCLIENT_HUDRM
+		TOCLIENT_HUDCHANGE
+		TOCLIENT_HUD_SET_FLAGS
+	PROTOCOL_VERSION 21:
+		TOCLIENT_BREATH
+		TOSERVER_BREATH
+		range added to ItemDefinition
+		drowning, leveled and liquid_range added to ContentFeatures
+		stepheight and collideWithObjects added to object properties
+		version, heat and humidity transfer in MapBock
 */
 
-#define LATEST_PROTOCOL_VERSION 16
+#define LATEST_PROTOCOL_VERSION 21
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -356,6 +379,7 @@ enum ToClientCommand
 		u8[len] name
 		[2] serialized inventory
 	*/
+
 	TOCLIENT_SHOW_FORMSPEC = 0x44,
 	/*
 		[0] u16 command
@@ -381,6 +405,102 @@ enum ToClientCommand
 		f1000 movement_liquid_sink
 		f1000 movement_gravity
 	*/
+
+	TOCLIENT_SPAWN_PARTICLE = 0x46,
+	/*
+		u16 command
+		v3f1000 pos
+		v3f1000 velocity
+		v3f1000 acceleration
+		f1000 expirationtime
+		f1000 size
+		u8 bool collisiondetection
+		u32 len
+		u8[len] texture
+	*/
+
+	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
+	/*
+		u16 command
+		u16 amount
+		f1000 spawntime
+		v3f1000 minpos
+		v3f1000 maxpos
+		v3f1000 minvel
+		v3f1000 maxvel
+		v3f1000 minacc
+		v3f1000 maxacc
+		f1000 minexptime
+		f1000 maxexptime
+		f1000 minsize
+		f1000 maxsize
+		u8 bool collisiondetection
+		u32 len
+		u8[len] texture
+		u32 id
+	*/
+
+	TOCLIENT_DELETE_PARTICLESPAWNER = 0x48,
+	/*
+		u16 command
+		u32 id
+	*/
+
+	TOCLIENT_HUDADD = 0x49,
+	/*
+		u16 command
+		u32 id
+		u8 type
+		v2f1000 pos
+		u32 len
+		u8[len] name
+		v2f1000 scale
+		u32 len2
+		u8[len2] text
+		u32 number
+		u32 item
+		u32 dir
+		v2f1000 align
+		v2f1000 offset
+	*/
+
+	TOCLIENT_HUDRM = 0x4a,
+	/*
+		u16 command
+		u32 id
+	*/
+
+	TOCLIENT_HUDCHANGE = 0x4b,
+	/*
+		u16 command
+		u32 id
+		u8 stat
+		[v2f1000 data |
+		 u32 len
+		 u8[len] data |
+		 u32 data]
+	*/
+
+	TOCLIENT_HUD_SET_FLAGS = 0x4c,
+	/*
+		u16 command
+		u32 flags
+		u32 mask
+	*/
+
+	TOCLIENT_HUD_SET_PARAM = 0x4d,
+	/*
+		u16 command
+		u16 param
+		u16 len
+		u8[len] value
+	*/
+
+	TOCLIENT_BREATH = 0x4e,
+	/*
+		u16 command
+		u16 breath
+	*/
 };
 
 enum ToServerCommand
@@ -390,7 +510,7 @@ enum ToServerCommand
 		Sent first after connected.
 
 		[0] u16 TOSERVER_INIT
-		[2] u8 SER_FMT_VER_HIGHEST
+		[2] u8 SER_FMT_VER_HIGHEST_READ
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)
 		[51] u16 minimum supported network protocol version (added sometime)
@@ -603,6 +723,12 @@ enum ToServerCommand
 	TOSERVER_RECEIVED_MEDIA = 0x41,
 	/*
 		u16 command
+	*/
+
+	TOSERVER_BREATH = 0x42,
+	/*
+		u16 command
+		u16 breath
 	*/
 };
 

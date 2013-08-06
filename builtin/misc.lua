@@ -14,14 +14,14 @@ minetest.register_globalstep(function(dtime)
 	for index, timer in ipairs(minetest.timers) do
 		timer.time = timer.time - dtime
 		if timer.time <= 0 then
-			timer.func(timer.param)
+			timer.func(unpack(timer.args or {}))
 			table.remove(minetest.timers,index)
 		end
 	end
 end)
 
-function minetest.after(time, func, param)
-	table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
+function minetest.after(time, func, ...)
+	table.insert(minetest.timers_to_add, {time=time, func=func, args={...}})
 end
 
 function minetest.check_player_privs(name, privs)
@@ -43,7 +43,7 @@ end
 function minetest.get_connected_players()
 	-- This could be optimized a bit, but leave that for later
 	local list = {}
-	for _, obj in pairs(minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
+	for _, obj in pairs(minetest.get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
 		if obj:is_player() then
 			table.insert(list, obj)
 		end
@@ -97,5 +97,12 @@ function minetest.setting_get_pos(name)
 		return nil
 	end
 	return minetest.string_to_pos(value)
+end
+
+function minetest.formspec_escape(str)
+	str = string.gsub(str, "\\", "\\\\")
+	str = string.gsub(str, "%[", "\\[")
+	str = string.gsub(str, "%]", "\\]")
+	return str
 end
 

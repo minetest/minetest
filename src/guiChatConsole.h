@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "chat.h"
+#include "config.h"
 
 class Client;
 
@@ -39,6 +40,9 @@ public:
 	// This doesn't open immediately but initiates an animation.
 	// You should call isOpenInhibited() before this.
 	void openConsole(f32 height);
+
+	bool isOpen() const;
+
 	// Check if the console should not be opened at the moment
 	// This is to avoid reopening the console immediately after closing
 	bool isOpenInhibited() const;
@@ -118,6 +122,9 @@ private:
 	// font
 	gui::IGUIFont* m_font;
 	v2u32 m_fontsize;
+#if USE_FREETYPE
+	bool m_use_freetype;
+#endif
 };
 
 

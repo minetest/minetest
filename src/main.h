@@ -28,6 +28,14 @@ extern Settings *g_settings;
 class Profiler;
 extern Profiler *g_profiler;
 
+// Menu clouds
+class Clouds;
+extern Clouds *g_menuclouds;
+
+// Scene manager used for menu clouds
+namespace irr{namespace scene{class ISceneManager;}}
+extern irr::scene::ISceneManager *g_menucloudsmgr;
+
 // Debug streams
 
 #include <fstream>

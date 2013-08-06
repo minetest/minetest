@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
+#include <set>
+#include <map>
 
 struct MapDrawControl
 {
@@ -31,7 +33,8 @@ struct MapDrawControl
 		wanted_max_blocks(0),
 		wanted_min_range(0),
 		blocks_drawn(0),
-		blocks_would_have_drawn(0)
+		blocks_would_have_drawn(0),
+		farthest_drawn(0)
 	{
 	}
 	// Overrides limits by drawing everything
@@ -46,6 +49,8 @@ struct MapDrawControl
 	u32 blocks_drawn;
 	// Number of blocks that would have been drawn in wanted_range
 	u32 blocks_would_have_drawn;
+	// Distance to the farthest block drawn
+	float farthest_drawn;
 };
 
 class Client;
@@ -128,7 +133,7 @@ public:
 	// Check if sector was drawn on last render()
 	bool sectorWasDrawn(v2s16 p)
 	{
-		return (m_last_drawn_sectors.find(p) != NULL);
+		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
 	}
 	
 private:
@@ -143,9 +148,9 @@ private:
 	f32 m_camera_fov;
 	JMutex m_camera_mutex;
 
-	core::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock*> m_drawlist;
 	
-	core::map<v2s16, bool> m_last_drawn_sectors;
+	std::set<v2s16> m_last_drawn_sectors;
 };
 
 #endif

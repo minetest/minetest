@@ -31,7 +31,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Normal build: main.cpp
 		Server build: servermain.cpp
 */
+enum TimePrecision {
+	PRECISION_SECONDS,
+	PRECISION_MILLI,
+	PRECISION_MICRO,
+	PRECISION_NANO
+};
+
 extern u32 getTimeMs();
+extern u32 getTime(TimePrecision prec);
 
 /*
 	Timestamp stuff

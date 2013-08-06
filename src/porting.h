@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // u32
 #include "debug.h"
 #include "constants.h"
+#include "gettime.h"
 
 #ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
@@ -41,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32
 	#ifndef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0500
+		#define _WIN32_WINNT 0x0501
 	#endif
 	#include <windows.h>
 	
@@ -152,19 +153,69 @@ bool threadSetPriority(threadid_t tid, int prio);
 	Overflow can occur at any value higher than 10000000.
 */
 #ifdef _WIN32 // Windows
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
+#endif
 	#include <windows.h>
+	
+	inline u32 getTimeS()
+	{
+		return GetTickCount() / 1000;
+	}
+	
 	inline u32 getTimeMs()
 	{
 		return GetTickCount();
 	}
+	
+	inline u32 getTimeUs()
+	{
+		LARGE_INTEGER freq, t;
+		QueryPerformanceFrequency(&freq);
+		QueryPerformanceCounter(&t);
+		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000.0);
+	}
+	
+	inline u32 getTimeNs()
+	{
+		LARGE_INTEGER freq, t;
+		QueryPerformanceFrequency(&freq);
+		QueryPerformanceCounter(&t);
+		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000000.0);
+	}
+	
 #else // Posix
 	#include <sys/time.h>
+	#include <time.h>
+	
+	inline u32 getTimeS()
+	{
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		return tv.tv_sec;
+	}
+	
 	inline u32 getTimeMs()
 	{
 		struct timeval tv;
 		gettimeofday(&tv, NULL);
 		return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 	}
+	
+	inline u32 getTimeUs()
+	{
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		return tv.tv_sec * 1000000 + tv.tv_usec;
+	}
+	
+	inline u32 getTimeNs()
+	{
+		struct timespec ts;
+		clock_gettime(CLOCK_REALTIME, &ts);
+		return ts.tv_sec * 1000000000 + ts.tv_nsec;
+	}
+	
 	/*#include <sys/timeb.h>
 	inline u32 getTimeMs()
 	{
@@ -173,6 +224,22 @@ bool threadSetPriority(threadid_t tid, int prio);
 		return tb.time * 1000 + tb.millitm;
 	}*/
 #endif
+
+inline u32 getTime(TimePrecision prec)
+{
+	switch (prec) {
+		case PRECISION_SECONDS:
+			return getTimeS();
+		case PRECISION_MILLI:
+			return getTimeMs();
+		case PRECISION_MICRO:
+			return getTimeUs();
+		case PRECISION_NANO:
+			return getTimeNs();
+	}
+	return 0;
+}
+
 
 } // namespace porting
 

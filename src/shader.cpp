@@ -4,16 +4,16 @@ Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2013 Kahrl <kahrl@gmx.net>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -125,10 +125,10 @@ public:
 			const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		core::map<std::string, std::string>::Node *n;
+		std::map<std::string, std::string>::iterator n;
 		n = m_programs.find(combined);
-		if(n)
-			return n->getValue();
+		if(n != m_programs.end())
+			return n->second;
 		return "";
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
@@ -136,10 +136,10 @@ public:
 			const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		core::map<std::string, std::string>::Node *n;
+		std::map<std::string, std::string>::iterator n;
 		n = m_programs.find(combined);
-		if(n)
-			return n->getValue();
+		if(n != m_programs.end())
+			return n->second;
 		std::string path = getShaderPath(name_of_shader, filename);
 		if(path == ""){
 			infostream<<"SourceShaderCache::getOrLoad(): No path found for \""
@@ -156,7 +156,7 @@ public:
 		return "";
 	}
 private:
-	core::map<std::string, std::string> m_programs;
+	std::map<std::string, std::string> m_programs;
 	std::string readFile(const std::string &path)
 	{
 		std::ifstream is(path.c_str(), std::ios::binary);
@@ -332,9 +332,9 @@ private:
 
 	// A shader id is index in this array.
 	// The first position contains a dummy shader.
-	core::array<ShaderInfo> m_shaderinfo_cache;
+	std::vector<ShaderInfo> m_shaderinfo_cache;
 	// Maps a shader name to an index in the former.
-	core::map<std::string, u32> m_name_to_id;
+	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
 	JMutex m_shaderinfo_cache_mutex;
 
@@ -343,7 +343,7 @@ private:
 
 	// Global constant setters
 	// TODO: Delete these in the destructor
-	core::array<IShaderConstantSetter*> m_global_setters;
+	std::vector<IShaderConstantSetter*> m_global_setters;
 };
 
 IWritableShaderSource* createShaderSource(IrrlichtDevice *device)
@@ -362,7 +362,7 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 	Load shader programs
 */
 void load_shaders(std::string name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, s32 enable_shaders,
+		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel);
 
@@ -388,6 +388,12 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 ShaderSource::~ShaderSource()
 {
 	//m_shader_callback->drop();
+
+	for (std::vector<IShaderConstantSetter*>::iterator iter = m_global_setters.begin();
+			iter != m_global_setters.end(); iter++) {
+		delete *iter;
+	}
+	m_global_setters.clear();
 }
 
 u32 ShaderSource::getShaderId(const std::string &name)
@@ -399,10 +405,10 @@ u32 ShaderSource::getShaderId(const std::string &name)
 			See if shader already exists
 		*/
 		JMutexAutoLock lock(m_shaderinfo_cache_mutex);
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL)
-			return n->getValue();
+		if(n != m_name_to_id.end())
+			return n->second;
 	}
 
 	/*
@@ -471,12 +477,12 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name)
 	{
 		JMutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-		core::map<std::string, u32>::Node *n;
+		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
-		if(n != NULL){
+		if(n != m_name_to_id.end()){
 			/*infostream<<"getShaderIdDirect(): \""<<name
 					<<"\" found in cache"<<std::endl;*/
-			return n->getValue();
+			return n->second;
 		}
 	}
 
@@ -494,7 +500,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name)
 
 	u32 id = m_shaderinfo_cache.size();
 	m_shaderinfo_cache.push_back(info);
-	m_name_to_id.insert(name, id);
+	m_name_to_id[name] = id;
 
 	/*infostream<<"getShaderIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
@@ -531,7 +537,7 @@ void ShaderSource::processQueue()
 	/*
 		Fetch shaders
 	*/
-	if(m_get_shader_queue.size() > 0){
+	if(!m_get_shader_queue.empty()){
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_shader_queue.pop();
 
@@ -579,8 +585,10 @@ void ShaderSource::rebuildShaders()
 	// Recreate shaders
 	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
-		*info = generate_shader(info->name, m_device,
-				m_shader_callback, &m_sourcecache);
+		if(info->name != ""){
+			*info = generate_shader(info->name, m_device,
+					m_shader_callback, &m_sourcecache);
+		}
 	}
 }
 
@@ -616,9 +624,8 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		}
 	}
 
-	// 0 = off, 1 = assembly shaders only, 2 = highlevel or assembly
-	s32 enable_shaders = g_settings->getS32("enable_shaders");
-	if(enable_shaders <= 0)
+	bool enable_shaders = g_settings->getBool("enable_shaders");
+	if(!enable_shaders)
 		return shaderinfo;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -740,7 +747,7 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 }
 
 void load_shaders(std::string name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, s32 enable_shaders,
+		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel)
 {
@@ -749,7 +756,7 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 	geometry_program = "";
 	is_highlevel = false;
 
-	if(enable_shaders >= 2){
+	if(enable_shaders){
 		// Look for high level shaders
 		if(drivertype == video::EDT_DIRECT3D9){
 			// Direct3D 9: HLSL
@@ -770,24 +777,4 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 		}
 	}
 
-	if(enable_shaders >= 1){
-		// Look for assembly shaders
-		if(drivertype == video::EDT_DIRECT3D8){
-			// Direct3D 8 assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "d3d8_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "d3d8_pixel.asm");
-		}
-		else if(drivertype == video::EDT_DIRECT3D9){
-			// Direct3D 9 assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "d3d9_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "d3d9_pixel.asm");
-		}
-		else if(drivertype == video::EDT_OPENGL){
-			// OpenGL assembly shaders
-			vertex_program = sourcecache->getOrLoad(name, "opengl_vertex.asm");
-			pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.asm");
-		}
-		if(vertex_program != "" || pixel_program != "")
-			return;
-	}
 }

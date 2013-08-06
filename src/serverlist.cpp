@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "log.h"
 #include "json/json.h"
+#include "convert_json.h"
 #if USE_CURL
 #include <curl/curl.h>
 #endif
@@ -38,10 +39,12 @@ std::string getFilePath()
 {
 	std::string serverlist_file = g_settings->get("serverlist_file");
 
-	std::string rel_path = std::string("client") + DIR_DELIM
-		+ "serverlist" + DIR_DELIM
-		+ serverlist_file;
-	std::string path = porting::path_share + DIR_DELIM + rel_path;
+	std::string dir_path = std::string("client") + DIR_DELIM
+		+ "serverlist" + DIR_DELIM;
+	fs::CreateDir(porting::path_user + DIR_DELIM + "client");
+	fs::CreateDir(porting::path_user + DIR_DELIM + dir_path);
+	std::string rel_path = dir_path + serverlist_file;
+	std::string path = porting::path_user + DIR_DELIM + rel_path;
 	return path;
 }
 
@@ -51,7 +54,7 @@ std::vector<ServerListSpec> getLocal()
 	std::string liststring;
 	if(fs::PathExists(path))
 	{
-		std::ifstream istream(path.c_str(), std::ios::binary);
+		std::ifstream istream(path.c_str());
 		if(istream.is_open())
 		{
 			std::ostringstream ostream;
@@ -66,35 +69,22 @@ std::vector<ServerListSpec> getLocal()
 
 
 #if USE_CURL
-
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
-
-
 std::vector<ServerListSpec> getOnline()
 {
-	std::string liststring;
-	CURL *curl;
+	Json::Value root = fetchJsonValue((g_settings->get("serverlist_url")+"/list").c_str(),0);
 
-	curl = curl_easy_init();
-	if (curl)
-	{
-		CURLcode res;
+	std::vector<ServerListSpec> serverlist;
 
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+"/list").c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
-
-		res = curl_easy_perform(curl);
-		if (res != CURLE_OK)
-			errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" not found (internet connection?)"<<std::endl;
-		curl_easy_cleanup(curl);
+	if (root.isArray()) {
+		for (unsigned int i = 0; i < root.size(); i++)
+		{
+			if (root[i].isObject()) {
+				serverlist.push_back(root[i]);
+			}
+		}
 	}
-	return ServerList::deSerializeJson(liststring);
+
+	return serverlist;
 }
 
 #endif
@@ -187,30 +177,6 @@ std::string serialize(std::vector<ServerListSpec> serverlist)
 	return liststring;
 }
 
-std::vector<ServerListSpec> deSerializeJson(std::string liststring)
-{
-	std::vector<ServerListSpec> serverlist;
-	Json::Value root;
-	Json::Reader reader;
-	std::istringstream stream(liststring);
-	if (!liststring.size()) {
-		return serverlist;
-	}
-	if (!reader.parse( stream, root ) )
-	{
-		errorstream  << "Failed to parse server list " << reader.getFormattedErrorMessages();
-		return serverlist;
-	}
-	if (root["list"].isArray())
-	    for (unsigned int i = 0; i < root["list"].size(); i++)
-	{
-		if (root["list"][i].isObject()) {
-			serverlist.push_back(root["list"][i]);
-		}
-	}
-	return serverlist;
-}
-
 std::string serializeJson(std::vector<ServerListSpec> serverlist)
 {
 	Json::Value root;
@@ -228,31 +194,42 @@ std::string serializeJson(std::vector<ServerListSpec> serverlist)
 #if USE_CURL
 static size_t ServerAnnounceCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-    return 0;
     //((std::string*)userp)->append((char*)contents, size * nmemb);
-    //return size * nmemb;
+    return size * nmemb;
 }
-void sendAnnounce(std::string action, u16 clients) {
+void sendAnnounce(std::string action, u16 clients, double uptime, std::string gameid, std::vector<ModSpec> m_mods) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
 	server["port"] = g_settings->get("port");
-        if (action != "del") {
+	server["address"]	= g_settings->get("server_address");
+	if (action != "delete") {
 		server["name"]		= g_settings->get("server_name");
 		server["description"]	= g_settings->get("server_description");
-		server["address"]	= g_settings->get("server_address");
 		server["version"]	= VERSION_STRING;
 		server["url"]		= g_settings->get("server_url");
 		server["creative"]	= g_settings->get("creative_mode");
 		server["damage"]	= g_settings->get("enable_damage");
-		server["dedicated"]	= g_settings->get("server_dedicated");
 		server["password"]	= g_settings->getBool("disallow_empty_password");
 		server["pvp"]		= g_settings->getBool("enable_pvp");
 		server["clients"]	= clients;
 		server["clients_max"]	= g_settings->get("max_users");
+		if (uptime >=1) server["uptime"] = (int)uptime;
+		if (gameid!="") server["gameid"] = gameid;
 	}
-	if(server["action"] == "start")
+
+	if(server["action"] == "start") {
+		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
+		server["liquid_finite"]	= g_settings->getBool("liquid_finite");
+		server["mapgen"]	= g_settings->get("mg_name");
+		server["mods"] = Json::Value(Json::arrayValue);
+		for(std::vector<ModSpec>::iterator m = m_mods.begin(); m != m_mods.end(); m++) {
+			server["mods"].append(m->name);
+		}
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
+	}
+
 	Json::StyledWriter writer;
 	CURL *curl;
 	curl = curl_easy_init();
@@ -267,8 +244,8 @@ void sendAnnounce(std::string action, u16 clients) {
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 1);
 		res = curl_easy_perform(curl);
-		//if (res != CURLE_OK)
-		//	errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" not found (internet connection?)"<<std::endl;
+		if (res != CURLE_OK)
+			errorstream<<"Serverlist at url "<<g_settings->get("serverlist_url")<<" error ("<<curl_easy_strerror(res)<<")"<<std::endl;
 		curl_easy_cleanup(curl);
 	}
 

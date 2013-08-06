@@ -75,6 +75,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	}
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
+	sound_place = def.sound_place;
+	range = def.range;
 	return *this;
 }
 
@@ -107,13 +109,20 @@ void ItemDefinition::reset()
 		tool_capabilities = NULL;
 	}
 	groups.clear();
+	sound_place = SimpleSoundSpec();
+	range = -1;
 
 	node_placement_prediction = "";
 }
 
-void ItemDefinition::serialize(std::ostream &os) const
+void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 1); // version
+	if(protocol_version <= 17)
+		writeU8(os, 1); // version
+	else if(protocol_version <= 20)
+		writeU8(os, 2); // version
+	else
+		writeU8(os, 3); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -126,7 +135,7 @@ void ItemDefinition::serialize(std::ostream &os) const
 	std::string tool_capabilities_s = "";
 	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
-		tool_capabilities->serialize(tmp_os);
+		tool_capabilities->serialize(tmp_os, protocol_version);
 		tool_capabilities_s = tmp_os.str();
 	}
 	os<<serializeString(tool_capabilities_s);
@@ -137,6 +146,14 @@ void ItemDefinition::serialize(std::ostream &os) const
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
+	if(protocol_version > 17){
+		//serializeSimpleSoundSpec(sound_place, os);
+		os<<serializeString(sound_place.name);
+		writeF1000(os, sound_place.gain);
+	}
+	if(protocol_version > 20){
+		writeF1000(os, range);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -146,7 +163,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 1)
+	if(version < 1 || version > 3)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -171,10 +188,26 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
+	if(version == 1){
+		// We cant be sure that node_placement_prediction is send in version 1
+		try{
+			node_placement_prediction = deSerializeString(is);
+		}catch(SerializationError &e) {};
+		// Set the old default sound
+		sound_place.name = "default_place_node";
+		sound_place.gain = 0.5;
+	} else if(version >= 2) {
+		node_placement_prediction = deSerializeString(is);
+		//deserializeSimpleSoundSpec(sound_place, is);
+		sound_place.name = deSerializeString(is);
+		sound_place.gain = readF1000(is);
+	}
+	if(version == 3) {
+		range = readF1000(is);
+	}
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		node_placement_prediction = deSerializeString(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -202,23 +235,32 @@ class CItemDefManager: public IWritableItemDefManager
 public:
 	CItemDefManager()
 	{
+
 #ifndef SERVER
 		m_main_thread = get_current_thread_id();
 #endif
-	
 		clear();
 	}
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const core::list<ClientCached*> &values = m_clientcached.getValues();
-		for(core::list<ClientCached*>::ConstIterator
+		const std::list<ClientCached*> &values = m_clientcached.getValues();
+		for(std::list<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
-			cc->wield_mesh->drop();
+			if (cc->wield_mesh)
+				cc->wield_mesh->drop();
+			delete cc;
 		}
+
 #endif
+		for (std::map<std::string, ItemDefinition*>::iterator iter =
+				m_item_definitions.begin(); iter != m_item_definitions.end();
+				iter ++) {
+			delete iter->second;
+		}
+		m_item_definitions.clear();
 	}
 	virtual const ItemDefinition& get(const std::string &name_) const
 	{
@@ -266,6 +308,7 @@ public:
 		return m_item_definitions.find(name) != m_item_definitions.end();
 	}
 #ifndef SERVER
+public:
 	ClientCached* createClientCachedDirect(const std::string &name,
 			IGameDef *gamedef) const
 	{
@@ -296,7 +339,7 @@ public:
 		cc->inventory_texture = NULL;
 		if(def->inventory_image != "")
 		{
-			cc->inventory_texture = tsrc->getTextureRaw(def->inventory_image);
+			cc->inventory_texture = tsrc->getTexture(def->inventory_image);
 		}
 		else if(def->type == ITEM_NODE)
 		{
@@ -304,11 +347,7 @@ public:
 		}
 
 		// Create a wield mesh
-		if(cc->wield_mesh != NULL)
-		{
-			cc->wield_mesh->drop();
-			cc->wield_mesh = NULL;
-		}
+		assert(cc->wield_mesh == NULL);
 		if(def->type == ITEM_NODE && def->wield_image == "")
 		{
 			need_node_mesh = true;
@@ -324,7 +363,7 @@ public:
 				imagename = def->inventory_image;
 
 			cc->wield_mesh = createExtrudedMesh(
-					tsrc->getTextureRaw(imagename),
+					tsrc->getTexture(imagename),
 					driver,
 					def->wield_scale * v3f(40.0, 40.0, 4.0));
 			if(cc->wield_mesh == NULL)
@@ -359,7 +398,7 @@ public:
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
 			video::SColor c(255, 255, 255, 255);
-			if(g_settings->getS32("enable_shaders") != 0)
+			if(g_settings->getBool("enable_shaders"))
 				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
 			setMeshColor(node_mesh, c);
 
@@ -375,53 +414,47 @@ public:
 			*/
 			if(cc->inventory_texture == NULL)
 			{
-				core::dimension2d<u32> dim(64,64);
-				std::string rtt_texture_name = "INVENTORY_"
+				TextureFromMeshParams params;
+				params.mesh = node_mesh;
+				params.dim.set(64, 64);
+				params.rtt_texture_name = "INVENTORY_"
 					+ def->name + "_RTT";
-				v3f camera_position(0, 1.0, -1.5);
-				camera_position.rotateXZBy(45);
-				v3f camera_lookat(0, 0, 0);
-				core::CMatrix4<f32> camera_projection_matrix;
+				params.delete_texture_on_shutdown = true;
+				params.camera_position.set(0, 1.0, -1.5);
+				params.camera_position.rotateXZBy(45);
+				params.camera_lookat.set(0, 0, 0);
 				// Set orthogonal projection
-				camera_projection_matrix.buildProjectionMatrixOrthoLH(
+				params.camera_projection_matrix.buildProjectionMatrixOrthoLH(
 						1.65, 1.65, 0, 100);
+				params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
+				params.light_position.set(10, 100, -50);
+				params.light_color.set(1.0, 0.5, 0.5, 0.5);
+				params.light_radius = 1000;
 
-				video::SColorf ambient_light(0.2,0.2,0.2);
-				v3f light_position(10, 100, -50);
-				video::SColorf light_color(0.5,0.5,0.5);
-				f32 light_radius = 1000;
-
-				cc->inventory_texture = generateTextureFromMesh(
-					node_mesh, device, dim, rtt_texture_name,
-					camera_position,
-					camera_lookat,
-					camera_projection_matrix,
-					ambient_light,
-					light_position,
-					light_color,
-					light_radius);
+				cc->inventory_texture =
+					tsrc->generateTextureFromMesh(params);
 
 				// render-to-target didn't work
 				if(cc->inventory_texture == NULL)
 				{
 					cc->inventory_texture =
-						tsrc->getTextureRaw(f.tiledef[0].name);
+						tsrc->getTexture(f.tiledef[0].name);
 				}
 			}
 
 			/*
 				Use the node mesh as the wield mesh
 			*/
-			if(cc->wield_mesh == NULL)
-			{
-				// Scale to proper wield mesh proportions
-				scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
-						* def->wield_scale);
-				cc->wield_mesh = node_mesh;
-				cc->wield_mesh->grab();
-			}
 
-			// falling outside of here deletes node_mesh
+			// Scale to proper wield mesh proportions
+			scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
+					* def->wield_scale);
+
+			cc->wield_mesh = node_mesh;
+			cc->wield_mesh->grab();
+
+			//no way reference count can be smaller than 2 in this place!
+			assert(cc->wield_mesh->getReferenceCount() >= 2);
 		}
 
 		// Put in cache
@@ -495,7 +528,8 @@ public:
 
 		// Add the four builtin items:
 		//   "" is the hand
-		//   "unknown" is returned whenever an undefined item is accessed
+		//   "unknown" is returned whenever an undefined item
+		//     is accessed (is also the unknown node)
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
@@ -506,6 +540,7 @@ public:
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
+		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 
@@ -547,7 +582,7 @@ public:
 			m_aliases[name] = convert_to;
 		}
 	}
-	void serialize(std::ostream &os)
+	void serialize(std::ostream &os, u16 protocol_version)
 	{
 		writeU8(os, 0); // version
 		u16 count = m_item_definitions.size();
@@ -559,7 +594,7 @@ public:
 			ItemDefinition *def = i->second;
 			// Serialize ItemDefinition and write wrapped in a string
 			std::ostringstream tmp_os(std::ios::binary);
-			def->serialize(tmp_os);
+			def->serialize(tmp_os, protocol_version);
 			os<<serializeString(tmp_os.str());
 		}
 		writeU16(os, m_aliases.size());
@@ -599,7 +634,7 @@ public:
 	void processQueue(IGameDef *gamedef)
 	{
 #ifndef SERVER
-		while(m_get_clientcached_queue.size() > 0)
+		while(!m_get_clientcached_queue.empty())
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>
 					request = m_get_clientcached_queue.pop();
@@ -633,4 +668,3 @@ IWritableItemDefManager* createItemDefManager()
 {
 	return new CItemDefManager();
 }
-

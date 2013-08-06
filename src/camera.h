@@ -105,19 +105,19 @@ public:
 	void step(f32 dtime);
 
 	// Update the camera from the local player's position.
-	// frametime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-			f32 tool_reload_ratio);
+	// busytime is used to adjust the viewing range.
+	void update(LocalPlayer* player, f32 frametime, f32 busytime,
+			v2u32 screensize, f32 tool_reload_ratio);
 
 	// Render distance feedback loop
-	void updateViewingRange(f32 frametime_in);
+	void updateViewingRange(f32 frametime_in, f32 busytime_in);
 
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, u16 playeritem);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -151,10 +151,10 @@ private:
 	f32 m_fov_y;
 
 	// Stuff for viewing range calculations
-	f32 m_added_frametime;
+	f32 m_added_busytime;
 	s16 m_added_frames;
 	f32 m_range_old;
-	f32 m_frametime_old;
+	f32 m_busytime_old;
 	f32 m_frametime_counter;
 	f32 m_time_per_range;
 
@@ -166,6 +166,8 @@ private:
 	s32 m_view_bobbing_state;
 	// Speed of view bobbing animation
 	f32 m_view_bobbing_speed;
+	// Fall view bobbing
+	f32 m_view_bobbing_fall;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
 	f32 m_digging_anim;
@@ -173,6 +175,15 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button;
+
+	//dummymesh for camera
+	irr::scene::IAnimatedMesh* m_dummymesh;
+
+	// Animation when changing wielded item
+	f32 m_wield_change_timer;
+	scene::IMesh *m_wield_mesh_next;
+	u16 m_previous_playeritem;
+	std::string m_previous_itemname;
 };
 
 #endif

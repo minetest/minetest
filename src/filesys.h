@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32 // WINDOWS
 #define DIR_DELIM "\\"
-#define DIR_DELIM_C '\\'
+#define FILESYS_CASE_INSENSITIVE 1
 #else // POSIX
 #define DIR_DELIM "/"
-#define DIR_DELIM_C '/'
+#define FILESYS_CASE_INSENSITIVE 0
 #endif
 
 namespace fs
@@ -49,11 +49,16 @@ bool PathExists(std::string path);
 
 bool IsDir(std::string path);
 
+bool IsDirDelimiter(char c);
+
 // Only pass full paths to this one. True on success.
 // NOTE: The WIN32 version returns always true.
 bool RecursiveDelete(std::string path);
 
 bool DeleteSingleFileOrEmptyDirectory(std::string path);
+
+// Returns path to temp directory, can return "" on error
+std::string TempPath();
 
 /* Multiplatform */
 
@@ -68,6 +73,30 @@ bool RecursiveDeleteContent(std::string path);
 
 // Create all directories on the given path that don't already exist.
 bool CreateAllDirs(std::string path);
+
+// Copy a regular file
+bool CopyFileContents(std::string source, std::string target);
+
+// Copy directory and all subdirectories
+// Omits files and subdirectories that start with a period
+bool CopyDir(std::string source, std::string target);
+
+// Check if one path is prefix of another
+// For example, "/tmp" is a prefix of "/tmp" and "/tmp/file" but not "/tmp2"
+// Ignores case differences and '/' vs. '\\' on Windows
+bool PathStartsWith(std::string path, std::string prefix);
+
+// Remove last path component and the dir delimiter before and/or after it,
+// returns "" if there is only one path component.
+// removed: If non-NULL, receives the removed component(s).
+// count: Number of components to remove
+std::string RemoveLastPathComponent(std::string path,
+               std::string *removed = NULL, int count = 1);
+
+// Remove "." and ".." path components and for every ".." removed, remove
+// the last normal path component before it. Unlike AbsolutePath,
+// this does not resolve symlinks and check for existence of directories.
+std::string RemoveRelativePathComponents(std::string path);
 
 }//fs
 
