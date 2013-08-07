@@ -595,7 +595,7 @@ bool PathStartsWith(std::string path, std::string prefix)
 					&& !IsDirDelimiter(path[pathpos+len])
 					&& prefixpos+len < prefixsize
 					&& !IsDirDelimiter(
-						prefix[prefixsize+len]));
+						prefix[prefixpos+len]));
 			pathpos += len;
 			prefixpos += len;
 		}
