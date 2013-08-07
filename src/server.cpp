@@ -59,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback.h"
 #include "util/serialize.h"
 #include "defaultsettings.h"
+#include "socket.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -651,7 +652,7 @@ Server::Server(
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
-	      g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"), this),
+	      sockets_use_ipv6() && g_settings->getBool("ipv6_server"), this),
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_rollback(NULL),
 	m_rollback_sink_enabled(true),
