@@ -151,7 +151,7 @@ void set_default_settings(Settings *settings)
 #else
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
-	settings->setDefault("mono_font_path", porting::getDataPath("textures" DIR_DELIM "fontdejavusansmono.png"));
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "fontdejavusansmono.png"));
 #endif
 
 	// Server stuff
