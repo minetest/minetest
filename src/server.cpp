@@ -1810,7 +1810,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		verbosestream<<"Server: Got TOSERVER_INIT from "<<addr_s<<std::endl;
+		// If net_proto_version is set, this client has already been handled
+		if(getClient(peer_id)->net_proto_version != 0){
+			verbosestream<<"Server: Ignoring multiple TOSERVER_INITs from "
+					<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
+			return;
+		}
+
+		verbosestream<<"Server: Got TOSERVER_INIT from "<<addr_s<<" (peer_id="
+				<<peer_id<<")"<<std::endl;
 
 		// Do not allow multiple players in simple singleplayer mode.
 		// This isn't a perfect way to do it, but will suffice for now.
@@ -4651,6 +4659,8 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 
 	// If there are way too many clients, get rid of denied new ones immediately
 	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+		verbosestream<<"Server: DenyAccess: Too many clients; getting rid of "
+				<<"peer_id="<<peer_id<<" immediately"<<std::endl;
 		// Delete peer to stop sending it data
 		m_con.DeletePeer(peer_id);
 		// Delete client also to stop block sends and other stuff
