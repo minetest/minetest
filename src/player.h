@@ -108,7 +108,7 @@ public:
 	{
 		m_speed = speed;
 	}
-	
+
 	void accelerateHorizontal(v3f target_speed, f32 max_increase);
 	void accelerateVertical(v3f target_speed, f32 max_increase);
 
@@ -185,7 +185,7 @@ public:
 		return last_online;
 	}
 
-	virtual	void setLastOnline( u32 lo ) 
+	virtual	void setLastOnline( u32 lo )
 	{
 		last_online = lo;
 	}
@@ -236,7 +236,7 @@ public:
 	bool is_climbing;
 	bool swimming_vertical;
 	bool camera_barely_in_ceiling;
-	
+
 	u8 light;
 
 	Inventory inventory;
@@ -265,17 +265,17 @@ public:
 	float hurt_tilt_strength;
 
 	u16 peer_id;
-	
+
 	std::string inventory_formspec;
-	
+
 	PlayerControl control;
 	PlayerControl getPlayerControl()
 	{
 		return control;
 	}
-	
+
 	u32 keyPressed;
-	
+
 	std::vector<HudElement *> hud;
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
@@ -294,7 +294,7 @@ protected:
 	f32 m_last_pitch;
 	f32 m_last_yaw;
 	v3f m_last_pos;
-	u16 m_last_hp;	
+	u16 m_last_hp;
 	Inventory m_last_inventory;
 };
 
@@ -313,7 +313,7 @@ public:
 	void setPlayerSAO(PlayerSAO *sao)
 	{ m_sao = sao; }
 	void setPosition(const v3f &position);
-	
+
 private:
 	PlayerSAO *m_sao;
 };
