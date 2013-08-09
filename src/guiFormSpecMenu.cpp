@@ -410,8 +410,8 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
 		v2s32 geom;
-		geom.X = stoi(v_geom[0]) * (float)imgsize.X;
-		geom.Y = stoi(v_geom[1]) * (float)imgsize.Y;
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
