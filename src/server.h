@@ -21,37 +21,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SERVER_HEADER
 
 #include "connection.h"
-#include "environment.h"
-#include "irrlichttypes_bloated.h"
-#include <string>
-#include "porting.h"
+#include "irr_v3d.h"
 #include "map.h"
-#include "inventory.h"
-#include "ban.h"
 #include "hud.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "mods.h"
 #include "inventorymanager.h"
 #include "subgame.h"
-#include "sound.h"
-#include "util/thread.h"
-#include "util/string.h"
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
-#include <list> // Needed for rollbackRevertActions()
-#include <algorithm>
+#include "util/numeric.h"
+#include "util/thread.h"
+#include <string>
+#include <list>
+#include <map>
+#include <vector>
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
+class BanManager;
 class EventManager;
+class Inventory;
+class Player;
 class PlayerSAO;
 class IRollbackManager;
 class EmergeManager;
-//struct HudElement; ?????????
-class ScriptApi;
+class GameScripting;
+class ServerEnvironment;
+struct SimpleSoundSpec;
 
 
 class ServerError : public std::exception
@@ -128,33 +128,7 @@ private:
 };
 
 class Server;
-
-class ServerThread : public SimpleThread
-{
-	Server *m_server;
-
-public:
-
-	ServerThread(Server *server):
-		SimpleThread(),
-		m_server(server)
-	{
-	}
-
-	void * Thread();
-};
-
-struct PlayerInfo
-{
-	u16 id;
-	char name[PLAYERNAME_SIZE];
-	v3f position;
-	Address address;
-	float avg_rtt;
-
-	PlayerInfo();
-	void PrintLine(std::ostream *s);
-};
+class ServerThread;
 
 /*
 	Used for queueing and sorting block transfers in containers
@@ -362,8 +336,7 @@ private:
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef,
-		public IBackgroundBlockEmerger
+		public InventoryManager, public IGameDef
 {
 public:
 	/*
@@ -372,7 +345,6 @@ public:
 
 	Server(
 		const std::string &path_world,
-		const std::string &path_config,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode
 	);
@@ -387,14 +359,8 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	//std::list<PlayerInfo> getPlayerInfo();
-
 	// Environment must be locked when called
-	void setTimeOfDay(u32 time)
-	{
-		m_env->setTimeOfDay(time);
-		m_time_of_day_send_timer = 0;
-	}
+	void setTimeOfDay(u32 time);
 
 	bool getShutdownRequested()
 	{
@@ -433,25 +399,9 @@ public:
 	void reportPrivsModified(const std::string &name=""); // ""=all
 	void reportInventoryFormspecModified(const std::string &name);
 
-	// Saves g_settings to configpath given at initialization
-	void saveConfig();
-
-	void setIpBanned(const std::string &ip, const std::string &name)
-	{
-		m_banmanager.add(ip, name);
-		return;
-	}
-
-	void unsetIpBanned(const std::string &ip_or_name)
-	{
-		m_banmanager.remove(ip_or_name);
-		return;
-	}
-
-	std::string getBanDescription(const std::string &ip_or_name)
-	{
-		return m_banmanager.getBanDescription(ip_or_name);
-	}
+	void setIpBanned(const std::string &ip, const std::string &name);
+	void unsetIpBanned(const std::string &ip_or_name);
+	std::string getBanDescription(const std::string &ip_or_name);
 
 	Address getPeerAddress(u16 peer_id)
 	{
@@ -490,13 +440,11 @@ public:
 	void deleteParticleSpawner(const char *playername, u32 id);
 	void deleteParticleSpawnerAll(u32 id);
 
-	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
-
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
 
 	// Envlock and conlock should be locked when using scriptapi
-	ScriptApi *getScriptIface(){ return m_script; }
+	GameScripting *getScriptIface(){ return m_script; }
 
 	// Envlock should be locked when using the rollback manager
 	IRollbackManager *getRollbackManager(){ return m_rollback; }
@@ -581,6 +529,7 @@ private:
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
+	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
 	void SendPlayerBreath(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
@@ -677,22 +626,8 @@ private:
 	RemoteClient* getClientNoEx(u16 peer_id);
 
 	// When called, environment mutex should be locked
-	std::string getPlayerName(u16 peer_id)
-	{
-		Player *player = m_env->getPlayer(peer_id);
-		if(player == NULL)
-			return "[id="+itos(peer_id)+"]";
-		return player->getName();
-	}
-
-	// When called, environment mutex should be locked
-	PlayerSAO* getPlayerSAO(u16 peer_id)
-	{
-		Player *player = m_env->getPlayer(peer_id);
-		if(player == NULL)
-			return NULL;
-		return player->getPlayerSAO();
-	}
+	std::string getPlayerName(u16 peer_id);
+	PlayerSAO* getPlayerSAO(u16 peer_id);
 
 	/*
 		Get a player from memory or creates one.
@@ -714,8 +649,6 @@ private:
 
 	// World directory
 	std::string m_path_world;
-	// Path to user's configuration file ("" = no configuration file)
-	std::string m_path_config;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer
@@ -750,7 +683,7 @@ private:
 	u16 m_clients_number; //for announcing masterserver
 
 	// Ban checking
-	BanManager m_banmanager;
+	BanManager *m_banmanager;
 
 	// Rollback manager (behind m_env_mutex)
 	IRollbackManager *m_rollback;
@@ -762,7 +695,7 @@ private:
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	ScriptApi *m_script;
+	GameScripting *m_script;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -789,7 +722,7 @@ private:
 	JMutex m_step_dtime_mutex;
 
 	// The server mainly operates in this thread
-	ServerThread m_thread;
+	ServerThread *m_thread;
 
 	/*
 		Time related stuff

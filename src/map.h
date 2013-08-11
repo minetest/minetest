@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAP_HEADER
 #define MAP_HEADER
 
-#include <jmutex.h>
-#include <jmutexautolock.h>
-#include <jthread.h>
 #include <iostream>
 #include <sstream>
 #include <set>
@@ -33,11 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapgen.h" //for MapgenParams
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
-#include "environment.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -51,7 +46,9 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
+class ServerEnvironment;
 struct BlockMakeData;
+struct MapgenParams;
 
 
 /*

@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
 #include "player.h"
-#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "genericobject.h"
 #include "util/serialize.h"
 #include "util/mathconstants.h"
@@ -399,7 +399,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 LuaEntitySAO::~LuaEntitySAO()
 {
 	if(m_registered){
-		ENV_TO_SA(m_env)->luaentity_Remove(m_id);
+		m_env->getScriptIface()->luaentity_Remove(m_id);
 	}
 }
 
@@ -408,15 +408,18 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	
 	// Create entity from name
-	m_registered = ENV_TO_SA(m_env)->luaentity_Add(m_id, m_init_name.c_str());
+	m_registered = m_env->getScriptIface()->
+		luaentity_Add(m_id, m_init_name.c_str());
 	
 	if(m_registered){
 		// Get properties
-		ENV_TO_SA(m_env)->luaentity_GetProperties(m_id, &m_prop);
+		m_env->getScriptIface()->
+			luaentity_GetProperties(m_id, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
-		ENV_TO_SA(m_env)->luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
+		m_env->getScriptIface()->
+			luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
 	}
 }
 
@@ -530,7 +533,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 
 	if(m_registered){
-		ENV_TO_SA(m_env)->luaentity_Step(m_id, dtime);
+		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
 	}
 
 	if(send_recommended == false)
@@ -640,7 +643,8 @@ std::string LuaEntitySAO::getStaticData()
 	os<<serializeString(m_init_name);
 	// state
 	if(m_registered){
-		std::string state = ENV_TO_SA(m_env)->luaentity_GetStaticdata(m_id);
+		std::string state = m_env->getScriptIface()->
+			luaentity_GetStaticdata(m_id);
 		os<<serializeLongString(state);
 	} else {
 		os<<serializeLongString(m_init_state);
@@ -707,7 +711,7 @@ int LuaEntitySAO::punch(v3f dir,
 			m_removed = true;
 	}
 
-	ENV_TO_SA(m_env)->luaentity_Punch(m_id, puncher,
+	m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir);
 
 	return result.wear;
@@ -720,7 +724,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	// It's best that attachments cannot be clicked
 	if(isAttached())
 		return;
-	ENV_TO_SA(m_env)->luaentity_Rightclick(m_id, clicker);
+	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(v3f pos)

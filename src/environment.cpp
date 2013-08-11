@@ -17,9 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <set>
-#include <list>
-#include <map>
 #include "environment.h"
 #include "filesys.h"
 #include "porting.h"
@@ -31,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
-#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings, g_profiler
@@ -43,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "daynightratio.h"
 #include "map.h"
+#include "emerge.h"
 #include "util/serialize.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -190,17 +188,6 @@ std::list<Player*> Environment::getPlayers(bool ignore_disconnected)
 	return newlist;
 }
 
-void Environment::printPlayers(std::ostream &o)
-{
-	o<<"Players in environment:"<<std::endl;
-	for(std::list<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); i++)
-	{
-		Player *player = *i;
-		o<<"Player peer_id="<<player->peer_id<<std::endl;
-	}
-}
-
 u32 Environment::getDayNightRatio()
 {
 	bool smooth = g_settings->getBool("enable_shaders");
@@ -320,7 +307,8 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 	ServerEnvironment
 */
 
-ServerEnvironment::ServerEnvironment(ServerMap *map, ScriptApi *scriptIface,
+ServerEnvironment::ServerEnvironment(ServerMap *map,
+		GameScripting *scriptIface,
 		IGameDef *gamedef, IBackgroundBlockEmerger *emerger):
 	m_map(map),
 	m_script(scriptIface),
@@ -1149,7 +1137,8 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL){
 				// Block needs to be fetched first
-				m_emerger->queueBlockEmerge(p, false);
+				m_emerger->enqueueBlockEmerge(
+						PEER_ID_INEXISTENT, p, false);
 				m_active_blocks.m_list.erase(p);
 				continue;
 			}
@@ -1505,7 +1494,9 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 	if(m_active_object_messages.empty())
 		return ActiveObjectMessage(0);
 	
-	return m_active_object_messages.pop_front();
+	ActiveObjectMessage message = m_active_object_messages.front();
+	m_active_object_messages.pop_front();
+	return message;
 }
 
 /*
@@ -2574,13 +2565,14 @@ void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 
 ClientEnvEvent ClientEnvironment::getClientEvent()
 {
+	ClientEnvEvent event;
 	if(m_client_event_queue.empty())
-	{
-		ClientEnvEvent event;
 		event.type = CEE_NONE;
-		return event;
+	else {
+		event = m_client_event_queue.front();
+		m_client_event_queue.pop_front();
 	}
-	return m_client_event_queue.pop_front();
+	return event;
 }
 
 #endif // #ifndef SERVER

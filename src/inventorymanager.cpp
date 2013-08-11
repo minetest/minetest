@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "log.h"
 #include "environment.h"
-#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "serverobject.h"
 #include "main.h"  // for g_settings
 #include "settings.h"
@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
+#define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
 
 /*
 	InventoryLocation

@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
+#include "serialization.h"
 #include "util/serialize.h"
 #include "filesys.h"
 

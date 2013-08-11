@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"
+#include "serialization.h"
 #include "nodemetadata.h"
 #include "settings.h"
 #include "log.h"
@@ -33,9 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/mathconstants.h"
 #include "rollback_interface.h"
+#include "environment.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
-#include "mapgen_indev.h"
 #include "biome.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"

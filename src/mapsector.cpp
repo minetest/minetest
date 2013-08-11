@@ -18,12 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mapsector.h"
-#include "jmutexautolock.h"
-#ifndef SERVER
-#include "client.h"
-#endif
 #include "exceptions.h"
 #include "mapblock.h"
+#include "serialization.h"
 
 MapSector::MapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
 		differs_from_disk(false),

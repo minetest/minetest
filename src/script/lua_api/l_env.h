@@ -20,17 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_ENV_H_
 #define L_ENV_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
-
-#include "environment.h"
 #include "lua_api/l_base.h"
+#include "environment.h"
 
-class ModApiEnvMod
-	:public ModApiBase
-{
+class ModApiEnvMod : public ModApiBase {
 private:
 	// minetest.set_node(pos, node)
 	// pos = {x=num, y=num, z=num}
@@ -131,14 +124,6 @@ private:
 	// returns world-specific voxel manipulator
 	static int l_get_voxel_manip(lua_State *L);
 	
-	// minetest.get_mapgen_object(objectname)
-	// returns the requested object used during map generation
-	static int l_get_mapgen_object(lua_State *L);
-	
-	// minetest.set_mapgen_params(params)
-	// set mapgen parameters
-	static int l_set_mapgen_params(lua_State *L);
-
 	// minetest.clear_objects()
 	// clear all objects in the environment
 	static int l_clear_objects(lua_State *L);
@@ -159,10 +144,8 @@ private:
 	static int l_get_heat(lua_State *L);
 	static int l_get_humidity(lua_State *L);
 	
-	static struct EnumString es_MapgenObject[];
-	
 public:
-	bool Initialize(lua_State *L, int top);
+	static void Initialize(lua_State *L, int top);
 };
 
 class LuaABM : public ActiveBlockModifier

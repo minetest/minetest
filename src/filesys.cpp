@@ -18,12 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "filesys.h"
-#include "strfnd.h"
+#include "util/string.h"
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <sstream>
 #include <fstream>
 #include "log.h"
 

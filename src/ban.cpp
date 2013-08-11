@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <set>
 #include "strfnd.h"
+#include "util/string.h"
 #include "log.h"
 #include "filesys.h"
 

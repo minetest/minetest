@@ -127,11 +127,19 @@ engine.get_favorites(location) -> list of favorites
 }
 engine.delete_favorite(id, location) -> success
 
+Logging:
+engine.debug(line)
+^ Always printed to stderr and logfile (print() is redirected here)
+engine.log(line)
+engine.log(loglevel, line)
+^ loglevel one of "error", "action", "info", "verbose"
+
 Settings:
 engine.setting_set(name, value)
 engine.setting_get(name) -> string or nil
 engine.setting_setbool(name, value)
 engine.setting_getbool(name) -> bool or nil
+engine.setting_save() -> nil, save all settings to config file
 
 Worlds:
 engine.get_worlds() -> list of worlds

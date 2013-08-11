@@ -20,24 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_ITEM_H_
 #define L_ITEM_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
-
-#include <vector>
-
-#include "itemdef.h"
-#include "content_sao.h"
-#include "util/pointedthing.h"
-#include "inventory.h"
-
 #include "lua_api/l_base.h"
+#include "inventory.h"  // ItemStack
 
-class ModApiInventory;
-
-class LuaItemStack
-{
+class LuaItemStack : public ModApiBase {
 private:
 	ItemStack m_stack;
 
@@ -134,18 +120,14 @@ public:
 
 };
 
-class ModApiItemMod
-	:virtual public ModApiBase
-{
-public:
-	ModApiItemMod();
-
-	bool Initialize(lua_State *L, int top);
-
+class ModApiItemMod : public ModApiBase {
+private:
 	static int l_register_item_raw(lua_State *L);
 	static int l_register_alias_raw(lua_State *L);
 	static int l_get_content_id(lua_State *L);
 	static int l_get_name_from_content_id(lua_State *L);
+public:
+	static void Initialize(lua_State *L, int top);
 };
 
 

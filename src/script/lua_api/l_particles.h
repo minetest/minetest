@@ -20,20 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_PARTICLES_H_
 #define L_PARTICLES_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#include "lua_api/l_base.h"
 
 class ModApiParticles : public ModApiBase {
-public:
-	bool Initialize(lua_State *L, int top);
 private:
 	static int l_add_particle(lua_State *L);
 	static int l_add_particlespawner(lua_State *L);
 	static int l_delete_particlespawner(lua_State *L);
+
+public:
+	static void Initialize(lua_State *L, int top);
 };
 
 
 
-#endif // L_PARTICLES_H_
+#endif /* L_PARTICLES_H_ */

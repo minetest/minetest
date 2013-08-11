@@ -17,14 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "guiEngine.h"
 
-#include "irrlicht.h"
-
+#include "scripting_mainmenu.h"
+#include "config.h"
 #include "porting.h"
 #include "filesys.h"
 #include "main.h"
@@ -33,29 +29,12 @@ extern "C" {
 #include "sound.h"
 #include "sound_openal.h"
 
-#include "guiEngine.h"
+#include <IGUIStaticText.h>
+#include <ICameraSceneNode.h>
 
 #if USE_CURL
 #include <curl/curl.h>
 #endif
-
-/******************************************************************************/
-int menuscript_ErrorHandler(lua_State *L) {
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-	if (!lua_istable(L, -1)) {
-	lua_pop(L, 1);
-	return 1;
-	}
-	lua_getfield(L, -1, "traceback");
-	if (!lua_isfunction(L, -1)) {
-	lua_pop(L, 2);
-	return 1;
-	}
-	lua_pushvalue(L, 1);
-	lua_pushinteger(L, 2);
-	lua_call(L, 2, 1);
-	return 1;
-}
 
 /******************************************************************************/
 TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
@@ -66,13 +45,33 @@ TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
 /******************************************************************************/
 void TextDestGuiEngine::gotText(std::map<std::string, std::string> fields)
 {
-	m_engine->handleButtons(fields);
+	m_engine->getScriptIface()->handleMainMenuButtons(fields);
 }
 
 /******************************************************************************/
 void TextDestGuiEngine::gotText(std::wstring text)
 {
-	m_engine->handleEvent(wide_to_narrow(text));
+	m_engine->getScriptIface()->handleMainMenuEvent(wide_to_narrow(text));
+}
+
+/******************************************************************************/
+void MenuMusicFetcher::fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::string> &dst_datas)
+{
+	if(m_fetched.count(name))
+		return;
+	m_fetched.insert(name);
+	std::string base;
+	base = porting::path_share + DIR_DELIM + "sounds";
+	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+	int i;
+	for(i=0; i<10; i++)
+		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+	base = porting::path_user + DIR_DELIM + "sounds";
+	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+	for(i=0; i<10; i++)
+		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
 }
 
 /******************************************************************************/
@@ -91,8 +90,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_buttonhandler(0),
 	m_menu(0),
 	m_startgame(false),
-	m_engineluastack(0),
-	m_luaerrorhandler(-1),
+	m_script(0),
 	m_scriptdir(""),
 	m_irr_toplefttext(0),
 	m_clouds_enabled(true),
@@ -104,26 +102,6 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
-
-	//create luastack
-	m_engineluastack = luaL_newstate();
-
-	//load basic lua modules
-	luaL_openlibs(m_engineluastack);
-
-	//init
-	guiLuaApi::initialize(m_engineluastack,this);
-
-	//push errorstring
-	if (m_data->errormessage != "")
-	{
-		lua_getglobal(m_engineluastack, "gamedata");
-		int gamedata_idx = lua_gettop(m_engineluastack);
-		lua_pushstring(m_engineluastack, "errormessage");
-		lua_pushstring(m_engineluastack,m_data->errormessage.c_str());
-		lua_settable(m_engineluastack, gamedata_idx);
-		m_data->errormessage = "";
-	}
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
@@ -160,68 +138,76 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_menu->setTextDest(m_buttonhandler);
 	m_menu->useGettext(true);
 
-	std::string builtin_helpers
-		= porting::path_share + DIR_DELIM + "builtin"
-			+ DIR_DELIM + "misc_helpers.lua";
+	// Initialize scripting
 
-	if (!runScript(builtin_helpers)) {
-		errorstream
-			<< "GUIEngine::GUIEngine unable to load builtin helper script"
-			<< std::endl;
-		return;
-	}
+	infostream<<"GUIEngine: Initializing Lua"<<std::endl;
 
-	std::string menuscript = "";
-	if (g_settings->exists("main_menu_script"))
-		menuscript = g_settings->get("main_menu_script");
-	std::string builtin_menuscript =
-			porting::path_share + DIR_DELIM + "builtin"
-				+ DIR_DELIM + "mainmenu.lua";
+	m_script = new MainMenuScripting(this);
 
-	lua_pushcfunction(m_engineluastack, menuscript_ErrorHandler);
-	m_luaerrorhandler = lua_gettop(m_engineluastack);
-
-	m_scriptdir = menuscript.substr(0,menuscript.find_last_of(DIR_DELIM)-1);
-	if((menuscript == "") || (!runScript(menuscript))) {
-		infostream
-			<< "GUIEngine::GUIEngine execution of custom menu failed!"
-			<< std::endl
-			<< "\tfalling back to builtin menu"
-			<< std::endl;
-		m_scriptdir = fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "builtin"+ DIR_DELIM);
-		if(!runScript(builtin_menuscript)) {
-			errorstream
-				<< "GUIEngine::GUIEngine unable to load builtin menu"
-				<< std::endl;
-			assert("no future without mainmenu" == 0);
+	try {
+		if (m_data->errormessage != "")
+		{
+			m_script->setMainMenuErrorMessage(m_data->errormessage);
+			m_data->errormessage = "";
 		}
+
+		if (!loadMainMenuScript())
+			assert("no future without mainmenu" == 0);
+
+		run();
+	}
+	catch(LuaError &e) {
+		errorstream << "MAINMENU ERROR: " << e.what() << std::endl;
+		m_data->errormessage = e.what();
 	}
 
-	run();
-
-	m_menumanager->deletingMenu(m_menu);
+	m_menu->quitMenu();
 	m_menu->drop();
 	m_menu = 0;
 }
 
 /******************************************************************************/
-bool GUIEngine::runScript(std::string script) {
+bool GUIEngine::loadMainMenuScript()
+{
+	// Try custom menu script (main_menu_script)
 
-	int ret = 	luaL_loadfile(m_engineluastack, script.c_str()) ||
-				lua_pcall(m_engineluastack, 0, 0, m_luaerrorhandler);
-	if(ret){
-		errorstream<<"========== ERROR FROM LUA WHILE CREATING MAIN MENU ==========="<<std::endl;
-		errorstream<<"Failed to load and run script from "<<std::endl;
-		errorstream<<script<<":"<<std::endl;
-		errorstream<<std::endl;
-		errorstream<<lua_tostring(m_engineluastack, -1)<<std::endl;
-		errorstream<<std::endl;
-		errorstream<<"=================== END OF ERROR FROM LUA ===================="<<std::endl;
-		lua_pop(m_engineluastack, 1); // Pop error message from stack
-		lua_pop(m_engineluastack, 1); // Pop the error handler from stack
-		return false;
+	std::string menuscript = g_settings->get("main_menu_script");
+	if(menuscript != "") {
+		m_scriptdir = fs::RemoveLastPathComponent(menuscript);
+
+		if(m_script->loadMod(menuscript, "__custommenu")) {
+			// custom menu script loaded
+			return true;
+		}
+		else {
+			infostream
+				<< "GUIEngine: execution of custom menu failed!"
+				<< std::endl
+				<< "\tfalling back to builtin menu"
+				<< std::endl;
+		}
 	}
-	return true;
+
+	// Try builtin menu script (main_menu_script)
+
+	std::string builtin_menuscript =
+			porting::path_share + DIR_DELIM + "builtin"
+				+ DIR_DELIM + "mainmenu.lua";
+
+	m_scriptdir = fs::RemoveRelativePathComponents(
+			fs::RemoveLastPathComponent(builtin_menuscript));
+
+	if(m_script->loadMod(builtin_menuscript, "__builtinmenu")) {
+		// builtin menu script loaded
+		return true;
+	}
+	else {
+		errorstream
+			<< "GUIEngine: unable to load builtin menu"
+			<< std::endl;
+	}
+
+	return false;
 }
 
 /******************************************************************************/
@@ -257,52 +243,6 @@ void GUIEngine::run()
 		else
 			sleep_ms(25);
 	}
-
-	m_menu->quitMenu();
-}
-
-/******************************************************************************/
-void GUIEngine::handleEvent(std::string text)
-{
-	lua_getglobal(m_engineluastack, "engine");
-
-	lua_getfield(m_engineluastack, -1, "event_handler");
-
-	if(lua_isnil(m_engineluastack, -1))
-		return;
-
-	luaL_checktype(m_engineluastack, -1, LUA_TFUNCTION);
-
-	lua_pushstring(m_engineluastack, text.c_str());
-
-	if(lua_pcall(m_engineluastack, 1, 0, m_luaerrorhandler))
-		scriptError("error: %s", lua_tostring(m_engineluastack, -1));
-}
-
-/******************************************************************************/
-void GUIEngine::handleButtons(std::map<std::string, std::string> fields)
-{
-	lua_getglobal(m_engineluastack, "engine");
-
-	lua_getfield(m_engineluastack, -1, "button_handler");
-
-	if(lua_isnil(m_engineluastack, -1))
-		return;
-
-	luaL_checktype(m_engineluastack, -1, LUA_TFUNCTION);
-
-	lua_newtable(m_engineluastack);
-	for(std::map<std::string, std::string>::const_iterator
-		i = fields.begin(); i != fields.end(); i++){
-		const std::string &name = i->first;
-		const std::string &value = i->second;
-		lua_pushstring(m_engineluastack, name.c_str());
-		lua_pushlstring(m_engineluastack, value.c_str(), value.size());
-		lua_settable(m_engineluastack, -3);
-	}
-
-	if(lua_pcall(m_engineluastack, 1, 0, m_luaerrorhandler))
-		scriptError("error: %s", lua_tostring(m_engineluastack, -1));
 }
 
 /******************************************************************************/
@@ -318,7 +258,8 @@ GUIEngine::~GUIEngine()
 
 	//TODO: clean up m_menu here
 
-	lua_close(m_engineluastack);
+	infostream<<"GUIEngine: Deinitializing scripting"<<std::endl;
+	delete m_script;
 
 	m_irr_toplefttext->setText(L"");
 
@@ -563,17 +504,6 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 	}
 #endif
 	return false;
-}
-
-/******************************************************************************/
-void GUIEngine::scriptError(const char *fmt, ...)
-{
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	errorstream<<"MAINMENU ERROR: "<<buf;
 }
 
 /******************************************************************************/

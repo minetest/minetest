@@ -18,9 +18,111 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serialize.h"
+#include "pointer.h"
+#include "../exceptions.h"
 
 #include <sstream>
 #include <iomanip>
+
+// Creates a string with the length as the first two bytes
+std::string serializeString(const std::string &plain)
+{
+	//assert(plain.size() <= 65535);
+	if(plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
+	char buf[2];
+	writeU16((u8*)&buf[0], plain.size());
+	std::string s;
+	s.append(buf, 2);
+	s.append(plain);
+	return s;
+}
+
+// Creates a string with the length as the first two bytes from wide string
+std::string serializeWideString(const std::wstring &plain)
+{
+	//assert(plain.size() <= 65535);
+	if(plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
+	char buf[2];
+	writeU16((u8*)buf, plain.size());
+	std::string s;
+	s.append(buf, 2);
+	for(u32 i=0; i<plain.size(); i++)
+	{
+		writeU16((u8*)buf, plain[i]);
+		s.append(buf, 2);
+	}
+	return s;
+}
+
+// Reads a string with the length as the first two bytes
+std::string deSerializeString(std::istream &is)
+{
+	char buf[2];
+	is.read(buf, 2);
+	if(is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
+	u16 s_size = readU16((u8*)buf);
+	if(s_size == 0)
+		return "";
+	Buffer<char> buf2(s_size);
+	is.read(&buf2[0], s_size);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&buf2[0], s_size);
+	return s;
+}
+
+// Reads a wide string with the length as the first two bytes
+std::wstring deSerializeWideString(std::istream &is)
+{
+	char buf[2];
+	is.read(buf, 2);
+	if(is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
+	u16 s_size = readU16((u8*)buf);
+	if(s_size == 0)
+		return L"";
+	std::wstring s;
+	s.reserve(s_size);
+	for(u32 i=0; i<s_size; i++)
+	{
+		is.read(&buf[0], 2);
+		wchar_t c16 = readU16((u8*)buf);
+		s.append(&c16, 1);
+	}
+	return s;
+}
+
+// Creates a string with the length as the first four bytes
+std::string serializeLongString(const std::string &plain)
+{
+	char buf[4];
+	writeU32((u8*)&buf[0], plain.size());
+	std::string s;
+	s.append(buf, 4);
+	s.append(plain);
+	return s;
+}
+
+// Reads a string with the length as the first four bytes
+std::string deSerializeLongString(std::istream &is)
+{
+	char buf[4];
+	is.read(buf, 4);
+	if(is.gcount() != 4)
+		throw SerializationError("deSerializeLongString: size not read");
+	u32 s_size = readU32((u8*)buf);
+	if(s_size == 0)
+		return "";
+	Buffer<char> buf2(s_size);
+	is.read(&buf2[0], s_size);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&buf2[0], s_size);
+	return s;
+}
 
 // Creates a string encoded in JSON format (almost equivalent to a C string literal)
 std::string serializeJsonString(const std::string &plain)

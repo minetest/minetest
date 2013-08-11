@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPGEN_HEADER
 #define MAPGEN_HEADER
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "util/container.h" // UniqueQueue
 #include "gamedef.h"
 #include "nodedef.h"

@@ -21,10 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define INVENTORY_HEADER
 
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 #include "debug.h"
 #include "itemdef.h"
 

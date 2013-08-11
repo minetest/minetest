@@ -17,66 +17,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SCRIPTAPI_H_
-#define SCRIPTAPI_H_
-
-#include <map>
-#include <set>
-#include <vector>
+#ifndef S_SERVER_H_
+#define S_SERVER_H_
 
 #include "cpp_api/s_base.h"
-#include "cpp_api/s_player.h"
-#include "cpp_api/s_env.h"
-#include "cpp_api/s_node.h"
-#include "cpp_api/s_inventory.h"
-#include "cpp_api/s_entity.h"
+#include <set>
 
-class ModApiBase;
-
-/*****************************************************************************/
-/* Scriptapi <-> Core Interface                                              */
-/*****************************************************************************/
-
-class ScriptApi
-		: virtual public ScriptApiBase,
-		  public ScriptApiPlayer,
-		  public ScriptApiEnv,
-		  public ScriptApiNode,
-		  public ScriptApiDetached,
-		  public ScriptApiEntity
+class ScriptApiServer
+		: virtual public ScriptApiBase
 {
 public:
-	ScriptApi();
-	ScriptApi(Server* server);
-	~ScriptApi();
-
+	// Calls on_chat_message handlers
 	// Returns true if script handled message
 	bool on_chat_message(const std::string &name, const std::string &message);
 
-	/* server */
+	// Calls on_shutdown handlers
 	void on_shutdown();
 
 	/* auth */
 	bool getAuth(const std::string &playername,
-			std::string *dst_password, std::set<std::string> *dst_privs);
+			std::string *dst_password,
+			std::set<std::string> *dst_privs);
 	void createAuth(const std::string &playername,
 			const std::string &password);
 	bool setPassword(const std::string &playername,
 			const std::string &password);
-
-	/** register a lua api module to scriptapi */
-	static bool registerModApiModule(ModApiBase* prototype);
-	/** load a mod **/
-	bool loadMod(const std::string &scriptpath,const std::string &modname);
-
 private:
 	void getAuthHandler();
-	void readPrivileges(int index,std::set<std::string> &result);
-
-	bool scriptLoad(const char *path);
-
-	static std::vector<ModApiBase*>* m_mod_api_modules;
-
+	void readPrivileges(int index, std::set<std::string> &result);
 };
 
-#endif /* SCRIPTAPI_H_ */
+
+
+#endif /* S_SERVER_H_ */

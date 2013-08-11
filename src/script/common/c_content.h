@@ -87,14 +87,13 @@ void               read_object_properties    (lua_State *L,
                                               int index,
                                               ObjectProperties *prop);
 
-//TODO fix parameter oreder!
-void               push_inventory_list       (Inventory *inv,
-                                              const char *name,
-                                              lua_State *L);
-void               read_inventory_list       (Inventory *inv,
-                                              const char *name,
-                                              lua_State *L,
+void               push_inventory_list       (lua_State *L,
+                                              Inventory *inv,
+                                              const char *name);
+void               read_inventory_list       (lua_State *L,
                                               int tableindex,
+                                              Inventory *inv,
+                                              const char *name,
                                               Server* srv,
                                               int forcesize=-1);
 

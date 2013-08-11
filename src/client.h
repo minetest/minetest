@@ -25,12 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "jmutex.h"
 #include <ostream>
+#include <map>
 #include <set>
 #include <vector>
 #include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "filesys.h"
 #include "filecache.h"
 #include "localplayer.h"
 #include "server.h"
@@ -246,6 +246,57 @@ struct ClientEvent
 	};
 };
 
+/*
+	Packet counter
+*/
+
+class PacketCounter
+{
+public:
+	PacketCounter()
+	{
+	}
+
+	void add(u16 command)
+	{
+		std::map<u16, u16>::iterator n = m_packets.find(command);
+		if(n == m_packets.end())
+		{
+			m_packets[command] = 1;
+		}
+		else
+		{
+			n->second++;
+		}
+	}
+
+	void clear()
+	{
+		for(std::map<u16, u16>::iterator
+				i = m_packets.begin();
+				i != m_packets.end(); ++i)
+		{
+			i->second = 0;
+		}
+	}
+
+	void print(std::ostream &o)
+	{
+		for(std::map<u16, u16>::iterator
+				i = m_packets.begin();
+				i != m_packets.end(); ++i)
+		{
+			o<<"cmd "<<i->first
+					<<" count "<<i->second
+					<<std::endl;
+		}
+	}
+
+private:
+	// command, count
+	std::map<u16, u16> m_packets;
+};
+
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
 public:
@@ -419,8 +470,6 @@ private:
 	void Receive();
 	
 	void sendPlayerPos();
-	// This sends the player's current name etc to the server
-	void sendPlayerInfo();
 	// Send the item number 'item' as player item to the server
 	void sendPlayerItem(u16 item);
 	

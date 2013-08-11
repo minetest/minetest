@@ -21,8 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define EMERGE_HEADER
 
 #include <map>
-#include <queue>
-#include "util/thread.h"
+#include "irr_v3d.h"
+#include "util/container.h"
+#include "map.h" // for ManualMapVoxelManipulator
 
 #define MGPARAMS_SET_MGNAME      1
 #define MGPARAMS_SET_SEED        2
@@ -35,15 +36,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	{ if (enable_mapgen_debug_info) \
 	infostream << "EmergeThread: " x << std::endl; }
 
+class EmergeThread;
 class Mapgen;
 struct MapgenParams;
 struct MapgenFactory;
 class Biome;
 class BiomeDefManager;
-class EmergeThread;
-class ManualMapVoxelManipulator;
-
-#include "server.h"
+class Decoration;
+class Ore;
+class INodeDefManager;
+class Settings;
 
 struct BlockMakeData {
 	ManualMapVoxelManipulator *vmanip;
@@ -68,7 +70,14 @@ struct BlockEmergeData {
 	u8 flags;
 };
 
-class EmergeManager {
+class IBackgroundBlockEmerger
+{
+public:
+	virtual bool enqueueBlockEmerge(u16 peer_id, v3s16 p,
+			bool allow_generate) = 0;
+};
+
+class EmergeManager : public IBackgroundBlockEmerger {
 public:
 	INodeDefManager *ndef;
 
@@ -106,6 +115,7 @@ public:
 	Mapgen *createMapgen(std::string mgname, int mgid,
 						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
+	void triggerAllThreads();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
 	
 	void registerMapgen(std::string name, MapgenFactory *mgfactory);
@@ -117,45 +127,6 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
 	u32 getBlockSeed(v3s16 p);
-};
-
-class EmergeThread : public SimpleThread
-{
-public:
-	Server *m_server;
-	ServerMap *map;
-	EmergeManager *emerge;
-	Mapgen *mapgen;
-	bool enable_mapgen_debug_info;
-	int id;
-	
-	Event qevent;
-	std::queue<v3s16> blockqueue;
-	
-	EmergeThread(Server *server, int ethreadid):
-		SimpleThread(),
-		m_server(server),
-		map(NULL),
-		emerge(NULL),
-		mapgen(NULL),
-		id(ethreadid)
-	{
-	}
-
-	void *Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
-
-	bool popBlockEmerge(v3s16 *pos, u8 *flags);
-	bool getBlockOrStartGen(v3s16 p, MapBlock **b, 
-							BlockMakeData *data, bool allow_generate);
 };
 
 #endif

@@ -267,12 +267,11 @@ set(common_SRCS
 	base64.cpp
 	ban.cpp
 	biome.cpp
-	clientserver.cpp
 	staticobject.cpp
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
-	${SCRIPT_SRCS}
+	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
 )
 
@@ -329,9 +328,9 @@ set(minetest_SRCS
 	game.cpp
 	main.cpp
 	guiEngine.cpp
-	guiLuaApi.cpp
 	guiFileSelectMenu.cpp
 	convert_json.cpp
+	${minetest_SCRIPT_SRCS}
 )
 
 if(USE_FREETYPE)
@@ -341,11 +340,14 @@ if(USE_FREETYPE)
 	)
 endif(USE_FREETYPE)
 
+list(SORT minetest_SRCS)
+
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
 	main.cpp
 )
+list(SORT minetestserver_SRCS)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
