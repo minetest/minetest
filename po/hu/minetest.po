@@ -3,43 +3,44 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 00:07+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"PO-Revision-Date: 2013-08-11 03:05+0200\n"
+"Last-Translator: Sasikaa Lacikaa <sasikaa@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 1.4-dev\n"
 
 #: src/client.cpp:2877
 msgid "Item textures..."
-msgstr ""
+msgstr "Tárgy textúrák..."
 
 #: src/game.cpp:959
 msgid "Loading..."
-msgstr ""
+msgstr "Betöltés..."
 
 #: src/game.cpp:1019
 msgid "Creating server...."
-msgstr ""
+msgstr "Szerver létrehozása..."
 
 #: src/game.cpp:1035
 msgid "Creating client..."
-msgstr ""
+msgstr "Kliens létrehozása..."
 
 #: src/game.cpp:1050
 msgid "Resolving address..."
-msgstr ""
+msgstr "Cím létrehozása..."
 
 #: src/game.cpp:1126
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Csatlakozás a szerverhez..."
 
 #: src/game.cpp:1223
 msgid "Item definitions..."
@@ -48,402 +49,410 @@ msgstr ""
 #: src/game.cpp:1230
 msgid "Node definitions..."
 msgstr ""
+"\n"
+"Nézd meg a debug.txt-t a részletekért."
 
 #: src/game.cpp:1237
 msgid "Media..."
 msgstr ""
+"Figyelem: Néhány mod nincs beállítva.\n"
+"Alapértelmezett beállításokkal lesz elmentve.  "
 
 #: src/game.cpp:3418
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Dolog leállítása..."
 
 #: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"Figyelem: Néhány beállított mod hiányzik.\n"
+"Ezek a beállítások ellesznek távolítva a mentésből.  "
 
 #: src/guiConfigureWorld.cpp:184
 msgid "enabled"
-msgstr ""
+msgstr "Engedélyezve"
 
 #: src/guiConfigureWorld.cpp:194
 msgid "Enable All"
-msgstr ""
+msgstr "Összes engedélyezve"
 
 #: src/guiConfigureWorld.cpp:203
 msgid "Disable All"
-msgstr ""
+msgstr "Összes tiltva"
 
 #: src/guiConfigureWorld.cpp:211
 msgid "depends on:"
-msgstr ""
+msgstr "Attól függ:"
 
 #: src/guiConfigureWorld.cpp:224
 msgid "is required by:"
-msgstr ""
+msgstr "kell neki:"
 
 #: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
 #: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Mégse"
 
 #: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
-msgstr ""
+msgstr "Mentés"
 
 #: src/guiConfigureWorld.cpp:374
 msgid "Configuration saved.  "
-msgstr ""
+msgstr "Beállítások mentve.  "
 
 #: src/guiConfigureWorld.cpp:386
 msgid "Warning: Configuration not consistent.  "
-msgstr ""
+msgstr "Figyelem: A beállítások nem egyformák.  "
 
 #: src/guiConfirmMenu.cpp:119
 msgid "Yes"
-msgstr ""
+msgstr "Igen"
 
 #: src/guiConfirmMenu.cpp:127
 msgid "No"
-msgstr ""
+msgstr "Nem"
 
 #: src/guiCreateWorld.cpp:123
 msgid "World name"
-msgstr ""
+msgstr "Világ neve"
 
 #: src/guiCreateWorld.cpp:146
 msgid "Game"
-msgstr ""
+msgstr "Játék"
 
 #: src/guiCreateWorld.cpp:170
 msgid "Create"
-msgstr ""
+msgstr "Létrehozás"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Meghaltál."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Újra éledés"
 
 #: src/guiFormSpecMenu.cpp:585
 msgid "Left click: Move all items, Right click: Move single item"
-msgstr ""
+msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
 
 #: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:133
 msgid "Proceed"
-msgstr ""
+msgstr "Elfogadva"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Gombkiosztás. (Amíg ez a menü fejlesztve van, el van távolítva a "
+"minetest.conf-ból)"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Használat\" = Lemászás"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Duplán nyomd meg az \"ugrás\" gombot ahhoz hogy repülj"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
-msgstr ""
+msgstr "A gomb már használatban van"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
-msgstr ""
+msgstr "Nyomj meg egy gombot"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
-msgstr ""
+msgstr "Vissza"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
-msgstr ""
+msgstr "Előre"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Bal"
 
 #: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Jobb"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
-msgstr ""
+msgstr "Használni"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
-msgstr ""
+msgstr "Ugrás"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
-msgstr ""
+msgstr "Lopakodás"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
-msgstr ""
+msgstr "Dobás"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
-msgstr ""
+msgstr "Invertory"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr ""
+msgstr "Beszélgetés"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
-msgstr ""
+msgstr "Parancs"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
-msgstr ""
+msgstr "Konzol"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
-msgstr ""
+msgstr "Repülés bekapcsolása"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
-msgstr ""
+msgstr "Gyorsaság bekapcsolása"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
-msgstr ""
+msgstr "váltás noclip-re"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr ""
+msgstr "Távolság választása"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
-msgstr ""
+msgstr "Stacks nyomtatása"
 
 #: src/guiMainMenu.cpp:92
 msgid "Cannot create world: Name contains invalid characters"
-msgstr ""
+msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
 
 #: src/guiMainMenu.cpp:103
 msgid "Cannot create world: A world by this name already exists"
-msgstr ""
+msgstr "Nem sikerült a viág létrehozása: A világ neve már használva van"
 
 #: src/guiMainMenu.cpp:285
 msgid "Singleplayer"
-msgstr ""
+msgstr "Egyjátékos mód"
 
 #: src/guiMainMenu.cpp:288
 msgid "Multiplayer"
-msgstr ""
+msgstr "Többjátékos mód"
 
 #: src/guiMainMenu.cpp:291
 msgid "Advanced"
-msgstr ""
+msgstr "Haladó"
 
 #: src/guiMainMenu.cpp:294
 msgid "Settings"
-msgstr ""
+msgstr "Beállítások"
 
 #: src/guiMainMenu.cpp:297
 msgid "Credits"
-msgstr ""
+msgstr "Stáblista"
 
 #: src/guiMainMenu.cpp:330
 msgid "Select World:"
-msgstr ""
+msgstr "Világ kiválasztása:"
 
 #: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Törlés"
 
 #: src/guiMainMenu.cpp:369
 msgid "New"
-msgstr ""
+msgstr "Új"
 
 #: src/guiMainMenu.cpp:379
 msgid "Configure"
-msgstr ""
+msgstr "Beállítás"
 
 #: src/guiMainMenu.cpp:396 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Játék"
 
 #: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
 msgid "Creative Mode"
-msgstr ""
+msgstr "Kreatív mód"
 
 #: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
 msgid "Enable Damage"
-msgstr ""
+msgstr "Sérülés engedélyezése"
 
 #: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
 msgid "Name/Password"
-msgstr ""
+msgstr "Név/jelszó"
 
 #: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
 msgid "Favorites:"
-msgstr ""
+msgstr "Kedvencek:"
 
 #: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
 msgid "Public Server List:"
-msgstr ""
+msgstr "Publikus Szerver Lista:"
 
 #: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
 msgid "Address/Port"
-msgstr ""
+msgstr "Cím/Port"
 
 #: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
 msgid "Show Public"
-msgstr ""
+msgstr "Publikus mutatása"
 
 #: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
 msgid "Show Favorites"
-msgstr ""
+msgstr "Kedvencek mutatása"
 
 #: src/guiMainMenu.cpp:591
 msgid "Connect"
-msgstr ""
+msgstr "Csatlakozás"
 
 #: src/guiMainMenu.cpp:668
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
 
 #: src/guiMainMenu.cpp:678
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "Játék indítása / Csatlakozás"
 
 #: src/guiMainMenu.cpp:716
 msgid "Public"
-msgstr ""
+msgstr "Publikus"
 
 #: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
 msgid "Delete world"
-msgstr ""
+msgstr "Világ törlése"
 
 #: src/guiMainMenu.cpp:735
 msgid "Create world"
-msgstr ""
+msgstr "Világ létrehozása"
 
 #: src/guiMainMenu.cpp:773
 msgid "Fancy trees"
-msgstr ""
+msgstr "Szép fák"
 
 #: src/guiMainMenu.cpp:781
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Simított megvilágítás"
 
 #: src/guiMainMenu.cpp:789
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D Felhők"
 
 #: src/guiMainMenu.cpp:797
 msgid "Opaque water"
-msgstr ""
+msgstr "Átlátszó víz"
 
 #: src/guiMainMenu.cpp:809
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip-mapping"
 
 #: src/guiMainMenu.cpp:818
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Anzisztrópikus szűrés"
 
 #: src/guiMainMenu.cpp:827
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Bi-Linear Szűrés"
 
 #: src/guiMainMenu.cpp:836
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Tri-Linear Szűrés"
 
 #: src/guiMainMenu.cpp:846
 msgid "Shaders"
-msgstr ""
+msgstr "Shaderek"
 
 #: src/guiMainMenu.cpp:855
 msgid "Preload item visuals"
-msgstr ""
+msgstr "Előretöltött tárgy láthatóság"
 
 #: src/guiMainMenu.cpp:864
 msgid "Enable Particles"
-msgstr ""
+msgstr "Részecskék engedélyezése"
 
 #: src/guiMainMenu.cpp:873
 msgid "Finite liquid"
-msgstr ""
+msgstr "Végtelen folyadék"
 
 #: src/guiMainMenu.cpp:885
 msgid "Change keys"
-msgstr ""
+msgstr "Gomb választása"
 
 #: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
 msgid "Address required."
-msgstr ""
+msgstr "Cím szükséges."
 
 #: src/guiMainMenu.cpp:1231
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Nem törölhető a világ: Nincs kiválasztva"
 
 #: src/guiMainMenu.cpp:1246
 msgid "Files to be deleted"
-msgstr ""
+msgstr "A fájl törölve lett"
 
 #: src/guiMainMenu.cpp:1267
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
 
 #: src/guiMainMenu.cpp:1286
 msgid "Cannot configure world: Nothing selected"
-msgstr ""
+msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
 
 #: src/guiMainMenu.cpp:1428
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Hiba az összes világ törlése közben"
 
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
-msgstr ""
+msgstr "Régi jelszó"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "Új jelszó"
 
 #: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
-msgstr ""
+msgstr "Jelszó visszaigazolás"
 
 #: src/guiPasswordChange.cpp:160
 msgid "Change"
-msgstr ""
+msgstr "Változtat"
 
 #: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Nem eggyeznek a jelszavak!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
-msgstr ""
+msgstr "Tovább"
 
 #: src/guiPauseMenu.cpp:133
 msgid "Change Password"
-msgstr ""
+msgstr "Jelszó változtatás"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
-msgstr ""
+msgstr "Hangerő"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Kilépés a menübe"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr ""
+msgstr "Kilépés az OP-rendszerbe"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -459,327 +468,338 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Alap beállítások:\n"
+"- WASD: Mozgás\n"
+"- Space: Ugrás/Mászás\n"
+"- Shift: Lopakodás/Lefele menés\n"
+"- Q: Tárgyak eldobása\n"
+"- I: Invertory\n"
+"- Egér: Forgás/Nézelődés\n"
+"- Egér Bal-gomb: Ásás/ütés\n"
+"- Egér jobb-gomb: elhejezés/használat\n"
+"- Egér görgő: Tárgyak kiválasztása\n"
+"- T: Beszélgetés\n"
 
 #: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Hangerő: "
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Kilépés"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Bal gomb"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Középső gomb"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Jobb gomb"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "X gomb 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "Vissza"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Törlés"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr ""
+msgstr "Enter"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tabulátor"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "X Gomb 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr ""
+msgstr "Kapital"
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr ""
+msgstr "Controll"
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Kanaa"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Menü"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Pillanat-álj"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "váltás"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "Konvertálás"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr ""
+msgstr "Kilépés"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Befejezés"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junjaa"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Kanjii"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nem konvertált"
 
 #: src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Elfogadva"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr ""
+msgstr "Vége"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr ""
+msgstr "Otthon"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "Mód váltás"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr ""
+msgstr "Következő"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Priorr"
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Hely"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "Le"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Tömörít"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "Nyomtat"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr ""
+msgstr "Kiválaszt"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Fel"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Segítség"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Beilleszt"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "Verzió"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Bal Windows"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "Prog"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numerikus billentyű 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numerikus billentyű 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Jobb Windows"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "Alvás"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numerikus billentyű 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numerikus billentyű 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numerikus billentyű 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numerikus billentyű 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numerikus billentyű 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numerikus billentyű 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Numerikus billentyű *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Numerikus billentyű +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Numerikus billentyű -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Numerikus billentyű /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numerikus billentyű 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numerikus billentyű 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Numerikus lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Skroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Bal Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Jobb Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Bal Controll"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Bal menü"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Jobb Controll"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Jobb menü"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Vessző"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Minusz"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "tizedes"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Plusz"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "Attnn"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "CrSell"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Erase OEFF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "ExSell"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clearr"
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "PA11"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Nagyítás"
 
 #: src/main.cpp:1680
 msgid "Main Menu"
-msgstr ""
+msgstr "Fő menü"
 
 #: src/main.cpp:2040
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "A világ betöltése közben hiba"
 
 #: src/main.cpp:2053
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Nincs kiválasztott világ, nincs cím. Nincs mit tenni."
 
 #: src/main.cpp:2061
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Nem található, vagy nem betöltött játék \""
 
 #: src/main.cpp:2075
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Nem valós játék spec."
 
 #: src/main.cpp:2116
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Csatlakozási hiba (Idő lejárt?)"
