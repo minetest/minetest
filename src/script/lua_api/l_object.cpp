@@ -17,13 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
-#include "common/c_converter.h"
-#include "common/c_content.h"
 #include "lua_api/l_object.h"
-#include "common/c_internal.h"
+#include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
+#include "common/c_converter.h"
+#include "common/c_content.h"
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
@@ -275,7 +274,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 	if(co == NULL) return 0;
 	// Do it
 	InventoryLocation loc = co->getInventoryLocation();
-	if(STACK_TO_SERVER(L)->getInventory(loc) != NULL)
+	if(getServer(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L); // An object may have no inventory (nil)
@@ -330,7 +329,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
 	// Do it
-	ItemStack item = read_item(L, 2,STACK_TO_SERVER(L));
+	ItemStack item = read_item(L, 2, getServer(L));
 	bool success = co->setWieldedItem(item);
 	lua_pushboolean(L, success);
 	return 1;
@@ -739,7 +738,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 	std::string formspec = luaL_checkstring(L, 2);
 
 	player->inventory_formspec = formspec;
-	STACK_TO_SERVER(L)->reportInventoryFormspecModified(player->getName());
+	getServer(L)->reportInventoryFormspecModified(player->getName());
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -841,7 +840,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
 
-	u32 id = STACK_TO_SERVER(L)->hudAdd(player, elem);
+	u32 id = getServer(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {
 		delete elem;
 		return 0;
@@ -863,7 +862,7 @@ int ObjectRef::l_hud_remove(lua_State *L)
 	if (!lua_isnil(L, 2))
 		id = lua_tonumber(L, 2);
 
-	if (!STACK_TO_SERVER(L)->hudRemove(player, id))
+	if (!getServer(L)->hudRemove(player, id))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -929,7 +928,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->offset;
 	}
 
-	STACK_TO_SERVER(L)->hudChange(player, id, stat, value);
+	getServer(L)->hudChange(player, id, stat, value);
 
 	lua_pushboolean(L, true);
 	return 1;
@@ -999,7 +998,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 			mask  |= esp[i].num;
 		}
 	}
-	if (!STACK_TO_SERVER(L)->hudSetFlags(player, flags, mask))
+	if (!getServer(L)->hudSetFlags(player, flags, mask))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1016,7 +1015,7 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 
 	s32 hotbar_itemcount = lua_tonumber(L, 2);
 
-	if (!STACK_TO_SERVER(L)->hudSetHotbarItemcount(player, hotbar_itemcount))
+	if (!getServer(L)->hudSetHotbarItemcount(player, hotbar_itemcount))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1139,5 +1138,3 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
 	{0,0}
 };
-
-REGISTER_LUA_REF(ObjectRef)

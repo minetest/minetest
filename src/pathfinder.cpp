@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 
 #include "pathfinder.h"
+#include "environment.h"
+#include "map.h"
+#include "log.h"
 
 #ifdef PATHFINDER_DEBUG
 #include <iomanip>

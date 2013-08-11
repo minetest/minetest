@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "server.h"
+#include "serverobject.h"
 #include "mapgen.h"
 
 struct EnumString es_TileAnimationType[] =
@@ -694,8 +694,7 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(Inventory *inv, const char *name,
-		lua_State *L)
+void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 {
 	InventoryList *invlist = inv->getList(name);
 	if(invlist == NULL){
@@ -709,8 +708,8 @@ void push_inventory_list(Inventory *inv, const char *name,
 }
 
 /******************************************************************************/
-void read_inventory_list(Inventory *inv, const char *name,
-		lua_State *L, int tableindex, Server* srv,int forcesize)
+void read_inventory_list(lua_State *L, int tableindex,
+		Inventory *inv, const char *name, Server* srv, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;

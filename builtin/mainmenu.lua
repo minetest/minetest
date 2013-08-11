@@ -1,3 +1,5 @@
+print = engine.debug
+math.randomseed(os.time())
 os.setlocale("C", "numeric")
 
 local scriptpath = engine.get_scriptdir()
@@ -9,6 +11,7 @@ mt_color_dark_green = "#003300"
 
 --for all other colors ask sfan5 to complete his worK!
 
+dofile(scriptpath .. DIR_DELIM .. "misc_helpers.lua")
 dofile(scriptpath .. DIR_DELIM .. "filterlist.lua")
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
 dofile(scriptpath .. DIR_DELIM .. "modstore.lua")

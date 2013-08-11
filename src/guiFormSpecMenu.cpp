@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIComboBox.h>
 #include "log.h"
 #include "tile.h" // ITextureSource
+#include "hud.h" // drawItemStack
 #include "util/string.h"
 #include "util/numeric.h"
 #include "filesys.h"
@@ -60,92 +61,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			return;															\
 	}
 
-
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		IGameDef *gamedef)
-{
-	if(item.empty())
-		return;
-	
-	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
-
-	// Draw the inventory texture
-	if(texture != NULL)
-	{
-		const video::SColor color(255,255,255,255);
-		const video::SColor colors[] = {color,color,color,color};
-		driver->draw2DImage(texture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getOriginalSize())),
-			clip, colors, true);
-	}
-
-	if(def.type == ITEM_TOOL && item.wear != 0)
-	{
-		// Draw a progressbar
-		float barheight = rect.getHeight()/16;
-		float barpad_x = rect.getWidth()/16;
-		float barpad_y = rect.getHeight()/16;
-		core::rect<s32> progressrect(
-			rect.UpperLeftCorner.X + barpad_x,
-			rect.LowerRightCorner.Y - barpad_y - barheight,
-			rect.LowerRightCorner.X - barpad_x,
-			rect.LowerRightCorner.Y - barpad_y);
-
-		// Shrink progressrect by amount of tool damage
-		float wear = item.wear / 65535.0;
-		int progressmid =
-			wear * progressrect.UpperLeftCorner.X +
-			(1-wear) * progressrect.LowerRightCorner.X;
-
-		// Compute progressbar color
-		//   wear = 0.0: green
-		//   wear = 0.5: yellow
-		//   wear = 1.0: red
-		video::SColor color(255,255,255,255);
-		int wear_i = MYMIN(floor(wear * 600), 511);
-		wear_i = MYMIN(wear_i + 10, 511);
-		if(wear_i <= 255)
-			color.set(255, wear_i, 255, 0);
-		else
-			color.set(255, 255, 511-wear_i, 0);
-
-		core::rect<s32> progressrect2 = progressrect;
-		progressrect2.LowerRightCorner.X = progressmid;
-		driver->draw2DRectangle(color, progressrect2, clip);
-
-		color = video::SColor(255,0,0,0);
-		progressrect2 = progressrect;
-		progressrect2.UpperLeftCorner.X = progressmid;
-		driver->draw2DRectangle(color, progressrect2, clip);
-	}
-
-	if(font != NULL && item.count >= 2)
-	{
-		// Get the item count as a string
-		std::string text = itos(item.count);
-		v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
-		v2s32 sdim(dim.X,dim.Y);
-
-		core::rect<s32> rect2(
-			/*rect.UpperLeftCorner,
-			core::dimension2d<u32>(rect.getWidth(), 15)*/
-			rect.LowerRightCorner - sdim,
-			sdim
-		);
-
-		video::SColor bgcolor(128,0,0,0);
-		driver->draw2DRectangle(bgcolor, rect2, clip);
-
-		video::SColor color(255,255,255,255);
-		font->draw(text.c_str(), rect2, color, false, false, clip);
-	}
-}
 
 /*
 	GUIFormSpecMenu

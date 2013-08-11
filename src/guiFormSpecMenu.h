@@ -57,13 +57,6 @@ public:
 	virtual std::string resolveText(std::string str){ return str; }
 };
 
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		IGameDef *gamedef);
-
 class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec

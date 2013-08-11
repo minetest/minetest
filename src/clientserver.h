@@ -20,10 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "util/pointer.h"
-
-SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
-
 /*
 	changes by PROTOCOL_VERSION:
 

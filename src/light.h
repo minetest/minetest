@@ -21,16 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LIGHT_HEADER
 
 #include "irrlichttypes.h"
-#include "debug.h"
-
-/*
-	Day/night cache:
-	Meshes are cached for different day-to-night transition values
-*/
-
-/*#define DAYNIGHT_CACHE_COUNT 3
-// First one is day, last one is night.
-extern u32 daynight_cache_ratios[DAYNIGHT_CACHE_COUNT];*/
 
 /*
 	Lower level lighting stuff

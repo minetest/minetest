@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "modalMenu.h"
 #include "clouds.h"
-#include "guiLuaApi.h"
 #include "guiFormSpecMenu.h"
 #include "sound.h"
 
@@ -50,6 +49,7 @@ typedef enum {
 /* forward declarations                                                       */
 /******************************************************************************/
 class GUIEngine;
+class MainMenuScripting;
 struct MainMenuData;
 struct SimpleSoundSpec;
 
@@ -86,35 +86,17 @@ class MenuMusicFetcher: public OnDemandSoundFetcher
 {
 	std::set<std::string> m_fetched;
 public:
-
 	void fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
-			std::set<std::string> &dst_datas)
-	{
-		if(m_fetched.count(name))
-			return;
-		m_fetched.insert(name);
-		std::string base;
-		base = porting::path_share + DIR_DELIM + "sounds";
-		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		int i;
-		for(i=0; i<10; i++)
-			dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-		base = porting::path_user + DIR_DELIM + "sounds";
-		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		for(i=0; i<10; i++)
-			dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-		}
+			std::set<std::string> &dst_datas);
 };
 
 /** implementation of main menu based uppon formspecs */
 class GUIEngine {
-public:
-	/** TextDestGuiEngine needs to transfer data to engine */
-	friend class TextDestGuiEngine;
-	/** guiLuaApi is used to initialize contained stack */
-	friend class guiLuaApi;
+	/** grant ModApiMainMenu access to private members */
+	friend class ModApiMainMenu;
 
+public:
 	/**
 	 * default constructor
 	 * @param dev device to draw at
@@ -132,20 +114,12 @@ public:
 	/** default destructor */
 	virtual ~GUIEngine();
 
-	s32 playSound(SimpleSoundSpec spec, bool looped);
-	void stopSound(s32 handle);
-
-protected:
 	/**
-	 * process field data recieved from formspec
-	 * @param fields data in field format
+	 * return MainMenuScripting interface
 	 */
-	void handleButtons(std::map<std::string, std::string> fields);
-	/**
-	 * process events received from formspec
-	 * @param text events in textual form
-	 */
-	void handleEvent(std::string text);
+	MainMenuScripting* getScriptIface() {
+		return m_script;
+	}
 
 	/**
 	 * return dir of current menuscript
@@ -156,7 +130,10 @@ protected:
 
 private:
 
-	/* run main menu loop */
+	/** find and run the main menu script */
+	bool loadMainMenuScript();
+
+	/** run main menu loop */
 	void run();
 
 	/** handler to limit frame rate within main menu */
@@ -185,27 +162,8 @@ private:
 	/** variable used to abort menu and return back to main game handling */
 	bool					m_startgame;
 
-	/**
-	 * initialize lua stack
-	 * @param L stack to initialize
-	 */
-	void initalize_api(lua_State * L);
-
-	/**
-	 * run a lua script
-	 * @param script full path to script to run
-	 */
-	bool runScript(std::string script);
-
-	/**
-	 * script error handler to process errors within lua
-	 */
-	void scriptError(const char *fmt, ...);
-
-	/** lua stack */
-	lua_State*				m_engineluastack;
-	/** lua internal stack number of error handler*/
-	int						m_luaerrorhandler;
+	/** scripting interface */
+	MainMenuScripting*			m_script;
 
 	/** script basefolder */
 	std::string				m_scriptdir;
@@ -283,6 +241,12 @@ private:
 	bool					m_clouds_enabled;
 	/** data used to draw clouds */
 	clouddata 				m_cloud;
+
+	/** start playing a sound and return handle */
+	s32 playSound(SimpleSoundSpec spec, bool looped);
+	/** stop playing a sound started with playSound() */
+	void stopSound(s32 handle);
+
 
 };
 

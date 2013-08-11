@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
-#include "connection.h" // PEER_ID_INEXISTENT
 #include "settings.h"
 #include "content_sao.h"
 #include "util/numeric.h"

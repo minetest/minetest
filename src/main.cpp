@@ -84,6 +84,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 Settings main_settings;
 Settings *g_settings = &main_settings;
+std::string g_settings_path;
 
 // Global profiler
 Profiler main_profiler;
@@ -913,7 +914,7 @@ int main(int argc, char *argv[])
 	*/
 	
 	// Path of configuration file in use
-	std::string configpath = "";
+	g_settings_path = "";
 	
 	if(cmd_args.exists("config"))
 	{
@@ -924,7 +925,7 @@ int main(int argc, char *argv[])
 					<<cmd_args.get("config")<<"\""<<std::endl;
 			return 1;
 		}
-		configpath = cmd_args.get("config");
+		g_settings_path = cmd_args.get("config");
 	}
 	else
 	{
@@ -946,14 +947,14 @@ int main(int argc, char *argv[])
 			bool r = g_settings->readConfigFile(filenames[i].c_str());
 			if(r)
 			{
-				configpath = filenames[i];
+				g_settings_path = filenames[i];
 				break;
 			}
 		}
 		
 		// If no path found, use the first one (menu creates the file)
-		if(configpath == "")
-			configpath = filenames[0];
+		if(g_settings_path == "")
+			g_settings_path = filenames[0];
 	}
 	
 	// Initialize debug streams
@@ -1193,7 +1194,7 @@ int main(int argc, char *argv[])
 		verbosestream<<_("Using gameid")<<" ["<<gamespec.id<<"]"<<std::endl;
 
 		// Create server
-		Server server(world_path, configpath, gamespec, false);
+		Server server(world_path, gamespec, false);
 		server.start(port);
 		
 		// Run server
@@ -1573,6 +1574,11 @@ int main(int argc, char *argv[])
 
 				}
 
+				if(menudata.errormessage != ""){
+					error_message = narrow_to_wide(menudata.errormessage);
+					continue;
+				}
+
 				//update worldspecs (necessary as new world may have been created)
 				worldspecs = getAvailableWorlds();
 
@@ -1675,7 +1681,10 @@ int main(int argc, char *argv[])
 
 			// Break out of menu-game loop to shut down cleanly
 			if(device->run() == false || kill == true) {
-				g_settings->updateConfigFile(configpath.c_str());
+				if(g_settings_path != "") {
+					g_settings->updateConfigFile(
+						g_settings_path.c_str());
+				}
 				break;
 			}
 
@@ -1694,7 +1703,6 @@ int main(int argc, char *argv[])
 				current_address,
 				current_port,
 				error_message,
-				configpath,
 				chat_backend,
 				gamespec,
 				simple_singleplayer_mode
@@ -1749,8 +1757,8 @@ int main(int argc, char *argv[])
 #endif // !SERVER
 	
 	// Update configuration file
-	if(configpath != "")
-		g_settings->updateConfigFile(configpath.c_str());
+	if(g_settings_path != "")
+		g_settings->updateConfigFile(g_settings_path.c_str());
 	
 	// Print modified quicktune values
 	{

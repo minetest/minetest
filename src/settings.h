@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SETTINGS_HEADER
 
 #include "irrlichttypes_bloated.h"
+#include "exceptions.h"
 #include <string>
-#include <jthread.h>
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include "strfnd.h"

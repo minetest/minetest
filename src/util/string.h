@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_STRING_HEADER
 
 #include "../irrlichttypes.h"
-#include "../strfnd.h" // For trim()
-#include "pointer.h"
+#include <stdlib.h>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -32,6 +31,9 @@ struct FlagDesc {
 	const char *name;
 	u32 flag;
 };
+
+std::wstring narrow_to_wide(const std::string& mbs);
+std::string wide_to_narrow(const std::wstring& wcs);
 
 static inline std::string padStringRight(std::string s, size_t len)
 {
@@ -95,29 +97,6 @@ inline bool str_starts_with(const std::wstring& str, const std::wstring& prefix,
 	return true;
 }
 
-inline std::wstring narrow_to_wide(const std::string& mbs)
-{
-	size_t wcl = mbs.size();
-	Buffer<wchar_t> wcs(wcl+1);
-	size_t l = mbstowcs(*wcs, mbs.c_str(), wcl);
-	if(l == (size_t)(-1))
-		return L"<invalid multibyte string>";
-	wcs[l] = 0;
-	return *wcs;
-}
-
-inline std::string wide_to_narrow(const std::wstring& wcs)
-{
-	size_t mbl = wcs.size()*4;
-	SharedBuffer<char> mbs(mbl+1);
-	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
-	if(l == (size_t)(-1))
-		mbs[0] = 0;
-	else
-		mbs[l] = 0;
-	return *mbs;
-}
-
 // Split a string using the given delimiter. Returns a vector containing
 // the component parts.
 inline std::vector<std::wstring> str_split(const std::wstring &str, wchar_t delimiter)
@@ -141,6 +120,29 @@ inline std::string lowercase(const std::string &s)
 		s2 += c;
 	}
 	return s2;
+}
+
+inline std::string trim(const std::string &s)
+{
+	size_t front = 0;
+	while(s[front] == ' '    ||
+	      s[front] == '\t'   ||
+	      s[front] == '\r'   ||
+	      s[front] == '\n'
+	     )
+		++front;
+
+	size_t back = s.size();
+	while(back > front &&
+	      (s[back-1] == ' '  ||
+	       s[back-1] == '\t' ||
+	       s[back-1] == '\r' ||
+	       s[back-1] == '\n'
+	      )
+	     )
+		--back;
+
+	return s.substr(front, back - front);
 }
 
 inline bool is_yes(const std::string &s)

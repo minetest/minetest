@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "object_properties.h"
 #include "irrlichttypes_bloated.h"
+#include "exceptions.h"
 #include "util/serialize.h"
 #include <sstream>
-#include <map>
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 #define PP2(x) "("<<(x).X<<","<<(x).Y<<")"

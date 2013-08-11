@@ -17,53 +17,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
-#include "lua_api/l_base.h"
 #include "lua_api/l_env.h"
-#include "lua_api/l_vmanip.h"
-#include "environment.h"
-#include "server.h"
-#include "daynightratio.h"
-#include "util/pointedthing.h"
-#include "content_sao.h"
-
-#include "common/c_converter.h"
-#include "common/c_content.h"
-#include "common/c_internal.h"
+#include "lua_api/l_internal.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_noise.h"
+#include "lua_api/l_vmanip.h"
+#include "common/c_converter.h"
+#include "common/c_content.h"
+#include "scripting_game.h"
+#include "environment.h"
+#include "server.h"
+#include "nodedef.h"
+#include "daynightratio.h"
+#include "util/pointedthing.h"
+#include "content_sao.h"
 #include "treegen.h"
 #include "pathfinder.h"
-#include "emerge.h"
-#include "mapgen_v7.h"
 
 
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
 				if( env == NULL) return 0
 				
-struct EnumString ModApiEnvMod::es_MapgenObject[] =
-{
-	{MGOBJ_VMANIP,    "voxelmanip"},
-	{MGOBJ_HEIGHTMAP, "heightmap"},
-	{MGOBJ_BIOMEMAP,  "biomemap"},
-	{MGOBJ_HEATMAP,   "heatmap"},
-	{MGOBJ_HUMIDMAP,  "humiditymap"},
-	{0, NULL},
-};
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
 {
-	ScriptApi* scriptIface = SERVER_TO_SA(env);
+	GameScripting *scriptIface = env->getScriptIface();
 	scriptIface->realityCheck();
 
-	lua_State* L = scriptIface->getStack();
+	lua_State *L = scriptIface->getStack();
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
@@ -196,8 +182,13 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
+	ScriptApiItem *scriptIfaceItem = getScriptApi<ScriptApiItem>(L);
+	Server *server = getServer(L);
+	INodeDefManager *ndef = server->ndef();
+	IItemDefManager *idef = server->idef();
+
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = readnode(L, 2, env->getGameDef()->ndef());
+	MapNode n = readnode(L, 2, ndef);
 
 	// Don't attempt to load non-loaded area as of now
 	MapNode n_old = env->getMap().getNodeNoEx(pos);
@@ -206,8 +197,6 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 		return 1;
 	}
 	// Create item to place
-	INodeDefManager *ndef = getServer(L)->ndef();
-	IItemDefManager *idef = getServer(L)->idef();
 	ItemStack item(ndef->get(n).name, 1, 0, "", idef);
 	// Make pointed position
 	PointedThing pointed;
@@ -216,7 +205,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
 	// Place it with a NULL placer (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = get_scriptapi(L)->item_OnPlace(item, NULL, pointed);
+	bool success = scriptIfaceItem->item_OnPlace(item, NULL, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -226,6 +215,8 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 int ModApiEnvMod::l_dig_node(lua_State *L)
 {
 	GET_ENV_PTR;
+
+	ScriptApiNode *scriptIfaceNode = getScriptApi<ScriptApiNode>(L);
 
 	v3s16 pos = read_v3s16(L, 1);
 
@@ -237,7 +228,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	}
 	// Dig it out with a NULL digger (appears in Lua as a
 	// non-functional ObjectRef)
-	bool success = get_scriptapi(L)->node_on_dig(pos, n, NULL);
+	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -247,6 +238,8 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 int ModApiEnvMod::l_punch_node(lua_State *L)
 {
 	GET_ENV_PTR;
+
+	ScriptApiNode *scriptIfaceNode = getScriptApi<ScriptApiNode>(L);
 
 	v3s16 pos = read_v3s16(L, 1);
 
@@ -258,7 +251,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	}
 	// Punch it with a NULL puncher (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = get_scriptapi(L)->node_on_punch(pos, n, NULL);
+	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -361,7 +354,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	if(objectid == 0)
 		return 0;
 	// Return ObjectRef
-	get_scriptapi(L)->objectrefGetOrCreate(obj);
+	getScriptApiBase(L)->objectrefGetOrCreate(obj);
 	return 1;
 }
 
@@ -420,7 +413,7 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 		return 1;
 	}
 	// Put player on stack
-	get_scriptapi(L)->objectrefGetOrCreate(sao);
+	getScriptApiBase(L)->objectrefGetOrCreate(sao);
 	return 1;
 }
 
@@ -446,7 +439,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 		// Insert object reference into table
 		lua_pushvalue(L, table_insert);
 		lua_pushvalue(L, table);
-		get_scriptapi(L)->objectrefGetOrCreate(obj);
+		getScriptApiBase(L)->objectrefGetOrCreate(obj);
 		if(lua_pcall(L, 2, 0, 0))
 			script_error(L, "error: %s", lua_tostring(L, -1));
 	}
@@ -624,142 +617,6 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 	return 1;
 }
 
-// minetest.get_mapgen_object(objectname)
-// returns the requested object used during map generation
-int ModApiEnvMod::l_get_mapgen_object(lua_State *L)
-{
-	const char *mgobjstr = lua_tostring(L, 1);
-	
-	int mgobjint;
-	if (!string_to_enum(es_MapgenObject, mgobjint, mgobjstr ? mgobjstr : ""))
-		return 0;
-		
-	enum MapgenObject mgobj = (MapgenObject)mgobjint;
-
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	Mapgen *mg = emerge->getCurrentMapgen();
-	if (!mg)
-		return 0;
-	
-	size_t maplen = mg->csize.X * mg->csize.Z;
-	
-	int nargs = 1;
-	
-	switch (mgobj) {
-		case MGOBJ_VMANIP: {
-			ManualMapVoxelManipulator *vm = mg->vm;
-			
-			// VoxelManip object
-			LuaVoxelManip *o = new LuaVoxelManip(vm, true);
-			*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
-			luaL_getmetatable(L, "VoxelManip");
-			lua_setmetatable(L, -2);
-			
-			// emerged min pos
-			push_v3s16(L, vm->m_area.MinEdge);
-
-			// emerged max pos
-			push_v3s16(L, vm->m_area.MaxEdge);
-			
-			nargs = 3;
-			
-			break; }
-		case MGOBJ_HEIGHTMAP: {
-			if (!mg->heightmap)
-				return 0;
-			
-			lua_newtable(L);
-			for (size_t i = 0; i != maplen; i++) {
-				lua_pushinteger(L, mg->heightmap[i]);
-				lua_rawseti(L, -2, i + 1);
-			}
-			break; }
-		case MGOBJ_BIOMEMAP: {
-			if (!mg->biomemap)
-				return 0;
-			
-			lua_newtable(L);
-			for (size_t i = 0; i != maplen; i++) {
-				lua_pushinteger(L, mg->biomemap[i]);
-				lua_rawseti(L, -2, i + 1);
-			}
-			break; }
-		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
-		case MGOBJ_HUMIDMAP:
-			if (strcmp(emerge->params->mg_name.c_str(), "v7"))
-				return 0;
-			
-			MapgenV7 *mgv7 = (MapgenV7 *)mg;
-
-			float *arr = (mgobj == MGOBJ_HEATMAP) ? 
-				mgv7->noise_heat->result : mgv7->noise_humidity->result;
-			if (!arr)
-				return 0;
-			
-			lua_newtable(L);
-			for (size_t i = 0; i != maplen; i++) {
-				lua_pushnumber(L, arr[i]);
-				lua_rawseti(L, -2, i + 1);
-			}
-			break; }
-	}
-	
-	return nargs;
-}
-
-// minetest.set_mapgen_params(params)
-// set mapgen parameters
-int ModApiEnvMod::l_set_mapgen_params(lua_State *L)
-{
-	if (!lua_istable(L, 1))
-		return 0;
-
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	if (emerge->mapgen.size())
-		return 0;
-	
-	MapgenParams *oparams = new MapgenParams;
-	u32 paramsmodified = 0;
-	u32 flagmask = 0;
-	
-	lua_getfield(L, 1, "mgname");
-	if (lua_isstring(L, -1)) {
-		oparams->mg_name = std::string(lua_tostring(L, -1));
-		paramsmodified |= MGPARAMS_SET_MGNAME;
-	}
-	
-	lua_getfield(L, 1, "seed");
-	if (lua_isnumber(L, -1)) {
-		oparams->seed = lua_tointeger(L, -1);
-		paramsmodified |= MGPARAMS_SET_SEED;
-	}
-	
-	lua_getfield(L, 1, "water_level");
-	if (lua_isnumber(L, -1)) {
-		oparams->water_level = lua_tointeger(L, -1);
-		paramsmodified |= MGPARAMS_SET_WATER_LEVEL;
-	}
-
-	lua_getfield(L, 1, "flags");
-	if (lua_isstring(L, -1)) {
-		std::string flagstr = std::string(lua_tostring(L, -1));
-		oparams->flags = readFlagString(flagstr, flagdesc_mapgen);
-		paramsmodified |= MGPARAMS_SET_FLAGS;
-	
-		lua_getfield(L, 1, "flagmask");
-		if (lua_isstring(L, -1)) {
-			flagstr = std::string(lua_tostring(L, -1));
-			flagmask = readFlagString(flagstr, flagdesc_mapgen);
-		}
-	}
-	
-	emerge->luaoverride_params          = oparams;
-	emerge->luaoverride_params_modified = paramsmodified;
-	emerge->luaoverride_flagmask        = flagmask;
-	
-	return 0;
-}
-
 // minetest.clear_objects()
 // clear all objects in the environment
 int ModApiEnvMod::l_clear_objects(lua_State *L)
@@ -913,48 +770,39 @@ int ModApiEnvMod::l_get_humidity(lua_State *L)
 }
 
 
-bool ModApiEnvMod::Initialize(lua_State *L,int top)
+void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
-
-	bool retval = true;
-
-	retval &= API_FCT(set_node);
-	retval &= API_FCT(add_node);
-	retval &= API_FCT(add_item);
-	retval &= API_FCT(remove_node);
-	retval &= API_FCT(get_node);
-	retval &= API_FCT(get_node_or_nil);
-	retval &= API_FCT(get_node_light);
-	retval &= API_FCT(place_node);
-	retval &= API_FCT(dig_node);
-	retval &= API_FCT(punch_node);
-	retval &= API_FCT(get_node_max_level);
-	retval &= API_FCT(get_node_level);
-	retval &= API_FCT(set_node_level);
-	retval &= API_FCT(add_node_level);
-	retval &= API_FCT(add_entity);
-	retval &= API_FCT(get_meta);
-	retval &= API_FCT(get_node_timer);
-	retval &= API_FCT(get_player_by_name);
-	retval &= API_FCT(get_objects_inside_radius);
-	retval &= API_FCT(set_timeofday);
-	retval &= API_FCT(get_timeofday);
-	retval &= API_FCT(find_node_near);
-	retval &= API_FCT(find_nodes_in_area);
-	retval &= API_FCT(get_perlin);
-	retval &= API_FCT(get_perlin_map);
-	retval &= API_FCT(get_voxel_manip);
-	retval &= API_FCT(get_mapgen_object);
-	retval &= API_FCT(set_mapgen_params);
-	retval &= API_FCT(clear_objects);
-	retval &= API_FCT(spawn_tree);
-	retval &= API_FCT(find_path);
-	retval &= API_FCT(line_of_sight);
-	retval &= API_FCT(transforming_liquid_add);
-	retval &= API_FCT(get_heat);
-	retval &= API_FCT(get_humidity);
-
-	return retval;
+	API_FCT(set_node);
+	API_FCT(add_node);
+	API_FCT(add_item);
+	API_FCT(remove_node);
+	API_FCT(get_node);
+	API_FCT(get_node_or_nil);
+	API_FCT(get_node_light);
+	API_FCT(place_node);
+	API_FCT(dig_node);
+	API_FCT(punch_node);
+	API_FCT(get_node_max_level);
+	API_FCT(get_node_level);
+	API_FCT(set_node_level);
+	API_FCT(add_node_level);
+	API_FCT(add_entity);
+	API_FCT(get_meta);
+	API_FCT(get_node_timer);
+	API_FCT(get_player_by_name);
+	API_FCT(get_objects_inside_radius);
+	API_FCT(set_timeofday);
+	API_FCT(get_timeofday);
+	API_FCT(find_node_near);
+	API_FCT(find_nodes_in_area);
+	API_FCT(get_perlin);
+	API_FCT(get_perlin_map);
+	API_FCT(get_voxel_manip);
+	API_FCT(clear_objects);
+	API_FCT(spawn_tree);
+	API_FCT(find_path);
+	API_FCT(line_of_sight);
+	API_FCT(transforming_liquid_add);
+	API_FCT(get_heat);
+	API_FCT(get_humidity);
 }
-
-ModApiEnvMod modapienv_prototype;

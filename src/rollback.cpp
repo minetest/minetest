@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "util/serialize.h"
 #include "util/string.h"
-#include "strfnd.h"
 #include "util/numeric.h"
 #include "inventorymanager.h" // deserializing InventoryLocations
 

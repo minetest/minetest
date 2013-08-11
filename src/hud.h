@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_HEADER
 
 #include "irrlichttypes_extrabloated.h"
+#include <string>
 
 #define HUD_DIR_LEFT_RIGHT 0
 #define HUD_DIR_RIGHT_LEFT 1
@@ -41,8 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define HUD_HOTBAR_ITEMCOUNT_DEFAULT 8
 #define HUD_HOTBAR_ITEMCOUNT_MAX     23
-
-class Player;
 
 enum HudElementType {
 	HUD_ELEM_IMAGE     = 0,
@@ -76,23 +75,18 @@ struct HudElement {
 	v2f offset;
 };
 
-
-inline u32 hud_get_free_id(Player *player) {
-	size_t size = player->hud.size();
-	for (size_t i = 0; i != size; i++) {
-		if (!player->hud[i])
-			return i;
-	}
-	return size;
-}
-
 #ifndef SERVER
 
+#include <vector>
 #include <IGUIFont.h>
+#include "irr_aabb3d.h"
 
-#include "gamedef.h"
-#include "inventory.h"
-#include "localplayer.h"
+class IGameDef;
+class ITextureSource;
+class Inventory;
+class InventoryList;
+class LocalPlayer;
+struct ItemStack;
 
 class Hud {
 public:
@@ -129,6 +123,14 @@ public:
 	void drawCrosshair();
 	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
 };
+
+void drawItemStack(video::IVideoDriver *driver,
+		gui::IGUIFont *font,
+		const ItemStack &item,
+		const core::rect<s32> &rect,
+		const core::rect<s32> *clip,
+		IGameDef *gamedef);
+
 
 #endif
 

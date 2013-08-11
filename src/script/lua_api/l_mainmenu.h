@@ -17,42 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GUILUAAPI_H_
-#define GUILUAAPI_H_
+#ifndef L_MAINMENU_H_
+#define L_MAINMENU_H_
 
-/******************************************************************************/
-/* Includes                                                                   */
-/******************************************************************************/
-#include "serverlist.h"
-
-/******************************************************************************/
-/* Typedefs and macros                                                        */
-/******************************************************************************/
-typedef int (*lua_CFunction) (lua_State *L);
-
-/******************************************************************************/
-/* forward declarations                                                       */
-/******************************************************************************/
-class GUIEngine;
-
-
-/******************************************************************************/
-/* declarations                                                               */
-/******************************************************************************/
+#include "lua_api/l_base.h"
 
 /** Implementation of lua api support for mainmenu */
-class guiLuaApi {
-
-public:
-	/**
-	 * initialize given Lua stack
-	 * @param L lua stack to initialize
-	 * @param engine pointer to GUIEngine element to use as reference
-	 */
-	static void initialize(lua_State* L,GUIEngine* engine);
-
-	/** default destructor */
-	virtual ~guiLuaApi() {}
+class ModApiMainMenu : public ModApiBase {
 
 private:
 	/**
@@ -78,27 +49,6 @@ private:
 	 * @return bool value of requested variable
 	 */
 	static int getBoolData(lua_State *L, std::string name,bool& valid);
-
-	/**
-	 * get the corresponding engine pointer from a lua stack
-	 * @param L stack to read pointer from
-	 * @return pointer to GUIEngine
-	 */
-	static GUIEngine* get_engine(lua_State *L);
-
-
-	/**
-	 * register a static member function as lua api call at current position of stack
-	 * @param L stack to registe fct to
-	 * @param name of function within lua
-	 * @param fct C-Function to call on lua call of function
-	 * @param top current top of stack
-	 */
-	static bool registerFunction(	lua_State* L,
-									const char* name,
-									lua_CFunction fct,
-									int top
-								);
 
 	/**
 	 * check if a path is within some of minetests folders
@@ -147,16 +97,6 @@ private:
 
 	static int l_update_formspec(lua_State *L);
 
-	//settings
-
-	static int l_setting_set(lua_State *L);
-
-	static int l_setting_get(lua_State *L);
-
-	static int l_setting_getbool(lua_State *L);
-
-	static int l_setting_setbool(lua_State *L);
-
 	//filesystem
 
 	static int l_get_scriptdir(lua_State *L);
@@ -184,6 +124,14 @@ private:
 	static int l_download_file(lua_State *L);
 
 
+public:
+	/**
+	 * initialize this API module
+	 * @param L lua stack to initialize
+	 * @param top index (in lua stack) of global API table
+	 */
+	static void Initialize(lua_State *L, int top);
+
 };
 
-#endif
+#endif /* L_MAINMENU_H_ */

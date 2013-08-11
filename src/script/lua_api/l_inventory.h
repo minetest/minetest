@@ -20,23 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_INVENTORY_H_
 #define L_INVENTORY_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
-
-#include "inventorymanager.h"
-#include "player.h"
-#include "serverobject.h"
-#include "inventory.h"
-
 #include "lua_api/l_base.h"
+
+#include "inventory.h"
+#include "inventorymanager.h"
+
+class Player;
+
 /*
 	InvRef
 */
 
-class InvRef
-{
+class InvRef : public ModApiBase {
 private:
 	InventoryLocation m_loc;
 
@@ -116,22 +111,19 @@ public:
 	static void Register(lua_State *L);
 };
 
-class ModApiInventory
-	: public ModApiBase
-{
-public:
-	ModApiInventory();
-
-	bool Initialize(lua_State *L, int top);
-
-	static int l_create_detached_inventory_raw(lua_State *L);
-	static int l_get_inventory(lua_State *L);
+class ModApiInventory : public ModApiBase {
 private:
+	static int l_create_detached_inventory_raw(lua_State *L);
+
+	static int l_get_inventory(lua_State *L);
+
 	static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 			lua_State *L, int tableindex, int forcesize);
 	static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 			lua_State *L);
 
+public:
+	static void Initialize(lua_State *L, int top);
 };
 
 #endif /* L_INVENTORY_H_ */

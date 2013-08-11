@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "nodedef.h"
 #include "util/timetaker.h"
+#include <string.h>  // memcpy, memset
 
 /*
 	Debug stuff

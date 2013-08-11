@@ -191,15 +191,14 @@ TODO: Should we have a receiver_peer_id also?
 	[6] u8 channel
 sender_peer_id:
 	Unique to each peer.
-	value 0 is reserved for making new connections
-	value 1 is reserved for server
+	value 0 (PEER_ID_INEXISTENT) is reserved for making new connections
+	value 1 (PEER_ID_SERVER) is reserved for server
+	these constants are defined in constants.h
 channel:
 	The lower the number, the higher the priority is.
 	Only channels 0, 1 and 2 exist.
 */
 #define BASE_HEADER_SIZE 7
-#define PEER_ID_INEXISTENT 0
-#define PEER_ID_SERVER 1
 #define CHANNEL_COUNT 3
 /*
 Packet types:

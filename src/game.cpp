@@ -915,7 +915,6 @@ void the_game(
 	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath,
 	ChatBackend &chat_backend,
 	const SubgameSpec &gamespec, // Used for local game,
 	bool simple_singleplayer_mode
@@ -1001,7 +1000,7 @@ void the_game(
 		draw_load_screen(text, device, font,0,25);
 		delete[] text;
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath, gamespec,
+		server = new Server(map_dir, gamespec,
 				simple_singleplayer_mode);
 		server->start(port);
 	}
@@ -3340,7 +3339,7 @@ void the_game(
 		*/
 		{
 			TimeTaker timer("endScene");
-			endSceneX(driver);
+			driver->endScene();
 			endscenetime = timer.stop(true);
 		}
 

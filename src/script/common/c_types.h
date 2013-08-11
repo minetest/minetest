@@ -50,26 +50,6 @@ public:
 	}
 };
 
-class ModNameStorer
-{
-private:
-	lua_State *L;
-public:
-	ModNameStorer(lua_State *L_, const std::string modname):
-		L(L_)
-	{
-		// Store current modname in registry
-		lua_pushstring(L, modname.c_str());
-		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
-	}
-	~ModNameStorer()
-	{
-		// Clear current modname in registry
-		lua_pushnil(L);
-		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
-	}
-};
-
 class LuaError : public std::exception
 {
 public:
