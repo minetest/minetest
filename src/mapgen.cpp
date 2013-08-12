@@ -1130,33 +1130,3 @@ void MapgenV7Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }
-
-
-/////////////////////////////////// legacy static functions for farmesh
-
-s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
-	//just need to return something
-	s16 level = 5;
-	return level;
-}
-
-
-bool Mapgen::get_have_beach(u64 seed, v2s16 p2d) {
-	double sandnoise = noise2d_perlin(
-				0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
-				seed+59420, 3, 0.50);
- 
-	return (sandnoise > 0.15);
-}
-
-
-double Mapgen::tree_amount_2d(u64 seed, v2s16 p) {
-	double noise = noise2d_perlin(
-			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
-			seed+2, 4, 0.66);
-	double zeroval = -0.39;
-	if(noise < zeroval)
-		return 0;
-	else
-		return 0.04 * (noise-zeroval) / (1.0-zeroval);
-}

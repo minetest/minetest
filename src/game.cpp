@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "particles.h"
 #include "camera.h"
-#include "farmesh.h"
 #include "mapblock.h"
 #include "settings.h"
 #include "profiler.h"
@@ -1308,16 +1307,6 @@ void the_game(
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 	
 	/*
-		FarMesh
-	*/
-
-	FarMesh *farmesh = NULL;
-	if(g_settings->getBool("enable_farmesh"))
-	{
-		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
-	}
-
-	/*
 		A copy of the local inventory
 	*/
 	Inventory local_inventory(itemdef);
@@ -1406,7 +1395,6 @@ void the_game(
 	bool ldown_for_dig = false;
 
 	float damage_flash = 0;
-	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
 	float jump_timer = 0;
 	bool reset_jump_timer = false;
@@ -2869,17 +2857,12 @@ void the_game(
 			Fog range
 		*/
 	
-		if(farmesh)
-		{
-			fog_range = BS*farmesh_range;
-		}
-		else
-		{
+		if(draw_control.range_all)
+			fog_range = 100000*BS;
+		else {
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
 			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
-			if(draw_control.range_all)
-				fog_range = 100000*BS;
 		}
 
 		/*
@@ -2918,7 +2901,6 @@ void the_game(
 		sky->update(time_of_day_smooth, time_brightness, direct_brightness,
 				sunlight_seen);
 		
-		float brightness = sky->getBrightness();
 		video::SColor bgcolor = sky->getBgColor();
 		video::SColor skycolor = sky->getSkyColor();
 
@@ -2936,22 +2918,6 @@ void the_game(
 			}
 		}
 		
-		/*
-			Update farmesh
-		*/
-		if(farmesh)
-		{
-			farmesh_range = draw_control.wanted_range * 10;
-			if(draw_control.range_all && farmesh_range < 500)
-				farmesh_range = 500;
-			if(farmesh_range > 1000)
-				farmesh_range = 1000;
-
-			farmesh->step(dtime);
-			farmesh->update(v2f(player_position.X, player_position.Z),
-					brightness, farmesh_range);
-		}
-
 		/*
 			Update particles
 		*/

@@ -306,7 +306,6 @@ set(minetest_SRCS
 	content_cao.cpp
 	mesh.cpp
 	mapblock_mesh.cpp
-	farmesh.cpp
 	keycode.cpp
 	camera.cpp
 	clouds.cpp

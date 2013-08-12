@@ -114,11 +114,6 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
-
-	//Legacy functions for Farmesh (pending removal)
-	static bool get_have_beach(u64 seed, v2s16 p2d);
-	static double tree_amount_2d(u64 seed, v2s16 p);
-	static s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 };
 
 struct MapgenFactory {

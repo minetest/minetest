@@ -103,7 +103,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("invert_mouse", "false");
-	settings->setDefault("enable_farmesh", "false");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");

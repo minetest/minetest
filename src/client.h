@@ -473,7 +473,6 @@ private:
 	u32 m_media_received_count;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
-	friend class FarMesh;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set;
