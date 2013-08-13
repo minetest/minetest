@@ -193,6 +193,7 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
+	s16 readDamage();
 	u16 getBreath() const;
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
@@ -283,6 +284,7 @@ private:
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
+	s16 m_damage;
 
 	// Cheat prevention
 	LagPool m_dig_pool;

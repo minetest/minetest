@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
+#include "genericobject.h"
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
@@ -3828,6 +3829,11 @@ void Server::SendPlayerHP(u16 peer_id)
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
 	SendHP(m_con, peer_id, playersao->getHP());
+
+	// Send to other clients
+	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
+	ActiveObjectMessage aom(playersao->getId(), true, str);
+	playersao->m_messages_out.push_back(aom);
 }
 
 void Server::SendPlayerBreath(u16 peer_id)

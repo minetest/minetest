@@ -942,6 +942,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_player(player_),
 	m_peer_id(peer_id_),
 	m_inventory(NULL),
+	m_damage(0),
 	m_last_good_position(0,0,0),
 	m_time_from_last_punch(0),
 	m_nocheat_dig_pos(32767, 32767, 32767),
@@ -1298,14 +1299,6 @@ int PlayerSAO::punch(v3f dir,
 
 	setHP(getHP() - hitparams.hp);
 
-	if(hitparams.hp != 0)
-	{
-		std::string str = gob_cmd_punched(hitparams.hp, getHP());
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push_back(aom);
-	}
-
 	return hitparams.wear;
 }
 
@@ -1316,6 +1309,13 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 s16 PlayerSAO::getHP() const
 {
 	return m_player->hp;
+}
+
+s16 PlayerSAO::readDamage()
+{
+	s16 damage = m_damage;
+	m_damage = 0;
+	return damage;
 }
 
 void PlayerSAO::setHP(s16 hp)
@@ -1335,19 +1335,15 @@ void PlayerSAO::setHP(s16 hp)
 
 	m_player->hp = hp;
 
-	if(hp != oldhp)
+	if(hp != oldhp) {
 		m_hp_not_sent = true;
-
-	// On death or reincarnation send an active object message
-	if((hp == 0) != (oldhp == 0))
-	{
-		// Will send new is_visible value based on (getHP()!=0)
-		m_properties_sent = false;
-		// Send new HP
-		std::string str = gob_cmd_punched(0, getHP());
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push_back(aom);
+		if(oldhp > hp)
+			m_damage += oldhp - hp;
 	}
+
+	// Update properties on death
+	if((hp == 0) != (oldhp == 0))
+		m_properties_sent = false;
 }
 
 u16 PlayerSAO::getBreath() const
