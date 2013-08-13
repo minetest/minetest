@@ -710,7 +710,7 @@ int ModApiEnvMod::l_get_surface(lua_State *L)
 		walkable_only = lua_toboolean(L, -1);
 	}
 
-	int result = env->get_surface(basepos,max_y,walkable_only);
+	int result = env->getMap().getSurface(basepos,max_y,walkable_only);
 
 	if (result >= basepos.Y) {
 		lua_pushnumber(L,result);
