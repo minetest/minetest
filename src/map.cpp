@@ -3490,20 +3490,21 @@ void ServerMap::saveMapMeta()
 	createDirs(m_savedir);
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
-	if(os.good() == false)
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not open"<<fullpath<<std::endl;
-		throw FileNotGoodException("Cannot open chunk metadata");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	Settings params;
 
 	m_emerge->setParamsToSettings(&params);
-	params.writeLines(os);
+	params.writeLines(ss);
 
-	os<<"[end_of_params]\n";
+	ss<<"[end_of_params]\n";
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+	{
+		infostream<<"ERROR: ServerMap::saveMapMeta(): "
+				<<"could not write "<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot save chunk metadata");
+	}
 
 	m_map_metadata_changed = false;
 }
@@ -3574,11 +3575,12 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	createDirs(dir);
 
 	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open sector metafile");
+	std::ostringstream ss(std::ios_base::binary);
 
-	sector->serialize(o, version);
+	sector->serialize(ss, version);
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+		throw FileNotGoodException("Cannot write sector metafile");
 
 	sector->differs_from_disk = false;
 }

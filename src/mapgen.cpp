@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "util/serialize.h"
+#include "filesys.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -756,24 +757,26 @@ bool DecoSchematic::loadSchematicFile() {
 	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
 */
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
-	std::ofstream os(filename.c_str(), std::ios_base::binary);
+	std::ostringstream ss(std::ios_base::binary);
 
-	writeU32(os, MTSCHEM_FILE_SIGNATURE); // signature
-	writeU16(os, 2);      // version
-	writeV3S16(os, size); // schematic size
+	writeU32(ss, MTSCHEM_FILE_SIGNATURE); // signature
+	writeU16(ss, 2);      // version
+	writeV3S16(ss, size); // schematic size
 	
 	std::vector<content_t> usednodes;
 	int nodecount = size.X * size.Y * size.Z;
 	build_nnlist_and_update_ids(schematic, nodecount, &usednodes);
 	
 	u16 numids = usednodes.size();
-	writeU16(os, numids); // name count
+	writeU16(ss, numids); // name count
 	for (int i = 0; i != numids; i++)
-		os << serializeString(ndef->get(usednodes[i]).name); // node names
+		ss << serializeString(ndef->get(usednodes[i]).name); // node names
 		
 	// compressed bulk node data
-	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST_WRITE, schematic,
+	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE, schematic,
 				nodecount, 2, 2, true);
+
+	fs::safeWriteToFile(filename, ss.str());
 }
 
 

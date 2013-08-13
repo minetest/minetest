@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <set>
+#include "filesys.h"
 
 enum ValueType
 {
@@ -308,14 +309,7 @@ public:
 
 		// Write stuff back
 		{
-			std::ofstream os(filename);
-			if(os.good() == false)
-			{
-				errorstream<<"Error opening configuration file"
-						" for writing: \""
-						<<filename<<"\""<<std::endl;
-				return false;
-			}
+			std::ostringstream ss(std::ios_base::binary);
 
 			/*
 				Write updated stuff
@@ -324,7 +318,7 @@ public:
 					i = objects.begin();
 					i != objects.end(); ++i)
 			{
-				os<<(*i);
+				ss<<(*i);
 			}
 
 			/*
@@ -340,7 +334,14 @@ public:
 				std::string value = i->second;
 				infostream<<"Adding \""<<name<<"\" = \""<<value<<"\""
 						<<std::endl;
-				os<<name<<" = "<<value<<"\n";
+				ss<<name<<" = "<<value<<"\n";
+			}
+
+			if(!fs::safeWriteToFile(filename, ss.str()))
+			{
+				errorstream<<"Error writing configuration file: \""
+						<<filename<<"\""<<std::endl;
+				return false;
 			}
 		}
 

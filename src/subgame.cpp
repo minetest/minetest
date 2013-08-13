@@ -241,8 +241,9 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 	if(!fs::PathExists(worldmt_path)){
 		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
 		fs::CreateAllDirs(path);
-		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
-		of<<"gameid = "<<gameid<<"\n";
+		std::ostringstream ss(std::ios_base::binary);
+		ss<<"gameid = "<<gameid<<"\n";
+		fs::safeWriteToFile(worldmt_path, ss.str());
 	}
 	return true;
 }

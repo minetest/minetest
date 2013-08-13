@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <sstream>
+#include <fstream>
 #include "log.h"
 
 namespace fs
@@ -682,6 +684,29 @@ std::string RemoveRelativePathComponents(std::string path)
 	while(pos != 0 && IsDirDelimiter(path[pos-1]))
 		pos--;
 	return path.substr(0, pos);
+}
+
+bool safeWriteToFile(const std::string &path, const std::string &content)
+{
+	std::string tmp_file = path + ".~mt";
+
+	// Write to a tmp file
+	std::ofstream os(tmp_file.c_str(), std::ios::binary);
+	if (!os.good())
+		return false;
+	os << content;
+	os.flush();
+	os.close();
+	if (os.fail())
+		return false;
+
+	// Copy file
+#ifdef _WIN32
+	remove(path.c_str());
+	return (rename(tmp_file.c_str(), path.c_str()) == 0);
+#else
+	return (rename(tmp_file.c_str(), path.c_str()) == 0);
+#endif
 }
 
 } // namespace fs

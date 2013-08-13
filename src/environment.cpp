@@ -437,13 +437,13 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		if(player->checkModified())
 		{
 			// Open file and serialize
-			std::ofstream os(path.c_str(), std::ios_base::binary);
-			if(os.good() == false)
+			std::ostringstream ss(std::ios_base::binary);
+			player->serialize(ss);
+			if(!fs::safeWriteToFile(path, ss.str()))
 			{
-				infostream<<"Failed to overwrite "<<path<<std::endl;
+				infostream<<"Failed to write "<<path<<std::endl;
 				continue;
 			}
-			player->serialize(os);
 			saved_players.insert(player);
 		} else {
 			saved_players.insert(player);
@@ -493,13 +493,13 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 			/*infostream<<"Saving player "<<player->getName()<<" to "
 					<<path<<std::endl;*/
 			// Open file and serialize
-			std::ofstream os(path.c_str(), std::ios_base::binary);
-			if(os.good() == false)
+			std::ostringstream ss(std::ios_base::binary);
+			player->serialize(ss);
+			if(!fs::safeWriteToFile(path, ss.str()))
 			{
-				infostream<<"Failed to overwrite "<<path<<std::endl;
+				infostream<<"Failed to write "<<path<<std::endl;
 				continue;
 			}
-			player->serialize(os);
 			saved_players.insert(player);
 		}
 	}
@@ -581,19 +581,20 @@ void ServerEnvironment::saveMeta(const std::string &savedir)
 	std::string path = savedir + "/env_meta.txt";
 
 	// Open file and serialize
-	std::ofstream os(path.c_str(), std::ios_base::binary);
-	if(os.good() == false)
-	{
-		infostream<<"ServerEnvironment::saveMeta(): Failed to open "
-				<<path<<std::endl;
-		throw SerializationError("Couldn't save env meta");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	Settings args;
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
-	args.writeLines(os);
-	os<<"EnvArgsEnd\n";
+	args.writeLines(ss);
+	ss<<"EnvArgsEnd\n";
+
+	if(!fs::safeWriteToFile(path, ss.str()))
+	{
+		infostream<<"ServerEnvironment::saveMeta(): Failed to write "
+				<<path<<std::endl;
+		throw SerializationError("Couldn't save env meta");
+	}
 }
 
 void ServerEnvironment::loadMeta(const std::string &savedir)
