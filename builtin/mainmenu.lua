@@ -1051,7 +1051,7 @@ function tabbuilder.tab_credits()
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
 			"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
 			"PilzAdam <pilzadam@minetest.net>," ..
-			"IIya Zhuravlev (thexyz) <xyz@minetest.net>,"..
+			"Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
 			"Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
 			"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
 			"proller <proler@gmail.com>,"..
