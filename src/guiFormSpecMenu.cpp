@@ -652,15 +652,23 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 		for (unsigned int i=0; i < items.size(); i++) {
 			if (items[i].c_str()[0] == '#') {
 				if (items[i].c_str()[1] == '#') {
-					e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
+
+					if (m_use_gettext) {
+						std::wstring wget_wtext = wstrgettext(items[i].c_str());
+						std::string wget_text = wide_to_narrow(wget_wtext);
+						std::string text_escaped = unescape_string(wget_text);
+						e->addItem(narrow_to_wide(text_escaped).c_str());
+					}
+					else {
+						e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
+					}
 				}
 				else {
 					std::string color = items[i].substr(1,6);
-					std::wstring toadd =
-						narrow_to_wide(unescape_string(items[i]).c_str() + 7);
-
-
-					e->addItem(toadd.c_str());
+					std::wstring wget_wtext = std::wstring(wstrgettext(items[i]).c_str() + 7);
+					std::string wget_text = wide_to_narrow(wget_wtext);
+					std::string text_escaped = unescape_string(wget_text);
+					e->addItem(narrow_to_wide(text_escaped).c_str());
 
 					irr::video::SColor toset;
 

@@ -850,20 +850,20 @@ function tabbuilder.init()
 	tabbuilder.show_buttons = true
 	
 	tabbuilder.current_buttons = {}
-	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption="Singleplayer"})
-	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption="Client"})
-	table.insert(tabbuilder.current_buttons,{name="server", caption="Server"})
-	table.insert(tabbuilder.current_buttons,{name="settings", caption="Settings"})
-	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption="Texture Packs"})
+	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption=gettext("Singleplayer")})
+	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption=gettext("Client")})
+	table.insert(tabbuilder.current_buttons,{name="server", caption=gettext("Server")})
+	table.insert(tabbuilder.current_buttons,{name="settings", caption=gettext("Settings")})
+	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption=gettext("Texture Packs")})
 	
 	if engine.setting_getbool("main_menu_game_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption="Games"})
+		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption=gettext("Games")})
 	end
 	
 	if engine.setting_getbool("main_menu_mod_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption="Mods"})
+		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption=gettext("Mods")})
 	end
-	table.insert(tabbuilder.current_buttons,{name="credits", caption="Credits"})
+	table.insert(tabbuilder.current_buttons,{name="credits", caption=gettext("Credits")})
 	
 	
 	for i=1,#tabbuilder.current_buttons,1 do

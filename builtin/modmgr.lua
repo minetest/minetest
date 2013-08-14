@@ -234,7 +234,7 @@ function modmgr.tab()
 	
 	local retval = 
 		"vertlabel[0,-0.25;".. gettext("MODS") .. "]" ..
-		"label[0.8,-0.25;".. gettext("Installed Mods") .. ":]" ..
+		"label[0.8,-0.25;".. gettext("Installed Mods:") .. "]" ..
 		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
@@ -257,7 +257,7 @@ function modmgr.tab()
 		else
 		--show dependencies
 			retval = retval .. 
-				"label[6,1.9;".. gettext("Depends") .. ":]" ..
+				"label[6,1.9;".. gettext("Depends:") .. "]" ..
 				"textlist[6,2.4;5.7,2;deplist;"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
@@ -279,7 +279,7 @@ function modmgr.dialog_rename_modpack()
 	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
 	
 	local retval = 
-		"label[1.75,1;".. gettext("Rename Modpack") .. ":]"..
+		"label[1.75,1;".. gettext("Rename Modpack:") .. "]"..
 		"field[4.5,1.4;6,0.5;te_modpack_name;;" ..
 		mod.name ..
 		"]" ..
@@ -392,9 +392,9 @@ function modmgr.dialog_configure_world()
 		mod = {name=""}
 	end
 	retval = retval ..
-		"label[0,0.45;" .. gettext("Mod") .. ":]" ..
+		"label[0,0.45;" .. gettext("Mod:") .. "]" ..
 		"label[0.75,0.45;" .. mod.name .. "]" ..
-		"label[0,1;" .. gettext("Depends") .. ":]" ..
+		"label[0,1;" .. gettext("Depends:") .. "]" ..
 		"textlist[0,1.5;5,4.25;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
 		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. gettext("Save") .. "]" ..

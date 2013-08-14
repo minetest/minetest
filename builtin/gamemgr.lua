@@ -217,7 +217,7 @@ function gamemgr.tab()
 		
 		retval = retval ..
 			"field[8,-0.25;6,2;;" .. current_game.name .. ";]"..
-			"label[6,1.4;" .. gettext("Mods") ..":]" ..
+			"label[6,1.4;" .. gettext("Mods:") .."]" ..
 			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;" .. gettext("edit game") .. "]" ..
 			"textlist[6,2;5.5,3.3;game_mgr_modlist;"
 			.. gamemgr.get_game_mods(current_game) ..";0]" ..
@@ -242,12 +242,12 @@ function gamemgr.dialog_edit_game()
 		end
 		
 		retval = retval .. 
-			"textlist[0.5,0.5;4.5,4.3;" .. gettext("mods_current") ..";"
+			"textlist[0.5,0.5;4.5,4.3;mods_current;"
 			.. gamemgr.get_game_mods(current_game) ..";0]"
 			
 			
 		retval = retval .. 
-			"textlist[7,0.5;4.5,4.3;" .. gettext("mods_available") ..";"
+			"textlist[7,0.5;4.5,4.3;mods_available;"
 			.. modmgr.render_modlist() .. ";0]"
 
 		retval = retval ..
