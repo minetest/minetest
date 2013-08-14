@@ -81,6 +81,8 @@ private:
 
 	static int l_sound_stop(lua_State *L);
 
+	static int l_gettext(lua_State *L);
+
 	//gui
 
 	static int l_show_keys_menu(lua_State *L);

@@ -44,9 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "filesys.h"
 #include "gettime.h"
-
 #include "gettext.h"
-
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -88,7 +86,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_listbox_doubleclick(false),
 	m_tooltip_element(NULL),
 	m_allowclose(true),
-	m_use_gettext(false),
 	m_lock(false)
 {
 	current_keys_pending.key_down = false;
@@ -379,9 +376,6 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element) {
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
-		if (m_use_gettext)
-			wlabel = wstrgettext(label);
-
 		FieldSpec spec = FieldSpec(
 				narrow_to_wide(name.c_str()),
 				L"",
@@ -499,9 +493,6 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,std::stri
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
-		if (m_use_gettext)
-			wlabel = wstrgettext(label);
-
 		FieldSpec spec = FieldSpec(
 			narrow_to_wide(name.c_str()),
 			wlabel,
@@ -608,7 +599,6 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 					std::string color = items[i].substr(1,6);
 					std::wstring toadd =
 						narrow_to_wide(unescape_string(items[i]).c_str() + 7);
-
 
 					e->addItem(toadd.c_str());
 
@@ -733,13 +723,6 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
-		if (m_use_gettext) {
-			if (label.length() > 1)
-				wlabel = wstrgettext(label);
-			else
-				wlabel = L"";
-		}
-
 		FieldSpec spec = FieldSpec(
 			narrow_to_wide(name.c_str()),
 			wlabel,
@@ -811,13 +794,6 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string>
 	label = unescape_string(label);
 
 	std::wstring wlabel = narrow_to_wide(label.c_str());
-
-	if (m_use_gettext) {
-		if (label.length() > 1)
-			wlabel = wstrgettext(label);
-		else
-			wlabel = L"";
-	}
 
 	FieldSpec spec = FieldSpec(
 		narrow_to_wide(name.c_str()),
@@ -902,13 +878,6 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 
 	std::wstring wlabel = narrow_to_wide(label.c_str());
 
-	if (m_use_gettext) {
-		if (label.length() > 1)
-			wlabel = wstrgettext(label);
-		else
-			wlabel = L"";
-	}
-
 	FieldSpec spec = FieldSpec(
 		narrow_to_wide(name.c_str()),
 		wlabel,
@@ -989,9 +958,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element) {
 
 		std::wstring wlabel = narrow_to_wide(text.c_str());
 
-		if (m_use_gettext)
-			wlabel = wstrgettext(text);
-
 		FieldSpec spec = FieldSpec(
 			L"",
 			wlabel,
@@ -1025,12 +991,6 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 
 		text = unescape_string(text);
 		std::string label = "";
-
-		if (m_use_gettext) {
-			const char* toset = gettext(text.c_str());
-
-			text = std::string(toset);
-		}
 
 		for (unsigned int i=0; i < text.length(); i++) {
 			label += text.c_str()[i];
@@ -1097,9 +1057,6 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		label = unescape_string(label);
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
-
-		if (m_use_gettext)
-			wlabel = wstrgettext(label);
 
 		FieldSpec spec = FieldSpec(
 			narrow_to_wide(name.c_str()),
@@ -1194,15 +1151,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element) {
 		for (unsigned int i=0; i< buttons.size(); i++) {
 			wchar_t* wbutton = 0;
 
-			if (m_use_gettext)
-				wbutton = wgettext(buttons[i].c_str());
-			else
-				wbutton = (wchar_t*) narrow_to_wide(buttons[i].c_str()).c_str();
+			wbutton = (wchar_t*) narrow_to_wide(buttons[i].c_str()).c_str();
 
 			e->addTab(wbutton,-1);
-
-			if (m_use_gettext)
-				delete[] wbutton;
 		}
 
 		if ((tab_index >= 0) &&

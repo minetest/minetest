@@ -981,6 +981,16 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_gettext(lua_State *L)
+{
+	const char* str = luaL_checkstring(L, 1);
+	str = gettext(str);
+	lua_pushstring(L, str);
+
+	return 1;
+}
+
+/******************************************************************************/
 void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
@@ -1013,4 +1023,5 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_modstore_list);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(gettext);
 }

@@ -136,7 +136,6 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_menu->lockSize(true,v2u32(800,600));
 	m_menu->setFormSource(m_formspecgui);
 	m_menu->setTextDest(m_buttonhandler);
-	m_menu->useGettext(true);
 
 	// Initialize scripting
 

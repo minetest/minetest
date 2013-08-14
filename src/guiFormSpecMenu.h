@@ -206,10 +206,6 @@ public:
 		m_allowclose = value;
 	}
 
-	void useGettext(bool value) {
-		m_use_gettext = true;
-	}
-
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
@@ -282,7 +278,6 @@ protected:
 	gui::IGUIStaticText *m_tooltip_element;
 
 	bool m_allowclose;
-	bool m_use_gettext;
 	bool m_lock;
 	v2u32 m_lockscreensize;
 private:

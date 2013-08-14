@@ -86,13 +86,22 @@ function string:split(sep)
 end
 
 --------------------------------------------------------------------------------
+function file_exists(filename)
+	local f = io.open(filename, "r")
+	if f==nil then
+		return false
+	else
+		f:close()
+		return true
+	end
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
-
-
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
@@ -208,6 +217,29 @@ if engine ~= nil then
 		end
 		
 		return nil
+	end
+	
+	function fgettext(text, ...)
+		text = engine.gettext(text)
+		local arg = {n=select('#', ...), ...}
+		if arg.n >= 1 then
+			-- Insert positional parameters ($1, $2, ...)
+			result = ''
+			pos = 1
+			while pos <= text:len() do
+				newpos = text:find('[$]', pos)
+				if newpos == nil then
+					result = result .. text:sub(pos)
+					pos = text:len() + 1
+				else
+					paramindex = tonumber(text:sub(newpos+1, newpos+1))
+					result = result .. text:sub(pos, newpos-1) .. tostring(arg[paramindex])
+					pos = newpos + 2
+				end
+			end
+			text = result
+		end
+		return engine.formspec_escape(text)
 	end
 end
 --------------------------------------------------------------------------------
