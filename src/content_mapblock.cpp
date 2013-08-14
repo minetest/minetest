@@ -653,47 +653,35 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// -Z towards +Z, thus the direction is +Z.
 				// Rotate texture to make animation go in flow direction
 				// Positive if liquid moves towards +Z
-				int dz = (corner_levels[side_corners[3][0]] +
+				f32 dz = (corner_levels[side_corners[3][0]] +
 						corner_levels[side_corners[3][1]]) -
 						(corner_levels[side_corners[2][0]] +
 						corner_levels[side_corners[2][1]]);
 				// Positive if liquid moves towards +X
-				int dx = (corner_levels[side_corners[1][0]] +
+				f32 dx = (corner_levels[side_corners[1][0]] +
 						corner_levels[side_corners[1][1]]) -
 						(corner_levels[side_corners[0][0]] +
 						corner_levels[side_corners[0][1]]);
-				// -X
-				if(-dx >= abs(dz))
+				f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG ;
+				v2f tcoord_center(0.5, 0.5);
+				v2f tcoord_translate(
+						blockpos_nodes.Z + z,
+						blockpos_nodes.X + x);
+				tcoord_translate.rotateBy(tcoord_angle);
+				tcoord_translate.X -= floor(tcoord_translate.X);
+				tcoord_translate.Y -= floor(tcoord_translate.Y);
+
+				for(s32 i=0; i<4; i++)
 				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = t;
+					vertices[i].TCoords.rotateBy(
+							tcoord_angle,
+							tcoord_center);
+					vertices[i].TCoords += tcoord_translate;
 				}
-				// +X
-				if(dx >= abs(dz))
-				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-				}
-				// -Z
-				if(-dz >= abs(dx))
-				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-					t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-				}
+
+				v2f t = vertices[0].TCoords;
+				vertices[0].TCoords = vertices[2].TCoords;
+				vertices[2].TCoords = t;
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
