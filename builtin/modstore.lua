@@ -181,8 +181,9 @@ end
 --------------------------------------------------------------------------------
 function modstore.getmodlist(list)
 	local retval = ""
-	retval = retval .. "label[10,-0.4;Page " .. (list.page +1) .. 
-							" of " .. (list.pagecount +1) .. "]"
+	retval = retval .. "label[10,-0.4;" .. gettext("Page").. " " .. 
+							(list.page +1) .. gettext(" of ") .. 
+							(list.pagecount +1) .. "]"
 	
 	retval = retval .. "button[11.6,-0.1;0.5,0.5;btn_modstore_page_up;^]"
 	retval = retval .. "box[11.6,0.35;0.28,8.6;000000]"
@@ -241,7 +242,8 @@ function modstore.getmodlist(list)
 				fs_escape_string(details.description) .. ";]"
 			--rating
 			local ratingy = screenshot_ypos + 0.6
-			retval = retval .."label[10.1," .. ratingy .. ";Rating: " .. details.rating .."]"
+			retval = retval .."label[10.1," .. ratingy .. ";" .. 
+							gettext("Rating") .. ": " .. details.rating .."]"
 			
 			--install button
 			local buttony = screenshot_ypos + 1.2
@@ -249,9 +251,9 @@ function modstore.getmodlist(list)
 			retval = retval .."button[9.6," .. buttony .. ";2,0.5;btn_install_mod_" .. buttonnumber .. ";"
 			
 			if modmgr.mod_exists(details.basename) then
-				retval = retval .. "re-Install]"
+				retval = retval .. gettext("re-Install") .."]"
 			else
-				retval = retval .. "Install]"
+				retval = retval .. gettext("Install") .."]"
 			end
 		end
 	end

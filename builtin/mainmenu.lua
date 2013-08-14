@@ -9,6 +9,11 @@ mt_color_dark_green = "#003300"
 
 --for all other colors ask sfan5 to complete his worK!
 
+--dummy for updatepo.sh
+function gettext(text)
+	return text
+end
+
 dofile(scriptpath .. DIR_DELIM .. "filterlist.lua")
 dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
 dofile(scriptpath .. DIR_DELIM .. "modstore.lua")
@@ -21,14 +26,14 @@ local tabbuilder = {}
 local worldlist = nil
 
 --------------------------------------------------------------------------------
-local function filterTP(TPlist)
-	TPlist2 = {"None"}
-	for _,i in ipairs(TPlist) do
+local function filter_texture_pack_list(list)
+	retval = {"None"}
+	for _,i in ipairs(list) do
 		if i~="base" then
-			table.insert(TPlist2, i)
+			table.insert(retval, i)
 		end
 	end
-	return TPlist2
+	return retval
 end
 
 --------------------------------------------------------------------------------
@@ -147,7 +152,7 @@ function update_menu()
 			"field[1,2;10,2;;ERROR: " ..
 			gamedata.errormessage .. 
 			";]"..
-			"button[4.5,4.2;3,0.5;btn_error_confirm;Ok]"
+			"button[4.5,4.2;3,0.5;btn_error_confirm;" .. gettext("Ok") .. "]"
 	else
 		formspec = formspec .. tabbuilder.gettab()
 	end
@@ -174,12 +179,10 @@ function menu.render_world_list()
 end
 
 --------------------------------------------------------------------------------
-function menu.render_TP_list(TPlist)
+function menu.render_texture_pack_list(list)
 	local retval = ""
 
-	--local current_TP = filterlist.get_list(TPlist)
-
-	for i,v in ipairs(TPlist) do
+	for i,v in ipairs(list) do
 		if retval ~= "" then
 			retval = retval ..","
 		end
@@ -289,12 +292,12 @@ function tabbuilder.dialog_create_world()
 	mglist = mglist:sub(1, -2)
 
 	local retval = 
-		"label[2,0;World name]"..
-		"label[2,1;Mapgen]"..
+		"label[2,0;" .. gettext("World name") .. "]"..
+		"label[2,1;" .. gettext("Mapgen") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
-		"label[2,2;Game]"..
-		"button[5,4.5;2.6,0.5;world_create_confirm;Create]" ..
-		"button[7.5,4.5;2.8,0.5;world_create_cancel;Cancel]" ..
+		"label[2,2;" .. gettext("Game") .. "]"..
+		"button[5,4.5;2.6,0.5;world_create_confirm;" .. gettext("Create") .. "]" ..
+		"button[7.5,4.5;2.8,0.5;world_create_cancel;" .. gettext("Cancel") .. "]" ..
 		"dropdown[4.2,1;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 		"textlist[4.2,1.9;5.8,2.3;games;" ..
 		gamemgr.gamelist() ..
@@ -306,8 +309,8 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.dialog_delete_world()
 	return	"label[2,2;Delete World \"" .. filterlist.get_raw_list(worldlist)[menu.world_to_del].name .. "\"?]"..
-			"button[3.5,4.2;2.6,0.5;world_delete_confirm;Yes]" ..
-			"button[6,4.2;2.8,0.5;world_delete_cancel;No]"
+			"button[3.5,4.2;2.6,0.5;world_delete_confirm;" .. gettext("Yes").. "]" ..
+			"button[6,4.2;2.8,0.5;world_delete_cancel;" .. gettext("No") .. "]"
 end
 
 --------------------------------------------------------------------------------
@@ -335,7 +338,7 @@ function tabbuilder.gettab()
 	end
 	
 	if tabbuilder.current_tab == "texture_packs" then
-		retval = retval .. tabbuilder.tab_TP()
+		retval = retval .. tabbuilder.tab_texture_packs()
 	end
 	
 	if tabbuilder.current_tab == "credits" then
@@ -375,7 +378,8 @@ function tabbuilder.handle_create_world_buttons(fields)
 				engine.setting_set("mg_name",fields["dd_mapgen"])
 				message = engine.create_world(worldname,gameindex)
 			else
-				message = "A world named \"" .. worldname .. "\" already exists"
+				message = gettext("A world named \"") .. worldname .. 
+					gettext("\" already exists")
 			end
 			
 			if message ~= nil then
@@ -389,7 +393,8 @@ function tabbuilder.handle_create_world_buttons(fields)
 									filterlist.raw_index_by_uid(worldlist,worldname))
 			end
 		else
-			gamedata.errormessage = "No worldname given or no game selected"
+			gamedata.errormessage = 
+				gettext("No worldname given or no game selected")
 		end
 	end
 	
@@ -766,18 +771,21 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 end
 
 --------------------------------------------------------------------------------
-function tabbuilder.handle_TP_buttons(fields)
+function tabbuilder.handle_texture_pack_buttons(fields)
 	if fields["TPs"] ~= nil then
 		local event = explode_textlist_event(fields["TPs"])
 		if event.typ == "CHG" or event.typ=="DCL" then
 			local index = engine.get_textlist_index("TPs")
 			engine.setting_set("mainmenu_last_selected_TP",
 				index)
-			local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
-			local TPname = TPlist[engine.get_textlist_index("TPs")]
-			local TPpath = engine.get_texturepath()..DIR_DELIM..TPname
-			if TPname == "None" then TPpath = "" end
-			engine.setting_set("texture_path", TPpath)
+			local list = filter_texture_pack_list(engine.get_dirlist(engine.get_texturepath(), true))
+			local current_index = engine.get_textlist_index("TPs")
+			if #list >= current_index then
+				local new_path = engine.get_texturepath()..DIR_DELIM..list[current_index]
+				if list[current_index] == "None" then new_path = "" end
+				
+				engine.setting_set("texture_path", new_path)
+			end
 		end
 	end
 end
@@ -875,22 +883,22 @@ end
 function tabbuilder.tab_multiplayer()
 
 	local retval =
-		"vertlabel[0,-0.25;CLIENT]" ..
-		"label[1,-0.25;Favorites:]"..
-		"label[1,4.25;Address/Port]"..
-		"label[9,2.75;Name/Password]" ..
+		"vertlabel[0,-0.25;".. gettext("CLIENT") .. "]" ..
+		"label[1,-0.25;".. gettext("Favorites:") .. "]"..
+		"label[1,4.25;".. gettext("Address/Port") .. "]"..
+		"label[9,2.75;".. gettext("Name/Password") .. "]" ..
 		"field[1.25,5.25;5.5,0.5;te_address;;" ..engine.setting_get("address") .."]" ..
 		"field[6.75,5.25;2.25,0.5;te_port;;" ..engine.setting_get("port") .."]" ..
-		"checkbox[1,3.6;cb_public_serverlist;Public Serverlist;" ..
+		"checkbox[1,3.6;cb_public_serverlist;".. gettext("Public Serverlist") .. ";" ..
 		dump(engine.setting_getbool("public_serverlist")) .. "]"
 		
 	if not engine.setting_getbool("public_serverlist") then
 		retval = retval .. 
-		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;Delete]"
+		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;".. gettext("Delete") .. "]"
 	end
 	
 	retval = retval ..
-		"button[9,4.95;2.5,0.5;btn_mp_connect;Connect]" ..
+		"button[9,4.95;2.5,0.5;btn_mp_connect;".. gettext("Connect") .. "]" ..
 		"field[9.3,3.75;2.5,0.5;te_name;;" ..engine.setting_get("name") .."]" ..
 		"pwdfield[9.3,4.5;2.5,0.5;te_pwd;]" ..
 		"textarea[9.3,0.25;2.5,2.75;;"
@@ -931,22 +939,22 @@ function tabbuilder.tab_server()
 				)
 	
 	local retval = 
-		"button[4,4.15;2.6,0.5;world_delete;Delete]" ..
-		"button[6.5,4.15;2.8,0.5;world_create;New]" ..
-		"button[9.2,4.15;2.55,0.5;world_configure;Configure]" ..
-		"button[8.5,4.9;3.25,0.5;start_server;Start Game]" ..
-		"label[4,-0.25;Select World:]"..
-		"vertlabel[0,-0.25;START SERVER]" ..
-		"checkbox[0.5,0.25;cb_creative_mode;Creative Mode;" ..
+		"button[4,4.15;2.6,0.5;world_delete;".. gettext("Delete") .. "]" ..
+		"button[6.5,4.15;2.8,0.5;world_create;".. gettext("New") .. "]" ..
+		"button[9.2,4.15;2.55,0.5;world_configure;".. gettext("Configure") .. "]" ..
+		"button[8.5,4.9;3.25,0.5;start_server;".. gettext("Start Game") .. "]" ..
+		"label[4,-0.25;".. gettext("Select World:") .. "]"..
+		"vertlabel[0,-0.25;".. gettext("START SERVER") .. "]" ..
+		"checkbox[0.5,0.25;cb_creative_mode;".. gettext("Creative Mode") .. ";" ..
 		dump(engine.setting_getbool("creative_mode")) .. "]"..
-		"checkbox[0.5,0.7;cb_enable_damage;Enable Damage;" ..
+		"checkbox[0.5,0.7;cb_enable_damage;".. gettext("Enable Damage") .. ";" ..
 		dump(engine.setting_getbool("enable_damage")) .. "]"..
-		"checkbox[0.5,1.15;cb_server_announce;Public;" ..
+		"checkbox[0.5,1.15;cb_server_announce;".. gettext("Public") .. ";" ..
 		dump(engine.setting_getbool("server_announce")) .. "]"..
-		"field[0.8,3.2;3,0.5;te_playername;Name;" ..
+		"field[0.8,3.2;3,0.5;te_playername;".. gettext("Name") .. ";" ..
 		engine.setting_get("name") .. "]" ..
-		"pwdfield[0.8,4.2;3,0.5;te_passwd;Password]" ..
-		"field[0.8,5.2;3,0.5;te_serverport;Server Port;30000]" ..
+		"pwdfield[0.8,4.2;3,0.5;te_passwd;".. gettext("Password") .. "]" ..
+		"field[0.8,5.2;3,0.5;te_serverport;".. gettext("Server Port") .. ";30000]" ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
 		menu.render_world_list() ..
 		";" .. index .. "]"
@@ -957,23 +965,36 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_settings()
 	return	"vertlabel[0,0;SETTINGS]" ..
-			"checkbox[1,0.75;cb_fancy_trees;Fancy trees;" 		.. dump(engine.setting_getbool("new_style_leaves"))	.. "]"..
-			"checkbox[1,1.25;cb_smooth_lighting;Smooth Lighting;".. dump(engine.setting_getbool("smooth_lighting"))	.. "]"..
-			"checkbox[1,1.75;cb_3d_clouds;3D Clouds;" 			.. dump(engine.setting_getbool("enable_3d_clouds"))	.. "]"..
-			"checkbox[1,2.25;cb_opaque_water;Opaque Water;" 		.. dump(engine.setting_getbool("opaque_water"))		.. "]"..
-			"checkbox[1,2.75;old_style_modselection;Old style modmgr;" .. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"..
+			"checkbox[1,0.75;cb_fancy_trees;".. gettext("Fancy trees") .. ";" 
+					.. dump(engine.setting_getbool("new_style_leaves")) .. "]"..
+			"checkbox[1,1.25;cb_smooth_lighting;".. gettext("Smooth Lighting") 
+					.. ";".. dump(engine.setting_getbool("smooth_lighting")) .. "]"..
+			"checkbox[1,1.75;cb_3d_clouds;".. gettext("3D Clouds") .. ";"
+					.. dump(engine.setting_getbool("enable_3d_clouds")) .. "]"..
+			"checkbox[1,2.25;cb_opaque_water;".. gettext("Opaque Water") .. ";"
+					.. dump(engine.setting_getbool("opaque_water")) .. "]"..
+			"checkbox[1,2.75;old_style_modselection;".. gettext("Old style modmgr") .. ";" 
+					.. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"..
 			
-			"checkbox[4,0.75;cb_mipmapping;Mip-Mapping;" 		.. dump(engine.setting_getbool("mip_map"))			.. "]"..
-			"checkbox[4,1.25;cb_anisotrophic;Anisotropic Filtering;".. dump(engine.setting_getbool("anisotropic_filter"))	.. "]"..
-			"checkbox[4,1.75;cb_bilinear;Bi-Linear Filtering;"	.. dump(engine.setting_getbool("bilinear_filter"))	.. "]"..
-			"checkbox[4,2.25;cb_trilinear;Tri-Linear Filtering;"	.. dump(engine.setting_getbool("trilinear_filter"))	.. "]"..
+			"checkbox[4,0.75;cb_mipmapping;".. gettext("Mip-Mapping") .. ";"
+					.. dump(engine.setting_getbool("mip_map")) .. "]"..
+			"checkbox[4,1.25;cb_anisotrophic;".. gettext("Anisotropic Filtering") .. ";"
+					.. dump(engine.setting_getbool("anisotropic_filter")) .. "]"..
+			"checkbox[4,1.75;cb_bilinear;".. gettext("Bi-Linear Filtering") .. ";"
+					.. dump(engine.setting_getbool("bilinear_filter")) .. "]"..
+			"checkbox[4,2.25;cb_trilinear;".. gettext("Tri-Linear Filtering") .. ";"
+					.. dump(engine.setting_getbool("trilinear_filter")) .. "]"..
 			
-			"checkbox[7.5,0.75;cb_shaders;Shaders;"				.. dump(engine.setting_getbool("enable_shaders"))		.. "]"..
-			"checkbox[7.5,1.25;cb_pre_ivis;Preload item visuals;".. dump(engine.setting_getbool("preload_item_visuals"))	.. "]"..
-			"checkbox[7.5,1.75;cb_particles;Enable Particles;"	.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
-			"checkbox[7.5,2.25;cb_finite_liquid;Finite Liquid;"	.. dump(engine.setting_getbool("liquid_finite"))		.. "]"..
+			"checkbox[7.5,0.75;cb_shaders;".. gettext("Shaders") .. ";"
+					.. dump(engine.setting_getbool("enable_shaders")) .. "]"..
+			"checkbox[7.5,1.25;cb_pre_ivis;".. gettext("Preload item visuals") .. ";"
+					.. dump(engine.setting_getbool("preload_item_visuals"))	.. "]"..
+			"checkbox[7.5,1.75;cb_particles;".. gettext("Enable Particles") .. ";"
+					.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
+			"checkbox[7.5,2.25;cb_finite_liquid;".. gettext("Finite Liquid") .. ";"
+					.. dump(engine.setting_getbool("liquid_finite")) .. "]"..
 			
-			"button[1,4.25;2.25,0.5;btn_change_keys;Change keys]"
+			"button[1,4.25;2.25,0.5;btn_change_keys;".. gettext("Change keys") .. "]"
 end
 
 --------------------------------------------------------------------------------
@@ -983,15 +1004,15 @@ function tabbuilder.tab_singleplayer()
 				tonumber(engine.setting_get("mainmenu_last_selected_world"))
 				)
 
-	return	"button[4,4.15;2.6,0.5;world_delete;Delete]" ..
-			"button[6.5,4.15;2.8,0.5;world_create;New]" ..
-			"button[9.2,4.15;2.55,0.5;world_configure;Configure]" ..
-			"button[8.5,4.95;3.25,0.5;play;Play]" ..
-			"label[4,-0.25;Select World:]"..
-			"vertlabel[0,-0.25;SINGLE PLAYER]" ..
-			"checkbox[0.5,0.25;cb_creative_mode;Creative Mode;" ..
+	return	"button[4,4.15;2.6,0.5;world_delete;".. gettext("Delete") .. "]" ..
+			"button[6.5,4.15;2.8,0.5;world_create;".. gettext("New") .. "]" ..
+			"button[9.2,4.15;2.55,0.5;world_configure;".. gettext("Configure") .. "]" ..
+			"button[8.5,4.95;3.25,0.5;play;".. gettext("Play") .. "]" ..
+			"label[4,-0.25;".. gettext("Select World:") .. "]"..
+			"vertlabel[0,-0.25;".. gettext("SINGLE PLAYER") .. "]" ..
+			"checkbox[0.5,0.25;cb_creative_mode;".. gettext("Creative Mode") .. ";" ..
 			dump(engine.setting_getbool("creative_mode")) .. "]"..
-			"checkbox[0.5,0.7;cb_enable_damage;Enable Damage;" ..
+			"checkbox[0.5,0.7;cb_enable_damage;".. gettext("Enable Damage") .. ";" ..
 			dump(engine.setting_getbool("enable_damage")) .. "]"..
 			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
 			menu.render_world_list() ..
@@ -1000,44 +1021,46 @@ function tabbuilder.tab_singleplayer()
 end
 
 --------------------------------------------------------------------------------
-function tabbuilder.tab_TP()
-	local TPpath = engine.setting_get("texture_path")
-	local TPlist = filterTP(engine.get_dirlist(engine.get_texturepath(), true))
+function tabbuilder.tab_texture_packs()
+	local retval = "label[4,-0.25;".. gettext("Select texture pack:") .. "]"..
+			"vertlabel[0,-0.25;".. gettext("TEXTURE PACKS") .. "]" ..
+			"textlist[4,0.25;7.5,5.0;TPs;"
+
+	local current_texture_path = engine.setting_get("texture_path")	
+	local list = filter_texture_pack_list(engine.get_dirlist(engine.get_texturepath(), true))	
 	local index = tonumber(engine.setting_get("mainmenu_last_selected_TP"))
+	
 	if index == nil then index = 1 end
-	if TPpath == "" then
-		return	"label[4,-0.25;Select texture pack:]"..
-			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
-			"textlist[4,0.25;7.5,5.0;TPs;" ..
-			menu.render_TP_list(TPlist) ..
+	
+	if current_texture_path == "" then
+		retval = retval ..
+			menu.render_texture_pack_list(list) ..
 			";" .. index .. "]"
+		return retval
 	end
-	local TPinfofile = TPpath..DIR_DELIM.."info.txt"
-	local f = io.open(TPinfofile, "r")
+	
+	local infofile = current_texture_path ..DIR_DELIM.."info.txt"
+	local infotext = ""
+	local f = io.open(infofile, "r")
 	if f==nil then
-		menu.TPinfo = "No information available" 
+		infotext = "No information available" 
 	else
-		menu.TPinfo = f:read("*all")
-		f:close()
-	end
-	local TPscreenfile = TPpath..DIR_DELIM.."screenshot.png"
-	local f = io.open(TPscreenfile, "r")
-	if f==nil then
-		menu.TPscreen = nil
-	else
-		menu.TPscreen = TPscreenfile
+		infotext = f:read("*all")
 		f:close()
 	end
 	
-	local no_screenshot = engine.get_texturepath()..DIR_DELIM.."base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
+	local screenfile = texture_pack_path..DIR_DELIM.."screenshot.png"
+	if not file_exists then
+		screenfile = nil
+		local no_screenshot = engine.get_texturepath()..DIR_DELIM..
+					"base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
+	end
 
-	return	"label[4,-0.25;Select texture pack:]"..
-			"vertlabel[0,-0.25;TEXTURE PACKS]" ..
-			"textlist[4,0.25;7.5,5.0;TPs;" ..
-			menu.render_TP_list(TPlist) ..
+	return	retval ..
+			menu.render_texture_pack_list(list) ..
 			";" .. index .. "]" ..
-			"image[0.65,0.25;4.0,3.7;"..(menu.TPscreen or no_screenshot).."]"..
-			"textarea[1.0,3.25;3.7,1.5;;"..(menu.TPinfo or "")..";]"
+			"image[0.65,0.25;4.0,3.7;"..(screenfile or no_screenshot).."]"..
+			"textarea[1.0,3.25;3.7,1.5;;"..(infotext or "")..";]"
 end
 
 --------------------------------------------------------------------------------
@@ -1047,7 +1070,7 @@ function tabbuilder.tab_credits()
 			"label[0.5,3.3;http://minetest.net]" .. 
 			"image[0.5,1;" .. menu.defaulttexturedir .. "logo.png]" ..
 			"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
-			"#FFFF00Core Developers," ..
+			"#FFFF00" .. gettext("Core Developers") .."," ..
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
 			"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
 			"PilzAdam <pilzadam@minetest.net>," ..
@@ -1058,7 +1081,7 @@ function tabbuilder.tab_credits()
 			"sfan5 <sfan5@live.de>,"..
 			"kahrl <kahrl@gmx.net>,"..
 			","..
-			"#FFFF00Active Contributors," ..
+			"#FFFF00" .. gettext("Active Contributors") .. "," ..
 			"sapier,"..
 			"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
 			"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
@@ -1068,7 +1091,7 @@ function tabbuilder.tab_credits()
 			"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
 			"0gb.us <0gb.us@0gb.us>,"..
 			"," ..
-			"#FFFF00Previous Contributors," ..
+			"#FFFF00" .. gettext("Previous Contributors") .. "," ..
 			"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
 			"Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
 			"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
@@ -1134,7 +1157,7 @@ engine.button_handler = function(fields)
 	end
 	
 	if tabbuilder.current_tab == "texture_packs" then
-		tabbuilder.handle_TP_buttons(fields)
+		tabbuilder.handle_texture_pack_buttons(fields)
 	end
 	
 	if tabbuilder.current_tab == "multiplayer" then

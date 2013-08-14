@@ -86,13 +86,22 @@ function string:split(sep)
 end
 
 --------------------------------------------------------------------------------
+function file_exists(filename)
+	local f = io.open(filename, "r")
+	if f==nil then
+		return false
+	else
+		f:close()
+		return true
+	end
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
-
-
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
