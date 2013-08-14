@@ -374,7 +374,8 @@ function modmgr.dialog_configure_world()
 	
 	local retval =
 		"size[11,6.5]" ..
-		"label[1.5,-0.25;" .. gettext("World") .. ": " .. worldspec.name .. "]"
+		"label[0.5,-0.25;" .. gettext("World:") .. "]" ..
+		"label[1.75,-0.25;" .. worldspec.name .. "]"
 		
 	if modmgr.hide_gamemods then
 		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. gettext("Hide Game") .. ";true]"
