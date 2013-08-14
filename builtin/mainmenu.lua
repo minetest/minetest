@@ -547,17 +547,17 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.handle_server_buttons(fields)
 
-	local world_doubleclick = false
+	local start_world = false
 
 	if fields["srv_worlds"] ~= nil then
 		local event = explode_textlist_event(fields["srv_worlds"])
 		
-		if event.typ == "DCL" then
-			world_doubleclick = true
-		end
-		if event.typ == "CHG" then
-			engine.setting_set("mainmenu_last_selected_world",
-				filterlist.get_raw_index(worldlist,engine.get_textlist_index("srv_worlds")))
+		if event.typ == "DCL" or event.typ == "CHG" then
+			local world = filterlist.get_raw_index(worldlist,engine.get_textlist_index("srv_worlds"))
+			if world == tonumber(engine.setting_set("mainmenu_last_selected_world")) then	
+				start_world = true
+			end
+			engine.setting_set("mainmenu_last_selected_world", world)
 		end
 	end
 	
@@ -576,7 +576,7 @@ function tabbuilder.handle_server_buttons(fields)
 	end
 	
 	if fields["start_server"] ~= nil or
-		world_doubleclick or
+		start_world or
 		fields["key_enter"] then
 		local selected = engine.get_textlist_index("srv_worlds")
 		if selected > 0 then
@@ -689,18 +689,17 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.handle_singleplayer_buttons(fields)
 
-	local world_doubleclick = false
+	local start_world = false
 
 	if fields["sp_worlds"] ~= nil then
 		local event = explode_textlist_event(fields["sp_worlds"])
 		
-		if event.typ == "DCL" then
-			world_doubleclick = true
-		end
-		
-		if event.typ == "CHG" then
-			engine.setting_set("mainmenu_last_selected_world",
-				filterlist.get_raw_index(worldlist,engine.get_textlist_index("sp_worlds")))
+		if event.typ == "DCL" or event.typ == "CHG" then
+			local world = filterlist.get_raw_index(worldlist,engine.get_textlist_index("sp_worlds"))
+			if world == tonumber(engine.setting_get("mainmenu_last_selected_world")) then
+				start_world = true
+			end
+			engine.setting_set("mainmenu_last_selected_world",world)
 		end
 	end
 	
@@ -715,7 +714,7 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	end
 
 	if fields["play"] ~= nil or
-		world_doubleclick or
+		start_world or
 		fields["key_enter"] then
 		local selected = engine.get_textlist_index("sp_worlds")
 		if selected > 0 then
