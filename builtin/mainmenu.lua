@@ -1050,7 +1050,7 @@ function tabbuilder.tab_texture_packs()
 	end
 	
 	local screenfile = current_texture_path..DIR_DELIM.."screenshot.png"
-	if not file_exists then
+	if not file_exists(screenfile) then
 		screenfile = nil
 		local no_screenshot = engine.get_texturepath()..DIR_DELIM..
 					"base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
