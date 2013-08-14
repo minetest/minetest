@@ -233,12 +233,12 @@ function modstore.getmodlist(list)
 			
 			--title + author
 			retval = retval .."label[2.75," .. screenshot_ypos .. ";" .. 
-				fs_escape_string(details.title) .. " (" .. details.author .. ")]"
+				engine.formspec_escape(details.title) .. " (" .. details.author .. ")]"
 			
 			--description
 			local descriptiony = screenshot_ypos + 0.5
 			retval = retval .. "textarea[3," .. descriptiony .. ";6.5,1.55;;" .. 
-				fs_escape_string(details.description) .. ";]"
+				engine.formspec_escape(details.description) .. ";]"
 			--rating
 			local ratingy = screenshot_ypos + 0.6
 			retval = retval .."label[10.1," .. ratingy .. ";Rating: " .. details.rating .."]"
