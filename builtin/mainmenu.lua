@@ -1049,7 +1049,7 @@ function tabbuilder.tab_texture_packs()
 		f:close()
 	end
 	
-	local screenfile = texture_pack_path..DIR_DELIM.."screenshot.png"
+	local screenfile = current_texture_path..DIR_DELIM.."screenshot.png"
 	if not file_exists then
 		screenfile = nil
 		local no_screenshot = engine.get_texturepath()..DIR_DELIM..
