@@ -964,7 +964,7 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_settings()
-	return	"vertlabel[0,0;SETTINGS]" ..
+	return	"vertlabel[0,0;" .. gettext("SETTINGS") .. "]" ..
 			"checkbox[1,0.75;cb_fancy_trees;".. gettext("Fancy trees") .. ";" 
 					.. dump(engine.setting_getbool("new_style_leaves")) .. "]"..
 			"checkbox[1,1.25;cb_smooth_lighting;".. gettext("Smooth Lighting") 
