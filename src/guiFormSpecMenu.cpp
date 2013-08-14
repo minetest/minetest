@@ -665,7 +665,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				}
 				else {
 					std::string color = items[i].substr(1,6);
-					std::wstring wget_wtext = std::wstring(wstrgettext(items[i]).c_str() + 7);
+					std::wstring wget_wtext = std::wstring(wstrgettext(items[i].c_str() + 7));
 					std::string wget_text = wide_to_narrow(wget_wtext);
 					std::string text_escaped = unescape_string(wget_text);
 					e->addItem(narrow_to_wide(text_escaped).c_str());
