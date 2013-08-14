@@ -20,10 +20,10 @@ gamemgr = {}
 --------------------------------------------------------------------------------
 function gamemgr.dialog_new_game()
 	local retval = 
-		"label[2,2;Game Name]"..
+		"label[2,2;" .. gettext("Game Name") .. "]"..
 		"field[4.5,2.4;6,0.5;te_game_name;;]" ..
-		"button[5,4.2;2.6,0.5;new_game_confirm;Create]" ..
-		"button[7.5,4.2;2.8,0.5;new_game_cancel;Cancel]"
+		"button[5,4.2;2.6,0.5;new_game_confirm;" .. gettext("Create") .. "]" ..
+		"button[7.5,4.2;2.8,0.5;new_game_cancel;" .. gettext("Cancel") .. "]"
 
 	return retval
 end
@@ -114,8 +114,8 @@ function gamemgr.handle_edit_game_buttons(fields)
 			local sourcepath = mod.path
 			
 			if not gamemgr.add_mod(current_game,sourcepath) then
-				gamedata.errormessage = "Gamemgr: Unable to copy mod: " .. 
-									mod.name .. " to game: " .. current_game.id
+				gamedata.errormessage = gettext("Gamemgr: Unable to copy mod: ") .. 
+									mod.name .. gettext(" to game: ") .. current_game.id
 			end
 		end
 	end
@@ -200,8 +200,8 @@ function gamemgr.tab()
 	end
 	
 	local retval = 
-		"vertlabel[0,-0.25;GAMES]" ..
-		"label[1,-0.25;Games:]" ..
+		"vertlabel[0,-0.25;" .. gettext("GAMES") .. "]" ..
+		"label[1,-0.25;" .. gettext("Games") .. ":]" ..
 		"textlist[1,0.25;4.5,4.4;gamelist;" ..
 		gamemgr.gamelist() ..
 		";" .. gamemgr.selected_game .. "]"
@@ -217,11 +217,11 @@ function gamemgr.tab()
 		
 		retval = retval ..
 			"field[8,-0.25;6,2;;" .. current_game.name .. ";]"..
-			"label[6,1.4;Mods:]" ..
-			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;edit game]" ..
+			"label[6,1.4;" .. gettext("Mods") ..":]" ..
+			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;" .. gettext("edit game") .. "]" ..
 			"textlist[6,2;5.5,3.3;game_mgr_modlist;"
 			.. gamemgr.get_game_mods(current_game) ..";0]" ..
-			"button[1,4.75;3.2,0.5;btn_game_mgr_new_game;new game]"
+			"button[1,4.75;3.2,0.5;btn_game_mgr_new_game;" .. gettext("new game") .. "]"
 	end
 	return retval
 end
@@ -231,7 +231,7 @@ function gamemgr.dialog_edit_game()
 	local current_game = gamemgr.get_game(gamemgr.selected_game)
 	if current_game ~= nil then
 		local retval = 
-			"vertlabel[0,-0.25;EDIT GAME]" ..
+			"vertlabel[0,-0.25;" .. gettext("EDIT GAME") .."]" ..
 			"label[0,-0.25;" .. current_game.name .. "]" ..
 			"button[11.55,-0.2;0.75,0.5;btn_close_edit_game;x]"
 		
@@ -242,19 +242,19 @@ function gamemgr.dialog_edit_game()
 		end
 		
 		retval = retval .. 
-			"textlist[0.5,0.5;4.5,4.3;mods_current;"
+			"textlist[0.5,0.5;4.5,4.3;" .. gettext("mods_current") ..";"
 			.. gamemgr.get_game_mods(current_game) ..";0]"
 			
 			
 		retval = retval .. 
-			"textlist[7,0.5;4.5,4.3;mods_available;"
+			"textlist[7,0.5;4.5,4.3;" .. gettext("mods_available") ..";"
 			.. modmgr.render_modlist() .. ";0]"
 
 		retval = retval ..
-			"button[0.55,4.95;4.7,0.5;btn_remove_mod_from_game;Remove selected mod]"
+			"button[0.55,4.95;4.7,0.5;btn_remove_mod_from_game;" .. gettext("Remove selected mod") .."]"
 			
 		retval = retval ..
-			"button[7.05,4.95;4.7,0.5;btn_add_mod_to_game;<<-- Add mod]"
+			"button[7.05,4.95;4.7,0.5;btn_add_mod_to_game;" .. gettext("<<-- Add mod") .."]"
 		
 		return retval
 	end

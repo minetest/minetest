@@ -233,15 +233,15 @@ function modmgr.tab()
 	end
 	
 	local retval = 
-		"vertlabel[0,-0.25;MODS]" ..
-		"label[0.8,-0.25;Installed Mods:]" ..
+		"vertlabel[0,-0.25;".. gettext("MODS") .. "]" ..
+		"label[0.8,-0.25;".. gettext("Installed Mods") .. ":]" ..
 		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
-		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;Install]" ..
-		"button[3,4.85;2,0.5;btn_mod_mgr_download;Download]"
+		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. gettext("Install") .. "]" ..
+		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. gettext("Download") .. "]"
 		
 	local selected_mod = nil
 		
@@ -251,11 +251,13 @@ function modmgr.tab()
 	
 	if selected_mod ~= nil then
 		if selected_mod.is_modpack then
-			retval = retval .. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;Rename]"
+			retval = retval 
+			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+					 gettext("Rename") .. "]"
 		else
 		--show dependencies
 			retval = retval .. 
-				"label[6,1.9;Depends:]" ..
+				"label[6,1.9;".. gettext("Depends") .. ":]" ..
 				"textlist[6,2.4;5.7,2;deplist;"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
@@ -265,7 +267,8 @@ function modmgr.tab()
 			--TODO read modinfo
 		end
 		--show delete button
-		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;Delete]"
+		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;"
+				.. gettext("Delete") .. "]"
 	end
 	return retval
 end
@@ -276,12 +279,14 @@ function modmgr.dialog_rename_modpack()
 	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
 	
 	local retval = 
-		"label[1.75,1;Rename Modpack:]"..
+		"label[1.75,1;".. gettext("Rename Modpack") .. ":]"..
 		"field[4.5,1.4;6,0.5;te_modpack_name;;" ..
 		mod.name ..
 		"]" ..
-		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;Accept]" ..
-		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;Cancel]"
+		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;".. 
+				gettext("Accept") .. "]" ..
+		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;".. 
+				gettext("Cancel") .. "]"
 
 	return retval
 end
@@ -369,31 +374,31 @@ function modmgr.dialog_configure_world()
 	
 	local retval =
 		"size[11,6.5]" ..
-		"label[1.5,-0.25;World: " .. worldspec.name .. "]"
+		"label[1.5,-0.25;" .. gettext("World") .. ": " .. worldspec.name .. "]"
 		
 	if modmgr.hide_gamemods then
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;true]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. gettext("Hide Game") .. ";true]"
 	else
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;false]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. gettext("Hide Game") .. ";false]"
 	end
 	
 	if modmgr.hide_modpackcontents then
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;true]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. gettext("Hide mp content") .. ";true]"
 	else
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;false]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. gettext("Hide mp content") .. ";false]"
 	end
 	
 	if mod == nil then
 		mod = {name=""}
 	end
 	retval = retval ..
-		"label[0,0.45;Mod:]" ..
+		"label[0,0.45;" .. gettext("Mod") .. ":]" ..
 		"label[0.75,0.45;" .. mod.name .. "]" ..
-		"label[0,1;Depends:]" ..
+		"label[0,1;" .. gettext("Depends") .. ":]" ..
 		"textlist[0,1.5;5,4.25;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
-		"button[9.25,6.35;2,0.5;btn_config_world_save;Save]" ..
-		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]"
+		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. gettext("Save") .. "]" ..
+		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. gettext("Cancel") .. "]"
 	
 	if engine.setting_get("old_style_mod_selection") == "true" then
 		if mod ~= nil and mod.name ~= "" then
@@ -410,25 +415,25 @@ function modmgr.dialog_configure_world()
 				end
 				
 				if all_enabled == false then
-					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;Enable MP]"
+					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;" .. gettext("Enable MP") .. "]"
 				else
-					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;Disable MP]"
+					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;" .. gettext("Disable MP") .. "]"
 				end
 			else
 				if mod.enabled then
-					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;true]"
+					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. gettext("enabled") .. ";true]"
 				else
-					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;false]"
+					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. gettext("enabled") .. ";false]"
 				end
 			end
 		
 		end
 		
 		retval = retval ..
-			"button[8.5,-0.125;2.5,0.5;btn_all_mods;Enable all]"
+			"button[8.5,-0.125;2.5,0.5;btn_all_mods;" .. gettext("Enable all") .. "]"
 	else
 		retval = retval ..
-		"button[5.5,-0.125;5.75,0.5;btn_all_mods;Enable all Mods]"
+		"button[5.5,-0.125;5.75,0.5;btn_all_mods;" .. gettext("Enable all Mods") .. "]"
 	end
 		retval = retval ..
 		"textlist[5.5,0.5;5.5,5.75;world_config_modlist;"
@@ -547,7 +552,7 @@ function modmgr.handle_modmgr_buttons(fields)
 	end
 	
 	if fields["btn_mod_mgr_install_local"] ~= nil then
-		engine.show_file_open_dialog("mod_mgt_open_dlg","Select Mod File:")
+		engine.show_file_open_dialog("mod_mgt_open_dlg",gettext("Select Mod File:"))
 	end
 	
 	if fields["btn_mod_mgr_download"] ~= nil then
@@ -586,8 +591,8 @@ function modmgr.installmod(modfilename,basename)
 	local modpath = modmgr.extract(modfile)
 	
 	if modpath == nil then
-		gamedata.errormessage = "Install Mod: file: " .. modfile.name ..
-			"\nInstall Mod: unsupported filetype \"" .. modfile.type .. "\""
+		gamedata.errormessage = gettext("Install Mod: file: ") .. modfile.name ..
+			gettext("\nInstall Mod: unsupported filetype \"") .. modfile.type .. "\""
 		return
 	end
 	
@@ -608,10 +613,10 @@ function modmgr.installmod(modfilename,basename)
 		if clean_path ~= nil then
 			local targetpath = engine.get_modpath() .. DIR_DELIM .. clean_path
 			if not engine.copy_dir(basefolder.path,targetpath) then
-				gamedata.errormessage = "Failed to install " .. basename .. " to " .. targetpath
+				gamedata.errormessage = gettext("Failed to install ") .. basename .. gettext(" to ") .. targetpath
 			end
 		else
-			gamedata.errormessage = "Install Mod: unable to find suitable foldername for modpack " 
+			gamedata.errormessage = gettext("Install Mod: unable to find suitable foldername for modpack ")
 				.. modfilename
 		end
 	end
@@ -632,7 +637,7 @@ function modmgr.installmod(modfilename,basename)
 			local targetpath = engine.get_modpath() .. DIR_DELIM .. targetfolder
 			engine.copy_dir(basefolder.path,targetpath)
 		else
-			gamedata.errormessage = "Install Mod: unable to find real modname for: " 
+			gamedata.errormessage = gettext("Install Mod: unable to find real modname for: ")
 				.. modfilename
 		end
 	end
@@ -835,11 +840,11 @@ function modmgr.handle_delete_mod_buttons(fields)
 			mod.path ~= "" and
 			mod.path ~= engine.get_modpath() then
 			if not engine.delete_dir(mod.path) then
-				gamedata.errormessage ="Modmgr: failed to delete >" .. mod.path .. "<"
+				gamedata.errormessage = gettext("Modmgr: failed to delete") .. " >" .. mod.path .. "<"
 			end
 			modmgr.refresh_globals()
 		else
-			gamedata.errormessage ="Modmgr: invalid modpath >" .. mod.path .. "<"
+			gamedata.errormessage = gettext("Modmgr: invalid modpath")  .. " >" .. mod.path .. "<"
 		end
 	end
 	
@@ -856,9 +861,9 @@ function modmgr.dialog_delete_mod()
 	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	local retval = 
-		"field[1.75,1;10,3;;Are you sure you want to delete ".. mod.name .. "?;]"..
-		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;Yes]" ..
-		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;No of course not!]"
+		"field[1.75,1;10,3;;" .. gettext("Are you sure you want to delete ") .. mod.name .. "?;]"..
+		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;" .. gettext("Yes") .. "]" ..
+		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;" .. gettext("No of course not!") .. "]"
 
 	return retval
 end
