@@ -184,6 +184,18 @@ function cleanup_path(temppath)
 	return temppath
 end
 
+local tbl = engine or minetest
+function tbl.formspec_escape(text)
+	if text ~= nil then
+		text = string.gsub(text,"\\","\\\\")
+		text = string.gsub(text,"%]","\\]")
+		text = string.gsub(text,"%[","\\[")
+		text = string.gsub(text,";","\\;")
+		text = string.gsub(text,",","\\,")
+	end
+	return text
+end
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
@@ -197,41 +209,7 @@ if engine ~= nil then
 		
 		return nil
 	end
-	
-	--------------------------------------------------------------------------------
-	function fs_escape_string(text)
-		if text ~= nil then
-			while (text:find("\r\n") ~= nil) do
-				local newtext = text:sub(1,text:find("\r\n")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\r\n")+3)
-				
-				text = newtext
-			end
-			
-			while (text:find("\n") ~= nil) do
-				local newtext = text:sub(1,text:find("\n")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\n")+1)
-				
-				text = newtext
-			end
-			
-			while (text:find("\r") ~= nil) do
-				local newtext = text:sub(1,text:find("\r")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\r")+1)
-				
-				text = newtext
-			end
-			
-			text = string.gsub(text,"\\","\\\\")
-			text = string.gsub(text,"%]","\\]")
-			text = string.gsub(text,"%[","\\[")
-			text = string.gsub(text,";","\\;")
-			text = string.gsub(text,",","\\,")
-		end
-		return text
-	end
 end
-
 --------------------------------------------------------------------------------
 -- core only fct
 --------------------------------------------------------------------------------
@@ -241,3 +219,4 @@ if minetest ~= nil then
 		return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 	end
 end
+

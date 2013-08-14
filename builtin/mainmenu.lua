@@ -39,11 +39,11 @@ function menu.render_favorite(spec,render_details)
 	local text = ""
 	
 	if spec.name ~= nil then
-		text = text .. fs_escape_string(spec.name:trim())
+		text = text .. engine.formspec_escape(spec.name:trim())
 		
 --		if spec.description ~= nil and
---			fs_escape_string(spec.description):trim() ~= "" then
---			text = text .. " (" .. fs_escape_string(spec.description) .. ")"
+--			engine.formspec_escape(spec.description):trim() ~= "" then
+--			text = text .. " (" .. engine.formspec_escape(spec.description) .. ")"
 --		end
 	else
 		if spec.address ~= nil then
@@ -93,7 +93,7 @@ function menu.render_favorite(spec,render_details)
 						string.format("%03d",spec.clients_max) .. " "
 	end
 	
-	return playercount .. fs_escape_string(details) ..  text
+	return playercount .. engine.formspec_escape(details) ..  text
 end
 
 --------------------------------------------------------------------------------
@@ -900,7 +900,7 @@ function tabbuilder.tab_multiplayer()
 	if menu.fav_selected ~= nil and 
 		menu.favorites[menu.fav_selected].description ~= nil then
 		retval = retval .. 
-			fs_escape_string(menu.favorites[menu.fav_selected].description,true)
+			engine.formspec_escape(menu.favorites[menu.fav_selected].description,true)
 	end
 	
 	retval = retval .. 
@@ -1040,7 +1040,7 @@ function tabbuilder.tab_TP()
 			menu.render_TP_list(TPlist) ..
 			";" .. index .. "]" ..
 			"image[0.65,0.25;4.0,3.7;"..(menu.TPscreen or no_screenshot).."]"..
-			"textarea[1.0,3.25;3.7,1.5;;"..(menu.TPinfo or "")..";]"
+			"textarea[1.0,3.25;3.7,1.5;;"..engine.formspec_escape(menu.TPinfo or "")..";]"
 end
 
 --------------------------------------------------------------------------------
