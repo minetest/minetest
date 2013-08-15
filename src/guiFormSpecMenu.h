@@ -294,6 +294,7 @@ private:
 		int bp_set;
 		v2u32 screensize;
 		std::map<std::wstring,int> listbox_selections;
+		std::map<std::wstring,int> listbox_scroll;
 	} parserData;
 
 	typedef struct {
@@ -310,6 +311,8 @@ private:
 	// Determine whether listbox click was double click
 	// (Using some black Irrlicht magic)
 	bool checkListboxClick(std::wstring wlistboxname, int eventtype);
+
+	gui::IGUIScrollBar* getListboxScrollbar(gui::IGUIListBox *listbox);
 
 	void parseElement(parserData* data,std::string element);
 

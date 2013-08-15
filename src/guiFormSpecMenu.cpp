@@ -184,6 +184,38 @@ bool GUIFormSpecMenu::checkListboxClick(std::wstring wlistboxname,
 	return false;
 }
 
+gui::IGUIScrollBar* GUIFormSpecMenu::getListboxScrollbar(
+		gui::IGUIListBox *listbox)
+{
+	// WARNING: BLACK IRRLICHT MAGIC
+	// Ordinarily, due to how formspecs work (recreating the entire GUI
+	// when something changes), when you select an item in a textlist
+	// with more items than fit in the visible area, the newly selected
+	// item is scrolled to the bottom of the visible area. This is
+	// annoying and breaks GUI designs that use double clicks.
+
+	// This function helps fixing this problem by giving direct access
+	// to a listbox's scrollbar. This works because CGUIListBox doesn't
+	// cache the scrollbar position anywhere.
+
+	// If this stops working in a future irrlicht version, consider
+	// maintaining a local copy of irr::gui::CGUIListBox, possibly also
+	// fixing the other reasons why black irrlicht magic is needed.
+
+	core::list<gui::IGUIElement*> children = listbox->getChildren();
+	for(core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end(); ++it) {
+		gui::IGUIElement* child = *it;
+		if (child && child->getType() == gui::EGUIET_SCROLL_BAR) {
+			return static_cast<gui::IGUIScrollBar*>(child);
+		}
+	}
+
+	verbosestream<<"getListboxScrollbar: WARNING: "
+			<<"listbox has no scrollbar"<<std::endl;
+	return NULL;
+}
+
 std::vector<std::string> split(const std::string &s, char delim) {
 	std::vector<std::string> tokens;
 
@@ -614,6 +646,13 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 
 		if (data->listbox_selections.find(fname_w) != data->listbox_selections.end()) {
 			e->setSelected(data->listbox_selections[fname_w]);
+		}
+
+		if (data->listbox_scroll.find(fname_w) != data->listbox_scroll.end()) {
+			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
+			if (scrollbar) {
+				scrollbar->setPos(data->listbox_scroll[fname_w]);
+			}
 		}
 
 		if (str_initial_selection != "")
@@ -1417,10 +1456,17 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	//preserve listboxes
 	for (unsigned int i = 0; i < m_listboxes.size(); i++) {
-		int selection = m_listboxes[i].second->getSelected();
+		std::wstring listboxname = m_listboxes[i].first.fname;
+		gui::IGUIListBox *listbox = m_listboxes[i].second;
+
+		int selection = listbox->getSelected();
 		if (selection != -1) {
-			std::wstring listboxname = m_listboxes[i].first.fname;
 			mydata.listbox_selections[listboxname] = selection;
+		}
+
+		gui::IGUIScrollBar *scrollbar = getListboxScrollbar(listbox);
+		if (scrollbar) {
+			mydata.listbox_scroll[listboxname] = scrollbar->getPos();
 		}
 	}
 
