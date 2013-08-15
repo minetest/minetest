@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/numeric.h"
 #include "filesys.h"
+#include "gettime.h"
 
 #include "gettext.h"
 
@@ -81,6 +82,10 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_selected_item(NULL),
 	m_selected_amount(0),
 	m_selected_dragging(false),
+	m_listbox_click_fname(),
+	m_listbox_click_index(-1),
+	m_listbox_click_time(0),
+	m_listbox_doubleclick(false),
 	m_tooltip_element(NULL),
 	m_allowclose(true),
 	m_use_gettext(false),
@@ -141,6 +146,42 @@ int GUIFormSpecMenu::getListboxIndex(std::string listboxname) {
 		}
 	}
 	return -1;
+}
+
+bool GUIFormSpecMenu::checkListboxClick(std::wstring wlistboxname,
+		int eventtype)
+{
+	// WARNING: BLACK IRRLICHT MAGIC
+	// Used to fix Irrlicht's subpar reporting of single clicks and double
+	// clicks in listboxes (gui::EGET_LISTBOX_CHANGED,
+	// gui::EGET_LISTBOX_SELECTED_AGAIN):
+	// 1. IGUIListBox::setSelected() is counted as a click.
+	//    Including the initial setSelected() done by parseTextList().
+	// 2. Clicking on a the selected item and then dragging for less
+	//    than 500ms is counted as a doubleclick, no matter when the
+	//    item was previously selected (e.g. more than 500ms ago)
+
+	// So when Irrlicht reports a doubleclick, we need to check
+	// for ourselves if really was a doubleclick. Or just a fake.
+
+	for(unsigned int i=0; i < m_listboxes.size(); i++) {
+		std::wstring name(m_listboxes[i].first.fname.c_str());
+		int selected = m_listboxes[i].second->getSelected();
+		if (name == wlistboxname && selected >= 0) {
+			u32 now = getTimeMs();
+			bool doubleclick =
+				(eventtype == gui::EGET_LISTBOX_SELECTED_AGAIN)
+				&& (name == m_listbox_click_fname)
+				&& (selected == m_listbox_click_index)
+				&& (m_listbox_click_time >= now - 500);
+			m_listbox_click_fname = name;
+			m_listbox_click_index = selected;
+			m_listbox_click_time = now;
+			m_listbox_doubleclick = doubleclick;
+			return true;
+		}
+	}
+	return false;
 }
 
 std::vector<std::string> split(const std::string &s, char delim) {
@@ -1920,7 +1961,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput(int eventtype)
+void GUIFormSpecMenu::acceptInput()
 {
 	if(m_text_dst)
 	{
@@ -1957,11 +1998,12 @@ void GUIFormSpecMenu::acceptInput(int eventtype)
 				}
 				else if(s.ftype == f_ListBox) {
 					std::stringstream ss;
-					if (eventtype == gui::EGET_LISTBOX_CHANGED) {
-						ss << "CHG:";
+
+					if (m_listbox_doubleclick) {
+						ss << "DCL:";
 					}
 					else {
-						ss << "DCL:";
+						ss << "CHG:";
 					}
 					ss << (getListboxIndex(wide_to_narrow(s.fname.c_str()))+1);
 					fields[wide_to_narrow(s.fname.c_str())] = ss.str();
@@ -2459,12 +2501,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				for(u32 i=0; i<m_fields.size(); i++)
 				{
 					FieldSpec &s = m_fields[i];
-					// if its a button, set the send field so
-					// lua knows which button was pressed
-					if ((s.ftype == f_ListBox) && (s.fid == current_id))
+					// if its a listbox, set the send field so
+					// lua knows which listbox was changed
+					// checkListboxClick() is black magic
+					// for properly handling double clicks
+					if ((s.ftype == f_ListBox) && (s.fid == current_id)
+							&& checkListboxClick(s.fname,
+								event.GUIEvent.EventType))
 					{
 						s.send = true;
-						acceptInput(event.GUIEvent.EventType);
+						acceptInput();
 						s.send=false;
 						// Restore focus to the full form
 						Environment->setFocus(this);
