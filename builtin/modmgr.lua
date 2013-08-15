@@ -972,6 +972,8 @@ function modmgr.init_worldconfig()
 									hide_game=modmgr.hide_gamemods,
 									hide_modpackcontents= modmgr.hide_modpackcontents
 									})
+		filterlist.add_sort_mechanism(modmgr.modlist, "alphabetic", sort_mod_list)
+		filterlist.set_sortmode(modmgr.modlist, "alphabetic")
 		
 		return true	
 	end
@@ -1068,6 +1070,8 @@ function modmgr.refresh_globals()
 					nil, --filter
 					{}
 					)
+	filterlist.add_sort_mechanism(modmgr.global_mods, "alphabetic", sort_mod_list)
+	filterlist.set_sortmode(modmgr.global_mods, "alphabetic")
 end
 
 --------------------------------------------------------------------------------
