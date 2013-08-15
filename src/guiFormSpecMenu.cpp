@@ -143,51 +143,34 @@ int GUIFormSpecMenu::getListboxIndex(std::string listboxname) {
 	return -1;
 }
 
-std::vector<std::string> split(const std::string &s, char delim, bool escape=false) {
+std::vector<std::string> split(const std::string &s, char delim) {
 	std::vector<std::string> tokens;
 
-	if (!escape) {
-		int startpos = 0;
-		size_t nextpos = s.find(delim);
-
-		while(nextpos != std::string::npos) {
-			std::string toadd = s.substr(startpos,nextpos-startpos);
-			tokens.push_back(toadd);
-			startpos = nextpos+1;
-			nextpos = s.find(delim,nextpos+1);
+	std::string current = "";
+	bool last_was_escape = false;
+	for(unsigned int i=0; i < s.size(); i++) {
+		if (last_was_escape) {
+			current += '\\';
+			current += s.c_str()[i];
+			last_was_escape = false;
 		}
-
-		//push last element
-		tokens.push_back(s.substr(startpos));
-	}
-	else {
-		std::string current = "";
-		current += s.c_str()[0];
-		bool last_was_escape = false;
-		for(unsigned int i=1; i < s.size(); i++) {
-			if (last_was_escape) {
-				current += '\\';
+		else {
+			if (s.c_str()[i] == delim) {
+				tokens.push_back(current);
+				current = "";
+				last_was_escape = false;
+			}
+			else if (s.c_str()[i] == '\\'){
+				last_was_escape = true;
+			}
+			else {
 				current += s.c_str()[i];
 				last_was_escape = false;
 			}
-			else {
-				if (s.c_str()[i] == delim) {
-					tokens.push_back(current);
-					current = "";
-					last_was_escape = false;
-				}
-				else if (s.c_str()[i] == '\\'){
-					last_was_escape = true;
-				}
-				else {
-					current += s.c_str()[i];
-					last_was_escape = false;
-				}
-			}
 		}
-		//push last element
-		tokens.push_back(current);
 	}
+	//push last element
+	tokens.push_back(current);
 
 	return tokens;
 }
@@ -518,7 +501,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',',true);
+		std::vector<std::string> items = split(parts[3],',');
 		std::string str_initial_selection = "";
 		std::string str_transparent = "false";
 
@@ -911,7 +894,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 }
 
 void GUIFormSpecMenu::parseField(parserData* data,std::string element,std::string type) {
-	std::vector<std::string> parts = split(element,';',true);
+	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 3) {
 		parseSimpleField(data,parts);
@@ -1275,7 +1258,7 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
 	if (element == "")
 		return;
 
-	std::vector<std::string> parts = split(element,'[', true);
+	std::vector<std::string> parts = split(element,'[');
 
 	// ugly workaround to keep compatibility
 	if (parts.size() > 2) {
@@ -1428,7 +1411,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_boxes.clear();
 
 
-	std::vector<std::string> elements = split(m_formspec_string,']',true);
+	std::vector<std::string> elements = split(m_formspec_string,']');
 
 	for (unsigned int i=0;i< elements.size();i++) {
 		parseElement(&mydata,elements[i]);
