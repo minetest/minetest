@@ -275,7 +275,6 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("main_menu_script","");
 	settings->setDefault("main_menu_mod_mgr","1");
-	settings->setDefault("old_style_mod_selection","true");
 	settings->setDefault("main_menu_game_mgr","0");
 	settings->setDefault("modstore_download_url", "https://forum.minetest.net/media/");
 	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");

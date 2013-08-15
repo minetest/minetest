@@ -654,9 +654,6 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_opaque_water"] then
 		engine.setting_setbool("opaque_water",tabbuilder.tobool(fields["cb_opaque_water"]))
 	end
-	if fields["old_style_modselection"] then
-		engine.setting_setbool("old_style_mod_selection",tabbuilder.tobool(fields["old_style_modselection"]))
-	end
 	
 	if fields["cb_mipmapping"] then
 		engine.setting_setbool("mip_map",tabbuilder.tobool(fields["cb_mipmapping"]))
@@ -964,7 +961,6 @@ function tabbuilder.tab_settings()
 			"checkbox[1,1.25;cb_smooth_lighting;Smooth Lighting;".. dump(engine.setting_getbool("smooth_lighting"))	.. "]"..
 			"checkbox[1,1.75;cb_3d_clouds;3D Clouds;" 			.. dump(engine.setting_getbool("enable_3d_clouds"))	.. "]"..
 			"checkbox[1,2.25;cb_opaque_water;Opaque Water;" 		.. dump(engine.setting_getbool("opaque_water"))		.. "]"..
-			"checkbox[1,2.75;old_style_modselection;Old style modmgr;" .. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"..
 			
 			"checkbox[4,0.75;cb_mipmapping;Mip-Mapping;" 		.. dump(engine.setting_getbool("mip_map"))			.. "]"..
 			"checkbox[4,1.25;cb_anisotrophic;Anisotropic Filtering;".. dump(engine.setting_getbool("anisotropic_filter"))	.. "]"..
