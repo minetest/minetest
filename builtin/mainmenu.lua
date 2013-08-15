@@ -960,23 +960,23 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.tab_settings()
 	return	"vertlabel[0,0;SETTINGS]" ..
-			"checkbox[1,0.75;cb_fancy_trees;Fancy trees;" 		.. dump(engine.setting_getbool("new_style_leaves"))	.. "]"..
-			"checkbox[1,1.25;cb_smooth_lighting;Smooth Lighting;".. dump(engine.setting_getbool("smooth_lighting"))	.. "]"..
-			"checkbox[1,1.75;cb_3d_clouds;3D Clouds;" 			.. dump(engine.setting_getbool("enable_3d_clouds"))	.. "]"..
-			"checkbox[1,2.25;cb_opaque_water;Opaque Water;" 		.. dump(engine.setting_getbool("opaque_water"))		.. "]"..
-			"checkbox[1,2.75;old_style_modselection;Old style modmgr;" .. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"..
-			
-			"checkbox[4,0.75;cb_mipmapping;Mip-Mapping;" 		.. dump(engine.setting_getbool("mip_map"))			.. "]"..
-			"checkbox[4,1.25;cb_anisotrophic;Anisotropic Filtering;".. dump(engine.setting_getbool("anisotropic_filter"))	.. "]"..
-			"checkbox[4,1.75;cb_bilinear;Bi-Linear Filtering;"	.. dump(engine.setting_getbool("bilinear_filter"))	.. "]"..
-			"checkbox[4,2.25;cb_trilinear;Tri-Linear Filtering;"	.. dump(engine.setting_getbool("trilinear_filter"))	.. "]"..
-			
-			"checkbox[7.5,0.75;cb_shaders;Shaders;"				.. dump(engine.setting_getbool("enable_shaders"))		.. "]"..
-			"checkbox[7.5,1.25;cb_pre_ivis;Preload item visuals;".. dump(engine.setting_getbool("preload_item_visuals"))	.. "]"..
-			"checkbox[7.5,1.75;cb_particles;Enable Particles;"	.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
-			"checkbox[7.5,2.25;cb_finite_liquid;Finite Liquid;"	.. dump(engine.setting_getbool("liquid_finite"))		.. "]"..
-			
-			"button[1,4.25;2.25,0.5;btn_change_keys;Change keys]"
+			"label[0.8,0.2;Ingame Elements]"..
+			  "checkbox[1,0.55;cb_fancy_trees;Fancy trees;" 		.. dump(engine.setting_getbool("new_style_leaves"))	.. "]"..
+			  "checkbox[1,1.05;cb_opaque_water;Opaque Water;".. dump(engine.setting_getbool("opaque_water"))	.. "]"..
+			  "checkbox[4.25,0.55;cb_smooth_lighting;Smooth Lighting;" 		.. dump(engine.setting_getbool("smooth_lighting"))			.. "]"..
+			  "checkbox[4.25,1.05;cb_particles;Enable Particles;".. dump(engine.setting_getbool("enable_particles"))	.. "]"..
+			  "checkbox[7.75,0.55;cb_3d_clouds;3D Clouds;"				.. dump(engine.setting_getbool("enable_3d_clouds"))		.. "]"..
+			  "checkbox[7.75,1.05;cb_finite_liquid;Finite Liquid;".. dump(engine.setting_getbool("liquid_finite"))	.. "]"..
+			"label[0.8,1.9;Graphic Settings]"..
+			  "checkbox[1,2.25;cb_shaders;Shaders;" 			.. dump(engine.setting_getbool("enable_shaders"))	.. "]"..
+			  "checkbox[1,2.75;cb_pre_ivis;Preload item visuals;" 		.. dump(engine.setting_getbool("preload_item_visuals"))		.. "]"..
+			  "checkbox[4.25,2.25;cb_mipmapping;Mip-Mapping;"	.. dump(engine.setting_getbool("mip_map"))	.. "]"..
+			  "checkbox[4.25,2.75;cb_anisotrophic;Anisotropic Filtering;"	.. dump(engine.setting_getbool("anisotropic_filter"))	.. "]"..
+			  "checkbox[7.75,2.25;cb_bilinear;Bi-Linear Filtering;"	.. dump(engine.setting_getbool("bilinear_filter"))	.. "]"..
+			  "checkbox[7.75,2.75;cb_trilinear;Tri-Linear Filtering;"	.. dump(engine.setting_getbool("trilinear_filter"))	.. "]"..
+			"label[0.8,3.6;General settings]"..			
+			  "button[1,4.35;2.45,0.5;btn_change_keys;Change keys]"..
+			  "checkbox[7.75,3.95;old_style_modselection;Old style modmgr;" .. dump(engine.setting_getbool("old_style_mod_selection"))		.. "]"
 end
 
 --------------------------------------------------------------------------------
