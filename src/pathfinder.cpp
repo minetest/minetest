@@ -207,7 +207,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 
 	//check parameters
 	if (env == 0) {
-		std::cout << "missing environment pointer" << std::endl;
+		ERROR_TARGET << "missing environment pointer" << std::endl;
 		return retval;
 	}
 
@@ -246,7 +246,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 
 	//build data map
 	if (!build_costmap()) {
-		std::cout << "failed to build costmap" << std::endl;
+		ERROR_TARGET << "failed to build costmap" << std::endl;
 		return retval;
 	}
 #ifdef PATHFINDER_DEBUG
@@ -263,13 +263,13 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	path_gridnode& endpos   = getIndexElement(EndIndex);
 
 	if (!startpos.valid) {
-		std::cout << "invalid startpos" <<
+		ERROR_TARGET << "invalid startpos" <<
 				"Index: " << PPOS(StartIndex) <<
 				"Realpos: " << PPOS(getRealPos(StartIndex)) << std::endl;
 		return retval;
 	}
 	if (!endpos.valid) {
-		std::cout << "invalid stoppos" <<
+		ERROR_TARGET << "invalid stoppos" <<
 				"Index: " << PPOS(EndIndex) <<
 				"Realpos: " << PPOS(getRealPos(EndIndex)) << std::endl;
 		return retval;
@@ -290,7 +290,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 			update_cost_retval = update_cost_heuristic(StartIndex,v3s16(0,0,0),0,0);
 			break;
 		default:
-			std::cout << "missing algorithm"<< std::endl;
+			ERROR_TARGET << "missing algorithm"<< std::endl;
 			break;
 	}
 
@@ -350,7 +350,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 #ifdef PATHFINDER_DEBUG
 		print_pathlen();
 #endif
-		std::cout << "failed to update cost map"<< std::endl;
+		ERROR_TARGET << "failed to update cost map"<< std::endl;
 	}
 
 
