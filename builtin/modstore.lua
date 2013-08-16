@@ -116,7 +116,7 @@ function modstore.handle_buttons(current_tab,fields)
 	
 	if fields["btn_modstore_page_down"] then
 		if modstore.current_list ~= nil and 
-			modstore.current_list.page <modstore.current_list.pagecount then
+			modstore.current_list.page <modstore.current_list.pagecount-1 then
 			modstore.current_list.page = modstore.current_list.page +1
 		end
 	end
@@ -169,10 +169,10 @@ function modstore.update_modlist()
 		
 	if modstore.modlist_unsorted.data ~= nil then
 		modstore.modlist_unsorted.pagecount = 
-			math.floor((#modstore.modlist_unsorted.data / modstore.modsperpage))
+			math.ceil((#modstore.modlist_unsorted.data / modstore.modsperpage))
 	else
 		modstore.modlist_unsorted.data = {}
-		modstore.modlist_unsorted.pagecount = 0
+		modstore.modlist_unsorted.pagecount = 1
 	end
 	modstore.modlist_unsorted.page = 0
 end
@@ -181,11 +181,11 @@ end
 function modstore.getmodlist(list)
 	local retval = ""
 	retval = retval .. "label[10,-0.4;Page " .. (list.page +1) .. 
-							" of " .. (list.pagecount +1) .. "]"
+							" of " .. list.pagecount .. "]"
 	
 	retval = retval .. "button[11.6,-0.1;0.5,0.5;btn_modstore_page_up;^]"
 	retval = retval .. "box[11.6,0.35;0.28,8.6;000000]"
-	local scrollbarpos = 0.35 + (8.1/list.pagecount) * list.page
+	local scrollbarpos = 0.35 + (8.1/(list.pagecount-1)) * list.page
 	retval = retval .. "box[11.6," ..scrollbarpos .. ";0.28,0.5;32CD32]"
 	retval = retval .. "button[11.6,9.0;0.5,0.5;btn_modstore_page_down;v]"
 	
