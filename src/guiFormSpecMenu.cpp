@@ -260,8 +260,6 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element) {
 		invsize.X = stof(parts[0]);
 		invsize.Y = stof(parts[1]);
 
-		infostream<<"Form size ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
-
 		if (m_lock) {
 			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
 			v2u32 delta = current_screensize - m_lockscreensize;
@@ -342,10 +340,6 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element) {
 		v2s32 geom;
 		geom.X = stoi(v_geom[0]);
 		geom.Y = stoi(v_geom[1]);
-		infostream<<"list inv="<<location<<", listname="<<listname
-				<<", pos=("<<pos.X<<","<<pos.Y<<")"
-				<<", geom=("<<geom.X<<","<<geom.Y<<")"
-				<<std::endl;
 
 		s32 start_i = 0;
 		if(startindex != "")
@@ -425,10 +419,6 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 		geom.X = stoi(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stoi(v_geom[1]) * (float)imgsize.Y;
 
-		infostream<<"image name="<<name
-				<<", pos=("<<pos.X<<","<<pos.Y<<")"
-				<<", geom=("<<geom.X<<","<<geom.Y<<")"
-				<<std::endl;
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos, geom));
@@ -445,9 +435,6 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
-		std::cout<<"image name="<<name
-				<<", pos=("<<pos.X<<","<<pos.Y<<")"
-				<<std::endl;
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos));
@@ -475,10 +462,6 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element) {
 		geom.X = stoi(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stoi(v_geom[1]) * (float)imgsize.Y;
 
-		infostream<<"item name="<<name
-				<<", pos=("<<pos.X<<","<<pos.Y<<")"
-				<<", geom=("<<geom.X<<","<<geom.Y<<")"
-				<<std::endl;
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of item_image without a size[] element"<<std::endl;
 		m_itemimages.push_back(ImageDrawSpec(name, pos, geom));
@@ -555,10 +538,6 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-		infostream<<"image name="<<name
-				<<", pos=("<<pos.X<<","<<pos.Y<<")"
-				<<", geom=("<<geom.X<<","<<geom.Y<<")"
-				<<std::endl;
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
 		m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
