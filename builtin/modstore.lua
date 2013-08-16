@@ -29,8 +29,7 @@ function modstore.init()
 	
 	modstore.modsperpage = 5
 	
-	modstore.basetexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+	modstore.basetexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
 						DIR_DELIM .. "pack" .. DIR_DELIM
 	
 	modstore.current_list = nil
