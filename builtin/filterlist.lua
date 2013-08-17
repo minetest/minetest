@@ -246,3 +246,36 @@ function sort_worlds_alphabetic(this)
 		return a.name:lower() < b.name:lower()
 	end)
 end
+
+--------------------------------------------------------------------------------
+function sort_mod_list(this)
+
+	table.sort(this.m_processed_list, function(a, b)
+		-- Show game mods at bottom
+		if a.typ ~= b.typ then
+			return b.typ == "game_mod"
+		end
+		-- If in same or no modpack, sort by name
+		if a.modpack == b.modpack then
+			if a.name:lower() == b.name:lower() then
+				return a.name < b.name
+			end
+			return a.name:lower() < b.name:lower()
+		-- Else compare name to modpack name
+		else
+			-- Always show modpack pseudo-mod on top of modpack mod list
+			if a.name == b.modpack then
+				return true
+			elseif b.name == a.modpack then
+				return false
+			end
+			
+			local name_a = a.modpack or a.name
+			local name_b = b.modpack or b.name
+			if name_a:lower() == name_b:lower() then
+				return  name_a < name_b
+			end
+			return name_a:lower() < name_b:lower()
+		end
+	end)
+end

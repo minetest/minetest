@@ -20,14 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPGEN_HEADER
 #define MAPGEN_HEADER
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "util/container.h" // UniqueQueue
 #include "gamedef.h"
 #include "nodedef.h"
 #include "mapnode.h"
 #include "noise.h"
 #include "settings.h"
-#include <map>
 
 /////////////////// Mapgen flags
 #define MG_TREES         0x01
@@ -115,11 +114,6 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
-
-	//Legacy functions for Farmesh (pending removal)
-	static bool get_have_beach(u64 seed, v2s16 p2d);
-	static double tree_amount_2d(u64 seed, v2s16 p);
-	static s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 };
 
 struct MapgenFactory {
@@ -262,6 +256,8 @@ public:
 };
 
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
+#define MTSCHEM_PROB_NEVER  0x00
+#define MTSCHEM_PROB_ALWAYS 0xFF
 
 class DecoSchematic : public Decoration {
 public:
@@ -292,7 +288,7 @@ public:
 	
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 	void placeStructure(Map *map, v3s16 p);
-	void applyProbabilities(std::vector<std::pair<v3s16, s16> > *plist, v3s16 p0);
+	void applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0);
 };
 
 void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,

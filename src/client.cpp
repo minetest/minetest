@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "jmutexautolock.h"
 #include "main.h"
 #include <sstream>
+#include "filesys.h"
 #include "porting.h"
 #include "mapsector.h"
 #include "mapblock_mesh.h"
@@ -1356,8 +1357,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			std::istringstream is(datastring, std::ios_base::binary);
 			//t3.stop();
 			
-			//m_env.printPlayers(infostream);
-
 			//TimeTaker t4("player get", m_device);
 			Player *player = m_env.getLocalPlayer();
 			assert(player != NULL);

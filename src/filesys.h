@@ -98,6 +98,8 @@ std::string RemoveLastPathComponent(std::string path,
 // this does not resolve symlinks and check for existence of directories.
 std::string RemoveRelativePathComponents(std::string path);
 
+bool safeWriteToFile(const std::string &path, const std::string &content);
+
 }//fs
 
 #endif

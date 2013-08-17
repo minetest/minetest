@@ -18,9 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tool.h"
-#include "itemdef.h" // For itemgroup_get()
+#include "itemgroup.h"
 #include "log.h"
 #include "inventory.h"
+#include "exceptions.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
 

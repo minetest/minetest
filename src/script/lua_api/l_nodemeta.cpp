@@ -17,13 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
+#include "lua_api/l_nodemeta.h"
+#include "lua_api/l_internal.h"
+#include "lua_api/l_inventory.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "environment.h"
 #include "map.h"
-#include "lua_api/l_nodemeta.h"
-#include "common/c_internal.h"
-#include "lua_api/l_inventory.h"
+#include "nodemetadata.h"
+
 
 
 /*
@@ -211,7 +213,7 @@ int NodeMetaRef::l_to_table(lua_State *L)
 		std::vector<const InventoryList*> lists = inv->getLists();
 		for(std::vector<const InventoryList*>::const_iterator
 				i = lists.begin(); i != lists.end(); i++){
-			push_inventory_list(inv, (*i)->getName().c_str(), L);
+			push_inventory_list(L, inv, (*i)->getName().c_str());
 			lua_setfield(L, -2, (*i)->getName().c_str());
 		}
 	}
@@ -257,7 +259,7 @@ int NodeMetaRef::l_from_table(lua_State *L)
 	while(lua_next(L, inventorytable) != 0){
 		// key at index -2 and value at index -1
 		std::string name = lua_tostring(L, -2);
-		read_inventory_list(inv, name.c_str(), L, -1,STACK_TO_SERVER(L));
+		read_inventory_list(L, -1, inv, name.c_str(), getServer(L));
 		lua_pop(L, 1); // removes value, keeps key for next iteration
 	}
 	reportMetadataChange(ref);
@@ -328,5 +330,3 @@ const luaL_reg NodeMetaRef::methods[] = {
 	luamethod(NodeMetaRef, from_table),
 	{0,0}
 };
-
-REGISTER_LUA_REF(NodeMetaRef);

@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "server.h"
+#include "serverobject.h"
 #include "mapgen.h"
 
 struct EnumString es_TileAnimationType[] =
@@ -190,6 +190,7 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	getfloatfield(L, -1, "stepheight", prop->stepheight);
 	prop->stepheight*=BS;
+	getboolfield(L, -1, "automatic_face_movement_dir", prop->automatic_face_movement_dir);
 }
 
 /******************************************************************************/
@@ -693,8 +694,7 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(Inventory *inv, const char *name,
-		lua_State *L)
+void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 {
 	InventoryList *invlist = inv->getList(name);
 	if(invlist == NULL){
@@ -708,8 +708,8 @@ void push_inventory_list(Inventory *inv, const char *name,
 }
 
 /******************************************************************************/
-void read_inventory_list(Inventory *inv, const char *name,
-		lua_State *L, int tableindex, Server* srv,int forcesize)
+void read_inventory_list(lua_State *L, int tableindex,
+		Inventory *inv, const char *name, Server* srv, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
@@ -956,8 +956,24 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 		
 		lua_pushnil(L);
 		while (lua_next(L, -2)) {
-			if (i < numnodes)
-				schemdata[i] = readnode(L, -1, ndef);
+			if (i < numnodes) {
+				// same as readnode, except param1 default is MTSCHEM_PROB_CONST
+				lua_getfield(L, -1, "name");
+				const char *name = luaL_checkstring(L, -1);
+				lua_pop(L, 1);
+				
+				u8 param1;
+				lua_getfield(L, -1, "param1");
+				param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
+				lua_pop(L, 1);
+	
+				u8 param2;
+				lua_getfield(L, -1, "param2");
+				param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
+				lua_pop(L, 1);
+				
+				schemdata[i] = MapNode(ndef, name, param1, param2);
+			}
 			
 			i++;
 			lua_pop(L, 1);

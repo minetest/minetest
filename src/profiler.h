@@ -20,13 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PROFILER_HEADER
 #define PROFILER_HEADER
 
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 #include <string>
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <map>
 #include "util/timetaker.h"
 #include "util/numeric.h" // paging()
+#include "debug.h" // assert()
 
 /*
 	Time profiler

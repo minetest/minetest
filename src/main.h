@@ -20,9 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAIN_HEADER
 #define MAIN_HEADER
 
+#include <string>
+
 // Settings
 class Settings;
 extern Settings *g_settings;
+extern std::string g_settings_path;
 
 // Global profiler
 class Profiler;

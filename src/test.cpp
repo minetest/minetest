@@ -157,6 +157,8 @@ struct TestUtilities: public TestBase
 		UASSERT(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
 		UASSERT(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
 		UASSERT(lowercase("Foo bAR") == "foo bar");
+		UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
+		UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
 		UASSERT(is_yes("YeS") == true);
 		UASSERT(is_yes("") == false);
 		UASSERT(is_yes("FAlse") == false);

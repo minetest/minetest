@@ -127,10 +127,6 @@
 #fast_move = false
 # Invert mouse
 #invert_mouse = false
-# FarMesh thingy
-#enable_farmesh = false
-#farmesh_trees = true
-#farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
@@ -387,6 +383,7 @@
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
 
+#main_menu_script =
 #main_menu_game_mgr = 0
 #main_menu_mod_mgr = 1
 #modstore_download_url = https://forum.minetest.net/media/

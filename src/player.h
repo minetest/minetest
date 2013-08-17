@@ -194,6 +194,15 @@ public:
 		return m_collisionbox;
 	}
 
+	u32 getFreeHudID() const {
+		size_t size = hud.size();
+		for (size_t i = 0; i != size; i++) {
+			if (!hud[i])
+				return i;
+		}
+		return size;
+	}
+
 	virtual bool isLocal() const
 	{ return false; }
 	virtual PlayerSAO *getPlayerSAO()

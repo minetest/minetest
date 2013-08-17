@@ -17,30 +17,141 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "cpp_api/s_base.h"
+#include "cpp_api/s_internal.h"
+#include "lua_api/l_object.h"
+#include "serverobject.h"
+#include "debug.h"
+#include "log.h"
+#include "mods.h"
+#include "util/string.h"
+
+
+extern "C" {
+#include "lualib.h"
+}
+
 #include <stdio.h>
 #include <cstdarg>
 
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-}
 
-#include "cpp_api/s_base.h"
-#include "lua_api/l_object.h"
-#include "serverobject.h"
-
-ScriptApiBase::ScriptApiBase() :
-		m_luastackmutex(),
-#ifdef LOCK_DEBUG
-		m_locked(false),
-#endif
-		m_luastack(0),
-		m_server(0),
-		m_environment(0)
+class ModNameStorer
 {
+private:
+	lua_State *L;
+public:
+	ModNameStorer(lua_State *L_, const std::string modname):
+		L(L_)
+	{
+		// Store current modname in registry
+		lua_pushstring(L, modname.c_str());
+		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	}
+	~ModNameStorer()
+	{
+		// Clear current modname in registry
+		lua_pushnil(L);
+		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	}
+};
 
+static int loadScript_ErrorHandler(lua_State *L) {
+	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return 1;
+	}
+	lua_getfield(L, -1, "traceback");
+	if (!lua_isfunction(L, -1)) {
+		lua_pop(L, 2);
+		return 1;
+	}
+	lua_pushvalue(L, 1);
+	lua_pushinteger(L, 2);
+	lua_call(L, 2, 1);
+	return 1;
 }
 
+
+/*
+	ScriptApiBase
+*/
+
+ScriptApiBase::ScriptApiBase()
+{
+	m_luastackmutex.Init();
+
+	#ifdef SCRIPTAPI_LOCK_DEBUG
+	m_locked = false;
+	#endif
+
+	m_luastack = luaL_newstate();
+	assert(m_luastack);
+
+	// Make the ScriptApiBase* accessible to ModApiBase
+	lua_pushlightuserdata(m_luastack, this);
+	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
+
+	m_server = 0;
+	m_environment = 0;
+	m_guiengine = 0;
+}
+
+ScriptApiBase::~ScriptApiBase()
+{
+	lua_close(m_luastack);
+}
+
+bool ScriptApiBase::loadMod(const std::string &scriptpath,
+		const std::string &modname)
+{
+	ModNameStorer modnamestorer(getStack(), modname);
+
+	if(!string_allowed(modname, MODNAME_ALLOWED_CHARS)){
+		errorstream<<"Error loading mod \""<<modname
+				<<"\": modname does not follow naming conventions: "
+				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
+		return false;
+	}
+
+	bool success = false;
+
+	try{
+		success = loadScript(scriptpath);
+	}
+	catch(LuaError &e){
+		errorstream<<"Error loading mod \""<<modname
+				<<"\": "<<e.what()<<std::endl;
+	}
+
+	return success;
+}
+
+bool ScriptApiBase::loadScript(const std::string &scriptpath)
+{
+	verbosestream<<"Loading and running script from "<<scriptpath<<std::endl;
+
+	lua_State *L = getStack();
+
+	lua_pushcfunction(L, loadScript_ErrorHandler);
+	int errorhandler = lua_gettop(L);
+
+	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, errorhandler);
+	if(ret){
+		errorstream<<"========== ERROR FROM LUA ==========="<<std::endl;
+		errorstream<<"Failed to load and run script from "<<std::endl;
+		errorstream<<scriptpath<<":"<<std::endl;
+		errorstream<<std::endl;
+		errorstream<<lua_tostring(L, -1)<<std::endl;
+		errorstream<<std::endl;
+		errorstream<<"=======END OF ERROR FROM LUA ========"<<std::endl;
+		lua_pop(L, 1); // Pop error message from stack
+		lua_pop(L, 1); // Pop the error handler from stack
+		return false;
+	}
+	lua_pop(L, 1); // Pop the error handler from stack
+	return true;
+}
 
 void ScriptApiBase::realityCheck()
 {
@@ -52,7 +163,7 @@ void ScriptApiBase::realityCheck()
 	}
 }
 
-void  ScriptApiBase::scriptError(const char *fmt, ...)
+void ScriptApiBase::scriptError(const char *fmt, ...)
 {
 	va_list argp;
 	va_start(argp, fmt);
@@ -65,130 +176,34 @@ void  ScriptApiBase::scriptError(const char *fmt, ...)
 
 void ScriptApiBase::stackDump(std::ostream &o)
 {
-  int i;
-  int top = lua_gettop(m_luastack);
-  for (i = 1; i <= top; i++) {  /* repeat for each level */
-	int t = lua_type(m_luastack, i);
-	switch (t) {
+	int i;
+	int top = lua_gettop(m_luastack);
+	for (i = 1; i <= top; i++) {  /* repeat for each level */
+		int t = lua_type(m_luastack, i);
+		switch (t) {
 
-	  case LUA_TSTRING:  /* strings */
-	  	o<<"\""<<lua_tostring(m_luastack, i)<<"\"";
-		break;
+			case LUA_TSTRING:  /* strings */
+				o<<"\""<<lua_tostring(m_luastack, i)<<"\"";
+				break;
 
-	  case LUA_TBOOLEAN:  /* booleans */
-		o<<(lua_toboolean(m_luastack, i) ? "true" : "false");
-		break;
+			case LUA_TBOOLEAN:  /* booleans */
+				o<<(lua_toboolean(m_luastack, i) ? "true" : "false");
+				break;
 
-	  case LUA_TNUMBER:  /* numbers */ {
-	  	char buf[10];
-		snprintf(buf, 10, "%g", lua_tonumber(m_luastack, i));
-		o<<buf;
-		break; }
+			case LUA_TNUMBER:  /* numbers */ {
+				char buf[10];
+				snprintf(buf, 10, "%g", lua_tonumber(m_luastack, i));
+				o<<buf;
+				break; }
 
-	  default:  /* other values */
-		o<<lua_typename(m_luastack, t);
-		break;
+			default:  /* other values */
+				o<<lua_typename(m_luastack, t);
+				break;
 
-	}
-	o<<" ";
-  }
-  o<<std::endl;
-}
-
-// Push the list of callbacks (a lua table).
-// Then push nargs arguments.
-// Then call this function, which
-// - runs the callbacks
-// - removes the table and arguments from the lua stack
-// - pushes the return value, computed depending on mode
-void ScriptApiBase::runCallbacks(int nargs,RunCallbacksMode mode)
-{
-	lua_State *L = getStack();
-
-	// Insert the return value into the lua stack, below the table
-	assert(lua_gettop(L) >= nargs + 1);
-	lua_pushnil(L);
-	lua_insert(L, -(nargs + 1) - 1);
-	// Stack now looks like this:
-	// ... <return value = nil> <table> <arg#1> <arg#2> ... <arg#n>
-
-	int rv = lua_gettop(L) - nargs - 1;
-	int table = rv + 1;
-	int arg = table + 1;
-
-	luaL_checktype(L, table, LUA_TTABLE);
-
-	// Foreach
-	lua_pushnil(L);
-	bool first_loop = true;
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		for(int i = 0; i < nargs; i++)
-			lua_pushvalue(L, arg+i);
-		if(lua_pcall(L, nargs, 1, 0))
-			scriptError("error: %s", lua_tostring(L, -1));
-
-		// Move return value to designated space in stack
-		// Or pop it
-		if(first_loop){
-			// Result of first callback is always moved
-			lua_replace(L, rv);
-			first_loop = false;
-		} else {
-			// Otherwise, what happens depends on the mode
-			if(mode == RUN_CALLBACKS_MODE_FIRST)
-				lua_pop(L, 1);
-			else if(mode == RUN_CALLBACKS_MODE_LAST)
-				lua_replace(L, rv);
-			else if(mode == RUN_CALLBACKS_MODE_AND ||
-					mode == RUN_CALLBACKS_MODE_AND_SC){
-				if((bool)lua_toboolean(L, rv) == true &&
-						(bool)lua_toboolean(L, -1) == false)
-					lua_replace(L, rv);
-				else
-					lua_pop(L, 1);
-			}
-			else if(mode == RUN_CALLBACKS_MODE_OR ||
-					mode == RUN_CALLBACKS_MODE_OR_SC){
-				if((bool)lua_toboolean(L, rv) == false &&
-						(bool)lua_toboolean(L, -1) == true)
-					lua_replace(L, rv);
-				else
-					lua_pop(L, 1);
-			}
-			else
-				assert(0);
 		}
-
-		// Handle short circuit modes
-		if(mode == RUN_CALLBACKS_MODE_AND_SC &&
-				(bool)lua_toboolean(L, rv) == false)
-			break;
-		else if(mode == RUN_CALLBACKS_MODE_OR_SC &&
-				(bool)lua_toboolean(L, rv) == true)
-			break;
-
-		// value removed, keep key for next iteration
+		o<<" ";
 	}
-
-	// Remove stuff from stack, leaving only the return value
-	lua_settop(L, rv);
-
-	// Fix return value in case no callbacks were called
-	if(first_loop){
-		if(mode == RUN_CALLBACKS_MODE_AND ||
-				mode == RUN_CALLBACKS_MODE_AND_SC){
-			lua_pop(L, 1);
-			lua_pushboolean(L, true);
-		}
-		else if(mode == RUN_CALLBACKS_MODE_OR ||
-				mode == RUN_CALLBACKS_MODE_OR_SC){
-			lua_pop(L, 1);
-			lua_pushboolean(L, false);
-		}
-	}
+	o<<std::endl;
 }
 
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
