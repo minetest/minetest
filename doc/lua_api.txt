@@ -1888,7 +1888,8 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
-    automatic_face_movement_dir = false,
+    automatic_face_movement_dir = 0.0,
+    ^ automatically set yaw to movement direction; offset in degrees; false to disable
 }
 
 Entity definition (register_entity)
