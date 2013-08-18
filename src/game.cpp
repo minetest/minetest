@@ -2999,6 +2999,8 @@ void the_game(
 			guitext->setVisible(false);
 		}
 		
+		guienv->getRootGUIElement()->bringToFront(guiroot);
+
 		if(show_debug)
 		{
 			std::ostringstream os(std::ios_base::binary);
