@@ -1253,7 +1253,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element) {
 		for (unsigned int i=0; i< buttons.size(); i++) {
 			wchar_t* wbutton = 0;
 
-			wbutton = (wchar_t*) narrow_to_wide(buttons[i].c_str()).c_str();
+			std::wstring wlabel = narrow_to_wide(buttons[i]); //Needed for displaying text on windows
+			wbutton = (wchar_t*) wlabel.c_str();
 
 			e->addTab(wbutton,-1);
 		}
