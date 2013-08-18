@@ -38,7 +38,7 @@ setmetatable(minetest.env, {
 		local func = minetest[key]
 		if type(func) == "function" then
 			rawset(table, key, function(self, ...)
-				return func(unpack({...}))
+				return func(...)
 			end)
 		else
 			rawset(table, key, nil)
