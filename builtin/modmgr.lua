@@ -529,9 +529,8 @@ function modmgr.get_worldconfig(worldpath)
 	end
 	
 	--read gamemods
-	local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. worldconfig.id .. DIR_DELIM .. "mods"
-	
-	get_mods(gamemodpath,worldconfig.game_mods)
+	local gamespec = gamemgr.find_by_gameid(worldconfig.id)
+	gamemgr.get_game_mods(gamespec, worldconfig.game_mods)
 
 	return worldconfig
 end
@@ -871,12 +870,8 @@ function modmgr.preparemodlist(data)
 	end
 	
 	--read game mods
-	if data.gameid ~= nil and
-		data.gameid ~= "" then
-		local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. data.gameid .. DIR_DELIM .. "mods"
-		
-		get_mods(gamemodpath,game_mods)
-	end
+	local gamespec = gamemgr.find_by_gameid(data.gameid)
+	gamemgr.get_game_mods(gamespec, game_mods)
 	
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"

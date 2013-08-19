@@ -237,13 +237,11 @@ function menu.update_last_game()
 	if current_world == nil then
 		return
 	end
-		
-	for i=1,#gamemgr.games,1 do		
-		if gamemgr.games[i].id == current_world.gameid then
-			menu.last_game = i
-			engine.setting_set("main_menu_last_game_idx",menu.last_game)
-			break
-		end
+	
+	local gamespec, i = gamemgr.find_by_gameid(current_world.gameid)
+	if i ~= nil then
+		menu.last_game = i
+		engine.setting_set("main_menu_last_game_idx",menu.last_game)
 	end
 end
 
