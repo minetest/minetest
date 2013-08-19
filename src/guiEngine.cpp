@@ -79,7 +79,8 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 						gui::IGUIElement* parent,
 						IMenuManager *menumgr,
 						scene::ISceneManager* smgr,
-						MainMenuData* data) :
+						MainMenuData* data,
+						bool& kill) :
 	m_device(dev),
 	m_parent(parent),
 	m_menumanager(menumgr),
@@ -89,6 +90,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_formspecgui(0),
 	m_buttonhandler(0),
 	m_menu(0),
+	m_kill(kill),
 	m_startgame(false),
 	m_script(0),
 	m_scriptdir(""),
@@ -219,7 +221,7 @@ void GUIEngine::run()
 
 	cloudInit();
 
-	while(m_device->run() && (!m_startgame)) {
+	while(m_device->run() && (!m_startgame) && (!m_kill)) {
 		driver->beginScene(true, true, video::SColor(255,140,186,250));
 
 		if (m_clouds_enabled)

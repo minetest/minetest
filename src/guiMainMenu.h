@@ -49,9 +49,6 @@ struct MainMenuData
 	int selected_world;
 	bool simple_singleplayer_mode;
 
-	// Actions
-	bool kill;
-
 	//error handling
 	std::string errormessage;
 	MainMenuData():

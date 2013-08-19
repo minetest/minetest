@@ -1519,7 +1519,6 @@ int main(int argc, char *argv[])
 				
 				// Initialize menu data
 				MainMenuData menudata;
-				menudata.kill = kill;
 				menudata.address = address;
 				menudata.name = playername;
 				menudata.port = itos(port);
@@ -1565,13 +1564,11 @@ int main(int argc, char *argv[])
 					}
 					infostream<<"Waited for other menus"<<std::endl;
 
-					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata);
+					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata,kill);
 					
 					delete temp;
 					//once finished you'll never end up here
 					smgr->clear();
-					kill = menudata.kill;
-
 				}
 
 				if(menudata.errormessage != ""){

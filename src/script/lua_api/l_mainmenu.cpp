@@ -131,11 +131,7 @@ int ModApiMainMenu::l_close(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	assert(engine != 0);
 
-	engine->m_data->kill = true;
-
-	//close menu next time
-	engine->m_startgame = true;
-	engine->m_menu->quitMenu();
+	engine->m_kill = true;
 	return 0;
 }
 
