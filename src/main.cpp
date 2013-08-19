@@ -244,7 +244,7 @@ public:
 		*/
 		if(noMenuActive() == false)
 		{
-			return false;
+			return g_menumgr.preprocessEvent(event);
 		}
 
 		// Remember whether each key is down or up

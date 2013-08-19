@@ -131,6 +131,81 @@ void GUIFormSpecMenu::removeChildren()
 	}
 }
 
+void GUIFormSpecMenu::setInitialFocus()
+{
+	// Set initial focus according to following order of precedence:
+	// 1. first empty editbox
+	// 2. first editbox
+	// 3. first listbox
+	// 4. last button
+	// 5. first focusable (not statictext, not tabheader)
+	// 6. first child element
+
+	core::list<gui::IGUIElement*> children = getChildren();
+
+	// in case "children" contains any NULL elements, remove them
+	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end();) {
+		if (*it)
+			++it;
+		else
+			it = children.erase(it);
+	}
+
+	// 1. first empty editbox
+	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end(); ++it) {
+		if ((*it)->getType() == gui::EGUIET_EDIT_BOX
+				&& (*it)->getText()[0] == 0) {
+			Environment->setFocus(*it);
+			return;
+		}
+	}
+
+	// 2. first editbox
+	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end(); ++it) {
+		if ((*it)->getType() == gui::EGUIET_EDIT_BOX) {
+			Environment->setFocus(*it);
+			return;
+		}
+	}
+
+	// 3. first listbox
+	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end(); ++it) {
+		if ((*it)->getType() == gui::EGUIET_LIST_BOX) {
+			Environment->setFocus(*it);
+			return;
+		}
+	}
+
+	// 4. last button
+	for (core::list<gui::IGUIElement*>::Iterator it = children.getLast();
+			it != children.end(); --it) {
+		if ((*it)->getType() == gui::EGUIET_BUTTON) {
+			Environment->setFocus(*it);
+			return;
+		}
+	}
+
+	// 5. first focusable (not statictext, not tabheader)
+	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
+			it != children.end(); ++it) {
+		if ((*it)->getType() != gui::EGUIET_STATIC_TEXT &&
+				(*it)->getType() != gui::EGUIET_TAB_CONTROL) {
+			Environment->setFocus(*it);
+			return;
+		}
+	}
+
+	// 6. first child element
+	if (children.empty())
+		Environment->setFocus(this);
+	else
+		Environment->setFocus(*(children.begin()));
+}
+
 int GUIFormSpecMenu::getListboxIndex(std::string listboxname) {
 
 	std::wstring wlistboxname = narrow_to_wide(listboxname.c_str());
@@ -387,6 +462,11 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element) {
 		spec.flabel = wlabel; //Needed for displaying text on MSVC
 		gui::IGUICheckBox* e = Environment->addCheckBox(fselected, rect, this,
 					spec.fid, spec.flabel.c_str());
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
+
 		m_checkboxes.push_back(std::pair<FieldSpec,gui::IGUICheckBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
@@ -503,7 +583,13 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,std::stri
 		if(type == "button_exit")
 			spec.is_exit = true;
 
-		Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+		gui::IGUIButton* e = Environment->addButton(rect, this, spec.fid,
+				spec.flabel.c_str());
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
+
 		m_fields.push_back(spec);
 		return;
 	}
@@ -582,9 +668,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 		//now really show list
 		gui::IGUIListBox *e = Environment->addListBox(rect, this,spec.fid);
 
-		//don't reset if we already have a user specified selection
-		if (data->listbox_selections.find(fname_w) == data->listbox_selections.end()) {
-			e->setAutoScrollEnabled(false);
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
 		}
 
 		if (str_transparent == "false")
@@ -670,10 +755,9 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element) {
 		//now really show list
 		gui::IGUIComboBox *e = Environment->addComboBox(rect, this,spec.fid);
 
-		//don't reset if we already have a user specified selection
-		//if (data->combobox_selections.find(fname_w) == data->listbox_selections.end()) {
-		//	e->setAutoScrollEnabled(false);
-		//}
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
 			e->addItem(narrow_to_wide(items[i]).c_str());
@@ -732,7 +816,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
 
 		spec.send = true;
 		gui::IGUIEditBox * e = Environment->addEditBox(0, rect, true, this, spec.fid);
-		Environment->setFocus(e);
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
 
 		if (label.length() > 1)
 		{
@@ -811,7 +898,10 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string>
 	{
 		spec.send = true;
 		gui::IGUIEditBox *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		Environment->setFocus(e);
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
 
 		irr::SEvent evt;
 		evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -894,7 +984,10 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 	{
 		spec.send = true;
 		gui::IGUIEditBox *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		Environment->setFocus(e);
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
 
 		if (type == "textarea")
 		{
@@ -1091,6 +1184,11 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 			pressed_texture = texture;
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
+
 		e->setUseAlphaChannel(true);
 		e->setImage(texture);
 		e->setPressedImage(pressed_texture);
@@ -1145,6 +1243,10 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element) {
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		gui::IGUITabControl *e = Environment->addTabControl(rect,this,show_background,show_border,spec.fid);
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
 
 		e->setNotClipped(true);
 
@@ -1213,6 +1315,11 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		);
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
+
 		e->setUseAlphaChannel(true);
 		e->setImage(texture);
 		e->setPressedImage(texture);
@@ -1400,6 +1507,21 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	//preserve focus
+	gui::IGUIElement *focused_element = Environment->getFocus();
+	if (focused_element && focused_element->getParent() == this) {
+		s32 focused_id = focused_element->getID();
+		if (focused_id > 257) {
+			for (u32 i=0; i<m_fields.size(); i++) {
+				if (m_fields[i].fid == focused_id) {
+					mydata.focused_fieldname =
+						m_fields[i].fname;
+					break;
+				}
+			}
+		}
+	}
+
 	// Remove children
 	removeChildren();
 
@@ -1485,6 +1607,13 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		m_tooltip_element->setWordWrap(false);
 	}
+
+	//set initial focus if parser didn't set it
+	focused_element = Environment->getFocus();
+	if (!focused_element
+			|| !isMyChild(focused_element)
+			|| focused_element->getType() == gui::EGUIET_TAB_CONTROL)
+		setInitialFocus();
 }
 
 GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
@@ -2041,6 +2170,41 @@ void GUIFormSpecMenu::acceptInput()
 	}
 }
 
+bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
+{
+	// Fix Esc/Return key being eaten by checkboxen and listboxen
+	if(event.EventType==EET_KEY_INPUT_EVENT)
+	{
+		KeyPress kp(event.KeyInput);
+		if (kp == EscapeKey || kp == getKeySetting("keymap_inventory")
+				|| event.KeyInput.Key==KEY_RETURN)
+		{
+			gui::IGUIElement *focused = Environment->getFocus();
+			if (focused && isMyChild(focused) &&
+					(focused->getType() == gui::EGUIET_LIST_BOX ||
+					 focused->getType() == gui::EGUIET_CHECK_BOX)) {
+				OnEvent(event);
+				return true;
+			}
+		}
+	}
+	// Mouse wheel events: send to hovered element instead of focused
+	if(event.EventType==EET_MOUSE_INPUT_EVENT
+			&& event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+	{
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(
+				core::position2d<s32>(x, y));
+		if (hovered && isMyChild(hovered)) {
+			hovered->OnEvent(event);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
 	if(event.EventType==EET_KEY_INPUT_EVENT)
@@ -2391,8 +2555,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = true;
 					acceptInput();
 					s.send = false;
-					// Restore focus to the full form
-					Environment->setFocus(this);
 					return true;
 				}
 			}
@@ -2442,8 +2604,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						return true;
 					}else{
 						s.send = false;
-						// Restore focus to the full form
-						Environment->setFocus(this);
 						return true;
 					}
 				}
@@ -2488,8 +2648,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						s.send = true;
 						acceptInput();
 						s.send=false;
-						// Restore focus to the full form
-						Environment->setFocus(this);
 					}
 				}
 				return true;

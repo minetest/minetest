@@ -212,6 +212,7 @@ public:
 	}
 
 	void removeChildren();
+	void setInitialFocus();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
@@ -225,6 +226,7 @@ public:
 	ItemStack verifySelectedItem();
 
 	void acceptInput();
+	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
 
 	int getListboxIndex(std::string listboxname);
@@ -288,6 +290,7 @@ private:
 		v2s32 basepos;
 		int bp_set;
 		v2u32 screensize;
+		std::wstring focused_fieldname;
 		std::map<std::wstring,int> listbox_selections;
 		std::map<std::wstring,int> listbox_scroll;
 	} parserData;
