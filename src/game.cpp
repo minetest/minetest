@@ -1720,7 +1720,7 @@ void the_game(
 			GUIFormSpecMenu *menu =
 				new GUIFormSpecMenu(device, guiroot, -1,
 					&g_menumgr,
-					&client, gamedef);
+					&client, gamedef, tsrc);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
@@ -2259,7 +2259,7 @@ void the_game(
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
-										&client, gamedef);
+										&client, gamedef, tsrc);
 						menu->setFormSource(current_formspec);
 						menu->setTextDest(current_textdest);
 						menu->drop();
@@ -2755,7 +2755,7 @@ void the_game(
 					GUIFormSpecMenu *menu =
 						new GUIFormSpecMenu(device, guiroot, -1,
 							&g_menumgr,
-							&client, gamedef);
+							&client, gamedef, tsrc);
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
 					menu->setFormSource(new NodeMetadataFormSource(
