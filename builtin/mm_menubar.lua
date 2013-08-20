@@ -51,7 +51,8 @@ function menubar.refresh()
 
 			menubar.formspec = menubar.formspec ..
 				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;"  ..
-				gamemgr.games[i].menuicon_path .. ";" .. btn_name .. ";;true;false]"
+				engine.formspec_escape(gamemgr.games[i].menuicon_path) .. ";" ..
+				btn_name .. ";;true;false]"
 		else
 		
 			local part1 = gamemgr.games[i].id:sub(1,5)

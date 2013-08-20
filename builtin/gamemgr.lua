@@ -225,7 +225,8 @@ function gamemgr.tab()
 		if current_game.menuicon_path ~= nil and
 			current_game.menuicon_path ~= "" then
 			retval = retval .. 
-				"image[5.8,-0.25;2,2;" .. current_game.menuicon_path .. "]"
+				"image[5.8,-0.25;2,2;" ..
+				engine.formspec_escape(current_game.menuicon_path) .. "]"
 		end
 		
 		retval = retval ..
@@ -251,7 +252,8 @@ function gamemgr.dialog_edit_game()
 		if current_game.menuicon_path ~= nil and
 			current_game.menuicon_path ~= "" then
 			retval = retval .. 
-				"image[5.25,0;2,2;" .. current_game.menuicon_path .. "]"			
+				"image[5.25,0;2,2;" ..
+				engine.formspec_escape(current_game.menuicon_path) .. "]"
 		end
 		
 		retval = retval .. 

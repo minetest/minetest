@@ -69,12 +69,14 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		InventoryManager *invmgr,
-		IGameDef *gamedef
+		IGameDef *gamedef,
+		ISimpleTextureSource *tsrc
 ):
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
 	m_invmgr(invmgr),
 	m_gamedef(gamedef),
+	m_tsrc(tsrc),
 	m_form_src(NULL),
 	m_text_dst(NULL),
 	m_selected_item(NULL),
@@ -483,7 +485,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 	if (parts.size() == 3) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
+		std::string name = unescape_string(parts[2]);
 
 		MY_CHECKPOS("image",0);
 		MY_CHECKGEOM("image",1);
@@ -504,7 +506,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 
 	if (parts.size() == 2) {
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string name = parts[1];
+		std::string name = unescape_string(parts[1]);
 
 		MY_CHECKPOS("image",0);
 
@@ -605,7 +607,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 	if (parts.size() == 3) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
+		std::string name = unescape_string(parts[2]);
 
 		MY_CHECKPOS("background",0);
 		MY_CHECKGEOM("background",1);
@@ -769,11 +771,6 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element) {
 		if (str_initial_selection != "")
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
-		//if (data->listbox_selections.find(fname_w) != data->listbox_selections.end()) {
-		//	e->setSelected(data->listbox_selections[fname_w]);
-		//}
-
-		//m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1149,6 +1146,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;
 
+		image_name = unescape_string(image_name);
+		pressed_image_name = unescape_string(pressed_image_name);
 		label = unescape_string(label);
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
@@ -1165,24 +1164,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 
 		video::ITexture *texture = 0;
 		video::ITexture *pressed_texture = 0;
-		//if there's no gamedef specified try to get direct
-		//TODO check for possible texture leak
-		if (m_gamedef != 0) {
-			texture = m_gamedef->tsrc()->getTexture(image_name);
-			if ((parts.size() == 8)) {
-				pressed_texture = m_gamedef->tsrc()->getTexture(pressed_image_name);
-			}
-		} else {
-			if (fs::PathExists(image_name)) {
-				texture = Environment->getVideoDriver()->getTexture(image_name.c_str());
-				m_Textures.push_back(texture);
-			}
-			if (fs::PathExists(pressed_image_name)) {
-				pressed_texture = Environment->getVideoDriver()->getTexture(pressed_image_name.c_str());
-				m_Textures.push_back(pressed_texture);
-			}
-		}
-		if (parts.size() < 8)
+		texture = m_tsrc->getTexture(image_name);
+		if (parts.size() == 8)
+			pressed_texture = m_tsrc->getTexture(pressed_image_name);
+		else
 			pressed_texture = texture;
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
@@ -1797,15 +1782,7 @@ void GUIFormSpecMenu::drawMenu()
 	for(u32 i=0; i<m_backgrounds.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_backgrounds[i];
-		video::ITexture *texture = 0;
-
-		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTexture(spec.name);
-		else
-		{
-			texture = driver->getTexture(spec.name.c_str());
-			m_Textures.push_back(texture);
-		}
+		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
 		if (texture != 0) {
 			// Image size on screen
@@ -1847,15 +1824,8 @@ void GUIFormSpecMenu::drawMenu()
 	for(u32 i=0; i<m_images.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_images[i];
-		video::ITexture *texture = 0;
+		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
-		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTexture(spec.name);
-		else
-		{
-			texture = driver->getTexture(spec.name.c_str());
-			m_Textures.push_back(texture);
-		}
 		if (texture != 0) {
 			const core::dimension2d<u32>& img_origsize = texture->getOriginalSize();
 			// Image size on screen
