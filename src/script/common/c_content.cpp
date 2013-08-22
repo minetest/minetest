@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "serverobject.h"
 #include "mapgen.h"
+#include "craftdef.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -997,4 +998,236 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 	}
 	
 	return true;
+}
+
+/******************************************************************************/
+bool readCraftRecipeShaped(lua_State *L, int index,
+		int &width, std::vector<std::string> &recipe)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if(!lua_istable(L, index))
+		return false;
+
+	lua_pushnil(L);
+	int rowcount = 0;
+	while(lua_next(L, index) != 0){
+		int colcount = 0;
+		// key at index -2 and value at index -1
+		if(!lua_istable(L, -1))
+			return false;
+		int table2 = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table2) != 0){
+			// key at index -2 and value at index -1
+			if(!lua_isstring(L, -1))
+				return false;
+			recipe.push_back(lua_tostring(L, -1));
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			colcount++;
+		}
+		if(rowcount == 0){
+			width = colcount;
+		} else {
+			if(colcount != width)
+				return false;
+		}
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+		rowcount++;
+	}
+	return width != 0;
+}
+
+
+/******************************************************************************/
+// helper for register_craft
+bool readCraftRecipeShapeless(lua_State *L, int index,
+		std::vector<std::string> &recipe)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if(!lua_istable(L, index))
+		return false;
+
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		if(!lua_isstring(L, -1))
+			return false;
+		recipe.push_back(lua_tostring(L, -1));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return true;
+}
+
+/******************************************************************************/
+// helper for register_craft
+bool readCraftReplacements(lua_State *L, int index,
+		CraftReplacements &replacements)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if(!lua_istable(L, index))
+		return false;
+
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		if(!lua_istable(L, -1))
+			return false;
+		lua_rawgeti(L, -1, 1);
+		if(!lua_isstring(L, -1))
+			return false;
+		std::string replace_from = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 2);
+		if(!lua_isstring(L, -1))
+			return false;
+		std::string replace_to = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		replacements.pairs.push_back(
+				std::make_pair(replace_from, replace_to));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return true;
+}
+
+/******************************************************************************/
+CraftDefinition*   read_craft                (lua_State *L,int index)
+{
+	luaL_checktype(L, index, LUA_TTABLE);
+	int table = index;
+
+	std::string type = getstringfield_default(L, table, "type", "shaped");
+
+	/*
+		CraftDefinitionShaped
+	*/
+	if(type == "shaped"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition is missing an output");
+
+		int width = 0;
+		std::vector<std::string> recipe;
+		lua_getfield(L, table, "recipe");
+		if(lua_isnil(L, -1))
+			throw LuaError(L, "Crafting definition is missing a recipe"
+					" (output=\"" + output + "\")");
+		if(!readCraftRecipeShaped(L, -1, width, recipe))
+			throw LuaError(L, "Invalid crafting recipe"
+					" (output=\"" + output + "\")");
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!readCraftReplacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (output=\"" + output + "\")");
+		}
+
+		return new CraftDefinitionShaped(output, width, recipe, replacements);
+	}
+	/*
+		CraftDefinitionShapeless
+	*/
+	else if(type == "shapeless"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (shapeless)"
+					" is missing an output");
+
+		std::vector<std::string> recipe;
+		lua_getfield(L, table, "recipe");
+		if(lua_isnil(L, -1))
+			throw LuaError(L, "Crafting definition (shapeless)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+		if(!readCraftRecipeShapeless(L, -1, recipe))
+			throw LuaError(L, "Invalid crafting recipe"
+					" (output=\"" + output + "\")");
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!readCraftReplacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (output=\"" + output + "\")");
+		}
+
+		return new CraftDefinitionShapeless(output, recipe, replacements);
+	}
+	/*
+		CraftDefinitionToolRepair
+	*/
+	else if(type == "toolrepair"){
+		float additional_wear = getfloatfield_default(L, table,
+				"additional_wear", 0.0);
+
+		return new CraftDefinitionToolRepair(additional_wear);
+	}
+	/*
+		CraftDefinitionCooking
+	*/
+	else if(type == "cooking"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (cooking)"
+					" is missing an output");
+
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (cooking)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+
+		float cooktime = getfloatfield_default(L, table, "cooktime", 3.0);
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!readCraftReplacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (cooking output=\"" + output + "\")");
+		}
+
+		return new CraftDefinitionCooking(output, recipe, cooktime, replacements);
+	}
+	/*
+		CraftDefinitionFuel
+	*/
+	else if(type == "fuel"){
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (fuel)"
+					" is missing a recipe");
+
+		float burntime = getfloatfield_default(L, table, "burntime", 1.0);
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!readCraftReplacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (fuel recipe=\"" + recipe + "\")");
+		}
+
+		return new CraftDefinitionFuel(recipe, burntime, replacements);
+	}
+	else
+	{
+		throw LuaError(L, "Unknown crafting definition type: \"" + type + "\"");
+		return 0;
+	}
 }

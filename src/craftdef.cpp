@@ -1026,6 +1026,20 @@ public:
 				<<def->dump()<<std::endl;
 		m_craft_definitions.push_back(def);
 	}
+
+	virtual void removeCraft(CraftDefinition *def)
+	{
+		for (std::vector<CraftDefinition*>::iterator iter = m_craft_definitions.begin();
+				iter != m_craft_definitions.end(); iter++) {
+			if (*def == **iter) {
+				CraftDefinition* todel = *iter;
+				m_craft_definitions.erase(iter);
+				delete todel;
+				break;
+			}
+		}
+	}
+
 	virtual void clear()
 	{
 		for(std::vector<CraftDefinition*>::iterator
