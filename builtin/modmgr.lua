@@ -235,11 +235,12 @@ function modmgr.tab()
 	local retval = 
 		"vertlabel[0,-0.25;".. fgettext("MODS") .. "]" ..
 		"label[0.8,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
+		"textlist[0.75,0.25;4.5,4;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
+		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" .. 
 		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. fgettext("Install") .. "]" ..
 		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. fgettext("Download") .. "]"
 		
@@ -250,25 +251,58 @@ function modmgr.tab()
 	end
 	
 	if selected_mod ~= nil then
+		local modscreenshot = nil
+		
+		--check for screenshot beeing available
+		local screenshotfilename = selected_mod.path .. DIR_DELIM .. "screenshot.png"
+		local error = nil
+		screenshotfile,error = io.open(screenshotfilename,"r")
+		if error == nil then
+			screenshotfile:close()
+			modscreenshot = screenshotfilename
+		end
+	
+		if modscreenshot == nil then
+				modscreenshot = modstore.basetexturedir .. "no_screenshot.png"
+		end
+		
+		retval = retval 
+				.. "image[5.5,0;3,2;" .. modscreenshot .. "]"
+				.. "label[8,-0.2;" .. selected_mod.name .. "]"
+				
+		local descriptiontext = nil
+		error = nil
+		local descriptionfilename = selected_mod.path .. "description.txt"
+		descriptionfile,error = io.open(descriptionfilename,"r")
+		if error == nil then
+			descriptiontext = descriptionfile:read("*line")
+			retval = retval ..
+				"textarea[8.3,0.5;4,1.55;;" .. engine.formspec_escape(descriptiontext) .. ";]"
+			descriptionfile:close()
+		else
+			retval = retval ..
+				"textarea[8.3,0.5;4,1.55;;No mod description available;]"
+		end
+	
 		if selected_mod.is_modpack then
 			retval = retval 
 			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
 					 fgettext("Rename") .. "]"
+		retval = retval .. "button[7,4.85;3,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Delete this modpack!") .. "]"
 		else
 		--show dependencies
 			retval = retval .. 
-				"label[6,1.9;".. fgettext("Depends:") .. "]" ..
-				"textlist[6,2.4;5.7,2;deplist;"
+				"label[5.5,1.9;".. fgettext("Depends:") .. "]" ..
+				"textlist[5.5,2.4;6.2,2;deplist;"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
 			
-			retval = retval .. toadd .. ";0;true,false]"
+			retval = retval .. toadd .. ";0]"
 			
-			--TODO read modinfo
+			retval = retval .. "button[7,4.85;3,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Delete this mod!") .. "]"
 		end
-		--show delete button
-		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Delete") .. "]"
 	end
 	return retval
 end
