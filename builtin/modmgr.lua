@@ -572,7 +572,7 @@ function modmgr.handle_modmgr_buttons(fields)
 		}
 
 	if fields["modlist"] ~= nil then
-		local event = explode_textlist_event(fields["modlist"])
+		local event = engine.explode_textlist_event(fields["modlist"])
 		modmgr.selected_mod = event.index
 	end
 
@@ -693,10 +693,10 @@ end
 --------------------------------------------------------------------------------
 function modmgr.handle_configure_world_buttons(fields)
 	if fields["world_config_modlist"] ~= nil then
-		local event = explode_textlist_event(fields["world_config_modlist"])
+		local event = engine.explode_textlist_event(fields["world_config_modlist"])
 		modmgr.world_config_selected_mod = event.index
 
-		if event.typ == "DCL" then
+		if event.type == "DCL" then
 			modmgr.world_config_enable_mod(nil)
 		end
 	end

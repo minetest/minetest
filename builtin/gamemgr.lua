@@ -31,7 +31,7 @@ end
 --------------------------------------------------------------------------------
 function gamemgr.handle_games_buttons(fields)
 	if fields["gamelist"] ~= nil then
-		local event = explode_textlist_event(fields["gamelist"])
+		local event = engine.explode_textlist_event(fields["gamelist"])
 		gamemgr.selected_game = event.index
 	end
 	

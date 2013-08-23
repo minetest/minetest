@@ -459,8 +459,8 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	end
 
 	if fields["favourites"] ~= nil then
-		local event = explode_textlist_event(fields["favourites"])
-		if event.typ == "DCL" then
+		local event = engine.explode_textlist_event(fields["favourites"])
+		if event.type == "DCL" then
 			if event.index <= #menu.favorites then
 				gamedata.address = menu.favorites[event.index].address
 				gamedata.port = menu.favorites[event.index].port
@@ -484,7 +484,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 			end
 		end
 
-		if event.typ == "CHG" then
+		if event.type == "CHG" then
 			if event.index <= #menu.favorites then
 				local address = menu.favorites[event.index].address
 				local port = menu.favorites[event.index].port
@@ -586,12 +586,12 @@ function tabbuilder.handle_server_buttons(fields)
 	local world_doubleclick = false
 
 	if fields["srv_worlds"] ~= nil then
-		local event = explode_textlist_event(fields["srv_worlds"])
+		local event = engine.explode_textlist_event(fields["srv_worlds"])
 
-		if event.typ == "DCL" then
+		if event.type == "DCL" then
 			world_doubleclick = true
 		end
-		if event.typ == "CHG" then
+		if event.type == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
 				filterlist.get_raw_index(worldlist,engine.get_textlist_index("srv_worlds")))
 		end
@@ -737,13 +737,13 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	local world_doubleclick = false
 
 	if fields["sp_worlds"] ~= nil then
-		local event = explode_textlist_event(fields["sp_worlds"])
+		local event = engine.explode_textlist_event(fields["sp_worlds"])
 
-		if event.typ == "DCL" then
+		if event.type == "DCL" then
 			world_doubleclick = true
 		end
 
-		if event.typ == "CHG" then
+		if event.type == "CHG" then
 			engine.setting_set("mainmenu_last_selected_world",
 				filterlist.get_raw_index(worldlist,engine.get_textlist_index("sp_worlds")))
 		end
@@ -813,8 +813,8 @@ end
 --------------------------------------------------------------------------------
 function tabbuilder.handle_texture_pack_buttons(fields)
 	if fields["TPs"] ~= nil then
-		local event = explode_textlist_event(fields["TPs"])
-		if event.typ == "CHG" or event.typ=="DCL" then
+		local event = engine.explode_textlist_event(fields["TPs"])
+		if event.type == "CHG" or event.type == "DCL" then
 			local index = engine.get_textlist_index("TPs")
 			engine.setting_set("mainmenu_last_selected_TP",
 				index)

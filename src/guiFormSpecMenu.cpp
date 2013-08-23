@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <limits>
 #include "guiFormSpecMenu.h"
+#include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "keycode.h"
@@ -33,9 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include <IGUIListBox.h>
 #include <IGUITabControl.h>
-#include <IGUIScrollBar.h>
 #include <IGUIComboBox.h>
 #include "log.h"
 #include "tile.h" // ITextureSource
@@ -83,10 +82,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_selected_item(NULL),
 	m_selected_amount(0),
 	m_selected_dragging(false),
-	m_listbox_click_fname(),
-	m_listbox_click_index(-1),
-	m_listbox_click_time(0),
-	m_listbox_doubleclick(false),
 	m_tooltip_element(NULL),
 	m_allowclose(true),
 	m_lock(false)
@@ -142,7 +137,7 @@ void GUIFormSpecMenu::setInitialFocus()
 	// Set initial focus according to following order of precedence:
 	// 1. first empty editbox
 	// 2. first editbox
-	// 3. first listbox
+	// 3. first table
 	// 4. last button
 	// 5. first focusable (not statictext, not tabheader)
 	// 6. first child element
@@ -177,10 +172,10 @@ void GUIFormSpecMenu::setInitialFocus()
 		}
 	}
 
-	// 3. first listbox
+	// 3. first table
 	for (core::list<gui::IGUIElement*>::Iterator it = children.begin();
 			it != children.end(); ++it) {
-		if ((*it)->getType() == gui::EGUIET_LIST_BOX) {
+		if ((*it)->getTypeName() == std::string("GUITable")) {
 			Environment->setFocus(*it);
 			return;
 		}
@@ -212,86 +207,13 @@ void GUIFormSpecMenu::setInitialFocus()
 		Environment->setFocus(*(children.begin()));
 }
 
-int GUIFormSpecMenu::getListboxIndex(std::string listboxname) {
-
-	std::wstring wlistboxname = narrow_to_wide(listboxname.c_str());
-
-	for(unsigned int i=0; i < m_listboxes.size(); i++) {
-
-		std::wstring name(m_listboxes[i].first.fname.c_str());
-		if ( name == wlistboxname) {
-			return m_listboxes[i].second->getSelected();
-		}
-	}
-	return -1;
-}
-
-bool GUIFormSpecMenu::checkListboxClick(std::wstring wlistboxname,
-		int eventtype)
+GUITable* GUIFormSpecMenu::getTable(std::wstring tablename)
 {
-	// WARNING: BLACK IRRLICHT MAGIC
-	// Used to fix Irrlicht's subpar reporting of single clicks and double
-	// clicks in listboxes (gui::EGET_LISTBOX_CHANGED,
-	// gui::EGET_LISTBOX_SELECTED_AGAIN):
-	// 1. IGUIListBox::setSelected() is counted as a click.
-	//    Including the initial setSelected() done by parseTextList().
-	// 2. Clicking on a the selected item and then dragging for less
-	//    than 500ms is counted as a doubleclick, no matter when the
-	//    item was previously selected (e.g. more than 500ms ago)
-
-	// So when Irrlicht reports a doubleclick, we need to check
-	// for ourselves if really was a doubleclick. Or just a fake.
-
-	for(unsigned int i=0; i < m_listboxes.size(); i++) {
-		std::wstring name(m_listboxes[i].first.fname.c_str());
-		int selected = m_listboxes[i].second->getSelected();
-		if (name == wlistboxname && selected >= 0) {
-			u32 now = getTimeMs();
-			bool doubleclick =
-				(eventtype == gui::EGET_LISTBOX_SELECTED_AGAIN)
-				&& (name == m_listbox_click_fname)
-				&& (selected == m_listbox_click_index)
-				&& (m_listbox_click_time >= now - 500);
-			m_listbox_click_fname = name;
-			m_listbox_click_index = selected;
-			m_listbox_click_time = now;
-			m_listbox_doubleclick = doubleclick;
-			return true;
-		}
+	for (u32 i = 0; i < m_tables.size(); ++i) {
+		if (tablename == m_tables[i].first.fname)
+			return m_tables[i].second;
 	}
-	return false;
-}
-
-gui::IGUIScrollBar* GUIFormSpecMenu::getListboxScrollbar(
-		gui::IGUIListBox *listbox)
-{
-	// WARNING: BLACK IRRLICHT MAGIC
-	// Ordinarily, due to how formspecs work (recreating the entire GUI
-	// when something changes), when you select an item in a textlist
-	// with more items than fit in the visible area, the newly selected
-	// item is scrolled to the bottom of the visible area. This is
-	// annoying and breaks GUI designs that use double clicks.
-
-	// This function helps fixing this problem by giving direct access
-	// to a listbox's scrollbar. This works because CGUIListBox doesn't
-	// cache the scrollbar position anywhere.
-
-	// If this stops working in a future irrlicht version, consider
-	// maintaining a local copy of irr::gui::CGUIListBox, possibly also
-	// fixing the other reasons why black irrlicht magic is needed.
-
-	core::list<gui::IGUIElement*> children = listbox->getChildren();
-	for(core::list<gui::IGUIElement*>::Iterator it = children.begin();
-			it != children.end(); ++it) {
-		gui::IGUIElement* child = *it;
-		if (child && child->getType() == gui::EGUIET_SCROLL_BAR) {
-			return static_cast<gui::IGUIScrollBar*>(child);
-		}
-	}
-
-	verbosestream<<"getListboxScrollbar: WARNING: "
-			<<"listbox has no scrollbar"<<std::endl;
-	return NULL;
+	return 0;
 }
 
 std::vector<std::string> split(const std::string &s, char delim) {
@@ -643,10 +565,109 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseTableOptions(parserData* data,std::string element) {
+	std::vector<std::string> parts = split(element,';');
+
+	data->table_options.clear();
+	for (size_t i = 0; i < parts.size(); ++i) {
+		// Parse table option
+		std::string opt = unescape_string(parts[i]);
+		data->table_options.push_back(GUITable::splitOption(opt));
+	}
+}
+
+void GUIFormSpecMenu::parseTableColumns(parserData* data,std::string element) {
+	std::vector<std::string> parts = split(element,';');
+
+	data->table_columns.clear();
+	for (size_t i = 0; i < parts.size(); ++i) {
+		std::vector<std::string> col_parts = split(parts[i],',');
+		GUITable::TableColumn column;
+		// Parse column type
+		if (!col_parts.empty())
+			column.type = col_parts[0];
+		// Parse column options
+		for (size_t j = 1; j < col_parts.size(); ++j) {
+			std::string opt = unescape_string(col_parts[j]);
+			column.options.push_back(GUITable::splitOption(opt));
+		}
+		data->table_columns.push_back(column);
+	}
+}
+
+void GUIFormSpecMenu::parseTable(parserData* data,std::string element) {
+	std::vector<std::string> parts = split(element,';');
+
+	if ((parts.size() == 4) || (parts.size() == 5)) {
+		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_geom = split(parts[1],',');
+		std::string name = parts[2];
+		std::vector<std::string> items = split(parts[3],',');
+		std::string str_initial_selection = "";
+		std::string str_transparent = "false";
+
+		if (parts.size() >= 5)
+			str_initial_selection = parts[4];
+
+		MY_CHECKPOS("table",0);
+		MY_CHECKGEOM("table",1);
+
+		v2s32 pos = padding;
+		pos.X += stof(v_pos[0]) * (float)spacing.X;
+		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
+
+		v2s32 geom;
+		geom.X = stof(v_geom[0]) * (float)spacing.X;
+		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
+
+
+		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+
+		std::wstring fname_w = narrow_to_wide(name.c_str());
+
+		FieldSpec spec = FieldSpec(
+			fname_w,
+			L"",
+			L"",
+			258+m_fields.size()
+		);
+
+		spec.ftype = f_Table;
+
+		for (unsigned int i = 0; i < items.size(); ++i) {
+			items[i] = unescape_string(items[i]);
+		}
+
+		//now really show table
+		GUITable *e = new GUITable(Environment, this, spec.fid, rect,
+				m_tsrc);
+		e->drop();  // IGUIElement maintains the remaining reference
+
+		if (spec.fname == data->focused_fieldname) {
+			Environment->setFocus(e);
+		}
+
+		e->setTable(data->table_options, data->table_columns, items);
+
+		if (data->table_dyndata.find(fname_w) != data->table_dyndata.end()) {
+			e->setDynamicData(data->table_dyndata[fname_w]);
+		}
+
+		if ((str_initial_selection != "") &&
+				(str_initial_selection != "0"))
+			e->setSelected(stoi(str_initial_selection.c_str()));
+
+		m_tables.push_back(std::pair<FieldSpec,GUITable*>(spec, e));
+		m_fields.push_back(spec);
+		return;
+	}
+	errorstream<< "Invalid table element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
 void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 5) || (parts.size() == 6)) {
+	if ((parts.size() == 4) || (parts.size() == 5) || (parts.size() == 6)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -683,63 +704,32 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 			258+m_fields.size()
 		);
 
-		spec.ftype = f_ListBox;
+		spec.ftype = f_Table;
+
+		for (unsigned int i = 0; i < items.size(); ++i) {
+			items[i] = unescape_string(items[i]);
+		}
 
 		//now really show list
-		gui::IGUIListBox *e = Environment->addListBox(rect, this,spec.fid);
+		GUITable *e = new GUITable(Environment, this, spec.fid, rect,
+				m_tsrc);
+		e->drop();  // IGUIElement maintains the remaining reference
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
 
-		if (str_transparent == "false")
-			e->setDrawBackground(true);
+		e->setTextList(items, is_yes(str_transparent));
 
-		for (unsigned int i=0; i < items.size(); i++) {
-			if (items[i].c_str()[0] == '#') {
-				if (items[i].c_str()[1] == '#') {
-					e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
-				}
-				else {
-					std::string color = items[i].substr(0,7);
-					std::wstring toadd =
-						narrow_to_wide(unescape_string(items[i]).c_str() + 7);
-
-					e->addItem(toadd.c_str());
-
-					video::SColor tmp_color;
-
-					if (parseColor(color, tmp_color, false))
-					e->setItemOverrideColor(i,tmp_color);
-				}
-			}
-			else {
-				e->addItem(narrow_to_wide(unescape_string(items[i])).c_str());
-			}
-		}
-
-		if (data->listbox_selections.find(fname_w) != data->listbox_selections.end()) {
-			e->setSelected(data->listbox_selections[fname_w]);
-		}
-
-		if (data->listbox_scroll.find(fname_w) != data->listbox_scroll.end()) {
-			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
-			if (scrollbar) {
-				scrollbar->setPos(data->listbox_scroll[fname_w]);
-			}
-		}
-		else {
-			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
-			if (scrollbar) {
-				scrollbar->setPos(0);
-			}
+		if (data->table_dyndata.find(fname_w) != data->table_dyndata.end()) {
+			e->setDynamicData(data->table_dyndata[fname_w]);
 		}
 
 		if ((str_initial_selection != "") &&
 				(str_initial_selection != "0"))
-			e->setSelected(stoi(str_initial_selection.c_str())-1);
+			e->setSelected(stoi(str_initial_selection.c_str()));
 
-		m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
+		m_tables.push_back(std::pair<FieldSpec,GUITable*>(spec, e));
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1478,6 +1468,21 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
 		return;
 	}
 
+	if (type == "tableoptions"){
+		parseTableOptions(data,description);
+		return;
+	}
+
+	if (type == "tablecolumns"){
+		parseTableColumns(data,description);
+		return;
+	}
+
+	if (type == "table"){
+		parseTable(data,description);
+		return;
+	}
+
 	if (type == "textlist"){
 		parseTextList(data,description);
 		return;
@@ -1550,20 +1555,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 {
 	parserData mydata;
 
-	//preserve listboxes
-	for (unsigned int i = 0; i < m_listboxes.size(); i++) {
-		std::wstring listboxname = m_listboxes[i].first.fname;
-		gui::IGUIListBox *listbox = m_listboxes[i].second;
-
-		int selection = listbox->getSelected();
-		if (selection != -1) {
-			mydata.listbox_selections[listboxname] = selection;
-		}
-
-		gui::IGUIScrollBar *scrollbar = getListboxScrollbar(listbox);
-		if (scrollbar) {
-			mydata.listbox_scroll[listboxname] = scrollbar->getPos();
-		}
+	//preserve tables
+	for (u32 i = 0; i < m_tables.size(); ++i) {
+		std::wstring tablename = m_tables[i].first.fname;
+		GUITable *table = m_tables[i].second;
+		mydata.table_dyndata[tablename] = table->getDynamicData();
 	}
 
 	//preserve focus
@@ -1603,7 +1599,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_images.clear();
 	m_backgrounds.clear();
 	m_itemimages.clear();
-	m_listboxes.clear();
+	m_tables.clear();
 	m_checkboxes.clear();
 	m_fields.clear();
 	m_boxes.clear();
@@ -2175,17 +2171,12 @@ void GUIFormSpecMenu::acceptInput(bool quit=false)
 				{
 					fields[wide_to_narrow(s.fname.c_str())] = wide_to_narrow(s.flabel.c_str());
 				}
-				else if(s.ftype == f_ListBox) {
-					std::stringstream ss;
-
-					if (m_listbox_doubleclick) {
-						ss << "DCL:";
+				else if(s.ftype == f_Table) {
+					GUITable *table = getTable(s.fname);
+					if (table) {
+						fields[wide_to_narrow(s.fname.c_str())]
+							= table->checkEvent();
 					}
-					else {
-						ss << "CHG:";
-					}
-					ss << (getListboxIndex(wide_to_narrow(s.fname.c_str()))+1);
-					fields[wide_to_narrow(s.fname.c_str())] = ss.str();
 				}
 				else if(s.ftype == f_DropDown) {
 					// no dynamic cast possible due to some distributions shipped
@@ -2249,7 +2240,7 @@ void GUIFormSpecMenu::acceptInput(bool quit=false)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
-	// Fix Esc/Return key being eaten by checkboxen and listboxen
+	// Fix Esc/Return key being eaten by checkboxen and tables
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
 		KeyPress kp(event.KeyInput);
@@ -2706,8 +2697,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 		}
 
-		if((event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN) ||
-			(event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED))
+		if(event.GUIEvent.EventType==gui::EGET_TABLE_CHANGED)
 		{
 			int current_id = event.GUIEvent.Caller->getID();
 			if(current_id > 257)
@@ -2716,13 +2706,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				for(u32 i=0; i<m_fields.size(); i++)
 				{
 					FieldSpec &s = m_fields[i];
-					// if its a listbox, set the send field so
-					// lua knows which listbox was changed
-					// checkListboxClick() is black magic
-					// for properly handling double clicks
-					if ((s.ftype == f_ListBox) && (s.fid == current_id)
-							&& checkListboxClick(s.fname,
-								event.GUIEvent.EventType))
+					// if it's a table, set the send field
+					// so lua knows which table was changed
+					if ((s.ftype == f_Table) && (s.fid == current_id))
 					{
 						s.send = true;
 						acceptInput();
@@ -2737,7 +2723,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-bool GUIFormSpecMenu::parseColor(std::string &value, video::SColor &color, bool quiet)
+bool GUIFormSpecMenu::parseColor(const std::string &value, video::SColor &color, bool quiet)
 {
 	const char *hexpattern = NULL;
 	if (value[0] == '#') {
