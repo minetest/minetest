@@ -89,12 +89,33 @@ engine.sound_play(spec, looped) -> handle
 ^ looped = bool
 engine.sound_stop(handle)
 
-GUI:
+Formspec:
 engine.update_formspec(formspec)
-- engine.set_background(type, texturepath)
+engine.get_table_index(tablename) -> index
+^ can also handle textlists
+engine.formspec_escape(string) -> string
+^ escapes characters [ ] \ , ; that can not be used in formspecs
+engine.explode_table_event(string) -> table
+^ returns e.g. {type="CHG", row=1, column=2}
+^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+engine.explode_textlist_event(string) -> table
+^ returns e.g. {type="CHG", index=1}
+^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+
+GUI:
+engine.set_background(type, texturepath)
 ^ type: "background", "overlay", "header" or "footer"
 engine.set_clouds(<true/false>)
 engine.set_topleft_text(text)
+engine.show_keys_menu()
+engine.file_open_dialog(formname,caption)
+^ shows a file open dialog
+^ formname is base name of dialog response returned in fields
+^     -if dialog was accepted "_accepted"
+^^       will be added to fieldname containing the path
+^     -if dialog was canceled "_cancelled"
+^        will be added to fieldname value is set to formname itself
+^ returns nil or selected file/folder
 
 Games:
 engine.get_game(index)
@@ -155,22 +176,7 @@ engine.get_worlds() -> list of worlds (possible in async calls)
 engine.create_world(worldname, gameid)
 engine.delete_world(index)
 
-
-UI:
-engine.get_textlist_index(textlistname) -> index
-engine.show_keys_menu()
-engine.file_open_dialog(formname,caption)
-^ shows a file open dialog
-^ formname is base name of dialog response returned in fields
-^     -if dialog was accepted "_accepted" 
-^^       will be added to fieldname containing the path
-^     -if dialog was canceled "_cancelled" 
-^        will be added to fieldname value is set to formname itself
-^ returns nil or selected file/folder
-
 Helpers:
-engine.formspec_escape(string) -> string
-^ escapes characters [ ] \ , ; that can not be used in formspecs
 engine.gettext(string) -> string
 ^ look up the translation of a string in the gettext message catalog
 fgettext(string, ...) -> string

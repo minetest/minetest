@@ -184,17 +184,24 @@ int ModApiMainMenu::l_set_clouds(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_textlist_index(lua_State *L)
 {
+	// get_table_index accepts both tables and textlists
+	return l_get_table_index(L);
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_table_index(lua_State *L)
+{
 	GUIEngine* engine = getGuiEngine(L);
 	assert(engine != 0);
 
-	std::string listboxname(luaL_checkstring(L, 1));
+	std::wstring tablename(narrow_to_wide(luaL_checkstring(L, 1)));
+	GUITable *table = engine->m_menu->getTable(tablename);
+	s32 selection = table ? table->getSelected() : 0;
 
-	int selection = engine->m_menu->getListboxIndex(listboxname);
-
-	if (selection >= 0)
-		selection++;
-
-	lua_pushinteger(L, selection);
+	if (selection >= 1)
+		lua_pushinteger(L, selection);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -1026,6 +1033,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(update_formspec);
 	API_FCT(set_clouds);
 	API_FCT(get_textlist_index);
+	API_FCT(get_table_index);
 	API_FCT(get_worlds);
 	API_FCT(get_games);
 	API_FCT(start);

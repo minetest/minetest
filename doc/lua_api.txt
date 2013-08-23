@@ -1011,6 +1011,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 ^    if you want a listelement to start with # write ##
 ^ index to be selected within textlist
 ^ true/false draw transparent background
+^ see also minetest.explode_textlist_event (main menu: engine.explode_textlist_event)
 
 tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
@@ -1042,6 +1043,57 @@ checkbox[<X>,<Y>;<name>;<label>;<selected>]
 ^ name fieldname data is transfered to lua
 ^ label to be shown left of checkbox
 ^ selected (optional) true/false
+
+table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
+^ show scrollable table using options defined by the previous tableoptions[]
+^ displays cells as defined by the previous tablecolumns[]
+^ x and y position the itemlist relative to the top left of the menu
+^ w and h are the size of the itemlist
+^ name fieldname sent to server on row select or doubleclick
+^ cell 1...n cell contents given in row-major order
+^ selected idx: index of row to be selected within table (first row = 1)
+^ see also minetest.explode_table_event (main menu: engine.explode_table_event)
+
+tableoptions[<opt 1>;<opt 2>;...]
+^ sets options for table[]:
+^ color=#RRGGBB
+^^ default text color (HEX-Color), defaults to #FFFFFF
+^ background=#RRGGBB
+^^ table background color (HEX-Color), defaults to #000000
+^ border=<true/false>
+^^ should the table be drawn with a border? (default true)
+^ highlight=#RRGGBB
+^^ highlight background color (HEX-Color), defaults to #466432
+^ highlight_text=#RRGGBB
+^^ highlight text color (HEX-Color), defaults to #FFFFFF
+^ opendepth=<value>
+^^ all subtrees up to depth < value are open (default value = 0)
+^^ only useful when there is a column of type "tree"
+
+tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]
+^ sets columns for table[]:
+^ types: text, image, color, indent, tree
+^^ text:   show cell contents as text
+^^ image:  cell contents are an image index, use column options to define images
+^^ color:  cell contents are a HEX-Color and define color of following cell
+^^ indent: cell contents are a number and define indentation of following cell
+^^ tree:   same as indent, but user can open and close subtrees (treeview-like)
+^ column options:
+^^    align=<value>   for "text" and "image": content alignment within cells
+^^                    available values: left (default), center, right, inline
+^^    width=<value>   for "text" and "image": minimum width in em (default 0)
+^^                    for "indent" and "tree": indent width in em (default 1.5)
+^^    padding=<value> padding left of the column, in em (default 0.5)
+^^                    exception: defaults to 0 for indent columns
+^^    tooltip=<value> tooltip text (default empty)
+^ "image" column options:
+^^    0=<value>       sets image for image index 0
+^^    1=<value>       sets image for image index 1
+^^    2=<value>       sets image for image index 2
+^^                    and so on; defined indices need not be contiguous
+^^                    empty or non-numeric cells are treated as 0
+^ "color" column options:
+^^    span=<value>    number of following columns to affect (default infinite)
 
 Note: do NOT use a element name starting with "key_" those names are reserved to
 pass key press events to formspec! 
@@ -1346,11 +1398,21 @@ minetest.get_inventory(location) -> InvRef
 minetest.create_detached_inventory(name, callbacks) -> InvRef
 ^ callbacks: See "Detached inventory callbacks"
 ^ Creates a detached inventory. If it already exists, it is cleared.
+
+Formspec:
 minetest.show_formspec(playername, formname, formspec)
 ^ playername: name of player to show formspec
 ^ formname: name passed to on_player_receive_fields callbacks
 ^           should follow "modname:<whatever>" naming convention
 ^ formspec: formspec to display
+minetest.formspec_escape(string) -> string
+^ escapes characters [ ] \ , ; that can not be used in formspecs
+minetest.explode_table_event(string) -> table
+^ returns e.g. {type="CHG", row=1, column=2}
+^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+minetest.explode_textlist_event(string) -> table
+^ returns e.g. {type="CHG", index=1}
+^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)
