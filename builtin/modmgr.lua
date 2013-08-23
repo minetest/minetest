@@ -297,7 +297,7 @@ function modmgr.tab()
 			retval = retval .. ";0]" .. 
 				"button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
 				fgettext("Rename") .. "]"
-			retval = retval .. "button[6,4.85;4,0.5;btn_mod_mgr_delete_mod;"
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
 				.. fgettext("Uninstall selected modpack") .. "]"
 		else
 			--show dependencies
@@ -308,7 +308,7 @@ function modmgr.tab()
 			
 			retval = retval .. toadd .. ";0]"
 			
-			retval = retval .. "button[6,4.85;4,0.5;btn_mod_mgr_delete_mod;"
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
 				.. fgettext("Uninstall selected mod") .. "]"
 		end
 	end
