@@ -241,8 +241,8 @@ function modmgr.tab()
 
 	retval = retval ..
 		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" .. 
-		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. fgettext("Install") .. "]" ..
-		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. fgettext("Download") .. "]"
+		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
+		"button[2.45,4.85;3.05,0.5;btn_mod_mgr_download;".. fgettext("Online mod repository") .. "]"
 		
 	local selected_mod = nil
 		
@@ -268,40 +268,48 @@ function modmgr.tab()
 		
 		retval = retval 
 				.. "image[5.5,0;3,2;" .. modscreenshot .. "]"
-				.. "label[8,-0.2;" .. selected_mod.name .. "]"
+				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
 				
-		local descriptiontext = nil
+		local descriptionlines = nil
 		error = nil
 		local descriptionfilename = selected_mod.path .. "description.txt"
 		descriptionfile,error = io.open(descriptionfilename,"r")
 		if error == nil then
-			descriptiontext = descriptionfile:read("*line")
-			retval = retval ..
-				"textarea[8.3,0.5;4,1.55;;" .. engine.formspec_escape(descriptiontext) .. ";]"
+			descriptiontext = descriptionfile:read("*all")
+			
+			descriptionlines = engine.splittext(descriptiontext,42)
 			descriptionfile:close()
 		else
-			retval = retval ..
-				"textarea[8.3,0.5;4,1.55;;No mod description available;]"
+			descriptionlines = {}
+			table.insert(descriptionlines,fgettext("no mod description available"))
 		end
 	
+		retval = retval .. 
+			"label[5.5,1.7;".. fgettext("Mod information:") .. "]" ..
+			"textlist[5.5,2.2;6.2,2.4;description;"
+			
+		for i=1,#descriptionlines,1 do
+			retval = retval .. engine.formspec_escape(descriptionlines[i]) .. ","
+		end
+		
+		
 		if selected_mod.is_modpack then
-			retval = retval 
-			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
-					 fgettext("Rename") .. "]"
-		retval = retval .. "button[7,4.85;3,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Delete this modpack!") .. "]"
+			retval = retval .. ";0]" .. 
+				"button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+				fgettext("Rename") .. "]"
+			retval = retval .. "button[6,4.85;4,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected modpack") .. "]"
 		else
-		--show dependencies
-			retval = retval .. 
-				"label[5.5,1.9;".. fgettext("Depends:") .. "]" ..
-				"textlist[5.5,2.4;6.2,2;deplist;"
+			--show dependencies
+
+			retval = retval .. ",Depends:,"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
 			
 			retval = retval .. toadd .. ";0]"
 			
-			retval = retval .. "button[7,4.85;3,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Delete this mod!") .. "]"
+			retval = retval .. "button[6,4.85;4,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected mod") .. "]"
 		end
 	end
 	return retval
