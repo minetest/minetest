@@ -721,8 +721,15 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				scrollbar->setPos(data->listbox_scroll[fname_w]);
 			}
 		}
+		else {
+			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
+			if (scrollbar) {
+				scrollbar->setPos(0);
+			}
+		}
 
-		if (str_initial_selection != "")
+		if ((str_initial_selection != "") &&
+				(str_initial_selection != "0"))
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
