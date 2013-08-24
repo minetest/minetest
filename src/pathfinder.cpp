@@ -823,6 +823,7 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 							" out of range (" << m_limits.X.max << "," <<
 							m_limits.Y.max << "," << m_limits.Z.max
 							<<")" << std::endl);
+					direction = get_dir_heuristic(directions,g_pos);
 					continue;
 				}
 
@@ -831,6 +832,7 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 				if (!g_pos2.valid) {
 					VERBOSE_TARGET << LVL "Pathfinder: no data for new position: "
 												<< PPOS(ipos2) << std::endl;
+					direction = get_dir_heuristic(directions,g_pos);
 					continue;
 				}
 
