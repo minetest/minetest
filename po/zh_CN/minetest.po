@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 00:07+0000\n"
+"POT-Creation-Date: 2013-08-25 16:52+0200\n"
 "PO-Revision-Date: 2013-05-18 16:23+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,111 +18,468 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2877
+#: builtin/gamemgr.lua:23
+#, fuzzy
+msgid "Game Name"
+msgstr "游戏"
+
+#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:295
+msgid "Create"
+msgstr "创建"
+
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:296 builtin/modmgr.lua:289
+#: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
+msgid "Cancel"
+msgstr "取消"
+
+#: builtin/gamemgr.lua:118
+msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+msgstr ""
+
+#: builtin/gamemgr.lua:216
+msgid "GAMES"
+msgstr ""
+
+#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:853
+#, fuzzy
+msgid "Games"
+msgstr "游戏"
+
+#: builtin/gamemgr.lua:233
+msgid "Mods:"
+msgstr ""
+
+#: builtin/gamemgr.lua:234
+msgid "edit game"
+msgstr ""
+
+#: builtin/gamemgr.lua:237
+msgid "new game"
+msgstr ""
+
+#: builtin/gamemgr.lua:247
+msgid "EDIT GAME"
+msgstr ""
+
+#: builtin/gamemgr.lua:267
+msgid "Remove selected mod"
+msgstr ""
+
+#: builtin/gamemgr.lua:270
+msgid "<<-- Add mod"
+msgstr ""
+
+#: builtin/mainmenu.lua:153
+msgid "Ok"
+msgstr ""
+
+#: builtin/mainmenu.lua:291
+msgid "World name"
+msgstr "世界名称"
+
+#: builtin/mainmenu.lua:292
+msgid "Mapgen"
+msgstr ""
+
+#: builtin/mainmenu.lua:294
+msgid "Game"
+msgstr "游戏"
+
+#: builtin/mainmenu.lua:308
+#, fuzzy
+msgid "Delete World \"$1\"?"
+msgstr "删除世界"
+
+#: builtin/mainmenu.lua:309 builtin/modmgr.lua:846
+msgid "Yes"
+msgstr "是"
+
+#: builtin/mainmenu.lua:310
+msgid "No"
+msgstr "否"
+
+#: builtin/mainmenu.lua:378
+#, fuzzy
+msgid "A world named \"$1\" already exists"
+msgstr "无法创建世界：同名世界已经存在"
+
+#: builtin/mainmenu.lua:393
+msgid "No worldname given or no game selected"
+msgstr ""
+
+#: builtin/mainmenu.lua:846
+msgid "Singleplayer"
+msgstr "单人游戏"
+
+#: builtin/mainmenu.lua:847
+msgid "Client"
+msgstr ""
+
+#: builtin/mainmenu.lua:848
+msgid "Server"
+msgstr ""
+
+#: builtin/mainmenu.lua:849
+msgid "Settings"
+msgstr "设置"
+
+#: builtin/mainmenu.lua:850
+msgid "Texture Packs"
+msgstr ""
+
+#: builtin/mainmenu.lua:857
+msgid "Mods"
+msgstr ""
+
+#: builtin/mainmenu.lua:859
+msgid "Credits"
+msgstr "关于"
+
+#: builtin/mainmenu.lua:879
+msgid "CLIENT"
+msgstr ""
+
+#: builtin/mainmenu.lua:880
+msgid "Favorites:"
+msgstr "最爱的服务器："
+
+#: builtin/mainmenu.lua:881
+msgid "Address/Port"
+msgstr "地址/端口"
+
+#: builtin/mainmenu.lua:882
+msgid "Name/Password"
+msgstr "名字/密码"
+
+#: builtin/mainmenu.lua:885
+#, fuzzy
+msgid "Public Serverlist"
+msgstr "公共服务器列表："
+
+#: builtin/mainmenu.lua:890 builtin/mainmenu.lua:935 builtin/mainmenu.lua:998
+#: builtin/modmgr.lua:271 src/keycode.cpp:229
+msgid "Delete"
+msgstr "删除"
+
+#: builtin/mainmenu.lua:894
+msgid "Connect"
+msgstr "连接"
+
+#: builtin/mainmenu.lua:936 builtin/mainmenu.lua:999
+msgid "New"
+msgstr "新建"
+
+#: builtin/mainmenu.lua:937 builtin/mainmenu.lua:1000
+msgid "Configure"
+msgstr "配置"
+
+#: builtin/mainmenu.lua:938
+#, fuzzy
+msgid "Start Game"
+msgstr "启动游戏/连接"
+
+#: builtin/mainmenu.lua:939 builtin/mainmenu.lua:1002
+msgid "Select World:"
+msgstr "选择世界："
+
+#: builtin/mainmenu.lua:940
+msgid "START SERVER"
+msgstr ""
+
+#: builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
+msgid "Creative Mode"
+msgstr "创造模式"
+
+#: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
+msgid "Enable Damage"
+msgstr "开启伤害"
+
+#: builtin/mainmenu.lua:945
+msgid "Public"
+msgstr "公共服务器"
+
+#: builtin/mainmenu.lua:947
+msgid "Name"
+msgstr ""
+
+#: builtin/mainmenu.lua:949
+#, fuzzy
+msgid "Password"
+msgstr "旧密码"
+
+#: builtin/mainmenu.lua:950
+msgid "Server Port"
+msgstr ""
+
+#: builtin/mainmenu.lua:960
+msgid "SETTINGS"
+msgstr ""
+
+#: builtin/mainmenu.lua:961
+msgid "Fancy trees"
+msgstr "更漂亮的树"
+
+#: builtin/mainmenu.lua:963
+msgid "Smooth Lighting"
+msgstr "平滑光照"
+
+#: builtin/mainmenu.lua:965
+msgid "3D Clouds"
+msgstr "3D云彩"
+
+#: builtin/mainmenu.lua:967
+#, fuzzy
+msgid "Opaque Water"
+msgstr "不透明的水"
+
+#: builtin/mainmenu.lua:970
+msgid "Mip-Mapping"
+msgstr "贴图处理"
+
+#: builtin/mainmenu.lua:972
+msgid "Anisotropic Filtering"
+msgstr "各向异性过滤"
+
+#: builtin/mainmenu.lua:974
+msgid "Bi-Linear Filtering"
+msgstr "双线性过滤"
+
+#: builtin/mainmenu.lua:976
+msgid "Tri-Linear Filtering"
+msgstr "三线性过滤"
+
+#: builtin/mainmenu.lua:979
+msgid "Shaders"
+msgstr "着色器"
+
+#: builtin/mainmenu.lua:981
+msgid "Preload item visuals"
+msgstr "预先加载物品图像"
+
+#: builtin/mainmenu.lua:983
+msgid "Enable Particles"
+msgstr "启用粒子效果"
+
+#: builtin/mainmenu.lua:985
+#, fuzzy
+msgid "Finite Liquid"
+msgstr "液体有限延伸"
+
+#: builtin/mainmenu.lua:988
+msgid "Change keys"
+msgstr "改变键位设置"
+
+#: builtin/mainmenu.lua:1001 src/keycode.cpp:248
+msgid "Play"
+msgstr "开始游戏"
+
+#: builtin/mainmenu.lua:1003
+msgid "SINGLE PLAYER"
+msgstr ""
+
+#: builtin/mainmenu.lua:1016
+msgid "Select texture pack:"
+msgstr ""
+
+#: builtin/mainmenu.lua:1017
+msgid "TEXTURE PACKS"
+msgstr ""
+
+#: builtin/mainmenu.lua:1037
+msgid "No information available"
+msgstr ""
+
+#: builtin/mainmenu.lua:1065
+msgid "Core Developers"
+msgstr ""
+
+#: builtin/mainmenu.lua:1076
+msgid "Active Contributors"
+msgstr ""
+
+#: builtin/mainmenu.lua:1086
+msgid "Previous Contributors"
+msgstr ""
+
+#: builtin/modmgr.lua:236
+msgid "MODS"
+msgstr ""
+
+#: builtin/modmgr.lua:237
+msgid "Installed Mods:"
+msgstr ""
+
+#: builtin/modmgr.lua:243 builtin/modstore.lua:253
+msgid "Install"
+msgstr ""
+
+#: builtin/modmgr.lua:244
+#, fuzzy
+msgid "Download"
+msgstr "向下"
+
+#: builtin/modmgr.lua:256
+msgid "Rename"
+msgstr ""
+
+#: builtin/modmgr.lua:260 builtin/modmgr.lua:402
+#, fuzzy
+msgid "Depends:"
+msgstr "依赖于:"
+
+#: builtin/modmgr.lua:282
+msgid "Rename Modpack:"
+msgstr ""
+
+#: builtin/modmgr.lua:287 src/keycode.cpp:227
+msgid "Accept"
+msgstr "接受"
+
+#: builtin/modmgr.lua:381
+#, fuzzy
+msgid "World:"
+msgstr "选择世界："
+
+#: builtin/modmgr.lua:385 builtin/modmgr.lua:387
+#, fuzzy
+msgid "Hide Game"
+msgstr "游戏"
+
+#: builtin/modmgr.lua:391 builtin/modmgr.lua:393
+msgid "Hide mp content"
+msgstr ""
+
+#: builtin/modmgr.lua:400
+msgid "Mod:"
+msgstr ""
+
+#: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
+msgid "Save"
+msgstr "保存"
+
+#: builtin/modmgr.lua:422
+#, fuzzy
+msgid "Enable MP"
+msgstr "全部启用"
+
+#: builtin/modmgr.lua:424
+#, fuzzy
+msgid "Disable MP"
+msgstr "全部禁用"
+
+#: builtin/modmgr.lua:428 builtin/modmgr.lua:430
+msgid "enabled"
+msgstr "启用"
+
+#: builtin/modmgr.lua:436
+#, fuzzy
+msgid "Enable all"
+msgstr "全部启用"
+
+#: builtin/modmgr.lua:551
+#, fuzzy
+msgid "Select Mod File:"
+msgstr "选择世界："
+
+#: builtin/modmgr.lua:590
+msgid "Install Mod: file: \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:591
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:612
+#, fuzzy
+msgid "Failed to install $1 to $2"
+msgstr "无法初始化世界"
+
+#: builtin/modmgr.lua:615
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr ""
+
+#: builtin/modmgr.lua:635
+msgid "Install Mod: unable to find real modname for: $1"
+msgstr ""
+
+#: builtin/modmgr.lua:824
+msgid "Modmgr: failed to delete \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:828
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:845
+msgid "Are you sure you want to delete \"$1\"?"
+msgstr ""
+
+#: builtin/modmgr.lua:847
+msgid "No of course not!"
+msgstr ""
+
+#: builtin/modstore.lua:183
+msgid "Page $1 of $2"
+msgstr ""
+
+#: builtin/modstore.lua:243
+msgid "Rating"
+msgstr ""
+
+#: builtin/modstore.lua:251
+msgid "re-Install"
+msgstr ""
+
+#: src/client.cpp:2911
 msgid "Item textures..."
 msgstr "物品材质..."
 
-#: src/game.cpp:959
+#: src/game.cpp:939
 msgid "Loading..."
 msgstr "载入中..."
 
-#: src/game.cpp:1019
+#: src/game.cpp:999
 msgid "Creating server...."
 msgstr "正在建立服务器...."
 
-#: src/game.cpp:1035
+#: src/game.cpp:1015
 msgid "Creating client..."
 msgstr "正在建立客户端..."
 
-#: src/game.cpp:1050
+#: src/game.cpp:1024
 msgid "Resolving address..."
 msgstr "正在解析地址..."
 
-#: src/game.cpp:1126
+#: src/game.cpp:1121
 msgid "Connecting to server..."
 msgstr "正在连接服务器..."
 
-#: src/game.cpp:1223
+#: src/game.cpp:1218
 #, fuzzy
 msgid "Item definitions..."
 msgstr "物品材质..."
 
-#: src/game.cpp:1230
+#: src/game.cpp:1225
 msgid "Node definitions..."
 msgstr ""
 
-#: src/game.cpp:1237
+#: src/game.cpp:1232
 msgid "Media..."
 msgstr ""
 
-#: src/game.cpp:3418
+#: src/game.cpp:3393
 msgid "Shutting down stuff..."
 msgstr "关闭中......"
 
-#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
+#: src/game.cpp:3423
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
 "\n"
 "查看 debug.txt 以获得详细信息。"
-
-#: src/guiConfigureWorld.cpp:184
-msgid "enabled"
-msgstr "启用"
-
-#: src/guiConfigureWorld.cpp:194
-msgid "Enable All"
-msgstr "全部启用"
-
-#: src/guiConfigureWorld.cpp:203
-msgid "Disable All"
-msgstr "全部禁用"
-
-#: src/guiConfigureWorld.cpp:211
-msgid "depends on:"
-msgstr "依赖于:"
-
-#: src/guiConfigureWorld.cpp:224
-msgid "is required by:"
-msgstr "被需要："
-
-#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
-#: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
-msgid "Cancel"
-msgstr "取消"
-
-#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
-msgid "Save"
-msgstr "保存"
-
-#: src/guiConfigureWorld.cpp:374
-msgid "Configuration saved.  "
-msgstr "配置已保存。  "
-
-#: src/guiConfigureWorld.cpp:386
-msgid "Warning: Configuration not consistent.  "
-msgstr "警告：配置不一致。  "
-
-#: src/guiConfirmMenu.cpp:119
-msgid "Yes"
-msgstr "是"
-
-#: src/guiConfirmMenu.cpp:127
-msgid "No"
-msgstr "否"
-
-#: src/guiCreateWorld.cpp:123
-msgid "World name"
-msgstr "世界名称"
-
-#: src/guiCreateWorld.cpp:146
-msgid "Game"
-msgstr "游戏"
-
-#: src/guiCreateWorld.cpp:170
-msgid "Create"
-msgstr "创建"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -132,12 +489,12 @@ msgstr "你死了。"
 msgid "Respawn"
 msgstr "重生"
 
-#: src/guiFormSpecMenu.cpp:585
+#: src/guiFormSpecMenu.cpp:1567
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:133
+#: src/guiFormSpecMenu.cpp:1593 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
 msgstr "继续游戏"
 
@@ -229,186 +586,6 @@ msgstr "选择范围"
 msgid "Print stacks"
 msgstr "打印栈"
 
-#: src/guiMainMenu.cpp:92
-msgid "Cannot create world: Name contains invalid characters"
-msgstr "无法创建世界：名字包含非法字符"
-
-#: src/guiMainMenu.cpp:103
-msgid "Cannot create world: A world by this name already exists"
-msgstr "无法创建世界：同名世界已经存在"
-
-#: src/guiMainMenu.cpp:285
-msgid "Singleplayer"
-msgstr "单人游戏"
-
-#: src/guiMainMenu.cpp:288
-msgid "Multiplayer"
-msgstr "多人游戏"
-
-#: src/guiMainMenu.cpp:291
-msgid "Advanced"
-msgstr "高级联机设置"
-
-#: src/guiMainMenu.cpp:294
-msgid "Settings"
-msgstr "设置"
-
-#: src/guiMainMenu.cpp:297
-msgid "Credits"
-msgstr "关于"
-
-#: src/guiMainMenu.cpp:330
-msgid "Select World:"
-msgstr "选择世界："
-
-#: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
-msgid "Delete"
-msgstr "删除"
-
-#: src/guiMainMenu.cpp:369
-msgid "New"
-msgstr "新建"
-
-#: src/guiMainMenu.cpp:379
-msgid "Configure"
-msgstr "配置"
-
-#: src/guiMainMenu.cpp:396 src/keycode.cpp:248
-msgid "Play"
-msgstr "开始游戏"
-
-#: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
-msgid "Creative Mode"
-msgstr "创造模式"
-
-#: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
-msgid "Enable Damage"
-msgstr "开启伤害"
-
-#: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
-msgid "Name/Password"
-msgstr "名字/密码"
-
-#: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
-msgid "Favorites:"
-msgstr "最爱的服务器："
-
-#: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
-msgid "Public Server List:"
-msgstr "公共服务器列表："
-
-#: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
-msgid "Address/Port"
-msgstr "地址/端口"
-
-#: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
-msgid "Show Public"
-msgstr "显示公共"
-
-#: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
-msgid "Show Favorites"
-msgstr "显示最爱"
-
-#: src/guiMainMenu.cpp:591
-msgid "Connect"
-msgstr "连接"
-
-#: src/guiMainMenu.cpp:668
-msgid "Leave address blank to start a local server."
-msgstr "地址栏留空可启动本地服务器。"
-
-#: src/guiMainMenu.cpp:678
-msgid "Start Game / Connect"
-msgstr "启动游戏/连接"
-
-#: src/guiMainMenu.cpp:716
-msgid "Public"
-msgstr "公共服务器"
-
-#: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
-msgid "Delete world"
-msgstr "删除世界"
-
-#: src/guiMainMenu.cpp:735
-msgid "Create world"
-msgstr "创造世界"
-
-#: src/guiMainMenu.cpp:773
-msgid "Fancy trees"
-msgstr "更漂亮的树"
-
-#: src/guiMainMenu.cpp:781
-msgid "Smooth Lighting"
-msgstr "平滑光照"
-
-#: src/guiMainMenu.cpp:789
-msgid "3D Clouds"
-msgstr "3D云彩"
-
-#: src/guiMainMenu.cpp:797
-msgid "Opaque water"
-msgstr "不透明的水"
-
-#: src/guiMainMenu.cpp:809
-msgid "Mip-Mapping"
-msgstr "贴图处理"
-
-#: src/guiMainMenu.cpp:818
-msgid "Anisotropic Filtering"
-msgstr "各向异性过滤"
-
-#: src/guiMainMenu.cpp:827
-msgid "Bi-Linear Filtering"
-msgstr "双线性过滤"
-
-#: src/guiMainMenu.cpp:836
-msgid "Tri-Linear Filtering"
-msgstr "三线性过滤"
-
-#: src/guiMainMenu.cpp:846
-msgid "Shaders"
-msgstr "着色器"
-
-#: src/guiMainMenu.cpp:855
-msgid "Preload item visuals"
-msgstr "预先加载物品图像"
-
-#: src/guiMainMenu.cpp:864
-msgid "Enable Particles"
-msgstr "启用粒子效果"
-
-#: src/guiMainMenu.cpp:873
-msgid "Finite liquid"
-msgstr "液体有限延伸"
-
-#: src/guiMainMenu.cpp:885
-msgid "Change keys"
-msgstr "改变键位设置"
-
-#: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
-msgid "Address required."
-msgstr "需要地址。"
-
-#: src/guiMainMenu.cpp:1231
-msgid "Cannot delete world: Nothing selected"
-msgstr "无法删除世界：没有选择世界"
-
-#: src/guiMainMenu.cpp:1246
-msgid "Files to be deleted"
-msgstr "将被删除的文件"
-
-#: src/guiMainMenu.cpp:1267
-msgid "Cannot create world: No games found"
-msgstr "无法创造世界：未找到游戏模式"
-
-#: src/guiMainMenu.cpp:1286
-msgid "Cannot configure world: Nothing selected"
-msgstr "无法配置世界：没有选择世界"
-
-#: src/guiMainMenu.cpp:1428
-msgid "Failed to delete all world files"
-msgstr "无法删除所有该世界的文件"
-
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "旧密码"
@@ -475,11 +652,11 @@ msgstr ""
 "鼠标滚轮: 选择物品\n"
 "T: 聊天\n"
 
-#: src/guiVolumeChange.cpp:107
+#: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
 msgstr "音量： "
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:122
 msgid "Exit"
 msgstr "退出"
 
@@ -566,10 +743,6 @@ msgstr "Kanji键"
 #: src/keycode.cpp:226
 msgid "Nonconvert"
 msgstr "无变换"
-
-#: src/keycode.cpp:227
-msgid "Accept"
-msgstr "接受"
 
 #: src/keycode.cpp:227
 msgid "End"
@@ -775,29 +948,39 @@ msgstr "PA1键"
 msgid "Zoom"
 msgstr "缩放"
 
-#: src/main.cpp:1680
+#: src/main.cpp:1469
 msgid "Main Menu"
 msgstr "主菜单"
 
-#: src/main.cpp:2040
-msgid "Failed to initialize world"
-msgstr "无法初始化世界"
-
-#: src/main.cpp:2053
+#: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "没有选择世界或提供地址。未执行操作。"
 
-#: src/main.cpp:2061
+#: src/main.cpp:1653
 msgid "Could not find or load game \""
 msgstr "无法找到或载入游戏模式“"
 
-#: src/main.cpp:2075
+#: src/main.cpp:1667
 msgid "Invalid gamespec."
 msgstr "非法游戏模式规格。"
 
-#: src/main.cpp:2116
+#: src/main.cpp:1712
 msgid "Connection error (timed out?)"
 msgstr "连接出错（超时？）"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：一些MOD仍未设定。\n"
+#~ "它们会在你保存配置的时候自动启用。  "
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：缺少一些设定了的MOD。\n"
+#~ "它们的设置会在你保存配置的时候被移除。  "
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -825,16 +1008,50 @@ msgstr "连接出错（超时？）"
 #~ "ESC：菜单\n"
 #~ "T：聊天\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：缺少一些设定了的MOD。\n"
-#~ "它们的设置会在你保存配置的时候被移除。  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "无法删除所有该世界的文件"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：一些MOD仍未设定。\n"
-#~ "它们会在你保存配置的时候自动启用。  "
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "无法配置世界：没有选择世界"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "无法创造世界：未找到游戏模式"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "将被删除的文件"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "无法删除世界：没有选择世界"
+
+#~ msgid "Address required."
+#~ msgstr "需要地址。"
+
+#~ msgid "Create world"
+#~ msgstr "创造世界"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "地址栏留空可启动本地服务器。"
+
+#~ msgid "Show Favorites"
+#~ msgstr "显示最爱"
+
+#~ msgid "Show Public"
+#~ msgstr "显示公共"
+
+#~ msgid "Advanced"
+#~ msgstr "高级联机设置"
+
+#~ msgid "Multiplayer"
+#~ msgstr "多人游戏"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "无法创建世界：名字包含非法字符"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "警告：配置不一致。  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "配置已保存。  "
+
+#~ msgid "is required by:"
+#~ msgstr "被需要："

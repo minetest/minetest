@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-13 18:26+0200\n"
+"POT-Creation-Date: 2013-08-25 16:52+0200\n"
 "PO-Revision-Date: 2013-06-21 15:47+0200\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,110 +18,467 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: src/client.cpp:2877
+#: builtin/gamemgr.lua:23
+#, fuzzy
+msgid "Game Name"
+msgstr "Mäng"
+
+#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:295
+msgid "Create"
+msgstr "Loo"
+
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:296 builtin/modmgr.lua:289
+#: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
+msgid "Cancel"
+msgstr "Tühista"
+
+#: builtin/gamemgr.lua:118
+msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+msgstr ""
+
+#: builtin/gamemgr.lua:216
+msgid "GAMES"
+msgstr ""
+
+#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:853
+#, fuzzy
+msgid "Games"
+msgstr "Mäng"
+
+#: builtin/gamemgr.lua:233
+msgid "Mods:"
+msgstr ""
+
+#: builtin/gamemgr.lua:234
+msgid "edit game"
+msgstr ""
+
+#: builtin/gamemgr.lua:237
+msgid "new game"
+msgstr ""
+
+#: builtin/gamemgr.lua:247
+msgid "EDIT GAME"
+msgstr ""
+
+#: builtin/gamemgr.lua:267
+msgid "Remove selected mod"
+msgstr ""
+
+#: builtin/gamemgr.lua:270
+msgid "<<-- Add mod"
+msgstr ""
+
+#: builtin/mainmenu.lua:153
+msgid "Ok"
+msgstr ""
+
+#: builtin/mainmenu.lua:291
+msgid "World name"
+msgstr "Maailma nimi"
+
+#: builtin/mainmenu.lua:292
+msgid "Mapgen"
+msgstr ""
+
+#: builtin/mainmenu.lua:294
+msgid "Game"
+msgstr "Mäng"
+
+#: builtin/mainmenu.lua:308
+#, fuzzy
+msgid "Delete World \"$1\"?"
+msgstr "Kustuta maailm"
+
+#: builtin/mainmenu.lua:309 builtin/modmgr.lua:846
+msgid "Yes"
+msgstr "Jah"
+
+#: builtin/mainmenu.lua:310
+msgid "No"
+msgstr "Ei"
+
+#: builtin/mainmenu.lua:378
+#, fuzzy
+msgid "A world named \"$1\" already exists"
+msgstr "Maailma loomine ebaõnnestus: Samanimeline maailm on juba olemas"
+
+#: builtin/mainmenu.lua:393
+msgid "No worldname given or no game selected"
+msgstr ""
+
+#: builtin/mainmenu.lua:846
+msgid "Singleplayer"
+msgstr "Üksikmäng"
+
+#: builtin/mainmenu.lua:847
+msgid "Client"
+msgstr ""
+
+#: builtin/mainmenu.lua:848
+msgid "Server"
+msgstr ""
+
+#: builtin/mainmenu.lua:849
+msgid "Settings"
+msgstr "Sätted"
+
+#: builtin/mainmenu.lua:850
+msgid "Texture Packs"
+msgstr ""
+
+#: builtin/mainmenu.lua:857
+msgid "Mods"
+msgstr ""
+
+#: builtin/mainmenu.lua:859
+msgid "Credits"
+msgstr "Tänuavaldused"
+
+#: builtin/mainmenu.lua:879
+msgid "CLIENT"
+msgstr ""
+
+#: builtin/mainmenu.lua:880
+msgid "Favorites:"
+msgstr "Lemmikud:"
+
+#: builtin/mainmenu.lua:881
+msgid "Address/Port"
+msgstr "IP/Port"
+
+#: builtin/mainmenu.lua:882
+msgid "Name/Password"
+msgstr "Nimi/Parool"
+
+#: builtin/mainmenu.lua:885
+#, fuzzy
+msgid "Public Serverlist"
+msgstr "Avatud serverite nimekiri:"
+
+#: builtin/mainmenu.lua:890 builtin/mainmenu.lua:935 builtin/mainmenu.lua:998
+#: builtin/modmgr.lua:271 src/keycode.cpp:229
+msgid "Delete"
+msgstr "Kustuta"
+
+#: builtin/mainmenu.lua:894
+msgid "Connect"
+msgstr "Liitu"
+
+#: builtin/mainmenu.lua:936 builtin/mainmenu.lua:999
+msgid "New"
+msgstr "Uus"
+
+#: builtin/mainmenu.lua:937 builtin/mainmenu.lua:1000
+msgid "Configure"
+msgstr "Konfigureeri"
+
+#: builtin/mainmenu.lua:938
+#, fuzzy
+msgid "Start Game"
+msgstr "Alusta mängu / Liitu"
+
+#: builtin/mainmenu.lua:939 builtin/mainmenu.lua:1002
+msgid "Select World:"
+msgstr "Vali maailm:"
+
+#: builtin/mainmenu.lua:940
+msgid "START SERVER"
+msgstr ""
+
+#: builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
+msgid "Creative Mode"
+msgstr "Kujunduslik mängumood"
+
+#: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
+msgid "Enable Damage"
+msgstr "Lülita valu sisse"
+
+#: builtin/mainmenu.lua:945
+msgid "Public"
+msgstr "Avalik"
+
+#: builtin/mainmenu.lua:947
+msgid "Name"
+msgstr ""
+
+#: builtin/mainmenu.lua:949
+#, fuzzy
+msgid "Password"
+msgstr "Vana parool"
+
+#: builtin/mainmenu.lua:950
+msgid "Server Port"
+msgstr ""
+
+#: builtin/mainmenu.lua:960
+msgid "SETTINGS"
+msgstr ""
+
+#: builtin/mainmenu.lua:961
+msgid "Fancy trees"
+msgstr "Uhked puud"
+
+#: builtin/mainmenu.lua:963
+msgid "Smooth Lighting"
+msgstr "Ilus valgustus"
+
+#: builtin/mainmenu.lua:965
+msgid "3D Clouds"
+msgstr "3D pilved"
+
+#: builtin/mainmenu.lua:967
+#, fuzzy
+msgid "Opaque Water"
+msgstr "Läbipaistmatu vesi"
+
+#: builtin/mainmenu.lua:970
+msgid "Mip-Mapping"
+msgstr "Väga hea kvaliteet"
+
+#: builtin/mainmenu.lua:972
+msgid "Anisotropic Filtering"
+msgstr "Anisotroopne Filtreerimine"
+
+#: builtin/mainmenu.lua:974
+msgid "Bi-Linear Filtering"
+msgstr "Bi-lineaarsed Filtreerimine"
+
+#: builtin/mainmenu.lua:976
+msgid "Tri-Linear Filtering"
+msgstr "Tri-Linear Filtreerimine"
+
+#: builtin/mainmenu.lua:979
+msgid "Shaders"
+msgstr "Varjutajad"
+
+#: builtin/mainmenu.lua:981
+msgid "Preload item visuals"
+msgstr "Lae asjade visuaale"
+
+#: builtin/mainmenu.lua:983
+msgid "Enable Particles"
+msgstr "Lülita osakesed sisse"
+
+#: builtin/mainmenu.lua:985
+#, fuzzy
+msgid "Finite Liquid"
+msgstr "Löppev vedelik"
+
+#: builtin/mainmenu.lua:988
+msgid "Change keys"
+msgstr "Vaheta nuppe"
+
+#: builtin/mainmenu.lua:1001 src/keycode.cpp:248
+msgid "Play"
+msgstr "Mängi"
+
+#: builtin/mainmenu.lua:1003
+msgid "SINGLE PLAYER"
+msgstr ""
+
+#: builtin/mainmenu.lua:1016
+msgid "Select texture pack:"
+msgstr ""
+
+#: builtin/mainmenu.lua:1017
+msgid "TEXTURE PACKS"
+msgstr ""
+
+#: builtin/mainmenu.lua:1037
+msgid "No information available"
+msgstr ""
+
+#: builtin/mainmenu.lua:1065
+msgid "Core Developers"
+msgstr ""
+
+#: builtin/mainmenu.lua:1076
+msgid "Active Contributors"
+msgstr ""
+
+#: builtin/mainmenu.lua:1086
+msgid "Previous Contributors"
+msgstr ""
+
+#: builtin/modmgr.lua:236
+msgid "MODS"
+msgstr ""
+
+#: builtin/modmgr.lua:237
+msgid "Installed Mods:"
+msgstr ""
+
+#: builtin/modmgr.lua:243 builtin/modstore.lua:253
+msgid "Install"
+msgstr ""
+
+#: builtin/modmgr.lua:244
+#, fuzzy
+msgid "Download"
+msgstr "Alla"
+
+#: builtin/modmgr.lua:256
+msgid "Rename"
+msgstr ""
+
+#: builtin/modmgr.lua:260 builtin/modmgr.lua:402
+#, fuzzy
+msgid "Depends:"
+msgstr "Vajab:"
+
+#: builtin/modmgr.lua:282
+msgid "Rename Modpack:"
+msgstr ""
+
+#: builtin/modmgr.lua:287 src/keycode.cpp:227
+msgid "Accept"
+msgstr "Nõustu"
+
+#: builtin/modmgr.lua:381
+#, fuzzy
+msgid "World:"
+msgstr "Vali maailm:"
+
+#: builtin/modmgr.lua:385 builtin/modmgr.lua:387
+#, fuzzy
+msgid "Hide Game"
+msgstr "Mäng"
+
+#: builtin/modmgr.lua:391 builtin/modmgr.lua:393
+msgid "Hide mp content"
+msgstr ""
+
+#: builtin/modmgr.lua:400
+msgid "Mod:"
+msgstr ""
+
+#: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
+msgid "Save"
+msgstr "Salvesta"
+
+#: builtin/modmgr.lua:422
+#, fuzzy
+msgid "Enable MP"
+msgstr "Lülita kõik sisse"
+
+#: builtin/modmgr.lua:424
+#, fuzzy
+msgid "Disable MP"
+msgstr "Lülita kõik välja"
+
+#: builtin/modmgr.lua:428 builtin/modmgr.lua:430
+msgid "enabled"
+msgstr "Sisse lülitatud"
+
+#: builtin/modmgr.lua:436
+#, fuzzy
+msgid "Enable all"
+msgstr "Lülita kõik sisse"
+
+#: builtin/modmgr.lua:551
+#, fuzzy
+msgid "Select Mod File:"
+msgstr "Vali maailm:"
+
+#: builtin/modmgr.lua:590
+msgid "Install Mod: file: \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:591
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:612
+#, fuzzy
+msgid "Failed to install $1 to $2"
+msgstr "Maailma initsialiseerimine ebaõnnestus"
+
+#: builtin/modmgr.lua:615
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr ""
+
+#: builtin/modmgr.lua:635
+msgid "Install Mod: unable to find real modname for: $1"
+msgstr ""
+
+#: builtin/modmgr.lua:824
+msgid "Modmgr: failed to delete \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:828
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr ""
+
+#: builtin/modmgr.lua:845
+msgid "Are you sure you want to delete \"$1\"?"
+msgstr ""
+
+#: builtin/modmgr.lua:847
+msgid "No of course not!"
+msgstr ""
+
+#: builtin/modstore.lua:183
+msgid "Page $1 of $2"
+msgstr ""
+
+#: builtin/modstore.lua:243
+msgid "Rating"
+msgstr ""
+
+#: builtin/modstore.lua:251
+msgid "re-Install"
+msgstr ""
+
+#: src/client.cpp:2911
 msgid "Item textures..."
 msgstr ""
 
-#: src/game.cpp:959
+#: src/game.cpp:939
 msgid "Loading..."
 msgstr ""
 
-#: src/game.cpp:1019
+#: src/game.cpp:999
 msgid "Creating server...."
 msgstr ""
 
-#: src/game.cpp:1035
+#: src/game.cpp:1015
 msgid "Creating client..."
 msgstr ""
 
-#: src/game.cpp:1050
+#: src/game.cpp:1024
 msgid "Resolving address..."
 msgstr ""
 
-#: src/game.cpp:1126
+#: src/game.cpp:1121
 msgid "Connecting to server..."
 msgstr ""
 
-#: src/game.cpp:1223
+#: src/game.cpp:1218
 msgid "Item definitions..."
 msgstr ""
 
-#: src/game.cpp:1230
+#: src/game.cpp:1225
 msgid "Node definitions..."
 msgstr ""
 
-#: src/game.cpp:1237
+#: src/game.cpp:1232
 msgid "Media..."
 msgstr ""
 
-#: src/game.cpp:3418
+#: src/game.cpp:3393
 msgid "Shutting down stuff..."
 msgstr ""
 
-#: src/game.cpp:3448 src/guiConfigureWorld.cpp:397
+#: src/game.cpp:3423
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
 "\n"
 "Vaata debug.txt info jaoks."
-
-#: src/guiConfigureWorld.cpp:184
-msgid "enabled"
-msgstr "Sisse lülitatud"
-
-#: src/guiConfigureWorld.cpp:194
-msgid "Enable All"
-msgstr "Lülita kõik sisse"
-
-#: src/guiConfigureWorld.cpp:203
-msgid "Disable All"
-msgstr "Lülita kõik välja"
-
-#: src/guiConfigureWorld.cpp:211
-msgid "depends on:"
-msgstr "Vajab:"
-
-#: src/guiConfigureWorld.cpp:224
-msgid "is required by:"
-msgstr "Seda vajavad:"
-
-#: src/guiConfigureWorld.cpp:246 src/guiCreateWorld.cpp:178
-#: src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
-msgid "Cancel"
-msgstr "Tühista"
-
-#: src/guiConfigureWorld.cpp:253 src/guiKeyChangeMenu.cpp:187
-msgid "Save"
-msgstr "Salvesta"
-
-#: src/guiConfigureWorld.cpp:374
-msgid "Configuration saved.  "
-msgstr "Konfiguratsioon salvestatud. "
-
-#: src/guiConfigureWorld.cpp:386
-msgid "Warning: Configuration not consistent.  "
-msgstr "Hoiatus: Konfiguratsioon pole kindel."
-
-#: src/guiConfirmMenu.cpp:119
-msgid "Yes"
-msgstr "Jah"
-
-#: src/guiConfirmMenu.cpp:127
-msgid "No"
-msgstr "Ei"
-
-#: src/guiCreateWorld.cpp:123
-msgid "World name"
-msgstr "Maailma nimi"
-
-#: src/guiCreateWorld.cpp:146
-msgid "Game"
-msgstr "Mäng"
-
-#: src/guiCreateWorld.cpp:170
-msgid "Create"
-msgstr "Loo"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -131,13 +488,13 @@ msgstr "Sa surid."
 msgid "Respawn"
 msgstr "Ärka ellu"
 
-#: src/guiFormSpecMenu.cpp:585
+#: src/guiFormSpecMenu.cpp:1567
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
 "Vasak hiireklõps: Liiguta kõiki asju, Parem hiireklõps: Liiguta üksikut asja"
 
-#: src/guiFormSpecMenu.cpp:611 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:133
+#: src/guiFormSpecMenu.cpp:1593 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
 msgstr "Jätka"
 
@@ -231,186 +588,6 @@ msgstr "Kauguse valik"
 msgid "Print stacks"
 msgstr "Prindi kogused"
 
-#: src/guiMainMenu.cpp:92
-msgid "Cannot create world: Name contains invalid characters"
-msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
-
-#: src/guiMainMenu.cpp:103
-msgid "Cannot create world: A world by this name already exists"
-msgstr "Maailma loomine ebaõnnestus: Samanimeline maailm on juba olemas"
-
-#: src/guiMainMenu.cpp:285
-msgid "Singleplayer"
-msgstr "Üksikmäng"
-
-#: src/guiMainMenu.cpp:288
-msgid "Multiplayer"
-msgstr "Mitmikmäng"
-
-#: src/guiMainMenu.cpp:291
-msgid "Advanced"
-msgstr "Arenenud sätted"
-
-#: src/guiMainMenu.cpp:294
-msgid "Settings"
-msgstr "Sätted"
-
-#: src/guiMainMenu.cpp:297
-msgid "Credits"
-msgstr "Tänuavaldused"
-
-#: src/guiMainMenu.cpp:330
-msgid "Select World:"
-msgstr "Vali maailm:"
-
-#: src/guiMainMenu.cpp:360 src/guiMainMenu.cpp:578 src/keycode.cpp:229
-msgid "Delete"
-msgstr "Kustuta"
-
-#: src/guiMainMenu.cpp:369
-msgid "New"
-msgstr "Uus"
-
-#: src/guiMainMenu.cpp:379
-msgid "Configure"
-msgstr "Konfigureeri"
-
-#: src/guiMainMenu.cpp:396 src/keycode.cpp:248
-msgid "Play"
-msgstr "Mängi"
-
-#: src/guiMainMenu.cpp:409 src/guiMainMenu.cpp:699
-msgid "Creative Mode"
-msgstr "Kujunduslik mängumood"
-
-#: src/guiMainMenu.cpp:417 src/guiMainMenu.cpp:707
-msgid "Enable Damage"
-msgstr "Lülita valu sisse"
-
-#: src/guiMainMenu.cpp:459 src/guiMainMenu.cpp:614
-msgid "Name/Password"
-msgstr "Nimi/Parool"
-
-#: src/guiMainMenu.cpp:498 src/guiMainMenu.cpp:519 src/guiMainMenu.cpp:1324
-msgid "Favorites:"
-msgstr "Lemmikud:"
-
-#: src/guiMainMenu.cpp:508 src/guiMainMenu.cpp:1338
-msgid "Public Server List:"
-msgstr "Avatud serverite nimekiri:"
-
-#: src/guiMainMenu.cpp:532 src/guiMainMenu.cpp:643
-msgid "Address/Port"
-msgstr "IP/Port"
-
-#: src/guiMainMenu.cpp:560 src/guiMainMenu.cpp:1323
-msgid "Show Public"
-msgstr "Näita avalikke"
-
-#: src/guiMainMenu.cpp:567 src/guiMainMenu.cpp:1337
-msgid "Show Favorites"
-msgstr "Näita lemmikuid"
-
-#: src/guiMainMenu.cpp:591
-msgid "Connect"
-msgstr "Liitu"
-
-#: src/guiMainMenu.cpp:668
-msgid "Leave address blank to start a local server."
-msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
-
-#: src/guiMainMenu.cpp:678
-msgid "Start Game / Connect"
-msgstr "Alusta mängu / Liitu"
-
-#: src/guiMainMenu.cpp:716
-msgid "Public"
-msgstr "Avalik"
-
-#: src/guiMainMenu.cpp:726 src/guiMainMenu.cpp:1245
-msgid "Delete world"
-msgstr "Kustuta maailm"
-
-#: src/guiMainMenu.cpp:735
-msgid "Create world"
-msgstr "Loo maailm"
-
-#: src/guiMainMenu.cpp:773
-msgid "Fancy trees"
-msgstr "Uhked puud"
-
-#: src/guiMainMenu.cpp:781
-msgid "Smooth Lighting"
-msgstr "Ilus valgustus"
-
-#: src/guiMainMenu.cpp:789
-msgid "3D Clouds"
-msgstr "3D pilved"
-
-#: src/guiMainMenu.cpp:797
-msgid "Opaque water"
-msgstr "Läbipaistmatu vesi"
-
-#: src/guiMainMenu.cpp:809
-msgid "Mip-Mapping"
-msgstr "Väga hea kvaliteet"
-
-#: src/guiMainMenu.cpp:818
-msgid "Anisotropic Filtering"
-msgstr "Anisotroopne Filtreerimine"
-
-#: src/guiMainMenu.cpp:827
-msgid "Bi-Linear Filtering"
-msgstr "Bi-lineaarsed Filtreerimine"
-
-#: src/guiMainMenu.cpp:836
-msgid "Tri-Linear Filtering"
-msgstr "Tri-Linear Filtreerimine"
-
-#: src/guiMainMenu.cpp:846
-msgid "Shaders"
-msgstr "Varjutajad"
-
-#: src/guiMainMenu.cpp:855
-msgid "Preload item visuals"
-msgstr "Lae asjade visuaale"
-
-#: src/guiMainMenu.cpp:864
-msgid "Enable Particles"
-msgstr "Lülita osakesed sisse"
-
-#: src/guiMainMenu.cpp:873
-msgid "Finite liquid"
-msgstr "Löppev vedelik"
-
-#: src/guiMainMenu.cpp:885
-msgid "Change keys"
-msgstr "Vaheta nuppe"
-
-#: src/guiMainMenu.cpp:1211 src/guiMainMenu.cpp:1372
-msgid "Address required."
-msgstr "IP on vajalkik."
-
-#: src/guiMainMenu.cpp:1231
-msgid "Cannot delete world: Nothing selected"
-msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
-
-#: src/guiMainMenu.cpp:1246
-msgid "Files to be deleted"
-msgstr "Failid mida kustutada"
-
-#: src/guiMainMenu.cpp:1267
-msgid "Cannot create world: No games found"
-msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
-
-#: src/guiMainMenu.cpp:1286
-msgid "Cannot configure world: Nothing selected"
-msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
-
-#: src/guiMainMenu.cpp:1428
-msgid "Failed to delete all world files"
-msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
-
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
 msgstr "Vana parool"
@@ -466,11 +643,11 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 
-#: src/guiVolumeChange.cpp:107
+#: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
 msgstr "Hääle Volüüm: "
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:122
 msgid "Exit"
 msgstr "Välju"
 
@@ -557,10 +734,6 @@ msgstr "Kanji"
 #: src/keycode.cpp:226
 msgid "Nonconvert"
 msgstr "Konverteerimatta"
-
-#: src/keycode.cpp:227
-msgid "Accept"
-msgstr "Nõustu"
 
 #: src/keycode.cpp:227
 msgid "End"
@@ -766,29 +939,39 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Suumi"
 
-#: src/main.cpp:1680
+#: src/main.cpp:1469
 msgid "Main Menu"
 msgstr "Menüü"
 
-#: src/main.cpp:2040
-msgid "Failed to initialize world"
-msgstr "Maailma initsialiseerimine ebaõnnestus"
-
-#: src/main.cpp:2053
+#: src/main.cpp:1645
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Pole valitud ei maailma ega IP aadressi. Pole midagi teha."
 
-#: src/main.cpp:2061
+#: src/main.cpp:1653
 msgid "Could not find or load game \""
 msgstr "Ei leia ega suuda jätkata mängu \""
 
-#: src/main.cpp:2075
+#: src/main.cpp:1667
 msgid "Invalid gamespec."
 msgstr "Vale mängu ID."
 
-#: src/main.cpp:2116
+#: src/main.cpp:1712
 msgid "Connection error (timed out?)"
 msgstr "Ühenduse viga (Aeg otsas?)"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
+#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
+#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -815,16 +998,50 @@ msgstr "Ühenduse viga (Aeg otsas?)"
 #~ "- ESC: Menüü\n"
 #~ "- T: Jututupa\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
-#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
-#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Failid mida kustutada"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
+
+#~ msgid "Address required."
+#~ msgstr "IP on vajalkik."
+
+#~ msgid "Create world"
+#~ msgstr "Loo maailm"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Näita lemmikuid"
+
+#~ msgid "Show Public"
+#~ msgstr "Näita avalikke"
+
+#~ msgid "Advanced"
+#~ msgstr "Arenenud sätted"
+
+#~ msgid "Multiplayer"
+#~ msgstr "Mitmikmäng"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Hoiatus: Konfiguratsioon pole kindel."
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguratsioon salvestatud. "
+
+#~ msgid "is required by:"
+#~ msgstr "Seda vajavad:"
