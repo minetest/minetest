@@ -389,3 +389,6 @@
 #modstore_download_url = https://forum.minetest.net/media/
 #modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
 #modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+
+# Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true

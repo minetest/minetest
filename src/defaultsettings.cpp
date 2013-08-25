@@ -280,6 +280,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");
 	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
 
+	settings->setDefault("high_precision_fpu", "true");
 }
 
 void override_default_settings(Settings *settings, Settings *from)

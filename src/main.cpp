@@ -1288,6 +1288,7 @@ int main(int argc, char *argv[])
 		params.Stencilbuffer = false;
 		params.Vsync         = vsync;
 		params.EventReceiver = &receiver;
+		params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 		nulldevice = createDeviceEx(params);
 
@@ -1340,6 +1341,7 @@ int main(int argc, char *argv[])
 	params.Stencilbuffer = false;
 	params.Vsync         = vsync;
 	params.EventReceiver = &receiver;
+	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 	device = createDeviceEx(params);
 
