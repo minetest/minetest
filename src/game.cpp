@@ -3199,6 +3199,11 @@ void the_game(
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
 
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
+
 
 				//Right eye...
 				irr::core::vector3df rightEye;
@@ -3222,6 +3227,11 @@ void the_game(
 				camera.getCameraNode()->setTarget( focusPoint );
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
 
 
 				//driver->endScene();
@@ -3250,10 +3260,13 @@ void the_game(
 		m.Lighting = false;
 		driver->setMaterial(m);
 
-		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+		if(!g_settings->getBool("anaglyph")) {
+			driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-		if (show_hud)
-			hud.drawSelectionBoxes(hilightboxes);
+			if (show_hud)
+				hud.drawSelectionBoxes(hilightboxes);
+		}
+
 		/*
 			Wielded tool
 		*/
