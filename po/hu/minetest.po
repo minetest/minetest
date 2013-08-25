@@ -49,14 +49,10 @@ msgstr ""
 #: src/game.cpp:1230
 msgid "Node definitions..."
 msgstr ""
-"\n"
-"Nézd meg a debug.txt-t a részletekért."
 
 #: src/game.cpp:1237
 msgid "Media..."
 msgstr ""
-"Figyelem: Néhány mod nincs beállítva.\n"
-"Alapértelmezett beállításokkal lesz elmentve.  "
 
 #: src/game.cpp:3418
 msgid "Shutting down stuff..."
@@ -67,8 +63,6 @@ msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
-"Figyelem: Néhány beállított mod hiányzik.\n"
-"Ezek a beállítások ellesznek távolítva a mentésből.  "
 
 #: src/guiConfigureWorld.cpp:184
 msgid "enabled"

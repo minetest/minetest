@@ -53,6 +53,7 @@ msgstr ""
 
 #: src/game.cpp:1237
 msgid "Media..."
+msgstr ""
 
 #: src/game.cpp:3418
 msgid "Shutting down stuff..."
