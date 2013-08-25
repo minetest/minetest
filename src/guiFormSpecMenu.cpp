@@ -124,11 +124,14 @@ void GUIFormSpecMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}*/
+
 	if(m_tooltip_element)
 	{
 		m_tooltip_element->remove();
+		m_tooltip_element->drop();
 		m_tooltip_element = NULL;
 	}
+
 }
 
 void GUIFormSpecMenu::setInitialFocus()
@@ -1606,6 +1609,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_tooltip_element->setOverrideColor(video::SColor(255,255,255,255));
 		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		m_tooltip_element->setWordWrap(false);
+		//we're not parent so no autograb for this one!
+		m_tooltip_element->grab();
 	}
 
 	//set initial focus if parser didn't set it
