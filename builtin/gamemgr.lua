@@ -155,22 +155,35 @@ function gamemgr.delete_mod(gamespec,modindex)
 end
 
 --------------------------------------------------------------------------------
-function gamemgr.get_game_mods(gamespec)
-
-	local retval = ""
-	
-	if gamespec.gamemods_path ~= nil and
-		gamespec.gamemods_path ~= "" then
-		local game_mods = {}
-		get_mods(gamespec.gamemods_path,game_mods)
-		
-		for i=1,#game_mods,1 do
-			if retval ~= "" then
-				retval = retval..","
-			end
-			retval = retval .. game_mods[i].name
-		end 
+function gamemgr.find_by_gameid(gameid)
+	for i=1,#gamemgr.games,1 do		
+		if gamemgr.games[i].id == gameid then
+			return gamemgr.games[i], i
+		end
 	end
+	return nil, nil
+end
+
+--------------------------------------------------------------------------------
+function gamemgr.get_game_mods(gamespec, retval)
+	if gamespec ~= nil and
+		gamespec.gamemods_path ~= nil and
+		gamespec.gamemods_path ~= "" then
+		get_mods(gamespec.gamemods_path, retval)
+	end
+end
+
+--------------------------------------------------------------------------------
+function gamemgr.get_game_modlist(gamespec)
+	local retval = ""
+	local game_mods = {}
+	gamemgr.get_game_mods(gamespec, game_mods)
+	for i=1,#game_mods,1 do
+		if retval ~= "" then
+			retval = retval..","
+		end
+		retval = retval .. game_mods[i].name
+	end 
 	return retval
 end
 
@@ -220,7 +233,7 @@ function gamemgr.tab()
 			"label[6,1.4;" .. fgettext("Mods:") .."]" ..
 			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;" .. fgettext("edit game") .. "]" ..
 			"textlist[6,2;5.5,3.3;game_mgr_modlist;"
-			.. gamemgr.get_game_mods(current_game) ..";0]" ..
+			.. gamemgr.get_game_modlist(current_game) ..";0]" ..
 			"button[1,4.75;3.2,0.5;btn_game_mgr_new_game;" .. fgettext("new game") .. "]"
 	end
 	return retval
@@ -243,7 +256,7 @@ function gamemgr.dialog_edit_game()
 		
 		retval = retval .. 
 			"textlist[0.5,0.5;4.5,4.3;mods_current;"
-			.. gamemgr.get_game_mods(current_game) ..";0]"
+			.. gamemgr.get_game_modlist(current_game) ..";0]"
 			
 			
 		retval = retval .. 

@@ -244,7 +244,7 @@ public:
 		*/
 		if(noMenuActive() == false)
 		{
-			return false;
+			return g_menumgr.preprocessEvent(event);
 		}
 
 		// Remember whether each key is down or up
@@ -1288,6 +1288,7 @@ int main(int argc, char *argv[])
 		params.Stencilbuffer = false;
 		params.Vsync         = vsync;
 		params.EventReceiver = &receiver;
+		params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 		nulldevice = createDeviceEx(params);
 
@@ -1340,6 +1341,7 @@ int main(int argc, char *argv[])
 	params.Stencilbuffer = false;
 	params.Vsync         = vsync;
 	params.EventReceiver = &receiver;
+	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 	device = createDeviceEx(params);
 
@@ -1519,7 +1521,6 @@ int main(int argc, char *argv[])
 				
 				// Initialize menu data
 				MainMenuData menudata;
-				menudata.kill = kill;
 				menudata.address = address;
 				menudata.name = playername;
 				menudata.port = itos(port);
@@ -1565,13 +1566,11 @@ int main(int argc, char *argv[])
 					}
 					infostream<<"Waited for other menus"<<std::endl;
 
-					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata);
+					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata,kill);
 					
 					delete temp;
 					//once finished you'll never end up here
 					smgr->clear();
-					kill = menudata.kill;
-
 				}
 
 				if(menudata.errormessage != ""){

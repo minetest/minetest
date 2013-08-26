@@ -109,7 +109,8 @@ public:
 				gui::IGUIElement* parent,
 				IMenuManager *menumgr,
 				scene::ISceneManager* smgr,
-				MainMenuData* data);
+				MainMenuData* data,
+				bool& kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
@@ -158,6 +159,9 @@ private:
 	TextDestGuiEngine*		m_buttonhandler;
 	/** the formspec menu */
 	GUIFormSpecMenu*		m_menu;
+
+	/** reference to kill variable managed by SIGINT handler */
+	bool&					m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
 	bool					m_startgame;

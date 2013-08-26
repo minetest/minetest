@@ -131,11 +131,7 @@ int ModApiMainMenu::l_close(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	assert(engine != 0);
 
-	engine->m_data->kill = true;
-
-	//close menu next time
-	engine->m_startgame = true;
-	engine->m_menu->quitMenu();
+	engine->m_kill = true;
 	return 0;
 }
 
@@ -983,9 +979,8 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_gettext(lua_State *L)
 {
-	const char* str = luaL_checkstring(L, 1);
-	str = gettext(str);
-	lua_pushstring(L, str);
+	std::wstring wtext = wstrgettext((std::string) luaL_checkstring(L, 1));
+	lua_pushstring(L, wide_to_narrow(wtext).c_str());
 
 	return 1;
 }

@@ -525,7 +525,7 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 	}
 
 	// Try with all permutations of the recipe
-	std::vector<std::string> recipe_copy = recipe;
+	std::vector<std::string> recipe_copy = craftGetItemNames(recipe, gamedef);
 	// Start from the lexicographically first permutation (=sorted)
 	std::sort(recipe_copy.begin(), recipe_copy.end());
 	//while(std::prev_permutation(recipe_copy.begin(), recipe_copy.end())){}

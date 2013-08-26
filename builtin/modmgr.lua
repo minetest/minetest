@@ -329,6 +329,8 @@ function modmgr.render_modlist(render_list)
 		if retval ~= "" then
 			retval = retval ..","
 		end
+
+		local color = ""
 		
 		if v.is_modpack then
 			local rawlist = filterlist.get_raw_list(render_list)
@@ -343,19 +345,21 @@ function modmgr.render_modlist(render_list)
 			end
 			
 			if all_enabled == false then
-				retval = retval .. mt_color_grey
+				color = mt_color_grey
 			else
-				retval = retval .. mt_color_dark_green
+				color = mt_color_dark_green
 			end
 		end
 		
 		if v.typ == "game_mod" then
-			retval = retval .. mt_color_blue
+			color = mt_color_blue
 		else
 			if v.enabled then
-				retval = retval .. mt_color_green
+				color = mt_color_green
 			end
 		end
+
+		retval = retval .. color
 		if v.modpack  ~= nil then
 			retval = retval .. "    "
 		end
@@ -401,7 +405,7 @@ function modmgr.dialog_configure_world()
 		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 	
-	if mod ~= nil and mod.name ~= "" then
+	if mod ~= nil and mod.name ~= "" and mod.typ ~= "game_mod" then
 		if mod.is_modpack then
 			local rawlist = filterlist.get_raw_list(modmgr.modlist)
 			
@@ -525,9 +529,8 @@ function modmgr.get_worldconfig(worldpath)
 	end
 	
 	--read gamemods
-	local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. worldconfig.id .. DIR_DELIM .. "mods"
-	
-	get_mods(gamemodpath,worldconfig.game_mods)
+	local gamespec = gamemgr.find_by_gameid(worldconfig.id)
+	gamemgr.get_game_mods(gamespec, worldconfig.game_mods)
 
 	return worldconfig
 end
@@ -662,57 +665,23 @@ function modmgr.handle_configure_world_buttons(fields)
 		modmgr.world_config_selected_mod = event.index
 
 		if event.typ == "DCL" then
-			local mod = filterlist.get_list(modmgr.modlist)[event.index]
-			
-			if mod.typ == "game_mod" then
-				return nil
-			end
-			
-			if not mod.is_modpack then
-				mod.enabled = not mod.enabled
-			else
-				local list = filterlist.get_raw_list(modmgr.modlist)
-				local toset = nil
-				
-				for i=1,#list,1 do
-					if list[i].modpack == mod.name then
-						if toset == nil then
-							toset = not list[i].enabled
-						end
-						
-						list[i].enabled = toset
-					end
-				end
-			end
+			modmgr.world_config_enable_mod(nil)
 		end
 	end
 	
+	if fields["key_enter"] ~= nil then
+		modmgr.world_config_enable_mod(nil)
+	end
+	
 	if fields["cb_mod_enable"] ~= nil then
-		local mod = filterlist.get_list(modmgr.modlist)
-			[engine.get_textlist_index("world_config_modlist")]
-		if fields["cb_mod_enable"] == "true" then
-			mod.enabled = true
-		else
-			mod.enabled = false
-		end
+		local toset = (fields["cb_mod_enable"] == "true")
+		modmgr.world_config_enable_mod(toset)
 	end
 	
 	if fields["btn_mp_enable"] ~= nil or
 		fields["btn_mp_disable"] then
-		local mod = filterlist.get_list(modmgr.modlist)
-			[engine.get_textlist_index("world_config_modlist")]
-		
-		local toset=false
-		if fields["btn_mp_enable"] ~= nil then
-			toset = true
-		end
-		local list = filterlist.get_raw_list(modmgr.modlist)
-		
-		for i=1,#list,1 do
-			if list[i].modpack == mod.name then
-				list[i].enabled = toset
-			end
-		end
+		local toset = (fields["btn_mp_enable"] ~= nil)
+		modmgr.world_config_enable_mod(toset)
 	end
 	
 	if fields["cb_hide_gamemods"] ~= nil then
@@ -818,6 +787,31 @@ function modmgr.handle_configure_world_buttons(fields)
 	return nil
 end
 --------------------------------------------------------------------------------
+function modmgr.world_config_enable_mod(toset)
+	local mod = filterlist.get_list(modmgr.modlist)
+		[engine.get_textlist_index("world_config_modlist")]
+
+	if mod.typ == "game_mod" then
+		-- game mods can't be enabled or disabled
+	elseif not mod.is_modpack then
+		if toset == nil then
+			mod.enabled = not mod.enabled
+		else
+			mod.enabled = toset
+		end
+	else
+		local list = filterlist.get_raw_list(modmgr.modlist)
+		for i=1,#list,1 do
+			if list[i].modpack == mod.name then
+				if toset == nil then
+					toset = not list[i].enabled
+				end
+				list[i].enabled = toset
+			end
+		end
+	end
+end
+--------------------------------------------------------------------------------
 function modmgr.handle_delete_mod_buttons(fields)
 	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
@@ -876,12 +870,8 @@ function modmgr.preparemodlist(data)
 	end
 	
 	--read game mods
-	if data.gameid ~= nil and
-		data.gameid ~= "" then
-		local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. data.gameid .. DIR_DELIM .. "mods"
-		
-		get_mods(gamemodpath,game_mods)
-	end
+	local gamespec = gamemgr.find_by_gameid(data.gameid)
+	gamemgr.get_game_mods(gamespec, game_mods)
 	
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"
