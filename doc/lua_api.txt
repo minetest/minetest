@@ -1905,6 +1905,10 @@ Entity definition (register_entity)
     get_staticdata = function(self),
     ^ Called sometimes; the string returned is passed to on_activate when
       the entity is re-activated from static state
+    force_load = false, -- if set to true, and option force_load_off is false,
+                           the object will load the world around it as a player.
+                           Do not use it unless absolutely required, and if you
+                           use it, please add a config in the mod to disable it.
     
     # Also you can define arbitrary member variables here
     myvariable = whatever,
