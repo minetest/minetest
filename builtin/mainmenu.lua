@@ -169,8 +169,8 @@ function menu.render_world_list()
 			retval = retval ..","
 		end
 		
-		retval = retval .. v.name .. 
-					" \\[" .. v.gameid .. "\\]"
+		retval = retval .. engine.formspec_escape(v.name) ..
+					" \\[" .. engine.formspec_escape(v.gameid) .. "\\]"
 	end
 
 	return retval
