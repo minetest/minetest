@@ -206,6 +206,10 @@ struct HTTPFetchOngoing
 					request.timeout);
 			curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS,
 					request.connect_timeout);
+
+			if (request.useragent != "")
+				curl_easy_setopt(curl, CURLOPT_USERAGENT, request.useragent.c_str());
+
 			// Set up a write callback that writes to the
 			// ostringstream ongoing->oss, unless the data
 			// is to be discarded

@@ -54,6 +54,9 @@ struct HTTPFetchRequest
 	// If not empty, should contain entries such as "Accept: text/html"
 	std::vector<std::string> extra_headers;
 
+	//useragent to use
+	std::string useragent;
+
 	HTTPFetchRequest()
 	{
 		url = "";
