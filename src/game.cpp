@@ -69,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <list>
 #include "util/directiontables.h"
+#include "util/pointedthing.h"
 
 /*
 	Text input system
@@ -1245,7 +1246,7 @@ void the_game(
 				server->step(dtime);
 			
 			// End condition
-			if(client.texturesReceived() &&
+			if(client.mediaReceived() &&
 					client.itemdefReceived() &&
 					client.nodedefReceived()){
 				got_content = true;
@@ -1460,7 +1461,7 @@ void the_game(
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	bool respawn_menu_active = false;
-	bool update_wielded_item_trigger = false;
+	bool update_wielded_item_trigger = true;
 
 	bool show_hud = true;
 	bool show_chat = true;
@@ -2327,10 +2328,6 @@ void the_game(
 					}
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
-				}
-				else if(event.type == CE_TEXTURES_UPDATED)
-				{
-					update_wielded_item_trigger = true;
 				}
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{

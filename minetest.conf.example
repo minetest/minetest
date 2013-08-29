@@ -191,9 +191,16 @@
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
 
-# will only work for servers which use remote_media setting
-# and only for clients compiled with cURL
-#media_fetch_threads = 8
+# Default timeout for cURL, in milliseconds
+# Only has an effect if compiled with cURL
+#curl_timeout = 5000
+# Limits number of parallel HTTP requests. Affects:
+# - Media fetch if server uses remote_media setting
+# - Serverlist download and server announcement
+# - Downloads performed by main menu (e.g. mod manager)
+# - Downloads performed by mods (minetest.httpfetch)
+# Only has an effect if compiled with cURL
+#curl_parallel_limit = 8
 
 # Url to the server list displayed in the Multiplayer Tab
 #serverlist_url = servers.minetest.net
