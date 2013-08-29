@@ -171,6 +171,10 @@ struct TestUtilities: public TestBase
 		UASSERT(removeStringEnd("bc", ends) == "b");
 		UASSERT(removeStringEnd("12c", ends) == "12");
 		UASSERT(removeStringEnd("foo", ends) == "");
+		UASSERT(urlencode("\"Aardvarks lurk, OK?\"")
+				== "%22Aardvarks%20lurk%2C%20OK%3F%22");
+		UASSERT(urldecode("%22Aardvarks%20lurk%2C%20OK%3F%22")
+				== "\"Aardvarks lurk, OK?\"");
 	}
 };
 

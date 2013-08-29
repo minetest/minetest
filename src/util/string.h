@@ -317,7 +317,8 @@ inline std::string unescape_string(std::string &s)
 }
 
 std::string translatePassword(std::string playername, std::wstring password);
-size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata);
+std::string urlencode(std::string str);
+std::string urldecode(std::string str);
 u32 readFlagString(std::string str, FlagDesc *flagdesc);
 std::string writeFlagString(u32 flags, FlagDesc *flagdesc);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
