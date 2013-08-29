@@ -140,6 +140,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_particles", "true");
 
 	settings->setDefault("media_fetch_threads", "8");
+	settings->setDefault("curl_parallel_limit", "8");
 
 	settings->setDefault("serverlist_url", "servers.minetest.net");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");

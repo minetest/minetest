@@ -188,7 +188,7 @@ message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
 message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
 
 set(USE_LUAJIT 0)
-if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
+if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT found.")
 	set(USE_LUAJIT 1)
 else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
@@ -307,6 +307,7 @@ set(common_SRCS
 	pathfinder.cpp
 	convert_json.cpp
 	gettext.cpp
+	httpfetch.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -500,7 +501,7 @@ if(MSVC)
 	# Flags for C files (sqlite)
 	# /MT = Link statically with standard library stuff
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
@@ -508,13 +509,13 @@ if(MSVC)
 
 else()
 	# Probably GCC
-	
+
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
-	
+
 	if(NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
@@ -537,7 +538,7 @@ else()
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
 	endif()
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
