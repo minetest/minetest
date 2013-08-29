@@ -297,7 +297,8 @@ public:
 
 				if(!m_list.empty())
 				{
-					typename std::list<T>::iterator last = m_list.back();
+					typename std::list<T>::iterator last = m_list.end();
+					last--;
 					T t = *last;
 					m_list.erase(last);
 					return t;
