@@ -2745,7 +2745,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		std::list<MediaRequest> tosend;
+		std::list<std::string> tosend;
 		u16 numfiles = readU16(is);
 
 		infostream<<"Sending "<<numfiles<<" files to "
@@ -2754,7 +2754,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		for(int i = 0; i < numfiles; i++) {
 			std::string name = deSerializeString(is);
-			tosend.push_back(MediaRequest(name));
+			tosend.push_back(name);
 			verbosestream<<"TOSERVER_REQUEST_MEDIA: requested file "
 					<<name<<std::endl;
 		}
@@ -4453,7 +4453,7 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(u16 peer_id,
-		const std::list<MediaRequest> &tosend)
+		const std::list<std::string> &tosend)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4470,17 +4470,19 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 	u32 file_size_bunch_total = 0;
 
-	for(std::list<MediaRequest>::const_iterator i = tosend.begin();
+	for(std::list<std::string>::const_iterator i = tosend.begin();
 			i != tosend.end(); ++i)
 	{
-		if(m_media.find(i->name) == m_media.end()){
+		const std::string &name = *i;
+
+		if(m_media.find(name) == m_media.end()){
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
-					<<"unknown file \""<<(i->name)<<"\""<<std::endl;
+					<<"unknown file \""<<(name)<<"\""<<std::endl;
 			continue;
 		}
 
 		//TODO get path + name
-		std::string tpath = m_media[(*i).name].path;
+		std::string tpath = m_media[name].path;
 
 		// Read data
 		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
@@ -4506,14 +4508,14 @@ void Server::sendRequestedMedia(u16 peer_id,
 		}
 		if(bad){
 			errorstream<<"Server::sendRequestedMedia(): Failed to read \""
-					<<(*i).name<<"\""<<std::endl;
+					<<name<<"\""<<std::endl;
 			continue;
 		}
 		/*infostream<<"Server::sendRequestedMedia(): Loaded \""
 				<<tname<<"\""<<std::endl;*/
 		// Put in list
 		file_bunches[file_bunches.size()-1].push_back(
-				SendableMedia((*i).name, tpath, tmp_os.str()));
+				SendableMedia(name, tpath, tmp_os.str()));
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch){

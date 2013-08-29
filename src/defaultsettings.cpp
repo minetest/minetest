@@ -139,7 +139,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
 
-	settings->setDefault("media_fetch_threads", "8");
+	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
 
 	settings->setDefault("serverlist_url", "servers.minetest.net");
@@ -284,7 +284,6 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("mgmath_generator", "mandelbox");
 
-	settings->setDefault("curl_timeout", "5000");
 
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");

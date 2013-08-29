@@ -36,9 +36,7 @@ public:
 	}
 	
 	bool update(const std::string &name, const std::string &data);
-	bool update_sha1(const std::string &data);
 	bool load(const std::string &name, std::ostream &os);
-	bool load_sha1(const std::string &sha1_raw, std::ostream &os);
 private:
 	std::string m_dir;
 

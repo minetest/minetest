@@ -360,6 +360,7 @@ set(minetest_SRCS
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	client.cpp
+	clientmedia.cpp
 	filecache.cpp
 	tile.cpp
 	shader.cpp
