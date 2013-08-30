@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-25 16:52+0200\n"
-"PO-Revision-Date: 2013-08-30 23:08+0200\n"
-"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
+"PO-Revision-Date: 2013-08-30 23:15+0200\n"
+"Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -319,7 +319,7 @@ msgstr "Зависит от:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr "Переименовать пакет модов:"
+msgstr "Переименовать модпак:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
@@ -336,7 +336,7 @@ msgstr "Игра"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
 msgid "Hide mp content"
-msgstr ""
+msgstr "Скрыть содержимое модпака"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
@@ -387,8 +387,7 @@ msgstr "Ошибка при установке $1 в $2"
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Установка мода: невозможно найти подходящее имя директории для пакета модов "
-"$1"
+"Установка мода: невозможно найти подходящее имя директории для модпака $1"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
@@ -745,15 +744,15 @@ msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr "Смена Режима"
+msgstr "Mode Change"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr "След."
+msgstr "Next"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr "Пред."
+msgstr "Prior"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -916,26 +915,22 @@ msgid "Attn"
 msgstr "Внимание"
 
 #: src/keycode.cpp:247
-#, fuzzy
 msgid "CrSel"
 msgstr "CrSel"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "Erase OEF"
 msgstr "Стереть ОНС"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "ExSel"
-msgstr "Exsel"
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
 msgstr "Очистить OEM"
 
 #: src/keycode.cpp:248
-#, fuzzy
 msgid "PA1"
 msgstr "PA1"
 
