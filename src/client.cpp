@@ -2178,7 +2178,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 	}
 
-	else if(command == TOSERVER_PARAMS)
+	else if(command == TOCLIENT_PARAMS)
 	{
 		u16 version = readU16(is);
 		if (version >= 1) {
