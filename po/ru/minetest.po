@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-25 16:52+0200\n"
 "PO-Revision-Date: 2013-08-30 23:08+0200\n"
-"Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
+"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -768,9 +768,8 @@ msgid "Execute"
 msgstr "Выполнить"
 
 #: src/keycode.cpp:228
-#, fuzzy
 msgid "Print"
-msgstr "Печать"
+msgstr "Print"
 
 #: src/keycode.cpp:228
 msgid "Select"
