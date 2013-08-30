@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPSECTOR_HEADER
 #define MAPSECTOR_HEADER
 
-#include <jmutex.h>
-#include "irrlichttypes_bloated.h"
-#include "exceptions.h"
+#include "irrlichttypes.h"
+#include "irr_v2d.h"
 #include <ostream>
 #include <map>
 #include <list>

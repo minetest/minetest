@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"
-#include "mapgen.h"
+#include "serialization.h"
 #include "nodemetadata.h"
 #include "settings.h"
 #include "log.h"
@@ -34,9 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/mathconstants.h"
 #include "rollback_interface.h"
+#include "environment.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
-#include "mapgen_indev.h"
 #include "biome.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -3491,20 +3491,21 @@ void ServerMap::saveMapMeta()
 	createDirs(m_savedir);
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
-	if(os.good() == false)
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not open"<<fullpath<<std::endl;
-		throw FileNotGoodException("Cannot open chunk metadata");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	Settings params;
 
 	m_emerge->setParamsToSettings(&params);
-	params.writeLines(os);
+	params.writeLines(ss);
 
-	os<<"[end_of_params]\n";
+	ss<<"[end_of_params]\n";
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+	{
+		infostream<<"ERROR: ServerMap::saveMapMeta(): "
+				<<"could not write "<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot save chunk metadata");
+	}
 
 	m_map_metadata_changed = false;
 }
@@ -3575,11 +3576,12 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	createDirs(dir);
 
 	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open sector metafile");
+	std::ostringstream ss(std::ios_base::binary);
 
-	sector->serialize(o, version);
+	sector->serialize(ss, version);
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+		throw FileNotGoodException("Cannot write sector metafile");
 
 	sector->differs_from_disk = false;
 }
@@ -4083,17 +4085,29 @@ s16 ServerMap::getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 	//f32 heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->getGameTime()/100, p.Z, m_emerge->params->seed);
 
 	//variant 2: season change based on default heat map
-	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z, m_emerge->params->seed);
-	heat += -30; // -30 - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
-	f32 base = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
-	base /= ( 86400 * g_settings->getS16("year_days") );
-	base += (f32)p.X / 3000;
-	heat += 30 * sin(base * M_PI); // season
+	const f32 offset = 20; // = m_emerge->biomedef->np_heat->offset
+	const f32 scale  = 20; // = m_emerge->biomedef->np_heat->scale
+	const f32 range  = 20;
+	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z,
+					m_emerge->params->seed); // 0..50..100
 
-	heat += p.Y / -333; // upper=colder, lower=hotter
+	heat -= m_emerge->biomedef->np_heat->offset; // -50..0..+50
+
+	// normalizing - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
+	if(m_emerge->biomedef->np_heat->scale)
+		heat /= m_emerge->biomedef->np_heat->scale / scale; //  -20..0..+20
+
+	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
+	seasonv /= 86400 * g_settings->getS16("year_days"); // season change speed
+	seasonv += (f32)p.X / 3000; // you can walk to area with other season
+	seasonv = sin(seasonv * M_PI);
+	heat += (range * (heat < 0 ? 2 : 0.5)) * seasonv; // -60..0..30
+
+	heat += offset; // -40..0..50
+	heat += p.Y / -333; // upper=colder, lower=hotter, 3c per 1000
 
 	// daily change, hotter at sun +4, colder at night -4
-	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); 
+	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); //-44..20..54
 
 	if(block != NULL) {
 		block->heat = heat;
@@ -4111,14 +4125,16 @@ s16 ServerMap::getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
 			return block->humidity;
 	}
 
-	f32 humidity = NoisePerlin3D(	m_emerge->biomedef->np_humidity,
-					p.X, env->getGameTime()/10, p.Z,
-					m_emerge->params->seed);
-	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
-	//todo like heat//humidity += 20 * ( sin(((f32)p.Z / 300) * M_PI) - 0.5);
+	f32 humidity = NoisePerlin2D(m_emerge->biomedef->np_humidity, p.X, p.Z, 
+						m_emerge->params->seed);
 
-	if (humidity > 100) humidity = 100;
-	if (humidity < 0) humidity = 0;
+	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
+	seasonv /= 86400 * 2; // bad weather change speed (2 days)
+	seasonv += (f32)p.Z / 300;
+	humidity += 30 * sin(seasonv * M_PI);
+
+	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
+	humidity = rangelim(humidity, 0, 100);
 
 	if(block != NULL) {
 		block->humidity = humidity;

@@ -220,7 +220,7 @@ void ContentFeatures::reset()
 	liquid_renewable = true;
 	freezemelt = "";
 	liquid_range = LIQUID_LEVEL_MAX+1;
-	drowning = true;
+	drowning = 0;
 	light_source = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();

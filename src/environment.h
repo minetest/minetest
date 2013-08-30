@@ -32,11 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <set>
 #include <list>
-#include "irrlichttypes_extrabloated.h"
-#include "player.h"
-#include <ostream>
+#include <map>
+#include "irr_v3d.h"
 #include "activeobject.h"
-#include "util/container.h"
 #include "util/numeric.h"
 #include "mapnode.h"
 #include "mapblock.h"
@@ -44,13 +42,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ServerEnvironment;
 class ActiveBlockModifier;
 class ServerActiveObject;
-typedef struct lua_State lua_State;
 class ITextureSource;
 class IGameDef;
+class IBackgroundBlockEmerger;
 class Map;
 class ServerMap;
 class ClientMap;
-class ScriptApi;
+class GameScripting;
+class Player;
 
 class Environment
 {
@@ -77,7 +76,6 @@ public:
 	Player * getNearestConnectedPlayer(v3f pos);
 	std::list<Player*> getPlayers();
 	std::list<Player*> getPlayers(bool ignore_disconnected);
-	void printPlayers(std::ostream &o);
 	
 	u32 getDayNightRatio();
 	
@@ -176,12 +174,6 @@ public:
 private:
 };
 
-class IBackgroundBlockEmerger
-{
-public:
-	virtual void queueBlockEmerge(v3s16 blockpos, bool allow_generate)=0;
-};
-
 /*
 	The server-side environment.
 
@@ -191,7 +183,8 @@ public:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, ScriptApi *iface, IGameDef *gamedef,
+	ServerEnvironment(ServerMap *map, GameScripting *scriptIface,
+			IGameDef *gamedef,
 			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
@@ -200,7 +193,7 @@ public:
 	ServerMap & getServerMap();
 
 	//TODO find way to remove this fct!
-	ScriptApi* getScriptIface()
+	GameScripting* getScriptIface()
 		{ return m_script; }
 
 	IGameDef *getGameDef()
@@ -304,6 +297,9 @@ public:
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
 
 	u32 getGameTime() { return m_game_time; }
+
+	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
+	float getMaxLagEstimate() { return m_max_lag_estimate; }
 private:
 
 	/*
@@ -351,15 +347,15 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	ScriptApi* m_script;
+	GameScripting* m_script;
 	// Game definition
 	IGameDef *m_gamedef;
-	// Background block emerger (the server, in practice)
+	// Background block emerger (the EmergeManager, in practice)
 	IBackgroundBlockEmerger *m_emerger;
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
-	Queue<ActiveObjectMessage> m_active_object_messages;
+	std::list<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
 	float m_random_spawn_timer; // used for experimental code
 	float m_send_recommended_timer;
@@ -378,6 +374,9 @@ private:
 	std::list<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
+	// Estimate for general maximum lag as determined by server.
+	// Can raise to high values like 15s with eg. map generation mods.
+	float m_max_lag_estimate;
 };
 
 #ifndef SERVER
@@ -497,7 +496,7 @@ private:
 	IrrlichtDevice *m_irr;
 	std::map<u16, ClientActiveObject*> m_active_objects;
 	std::list<ClientSimpleObject*> m_simple_objects;
-	Queue<ClientEnvEvent> m_client_event_queue;
+	std::list<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
 	IntervalLimiter m_drowning_interval;

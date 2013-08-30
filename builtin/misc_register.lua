@@ -223,6 +223,13 @@ function minetest.register_alias(name, convert_to)
 	end
 end
 
+local register_biome_raw = minetest.register_biome
+minetest.registered_biomes = {}
+function minetest.register_biome(biome)
+	minetest.registered_biomes[biome.name] = biome
+	register_biome_raw(biome)
+end
+
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 local name
@@ -319,4 +326,5 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
+minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
 

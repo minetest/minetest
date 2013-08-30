@@ -20,10 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_OBJECT_H_
 #define L_OBJECT_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#include "lua_api/l_base.h"
+#include "irrlichttypes.h"
 
 class ServerActiveObject;
 class LuaEntitySAO;
@@ -34,8 +32,7 @@ class Player;
 	ObjectRef
 */
 
-class ObjectRef
-{
+class ObjectRef : public ModApiBase {
 private:
 	ServerActiveObject *m_object;
 

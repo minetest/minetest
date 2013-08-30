@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/serialize.h"
 #include "strfnd.h"
+#include "exceptions.h"
 
 // Check if input matches recipe
 // Takes recipe groups into account
@@ -149,23 +150,6 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	}
 	return success;
 }
-
-#if 0
-// This became useless when group support was added to shapeless recipes
-// Convert a list of item names to a multiset
-static std::multiset<std::string> craftMakeMultiset(const std::vector<std::string> &names)
-{
-	std::multiset<std::string> set;
-	for(std::vector<std::string>::const_iterator
-			i = names.begin();
-			i != names.end(); i++)
-	{
-		if(*i != "")
-			set.insert(*i);
-	}
-	return set;
-}
-#endif
 
 // Removes 1 from each item stack
 static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
@@ -541,7 +525,7 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 	}
 
 	// Try with all permutations of the recipe
-	std::vector<std::string> recipe_copy = recipe;
+	std::vector<std::string> recipe_copy = craftGetItemNames(recipe, gamedef);
 	// Start from the lexicographically first permutation (=sorted)
 	std::sort(recipe_copy.begin(), recipe_copy.end());
 	//while(std::prev_permutation(recipe_copy.begin(), recipe_copy.end())){}

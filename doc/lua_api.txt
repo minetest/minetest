@@ -436,17 +436,15 @@ Schematic specifier
 or through raw data supplied through Lua, in the form of a table.  This table must specify two fields:
  - The 'size' field is a 3d vector containing the dimensions of the provided schematic.
  - The 'data' field is a flat table of MapNodes making up the schematic, in the order of [z [y [x]]].
+Important:  The default value for param1 in MapNodes here is 255, which represents "always place".
 
 In the bulk MapNode data, param1, instead of the typical light values, instead represents the 
 probability of that node appearing in the structure.
-When passed to minetest.create_schematic, probability is an integer value ranging from -1 to 255:
- - A probability value of 0 means that node will always appear.
- - A probability value of -1 means the node will never appear.
+When passed to minetest.create_schematic, probability is an integer value ranging from 0 to 255:
+ - A probability value of 0 means that node will never appear (0% chance).
+ - A probability value of 255 means the node will always appear (100% chance).
  - If the probability value p is greater than 0, then there is a (p / 256 * 100)% chance that node
    will appear when the schematic is placed on the map.
-
-If registering a structure in the raw format, however, -1 is not a valid probability value; in order to
-have a node that is not placed, it must be CONTENT_IGNORE (the name for which is "ignore").
 
 Important note: Node aliases cannot be used for a raw schematic provided when registering as a decoration.
 
@@ -972,7 +970,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
-^ listelements can be prepended by #colorkey (see colorkeys), 
+^ listelements can be prepended by #color in hexadecimal format RRGGBB,
 ^    if you want a listelement to start with # write ##
 
 textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
@@ -998,7 +996,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ colorkey (see colorkeys)
+^ color in hexadecimal format RRGGBB
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1070,8 +1068,7 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
-minetest.formspec_escape(string) -> string
-^ escapes characters like [, ], and \ that can not be used in formspecs
+^ escapes characters [ ] \ , ;  that can not be used in formspecs
 
 minetest namespace reference
 -----------------------------
@@ -1142,6 +1139,9 @@ minetest.register_on_joinplayer(func(ObjectRef))
 ^ Called when a player joins the game
 minetest.register_on_leaveplayer(func(ObjectRef))
 ^ Called when a player leaves the game
+minetest.register_on_cheat(func(ObjectRef, cheat))
+^ Called when a player cheats
+^ cheat: {type="moved_too_fast"/"interacted_too_far"/"finished_unknown_dig"/"dug_unbreakable"/"dug_too_fast"}
 minetest.register_on_chat_message(func(name, message))
 ^ Called always when a player says something
 minetest.register_on_player_receive_fields(func(player, formname, fields))
@@ -1166,6 +1166,7 @@ minetest.register_authentication_handler(handler)
 Setting-related:
 minetest.setting_set(name, value)
 minetest.setting_get(name) -> string or nil
+minetest.setting_setbool(name, value)
 minetest.setting_getbool(name) -> boolean value or nil
 minetest.setting_get_pos(name) -> position or nil
 minetest.setting_save() -> nil, save all settings to config file
@@ -1433,16 +1434,17 @@ minetest.create_schematic(p1, p2, probability_list, filename)
 ^ Apply the specified probability values to the specified nodes in probability_list.
    ^ probability_list is an array of tables containing two fields, pos and prob.
    ^ pos is the 3d vector specifying the absolute coordinates of the node being modified,
-   ^ and prob is the integer value from -1 to 255 of the probability (see: Schematic specifier).
+   ^ and prob is the integer value from 0 to 255 of the probability (see: Schematic specifier).
    ^ If there are two or more entries with the same pos value, the last occuring in the array is used.
    ^ If pos is not inside the box formed by p1 and p2, it is ignored.
    ^ If probability_list is nil, no probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic, rotation)
+minetest.place_schematic(pos, schematic, rotation, replacements)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
+^ replacements = {{"oldname", "convert_to"}, ...}
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
@@ -1861,6 +1863,7 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
+    automatic_face_movement_dir = false,
 }
 
 Entity definition (register_entity)
@@ -1983,12 +1986,11 @@ Node definition (register_node)
     liquid_alternative_flowing = "", -- Flowing version of source liquid
     liquid_alternative_source = "", -- Source version of flowing liquid
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
-    liquid_renewable = true, -- Can new liquid source be created by placing
+    liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
     freezemelt = "", -- water for snow/ice, ice/snow for water
     leveled = 0, -- Block contain level in param2. value - default level, used for snow. Dont forget use "leveled" type nodebox
     liquid_range = 8, -- number of flowing nodes arround source (max. 8)
-    drowning = true, -- Player will drown in these 
-    two or more sources nearly?
+    drowning = 0, -- Player will take this amount of damage if no bubbles are left
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
@@ -2129,6 +2131,7 @@ Ore definition (register_ore)
     ore_type = "scatter", -- See "Ore types"
     ore = "default:stone_with_coal",
     wherein = "default:stone",
+    ^ a list of nodenames is supported too
     clust_scarcity = 8*8*8,
     ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
     ^ This value should be *MUCH* higher than your intuition might tell you!
@@ -2190,12 +2193,13 @@ Decoration definition (register_decoration)
     schematic = {
         size = {x=4, y=6, z=4},
         data = {
-            {name="cobble", param1=0, param2=0},
-            {name="dirt_with_grass", param1=0, param2=0},
+            {name="cobble", param1=255, param2=0},
+            {name="dirt_with_grass", param1=255, param2=0},
              ...
         }
     },
     ^ See 'Schematic specifier' for details.
+    replacements = {{"oldname", "convert_to"}, ...},
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
     rotation = "90" --rotate schematic 90 degrees on placement

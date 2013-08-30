@@ -122,6 +122,36 @@ private:
 	PlayerSAO needs some internals exposed.
 */
 
+class LagPool
+{
+	float m_pool;
+	float m_max;
+public:
+	LagPool(): m_pool(15), m_max(15)
+	{}
+	void setMax(float new_max)
+	{
+		m_max = new_max;
+		if(m_pool > new_max)
+			m_pool = new_max;
+	}
+	void add(float dtime)
+	{
+		m_pool -= dtime;
+		if(m_pool < 0)
+			m_pool = 0;
+	}
+	bool grab(float dtime)
+	{
+		if(dtime <= 0)
+			return true;
+		if(m_pool + dtime > m_max)
+			return false;
+		m_pool += dtime;
+		return true;
+	}
+};
+
 class PlayerSAO : public ServerActiveObject
 {
 public:
@@ -163,6 +193,7 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
+	s16 readDamage();
 	u16 getBreath() const;
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
@@ -228,6 +259,12 @@ public:
 	{
 		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	}
+	LagPool& getDigPool()
+	{
+		return m_dig_pool;
+	}
+	// Returns true if cheated
+	bool checkMovementCheat();
 
 	// Other
 
@@ -247,10 +284,12 @@ private:
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
+	s16 m_damage;
 
 	// Cheat prevention
+	LagPool m_dig_pool;
+	LagPool m_move_pool;
 	v3f m_last_good_position;
-	float m_last_good_position_age;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;

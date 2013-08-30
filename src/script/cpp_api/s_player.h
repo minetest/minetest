@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef S_PLAYER_H_
 #define S_PLAYER_H_
 
+#include <map>
+
 #include "cpp_api/s_base.h"
 
 
@@ -34,6 +36,7 @@ public:
 	bool on_respawnplayer(ServerActiveObject *player);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player);
+	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname,

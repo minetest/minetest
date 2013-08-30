@@ -17,15 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
+#include "lua_api/l_inventory.h"
+#include "lua_api/l_internal.h"
+#include "lua_api/l_item.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "lua_api/l_inventory.h"
-#include "lua_api/l_item.h"
-#include "common/c_internal.h"
 #include "server.h"
-#include "log.h"
-#include "inventorymanager.h"
+#include "player.h"
 
 /*
 	InvRef
@@ -40,7 +38,7 @@ InvRef* InvRef::checkobject(lua_State *L, int narg)
 
 Inventory* InvRef::getinv(lua_State *L, InvRef *ref)
 {
-	return STACK_TO_SERVER(L)->getInventory(ref->m_loc);
+	return getServer(L)->getInventory(ref->m_loc);
 }
 
 InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
@@ -56,7 +54,7 @@ InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
 void InvRef::reportInventoryChange(lua_State *L, InvRef *ref)
 {
 	// Inform other things that the inventory has changed
-	STACK_TO_SERVER(L)->setInventoryModified(ref->m_loc);
+	getServer(L)->setInventoryModified(ref->m_loc);
 }
 
 // Exported functions
@@ -182,7 +180,7 @@ int InvRef::l_set_stack(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
 	int i = luaL_checknumber(L, 3) - 1;
-	ItemStack newitem = read_item(L, 4,STACK_TO_SERVER(L));
+	ItemStack newitem = read_item(L, 4, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list != NULL && i >= 0 && i < (int) list->getSize()){
 		list->changeItem(i, newitem);
@@ -202,7 +200,7 @@ int InvRef::l_get_list(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
 	if(inv){
-		push_inventory_list(inv, listname, L);
+		push_inventory_list(L, inv, listname);
 	} else {
 		lua_pushnil(L);
 	}
@@ -221,10 +219,10 @@ int InvRef::l_set_list(lua_State *L)
 	}
 	InventoryList *list = inv->getList(listname);
 	if(list)
-		read_inventory_list(inv, listname, L, 3,
-				STACK_TO_SERVER(L),list->getSize());
+		read_inventory_list(L, 3, inv, listname,
+				getServer(L), list->getSize());
 	else
-		read_inventory_list(inv, listname, L, 3,STACK_TO_SERVER(L));
+		read_inventory_list(L, 3, inv, listname, getServer(L));
 	reportInventoryChange(L, ref);
 	return 0;
 }
@@ -236,7 +234,7 @@ int InvRef::l_add_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	ItemStack item = read_item(L, 3,STACK_TO_SERVER(L));
+	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
 		ItemStack leftover = list->addItem(item);
@@ -256,7 +254,7 @@ int InvRef::l_room_for_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	ItemStack item = read_item(L, 3,STACK_TO_SERVER(L));
+	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
 		lua_pushboolean(L, list->roomForItem(item));
@@ -273,7 +271,7 @@ int InvRef::l_contains_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	ItemStack item = read_item(L, 3, STACK_TO_SERVER(L));
+	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
 		lua_pushboolean(L, list->containsItem(item));
@@ -290,7 +288,7 @@ int InvRef::l_remove_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
-	ItemStack item = read_item(L, 3,STACK_TO_SERVER(L));
+	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
 		ItemStack removed = list->removeItem(item);
@@ -473,20 +471,8 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
-bool ModApiInventory::Initialize(lua_State *L, int top) {
-	bool retval = true;
-
-	retval &= API_FCT(create_detached_inventory_raw);
-	retval &= API_FCT(get_inventory);
-
-	InvRef::Register(L);
-
-	return retval;
+void ModApiInventory::Initialize(lua_State *L, int top)
+{
+	API_FCT(create_detached_inventory_raw);
+	API_FCT(get_inventory);
 }
-
-ModApiInventory::ModApiInventory()
-	: ModApiBase() {
-
-}
-
-ModApiInventory modapiinventory_prototype;

@@ -21,14 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MODS_HEADER
 
 #include "irrlichttypes.h"
-#include <irrList.h>
 #include <list>
 #include <set>
 #include <vector>
 #include <string>
 #include <map>
 #include <exception>
-#include <list>
 #include "json/json.h"
 #include "config.h"
 
@@ -152,10 +150,9 @@ private:
 	// exists. A name conflict happens when two or more mods
 	// at the same level have the same name but different paths.
 	// Levels (mods in higher levels override mods in lower levels):
-	// 1. common mod in modpack; 2. common mod;
-	// 3. game mod in modpack; 4. game mod;
-	// 5. world mod in modpack; 6. world mod;
-	// 7. addon mod in modpack; 8. addon mod.
+	// 1. game mod in modpack; 2. game mod;
+	// 3. world mod in modpack; 4. world mod;
+	// 5. addon mod in modpack; 6. addon mod.
 	std::set<std::string> m_name_conflicts;
 
 };

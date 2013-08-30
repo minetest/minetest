@@ -1,0 +1,1 @@
+Put your texture pack folders in this folder. Textures in the "server" pack will be used by the server.

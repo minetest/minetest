@@ -711,7 +711,8 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef);
-	assert(facedir <= 23);
+	if (facedir > 23)
+		facedir = 0;
 	static const u16 dir_to_tile[24 * 16] =
 	{
 		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation  
@@ -734,17 +735,17 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		   0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
 		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
 		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
-		   
+
 		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19  
 		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
 		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,  
 		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,  
-		
+
 		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
 		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,  
 		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,  
 		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2   
-		   
+
 	};
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
@@ -1133,12 +1134,17 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
 		{
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
-			std::string crack_basename = tsrc->getTextureName(p.tile.texture_id);
+			// Find the texture name plus ^[crack:N:
+			std::ostringstream os(std::ios::binary);
+			os<<tsrc->getTextureName(p.tile.texture_id)<<"^[crack";
 			if(p.tile.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-				crack_basename += "^[cracko";
-			else
-				crack_basename += "^[crack";
-			m_crack_materials.insert(std::make_pair(i, crack_basename));
+				os<<"o";  // use ^[cracko
+			os<<":"<<(u32)p.tile.animation_frame_count<<":";
+			m_crack_materials.insert(std::make_pair(i, os.str()));
+			// Replace tile texture with the cracked one
+			p.tile.texture = tsrc->getTexture(
+					os.str()+"0",
+					&p.tile.texture_id);
 		}
 		// - Texture animation
 		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
@@ -1313,8 +1319,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			ITextureSource *tsrc = m_gamedef->getTextureSource();
 			std::ostringstream os;
 			os<<basename<<crack;
-			buf->getMaterial().setTexture(0,
-					tsrc->getTexture(os.str()));
+			u32 new_texture_id = 0;
+			video::ITexture *new_texture =
+				tsrc->getTexture(os.str(), &new_texture_id);
+			buf->getMaterial().setTexture(0, new_texture);
+
+			// If the current material is also animated,
+			// update animation info
+			std::map<u32, TileSpec>::iterator anim_iter =
+				m_animation_tiles.find(i->first);
+			if(anim_iter != m_animation_tiles.end()){
+				TileSpec &tile = anim_iter->second;
+				tile.texture = new_texture;
+				tile.texture_id = new_texture_id;
+				// force animation update
+				m_animation_frames[i->first] = -1;
+			}
 		}
 
 		m_last_crack = crack;

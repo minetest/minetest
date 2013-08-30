@@ -140,6 +140,15 @@ public:
 	{}
 };
 
+// Only used on Windows (SEH)
+class FatalSystemException : public BaseException
+{
+public:
+	FatalSystemException(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*
 	Some "old-style" interrupts:
 */

@@ -215,6 +215,8 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	//u32 blocks_had_pass_meshbuf = 0;
 	// Blocks from which stuff was actually drawn
 	//u32 blocks_without_stuff = 0;
+	// Distance to farthest drawn block
+	float farthest_drawn = 0;
 
 	for(std::map<v2s16, MapSector*>::iterator
 			si = m_sectors.begin();
@@ -347,6 +349,8 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 			sector_blocks_drawn++;
 			blocks_drawn++;
+			if(d/BS > farthest_drawn)
+				farthest_drawn = d/BS;
 
 		} // foreach sectorblocks
 
@@ -356,6 +360,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
 	m_control.blocks_drawn = blocks_drawn;
+	m_control.farthest_drawn = farthest_drawn;
 
 	g_profiler->avg("CM: blocks in range", blocks_in_range);
 	g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
@@ -363,6 +368,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 		g_profiler->avg("CM: blocks in range without mesh (frac)",
 				(float)blocks_in_range_without_mesh/blocks_in_range);
 	g_profiler->avg("CM: blocks drawn", blocks_drawn);
+	g_profiler->avg("CM: farthest drawn", farthest_drawn);
 	g_profiler->avg("CM: wanted max blocks", m_control.wanted_max_blocks);
 }
 

@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,15 +17,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "clientserver.h"
-#include "util/serialize.h"
+#ifndef S_MAINMENU_H_
+#define S_MAINMENU_H_
 
-SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
+#include "cpp_api/s_base.h"
+#include <map>
+
+class ScriptApiMainMenu
+		: virtual public ScriptApiBase
 {
-	SharedBuffer<u8> data(2+2+4);
-	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
-	writeU16(&data[2], time);
-	writeF1000(&data[4], time_speed);
-	return data;
-}
+public:
+	/**
+	 * set gamedata.errormessage to inform lua of an error
+	 * @param errormessage the error message
+	 */
+	void setMainMenuErrorMessage(std::string errormessage);
 
+	/**
+	 * process events received from formspec
+	 * @param text events in textual form
+	 */
+	void handleMainMenuEvent(std::string text);
+
+	/**
+	 * process field data recieved from formspec
+	 * @param fields data in field format
+	 */
+	void handleMainMenuButtons(std::map<std::string, std::string> fields);
+};
+
+#endif /* S_MAINMENU_H_ */

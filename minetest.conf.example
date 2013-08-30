@@ -127,10 +127,6 @@
 #fast_move = false
 # Invert mouse
 #invert_mouse = false
-# FarMesh thingy
-#enable_farmesh = false
-#farmesh_trees = true
-#farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
@@ -189,6 +185,9 @@
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
+# Whether freetype fonts are used, requires freetype support to be compiled in
+#freetype = true
+# Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
 #font_size = 13
 #mono_font_path = fonts/liberationmono.ttf
@@ -274,6 +273,8 @@
 # Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year. 30 days = 10 real hours
 #year_days = 30
 #server_unload_unused_data_timeout = 29
+# Maximum number of statically stored objects in a block
+#max_objects_per_block = 49
 # Interval of saving important changes in the world
 #server_map_save_interval = 5.3
 # To reduce lag, block transfers are slowed down when a player is building something.
@@ -382,8 +383,12 @@
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
 
+#main_menu_script =
 #main_menu_game_mgr = 0
 #main_menu_mod_mgr = 1
 #modstore_download_url = https://forum.minetest.net/media/
 #modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
 #modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+
+# Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true

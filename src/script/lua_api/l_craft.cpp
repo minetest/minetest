@@ -19,20 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "lua_api/l_craft.h"
-#include "common/c_internal.h"
+#include "lua_api/l_internal.h"
+#include "lua_api/l_item.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
-#include "lua_api/l_item.h"
-
-extern "C" {
-#include "lauxlib.h"
-}
-
-ModApiCraft::ModApiCraft()
-	: ModApiBase() {
-
-}
+#include "craftdef.h"
 
 struct EnumString ModApiCraft::es_CraftMethod[] =
 {
@@ -463,15 +455,10 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 	return 1;
 }
 
-bool ModApiCraft::Initialize(lua_State* L, int top) {
-	bool retval = true;
-
-	retval &= API_FCT(get_all_craft_recipes);
-	retval &= API_FCT(get_craft_recipe);
-	retval &= API_FCT(get_craft_result);
-	retval &= API_FCT(register_craft);
-
-	return retval;
+void ModApiCraft::Initialize(lua_State *L, int top)
+{
+	API_FCT(get_all_craft_recipes);
+	API_FCT(get_craft_recipe);
+	API_FCT(get_craft_result);
+	API_FCT(register_craft);
 }
-
-ModApiCraft modapicraft_prototype;

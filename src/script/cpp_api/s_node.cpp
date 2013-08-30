@@ -18,10 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_node.h"
+#include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "nodedef.h"
 #include "server.h"
+#include "environment.h"
 
 
 struct EnumString ScriptApiNode::es_DrawType[] =

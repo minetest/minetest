@@ -45,6 +45,7 @@ struct ObjectProperties
 	bool makes_footstep_sound;
 	float automatic_rotate;
 	f32 stepheight;
+	bool automatic_face_movement_dir;
 
 
 	ObjectProperties();
