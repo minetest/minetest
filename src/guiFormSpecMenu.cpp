@@ -1069,7 +1069,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 
 	if (parts.size() == 2) {
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string text = parts[1];
+		std::wstring text = narrow_to_wide(unescape_string(parts[1]));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1082,17 +1082,16 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
-		text = unescape_string(text);
-		std::string label = "";
+		std::wstring label = L"";
 
 		for (unsigned int i=0; i < text.length(); i++) {
-			label += text.c_str()[i];
-			label += "\n";
+			label += text[i];
+			label += L"\n";
 		}
 
 		FieldSpec spec = FieldSpec(
 			L"",
-			narrow_to_wide(label.c_str()),
+			label,
 			L"",
 			258+m_fields.size()
 		);
