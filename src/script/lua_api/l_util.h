@@ -59,6 +59,9 @@ private:
 	// setting_save()
 	static int l_setting_save(lua_State *L);
 
+	// parse_json(str[, nullvalue])
+	static int l_parse_json(lua_State *L);
+
 	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 	static int l_get_dig_params(lua_State *L);
 

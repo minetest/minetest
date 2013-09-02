@@ -1458,6 +1458,12 @@ minetest.get_content_id(name) -> integer
 ^ Gets the internal content ID of name
 minetest.get_name_from_content_id(content_id) -> string
 ^ Gets the name of the content with that content ID
+minetest.parse_json(string[, nullvalue]) -> something
+^ Convert a string containing JSON data into the Lua equivalent
+^ nullvalue: returned in place of the JSON null; defaults to nil
+^ On success returns a table, a string, a number, a boolean or nullvalue
+^ On failure outputs an error message and returns nil
+^ Example: parse_json("[10, {\"a\":false}]") -> {[1] = 10, [2] = {a = false}}
 minetest.serialize(table) -> string
 ^ Convert a table containing tables, strings, numbers, booleans and nils
   into string form readable by minetest.deserialize
