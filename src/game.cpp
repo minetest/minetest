@@ -794,9 +794,9 @@ public:
 		services->setPixelShaderConstant("skyBgColor", bgcolorfa, 4);
 
 		// Fog distance
-		float fog_distance = *m_fog_range;
-		if(*m_force_fog_off)
-			fog_distance = 10000*BS;
+		float fog_distance = 10000*BS;
+		if(g_settings->getBool("enable_fog") && !*m_force_fog_off)
+			fog_distance = *m_fog_range;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
 
 		// Day-night ratio
@@ -2928,7 +2928,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings->getBool("enable_fog") == true && !force_fog_off)
+		if(g_settings->getBool("enable_fog") && !force_fog_off)
 		{
 			driver->setFog(
 				bgcolor,
