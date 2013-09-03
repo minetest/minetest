@@ -4999,6 +4999,20 @@ bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
 	return true;
 }
 
+void Server::hudSetHotbarImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
+}
+
+void Server::hudSetHotbarSelectedImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
+}
+
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);

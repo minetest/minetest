@@ -1022,6 +1022,34 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 	return 1;
 }
 
+// hud_set_hotbar_image(self, name)
+int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = lua_tostring(L, 2);
+
+	getServer(L)->hudSetHotbarImage(player, name);
+	return 1;
+}
+
+// hud_set_hotbar_selected_image(self, name)
+int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = lua_tostring(L, 2);
+
+	getServer(L)->hudSetHotbarSelectedImage(player, name);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1136,5 +1164,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
+	luamethod(ObjectRef, hud_set_hotbar_image),
+	luamethod(ObjectRef, hud_set_hotbar_selected_image),
 	{0,0}
 };
