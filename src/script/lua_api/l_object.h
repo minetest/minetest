@@ -215,6 +215,12 @@ private:
 	// hud_set_hotbar_itemcount(self, hotbar_itemcount)
 	static int l_hud_set_hotbar_itemcount(lua_State *L);
 
+	// hud_set_hotbar_image(self, name)
+	static int l_hud_set_hotbar_image(lua_State *L);
+
+	// hud_set_hotbar_selected_image(self, name)
+	static int l_hud_set_hotbar_selected_image(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

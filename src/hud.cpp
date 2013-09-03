@@ -64,8 +64,11 @@ Hud::Hud(video::IVideoDriver *driver, gui::IGUIEnvironment* guienv,
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
 	
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
-	use_hotbar_bg_img = tsrc->isKnownSourceImage("hotbar.png");
-	use_hotbar_border_img = tsrc->isKnownSourceImage("hotbar_selected.png");
+
+	hotbar_image = "";
+	use_hotbar_image = false;
+	hotbar_selected_image = "";
+	use_hotbar_selected_image = false;
 }
 
 
@@ -95,10 +98,26 @@ void Hud::drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 	const video::SColor hbar_color(255, 255, 255, 255);
 	const video::SColor hbar_colors[] = {hbar_color, hbar_color, hbar_color, hbar_color};
 
-	if (use_hotbar_bg_img) {
+	if (hotbar_image != player->hotbar_image) {
+		hotbar_image = player->hotbar_image;
+		if (hotbar_image != "")
+			use_hotbar_image = tsrc->isKnownSourceImage(hotbar_image);
+		else
+			use_hotbar_image = false;
+	}
+
+	if (hotbar_selected_image != player->hotbar_selected_image) {
+		hotbar_selected_image = player->hotbar_selected_image;
+		if (hotbar_selected_image != "")
+			use_hotbar_selected_image = tsrc->isKnownSourceImage(hotbar_selected_image);
+		else
+			use_hotbar_selected_image = false;
+	}
+
+	if (use_hotbar_image) {
 		core::rect<s32> imgrect2(-padding/2, -padding/2, width+padding/2, height+padding/2);
 		core::rect<s32> rect2 = imgrect2 + pos;
-		video::ITexture *texture = tsrc->getTexture("hotbar.png");
+		video::ITexture *texture = tsrc->getTexture(hotbar_image);
 		core::dimension2di imgsize(texture->getOriginalSize());
 		driver->draw2DImage(texture, rect2,
 			core::rect<s32>(core::position2d<s32>(0,0), imgsize),
@@ -127,10 +146,10 @@ void Hud::drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		core::rect<s32> rect = imgrect + pos + steppos;
 
 		if (selectitem == i + 1) {
-			if (use_hotbar_border_img) {
+			if (use_hotbar_selected_image) {
 				core::rect<s32> imgrect2(-padding*2, -padding*2, height, height);
 				rect = imgrect2 + pos + steppos;
-				video::ITexture *texture = tsrc->getTexture("hotbar_selected.png");
+				video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
 				core::dimension2di imgsize(texture->getOriginalSize());
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
@@ -192,7 +211,7 @@ void Hud::drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 		}
 
 		video::SColor bgcolor2(128, 0, 0, 0);
-		if (!use_hotbar_bg_img)
+		if (!use_hotbar_image)
 			driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}

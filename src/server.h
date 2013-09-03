@@ -493,7 +493,9 @@ public:
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(Player *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
-	
+	void hudSetHotbarImage(Player *player, std::string name);
+	void hudSetHotbarSelectedImage(Player *player, std::string name);
+
 private:
 
 	// con::PeerHandler implementation.

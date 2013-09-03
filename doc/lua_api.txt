@@ -1618,6 +1618,10 @@ Player-only: (no-op for other objects)
   ^ if a flag is nil, the flag is not modified
 - hud_set_hotbar_itemcount(count): sets number of items in builtin hotbar
   ^ count: number of items, must be between 1 and 23
+- hud_set_hotbar_image(texturename)
+  ^ sets background image for hotbar
+- hud_set_hotbar_selected_image(texturename)
+  ^ sets image for selected item of hotbar
 
 InvRef: Reference to an inventory
 methods:
