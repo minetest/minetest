@@ -3260,11 +3260,10 @@ void the_game(
 		m.Lighting = false;
 		driver->setMaterial(m);
 
-		if(!g_settings->getBool("anaglyph")) {
-			driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-			if (show_hud)
-				hud.drawSelectionBoxes(hilightboxes);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+		if((!g_settings->getBool("anaglyph")) && (show_hud))
+		{
+			hud.drawSelectionBoxes(hilightboxes);
 		}
 
 		/*
