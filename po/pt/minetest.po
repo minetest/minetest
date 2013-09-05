@@ -8,20 +8,19 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-25 16:52+0200\n"
-"PO-Revision-Date: 2013-05-30 00:13+0200\n"
-"Last-Translator: v c <vicente.camolas@gmail.com>\n"
+"PO-Revision-Date: 2013-09-05 12:47+0200\n"
+"Last-Translator: Leonardo Costa <k95leo@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
-#, fuzzy
 msgid "Game Name"
-msgstr "Jogo"
+msgstr "Nome do Jogo"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:295
 msgid "Create"
@@ -34,44 +33,43 @@ msgstr "Cancelar"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Mensagem de Jogo: Impossível fazer cópia do extra \"$1\" para o jogo \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "JOGOS"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:853
-#, fuzzy
 msgid "Games"
-msgstr "Jogo"
+msgstr "Jogos"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Extras:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "editar jogo"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "novo jogo"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "EDITAR JOGO"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Remover extra selecionado"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- Adicionar extra"
 
 #: builtin/mainmenu.lua:153
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/mainmenu.lua:291
 msgid "World name"
@@ -79,16 +77,15 @@ msgstr "Nome do Mundo"
 
 #: builtin/mainmenu.lua:292
 msgid "Mapgen"
-msgstr ""
+msgstr "Geração de Mapa"
 
 #: builtin/mainmenu.lua:294
 msgid "Game"
 msgstr "Jogo"
 
 #: builtin/mainmenu.lua:308
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Eliminar mundo"
+msgstr "Eliminar Mundo \"$1\"?"
 
 #: builtin/mainmenu.lua:309 builtin/modmgr.lua:846
 msgid "Yes"
@@ -99,13 +96,12 @@ msgid "No"
 msgstr "Não"
 
 #: builtin/mainmenu.lua:378
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Não foi possível criar mundo: Já existe um mundo com este nome"
+msgstr "O mundo com o nome \"$1\" já existe"
 
 #: builtin/mainmenu.lua:393
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Mundo sem nome ou nenhum jogo selecionado"
 
 #: builtin/mainmenu.lua:846
 msgid "Singleplayer"
@@ -113,11 +109,11 @@ msgstr "Um Jogador"
 
 #: builtin/mainmenu.lua:847
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #: builtin/mainmenu.lua:848
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
 #: builtin/mainmenu.lua:849
 msgid "Settings"
@@ -125,11 +121,11 @@ msgstr "Definições"
 
 #: builtin/mainmenu.lua:850
 msgid "Texture Packs"
-msgstr ""
+msgstr "Pacotes de Texturas"
 
 #: builtin/mainmenu.lua:857
 msgid "Mods"
-msgstr ""
+msgstr "Extras"
 
 #: builtin/mainmenu.lua:859
 msgid "Credits"
@@ -137,7 +133,7 @@ msgstr "Créditos"
 
 #: builtin/mainmenu.lua:879
 msgid "CLIENT"
-msgstr ""
+msgstr "CLIENTE"
 
 #: builtin/mainmenu.lua:880
 msgid "Favorites:"
@@ -152,9 +148,8 @@ msgid "Name/Password"
 msgstr "Nome/Senha"
 
 #: builtin/mainmenu.lua:885
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Lista de servidores públicos:"
+msgstr "Lista de Servidores Públicos"
 
 #: builtin/mainmenu.lua:890 builtin/mainmenu.lua:935 builtin/mainmenu.lua:998
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
@@ -174,9 +169,8 @@ msgid "Configure"
 msgstr "Configurar"
 
 #: builtin/mainmenu.lua:938
-#, fuzzy
 msgid "Start Game"
-msgstr "Iniciar Jogo / Conectar"
+msgstr "Jogar"
 
 #: builtin/mainmenu.lua:939 builtin/mainmenu.lua:1002
 msgid "Select World:"
@@ -184,7 +178,7 @@ msgstr "Seleccionar Mundo:"
 
 #: builtin/mainmenu.lua:940
 msgid "START SERVER"
-msgstr ""
+msgstr "INICIAR SERVIDOR"
 
 #: builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 msgid "Creative Mode"
@@ -200,20 +194,19 @@ msgstr "Público"
 
 #: builtin/mainmenu.lua:947
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: builtin/mainmenu.lua:949
-#, fuzzy
 msgid "Password"
-msgstr "Senha antiga"
+msgstr "Senha"
 
 #: builtin/mainmenu.lua:950
 msgid "Server Port"
-msgstr ""
+msgstr "Porta"
 
 #: builtin/mainmenu.lua:960
 msgid "SETTINGS"
-msgstr ""
+msgstr "DEFINIÇÕES"
 
 #: builtin/mainmenu.lua:961
 msgid "Fancy trees"
@@ -228,7 +221,6 @@ msgid "3D Clouds"
 msgstr "Nuvens 3D"
 
 #: builtin/mainmenu.lua:967
-#, fuzzy
 msgid "Opaque Water"
 msgstr "Água Opaca"
 
@@ -261,9 +253,8 @@ msgid "Enable Particles"
 msgstr "Ativar Partículas"
 
 #: builtin/mainmenu.lua:985
-#, fuzzy
 msgid "Finite Liquid"
-msgstr "Líquido finito"
+msgstr "Líquido Finito"
 
 #: builtin/mainmenu.lua:988
 msgid "Change keys"
@@ -275,75 +266,71 @@ msgstr "Jogar"
 
 #: builtin/mainmenu.lua:1003
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "Um Jogador"
 
 #: builtin/mainmenu.lua:1016
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Selecione um pacote de texturas:"
 
 #: builtin/mainmenu.lua:1017
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "PACOTES DE TEXTURAS"
 
 #: builtin/mainmenu.lua:1037
 msgid "No information available"
-msgstr ""
+msgstr "Sem informação"
 
 #: builtin/mainmenu.lua:1065
 msgid "Core Developers"
-msgstr ""
+msgstr "Desenvolvedores Chave"
 
 #: builtin/mainmenu.lua:1076
 msgid "Active Contributors"
-msgstr ""
+msgstr "Contribuintes Ativos"
 
 #: builtin/mainmenu.lua:1086
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Antigos Contribuintes"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "EXTRAS"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Extras Instalados:"
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Download"
-msgstr "Baixo"
+msgstr "Descarregar"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "Renomear"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
-#, fuzzy
 msgid "Depends:"
-msgstr "depende de:"
+msgstr "Depende de:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Renomear Pacote de Extras:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
 msgstr "Aceitar"
 
 #: builtin/modmgr.lua:381
-#, fuzzy
 msgid "World:"
-msgstr "Seleccionar Mundo:"
+msgstr "Mundo:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
-#, fuzzy
 msgid "Hide Game"
-msgstr "Jogo"
+msgstr "Esconder Jogo"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
 msgid "Hide mp content"
@@ -351,7 +338,7 @@ msgstr ""
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "Extra:"
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
@@ -377,24 +364,24 @@ msgid "Enable all"
 msgstr "Ativar Tudo"
 
 #: builtin/modmgr.lua:551
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Seleccionar Mundo:"
+msgstr "Seleccionar ficheiro de Extra:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Instalar Extra: ficheiro: \"$1\""
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"Instalar Extra: tipo de ficheiro desconhecido \"$1\""
 
 #: builtin/modmgr.lua:612
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Falha ao iniciar mundo"
+msgstr "Falha ao instalar de $1 ao $2"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -406,31 +393,31 @@ msgstr ""
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Mensagem de Extra: falhou a eliminação de \"$1\""
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Mensagem de extra: caminho inválido \"$1\""
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Tem a certeza que pertende eliminar \"$1\"?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "Não, é claro que não!"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Página $1 de $2"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "Classificação"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "re-Instalar"
 
 #: src/client.cpp:2911
 msgid "Item textures..."
@@ -457,9 +444,8 @@ msgid "Connecting to server..."
 msgstr "A conectar ao servidor..."
 
 #: src/game.cpp:1218
-#, fuzzy
 msgid "Item definitions..."
-msgstr "Texturas dos items..."
+msgstr "Definições dos Itens..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
@@ -467,7 +453,7 @@ msgstr ""
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "Dados..."
 
 #: src/game.cpp:3393
 msgid "Shutting down stuff..."
