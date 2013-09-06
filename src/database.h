@@ -7,6 +7,8 @@
 #include "mapblock.h"
 #include "main.h"
 #include "filesys.h"
+#include "serialization.h"
+#include <irrList.h>
 
 class Database;
 class ServerMap;

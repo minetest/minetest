@@ -55,7 +55,7 @@ void Database_LevelDB::saveBlock(MapBlock *block)
 	}
 
 	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
 	v3s16 p3d = block->getPos();
 

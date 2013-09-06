@@ -3371,7 +3371,10 @@ void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
 				<<"all blocks that are stored in flat files"<<std::endl;
 	}
-	dbase->listAllLoadableBlocks(dst);
+	core::list<v3s16> dst_;
+	dbase->listAllLoadableBlocks(dst_);
+	for(core::list<v3s16>::Iterator i = dst_.begin(); i != dst_.end(); ++i)
+		dst.push_back(*i);
 }
 
 void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
