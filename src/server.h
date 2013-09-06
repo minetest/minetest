@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h" // Needed for rollbackRevertActions()
 #include "util/numeric.h"
 #include "util/thread.h"
+#include "environment.h"
 #include <string>
 #include <list>
 #include <map>

@@ -795,8 +795,8 @@ int main(int argc, char *argv[])
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 	#if USE_LEVELDB
-	allowed_options.insert("migrate", ValueSpec(VALUETYPE_STRING,
-			_("Migrate from current map backend to another")));
+	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
+			_("Migrate from current map backend to another"))));
 	#endif
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
@@ -1248,12 +1248,12 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 
-			core::list<v3s16> blocks;
+			std::list<v3s16> blocks;
 			ServerMap &old_map = ((ServerMap&)server.getMap());
 			old_map.listAllLoadableBlocks(blocks);
 			int count = 0;
 			new_db->beginSave();
-			for (core::list<v3s16>::Iterator i = blocks.begin(); i != blocks.end(); ++i) {
+			for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); ++i) {
 				MapBlock *block = old_map.loadBlock(*i);
 				new_db->saveBlock(block);
 				MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
