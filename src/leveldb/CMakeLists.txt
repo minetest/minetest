@@ -23,6 +23,7 @@ endif()
 
 # OS detection
 if(WIN32)
+    message(FATAL_ERROR "LevelDB currently doesn't support Windows")
     add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN)
     if(MINGW)
 add_definitions(-DMINGW)
