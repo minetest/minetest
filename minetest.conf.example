@@ -191,6 +191,10 @@
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
 
+# This font will be used for certain languages
+#fallback_font_path = fonts/DroidSansFallbackFull.ttf
+#fallback_font_size = 13
+
 #
 # Server stuff
 #
@@ -390,3 +394,7 @@
 
 # Makes DirectX work with LuaJIT. Disable if it causes troubles.
 #high_precision_fpu = true
+
+# Override language. When no value is provided (default) system language is used.
+# Check "locale" directory for the list of available translations.
+#language =
