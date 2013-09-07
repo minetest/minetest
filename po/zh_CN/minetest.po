@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-25 16:52+0200\n"
-"PO-Revision-Date: 2013-05-18 16:23+0200\n"
+"PO-Revision-Date: 2013-09-07 16:20+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -16,12 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 1.4-dev\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
-#, fuzzy
 msgid "Game Name"
-msgstr "游戏"
+msgstr "游戏名"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:295
 msgid "Create"
@@ -34,44 +33,43 @@ msgstr "取消"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: 无法复制MOD“$1”到游戏“$2”"
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "游戏"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:853
-#, fuzzy
 msgid "Games"
 msgstr "游戏"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "MODS："
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "编辑游戏"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "新建游戏"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "编辑游戏"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "删除选中MOD"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- 添加MOD"
 
 #: builtin/mainmenu.lua:153
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: builtin/mainmenu.lua:291
 msgid "World name"
@@ -86,9 +84,8 @@ msgid "Game"
 msgstr "游戏"
 
 #: builtin/mainmenu.lua:308
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "删除世界"
+msgstr "删除世界“$1”?"
 
 #: builtin/mainmenu.lua:309 builtin/modmgr.lua:846
 msgid "Yes"
@@ -99,13 +96,12 @@ msgid "No"
 msgstr "否"
 
 #: builtin/mainmenu.lua:378
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "无法创建世界：同名世界已经存在"
+msgstr "名为 \"$1\" 的世界已经存在"
 
 #: builtin/mainmenu.lua:393
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "未给定世界名或未选择游戏"
 
 #: builtin/mainmenu.lua:846
 msgid "Singleplayer"
@@ -113,11 +109,11 @@ msgstr "单人游戏"
 
 #: builtin/mainmenu.lua:847
 msgid "Client"
-msgstr ""
+msgstr "客户端"
 
 #: builtin/mainmenu.lua:848
 msgid "Server"
-msgstr ""
+msgstr "服务器"
 
 #: builtin/mainmenu.lua:849
 msgid "Settings"
@@ -125,11 +121,11 @@ msgstr "设置"
 
 #: builtin/mainmenu.lua:850
 msgid "Texture Packs"
-msgstr ""
+msgstr "材质包"
 
 #: builtin/mainmenu.lua:857
 msgid "Mods"
-msgstr ""
+msgstr "MODS"
 
 #: builtin/mainmenu.lua:859
 msgid "Credits"
@@ -137,7 +133,7 @@ msgstr "关于"
 
 #: builtin/mainmenu.lua:879
 msgid "CLIENT"
-msgstr ""
+msgstr "客户端"
 
 #: builtin/mainmenu.lua:880
 msgid "Favorites:"
@@ -152,9 +148,8 @@ msgid "Name/Password"
 msgstr "名字/密码"
 
 #: builtin/mainmenu.lua:885
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "公共服务器列表："
+msgstr "公共服务器列表"
 
 #: builtin/mainmenu.lua:890 builtin/mainmenu.lua:935 builtin/mainmenu.lua:998
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
@@ -176,7 +171,7 @@ msgstr "配置"
 #: builtin/mainmenu.lua:938
 #, fuzzy
 msgid "Start Game"
-msgstr "启动游戏/连接"
+msgstr "启动游戏"
 
 #: builtin/mainmenu.lua:939 builtin/mainmenu.lua:1002
 msgid "Select World:"
@@ -184,7 +179,7 @@ msgstr "选择世界："
 
 #: builtin/mainmenu.lua:940
 msgid "START SERVER"
-msgstr ""
+msgstr "启动服务器"
 
 #: builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 msgid "Creative Mode"
@@ -200,20 +195,19 @@ msgstr "公共服务器"
 
 #: builtin/mainmenu.lua:947
 msgid "Name"
-msgstr ""
+msgstr "名字"
 
 #: builtin/mainmenu.lua:949
-#, fuzzy
 msgid "Password"
-msgstr "旧密码"
+msgstr "密码"
 
 #: builtin/mainmenu.lua:950
 msgid "Server Port"
-msgstr ""
+msgstr "服务器端口"
 
 #: builtin/mainmenu.lua:960
 msgid "SETTINGS"
-msgstr ""
+msgstr "设置"
 
 #: builtin/mainmenu.lua:961
 msgid "Fancy trees"
@@ -228,7 +222,6 @@ msgid "3D Clouds"
 msgstr "3D云彩"
 
 #: builtin/mainmenu.lua:967
-#, fuzzy
 msgid "Opaque Water"
 msgstr "不透明的水"
 
@@ -261,7 +254,6 @@ msgid "Enable Particles"
 msgstr "启用粒子效果"
 
 #: builtin/mainmenu.lua:985
-#, fuzzy
 msgid "Finite Liquid"
 msgstr "液体有限延伸"
 
@@ -275,83 +267,80 @@ msgstr "开始游戏"
 
 #: builtin/mainmenu.lua:1003
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "单人游戏"
 
 #: builtin/mainmenu.lua:1016
 msgid "Select texture pack:"
-msgstr ""
+msgstr "选择材质包："
 
 #: builtin/mainmenu.lua:1017
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "材质包"
 
 #: builtin/mainmenu.lua:1037
 msgid "No information available"
-msgstr ""
+msgstr "无可用信息"
 
 #: builtin/mainmenu.lua:1065
 msgid "Core Developers"
-msgstr ""
+msgstr "核心开发人员"
 
 #: builtin/mainmenu.lua:1076
 msgid "Active Contributors"
-msgstr ""
+msgstr "活跃的贡献者"
 
 #: builtin/mainmenu.lua:1086
 msgid "Previous Contributors"
-msgstr ""
+msgstr "以往的贡献者"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "MODS"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "已安装的MOD："
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "安装"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Download"
-msgstr "向下"
+msgstr "下载"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "重命名"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
-#, fuzzy
 msgid "Depends:"
 msgstr "依赖于:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "重命名MOD包："
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
 msgstr "接受"
 
 #: builtin/modmgr.lua:381
-#, fuzzy
 msgid "World:"
-msgstr "选择世界："
+msgstr "世界："
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
-#, fuzzy
 msgid "Hide Game"
-msgstr "游戏"
+msgstr "隐藏游戏"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
+#, fuzzy
 msgid "Hide mp content"
-msgstr ""
+msgstr "隐藏mp内容"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "MOD："
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
@@ -360,7 +349,7 @@ msgstr "保存"
 #: builtin/modmgr.lua:422
 #, fuzzy
 msgid "Enable MP"
-msgstr "全部启用"
+msgstr "启用MP"
 
 #: builtin/modmgr.lua:424
 #, fuzzy
