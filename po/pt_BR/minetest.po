@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-25 16:52+0200\n"
+"POT-Creation-Date: 2013-09-07 22:01+0400\n"
 "PO-Revision-Date: 2013-05-15 18:58+0200\n"
 "Last-Translator: Frederico Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: LANGUAGE <contato@ejweb.com.br>\n"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "Game Name"
 msgstr "Jogo"
 
-#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:295
+#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:301
 msgid "Create"
 msgstr "Criar"
 
-#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:296 builtin/modmgr.lua:289
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:302 builtin/modmgr.lua:289
 #: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Cancelar"
@@ -40,7 +40,7 @@ msgstr ""
 msgid "GAMES"
 msgstr ""
 
-#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:853
+#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
 #, fuzzy
 msgid "Games"
 msgstr "Jogo"
@@ -69,235 +69,235 @@ msgstr ""
 msgid "<<-- Add mod"
 msgstr ""
 
-#: builtin/mainmenu.lua:153
+#: builtin/mainmenu.lua:159
 msgid "Ok"
 msgstr ""
 
-#: builtin/mainmenu.lua:291
+#: builtin/mainmenu.lua:297
 msgid "World name"
 msgstr "Nome do mundo"
 
-#: builtin/mainmenu.lua:292
+#: builtin/mainmenu.lua:298
 msgid "Mapgen"
 msgstr ""
 
-#: builtin/mainmenu.lua:294
+#: builtin/mainmenu.lua:300
 msgid "Game"
 msgstr "Jogo"
 
-#: builtin/mainmenu.lua:308
+#: builtin/mainmenu.lua:314
 #, fuzzy
 msgid "Delete World \"$1\"?"
 msgstr "Excluir o mundo"
 
-#: builtin/mainmenu.lua:309 builtin/modmgr.lua:846
+#: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
 msgid "Yes"
 msgstr "Sim"
 
-#: builtin/mainmenu.lua:310
+#: builtin/mainmenu.lua:316
 msgid "No"
 msgstr "Não"
 
-#: builtin/mainmenu.lua:378
+#: builtin/mainmenu.lua:384
 #, fuzzy
 msgid "A world named \"$1\" already exists"
 msgstr "Não foi possivel criar o mundo: Já existe um mundo com esse nome"
 
-#: builtin/mainmenu.lua:393
+#: builtin/mainmenu.lua:399
 msgid "No worldname given or no game selected"
 msgstr ""
 
-#: builtin/mainmenu.lua:846
+#: builtin/mainmenu.lua:852
 msgid "Singleplayer"
 msgstr "Um jogador"
 
-#: builtin/mainmenu.lua:847
+#: builtin/mainmenu.lua:853
 msgid "Client"
 msgstr ""
 
-#: builtin/mainmenu.lua:848
+#: builtin/mainmenu.lua:854
 msgid "Server"
 msgstr ""
 
-#: builtin/mainmenu.lua:849
+#: builtin/mainmenu.lua:855
 msgid "Settings"
 msgstr "Configurações"
 
-#: builtin/mainmenu.lua:850
+#: builtin/mainmenu.lua:856
 msgid "Texture Packs"
 msgstr ""
 
-#: builtin/mainmenu.lua:857
+#: builtin/mainmenu.lua:863
 msgid "Mods"
 msgstr ""
 
-#: builtin/mainmenu.lua:859
+#: builtin/mainmenu.lua:865
 msgid "Credits"
 msgstr "Créditos"
 
-#: builtin/mainmenu.lua:879
+#: builtin/mainmenu.lua:885
 msgid "CLIENT"
 msgstr ""
 
-#: builtin/mainmenu.lua:880
+#: builtin/mainmenu.lua:886
 msgid "Favorites:"
 msgstr "Favoritos:"
 
-#: builtin/mainmenu.lua:881
+#: builtin/mainmenu.lua:887
 msgid "Address/Port"
 msgstr "Endereço/Porta"
 
-#: builtin/mainmenu.lua:882
+#: builtin/mainmenu.lua:888
 msgid "Name/Password"
 msgstr "Nome/Senha"
 
-#: builtin/mainmenu.lua:885
+#: builtin/mainmenu.lua:891
 #, fuzzy
 msgid "Public Serverlist"
 msgstr "Lista de servidores públicos:"
 
-#: builtin/mainmenu.lua:890 builtin/mainmenu.lua:935 builtin/mainmenu.lua:998
+#: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Excluir"
 
-#: builtin/mainmenu.lua:894
+#: builtin/mainmenu.lua:900
 msgid "Connect"
 msgstr "Conectar"
 
-#: builtin/mainmenu.lua:936 builtin/mainmenu.lua:999
+#: builtin/mainmenu.lua:942 builtin/mainmenu.lua:1005
 msgid "New"
 msgstr "Novo"
 
-#: builtin/mainmenu.lua:937 builtin/mainmenu.lua:1000
+#: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
 msgid "Configure"
 msgstr "Configurar"
 
-#: builtin/mainmenu.lua:938
+#: builtin/mainmenu.lua:944
 #, fuzzy
 msgid "Start Game"
 msgstr "Iniciar o jogo/Conectar"
 
-#: builtin/mainmenu.lua:939 builtin/mainmenu.lua:1002
+#: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
 msgid "Select World:"
 msgstr "Selecione um mundo:"
 
-#: builtin/mainmenu.lua:940
+#: builtin/mainmenu.lua:946
 msgid "START SERVER"
 msgstr ""
 
-#: builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
+#: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
 msgstr "Modo criativo"
 
-#: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
+#: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
 msgid "Enable Damage"
 msgstr "Habilitar dano"
 
-#: builtin/mainmenu.lua:945
+#: builtin/mainmenu.lua:951
 msgid "Public"
 msgstr "Público"
 
-#: builtin/mainmenu.lua:947
+#: builtin/mainmenu.lua:953
 msgid "Name"
 msgstr ""
 
-#: builtin/mainmenu.lua:949
+#: builtin/mainmenu.lua:955
 #, fuzzy
 msgid "Password"
 msgstr "Senha antiga"
 
-#: builtin/mainmenu.lua:950
+#: builtin/mainmenu.lua:956
 msgid "Server Port"
 msgstr ""
 
-#: builtin/mainmenu.lua:960
+#: builtin/mainmenu.lua:966
 msgid "SETTINGS"
 msgstr ""
 
-#: builtin/mainmenu.lua:961
+#: builtin/mainmenu.lua:967
 msgid "Fancy trees"
 msgstr "Árvores mais detalhadas"
 
-#: builtin/mainmenu.lua:963
+#: builtin/mainmenu.lua:969
 msgid "Smooth Lighting"
 msgstr "Iluminação suave"
 
-#: builtin/mainmenu.lua:965
+#: builtin/mainmenu.lua:971
 msgid "3D Clouds"
 msgstr "Nuvens 3D"
 
-#: builtin/mainmenu.lua:967
+#: builtin/mainmenu.lua:973
 #, fuzzy
 msgid "Opaque Water"
 msgstr "Água opaca"
 
-#: builtin/mainmenu.lua:970
+#: builtin/mainmenu.lua:976
 msgid "Mip-Mapping"
 msgstr "Mip-Mapping"
 
-#: builtin/mainmenu.lua:972
+#: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
 msgstr "Filtragem anisotrópica"
 
-#: builtin/mainmenu.lua:974
+#: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
 msgstr "Filtragem bi-linear"
 
-#: builtin/mainmenu.lua:976
+#: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
 msgstr "Filtragem tri-linear"
 
-#: builtin/mainmenu.lua:979
+#: builtin/mainmenu.lua:985
 msgid "Shaders"
 msgstr "Sombreadores"
 
-#: builtin/mainmenu.lua:981
+#: builtin/mainmenu.lua:987
 msgid "Preload item visuals"
 msgstr "Precarga dos elementos visuais"
 
-#: builtin/mainmenu.lua:983
+#: builtin/mainmenu.lua:989
 msgid "Enable Particles"
 msgstr "Habilitar partículas"
 
-#: builtin/mainmenu.lua:985
+#: builtin/mainmenu.lua:991
 #, fuzzy
 msgid "Finite Liquid"
 msgstr "Líquido finito"
 
-#: builtin/mainmenu.lua:988
+#: builtin/mainmenu.lua:994
 msgid "Change keys"
 msgstr "Mudar teclas"
 
-#: builtin/mainmenu.lua:1001 src/keycode.cpp:248
+#: builtin/mainmenu.lua:1007 src/keycode.cpp:248
 msgid "Play"
 msgstr "Jogar"
 
-#: builtin/mainmenu.lua:1003
+#: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
 msgstr ""
 
-#: builtin/mainmenu.lua:1016
+#: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
 msgstr ""
 
-#: builtin/mainmenu.lua:1017
+#: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
 msgstr ""
 
-#: builtin/mainmenu.lua:1037
+#: builtin/mainmenu.lua:1043
 msgid "No information available"
 msgstr ""
 
-#: builtin/mainmenu.lua:1065
+#: builtin/mainmenu.lua:1071
 msgid "Core Developers"
 msgstr ""
 
-#: builtin/mainmenu.lua:1076
+#: builtin/mainmenu.lua:1082
 msgid "Active Contributors"
 msgstr ""
 
-#: builtin/mainmenu.lua:1086
+#: builtin/mainmenu.lua:1092
 msgid "Previous Contributors"
 msgstr ""
 
@@ -432,7 +432,7 @@ msgstr ""
 msgid "re-Install"
 msgstr ""
 
-#: src/client.cpp:2911
+#: src/client.cpp:2915
 msgid "Item textures..."
 msgstr "Texturas dos itens..."
 
@@ -469,11 +469,11 @@ msgstr ""
 msgid "Media..."
 msgstr ""
 
-#: src/game.cpp:3393
+#: src/game.cpp:3405
 msgid "Shutting down stuff..."
 msgstr "Desligando tudo..."
 
-#: src/game.cpp:3423
+#: src/game.cpp:3435
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -489,11 +489,11 @@ msgstr "Você morreu."
 msgid "Respawn"
 msgstr "Reviver"
 
-#: src/guiFormSpecMenu.cpp:1567
+#: src/guiFormSpecMenu.cpp:1569
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr "Botão esq.: Move todos os itens, Botão dir.: Move um item"
 
-#: src/guiFormSpecMenu.cpp:1593 src/guiMessageMenu.cpp:107
+#: src/guiFormSpecMenu.cpp:1595 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
 msgstr "Continuar"
@@ -949,41 +949,79 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1469
+#: src/main.cpp:1411
+msgid "needs_fallback_font"
+msgstr ""
+
+#: src/main.cpp:1486
 msgid "Main Menu"
 msgstr "Menu principal"
 
-#: src/main.cpp:1645
+#: src/main.cpp:1662
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
 "Nenhum mundo foi selecionado e nenhum endereço fornecido. Não existe nada a "
 "ser feito."
 
-#: src/main.cpp:1653
+#: src/main.cpp:1670
 msgid "Could not find or load game \""
 msgstr "Não foi possível localizar ou carregar jogo \""
 
-#: src/main.cpp:1667
+#: src/main.cpp:1684
 msgid "Invalid gamespec."
 msgstr "Especificação do jogo inválida."
 
-#: src/main.cpp:1712
+#: src/main.cpp:1729
 msgid "Connection error (timed out?)"
 msgstr "Erro de conexão (tempo excedido?)"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Atenção: Alguns mods ainda não foram configurados.\n"
-#~ "E eles serão ativados por padrão, quando você salvar a configuração."
+#~ msgid "is required by:"
+#~ msgstr "é necessário para:"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Atenção: Alguns mods configurados não foram encontrados.\n"
-#~ "Suas definições serão removidas quando você salvar a configuração."
+#~ msgid "Configuration saved.  "
+#~ msgstr "A configuração foi salva. "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Atenção: A configuração não está consistente."
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Não foi possível criar o mundo: O nome contém caracteres inválidos"
+
+#~ msgid "Multiplayer"
+#~ msgstr "Vários jogadores"
+
+#~ msgid "Advanced"
+#~ msgstr "Avançado"
+
+#~ msgid "Show Public"
+#~ msgstr "Exibir públicos"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Exibir favoritos"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Deixe o endereço em branco para iniciar um servidor local."
+
+#~ msgid "Create world"
+#~ msgstr "Criar o mundo"
+
+#~ msgid "Address required."
+#~ msgstr "É necessário um endereço."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Não foi possível excluir o mundo: Nenhum foi selecionado"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Arquivos a serem excluídos"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Não foi possivel criar o mundo: Não foi encontrado nenhum jogo"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Não foi possível configurar o mundo: Nada foi selecionado"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Não foi possível excluir todos os arquivos do mundo"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -1010,50 +1048,16 @@ msgstr "Erro de conexão (tempo excedido?)"
 #~ "- ESC: este menu\n"
 #~ "- T: bate-papo\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Não foi possível excluir todos os arquivos do mundo"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Atenção: Alguns mods configurados não foram encontrados.\n"
+#~ "Suas definições serão removidas quando você salvar a configuração."
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Não foi possível configurar o mundo: Nada foi selecionado"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Não foi possivel criar o mundo: Não foi encontrado nenhum jogo"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Arquivos a serem excluídos"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Não foi possível excluir o mundo: Nenhum foi selecionado"
-
-#~ msgid "Address required."
-#~ msgstr "É necessário um endereço."
-
-#~ msgid "Create world"
-#~ msgstr "Criar o mundo"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Deixe o endereço em branco para iniciar um servidor local."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Exibir favoritos"
-
-#~ msgid "Show Public"
-#~ msgstr "Exibir públicos"
-
-#~ msgid "Advanced"
-#~ msgstr "Avançado"
-
-#~ msgid "Multiplayer"
-#~ msgstr "Vários jogadores"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Não foi possível criar o mundo: O nome contém caracteres inválidos"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Atenção: A configuração não está consistente."
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "A configuração foi salva. "
-
-#~ msgid "is required by:"
-#~ msgstr "é necessário para:"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Atenção: Alguns mods ainda não foram configurados.\n"
+#~ "E eles serão ativados por padrão, quando você salvar a configuração."
