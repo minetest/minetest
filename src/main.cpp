@@ -995,7 +995,19 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-	
+
+	std::string language = g_settings->get("language");
+	if (language.length()) {
+#ifndef _WIN32
+		setenv("LANGUAGE", language.c_str(), 1);
+#else
+		char *lang_str = (char*)calloc(10 + language.length(), sizeof(char));
+		strcat(lang_str, "LANGUAGE=");
+		strcat(lang_str, language.c_str());
+		putenv(lang_str);
+#endif
+	}
+
 	/*
 		Game parameters
 	*/
@@ -1396,7 +1408,11 @@ int main(int argc, char *argv[])
 	bool use_freetype = g_settings->getBool("freetype");
 	#if USE_FREETYPE
 	if (use_freetype) {
-		u16 font_size = g_settings->getU16("font_size");
+		std::string fallback;
+		if (is_yes(gettext("needs_fallback_font")))
+			fallback = "fallback_";
+		u16 font_size = g_settings->getU16(fallback + "font_size");
+		font_path = g_settings->get(fallback + "font_path");
 		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
 	} else {
 		font = guienv->getFont(font_path.c_str());

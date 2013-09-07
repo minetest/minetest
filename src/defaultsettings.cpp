@@ -147,6 +147,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", "13");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
 	settings->setDefault("mono_font_size", "13");
+	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
+	settings->setDefault("fallback_font_size", "13");
 #else
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
@@ -281,6 +283,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
 
 	settings->setDefault("high_precision_fpu", "true");
+
+	settings->setDefault("language", "");
 }
 
 void override_default_settings(Settings *settings, Settings *from)
