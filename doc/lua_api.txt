@@ -1226,6 +1226,7 @@ minetest.get_player_by_name(name) -- Get an ObjectRef to a player
 minetest.get_objects_inside_radius(pos, radius)
 minetest.set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 minetest.get_timeofday()
+minetest.get_gametime(): returns the time, in seconds, since the world was created
 minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
