@@ -796,7 +796,7 @@ int main(int argc, char *argv[])
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 	#if USE_LEVELDB
 	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
-			_("Migrate from current map backend to another"))));
+			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
 	#endif
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
