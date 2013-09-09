@@ -1069,6 +1069,8 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
+minetest.is_yes(string)
+^ returns whether string can be interpreted as yes
 
 minetest namespace reference
 -----------------------------
@@ -1736,6 +1738,18 @@ methods:
 - iter(minx, miny, minz, maxx, maxy, maxz):  returns an iterator that returns indices
   ^ from (minx,miny,minz) to (maxx,maxy,maxz) in the order of [z [y [x]]]
 - iterp(minp, maxp):  same as above, except takes a vector
+
+Settings: An interface to read config files in the format of minetest.conf
+- Can be created via Settings(filename)
+methods:
+- get(key) -> value
+- get_bool(key) -> boolean
+- set(key, value)
+- remove(key) -> success
+- get_names() -> {key1,...}
+- write() -> success
+  ^ write changes to file
+- to_table() -> {[key1]=value1,...}
 
 Mapgen objects
 ---------------

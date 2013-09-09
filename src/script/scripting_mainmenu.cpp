@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_util.h"
+#include "lua_api/l_settings.h"
 
 extern "C" {
 #include "lualib.h"
@@ -62,4 +63,7 @@ void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 	// Initialize mod api modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
+
+	// Register reference classes (userdata)
+	LuaSettings::Register(L);
 }
