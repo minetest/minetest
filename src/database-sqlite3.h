@@ -22,7 +22,7 @@ public:
 
         virtual void saveBlock(MapBlock *block);
         virtual MapBlock* loadBlock(v3s16 blockpos);
-        virtual void listAllLoadableBlocks(core::list<v3s16> &dst);
+        virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
         virtual int Initialized(void);
 	~Database_SQLite3();
 private:

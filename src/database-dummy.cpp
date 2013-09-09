@@ -139,7 +139,7 @@ MapBlock* Database_Dummy::loadBlock(v3s16 blockpos)
 	return(NULL);
 }
 
-void Database_Dummy::listAllLoadableBlocks(core::list<v3s16> &dst)
+void Database_Dummy::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	for(std::map<unsigned long long, std::string>::iterator x = m_database.begin(); x != m_database.end(); ++x)
 	{

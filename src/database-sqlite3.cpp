@@ -294,7 +294,7 @@ void Database_SQLite3::createDatabase()
 	
 }
 
-void Database_SQLite3::listAllLoadableBlocks(core::list<v3s16> &dst)
+void Database_SQLite3::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	verifyDatabase();
 	
