@@ -513,6 +513,8 @@ function modmgr.get_worldconfig(worldpath)
 
 			if key == "gameid" then
 				worldconfig.id = parts[2]:trim()
+			elseif key == "backend" then
+				worldconfig.backend = parts[2]:trim()
 			else
 				local key = parts[1]:trim():sub(10)
 				if parts[2]:trim() == "true" then
@@ -729,7 +731,7 @@ function modmgr.handle_configure_world_buttons(fields)
 		local worldfile = io.open(filename,"w")
 		
 		if worldfile then
-			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\n")
+			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\nbackend = " .. modmgr.worldconfig.backend .. "\n")
 			
 			local rawlist = filterlist.get_raw_list(modmgr.modlist)
 			
