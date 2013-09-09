@@ -71,6 +71,9 @@ private:
 	// get_password_hash(name, raw_password)
 	static int l_get_password_hash(lua_State *L);
 
+	// is_yes(string)
+	static int l_is_yes(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 

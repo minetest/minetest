@@ -220,6 +220,16 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 	return 1;
 }
 
+// is_yes(string)
+int ModApiUtil::l_is_yes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string str = luaL_checkstring(L, 1);
+	bool yes = is_yes(str);
+	lua_pushboolean(L, yes);
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -237,5 +247,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_hit_params);
 
 	API_FCT(get_password_hash);
+
+	API_FCT(is_yes);
 }
 
