@@ -503,6 +503,7 @@ function modmgr.get_worldconfig(worldpath)
 	local worldconfig = {}
 	worldconfig.global_mods = {}
 	worldconfig.game_mods = {}
+	worldconfig.unknown_lines = {}
 	
 	if worldfile then
 		local dependency = worldfile:read("*l")
@@ -513,13 +514,15 @@ function modmgr.get_worldconfig(worldpath)
 
 			if key == "gameid" then
 				worldconfig.id = parts[2]:trim()
-			else
+			elseif key:sub(0,9) == "load_mod_" then
 				local key = parts[1]:trim():sub(10)
 				if parts[2]:trim() == "true" then
 					worldconfig.global_mods[key] = true
 				else
 					worldconfig.global_mods[key] = false
 				end
+			else
+				table.insert(worldconfig.unknown_lines,dependency)
 			end
 			dependency = worldfile:read("*l")
 		end
@@ -730,6 +733,10 @@ function modmgr.handle_configure_world_buttons(fields)
 		
 		if worldfile then
 			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\n")
+			
+			for i=#modmgr.worldconfig.unknown_lines,1 do
+				worldfile:write(modmgr.worldconfig.unknown_lines[i] .. "\n")
+			end 
 			
 			local rawlist = filterlist.get_raw_list(modmgr.modlist)
 			
