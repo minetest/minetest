@@ -1266,7 +1266,11 @@ int main(int argc, char *argv[])
 			new_db->endSave();
 
 			actionstream << "Successfully migrated " << count << " blocks" << std::endl;
-			actionstream << "Don't forget to update your world.mt backend setting!" << std::endl;
+			world_mt.set("backend", migrate_to);
+			if(!world_mt.updateConfigFile((world_path + DIR_DELIM + "world.mt").c_str()))
+				errorstream<<"Failed to update world.mt!"<<std::endl;
+			else
+				actionstream<<"world.mt updated"<<std::endl;
 
 			return 0;
 		}
