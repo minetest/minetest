@@ -498,36 +498,18 @@ function modmgr.get_worldconfig(worldpath)
 	local filename = worldpath ..
 				DIR_DELIM .. "world.mt"
 
-	local worldfile = io.open(filename,"r")
+	local worldfile = Settings(filename)
 	
 	local worldconfig = {}
 	worldconfig.global_mods = {}
 	worldconfig.game_mods = {}
 	
-	if worldfile then
-		local dependency = worldfile:read("*l")
-		while dependency do
-			local parts = dependency:split("=")
-
-			local key = parts[1]:trim()
-
-			if key == "gameid" then
-				worldconfig.id = parts[2]:trim()
-			elseif key == "backend" then
-				worldconfig.backend = parts[2]:trim()
-			else
-				local key = parts[1]:trim():sub(10)
-				if parts[2]:trim() == "true" then
-					worldconfig.global_mods[key] = true
-				else
-					worldconfig.global_mods[key] = false
-				end
-			end
-			dependency = worldfile:read("*l")
+	for key,value in pairs(worldfile:to_table()) do
+		if key == "gameid" then
+			worldconfig.id = value
+		else
+			worldconfig.global_mods[key] = engine.is_yes(value)
 		end
-		worldfile:close()
-	else
-		print("Modmgr: " .. filename .. " not found")
 	end
 	
 	--read gamemods
@@ -727,29 +709,34 @@ function modmgr.handle_configure_world_buttons(fields)
 		
 		local filename = worldspec.path ..
 				DIR_DELIM .. "world.mt"
-
-		local worldfile = io.open(filename,"w")
 		
-		if worldfile then
-			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\nbackend = " .. modmgr.worldconfig.backend .. "\n")
-			
-			local rawlist = filterlist.get_raw_list(modmgr.modlist)
-			
-			for i=1,#rawlist,1 do
-			
-				if not rawlist[i].is_modpack and
-					rawlist[i].typ ~= "game_mod" then
-					if rawlist[i].enabled then
-						worldfile:write("load_mod_" .. rawlist[i].name .. " = true" .. "\n")
-					else
-						worldfile:write("load_mod_" .. rawlist[i].name .. " = false" .. "\n")
-					end
+		local worldfile = Settings(filename)
+		local mods = worldfile:to_table()
+		
+		local rawlist = filterlist.get_raw_list(modmgr.modlist)
+		
+		local i,mod
+		for i,mod in ipairs(rawlist) do
+			if not mod.is_modpack and
+					mod.typ ~= "game_mod" then
+				if mod.enabled then
+					worldfile:set("load_mod_"..mod.name, "true")
+				else
+					worldfile:set("load_mod_"..mod.name, "false")
 				end
+				mods["load_mod_"..mod.name] = nil
 			end
-			
-			worldfile:close()
-		else
-			print("failed to open world config file")
+		end
+		
+		-- Remove mods that are not present anymore
+		for key,value in pairs(mods) do
+			if key:sub(1,9) == "load_mod_" then
+				worldfile:remove(key)
+			end
+		end
+		
+		if not worldfile:write() then
+			print("failed to write world config file")
 		end
 		
 		modmgr.modlist = nil
@@ -888,37 +875,24 @@ function modmgr.preparemodlist(data)
 	local filename = data.worldpath ..
 				DIR_DELIM .. "world.mt"
 
-	local worldfile = io.open(filename,"r")
-	if worldfile then
-		local dependency = worldfile:read("*l")
-		while dependency do
-			local parts = dependency:split("=")
-
-			local key = parts[1]:trim()
-
-			if key ~= "gameid" then
-				local key = parts[1]:trim():sub(10)
-				local element = nil
-				for i=1,#retval,1 do
-					if retval[i].name == key then
-						element = retval[i]
-						break
-					end
-				end
-				if element ~= nil then
-					if parts[2]:trim() == "true" then
-						element.enabled = true
-					else
-						element.enabled = false
-					end
-				else
-					print("Mod: " .. key .. " " .. dump(parts[2]) .. " but not found")
+	local worldfile = Settings(filename)
+	
+	for key,value in pairs(worldfile:to_table()) do
+		if key:sub(1, 9) == "load_mod_" then
+			key = key:sub(10)
+			local element = nil
+			for i=1,#retval,1 do
+				if retval[i].name == key then
+					element = retval[i]
+					break
 				end
 			end
-			dependency = worldfile:read("*l")
+			if element ~= nil then
+				element.enabled = engine.is_yes(value)
+			else
+				print("Mod: " .. key .. " " .. dump(value) .. " but not found")
+			end
 		end
-		worldfile:close()
-
 	end
 
 	return retval
