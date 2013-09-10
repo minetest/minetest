@@ -233,15 +233,15 @@ function modmgr.tab()
 	end
 	
 	local retval = 
-		"vertlabel[0,-0.25;MODS]" ..
-		"label[0.8,-0.25;Installed Mods:]" ..
+		"vertlabel[0,-0.25;".. fgettext("MODS") .. "]" ..
+		"label[0.8,-0.25;".. fgettext("Installed Mods:") .. "]" ..
 		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
-		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;Install]" ..
-		"button[3,4.85;2,0.5;btn_mod_mgr_download;Download]"
+		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. fgettext("Install") .. "]" ..
+		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. fgettext("Download") .. "]"
 		
 	local selected_mod = nil
 		
@@ -251,11 +251,13 @@ function modmgr.tab()
 	
 	if selected_mod ~= nil then
 		if selected_mod.is_modpack then
-			retval = retval .. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;Rename]"
+			retval = retval 
+			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+					 fgettext("Rename") .. "]"
 		else
 		--show dependencies
 			retval = retval .. 
-				"label[6,1.9;Depends:]" ..
+				"label[6,1.9;".. fgettext("Depends:") .. "]" ..
 				"textlist[6,2.4;5.7,2;deplist;"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
@@ -265,7 +267,8 @@ function modmgr.tab()
 			--TODO read modinfo
 		end
 		--show delete button
-		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;Delete]"
+		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Delete") .. "]"
 	end
 	return retval
 end
@@ -276,12 +279,14 @@ function modmgr.dialog_rename_modpack()
 	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
 	
 	local retval = 
-		"label[1.75,1;Rename Modpack:]"..
+		"label[1.75,1;".. fgettext("Rename Modpack:") .. "]"..
 		"field[4.5,1.4;6,0.5;te_modpack_name;;" ..
 		mod.name ..
 		"]" ..
-		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;Accept]" ..
-		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;Cancel]"
+		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;".. 
+				fgettext("Accept") .. "]" ..
+		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;".. 
+				fgettext("Cancel") .. "]"
 
 	return retval
 end
@@ -324,6 +329,8 @@ function modmgr.render_modlist(render_list)
 		if retval ~= "" then
 			retval = retval ..","
 		end
+
+		local color = ""
 		
 		if v.is_modpack then
 			local rawlist = filterlist.get_raw_list(render_list)
@@ -338,19 +345,21 @@ function modmgr.render_modlist(render_list)
 			end
 			
 			if all_enabled == false then
-				retval = retval .. mt_color_grey
+				color = mt_color_grey
 			else
-				retval = retval .. mt_color_dark_green
+				color = mt_color_dark_green
 			end
 		end
 		
 		if v.typ == "game_mod" then
-			retval = retval .. mt_color_blue
+			color = mt_color_blue
 		else
 			if v.enabled then
-				retval = retval .. mt_color_green
+				color = mt_color_green
 			end
 		end
+
+		retval = retval .. color
 		if v.modpack  ~= nil then
 			retval = retval .. "    "
 		end
@@ -369,73 +378,66 @@ function modmgr.dialog_configure_world()
 	
 	local retval =
 		"size[11,6.5]" ..
-		"label[1.5,-0.25;World: " .. worldspec.name .. "]"
+		"label[0.5,-0.25;" .. fgettext("World:") .. "]" ..
+		"label[1.75,-0.25;" .. worldspec.name .. "]"
 		
 	if modmgr.hide_gamemods then
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;true]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true]"
 	else
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;Hide Game;false]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
 	end
 	
 	if modmgr.hide_modpackcontents then
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;true]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
 	else
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;Hide mp content;false]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
 	end
 	
 	if mod == nil then
 		mod = {name=""}
 	end
 	retval = retval ..
-		"label[0,0.45;Mod:]" ..
+		"label[0,0.45;" .. fgettext("Mod:") .. "]" ..
 		"label[0.75,0.45;" .. mod.name .. "]" ..
-		"label[0,1;Depends:]" ..
+		"label[0,1;" .. fgettext("Depends:") .. "]" ..
 		"textlist[0,1.5;5,4.25;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
-		"button[9.25,6.35;2,0.5;btn_config_world_save;Save]" ..
-		"button[7.4,6.35;2,0.5;btn_config_world_cancel;Cancel]"
+		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
+		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 	
-	if engine.setting_get("old_style_mod_selection") == "true" then
-		if mod ~= nil and mod.name ~= "" then
-			if mod.is_modpack then
-				local rawlist = filterlist.get_raw_list(modmgr.modlist)
-				
-				local all_enabled = true
-				for j=1,#rawlist,1 do
-					if rawlist[j].modpack == mod.name and
-						rawlist[j].enabled ~= true then
-							all_enabled = false
-							break
-					end
-				end
-				
-				if all_enabled == false then
-					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;Enable MP]"
-				else
-					retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;Disable MP]"
-				end
-			else
-				if mod.enabled then
-					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;true]"
-				else
-					retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;enabled;false]"
+	if mod ~= nil and mod.name ~= "" and mod.typ ~= "game_mod" then
+		if mod.is_modpack then
+			local rawlist = filterlist.get_raw_list(modmgr.modlist)
+			
+			local all_enabled = true
+			for j=1,#rawlist,1 do
+				if rawlist[j].modpack == mod.name and
+					rawlist[j].enabled ~= true then
+						all_enabled = false
+						break
 				end
 			end
-		
+			
+			if all_enabled == false then
+				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;" .. fgettext("Enable MP") .. "]"
+			else
+				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;" .. fgettext("Disable MP") .. "]"
+			end
+		else
+			if mod.enabled then
+				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";true]"
+			else
+				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
+			end
 		end
-		
-		retval = retval ..
-			"button[8.5,-0.125;2.5,0.5;btn_all_mods;Enable all]"
-	else
-		retval = retval ..
-		"button[5.5,-0.125;5.75,0.5;btn_all_mods;Enable all Mods]"
 	end
-		retval = retval ..
+	
+	retval = retval ..
+		"button[8.5,-0.125;2.5,0.5;btn_all_mods;" .. fgettext("Enable all") .. "]" ..
 		"textlist[5.5,0.5;5.5,5.75;world_config_modlist;"
-		
-
+	
 	retval = retval .. modmgr.render_modlist(modmgr.modlist)
-
+	
 	retval = retval .. ";" .. modmgr.world_config_selected_mod .."]"
 	
 	return retval
@@ -511,6 +513,8 @@ function modmgr.get_worldconfig(worldpath)
 
 			if key == "gameid" then
 				worldconfig.id = parts[2]:trim()
+			elseif key == "backend" then
+				worldconfig.backend = parts[2]:trim()
 			else
 				local key = parts[1]:trim():sub(10)
 				if parts[2]:trim() == "true" then
@@ -527,9 +531,8 @@ function modmgr.get_worldconfig(worldpath)
 	end
 	
 	--read gamemods
-	local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. worldconfig.id .. DIR_DELIM .. "mods"
-	
-	get_mods(gamemodpath,worldconfig.game_mods)
+	local gamespec = gamemgr.find_by_gameid(worldconfig.id)
+	gamemgr.get_game_mods(gamespec, worldconfig.game_mods)
 
 	return worldconfig
 end
@@ -547,10 +550,11 @@ function modmgr.handle_modmgr_buttons(fields)
 	end
 	
 	if fields["btn_mod_mgr_install_local"] ~= nil then
-		engine.show_file_open_dialog("mod_mgt_open_dlg","Select Mod File:")
+		engine.show_file_open_dialog("mod_mgt_open_dlg",fgettext("Select Mod File:"))
 	end
 	
 	if fields["btn_mod_mgr_download"] ~= nil then
+		modstore.update_modlist()
 		retval.current_tab = "dialog_modstore_unsorted"
 		retval.is_dialog = true
 		retval.show_buttons = false
@@ -585,8 +589,8 @@ function modmgr.installmod(modfilename,basename)
 	local modpath = modmgr.extract(modfile)
 	
 	if modpath == nil then
-		gamedata.errormessage = "Install Mod: file: " .. modfile.name ..
-			"\nInstall Mod: unsupported filetype \"" .. modfile.type .. "\""
+		gamedata.errormessage = fgettext("Install Mod: file: \"$1\"", modfile.name) ..
+			fgettext("\nInstall Mod: unsupported filetype \"$1\"", modfile.type)
 		return
 	end
 	
@@ -607,11 +611,10 @@ function modmgr.installmod(modfilename,basename)
 		if clean_path ~= nil then
 			local targetpath = engine.get_modpath() .. DIR_DELIM .. clean_path
 			if not engine.copy_dir(basefolder.path,targetpath) then
-				gamedata.errormessage = "Failed to install " .. basename .. " to " .. targetpath
+				gamedata.errormessage = fgettext("Failed to install $1 to $2", basename, targetpath)
 			end
 		else
-			gamedata.errormessage = "Install Mod: unable to find suitable foldername for modpack " 
-				.. modfilename
+			gamedata.errormessage = fgettext("Install Mod: unable to find suitable foldername for modpack $1", modfilename)
 		end
 	end
 	
@@ -631,8 +634,7 @@ function modmgr.installmod(modfilename,basename)
 			local targetpath = engine.get_modpath() .. DIR_DELIM .. targetfolder
 			engine.copy_dir(basefolder.path,targetpath)
 		else
-			gamedata.errormessage = "Install Mod: unable to find real modname for: " 
-				.. modfilename
+			gamedata.errormessage = fgettext("Install Mod: unable to find real modname for: $1", modfilename)
 		end
 	end
 	
@@ -664,62 +666,24 @@ function modmgr.handle_configure_world_buttons(fields)
 		local event = explode_textlist_event(fields["world_config_modlist"])
 		modmgr.world_config_selected_mod = event.index
 
-		if engine.setting_get("old_style_mod_selection") ~= "true" then
-			if event.typ == "DCL" then
-				local mod = filterlist.get_list(modmgr.modlist)[event.index]
-				
-				if mod.typ == "game_mod" then
-					return nil
-				end
-				
-				if not mod.is_modpack then
-					mod.enabled = not mod.enabled
-				else
-					local list = filterlist.get_raw_list(modmgr.modlist)
-					local toset = nil
-					
-					for i=1,#list,1 do
-						if list[i].modpack == mod.name then
-							if toset == nil then
-								toset = not list[i].enabled
-							end
-							
-							list[i].enabled = toset
-						end
-					end
-				end
-			end
+		if event.typ == "DCL" then
+			modmgr.world_config_enable_mod(nil)
 		end
 	end
 	
-	if engine.setting_get("old_style_mod_selection") == "true" then
-		if fields["cb_mod_enable"] ~= nil then
-			local mod = filterlist.get_list(modmgr.modlist)
-				[engine.get_textlist_index("world_config_modlist")]
-			if fields["cb_mod_enable"] == "true" then
-				mod.enabled = true
-			else
-				mod.enabled = false
-			end
-		end
-		
-		if fields["btn_mp_enable"] ~= nil or 
-			fields["btn_mp_disable"] then
-			local mod = filterlist.get_list(modmgr.modlist)
-				[engine.get_textlist_index("world_config_modlist")]
-			
-			local toset=false
-			if fields["btn_mp_enable"] ~= nil then
-				toset = true
-			end
-			local list = filterlist.get_raw_list(modmgr.modlist)
-			
-			for i=1,#list,1 do
-				if list[i].modpack == mod.name then
-					list[i].enabled = toset
-				end
-			end
-		end
+	if fields["key_enter"] ~= nil then
+		modmgr.world_config_enable_mod(nil)
+	end
+	
+	if fields["cb_mod_enable"] ~= nil then
+		local toset = (fields["cb_mod_enable"] == "true")
+		modmgr.world_config_enable_mod(toset)
+	end
+	
+	if fields["btn_mp_enable"] ~= nil or
+		fields["btn_mp_disable"] then
+		local toset = (fields["btn_mp_enable"] ~= nil)
+		modmgr.world_config_enable_mod(toset)
 	end
 	
 	if fields["cb_hide_gamemods"] ~= nil then
@@ -767,7 +731,7 @@ function modmgr.handle_configure_world_buttons(fields)
 		local worldfile = io.open(filename,"w")
 		
 		if worldfile then
-			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\n")
+			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\nbackend = " .. modmgr.worldconfig.backend .. "\n")
 			
 			local rawlist = filterlist.get_raw_list(modmgr.modlist)
 			
@@ -825,6 +789,31 @@ function modmgr.handle_configure_world_buttons(fields)
 	return nil
 end
 --------------------------------------------------------------------------------
+function modmgr.world_config_enable_mod(toset)
+	local mod = filterlist.get_list(modmgr.modlist)
+		[engine.get_textlist_index("world_config_modlist")]
+
+	if mod.typ == "game_mod" then
+		-- game mods can't be enabled or disabled
+	elseif not mod.is_modpack then
+		if toset == nil then
+			mod.enabled = not mod.enabled
+		else
+			mod.enabled = toset
+		end
+	else
+		local list = filterlist.get_raw_list(modmgr.modlist)
+		for i=1,#list,1 do
+			if list[i].modpack == mod.name then
+				if toset == nil then
+					toset = not list[i].enabled
+				end
+				list[i].enabled = toset
+			end
+		end
+	end
+end
+--------------------------------------------------------------------------------
 function modmgr.handle_delete_mod_buttons(fields)
 	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
@@ -834,11 +823,11 @@ function modmgr.handle_delete_mod_buttons(fields)
 			mod.path ~= "" and
 			mod.path ~= engine.get_modpath() then
 			if not engine.delete_dir(mod.path) then
-				gamedata.errormessage ="Modmgr: failed to delete >" .. mod.path .. "<"
+				gamedata.errormessage = fgettext("Modmgr: failed to delete \"$1\"", mod.path)
 			end
 			modmgr.refresh_globals()
 		else
-			gamedata.errormessage ="Modmgr: invalid modpath >" .. mod.path .. "<"
+			gamedata.errormessage = fgettext("Modmgr: invalid modpath \"$1\"", mod.path)
 		end
 	end
 	
@@ -855,9 +844,9 @@ function modmgr.dialog_delete_mod()
 	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	local retval = 
-		"field[1.75,1;10,3;;Are you sure you want to delete ".. mod.name .. "?;]"..
-		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;Yes]" ..
-		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;No of course not!]"
+		"field[1.75,1;10,3;;" .. fgettext("Are you sure you want to delete \"$1\"?", mod.name) ..  ";]"..
+		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;" .. fgettext("Yes") .. "]" ..
+		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;" .. fgettext("No of course not!") .. "]"
 
 	return retval
 end
@@ -883,12 +872,8 @@ function modmgr.preparemodlist(data)
 	end
 	
 	--read game mods
-	if data.gameid ~= nil and
-		data.gameid ~= "" then
-		local gamemodpath = engine.get_gamepath() .. DIR_DELIM .. data.gameid .. DIR_DELIM .. "mods"
-		
-		get_mods(gamemodpath,game_mods)
-	end
+	local gamespec = gamemgr.find_by_gameid(data.gameid)
+	gamemgr.get_game_mods(gamespec, game_mods)
 	
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"
@@ -982,6 +967,8 @@ function modmgr.init_worldconfig()
 									hide_game=modmgr.hide_gamemods,
 									hide_modpackcontents= modmgr.hide_modpackcontents
 									})
+		filterlist.add_sort_mechanism(modmgr.modlist, "alphabetic", sort_mod_list)
+		filterlist.set_sortmode(modmgr.modlist, "alphabetic")
 		
 		return true	
 	end
@@ -1078,6 +1065,8 @@ function modmgr.refresh_globals()
 					nil, --filter
 					{}
 					)
+	filterlist.add_sort_mechanism(modmgr.global_mods, "alphabetic", sort_mod_list)
+	filterlist.set_sortmode(modmgr.global_mods, "alphabetic")
 end
 
 --------------------------------------------------------------------------------

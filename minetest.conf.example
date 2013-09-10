@@ -127,10 +127,6 @@
 #fast_move = false
 # Invert mouse
 #invert_mouse = false
-# FarMesh thingy
-#enable_farmesh = false
-#farmesh_trees = true
-#farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
@@ -170,10 +166,8 @@
 #trilinear_filter = false
 # Set to true to pre-generate all item visuals
 #preload_item_visuals = true
-# 0: disable shaders
-# (1: low level shaders; not implemented)
-# 2: enable high level shaders
-#enable_shaders = 2
+# Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
+#enable_shaders = true
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
 # The time in seconds it takes between repeated
@@ -196,6 +190,10 @@
 #font_size = 13
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
+
+# This font will be used for certain languages
+#fallback_font_path = fonts/DroidSansFallbackFull.ttf
+#fallback_font_size = 13
 
 #
 # Server stuff
@@ -389,8 +387,16 @@
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
 
+#main_menu_script =
 #main_menu_game_mgr = 0
 #main_menu_mod_mgr = 1
 #modstore_download_url = https://forum.minetest.net/media/
 #modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
 #modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+
+# Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true
+
+# Override language. When no value is provided (default) system language is used.
+# Check "locale" directory for the list of available translations.
+#language =

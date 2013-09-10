@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include "map.h"
-// For g_settings
-#include "main.h"
 #include "light.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
@@ -31,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h"
 #include "content_mapnode.h" // For legacy name-id mapping
 #include "content_nodemeta.h" // For legacy deserialization
+#include "serialization.h"
 #ifndef SERVER
 #include "mapblock_mesh.h"
 #endif

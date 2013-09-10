@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdlib.h>
 
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {

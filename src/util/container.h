@@ -21,11 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_CONTAINER_HEADER
 
 #include "../irrlichttypes.h"
+#include "../exceptions.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include "../porting.h" // For sleep_ms
 #include <list>
 #include <vector>
+#include <map>
 
 /*
 	Queue with unique values with fast checking of value existence

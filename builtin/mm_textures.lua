@@ -20,8 +20,7 @@ mm_texture = {}
 
 --------------------------------------------------------------------------------
 function mm_texture.init()
-	mm_texture.defaulttexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+	mm_texture.defaulttexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
 						DIR_DELIM .. "pack" .. DIR_DELIM
 	mm_texture.basetexturedir = mm_texture.defaulttexturedir
 	

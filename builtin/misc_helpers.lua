@@ -86,13 +86,22 @@ function string:split(sep)
 end
 
 --------------------------------------------------------------------------------
+function file_exists(filename)
+	local f = io.open(filename, "r")
+	if f==nil then
+		return false
+	else
+		f:close()
+		return true
+	end
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
-
-
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
@@ -184,6 +193,18 @@ function cleanup_path(temppath)
 	return temppath
 end
 
+local tbl = engine or minetest
+function tbl.formspec_escape(text)
+	if text ~= nil then
+		text = string.gsub(text,"\\","\\\\")
+		text = string.gsub(text,"%]","\\]")
+		text = string.gsub(text,"%[","\\[")
+		text = string.gsub(text,";","\\;")
+		text = string.gsub(text,",","\\,")
+	end
+	return text
+end
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
@@ -198,40 +219,29 @@ if engine ~= nil then
 		return nil
 	end
 	
-	--------------------------------------------------------------------------------
-	function fs_escape_string(text)
-		if text ~= nil then
-			while (text:find("\r\n") ~= nil) do
-				local newtext = text:sub(1,text:find("\r\n")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\r\n")+3)
-				
-				text = newtext
+	function fgettext(text, ...)
+		text = engine.gettext(text)
+		local arg = {n=select('#', ...), ...}
+		if arg.n >= 1 then
+			-- Insert positional parameters ($1, $2, ...)
+			result = ''
+			pos = 1
+			while pos <= text:len() do
+				newpos = text:find('[$]', pos)
+				if newpos == nil then
+					result = result .. text:sub(pos)
+					pos = text:len() + 1
+				else
+					paramindex = tonumber(text:sub(newpos+1, newpos+1))
+					result = result .. text:sub(pos, newpos-1) .. tostring(arg[paramindex])
+					pos = newpos + 2
+				end
 			end
-			
-			while (text:find("\n") ~= nil) do
-				local newtext = text:sub(1,text:find("\n")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\n")+1)
-				
-				text = newtext
-			end
-			
-			while (text:find("\r") ~= nil) do
-				local newtext = text:sub(1,text:find("\r")-1)
-				newtext = newtext .. " " .. text:sub(text:find("\r")+1)
-				
-				text = newtext
-			end
-			
-			text = string.gsub(text,"\\","\\\\")
-			text = string.gsub(text,"%]","\\]")
-			text = string.gsub(text,"%[","\\[")
-			text = string.gsub(text,";","\\;")
-			text = string.gsub(text,",","\\,")
+			text = result
 		end
-		return text
+		return engine.formspec_escape(text)
 	end
 end
-
 --------------------------------------------------------------------------------
 -- core only fct
 --------------------------------------------------------------------------------
@@ -241,3 +251,4 @@ if minetest ~= nil then
 		return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 	end
 end
+

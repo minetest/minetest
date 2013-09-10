@@ -29,10 +29,8 @@ function modstore.init()
 	
 	modstore.modsperpage = 5
 	
-	modstore.basetexturedir = engine.get_gamepath() .. DIR_DELIM .. ".." ..
-						DIR_DELIM .. "textures" .. DIR_DELIM .. "base" .. 
+	modstore.basetexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
 						DIR_DELIM .. "pack" .. DIR_DELIM
-	modstore.update_modlist()
 	
 	modstore.current_list = nil
 	
@@ -118,7 +116,7 @@ function modstore.handle_buttons(current_tab,fields)
 	
 	if fields["btn_modstore_page_down"] then
 		if modstore.current_list ~= nil and 
-			modstore.current_list.page <modstore.current_list.pagecount then
+			modstore.current_list.page <modstore.current_list.pagecount-1 then
 			modstore.current_list.page = modstore.current_list.page +1
 		end
 	end
@@ -171,10 +169,10 @@ function modstore.update_modlist()
 		
 	if modstore.modlist_unsorted.data ~= nil then
 		modstore.modlist_unsorted.pagecount = 
-			math.floor((#modstore.modlist_unsorted.data / modstore.modsperpage))
+			math.ceil((#modstore.modlist_unsorted.data / modstore.modsperpage))
 	else
 		modstore.modlist_unsorted.data = {}
-		modstore.modlist_unsorted.pagecount = 0
+		modstore.modlist_unsorted.pagecount = 1
 	end
 	modstore.modlist_unsorted.page = 0
 end
@@ -182,12 +180,11 @@ end
 --------------------------------------------------------------------------------
 function modstore.getmodlist(list)
 	local retval = ""
-	retval = retval .. "label[10,-0.4;Page " .. (list.page +1) .. 
-							" of " .. (list.pagecount +1) .. "]"
+	retval = retval .. "label[10,-0.4;" .. fgettext("Page $1 of $2", list.page+1, list.pagecount) .. "]"
 	
 	retval = retval .. "button[11.6,-0.1;0.5,0.5;btn_modstore_page_up;^]"
 	retval = retval .. "box[11.6,0.35;0.28,8.6;000000]"
-	local scrollbarpos = 0.35 + (8.1/list.pagecount) * list.page
+	local scrollbarpos = 0.35 + (8.1/(list.pagecount-1)) * list.page
 	retval = retval .. "box[11.6," ..scrollbarpos .. ";0.28,0.5;32CD32]"
 	retval = retval .. "button[11.6,9.0;0.5,0.5;btn_modstore_page_down;v]"
 	
@@ -234,15 +231,16 @@ function modstore.getmodlist(list)
 			
 			--title + author
 			retval = retval .."label[2.75," .. screenshot_ypos .. ";" .. 
-				fs_escape_string(details.title) .. " (" .. details.author .. ")]"
+				engine.formspec_escape(details.title) .. " (" .. details.author .. ")]"
 			
 			--description
 			local descriptiony = screenshot_ypos + 0.5
 			retval = retval .. "textarea[3," .. descriptiony .. ";6.5,1.55;;" .. 
-				fs_escape_string(details.description) .. ";]"
+				engine.formspec_escape(details.description) .. ";]"
 			--rating
 			local ratingy = screenshot_ypos + 0.6
-			retval = retval .."label[10.1," .. ratingy .. ";Rating: " .. details.rating .."]"
+			retval = retval .."label[10.1," .. ratingy .. ";" .. 
+							fgettext("Rating") .. ": " .. details.rating .."]"
 			
 			--install button
 			local buttony = screenshot_ypos + 1.2
@@ -250,9 +248,9 @@ function modstore.getmodlist(list)
 			retval = retval .."button[9.6," .. buttony .. ";2,0.5;btn_install_mod_" .. buttonnumber .. ";"
 			
 			if modmgr.mod_exists(details.basename) then
-				retval = retval .. "re-Install]"
+				retval = retval .. fgettext("re-Install") .."]"
 			else
-				retval = retval .. "Install]"
+				retval = retval .. fgettext("Install") .."]"
 			end
 		end
 	end

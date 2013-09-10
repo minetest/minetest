@@ -20,10 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "util/pointer.h"
-
-SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
-
 /*
 	changes by PROTOCOL_VERSION:
 
@@ -102,6 +98,7 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		drowning, leveled and liquid_range added to ContentFeatures
 		stepheight and collideWithObjects added to object properties
 		version, heat and humidity transfer in MapBock
+		added new property to entities automatic_face_movement_dir
 */
 
 #define LATEST_PROTOCOL_VERSION 21

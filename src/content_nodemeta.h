@@ -20,8 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTENT_NODEMETA_HEADER
 #define CONTENT_NODEMETA_HEADER
 
-#include "nodemetadata.h"
-#include "nodetimer.h"
+#include <iostream>
+
+class NodeMetadataList;
+class NodeTimerList;
+class IGameDef;
 
 /*
 	Legacy nodemeta definitions

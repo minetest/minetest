@@ -1210,6 +1210,11 @@ public:
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
+
+		if (getParent() == NULL && m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
+			updateNodePos();
+		}
 	}
 
 	void updateTexturePos()
@@ -1734,8 +1739,29 @@ public:
 		{
 			/*s16 damage =*/ readS16(is);
 			s16 result_hp = readS16(is);
-			
+
+			// Use this instead of the send damage to not interfere with prediction
+			s16 damage = m_hp - result_hp;
+
 			m_hp = result_hp;
+
+			if (damage > 0) {
+				if (m_hp <= 0) {
+					// TODO: Execute defined fast response
+					// As there is no definition, make a smoke puff
+					ClientSimpleObject *simple = createSmokePuff(
+							m_smgr, m_env, m_position,
+							m_prop.visual_size * BS);
+					m_env->addSimpleObject(simple);
+				} else {
+					// TODO: Execute defined fast response
+					// Flashing shall suffice as there is no definition
+					m_reset_textures_timer = 0.05;
+					if(damage >= 2)
+						m_reset_textures_timer += 0.05 * damage;
+					updateTextures("^[brighten");
+				}
+			}
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS)
 		{

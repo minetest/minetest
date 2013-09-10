@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_player.h"
+#include "cpp_api/s_internal.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 {
@@ -28,7 +29,7 @@ void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_newplayers");
 	// Call callbacks
 	objectrefGetOrCreate(player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player)
@@ -40,7 +41,7 @@ void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_dieplayers");
 	// Call callbacks
 	objectrefGetOrCreate(player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
@@ -52,7 +53,7 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_respawnplayers");
 	// Call callbacks
 	objectrefGetOrCreate(player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_OR);
 	bool positioning_handled_by_some = lua_toboolean(L, -1);
 	return positioning_handled_by_some;
 }
@@ -66,7 +67,7 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player)
@@ -78,7 +79,7 @@ void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player)
 	lua_getfield(L, -1, "registered_on_leaveplayers");
 	// Call callbacks
 	objectrefGetOrCreate(player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
@@ -94,7 +95,7 @@ void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 	lua_newtable(L);
 	lua_pushlstring(L, cheat_type.c_str(), cheat_type.size());
 	lua_setfield(L, -2, "type");
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
@@ -121,7 +122,7 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 		lua_pushlstring(L, value.c_str(), value.size());
 		lua_settable(L, -3);
 	}
-	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
+	script_run_callbacks(L, 3, RUN_CALLBACKS_MODE_OR_SC);
 }
 ScriptApiPlayer::~ScriptApiPlayer() {
 }

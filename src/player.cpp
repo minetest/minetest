@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
-#include "connection.h" // PEER_ID_INEXISTENT
 #include "settings.h"
 #include "content_sao.h"
 #include "util/numeric.h"
@@ -34,9 +33,13 @@ Player::Player(IGameDef *gamedef):
 	is_climbing(false),
 	swimming_vertical(false),
 	camera_barely_in_ceiling(false),
+	light(0),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
+	hurt_tilt_timer(0),
+	hurt_tilt_strength(0),
 	peer_id(PEER_ID_INEXISTENT),
+	keyPressed(0),
 // protected
 	m_gamedef(gamedef),
 	m_breath(-1),

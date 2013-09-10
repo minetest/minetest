@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "particles.h"
 #include "camera.h"
-#include "farmesh.h"
 #include "mapblock.h"
 #include "settings.h"
 #include "profiler.h"
@@ -795,9 +794,9 @@ public:
 		services->setPixelShaderConstant("skyBgColor", bgcolorfa, 4);
 
 		// Fog distance
-		float fog_distance = *m_fog_range;
-		if(*m_force_fog_off)
-			fog_distance = 10000*BS;
+		float fog_distance = 10000*BS;
+		if(g_settings->getBool("enable_fog") && !*m_force_fog_off)
+			fog_distance = *m_fog_range;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
 
 		// Day-night ratio
@@ -916,7 +915,6 @@ void the_game(
 	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath,
 	ChatBackend &chat_backend,
 	const SubgameSpec &gamespec, // Used for local game,
 	bool simple_singleplayer_mode
@@ -1002,7 +1000,7 @@ void the_game(
 		draw_load_screen(text, device, font,0,25);
 		delete[] text;
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath, gamespec,
+		server = new Server(map_dir, gamespec,
 				simple_singleplayer_mode);
 		server->start(port);
 	}
@@ -1308,16 +1306,6 @@ void the_game(
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 	
 	/*
-		FarMesh
-	*/
-
-	FarMesh *farmesh = NULL;
-	if(g_settings->getBool("enable_farmesh"))
-	{
-		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
-	}
-
-	/*
 		A copy of the local inventory
 	*/
 	Inventory local_inventory(itemdef);
@@ -1406,7 +1394,6 @@ void the_game(
 	bool ldown_for_dig = false;
 
 	float damage_flash = 0;
-	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
 	float jump_timer = 0;
 	bool reset_jump_timer = false;
@@ -2869,17 +2856,12 @@ void the_game(
 			Fog range
 		*/
 	
-		if(farmesh)
-		{
-			fog_range = BS*farmesh_range;
-		}
-		else
-		{
+		if(draw_control.range_all)
+			fog_range = 100000*BS;
+		else {
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
 			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
-			if(draw_control.range_all)
-				fog_range = 100000*BS;
 		}
 
 		/*
@@ -2918,7 +2900,6 @@ void the_game(
 		sky->update(time_of_day_smooth, time_brightness, direct_brightness,
 				sunlight_seen);
 		
-		float brightness = sky->getBrightness();
 		video::SColor bgcolor = sky->getBgColor();
 		video::SColor skycolor = sky->getSkyColor();
 
@@ -2937,22 +2918,6 @@ void the_game(
 		}
 		
 		/*
-			Update farmesh
-		*/
-		if(farmesh)
-		{
-			farmesh_range = draw_control.wanted_range * 10;
-			if(draw_control.range_all && farmesh_range < 500)
-				farmesh_range = 500;
-			if(farmesh_range > 1000)
-				farmesh_range = 1000;
-
-			farmesh->step(dtime);
-			farmesh->update(v2f(player_position.X, player_position.Z),
-					brightness, farmesh_range);
-		}
-
-		/*
 			Update particles
 		*/
 
@@ -2963,7 +2928,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings->getBool("enable_fog") == true && !force_fog_off)
+		if(g_settings->getBool("enable_fog") && !force_fog_off)
 		{
 			driver->setFog(
 				bgcolor,
@@ -3234,6 +3199,11 @@ void the_game(
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
 
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
+
 
 				//Right eye...
 				irr::core::vector3df rightEye;
@@ -3257,6 +3227,11 @@ void the_game(
 				camera.getCameraNode()->setTarget( focusPoint );
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
 
 
 				//driver->endScene();
@@ -3286,9 +3261,11 @@ void the_game(
 		driver->setMaterial(m);
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-		if (show_hud)
+		if((!g_settings->getBool("anaglyph")) && (show_hud))
+		{
 			hud.drawSelectionBoxes(hilightboxes);
+		}
+
 		/*
 			Wielded tool
 		*/
@@ -3374,7 +3351,7 @@ void the_game(
 		*/
 		{
 			TimeTaker timer("endScene");
-			endSceneX(driver);
+			driver->endScene();
 			endscenetime = timer.stop(true);
 		}
 

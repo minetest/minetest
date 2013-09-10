@@ -228,7 +228,7 @@ struct ContentFeatures
 	std::string freezemelt;
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
-	bool drowning;
+	u8 drowning;
 	// Amount of light the node emits
 	u8 light_source;
 	u32 damage_per_second;

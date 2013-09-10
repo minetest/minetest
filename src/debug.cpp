@@ -19,15 +19,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "debug.h"
+#include "exceptions.h"
+#include "threads.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
+#include <map>
+#include <jmutex.h>
+#include <jmutexautolock.h>
 
 /*
 	Debug output
 */
 
+#define DEBUGSTREAM_COUNT 2
+
 FILE *g_debugstreams[DEBUGSTREAM_COUNT] = {stderr, NULL};
+
+#define DEBUGPRINT(...)\
+{\
+	for(int i=0; i<DEBUGSTREAM_COUNT; i++)\
+	{\
+		if(g_debugstreams[i] != NULL){\
+			fprintf(g_debugstreams[i], __VA_ARGS__);\
+			fflush(g_debugstreams[i]);\
+		}\
+	}\
+}
 
 void debugstreams_init(bool disable_stderr, const char *filename)
 {
@@ -52,6 +70,47 @@ void debugstreams_deinit()
 	if(g_debugstreams[1] != NULL)
 		fclose(g_debugstreams[1]);
 }
+
+class Debugbuf : public std::streambuf
+{
+public:
+	Debugbuf(bool disable_stderr)
+	{
+		m_disable_stderr = disable_stderr;
+	}
+
+	int overflow(int c)
+	{
+		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
+		{
+			if(g_debugstreams[i] == stderr && m_disable_stderr)
+				continue;
+			if(g_debugstreams[i] != NULL)
+				(void)fwrite(&c, 1, 1, g_debugstreams[i]);
+			//TODO: Is this slow?
+			fflush(g_debugstreams[i]);
+		}
+		
+		return c;
+	}
+	std::streamsize xsputn(const char *s, std::streamsize n)
+	{
+		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
+		{
+			if(g_debugstreams[i] == stderr && m_disable_stderr)
+				continue;
+			if(g_debugstreams[i] != NULL)
+				(void)fwrite(s, 1, n, g_debugstreams[i]);
+			//TODO: Is this slow?
+			fflush(g_debugstreams[i]);
+		}
+
+		return n;
+	}
+	
+private:
+	bool m_disable_stderr;
+};
 
 Debugbuf debugbuf(false);
 std::ostream dstream(&debugbuf);
@@ -82,6 +141,18 @@ void assert_fail(const char *assertion, const char *file,
 /*
 	DebugStack
 */
+
+struct DebugStack
+{
+	DebugStack(threadid_t id);
+	void print(FILE *file, bool everything);
+	void print(std::ostream &os, bool everything);
+	
+	threadid_t threadid;
+	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
+	int stack_i; // Points to the lowest empty position
+	int stack_max_i; // Highest i that was seen
+};
 
 DebugStack::DebugStack(threadid_t id)
 {

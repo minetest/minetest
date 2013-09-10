@@ -201,6 +201,25 @@ endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 mark_as_advanced(LUA_LIBRARY)
 mark_as_advanced(LUA_INCLUDE_DIR)
 
+set(USE_LEVELDB 0)
+
+OPTION(ENABLE_LEVELDB "Enable LevelDB backend")
+
+if(ENABLE_LEVELDB)
+	find_library(LEVELDB_LIBRARY leveldb)
+	find_path(LEVELDB_INCLUDE_DIR db.h PATH_SUFFIXES leveldb)
+	message (STATUS "LevelDB library: ${LEVELDB_LIBRARY}")
+	message (STATUS "LevelDB headers: ${LEVELDB_INCLUDE_DIR}")
+	if(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+		set(USE_LEVELDB 1)
+		message(STATUS "LevelDB backend enabled")
+		include_directories(${LEVELDB_INCLUDE_DIR})
+	else(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+		set(USE_LEVELDB 0)
+		message(STATUS "LevelDB not found!")
+	endif(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+endif(ENABLE_LEVELDB)
+
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
@@ -261,18 +280,21 @@ set(common_SRCS
 	mapblock.cpp
 	mapsector.cpp
 	map.cpp
+	database.cpp
+	database-dummy.cpp
+	database-leveldb.cpp
+	database-sqlite3.cpp
 	player.cpp
 	test.cpp
 	sha1.cpp
 	base64.cpp
 	ban.cpp
 	biome.cpp
-	clientserver.cpp
 	staticobject.cpp
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
-	${SCRIPT_SRCS}
+	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
 )
 
@@ -306,7 +328,6 @@ set(minetest_SRCS
 	content_cao.cpp
 	mesh.cpp
 	mapblock_mesh.cpp
-	farmesh.cpp
 	keycode.cpp
 	camera.cpp
 	clouds.cpp
@@ -330,9 +351,9 @@ set(minetest_SRCS
 	game.cpp
 	main.cpp
 	guiEngine.cpp
-	guiLuaApi.cpp
 	guiFileSelectMenu.cpp
 	convert_json.cpp
+	${minetest_SCRIPT_SRCS}
 )
 
 if(USE_FREETYPE)
@@ -342,11 +363,14 @@ if(USE_FREETYPE)
 	)
 endif(USE_FREETYPE)
 
+list(SORT minetest_SRCS)
+
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
 	main.cpp
 )
+list(SORT minetestserver_SRCS)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -413,6 +437,9 @@ if(BUILD_CLIENT)
 			${CGUITTFONT_LIBRARY}
 		)
 	endif(USE_FREETYPE)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -427,6 +454,9 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}server

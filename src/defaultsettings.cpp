@@ -103,7 +103,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("invert_mouse", "false");
-	settings->setDefault("enable_farmesh", "false");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");
@@ -148,10 +147,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", "13");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
 	settings->setDefault("mono_font_size", "13");
+	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
+	settings->setDefault("fallback_font_size", "13");
 #else
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
-	settings->setDefault("mono_font_path", porting::getDataPath("textures" DIR_DELIM "fontdejavusansmono.png"));
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "fontdejavusansmono.png"));
 #endif
 
 	// Server stuff
@@ -274,13 +275,16 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
 
+	settings->setDefault("main_menu_script","");
 	settings->setDefault("main_menu_mod_mgr","1");
-	settings->setDefault("old_style_mod_selection","true");
 	settings->setDefault("main_menu_game_mgr","0");
 	settings->setDefault("modstore_download_url", "https://forum.minetest.net/media/");
 	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");
 	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
 
+	settings->setDefault("high_precision_fpu", "true");
+
+	settings->setDefault("language", "");
 }
 
 void override_default_settings(Settings *settings, Settings *from)

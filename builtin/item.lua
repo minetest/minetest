@@ -490,6 +490,7 @@ minetest.nodedef_default = {
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",
 	liquid_viscosity = 0,
+	drowning = 0,
 	light_source = 0,
 	damage_per_second = 0,
 	selection_box = {type="regular"},

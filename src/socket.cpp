@@ -56,6 +56,7 @@ typedef int socket_t;
 #include <string.h>
 #include <errno.h>
 #include <sstream>
+#include <iomanip>
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -392,9 +393,10 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 		for(int i = 0; i < size && i < 20; i++)
 		{
 			if(i % 2 == 0)
-				DEBUGPRINT(" ");
+				dstream << " ";
 			unsigned int a = ((const unsigned char *) data)[i];
-			DEBUGPRINT("%.2X", a);
+			dstream << std::hex << std::setw(2) << std::setfill('0')
+				<< a;
 		}
 		
 		if(size > 20)
@@ -494,9 +496,10 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 		for(int i = 0; i < received && i < 20; i++)
 		{
 			if(i % 2 == 0)
-				DEBUGPRINT(" ");
+				dstream << " ";
 			unsigned int a = ((const unsigned char *) data)[i];
-			DEBUGPRINT("%.2X", a);
+			dstream << std::hex << std::setw(2) << std::setfill('0')
+				<< a;
 		}
 		if(received > 20)
 			dstream << "...";

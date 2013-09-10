@@ -105,13 +105,11 @@ bool deleteEntry (ServerListSpec server)
 	}
 
 	std::string path = ServerList::getFilePath();
-	std::ofstream stream (path.c_str());
-	if (stream.is_open())
-	{
-		stream<<ServerList::serialize(serverlist);
-		return true;
-	}
-	return false;
+	std::ostringstream ss(std::ios_base::binary);
+	ss << ServerList::serialize(serverlist);
+	if (!fs::safeWriteToFile(path, ss.str()))
+		return false;
+	return true;
 }
 
 /*
@@ -128,11 +126,9 @@ bool insert (ServerListSpec server)
 	serverlist.insert(serverlist.begin(), server);
 
 	std::string path = ServerList::getFilePath();
-	std::ofstream stream (path.c_str());
-	if (stream.is_open())
-	{
-		stream<<ServerList::serialize(serverlist);
-	}
+	std::ostringstream ss(std::ios_base::binary);
+	ss << ServerList::serialize(serverlist);
+	fs::safeWriteToFile(path, ss.str());
 
 	return false;
 }

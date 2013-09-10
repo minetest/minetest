@@ -74,7 +74,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	cid_cobble       = ndef->getId("mapgen_cobble");
 	cid_mossycobble  = ndef->getId("mapgen_mossycobble");
 	//cid_torch        = ndef->getId("default:torch");
-	cid_cobblestair  = ndef->getId("stairs:stair_cobble");
+	cid_cobblestair  = ndef->getId("mapgen_stair_cobble");
 
 	// Dungeon generator doesn't modify places which have this set
 	vmanip->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);

@@ -17,32 +17,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
 #include "lua_api/l_base.h"
-#include "common/c_internal.h"
-#include "log.h"
+#include "lua_api/l_internal.h"
+#include "cpp_api/s_base.h"
 
-extern "C" {
-#include "lua.h"
+ScriptApiBase* ModApiBase::getScriptApiBase(lua_State *L) {
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
+	ScriptApiBase *sapi_ptr = (ScriptApiBase*) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	return sapi_ptr;
 }
 
-ModApiBase::ModApiBase() {
-	ScriptApi::registerModApiModule(this);
+Server* ModApiBase::getServer(lua_State *L) {
+	return getScriptApiBase(L)->getServer();
 }
 
-Server* ModApiBase::getServer(lua_State* L) {
-	return get_scriptapi(L)->getServer();
+Environment* ModApiBase::getEnv(lua_State *L) {
+	return getScriptApiBase(L)->getEnv();
 }
 
-Environment* ModApiBase::getEnv(lua_State* L) {
-	return get_scriptapi(L)->getEnv();
+GUIEngine* ModApiBase::getGuiEngine(lua_State *L) {
+	return getScriptApiBase(L)->getGuiEngine();
 }
 
-bool ModApiBase::registerFunction(	lua_State* L,
-								const char* name,
-								lua_CFunction fct,
-								int top
-								) {
+bool ModApiBase::registerFunction(lua_State *L,
+		const char *name,
+		lua_CFunction fct,
+		int top
+		) {
 	//TODO check presence first!
 
 	lua_pushstring(L,name);
@@ -51,13 +54,3 @@ bool ModApiBase::registerFunction(	lua_State* L,
 
 	return true;
 }
-
-struct EnumString es_BiomeTerrainType[] =
-{
-	{BIOME_TERRAIN_NORMAL, "normal"},
-	{BIOME_TERRAIN_LIQUID, "liquid"},
-	{BIOME_TERRAIN_NETHER, "nether"},
-	{BIOME_TERRAIN_AETHER, "aether"},
-	{BIOME_TERRAIN_FLAT,   "flat"},
-	{0, NULL},
-};

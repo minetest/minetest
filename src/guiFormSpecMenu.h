@@ -57,13 +57,6 @@ public:
 	virtual std::string resolveText(std::string str){ return str; }
 };
 
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		IGameDef *gamedef);
-
 class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
@@ -213,16 +206,13 @@ public:
 		m_allowclose = value;
 	}
 
-	void useGettext(bool value) {
-		m_use_gettext = true;
-	}
-
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
 	}
 
 	void removeChildren();
+	void setInitialFocus();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
@@ -235,9 +225,10 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput(int evttype=-1);
+	void acceptInput();
+	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
-	
+
 	int getListboxIndex(std::string listboxname);
 
 protected:
@@ -279,11 +270,16 @@ protected:
 	ItemStack m_selected_content_guess;
 	InventoryLocation m_selected_content_guess_inventory;
 
+	// WARNING: BLACK IRRLICHT MAGIC, see checkListboxClick()
+	std::wstring m_listbox_click_fname;
+	int m_listbox_click_index;
+	u32 m_listbox_click_time;
+	bool m_listbox_doubleclick;
+
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
 
 	bool m_allowclose;
-	bool m_use_gettext;
 	bool m_lock;
 	v2u32 m_lockscreensize;
 private:
@@ -294,7 +290,9 @@ private:
 		v2s32 basepos;
 		int bp_set;
 		v2u32 screensize;
+		std::wstring focused_fieldname;
 		std::map<std::wstring,int> listbox_selections;
+		std::map<std::wstring,int> listbox_scroll;
 	} parserData;
 
 	typedef struct {
@@ -307,6 +305,12 @@ private:
 	std::vector<video::ITexture *> m_Textures;
 
 	fs_key_pendig current_keys_pending;
+
+	// Determine whether listbox click was double click
+	// (Using some black Irrlicht magic)
+	bool checkListboxClick(std::wstring wlistboxname, int eventtype);
+
+	gui::IGUIScrollBar* getListboxScrollbar(gui::IGUIListBox *listbox);
 
 	void parseElement(parserData* data,std::string element);
 

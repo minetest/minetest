@@ -19,12 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
+#include "emerge.h"
 #include "server.h"
 #include <iostream>
 #include <queue>
-#include "clientserver.h"
 #include "map.h"
-#include "jmutexautolock.h"
+#include "environment.h"
+#include "util/container.h"
+#include "util/thread.h"
 #include "main.h"
 #include "constants.h"
 #include "voxel.h"
@@ -32,17 +34,56 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "settings.h"
-#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "profiler.h"
 #include "log.h"
 #include "nodedef.h"
 #include "biome.h"
-#include "emerge.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_indev.h"
 #include "mapgen_singlenode.h"
 #include "mapgen_math.h"
+
+
+class EmergeThread : public SimpleThread
+{
+public:
+	Server *m_server;
+	ServerMap *map;
+	EmergeManager *emerge;
+	Mapgen *mapgen;
+	bool enable_mapgen_debug_info;
+	int id;
+	
+	Event qevent;
+	std::queue<v3s16> blockqueue;
+	
+	EmergeThread(Server *server, int ethreadid):
+		SimpleThread(),
+		m_server(server),
+		map(NULL),
+		emerge(NULL),
+		mapgen(NULL),
+		id(ethreadid)
+	{
+	}
+
+	void *Thread();
+
+	void trigger()
+	{
+		setRun(true);
+		if(IsRunning() == false)
+		{
+			Start();
+		}
+	}
+
+	bool popBlockEmerge(v3s16 *pos, u8 *flags);
+	bool getBlockOrStartGen(v3s16 p, MapBlock **b,
+			BlockMakeData *data, bool allow_generate);
+};
 
 
 /////////////////////////////// Emerge Manager ////////////////////////////////
@@ -182,6 +223,11 @@ Mapgen *EmergeManager::getCurrentMapgen() {
 	return NULL;
 }
 
+
+void EmergeManager::triggerAllThreads() {
+	for (unsigned int i = 0; i != emergethread.size(); i++)
+		emergethread[i]->trigger();
+}
 
 bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate) {
 	std::map<v3s16, BlockEmergeData *>::const_iterator iter;
@@ -466,7 +512,8 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						SERVER_TO_SA(m_server)->environment_OnGenerated(
+						m_server->getScriptIface()->
+								environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 

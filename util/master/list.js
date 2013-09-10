@@ -48,7 +48,7 @@ function success(r) {
         if (/:/.test(s.address)) s.address = '[' + s.address + ']';
         h += '<tr class="mts_row">';
         h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
-        h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + s.clients_top : '') + '</td>';
+        h += '<td class="mts_clients">' + e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + e(s.clients_top) : '') + '</td>';
         var mods = 0;
         if (s.mods && jQuery.isArray(s.mods)) {
             mods = s.mods.length;

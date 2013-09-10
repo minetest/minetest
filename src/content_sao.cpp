@@ -27,9 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
 #include "player.h"
-#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "genericobject.h"
 #include "util/serialize.h"
+#include "util/mathconstants.h"
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -398,7 +399,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 LuaEntitySAO::~LuaEntitySAO()
 {
 	if(m_registered){
-		ENV_TO_SA(m_env)->luaentity_Remove(m_id);
+		m_env->getScriptIface()->luaentity_Remove(m_id);
 	}
 }
 
@@ -407,15 +408,18 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	
 	// Create entity from name
-	m_registered = ENV_TO_SA(m_env)->luaentity_Add(m_id, m_init_name.c_str());
+	m_registered = m_env->getScriptIface()->
+		luaentity_Add(m_id, m_init_name.c_str());
 	
 	if(m_registered){
 		// Get properties
-		ENV_TO_SA(m_env)->luaentity_GetProperties(m_id, &m_prop);
+		m_env->getScriptIface()->
+			luaentity_GetProperties(m_id, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
-		ENV_TO_SA(m_env)->luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
+		m_env->getScriptIface()->
+			luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
 	}
 }
 
@@ -522,10 +526,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					* dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
 		}
+
+		if(m_prop.automatic_face_movement_dir){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
+		}
 	}
 
 	if(m_registered){
-		ENV_TO_SA(m_env)->luaentity_Step(m_id, dtime);
+		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
 	}
 
 	if(send_recommended == false)
@@ -635,7 +643,8 @@ std::string LuaEntitySAO::getStaticData()
 	os<<serializeString(m_init_name);
 	// state
 	if(m_registered){
-		std::string state = ENV_TO_SA(m_env)->luaentity_GetStaticdata(m_id);
+		std::string state = m_env->getScriptIface()->
+			luaentity_GetStaticdata(m_id);
 		os<<serializeLongString(state);
 	} else {
 		os<<serializeLongString(m_init_state);
@@ -702,7 +711,7 @@ int LuaEntitySAO::punch(v3f dir,
 			m_removed = true;
 	}
 
-	ENV_TO_SA(m_env)->luaentity_Punch(m_id, puncher,
+	m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir);
 
 	return result.wear;
@@ -715,7 +724,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	// It's best that attachments cannot be clicked
 	if(isAttached())
 		return;
-	ENV_TO_SA(m_env)->luaentity_Rightclick(m_id, clicker);
+	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(v3f pos)
@@ -933,6 +942,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_player(player_),
 	m_peer_id(peer_id_),
 	m_inventory(NULL),
+	m_damage(0),
 	m_last_good_position(0,0,0),
 	m_time_from_last_punch(0),
 	m_nocheat_dig_pos(32767, 32767, 32767),
@@ -943,8 +953,11 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_properties_sent(true),
 	m_privs(privs),
 	m_is_singleplayer(is_singleplayer),
+	m_animation_speed(0),
+	m_animation_blend(0),
 	m_animation_sent(false),
 	m_bone_position_sent(false),
+	m_attachment_parent_id(0),
 	m_attachment_sent(false),
 	// public
 	m_moved(false),
@@ -1286,14 +1299,6 @@ int PlayerSAO::punch(v3f dir,
 
 	setHP(getHP() - hitparams.hp);
 
-	if(hitparams.hp != 0)
-	{
-		std::string str = gob_cmd_punched(hitparams.hp, getHP());
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push_back(aom);
-	}
-
 	return hitparams.wear;
 }
 
@@ -1304,6 +1309,13 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 s16 PlayerSAO::getHP() const
 {
 	return m_player->hp;
+}
+
+s16 PlayerSAO::readDamage()
+{
+	s16 damage = m_damage;
+	m_damage = 0;
+	return damage;
 }
 
 void PlayerSAO::setHP(s16 hp)
@@ -1323,19 +1335,15 @@ void PlayerSAO::setHP(s16 hp)
 
 	m_player->hp = hp;
 
-	if(hp != oldhp)
+	if(hp != oldhp) {
 		m_hp_not_sent = true;
-
-	// On death or reincarnation send an active object message
-	if((hp == 0) != (oldhp == 0))
-	{
-		// Will send new is_visible value based on (getHP()!=0)
-		m_properties_sent = false;
-		// Send new HP
-		std::string str = gob_cmd_punched(0, getHP());
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push_back(aom);
+		if(oldhp > hp)
+			m_damage += oldhp - hp;
 	}
+
+	// Update properties on death
+	if((hp == 0) != (oldhp == 0))
+		m_properties_sent = false;
 }
 
 u16 PlayerSAO::getBreath() const

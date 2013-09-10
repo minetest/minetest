@@ -23,7 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <set>
 #include "strfnd.h"
+#include "util/string.h"
 #include "log.h"
+#include "filesys.h"
 
 BanManager::BanManager(const std::string &banfilepath):
 		m_banfilepath(banfilepath),
@@ -76,20 +78,20 @@ void BanManager::save()
 {
 	JMutexAutoLock lock(m_mutex);
 	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
-	std::ofstream os(m_banfilepath.c_str(), std::ios::binary);
-	
-	if(os.good() == false)
-	{
-		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
-		throw SerializationError("BanManager::load(): Couldn't open file");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	for(std::map<std::string, std::string>::iterator
 			i = m_ips.begin();
 			i != m_ips.end(); i++)
 	{
-		os<<i->first<<"|"<<i->second<<"\n";
+		ss << i->first << "|" << i->second << "\n";
 	}
+
+	if(!fs::safeWriteToFile(m_banfilepath, ss.str())) {
+		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
+		throw SerializationError("BanManager::save(): Couldn't write file");
+	}
+
 	m_modified = false;
 }
 

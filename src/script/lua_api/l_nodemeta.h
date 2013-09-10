@@ -19,20 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_NODEMETA_H_
 #define L_NODEMETA_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#include "lua_api/l_base.h"
+#include "irrlichttypes_bloated.h"
 
-#include "environment.h"
-#include "nodemetadata.h"
+class ServerEnvironment;
+class NodeMetadata;
 
 /*
 	NodeMetaRef
 */
 
-class NodeMetaRef
-{
+class NodeMetaRef : public ModApiBase {
 private:
 	v3s16 m_p;
 	ServerEnvironment *m_env;
@@ -90,4 +87,4 @@ public:
 	static void Register(lua_State *L);
 };
 
-#endif //L_NODEMETA_H_
+#endif /* L_NODEMETA_H_ */

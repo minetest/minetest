@@ -18,8 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_noise.h"
-#include "common/c_internal.h"
+#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
+#include "common/c_content.h"
 #include "log.h"
 
 // garbage collector
@@ -412,7 +413,3 @@ const luaL_reg LuaPseudoRandom::methods[] = {
 	luamethod(LuaPseudoRandom, next),
 	{0,0}
 };
-
-REGISTER_LUA_REF(LuaPseudoRandom);
-REGISTER_LUA_REF(LuaPerlinNoiseMap);
-REGISTER_LUA_REF(LuaPerlinNoise);

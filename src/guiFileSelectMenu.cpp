@@ -101,12 +101,6 @@ bool GUIFileSelectMenu::OnEvent(const SEvent& event)
 {
 
 	if (event.EventType == irr::EET_GUI_EVENT) {
-
-		int callerId = event.GUIEvent.Caller->getID();
-		if (callerId >= 0) {
-			std::cout << "CallerId:" << callerId << std::endl;
-		}
-
 		switch (event.GUIEvent.EventType) {
 			case gui::EGET_ELEMENT_CLOSED:
 			case gui::EGET_FILE_CHOOSE_DIALOG_CANCELLED:

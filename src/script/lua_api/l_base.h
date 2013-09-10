@@ -20,44 +20,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_BASE_H_
 #define L_BASE_H_
 
-#include "biome.h"
 #include "common/c_types.h"
 
 extern "C" {
-#include "lua.h"
+#include <lua.h>
+#include <lauxlib.h>
 }
 
-extern struct EnumString es_BiomeTerrainType[];
-
-class ScriptApi;
+class ScriptApiBase;
 class Server;
 class Environment;
+class GUIEngine;
 
-typedef class ModApiBase {
-
-public:
-	ModApiBase();
-
-	virtual bool Initialize(lua_State* L, int top) = 0;
-	virtual ~ModApiBase() {};
+class ModApiBase {
 
 protected:
-	static Server* getServer(      lua_State* L);
-	static Environment* getEnv(    lua_State* L);
-	static bool registerFunction(	lua_State* L,
-									const char* name,
-									lua_CFunction fct,
-									int top
-									);
-} ModApiBase;
+	static ScriptApiBase*   getScriptApiBase(lua_State *L);
+	static Server*          getServer(lua_State *L);
+	static Environment*     getEnv(lua_State *L);
+	static GUIEngine*       getGuiEngine(lua_State *L);
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
-#define NO_MAP_LOCK_REQUIRED
-#else
-#include "main.h"
-#include "profiler.h"
-#define NO_MAP_LOCK_REQUIRED ScopeProfiler nolocktime(g_profiler,"Scriptapi: unlockable time",SPT_ADD)
-//#define NO_ENVLOCK_REQUIRED assert(getServer(L).m_env_mutex.IsLocked() == false)
-#endif
+	// Get an arbitrary subclass of ScriptApiBase
+	// by using dynamic_cast<> on getScriptApiBase()
+	template<typename T>
+	static T* getScriptApi(lua_State *L) {
+		ScriptApiBase *scriptIface = getScriptApiBase(L);
+		T *scriptIfaceDowncast = dynamic_cast<T*>(scriptIface);
+		if (!scriptIfaceDowncast) {
+			throw LuaError(L, "Requested unavailable ScriptApi - core engine bug!");
+		}
+		return scriptIfaceDowncast;
+	}
+
+	static bool registerFunction(lua_State *L,
+			const char* name,
+			lua_CFunction fct,
+			int top
+			);
+};
 
 #endif /* L_BASE_H_ */

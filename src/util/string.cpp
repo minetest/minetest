@@ -18,10 +18,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "string.h"
+#include "pointer.h"
 
 #include "../sha1.h"
 #include "../base64.h"
 #include "../porting.h"
+
+std::wstring narrow_to_wide(const std::string& mbs)
+{
+	size_t wcl = mbs.size();
+	Buffer<wchar_t> wcs(wcl+1);
+	size_t l = mbstowcs(*wcs, mbs.c_str(), wcl);
+	if(l == (size_t)(-1))
+		return L"<invalid multibyte string>";
+	wcs[l] = 0;
+	return *wcs;
+}
+
+std::string wide_to_narrow(const std::wstring& wcs)
+{
+	size_t mbl = wcs.size()*4;
+	SharedBuffer<char> mbs(mbl+1);
+	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
+	if(l == (size_t)(-1))
+		mbs[0] = 0;
+	else
+		mbs[l] = 0;
+	return *mbs;
+}
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as

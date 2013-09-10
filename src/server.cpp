@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <algorithm>
 #include "clientserver.h"
+#include "ban.h"
+#include "environment.h"
 #include "map.h"
 #include "jmutexautolock.h"
 #include "main.h"
@@ -31,10 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
+#include "genericobject.h"
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "script/cpp_api/scriptapi.h"
+#include "scripting_game.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "craftdef.h"
@@ -58,6 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
+#include "util/thread.h"
 #include "defaultsettings.h"
 
 class ClientNotFoundException : public BaseException
@@ -66,6 +70,21 @@ public:
 	ClientNotFoundException(const char *s):
 		BaseException(s)
 	{}
+};
+
+class ServerThread : public SimpleThread
+{
+	Server *m_server;
+
+public:
+
+	ServerThread(Server *server):
+		SimpleThread(),
+		m_server(server)
+	{
+	}
+
+	void * Thread();
 };
 
 void * ServerThread::Thread()
@@ -614,45 +633,22 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 }
 
 /*
-	PlayerInfo
-*/
-
-PlayerInfo::PlayerInfo()
-{
-	name[0] = 0;
-	avg_rtt = 0;
-}
-
-void PlayerInfo::PrintLine(std::ostream *s)
-{
-	(*s)<<id<<": ";
-	(*s)<<"\""<<name<<"\" ("
-			<<(position.X/10)<<","<<(position.Y/10)
-			<<","<<(position.Z/10)<<") ";
-	address.print(s);
-	(*s)<<" avg_rtt="<<avg_rtt;
-	(*s)<<std::endl;
-}
-
-/*
 	Server
 */
 
 Server::Server(
 		const std::string &path_world,
-		const std::string &path_config,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode
 	):
 	m_path_world(path_world),
-	m_path_config(path_config),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
 	      g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"), this),
-	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
+	m_banmanager(NULL),
 	m_rollback(NULL),
 	m_rollback_sink_enabled(true),
 	m_enable_rollback_recording(false),
@@ -662,7 +658,7 @@ Server::Server(
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
-	m_thread(this),
+	m_thread(NULL),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_shutdown_requested(false),
@@ -695,7 +691,6 @@ Server::Server(
 	else
 		infostream<<std::endl;
 	infostream<<"- world:  "<<m_path_world<<std::endl;
-	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
 	// Initialize default settings and override defaults with those provided
@@ -704,10 +699,17 @@ Server::Server(
 	Settings gamedefaults;
 	getGameMinetestConfig(gamespec.path, gamedefaults);
 	override_default_settings(g_settings, &gamedefaults);
-	
+
+	// Create server thread
+	m_thread = new ServerThread(this);
+
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
-	
+
+	// Create ban manager
+	std::string ban_path = m_path_world+DIR_DELIM+"ipban.txt";
+	m_banmanager = new BanManager(ban_path);
+
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
@@ -773,7 +775,7 @@ Server::Server(
 
 	infostream<<"Server: Initializing Lua"<<std::endl;
 
-	m_script = new ScriptApi(this);
+	m_script = new GameScripting(this);
 
 
 	// Load and run builtin.lua
@@ -816,7 +818,7 @@ Server::Server(
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_script, this, this);
+	m_env = new ServerEnvironment(servermap, m_script, this, m_emerge);
 	
 	// Run some callbacks after the MG params have been set up but before activation
 	MapgenParams *mgparams = servermap->getMapgenParams();
@@ -913,6 +915,7 @@ Server::~Server()
 		Stop threads
 	*/
 	stop();
+	delete m_thread;
 
 	//shutdown all emerge threads first!
 	delete m_emerge;
@@ -936,6 +939,7 @@ Server::~Server()
 	// Delete things in the reverse order of creation
 	delete m_env;
 	delete m_rollback;
+	delete m_banmanager;
 	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -961,15 +965,15 @@ void Server::start(unsigned short port)
 	infostream<<"Starting server on port "<<port<<"..."<<std::endl;
 
 	// Stop thread if already running
-	m_thread.stop();
+	m_thread->stop();
 
 	// Initialize connection
 	m_con.SetTimeoutMs(30);
 	m_con.Serve(port);
 
 	// Start thread
-	m_thread.setRun(true);
-	m_thread.Start();
+	m_thread->setRun(true);
+	m_thread->Start();
 
 	// ASCII art for the win!
 	actionstream
@@ -991,9 +995,9 @@ void Server::stop()
 	infostream<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
-	m_thread.setRun(false);
+	m_thread->setRun(false);
 	//m_emergethread.setRun(false);
-	m_thread.stop();
+	m_thread->stop();
 	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
@@ -1086,15 +1090,15 @@ void Server::AsyncRunStep()
 			//JMutexAutoLock envlock(m_env_mutex);
 			JMutexAutoLock conlock(m_con_mutex);
 
+			u16 time = m_env->getTimeOfDay();
+			float time_speed = g_settings->getFloat("time_speed");
+
 			for(std::map<u16, RemoteClient*>::iterator
 				i = m_clients.begin();
 				i != m_clients.end(); ++i)
 			{
 				RemoteClient *client = i->second;
-				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-						m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
-				// Send as reliable
-				m_con.Send(client->peer_id, 0, data, true);
+				SendTimeOfDay(client->peer_id, time, time_speed);
 			}
 		}
 	}
@@ -1680,8 +1684,7 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
-			for (unsigned int i = 0; i != m_emerge->emergethread.size(); i++)
-				m_emerge->emergethread[i]->trigger();
+			m_emerge->triggerAllThreads();
 
 			// Update m_enable_rollback_recording here too
 			m_enable_rollback_recording =
@@ -1701,8 +1704,8 @@ void Server::AsyncRunStep()
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
 			//Ban stuff
-			if(m_banmanager.isModified())
-				m_banmanager.save();
+			if(m_banmanager->isModified())
+				m_banmanager->save();
 
 			// Save changed parts of map
 			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
@@ -1772,13 +1775,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		addr_s = address.serializeString();
 
 		// drop player if is ip is banned
-		if(m_banmanager.isIpBanned(addr_s)){
+		if(m_banmanager->isIpBanned(addr_s)){
+			std::string ban_name = m_banmanager->getBanName(addr_s);
 			infostream<<"Server: A banned client tried to connect from "
 					<<addr_s<<"; banned name was "
-					<<m_banmanager.getBanName(addr_s)<<std::endl;
+					<<ban_name<<std::endl;
 			// This actually doesn't seem to transfer to the client
 			DenyAccess(peer_id, L"Your ip is banned. Banned name was "
-					+narrow_to_wide(m_banmanager.getBanName(addr_s)));
+					+narrow_to_wide(ban_name));
 			m_con.DeletePeer(peer_id);
 			return;
 		}
@@ -1810,14 +1814,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		verbosestream<<"Server: Got TOSERVER_INIT from "
-				<<peer_id<<std::endl;
+		// If net_proto_version is set, this client has already been handled
+		if(getClient(peer_id)->net_proto_version != 0){
+			verbosestream<<"Server: Ignoring multiple TOSERVER_INITs from "
+					<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
+			return;
+		}
+
+		verbosestream<<"Server: Got TOSERVER_INIT from "<<addr_s<<" (peer_id="
+				<<peer_id<<")"<<std::endl;
 
 		// Do not allow multiple players in simple singleplayer mode.
 		// This isn't a perfect way to do it, but will suffice for now.
 		if(m_simple_singleplayer_mode && m_clients.size() > 1){
-			infostream<<"Server: Not allowing another client to connect in"
-					<<" simple singleplayer mode"<<std::endl;
+			infostream<<"Server: Not allowing another client ("<<addr_s
+					<<") to connect in simple singleplayer mode"<<std::endl;
 			DenyAccess(peer_id, L"Running in simple singleplayer mode.");
 			return;
 		}
@@ -1839,9 +1850,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			actionstream<<"Server: A mismatched client tried to connect from "
 					<<addr_s<<std::endl;
-			infostream<<"Server: Cannot negotiate "
-					"serialization version with peer "
-					<<peer_id<<std::endl;
+			infostream<<"Server: Cannot negotiate serialization version with "
+					<<addr_s<<std::endl;
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
@@ -1879,7 +1889,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				net_proto_version = max_net_proto_version;
 		}
 
-		verbosestream<<"Server: "<<peer_id<<" Protocol version: min: "
+		verbosestream<<"Server: "<<addr_s<<": Protocol version: min: "
 				<<min_net_proto_version<<", max: "<<max_net_proto_version
 				<<", chosen: "<<net_proto_version<<std::endl;
 
@@ -1888,8 +1898,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 				net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
 		{
-			actionstream<<"Server: A mismatched client tried to connect from "<<addr_s
-					<<std::endl;
+			actionstream<<"Server: A mismatched client tried to connect from "
+					<<addr_s<<std::endl;
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
@@ -1957,14 +1967,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0)
 		{
-			actionstream<<"Server: Player with an invalid name "
+			actionstream<<"Server: Player with the name \"singleplayer\" "
 					<<"tried to connect from "<<addr_s<<std::endl;
 			DenyAccess(peer_id, L"Name is not allowed");
 			return;
 		}
 
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
-				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
+				<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
 
 		// Get password
 		char given_password[PASSWORD_SIZE];
@@ -2041,9 +2051,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if(given_password != checkpwd){
-			actionstream<<"Server: "<<playername<<" supplied invalid password"
-					<<" (peer_id="<<peer_id<<")"<<std::endl;
-			DenyAccess(peer_id, L"Invalid password");
+			actionstream<<"Server: "<<playername<<" supplied wrong password"
+					<<std::endl;
+			DenyAccess(peer_id, L"Wrong password");
 			return;
 		}
 
@@ -2053,10 +2063,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// If failed, cancel
 		if(playersao == NULL)
 		{
-			errorstream<<"Server: peer_id="<<peer_id
-					<<": failed to emerge player"<<std::endl;
-			DenyAccess(peer_id, L"Could not allocate player. You"
-					" may need to wait for a timeout.");
+			RemotePlayer *player =
+					static_cast<RemotePlayer*>(m_env->getPlayer(playername));
+			if(player && player->peer_id != 0){
+				errorstream<<"Server: "<<playername<<": Failed to emerge player"
+						<<" (player allocated to an another client)"<<std::endl;
+				DenyAccess(peer_id, L"Another client is connected with this "
+						L"name. If your client closed unexpectedly, try again in "
+						L"a minute.");
+			} else {
+				errorstream<<"Server: "<<playername<<": Failed to emerge player"
+						<<std::endl;
+				DenyAccess(peer_id, L"Could not allocate player.");
+			}
 			return;
 		}
 
@@ -2144,9 +2163,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Send time of day
 		{
-			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-					m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
-			m_con.Send(peer_id, 0, data, true);
+			u16 time = m_env->getTimeOfDay();
+			float time_speed = g_settings->getFloat("time_speed");
+			SendTimeOfDay(peer_id, time, time_speed);
 		}
 
 		// Note things in chat if not in simple singleplayer mode
@@ -3188,6 +3207,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 }
 
+void Server::setTimeOfDay(u32 time)
+{
+	m_env->setTimeOfDay(time);
+	m_time_of_day_send_timer = 0;
+}
+
 void Server::onMapEditEvent(MapEditEvent *event)
 {
 	//infostream<<"Server::onMapEditEvent()"<<std::endl;
@@ -3277,48 +3302,6 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		assert(0);
 	}
 }
-
-//std::list<PlayerInfo> Server::getPlayerInfo()
-//{
-//	DSTACK(__FUNCTION_NAME);
-//	JMutexAutoLock envlock(m_env_mutex);
-//	JMutexAutoLock conlock(m_con_mutex);
-//
-//	std::list<PlayerInfo> list;
-//
-//	std::list<Player*> players = m_env->getPlayers();
-//
-//	std::list<Player*>::iterator i;
-//	for(i = players.begin();
-//			i != players.end(); ++i)
-//	{
-//		PlayerInfo info;
-//
-//		Player *player = *i;
-//
-//		try{
-//			// Copy info from connection to info struct
-//			info.id = player->peer_id;
-//			info.address = m_con.GetPeerAddress(player->peer_id);
-//			info.avg_rtt = m_con.GetPeerAvgRTT(player->peer_id);
-//		}
-//		catch(con::PeerNotFoundException &e)
-//		{
-//			// Set dummy peer info
-//			info.id = 0;
-//			info.address = Address(0,0,0,0,0);
-//			info.avg_rtt = 0.0;
-//		}
-//
-//		snprintf(info.name, PLAYERNAME_SIZE, "%s", player->getName());
-//		info.position = player->getPosition();
-//
-//		list.push_back(info);
-//	}
-//
-//	return list;
-//}
-
 
 void Server::peerAdded(con::Peer *peer)
 {
@@ -3826,6 +3809,20 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 	}
 }
 
+void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	// Make packet
+	SharedBuffer<u8> data(2+2+4);
+	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
+	writeU16(&data[2], time);
+	writeF1000(&data[4], time_speed);
+
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::SendPlayerHP(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3833,6 +3830,11 @@ void Server::SendPlayerHP(u16 peer_id)
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
 	SendHP(m_con, peer_id, playersao->getHP());
+
+	// Send to other clients
+	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
+	ActiveObjectMessage aom(playersao->getId(), true, str);
+	playersao->m_messages_out.push_back(aom);
 }
 
 void Server::SendPlayerBreath(u16 peer_id)
@@ -4644,6 +4646,8 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 
 	// If there are way too many clients, get rid of denied new ones immediately
 	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+		verbosestream<<"Server: DenyAccess: Too many clients; getting rid of "
+				<<"peer_id="<<peer_id<<" immediately"<<std::endl;
 		// Delete peer to stop sending it data
 		m_con.DeletePeer(peer_id);
 		// Delete client also to stop block sends and other stuff
@@ -4757,9 +4761,6 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 	delete m_clients[peer_id];
 	m_clients.erase(peer_id);
 
-	// Send player info to all remaining clients
-	//SendPlayerInfos();
-
 	// Send leave chat message to all remaining clients
 	if(message.length() != 0)
 		BroadcastChatMessage(message);
@@ -4799,6 +4800,22 @@ RemoteClient* Server::getClientNoEx(u16 peer_id)
 	if(n == m_clients.end())
 		return NULL;
 	return n->second;
+}
+
+std::string Server::getPlayerName(u16 peer_id)
+{
+	Player *player = m_env->getPlayer(peer_id);
+	if(player == NULL)
+		return "[id="+itos(peer_id)+"]";
+	return player->getName();
+}
+
+PlayerSAO* Server::getPlayerSAO(u16 peer_id)
+{
+	Player *player = m_env->getPlayer(peer_id);
+	if(player == NULL)
+		return NULL;
+	return player->getPlayerSAO();
 }
 
 std::wstring Server::getStatusString()
@@ -4889,11 +4906,19 @@ void Server::reportInventoryFormspecModified(const std::string &name)
 	SendPlayerInventoryFormspec(player->peer_id);
 }
 
-// Saves g_settings to configpath given at initialization
-void Server::saveConfig()
+void Server::setIpBanned(const std::string &ip, const std::string &name)
 {
-	if(m_path_config != "")
-		g_settings->updateConfigFile(m_path_config.c_str());
+	m_banmanager->add(ip, name);
+}
+
+void Server::unsetIpBanned(const std::string &ip_or_name)
+{
+	m_banmanager->remove(ip_or_name);
+}
+
+std::string Server::getBanDescription(const std::string &ip_or_name)
+{
+	return m_banmanager->getBanDescription(ip_or_name);
 }
 
 void Server::notifyPlayer(const char *name, const std::wstring msg, const bool prepend = true)
@@ -4925,7 +4950,7 @@ u32 Server::hudAdd(Player *player, HudElement *form) {
 	if (!player)
 		return -1;
 
-	u32 id = hud_get_free_id(player);
+	u32 id = player->getFreeHudID();
 	if (id < player->hud.size())
 		player->hud[id] = form;
 	else
@@ -4972,6 +4997,20 @@ bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
 	writeS32(os, hotbar_itemcount);
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
+}
+
+void Server::hudSetHotbarImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
+}
+
+void Server::hudSetHotbarSelectedImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
 void Server::notifyPlayers(const std::wstring msg)
@@ -5082,11 +5121,6 @@ void Server::deleteParticleSpawnerAll(u32 id)
 			m_particlespawner_ids.end(), id),
 			m_particlespawner_ids.end());
 	SendDeleteParticleSpawnerAll(id);
-}
-
-void Server::queueBlockEmerge(v3s16 blockpos, bool allow_generate)
-{
-	m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, blockpos, allow_generate);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"
-#include "mapgen.h"
+#include "serialization.h"
 #include "nodemetadata.h"
 #include "settings.h"
 #include "log.h"
@@ -34,10 +34,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/mathconstants.h"
 #include "rollback_interface.h"
+#include "environment.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
-#include "mapgen_indev.h"
 #include "biome.h"
+#include "config.h"
+#include "database.h"
+#include "database-dummy.h"
+#include "database-sqlite3.h"
+#if USE_LEVELDB
+#include "database-leveldb.h"
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -2401,10 +2408,7 @@ s16 Map::getHumidity(v3s16 p)
 ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	m_seed(0),
-	m_map_metadata_changed(true),
-	m_database(NULL),
-	m_database_read(NULL),
-	m_database_write(NULL)
+	m_map_metadata_changed(true)
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
@@ -2434,6 +2438,28 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	/*
 		Try to load map; if not found, create a new one.
 	*/
+
+	// Determine which database backend to use
+	std::string conf_path = savedir + DIR_DELIM + "world.mt";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if (!succeeded || !conf.exists("backend")) {
+		// fall back to sqlite3
+		dbase = new Database_SQLite3(this, savedir);
+		conf.set("backend", "sqlite3");
+	} else {
+		std::string backend = conf.get("backend");
+		if (backend == "dummy")
+			dbase = new Database_Dummy(this);
+		else if (backend == "sqlite3")
+			dbase = new Database_SQLite3(this, savedir);
+		#if USE_LEVELDB
+		else if (backend == "leveldb")
+			dbase = new Database_LevelDB(this, savedir);
+		#endif
+		else
+			throw BaseException("Unknown map backend");
+	}
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -2526,12 +2552,7 @@ ServerMap::~ServerMap()
 	/*
 		Close database if it was opened
 	*/
-	if(m_database_read)
-		sqlite3_finalize(m_database_read);
-	if(m_database_write)
-		sqlite3_finalize(m_database_write);
-	if(m_database)
-		sqlite3_close(m_database);
+	delete(dbase);
 
 #if 0
 	/*
@@ -3167,79 +3188,10 @@ plan_b:
 	//return (s16)level;
 }
 
-void ServerMap::createDatabase() {
-	int e;
-	assert(m_database);
-	e = sqlite3_exec(m_database,
-		"CREATE TABLE IF NOT EXISTS `blocks` ("
-			"`pos` INT NOT NULL PRIMARY KEY,"
-			"`data` BLOB"
-		");"
-	, NULL, NULL, NULL);
-	if(e == SQLITE_ABORT)
-		throw FileNotGoodException("Could not create database structure");
-	else
-		infostream<<"ServerMap: Database structure was created";
-}
-
-void ServerMap::verifyDatabase() {
-	if(m_database)
-		return;
-
-	{
-		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
-		bool needs_create = false;
-		int d;
-
-		/*
-			Open the database connection
-		*/
-
-		createDirs(m_savedir);
-
-		if(!fs::PathExists(dbp))
-			needs_create = true;
-
-		d = sqlite3_open_v2(dbp.c_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database failed to open: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot open database file");
-		}
-
-		if(needs_create)
-			createDatabase();
-
-		d = sqlite3_prepare(m_database, "SELECT `data` FROM `blocks` WHERE `pos`=? LIMIT 1", -1, &m_database_read, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare read statement");
-		}
-
-		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare write statement");
-		}
-
-		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database list statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare read statement");
-		}
-
-		infostream<<"ServerMap: Database opened"<<std::endl;
-	}
-}
-
 bool ServerMap::loadFromFolders() {
-	if(!m_database && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
+	if(!dbase->Initialized() && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite")) // ?
 		return true;
 	return false;
-}
-
-sqlite3_int64 ServerMap::getBlockAsInteger(const v3s16 pos) {
-	return (sqlite3_int64)pos.Z*16777216 +
-		(sqlite3_int64)pos.Y*4096 + (sqlite3_int64)pos.X;
 }
 
 void ServerMap::createDirs(std::string path)
@@ -3414,50 +3366,13 @@ void ServerMap::save(ModifiedState save_level)
 	}
 }
 
-static s32 unsignedToSigned(s32 i, s32 max_positive)
-{
-	if(i < max_positive)
-		return i;
-	else
-		return i - 2*max_positive;
-}
-
-// modulo of a negative number does not work consistently in C
-static sqlite3_int64 pythonmodulo(sqlite3_int64 i, sqlite3_int64 mod)
-{
-	if(i >= 0)
-		return i % mod;
-	return mod - ((-i) % mod);
-}
-
-v3s16 ServerMap::getIntegerAsBlock(sqlite3_int64 i)
-{
-	s32 x = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	i = (i - x) / 4096;
-	s32 y = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	i = (i - y) / 4096;
-	s32 z = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	return v3s16(x,y,z);
-}
-
 void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	if(loadFromFolders()){
 		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
 				<<"all blocks that are stored in flat files"<<std::endl;
 	}
-
-	{
-		verifyDatabase();
-
-		while(sqlite3_step(m_database_list) == SQLITE_ROW)
-		{
-			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
-			v3s16 p = getIntegerAsBlock(block_i);
-			//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;
-			dst.push_back(p);
-		}
-	}
+	dbase->listAllLoadableBlocks(dst);
 }
 
 void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
@@ -3491,20 +3406,21 @@ void ServerMap::saveMapMeta()
 	createDirs(m_savedir);
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
-	if(os.good() == false)
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not open"<<fullpath<<std::endl;
-		throw FileNotGoodException("Cannot open chunk metadata");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	Settings params;
 
 	m_emerge->setParamsToSettings(&params);
-	params.writeLines(os);
+	params.writeLines(ss);
 
-	os<<"[end_of_params]\n";
+	ss<<"[end_of_params]\n";
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+	{
+		infostream<<"ERROR: ServerMap::saveMapMeta(): "
+				<<"could not write "<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot save chunk metadata");
+	}
 
 	m_map_metadata_changed = false;
 }
@@ -3575,11 +3491,12 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	createDirs(dir);
 
 	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open sector metafile");
+	std::ostringstream ss(std::ios_base::binary);
 
-	sector->serialize(o, version);
+	sector->serialize(ss, version);
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+		throw FileNotGoodException("Cannot write sector metafile");
 
 	sector->differs_from_disk = false;
 }
@@ -3741,88 +3658,16 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 #endif
 
 void ServerMap::beginSave() {
-	verifyDatabase();
-	if(sqlite3_exec(m_database, "BEGIN;", NULL, NULL, NULL) != SQLITE_OK)
-		infostream<<"WARNING: beginSave() failed, saving might be slow.";
+	dbase->beginSave();
 }
 
 void ServerMap::endSave() {
-	verifyDatabase();
-	if(sqlite3_exec(m_database, "COMMIT;", NULL, NULL, NULL) != SQLITE_OK)
-		infostream<<"WARNING: endSave() failed, map might not have saved.";
+	dbase->endSave();
 }
 
 void ServerMap::saveBlock(MapBlock *block)
 {
-	DSTACK(__FUNCTION_NAME);
-	/*
-		Dummy blocks are not written
-	*/
-	if(block->isDummy())
-	{
-		/*v3s16 p = block->getPos();
-		infostream<<"ServerMap::saveBlock(): WARNING: Not writing dummy block "
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		return;
-	}
-
-	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v3s16 p3d = block->getPos();
-
-
-#if 0
-	v2s16 p2d(p3d.X, p3d.Z);
-	std::string sectordir = getSectorDir(p2d);
-
-	createDirs(sectordir);
-
-	std::string fullpath = sectordir+DIR_DELIM+getBlockFilename(p3d);
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open block data");
-#endif
-	/*
-		[0] u8 serialization version
-		[1] data
-	*/
-
-	verifyDatabase();
-
-	std::ostringstream o(std::ios_base::binary);
-
-	o.write((char*)&version, 1);
-
-	// Write basic data
-	block->serialize(o, version, true);
-
-	// Write block to database
-
-	std::string tmp = o.str();
-	const char *bytes = tmp.c_str();
-
-	bool success = true;
-	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK) {
-		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) { // TODO this mught not be the right length
-		infostream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	int written = sqlite3_step(m_database_write);
-	if(written != SQLITE_DONE) {
-		errorstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
-				<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	// Make ready for later reuse
-	sqlite3_reset(m_database_write);
-
-	// We just wrote it to the disk so clear modified flag
-	if (success)
-		block->resetModified();
+  dbase->saveBlock(block);
 }
 
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load)
@@ -3976,38 +3821,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
-	if(!loadFromFolders()) {
-		verifyDatabase();
+	MapBlock *ret;
 
-		if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
-			infostream<<"WARNING: Could not bind block position for load: "
-				<<sqlite3_errmsg(m_database)<<std::endl;
-		if(sqlite3_step(m_database_read) == SQLITE_ROW) {
-			/*
-				Make sure sector is loaded
-			*/
-			MapSector *sector = createSector(p2d);
-
-			/*
-				Load block
-			*/
-			const char * data = (const char *)sqlite3_column_blob(m_database_read, 0);
-			size_t len = sqlite3_column_bytes(m_database_read, 0);
-
-			std::string datastr(data, len);
-
-			loadBlock(&datastr, blockpos, sector, false);
-
-			sqlite3_step(m_database_read);
-			// We should never get more than 1 row, so ok to reset
-			sqlite3_reset(m_database_read);
-
-			return getBlockNoCreateNoEx(blockpos);
-		}
-		sqlite3_reset(m_database_read);
-
-		// Not found in database, try the files
-	}
+	ret = dbase->loadBlock(blockpos);
+	if (ret) return (ret);
+	// Not found in database, try the files
 
 	// The directory layout we're going to load from.
 	//  1 - original sectors/xxxxzzzz/
@@ -4083,17 +3901,29 @@ s16 ServerMap::getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 	//f32 heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->getGameTime()/100, p.Z, m_emerge->params->seed);
 
 	//variant 2: season change based on default heat map
-	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z, m_emerge->params->seed);
-	heat += -30; // -30 - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
-	f32 base = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
-	base /= ( 86400 * g_settings->getS16("year_days") );
-	base += (f32)p.X / 3000;
-	heat += 30 * sin(base * M_PI); // season
+	const f32 offset = 20; // = m_emerge->biomedef->np_heat->offset
+	const f32 scale  = 20; // = m_emerge->biomedef->np_heat->scale
+	const f32 range  = 20;
+	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z,
+					m_emerge->params->seed); // 0..50..100
 
-	heat += p.Y / -333; // upper=colder, lower=hotter
+	heat -= m_emerge->biomedef->np_heat->offset; // -50..0..+50
+
+	// normalizing - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
+	if(m_emerge->biomedef->np_heat->scale)
+		heat /= m_emerge->biomedef->np_heat->scale / scale; //  -20..0..+20
+
+	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
+	seasonv /= 86400 * g_settings->getS16("year_days"); // season change speed
+	seasonv += (f32)p.X / 3000; // you can walk to area with other season
+	seasonv = sin(seasonv * M_PI);
+	heat += (range * (heat < 0 ? 2 : 0.5)) * seasonv; // -60..0..30
+
+	heat += offset; // -40..0..50
+	heat += p.Y / -333; // upper=colder, lower=hotter, 3c per 1000
 
 	// daily change, hotter at sun +4, colder at night -4
-	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); 
+	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); //-44..20..54
 
 	if(block != NULL) {
 		block->heat = heat;
@@ -4111,14 +3941,16 @@ s16 ServerMap::getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
 			return block->humidity;
 	}
 
-	f32 humidity = NoisePerlin3D(	m_emerge->biomedef->np_humidity,
-					p.X, env->getGameTime()/10, p.Z,
-					m_emerge->params->seed);
-	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
-	//todo like heat//humidity += 20 * ( sin(((f32)p.Z / 300) * M_PI) - 0.5);
+	f32 humidity = NoisePerlin2D(m_emerge->biomedef->np_humidity, p.X, p.Z, 
+						m_emerge->params->seed);
 
-	if (humidity > 100) humidity = 100;
-	if (humidity < 0) humidity = 0;
+	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
+	seasonv /= 86400 * 2; // bad weather change speed (2 days)
+	seasonv += (f32)p.Z / 300;
+	humidity += 30 * sin(seasonv * M_PI);
+
+	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
+	humidity = rangelim(humidity, 0, 100);
 
 	if(block != NULL) {
 		block->humidity = humidity;

@@ -1,4 +1,5 @@
-set(SCRIPT_CPP_API_SRCS
+# Used by server and client
+set(common_SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_base.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_entity.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_env.cpp
@@ -7,5 +8,10 @@ set(SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_node.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_nodemeta.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_player.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/scriptapi.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_server.cpp
+	PARENT_SCOPE)
+
+# Used by client only
+set(minetest_SCRIPT_CPP_API_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/s_mainmenu.cpp
 	PARENT_SCOPE)

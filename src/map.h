@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAP_HEADER
 #define MAP_HEADER
 
-#include <jmutex.h>
-#include <jmutexautolock.h>
-#include <jthread.h>
 #include <iostream>
 #include <sstream>
 #include <set>
@@ -33,16 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapgen.h" //for BlockMakeData and EmergeManager
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
-#include "environment.h"
 
-extern "C" {
-	#include "sqlite3.h"
-}
-
+class Database;
 class ClientMap;
 class MapSector;
 class ServerMapSector;
@@ -51,7 +43,9 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
+class ServerEnvironment;
 struct BlockMakeData;
+struct MapgenParams;
 
 
 /*
@@ -428,13 +422,8 @@ public:
 	/*
 		Database functions
 	*/
-	// Create the database structure
-	void createDatabase();
 	// Verify we can read/write to the database
 	void verifyDatabase();
-	// Get an integer suitable for a block
-	static sqlite3_int64 getBlockAsInteger(const v3s16 pos);
-	static v3s16 getIntegerAsBlock(sqlite3_int64 i);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();
@@ -514,14 +503,7 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed;
-
-	/*
-		SQLite database and statements
-	*/
-	sqlite3 *m_database;
-	sqlite3_stmt *m_database_read;
-	sqlite3_stmt *m_database_write;
-	sqlite3_stmt *m_database_list;
+	Database *dbase;
 };
 
 #define VMANIP_BLOCK_DATA_INEXIST     1

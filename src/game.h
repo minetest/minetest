@@ -137,7 +137,6 @@ void the_game(
 	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath,
 	ChatBackend &chat_backend,
 	const SubgameSpec &gamespec, // Used for local game
 	bool simple_singleplayer_mode
