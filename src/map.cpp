@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen_v6.h"
 #include "biome.h"
+#include "config.h"
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
