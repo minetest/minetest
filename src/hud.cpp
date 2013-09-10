@@ -337,7 +337,7 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, s
 	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
 	s32 padding = hotbar_imagesize / 12;
 	s32 width = hotbar_itemcount * (hotbar_imagesize + padding * 2);
-	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 2);
+	v2s32 pos = centerlowerpos - v2s32(width / 2, hotbar_imagesize + padding * 3);
 	
 	if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)
 		drawItem(pos, hotbar_imagesize, hotbar_itemcount, mainlist, playeritem + 1, 0);
