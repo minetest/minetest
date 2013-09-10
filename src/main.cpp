@@ -79,8 +79,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "mapsector.h"
 
-#ifdef USE_LEVELDB
 #include "database-sqlite3.h"
+#ifdef USE_LEVELDB
 #include "database-leveldb.h"
 #endif
 
@@ -795,10 +795,8 @@ int main(int argc, char *argv[])
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
-	#if USE_LEVELDB
 	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
 			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
-	#endif
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
 			_("Show available video modes"))));
@@ -1219,7 +1217,6 @@ int main(int argc, char *argv[])
 		// Create server
 		Server server(world_path, gamespec, false);
 
-		#if USE_LEVELDB
 		// Database migration
 		if (cmd_args.exists("migrate")) {
 			std::string migrate_to = cmd_args.get("migrate");
@@ -1242,8 +1239,10 @@ int main(int argc, char *argv[])
 			}
 			if (migrate_to == "sqlite3")
 				new_db = new Database_SQLite3(&(ServerMap&)server.getMap(), world_path);
+			#if USE_LEVELDB
 			else if (migrate_to == "leveldb")
 				new_db = new Database_LevelDB(&(ServerMap&)server.getMap(), world_path);
+			#endif
 			else {
 				errorstream << "Migration to " << migrate_to << " is not supported" << std::endl;
 				return 1;
@@ -1275,7 +1274,6 @@ int main(int argc, char *argv[])
 
 			return 0;
 		}
-		#endif
 
 		server.start(port);
 		
