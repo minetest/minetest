@@ -33,8 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
-#include "database.h"
 
+class Database;
 class ClientMap;
 class MapSector;
 class ServerMapSector;
