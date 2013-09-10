@@ -41,6 +41,9 @@ private:
 	// set(self, key, value)
 	static int l_set(lua_State* L);
 
+	// set_defaults(self, {key = value, [...]})
+	static int l_set_defaults(lua_State* L);
+
 	// remove(self, key) -> success
 	static int l_remove(lua_State* L);
 

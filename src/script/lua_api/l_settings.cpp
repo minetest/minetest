@@ -78,6 +78,29 @@ int LuaSettings::l_set(lua_State* L)
 	return 1;
 }
 
+// set_defaults(self, {key = value, [...]})
+int LuaSettings::l_set_defaults(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings* o = checkobject(L, 1);
+
+	if(!lua_istable(L, 2))
+		return 0;
+
+	lua_pushnil(L);
+	while(lua_next(L, 2) != 0){
+		// key at index -2 and value at index -1
+		const char *key   = luaL_checkstring(L, -2);
+		const char *value = luaL_checkstring(L, -1);
+
+		o->m_settings->setDefault(key, value);
+
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return 1;
+}
+
 // remove(self, key) -> success
 int LuaSettings::l_remove(lua_State* L)
 {
@@ -208,6 +231,7 @@ const luaL_reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, set),
+	luamethod(LuaSettings, set_defaults),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, write),
