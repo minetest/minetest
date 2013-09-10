@@ -121,7 +121,7 @@ function minetest.get_node_drops(nodename, toolname)
 	return got_items
 end
 
-function minetest.item_place_node(itemstack, placer, pointed_thing)
+function minetest.item_place_node(itemstack, placer, pointed_thing, facedir)
 	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
@@ -176,16 +176,20 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		newnode.param2 = minetest.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif def.paramtype2 == 'facedir' then
-		local placer_pos = placer:getpos()
-		if placer_pos then
-			local dir = {
-				x = above.x - placer_pos.x,
-				y = above.y - placer_pos.y,
-				z = above.z - placer_pos.z
-			}
-			newnode.param2 = minetest.dir_to_facedir(dir)
-			minetest.log("action", "facedir: " .. newnode.param2)
+		if facedir then
+			newnode.param2 = facedir	
+		else
+			local placer_pos = placer:getpos()
+			if placer_pos then
+				local dir = {
+					x = above.x - placer_pos.x,
+					y = above.y - placer_pos.y,
+					z = above.z - placer_pos.z
+				}
+				newnode.param2 = minetest.dir_to_facedir(dir)
+			end
 		end
+		minetest.log("action", "facedir: " .. newnode.param2)
 	end
 
 	-- Check if the node is attached and if it can be placed there
@@ -237,7 +241,7 @@ function minetest.item_place_object(itemstack, placer, pointed_thing)
 	return itemstack
 end
 
-function minetest.item_place(itemstack, placer, pointed_thing)
+function minetest.item_place(itemstack, placer, pointed_thing, facedir)
 	-- Call on_rightclick if the pointed node defines it
 	if pointed_thing.type == "node" and placer and
 			not placer:get_player_control().sneak then
@@ -249,7 +253,7 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 	end
 
 	if itemstack:get_definition().type == "node" then
-		return minetest.item_place_node(itemstack, placer, pointed_thing)
+		return minetest.item_place_node(itemstack, placer, pointed_thing, facedir)
 	end
 	return itemstack
 end

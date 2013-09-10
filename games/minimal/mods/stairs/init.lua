@@ -17,6 +17,36 @@ function stairs.register_stair(subname, recipeitem, groups, images, description)
 				{-0.5, 0, 0, 0.5, 0.5, 0.5},
 			},
 		},
+		on_place = function(itemstack, placer, pointed_thing)
+			if pointed_thing.type ~= "node" then
+				return itemstack
+			end
+			
+			local p0 = pointed_thing.under
+			local p1 = pointed_thing.above
+			if p0.y-1 == p1.y then
+				local placer_pos = placer:getpos()
+				local dir = {
+					x = pointed_thing.above.x - placer_pos.x,
+					y = pointed_thing.above.y - placer_pos.y,
+					z = pointed_thing.above.z - placer_pos.z
+				}
+				local param2 = minetest.dir_to_facedir(dir)
+				if param2 == 0 then
+					param2 = 20
+				elseif param2 == 1 then
+					param2 = 23
+				elseif param2 == 2 then
+					param2 = 22
+				elseif param2 == 3 then
+					param2 = 21
+				end
+				return minetest.item_place(itemstack, placer, pointed_thing, param2)
+			end
+			
+			-- Otherwise place regularly
+			return minetest.item_place(itemstack, placer, pointed_thing)
+		end,
 	})
 
 	minetest.register_craft({
