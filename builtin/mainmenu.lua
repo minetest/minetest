@@ -1047,16 +1047,17 @@ function tabbuilder.tab_texture_packs()
 	return	retval ..
 			menu.render_texture_pack_list(list) ..
 			";" .. index .. "]" ..
-			"image[0.65,0.25;4.0,3.7;"..(screenfile or no_screenshot).."]"..
+			"image[0.65,0.25;4.0,3.7;"..engine.formspec_escape(screenfile or no_screenshot).."]"..
 			"textarea[1.0,3.25;3.7,1.5;;"..engine.formspec_escape(infotext or "")..";]"
 end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_credits()
+	local logofile = menu.defaulttexturedir .. "logo.png"
 	return	"vertlabel[0,-0.5;CREDITS]" ..
 			"label[0.5,3;Minetest " .. engine.get_version() .. "]" ..
 			"label[0.5,3.3;http://minetest.net]" .. 
-			"image[0.5,1;" .. menu.defaulttexturedir .. "logo.png]" ..
+			"image[0.5,1;" .. engine.formspec_escape(logofile) .. "]" ..
 			"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
 			"#FFFF00" .. fgettext("Core Developers") .."," ..
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
