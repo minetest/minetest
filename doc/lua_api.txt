@@ -1069,8 +1069,8 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
-minetest.is_yes(string)
-^ returns whether string can be interpreted as yes
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
 
 minetest namespace reference
 -----------------------------
