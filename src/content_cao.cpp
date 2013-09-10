@@ -1211,7 +1211,8 @@ public:
 			updateNodePos();
 		}
 
-		if (getParent() == NULL && m_prop.automatic_face_movement_dir){
+		if ((getParent() == NULL && m_prop.automatic_face_movement_dir) &&
+			((m_velocity.Z != 0) || (m_velocity.X != 0))){
 			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
 			updateNodePos();
 		}
