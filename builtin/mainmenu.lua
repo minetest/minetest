@@ -499,8 +499,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	end
 	
 	if fields["cb_public_serverlist"] ~= nil then
-		engine.setting_setbool("public_serverlist",
-			tabbuilder.tobool(fields["cb_public_serverlist"]))
+		engine.setting_set("public_serverlist", fields["cb_public_serverlist"])
 			
 		if engine.setting_getbool("public_serverlist") then
 			menu.favorites = engine.get_favorites("online")
@@ -571,15 +570,15 @@ function tabbuilder.handle_server_buttons(fields)
 	menu.handle_key_up_down(fields,"srv_worlds","mainmenu_last_selected_world")
 	
 	if fields["cb_creative_mode"] then
-		engine.setting_setbool("creative_mode",tabbuilder.tobool(fields["cb_creative_mode"]))
+		engine.setting_set("creative_mode", fields["cb_creative_mode"])
 	end
 	
 	if fields["cb_enable_damage"] then
-		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
+		engine.setting_set("enable_damage", fields["cb_enable_damage"])
 	end
 
 	if fields["cb_server_announce"] then
-		engine.setting_setbool("server_announce",tabbuilder.tobool(fields["cb_server_announce"]))
+		engine.setting_set("server_announce", fields["cb_server_announce"])
 	end
 	
 	if fields["start_server"] ~= nil or
@@ -636,53 +635,44 @@ function tabbuilder.handle_server_buttons(fields)
 end
 
 --------------------------------------------------------------------------------
-function tabbuilder.tobool(text)
-	if text == "true" then
-		return true
-	else
-		return false
-	end
-end
-
---------------------------------------------------------------------------------
 function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_fancy_trees"] then
-		engine.setting_setbool("new_style_leaves",tabbuilder.tobool(fields["cb_fancy_trees"]))
+		engine.setting_set("new_style_leaves", fields["cb_fancy_trees"])
 	end
 	if fields["cb_smooth_lighting"] then
-		engine.setting_setbool("smooth_lighting",tabbuilder.tobool(fields["cb_smooth_lighting"]))
+		engine.setting_set("smooth_lighting", fields["cb_smooth_lighting"])
 	end
 	if fields["cb_3d_clouds"] then
-		engine.setting_setbool("enable_3d_clouds",tabbuilder.tobool(fields["cb_3d_clouds"]))
+		engine.setting_set("enable_3d_clouds", fields["cb_3d_clouds"])
 	end
 	if fields["cb_opaque_water"] then
-		engine.setting_setbool("opaque_water",tabbuilder.tobool(fields["cb_opaque_water"]))
+		engine.setting_set("opaque_water", fields["cb_opaque_water"])
 	end
 	
 	if fields["cb_mipmapping"] then
-		engine.setting_setbool("mip_map",tabbuilder.tobool(fields["cb_mipmapping"]))
+		engine.setting_set("mip_map", fields["cb_mipmapping"])
 	end
 	if fields["cb_anisotrophic"] then
-		engine.setting_setbool("anisotropic_filter",tabbuilder.tobool(fields["cb_anisotrophic"]))
+		engine.setting_set("anisotropic_filter", fields["cb_anisotrophic"])
 	end
 	if fields["cb_bilinear"] then
-		engine.setting_setbool("bilinear_filter",tabbuilder.tobool(fields["cb_bilinear"]))
+		engine.setting_set("bilinear_filter", fields["cb_bilinear"])
 	end
 	if fields["cb_trilinear"] then
-		engine.setting_setbool("trilinear_filter",tabbuilder.tobool(fields["cb_trilinear"]))
+		engine.setting_set("trilinear_filter", fields["cb_trilinear"])
 	end
 			
 	if fields["cb_shaders"] then
-		engine.setting_setbool("enable_shaders",tabbuilder.tobool(fields["cb_shaders"]))
+		engine.setting_set("enable_shaders", fields["cb_shaders"])
 	end
 	if fields["cb_pre_ivis"] then
-		engine.setting_setbool("preload_item_visuals",tabbuilder.tobool(fields["cb_pre_ivis"]))
+		engine.setting_set("preload_item_visuals", fields["cb_pre_ivis"])
 	end
 	if fields["cb_particles"] then
-		engine.setting_setbool("enable_particles",tabbuilder.tobool(fields["cb_particles"]))
+		engine.setting_set("enable_particles", fields["cb_particles"])
 	end
 	if fields["cb_finite_liquid"] then
-		engine.setting_setbool("liquid_finite",tabbuilder.tobool(fields["cb_finite_liquid"]))
+		engine.setting_set("liquid_finite", fields["cb_finite_liquid"])
 	end
 
 	if fields["btn_change_keys"] ~= nil then
@@ -711,11 +701,11 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	menu.handle_key_up_down(fields,"sp_worlds","mainmenu_last_selected_world")
 	
 	if fields["cb_creative_mode"] then
-		engine.setting_setbool("creative_mode",tabbuilder.tobool(fields["cb_creative_mode"]))
+		engine.setting_set("creative_mode", fields["cb_creative_mode"])
 	end
 	
 	if fields["cb_enable_damage"] then
-		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
+		engine.setting_set("enable_damage", fields["cb_enable_damage"])
 	end
 
 	if fields["play"] ~= nil or

@@ -658,7 +658,7 @@ function modmgr.handle_configure_world_buttons(fields)
 	end
 	
 	if fields["cb_mod_enable"] ~= nil then
-		local toset = (fields["cb_mod_enable"] == "true")
+		local toset = engine.is_yes(fields["cb_mod_enable"])
 		modmgr.world_config_enable_mod(toset)
 	end
 	
@@ -675,7 +675,7 @@ function modmgr.handle_configure_world_buttons(fields)
 			current = {}
 		end
 
-		if fields["cb_hide_gamemods"] == "true" then
+		if engine.is_yes(fields["cb_hide_gamemods"]) then
 			current.hide_game = true
 			modmgr.hide_gamemods = true
 		else
@@ -693,7 +693,7 @@ function modmgr.handle_configure_world_buttons(fields)
 			current = {}
 		end
 
-		if fields["cb_hide_mpcontent"] == "true" then
+		if engine.is_yes(fields["cb_hide_mpcontent"]) then
 			current.hide_modpackcontents = true
 			modmgr.hide_modpackcontents = true
 		else
