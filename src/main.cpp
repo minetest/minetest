@@ -77,6 +77,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "serverlist.h"
 #include "guiEngine.h"
+#include "mapsector.h"
 
 #ifdef USE_LEVELDB
 #include "database-sqlite3.h"
