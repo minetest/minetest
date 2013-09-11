@@ -179,11 +179,11 @@ function minetest.get_node_drops(nodename, toolname)
 	return got_items
 end
 
-function minetest.item_place_node(itemstack, placer, pointed_thing)
+function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
-		return itemstack
+		return itemstack, false
 	end
 
 	local under = pointed_thing.under
@@ -194,7 +194,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	if not oldnode_under or not oldnode_above then
 		minetest.log("info", placer:get_player_name() .. " tried to place"
 			.. " node in unloaded position " .. minetest.pos_to_string(above))
-		return itemstack
+		return itemstack, false
 	end
 
 	local olddef_under = ItemStack({name=oldnode_under.name}):get_definition()
@@ -206,7 +206,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		minetest.log("info", placer:get_player_name() .. " tried to place"
 			.. " node in invalid position " .. minetest.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
-		return itemstack
+		return itemstack, false
 	end
 
 	-- Place above pointed node
@@ -222,10 +222,10 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 	
 	local oldnode = minetest.get_node(place_to)
-	local newnode = {name = def.name, param1 = 0, param2 = 0}
+	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
-	if def.paramtype2 == 'wallmounted' then
+	if def.paramtype2 == 'wallmounted' and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -233,7 +233,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		}
 		newnode.param2 = minetest.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
-	elseif def.paramtype2 == 'facedir' then
+	elseif def.paramtype2 == 'facedir' and not param2 then
 		local placer_pos = placer:getpos()
 		if placer_pos then
 			local dir = {
@@ -251,7 +251,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		not check_attached_node(place_to, newnode) then
 		minetest.log("action", "attached node " .. def.name ..
 			" can not be placed at " .. minetest.pos_to_string(place_to))
-		return itemstack
+		return itemstack, false
 	end
 
 	-- Add node and update
@@ -283,7 +283,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	if take_item then
 		itemstack:take_item()
 	end
-	return itemstack
+	return itemstack, true
 end
 
 function minetest.item_place_object(itemstack, placer, pointed_thing)
@@ -295,19 +295,19 @@ function minetest.item_place_object(itemstack, placer, pointed_thing)
 	return itemstack
 end
 
-function minetest.item_place(itemstack, placer, pointed_thing)
+function minetest.item_place(itemstack, placer, pointed_thing, param2)
 	-- Call on_rightclick if the pointed node defines it
 	if pointed_thing.type == "node" and placer and
 			not placer:get_player_control().sneak then
 		local n = minetest.get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
-			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack
+			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack, false
 		end
 	end
 
 	if itemstack:get_definition().type == "node" then
-		return minetest.item_place_node(itemstack, placer, pointed_thing)
+		return minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 	return itemstack
 end

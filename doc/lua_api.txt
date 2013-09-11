@@ -1361,14 +1361,18 @@ minetest.rollback_revert_actions_by(actor, seconds) -> bool, log messages
 
 Defaults for the on_* item definition functions:
 (These return the leftover itemstack)
-minetest.item_place_node(itemstack, placer, pointed_thing)
+minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 ^ Place item as a node
+^ param2 overrides facedir and wallmounted param2
+^ returns itemstack, success
 minetest.item_place_object(itemstack, placer, pointed_thing)
 ^ Place item as-is
-minetest.item_place(itemstack, placer, pointed_thing)
+minetest.item_place(itemstack, placer, pointed_thing, param2)
 ^ Use one of the above based on what the item is.
 ^ Calls on_rightclick of pointed_thing.under if defined instead
 ^ Note: is not called when wielded item overrides on_place
+^ param2 overrides facedir and wallmounted param2
+^ returns itemstack, success
 minetest.item_drop(itemstack, dropper, pos)
 ^ Drop the item
 minetest.item_eat(hp_change, replace_with_item)
