@@ -8,18 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-08-05 22:18+0200\n"
-"Last-Translator: Sasikaa Lacikaa <sasikaa@gmail.com>\n"
+"PO-Revision-Date: 2013-09-11 15:27+0200\n"
+"Last-Translator: Rutger NL <r.minetest@rutger.nl>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
-#, fuzzy
 msgid "Game Name"
 msgstr "Spel"
 
@@ -34,44 +33,43 @@ msgstr "Annuleer"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: Kan mod \"$1\" niet naar spel \"$2\" kopiëren"
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "SPELLEN"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
-#, fuzzy
 msgid "Games"
-msgstr "Spel"
+msgstr "Spellen"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Mods:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "spel aanpassen"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "nieuw spel"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "SPEL AANPASSEN"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Geselecteerde mod verwijderen"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- Mod toevoegen"
 
 #: builtin/mainmenu.lua:159
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
@@ -79,16 +77,15 @@ msgstr "Naam wereld"
 
 #: builtin/mainmenu.lua:298
 msgid "Mapgen"
-msgstr ""
+msgstr "Kaartgenerator"
 
 #: builtin/mainmenu.lua:300
 msgid "Game"
 msgstr "Spel"
 
 #: builtin/mainmenu.lua:314
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Verwijder wereld"
+msgstr "Verwijder wereld \"$1\"?"
 
 #: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
 msgid "Yes"
@@ -99,13 +96,12 @@ msgid "No"
 msgstr "Nee"
 
 #: builtin/mainmenu.lua:384
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Kan geen nieuwe wereld aanmaken: De naam bestaat al"
+msgstr "Wereld \"$1\" bestaat al"
 
 #: builtin/mainmenu.lua:399
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Geen wereldnaam opgegeven of geen spel geselecteerd"
 
 #: builtin/mainmenu.lua:852
 msgid "Singleplayer"
@@ -113,11 +109,11 @@ msgstr "Singleplayer"
 
 #: builtin/mainmenu.lua:853
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #: builtin/mainmenu.lua:854
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: builtin/mainmenu.lua:855
 msgid "Settings"
@@ -125,11 +121,11 @@ msgstr "Instellingen"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr ""
+msgstr "Textuurverzamelingen"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
-msgstr ""
+msgstr "Mods"
 
 #: builtin/mainmenu.lua:865
 msgid "Credits"
@@ -137,11 +133,11 @@ msgstr "Credits"
 
 #: builtin/mainmenu.lua:885
 msgid "CLIENT"
-msgstr ""
+msgstr "CLIENT"
 
 #: builtin/mainmenu.lua:886
 msgid "Favorites:"
-msgstr "Favourieten:"
+msgstr "Favorieten:"
 
 #: builtin/mainmenu.lua:887
 msgid "Address/Port"
@@ -152,9 +148,8 @@ msgid "Name/Password"
 msgstr "Naam/Wachtwoord"
 
 #: builtin/mainmenu.lua:891
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Publieke Server lijst:"
+msgstr "Publieke Serverlijst"
 
 #: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
@@ -174,9 +169,8 @@ msgid "Configure"
 msgstr "Instellingen"
 
 #: builtin/mainmenu.lua:944
-#, fuzzy
 msgid "Start Game"
-msgstr "Start het spel / Verbind"
+msgstr "Start spel"
 
 #: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
 msgid "Select World:"
@@ -184,7 +178,7 @@ msgstr "Selecteer Wereld:"
 
 #: builtin/mainmenu.lua:946
 msgid "START SERVER"
-msgstr ""
+msgstr "START SERVER"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
@@ -200,20 +194,19 @@ msgstr "Publiek"
 
 #: builtin/mainmenu.lua:953
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #: builtin/mainmenu.lua:955
-#, fuzzy
 msgid "Password"
-msgstr "Huidig wachtwoord"
+msgstr "Wachtwoord"
 
 #: builtin/mainmenu.lua:956
 msgid "Server Port"
-msgstr ""
+msgstr "Serverpoort"
 
 #: builtin/mainmenu.lua:966
 msgid "SETTINGS"
-msgstr ""
+msgstr "INSTELLINGEN"
 
 #: builtin/mainmenu.lua:967
 msgid "Fancy trees"
@@ -228,9 +221,8 @@ msgid "3D Clouds"
 msgstr "3D wolken"
 
 #: builtin/mainmenu.lua:973
-#, fuzzy
 msgid "Opaque Water"
-msgstr "Doorzichtig water"
+msgstr "Ondoorzichtig water"
 
 #: builtin/mainmenu.lua:976
 msgid "Mip-Mapping"
@@ -238,15 +230,15 @@ msgstr "Mip-Mapping"
 
 #: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
-msgstr "Bi-Linear Filtering"
+msgstr "Anisotrope Filtering"
 
 #: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
-msgstr "Bi-Linear Filtering"
+msgstr "Bi-Lineaire Filtering"
 
 #: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
-msgstr "Tri-Linear Filtering"
+msgstr "Tri-Lineare Filtering"
 
 #: builtin/mainmenu.lua:985
 msgid "Shaders"
@@ -254,20 +246,19 @@ msgstr "Shaders"
 
 #: builtin/mainmenu.lua:987
 msgid "Preload item visuals"
-msgstr "Preload item visuals"
+msgstr "Voorwerpen vooraf laden"
 
 #: builtin/mainmenu.lua:989
 msgid "Enable Particles"
-msgstr "Enable Particles"
+msgstr "Deeltjes aanzetten"
 
 #: builtin/mainmenu.lua:991
-#, fuzzy
 msgid "Finite Liquid"
-msgstr "Finite liquid"
+msgstr "Eindige vloeistoffen"
 
 #: builtin/mainmenu.lua:994
 msgid "Change keys"
-msgstr "Sneltoetsen veranderen"
+msgstr "Toetsen"
 
 #: builtin/mainmenu.lua:1007 src/keycode.cpp:248
 msgid "Play"
@@ -275,202 +266,195 @@ msgstr "Speel"
 
 #: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "ENKELE SPELER"
 
 #: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Selecteer textuurverzameling:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "TEXTUURVERZAMELINGEN"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
-msgstr ""
+msgstr "Geen informatie aanwezig"
 
 #: builtin/mainmenu.lua:1071
 msgid "Core Developers"
-msgstr ""
+msgstr "Hoofdontwikkelaars"
 
 #: builtin/mainmenu.lua:1082
 msgid "Active Contributors"
-msgstr ""
+msgstr "Actieve bijdragers"
 
 #: builtin/mainmenu.lua:1092
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Vroegere bijdragers"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "MODS"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Geïnstalleerde Mods:"
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Installeren"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Download"
-msgstr "Omlaag"
+msgstr "Downloaden"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "Hernoemen"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
-#, fuzzy
 msgid "Depends:"
-msgstr "heeft nodig:"
+msgstr "Afhankelijkheden:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Modverzameling hernoemen:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
 msgstr "Accepteren"
 
 #: builtin/modmgr.lua:381
-#, fuzzy
 msgid "World:"
 msgstr "Selecteer Wereld:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
-#, fuzzy
 msgid "Hide Game"
-msgstr "Spel"
+msgstr "Geen std"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
 msgid "Hide mp content"
-msgstr ""
+msgstr "Verberg mp mods"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Bewaar"
 
 #: builtin/modmgr.lua:422
-#, fuzzy
 msgid "Enable MP"
-msgstr "Allen inschakelen"
+msgstr "MP inschakelen"
 
 #: builtin/modmgr.lua:424
-#, fuzzy
 msgid "Disable MP"
-msgstr "Allen uitschakelen"
+msgstr "MP uitschakelen"
 
 #: builtin/modmgr.lua:428 builtin/modmgr.lua:430
 msgid "enabled"
 msgstr "ingeschakeld"
 
 #: builtin/modmgr.lua:436
-#, fuzzy
 msgid "Enable all"
-msgstr "Allen inschakelen"
+msgstr "Alles aan"
 
 #: builtin/modmgr.lua:551
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Selecteer Wereld:"
+msgstr "Selecteer Modbestand:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Mod installeren: bestand: \"$1\""
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"Mod installeren: niet ondersteund bestandstype \"$1\""
 
 #: builtin/modmgr.lua:612
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Laden van wereld is mislukt"
+msgstr "Installeren van $1 in $2 is mislukt"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
+msgstr "Mod installeren: kan geen geschikte map vinden voor modverzameling $1"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Mod installeren: kan geen echte modnaam vinden voor: $1"
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: kan \"$1\" niet verwijderen"
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: onjuist pad \"$1\""
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Weet je zeker dat je \"$1\" wilt verwijderen?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "Natuurlijk niet!"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Pagina $1 van $2"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "Rang"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "opnieuw installeren"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
-msgstr "Artikel texturen..."
+msgstr "Voorwerp texturen…"
 
 #: src/game.cpp:939
 msgid "Loading..."
-msgstr ""
+msgstr "Bezig met laden…"
 
 #: src/game.cpp:999
 msgid "Creating server...."
-msgstr ""
+msgstr "Bezig server te maken…"
 
 #: src/game.cpp:1015
 msgid "Creating client..."
-msgstr ""
+msgstr "Bezig client te maken…"
 
 #: src/game.cpp:1024
 msgid "Resolving address..."
-msgstr ""
+msgstr "IP-adres opzoeken…"
 
 #: src/game.cpp:1121
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Bezig verbinding met de server te maken…"
 
 #: src/game.cpp:1218
 msgid "Item definitions..."
-msgstr ""
+msgstr "Voorwerpdefinities…"
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr ""
+msgstr "Node definities…"
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "Media…"
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Stopzetten…"
 
 #: src/game.cpp:3435
 msgid ""
@@ -478,7 +462,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Check debug.txt for details."
+"Lees debug.txt voor details."
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -486,7 +470,7 @@ msgstr "Je bent gestorven."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Respawn"
+msgstr "Herspawnen"
 
 #: src/guiFormSpecMenu.cpp:1569
 msgid "Left click: Move all items, Right click: Move single item"
@@ -496,19 +480,21 @@ msgstr ""
 #: src/guiFormSpecMenu.cpp:1595 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
-msgstr "Volgende"
+msgstr "Doorgaan"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Sneltoetsen."
+msgstr ""
+"Sneltoetsen. (Als dit menu stuk gaat, verwijder dan instellingen uit "
+"minetest.conf)."
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr "\"Use\" = Omlaag klimmen"
+msgstr "\"Gebruiken\" = Omlaag klimmen"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Dubbelklik op \"jump\" om te vliegen"
+msgstr "2x \"springen\" om te vliegen"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
@@ -536,7 +522,7 @@ msgstr "Rechts"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
-msgstr "Gebruikwn"
+msgstr "Gebruiken"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
@@ -556,7 +542,7 @@ msgstr "Rugzak"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr "Chat"
+msgstr "Kletsen"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
@@ -640,6 +626,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Standaard toetsen:\n"
+"- W,A,S,D: bewegen\n"
+"- Spatie: spring/klim\n"
+"- Shift: kruip/duik\n"
+"- Q: weggooien\n"
+"- I: rugzak\n"
+"- Muis: draaien/kijken\n"
+"- L.muisknop: graaf/sla\n"
+"- R.muisknop: plaats/gebruik\n"
+"- Muiswiel: selecteer\n"
+"- T: chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
@@ -647,7 +644,7 @@ msgstr "Volume: "
 
 #: src/guiVolumeChange.cpp:122
 msgid "Exit"
-msgstr "Exit"
+msgstr "Terug"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -675,7 +672,7 @@ msgstr "Wissen"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr "Return"
+msgstr "Terug"
 
 #: src/keycode.cpp:224
 msgid "Tab"
@@ -939,7 +936,7 @@ msgstr "Zoom"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "needs_fallback_font"
 
 #: src/main.cpp:1486
 msgid "Main Menu"
@@ -959,7 +956,7 @@ msgstr "Onjuiste gamespec."
 
 #: src/main.cpp:1729
 msgid "Connection error (timed out?)"
-msgstr "Connection error (timed out?)"
+msgstr "Fout bij verbinden (time out?)"
 
 #~ msgid "is required by:"
 #~ msgstr "is benodigd voor:"
