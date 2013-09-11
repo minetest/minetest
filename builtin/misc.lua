@@ -40,15 +40,24 @@ function minetest.check_player_privs(name, privs)
 	return true, ""
 end
 
-function minetest.get_connected_players()
-	-- This could be optimized a bit, but leave that for later
-	local list = {}
-	for _, obj in pairs(minetest.get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
-		if obj:is_player() then
-			table.insert(list, obj)
-		end
+local player_list = {}
+
+minetest.register_on_joinplayer( function( player_ref )
+	if player_ref:is_player() then
+		table.insert( player_list, player_ref )
 	end
-	return list
+end)
+
+minetest.register_on_leaveplayer( function( player_ref )
+    for index, value in pairs( player_list ) do
+        if player_ref:get_player_name() == value:get_player_name() then
+            table.remove( player_list, index )
+        end
+    end
+end)
+
+function minetest.get_connected_players()
+    return player_list
 end
 
 function minetest.hash_node_position(pos)
