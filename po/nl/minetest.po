@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-09-11 15:27+0200\n"
+"PO-Revision-Date: 2013-09-11 16:25+0200\n"
 "Last-Translator: Rutger NL <r.minetest@rutger.nl>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -121,7 +121,7 @@ msgstr "Instellingen"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr "Textuurverzamelingen"
+msgstr "Texturen"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
@@ -170,7 +170,7 @@ msgstr "Instellingen"
 
 #: builtin/mainmenu.lua:944
 msgid "Start Game"
-msgstr "Start spel"
+msgstr "Start Server"
 
 #: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
 msgid "Select World:"
@@ -182,7 +182,7 @@ msgstr "START SERVER"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
-msgstr "Creative Modus"
+msgstr "Creatieve Modus"
 
 #: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
 msgid "Enable Damage"
@@ -266,7 +266,7 @@ msgstr "Speel"
 
 #: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
-msgstr "ENKELE SPELER"
+msgstr "SINGLEPLAYER"
 
 #: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
@@ -274,7 +274,7 @@ msgstr "Selecteer textuurverzameling:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr "TEXTUURVERZAMELINGEN"
+msgstr "TEXTUREN"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
@@ -326,7 +326,7 @@ msgstr "Accepteren"
 
 #: builtin/modmgr.lua:381
 msgid "World:"
-msgstr "Selecteer Wereld:"
+msgstr "Wereld:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
 msgid "Hide Game"
@@ -418,43 +418,43 @@ msgstr "opnieuw installeren"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
-msgstr "Voorwerp texturen…"
+msgstr "Voorwerp texturen..."
 
 #: src/game.cpp:939
 msgid "Loading..."
-msgstr "Bezig met laden…"
+msgstr "Bezig met laden..."
 
 #: src/game.cpp:999
 msgid "Creating server...."
-msgstr "Bezig server te maken…"
+msgstr "Bezig server te maken..."
 
 #: src/game.cpp:1015
 msgid "Creating client..."
-msgstr "Bezig client te maken…"
+msgstr "Bezig client te maken..."
 
 #: src/game.cpp:1024
 msgid "Resolving address..."
-msgstr "IP-adres opzoeken…"
+msgstr "IP-adres opzoeken..."
 
 #: src/game.cpp:1121
 msgid "Connecting to server..."
-msgstr "Bezig verbinding met de server te maken…"
+msgstr "Verbinding met de server maken..."
 
 #: src/game.cpp:1218
 msgid "Item definitions..."
-msgstr "Voorwerpdefinities…"
+msgstr "Voorwerpdefinities..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr "Node definities…"
+msgstr "Node definities..."
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr "Media…"
+msgstr "Media..."
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."
-msgstr "Stopzetten…"
+msgstr "Stopzetten..."
 
 #: src/game.cpp:3435
 msgid ""
@@ -490,7 +490,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr "\"Gebruiken\" = Omlaag klimmen"
+msgstr "\"Gebruiken\" = Omlaag"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
@@ -542,7 +542,7 @@ msgstr "Rugzak"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr "Kletsen"
+msgstr "Chatten"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
@@ -594,7 +594,7 @@ msgstr "Wachtwoorden zijn niet gelijk!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
-msgstr "Volgende"
+msgstr "Verder spelen"
 
 #: src/guiPauseMenu.cpp:133
 msgid "Change Password"
@@ -606,7 +606,7 @@ msgstr "Volume"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr "Exit naar menu"
+msgstr "Terug naar menu"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
@@ -792,7 +792,7 @@ msgstr "Linker Windowstoets"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr "Apps"
+msgstr "Menu"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -908,7 +908,7 @@ msgstr "Plus"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr "Attn"
+msgstr "SAK"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
@@ -916,7 +916,7 @@ msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr "Erase OEF"
+msgstr "Erase EOF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
