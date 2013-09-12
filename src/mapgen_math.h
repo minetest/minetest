@@ -27,14 +27,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapgenMathParams : public MapgenV7Params {
 
-	MapgenMathParams() : par() {
-	}
+	MapgenMathParams() {};
 
 	Json::Value params;
-	sFractal par;
 
-	bool readParams(Settings *settings);
-	void writeParams(Settings *settings);
+#ifdef FRACTAL_H_
+	sFractal par;
+#endif
+
+	bool readParams(Settings * settings);
+	void writeParams(Settings * settings);
 };
 
 class MapgenMath : public MapgenV7 {
@@ -47,6 +49,7 @@ class MapgenMath : public MapgenV7 {
 		int generateTerrain();
 		int getGroundLevelAtPoint(v2s16 p);
 
+		bool internal;
 		bool invert;
 		double size;
 		double scale;
@@ -54,7 +57,6 @@ class MapgenMath : public MapgenV7 {
 		int iterations;
 		double distance;
 		double (*func)(double, double, double, double, int);
-
 };
 
 struct MapgenFactoryMath : public MapgenFactory {
