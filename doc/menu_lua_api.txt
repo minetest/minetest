@@ -182,8 +182,8 @@ string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
-minetest.is_yes(string)
-^ returns whether string can be interpreted as yes
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
 
 Class reference
 ----------------

@@ -191,7 +191,15 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	getfloatfield(L, -1, "stepheight", prop->stepheight);
 	prop->stepheight*=BS;
-	getboolfield(L, -1, "automatic_face_movement_dir", prop->automatic_face_movement_dir);
+	lua_getfield(L, -1, "automatic_face_movement_dir");
+	if (lua_isnumber(L, -1)) {
+		prop->automatic_face_movement_dir = true;
+		prop->automatic_face_movement_dir_offset = luaL_checknumber(L, -1);
+	} else if (lua_isboolean(L, -1)) {
+		prop->automatic_face_movement_dir = lua_toboolean(L, -1);
+		prop->automatic_face_movement_dir_offset = 0.0;
+	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/

@@ -220,11 +220,17 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 	return 1;
 }
 
-// is_yes(string)
+// is_yes(arg)
 int ModApiUtil::l_is_yes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string str = luaL_checkstring(L, 1);
+
+	lua_getglobal(L, "tostring"); // function to be called
+	lua_pushvalue(L, 1); // 1st argument
+	lua_call(L, 1, 1); // execute function
+	std::string str(lua_tostring(L, -1)); // get result
+	lua_pop(L, 1);
+
 	bool yes = is_yes(str);
 	lua_pushboolean(L, yes);
 	return 1;

@@ -1069,8 +1069,8 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
-minetest.is_yes(string)
-^ returns whether string can be interpreted as yes
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
 
 minetest namespace reference
 -----------------------------
@@ -1888,7 +1888,8 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
-    automatic_face_movement_dir = false,
+    automatic_face_movement_dir = 0.0,
+    ^ automatically set yaw to movement direction; offset in degrees; false to disable
 }
 
 Entity definition (register_entity)

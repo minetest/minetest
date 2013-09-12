@@ -98,7 +98,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		drowning, leveled and liquid_range added to ContentFeatures
 		stepheight and collideWithObjects added to object properties
 		version, heat and humidity transfer in MapBock
-		added new property to entities automatic_face_movement_dir
+		automatic_face_movement_dir and automatic_face_movement_dir_offset
+			added to object properties
 */
 
 #define LATEST_PROTOCOL_VERSION 21
