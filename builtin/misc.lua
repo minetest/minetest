@@ -57,7 +57,11 @@ minetest.register_on_leaveplayer( function( player_ref )
 end)
 
 function minetest.get_connected_players()
-    return player_list
+	local temp_table = {}
+    for index, value in pairs( player_list ) do
+		table.insert( temp_table, value )
+	end
+	return temp_table
 end
 
 function minetest.hash_node_position(pos)
