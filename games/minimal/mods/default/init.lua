@@ -210,8 +210,8 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'default:fence_wood 2',
 	recipe = {
-		{'default:stick', 'default:stick', 'default:stick'},
-		{'default:stick', 'default:stick', 'default:stick'},
+		{'group:stick', 'group:stick', 'group:stick'},
+		{'group:stick', 'group:stick', 'group:stick'},
 	}
 })
 
@@ -220,7 +220,7 @@ minetest.register_craft({
 	recipe = {
 		{'default:wood', 'default:wood', 'default:wood'},
 		{'default:wood', 'default:wood', 'default:wood'},
-		{'', 'default:stick', ''},
+		{'', 'group:stick', ''},
 	}
 })
 
@@ -228,7 +228,7 @@ minetest.register_craft({
 	output = 'default:torch 4',
 	recipe = {
 		{'default:coal_lump'},
-		{'default:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -236,8 +236,8 @@ minetest.register_craft({
 	output = 'default:pick_wood',
 	recipe = {
 		{'default:wood', 'default:wood', 'default:wood'},
-		{'', 'default:stick', ''},
-		{'', 'default:stick', ''},
+		{'', 'group:stick', ''},
+		{'', 'group:stick', ''},
 	}
 })
 
@@ -245,8 +245,8 @@ minetest.register_craft({
 	output = 'default:pick_stone',
 	recipe = {
 		{'default:cobble', 'default:cobble', 'default:cobble'},
-		{'', 'default:stick', ''},
-		{'', 'default:stick', ''},
+		{'', 'group:stick', ''},
+		{'', 'group:stick', ''},
 	}
 })
 
@@ -254,8 +254,8 @@ minetest.register_craft({
 	output = 'default:pick_steel',
 	recipe = {
 		{'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
-		{'', 'default:stick', ''},
-		{'', 'default:stick', ''},
+		{'', 'group:stick', ''},
+		{'', 'group:stick', ''},
 	}
 })
 
@@ -263,8 +263,8 @@ minetest.register_craft({
 	output = 'default:pick_mese',
 	recipe = {
 		{'default:mese', 'default:mese', 'default:mese'},
-		{'', 'default:stick', ''},
-		{'', 'default:stick', ''},
+		{'', 'group:stick', ''},
+		{'', 'group:stick', ''},
 	}
 })
 
@@ -272,8 +272,8 @@ minetest.register_craft({
 	output = 'default:shovel_wood',
 	recipe = {
 		{'default:wood'},
-		{'default:stick'},
-		{'default:stick'},
+		{'group:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -281,8 +281,8 @@ minetest.register_craft({
 	output = 'default:shovel_stone',
 	recipe = {
 		{'default:cobble'},
-		{'default:stick'},
-		{'default:stick'},
+		{'group:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -290,8 +290,8 @@ minetest.register_craft({
 	output = 'default:shovel_steel',
 	recipe = {
 		{'default:steel_ingot'},
-		{'default:stick'},
-		{'default:stick'},
+		{'group:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -299,8 +299,8 @@ minetest.register_craft({
 	output = 'default:axe_wood',
 	recipe = {
 		{'default:wood', 'default:wood'},
-		{'default:wood', 'default:stick'},
-		{'', 'default:stick'},
+		{'default:wood', 'group:stick'},
+		{'', 'group:stick'},
 	}
 })
 
@@ -308,8 +308,8 @@ minetest.register_craft({
 	output = 'default:axe_stone',
 	recipe = {
 		{'default:cobble', 'default:cobble'},
-		{'default:cobble', 'default:stick'},
-		{'', 'default:stick'},
+		{'default:cobble', 'group:stick'},
+		{'', 'group:stick'},
 	}
 })
 
@@ -317,8 +317,8 @@ minetest.register_craft({
 	output = 'default:axe_steel',
 	recipe = {
 		{'default:steel_ingot', 'default:steel_ingot'},
-		{'default:steel_ingot', 'default:stick'},
-		{'', 'default:stick'},
+		{'default:steel_ingot', 'group:stick'},
+		{'', 'group:stick'},
 	}
 })
 
@@ -327,7 +327,7 @@ minetest.register_craft({
 	recipe = {
 		{'default:wood'},
 		{'default:wood'},
-		{'default:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -336,7 +336,7 @@ minetest.register_craft({
 	recipe = {
 		{'default:cobble'},
 		{'default:cobble'},
-		{'default:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -345,7 +345,7 @@ minetest.register_craft({
 	recipe = {
 		{'default:steel_ingot'},
 		{'default:steel_ingot'},
-		{'default:stick'},
+		{'group:stick'},
 	}
 })
 
@@ -353,7 +353,7 @@ minetest.register_craft({
 	output = 'default:rail 15',
 	recipe = {
 		{'default:steel_ingot', '', 'default:steel_ingot'},
-		{'default:steel_ingot', 'default:stick', 'default:steel_ingot'},
+		{'default:steel_ingot', 'group:stick', 'default:steel_ingot'},
 		{'default:steel_ingot', '', 'default:steel_ingot'},
 	}
 })
@@ -446,9 +446,9 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'default:ladder',
 	recipe = {
-		{'default:stick', '', 'default:stick'},
-		{'default:stick', 'default:stick', 'default:stick'},
-		{'default:stick', '', 'default:stick'},
+		{'group:stick', '', 'group:stick'},
+		{'group:stick', 'group:stick', 'group:stick'},
+		{'group:stick', '', 'group:stick'},
 	}
 })
 
@@ -1526,6 +1526,7 @@ minetest.register_node("default:apple", {
 minetest.register_craftitem("default:stick", {
 	description = "Stick",
 	inventory_image = "default_stick.png",
+	groups = {stick=1},
 })
 
 minetest.register_craftitem("default:paper", {
