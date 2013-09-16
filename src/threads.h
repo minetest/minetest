@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef THREADS_HEADER
 #define THREADS_HEADER
 
-#include <jmutex.h>
+#include "jthread/jmutex.h"
 
 #if (defined(WIN32) || defined(_WIN32_WCE))
 typedef DWORD threadid_t;
