@@ -28,8 +28,8 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "jmutex.h"
-#include "jmutexautolock.h"
+#include "jthread/jmutex.h"
+#include "jthread/jmutexautolock.h"
 #include "common/c_types.h"
 
 #define SCRIPTAPI_LOCK_DEBUG

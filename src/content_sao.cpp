@@ -527,8 +527,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_velocity += dtime * m_acceleration;
 		}
 
-		if(m_prop.automatic_face_movement_dir){
-			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI;
+		if((m_prop.automatic_face_movement_dir) &&
+				(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI + m_prop.automatic_face_movement_dir_offset;
 		}
 	}
 

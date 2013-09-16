@@ -794,9 +794,9 @@ public:
 		services->setPixelShaderConstant("skyBgColor", bgcolorfa, 4);
 
 		// Fog distance
-		float fog_distance = *m_fog_range;
-		if(*m_force_fog_off)
-			fog_distance = 10000*BS;
+		float fog_distance = 10000*BS;
+		if(g_settings->getBool("enable_fog") && !*m_force_fog_off)
+			fog_distance = *m_fog_range;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
 
 		// Day-night ratio
@@ -1720,7 +1720,7 @@ void the_game(
 			GUIFormSpecMenu *menu =
 				new GUIFormSpecMenu(device, guiroot, -1,
 					&g_menumgr,
-					&client, gamedef);
+					&client, gamedef, tsrc);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
@@ -2259,7 +2259,7 @@ void the_game(
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
-										&client, gamedef);
+										&client, gamedef, tsrc);
 						menu->setFormSource(current_formspec);
 						menu->setTextDest(current_textdest);
 						menu->drop();
@@ -2755,7 +2755,7 @@ void the_game(
 					GUIFormSpecMenu *menu =
 						new GUIFormSpecMenu(device, guiroot, -1,
 							&g_menumgr,
-							&client, gamedef);
+							&client, gamedef, tsrc);
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
 					menu->setFormSource(new NodeMetadataFormSource(
@@ -2930,7 +2930,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings->getBool("enable_fog") == true && !force_fog_off)
+		if(g_settings->getBool("enable_fog") && !force_fog_off)
 		{
 			driver->setFog(
 				bgcolor,
@@ -3201,6 +3201,11 @@ void the_game(
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
 
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
+
 
 				//Right eye...
 				irr::core::vector3df rightEye;
@@ -3224,6 +3229,11 @@ void the_game(
 				camera.getCameraNode()->setTarget( focusPoint );
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
 
 
 				//driver->endScene();
@@ -3253,9 +3263,11 @@ void the_game(
 		driver->setMaterial(m);
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-		if (show_hud)
+		if((!g_settings->getBool("anaglyph")) && (show_hud))
+		{
 			hud.drawSelectionBoxes(hilightboxes);
+		}
+
 		/*
 			Wielded tool
 		*/

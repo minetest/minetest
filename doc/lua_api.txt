@@ -1069,6 +1069,8 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
 
 minetest namespace reference
 -----------------------------
@@ -1226,6 +1228,7 @@ minetest.get_player_by_name(name) -- Get an ObjectRef to a player
 minetest.get_objects_inside_radius(pos, radius)
 minetest.set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 minetest.get_timeofday()
+minetest.get_gametime(): returns the time, in seconds, since the world was created
 minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
@@ -1458,6 +1461,12 @@ minetest.get_content_id(name) -> integer
 ^ Gets the internal content ID of name
 minetest.get_name_from_content_id(content_id) -> string
 ^ Gets the name of the content with that content ID
+minetest.parse_json(string[, nullvalue]) -> something
+^ Convert a string containing JSON data into the Lua equivalent
+^ nullvalue: returned in place of the JSON null; defaults to nil
+^ On success returns a table, a string, a number, a boolean or nullvalue
+^ On failure outputs an error message and returns nil
+^ Example: parse_json("[10, {\"a\":false}]") -> {[1] = 10, [2] = {a = false}}
 minetest.serialize(table) -> string
 ^ Convert a table containing tables, strings, numbers, booleans and nils
   into string form readable by minetest.deserialize
@@ -1612,6 +1621,10 @@ Player-only: (no-op for other objects)
   ^ if a flag is nil, the flag is not modified
 - hud_set_hotbar_itemcount(count): sets number of items in builtin hotbar
   ^ count: number of items, must be between 1 and 23
+- hud_set_hotbar_image(texturename)
+  ^ sets background image for hotbar
+- hud_set_hotbar_selected_image(texturename)
+  ^ sets image for selected item of hotbar
 
 InvRef: Reference to an inventory
 methods:
@@ -1725,6 +1738,18 @@ methods:
 - iter(minx, miny, minz, maxx, maxy, maxz):  returns an iterator that returns indices
   ^ from (minx,miny,minz) to (maxx,maxy,maxz) in the order of [z [y [x]]]
 - iterp(minp, maxp):  same as above, except takes a vector
+
+Settings: An interface to read config files in the format of minetest.conf
+- Can be created via Settings(filename)
+methods:
+- get(key) -> value
+- get_bool(key) -> boolean
+- set(key, value)
+- remove(key) -> success
+- get_names() -> {key1,...}
+- write() -> success
+  ^ write changes to file
+- to_table() -> {[key1]=value1,...}
 
 Mapgen objects
 ---------------
@@ -1863,7 +1888,8 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
-    automatic_face_movement_dir = false,
+    automatic_face_movement_dir = 0.0,
+    ^ automatically set yaw to movement direction; offset in degrees; false to disable
 }
 
 Entity definition (register_entity)

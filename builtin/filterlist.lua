@@ -240,6 +240,12 @@ end
 function sort_worlds_alphabetic(this) 
 
 	table.sort(this.m_processed_list, function(a, b)
+		--fixes issue #857 (crash due to sorting nil in worldlist)
+		if a == nil or b == nil then
+			if a == nil and b ~= nil then return false end
+			if b == nil and a ~= nil then return true end
+			return false
+		end
 		if a.name:lower() == b.name:lower() then
 			return a.name < b.name
 		end

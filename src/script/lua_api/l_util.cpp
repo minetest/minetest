@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "settings.h"
 #include "main.h"  //required for g_settings, g_settings_path
+#include "json/json.h"
 
 // debug(...)
 // Writes a line to dstream
@@ -138,6 +139,45 @@ int ModApiUtil::l_setting_save(lua_State *L)
 	return 0;
 }
 
+// parse_json(str[, nullvalue])
+int ModApiUtil::l_parse_json(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const char *jsonstr = luaL_checkstring(L, 1);
+
+	// Use passed nullvalue or default to nil
+	int nullindex = 2;
+	if (lua_isnone(L, nullindex)) {
+		lua_pushnil(L);
+		nullindex = lua_gettop(L);
+	}
+
+	Json::Value root;
+
+	{
+		Json::Reader reader;
+		std::istringstream stream(jsonstr);
+
+		if (!reader.parse(stream, root)) {
+			errorstream << "Failed to parse json data "
+				<< reader.getFormattedErrorMessages();
+			errorstream << "data: \"" << jsonstr << "\""
+				<< std::endl;
+			lua_pushnil(L);
+			return 1;
+		}
+	}
+
+	if (!push_json_value(L, root, nullindex)) {
+		errorstream << "Failed to parse json data, "
+			<< "depth exceeds lua stack limit" << std::endl;
+		errorstream << "data: \"" << jsonstr << "\"" << std::endl;
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
@@ -180,6 +220,22 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 	return 1;
 }
 
+// is_yes(arg)
+int ModApiUtil::l_is_yes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_getglobal(L, "tostring"); // function to be called
+	lua_pushvalue(L, 1); // 1st argument
+	lua_call(L, 1, 1); // execute function
+	std::string str(lua_tostring(L, -1)); // get result
+	lua_pop(L, 1);
+
+	bool yes = is_yes(str);
+	lua_pushboolean(L, yes);
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -191,9 +247,13 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(setting_getbool);
 	API_FCT(setting_save);
 
+	API_FCT(parse_json);
+
 	API_FCT(get_dig_params);
 	API_FCT(get_hit_params);
 
 	API_FCT(get_password_hash);
+
+	API_FCT(is_yes);
 }
 

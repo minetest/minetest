@@ -77,6 +77,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "serverlist.h"
 #include "guiEngine.h"
+#include "mapsector.h"
+
+#include "database-sqlite3.h"
+#ifdef USE_LEVELDB
+#include "database-leveldb.h"
+#endif
 
 /*
 	Settings.
@@ -789,6 +795,8 @@ int main(int argc, char *argv[])
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
+	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
+			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
 			_("Show available video modes"))));
@@ -995,7 +1003,19 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-	
+
+	std::string language = g_settings->get("language");
+	if (language.length()) {
+#ifndef _WIN32
+		setenv("LANGUAGE", language.c_str(), 1);
+#else
+		char *lang_str = (char*)calloc(10 + language.length(), sizeof(char));
+		strcat(lang_str, "LANGUAGE=");
+		strcat(lang_str, language.c_str());
+		putenv(lang_str);
+#endif
+	}
+
 	/*
 		Game parameters
 	*/
@@ -1072,6 +1092,7 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 	}
+
 
 	/*
 		Run dedicated server if asked to or no other option
@@ -1195,6 +1216,65 @@ int main(int argc, char *argv[])
 
 		// Create server
 		Server server(world_path, gamespec, false);
+
+		// Database migration
+		if (cmd_args.exists("migrate")) {
+			std::string migrate_to = cmd_args.get("migrate");
+			Settings world_mt;
+			bool success = world_mt.readConfigFile((world_path + DIR_DELIM + "world.mt").c_str());
+			if (!success) {
+				errorstream << "Cannot read world.mt" << std::endl;
+				return 1;
+			}
+			if (!world_mt.exists("backend")) {
+				errorstream << "Please specify your current backend in world.mt file:"
+					<< std::endl << "	backend = {sqlite3|leveldb|dummy}" << std::endl;
+				return 1;
+			}
+			std::string backend = world_mt.get("backend");
+			Database *new_db;
+			if (backend == migrate_to) {
+				errorstream << "Cannot migrate: new backend is same as the old one" << std::endl;
+				return 1;
+			}
+			if (migrate_to == "sqlite3")
+				new_db = new Database_SQLite3(&(ServerMap&)server.getMap(), world_path);
+			#if USE_LEVELDB
+			else if (migrate_to == "leveldb")
+				new_db = new Database_LevelDB(&(ServerMap&)server.getMap(), world_path);
+			#endif
+			else {
+				errorstream << "Migration to " << migrate_to << " is not supported" << std::endl;
+				return 1;
+			}
+
+			std::list<v3s16> blocks;
+			ServerMap &old_map = ((ServerMap&)server.getMap());
+			old_map.listAllLoadableBlocks(blocks);
+			int count = 0;
+			new_db->beginSave();
+			for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); ++i) {
+				MapBlock *block = old_map.loadBlock(*i);
+				new_db->saveBlock(block);
+				MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
+				sector->deleteBlock(block);
+				++count;
+				if (count % 500 == 0)
+					actionstream << "Migrated " << count << " blocks "
+						<< (100.0 * count / blocks.size()) << "\% completed" << std::endl;
+			}
+			new_db->endSave();
+
+			actionstream << "Successfully migrated " << count << " blocks" << std::endl;
+			world_mt.set("backend", migrate_to);
+			if(!world_mt.updateConfigFile((world_path + DIR_DELIM + "world.mt").c_str()))
+				errorstream<<"Failed to update world.mt!"<<std::endl;
+			else
+				actionstream<<"world.mt updated"<<std::endl;
+
+			return 0;
+		}
+
 		server.start(port);
 		
 		// Run server
@@ -1396,7 +1476,11 @@ int main(int argc, char *argv[])
 	bool use_freetype = g_settings->getBool("freetype");
 	#if USE_FREETYPE
 	if (use_freetype) {
-		u16 font_size = g_settings->getU16("font_size");
+		std::string fallback;
+		if (is_yes(gettext("needs_fallback_font")))
+			fallback = "fallback_";
+		u16 font_size = g_settings->getU16(fallback + "font_size");
+		font_path = g_settings->get(fallback + "font_path");
 		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
 	} else {
 		font = guienv->getFont(font_path.c_str());

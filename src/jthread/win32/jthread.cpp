@@ -25,7 +25,7 @@
 
 */
 
-#include "jthread.h"
+#include "jthread/jthread.h"
 
 #ifndef _WIN32_WCE
 	#include <process.h>

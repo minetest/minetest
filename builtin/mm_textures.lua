@@ -129,9 +129,8 @@ function mm_texture.set_game(identifier,gamedetails)
 	end
 
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.basetexturedir .. 
+		local path = mm_texture.texturepack .. DIR_DELIM ..
 						gamedetails.id .. "_menu_" .. identifier .. ".png"
-						
 		if engine.set_background(identifier,path) then
 			return true
 		end

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "sound_openal.h"
+#include "clouds.h"
 
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
@@ -36,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <curl/curl.h>
 #endif
 
+/******************************************************************************/
+/** TextDestGuiEngine                                                         */
 /******************************************************************************/
 TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
 {
@@ -54,6 +57,38 @@ void TextDestGuiEngine::gotText(std::wstring text)
 	m_engine->getScriptIface()->handleMainMenuEvent(wide_to_narrow(text));
 }
 
+/******************************************************************************/
+/** MenuTextureSource                                                         */
+/******************************************************************************/
+MenuTextureSource::MenuTextureSource(video::IVideoDriver *driver)
+{
+	m_driver = driver;
+}
+
+/******************************************************************************/
+MenuTextureSource::~MenuTextureSource()
+{
+	for (std::set<std::string>::iterator it = m_to_delete.begin();
+			it != m_to_delete.end(); ++it) {
+		const char *tname = (*it).c_str();
+		video::ITexture *texture = m_driver->getTexture(tname);
+		m_driver->removeTexture(texture);
+	}
+}
+
+/******************************************************************************/
+video::ITexture* MenuTextureSource::getTexture(const std::string &name, u32 *id)
+{
+	if(id)
+		*id = 0;
+	if(name.empty())
+		return NULL;
+	m_to_delete.insert(name);
+	return m_driver->getTexture(name.c_str());
+}
+
+/******************************************************************************/
+/** MenuMusicFetcher                                                          */
 /******************************************************************************/
 void MenuMusicFetcher::fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
@@ -75,6 +110,8 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 }
 
 /******************************************************************************/
+/** GUIEngine                                                                 */
+/******************************************************************************/
 GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 						gui::IGUIElement* parent,
 						IMenuManager *menumgr,
@@ -86,6 +123,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_menumanager(menumgr),
 	m_smgr(smgr),
 	m_data(data),
+	m_texture_source(NULL),
 	m_sound_manager(NULL),
 	m_formspecgui(0),
 	m_buttonhandler(0),
@@ -104,6 +142,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
+
+	//create texture source
+	m_texture_source = new MenuTextureSource(m_device->getVideoDriver());
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
@@ -132,7 +173,8 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 								-1,
 								m_menumanager,
 								0 /* &client */,
-								0 /* gamedef */);
+								0 /* gamedef */,
+								m_texture_source);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
@@ -264,11 +306,13 @@ GUIEngine::~GUIEngine()
 
 	m_irr_toplefttext->setText(L"");
 
-	//initialize texture pointers
+	//clean up texture pointers
 	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
 		if (m_textures[i] != 0)
 			driver->removeTexture(m_textures[i]);
 	}
+
+	delete m_texture_source;
 	
 	if (m_cloud.clouds)
 		m_cloud.clouds->drop();
