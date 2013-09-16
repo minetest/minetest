@@ -2,22 +2,12 @@
 vector = {}
 
 function vector.new(a, b, c)
-	v = {x=0, y=0, z=0}
 	if type(a) == "table" then
-		v = {x=a.x, y=a.y, z=a.z}
+		return {x=a.x, y=a.y, z=a.z}
 	elseif a and b and c then
-		v = {x=a, y=b, z=c}
+		return {x=a, y=b, z=c}
 	end
-	setmetatable(v, {
-		__add = vector.add,
-		__sub = vector.subtract,
-		__mul = vector.multiply,
-		__div = vector.divide,
-		__umn = function(v) return vector.multiply(v, -1) end,
-		__len = vector.length,
-		__eq  = vector.equals,
-	})
-	return v
+	return {x=0, y=0, z=0}
 end
 
 function vector.equals(a, b)
@@ -85,57 +75,49 @@ end
 
 function vector.add(a, b)
 	if type(b) == "table" then
-		 return vector.new(
-			a.x + b.x,
-			a.y + b.y,
-			a.z + b.z)
+		return {x = a.x + b.x,
+			y = a.y + b.y,
+			z = a.z + b.z}
 	else
-		return vector.new(
-			a.x + b,
-			a.y + b,
-			a.z + b)
+		return {x = a.x + b,
+			y = a.y + b,
+			z = a.z + b}
 	end
 end
 
 function vector.subtract(a, b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x - b.x,
-			a.y - b.y,
-			a.z - b.z)
+		return {x = a.x - b.x,
+			y = a.y - b.y,
+			z = a.z - b.z}
 	else
-		return vector.new(
-			a.x - b,
-			a.y - b,
-			a.z - b)
+		return {x = a.x - b,
+			y = a.y - b,
+			z = a.z - b}
 	end
 end
 
 function vector.multiply(a, b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x * b.x,
-			a.y * b.y,
-			a.z * b.z)
+		return {x = a.x * b.x,
+			y = a.y * b.y,
+			z = a.z * b.z}
 	else
-		return vector.new(
-			a.x * b,
-			a.y * b,
-			a.z * b)
+		return {x = a.x * b,
+			y = a.y * b,
+			z = a.z * b}
 	end
 end
 
 function vector.divide(a, b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x / b.x,
-			a.y / b.y,
-			a.z / b.z)
+		return {x = a.x / b.x,
+			y = a.y / b.y,
+			z = a.z / b.z}
 	else
-		return vector.new(
-			a.x / b,
-			a.y / b,
-			a.z / b)
+		return {x = a.x / b,
+			y = a.y / b,
+			z = a.z / b}
 	end
 end
 

@@ -1037,21 +1037,11 @@ vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
 vector.equal(v1, v2) -> bool
+For the folowing x can be either a vector or a number.
 vector.add(v, x) -> vector
- ^ x can be annother vector or a number
 vector.subtract(v, x) -> vector
 vector.multiply(v, x) -> vector
 vector.divide(v, x) -> vector
-
-You can also use Lua operators on vectors.
-For example:
-	v1 = vector.new()
-	v1 = v1 + 5
-	v2 = vector.new(v1)
-	v1 = v1 * v2
-	if v1 == v2 then
-		error("Math broke")
-	end
 
 Helper functions
 -----------------
