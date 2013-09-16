@@ -108,7 +108,7 @@
 # Underground water and lava springs, its infnity sources if liquid_finite enabled
 #underground_springs = 1
 # Enable weather (cold-hot, water freeze-melt). use only with liquid_finite=1
-#weather = false
+#weather = true
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
