@@ -279,6 +279,8 @@
 #max_objects_per_block = 49
 # Interval of saving important changes in the world
 #server_map_save_interval = 5.3
+# http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
+#sqlite_synchronous = 2
 # To reduce lag, block transfers are slowed down when a player is building something.
 # This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
