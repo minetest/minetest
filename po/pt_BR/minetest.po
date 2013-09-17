@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-09-16 17:22+0200\n"
+"PO-Revision-Date: 2013-09-17 15:15+0200\n"
 "Last-Translator: Frederico Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: LANGUAGE <contato@ejweb.com.br>\n"
 "Language: pt_BR\n"
@@ -123,7 +123,7 @@ msgstr "Configurações"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr "Pacotes de texturas"
+msgstr "Texturas"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
@@ -180,7 +180,7 @@ msgstr "Selecione um mundo:"
 
 #: builtin/mainmenu.lua:946
 msgid "START SERVER"
-msgstr "INICIAR SERVIDOR"
+msgstr "SERVIDOR"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
@@ -276,7 +276,7 @@ msgstr "Selecione o pacote de texturas:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr "PACOTES DE TEXTURAS"
+msgstr "TEXTURAS"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
