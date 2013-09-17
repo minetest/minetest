@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v6.h"
 #include "biome.h"
 #include "config.h"
+#include "server.h"
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
@@ -2824,6 +2825,38 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	/*infostream<<"finishBlockMake() done for ("<<blockpos_requested.X
 			<<","<<blockpos_requested.Y<<","
 			<<blockpos_requested.Z<<")"<<std::endl;*/
+			
+	/*
+		Update weather data in central blocks if needed
+	*/
+	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
+	if (senv->m_use_weather) {
+		for(s16 x=blockpos_min.X-extra_borders.X;
+			x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+			z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+			y<=blockpos_max.Y+extra_borders.Y; y++)
+		{
+			v3s16 p(x, y, z);
+			updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
+			updateBlockHumidity(senv, p * MAP_BLOCKSIZE, NULL);
+		}
+	} else {
+		for(s16 x=blockpos_min.X-extra_borders.X;
+			x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+			z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+			y<=blockpos_max.Y+extra_borders.Y; y++)
+		{
+			MapBlock *block = getBlockNoCreateNoEx(v3s16(x, y, z));
+			block->heat     = HEAT_UNDEFINED;
+			block->humidity = HUMIDITY_UNDEFINED;
+			block->weather_update_time = 0;
+		}
+	}
+	
 #if 0
 	if(enable_mapgen_debug_info)
 	{
@@ -3888,74 +3921,41 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
-s16 ServerMap::getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
+s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 {
-	if(block == NULL)
-		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
-	if(block != NULL) {
-		if (env->getGameTime() - block->heat_time < 10)
+	u32 gametime = env->getGameTime();
+	
+	if (block) {
+		if (gametime - block->weather_update_time < 10)
 			return block->heat;
+	} else {
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
 
-	//variant 1: full random
-	//f32 heat = NoisePerlin3D(m_emerge->biomedef->np_heat, p.X, env->getGameTime()/100, p.Z, m_emerge->params->seed);
+	f32 heat = m_emerge->biomedef->calcBlockHeat(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
 
-	//variant 2: season change based on default heat map
-	const f32 offset = 20; // = m_emerge->biomedef->np_heat->offset
-	const f32 scale  = 20; // = m_emerge->biomedef->np_heat->scale
-	const f32 range  = 20;
-	f32 heat = NoisePerlin2D(m_emerge->biomedef->np_heat, p.X, p.Z,
-					m_emerge->params->seed); // 0..50..100
-
-	heat -= m_emerge->biomedef->np_heat->offset; // -50..0..+50
-
-	// normalizing - todo REMOVE after fixed NoiseParams nparams_biome_def_heat = {50, 50, -> 20, 50,
-	if(m_emerge->biomedef->np_heat->scale)
-		heat /= m_emerge->biomedef->np_heat->scale / scale; //  -20..0..+20
-
-	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
-	seasonv /= 86400 * g_settings->getS16("year_days"); // season change speed
-	seasonv += (f32)p.X / 3000; // you can walk to area with other season
-	seasonv = sin(seasonv * M_PI);
-	heat += (range * (heat < 0 ? 2 : 0.5)) * seasonv; // -60..0..30
-
-	heat += offset; // -40..0..50
-	heat += p.Y / -333; // upper=colder, lower=hotter, 3c per 1000
-
-	// daily change, hotter at sun +4, colder at night -4
-	heat += 8 * (sin(cycle_shift(env->getTimeOfDayF(), -0.25) * M_PI) - 0.5); //-44..20..54
-
-	if(block != NULL) {
-		block->heat = heat;
-		block->heat_time = env->getGameTime();
-	}
+	block->heat = heat;
+	block->weather_update_time = gametime;
 	return heat;
 }
 
-s16 ServerMap::getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
+s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
 {
-	if(block == NULL)
-		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
-	if(block != NULL) {
-		if (env->getGameTime() - block->humidity_time < 10)
+	u32 gametime = env->getGameTime();
+	
+	if (block) {
+		if (gametime - block->weather_update_time < 10)
 			return block->humidity;
+	} else {
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
 
-	f32 humidity = NoisePerlin2D(m_emerge->biomedef->np_humidity, p.X, p.Z, 
-						m_emerge->params->seed);
-
-	f32 seasonv = (f32)env->getGameTime() * env->getTimeOfDaySpeed();
-	seasonv /= 86400 * 2; // bad weather change speed (2 days)
-	seasonv += (f32)p.Z / 300;
-	humidity += 30 * sin(seasonv * M_PI);
-
-	humidity += -12 * ( sin(cycle_shift(env->getTimeOfDayF(), -0.1) * M_PI) - 0.5);
-	humidity = rangelim(humidity, 0, 100);
-
-	if(block != NULL) {
-		block->humidity = humidity;
-		block->humidity_time = env->getGameTime();
-	}
+	f32 humidity = m_emerge->biomedef->calcBlockHumidity(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
+			
+	block->humidity = humidity;
+	block->weather_update_time = gametime;
 	return humidity;
 }
 
