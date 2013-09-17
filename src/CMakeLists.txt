@@ -3,7 +3,6 @@ cmake_minimum_required( VERSION 2.6 )
 
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
-mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
 mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
 mark_as_advanced(JSON_INCLUDE_DIR JSON_LIBRARY)
 
@@ -169,7 +168,6 @@ else()
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
-find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
 find_package(OpenGLES2)
@@ -225,6 +223,7 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
+add_subdirectory(jthread)
 add_subdirectory(script)
 add_subdirectory(util)
 
@@ -294,6 +293,7 @@ set(common_SRCS
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
+	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
 )
@@ -381,7 +381,6 @@ include_directories(
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
-	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
@@ -416,7 +415,6 @@ if(BUILD_CLIENT)
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
 		${SOUND_LIBRARIES}
-		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${JSON_LIBRARY}
@@ -447,7 +445,6 @@ if(BUILD_SERVER)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
-		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
 		${GETTEXT_LIBRARY}
@@ -621,11 +618,6 @@ if (USE_GETTEXT)
 endif(USE_GETTEXT)
 
 # Subdirectories
-
-if (JTHREAD_FOUND)
-else (JTHREAD_FOUND)
-	add_subdirectory(jthread)
-endif (JTHREAD_FOUND)
 
 if (SQLITE3_FOUND)
 else (SQLITE3_FOUND)

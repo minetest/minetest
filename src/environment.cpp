@@ -322,6 +322,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_recommended_send_interval(0.1),
 	m_max_lag_estimate(0.1)
 {
+	m_use_weather = g_settings->getBool("weather");
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -808,6 +809,16 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	
 	// Activate stored objects
 	activateObjects(block, dtime_s);
+	
+	// Calculate weather conditions
+	if (m_use_weather) {
+		m_map->updateBlockHeat(this, block->getPos() *  MAP_BLOCKSIZE, block);
+		m_map->updateBlockHumidity(this, block->getPos() * MAP_BLOCKSIZE, block);
+	} else {
+		block->heat     = HEAT_UNDEFINED;
+		block->humidity = HUMIDITY_UNDEFINED;
+		block->weather_update_time = 0;
+	}
 
 	// Run node timers
 	std::map<v3s16, NodeTimer> elapsed_timers =

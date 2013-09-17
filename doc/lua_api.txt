@@ -1109,7 +1109,7 @@ minetest.register_decoration(decoration definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
-^ Called every server step, usually interval of 0.05s
+^ Called every server step, usually interval of 0.1s
 minetest.register_on_shutdown(func())
 ^ Called before server shutdown
 ^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
@@ -1790,7 +1790,7 @@ Registered entities
   - on_activate(self, staticdata)
     ^ Called when the object is instantiated.
   - on_step(self, dtime)
-    ^ Called on every server tick (dtime is usually 0.05 seconds)
+    ^ Called on every server tick (dtime is usually 0.1 seconds)
   - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
     ^ Called when somebody punches the object.
     ^ Note that you probably want to handle most punches using the

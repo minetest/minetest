@@ -477,8 +477,8 @@ public:
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
 
-	virtual s16 getHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
-	virtual s16 getHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+	virtual s16 updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+	virtual s16 updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
 
 private:
 	// Seed used for all kinds of randomness in generation

@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <cstring>
 #include <map>
-#include <jmutex.h>
-#include <jmutexautolock.h>
+#include "jthread/jmutex.h"
+#include "jthread/jmutexautolock.h"
 
 /*
 	Debug output

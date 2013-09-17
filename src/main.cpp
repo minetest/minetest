@@ -1473,8 +1473,8 @@ int main(int argc, char *argv[])
 	gui::IGUISkin* skin = guienv->getSkin();
 	std::string font_path = g_settings->get("font_path");
 	gui::IGUIFont *font;
-	bool use_freetype = g_settings->getBool("freetype");
 	#if USE_FREETYPE
+	bool use_freetype = g_settings->getBool("freetype");
 	if (use_freetype) {
 		std::string fallback;
 		if (is_yes(gettext("needs_fallback_font")))
@@ -1686,7 +1686,7 @@ int main(int argc, char *argv[])
 				g_settings->set("port", itos(port));
 
 				if((menudata.selected_world >= 0) &&
-						(menudata.selected_world < worldspecs.size()))
+						(menudata.selected_world < (int)worldspecs.size()))
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
 
@@ -1718,7 +1718,7 @@ int main(int argc, char *argv[])
 				
 				// Set world path to selected one
 				if ((menudata.selected_world >= 0) &&
-					(menudata.selected_world < worldspecs.size())) {
+					(menudata.selected_world < (int)worldspecs.size())) {
 					worldspec = worldspecs[menudata.selected_world];
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;

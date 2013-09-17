@@ -1,16 +1,11 @@
 if( UNIX )
-	set(jthread_SRCS pthread/jmutex.cpp pthread/jthread.cpp)
-	set(jthread_platform_LIBS "")
+	set(JTHREAD_SRCS
+		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jmutex.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jthread.cpp
+		PARENT_SCOPE)
 else( UNIX )
-	set(jthread_SRCS win32/jmutex.cpp win32/jthread.cpp)
-	set(jthread_platform_LIBS "")
+	set(JTHREAD_SRCS
+		${CMAKE_CURRENT_SOURCE_DIR}/win32/jmutex.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/win32/jthread.cpp
+		PARENT_SCOPE)
 endif( UNIX )
-
-add_library(jthread ${jthread_SRCS})
-
-target_link_libraries(
-	jthread
-	${jthread_platform_LIBS}
-)
-
-

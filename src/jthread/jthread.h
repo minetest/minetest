@@ -29,7 +29,7 @@
 
 #define JTHREAD_H
 
-#include "jmutex.h"
+#include "jthread/jmutex.h"
 
 #define ERR_JTHREAD_CANTINITMUTEX						-1
 #define ERR_JTHREAD_CANTSTARTTHREAD						-2

@@ -108,7 +108,16 @@ void Database_SQLite3::verifyDatabase() {
 		
 		if(needs_create)
 			createDatabase();
-	
+
+		std::string querystr = std::string("PRAGMA synchronous = ")
+				 + itos(g_settings->getU16("sqlite_synchronous"));
+		d = sqlite3_exec(m_database, querystr.c_str(), NULL, NULL, NULL);
+		if(d != SQLITE_OK) {
+			infostream<<"WARNING: Database pragma set failed: "
+					<<sqlite3_errmsg(m_database)<<std::endl;
+			throw FileNotGoodException("Cannot set pragma");
+		}
+
 		d = sqlite3_prepare(m_database, "SELECT `data` FROM `blocks` WHERE `pos`=? LIMIT 1", -1, &m_database_read, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: SQLite3 database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;

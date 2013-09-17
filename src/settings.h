@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include <string>
-#include <jmutex.h>
-#include <jmutexautolock.h>
+#include "jthread/jmutex.h"
+#include "jthread/jmutexautolock.h"
 #include "strfnd.h"
 #include <iostream>
 #include <fstream>
