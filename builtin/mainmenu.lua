@@ -142,23 +142,22 @@ function init_globals()
 					
 	filterlist.add_sort_mechanism(worldlist,"alphabetic",sort_worlds_alphabetic)
 	filterlist.set_sortmode(worldlist,"alphabetic")
-					
 end
 
 --------------------------------------------------------------------------------
 function update_menu()
 
-	local formspec = "size[12,5.2]"
+	local formspec
 	
 	-- handle errors
 	if gamedata.errormessage ~= nil then
-		formspec = formspec ..
+		formspec = "size[12,5.2]" ..
 			"field[1,2;10,2;;ERROR: " ..
 			gamedata.errormessage .. 
 			";]"..
 			"button[4.5,4.2;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
 	else
-		formspec = formspec .. tabbuilder.gettab()
+		formspec = tabbuilder.gettab()
 	end
 
 	engine.update_formspec(formspec)
@@ -279,7 +278,8 @@ end
 function tabbuilder.dialog_create_world()
 	local mapgens = {"v6", "v7", "indev", "singlenode", "math"}
 
-	local current_mg = engine.setting_get("mg_name")
+	local current_seed = engine.setting_get("fixed_map_seed") or ""
+	local current_mg   = engine.setting_get("mg_name")
 
 	local mglist = ""
 	local selindex = 1
@@ -295,15 +295,20 @@ function tabbuilder.dialog_create_world()
 
 	local retval = 
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"label[2,1;" .. fgettext("Mapgen") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
-		"label[2,2;" .. fgettext("Game") .. "]"..
-		"button[5,4.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[7.5,4.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]" ..
-		"dropdown[4.2,1;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
-		"textlist[4.2,1.9;5.8,2.3;games;" ..
-		gamemgr.gamelist() ..
-		";" .. menu.last_game .. ";true]"
+
+		"label[2,1;" .. fgettext("Seed") .. "]"..
+		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
+
+		"label[2,2;" .. fgettext("Mapgen") .. "]"..
+		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+
+		"label[2,3;" .. fgettext("Game") .. "]"..
+		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
+		";" .. menu.last_game .. ";true]" ..
+
+		"button[5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[7.5,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 
 	return retval
 end
@@ -317,43 +322,18 @@ function tabbuilder.dialog_delete_world()
 end
 
 --------------------------------------------------------------------------------
+
 function tabbuilder.gettab()
-	local retval = ""
-	
+	local tsize = tabbuilder.tabsizes[tabbuilder.current_tab] or {width=12, height=5.2}
+	local retval = "size[" .. tsize.width .. "," .. tsize.height .. "]"
+
 	if tabbuilder.show_buttons then
 		retval = retval .. tabbuilder.tab_header()
 	end
 
-	if tabbuilder.current_tab == "singleplayer" then
-		retval = retval .. tabbuilder.tab_singleplayer()
-	end
-	
-	if tabbuilder.current_tab == "multiplayer" then
-		retval = retval .. tabbuilder.tab_multiplayer()
-	end
-
-	if tabbuilder.current_tab == "server" then
-		retval = retval .. tabbuilder.tab_server()
-	end
-	
-	if tabbuilder.current_tab == "settings" then
-		retval = retval .. tabbuilder.tab_settings()
-	end
-	
-	if tabbuilder.current_tab == "texture_packs" then
-		retval = retval .. tabbuilder.tab_texture_packs()
-	end
-	
-	if tabbuilder.current_tab == "credits" then
-		retval = retval .. tabbuilder.tab_credits()
-	end
-	
-	if tabbuilder.current_tab == "dialog_create_world" then
-		retval = retval .. tabbuilder.dialog_create_world()
-	end
-	
-	if tabbuilder.current_tab == "dialog_delete_world" then
-		retval = retval .. tabbuilder.dialog_delete_world()
+	local buildfunc = tabbuilder.tabfuncs[tabbuilder.current_tab]
+	if buildfunc ~= nil then
+		retval = retval .. buildfunc()
 	end
 	
 	retval = retval .. modmgr.gettab(tabbuilder.current_tab)
@@ -383,6 +363,8 @@ function tabbuilder.handle_create_world_buttons(fields)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
+
+			engine.setting_set("fixed_map_seed", fields["te_seed"])
 			
 			if message ~= nil then
 				gamedata.errormessage = message
@@ -825,50 +807,6 @@ function tabbuilder.handle_tab_buttons(fields)
 end
 
 --------------------------------------------------------------------------------
-function tabbuilder.init()
-	tabbuilder.current_tab = engine.setting_get("main_menu_tab")
-	
-	if tabbuilder.current_tab == nil or
-		tabbuilder.current_tab == "" then
-		tabbuilder.current_tab = "singleplayer"
-		engine.setting_set("main_menu_tab",tabbuilder.current_tab)
-	end
-	
-	--initialize tab buttons
-	tabbuilder.last_tab = nil
-	tabbuilder.show_buttons = true
-	
-	tabbuilder.current_buttons = {}
-	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption=fgettext("Singleplayer")})
-	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption=fgettext("Client")})
-	table.insert(tabbuilder.current_buttons,{name="server", caption=fgettext("Server")})
-	table.insert(tabbuilder.current_buttons,{name="settings", caption=fgettext("Settings")})
-	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption=fgettext("Texture Packs")})
-	
-	if engine.setting_getbool("main_menu_game_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption=fgettext("Games")})
-	end
-	
-	if engine.setting_getbool("main_menu_mod_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption=fgettext("Mods")})
-	end
-	table.insert(tabbuilder.current_buttons,{name="credits", caption=fgettext("Credits")})
-	
-	
-	for i=1,#tabbuilder.current_buttons,1 do
-		if tabbuilder.current_buttons[i].name == tabbuilder.current_tab then
-			tabbuilder.last_tab_index = i
-		end
-	end
-	
-	if tabbuilder.current_tab ~= "singleplayer" then
-		menu.update_gametype(true)
-	else
-		menu.update_gametype()
-	end
-end
-
---------------------------------------------------------------------------------
 function tabbuilder.tab_multiplayer()
 
 	local retval =
@@ -1089,6 +1027,66 @@ function tabbuilder.tab_credits()
 			"matttpt <matttpt@gmail.com>,"..
 			"JacobF <queatz@gmail.com>,"..
 			";0;true]"
+end
+
+--------------------------------------------------------------------------------
+function tabbuilder.init()
+	tabbuilder.tabfuncs = {
+		singleplayer  = tabbuilder.tab_singleplayer,
+		multiplayer   = tabbuilder.tab_multiplayer,
+		server        = tabbuilder.tab_server,
+		settings      = tabbuilder.tab_settings,
+		texture_packs = tabbuilder.tab_texture_packs,
+		credits       = tabbuilder.tab_credits,
+		dialog_create_world = tabbuilder.dialog_create_world,
+		dialog_delete_world = tabbuilder.dialog_delete_world
+	}
+
+	tabbuilder.tabsizes = {
+		dialog_create_world = {width=12, height=7},
+		dialog_delete_world = {width=12, height=5.2}
+	}
+
+	tabbuilder.current_tab = engine.setting_get("main_menu_tab")
+	
+	if tabbuilder.current_tab == nil or
+		tabbuilder.current_tab == "" then
+		tabbuilder.current_tab = "singleplayer"
+		engine.setting_set("main_menu_tab",tabbuilder.current_tab)
+	end
+	
+	--initialize tab buttons
+	tabbuilder.last_tab = nil
+	tabbuilder.show_buttons = true
+	
+	tabbuilder.current_buttons = {}
+	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption=fgettext("Singleplayer")})
+	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption=fgettext("Client")})
+	table.insert(tabbuilder.current_buttons,{name="server", caption=fgettext("Server")})
+	table.insert(tabbuilder.current_buttons,{name="settings", caption=fgettext("Settings")})
+	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption=fgettext("Texture Packs")})
+	
+	if engine.setting_getbool("main_menu_game_mgr") then
+		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption=fgettext("Games")})
+	end
+	
+	if engine.setting_getbool("main_menu_mod_mgr") then
+		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption=fgettext("Mods")})
+	end
+	table.insert(tabbuilder.current_buttons,{name="credits", caption=fgettext("Credits")})
+	
+	
+	for i=1,#tabbuilder.current_buttons,1 do
+		if tabbuilder.current_buttons[i].name == tabbuilder.current_tab then
+			tabbuilder.last_tab_index = i
+		end
+	end
+	
+	if tabbuilder.current_tab ~= "singleplayer" then
+		menu.update_gametype(true)
+	else
+		menu.update_gametype()
+	end
 end
 
 --------------------------------------------------------------------------------
