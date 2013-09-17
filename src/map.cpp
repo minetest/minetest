@@ -2827,7 +2827,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 			<<blockpos_requested.Z<<")"<<std::endl;*/
 			
 	/*
-		Update weather data in central blocks if needed
+		Update weather data in blocks
 	*/
 	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
 	if (senv->m_use_weather) {

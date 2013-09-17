@@ -4645,7 +4645,7 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 		client->denied = true;
 
 	// If there are way too many clients, get rid of denied new ones immediately
-	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+	if((int)m_clients.size() > 2 * g_settings->getU16("max_users")){
 		verbosestream<<"Server: DenyAccess: Too many clients; getting rid of "
 				<<"peer_id="<<peer_id<<" immediately"<<std::endl;
 		// Delete peer to stop sending it data

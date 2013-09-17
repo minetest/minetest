@@ -484,7 +484,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 				v3s16 pos = read_v3s16(L, -1);
 				lua_pop(L, 1);
 				
-				u8 prob = getintfield_default(L, -1, "prob", 0xFF);
+				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
 				probability_list.push_back(std::make_pair(pos, prob));
 			}
 
