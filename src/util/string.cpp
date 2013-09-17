@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "string.h"
 #include "pointer.h"
+#include "numeric.h"
 
 #include "../sha1.h"
 #include "../base64.h"
@@ -135,4 +136,19 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) {
 	
 	*lasts = t;
 	return s;
+}
+
+u64 read_seed(const char *str) {
+	char *endptr;
+	u64 num;
+	
+	if (str[0] == '0' && str[1] == 'x')
+		num = strtoull(str, &endptr, 16);
+	else
+		num = strtoull(str, &endptr, 10);
+		
+	if (*endptr)
+		num = murmur_hash_64_ua(str, (int)strlen(str), 0x1337);
+		
+	return num;
 }

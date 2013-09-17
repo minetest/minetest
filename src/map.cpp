@@ -3507,7 +3507,7 @@ void ServerMap::loadMapMeta()
 		m_seed = mgparams->seed;
 	} else {
 		if (params.exists("seed")) {
-			m_seed = params.getU64("seed");
+			m_seed = read_seed(params.get("seed").c_str());
 			m_mgparams->seed = m_seed;
 		}
 	}
