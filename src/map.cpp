@@ -3935,8 +3935,10 @@ s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 	f32 heat = m_emerge->biomedef->calcBlockHeat(p, m_seed,
 			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
 
-	block->heat = heat;
-	block->weather_update_time = gametime;
+	if(block) {
+		block->heat = heat;
+		block->weather_update_time = gametime;
+	}
 	return heat;
 }
 
@@ -3954,8 +3956,10 @@ s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *bl
 	f32 humidity = m_emerge->biomedef->calcBlockHumidity(p, m_seed,
 			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
 			
-	block->humidity = humidity;
-	block->weather_update_time = gametime;
+	if(block) {
+		block->humidity = humidity;
+		block->weather_update_time = gametime;
+	}
 	return humidity;
 }
 
