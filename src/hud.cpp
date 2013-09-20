@@ -237,10 +237,15 @@ void Hud::drawLuaElements() {
 				core::rect<s32> rect(0, 0, imgsize.Width  * e->scale.X,
 									       imgsize.Height * e->scale.X);
 				rect += pos;
-				v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
+				if (e->scale.X < 0 && e->scale.Y < 0) {
+					rect = core::rect<s32>(0, 0, screensize.X*(e->scale.X*-0.01), screensize.Y*(e->scale.Y*-0.01));
+					rect += pos;
+				} else {
+					v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
 				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
-				rect += offset;
-				rect += v2s32(e->offset.X, e->offset.Y);
+					rect += offset;
+					rect += v2s32(e->offset.X, e->offset.Y);
+				}
 				driver->draw2DImage(texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
