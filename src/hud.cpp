@@ -239,6 +239,7 @@ void Hud::drawLuaElements() {
 				rect += pos;
 				if (e->scale.X < 0 && e->scale.Y < 0) {
 					rect = core::rect<s32>(0, 0, screensize.X*(e->scale.X*-0.01), screensize.Y*(e->scale.Y*-0.01));
+					rect += pos;
 				} else {
 					v2s32 offset((e->align.X - 1.0) * ((imgsize.Width  * e->scale.X) / 2),
 				             (e->align.Y - 1.0) * ((imgsize.Height * e->scale.X) / 2));
