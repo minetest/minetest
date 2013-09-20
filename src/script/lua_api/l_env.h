@@ -104,6 +104,9 @@ private:
 	// minetest.get_timeofday() -> 0...1
 	static int l_get_timeofday(lua_State *L);
 
+	// minetest.get_gametime()
+	static int l_get_gametime(lua_State *L);
+
 	// minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L);

@@ -227,7 +227,7 @@ function modstore.getmodlist(list)
 			end
 			
 			retval = retval .. "image[0,".. screenshot_ypos .. ";3,2;" .. 
-					list.data[i].texturename .. "]"
+					engine.formspec_escape(list.data[i].texturename) .. "]"
 			
 			--title + author
 			retval = retval .."label[2.75," .. screenshot_ypos .. ";" .. 

@@ -15,6 +15,7 @@
 #define USE_FREETYPE 0
 #define STATIC_SHAREDIR ""
 #define BUILD_INFO "non-cmake"
+#define USE_LEVELDB 0
 
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
@@ -36,6 +37,8 @@
 	#define STATIC_SHAREDIR CMAKE_STATIC_SHAREDIR
 	#undef BUILD_INFO
 	#define BUILD_INFO CMAKE_BUILD_INFO
+	#undef USE_LEVELDB
+	#define USE_LEVELDB CMAKE_USE_LEVELDB
 #endif
 
 #endif

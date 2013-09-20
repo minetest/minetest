@@ -25,7 +25,7 @@
 
 */
 
-#include "jmutex.h"
+#include "jthread/jmutex.h"
 
 JMutex::JMutex()
 {

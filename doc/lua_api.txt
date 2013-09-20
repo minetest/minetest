@@ -478,8 +478,10 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
 
 - image
     Displays an image on the HUD.
-	- scale: The scale of the image, with 1 being the original texture size.
-             Only the X coordinate scale is used.
+    - scale: The scale of the image, with 1 being the original texture size.
+             Only the X coordinate scale is used (positive values)
+             Negative values represent that percentage of the screen it
+             should take; e.g. x=-100 means 100% (width)
     - text: The name of the texture that is displayed.
     - alignment: The alignment of the image.
     - offset: offset in pixels from position.
@@ -1069,6 +1071,8 @@ minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 minetest.string_to_pos(string) -> position
 ^ Same but in reverse
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
 
 minetest namespace reference
 -----------------------------
@@ -1107,7 +1111,7 @@ minetest.register_decoration(decoration definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
-^ Called every server step, usually interval of 0.05s
+^ Called every server step, usually interval of 0.1s
 minetest.register_on_shutdown(func())
 ^ Called before server shutdown
 ^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
@@ -1226,6 +1230,7 @@ minetest.get_player_by_name(name) -- Get an ObjectRef to a player
 minetest.get_objects_inside_radius(pos, radius)
 minetest.set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 minetest.get_timeofday()
+minetest.get_gametime(): returns the time, in seconds, since the world was created
 minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
@@ -1618,6 +1623,10 @@ Player-only: (no-op for other objects)
   ^ if a flag is nil, the flag is not modified
 - hud_set_hotbar_itemcount(count): sets number of items in builtin hotbar
   ^ count: number of items, must be between 1 and 23
+- hud_set_hotbar_image(texturename)
+  ^ sets background image for hotbar
+- hud_set_hotbar_selected_image(texturename)
+  ^ sets image for selected item of hotbar
 
 InvRef: Reference to an inventory
 methods:
@@ -1732,6 +1741,18 @@ methods:
   ^ from (minx,miny,minz) to (maxx,maxy,maxz) in the order of [z [y [x]]]
 - iterp(minp, maxp):  same as above, except takes a vector
 
+Settings: An interface to read config files in the format of minetest.conf
+- Can be created via Settings(filename)
+methods:
+- get(key) -> value
+- get_bool(key) -> boolean
+- set(key, value)
+- remove(key) -> success
+- get_names() -> {key1,...}
+- write() -> success
+  ^ write changes to file
+- to_table() -> {[key1]=value1,...}
+
 Mapgen objects
 ---------------
 A mapgen object is a construct used in map generation.  Mapgen objects can be used by an on_generate 
@@ -1771,7 +1792,7 @@ Registered entities
   - on_activate(self, staticdata)
     ^ Called when the object is instantiated.
   - on_step(self, dtime)
-    ^ Called on every server tick (dtime is usually 0.05 seconds)
+    ^ Called on every server tick (dtime is usually 0.1 seconds)
   - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
     ^ Called when somebody punches the object.
     ^ Note that you probably want to handle most punches using the
@@ -1869,7 +1890,8 @@ Object Properties
     makes_footstep_sound = false,
     automatic_rotate = false,
     stepheight = 0,
-    automatic_face_movement_dir = false,
+    automatic_face_movement_dir = 0.0,
+    ^ automatically set yaw to movement direction; offset in degrees; false to disable
 }
 
 Entity definition (register_entity)

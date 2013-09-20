@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_server.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_vmanip.h"
+#include "lua_api/l_settings.h"
 
 extern "C" {
 #include "lualib.h"
@@ -96,4 +97,5 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	NodeMetaRef::Register(L);
 	NodeTimerRef::Register(L);
 	ObjectRef::Register(L);
+	LuaSettings::Register(L);
 }

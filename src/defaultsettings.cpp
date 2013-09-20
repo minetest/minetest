@@ -147,6 +147,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", "13");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
 	settings->setDefault("mono_font_size", "13");
+	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
+	settings->setDefault("fallback_font_size", "13");
 #else
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
@@ -189,6 +191,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("max_objects_per_block", "49");
 	settings->setDefault("server_map_save_interval", "5.3");
+	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");
@@ -281,6 +284,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
 
 	settings->setDefault("high_precision_fpu", "true");
+
+	settings->setDefault("language", "");
 }
 
 void override_default_settings(Settings *settings, Settings *from)

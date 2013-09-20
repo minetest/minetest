@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class InventoryManager;
+class ISimpleTextureSource;
 
 typedef enum {
 	f_Button,
@@ -176,7 +177,8 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
-			IGameDef *gamedef
+			IGameDef *gamedef,
+			ISimpleTextureSource *tsrc
 			);
 
 	~GUIFormSpecMenu();
@@ -245,6 +247,7 @@ protected:
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
+	ISimpleTextureSource *m_tsrc;
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
@@ -301,8 +304,6 @@ private:
 		bool key_enter;
 		bool key_escape;
 	} fs_key_pendig;
-
-	std::vector<video::ITexture *> m_Textures;
 
 	fs_key_pendig current_keys_pending;
 

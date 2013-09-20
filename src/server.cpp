@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ban.h"
 #include "environment.h"
 #include "map.h"
-#include "jmutexautolock.h"
+#include "jthread/jmutexautolock.h"
 #include "main.h"
 #include "constants.h"
 #include "voxel.h"
@@ -4645,7 +4645,7 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 		client->denied = true;
 
 	// If there are way too many clients, get rid of denied new ones immediately
-	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+	if((int)m_clients.size() > 2 * g_settings->getU16("max_users")){
 		verbosestream<<"Server: DenyAccess: Too many clients; getting rid of "
 				<<"peer_id="<<peer_id<<" immediately"<<std::endl;
 		// Delete peer to stop sending it data
@@ -4997,6 +4997,20 @@ bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
 	writeS32(os, hotbar_itemcount);
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
+}
+
+void Server::hudSetHotbarImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
+}
+
+void Server::hudSetHotbarSelectedImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
 void Server::notifyPlayers(const std::wstring msg)

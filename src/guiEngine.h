@@ -25,17 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 #include "irrlichttypes.h"
 #include "modalMenu.h"
-#include "clouds.h"
 #include "guiFormSpecMenu.h"
 #include "sound.h"
+#include "tile.h"
 
 /******************************************************************************/
 /* Typedefs and macros                                                        */
 /******************************************************************************/
-#define MAX_MENUBAR_BTN_COUNT	10
-#define MAX_MENUBAR_BTN_ID		256
-#define MIN_MENUBAR_BTN_ID		(MAX_MENUBAR_BTN_ID - MAX_MENUBAR_BTN_COUNT)
-
 /** texture layer ids */
 typedef enum {
 	TEX_LAYER_BACKGROUND = 0,
@@ -50,8 +46,8 @@ typedef enum {
 /******************************************************************************/
 class GUIEngine;
 class MainMenuScripting;
+class Clouds;
 struct MainMenuData;
-struct SimpleSoundSpec;
 
 /******************************************************************************/
 /* declarations                                                               */
@@ -66,6 +62,7 @@ public:
 	 * @param engine the engine data is transmitted for further processing
 	 */
 	TextDestGuiEngine(GUIEngine* engine);
+
 	/**
 	 * receive fields transmitted by guiFormSpecMenu
 	 * @param fields map containing formspec field elements currently active
@@ -77,18 +74,58 @@ public:
 	 * @param text textual representation of event
 	 */
 	void gotText(std::wstring text);
+
 private:
 	/** target to transmit data to */
 	GUIEngine* m_engine;
 };
 
+/** GUIEngine specific implementation of ISimpleTextureSource */
+class MenuTextureSource : public ISimpleTextureSource
+{
+public:
+	/**
+	 * default constructor
+	 * @param driver the video driver to load textures from
+	 */
+	MenuTextureSource(video::IVideoDriver *driver);
+
+	/**
+	 * destructor, removes all loaded textures
+	 */
+	virtual ~MenuTextureSource();
+
+	/**
+	 * get a texture, loading it if required
+	 * @param name path to the texture
+	 * @param id receives the texture ID, always 0 in this implementation
+	 */
+	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
+
+private:
+	/** driver to get textures from */
+	video::IVideoDriver *m_driver;
+	/** set of texture names to delete */
+	std::set<std::string> m_to_delete;
+};
+
+/** GUIEngine specific implementation of OnDemandSoundFetcher */
 class MenuMusicFetcher: public OnDemandSoundFetcher
 {
-	std::set<std::string> m_fetched;
 public:
+	/**
+	 * get sound file paths according to sound name
+	 * @param name sound name
+	 * @param dst_paths receives possible paths to sound files
+	 * @param dst_datas receives binary sound data (not used here)
+	 */
 	void fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
 			std::set<std::string> &dst_datas);
+
+private:
+	/** set of fetched sound names */
+	std::set<std::string> m_fetched;
 };
 
 /** implementation of main menu based uppon formspecs */
@@ -150,6 +187,8 @@ private:
 	scene::ISceneManager*	m_smgr;
 	/** pointer to data beeing transfered back to main game handling */
 	MainMenuData*			m_data;
+	/** pointer to texture source */
+	ISimpleTextureSource*	m_texture_source;
 	/** pointer to soundmanager*/
 	ISoundManager*			m_sound_manager;
 
@@ -167,7 +206,7 @@ private:
 	bool					m_startgame;
 
 	/** scripting interface */
-	MainMenuScripting*			m_script;
+	MainMenuScripting*		m_script;
 
 	/** script basefolder */
 	std::string				m_scriptdir;
