@@ -983,53 +983,39 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 }
 
 
-//int []
-
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
 
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	//TimeTaker t("updateLighting");
-errorstream<<"Mapgen::calcLighting"<<std::endl;
+
 	// first, send vertical rays of sunshine downward
 	v3s16 em = vm->m_area.getExtent();
-	s32 cnt = 0;
-errorstream << " Aminz="<< a.MinEdge.Z << " amaxz="<<a.MaxEdge.Z<<" z="<<a.MaxEdge.Z-a.MinEdge.Z<< " Aminx="<< a.MinEdge.X << " amaxz="<<a.MaxEdge.X<<" x="<<a.MaxEdge.X-a.MinEdge.X<<std::endl;
-
-#define STEP 8
-	for (int s = 0; s < STEP; s++) 
-	for (int z = a.MinEdge.Z+s; z <= a.MaxEdge.Z; z+=STEP) {
-//errorstream << " s="<< s<<" z="<<z<<std::endl;
-		for (int x = a.MinEdge.X+s; x <= a.MaxEdge.X; x+=STEP) {
-			++cnt;
+	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
+		for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++) {
 			// see if we can get a light value from the overtop
 			u32 i = vm->m_area.index(x, a.MaxEdge.Y + 1, z);
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
 				if (block_is_underground)
 					continue;
 			} else if ((vm->m_data[i].param1 & 0x0F) != LIGHT_SUN) {
-				u32 ii = 0; 
-				//ii = vm->m_area.index(x + 1, a.MaxEdge.Y + 1, z);
-// /*
+				u32 ii = 0;
 				if (
-(ii = vm->m_area.index(x + 1, a.MaxEdge.Y + 1, z    ) && vm->m_data[ii].getContent() != CONTENT_IGNORE && (vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN)||
-(ii = vm->m_area.index(x - 1, a.MaxEdge.Y + 1, z    ) && vm->m_data[ii].getContent() != CONTENT_IGNORE && (vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN)||
-(ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z - 1) && vm->m_data[ii].getContent() != CONTENT_IGNORE && (vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN)||
-(ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z + 1) && vm->m_data[ii].getContent() != CONTENT_IGNORE && (vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN)
-
-) {
-errorstream<<"Uppi!"<<"C="<<cnt<<std::endl;
+				(x < a.MaxEdge.X && (ii = vm->m_area.index(x + 1, a.MaxEdge.Y + 1, z    )) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(x > a.MinEdge.X && (ii = vm->m_area.index(x - 1, a.MaxEdge.Y + 1, z    )) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(z > a.MinEdge.Z && (ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z - 1)) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(z < a.MaxEdge.Z && (ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z + 1)) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))
+				) {
 				} else
-// */
-				/*if      (!((cnt+1)%3)) ii = vm->m_area.index(x + 1, a.MaxEdge.Y + 1, z);
-				else if (!((cnt+2)%3)) ii = vm->m_area.index(x - 1, a.MaxEdge.Y + 1, z);
-				else if (!((cnt+3)%3)) ii = vm->m_area.index(x,     a.MaxEdge.Y + 1, z + 1);
-				else if (!((cnt+4)%3)) ii = vm->m_area.index(x,     a.MaxEdge.Y + 1, z - 1);
-				if (vm->m_data[ii].getContent() != CONTENT_IGNORE &&
-				   (vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN) {
-errorstream<<"Uppi!"<<"C="<<cnt<<std::endl;
-				} else*/
 				continue;
 			}
 			vm->m_area.add_y(em, i, -1);
