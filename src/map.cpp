@@ -639,10 +639,25 @@ s16 Map::propagateSunlight(v3s16 start,
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
+	v3s16 dirs[4] = {
+		v3s16(0,0,1), // back
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(-1,0,0), // left
+	};
+
+	std::map<v3s16, s16> area;
 	s16 y = start.Y;
+	area[v3s16(start.X,0, start.Z)] = y + 1;
+	s16 ret = 0;
 	for(; ; y--)
 	{
-		v3s16 pos(start.X, y, start.Z);
+	    int cnt = 0;
+	    for(std::map<v3s16, s16>::iterator i = area.begin();i != area.end(); ++i) {
+		if(i->second <= y)
+			continue;
+		++cnt;
+		v3s16 pos(i->first.X, y, i->first.Z);
 
 		v3s16 blockpos = getNodeBlockPos(pos);
 		MapBlock *block;
@@ -651,7 +666,7 @@ s16 Map::propagateSunlight(v3s16 start,
 		}
 		catch(InvalidPositionException &e)
 		{
-			break;
+			goto lfinish;
 		}
 
 		v3s16 relpos = pos - blockpos*MAP_BLOCKSIZE;
@@ -659,18 +674,38 @@ s16 Map::propagateSunlight(v3s16 start,
 
 		if(nodemgr->get(n).sunlight_propagates)
 		{
+			for(u16 i=0; i<4; i++){
+				v3s16 n2pos = pos + dirs[i];
+				MapNode n2;
+				try{
+					n2 = getNode(n2pos);
+					if(nodemgr->get(n2).sunlight_propagates && n2.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN) {
+						area[v3s16(n2pos.X,0,n2pos.Z)] = y;
+					}
+				}
+				catch(InvalidPositionException &e)
+				{
+					area.erase(v3s16(n2pos.X,0,n2pos.Z));
+					continue;
+				}
+			}
 			n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
 			block->setNode(relpos, n);
-
 			modified_blocks[blockpos] = block;
 		}
 		else
 		{
 			// Sunlight goes no further
-			break;
+			if(pos.X == start.X && pos.Z == start.Z)
+				ret = y;
+			area.erase(v3s16(pos.X,0,pos.Z));
 		}
+	    }
+	    if (!cnt || area.empty())
+		break;
 	}
-	return y + 1;
+	lfinish:
+	return ((ret ? ret : y) + 1);
 }
 
 void Map::updateLighting(enum LightBank bank,
