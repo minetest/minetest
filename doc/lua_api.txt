@@ -478,8 +478,10 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
 
 - image
     Displays an image on the HUD.
-	- scale: The scale of the image, with 1 being the original texture size.
-             Only the X coordinate scale is used.
+    - scale: The scale of the image, with 1 being the original texture size.
+             Only the X coordinate scale is used (positive values)
+             Negative values represent that percentage of the screen it
+             should take; e.g. x=-100 means 100% (width)
     - text: The name of the texture that is displayed.
     - alignment: The alignment of the image.
     - offset: offset in pixels from position.
