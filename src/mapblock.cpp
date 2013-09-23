@@ -175,11 +175,23 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
+//errorstream<<"MapBlock::propagateSunlight "<<" r="<<remove_light<<std::endl;
 	// Whether the sunlight at the top of the bottom block is valid
 	bool block_below_is_valid = true;
 	
 	v3s16 pos_relative = getPosRelative();
 	
+
+	v3s16 dirs[4] = {
+		v3s16(0,0,1), // back
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(-1,0,0), // left
+	};
+
+	std::map<v3s16, s16> area;
+	//area[v3s16(start.X,0, start.Z)] = y + 1;
+
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
 	{
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++)
@@ -253,6 +265,10 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 			
 			u8 current_light = no_sunlight ? 0 : LIGHT_SUN;
 
+			if (current_light<LIGHT_SUN && area[v3s16(x,0, z)]) {
+				current_light = LIGHT_SUN - 1;
+//errorstream<<"Ahit x="<<x<<" z="<<z<<" cl="<<current_light<<std::endl;
+			}
 			for(; y >= 0; y--)
 			{
 				v3s16 pos(x, y, z);
@@ -264,6 +280,10 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 				}
 				else if(current_light == LIGHT_SUN && nodemgr->get(n).sunlight_propagates)
 				{
+					for(u16 i=0; i<4; i++){
+						v3s16 n2pos = pos + dirs[i];
+						area[v3s16(n2pos.X,0, n2pos.Z)] = y;
+					}
 					// Do nothing: Sunlight is continued
 				}
 				else if(nodemgr->get(n).light_propagates == false)
@@ -273,7 +293,15 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 					
 					// Light stops.
 					current_light = 0;
+					area.erase(v3s16(pos.X,0,pos.Z));
 				}
+				else if (area[v3s16(pos.X,0, pos.Z)]) 
+				{
+					for(u16 i=0; i<4; i++){
+						v3s16 n2pos = pos + dirs[i];
+						area[v3s16(n2pos.X,0, n2pos.Z)] = y;
+					}
+				} 
 				else
 				{
 					// Diminish light

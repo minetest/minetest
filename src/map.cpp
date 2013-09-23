@@ -645,7 +645,7 @@ s16 Map::propagateSunlight(v3s16 start,
 		v3s16(0,0,-1), // front
 		v3s16(-1,0,0), // left
 	};
-
+errorstream<<"Map::propagateSunlight "<< " x="<<start.X<<" z="<< start.Z<<std::endl;
 	std::map<v3s16, s16> area;
 	s16 y = start.Y;
 	area[v3s16(start.X,0, start.Z)] = y + 1;
@@ -658,6 +658,7 @@ s16 Map::propagateSunlight(v3s16 start,
 			continue;
 		++cnt;
 		v3s16 pos(i->first.X, y, i->first.Z);
+		bool mainline = (pos.X == start.X && pos.Z == start.Z);
 
 		v3s16 blockpos = getNodeBlockPos(pos);
 		MapBlock *block;
@@ -674,12 +675,20 @@ s16 Map::propagateSunlight(v3s16 start,
 
 		if(nodemgr->get(n).sunlight_propagates)
 		{
+			s16 wantlight = (mainline ? LIGHT_SUN : LIGHT_SUN - 1);
+			if (!mainline && n.getLight(LIGHTBANK_DAY, nodemgr) >= wantlight) {
+				area.erase(v3s16(pos.X,0,pos.Z));
+				continue;
+			}
+			n.setLight(LIGHTBANK_DAY, wantlight, nodemgr);
+			block->setNode(relpos, n);
+			modified_blocks[blockpos] = block;
 			for(u16 i=0; i<4; i++){
 				v3s16 n2pos = pos + dirs[i];
 				MapNode n2;
 				try{
 					n2 = getNode(n2pos);
-					if(nodemgr->get(n2).sunlight_propagates && n2.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN) {
+					if(nodemgr->get(n2).sunlight_propagates && n2.getLight(LIGHTBANK_DAY, nodemgr) < LIGHT_SUN) {
 						area[v3s16(n2pos.X,0,n2pos.Z)] = y;
 					}
 				}
@@ -689,14 +698,11 @@ s16 Map::propagateSunlight(v3s16 start,
 					continue;
 				}
 			}
-			n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
-			block->setNode(relpos, n);
-			modified_blocks[blockpos] = block;
 		}
 		else
 		{
 			// Sunlight goes no further
-			if(pos.X == start.X && pos.Z == start.Z)
+			if (mainline)
 				ret = y;
 			area.erase(v3s16(pos.X,0,pos.Z));
 		}

@@ -3015,6 +3015,11 @@ void the_game(
 				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
 				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
 				<<")";
+
+			if(pointed.type == POINTEDTHING_NODE)
+				os<<" Lp="<<(int)client.getEnv().getClientMap().getNode(pointed.node_undersurface).getLight(LIGHTBANK_DAY, nodedef);
+			os<<" Lm="<<(int)client.getEnv().getClientMap().getNode(pos_i).getLight(LIGHTBANK_DAY, nodedef);
+
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
 		}
