@@ -209,7 +209,7 @@ class LiquidDropABM : public ActiveBlockModifier {
 		{ return contents; }
 		virtual std::set<std::string> getRequiredNeighbors() {
 			std::set<std::string> neighbors;
-			neighbors.insert("mapgen_air");
+			neighbors.insert("air");
 			return neighbors;
 		}
 		virtual float getTriggerInterval()
@@ -241,7 +241,7 @@ class LiquidFreeze : public ActiveBlockModifier {
 		}
 		virtual std::set<std::string> getRequiredNeighbors() {
 			std::set<std::string> s;
-			s.insert("mapgen_air");
+			s.insert("air");
 			s.insert("group:melts");
 			return s;
 		}
@@ -303,7 +303,7 @@ class LiquidMeltWeather : public ActiveBlockModifier {
 		}
 		virtual std::set<std::string> getRequiredNeighbors() {
 			std::set<std::string> s;
-			s.insert("mapgen_air");
+			s.insert("air");
 			s.insert("group:freezes");
 			return s;
 		}
