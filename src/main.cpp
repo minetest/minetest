@@ -772,6 +772,8 @@ int main(int argc, char *argv[])
 	std::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
 			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("version", ValueSpec(VALUETYPE_FLAG,
+			_("Show version information"))));
 	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
 			_("Load configuration from specified file"))));
 	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
@@ -842,6 +844,18 @@ int main(int argc, char *argv[])
 		}
 
 		return cmd_args.getFlag("help") ? 0 : 1;
+	}
+
+	if(cmd_args.getFlag("version"))
+	{
+#ifdef SERVER
+		dstream<<"minetestserver "<<minetest_version_hash<<std::endl;
+#else
+		dstream<<"Minetest "<<minetest_version_hash<<std::endl;
+		dstream<<"Using Irrlicht "<<IRRLICHT_SDK_VERSION<<std::endl;
+#endif
+		dstream<<"Build info: "<<minetest_build_info<<std::endl;
+		return 0;
 	}
 	
 	/*
