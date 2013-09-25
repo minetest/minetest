@@ -225,11 +225,21 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
+# Add a target that always rebuilds cmake_config_githash.h
+add_custom_target(GenerateVersion
+	COMMAND ${CMAKE_COMMAND}
+	-D "GENERATE_VERSION_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+	-D "GENERATE_VERSION_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+	-D "VERSION_STRING=${VERSION_STRING}"
+	-P "${CMAKE_SOURCE_DIR}/cmake/Modules/GenerateVersion.cmake"
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
 add_subdirectory(jthread)
 add_subdirectory(script)
 add_subdirectory(util)
 
 set(common_SRCS
+	version.cpp
 	rollback_interface.cpp
 	rollback.cpp
 	genericobject.cpp
@@ -406,6 +416,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
+	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
@@ -444,6 +455,7 @@ endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
 	add_executable(${PROJECT_NAME}server ${minetestserver_SRCS})
+	add_dependencies(${PROJECT_NAME}server GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <algorithm>
 
+#include "version.h"
 #include "main.h" // for g_settings
 #include "settings.h"
 #include "serverlist.h"
@@ -202,7 +203,7 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 	if (action != "delete") {
 		server["name"]		= g_settings->get("server_name");
 		server["description"]	= g_settings->get("server_description");
-		server["version"]	= VERSION_STRING;
+		server["version"]	= minetest_version_simple;
 		server["url"]		= g_settings->get("server_url");
 		server["creative"]	= g_settings->get("creative_mode");
 		server["damage"]	= g_settings->get("enable_damage");

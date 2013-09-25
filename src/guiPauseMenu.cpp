@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "porting.h"
 #include "config.h"
+#include "version.h"
 #include "main.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
@@ -195,7 +196,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 
 		std::ostringstream os;
 		os<<"Minetest\n";
-		os<<BUILD_INFO<<"\n";
+		os<<minetest_build_info<<"\n";
 		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
