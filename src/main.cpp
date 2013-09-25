@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
+#include "version.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "keycode.h"
@@ -903,7 +904,7 @@ int main(int argc, char *argv[])
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
-			<<", "<<BUILD_INFO
+			<<", "<<minetest_build_info
 			<<std::endl;
 	
 	/*

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiKeyChangeMenu.h"
 #include "guiFileSelectMenu.h"
 #include "subgame.h"
+#include "version.h"
 #include "porting.h"
 #include "filesys.h"
 #include "convert_json.h"
@@ -923,7 +924,7 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_version(lua_State *L)
 {
-	lua_pushstring(L,VERSION_STRING);
+	lua_pushstring(L, minetest_version_simple);
 	return 1;
 }
 

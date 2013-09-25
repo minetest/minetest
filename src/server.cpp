@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
+#include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -1855,7 +1856,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
+					+ narrow_to_wide(minetest_version_simple) + L"."
 			);
 			return;
 		}
@@ -1903,7 +1904,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L",\n"
+					+ narrow_to_wide(minetest_version_simple) + L",\n"
 					+ L"server's PROTOCOL_VERSION is "
 					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
 					+ L"..."
@@ -1925,7 +1926,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				DenyAccess(peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
-						+ narrow_to_wide(VERSION_STRING) + L",\n"
+						+ narrow_to_wide(minetest_version_simple) + L",\n"
 						+ L"server's PROTOCOL_VERSION (strict) is "
 						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
 						+ L", client's PROTOCOL_VERSION is "
@@ -4823,7 +4824,7 @@ std::wstring Server::getStatusString()
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(VERSION_STRING);
+	os<<L"version="<<narrow_to_wide(minetest_version_simple);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Max lag estimate

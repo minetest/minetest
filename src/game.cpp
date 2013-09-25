@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "guiChatConsole.h"
 #include "config.h"
+#include "version.h"
 #include "clouds.h"
 #include "particles.h"
 #include "camera.h"
@@ -2963,9 +2964,6 @@ void the_game(
 
 		//TimeTaker guiupdatetimer("Gui updating");
 		
-		const char program_name_and_version[] =
-			"Minetest " VERSION_STRING;
-
 		if(show_debug)
 		{
 			static float drawtime_avg = 0;
@@ -2979,7 +2977,7 @@ void the_game(
 			
 			std::ostringstream os(std::ios_base::binary);
 			os<<std::fixed
-				<<program_name_and_version
+				<<"Minetest "<<minetest_version_hash
 				<<" (R: range_all="<<draw_control.range_all<<")"
 				<<std::setprecision(0)
 				<<" drawtime = "<<drawtime_avg
@@ -2995,7 +2993,9 @@ void the_game(
 		}
 		else if(show_hud || show_chat)
 		{
-			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<"Minetest "<<minetest_version_hash;
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else

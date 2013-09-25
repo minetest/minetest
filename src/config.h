@@ -7,22 +7,18 @@
 #define CONFIG_H
 
 #define PROJECT_NAME "Minetest"
-#define VERSION_STRING "unknown"
 #define RUN_IN_PLACE 0
 #define USE_GETTEXT 0
 #define USE_SOUND 0
 #define USE_CURL 0
 #define USE_FREETYPE 0
 #define STATIC_SHAREDIR ""
-#define BUILD_INFO "non-cmake"
 #define USE_LEVELDB 0
 
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
 	#undef PROJECT_NAME
 	#define PROJECT_NAME CMAKE_PROJECT_NAME
-	#undef VERSION_STRING
-	#define VERSION_STRING CMAKE_VERSION_STRING
 	#undef RUN_IN_PLACE
 	#define RUN_IN_PLACE CMAKE_RUN_IN_PLACE
 	#undef USE_GETTEXT
@@ -35,8 +31,6 @@
 	#define USE_FREETYPE CMAKE_USE_FREETYPE
 	#undef STATIC_SHAREDIR
 	#define STATIC_SHAREDIR CMAKE_STATIC_SHAREDIR
-	#undef BUILD_INFO
-	#define BUILD_INFO CMAKE_BUILD_INFO
 	#undef USE_LEVELDB
 	#define USE_LEVELDB CMAKE_USE_LEVELDB
 #endif
