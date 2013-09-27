@@ -2818,9 +2818,17 @@ void the_game(
 					v3f objpos = selected_object->getPosition();
 					v3f dir = (objpos - player_position).normalize();
 					
-					bool disable_send = selected_object->directReportPunch(
-							dir, &playeritem, time_from_last_punch);
-					time_from_last_punch = 0;
+                    bool disable_send = true;
+                    if(time_from_last_punch >= playeritem.getToolCapabilities(gamedef->idef()).full_punch_interval)
+                    {
+                        disable_send = selected_object->directReportPunch(
+                                dir, &playeritem, time_from_last_punch);
+                        time_from_last_punch = 0;
+                    }
+                    else
+                    {
+                        left_punch = false;
+                    }
 					if(!disable_send)
 						client.interact(0, pointed);
 				}
