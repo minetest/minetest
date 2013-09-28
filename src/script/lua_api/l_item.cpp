@@ -57,6 +57,20 @@ int LuaItemStack::l_get_name(lua_State *L)
 	return 1;
 }
 
+// set_name(self, name)
+int LuaItemStack::l_set_name(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	item.name = luaL_checkstring(L, 2);
+
+	if (item.name == "" || item.empty())
+		item.clear();
+
+	return 1;
+}
+
 // get_count(self) -> number
 int LuaItemStack::l_get_count(lua_State *L)
 {
@@ -64,6 +78,20 @@ int LuaItemStack::l_get_count(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 	lua_pushinteger(L, item.count);
+	return 1;
+}
+
+// set_count(self, number)
+int LuaItemStack::l_set_count(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	item.count = luaL_checkinteger(L, 2);
+
+	if (item.name == "" || item.empty())
+		item.clear();
+
 	return 1;
 }
 
@@ -77,6 +105,20 @@ int LuaItemStack::l_get_wear(lua_State *L)
 	return 1;
 }
 
+// set_wear(self, number)
+int LuaItemStack::l_set_wear(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	item.wear = luaL_checkinteger(L, 2);
+
+	if (item.wear > 65535)
+		item.clear();
+
+	return 1;
+}
+
 // get_metadata(self) -> string
 int LuaItemStack::l_get_metadata(lua_State *L)
 {
@@ -84,6 +126,23 @@ int LuaItemStack::l_get_metadata(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 	lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
+	return 1;
+}
+
+// set_metadata(self, string)
+int LuaItemStack::l_set_metadata(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+
+	size_t len = 0;
+	const char *ptr = luaL_checklstring(L, 2, &len);
+	if (ptr)
+		item.metadata.assign(ptr, len);
+	else
+		item.metadata = "";
+
 	return 1;
 }
 
@@ -363,9 +422,13 @@ const char LuaItemStack::className[] = "ItemStack";
 const luaL_reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, is_empty),
 	luamethod(LuaItemStack, get_name),
+	luamethod(LuaItemStack, set_name),
 	luamethod(LuaItemStack, get_count),
+	luamethod(LuaItemStack, set_count),
 	luamethod(LuaItemStack, get_wear),
+	luamethod(LuaItemStack, set_wear),
 	luamethod(LuaItemStack, get_metadata),
+	luamethod(LuaItemStack, set_metadata),
 	luamethod(LuaItemStack, clear),
 	luamethod(LuaItemStack, replace),
 	luamethod(LuaItemStack, to_string),
