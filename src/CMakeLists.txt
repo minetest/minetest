@@ -187,8 +187,10 @@ find_path(LUA_INCLUDE_DIR luajit.h
 message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
 message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
 
+set(USE_LUAJIT 0)
 if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
 	message (STATUS "LuaJIT found.")
+	set(USE_LUAJIT 1)
 else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT not found, using bundled Lua.")
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
