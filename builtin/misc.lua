@@ -43,20 +43,16 @@ end
 local player_list = {}
 
 minetest.register_on_joinplayer(function(player)
-	table.insert(player_list, player)
+	player_list[player:get_player_name()] = player
 end)
 
 minetest.register_on_leaveplayer(function(player)
-    for index, value in pairs(player_list) do
-        if player:get_player_name() == value:get_player_name() then
-            table.remove(player_list, index)
-        end
-    end
+	player_list[player:get_player_name()] = nil
 end)
 
 function minetest.get_connected_players()
 	local temp_table = {}
-    for index, value in pairs(player_list) do
+	for index, value in pairs(player_list) do
 		table.insert(temp_table, value)
 	end
 	return temp_table
