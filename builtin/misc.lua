@@ -42,24 +42,24 @@ end
 
 local player_list = {}
 
-minetest.register_on_joinplayer( function( player_ref )
-	if player_ref:is_player() then
-		table.insert( player_list, player_ref )
+minetest.register_on_joinplayer( function(player)
+	if player:is_player() then
+		table.insert(player_list, player)
 	end
 end)
 
-minetest.register_on_leaveplayer( function( player_ref )
-    for index, value in pairs( player_list ) do
-        if player_ref:get_player_name() == value:get_player_name() then
-            table.remove( player_list, index )
+minetest.register_on_leaveplayer(function(player)
+    for index, value in pairs(player_list) do
+        if player:get_player_name() == value:get_player_name() then
+            table.remove(player_list, index)
         end
     end
 end)
 
 function minetest.get_connected_players()
 	local temp_table = {}
-    for index, value in pairs( player_list ) do
-		table.insert( temp_table, value )
+    for index, value in pairs(player_list) do
+		table.insert(temp_table, value)
 	end
 	return temp_table
 end
