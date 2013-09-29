@@ -42,10 +42,8 @@ end
 
 local player_list = {}
 
-minetest.register_on_joinplayer( function(player)
-	if player:is_player() then
-		table.insert(player_list, player)
-	end
+minetest.register_on_joinplayer(function(player)
+	table.insert(player_list, player)
 end)
 
 minetest.register_on_leaveplayer(function(player)
