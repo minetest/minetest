@@ -478,8 +478,10 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
 
 - image
     Displays an image on the HUD.
-	- scale: The scale of the image, with 1 being the original texture size.
-             Only the X coordinate scale is used.
+    - scale: The scale of the image, with 1 being the original texture size.
+             Only the X coordinate scale is used (positive values)
+             Negative values represent that percentage of the screen it
+             should take; e.g. x=-100 means 100% (width)
     - text: The name of the texture that is displayed.
     - alignment: The alignment of the image.
     - offset: offset in pixels from position.
@@ -1109,7 +1111,7 @@ minetest.register_decoration(decoration definition)
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
-^ Called every server step, usually interval of 0.05s
+^ Called every server step, usually interval of 0.1s
 minetest.register_on_shutdown(func())
 ^ Called before server shutdown
 ^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
@@ -1359,14 +1361,18 @@ minetest.rollback_revert_actions_by(actor, seconds) -> bool, log messages
 
 Defaults for the on_* item definition functions:
 (These return the leftover itemstack)
-minetest.item_place_node(itemstack, placer, pointed_thing)
+minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 ^ Place item as a node
+^ param2 overrides facedir and wallmounted param2
+^ returns itemstack, success
 minetest.item_place_object(itemstack, placer, pointed_thing)
 ^ Place item as-is
-minetest.item_place(itemstack, placer, pointed_thing)
+minetest.item_place(itemstack, placer, pointed_thing, param2)
 ^ Use one of the above based on what the item is.
 ^ Calls on_rightclick of pointed_thing.under if defined instead
 ^ Note: is not called when wielded item overrides on_place
+^ param2 overrides facedir and wallmounted param2
+^ returns itemstack, success
 minetest.item_drop(itemstack, dropper, pos)
 ^ Drop the item
 minetest.item_eat(hp_change, replace_with_item)
@@ -1652,9 +1658,13 @@ ItemStack: A stack of items.
 methods:
 - is_empty(): return true if stack is empty
 - get_name(): returns item name (e.g. "default:stone")
+- set_name(itemname)
 - get_count(): returns number of items on the stack
+- set_count(count)
 - get_wear(): returns tool wear (0-65535), 0 for non-tools
+- set_wear(wear)
 - get_metadata(): returns metadata (a string attached to an item stack)
+- set_metadata(metadata)
 - clear(): removes all items from the stack, making it empty
 - replace(item): replace the contents of this stack (item can also
     be an itemstring or table)
@@ -1790,7 +1800,7 @@ Registered entities
   - on_activate(self, staticdata)
     ^ Called when the object is instantiated.
   - on_step(self, dtime)
-    ^ Called on every server tick (dtime is usually 0.05 seconds)
+    ^ Called on every server tick (dtime is usually 0.1 seconds)
   - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
     ^ Called when somebody punches the object.
     ^ Note that you probably want to handle most punches using the

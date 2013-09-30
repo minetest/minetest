@@ -764,7 +764,7 @@ int ModApiEnvMod::l_get_heat(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().getHeat(env, pos));
+	lua_pushnumber(L, env->getServerMap().updateBlockHeat(env, pos));
 	return 1;
 }
 
@@ -775,7 +775,7 @@ int ModApiEnvMod::l_get_humidity(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().getHumidity(env, pos));
+	lua_pushnumber(L, env->getServerMap().updateBlockHumidity(env, pos));
 	return 1;
 }
 

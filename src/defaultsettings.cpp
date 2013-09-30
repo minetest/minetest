@@ -159,7 +159,7 @@ void set_default_settings(Settings *settings)
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");
-	settings->setDefault("max_users", "100");
+	settings->setDefault("max_users", "15");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
@@ -191,6 +191,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("max_objects_per_block", "49");
 	settings->setDefault("server_map_save_interval", "5.3");
+	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");

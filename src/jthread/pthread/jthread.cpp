@@ -25,7 +25,7 @@
 
 */
 
-#include "jthread.h"
+#include "jthread/jthread.h"
 #include <sys/time.h>
 #include <time.h>
 #include <stdlib.h>

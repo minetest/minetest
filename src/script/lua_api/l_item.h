@@ -41,14 +41,26 @@ private:
 	// get_name(self) -> string
 	static int l_get_name(lua_State *L);
 
+	// set_name(self, name)
+	static int l_set_name(lua_State *L);
+
 	// get_count(self) -> number
 	static int l_get_count(lua_State *L);
+
+	// set_count(self, number)
+	static int l_set_count(lua_State *L);
 
 	// get_wear(self) -> number
 	static int l_get_wear(lua_State *L);
 
+	// set_wear(self, number)
+	static int l_set_wear(lua_State *L);
+
 	// get_metadata(self) -> string
 	static int l_get_metadata(lua_State *L);
+
+	// set_metadata(self, string)
+	static int l_set_metadata(lua_State *L);
 
 	// clear(self) -> true
 	static int l_clear(lua_State *L);

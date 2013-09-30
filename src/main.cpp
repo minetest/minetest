@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
+#include "version.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "keycode.h"
@@ -771,6 +772,8 @@ int main(int argc, char *argv[])
 	std::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
 			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("version", ValueSpec(VALUETYPE_FLAG,
+			_("Show version information"))));
 	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
 			_("Load configuration from specified file"))));
 	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
@@ -842,6 +845,18 @@ int main(int argc, char *argv[])
 
 		return cmd_args.getFlag("help") ? 0 : 1;
 	}
+
+	if(cmd_args.getFlag("version"))
+	{
+#ifdef SERVER
+		dstream<<"minetestserver "<<minetest_version_hash<<std::endl;
+#else
+		dstream<<"Minetest "<<minetest_version_hash<<std::endl;
+		dstream<<"Using Irrlicht "<<IRRLICHT_SDK_VERSION<<std::endl;
+#endif
+		dstream<<"Build info: "<<minetest_build_info<<std::endl;
+		return 0;
+	}
 	
 	/*
 		Low-level initialization
@@ -903,7 +918,7 @@ int main(int argc, char *argv[])
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
-			<<", "<<BUILD_INFO
+			<<", "<<minetest_build_info
 			<<std::endl;
 	
 	/*
@@ -1473,8 +1488,8 @@ int main(int argc, char *argv[])
 	gui::IGUISkin* skin = guienv->getSkin();
 	std::string font_path = g_settings->get("font_path");
 	gui::IGUIFont *font;
-	bool use_freetype = g_settings->getBool("freetype");
 	#if USE_FREETYPE
+	bool use_freetype = g_settings->getBool("freetype");
 	if (use_freetype) {
 		std::string fallback;
 		if (is_yes(gettext("needs_fallback_font")))
@@ -1686,7 +1701,7 @@ int main(int argc, char *argv[])
 				g_settings->set("port", itos(port));
 
 				if((menudata.selected_world >= 0) &&
-						(menudata.selected_world < worldspecs.size()))
+						(menudata.selected_world < (int)worldspecs.size()))
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
 
@@ -1718,7 +1733,7 @@ int main(int argc, char *argv[])
 				
 				// Set world path to selected one
 				if ((menudata.selected_world >= 0) &&
-					(menudata.selected_world < worldspecs.size())) {
+					(menudata.selected_world < (int)worldspecs.size())) {
 					worldspec = worldspecs[menudata.selected_world];
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;

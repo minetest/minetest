@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "scripting_mainmenu.h"
 #include "config.h"
+#include "version.h"
 #include "porting.h"
 #include "filesys.h"
 #include "main.h"
@@ -157,7 +158,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	//create topleft header
 	core::rect<s32> rect(0, 0, 500, 40);
 	rect += v2s32(4, 0);
-	std::string t = "Minetest " VERSION_STRING;
+	std::string t = std::string("Minetest ") + minetest_version_hash;
 
 	m_irr_toplefttext =
 		m_device->getGUIEnvironment()->addStaticText(narrow_to_wide(t).c_str(),
@@ -553,7 +554,7 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 
 /******************************************************************************/
 void GUIEngine::setTopleftText(std::string append) {
-	std::string toset = "Minetest " VERSION_STRING;
+	std::string toset = std::string("Minetest ") + minetest_version_hash;
 
 	if (append != "") {
 		toset += " / ";
