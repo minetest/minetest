@@ -242,6 +242,11 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
+    float getTimeFromLastPunch()
+    {
+        return m_time_from_last_punch;
+    }
+
 	void noCheatDigStart(v3s16 p)
 	{
 		m_nocheat_dig_pos = p;

@@ -2926,10 +2926,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				v3f dir = (pointed_object->getBasePosition() -
 						(player->getPosition() + player->getEyeOffset())
 							).normalize();
-				float time_from_last_punch =
-					playersao->resetTimeFromLastPunch();
-				pointed_object->punch(dir, &toolcap, playersao,
-						time_from_last_punch);
+
+                if(playersao->getTimeFromLastPunch() >= toolcap.full_punch_interval)
+                {
+                    pointed_object->punch(dir, &toolcap, playersao,
+                                          playersao->resetTimeFromLastPunch());
+                }
 			}
 
 		} // action == 0
