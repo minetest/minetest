@@ -16,9 +16,9 @@
 //#include "Render3D.h"
 //#include "interface.h"
 //#include "primitives.h"
-#include "fractal.h"
 #include <stdlib.h>
 
+#include "fractal.h"
 #include "algebra.cpp"
 
 /**
@@ -1197,15 +1197,17 @@ double Compute(CVector3 z, const sFractal &par, int *iter_count)
 	}
 
 	//************ return values *****************
-	//N_counter += L + 1;
-	//Loop_counter++;
 
 /*
+	N_counter += L + 1;
+	Loop_counter++;
+
 	if (L < 64)
 		histogram[L]++;
 	else
 		histogram[63]++;
 */
+
 	if (iter_count != NULL)
 		*iter_count = L;
 
@@ -1247,6 +1249,249 @@ double Compute(CVector3 z, const sFractal &par, int *iter_count)
 	}
 }
 
+#if 0
+//******************* Calculate distance *******************8
+
+double CalculateDistance(CVector3 point, sFractal &params, bool *max_iter)
+{
+	int L;
+	double distance;
+	params.objectOut = objFractal;
+
+	if (params.limits_enabled)
+	{
+		bool limit = false;
+		double distance_a = 0;
+		double distance_b = 0;
+		double distance_c = 0;
+
+		if (point.x < params.doubles.amin - params.doubles.detailSize)
+		{
+			distance_a = fabs(params.doubles.amin - point.x);
+			limit = true;
+		}
+		if (point.x > params.doubles.amax + params.doubles.detailSize)
+		{
+			distance_a = fabs(params.doubles.amax - point.x);
+			limit = true;
+		}
+
+		if (point.y < params.doubles.bmin - params.doubles.detailSize)
+		{
+			distance_a = fabs(params.doubles.bmin - point.y);
+			limit = true;
+		}
+		if (point.y > params.doubles.bmax + params.doubles.detailSize)
+		{
+			distance_b = fabs(params.doubles.bmax - point.y);
+			limit = true;
+		}
+
+		if (point.z < params.doubles.cmin - params.doubles.detailSize)
+		{
+			distance_c = fabs(params.doubles.cmin - point.z);
+			limit = true;
+		}
+		if (point.z > params.doubles.cmax + params.doubles.detailSize)
+		{
+			distance_c = fabs(params.doubles.cmax - point.z);
+			limit = true;
+		}
+
+		if (limit)
+		{
+			if (max_iter != NULL)
+				*max_iter = false;
+			distance = dMax(distance_a, distance_b, distance_c);
+			return distance;
+		}
+	}
+
+	if(!params.primitives.onlyPlane)
+	{
+		if (params.analitycDE)
+		{
+			distance = Compute<normal>(point, params, &L);
+			if (max_iter != NULL)
+			{
+				if (L == (int)params.doubles.N) *max_iter = true;
+				else *max_iter = false;
+			}
+			params.itersOut = L;
+
+			if (L < params.minN && distance < params.doubles.detailSize) distance = params.doubles.detailSize;
+
+			if (params.interiorMode)
+			{
+				if (distance < 0.5 * params.doubles.detailSize || L == (int)params.doubles.N)
+				{
+					distance = params.doubles.detailSize;
+					if (max_iter != NULL) *max_iter = false;
+				}
+			}
+			if (params.iterThresh)
+			{
+				if(distance < params.doubles.detailSize)
+				{
+					distance = params.doubles.detailSize * 1.01;
+				}
+			}
+		}
+		else
+		{
+			double deltaDE = 1e-10;
+
+			double r = Compute<deltaDE1>(point, params, &L);
+			int retval = L;
+			params.itersOut = L;
+
+			point.x += deltaDE;
+			point.y += 0;
+			point.z += 0;
+			double r2 = Compute<deltaDE2>(point, params, &L);
+			double dr1 = fabs(r2 - r) / deltaDE;
+
+			point.x -= deltaDE;
+			point.y += deltaDE;
+			point.z += 0;
+			r2 = Compute<deltaDE2>(point, params, &L);
+			double dr2 = fabs(r2 - r) / deltaDE;
+
+			point.x += 0;
+			point.y -= deltaDE;
+			point.z += deltaDE;
+			r2 = Compute<deltaDE2>(point, params, &L);
+			double dr3 = fabs(r2 - r) / deltaDE;
+
+			double dr = sqrt(dr1 * dr1 + dr2 * dr2 + dr3 * dr3);
+
+			if (params.linearDEmode)
+			{
+				distance = 0.5 * r / dr;
+			}
+			else
+			{
+				distance = 0.5 * r * log(r) / dr;
+			}
+
+			if (retval == (int)params.doubles.N)
+			{
+				if (max_iter != NULL) *max_iter = true;
+				distance = 0;
+			}
+			else if (max_iter != NULL) *max_iter = false;
+
+			if (L < params.minN && distance < params.doubles.detailSize) distance = params.doubles.detailSize;
+
+			if (params.interiorMode)
+			{
+				if (distance < 0.5 * params.doubles.detailSize || retval == 256)
+				{
+					distance = params.doubles.detailSize;
+					if (max_iter != NULL) *max_iter = false;
+				}
+			}
+
+			if (params.iterThresh)
+			{
+				if(distance < params.doubles.detailSize)
+				{
+					distance = params.doubles.detailSize * 1.01;
+				}
+			}
+
+		}
+	}
+	else
+	{
+		distance = 10.0;
+		if (max_iter != NULL) *max_iter = false;
+	}
+
+	//plane
+	if (params.primitives.planeEnable)
+	{
+		double planeDistance = PrimitivePlane(point, params.doubles.primitives.planeCentre, params.doubles.primitives.planeNormal);
+		if(!params.primitives.onlyPlane && planeDistance < distance) 	params.objectOut = objPlane;
+		distance = (planeDistance < distance) ? planeDistance : distance;
+
+	}
+
+	//box
+	if (params.primitives.boxEnable)
+	{
+		double boxDistance = PrimitiveBox(point, params.doubles.primitives.boxCentre, params.doubles.primitives.boxSize);
+		if(boxDistance < distance) 	params.objectOut = objBox;
+		distance = (boxDistance < distance) ? boxDistance : distance;
+	}
+
+	//inverted box
+	if (params.primitives.invertedBoxEnable)
+	{
+		double boxDistance = PrimitiveInvertedBox(point, params.doubles.primitives.invertedBoxCentre, params.doubles.primitives.invertedBoxSize);
+		if(boxDistance < distance) 	params.objectOut = objBoxInv;
+		distance = (boxDistance < distance) ? boxDistance : distance;
+	}
+
+	//sphere
+	if (params.primitives.sphereEnable)
+	{
+		double sphereDistance = PrimitiveSphere(point, params.doubles.primitives.sphereCentre, params.doubles.primitives.sphereRadius);
+		if(sphereDistance < distance) 	params.objectOut = objSphere;
+		distance = (sphereDistance < distance) ? sphereDistance : distance;
+	}
+
+	//invertedSphere
+	if (params.primitives.invertedSphereEnable)
+	{
+		double sphereDistance = PrimitiveInvertedSphere(point, params.doubles.primitives.invertedSphereCentre, params.doubles.primitives.invertedSphereRadius);
+		if(sphereDistance < distance) 	params.objectOut = objSphereInv;
+		distance = (sphereDistance < distance) ? sphereDistance : distance;
+	}
+
+	//water
+	if (params.primitives.waterEnable)
+	{
+		double waterDistance = PrimitiveWater(point, params.doubles.primitives.waterHeight, params.doubles.primitives.waterAmplitude,
+				params.doubles.primitives.waterLength, params.doubles.primitives.waterRotation, params.primitives.waterIterations, 0.1, params.frameNo);
+		if(waterDistance < distance) 	params.objectOut = objWater;
+		distance = (waterDistance < distance) ? waterDistance : distance;
+	}
+
+	if (distance < 0) distance = 0;
+	if (max_iter != NULL)
+	{
+
+		if (*max_iter)
+		{
+			if (params.limits_enabled)
+			{
+				double distance_a1 = fabs(params.doubles.amin - point.x);
+				double distance_a2 = fabs(params.doubles.amax - point.x);
+				double distance_b1 = fabs(params.doubles.bmin - point.y);
+				double distance_b2 = fabs(params.doubles.bmax - point.y);
+				double distance_c1 = fabs(params.doubles.cmin - point.z);
+				double distance_c2 = fabs(params.doubles.cmax - point.z);
+				double min1 = dMin(distance_a1, distance_b1, distance_c1);
+				double min2 = dMin(distance_a2, distance_b2, distance_c2);
+				double min = MIN(min1, min2);
+				if(min < params.doubles.detailSize)
+				{
+					distance = min;
+				}
+			}
+			else
+			{
+				//distance = params.doubles.detailSize * 0.5;
+				distance = 0.0;
+			}
+		}
+
+
+	}
+	return distance;
+}
+#endif
 
 // force template instantiation
 template double Compute<normal>(CVector3, const sFractal&, int*);

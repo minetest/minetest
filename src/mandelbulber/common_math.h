@@ -12,7 +12,7 @@
 
 struct sVectorsAround
 {
-	double alfa;
+	double alpha;
 	double beta;
 	CVector3 v;
 	int R;
@@ -30,7 +30,7 @@ struct sVector
 
 struct sSortZ
 {
-	double z;
+	float z;
 	int i;
 };
 

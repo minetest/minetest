@@ -13,28 +13,18 @@
 
 struct sParamRenderD
 {
-	CVector3 vp; //view point
-	CVector3 auxLightPre1;
-	CVector3 auxLightPre2;
-	CVector3 auxLightPre3;
-	CVector3 auxLightPre4;
-	CVector3 auxLightRandomCenter;
-
 	double zoom; //zoom
-	double min_y; //range of depth;
-	double max_y;
 	double DE_factor; //factor for distance estimation steps
-	double dist_thresh; //distance treshold
 	double resolution; //resolution of image in fractal coordinates
 	double persp; //perspective factor
 	double quality; //DE threshold factor
 	double smoothness;
-	double alfa; //rotation of fractal
+	double alpha; //rotation of fractal
 	double beta; //
 	double gamma;
 	double DOFFocus;
 	double DOFRadius;
-	double mainLightAlfa;
+	double mainLightAlpha;
 	double mainLightBeta;
 	double auxLightIntensity;
 	double auxLightMaxDist;
@@ -47,7 +37,6 @@ struct sParamRenderD
 	double stereoEyeDistance;
 	double viewDistanceMin;
 	double viewDistanceMax;
-	double volumetricLightQuality;
 	double volumetricLightIntensity[5];
 	double fogDensity;
 	double fogColour1Distance;
@@ -59,8 +48,23 @@ struct sParamRenderD
 	double iterFogOpacityTrim;
 	double fakeLightsIntensity;
 	double fakeLightsVisibility;
+	double fakeLightsVisibilitySize;
+	double shadowConeAngle;
+	double primitivePlaneReflect;
+	double primitiveBoxReflect;
+	double primitiveInvertedBoxReflect;
+	double primitiveSphereReflect;
+	double primitiveInvertedSphereReflect;
+	double primitiveWaterReflect;
 
-	//sImageAdjustments imageAdjustments;
+//	sImageAdjustments imageAdjustments;
+
+	CVector3 vp; //view point
+	CVector3 auxLightPre1;
+	CVector3 auxLightPre2;
+	CVector3 auxLightPre3;
+	CVector3 auxLightPre4;
+	CVector3 auxLightRandomCenter;
 };
 
 struct sParamRender
@@ -110,9 +114,9 @@ struct sParamRender
 	bool quiet;
 	bool fishEyeCut;
 	bool fakeLightsEnabled;
+/*
 	sImageSwitches imageSwitches;
 
-/*
 	sRGB background_color1; //background colour
 	sRGB background_color2;
 	sRGB background_color3;

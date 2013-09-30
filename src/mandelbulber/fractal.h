@@ -75,6 +75,17 @@ enum enumGeneralizedFoldBoxType
 	foldBox5 = 7
 };
 
+enum enumObjectType
+{
+	objFractal = 0,
+	objPlane = 1,
+	objWater = 2,
+	objSphere = 3,
+	objSphereInv = 4,
+	objBox = 5,
+	objBoxInv = 6
+};
+
 struct sFractalIFSD
 {
 	double rotationGamma;
@@ -234,7 +245,6 @@ struct sFractal
 	bool sphericalFoldingMode;  // spherical folding mode
 	bool interiorMode;
 	bool hybridCyclic;
-	bool dynamicDEcorrection;
 	bool linearDEmode;
 	bool constantDEThreshold;
 
@@ -251,10 +261,10 @@ struct sFractal
 	sFractalGeneralizedFoldBox genFoldBox;
 	sFractalPrimitives primitives;
 
-	int specialColour;
 	int frameNo;
 
 	int itersOut;
+	enumObjectType objectOut;
 
 	int fakeLightsMinIter;
 	int fakeLightsMaxIter;
@@ -262,5 +272,6 @@ struct sFractal
 
 template <int Mode> double Compute(CVector3 z, const sFractal &par, int *iter_count = NULL);
 //double CalculateDistance(CVector3 point, sFractal &par, bool *max_iter = NULL);
+
 
 #endif /* FRACTAL_H_ */
