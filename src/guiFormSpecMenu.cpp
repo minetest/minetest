@@ -1144,7 +1144,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		if(data->bp_set != 2)
-			errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;
+			errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
 
 		image_name = unescape_string(image_name);
 		pressed_image_name = unescape_string(pressed_image_name);
