@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-10-08 07:06+0200\n"
-"Last-Translator: Petr Hála <halapetr@selfnet.cz>\n"
+"PO-Revision-Date: 2013-10-08 10:39+0200\n"
+"Last-Translator: Heisenberg CZE <w.heisenberg@seznam.cz>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -499,7 +499,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
-msgstr "Klávesa je již používána."
+msgstr "Klávesa je již používána"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
@@ -641,7 +641,7 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr "Hlasitost:"
+msgstr "Hlasitost: "
 
 #: src/guiVolumeChange.cpp:122
 msgid "Exit"
@@ -677,7 +677,7 @@ msgstr "Vrátit"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr "Tab"
+msgstr "Tabulátor"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -933,11 +933,11 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Přiblížení"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "vyzaduje_fallback_font"
 
 #: src/main.cpp:1486
 msgid "Main Menu"
