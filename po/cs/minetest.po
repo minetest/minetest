@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-10-08 20:04+0200\n"
-"Last-Translator: Heisenberg CZE <w.heisenberg@seznam.cz>\n"
+"PO-Revision-Date: 2013-10-08 21:41+0200\n"
+"Last-Translator: Frantisek  Simorda <frantisek.simorda@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -334,9 +334,8 @@ msgid "Hide Game"
 msgstr "Skrýt Hru"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
-#, fuzzy
 msgid "Hide mp content"
-msgstr "Hide mp content"
+msgstr "Skrýt obsah mp"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
@@ -572,7 +571,7 @@ msgstr "Vybrat rozmezí"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
-msgstr ""
+msgstr "Vytisknout zásobníky"
 
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
@@ -750,7 +749,7 @@ msgstr "Další"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Předchozí"
 
 #: src/keycode.cpp:227
 msgid "Space"
