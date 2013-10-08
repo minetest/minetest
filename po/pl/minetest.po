@@ -8,21 +8,20 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-04-21 23:38+0200\n"
-"Last-Translator: Daniel \"Tracerneo\" Ziółkowski <ziolkoneo@gmail.com>\n"
+"PO-Revision-Date: 2013-10-08 21:22+0200\n"
+"Last-Translator: Maciej Kasatkin <maciej.kasatkin@yahoo.com>\n"
 "Language-Team: Polish <>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
-#, fuzzy
 msgid "Game Name"
-msgstr "Gra"
+msgstr "Nazwa Gry"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:301
 msgid "Create"
@@ -35,44 +34,43 @@ msgstr "Anuluj"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: Kopiowanie moda \"$1\" do gry \"$2\" nie powiodło się"
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "GRY"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
-#, fuzzy
 msgid "Games"
-msgstr "Gra"
+msgstr "Gry"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Mody:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "edytuj grę"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "nowa gra"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "EDYTUJ GRĘ"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Usuń zaznaczony mod"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<--Dodaj mod"
 
 #: builtin/mainmenu.lua:159
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
@@ -80,16 +78,15 @@ msgstr "Nazwa świata"
 
 #: builtin/mainmenu.lua:298
 msgid "Mapgen"
-msgstr ""
+msgstr "Generator mapy"
 
 #: builtin/mainmenu.lua:300
 msgid "Game"
 msgstr "Gra"
 
 #: builtin/mainmenu.lua:314
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Usuń świat"
+msgstr "Usunąć świat \"$1\"?"
 
 #: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
 msgid "Yes"
@@ -100,13 +97,12 @@ msgid "No"
 msgstr "Nie"
 
 #: builtin/mainmenu.lua:384
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Nie można stworzyć świata: Istnieje już świat o takiej nazwie"
+msgstr "Istnieje już świat o nazwie \"$1\""
 
 #: builtin/mainmenu.lua:399
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Nie podano nazwy świata lub nie wybrano gry"
 
 #: builtin/mainmenu.lua:852
 msgid "Singleplayer"
@@ -114,11 +110,11 @@ msgstr "Pojedynczy gracz"
 
 #: builtin/mainmenu.lua:853
 msgid "Client"
-msgstr ""
+msgstr "Klient"
 
 #: builtin/mainmenu.lua:854
 msgid "Server"
-msgstr ""
+msgstr "Serwer"
 
 #: builtin/mainmenu.lua:855
 msgid "Settings"
@@ -126,11 +122,11 @@ msgstr "Ustawienia"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr ""
+msgstr "Paczki tekstur"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
-msgstr ""
+msgstr "Mody"
 
 #: builtin/mainmenu.lua:865
 msgid "Credits"
@@ -138,7 +134,7 @@ msgstr "Autorzy"
 
 #: builtin/mainmenu.lua:885
 msgid "CLIENT"
-msgstr ""
+msgstr "KLIENT"
 
 #: builtin/mainmenu.lua:886
 msgid "Favorites:"
@@ -153,9 +149,8 @@ msgid "Name/Password"
 msgstr "Nazwa gracza/Hasło"
 
 #: builtin/mainmenu.lua:891
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Lista publicznych serwerów:"
+msgstr "Lista publicznych serwerów"
 
 #: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
@@ -175,7 +170,6 @@ msgid "Configure"
 msgstr "Ustaw"
 
 #: builtin/mainmenu.lua:944
-#, fuzzy
 msgid "Start Game"
 msgstr "Rozpocznij grę/Połącz"
 
@@ -185,7 +179,7 @@ msgstr "Wybierz świat:"
 
 #: builtin/mainmenu.lua:946
 msgid "START SERVER"
-msgstr ""
+msgstr "URUCHOM SERWER"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
@@ -201,20 +195,19 @@ msgstr "Publiczne"
 
 #: builtin/mainmenu.lua:953
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
 #: builtin/mainmenu.lua:955
-#, fuzzy
 msgid "Password"
-msgstr "Stare hasło"
+msgstr "Hasło"
 
 #: builtin/mainmenu.lua:956
 msgid "Server Port"
-msgstr ""
+msgstr "Port Serwera"
 
 #: builtin/mainmenu.lua:966
 msgid "SETTINGS"
-msgstr ""
+msgstr "USTAWIENIA"
 
 #: builtin/mainmenu.lua:967
 msgid "Fancy trees"
@@ -229,7 +222,6 @@ msgid "3D Clouds"
 msgstr "Chmury 3D"
 
 #: builtin/mainmenu.lua:973
-#, fuzzy
 msgid "Opaque Water"
 msgstr "Nieprzeźroczysta woda"
 
@@ -243,11 +235,11 @@ msgstr "Filtrowanie anizotropowe"
 
 #: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
-msgstr "Dwuliniowe filtrowanie"
+msgstr "Filtrowanie dwuliniowe"
 
 #: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
-msgstr "Trójliniowe filtrowanie"
+msgstr "Filtrowanie trójliniowe"
 
 #: builtin/mainmenu.lua:985
 msgid "Shaders"
@@ -262,7 +254,6 @@ msgid "Enable Particles"
 msgstr "Włącz cząstki"
 
 #: builtin/mainmenu.lua:991
-#, fuzzy
 msgid "Finite Liquid"
 msgstr "Realistyczne ciecze"
 
@@ -276,75 +267,71 @@ msgstr "Graj"
 
 #: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "TRYB JEDNOOSOBOWY"
 
 #: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Wybierz paczkę tekstur:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "PACZKI TEKSTUR"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
-msgstr ""
+msgstr "Brak informacjii"
 
 #: builtin/mainmenu.lua:1071
 msgid "Core Developers"
-msgstr ""
+msgstr "Twórcy"
 
 #: builtin/mainmenu.lua:1082
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktywni współautorzy"
 
 #: builtin/mainmenu.lua:1092
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Byli współautorzy"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "MODY"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Zainstalowane Mody:"
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Instaluj"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Download"
-msgstr "Dół"
+msgstr "Ściągnij"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "Zmień nazwę"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
-#, fuzzy
 msgid "Depends:"
-msgstr "zależne od:"
+msgstr "Zależy od:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Zmień nazwe Paczki Modów:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
 msgstr "Accept"
 
 #: builtin/modmgr.lua:381
-#, fuzzy
 msgid "World:"
-msgstr "Wybierz świat:"
+msgstr "Świat:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
-#, fuzzy
 msgid "Hide Game"
-msgstr "Gra"
+msgstr "Ukryj Grę"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
 msgid "Hide mp content"
@@ -352,7 +339,7 @@ msgstr ""
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
@@ -373,105 +360,105 @@ msgid "enabled"
 msgstr "włączone"
 
 #: builtin/modmgr.lua:436
-#, fuzzy
 msgid "Enable all"
 msgstr "Włącz wszystkie"
 
 #: builtin/modmgr.lua:551
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Wybierz świat:"
+msgstr "Wybierz plik moda:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Zainstaluj mod: plik: \"$1\""
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"Instalacja moda: nieznany typ pliku \"$1\""
 
 #: builtin/modmgr.lua:612
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Inicjalizacja świata nie powiodła się"
+msgstr "Instalacja $1 do $2 nie powiodła się"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
+"Instalacja moda: nie można znaleźć odpowiedniego folderu dla paczki modów $1"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Instalacja moda: nie można znaleźć nazwy moda $1"
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: nie można usunąć \"$1\""
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: nieprawidłowy katalog \"$1\""
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Na pewno usunąć \"$1\"?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "Oczywiście, że nie!"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Strona $1 z $2"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "Ocena"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "Ponowna instalacja"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
-msgstr ""
+msgstr "Tekstury przedmiotów..."
 
 #: src/game.cpp:939
 msgid "Loading..."
-msgstr ""
+msgstr "Ładowanie..."
 
 #: src/game.cpp:999
 msgid "Creating server...."
-msgstr ""
+msgstr "Tworzenie serwera...."
 
 #: src/game.cpp:1015
 msgid "Creating client..."
-msgstr ""
+msgstr "Tworzenie klienta..."
 
 #: src/game.cpp:1024
 msgid "Resolving address..."
-msgstr ""
+msgstr "Sprawdzanie adresu..."
 
 #: src/game.cpp:1121
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Łączenie z serwerem..."
 
 #: src/game.cpp:1218
 msgid "Item definitions..."
-msgstr ""
+msgstr "Definicje przedmiotów..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr ""
+msgstr "Definicje nod..."
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "Media..."
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Wyłączanie..."
 
 #: src/game.cpp:3435
 msgid ""
@@ -644,6 +631,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Domyślne sterowanie:↵\n"
+"- WASD: ruch↵\n"
+"- Spacja: skok/wspinanie się↵\n"
+"- Shift: skradanie się/schodzenie w dół↵\n"
+"- Q: upuszczenie przedmiotu↵\n"
+"- I: ekwipunek↵\n"
+"- Mysz: obracanie się/patrzenie↵\n"
+"- Lewy przycisk myszy: kopanie/uderzanie↵\n"
+"- Prawy przycisk myszy: postawienie/użycie przedmiotu↵\n"
+"- Rolka myszy: wybór przedmiotu↵\n"
+"- T: chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
