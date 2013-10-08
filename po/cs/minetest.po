@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-10-08 10:39+0200\n"
-"Last-Translator: Heisenberg CZE <w.heisenberg@seznam.cz>\n"
+"PO-Revision-Date: 2013-10-08 14:45+0200\n"
+"Last-Translator: Petr Hála <halapetr@selfnet.cz>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -226,7 +226,7 @@ msgstr "Neprůhledná voda"
 
 #: builtin/mainmenu.lua:976
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip-Mapování"
 
 #: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
@@ -245,9 +245,8 @@ msgid "Shaders"
 msgstr "Shadery"
 
 #: builtin/mainmenu.lua:987
-#, fuzzy
 msgid "Preload item visuals"
-msgstr "Preload item visuals"
+msgstr "Přednačtené textury itemů"
 
 #: builtin/mainmenu.lua:989
 msgid "Enable Particles"
@@ -488,6 +487,8 @@ msgstr "Pokračovat"
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Nastavení kláves. (Pokud tohle menu nebude v pořádku, odstraňte nastavení z "
+"minetest.conf"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
@@ -495,7 +496,7 @@ msgstr "\"Použít\" = slézt dolů"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Dvakrát zmáčkněte \"skok\" pro zapnutí létání"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
@@ -563,7 +564,7 @@ msgstr "Přepnout rychlý pohyb"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Zapnout noclip"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
@@ -721,7 +722,7 @@ msgstr "Konečný"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
@@ -909,11 +910,11 @@ msgstr "Plus"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
@@ -921,15 +922,15 @@ msgstr "Smazat EOF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clear"
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
@@ -937,7 +938,7 @@ msgstr "Přiblížení"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
-msgstr "vyzaduje_fallback_font"
+msgstr "vyžaduje_fallback_font"
 
 #: src/main.cpp:1486
 msgid "Main Menu"
