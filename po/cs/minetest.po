@@ -33,11 +33,11 @@ msgstr "Zrušit"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Nepovedlo se zkopírovat mod\"$1\" do hry\"$2\""
+msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry\"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr "Hry"
+msgstr "HRY"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
 msgid "Games"
@@ -49,7 +49,7 @@ msgstr "Mody:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr "editovat hru"
+msgstr "upravit hru"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
@@ -57,7 +57,7 @@ msgstr "nová hra"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr "Editovat hru"
+msgstr "UPRAVIT HRU"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
@@ -65,7 +65,7 @@ msgstr "Odstranit vybraný mod"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr "<-- Přidat mod"
+msgstr "<<-- Přidat mod"
 
 #: builtin/mainmenu.lua:159
 msgid "Ok"
@@ -129,7 +129,7 @@ msgstr "Mody"
 
 #: builtin/mainmenu.lua:865
 msgid "Credits"
-msgstr ""
+msgstr "Autoři"
 
 #: builtin/mainmenu.lua:885
 msgid "CLIENT"
@@ -182,7 +182,7 @@ msgstr "MÍSTNÍ SERVER"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
-msgstr ""
+msgstr "Kreativní mód"
 
 #: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
 msgid "Enable Damage"
@@ -202,7 +202,7 @@ msgstr "Heslo"
 
 #: builtin/mainmenu.lua:956
 msgid "Server Port"
-msgstr ""
+msgstr "Port serveru"
 
 #: builtin/mainmenu.lua:966
 msgid "SETTINGS"
@@ -214,7 +214,7 @@ msgstr "Pěkné stromy"
 
 #: builtin/mainmenu.lua:969
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Hladké osvětlení"
 
 #: builtin/mainmenu.lua:971
 msgid "3D Clouds"
@@ -230,7 +230,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
-msgstr "Anizotropní Filtrování"
+msgstr "Anizotropní filtrování"
 
 #: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
@@ -238,7 +238,7 @@ msgstr "Bilineární filtrování"
 
 #: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
-msgstr "Trilineární Filtrování"
+msgstr "Trilineární filtrování"
 
 #: builtin/mainmenu.lua:985
 msgid "Shaders"
@@ -283,19 +283,16 @@ msgid "No information available"
 msgstr "Žádné informace dostupné"
 
 #: builtin/mainmenu.lua:1071
-#, fuzzy
 msgid "Core Developers"
-msgstr "Hlavní vývojáři"
+msgstr "Vývojáři jádra"
 
 #: builtin/mainmenu.lua:1082
-#, fuzzy
 msgid "Active Contributors"
-msgstr "Aktivní Přispívatelé"
+msgstr "Aktivní přispěvatelé"
 
 #: builtin/mainmenu.lua:1092
-#, fuzzy
 msgid "Previous Contributors"
-msgstr "Bývalí Přispívatelé"
+msgstr "Bývalí přispěvatelé"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
@@ -388,102 +385,105 @@ msgstr "Selhala instalace $1 do $2"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
+msgstr "Install Mod: nenalezen adresář s příslušným názvem pro balíček modu $1"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Install Mod: Nenašel jsem skutečné jméno modu: $1"
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: Nepodařilo se odstranit \"$1\""
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: Neplatná cesta k modu \"$1\""
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Skutečně chcete odstranit \"$1\"?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "Jistě, že ne!"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Strana $1 z $2"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "Hodnocení"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "přeinstalovat"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
-msgstr ""
+msgstr "Textury předmětů..."
 
 #: src/game.cpp:939
 msgid "Loading..."
-msgstr ""
+msgstr "Nahrávám..."
 
 #: src/game.cpp:999
 msgid "Creating server...."
-msgstr ""
+msgstr "Vytvářím server..."
 
 #: src/game.cpp:1015
 msgid "Creating client..."
-msgstr ""
+msgstr "Vytvářím klienta..."
 
 #: src/game.cpp:1024
 msgid "Resolving address..."
-msgstr ""
+msgstr "Překládám adresu..."
 
 #: src/game.cpp:1121
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Připojuji se k serveru..."
 
 #: src/game.cpp:1218
 msgid "Item definitions..."
-msgstr ""
+msgstr "Definice předmětů..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr ""
+msgstr "Definice uzlů..."
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "Média..."
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Vypínám to..."
 
 #: src/game.cpp:3435
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Pro detaily se podívej do debug.txt."
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Zemřel jsi."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Oživení"
 
 #: src/guiFormSpecMenu.cpp:1569
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
+"Levý klik: Přesunout všechny předměty, Pravý klik: Přesunout jeden předmět"
 
 #: src/guiFormSpecMenu.cpp:1595 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
-msgstr ""
+msgstr "Pokračovat"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -491,7 +491,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Použít\" = slézt dolů"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
@@ -499,67 +499,67 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
-msgstr ""
+msgstr "Klávesa je již používána."
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
-msgstr ""
+msgstr "stiskni klávesu"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
-msgstr ""
+msgstr "Vpřed"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
-msgstr ""
+msgstr "Vzad"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Vlevo"
 
 #: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Vpravo"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
-msgstr ""
+msgstr "Použít"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
-msgstr ""
+msgstr "Skočit"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
-msgstr ""
+msgstr "Plížení"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
-msgstr ""
+msgstr "Zahodit"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
-msgstr ""
+msgstr "Inventář"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
-msgstr ""
+msgstr "Příkaz"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
-msgstr ""
+msgstr "Konzole"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
-msgstr ""
+msgstr "Přepnout létání"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
-msgstr ""
+msgstr "Přepnout rychlý pohyb"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
@@ -567,7 +567,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr ""
+msgstr "Vybrat rozmezí"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
@@ -575,43 +575,43 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
-msgstr ""
+msgstr "Staré heslo"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "Nové heslo"
 
 #: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
-msgstr ""
+msgstr "Potvrdit heslo"
 
 #: src/guiPasswordChange.cpp:160
 msgid "Change"
-msgstr ""
+msgstr "Změnit"
 
 #: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Hesla si neodpovídají!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovat"
 
 #: src/guiPauseMenu.cpp:133
 msgid "Change Password"
-msgstr ""
+msgstr "Změnit heslo"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
-msgstr ""
+msgstr "Hlasitost"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Odejít do Nabídky"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr ""
+msgstr "Ukončit hru"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -627,26 +627,37 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Výchozí ovládání:\n"
+"- WASD: pohyb\n"
+"- Mezera: skákání/šplhání\n"
+"- Shift: plížení\n"
+"- Q: zahodit\n"
+"- I: inventář\n"
+"- Myš: otáčení,rozhlížení\n"
+"- Myš(levé tl.): kopat, štípat\n"
+"- Myš(pravé tl.): položit, použít\n"
+"- Myš(kolečko): vybrat předmět\n"
+"- T: chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Hlasitost:"
 
 #: src/guiVolumeChange.cpp:122
 msgid "Exit"
-msgstr ""
+msgstr "Odejít"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Levé tlačítko myši"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Prostřední tlačítko myši"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Pravé tlačítko myši"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -654,19 +665,19 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "Zpět"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Vyčistit"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr ""
+msgstr "Vrátit"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
@@ -678,35 +689,35 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Nabídka"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Pauza"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "Převést"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr ""
+msgstr "Esc"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Konečný"
 
 #: src/keycode.cpp:226
 msgid "Junja"
@@ -714,7 +725,7 @@ msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
@@ -722,19 +733,19 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "Změna modu"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr ""
+msgstr "Další"
 
 #: src/keycode.cpp:227
 msgid "Prior"
@@ -742,15 +753,15 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Mezerník"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "Dolů"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Spustit"
 
 #: src/keycode.cpp:228
 msgid "Print"
@@ -758,23 +769,23 @@ msgstr ""
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr ""
+msgstr "Vybrat"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Nahoru"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Pomoc"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Vložit"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "Momentka"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
@@ -782,15 +793,15 @@ msgstr ""
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "Aplikace"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numerická klávesnice: 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numerická klávesnice: 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
@@ -798,75 +809,75 @@ msgstr ""
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "Spát"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numerická klávesnice: 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numerická klávesnice: 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numerická klávesnice: 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numerická klávesnice: 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numerická klávesnice: 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numerická klávesnice: 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Numerická klávesnice: *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Numerická klávesnice: +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Numerická klávesnice: -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Numerická klávesnice: /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numerická klávesnice: 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numerická klávesnice: 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Levý Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Pravý Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Levý Control"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
@@ -874,7 +885,7 @@ msgstr ""
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Pravý Control"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
@@ -882,19 +893,19 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Čárka"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Mínus"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Tečka"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp:247
 msgid "Attn"
@@ -906,7 +917,7 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Smazat EOF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
@@ -922,7 +933,7 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
@@ -930,20 +941,21 @@ msgstr ""
 
 #: src/main.cpp:1486
 msgid "Main Menu"
-msgstr ""
+msgstr "Hlavní nabídka"
 
 #: src/main.cpp:1662
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
+"Nebyl vybrán žádný svět a nebyla poskytnuta žádná adresa. Nemám co dělat."
 
 #: src/main.cpp:1670
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Hru nebylo možné najít nebo nahrát \""
 
 #: src/main.cpp:1684
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Neplatná specifikace hry."
 
 #: src/main.cpp:1729
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Chyba spojení (vypršel čas?)"
