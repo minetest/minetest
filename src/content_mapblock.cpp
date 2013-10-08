@@ -908,13 +908,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
+				video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
+				video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
 			for(s32 i=0; i<4; i++)
@@ -949,13 +950,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 				
 			float d = (float)BS/16;
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 0,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,  s,  s, 0,0,0, c, 0,0),
+				video::S3DVertex(BS/2-d,  s, -s, 0,0,0, c, 1,0),
+				video::S3DVertex(BS/2-d, -s, -s, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2-d, -s,  s, 0,0,0, c, 0,1),
 			};
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
@@ -990,16 +992,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
+
 			for(u32 j=0; j<2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 0,1),
-					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 1,1),
-					video::S3DVertex( BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 0,0),
+					video::S3DVertex(-s,-BS/2,      0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-BS/2,      0, 0,0,0, c, 1,1),
+					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
 
 				if(j == 0)
