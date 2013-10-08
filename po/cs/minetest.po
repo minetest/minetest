@@ -3,128 +3,129 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-10-08 07:06+0200\n"
+"Last-Translator: Petr Hála <halapetr@selfnet.cz>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
-msgstr ""
+msgstr "Název hry"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:301
 msgid "Create"
-msgstr ""
+msgstr "Vytvořit"
 
 #: builtin/gamemgr.lua:26 builtin/mainmenu.lua:302 builtin/modmgr.lua:289
 #: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Nepovedlo se zkopírovat mod\"$1\" do hry\"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "Hry"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
 msgid "Games"
-msgstr ""
+msgstr "Hry"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Mody:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "editovat hru"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "nová hra"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "Editovat hru"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Odstranit vybraný mod"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<-- Přidat mod"
 
 #: builtin/mainmenu.lua:159
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
-msgstr ""
+msgstr "Název světa"
 
 #: builtin/mainmenu.lua:298
 msgid "Mapgen"
-msgstr ""
+msgstr "Generátor světa"
 
 #: builtin/mainmenu.lua:300
 msgid "Game"
-msgstr ""
+msgstr "Hra"
 
 #: builtin/mainmenu.lua:314
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Doopravdy chcete smazat svět \"$1\"?"
 
 #: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
 msgid "Yes"
-msgstr ""
+msgstr "Ano"
 
 #: builtin/mainmenu.lua:316
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: builtin/mainmenu.lua:384
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Svět s názvem \"$1\" už existuje"
 
 #: builtin/mainmenu.lua:399
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Nebyla vybrána žádná hra"
 
 #: builtin/mainmenu.lua:852
 msgid "Singleplayer"
-msgstr ""
+msgstr "Hra jednoho hráče"
 
 #: builtin/mainmenu.lua:853
 msgid "Client"
-msgstr ""
+msgstr "Hra více hráčů"
 
 #: builtin/mainmenu.lua:854
 msgid "Server"
-msgstr ""
+msgstr "Místní server"
 
 #: builtin/mainmenu.lua:855
 msgid "Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr ""
+msgstr "Balíčky textur"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
-msgstr ""
+msgstr "Mody"
 
 #: builtin/mainmenu.lua:865
 msgid "Credits"
@@ -132,52 +133,52 @@ msgstr ""
 
 #: builtin/mainmenu.lua:885
 msgid "CLIENT"
-msgstr ""
+msgstr "CLIENT"
 
 #: builtin/mainmenu.lua:886
 msgid "Favorites:"
-msgstr ""
+msgstr "Oblíbené:"
 
 #: builtin/mainmenu.lua:887
 msgid "Address/Port"
-msgstr ""
+msgstr "Adresa/port"
 
 #: builtin/mainmenu.lua:888
 msgid "Name/Password"
-msgstr ""
+msgstr "Jméno/Heslo"
 
 #: builtin/mainmenu.lua:891
 msgid "Public Serverlist"
-msgstr ""
+msgstr "Veřejný seznam serverů"
 
 #: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Vymazat"
 
 #: builtin/mainmenu.lua:900
 msgid "Connect"
-msgstr ""
+msgstr "Připojit"
 
 #: builtin/mainmenu.lua:942 builtin/mainmenu.lua:1005
 msgid "New"
-msgstr ""
+msgstr "Nový"
 
 #: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
 msgid "Configure"
-msgstr ""
+msgstr "Nastavit"
 
 #: builtin/mainmenu.lua:944
 msgid "Start Game"
-msgstr ""
+msgstr "Začít hru"
 
 #: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
 msgid "Select World:"
-msgstr ""
+msgstr "Vyber svět:"
 
 #: builtin/mainmenu.lua:946
 msgid "START SERVER"
-msgstr ""
+msgstr "MÍSTNÍ SERVER"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
@@ -185,19 +186,19 @@ msgstr ""
 
 #: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
 msgid "Enable Damage"
-msgstr ""
+msgstr "Povolit poškození"
 
 #: builtin/mainmenu.lua:951
 msgid "Public"
-msgstr ""
+msgstr "Veřejný"
 
 #: builtin/mainmenu.lua:953
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
 #: builtin/mainmenu.lua:955
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: builtin/mainmenu.lua:956
 msgid "Server Port"
@@ -205,11 +206,11 @@ msgstr ""
 
 #: builtin/mainmenu.lua:966
 msgid "SETTINGS"
-msgstr ""
+msgstr "NASTAVENÍ"
 
 #: builtin/mainmenu.lua:967
 msgid "Fancy trees"
-msgstr ""
+msgstr "Pěkné stromy"
 
 #: builtin/mainmenu.lua:969
 msgid "Smooth Lighting"
@@ -217,11 +218,11 @@ msgstr ""
 
 #: builtin/mainmenu.lua:971
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D Mraky"
 
 #: builtin/mainmenu.lua:973
 msgid "Opaque Water"
-msgstr ""
+msgstr "Neprůhledná voda"
 
 #: builtin/mainmenu.lua:976
 msgid "Mip-Mapping"
@@ -229,153 +230,161 @@ msgstr ""
 
 #: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Anizotropní Filtrování"
 
 #: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Bilineární filtrování"
 
 #: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Trilineární Filtrování"
 
 #: builtin/mainmenu.lua:985
 msgid "Shaders"
-msgstr ""
+msgstr "Shadery"
 
 #: builtin/mainmenu.lua:987
+#, fuzzy
 msgid "Preload item visuals"
-msgstr ""
+msgstr "Preload item visuals"
 
 #: builtin/mainmenu.lua:989
 msgid "Enable Particles"
-msgstr ""
+msgstr "Povolit Částice"
 
 #: builtin/mainmenu.lua:991
+#, fuzzy
 msgid "Finite Liquid"
-msgstr ""
+msgstr "Finite Liquid"
 
 #: builtin/mainmenu.lua:994
 msgid "Change keys"
-msgstr ""
+msgstr "Změnit nastavení klávesy"
 
 #: builtin/mainmenu.lua:1007 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Hrát"
 
 #: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "HRA JEDNOHO HRÁČE"
 
 #: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Vyberte balíček textur:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "BALÍČKY TEXTUR"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
-msgstr ""
+msgstr "Žádné informace dostupné"
 
 #: builtin/mainmenu.lua:1071
+#, fuzzy
 msgid "Core Developers"
-msgstr ""
+msgstr "Hlavní vývojáři"
 
 #: builtin/mainmenu.lua:1082
+#, fuzzy
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktivní Přispívatelé"
 
 #: builtin/mainmenu.lua:1092
+#, fuzzy
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Bývalí Přispívatelé"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "MODY"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Instalované Mody:"
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Instalovat"
 
 #: builtin/modmgr.lua:244
 msgid "Download"
-msgstr ""
+msgstr "Stáhnout"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
 msgid "Depends:"
-msgstr ""
+msgstr "Závislosti:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Přejmenovat Modpack:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Přijmout"
 
 #: builtin/modmgr.lua:381
 msgid "World:"
-msgstr ""
+msgstr "Svět:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
 msgid "Hide Game"
-msgstr ""
+msgstr "Skrýt Hru"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
+#, fuzzy
 msgid "Hide mp content"
-msgstr ""
+msgstr "Hide mp content"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "Mody:"
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
-msgstr ""
+msgstr "Uložit"
 
 #: builtin/modmgr.lua:422
 msgid "Enable MP"
-msgstr ""
+msgstr "Povolit Hru více hráčů"
 
 #: builtin/modmgr.lua:424
 msgid "Disable MP"
-msgstr ""
+msgstr "Zakázat Hru více hráčů"
 
 #: builtin/modmgr.lua:428 builtin/modmgr.lua:430
 msgid "enabled"
-msgstr ""
+msgstr "povoleno"
 
 #: builtin/modmgr.lua:436
 msgid "Enable all"
-msgstr ""
+msgstr "Povolit vše"
 
 #: builtin/modmgr.lua:551
 msgid "Select Mod File:"
-msgstr ""
+msgstr "Vybrat Soubor s Modem:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Instalace Modu: ze souboru: \"$1\""
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"Instalace Modu: nepodporovaný typ souboru \"$1\""
 
 #: builtin/modmgr.lua:612
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Selhala instalace $1 do $2"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
