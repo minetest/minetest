@@ -1998,7 +1998,9 @@ Node definition (register_node)
     <all fields allowed in item definitions>,
 
     drawtype = "normal", -- See "Node drawtypes"
-    visual_scale = 1.0,
+    visual_scale = 1.0, -- supported for drawtypes "plantlike", "signlike", "torchlike"
+                        -- for plantlike, the image will start at the bottom of the node; for the other drawtypes, the image
+                        -- will be centered on the node
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
     ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
     ^ List can be shortened to needed length
