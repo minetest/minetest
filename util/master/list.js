@@ -74,7 +74,7 @@ function success(r) {
         if (!master.no_clients) {
             h += '<td class="mts_clients' + (s.clients ? ' mts_is_clients' : '') + '">';
             if (!master.no_clients_list && s.clients && s.clients_list) {
-                h += '<div class="mts_clients_list">Players (' + s.clients + '):<br/>';
+                h += '<div class="mts_clients_list">Players (' + e(s.clients) + '):<br/>';
                 for (var ii in s.clients_list)
                     h += e(s.clients_list[ii]) + '<br/>';
                 h += '</div>';
