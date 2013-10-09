@@ -72,7 +72,7 @@ function success(r) {
         h += '<tr class="mts_row">';
         if (!master.no_address) h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
         if (!master.no_clients) {
-            h += '<td class="mts_clients' + (s.clients ? ' mts_is_clients' : '') + '">';
+            h += '<td class="mts_clients' + (s.clients && s.clients_list ? ' mts_is_clients' : '') + '">';
             if (!master.no_clients_list && s.clients && s.clients_list) {
                 h += '<div class="mts_clients_list">Players (' + e(s.clients) + '):<br/>';
                 for (var ii in s.clients_list)
