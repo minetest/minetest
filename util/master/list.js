@@ -49,9 +49,9 @@ function success(r) {
     if (!r || !r.list) return;
     var h = '';
     if (!master.no_total && r.total)
-        h += '<div>Now players: ' + r.total.clients + ' servers: ' + r.total.servers + '</div>';
+        h += '<div class="mts_total">Now players: ' + r.total.clients + ' servers: ' + r.total.servers + '</div>';
     if (!master.no_total_max && r.total_max)
-        h += '<div>Max players: ' + r.total_max.clients + ' servers: ' + r.total_max.servers + '</div>';
+        h += '<div class="mts_total_max">Max players: ' + r.total_max.clients + ' servers: ' + r.total_max.servers + '</div>';
     h += '<table class="mts_table">';
     if (r.list.length) {
         h += '<tr class="mts_head">';
@@ -76,7 +76,7 @@ function success(r) {
             if (!master.no_clients_list && s.clients && s.clients_list) {
                 h += '<div class="mts_clients_list">Players (' + s.clients + '):<br/>';
                 for (var ii in s.clients_list)
-                    h += s.clients_list[ii] + '<br/>';
+                    h += e(s.clients_list[ii]) + '<br/>';
                 h += '</div>';
             }
             h += e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + e(s.clients_top) : '') + '</td>';
@@ -89,7 +89,7 @@ function success(r) {
             if (!master.no_mods && mods) {
                 h += '<div class="mts_mods">Mods (' + mods + '):<br/>';
                 for (var ii in s.mods)
-                    h += s.mods[ii] + '<br/>';
+                    h += e(s.mods[ii]) + '<br/>';
                 h += '</div>';
             }
             h += '</td>';
