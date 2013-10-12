@@ -1704,6 +1704,11 @@ Player-only: (no-op for other objects)
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
 - set_look_pitch(radians): sets look pitch
 - set_look_yaw(radians): sets look yaw
+- set_fov(degrees): sets field of view
+  ^ A positive FOV overrides `fov' setting
+  ^ A negative FOV specifies a percentage of `fov'
+  ^  (e.g. -100 is same as `fov', -50 is half of `fov', etc).
+- get_fov(): fov in degrees
 - get_breath() : returns players breath
 - set_breath(value) : sets players breath
     values: 0    player is drowning,

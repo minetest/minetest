@@ -2027,6 +2027,18 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			((LocalPlayer *) player)->hotbar_selected_image = value;
 		}
 	}
+	else if(command == TOCLIENT_SET_FOV)
+	{
+		std::string sdata;
+
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		f32 fov  = readF1000(is);
+
+		Player *player = m_env.getLocalPlayer();
+		((LocalPlayer *) player)->setFOV(fov);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

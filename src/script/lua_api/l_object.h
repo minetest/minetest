@@ -140,6 +140,12 @@ private:
 	// getyaw(self)
 	static int l_getyaw(lua_State *L);
 
+	// set_fov(self, degrees)
+	static int l_set_fov(lua_State *L);
+
+	// get_fov(self)
+	static int l_get_fov(lua_State *L);
+
 	// settexturemod(self, mod)
 	static int l_settexturemod(lua_State *L);
 

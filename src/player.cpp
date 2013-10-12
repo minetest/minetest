@@ -45,6 +45,7 @@ Player::Player(IGameDef *gamedef):
 	m_breath(-1),
 	m_pitch(0),
 	m_yaw(0),
+	m_fov(-100),
 	m_speed(0,0,0),
 	m_position(0,0,0),
 	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.55,BS*0.30),

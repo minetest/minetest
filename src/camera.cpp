@@ -356,6 +356,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 	// Get FOV setting
 	f32 fov_degrees = g_settings->getFloat("fov");
+	f32 fov_player = player->getFOV();
+	if (fov_player > 0)
+		fov_degrees = fov_player;
+	else
+		fov_degrees = (fov_degrees / 100) * (-fov_player);
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 

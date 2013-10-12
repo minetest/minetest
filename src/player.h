@@ -175,6 +175,16 @@ public:
 		return -1.0 * m_pitch * core::DEGTORAD;
 	}
 
+	virtual void setFOV(f32 fov)
+	{
+		m_fov = fov;
+	}
+
+	f32 getFOV()
+	{
+		return m_fov;
+	}
+
 	f32 getRadYaw()
 	{
 		return (m_yaw + 90.) * core::DEGTORAD;
@@ -297,6 +307,7 @@ protected:
 	u16 m_breath;
 	f32 m_pitch;
 	f32 m_yaw;
+	f32 m_fov;
 	v3f m_speed;
 	v3f m_position;
 	core::aabbox3d<f32> m_collisionbox;
