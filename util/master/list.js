@@ -65,9 +65,12 @@ function success(r) {
         if (!master.no_ping) h += '<th>ping</th>';
         h += '</tr>';
     }
+    var count = 0;
     for (var i = 0; i < r.list.length; ++i) {
+        if (++count > master.limit && master.limit) break;
         var s = r.list[i];
         if (!s) continue;
+        if (master.clients_min && s.clients < master.clients_min) continue;
         if (/:/.test(s.address)) s.address = '[' + s.address + ']';
         h += '<tr class="mts_row">';
         if (!master.no_address) h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
@@ -119,11 +122,13 @@ function success(r) {
         h += '</tr>';
     }
     h += '</table>';
+    if (master.clients_min || master.limit)
+        h += '<a href="#" onclick="delete master.limit;delete master.clients_min; get(1);">more...</a>';
     jQuery(master.output || '#servers_table').html(h);
 }
 
-function get() {
+function get(refresh) {
     jQuery.getJSON((master.root || '') + 'list', success);
-    setTimeout(get, 60000);
+    if (!refresh && !master.no_refresh) setTimeout(get, 60000);
 }
 get();

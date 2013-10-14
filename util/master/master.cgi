@@ -226,6 +226,7 @@ sub request (;$) {
                     $param->{ping} = $duration if $pingret;
                     printlog " PING t=$config{ping_timeout}, $param->{address}:$param->{port} = ( $pingret, $duration, $ip )" if $config{debug};
                 }
+                return if !$param->{ping};
             }
             my $list = read_json($config{list_full}) || {};
             printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}};
