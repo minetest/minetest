@@ -106,6 +106,11 @@ function minetest.register_item(name, itemdef)
 		-- Use the nodebox as selection box if it's not set manually
 		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
 			itemdef.selection_box = itemdef.node_box
+		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
+			itemdef.selection_box = {
+				type = "fixed",
+				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
+			}
 		end
 		setmetatable(itemdef, {__index = minetest.nodedef_default})
 		minetest.registered_nodes[itemdef.name] = itemdef
