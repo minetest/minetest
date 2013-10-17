@@ -673,7 +673,6 @@ Server::Server(
 	m_objectdata_timer = 0.0;
 	m_emergethread_trigger_timer = 0.0;
 	m_savemap_timer = 0.0;
-	m_clients_number = 0;
 
 	m_env_mutex.Init();
 	m_con_mutex.Init();
@@ -1244,7 +1243,7 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 
 			JMutexAutoLock lock2(m_con_mutex);
-			m_clients_number = 0;
+			m_clients_names.clear();
 			if(m_clients.size() != 0)
 				infostream<<"Players:"<<std::endl;
 			for(std::map<u16, RemoteClient*>::iterator
@@ -1258,7 +1257,7 @@ void Server::AsyncRunStep()
 					continue;
 				infostream<<"* "<<player->getName()<<"\t";
 				client->PrintInfo(infostream);
-				++m_clients_number;
+				m_clients_names.push_back(player->getName());
 			}
 		}
 	}
@@ -1270,7 +1269,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id, m_mods);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_names, m_uptime.get(), m_env->getGameTime(), m_gamespec.id, m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;
