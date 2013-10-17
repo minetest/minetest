@@ -2,35 +2,30 @@
 vector = {}
 
 function vector.new(a, b, c)
-	v = {x=0, y=0, z=0}
+	assert(a)
 	if type(a) == "table" then
-		v = {x=a.x, y=a.y, z=a.z}
-	elseif a and b and c then
-		v = {x=a, y=b, z=c}
+		return {x=a.x, y=a.y, z=a.z}
+	else
+		assert(b and c)
+		return {x=a, y=b, z=c}
 	end
-	setmetatable(v, {
-		__add = vector.add,
-		__sub = vector.subtract,
-		__mul = vector.multiply,
-		__div = vector.divide,
-		__umn = function(v) return vector.multiply(v, -1) end,
-		__len = vector.length,
-		__eq  = vector.equals,
-	})
-	return v
+	return {x=0, y=0, z=0}
 end
 
 function vector.equals(a, b)
+	assert(a and b)
 	return a.x == b.x and
 	       a.y == b.y and
 	       a.z == b.z
 end
 
 function vector.length(v)
+	assert(v)
 	return math.hypot(v.x, math.hypot(v.y, v.z))
 end
 
 function vector.normalize(v)
+	assert(v)
 	local len = vector.length(v)
 	if len == 0 then
 		return vector.new()
@@ -40,6 +35,7 @@ function vector.normalize(v)
 end
 
 function vector.round(v)
+	assert(v)
 	return {
 		x = math.floor(v.x + 0.5),
 		y = math.floor(v.y + 0.5),
@@ -48,6 +44,7 @@ function vector.round(v)
 end
 
 function vector.distance(a, b)
+	assert(a and b)
 	local x = a.x - b.x
 	local y = a.y - b.y
 	local z = a.z - b.z
@@ -55,6 +52,7 @@ function vector.distance(a, b)
 end
 
 function vector.direction(pos1, pos2)
+	assert(pos1 and pos2)
 	local x_raw = pos2.x - pos1.x
 	local y_raw = pos2.y - pos1.y
 	local z_raw = pos2.z - pos1.z
@@ -84,58 +82,54 @@ end
 
 
 function vector.add(a, b)
+	assert(a and b)
 	if type(b) == "table" then
-		 return vector.new(
-			a.x + b.x,
-			a.y + b.y,
-			a.z + b.z)
+		return {x = a.x + b.x,
+			y = a.y + b.y,
+			z = a.z + b.z}
 	else
-		return vector.new(
-			a.x + b,
-			a.y + b,
-			a.z + b)
+		return {x = a.x + b,
+			y = a.y + b,
+			z = a.z + b}
 	end
 end
 
 function vector.subtract(a, b)
+	assert(a and b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x - b.x,
-			a.y - b.y,
-			a.z - b.z)
+		return {x = a.x - b.x,
+			y = a.y - b.y,
+			z = a.z - b.z}
 	else
-		return vector.new(
-			a.x - b,
-			a.y - b,
-			a.z - b)
+		return {x = a.x - b,
+			y = a.y - b,
+			z = a.z - b}
 	end
 end
 
 function vector.multiply(a, b)
+	assert(a and b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x * b.x,
-			a.y * b.y,
-			a.z * b.z)
+		return {x = a.x * b.x,
+			y = a.y * b.y,
+			z = a.z * b.z}
 	else
-		return vector.new(
-			a.x * b,
-			a.y * b,
-			a.z * b)
+		return {x = a.x * b,
+			y = a.y * b,
+			z = a.z * b}
 	end
 end
 
 function vector.divide(a, b)
+	assert(a and b)
 	if type(b) == "table" then
-		return vector.new(
-			a.x / b.x,
-			a.y / b.y,
-			a.z / b.z)
+		return {x = a.x / b.x,
+			y = a.y / b.y,
+			z = a.z / b.z}
 	else
-		return vector.new(
-			a.x / b,
-			a.y / b,
-			a.z / b)
+		return {x = a.x / b,
+			y = a.y / b,
+			z = a.z / b}
 	end
 end
 
