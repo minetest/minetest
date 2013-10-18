@@ -3814,6 +3814,23 @@ void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendOverrideDayNightRatio(u16 peer_id, bool do_override,
+		float ratio)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO);
+	writeU8(os, do_override);
+	writeU16(os, ratio*65535);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::BroadcastChatMessage(const std::wstring &message)
 {
 	for(std::map<u16, RemoteClient*>::iterator
@@ -5041,6 +5058,16 @@ bool Server::setSky(Player *player, const video::SColor &bgcolor,
 		return false;
 
 	SendSetSky(player->peer_id, bgcolor, type, params);
+	return true;
+}
+
+bool Server::overrideDayNightRatio(Player *player, bool do_override,
+		float ratio)
+{
+	if (!player)
+		return false;
+
+	SendOverrideDayNightRatio(player->peer_id, do_override, ratio);
 	return true;
 }
 
