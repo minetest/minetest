@@ -48,10 +48,8 @@ function human_time(t, abs) {
 function success(r) {
     if (!r || !r.list) return;
     var h = '';
-    if (!master.no_total && r.total)
-        h += '<div class="mts_total">Now players: ' + r.total.clients + ' servers: ' + r.total.servers + '</div>';
-    if (!master.no_total_max && r.total_max)
-        h += '<div class="mts_total_max">Max players: ' + r.total_max.clients + ' servers: ' + r.total_max.servers + '</div>';
+    if (!master.no_total && r.total && r.total_max)
+        h += '<div class="mts_total">Players: ' + r.total.clients + ('/' + r.total_max.clients) + ' servers: ' + r.total.servers + ('/' + r.total_max.servers) + '</div>';
     h += '<table class="mts_table">';
     if (r.list.length) {
         h += '<tr class="mts_head">';

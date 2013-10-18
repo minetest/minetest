@@ -229,7 +229,7 @@ sub request (;$) {
                 return if !$param->{ping};
             }
             my $list = read_json($config{list_full}) || {};
-            printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}};
+            printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
             my $listk = {map { $_->{key} => $_ } @{$list->{list}}};
             my $old = $listk->{$param->{key}};
             $param->{time} = $old->{time} if $param->{off};
@@ -250,13 +250,12 @@ sub request (;$) {
             delete $param->{action};
             $listk->{$param->{key}} = $param;
             #printlog 'write', Dumper $param if $config{debug};
-            $list->{list} = [grep { $_->{time} > time - $config{time_purge} } values %$listk];
-            file_rewrite($config{list_full}, JSON->new->encode($list));
-            printlog "writed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
+            my $list_full = [grep { $_->{time} > time - $config{time_purge} } values %$listk];
+
             $list->{list} = [
                 sort { $b->{clients} <=> $a->{clients} || $a->{start} <=> $b->{start} }
                   grep { $_->{time} > time - $config{time_alive} and !$_->{off} and (!$config{ping} or !$config{pingable} or $_->{ping}) }
-                  @{$list->{list}}
+                  @{$list_full}
             ];
             $list->{total} = {clients => 0, servers => 0};
             for (@{$list->{list}}) {
@@ -265,8 +264,14 @@ sub request (;$) {
             }
             $list->{total_max}{clients} = $list->{total}{clients} if $list->{total_max}{clients} < $list->{total}{clients};
             $list->{total_max}{servers} = $list->{total}{servers} if $list->{total_max}{servers} < $list->{total}{servers};
+
             file_rewrite($config{list_pub}, JSON->new->encode($list));
             printlog "writed[$config{list_pub}] list size=", scalar @{$list->{list}} if $config{debug};
+
+            $list->{list} = $list_full;
+            file_rewrite($config{list_full}, JSON->new->encode($list));
+            printlog "writed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
+
         }
     };
     return [200, ["Content-type", "application/json"], [JSON->new->encode({})]], $after;
