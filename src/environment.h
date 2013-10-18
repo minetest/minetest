@@ -78,7 +78,7 @@ public:
 	std::list<Player*> getPlayers(bool ignore_disconnected);
 	
 	u32 getDayNightRatio();
-	
+
 	// 0-23999
 	virtual void setTimeOfDay(u32 time)
 	{
@@ -100,6 +100,12 @@ public:
 	float getTimeOfDaySpeed()
 	{ return m_time_of_day_speed; }
 
+	void setDayNightRatioOverride(bool enable, u32 value)
+	{
+		m_enable_day_night_ratio_override = enable;
+		m_day_night_ratio_override = value;
+	}
+
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::list<Player*> m_players;
@@ -110,6 +116,9 @@ protected:
 	float m_time_of_day_speed;
 	// Used to buffer dtime for adding to m_time_of_day
 	float m_time_counter;
+	// Overriding the day-night ratio is useful for custom sky visuals
+	bool m_enable_day_night_ratio_override;
+	u32 m_day_night_ratio_override;
 };
 
 /*

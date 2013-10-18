@@ -1820,6 +1820,9 @@ Player-only: (no-op for other objects)
     - "plain": Uses 0 textures, bgcolor used
   ^ Note: currently does not work directly in on_joinplayer; use
           minetest.after(0) in there.
+- override_day_night_ratio(ratio or nil)
+  ^ 0...1: Overrides day-night ratio, controlling sunlight to a specific amount
+  ^ nil: Disables override, defaulting to sunlight based on day-night cycle
 
 InvRef: Reference to an inventory
 methods:

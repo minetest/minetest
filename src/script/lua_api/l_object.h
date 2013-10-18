@@ -228,6 +228,9 @@ private:
 	// set_sky(self, type, list)
 	static int l_set_sky(lua_State *L);
 
+	// override_day_night_ratio(self, type, list)
+	static int l_override_day_night_ratio(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

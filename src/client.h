@@ -135,6 +135,7 @@ enum ClientEventType
 	CE_HUDRM,
 	CE_HUDCHANGE,
 	CE_SET_SKY,
+	CE_OVERRIDE_DAY_NIGHT_RATIO,
 };
 
 struct ClientEvent
@@ -223,6 +224,10 @@ struct ClientEvent
 			std::string *type;
 			std::vector<std::string> *params;
 		} set_sky;
+		struct{
+			bool do_override;
+			float ratio_f;
+		} override_day_night_ratio;
 	};
 };
 

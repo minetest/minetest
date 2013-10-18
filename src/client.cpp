@@ -2045,6 +2045,20 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.set_sky.params = params;
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		bool do_override = readU8(is);
+		float day_night_ratio_f = (float)readU16(is) / 65536;
+
+		ClientEvent event;
+		event.type = CE_OVERRIDE_DAY_NIGHT_RATIO;
+		event.override_day_night_ratio.do_override = do_override;
+		event.override_day_night_ratio.ratio_f = day_night_ratio_f;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

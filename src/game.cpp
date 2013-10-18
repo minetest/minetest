@@ -2498,6 +2498,12 @@ void the_game(
 					delete event.set_sky.type;
 					delete event.set_sky.params;
 				}
+				else if (event.type == CE_OVERRIDE_DAY_NIGHT_RATIO)
+				{
+					bool enable = event.override_day_night_ratio.do_override;
+					u32 value = event.override_day_night_ratio.ratio_f * 1000;
+					client.getEnv().setDayNightRatioOverride(enable, value);
+				}
 			}
 		}
 		

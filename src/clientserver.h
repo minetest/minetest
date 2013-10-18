@@ -519,6 +519,13 @@ enum ToClientCommand
 			u8 len
 			u8[len] param
 	*/
+
+	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
+	/*
+		u16 command
+		u8 do_override (boolean)
+		u16 day-night ratio 0...65535
+	*/
 };
 
 enum ToServerCommand

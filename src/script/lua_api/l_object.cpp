@@ -1129,6 +1129,28 @@ int ObjectRef::l_set_sky(lua_State *L)
 	return 1;
 }
 
+// override_day_night_ratio(self, brightness=0...1)
+int ObjectRef::l_override_day_night_ratio(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	bool do_override = false;
+	float ratio = 0.0f;
+	if (!lua_isnil(L, 2)){
+		do_override = true;
+		ratio = luaL_checknumber(L, 2);
+	}
+
+	if (!getServer(L)->overrideDayNightRatio(player, do_override, ratio))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1247,5 +1269,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_set_hotbar_image),
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
+	luamethod(ObjectRef, override_day_night_ratio),
 	{0,0}
 };
