@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-10-19 08:14+0200\n"
+"PO-Revision-Date: 2013-10-19 08:15+0200\n"
 "Last-Translator: Pablo Lezaeta <prflr88@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -362,7 +362,7 @@ msgstr "Activar todos"
 
 #: builtin/modmgr.lua:551
 msgid "Select Mod File:"
-msgstr "Selecciona fichero de mod:"
+msgstr "Selecciona fichero mod:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
@@ -496,7 +496,7 @@ msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Dos veces \"saltar\" para volar"
+msgstr "Pulsa dos veces \"saltar\" para volar"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
