@@ -390,7 +390,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 	}
 
 	/* Draw background texture */
-	v2u32 sourcesize = texture->getSize();
+	v2u32 sourcesize = texture->getOriginalSize();
 	driver->draw2DImage(texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
@@ -409,7 +409,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 		return;
 
 	/* Draw background texture */
-	v2u32 sourcesize = texture->getSize();
+	v2u32 sourcesize = texture->getOriginalSize();
 	driver->draw2DImage(texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
@@ -427,7 +427,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 	if(!texture)
 		return;
 
-	f32 mult = (((f32)screensize.Width / 2)) /
+	f32 mult = (((f32)screensize.Width / 2.0)) /
 			((f32)texture->getOriginalSize().Width);
 
 	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
@@ -445,7 +445,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 
 	driver->draw2DImage(texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
-		core::dimension2di(texture->getSize())),
+		core::dimension2di(texture->getOriginalSize())),
 		NULL, NULL, true);
 	}
 }
@@ -477,7 +477,7 @@ void GUIEngine::drawFooter(video::IVideoDriver* driver)
 
 		driver->draw2DImage(texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getSize())),
+			core::dimension2di(texture->getOriginalSize())),
 			NULL, NULL, true);
 	}
 }
