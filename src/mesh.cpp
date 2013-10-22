@@ -260,7 +260,7 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 		video::IVideoDriver *driver, v3f scale)
 {
 	scene::IAnimatedMesh *mesh = NULL;
-	core::dimension2d<u32> size = texture->getSize();
+	core::dimension2d<u32> size = texture->getOriginalSize();
 	video::ECOLOR_FORMAT format = texture->getColorFormat();
 	if (format == video::ECF_A8R8G8B8)
 	{
