@@ -812,7 +812,7 @@ function tabbuilder.handle_tab_buttons(fields)
 	
 	--handle tab changes
 	if tabbuilder.current_tab ~= tabbuilder.old_tab then
-		if tabbuilder.current_tab ~= "singleplayer" then
+		if tabbuilder.current_tab ~= "singleplayer" and not tabbuilder.is_dialog then
 			menu.update_gametype(true)
 		end
 	end
