@@ -1145,6 +1145,11 @@ minetest.register_on_player_receive_fields(func(player, formname, fields))
 minetest.register_on_mapgen_init(func(MapgenParams))
 ^ Called just before the map generator is initialized but before the environment is initialized
 ^ MapgenParams consists of a table with the fields mgname, seed, water_level, and flags
+minetest.register_on_craft(func(itemstack, player))
+^ Called when a player crafts something
+^ itemstack is the output of the crafting, player is the player that crafted
+^ The function should return another itemstack, to replace the output, or nil,
+^ to use the original craft result.
 
 Other registration functions:
 minetest.register_chatcommand(cmd, chatcommand definition)
