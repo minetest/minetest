@@ -86,8 +86,8 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	return true;
 }
 
-bool ScriptApiItem::item_OnCraft(ItemStack &item,
-		ServerActiveObject *user)
+bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
+		InventoryList *old_craft_grid)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -95,7 +95,11 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item,
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
-	if(lua_pcall(L, 2, 1, 0))
+	std::vector<ItemStack> items;
+	for(u32 i=0; i<old_craft_grid->getSize(); i++)
+		items.push_back(old_craft_grid->getItem(i));
+	push_items(L, items);
+	if(lua_pcall(L, 3, 1, 0))
 		scriptError("error: %s", lua_tostring(L, -1));
 	if(!lua_isnil(L, -1))
 		item = read_item(L,-1, getServer());

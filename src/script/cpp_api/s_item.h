@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
+#include "inventory.h"
 
 struct PointedThing;
 struct ItemStack;
@@ -40,8 +41,8 @@ public:
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);
-	bool item_OnCraft(ItemStack &item,
-		ServerActiveObject *user);
+	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
+			InventoryList *old_craft_grid);
 
 protected:
 	friend class LuaItemStack;

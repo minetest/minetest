@@ -230,9 +230,9 @@ function minetest.register_biome(biome)
 	register_biome_raw(biome)
 end
 
-function minetest.on_craft(itemstack, player)
+function minetest.on_craft(itemstack, player, old_craft_list)
 	for _, func in ipairs(minetest.registered_on_crafts) do
-		itemstack = func(itemstack, player) or itemstack
+		itemstack = func(itemstack, player, old_craft_list) or itemstack
 	end
 	return itemstack
 end

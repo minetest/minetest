@@ -703,6 +703,8 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 
 	InventoryList *list_craft = inv_craft->getList("craft");
 	InventoryList *list_craftresult = inv_craft->getList("craftresult");
+	
+	InventoryList saved_craft_list = *list_craft;
 
 	/*
 		If a list doesn't exist or the source item doesn't exist
@@ -751,7 +753,7 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 
 	// Make the callback
 	crafted = list_craftresult->getItem(0);
-	PLAYER_TO_SA(player)->item_OnCraft(crafted, player);
+	PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list);
 	list_craftresult->changeItem(0, crafted);
 
 	infostream<<"ICraftAction::apply(): crafted "
