@@ -749,6 +749,11 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 		found = getCraftingResult(inv_craft, crafted, false, gamedef);
 	}
 
+	// Make the callback
+	crafted = list_craftresult->getItem(0);
+	PLAYER_TO_SA(player)->item_OnCraft(crafted, player);
+	list_craftresult->changeItem(0, crafted);
+
 	infostream<<"ICraftAction::apply(): crafted "
 			<<" craft_inv=\""<<craft_inv.dump()<<"\""
 			<<std::endl;

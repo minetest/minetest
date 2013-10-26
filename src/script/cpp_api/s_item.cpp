@@ -86,6 +86,22 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	return true;
 }
 
+bool ScriptApiItem::item_OnCraft(ItemStack &item,
+		ServerActiveObject *user)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "on_craft");
+	LuaItemStack::create(L, item);
+	objectrefGetOrCreate(user);
+	if(lua_pcall(L, 2, 1, 0))
+		scriptError("error: %s", lua_tostring(L, -1));
+	if(!lua_isnil(L, -1))
+		item = read_item(L,-1, getServer());
+	return true;
+}
+
 // Retrieves minetest.registered_items[name][callbackname]
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the

@@ -40,6 +40,8 @@ public:
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);
+	bool item_OnCraft(ItemStack &item,
+		ServerActiveObject *user);
 
 protected:
 	friend class LuaItemStack;
