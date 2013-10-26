@@ -2041,11 +2041,15 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput()
+void GUIFormSpecMenu::acceptInput(bool quit=false)
 {
 	if(m_text_dst)
 	{
 		std::map<std::string, std::string> fields;
+
+		if (quit) {
+			fields["quit"] = "true";
+		}
 
 		if (current_keys_pending.key_down) {
 			fields["key_down"] = "true";
@@ -2188,10 +2192,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.KeyInput.PressedDown && (kp == EscapeKey ||
 			kp == getKeySetting("keymap_inventory")))
 		{
-			if (m_allowclose)
+			if (m_allowclose) {
+				acceptInput(true);
 				quitMenu();
-			else
+			 } else {
 				m_text_dst->gotText(narrow_to_wide("MenuQuit"));
+			}
 			return true;
 		}
 		if (event.KeyInput.PressedDown &&
@@ -2204,7 +2210,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			switch (event.KeyInput.Key) {
 				case KEY_RETURN:
 					if (m_allowclose) {
-						acceptInput();
+						acceptInput(true);
 						quitMenu();
 					}
 					else
@@ -2551,11 +2557,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			unsigned int btn_id = event.GUIEvent.Caller->getID();
 
 			if (btn_id == 257) {
-				acceptInput();
-				if (m_allowclose)
+				if (m_allowclose) {
+					acceptInput(true);
 					quitMenu();
-				else
+				} else {
+					acceptInput();
 					m_text_dst->gotText(narrow_to_wide("ExitButton"));
+				}
 				// quitMenu deallocates menu
 				return true;
 			}
@@ -2572,10 +2580,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = true;
 					acceptInput();
 					if(s.is_exit){
-						if (m_allowclose)
+						if (m_allowclose) {
+							acceptInput(true);
 							quitMenu();
-						else
+						} else {
 							m_text_dst->gotText(narrow_to_wide("ExitButton"));
+						}
 						return true;
 					}else{
 						s.send = false;
@@ -2590,7 +2600,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			{
 
 				if (m_allowclose) {
-					acceptInput();
+					acceptInput(true);
 					quitMenu();
 				}
 				else {
