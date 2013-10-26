@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_inventory.h"
 #include "server.h"
 #include "log.h"
 #include "util/pointedthing.h"
@@ -87,7 +88,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 }
 
 bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
-		InventoryList *old_craft_grid)
+		InventoryList *old_craft_grid, InventoryLocation &craft_inv)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -95,11 +96,15 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
+	
+	//Push inventory list
 	std::vector<ItemStack> items;
 	for(u32 i=0; i<old_craft_grid->getSize(); i++)
 		items.push_back(old_craft_grid->getItem(i));
 	push_items(L, items);
-	if(lua_pcall(L, 3, 1, 0))
+
+	InvRef::create(L, craft_inv);
+	if(lua_pcall(L, 4, 1, 0))
 		scriptError("error: %s", lua_tostring(L, -1));
 	if(!lua_isnil(L, -1))
 		item = read_item(L,-1, getServer());
