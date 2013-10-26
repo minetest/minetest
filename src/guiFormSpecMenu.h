@@ -227,7 +227,7 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput();
+	void acceptInput(bool quit);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
 
