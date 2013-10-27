@@ -1151,8 +1151,6 @@ minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))
 ^ old_craft_grid contains the recipe (Note: the one in the inventory is cleared)
 ^ craft_inv is the inventory with the crafting grid
 ^ Return either an ItemStack, to replace the output, or nil, to not modify it
-^ Warning: do not assume that the width of the crafting grid is 3, use
-^ craft:inv:get_width("craft")
 
 Other registration functions:
 minetest.register_chatcommand(cmd, chatcommand definition)
