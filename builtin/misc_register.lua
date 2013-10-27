@@ -237,6 +237,13 @@ function minetest.on_craft(itemstack, player, old_craft_list, craft_inv)
 	return itemstack
 end
 
+function minetest.craft_predict(itemstack, player, old_craft_list, craft_inv)
+	for _, func in ipairs(minetest.registered_craft_predicts) do
+		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+	end
+	return itemstack
+end
+
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 local name
@@ -335,4 +342,5 @@ minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_reg
 minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
 minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
 minetest.registered_on_crafts, minetest.register_on_craft = make_registration()
+minetest.registered_craft_predicts, minetest.register_craft_predict = make_registration()
 

@@ -703,8 +703,6 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 
 	InventoryList *list_craft = inv_craft->getList("craft");
 	InventoryList *list_craftresult = inv_craft->getList("craftresult");
-	
-	InventoryList saved_craft_list = *list_craft;
 
 	/*
 		If a list doesn't exist or the source item doesn't exist
@@ -726,13 +724,19 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 	}
 
 	ItemStack crafted;
+	ItemStack craftresultitem;
 	int count_remaining = count;
 	bool found = getCraftingResult(inv_craft, crafted, false, gamedef);
+	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
+	found = !crafted.empty();
 
 	while(found && list_craftresult->itemFits(0, crafted))
 	{
+		InventoryList saved_craft_list = *list_craft;
+		
 		// Decrement input and add crafting output
 		getCraftingResult(inv_craft, crafted, true, gamedef);
+		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
 		list_craftresult->addItem(0, crafted);
 		mgr->setInventoryModified(craft_inv);
 
@@ -746,14 +750,11 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 			break;
 		else if(count_remaining > 1)
 			count_remaining--;
-		
-		// Do the callback
-		crafted = list_craftresult->getItem(0);
-		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
-		list_craftresult->changeItem(0, crafted);
 
 		// Get next crafting result
 		found = getCraftingResult(inv_craft, crafted, false, gamedef);
+		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
+		found = !crafted.empty();
 	}
 
 	infostream<<"ICraftAction::apply(): crafted "

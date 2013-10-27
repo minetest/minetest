@@ -113,6 +113,30 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	return true;
 }
 
+bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
+		InventoryList *old_craft_grid, InventoryLocation &craft_inv)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "craft_predict");
+	LuaItemStack::create(L, item);
+	objectrefGetOrCreate(user);
+	
+	//Push inventory list
+	std::vector<ItemStack> items;
+	for(u32 i=0; i<old_craft_grid->getSize(); i++)
+		items.push_back(old_craft_grid->getItem(i));
+	push_items(L, items);
+
+	InvRef::create(L, craft_inv);
+	if(lua_pcall(L, 4, 1, 0))
+		scriptError("error: %s", lua_tostring(L, -1));
+	if(!lua_isnil(L, -1))
+		item = read_item(L,-1, getServer());
+	return true;
+}
+
 // Retrieves minetest.registered_items[name][callbackname]
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the
