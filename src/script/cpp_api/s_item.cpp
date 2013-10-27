@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "util/pointedthing.h"
+#include "inventory.h"
+#include "inventorymanager.h"
 
 bool ScriptApiItem::item_OnDrop(ItemStack &item,
 		ServerActiveObject *dropper, v3f pos)

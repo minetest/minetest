@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
-#include "inventory.h"
-#include "inventorymanager.h"
 
 struct PointedThing;
 struct ItemStack;
@@ -31,6 +29,8 @@ class ServerActiveObject;
 struct ItemDefinition;
 class LuaItemStack;
 class ModApiItemMod;
+class InventoryList;
+class InventoryLocation;
 
 class ScriptApiItem
 : virtual public ScriptApiBase
