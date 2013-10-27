@@ -746,15 +746,15 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 			break;
 		else if(count_remaining > 1)
 			count_remaining--;
+		
+		// Do the callback
+		crafted = list_craftresult->getItem(0);
+		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
+		list_craftresult->changeItem(0, crafted);
 
 		// Get next crafting result
 		found = getCraftingResult(inv_craft, crafted, false, gamedef);
 	}
-
-	// Make the callback
-	crafted = list_craftresult->getItem(0);
-	PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
-	list_craftresult->changeItem(0, crafted);
 
 	infostream<<"ICraftAction::apply(): crafted "
 			<<" craft_inv=\""<<craft_inv.dump()<<"\""
