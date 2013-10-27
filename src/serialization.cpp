@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 
 #include "util/serialize.h"
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#define ZLIB_WINAPI
 #endif
 #include "zlib.h"
