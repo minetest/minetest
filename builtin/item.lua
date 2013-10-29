@@ -370,8 +370,7 @@ end
 
 function minetest.node_dig(pos, node, digger)
 	local def = ItemStack({name=node.name}):get_definition()
-	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
-	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
+	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
