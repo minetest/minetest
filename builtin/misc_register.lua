@@ -270,6 +270,7 @@ minetest.register_item(":unknown", {
 	on_place = minetest.item_place,
 	on_drop = minetest.item_drop,
 	groups = {not_in_creative_inventory=1},
+	diggable = true,
 })
 
 minetest.register_node(":air", {
