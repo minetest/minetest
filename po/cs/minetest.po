@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-10-30 15:03+0200\n"
+"PO-Revision-Date: 2013-10-30 15:04+0200\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: cs\n"
@@ -708,7 +708,7 @@ msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr "Převést"
+msgstr "Převádět"
 
 #: src/keycode.cpp:226
 msgid "Escape"
