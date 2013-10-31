@@ -131,14 +131,18 @@ public:
 	// Empty = do not check neighbors
 	virtual std::set<std::string> getRequiredNeighbors()
 	{ return std::set<std::string>(); }
+	// Maximum range to neighbors
+	virtual u32 getNeighborsRange()
+	{ return 1; };
 	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
 	virtual u32 getTriggerChance() = 0;
 	// This is called usually at interval for 1/chance of the nodes
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
+	//virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
+	//virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n, MapNode neighbor){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
-			u32 active_object_count, u32 active_object_count_wider){};
+			u32 active_object_count, u32 active_object_count_wider, MapNode neighbor){};
 };
 
 struct ABMWithState

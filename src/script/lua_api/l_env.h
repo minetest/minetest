@@ -158,16 +158,19 @@ private:
 
 	std::set<std::string> m_trigger_contents;
 	std::set<std::string> m_required_neighbors;
+	u32 m_neighbors_range;
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 public:
 	LuaABM(lua_State *L, int id,
 			const std::set<std::string> &trigger_contents,
 			const std::set<std::string> &required_neighbors,
+			int neighbors_range,
 			float trigger_interval, u32 trigger_chance):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
+		m_neighbors_range(neighbors_range),
 		m_trigger_interval(trigger_interval),
 		m_trigger_chance(trigger_chance)
 	{
@@ -180,6 +183,10 @@ public:
 	{
 		return m_required_neighbors;
 	}
+	virtual u32 getNeighborsRange()
+	{
+		return m_neighbors_range;
+	}
 	virtual float getTriggerInterval()
 	{
 		return m_trigger_interval;
@@ -189,7 +196,7 @@ public:
 		return m_trigger_chance;
 	}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
-			u32 active_object_count, u32 active_object_count_wider);
+			u32 active_object_count, u32 active_object_count_wider, MapNode neighbor);
 };
 
 #endif /* L_ENV_H_ */
