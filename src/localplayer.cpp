@@ -561,6 +561,21 @@ void LocalPlayer::applyControl(float dtime)
 		else
 			incH = movement_acceleration_air * BS * dtime;
 		incV = 0; // No vertical acceleration in air
+
+		// better air control when falling fast
+		float speed = m_speed.getLength();
+		if (!superspeed && speed > movement_speed_fast && (control.down || control.up || control.left || control.right)) {
+			v3f rotate = move_direction * (speed / (BS * 120)); // 80 - good wingsuit
+			if(control.up)		rotate = rotate.crossProduct(v3f(0,1,0));
+			if(control.down)	rotate = rotate.crossProduct(v3f(0,-1,0));
+			if(control.left)	rotate *=-1;
+			m_speed.rotateYZBy(rotate.X);
+			m_speed.rotateXZBy(rotate.Y);
+			m_speed.rotateXYBy(rotate.Z);
+			m_speed = m_speed.normalize() * speed * (1-speed*0.00001); // 0.998
+			if (m_speed.Y)
+				return;
+		}
 	}
 	else if (superspeed || (is_climbing && fast_climb) || ((in_liquid || in_liquid_stable) && fast_climb))
 		incH = incV = movement_acceleration_fast * BS * dtime;
