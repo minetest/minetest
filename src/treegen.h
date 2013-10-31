@@ -58,6 +58,8 @@ namespace treegen {
 	// Add jungle tree
 	void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef, int seed);
+	void make_cavetree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_jungle_tree, INodeDefManager *ndef, int seed);
 
 	// Add L-Systems tree (used by engine)
 	void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,

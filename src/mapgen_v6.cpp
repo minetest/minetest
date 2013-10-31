@@ -783,10 +783,11 @@ void MapgenV6::addDirtGravelBlobs() {
 
 void MapgenV6::placeTreesAndJungleGrass() {
 	//TimeTaker t("placeTrees");
-	if (node_max.Y < water_level)
-		return;
 	
 	PseudoRandom grassrandom(blockseed + 53);
+
+	content_t c_sand            = ndef->getId("mapgen_sand");
+
 	content_t c_junglegrass = ndef->getId("mapgen_junglegrass");
 	// if we don't have junglegrass, don't place cignore... that's bad
 	if (c_junglegrass == CONTENT_IGNORE)
@@ -821,7 +822,8 @@ void MapgenV6::placeTreesAndJungleGrass() {
 		
 		// Amount of trees, jungle area
 		u32 tree_count = area * getTreeAmount(p2d_center);
-		
+
+
 		float humidity;
 		bool is_jungle = false;
 		if (flags & MGV6_JUNGLES) {
@@ -831,6 +833,9 @@ void MapgenV6::placeTreesAndJungleGrass() {
 				tree_count *= 4;
 			}
 		}
+
+		if (node_max.Y < water_level)
+			tree_count /= 2;
 
 		// Add jungle grass
 		if (is_jungle) {			
@@ -859,7 +864,7 @@ void MapgenV6::placeTreesAndJungleGrass() {
 			s16 y = findGroundLevelFull(v2s16(x, z)); ////////////////////optimize this!
 			// Don't make a tree under water level
 			// Don't make a tree so high that it doesn't fit
-			if(y < water_level || y > node_max.Y - 6)
+			if(y > node_max.Y - 6)
 				continue;
 			
 			v3s16 p(x,y,z);
@@ -868,13 +873,17 @@ void MapgenV6::placeTreesAndJungleGrass() {
 				u32 i = vm->m_area.index(p);
 				MapNode *n = &vm->m_data[i];
 				if (n->getContent() != c_dirt &&
-					n->getContent() != c_dirt_with_grass)
+					n->getContent() != c_dirt_with_grass &&
+					(y >= water_level || n->getContent() != c_sand))
 					continue;
 			}
 			p.Y++;
 			
 			// Make a tree
-			if (is_jungle) {
+			if (y < water_level) {
+				treegen::make_cavetree(*vm, p, is_jungle, ndef, myrand());
+			}
+			else if (is_jungle) {
 				treegen::make_jungletree(*vm, p, ndef, myrand());
 			} else {
 				bool is_apple_tree = (myrand_range(0, 3) == 0) &&
