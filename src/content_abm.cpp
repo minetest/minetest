@@ -60,8 +60,12 @@ public:
 		{
 			if(c_snow != CONTENT_IGNORE && n_top.getContent() == c_snow)
 				n.setContent(ndef->getId("dirt_with_snow"));
-			else
+			else if (!env->m_use_weather || map->updateBlockHeat(env, p) > 0)
 				n.setContent(ndef->getId("mapgen_dirt_with_grass"));
+			else if (env->m_use_weather && map->updateBlockHeat(env, p) < -20)
+				n.setContent(ndef->getId("dirt_with_snow"));
+			else
+				return;
 			map->addNodeWithEvent(p, n);
 		}
 	}
@@ -89,13 +93,45 @@ public:
 		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
 		if((!ndef->get(n_top).light_propagates &&
 				n_top.getContent() != CONTENT_IGNORE) ||
-				ndef->get(n_top).isLiquid())
+				ndef->get(n_top).isLiquid() || 
+				(env->m_use_weather && map->updateBlockHeat(env, p) < -10))
 		{
 			n.setContent(ndef->getId("mapgen_dirt"));
 			map->addNodeWithEvent(p, n);
 		}
 	}
 };
+
+class RemoveDirtWithSnowABM : public ActiveBlockModifier
+{
+private:
+public:
+	virtual std::set<std::string> getTriggerContents()
+	{
+		std::set<std::string> s;
+		s.insert("dirt_with_snow");
+		return s;
+	}
+	virtual float getTriggerInterval()
+	{ return 10.0; }
+	virtual u32 getTriggerChance()
+	{ return 100; }
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
+				u32 active_object_count, u32 active_object_count_wider, MapNode neighbor)
+	{
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		ServerMap *map = &env->getServerMap();
+		MapNode n_top = map->getNodeNoEx(p+v3s16(0,1,0));
+		content_t c_snow = ndef->getId("snow");
+		if(ndef->get(n_top).isLiquid() ||
+			(env->m_use_weather && map->updateBlockHeat(env, p) > 3 && n_top.getContent() != c_snow))
+		{
+			n.setContent(ndef->getId("mapgen_dirt"));
+			map->addNodeWithEvent(p, n);
+		}
+	}
+};
+
 
 class MakeTreesFromSaplingsABM : public ActiveBlockModifier
 {
@@ -174,7 +210,8 @@ class LiquidFlowABM : public ActiveBlockModifier {
 
 	public:
 		LiquidFlowABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
-			std::set<content_t> liquids;
+			contents.insert("group:liquid_flow");
+			std::set<content_t> liquids; // todo: remove, make all via group:liquid_flow
 			nodemgr->getIds("group:liquid", liquids);
 			for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
 				contents.insert(nodemgr->get(*k).liquid_alternative_flowing);
@@ -200,7 +237,8 @@ class LiquidDropABM : public ActiveBlockModifier {
 
 	public:
 		LiquidDropABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
-			std::set<content_t> liquids;
+			contents.insert("group:liquid_drop");
+			std::set<content_t> liquids; // todo: remove, make all via group:liquid_drop
 			nodemgr->getIds("group:liquid", liquids);
 			for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
 				contents.insert(nodemgr->get(*k).liquid_alternative_source);
@@ -372,6 +410,7 @@ class LiquidMeltAround : public LiquidMeltHot {
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
 	env->addActiveBlockModifier(new GrowGrassABM());
 	env->addActiveBlockModifier(new RemoveGrassABM());
+	env->addActiveBlockModifier(new RemoveDirtWithSnowABM());
 	env->addActiveBlockModifier(new MakeTreesFromSaplingsABM(env, nodedef));
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));

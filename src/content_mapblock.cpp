@@ -261,7 +261,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
-				if(neighbor_is_same_liquid && !top_is_same_liquid)
+				if(neighbor_is_same_liquid && top_is_same_liquid)
 					continue;
 
 				// Use backface culled material if neighbor doesn't have a
@@ -370,11 +370,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			*/
 			TileSpec tile_liquid = f.special_tiles[0];
 			TileSpec tile_liquid_bfculled = f.special_tiles[1];
+			const TileSpec *current_tile = &tile_liquid;
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
 			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
 			content_t c_source = nodedef->getId(f.liquid_alternative_source);
+			TileSpec tile_liquid_source = nodedef->get(c_source).special_tiles[0];
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 			
@@ -394,8 +396,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			else
 				l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
-			
-			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 0, 8);
 
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
@@ -429,8 +429,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					if(n2.getContent() == c_source)
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing){
-						u8 liquid_level = (n2.param2&LIQUID_LEVEL_MASK) - (LIQUID_LEVEL_MAX+1-range);
-						level = (-0.5 + ((float)liquid_level+ 0.5) / (float)range * node_liquid_level) * BS;
+						level = (-0.5 + ((float)n2.getLevel(nodedef)
+							 + 0.5) / n2.getMaxLevel(nodedef) * node_liquid_level) * BS;
 					}
 
 					// Check node above neighbor.
@@ -494,7 +494,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 				}
 				if(air_count >= 2)
-					cornerlevel = -0.5*BS+0.2;
+					cornerlevel = -0.5*BS+(float)1/f.getMaxLevel();
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
@@ -541,12 +541,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
 				if(neighbor_is_same_liquid == true
-						&& top_is_same_liquid == false)
+						&& top_is_same_liquid == true)
 					continue;
 
 				// Use backface culled material if neighbor doesn't have a
 				// solidness of 0
-				const TileSpec *current_tile = &tile_liquid;
+				current_tile = &tile_liquid;
 				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
 					current_tile = &tile_liquid_bfculled;
 				
@@ -627,6 +627,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			if(top_is_same_liquid == false)
 			{
+				current_tile = &tile_liquid_source;
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
@@ -646,6 +647,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
+					if (neighbor_levels[neighbor_dirs[0]] > corner_levels[j] + 0.25 ||
+					    neighbor_levels[neighbor_dirs[0]] < corner_levels[j] - 0.25)
+						current_tile = &tile_liquid;
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 				
@@ -685,8 +689,32 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(tile_liquid, vertices, 4, indices, 6);
+				collector.append(*current_tile, vertices, 4, indices, 6);
 			}
+
+			/*
+				Generate bottom side, if appropriate
+			*/
+			MapNode n_bottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y-1,z));
+			const ContentFeatures &f_bottom = nodedef->get(n_bottom);
+			if (!f_bottom.walkable && n_bottom.getContent() != c_flowing &&
+				n_bottom.getContent() != c_source) {
+				video::S3DVertex vertices[4] = {
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,0),
+				};
+
+				v3f offset(p.X*BS, p.Y*BS + -0.5*BS, p.Z*BS);
+				for(s32 i=0; i<4; i++) {
+					vertices[i].Pos += offset;
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(tile_liquid, vertices, 4, indices, 6);
+                        }
 		break;}
 		case NDT_GLASSLIKE:
 		{

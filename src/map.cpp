@@ -704,6 +704,9 @@ void Map::updateLighting(enum LightBank bank,
 	{
 		MapBlock *block = i->second;
 
+		if(!block || block->isDummy())
+			continue;
+
 		for(;;)
 		{
 			// Don't bother with dummy blocks.
@@ -924,6 +927,8 @@ void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
 			i != modified_blocks.end(); ++i)
 	{
 		MapBlock *block = i->second;
+		if(!block || block->isDummy())
+			continue;
 		block->expireDayNightDiff();
 	}
 }
@@ -1627,7 +1632,7 @@ s32 Map::transforming_liquid_size() {
         return m_transforming_liquid.size();
 }
 
-const v3s16 g_7dirs[7] =
+const v3s16 liquid_flow_dirs[7] =
 {
 	// +right, +top, +back
 	v3s16( 0,-1, 0), // bottom
@@ -1637,6 +1642,15 @@ const v3s16 g_7dirs[7] =
 	v3s16( 1, 0, 0), // right
 	v3s16(-1, 0, 0), // left
 	v3s16( 0, 1, 0)  // top
+};
+
+// when looking around we must first check self node for correct type definitions
+const s8 liquid_explore_map[7] = {1,0,2,3,4,5,6};
+const s8 liquid_random_map[4][7] = {
+	{0,1,2,3,4,5,6},
+	{0,1,4,3,5,2,6},
+	{0,1,3,5,4,2,6},
+	{0,1,5,3,2,4,6}
 };
 
 #define D_BOTTOM 0
@@ -1664,9 +1678,9 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
 	u16 loop_max = g_settings->getU16("liquid_loop_max");
+	u16 loop_rand = myrand();
 
 	//if (m_transforming_liquid.size() > 0) errorstream << "Liquid queue size="<<m_transforming_liquid.size()<<std::endl;
-
 	while (m_transforming_liquid.size() > 0)
 	{
 		// This should be done here so that it is done when continue is used
@@ -1678,6 +1692,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		*/
 		v3s16 p0 = m_transforming_liquid.pop_front();
 		u16 total_level = 0;
+		//u16 level_max = 0;
 		// surrounding flowing liquid nodes
 		NodeNeighbor neighbors[7]; 
 		// current level of every block
@@ -1687,11 +1702,14 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		s8 can_liquid_same_level = 0;
 		content_t liquid_kind = CONTENT_IGNORE;
 		content_t liquid_kind_flowing = CONTENT_IGNORE;
+		content_t melt_kind = CONTENT_IGNORE;
+		content_t melt_kind_flowing = CONTENT_IGNORE;
+		//s8 viscosity = 0;
 		/*
-			Collect information about the environment
+			Collect information about the environment, start from self
 		 */
-		const v3s16 *dirs = g_7dirs;
-		for (u16 i = 0; i < 7; i++) {
+		for (u8 e = 0; e < 7; e++) {
+			u8 i = liquid_explore_map[e];
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
 				case D_TOP:
@@ -1701,7 +1719,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 					nt = NEIGHBOR_LOWER;
 					break;
 			}
-			v3s16 npos = p0 + dirs[i];
+			v3s16 npos = p0 + liquid_flow_dirs[i];
 
 			neighbors[i].n = getNodeNoEx(npos);
 			neighbors[i].t = nt;
@@ -1712,10 +1730,29 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 
 			switch (nodemgr->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
+					//TODO: if (nb.n.getContent() == CONTENT_AIR || nodemgr->get(nb.n).buildable_to && !nodemgr->get(nb.n).walkable) { // need lua drop api for drop torches
 					if (nb.n.getContent() == CONTENT_AIR) {
 						liquid_levels[i] = 0;
 						nb.l = 1;
 					}
+					else if (	melt_kind_flowing != CONTENT_IGNORE &&
+							nb.n.getContent() == melt_kind_flowing &&
+							nb.t != NEIGHBOR_UPPER &&
+							!(loopcount % 2)) {
+						u8 melt_max_level = nb.n.getMaxLevel(nodemgr);
+						u8 my_max_level = MapNode(liquid_kind_flowing).getMaxLevel(nodemgr);
+						liquid_levels[i] = 
+							(float)my_max_level / melt_max_level * nb.n.getLevel(nodemgr);
+						nb.l = 1;
+					}
+					else if (	melt_kind != CONTENT_IGNORE &&
+							nb.n.getContent() == melt_kind &&
+							nb.t != NEIGHBOR_UPPER &&
+							!(loopcount % 8)) {
+						liquid_levels[i] = nodemgr->get(liquid_kind_flowing).getMaxLevel();
+						nb.l = 1;
+					}
+					// todo: for erosion add something here..
 					break;
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type,
@@ -1725,6 +1762,17 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 							nodemgr->get(nb.n).liquid_alternative_flowing);
 					if (liquid_kind == CONTENT_IGNORE)
 						liquid_kind = nb.n.getContent();
+					if (liquid_kind_flowing == CONTENT_IGNORE)
+						liquid_kind_flowing = liquid_kind;
+					if (melt_kind == CONTENT_IGNORE)
+						melt_kind = nodemgr->getId(nodemgr->get(nb.n).freezemelt);
+					if (melt_kind_flowing == CONTENT_IGNORE)
+						melt_kind_flowing = 
+							nodemgr->getId(
+							nodemgr->get(nodemgr->getId(nodemgr->get(nb.n).freezemelt)
+									).liquid_alternative_flowing);
+					if (melt_kind_flowing == CONTENT_IGNORE)
+						melt_kind_flowing = melt_kind;
 					if (nb.n.getContent() == liquid_kind) {
 						liquid_levels[i] = nb.n.getLevel(nodemgr); //LIQUID_LEVEL_SOURCE;
 						nb.l = 1;
@@ -1739,13 +1787,22 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 					if (liquid_kind == CONTENT_IGNORE)
 						liquid_kind = nodemgr->getId(
 							nodemgr->get(nb.n).liquid_alternative_source);
+					if (liquid_kind == CONTENT_IGNORE)
+						liquid_kind = liquid_kind_flowing;
+					if (melt_kind_flowing == CONTENT_IGNORE)
+						melt_kind_flowing = nodemgr->getId(nodemgr->get(nb.n).freezemelt);
+					if (melt_kind == CONTENT_IGNORE)
+						melt_kind = nodemgr->getId(nodemgr->get(nodemgr->getId(
+							nodemgr->get(nb.n).freezemelt)).liquid_alternative_source);
+					if (melt_kind == CONTENT_IGNORE)
+						melt_kind = melt_kind_flowing;
 					if (nb.n.getContent() == liquid_kind_flowing) {
-						liquid_levels[i] = nb.n.getLevel(nodemgr); //(nb.n.param2 & LIQUID_LEVEL_MASK);
+						liquid_levels[i] = nb.n.getLevel(nodemgr);
 						nb.l = 1;
 					}
 					break;
 			}
-			
+
 			if (nb.l && nb.t == NEIGHBOR_SAME_LEVEL)
 				++can_liquid_same_level;
 			if (liquid_levels[i] > 0)
@@ -1759,57 +1816,66 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			//<< " lk=" << liquid_kind << " lkf=" << liquid_kind_flowing
 			<< " l="<< nb.l	<< " inf="<< nb.i << " nlevel=" << (int)liquid_levels[i]
 			<< " tlevel=" << (int)total_level << " cansame="
-			<< (int)can_liquid_same_level << std::endl;
+			<< (int)can_liquid_same_level << " Lmax="<<(int)level_max<<std::endl;
 			*/
 		}
+		s16 level_max = nodemgr->get(liquid_kind_flowing).getMaxLevel();
+		//viscosity = nodemgr->get(liquid_kind).viscosity;
 
-		if (liquid_kind == CONTENT_IGNORE ||
-			!neighbors[D_SELF].l ||
-			total_level <= 0)
+		if (liquid_kind == CONTENT_IGNORE || !neighbors[D_SELF].l || total_level <= 0)
 			continue;
 
 		// fill bottom block
 		if (neighbors[D_BOTTOM].l) {
-			liquid_levels_want[D_BOTTOM] = total_level > LIQUID_LEVEL_SOURCE ?
-				LIQUID_LEVEL_SOURCE : total_level;
+			liquid_levels_want[D_BOTTOM] = total_level > level_max ?
+				level_max : total_level;
 			total_level -= liquid_levels_want[D_BOTTOM];
 		}
 
 		//relax up
-		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) && liquid_levels[D_TOP] == 0 &&
-			liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE &&
-			total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level-
+		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) &&
+			level_max > 1 &&
+			liquid_levels[D_TOP] == 0 &&
+			liquid_levels[D_BOTTOM] == level_max &&
+			total_level >= level_max * can_liquid_same_level -
 			(can_liquid_same_level - relax) &&
-			can_liquid_same_level >= relax + 1) { 
-			total_level = LIQUID_LEVEL_SOURCE * can_liquid_same_level; 
+			can_liquid_same_level >= relax + 1) {
+			total_level = level_max * can_liquid_same_level;
 		}
 
 		// prevent lakes in air above unloaded blocks
-		if (liquid_levels[D_TOP] == 0 && (p0.Y > water_level) && neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE && !(loopcount % 3)) {
+		if (	liquid_levels[D_TOP] == 0 &&
+			p0.Y > water_level &&
+			level_max > 1 &&
+			neighbors[D_BOTTOM].n.getContent() == CONTENT_IGNORE &&
+			!(loopcount % 3)) {
 			--total_level;
 		}
 
 		// calculate self level 5 blocks
-		u8 want_level = 
-			  total_level >= LIQUID_LEVEL_SOURCE * can_liquid_same_level
-			? LIQUID_LEVEL_SOURCE 
+		u16 want_level =
+			  total_level >= level_max * can_liquid_same_level
+			? level_max
 			: total_level / can_liquid_same_level;
 		total_level -= want_level * can_liquid_same_level;
 
 		//relax down
 		if (relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 &&
-			liquid_levels[D_BOTTOM] == LIQUID_LEVEL_SOURCE && want_level == 0 &&
+			level_max > 1 &&
+			liquid_levels[D_BOTTOM] == level_max && want_level == 0 &&
 			total_level <= (can_liquid_same_level - relax) &&
 			can_liquid_same_level >= relax + 1) {
 			total_level = 0;
 		}
 
-		for (u16 ii = D_SELF; ii < D_TOP; ++ii) { // fill only same level
+		for (u16 ir = D_SELF; ir < D_TOP; ++ir) { // fill only same level
+			u16 ii = liquid_random_map[(loopcount+loop_rand+1)%4][ir];
 			if (!neighbors[ii].l)
 				continue;
 			liquid_levels_want[ii] = want_level;
-			if (liquid_levels_want[ii] < LIQUID_LEVEL_SOURCE && total_level > 0) {
-				if (loopcount % 3 || liquid_levels[ii] <= 0){
+			//if (viscosity > 1 && (liquid_levels_want[ii]-liquid_levels[ii]>8-viscosity))
+			if (liquid_levels_want[ii] < level_max && total_level > 0) {
+				if (level_max > LIQUID_LEVEL_SOURCE || loopcount % 3 || liquid_levels[ii] <= 0){
 					if (liquid_levels[ii] > liquid_levels_want[ii]) {
 						++liquid_levels_want[ii];
 						--total_level;
@@ -1821,10 +1887,11 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			}
 		}
 
-		for (u16 ii = 0; ii < 7; ++ii) {
+		for (u16 ir = D_SELF; ir < D_TOP; ++ir) {
 			if (total_level < 1) break;
+			u16 ii = liquid_random_map[(loopcount+loop_rand+2)%4][ir];
 			if (liquid_levels_want[ii] >= 0 &&
-				liquid_levels_want[ii] < LIQUID_LEVEL_SOURCE) {
+				liquid_levels_want[ii] < level_max) {
 				++liquid_levels_want[ii];
 				--total_level;
 			}
@@ -1832,34 +1899,37 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 
 		// fill top block if can
 		if (neighbors[D_TOP].l) {
-			liquid_levels_want[D_TOP] = total_level > LIQUID_LEVEL_SOURCE ?
-				LIQUID_LEVEL_SOURCE : total_level;
+			liquid_levels_want[D_TOP] = total_level > level_max ?
+				level_max : total_level;
 			total_level -= liquid_levels_want[D_TOP];
 		}
 
 		for (u16 ii = 0; ii < 7; ii++) // infinity and cave flood optimization
-			if (    neighbors[ii].i ||
-				(liquid_levels_want[ii] >= 0 &&
-				 (fast_flood && p0.Y < water_level &&
-				  (initial_size >= 1000
-				   && ii != D_TOP
-				   && want_level >= LIQUID_LEVEL_SOURCE/4
-				   && can_liquid_same_level >= 5
-				   && liquid_levels[D_TOP] >= LIQUID_LEVEL_SOURCE))))
-				liquid_levels_want[ii] = LIQUID_LEVEL_SOURCE;
+			if (    neighbors[ii].i			||
+				(liquid_levels_want[ii] >= 0	&&
+				 level_max > 1			&&
+				 fast_flood			&&
+				 p0.Y < water_level		&&
+				 initial_size >= loop_max	&&
+				 ii != D_TOP			&&
+				 want_level >= level_max/4	&&
+				 can_liquid_same_level >= 5	&&
+				 liquid_levels[D_TOP] >= level_max))
+					liquid_levels_want[ii] = level_max;
 
 		/*
 		if (total_level > 0) //|| flowed != volume)
-			infostream <<" AFTER level=" << (int)total_level 
+			infostream <<" AFTER level=" << (int)total_level
 			//<< " flowed="<<flowed<< " volume=" << volume
+			<< " max="<<(int)level_max
 			<< " wantsame="<<(int)want_level<< " top="
 			<< (int)liquid_levels_want[D_TOP]<< " topwas="
 			<< (int)liquid_levels[D_TOP]<< " bot="
 			<< (int)liquid_levels_want[D_BOTTOM]<<std::endl;
 		*/
 
-		//u8 changed = 0;
-		for (u16 i = 0; i < 7; i++) {
+		for (u16 r = 0; r < 7; r++) {
+			u16 i = liquid_random_map[(loopcount+loop_rand+3)%4][r];
 			if (liquid_levels_want[i] < 0 || !neighbors[i].l) 
 				continue;
 			MapNode & n0 = neighbors[i].n;
@@ -1867,8 +1937,9 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 			/*
 				decide on the type (and possibly level) of the current node
 			*/
-			content_t new_node_content;
-			s8 new_node_level = -1;
+			//content_t new_node_content;
+			s8 new_node_level = 0;
+			/* disabled because brokes constant volume of lava
 			u8 viscosity = nodemgr->get(liquid_kind).liquid_viscosity;
 			if (viscosity > 1 && liquid_levels_want[i] != liquid_levels[i]) {
 				// amount to gain, limited by viscosity
@@ -1881,23 +1952,18 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				else if (level_inc > 0)
 					new_node_level = liquid_levels[i] + 1;
 			} else {
-				new_node_level = liquid_levels_want[i];
-			}
-			
-			if (new_node_level >= LIQUID_LEVEL_SOURCE)
-				new_node_content = liquid_kind;
-			else if (new_node_level > 0)
-				new_node_content = liquid_kind_flowing;
-			else
-				new_node_content = CONTENT_AIR;
-			
+			*/
+			new_node_level = liquid_levels_want[i];
+			/* } */
+
 			// last level must flow down on stairs
 			if (liquid_levels_want[i] != liquid_levels[i] &&
-				liquid_levels[D_TOP] <= 0 && !neighbors[D_BOTTOM].l &&
+				liquid_levels[D_TOP] <= 0 && (!neighbors[D_BOTTOM].l || level_max == 1) &&
 				new_node_level >= 1 && new_node_level <= 2) {
-				for (u16 ii = D_SELF + 1; ii < D_TOP; ++ii) { // only same level
+				for (u16 ir = D_SELF + 1; ir < D_TOP; ++ir) { // only same level
+					u16 ii = liquid_random_map[(loopcount+loop_rand+4)%4][ir];
 					if (neighbors[ii].l)
-						must_reflow_second.push_back(p0 + dirs[ii]);
+						must_reflow_second.push_back(p0 + liquid_flow_dirs[ii]);
 				}
 			}
 
@@ -1905,47 +1971,14 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				check if anything has changed.
 				if not, just continue with the next node.
 			 */
-			/*
-			if (
-				 new_node_content == n0.getContent() 
-				&& (nodemgr->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
-				 (n0.getLevel(nodemgr) == (u8)new_node_level
-				 //&& ((n0.param2 & LIQUID_FLOW_DOWN_MASK) ==
-				 //LIQUID_FLOW_DOWN_MASK) == flowing_down
-				 ))
-				&&
-				 (nodemgr->get(n0.getContent()).liquid_type != LIQUID_SOURCE ||
-				 (((n0.param2 & LIQUID_INFINITY_MASK) ==
-					LIQUID_INFINITY_MASK) == neighbors[i].i
-				 ))
-			   )*/
 			if (liquid_levels[i] == new_node_level)
 			{
 				continue;
 			}
-			
-			//++changed;
 
-			/*
-				update the current node
-			 */
-			/*
-			if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
-				// set level to last 3 bits, flowing down bit to 4th bit
-				n0.param2 = (new_node_level & LIQUID_LEVEL_MASK);
-			} else if (nodemgr->get(new_node_content).liquid_type == LIQUID_SOURCE) {
-				//n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
-				n0.param2 = (neighbors[i].i ? LIQUID_INFINITY_MASK : 0x00);
-			}
-			*/
-			/*
-			infostream << "set node i=" <<(int)i<<" "<< PP(p0)<< " nc="
-			<<new_node_content<< " p2="<<(int)n0.param2<< " nl="
-			<<(int)new_node_level<<std::endl;
-			*/
-			
 			n0.setContent(liquid_kind_flowing);
 			n0.setLevel(nodemgr, new_node_level);
+			/* rollback will stop your server if enabled with liquid_finite
 			// Find out whether there is a suspect for this action
 			std::string suspect;
 			if(m_gamedef->rollback()){
@@ -1965,17 +1998,21 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				action.setSetNode(p0, rollback_oldnode, rollback_newnode);
 				m_gamedef->rollback()->reportAction(action);
 			} else {
+			*/
 				// Set node
-				setNode(p0, n0);
-			}
+			setNode(p0, n0);
+			//}
 
-			v3s16 blockpos = getNodeBlockPos(p0);
-			MapBlock *block = getBlockNoCreateNoEx(blockpos);
-			if(block != NULL) {
-				modified_blocks[blockpos] = block;
-				// If node emits light, MapBlock requires lighting update
-				if(nodemgr->get(n0).light_source != 0)
+			// If node emits light, MapBlock requires lighting update
+			// or if node removed
+			if (new_node_level <= 0 || nodemgr->get(n0).light_source) { 
+				v3s16 blockpos = getNodeBlockPos(p0);
+				MapBlock *block = getBlockNoCreateNoEx(blockpos);
+				if(block != NULL) {
+					modified_blocks[blockpos] = block;
+					//if(nodemgr->get(n0).light_source != 0) // better ro update always
 					lighting_modified_blocks[block->getPos()] = block;
+				}
 			}
 			must_reflow.push_back(neighbors[i].p);
 		}
@@ -1987,7 +2024,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 	}
 	/*
 	if (loopcount)
-		infostream<<"Map::transformLiquids(): loopcount="<<loopcount
+		errorstream<<"Map::transformLiquids(): loopcount="<<loopcount
 		<<" reflow="<<must_reflow.size()
 		<<" queue="<< m_transforming_liquid.size()<<std::endl;
 	*/
@@ -2045,11 +2082,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		LiquidType liquid_type = nodemgr->get(n0).liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
-				liquid_level = LIQUID_LEVEL_SOURCE;
+				liquid_level = n0.getLevel(nodemgr);
 				liquid_kind = nodemgr->getId(nodemgr->get(n0).liquid_alternative_flowing);
 				break;
 			case LIQUID_FLOWING:
-				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
+				liquid_level = n0.getLevel(nodemgr);
 				liquid_kind = n0.getContent();
 				break;
 			case LIQUID_NONE:
@@ -2129,7 +2166,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 					break;
 			}
 		}
-
+		u16 level_max = nodemgr->get(liquid_kind).getMaxLevel(); // source level
+		if (level_max <= 1)
+			continue;
+		level_max -= 1; // source - 1 = max flowing level
 		/*
 			decide on the type (and possibly level) of the current node
 		 */
@@ -2140,20 +2180,23 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
 			// it's perfectly safe to use liquid_kind here to determine the new node content.
-			new_node_content = nodemgr->getId(nodemgr->get(liquid_kind).liquid_alternative_source);
+			//new_node_content = nodemgr->getId(nodemgr->get(liquid_kind).liquid_alternative_source);
+			//new_node_content = liquid_kind;
+			//max_node_level = level_max + 1;
+			new_node_level = level_max + 1;
 		} else if (num_sources >= 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
-			new_node_content = liquid_kind;
-			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
+			//new_node_content = liquid_kind;
+			new_node_level = level_max;
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
-				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
+				u8 nb_liquid_level = (flows[i].n.getLevel(nodemgr));
 				switch (flows[i].t) {
 					case NEIGHBOR_UPPER:
 						if (nb_liquid_level + WATER_DROP_BOOST > max_node_level) {
-							max_node_level = LIQUID_LEVEL_MAX;
-							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
+							max_node_level = level_max;
+							if (nb_liquid_level + WATER_DROP_BOOST < level_max)
 								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
 						} else if (nb_liquid_level > max_node_level)
 							max_node_level = nb_liquid_level;
@@ -2168,9 +2211,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 						break;
 				}
 			}
-
 			u8 viscosity = nodemgr->get(liquid_kind).liquid_viscosity;
 			if (viscosity > 1 && max_node_level != liquid_level) {
+				if (liquid_level < 0)
+					liquid_level = 0;
 				// amount to gain, limited by viscosity
 				// must be at least 1 in absolute value
 				s8 level_inc = max_node_level - liquid_level;
@@ -2185,29 +2229,40 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			} else
 				new_node_level = max_node_level;
 
-			u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, LIQUID_LEVEL_MAX+1);
-			if (new_node_level >= (LIQUID_LEVEL_MAX+1-range))
+/*
+			u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, level_max+1);
+			if (new_node_level >= (level_max+1-range))
+*/
+/*
+			if (new_node_level >= 1)
 				new_node_content = liquid_kind;
 			else
 				new_node_content = CONTENT_AIR;
-
+				//new_node_content = liquid_kind;
+*/
 		}
+		new_node_content = liquid_kind;
 
 		/*
 			check if anything has changed. if not, just continue with the next node.
 		 */
+/*
 		if (new_node_content == n0.getContent() && (nodemgr->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
 										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level &&
 										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
 										 == flowing_down)))
+*/
+		if (liquid_level == new_node_level || new_node_level < 0)
 			continue;
 
+//errorstream << " was="<<(int)liquid_level<<" new="<< (int)new_node_level<< " ncon="<< (int)new_node_content << " flodo="<<(int)flowing_down<< " lmax="<<level_max<< " nameNE="<<nodemgr->get(new_node_content).name<<" nums="<<(int)num_sources<<" wasname="<<nodemgr->get(n0).name<<std::endl;
 
 		/*
 			update the current node
 		 */
 		MapNode n00 = n0;
 		//bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
+/*
 		if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
 			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
@@ -2215,7 +2270,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			// set the liquid level and flow bit to 0
 			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
+*/
 		n0.setContent(new_node_content);
+		n0.setLevel(nodemgr, new_node_level); // set air, flowing, source depend on level
+		if (nodemgr->get(n0).liquid_type == LIQUID_FLOWING)
+			n0.param2 |= (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00);
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
@@ -2239,7 +2298,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			// Set node
 			setNode(p0, n0);
 		}
-
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL) {
