@@ -295,13 +295,15 @@ function tabbuilder.dialog_create_world()
 
 	local retval = 
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"label[2,1;" .. fgettext("Mapgen") .. "]"..
+		"label[2,0.8;" .. fgettext("Mapgen") .. "]"..
+		"label[2,1.6;" .. fgettext("Seed") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
-		"label[2,2;" .. fgettext("Game") .. "]"..
+		"field[4.5,2;6,0.5;seed;;]" ..
+		"label[2,2.4;" .. fgettext("Game") .. "]"..
 		"button[5,4.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
 		"button[7.5,4.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]" ..
-		"dropdown[4.2,1;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
-		"textlist[4.2,1.9;5.8,2.3;games;" ..
+		"dropdown[4.2,0.8;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"textlist[4.2,2.5;5.8,1.9;games;" ..
 		gamemgr.gamelist() ..
 		";" .. menu.last_game .. ";true]"
 
@@ -379,6 +381,7 @@ function tabbuilder.handle_create_world_buttons(fields)
 			
 			if not filterlist.uid_exists_raw(worldlist,worldname) then
 				engine.setting_set("mg_name",fields["dd_mapgen"])
+				engine.setting_set("fixed_map_seed",fields["seed"])
 				message = engine.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
