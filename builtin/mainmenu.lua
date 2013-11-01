@@ -1070,7 +1070,7 @@ function tabbuilder.tab_credits()
 			"sfan5 <sfan5@live.de>,"..
 			"kahrl <kahrl@gmx.net>,"..
 			"sapier,"..
-			"ShadowNinja,"..
+			"ShadowNinja <shadowninja@minetest.net>,"..
 			"Nathanaël Courant (Nore/Novatux) <nore@mesecons.net>,"..
 			","..
 			"#FFFF00" .. fgettext("Active Contributors") .. "," ..
