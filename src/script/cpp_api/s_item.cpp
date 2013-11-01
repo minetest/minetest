@@ -90,7 +90,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 }
 
 bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
-		InventoryList *old_craft_grid, InventoryLocation &craft_inv)
+		const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -114,7 +114,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 }
 
 bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
-		InventoryList *old_craft_grid, InventoryLocation &craft_inv)
+		const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

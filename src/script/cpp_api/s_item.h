@@ -43,9 +43,9 @@ public:
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);
 	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
-			InventoryList *old_craft_grid, InventoryLocation &craft_inv);
+			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 	bool item_CraftPredict(ItemStack &item, ServerActiveObject *user,
-			InventoryList *old_craft_grid, InventoryLocation &craft_inv);
+			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 
 protected:
 	friend class LuaItemStack;
