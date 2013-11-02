@@ -2025,7 +2025,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 	}
 	/*
 	if (loopcount)
-		errorstream<<"Map::transformLiquids(): loopcount="<<loopcount
+		infostream<<"Map::transformLiquids(): loopcount="<<loopcount
 		<<" reflow="<<must_reflow.size()
 		<<" queue="<< m_transforming_liquid.size()<<std::endl;
 	*/
