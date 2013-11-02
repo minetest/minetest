@@ -1,0 +1,68 @@
+{{? !master.no_total}}
+<div class="total">
+	Players: {{=it.total.clients}}/{{=it.total_max.clients}}&nbsp;
+	Servers: {{=it.total.servers}}/{{=it.total_max.servers}}
+</div>
+{{?}}
+<table>
+	<tr>
+		{{? !master.no_address}}<th>IP[:Port]</th>{{?}}
+		{{? !master.no_clients}}<th>Players/Max</th>{{?}}
+		{{? !master.no_version}}<th>Version, Gameid, MapGen</th>{{?}}
+		{{? !master.no_name}}<th>Name</th>{{?}}
+		{{? !master.no_description}}<th>Description</th>{{?}}
+		{{? !master.no_flags}}<th>Flags</th>{{?}}
+		{{? !master.no_uptime}}<th>Uptime, Age</th>{{?}}
+		{{? !master.no_ping}}<th>Ping</th>{{?}}
+	</tr>
+	{{~it.list :server:index}}
+	{{ if (master.limit && index + 1 > master.limit) break;}}
+	<tr>
+		{{? !master.no_address}}
+		<td class ="address">
+			{{=addressString(server)}}
+		</td>{{?}}
+		{{? !master.no_clients}}
+		<td class="clients{{? server.clients_list && server.clients_list.length > 0}} hover_list_text{{?}}">
+			{{=server.clients}}/{{=server.clients_max}} {{=server.clients_top}}
+			{{=hoverList("Clients", server.clients_list)}}
+		</td>{{?}}
+		{{? !master.no_version}}
+		<td class="version{{? server.mods && server.mods.length > 0}} hover_list_text{{?}}">
+			{{=escapeHTML(server.version)}}, {{=escapeHTML(server.gameid)}},&nbsp;
+			{{=escapeHTML(server.mapgen || '?')}}
+			{{=hoverList("Mods", server.mods)}}
+		</td>{{?}}
+		{{? !master.no_name}}
+		<td class="name">
+			{{? server.url}}
+				<a href="{{=escapeHTML(server.url)}}">{{=tooltipString(server.name, 25)}}</a>
+			{{??}}
+				{{=tooltipString(server.name, 25)}}
+			{{?}}
+		</td>{{?}}
+		{{? !master.no_description}}
+		<td class="description">
+			{{=tooltipString(server.description, 50)}}
+		</td>{{?}}
+		{{? !master.no_flags}}
+		<td class="flags">
+			{{=server.creative ? 'Cre ' : ''}}
+			{{=server.dedicated ? 'Ded ' : ''}}
+			{{=server.damage ? 'Dmg ' : ''}}
+			{{=server.liquid_finite ? 'Liq ' : ''}}
+			{{=server.pvp ? 'PvP ' : ''}}
+			{{=server.password ? 'Pwd ' : ''}}
+			{{=server.rollback ? 'Rol ' : ''}}
+		</td>{{?}}
+		{{? !master.no_uptime}}
+		<td class="uptime">
+			{{=humanTime(server.uptime)}}, {{=humanTime(server.game_time)}}
+		</td>{{?}}
+		{{? !master.no_ping}}
+		<td class="ping">
+			{{=Math.floor(server.ping * 1000)}}
+		</td>{{?}}
+	</tr>
+	{{~}}
+</table>

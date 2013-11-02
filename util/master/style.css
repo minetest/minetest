@@ -1,32 +1,31 @@
-table {
-  max-width: 100%;
-  background-color: transparent;
-  border-collapse: collapse;
-  border-spacing: 0;
+#server_list table {
+	max-width: 100%;
+	width: 100%;
+	background-color: transparent;
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-size: small;
 }
 
-td, th {
-  border: 1px solid gray;
+#server_list td, #server_list th {
+	border: 1px solid gray;
 }
 
-div#table table {
-  width: 100%;
+.hover_list{
+	visibility: hidden;
+	border: gray solid 1px;
+	position: absolute;
+	z-index: 100;
+	background-color: white;
+	padding: 0.5em;
 }
 
-.mts_mods, .mts_clients_list {
-  visibility: hidden; 
-  border:gray solid 1px; 
-  position:absolute; 
-  z-index:100; 
-  background-color:white; 
-  padding:.5em;
+td:hover .hover_list {
+	visibility: visible;
 }
 
-.mts_version:hover .mts_mods, .mts_clients:hover .mts_clients_list {
-  visibility: visible;
+.hover_list_text, .tooltip {
+	text-decoration: underline;
+	text-decoration-style: dashed;
 }
 
-.mts_version.mts_is_mods, .mts_clients.mts_is_clients  {
-  text-decoration:underline; 
-  text-decoration-style:dashed;
-}
