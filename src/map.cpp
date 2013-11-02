@@ -1911,7 +1911,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 				 level_max > 1			&&
 				 fast_flood			&&
 				 p0.Y < water_level		&&
-				 initial_size >= loop_max	&&
+				 initial_size >= 1000		&&
 				 ii != D_TOP			&&
 				 want_level >= level_max/4	&&
 				 can_liquid_same_level >= 5	&&
