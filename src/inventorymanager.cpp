@@ -724,13 +724,19 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 	}
 
 	ItemStack crafted;
+	ItemStack craftresultitem;
 	int count_remaining = count;
 	bool found = getCraftingResult(inv_craft, crafted, false, gamedef);
+	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
+	found = !crafted.empty();
 
 	while(found && list_craftresult->itemFits(0, crafted))
 	{
+		InventoryList saved_craft_list = *list_craft;
+		
 		// Decrement input and add crafting output
 		getCraftingResult(inv_craft, crafted, true, gamedef);
+		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
 		list_craftresult->addItem(0, crafted);
 		mgr->setInventoryModified(craft_inv);
 
@@ -747,6 +753,8 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 
 		// Get next crafting result
 		found = getCraftingResult(inv_craft, crafted, false, gamedef);
+		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
+		found = !crafted.empty();
 	}
 
 	infostream<<"ICraftAction::apply(): crafted "

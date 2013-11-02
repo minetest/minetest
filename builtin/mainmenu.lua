@@ -812,7 +812,7 @@ function tabbuilder.handle_tab_buttons(fields)
 	
 	--handle tab changes
 	if tabbuilder.current_tab ~= tabbuilder.old_tab then
-		if tabbuilder.current_tab ~= "singleplayer" then
+		if tabbuilder.current_tab ~= "singleplayer" and not tabbuilder.is_dialog then
 			menu.update_gametype(true)
 		end
 	end
@@ -1069,14 +1069,15 @@ function tabbuilder.tab_credits()
 			"proller <proler@gmail.com>,"..
 			"sfan5 <sfan5@live.de>,"..
 			"kahrl <kahrl@gmx.net>,"..
+			"sapier,"..
+			"ShadowNinja <shadowninja@minetest.net>,"..
+			"Nathanaël Courant (Nore/Novatux) <nore@mesecons.net>,"..
 			","..
 			"#FFFF00" .. fgettext("Active Contributors") .. "," ..
-			"sapier,"..
 			"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
 			"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
 			"Jeija <jeija@mesecons.net>,"..
 			"MirceaKitsune <mirceakitsune@gmail.com>,"..
-			"ShadowNinja,"..
 			"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
 			"0gb.us <0gb.us@0gb.us>,"..
 			"," ..
