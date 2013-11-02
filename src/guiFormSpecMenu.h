@@ -285,6 +285,14 @@ protected:
 	bool m_allowclose;
 	bool m_lock;
 	v2u32 m_lockscreensize;
+
+	bool m_bgfullscreen;
+	bool m_slotborder;
+	bool m_clipbackground;
+	video::SColor m_bgcolor;
+	video::SColor m_slotbg_n;
+	video::SColor m_slotbg_h;
+	video::SColor m_slotbordercolor;
 private:
 	typedef struct {
 		v2s32 size;
@@ -334,8 +342,10 @@ private:
 	void parseItemImageButton(parserData* data,std::string element);
 	void parseTabHeader(parserData* data,std::string element);
 	void parseBox(parserData* data,std::string element);
+	void parseBackgroundColor(parserData* data,std::string element);
+	void parseListColors(parserData* data,std::string element);
 
-	bool parseColor(std::string color, irr::video::SColor& outcolor); 
+	bool parseColor(std::string &value, video::SColor &color, bool quiet);
 };
 
 class FormspecFormSource: public IFormSource
