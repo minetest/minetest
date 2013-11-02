@@ -106,3 +106,14 @@ function minetest.setting_get_pos(name)
 	return minetest.string_to_pos(value)
 end
 
+-- To be overriden by protection mods
+function minetest.is_protected(pos, name)
+	return false
+end
+
+function minetest.record_protection_violation(pos, name)
+	for _, func in pairs(minetest.registered_on_protection_violation) do
+		func(pos, name)
+	end
+end
+

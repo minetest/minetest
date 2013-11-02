@@ -43,7 +43,7 @@ typedef u16 content_t;
 	there is enough room for dummy node IDs, which are created when
 	a MapBlock containing unknown node names is loaded from disk.
 */
-#define MAX_REGISTERED_CONTENT 0xfffU
+#define MAX_REGISTERED_CONTENT 0x7fffU
 
 /*
 	A solid walkable node with the texture unknown_node.png.
