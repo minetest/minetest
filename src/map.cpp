@@ -2177,7 +2177,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		content_t new_node_content;
 		s8 new_node_level = -1;
 		s8 max_node_level = -1;
-		u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, LIQUID_LEVEL_MAX+1);
 		if ((num_sources >= 2 && nodemgr->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
@@ -2230,18 +2229,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 					must_reflow.push_back(p0);
 			} else
 				new_node_level = max_node_level;
-
-/*
-			u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, level_max+1);
-			if (new_node_level >= (level_max+1-range))
-*/
-/*
-			if (max_node_level >= (LIQUID_LEVEL_MAX+1-range))
-				new_node_content = liquid_kind;
-			else
-				new_node_content = CONTENT_AIR;
-				//new_node_content = liquid_kind;
-*/
 		}
 		new_node_content = liquid_kind;
 
