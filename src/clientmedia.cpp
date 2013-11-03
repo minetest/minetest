@@ -144,7 +144,7 @@ void ClientMediaDownloader::step(Client *client)
 			m_httpfetch_active--;
 			fetched_something = true;
 
-			// Is this is a hashset (index.mth) or a media file?
+			// Is this a hashset (index.mth) or a media file?
 			if (fetchresult.request_id < m_remotes.size())
 				remoteHashSetReceived(fetchresult);
 			else
@@ -228,7 +228,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 		// don't slow down fetches too much. (We still want some limit
 		// so that when the first remote server returns its hash set,
 		// not all files are requested from that server immediately.)
-		// One such ineffciency is that ClientMediaDownloader::step()
+		// One such inefficiency is that ClientMediaDownloader::step()
 		// is only called a couple times per second, while httpfetch
 		// might return responses much faster than that.
 		// Note that httpfetch strictly enforces curl_parallel_limit
@@ -337,8 +337,10 @@ void ClientMediaDownloader::remoteMediaReceived(
 		const HTTPFetchResult &fetchresult,
 		Client *client)
 {
-	// Get file and remote server pertaining to this fetch result;
-	// check assertions; decrement counters and remove state for the fetch
+	// Some remote server sent us a file.
+	// -> decrement number of active fetches
+	// -> mark file as received if fetch succeeded
+	// -> try to load media
 
 	std::string name;
 	{
@@ -481,13 +483,12 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 	if (m_uncached_received_count == m_uncached_count) {
 		// In this case all media was found in the cache or
 		// has been downloaded from some remote server;
-		// report this to the server then return true
-		// so that the client deletes the ClientMediaDownloader
+		// report this fact to the server
 		client->received_media();
 	}
 	else {
 		// Some media files have not been received yet, use the
-		// conventional method (minetest protocol) to get them
+		// conventional slow method (minetest protocol) to get them
 		std::list<std::string> file_requests;
 		for (std::map<std::string, FileStatus*>::iterator
 				it = m_files.begin();
