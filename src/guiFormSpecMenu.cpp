@@ -1629,7 +1629,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 
 	std::vector<std::string> elements = split(m_formspec_string,']');
-
 	for (unsigned int i=0;i< elements.size();i++) {
 		parseElement(&mydata,elements[i]);
 	}
@@ -1648,7 +1647,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		recalculateAbsolutePosition(false);
 		mydata.basepos = getBasePos();
 
-		changeCtype("");
 		{
 			v2s32 pos = mydata.basepos;
 			pos.Y = ((m_fields.size()+2)*60);
@@ -1659,7 +1657,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			Environment->addButton(mydata.rect, this, 257, text);
 			delete[] text;
 		}
-		changeCtype("C");
+
 	}
 
 	//set initial focus if parser didn't set it

@@ -205,6 +205,10 @@ inline core::array<u8> getUnicodeBOM(EUTF_ENCODE mode)
 		case EUTFE_UTF32_LE:
 			COPY_ARRAY(BOM_ENCODE_UTF32_LE, BOM_ENCODE_UTF32_LEN);
 			break;
+		case EUTFE_NONE:
+			// TODO sapier: fixed warning only,
+			// don't know if something needs to be done here
+			break;
 	}
 	return ret;
 
@@ -257,7 +261,7 @@ public:
 				_set(c);
 				return *this;
 			}
-			
+
 			//! Increments the value by 1.
 			//! \return Myself.
 			_ustring16_iterator_access& operator++()
@@ -392,7 +396,7 @@ public:
 					return unicode::toUTF32(a[pos], a[pos + 1]);
 				}
 			}
-			
+
 			//! Sets a uchar32_t at our current position.
 			void _set(uchar32_t c)
 			{
@@ -707,7 +711,6 @@ public:
 			//! Moves the iterator to the end of the string.
 			void toEnd()
 			{
-				const uchar16_t* a = ref->c_str();
 				pos = ref->size_raw();
 			}
 
@@ -732,12 +735,13 @@ public:
 			typedef typename _Base::const_pointer const_pointer;
 			typedef typename _Base::const_reference const_reference;
 
+
 			typedef typename _Base::value_type value_type;
 			typedef typename _Base::difference_type difference_type;
 			typedef typename _Base::distance_type distance_type;
 			typedef access pointer;
 			typedef access reference;
-			
+
 			using _Base::pos;
 			using _Base::ref;
 
@@ -2096,7 +2100,7 @@ public:
 	}
 #endif
 
-	
+
 	//! Appends a number to this ustring16.
 	//! \param c Number to append.
 	//! \return A reference to our current string.
@@ -2958,7 +2962,7 @@ public:
 		if (endian != unicode::EUTFEE_NATIVE && getEndianness() != endian)
 		{
 			for (u32 i = 0; i <= used; ++i)
-				*ptr++ = unicode::swapEndian16(*ptr);
+				ptr[i] = unicode::swapEndian16(ptr[i]);
 		}
 		ret.set_used(used + (addBOM ? unicode::BOM_UTF16_LEN : 0));
 		ret.push_back(0);

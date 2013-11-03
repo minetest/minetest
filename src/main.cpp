@@ -750,20 +750,6 @@ int main(int argc, char *argv[])
 	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
 
 	log_register_thread("main");
-
-	// This enables internatonal characters input
-	if( setlocale(LC_ALL, "") == NULL )
-	{
-		fprintf( stderr, "%s: warning: could not set default locale\n", argv[0] );
-	}
-
-	// Set locale. This is for forcing '.' as the decimal point.
-	try {
-		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
-		setlocale(LC_NUMERIC, "C");
-	} catch (const std::exception& ex) {
-		errorstream<<"Could not set numeric locale to C"<<std::endl;
-	}
 	/*
 		Parse command line
 	*/
@@ -884,8 +870,6 @@ int main(int argc, char *argv[])
 
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
-
-	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
 
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
@@ -1018,18 +1002,11 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-
-	std::string language = g_settings->get("language");
-	if (language.length()) {
-#ifndef _WIN32
-		setenv("LANGUAGE", language.c_str(), 1);
+#ifdef _MSC_VER
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),g_settings->get("language"),argc,argv);
 #else
-		char *lang_str = (char*)calloc(10 + language.length(), sizeof(char));
-		strcat(lang_str, "LANGUAGE=");
-		strcat(lang_str, language.c_str());
-		putenv(lang_str);
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),g_settings->get("language"));
 #endif
-	}
 
 	/*
 		Game parameters

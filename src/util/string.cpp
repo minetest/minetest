@@ -41,8 +41,9 @@ std::string wide_to_narrow(const std::wstring& wcs)
 	size_t mbl = wcs.size()*4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
-	if(l == (size_t)(-1))
-		mbs[0] = 0;
+	if(l == (size_t)(-1)) {
+		return "Character conversion failed!";
+	}
 	else
 		mbs[l] = 0;
 	return *mbs;
