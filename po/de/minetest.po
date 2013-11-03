@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-09-06 21:24+0200\n"
-"Last-Translator: Block Men <nmuelll@web.de>\n"
+"PO-Revision-Date: 2013-09-09 18:31+0200\n"
+"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -933,7 +933,7 @@ msgstr "Zoom"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/main.cpp:1486
 msgid "Main Menu"

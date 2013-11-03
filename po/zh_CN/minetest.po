@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-09-07 16:20+0200\n"
+"PO-Revision-Date: 2013-09-14 12:52+0200\n"
 "Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -77,7 +77,7 @@ msgstr "世界名称"
 
 #: builtin/mainmenu.lua:298
 msgid "Mapgen"
-msgstr ""
+msgstr "地图生成器"
 
 #: builtin/mainmenu.lua:300
 msgid "Game"
@@ -169,7 +169,6 @@ msgid "Configure"
 msgstr "配置"
 
 #: builtin/mainmenu.lua:944
-#, fuzzy
 msgid "Start Game"
 msgstr "启动游戏"
 
@@ -334,9 +333,8 @@ msgid "Hide Game"
 msgstr "隐藏游戏"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
-#, fuzzy
 msgid "Hide mp content"
-msgstr "隐藏mp内容"
+msgstr "隐藏MOD包内容"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
@@ -347,79 +345,76 @@ msgid "Save"
 msgstr "保存"
 
 #: builtin/modmgr.lua:422
-#, fuzzy
 msgid "Enable MP"
-msgstr "启用MP"
+msgstr "启用MOD包"
 
 #: builtin/modmgr.lua:424
-#, fuzzy
 msgid "Disable MP"
-msgstr "全部禁用"
+msgstr "禁用MOD包"
 
 #: builtin/modmgr.lua:428 builtin/modmgr.lua:430
 msgid "enabled"
 msgstr "启用"
 
 #: builtin/modmgr.lua:436
-#, fuzzy
 msgid "Enable all"
 msgstr "全部启用"
 
 #: builtin/modmgr.lua:551
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "选择世界："
+msgstr "选择MOD文件："
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "安装MOD：文件：”$1“"
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"安装MOD：不支持的文件类型“$1“"
 
 #: builtin/modmgr.lua:612
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "无法初始化世界"
+msgstr "无法安装$1到$2"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
+msgstr "安装MOD：找不到MOD包$1的合适文件夹名"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "安装MOD：找不到$1的真正MOD名"
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "MOD管理器：无法删除“$1“"
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "MOD管理器：MOD“$1“路径非法"
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "你确认要删除\"$1\"?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "当然不！"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "第$1页,共$2页"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "评级"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "重新安装"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
@@ -446,17 +441,16 @@ msgid "Connecting to server..."
 msgstr "正在连接服务器..."
 
 #: src/game.cpp:1218
-#, fuzzy
 msgid "Item definitions..."
-msgstr "物品材质..."
+msgstr "物品定义..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr ""
+msgstr "方块定义..."
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "媒体..."
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."

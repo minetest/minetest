@@ -98,7 +98,7 @@ function minetest.facedir_to_dir(facedir)
 
 					--indexed into by a table of correlating facedirs
 					[({[0]=1, 2, 3, 4, 
-						5, 2, 6, 4,
+						5, 4, 6, 2,
 						6, 2, 5, 4,
 						1, 5, 3, 6,
 						1, 6, 3, 5,
@@ -216,6 +216,15 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	if olddef_under.buildable_to then
 		minetest.log("info", "node under is buildable to")
 		place_to = {x = under.x, y = under.y, z = under.z}
+	end
+
+	if minetest.is_protected(place_to, placer:get_player_name()) then
+		minetest.log("action", placer:get_player_name()
+				.. " tried to place " .. def.name
+				.. " at protected position "
+				.. minetest.pos_to_string(place_to))
+		minetest.record_protection_violation(place_to, placer:get_player_name())
+		return itemstack
 	end
 
 	minetest.log("action", placer:get_player_name() .. " places node "
@@ -370,11 +379,19 @@ end
 
 function minetest.node_dig(pos, node, digger)
 	local def = ItemStack({name=node.name}):get_definition()
-	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
-	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
+	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
+		return
+	end
+
+	if minetest.is_protected(pos, digger:get_player_name()) then
+		minetest.log("action", digger:get_player_name()
+				.. " tried to dig " .. node.name
+				.. " at protected position "
+				.. minetest.pos_to_string(pos))
+		minetest.record_protection_violation(pos, digger:get_player_name())
 		return
 	end
 
@@ -383,14 +400,19 @@ function minetest.node_dig(pos, node, digger)
 
 	local wielded = digger:get_wielded_item()
 	local drops = minetest.get_node_drops(node.name, wielded:get_name())
-
-	-- Wear out tool
-	if not minetest.setting_getbool("creative_mode") then
-		local tp = wielded:get_tool_capabilities()
-		local dp = minetest.get_dig_params(def.groups, tp)
-		wielded:add_wear(dp.wear)
-		digger:set_wielded_item(wielded)
+	
+	local wdef = wielded:get_definition()
+	local tp = wielded:get_tool_capabilities()
+	local dp = minetest.get_dig_params(def.groups, tp)
+	if wdef and wdef.after_use then
+		wielded = wdef.after_use(wielded, digger, node, dp) or wielded
+	else
+		-- Wear out tool
+		if not minetest.setting_getbool("creative_mode") then
+			wielded:add_wear(dp.wear)
+		end
 	end
+	digger:set_wielded_item(wielded)
 	
 	-- Handle drops
 	minetest.handle_node_drops(pos, drops, digger)

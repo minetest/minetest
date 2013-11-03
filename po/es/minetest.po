@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: 2013-08-26 01:55+0200\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2013-09-14 04:33+0200\n"
+"Last-Translator: William Strealy <wilstrealy@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -37,7 +37,7 @@ msgstr ""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "JUEGOS"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
 msgid "Games"
@@ -45,7 +45,7 @@ msgstr "Juegos"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Modificaciónes:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
@@ -53,7 +53,7 @@ msgstr "editar juego"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr "Juego Nuevo"
+msgstr "juego nuevo"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"

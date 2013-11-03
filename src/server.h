@@ -685,7 +685,7 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	std::map<u16, RemoteClient*> m_clients;
-	u16 m_clients_number; //for announcing masterserver
+	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Ban checking
 	BanManager *m_banmanager;
