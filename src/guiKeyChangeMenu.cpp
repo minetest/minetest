@@ -113,7 +113,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 topleft(0, 0);
-	changeCtype("");
+	
 	{
 		core::rect < s32 > rect(0, 0, 600, 40);
 		rect += topleft + v2s32(25, 3);
@@ -196,9 +196,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
 							 text );
 		delete[] text;
-	}
-	changeCtype("C");
-	
+	}	
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -265,7 +263,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	if (event.EventType == EET_KEY_INPUT_EVENT && activeKey >= 0
 		&& event.KeyInput.PressedDown)
 	{
-		changeCtype("");
+		
 		bool prefer_character = shift_down;
 		KeyPress kp(event.KeyInput, prefer_character);
 		
@@ -313,7 +311,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 
 			this->key_used.push_back(kp);
 
-			changeCtype("C");
 			// Allow characters made with shift
 			if(shift_went_down){
 				shift_down = true;
@@ -339,12 +336,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		}
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)
 		{
-			if(event.GUIEvent.Caller->getID() != GUI_ID_BACK_BUTTON &&
-			   event.GUIEvent.Caller->getID() != GUI_ID_ABORT_BUTTON)
-			{
-				changeCtype("");
-			}
-
 			switch (event.GUIEvent.Caller->getID())
 			{
 				case GUI_ID_BACK_BUTTON: //back
@@ -377,8 +368,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					break;
 			}
 			Environment->setFocus(this);
-			//Buttons
-			changeCtype("C");
 		}
 	}
 	return Parent ? Parent->OnEvent(event) : false;
