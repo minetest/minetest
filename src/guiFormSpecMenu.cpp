@@ -1382,7 +1382,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element)
 void GUIFormSpecMenu::parseListColors(parserData* data,std::string element) {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
+	if ((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
 		parseColor(parts[0], m_slotbg_n, false);
 		parseColor(parts[1], m_slotbg_h, false);
 		
