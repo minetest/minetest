@@ -2229,14 +2229,18 @@ void the_game(
 					camera_point_target.X = event.deathscreen.camera_point_target_x;
 					camera_point_target.Y = event.deathscreen.camera_point_target_y;
 					camera_point_target.Z = event.deathscreen.camera_point_target_z;*/
-					MainRespawnInitiator *respawner =
+
+					if (g_settings->getBool("respawn_auto")) { 
+						client.sendRespawn(); 
+					} else {
+						MainRespawnInitiator *respawner =
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
-					GUIDeathScreen *menu =
+						GUIDeathScreen *menu =
 							new GUIDeathScreen(guienv, guiroot, -1, 
 								&g_menumgr, respawner);
-					menu->drop();
-					
+						menu->drop();
+					}
 					chat_backend.addMessage(L"", L"You died.");
 
 					/* Handle visualization */
