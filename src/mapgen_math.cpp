@@ -332,12 +332,14 @@ int MapgenMath::generateTerrain() {
 #ifdef FRACTAL_H_
 	v3f vec0(node_min.X, node_min.Y, node_min.Z);
 	vec0 = (vec0 - center) * scale ;
+/*
 	errorstream << " X=" << node_min.X << " Y=" << node_min.Y << " Z=" << node_min.Z
 	            << " N=" << Compute<normal>(CVector3(vec0.X, vec0.Y, vec0.Z), mg_params->par)
 	            //<<" F="<< Compute<fake_AO>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
 	            //<<" L="<<node_min.getLength()<< " -="<<node_min.getLength() - Compute<normal>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
 	            << " Sc=" << scale << " internal=" << internal
 	            << std::endl;
+*/
 #endif
 
 	double d = 0;
