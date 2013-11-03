@@ -17,6 +17,7 @@
 	</tr>
 	{{~it.list :server:index}}
 	{{ if (master.limit && index + 1 > master.limit) break;}}
+	{{ if (master.min_clients && server.clients < master.min_clients) continue;}}
 	<tr>
 		{{? !master.no_address}}
 		<td class ="address">
