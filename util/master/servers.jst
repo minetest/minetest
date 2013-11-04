@@ -47,7 +47,8 @@
 			{{=tooltipString(server.description, 50)}}
 		</td>{{?}}
 		{{? !master.no_flags}}
-		<td class="flags" {{? server.privs}}title="{{=escapeHTML(server.privs)}}"{{?}}>
+		<td class="flags {{? server.privs}} mts_hover_list_text{{?}}">
+			{{=hoverString("Privs", server.privs)}}
 			{{=server.creative ? 'Cre ' : ''}}
 			{{=server.dedicated ? 'Ded ' : ''}}
 			{{=server.damage ? 'Dmg ' : ''}}
