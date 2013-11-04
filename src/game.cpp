@@ -1459,6 +1459,7 @@ void the_game(
 			gamedef, player, &local_inventory);
 
 	bool use_weather = g_settings->getBool("weather");
+	bool no_output = device->getVideoDriver()->getDriverType() == video::EDT_NULL;
 
 	for(;;)
 	{
@@ -1614,7 +1615,8 @@ void the_game(
 		}
 
 		/* Process TextureSource's queue */
-		tsrc->processQueue();
+		if (!no_output)
+			tsrc->processQueue();
 
 		/* Process ItemDefManager's queue */
 		itemdef->processQueue(gamedef);
@@ -1622,7 +1624,8 @@ void the_game(
 		/*
 			Process ShaderSource's queue
 		*/
-		shsrc->processQueue();
+		if (!no_output)
+			shsrc->processQueue();
 
 		/*
 			Random calculations
@@ -2931,8 +2934,10 @@ void the_game(
 			Update particles
 		*/
 
-		allparticles_step(dtime, client.getEnv());
-		allparticlespawners_step(dtime, client.getEnv());
+		if (!no_output) {
+			allparticles_step(dtime, client.getEnv());
+			allparticlespawners_step(dtime, client.getEnv());
+		}
 		
 		/*
 			Fog
@@ -3159,7 +3164,7 @@ void the_game(
 
 		TimeTaker tt_draw("mainloop: draw");
 		
-		{
+		if (!no_output) {
 			TimeTaker timer("beginScene");
 			//driver->beginScene(false, true, bgcolor);
 			//driver->beginScene(true, true, bgcolor);
@@ -3170,7 +3175,7 @@ void the_game(
 		//timer3.stop();
 	
 		//infostream<<"smgr->drawAll()"<<std::endl;
-		{
+		if (!no_output) {
 			TimeTaker timer("smgr");
 			smgr->drawAll();
 			
@@ -3287,7 +3292,7 @@ void the_game(
 		/*
 			Post effects
 		*/
-		{
+		if (!no_output) {
 			client.getEnv().getClientMap().renderPostFx();
 		}
 
@@ -3353,12 +3358,13 @@ void the_game(
 			Draw gui
 		*/
 		// 0-1ms
-		guienv->drawAll();
+		if (!no_output)
+			guienv->drawAll();
 
 		/*
 			End scene
 		*/
-		{
+		if (!no_output) {
 			TimeTaker timer("endScene");
 			driver->endScene();
 			endscenetime = timer.stop(true);
