@@ -17,8 +17,18 @@ Then install doT.js and it's dependencies:
     $ cd doT
     $ npm install
 
+Or by npm:
+    $ npm install dot commander mkdirp
+
 And finally compile the template:
     $ cd ~/minetest/util/master
     $ ~/code/doT/bin/dot-packer -s . -d .
+or
+    $ ./node_modules/dot/bin/dot-packer -s . -d .
 
 
+Embending to any page
+----------------------
+
+<script>var master = {root: 'http://servers.minetest.net/', limit:10, clients_min:1, no_flags:1, no_ping:1, no_uptime:1};</script>
+<script src="http://servers.minetest.net/list.js"></script>
