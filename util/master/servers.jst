@@ -24,12 +24,12 @@
 			{{=addressString(server)}}
 		</td>{{?}}
 		{{? !master.no_clients}}
-		<td class="clients{{? server.clients_list && server.clients_list.length > 0}} hover_list_text{{?}}">
+		<td class="clients{{? server.clients_list && server.clients_list.length > 0}} mts_hover_list_text{{?}}">
 			{{=server.clients}}/{{=server.clients_max}} {{=server.clients_top}}
 			{{=hoverList("Clients", server.clients_list)}}
 		</td>{{?}}
 		{{? !master.no_version}}
-		<td class="version{{? server.mods && server.mods.length > 0}} hover_list_text{{?}}">
+		<td class="version{{? server.mods && server.mods.length > 0}} mts_hover_list_text{{?}}">
 			{{=escapeHTML(server.version)}}, {{=escapeHTML(server.gameid)}},&nbsp;
 			{{=escapeHTML(server.mapgen || '?')}}
 			{{=hoverList("Mods", server.mods)}}
@@ -47,7 +47,7 @@
 			{{=tooltipString(server.description, 50)}}
 		</td>{{?}}
 		{{? !master.no_flags}}
-		<td class="flags">
+		<td class="flags" {{? server.privs}}title="{{=escapeHTML(server.privs)}}"{{?}}>
 			{{=server.creative ? 'Cre ' : ''}}
 			{{=server.dedicated ? 'Ded ' : ''}}
 			{{=server.damage ? 'Dmg ' : ''}}

@@ -241,7 +241,7 @@ sub request (;$) {
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
             # params reported once on start, must be same as src/serverlist.cpp:~221 if(server["action"] == "start") { ...
-            for (qw(dedicated rollback liquid_finite mapgen mods)) {
+            for (qw(dedicated rollback liquid_finite mapgen mods privs)) {
                 $param->{$_} ||= $old->{$_} if $old->{$_} and !($param->{action} ~~ 'start');
             }
             $param->{pop_n} = $old->{pop_n} + 1;

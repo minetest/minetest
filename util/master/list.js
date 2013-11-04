@@ -35,7 +35,7 @@ function addressString(server) {
 	var str = '<span'
 	if (shortStr.length > 25) {
 		shortStr = shortStr.substr(0, 23) + "&hellip;";
-		str += ' class="tooltip" title="' + addrStr + '"'
+		str += ' class="mts_tooltip" title="' + addrStr + '"'
 	}
 	if (server.port != 30000)
 		shortStr += ':' + server.port;
@@ -48,14 +48,14 @@ function tooltipString(str, maxLen) {
 	var ret = '<span';
 	if (shortStr.length > maxLen) {
 		shortStr = shortStr.substr(0, maxLen - 2) + "&hellip;";
-		ret += ' class="tooltip" title="' + str + '"';
+		ret += ' class="mts_tooltip" title="' + str + '"';
 	}
 	return ret + '>' + shortStr + '</span>';
 }
 
 function hoverList(name, list) {
 	if (!list || list.length == 0) return '';
-	var str = '<div class="hover_list">'
+	var str = '<div class="mts_hover_list">'
 	str += name + '(' + list.length + ')<br />';
 	for (var i in list) {
 		str += escapeHTML(list[i]) + '<br />';
@@ -72,9 +72,19 @@ function get() {
 	jQuery.getJSON(master.url, draw);
 }
 
-if (!master.no_refresh) {
-	setInterval(get, 60 * 1000);
+function loaded(){
+	if (!master.no_refresh) {
+		setInterval(get, 60 * 1000);
+	}
+	get();
 }
 
-get();
+// https://github.com/pyrsmk/toast
+this.toast=function(){var e=document,t=e.getElementsByTagName("head")[0],n=this.setTimeout,r="createElement",i="appendChild",s="addEventListener",o="onreadystatechange",u="styleSheet",a=10,f=0,l=function(){--f},c,h=function(e,r,i,s){if(!t)n(function(){h(e)},a);else if(e.length){c=-1;while(i=e[++c]){if((s=typeof i)=="function"){r=function(){return i(),!0};break}if(s=="string")p(i);else if(i.pop){p(i[0]),r=i[1];break}}d(r,Array.prototype.slice.call(e,c+1))}},p=function(n,s){++f,/\.css$/.test(n)?(s=e[r]("link"),s.rel=u,s.href=n,t[i](s),v(s)):(s=e[r]("script"),s.src=n,t[i](s),s[o]===null?s[o]=m:s.onload=l)},d=function(e,t){if(!f)if(!e||e()){h(t);return}n(function(){d(e,t)},a)},v=function(e){if(e.sheet||e[u]){l();return}n(function(){v(e)},a)},m=function(){/ded|co/.test(this.readyState)&&l()};h(arguments)};
 
+toast('style.css', 'servers.js', function() {
+	if (typeof(jQuery)!='undefined')
+		loaded();
+	else
+		toast('//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', loaded);
+});

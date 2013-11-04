@@ -11,7 +11,7 @@
 	border: 1px solid gray;
 }
 
-.hover_list{
+.mts_hover_list{
 	visibility: hidden;
 	border: gray solid 1px;
 	position: absolute;
@@ -20,12 +20,11 @@
 	padding: 0.5em;
 }
 
-td:hover .hover_list {
+td:hover .mts_hover_list {
 	visibility: visible;
 }
 
-.hover_list_text, .tooltip {
+.mts_hover_list_text, .mts_tooltip {
 	text-decoration: underline;
 	text-decoration-style: dashed;
 }
-
