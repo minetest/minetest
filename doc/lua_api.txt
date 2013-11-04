@@ -873,6 +873,22 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
+listcolors[<slot_bg_normal>;<slot_bg_hover>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+
+listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+^ Sets color of slots border
+
+listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+^ Sets color of slots border
+^ Sets background color of tooltips
+^ Sets font color of tooltips
+
 image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
@@ -881,10 +897,20 @@ item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Show an inventory image of registered item/node
 ^ Position and size units are inventory slots
 
+bgcolor[<color>;<fullscreen>]
+^ Sets background color of formspec in HEX-Color format
+^ If true the background color is drawn fullscreen (does not effect the size of the formspec)
+
 background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Use a background. Inventory rectangles are not drawn then.
 ^ Position and size units are inventory slots
 ^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
+
+background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]
+^ Use a background. Inventory rectangles are not drawn then.
+^ Position and size units are inventory slots
+^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
+^ If true the background is clipped to formspec size (x and y are used as offset values, w and h are ignored)
 
 pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Textual password style field; will be sent to server when a button is clicked
@@ -972,7 +998,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
-^ listelements can be prepended by #color in hexadecimal format RRGGBB,
+^ listelements can be prepended by #color in hexadecimal format RRGGBB (only),
 ^    if you want a listelement to start with # write ##
 
 textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
@@ -980,7 +1006,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
-^ listelements can be prepended by #RRGGBB in hexadecimal format
+^ listelements can be prepended by #RRGGBB (only) in hexadecimal format
 ^    if you want a listelement to start with # write ##
 ^ index to be selected within textlist
 ^ true/false draw transparent background
@@ -998,7 +1024,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ color in hexadecimal format RRGGBB
+^ color in HEX-Color format
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1007,7 +1033,7 @@ dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ fieldname data is transfered to lua
 ^ items to be shown in dropdown
 ^ index of currently selected dropdown item
-^ color in hexadecimal format RRGGBB
+^ color in hexadecimal format RRGGBB (only)
 
 checkbox[<X>,<Y>;<name>;<label>;<selected>]
 ^ show a checkbox
@@ -1026,6 +1052,17 @@ Inventory location:
 - "player:<name>": Any player
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
+
+HEX-Color
+---------
+#RGB
+^ defines a color in hexadecimal format
+#RGBA
+^ defines a color in hexadecimal format and alpha channel
+#RRGGBB
+^ defines a color in hexadecimal format
+#RRGGBBAA
+^ defines a color in hexadecimal format and alpha channel
 
 Vector helpers
 ---------------
