@@ -105,12 +105,16 @@ std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist) {
 
 			//id
 			if (modlist[i]["id"].asString().size()) {
-				const char* id_raw = modlist[i]["id"].asString().c_str();
+				std::string id_raw = modlist[i]["id"].asString();
 				char* endptr = 0;
-				int numbervalue = strtol(id_raw,&endptr,10);
+				int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-				if ((*id_raw != 0) && (*endptr == 0)) {
+				if ((id_raw != "") && (*endptr == 0)) {
 					toadd.id = numbervalue;
+				}
+				else {
+					errorstream << "readModStoreList: missing id" << std::endl;
+					toadd.valid = false;
 				}
 			}
 			else {
@@ -163,11 +167,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 			ModStoreVersionEntry toadd;
 
 			if (details["version_set"][i]["id"].asString().size()) {
-				const char* id_raw = details["version_set"][i]["id"].asString().c_str();
+				std::string id_raw = details["version_set"][i]["id"].asString();
 				char* endptr = 0;
-				int numbervalue = strtol(id_raw,&endptr,10);
+				int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-				if ((*id_raw != 0) && (*endptr == 0)) {
+				if ((id_raw != "") && (*endptr == 0)) {
 					toadd.id = numbervalue;
 				}
 			}
@@ -215,11 +219,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 
 			if (details["categories"][i]["id"].asString().size()) {
 
-				const char* id_raw = details["categories"][i]["id"].asString().c_str();
+				std::string id_raw = details["categories"][i]["id"].asString();
 				char* endptr = 0;
-				int numbervalue = strtol(id_raw,&endptr,10);
+				int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-				if ((*id_raw != 0) && (*endptr == 0)) {
+				if ((id_raw != "") && (*endptr == 0)) {
 					toadd.id = numbervalue;
 				}
 			}
@@ -248,11 +252,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	if (details["author"].isObject()) {
 		if (details["author"]["id"].asString().size()) {
 
-			const char* id_raw = details["author"]["id"].asString().c_str();
+			std::string id_raw = details["author"]["id"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(id_raw,&endptr,10);
+			int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-			if ((*id_raw != 0) && (*endptr == 0)) {
+			if ((id_raw != "") && (*endptr == 0)) {
 				retval.author.id = numbervalue;
 			}
 			else {
@@ -282,11 +286,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	if (details["license"].isObject()) {
 		if (details["license"]["id"].asString().size()) {
 
-			const char* id_raw = details["license"]["id"].asString().c_str();
+			std::string id_raw = details["license"]["id"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(id_raw,&endptr,10);
+			int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-			if ((*id_raw != 0) && (*endptr == 0)) {
+			if ((id_raw != "") && (*endptr == 0)) {
 				retval.license.id = numbervalue;
 			}
 		}
@@ -313,11 +317,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	if (details["titlepic"].isObject()) {
 		if (details["titlepic"]["id"].asString().size()) {
 
-			const char* id_raw = details["titlepic"]["id"].asString().c_str();
+			std::string id_raw = details["titlepic"]["id"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(id_raw,&endptr,10);
+			int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-			if ((*id_raw != 0) && (*endptr == 0)) {
+			if ((id_raw != "") && (*endptr == 0)) {
 				retval.titlepic.id = numbervalue;
 			}
 		}
@@ -332,11 +336,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 
 		if (details["titlepic"]["mod"].asString().size()) {
 
-			const char* mod_raw = details["titlepic"]["mod"].asString().c_str();
+			std::string mod_raw = details["titlepic"]["mod"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(mod_raw,&endptr,10);
+			int numbervalue = strtol(mod_raw.c_str(),&endptr,10);
 
-			if ((*mod_raw != 0) && (*endptr == 0)) {
+			if ((mod_raw != "") && (*endptr == 0)) {
 				retval.titlepic.mod = numbervalue;
 			}
 		}
@@ -345,11 +349,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	//id
 	if (details["id"].asString().size()) {
 
-		const char* id_raw = details["id"].asString().c_str();
+		std::string id_raw = details["id"].asString();
 		char* endptr = 0;
-		int numbervalue = strtol(id_raw,&endptr,10);
+		int numbervalue = strtol(id_raw.c_str(),&endptr,10);
 
-		if ((*id_raw != 0) && (*endptr == 0)) {
+		if ((id_raw != "") && (*endptr == 0)) {
 			retval.id = numbervalue;
 		}
 	}
@@ -389,11 +393,11 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	//value
 	if (details["rating"].asString().size()) {
 
-		const char* id_raw = details["rating"].asString().c_str();
+		std::string id_raw = details["rating"].asString();
 		char* endptr = 0;
-		float numbervalue = strtof(id_raw,&endptr);
+		float numbervalue = strtof(id_raw.c_str(),&endptr);
 
-		if ((*id_raw != 0) && (*endptr == 0)) {
+		if ((id_raw != "") && (*endptr == 0)) {
 			retval.rating = numbervalue;
 		}
 	}
