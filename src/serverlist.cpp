@@ -222,6 +222,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 
 	if(server["action"] == "start") {
 		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["privs"]		= g_settings->get("default_privs");
 		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
 		server["liquid_finite"]	= g_settings->getBool("liquid_finite");
 		server["mapgen"]	= g_settings->get("mg_name");
