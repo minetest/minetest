@@ -19,6 +19,7 @@ function humanTime(seconds) {
 			return (seconds / conv[i]).toFixed(1) + i;
 		}
 	}
+	return seconds + 's';
 }
 
 function escapeHTML(str) {
