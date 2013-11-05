@@ -7,7 +7,7 @@
 <table>
 	<tr>
 		{{? !master.no_address}}<th>IP[:Port]</th>{{?}}
-		{{? !master.no_clients}}<th>Players/Max</th>{{?}}
+		{{? !master.no_clients}}<th>Players/Max{{? !master.no_avgtop}}<br/>Avg/Top{{?}}</th>{{?}}
 		{{? !master.no_version}}<th>Version, Gameid, MapGen</th>{{?}}
 		{{? !master.no_name}}<th>Name</th>{{?}}
 		{{? !master.no_description}}<th>Description</th>{{?}}
@@ -25,7 +25,7 @@
 		</td>{{?}}
 		{{? !master.no_clients}}
 		<td class="clients{{? server.clients_list && server.clients_list.length > 0}} mts_hover_list_text{{?}}">
-			{{=server.clients}}/{{=server.clients_max}} {{=server.clients_top}}
+			{{=server.clients}}/{{=server.clients_max}}{{? !master.no_avgtop}} &nbsp;&nbsp;{{=Math.floor(server.pop_v)}}/{{=server.clients_top}}{{?}}
 			{{=hoverList("Clients", server.clients_list)}}
 		</td>{{?}}
 		{{? !master.no_version}}
