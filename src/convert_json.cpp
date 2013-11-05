@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "main.h" // for g_settings
 #include "settings.h"
+#include "version.h"
 
 #if USE_CURL
 #include <curl/curl.h>
@@ -56,6 +57,7 @@ Json::Value                 fetchJsonValue(const std::string url,
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, g_settings->getS32("curl_timeout"));
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, g_settings->getS32("curl_timeout"));
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 
 		if (chunk != 0)
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
