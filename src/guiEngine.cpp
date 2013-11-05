@@ -532,7 +532,7 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, targetfile);
-
+			curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 			res = curl_easy_perform(curl);
 			if (res != CURLE_OK) {
 				errorstream << "File at url \"" << url

@@ -241,7 +241,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 		CURLcode res;
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+std::string("/announce?json=")+curl_easy_escape(curl, writer.write( server ).c_str(), 0)).c_str());
-		//curl_easy_setopt(curl, CURLOPT_USERAGENT, "minetest");
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::ServerAnnounceCallback);
 		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1);
