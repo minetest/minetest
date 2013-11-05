@@ -220,6 +220,7 @@ int ModApiServer::l_get_modpath(lua_State *L)
 int ModApiServer::l_get_modnames(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
 	// Get a list of mods
 	std::list<std::string> mods_unsorted, mods_sorted;
 	getServer(L)->getModNames(mods_unsorted);
@@ -263,7 +264,7 @@ int ModApiServer::l_get_modnames(lua_State *L)
 		lua_pushstring(L, (*i).c_str());
 		if(lua_pcall(L, 2, 0, 0) != 0)
 		{
-			script_error(L, "error: %s", lua_tostring(L, -1));
+			script_error(L);
 		}
 		++i;
 	}

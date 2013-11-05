@@ -871,6 +871,8 @@ void read_groups(lua_State *L, int index,
 /******************************************************************************/
 void push_items(lua_State *L, const std::vector<ItemStack> &items)
 {
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
 	// Get the table insert function
 	lua_getglobal(L, "table");
 	lua_getfield(L, -1, "insert");
@@ -883,11 +885,12 @@ void push_items(lua_State *L, const std::vector<ItemStack> &items)
 		lua_pushvalue(L, table_insert);
 		lua_pushvalue(L, table);
 		LuaItemStack::create(L, item);
-		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+		if(lua_pcall(L, 2, 0, errorhandler))
+			script_error(L);
 	}
-	lua_remove(L, -2); // Remove table
 	lua_remove(L, -2); // Remove insert
+	lua_remove(L, -2); // Remove table
+	lua_remove(L, -2); // Remove error handler
 }
 
 /******************************************************************************/

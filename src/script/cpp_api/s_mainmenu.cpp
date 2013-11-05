@@ -37,29 +37,41 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Get handler function
 	lua_getglobal(L, "engine");
 	lua_getfield(L, -1, "event_handler");
-	if(lua_isnil(L, -1))
+	lua_remove(L, -2); // Remove engine
+	if(lua_isnil(L, -1)) {
+		lua_pop(L, 1); // Pop event_handler
 		return;
+	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
 	// Call it
 	lua_pushstring(L, text.c_str());
-	if(lua_pcall(L, 1, 0, 0))
-		scriptError("error running function engine.event_handler: %s\n",
-				lua_tostring(L, -1));
+	if(lua_pcall(L, 1, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiMainMenu::handleMainMenuButtons(std::map<std::string, std::string> fields)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Get handler function
 	lua_getglobal(L, "engine");
 	lua_getfield(L, -1, "button_handler");
-	if(lua_isnil(L, -1))
+	lua_remove(L, -2); // Remove engine
+	if(lua_isnil(L, -1)) {
+		lua_pop(L, 1); // Pop button handler
 		return;
+	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
 	// Convert fields to lua table
@@ -74,7 +86,7 @@ void ScriptApiMainMenu::handleMainMenuButtons(std::map<std::string, std::string>
 	}
 
 	// Call it
-	if(lua_pcall(L, 1, 0, 0))
-		scriptError("error running function engine.button_handler: %s\n",
-				lua_tostring(L, -1));
+	if(lua_pcall(L, 1, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
 }

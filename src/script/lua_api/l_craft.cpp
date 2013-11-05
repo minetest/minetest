@@ -449,7 +449,7 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 			lua_pushstring(L, &tmpout.item[0]);
 			lua_setfield(L, -2, "output");
 			if (lua_pcall(L, 2, 0, 0))
-				script_error(L, "error: %s", lua_tostring(L, -1));
+				script_error(L);
 		}
 	}
 	return 1;
