@@ -206,6 +206,84 @@ function tbl.formspec_escape(text)
 end
 
 --------------------------------------------------------------------------------
+
+if minetest then
+	local dirs1 = { 9, 18, 7, 12 }
+	local dirs2 = { 20, 23, 22, 21 }
+
+	function minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)
+
+		local node = minetest.get_node(pointed_thing.under)
+		if not minetest.registered_nodes[node.name]
+		   or not minetest.registered_nodes[node.name].on_rightclick then
+
+			local above = pointed_thing.above
+			local under = pointed_thing.under
+			local pitch = placer:get_look_pitch()
+			local pname = minetest.get_node(under).name
+			local node = minetest.get_node(above)
+			local fdir = minetest.dir_to_facedir(placer:get_look_dir())
+			local wield_name = itemstack:get_name()
+			local reg_node = minetest.registered_nodes[pname]
+
+			if not reg_node or not reg_node.on_rightclick then
+
+				local iswall = (above.x ~= under.x) or (above.z ~= under.z)
+				local isceiling = (above.x == under.x) and (above.z == under.z)
+								  and (pitch > 0)
+				local pos1 = above
+
+				if reg_node and reg_node.buildable_to then
+					pos1 = under
+					iswall = false
+				end
+
+				reg_node = minetest.registered_nodes[minetest.get_node(pos1).name]
+				if not reg_node or not reg_node.buildable_to then
+					return
+				end
+
+				if orient_flags.force_floor then
+					iswall = false
+					isceiling = false
+				elseif orient_flags.force_ceiling then 
+					iswall = false
+					isceiling = true
+				elseif orient_flags.force_wall then					
+					iswall = true
+					isceiling = false
+				elseif orient_flags.invert_wall then
+					iswall = not iswall
+				end
+
+				if iswall then
+					minetest.add_node(pos1, {name = wield_name, param2 = dirs1[fdir+1] })
+				elseif isceiling then
+					if orient_flags.force_facedir then
+						minetest.add_node(pos1, {name = wield_name, param2 = 20 })
+					else
+						minetest.add_node(pos1, {name = wield_name, param2 = dirs2[fdir+1] })
+					end
+				else -- place right side up
+					if orient_flags.force_facedir then
+						minetest.add_node(pos1, {name = wield_name, param2 = 0 })
+					else
+						minetest.add_node(pos1, {name = wield_name, param2 = fdir })
+					end
+				end
+
+				if not infinitestacks then
+					itemstack:take_item()
+					return itemstack
+				end
+			end
+		else
+			minetest.registered_nodes[node.name].on_rightclick(pointed_thing.under, node, placer, itemstack)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
 if engine ~= nil then
