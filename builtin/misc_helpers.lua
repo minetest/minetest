@@ -214,7 +214,6 @@ function tbl.splittext(text,charlimit)
 	local start,stop = string.find(text," ",current_idx)
 	local nl_start,nl_stop = string.find(text,"\n",current_idx)
 	local gotnewline = false
-	print("nl_start: " .. dump(nl_start))
 	if nl_start ~= nil and (start == nil or nl_start < start) then
 		start = nl_start
 		stop = nl_stop

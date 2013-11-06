@@ -281,7 +281,7 @@ function modmgr.tab()
 			descriptionfile:close()
 		else
 			descriptionlines = {}
-			table.insert(descriptionlines,fgettext("no mod description available"))
+			table.insert(descriptionlines,fgettext("No mod description available"))
 		end
 	
 		retval = retval .. 
