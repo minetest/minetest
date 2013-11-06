@@ -101,7 +101,7 @@ mods
 |-- modname
 |   |-- depends.txt
 |   |-- screenshot.png
-|   |-- description.png
+|   |-- description.txt
 |   |-- init.lua
 |   |-- textures
 |   |   |-- modname_stuff.png
