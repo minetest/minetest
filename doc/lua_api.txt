@@ -1561,6 +1561,11 @@ minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orie
   force_facedir:	if true, forcably reset the facedir to north when placing on
 					the floor or ceiling
 
+minetest.rotate_node(itemstack, placer, pointed_thing)
+^ calls rotate_and_place() with infinitestacks set according to the state of
+  the creative mode setting, and checks for "sneak" to set the invert_wall
+  parameter.
+
 Global objects:
 minetest.env - EnvRef of the server environment and world.
 ^ Any function in the minetest namespace can be called using the syntax

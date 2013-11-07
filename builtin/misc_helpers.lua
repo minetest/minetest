@@ -282,6 +282,20 @@ if minetest then
 			minetest.registered_nodes[node.name].on_rightclick(pointed_thing.under, node, placer, itemstack)
 		end
 	end
+
+
+--------------------------------------------------------------------------------
+--Wrapper for rotate_and_place() to check for sneak and assume Creative mode
+--implies infinite stacks when performing a 6d rotation.
+--------------------------------------------------------------------------------
+
+
+	minetest.rotate_node = function(itemstack, placer, pointed_thing)
+		minetest.rotate_and_place(itemstack, placer, pointed_thing,
+		minetest.setting_getbool("creative_mode"), 
+		{invert_wall = placer:get_player_control().sneak})
+		return itemstack
+	end
 end
 
 --------------------------------------------------------------------------------
