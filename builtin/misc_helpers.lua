@@ -212,6 +212,7 @@ if minetest then
 	local dirs2 = { 20, 23, 22, 21 }
 
 	function minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)
+		orient_flags = orient_flags or {}
 
 		local node = minetest.get_node(pointed_thing.under)
 		if not minetest.registered_nodes[node.name]
