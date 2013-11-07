@@ -387,7 +387,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 				// Limit the send area vertically to 1/2
 				if(can_skip && abs(p.Y - center.Y) > d_max / 2)
-					continue;
+					generate = false;
 			}
 
 #if 0
