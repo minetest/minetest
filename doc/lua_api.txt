@@ -1073,7 +1073,7 @@ vector.distance(p1, p2) -> number
 vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
-vector.equal(v1, v2) -> bool
+vector.equals(v1, v2) -> bool
 For the folowing x can be either a vector or a number.
 vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
