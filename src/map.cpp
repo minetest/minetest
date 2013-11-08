@@ -1744,14 +1744,16 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 						u8 my_max_level = MapNode(liquid_kind_flowing).getMaxLevel(nodemgr);
 						liquid_levels[i] = 
 							(float)my_max_level / melt_max_level * nb.n.getLevel(nodemgr);
-						nb.l = 1;
+						if (liquid_levels[i])
+							nb.l = 1;
 					}
 					else if (	melt_kind != CONTENT_IGNORE &&
 							nb.n.getContent() == melt_kind &&
 							nb.t != NEIGHBOR_UPPER &&
 							!(loopcount % 8)) {
 						liquid_levels[i] = nodemgr->get(liquid_kind_flowing).getMaxLevel();
-						nb.l = 1;
+						if (liquid_levels[i])
+							nb.l = 1;
 					}
 					// todo: for erosion add something here..
 					break;
