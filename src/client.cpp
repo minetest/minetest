@@ -223,47 +223,6 @@ void * MeshUpdateThread::Thread()
 	return NULL;
 }
 
-void * MediaFetchThread::Thread()
-{
-	ThreadStarted();
-
-	log_register_thread("MediaFetchThread");
-
-	DSTACK(__FUNCTION_NAME);
-
-	BEGIN_DEBUG_EXCEPTION_HANDLER
-
-	#if USE_CURL
-	CURL *curl;
-	CURLcode res;
-	for (std::list<MediaRequest>::iterator i = m_file_requests.begin();
-			i != m_file_requests.end(); ++i) {
-		curl = curl_easy_init();
-		assert(curl);
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(curl, CURLOPT_URL, (m_remote_url + i->name).c_str());
-		curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
-		std::ostringstream stream;
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream);
-		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
-		res = curl_easy_perform(curl);
-		if (res == CURLE_OK) {
-			std::string data = stream.str();
-			m_file_data.push_back(make_pair(i->name, data));
-		} else {
-			m_failed.push_back(*i);
-			infostream << "cURL request failed for " << i->name << " (" << curl_easy_strerror(res) << ")"<< std::endl;
-		}
-		curl_easy_cleanup(curl);
-	}
-	#endif
-
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-
-	return NULL;
-}
-
 /*
 	Client
 */
