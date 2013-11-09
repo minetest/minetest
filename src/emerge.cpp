@@ -541,7 +541,7 @@ void *EmergeThread::Thread() {
 		for(std::map<v3s16, MapBlock *>::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i) {
-			map->updateBlockHeat(m_server->m_env, MAP_BLOCKSIZE*i->first ,i->second);
+			map->updateBlockHeat(m_server->m_env, MAP_BLOCKSIZE*i->first, i->second);
 		}
 
 		// Set the modified blocks unsent for all the clients
