@@ -2152,6 +2152,7 @@ void ClientEnvironment::step(float dtime)
 	bool is_climbing = lplayer->is_climbing;
 	
 	f32 player_speed = lplayer->getSpeed().getLength();
+	v3f pf = lplayer->getPosition();
 	
 	/*
 		Maximum position increment
@@ -2209,21 +2210,30 @@ void ClientEnvironment::step(float dtime)
 			// Apply physics
 			if(free_move == false && is_climbing == false)
 			{
+				f32 viscosity_factor = 0;
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->in_liquid == false)
+				if(lplayer->in_liquid == false) {
 					speed.Y -= lplayer->movement_gravity * lplayer->physics_override_gravity * dtime_part * 2;
+					viscosity_factor = 0.96; // todo maybe depend on speed; 0.96 = ~100 nps max
+					viscosity_factor += (1.0-viscosity_factor) * 
+						(1-(MAP_GENERATION_LIMIT - pf.Y/BS)/
+							MAP_GENERATION_LIMIT);
+				}
 
 				// Liquid floating / sinking
 				if(lplayer->in_liquid && !lplayer->swimming_vertical)
 					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
 
-				// Liquid resistance
 				if(lplayer->in_liquid_stable || lplayer->in_liquid)
+				{
+					viscosity_factor = 0.3; // todo: must depend on speed^2
+				}
+				// Liquid resistance
+				if(viscosity_factor)
 				{
 					// How much the node's viscosity blocks movement, ranges between 0 and 1
 					// Should match the scale at which viscosity increase affects other liquid attributes
-					const f32 viscosity_factor = 0.3;
 
 					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
 					f32 dl = d_wanted.getLength();
@@ -2264,14 +2274,13 @@ void ClientEnvironment::step(float dtime)
 			i != player_collisions.end(); ++i)
 	{
 		CollisionInfo &info = *i;
-		v3f speed_diff = info.new_speed - info.old_speed;;
+		v3f speed_diff = info.new_speed - info.old_speed;
 		// Handle only fall damage
 		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+		if((speed_diff.Y < 0 || info.old_speed.Y >= 0) && 
+			speed_diff.getLength() <= lplayer->movement_speed_fast * 1.1) {
 			continue;
-		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
+		}
 		f32 pre_factor = 1; // 1 hp per node/s
 		f32 tolerance = BS*14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
@@ -2301,7 +2310,6 @@ void ClientEnvironment::step(float dtime)
 	*/
 	if(m_lava_hurt_interval.step(dtime, 1.0))
 	{
-		v3f pf = lplayer->getPosition();
 		
 		// Feet, middle and head
 		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);

@@ -3010,6 +3010,7 @@ void the_game(
 				<<"(" <<(player_position.X/BS)
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
+				<<") (spd="<< (int)player->getSpeed().getLength()/BS
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
 				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
 				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
