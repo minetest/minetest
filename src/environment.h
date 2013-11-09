@@ -362,6 +362,7 @@ private:
 	IBackgroundBlockEmerger *m_emerger;
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
+	u32 m_active_objects_last;
 	// Outgoing network message buffer for active objects
 	std::list<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -370,6 +371,8 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
+	u32 m_active_block_last;
+	u32 m_blocks_added_last;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;

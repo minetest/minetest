@@ -298,8 +298,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
