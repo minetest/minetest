@@ -280,6 +280,7 @@ struct HTTPFetchOngoing
 		if (curl != NULL) {
 			if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,
 					&result.response_code) != CURLE_OK) {
+				//we failed to get a return code make sure it is still 0
 				result.response_code = 0;
 			}
 		}

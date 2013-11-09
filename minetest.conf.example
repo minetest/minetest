@@ -198,7 +198,6 @@
 # - Media fetch if server uses remote_media setting
 # - Serverlist download and server announcement
 # - Downloads performed by main menu (e.g. mod manager)
-# - Downloads performed by mods (minetest.httpfetch)
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
 

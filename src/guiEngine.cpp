@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "sound_openal.h"
 #include "clouds.h"
+#include "httpfetch.h"
 
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
@@ -507,51 +508,39 @@ bool GUIEngine::setTexture(texture_layer layer,std::string texturepath) {
 }
 
 /******************************************************************************/
-#if USE_CURL
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-	FILE* targetfile = (FILE*) userp;
-	fwrite(contents,size,nmemb,targetfile);
-	return size * nmemb;
-}
-#endif
 bool GUIEngine::downloadFile(std::string url,std::string target) {
 #if USE_CURL
-	//download file via curl
-	CURL *curl;
+	bool retval = true;
 
-	curl = curl_easy_init();
+	FILE* targetfile = fopen(target.c_str(),"wb");
 
-	if (curl)
-	{
-		CURLcode res;
-		bool retval = true;
+	if (targetfile) {
+		HTTPFetchRequest fetchrequest;
+		HTTPFetchResult fetchresult;
+		fetchrequest.url = url;
+		fetchrequest.useragent = std::string("Minetest ")+minetest_version_hash;
+		fetchrequest.timeout = g_settings->getS32("curl_timeout");
+		fetchrequest.caller = HTTPFETCH_SYNC;
+		httpfetch_sync(fetchrequest,fetchresult);
 
-		FILE* targetfile = fopen(target.c_str(),"wb");
-
-		if (targetfile) {
-			curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, targetfile);
-			curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
-			res = curl_easy_perform(curl);
-			if (res != CURLE_OK) {
-				errorstream << "File at url \"" << url
-					<<"\" not found (" << curl_easy_strerror(res) << ")" <<std::endl;
+		if (fetchresult.succeeded) {
+			if (fwrite(fetchresult.data.c_str(),1,fetchresult.data.size(),targetfile) != fetchresult.data.size()) {
 				retval = false;
 			}
-			fclose(targetfile);
 		}
 		else {
 			retval = false;
 		}
-
-		curl_easy_cleanup(curl);
-		return retval;
+		fclose(targetfile);
 	}
-#endif
+	else {
+		retval = false;
+	}
+
+	return retval;
+#else
 	return false;
+#endif
 }
 
 /******************************************************************************/

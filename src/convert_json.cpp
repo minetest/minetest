@@ -28,58 +28,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // for g_settings
 #include "settings.h"
 #include "version.h"
-
-#if USE_CURL
-#include <curl/curl.h>
-
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
-
-#endif
+#include "httpfetch.h"
 
 Json::Value                 fetchJsonValue(const std::string url,
 													struct curl_slist *chunk) {
 #if USE_CURL
-	std::string liststring;
-	CURL *curl;
 
-	curl = curl_easy_init();
-	if (curl)
-	{
-		CURLcode res;
+	HTTPFetchRequest fetchrequest;
+	HTTPFetchResult fetchresult;
+	fetchrequest.url = url;
+	fetchrequest.useragent = std::string("Minetest ")+minetest_version_hash;
+	fetchrequest.timeout = g_settings->getS32("curl_timeout");
+	fetchrequest.caller = HTTPFETCH_SYNC;
 
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
-		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, g_settings->getS32("curl_timeout"));
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, g_settings->getS32("curl_timeout"));
-		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
-
-		if (chunk != 0)
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-
-		res = curl_easy_perform(curl);
-		if (res != CURLE_OK)
-			errorstream<<"Jsonreader: "<< url <<" not found (" << curl_easy_strerror(res) << ")" <<std::endl;
-		curl_easy_cleanup(curl);
+	struct curl_slist* runptr = chunk;
+	while(runptr) {
+		fetchrequest.extra_headers.push_back(runptr->data);
+		runptr = runptr->next;
 	}
+	httpfetch_sync(fetchrequest,fetchresult);
 
-	Json::Value root;
-	Json::Reader reader;
-	std::istringstream stream(liststring);
-	if (!liststring.size()) {
+	if (!fetchresult.succeeded) {
 		return Json::Value();
 	}
+	Json::Value root;
+	Json::Reader reader;
+	std::istringstream stream(fetchresult.data);
 
 	if (!reader.parse( stream, root ) )
 	{
 		errorstream << "URL: " << url << std::endl;
 		errorstream << "Failed to parse json data " << reader.getFormattedErrorMessages();
-		errorstream << "data: \"" << liststring << "\"" << std::endl;
+		errorstream << "data: \"" << fetchresult.data << "\"" << std::endl;
 		return Json::Value();
 	}
 

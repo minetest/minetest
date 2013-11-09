@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Can be used in place of "caller" in asynchronous transfers to discard result
 // (used as default value of "caller")
 #define HTTPFETCH_DISCARD 0
+#define HTTPFETCH_SYNC 1
 
 struct HTTPFetchRequest
 {
@@ -96,6 +97,7 @@ struct HTTPFetchResult
 		caller = fetchrequest.caller;
 		request_id = fetchrequest.request_id;
 	}
+
 };
 
 // Initializes the httpfetch module
