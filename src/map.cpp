@@ -2834,12 +2834,9 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	*/
 	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
 	for(s16 x=blockpos_min.X-extra_borders.X;x<=blockpos_max.X+extra_borders.X; x++)
-	for(s16 z=blockpos_min.Z-extra_borders.Z;z<=blockpos_max.Z+extra_borders.Z; z++)
-	for(s16 y=blockpos_min.Y-extra_borders.Y;y<=blockpos_max.Y+extra_borders.Y; y++)
-	{
-		v3s16 p(x, y, z);
-		updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
-	}
+		for(s16 z=blockpos_min.Z-extra_borders.Z;z<=blockpos_max.Z+extra_borders.Z; z++)
+			for(s16 y=blockpos_min.Y-extra_borders.Y;y<=blockpos_max.Y+extra_borders.Y; y++)
+				updateBlockHeat(senv, v3s16(x, y, z) * MAP_BLOCKSIZE, NULL);
 #endif
 
 #if 0
@@ -3490,7 +3487,7 @@ void ServerMap::loadMapMeta()
 		m_seed = mgparams->seed;
 	} else {
 		if (params.exists("seed")) {
-			m_seed = params.getU64("seed");
+			m_seed = read_seed(params.get("seed").c_str());
 			m_mgparams->seed = m_seed;
 		}
 	}

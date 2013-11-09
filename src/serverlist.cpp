@@ -222,6 +222,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 
 	if(server["action"] == "start") {
 		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["privs"]		= g_settings->get("default_privs");
 		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
 		server["liquid_finite"]	= g_settings->getBool("liquid_finite");
 		server["mapgen"]	= g_settings->get("mg_name");
@@ -240,7 +241,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 		CURLcode res;
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+std::string("/announce?json=")+curl_easy_escape(curl, writer.write( server ).c_str(), 0)).c_str());
-		//curl_easy_setopt(curl, CURLOPT_USERAGENT, "minetest");
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::ServerAnnounceCallback);
 		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1);
