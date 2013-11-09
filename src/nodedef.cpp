@@ -219,7 +219,6 @@ void ContentFeatures::reset()
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	freezemelt = "";
-	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
 	light_source = 0;
 	damage_per_second = 0;
@@ -289,7 +288,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, rightclickable);
 	writeU8(os, drowning);
 	writeU8(os, leveled);
-	writeU8(os, liquid_range);
+	writeU8(os, 0/*liquid_range*/);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
 }
@@ -353,7 +352,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	rightclickable = readU8(is);
 	drowning = readU8(is);
 	leveled = readU8(is);
-	liquid_range = readU8(is);
+	/*liquid_range =*/ readU8(is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{

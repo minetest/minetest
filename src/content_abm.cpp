@@ -38,7 +38,8 @@ class LiquidFlowABM : public ActiveBlockModifier {
 
 	public:
 		LiquidFlowABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
-			std::set<content_t> liquids;
+			contents.insert("group:liquid_flow");
+			std::set<content_t> liquids; // todo: remove, make all via group:liquid_flow
 			nodemgr->getIds("group:liquid", liquids);
 			for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
 				contents.insert(nodemgr->get(*k).liquid_alternative_flowing);
@@ -64,7 +65,8 @@ class LiquidDropABM : public ActiveBlockModifier {
 
 	public:
 		LiquidDropABM(ServerEnvironment *env, INodeDefManager *nodemgr) {
-			std::set<content_t> liquids;
+			contents.insert("group:liquid_drop");
+			std::set<content_t> liquids; // todo: remove, make all via group:liquid_drop
 			nodemgr->getIds("group:liquid", liquids);
 			for(std::set<content_t>::const_iterator k = liquids.begin(); k != liquids.end(); k++)
 				contents.insert(nodemgr->get(*k).liquid_alternative_source);
