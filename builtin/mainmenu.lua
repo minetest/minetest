@@ -1010,6 +1010,7 @@ function tabbuilder.tab_credits()
 			"sapier,"..
 			"ShadowNinja <shadowninja@minetest.net>,"..
 			"Nathanaël Courant (Nore/Novatux) <nore@mesecons.net>,"..
+			"BlockMen,"..
 			","..
 			"#FFFF00" .. fgettext("Active Contributors") .. "," ..
 			"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
