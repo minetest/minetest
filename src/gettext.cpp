@@ -142,13 +142,14 @@ void init_gettext(const char *path,std::string configured_language) {
 
 		SetEnvironmentVariableA("LANGUAGE",configured_language.c_str());
 
+#ifndef SERVER
 		//very very dirty workaround to force gettext to see the right environment
 		if (current_language_var != configured_language) {
 			STARTUPINFO startupinfo;
 			PROCESS_INFORMATION processinfo;
 			memset(&startupinfo,0,sizeof(startupinfo));
 			memset(&processinfo,0,sizeof(processinfo));
-			errorstream << "MSVC localization workaround aktive restating minetest in new environment!" << std::endl;
+			errorstream << "MSVC localization workaround active restating minetest in new environment!" << std::endl;
 
 			std::string parameters = "";
 
@@ -199,6 +200,13 @@ void init_gettext(const char *path,std::string configured_language) {
 			else {
 				exit(0);
 			}
+#else
+			errorstream << "*******************************************************" << std::endl;
+			errorstream << "Can't apply locale workaround for server!" << std::encl;
+			errorstream << "Expect language to be broken!" << std::endl;
+			errorstream << "*******************************************************" << std::endl;
+
+#endif
 		}
 
 		setlocale(LC_ALL,configured_language.c_str());
