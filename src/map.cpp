@@ -2841,6 +2841,8 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 			y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
+			MapBlock *block = getBlockNoCreateNoEx(p);
+			block->weather_update_time = 0;
 			updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
 			updateBlockHumidity(senv, p * MAP_BLOCKSIZE, NULL);
 		}
