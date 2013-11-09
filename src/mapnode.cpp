@@ -435,9 +435,12 @@ u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
 }
 
 void MapNode::freezeMelt(INodeDefManager *ndef) {
+	content_t to = ndef->getId(ndef->get(*this).freezemelt);
+	if (to == CONTENT_IGNORE)
+		return;
 	u8 level_was_max = this->getMaxLevel(ndef);
 	u8 level_was = this->getLevel(ndef);
-	this->setContent(ndef->getId(ndef->get(*this).freezemelt));
+	this->setContent(to);
 	u8 level_now_max = this->getMaxLevel(ndef);
 	if (level_was_max && level_was_max != level_now_max) {
 		u8 want = (float)level_now_max / level_was_max * level_was;
