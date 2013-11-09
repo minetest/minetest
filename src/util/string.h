@@ -155,7 +155,9 @@ inline bool is_yes(const std::string &s)
 
 inline s32 mystoi(const std::string &s, s32 min, s32 max)
 {
-	s32 i = atoi(s.c_str());
+	s32 i = 0;
+	if (s.length() > 0)
+		i= atoi(s.c_str());
 	if(i < min)
 		i = min;
 	if(i > max)
@@ -175,16 +177,23 @@ inline s64 stoi64(const std::string &s) {
 
 inline s32 mystoi(const std::string &s)
 {
+	if (s.length() <= 0)
+		return 0;
+
 	return atoi(s.c_str());
 }
 
 inline s32 mystoi(const std::wstring &s)
 {
+	if (s.length() <= 0)
+		return 0;
 	return atoi(wide_to_narrow(s).c_str());
 }
 
 inline float mystof(const std::string &s)
 {
+	if (s.length() <= 0)
+		return 0.0;
 	// This crap causes a segfault in certain cases on MinGW
 	/*float f;
 	std::istringstream ss(s);
