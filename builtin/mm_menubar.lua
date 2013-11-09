@@ -30,27 +30,28 @@ end
 
 --------------------------------------------------------------------------------
 function menubar.refresh()
-	menubar.formspec = "box[-0.3,5.625;12.4,1.3;#000000]" ..
+
+	menubar.formspec = "box[-0.3,5.625;12.4,1.2;#000000]" ..
 					   "box[-0.3,5.6;12.4,0.05;#FFFFFF]"
 	menubar.buttons = {}
 
-	local button_base = -0.25
+	local button_base = -0.08
 	
 	local maxbuttons = #gamemgr.games
 	
-	if maxbuttons > 10 then
-		maxbuttons = 10
+	if maxbuttons > 11 then
+		maxbuttons = 11
 	end
 	
 	for i=1,maxbuttons,1 do
 
 		local btn_name = "menubar_btn_" .. gamemgr.games[i].id
-		local buttonpos = button_base + (i-1) * 1.245
+		local buttonpos = button_base + (i-1) * 1.1
 		if gamemgr.games[i].menuicon_path ~= nil and
 			gamemgr.games[i].menuicon_path ~= "" then
 
 			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;"  ..
+				"image_button[" .. buttonpos ..  ",5.72;1.165,1.175;"  ..
 				engine.formspec_escape(gamemgr.games[i].menuicon_path) .. ";" ..
 				btn_name .. ";;true;false]"
 		else
@@ -65,7 +66,7 @@ function menubar.refresh()
 				text = text .. "\n" .. part3
 			end
 			menubar.formspec = menubar.formspec ..
-				"image_button[" .. buttonpos ..  ",5.7;1.3,1.3;;" ..btn_name ..
+				"image_button[" .. buttonpos ..  ",5.72;1.165,1.175;;" ..btn_name ..
 				";" .. text .. ";true;true]"
 		end
 		
