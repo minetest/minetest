@@ -1350,9 +1350,6 @@ struct TestMapSector: public TestBase
 };
 #endif
 
-//#define COLL_ZERO_TEST 0.033
-#define COLL_ZERO_TEST 0.001
-
 struct TestCollision: public TestBase
 {
 	void Run()
@@ -1372,8 +1369,7 @@ struct TestCollision: public TestBase
 				v3f v(1, 0, 0);
 				f32 dtime = 0;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 1.000) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 1.000) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1381,7 +1377,6 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1, 0, 0);
 				f32 dtime = 0;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1389,7 +1384,6 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(1, 0, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1397,8 +1391,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(0.5, 0.1, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 3.000) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 3.000) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1406,8 +1399,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(0.5, 0.1, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 3.000) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 3.000) < 0.001);
 			}
 
 			// X+
@@ -1417,8 +1409,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1, 0, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 1.000) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 1.000) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1426,7 +1417,6 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(1, 0, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1434,7 +1424,6 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1, 0, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == -1);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1442,8 +1431,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-0.5, 0.2, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);  // Y, not X!
-				UASSERT(fabs(dtime - 2.500) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 2.500) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+1, by+1, bz+1);
@@ -1451,8 +1439,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-0.5, 0.3, 0);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 2.000) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 2.000) < 0.001);
 			}
 
 			// TODO: Y-, Y+, Z-, Z+
@@ -1464,8 +1451,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1./3, -1./3, -1./3);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 0.9) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 0.9) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -1473,8 +1459,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1./3, -1./3, -1./3);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);
-				UASSERT(fabs(dtime - 0.9) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 0.9) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -1482,8 +1467,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(-1./3, -1./3, -1./3);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 2);
-				UASSERT(fabs(dtime - 0.9) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 0.9) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -1491,8 +1475,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(1./7, 1./7, 1./7);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 0);
-				UASSERT(fabs(dtime - 16.1) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 16.1) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -1500,8 +1483,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(1./7, 1./7, 1./7);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 1);
-				UASSERT(fabs(dtime - 16.1) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 16.1) < 0.001);
 			}
 			{
 				aabb3f s(bx, by, bz, bx+2, by+2, bz+2);
@@ -1509,8 +1491,7 @@ errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v
 				v3f v(1./7, 1./7, 1./7);
 				f32 dtime;
 				UASSERT(axisAlignedCollision(s, m, v, 0, dtime) == 2);
-				UASSERT(fabs(dtime - 16.1) < COLL_ZERO_TEST);
-errorstream<<"C:"<<__LINE__<<" dt="<<dtime<< " c="<<axisAlignedCollision(s, m, v, 0, dtime)<<std::endl;
+				UASSERT(fabs(dtime - 16.1) < 0.001);
 			}
 		}
 	}

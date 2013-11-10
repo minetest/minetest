@@ -217,6 +217,23 @@ class LiquidMeltHot : public ActiveBlockModifier {
 		}
 };
 
+/* too buggy, later via liquid flow code
+class LiquidMeltAround : public LiquidMeltHot {
+	public:
+		LiquidMeltAround(ServerEnvironment *env, INodeDefManager *nodemgr) 
+			: LiquidMeltHot(env, nodemgr) { }
+		virtual std::set<std::string> getRequiredNeighbors() {
+			std::set<std::string> s;
+			s.insert("group:melt_around");
+			return s;
+		}
+		virtual float getTriggerInterval()
+		{ return 40.0; }
+		virtual u32 getTriggerChance()
+		{ return 60; }
+};
+*/
+
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
 	if (g_settings->getBool("liquid_finite")) {
 		env->addActiveBlockModifier(new LiquidFlowABM(env, nodedef));
