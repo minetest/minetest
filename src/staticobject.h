@@ -54,7 +54,7 @@ class StaticObjectList
 public:
 	/*
 		Inserts an object to the container.
-		Id must be unique or 0.
+		Id must be unique (active) or 0 (stored).
 	*/
 	void insert(u16 id, StaticObject obj)
 	{

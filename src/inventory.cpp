@@ -175,7 +175,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		// Convert old materials
 		if(material <= 0xff)
 			material = content_translate_from_19_to_internal(material);
-		if(material > MAX_CONTENT)
+		if(material > 0xfff)
 			throw SerializationError("Too large material number");
 		// Convert old id to name
 		NameIdMapping legacy_nimap;
@@ -194,7 +194,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		is>>material;
 		u16 materialcount;
 		is>>materialcount;
-		if(material > MAX_CONTENT)
+		if(material > 0xfff)
 			throw SerializationError("Too large material number");
 		// Convert old id to name
 		NameIdMapping legacy_nimap;

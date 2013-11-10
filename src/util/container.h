@@ -21,11 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_CONTAINER_HEADER
 
 #include "../irrlichttypes.h"
-#include <jmutex.h>
-#include <jmutexautolock.h>
+#include "../exceptions.h"
+#include "../jthread/jmutex.h"
+#include "../jthread/jmutexautolock.h"
 #include "../porting.h" // For sleep_ms
 #include <list>
 #include <vector>
+#include <map>
 
 /*
 	Queue with unique values with fast checking of value existence
@@ -117,6 +119,11 @@ public:
 			result.push_back(i->second);
 		}
 		return result;
+	}
+	
+	void clear ()
+	{
+		m_values.clear();
 	}
 
 private:

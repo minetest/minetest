@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef ITEMGROUP_HEADER
 #define ITEMGROUP_HEADER
 
-#include "irrlichttypes_extrabloated.h"
 #include <string>
 #include <map>
 

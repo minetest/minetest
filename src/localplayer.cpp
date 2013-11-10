@@ -43,6 +43,8 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
+	hotbar_image(""),
+	hotbar_selected_image(""),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
 	m_old_node_below(32767,32767,32767),

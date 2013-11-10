@@ -223,6 +223,27 @@ function minetest.register_alias(name, convert_to)
 	end
 end
 
+local register_biome_raw = minetest.register_biome
+minetest.registered_biomes = {}
+function minetest.register_biome(biome)
+	minetest.registered_biomes[biome.name] = biome
+	register_biome_raw(biome)
+end
+
+function minetest.on_craft(itemstack, player, old_craft_list, craft_inv)
+	for _, func in ipairs(minetest.registered_on_crafts) do
+		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+	end
+	return itemstack
+end
+
+function minetest.craft_predict(itemstack, player, old_craft_list, craft_inv)
+	for _, func in ipairs(minetest.registered_craft_predicts) do
+		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+	end
+	return itemstack
+end
+
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 local name
@@ -249,6 +270,7 @@ minetest.register_item(":unknown", {
 	on_place = minetest.item_place,
 	on_drop = minetest.item_drop,
 	groups = {not_in_creative_inventory=1},
+	diggable = true,
 })
 
 minetest.register_node(":air", {
@@ -319,4 +341,8 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
+minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
+minetest.registered_on_crafts, minetest.register_on_craft = make_registration()
+minetest.registered_craft_predicts, minetest.register_craft_predict = make_registration()
+minetest.registered_on_protection_violation, minetest.register_on_protection_violation = make_registration()
 

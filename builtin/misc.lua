@@ -40,15 +40,22 @@ function minetest.check_player_privs(name, privs)
 	return true, ""
 end
 
+local player_list = {}
+
+minetest.register_on_joinplayer(function(player)
+	player_list[player:get_player_name()] = player
+end)
+
+minetest.register_on_leaveplayer(function(player)
+	player_list[player:get_player_name()] = nil
+end)
+
 function minetest.get_connected_players()
-	-- This could be optimized a bit, but leave that for later
-	local list = {}
-	for _, obj in pairs(minetest.get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
-		if obj:is_player() then
-			table.insert(list, obj)
-		end
+	local temp_table = {}
+	for index, value in pairs(player_list) do
+		table.insert(temp_table, value)
 	end
-	return list
+	return temp_table
 end
 
 function minetest.hash_node_position(pos)
@@ -99,10 +106,14 @@ function minetest.setting_get_pos(name)
 	return minetest.string_to_pos(value)
 end
 
-function minetest.formspec_escape(str)
-	str = string.gsub(str, "\\", "\\\\")
-	str = string.gsub(str, "%[", "\\[")
-	str = string.gsub(str, "%]", "\\]")
-	return str
+-- To be overriden by protection mods
+function minetest.is_protected(pos, name)
+	return false
+end
+
+function minetest.record_protection_violation(pos, name)
+	for _, func in pairs(minetest.registered_on_protection_violation) do
+		func(pos, name)
+	end
 end
 

@@ -105,12 +105,12 @@ public:
 	void step(f32 dtime);
 
 	// Update the camera from the local player's position.
-	// frametime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-			f32 tool_reload_ratio);
+	// busytime is used to adjust the viewing range.
+	void update(LocalPlayer* player, f32 frametime, f32 busytime,
+			v2u32 screensize, f32 tool_reload_ratio);
 
 	// Render distance feedback loop
-	void updateViewingRange(f32 frametime_in);
+	void updateViewingRange(f32 frametime_in, f32 busytime_in);
 
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click
@@ -151,10 +151,10 @@ private:
 	f32 m_fov_y;
 
 	// Stuff for viewing range calculations
-	f32 m_added_frametime;
+	f32 m_added_busytime;
 	s16 m_added_frames;
 	f32 m_range_old;
-	f32 m_frametime_old;
+	f32 m_busytime_old;
 	f32 m_frametime_counter;
 	f32 m_time_per_range;
 

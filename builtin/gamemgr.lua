@@ -20,10 +20,10 @@ gamemgr = {}
 --------------------------------------------------------------------------------
 function gamemgr.dialog_new_game()
 	local retval = 
-		"label[2,2;Game Name]"..
+		"label[2,2;" .. fgettext("Game Name") .. "]"..
 		"field[4.5,2.4;6,0.5;te_game_name;;]" ..
-		"button[5,4.2;2.6,0.5;new_game_confirm;Create]" ..
-		"button[7.5,4.2;2.8,0.5;new_game_cancel;Cancel]"
+		"button[5,4.2;2.6,0.5;new_game_confirm;" .. fgettext("Create") .. "]" ..
+		"button[7.5,4.2;2.8,0.5;new_game_cancel;" .. fgettext("Cancel") .. "]"
 
 	return retval
 end
@@ -108,13 +108,15 @@ function gamemgr.handle_edit_game_buttons(fields)
 	if fields["btn_add_mod_to_game"] ~= nil then
 		local modindex = engine.get_textlist_index("mods_available")
 		
-		if modindex > 0 and
-			modindex <= #modmgr.global_mods then
+		local mod = modmgr.get_global_mod(modindex)
+		if mod ~= nil then
 			
-			local sourcepath = 
-				engine.get_modpath() .. DIR_DELIM .. modmgr.global_mods[modindex]
+			local sourcepath = mod.path
 			
-			gamemgr.add_mod(current_game,sourcepath)
+			if not gamemgr.add_mod(current_game,sourcepath) then
+				gamedata.errormessage =
+					fgettext("Gamemgr: Unable to copy mod \"$1\" to game \"$2\"", mod.name, current_game.id)
+			end
 		end
 	end
 	
@@ -128,8 +130,10 @@ function gamemgr.add_mod(gamespec,sourcepath)
 		
 		local modname = get_last_folder(sourcepath)
 		
-		engine.copy_dir(sourcepath,gamespec.gamemods_path .. DIR_DELIM .. modname);
+		return engine.copy_dir(sourcepath,gamespec.gamemods_path .. DIR_DELIM .. modname);
 	end
+	
+	return false
 end
 
 --------------------------------------------------------------------------------
@@ -141,38 +145,45 @@ function gamemgr.delete_mod(gamespec,modindex)
 		
 		if modindex > 0 and
 			#game_mods >= modindex then
-			
-			local modname = game_mods[modindex]
-	
-			if modname:find("<MODPACK>") ~= nil then
-				modname = modname:sub(0,modname:find("<") -2)
-			end
 
-			local modpath = gamespec.gamemods_path .. DIR_DELIM .. modname
-			if modpath:sub(0,gamespec.gamemods_path:len()) == gamespec.gamemods_path then
-				engine.delete_dir(modpath)
+			if game_mods[modindex].path:sub(0,gamespec.gamemods_path:len()) 
+					== gamespec.gamemods_path then
+				engine.delete_dir(game_mods[modindex].path)
 			end
 		end
 	end
 end
 
 --------------------------------------------------------------------------------
-function gamemgr.get_game_mods(gamespec)
-
-	local retval = ""
-	
-	if gamespec.gamemods_path ~= nil and
-		gamespec.gamemods_path ~= "" then
-		local game_mods = {}
-		get_mods(gamespec.gamemods_path,game_mods)
-		
-		for i=1,#game_mods,1 do
-			if retval ~= "" then
-				retval = retval..","
-			end
-			retval = retval .. game_mods[i]
-		end 
+function gamemgr.find_by_gameid(gameid)
+	for i=1,#gamemgr.games,1 do		
+		if gamemgr.games[i].id == gameid then
+			return gamemgr.games[i], i
+		end
 	end
+	return nil, nil
+end
+
+--------------------------------------------------------------------------------
+function gamemgr.get_game_mods(gamespec, retval)
+	if gamespec ~= nil and
+		gamespec.gamemods_path ~= nil and
+		gamespec.gamemods_path ~= "" then
+		get_mods(gamespec.gamemods_path, retval)
+	end
+end
+
+--------------------------------------------------------------------------------
+function gamemgr.get_game_modlist(gamespec)
+	local retval = ""
+	local game_mods = {}
+	gamemgr.get_game_mods(gamespec, game_mods)
+	for i=1,#game_mods,1 do
+		if retval ~= "" then
+			retval = retval..","
+		end
+		retval = retval .. game_mods[i].name
+	end 
 	return retval
 end
 
@@ -202,8 +213,8 @@ function gamemgr.tab()
 	end
 	
 	local retval = 
-		"vertlabel[0,-0.25;GAMES]" ..
-		"label[1,-0.25;Games:]" ..
+		"vertlabel[0,-0.25;" .. fgettext("GAMES") .. "]" ..
+		"label[1,-0.25;" .. fgettext("Games") .. ":]" ..
 		"textlist[1,0.25;4.5,4.4;gamelist;" ..
 		gamemgr.gamelist() ..
 		";" .. gamemgr.selected_game .. "]"
@@ -214,16 +225,17 @@ function gamemgr.tab()
 		if current_game.menuicon_path ~= nil and
 			current_game.menuicon_path ~= "" then
 			retval = retval .. 
-				"image[5.8,-0.25;2,2;" .. current_game.menuicon_path .. "]"
+				"image[5.8,-0.25;2,2;" ..
+				engine.formspec_escape(current_game.menuicon_path) .. "]"
 		end
 		
 		retval = retval ..
 			"field[8,-0.25;6,2;;" .. current_game.name .. ";]"..
-			"label[6,1.4;Mods:]" ..
-			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;edit game]" ..
+			"label[6,1.4;" .. fgettext("Mods:") .."]" ..
+			"button[9.7,1.5;2,0.2;btn_game_mgr_edit_game;" .. fgettext("edit game") .. "]" ..
 			"textlist[6,2;5.5,3.3;game_mgr_modlist;"
-			.. gamemgr.get_game_mods(current_game) ..";0]" ..
-			"button[1,4.75;3.2,0.5;btn_game_mgr_new_game;new game]"
+			.. gamemgr.get_game_modlist(current_game) ..";0]" ..
+			"button[1,4.75;3.2,0.5;btn_game_mgr_new_game;" .. fgettext("new game") .. "]"
 	end
 	return retval
 end
@@ -233,30 +245,31 @@ function gamemgr.dialog_edit_game()
 	local current_game = gamemgr.get_game(gamemgr.selected_game)
 	if current_game ~= nil then
 		local retval = 
-			"vertlabel[0,-0.25;EDIT GAME]" ..
+			"vertlabel[0,-0.25;" .. fgettext("EDIT GAME") .."]" ..
 			"label[0,-0.25;" .. current_game.name .. "]" ..
 			"button[11.55,-0.2;0.75,0.5;btn_close_edit_game;x]"
 		
 		if current_game.menuicon_path ~= nil and
 			current_game.menuicon_path ~= "" then
 			retval = retval .. 
-				"image[5.25,0;2,2;" .. current_game.menuicon_path .. "]"			
+				"image[5.25,0;2,2;" ..
+				engine.formspec_escape(current_game.menuicon_path) .. "]"
 		end
 		
 		retval = retval .. 
 			"textlist[0.5,0.5;4.5,4.3;mods_current;"
-			.. gamemgr.get_game_mods(current_game) ..";0]"
+			.. gamemgr.get_game_modlist(current_game) ..";0]"
 			
 			
 		retval = retval .. 
 			"textlist[7,0.5;4.5,4.3;mods_available;"
-			.. modmgr.get_mods_list() .. ";0]"
+			.. modmgr.render_modlist() .. ";0]"
 
 		retval = retval ..
-			"button[0.55,4.95;4.7,0.5;btn_remove_mod_from_game;Remove selected mod]"
+			"button[0.55,4.95;4.7,0.5;btn_remove_mod_from_game;" .. fgettext("Remove selected mod") .."]"
 			
 		retval = retval ..
-			"button[7.05,4.95;4.7,0.5;btn_add_mod_to_game;<<-- Add mod]"
+			"button[7.05,4.95;4.7,0.5;btn_add_mod_to_game;" .. fgettext("<<-- Add mod") .."]"
 		
 		return retval
 	end

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"
-#include "mapgen.h"
+#include "serialization.h"
 #include "nodemetadata.h"
 #include "settings.h"
 #include "log.h"
@@ -32,11 +32,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "util/directiontables.h"
+#include "util/mathconstants.h"
 #include "rollback_interface.h"
+#include "environment.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
-#include "mapgen_indev.h"
-#include "cpp_api/scriptapi.h"
+//#include "mapgen_indev.h"
+//#include "cpp_api/scriptapi.h"
+#include "scripting_game.h"
+#include "biome.h"
+#include "config.h"
+#include "server.h"
+#include "database.h"
+#include "database-dummy.h"
+#include "database-sqlite3.h"
+#if USE_LEVELDB
+#include "database-leveldb.h"
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1088,6 +1100,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Add neighboring liquid nodes and the node itself if it is
 		liquid (=water node was added) to transform queue.
+		note: todo: for liquid_finite enough to add only self node
 	*/
 	v3s16 dirs[7] = {
 		v3s16(0,0,0), // self
@@ -1279,6 +1292,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	/*
 		Add neighboring liquid nodes and this node to transform queue.
 		(it's vital for the node itself to get updated last.)
+		note: todo: for liquid_finite enough to add only self node
 	*/
 	v3s16 dirs[7] = {
 		v3s16(0,0,1), // back
@@ -1632,7 +1646,7 @@ const v3s16 g_7dirs[7] =
 #define D_TOP 6
 #define D_SELF 1
 
-void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
+void Map::transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 	
@@ -1715,7 +1729,7 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 					if (liquid_kind == CONTENT_IGNORE)
 						liquid_kind = nb.n.getContent();
 					if (nb.n.getContent() == liquid_kind) {
-						liquid_levels[i] = LIQUID_LEVEL_SOURCE;
+						liquid_levels[i] = nb.n.getLevel(nodemgr); //LIQUID_LEVEL_SOURCE;
 						nb.l = 1;
 						nb.i = (nb.n.param2 & LIQUID_INFINITY_MASK);
 					}
@@ -1729,7 +1743,7 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 						liquid_kind = nodemgr->getId(
 							nodemgr->get(nb.n).liquid_alternative_source);
 					if (nb.n.getContent() == liquid_kind_flowing) {
-						liquid_levels[i] = (nb.n.param2 & LIQUID_LEVEL_MASK);
+						liquid_levels[i] = nb.n.getLevel(nodemgr); //(nb.n.param2 & LIQUID_LEVEL_MASK);
 						nb.l = 1;
 					}
 					break;
@@ -1855,7 +1869,7 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 			<< (int)liquid_levels_want[D_BOTTOM]<<std::endl;
 		*/
 
-		u8 changed = 0;
+		//u8 changed = 0;
 		for (u16 i = 0; i < 7; i++) {
 			if (liquid_levels_want[i] < 0 || !neighbors[i].l) 
 				continue;
@@ -1887,7 +1901,7 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 				new_node_content = liquid_kind_flowing;
 			else
 				new_node_content = CONTENT_AIR;
-
+			
 			// last level must flow down on stairs
 			if (liquid_levels_want[i] != liquid_levels[i] &&
 				liquid_levels[D_TOP] <= 0 && !neighbors[D_BOTTOM].l &&
@@ -1902,10 +1916,11 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 				check if anything has changed.
 				if not, just continue with the next node.
 			 */
+			/*
 			if (
 				 new_node_content == n0.getContent() 
 				&& (nodemgr->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
-				 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level 
+				 (n0.getLevel(nodemgr) == (u8)new_node_level
 				 //&& ((n0.param2 & LIQUID_FLOW_DOWN_MASK) ==
 				 //LIQUID_FLOW_DOWN_MASK) == flowing_down
 				 ))
@@ -1914,14 +1929,18 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 				 (((n0.param2 & LIQUID_INFINITY_MASK) ==
 					LIQUID_INFINITY_MASK) == neighbors[i].i
 				 ))
-			   ) {
+			   )*/
+			if (liquid_levels[i] == new_node_level)
+			{
 				continue;
 			}
-			++changed;
+			
+			//++changed;
 
 			/*
 				update the current node
 			 */
+			/*
 			if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 				// set level to last 3 bits, flowing down bit to 4th bit
 				n0.param2 = (new_node_level & LIQUID_LEVEL_MASK);
@@ -1929,13 +1948,15 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 				//n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 				n0.param2 = (neighbors[i].i ? LIQUID_INFINITY_MASK : 0x00);
 			}
+			*/
 			/*
 			infostream << "set node i=" <<(int)i<<" "<< PP(p0)<< " nc="
 			<<new_node_content<< " p2="<<(int)n0.param2<< " nl="
 			<<(int)new_node_level<<std::endl;
 			*/
 			
-			n0.setContent(new_node_content);
+			n0.setContent(liquid_kind_flowing);
+			n0.setLevel(nodemgr, new_node_level);
 			// Find out whether there is a suspect for this action
 			std::string suspect;
 			if(m_gamedef->rollback()){
@@ -1992,7 +2013,7 @@ void Map::transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*>
 	updateLighting(lighting_modified_blocks, modified_blocks);
 }
 
-void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
+void Map::transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
 {
 
 	if (g_settings->getBool("liquid_finite"))
@@ -2130,6 +2151,7 @@ void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & mod
 		content_t new_node_content;
 		s8 new_node_level = -1;
 		s8 max_node_level = -1;
+		u8 range = rangelim(nodemgr->get(liquid_kind).liquid_range, 0, LIQUID_LEVEL_MAX+1);
 		if ((num_sources >= 2 && nodemgr->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
@@ -2139,6 +2161,8 @@ void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & mod
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
 			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
+			if (new_node_level < (LIQUID_LEVEL_MAX+1-range))
+				new_node_content = CONTENT_AIR;
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
@@ -2179,7 +2203,7 @@ void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & mod
 			} else
 				new_node_level = max_node_level;
 
-			if (new_node_level >= 0)
+			if (max_node_level >= (LIQUID_LEVEL_MAX+1-range))
 				new_node_content = liquid_kind;
 			else
 				new_node_content = CONTENT_AIR;
@@ -2199,6 +2223,7 @@ void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & mod
 		/*
 			update the current node
 		 */
+		MapNode n00 = n0;
 		//bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
 		if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
@@ -2236,8 +2261,9 @@ void Map::transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & mod
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL) {
 			modified_blocks[blockpos] =  block;
-			// If node emits light, MapBlock requires lighting update
-			if(nodemgr->get(n0).light_source != 0)
+			// If new or old node emits light, MapBlock requires lighting update
+			if(nodemgr->get(n0).light_source != 0 ||
+					nodemgr->get(n00).light_source != 0)
 				lighting_modified_blocks[block->getPos()] = block;
 		}
 
@@ -2374,16 +2400,33 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
+s16 Map::getHeat(v3s16 p)
+{
+	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		return block->heat;
+	}
+	//errorstream << "No heat for " << p.X<<"," << p.Z << std::endl;
+	return 0;
+}
+
+s16 Map::getHumidity(v3s16 p)
+{
+	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	if(block != NULL) {
+		return block->humidity;
+	}
+	//errorstream << "No humidity for " << p.X<<"," << p.Z << std::endl;
+	return 0;
+}
+
 /*
 	ServerMap
 */
 ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	m_seed(0),
-	m_map_metadata_changed(true),
-	m_database(NULL),
-	m_database_read(NULL),
-	m_database_write(NULL)
+	m_map_metadata_changed(true)
 {
 	verbosestream<<__FUNCTION_NAME<<std::endl;
 
@@ -2413,6 +2456,28 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	/*
 		Try to load map; if not found, create a new one.
 	*/
+
+	// Determine which database backend to use
+	std::string conf_path = savedir + DIR_DELIM + "world.mt";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if (!succeeded || !conf.exists("backend")) {
+		// fall back to sqlite3
+		dbase = new Database_SQLite3(this, savedir);
+		conf.set("backend", "sqlite3");
+	} else {
+		std::string backend = conf.get("backend");
+		if (backend == "dummy")
+			dbase = new Database_Dummy(this);
+		else if (backend == "sqlite3")
+			dbase = new Database_SQLite3(this, savedir);
+		#if USE_LEVELDB
+		else if (backend == "leveldb")
+			dbase = new Database_LevelDB(this, savedir);
+		#endif
+		else
+			throw BaseException("Unknown map backend");
+	}
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -2505,12 +2570,7 @@ ServerMap::~ServerMap()
 	/*
 		Close database if it was opened
 	*/
-	if(m_database_read)
-		sqlite3_finalize(m_database_read);
-	if(m_database_write)
-		sqlite3_finalize(m_database_write);
-	if(m_database)
-		sqlite3_close(m_database);
+	delete(dbase);
 
 #if 0
 	/*
@@ -2782,6 +2842,40 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	/*infostream<<"finishBlockMake() done for ("<<blockpos_requested.X
 			<<","<<blockpos_requested.Y<<","
 			<<blockpos_requested.Z<<")"<<std::endl;*/
+			
+	/*
+		Update weather data in blocks
+	*/
+	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
+	if (senv->m_use_weather) {
+		for(s16 x=blockpos_min.X-extra_borders.X;
+			x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+			z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+			y<=blockpos_max.Y+extra_borders.Y; y++)
+		{
+			v3s16 p(x, y, z);
+			MapBlock *block = getBlockNoCreateNoEx(p);
+			block->weather_update_time = 0;
+			updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
+			updateBlockHumidity(senv, p * MAP_BLOCKSIZE, NULL);
+		}
+	} else {
+		for(s16 x=blockpos_min.X-extra_borders.X;
+			x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+			z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+			y<=blockpos_max.Y+extra_borders.Y; y++)
+		{
+			MapBlock *block = getBlockNoCreateNoEx(v3s16(x, y, z));
+			block->heat     = HEAT_UNDEFINED;
+			block->humidity = HUMIDITY_UNDEFINED;
+			block->weather_update_time = 0;
+		}
+	}
+	
 #if 0
 	if(enable_mapgen_debug_info)
 	{
@@ -3146,79 +3240,10 @@ plan_b:
 	//return (s16)level;
 }
 
-void ServerMap::createDatabase() {
-	int e;
-	assert(m_database);
-	e = sqlite3_exec(m_database,
-		"CREATE TABLE IF NOT EXISTS `blocks` ("
-			"`pos` INT NOT NULL PRIMARY KEY,"
-			"`data` BLOB"
-		");"
-	, NULL, NULL, NULL);
-	if(e == SQLITE_ABORT)
-		throw FileNotGoodException("Could not create database structure");
-	else
-		infostream<<"ServerMap: Database structure was created";
-}
-
-void ServerMap::verifyDatabase() {
-	if(m_database)
-		return;
-
-	{
-		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
-		bool needs_create = false;
-		int d;
-
-		/*
-			Open the database connection
-		*/
-
-		createDirs(m_savedir);
-
-		if(!fs::PathExists(dbp))
-			needs_create = true;
-
-		d = sqlite3_open_v2(dbp.c_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database failed to open: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot open database file");
-		}
-
-		if(needs_create)
-			createDatabase();
-
-		d = sqlite3_prepare(m_database, "SELECT `data` FROM `blocks` WHERE `pos`=? LIMIT 1", -1, &m_database_read, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare read statement");
-		}
-
-		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare write statement");
-		}
-
-		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
-		if(d != SQLITE_OK) {
-			infostream<<"WARNING: Database list statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-			throw FileNotGoodException("Cannot prepare read statement");
-		}
-
-		infostream<<"ServerMap: Database opened"<<std::endl;
-	}
-}
-
 bool ServerMap::loadFromFolders() {
-	if(!m_database && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
+	if(!dbase->Initialized() && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite")) // ?
 		return true;
 	return false;
-}
-
-sqlite3_int64 ServerMap::getBlockAsInteger(const v3s16 pos) {
-	return (sqlite3_int64)pos.Z*16777216 +
-		(sqlite3_int64)pos.Y*4096 + (sqlite3_int64)pos.X;
 }
 
 void ServerMap::createDirs(std::string path)
@@ -3393,50 +3418,13 @@ void ServerMap::save(ModifiedState save_level)
 	}
 }
 
-static s32 unsignedToSigned(s32 i, s32 max_positive)
-{
-	if(i < max_positive)
-		return i;
-	else
-		return i - 2*max_positive;
-}
-
-// modulo of a negative number does not work consistently in C
-static sqlite3_int64 pythonmodulo(sqlite3_int64 i, sqlite3_int64 mod)
-{
-	if(i >= 0)
-		return i % mod;
-	return mod - ((-i) % mod);
-}
-
-v3s16 ServerMap::getIntegerAsBlock(sqlite3_int64 i)
-{
-	s32 x = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	i = (i - x) / 4096;
-	s32 y = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	i = (i - y) / 4096;
-	s32 z = unsignedToSigned(pythonmodulo(i, 4096), 2048);
-	return v3s16(x,y,z);
-}
-
 void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	if(loadFromFolders()){
 		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
 				<<"all blocks that are stored in flat files"<<std::endl;
 	}
-
-	{
-		verifyDatabase();
-
-		while(sqlite3_step(m_database_list) == SQLITE_ROW)
-		{
-			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
-			v3s16 p = getIntegerAsBlock(block_i);
-			//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;
-			dst.push_back(p);
-		}
-	}
+	dbase->listAllLoadableBlocks(dst);
 }
 
 void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
@@ -3470,20 +3458,21 @@ void ServerMap::saveMapMeta()
 	createDirs(m_savedir);
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
-	if(os.good() == false)
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not open"<<fullpath<<std::endl;
-		throw FileNotGoodException("Cannot open chunk metadata");
-	}
+	std::ostringstream ss(std::ios_base::binary);
 
 	Settings params;
 
 	m_emerge->setParamsToSettings(&params);
-	params.writeLines(os);
+	params.writeLines(ss);
 
-	os<<"[end_of_params]\n";
+	ss<<"[end_of_params]\n";
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+	{
+		infostream<<"ERROR: ServerMap::saveMapMeta(): "
+				<<"could not write "<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot save chunk metadata");
+	}
 
 	m_map_metadata_changed = false;
 }
@@ -3535,7 +3524,7 @@ void ServerMap::loadMapMeta()
 		m_seed = mgparams->seed;
 	} else {
 		if (params.exists("seed")) {
-			m_seed = params.getU64("seed");
+			m_seed = read_seed(params.get("seed").c_str());
 			m_mgparams->seed = m_seed;
 		}
 	}
@@ -3547,18 +3536,19 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 {
 	DSTACK(__FUNCTION_NAME);
 	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
 	v2s16 pos = sector->getPos();
 	std::string dir = getSectorDir(pos);
 	createDirs(dir);
 
 	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open sector metafile");
+	std::ostringstream ss(std::ios_base::binary);
 
-	sector->serialize(o, version);
+	sector->serialize(ss, version);
+
+	if(!fs::safeWriteToFile(fullpath, ss.str()))
+		throw FileNotGoodException("Cannot write sector metafile");
 
 	sector->differs_from_disk = false;
 }
@@ -3720,88 +3710,16 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 #endif
 
 void ServerMap::beginSave() {
-	verifyDatabase();
-	if(sqlite3_exec(m_database, "BEGIN;", NULL, NULL, NULL) != SQLITE_OK)
-		infostream<<"WARNING: beginSave() failed, saving might be slow.";
+	dbase->beginSave();
 }
 
 void ServerMap::endSave() {
-	verifyDatabase();
-	if(sqlite3_exec(m_database, "COMMIT;", NULL, NULL, NULL) != SQLITE_OK)
-		infostream<<"WARNING: endSave() failed, map might not have saved.";
+	dbase->endSave();
 }
 
 void ServerMap::saveBlock(MapBlock *block)
 {
-	DSTACK(__FUNCTION_NAME);
-	/*
-		Dummy blocks are not written
-	*/
-	if(block->isDummy())
-	{
-		/*v3s16 p = block->getPos();
-		infostream<<"ServerMap::saveBlock(): WARNING: Not writing dummy block "
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		return;
-	}
-
-	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
-	// Get destination
-	v3s16 p3d = block->getPos();
-
-
-#if 0
-	v2s16 p2d(p3d.X, p3d.Z);
-	std::string sectordir = getSectorDir(p2d);
-
-	createDirs(sectordir);
-
-	std::string fullpath = sectordir+DIR_DELIM+getBlockFilename(p3d);
-	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
-	if(o.good() == false)
-		throw FileNotGoodException("Cannot open block data");
-#endif
-	/*
-		[0] u8 serialization version
-		[1] data
-	*/
-
-	verifyDatabase();
-
-	std::ostringstream o(std::ios_base::binary);
-
-	o.write((char*)&version, 1);
-
-	// Write basic data
-	block->serialize(o, version, true);
-
-	// Write block to database
-
-	std::string tmp = o.str();
-	const char *bytes = tmp.c_str();
-
-	bool success = true;
-	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK) {
-		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) { // TODO this mught not be the right length
-		infostream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	int written = sqlite3_step(m_database_write);
-	if(written != SQLITE_DONE) {
-		errorstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
-				<<sqlite3_errmsg(m_database)<<std::endl;
-		success = false;
-	}
-	// Make ready for later reuse
-	sqlite3_reset(m_database_write);
-
-	// We just wrote it to the disk so clear modified flag
-	if (success)
-		block->resetModified();
+  dbase->saveBlock(block);
 }
 
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load)
@@ -3854,7 +3772,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 			Save blocks loaded in old format in new format
 		*/
 
-		if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		if(version < SER_FMT_VER_HIGHEST_WRITE || save_after_load)
 		{
 			saveBlock(block);
 
@@ -3873,7 +3791,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 				<<" (SerializationError). "
 				<<"what()="<<e.what()
 				<<std::endl;
-				//" Ignoring. A new one will be generated.
+				// Ignoring. A new one will be generated.
 		assert(0);
 
 		// TODO: Backup file; name is in fullpath.
@@ -3921,7 +3839,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			Save blocks loaded in old format in new format
 		*/
 
-		//if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		//if(version < SER_FMT_VER_HIGHEST_READ || save_after_load)
 		// Only save if asked to; no need to update version
 		if(save_after_load)
 			saveBlock(block);
@@ -3955,38 +3873,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
-	if(!loadFromFolders()) {
-		verifyDatabase();
+	MapBlock *ret;
 
-		if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
-			infostream<<"WARNING: Could not bind block position for load: "
-				<<sqlite3_errmsg(m_database)<<std::endl;
-		if(sqlite3_step(m_database_read) == SQLITE_ROW) {
-			/*
-				Make sure sector is loaded
-			*/
-			MapSector *sector = createSector(p2d);
-
-			/*
-				Load block
-			*/
-			const char * data = (const char *)sqlite3_column_blob(m_database_read, 0);
-			size_t len = sqlite3_column_bytes(m_database_read, 0);
-
-			std::string datastr(data, len);
-
-			loadBlock(&datastr, blockpos, sector, false);
-
-			sqlite3_step(m_database_read);
-			// We should never get more than 1 row, so ok to reset
-			sqlite3_reset(m_database_read);
-
-			return getBlockNoCreateNoEx(blockpos);
-		}
-		sqlite3_reset(m_database_read);
-
-		// Not found in database, try the files
-	}
+	ret = dbase->loadBlock(blockpos);
+	if (ret) return (ret);
+	// Not found in database, try the files
 
 	// The directory layout we're going to load from.
 	//  1 - original sectors/xxxxzzzz/
@@ -4047,6 +3938,48 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
+}
+
+s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
+{
+	u32 gametime = env->getGameTime();
+	
+	if (block) {
+		if (gametime - block->weather_update_time < 10)
+			return block->heat;
+	} else {
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	}
+
+	f32 heat = m_emerge->biomedef->calcBlockHeat(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
+
+	if(block) {
+		block->heat = heat;
+		block->weather_update_time = gametime;
+	}
+	return heat;
+}
+
+s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
+{
+	u32 gametime = env->getGameTime();
+	
+	if (block) {
+		if (gametime - block->weather_update_time < 10)
+			return block->humidity;
+	} else {
+		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
+	}
+
+	f32 humidity = m_emerge->biomedef->calcBlockHumidity(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
+			
+	if(block) {
+		block->humidity = humidity;
+		block->weather_update_time = gametime;
+	}
+	return humidity;
 }
 
 /*

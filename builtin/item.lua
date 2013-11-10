@@ -34,8 +34,45 @@ function minetest.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
-function minetest.dir_to_facedir(dir)
-	if math.abs(dir.x) > math.abs(dir.z) then
+function minetest.dir_to_facedir(dir, is6d)
+	--account for y if requested
+	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
+
+		--from above
+		if dir.y < 0 then
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 19
+				else
+					return 13
+				end
+			else
+				if dir.z < 0 then
+					return 10
+				else
+					return 4
+				end
+			end
+
+		--from below
+		else
+			if math.abs(dir.x) > math.abs(dir.z) then
+				if dir.x < 0 then
+					return 15
+				else
+					return 17
+				end
+			else
+				if dir.z < 0 then
+					return 6
+				else
+					return 8
+				end
+			end
+		end
+
+	--otherwise, place horizontally
+	elseif math.abs(dir.x) > math.abs(dir.z) then
 		if dir.x < 0 then
 			return 3
 		else
@@ -48,6 +85,27 @@ function minetest.dir_to_facedir(dir)
 			return 0
 		end
 	end
+end
+
+function minetest.facedir_to_dir(facedir)
+	--a table of possible dirs
+	return ({{x=0, y=0, z=1},
+					{x=1, y=0, z=0},
+					{x=0, y=0, z=-1},
+					{x=-1, y=0, z=0},
+					{x=0, y=-1, z=0},
+					{x=0, y=1, z=0}})
+
+					--indexed into by a table of correlating facedirs
+					[({[0]=1, 2, 3, 4, 
+						5, 4, 6, 2,
+						6, 2, 5, 4,
+						1, 5, 3, 6,
+						1, 6, 3, 5,
+						1, 4, 3, 2})
+
+						--indexed into by the facedir in question
+						[facedir]]
 end
 
 function minetest.dir_to_wallmounted(dir)
@@ -121,11 +179,11 @@ function minetest.get_node_drops(nodename, toolname)
 	return got_items
 end
 
-function minetest.item_place_node(itemstack, placer, pointed_thing)
+function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
-		return itemstack
+		return itemstack, false
 	end
 
 	local under = pointed_thing.under
@@ -136,7 +194,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	if not oldnode_under or not oldnode_above then
 		minetest.log("info", placer:get_player_name() .. " tried to place"
 			.. " node in unloaded position " .. minetest.pos_to_string(above))
-		return itemstack
+		return itemstack, false
 	end
 
 	local olddef_under = ItemStack({name=oldnode_under.name}):get_definition()
@@ -148,7 +206,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		minetest.log("info", placer:get_player_name() .. " tried to place"
 			.. " node in invalid position " .. minetest.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
-		return itemstack
+		return itemstack, false
 	end
 
 	-- Place above pointed node
@@ -160,14 +218,23 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
+	if minetest.is_protected(place_to, placer:get_player_name()) then
+		minetest.log("action", placer:get_player_name()
+				.. " tried to place " .. def.name
+				.. " at protected position "
+				.. minetest.pos_to_string(place_to))
+		minetest.record_protection_violation(place_to, placer:get_player_name())
+		return itemstack
+	end
+
 	minetest.log("action", placer:get_player_name() .. " places node "
 		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 	
 	local oldnode = minetest.get_node(place_to)
-	local newnode = {name = def.name, param1 = 0, param2 = 0}
+	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
-	if def.paramtype2 == 'wallmounted' then
+	if def.paramtype2 == 'wallmounted' and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -175,7 +242,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		}
 		newnode.param2 = minetest.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
-	elseif def.paramtype2 == 'facedir' then
+	elseif def.paramtype2 == 'facedir' and not param2 then
 		local placer_pos = placer:getpos()
 		if placer_pos then
 			local dir = {
@@ -193,7 +260,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		not check_attached_node(place_to, newnode) then
 		minetest.log("action", "attached node " .. def.name ..
 			" can not be placed at " .. minetest.pos_to_string(place_to))
-		return itemstack
+		return itemstack, false
 	end
 
 	-- Add node and update
@@ -225,7 +292,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 	if take_item then
 		itemstack:take_item()
 	end
-	return itemstack
+	return itemstack, true
 end
 
 function minetest.item_place_object(itemstack, placer, pointed_thing)
@@ -237,19 +304,19 @@ function minetest.item_place_object(itemstack, placer, pointed_thing)
 	return itemstack
 end
 
-function minetest.item_place(itemstack, placer, pointed_thing)
+function minetest.item_place(itemstack, placer, pointed_thing, param2)
 	-- Call on_rightclick if the pointed node defines it
 	if pointed_thing.type == "node" and placer and
 			not placer:get_player_control().sneak then
 		local n = minetest.get_node(pointed_thing.under)
 		local nn = n.name
 		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
-			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack
+			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n, placer, itemstack) or itemstack, false
 		end
 	end
 
 	if itemstack:get_definition().type == "node" then
-		return minetest.item_place_node(itemstack, placer, pointed_thing)
+		return minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 	return itemstack
 end
@@ -312,11 +379,19 @@ end
 
 function minetest.node_dig(pos, node, digger)
 	local def = ItemStack({name=node.name}):get_definition()
-	-- Check if def ~= 0 because we always want to be able to remove unknown nodes
-	if #def ~= 0 and not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
+	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. minetest.pos_to_string(pos))
+		return
+	end
+
+	if minetest.is_protected(pos, digger:get_player_name()) then
+		minetest.log("action", digger:get_player_name()
+				.. " tried to dig " .. node.name
+				.. " at protected position "
+				.. minetest.pos_to_string(pos))
+		minetest.record_protection_violation(pos, digger:get_player_name())
 		return
 	end
 
@@ -325,14 +400,19 @@ function minetest.node_dig(pos, node, digger)
 
 	local wielded = digger:get_wielded_item()
 	local drops = minetest.get_node_drops(node.name, wielded:get_name())
-
-	-- Wear out tool
-	if not minetest.setting_getbool("creative_mode") then
-		local tp = wielded:get_tool_capabilities()
-		local dp = minetest.get_dig_params(def.groups, tp)
-		wielded:add_wear(dp.wear)
-		digger:set_wielded_item(wielded)
+	
+	local wdef = wielded:get_definition()
+	local tp = wielded:get_tool_capabilities()
+	local dp = minetest.get_dig_params(def.groups, tp)
+	if wdef and wdef.after_use then
+		wielded = wdef.after_use(wielded, digger, node, dp) or wielded
+	else
+		-- Wear out tool
+		if not minetest.setting_getbool("creative_mode") then
+			wielded:add_wear(dp.wear)
+		end
 	end
+	digger:set_wielded_item(wielded)
 	
 	-- Handle drops
 	minetest.handle_node_drops(pos, drops, digger)
@@ -432,6 +512,7 @@ minetest.nodedef_default = {
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",
 	liquid_viscosity = 0,
+	drowning = 0,
 	light_source = 0,
 	damage_per_second = 0,
 	selection_box = {type="regular"},

@@ -18,14 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_entity.h"
+#include "cpp_api/s_internal.h"
 #include "log.h"
 #include "object_properties.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-
-extern "C" {
-#include "lauxlib.h"
-}
 
 bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
@@ -169,6 +166,7 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
 
 	getboolfield(L, -1, "physical", prop->physical);
+	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
 	getfloatfield(L, -1, "weight", prop->weight);
 

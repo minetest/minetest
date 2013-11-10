@@ -25,17 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 #include "irrlichttypes.h"
 #include "modalMenu.h"
-#include "clouds.h"
-#include "guiLuaApi.h"
 #include "guiFormSpecMenu.h"
+#include "sound.h"
+#include "tile.h"
 
 /******************************************************************************/
 /* Typedefs and macros                                                        */
 /******************************************************************************/
-#define MAX_MENUBAR_BTN_COUNT	10
-#define MAX_MENUBAR_BTN_ID		256
-#define MIN_MENUBAR_BTN_ID		(MAX_MENUBAR_BTN_ID - MAX_MENUBAR_BTN_COUNT)
-
 /** texture layer ids */
 typedef enum {
 	TEX_LAYER_BACKGROUND = 0,
@@ -49,6 +45,8 @@ typedef enum {
 /* forward declarations                                                       */
 /******************************************************************************/
 class GUIEngine;
+class MainMenuScripting;
+class Clouds;
 struct MainMenuData;
 
 /******************************************************************************/
@@ -64,6 +62,7 @@ public:
 	 * @param engine the engine data is transmitted for further processing
 	 */
 	TextDestGuiEngine(GUIEngine* engine);
+
 	/**
 	 * receive fields transmitted by guiFormSpecMenu
 	 * @param fields map containing formspec field elements currently active
@@ -75,20 +74,66 @@ public:
 	 * @param text textual representation of event
 	 */
 	void gotText(std::wstring text);
+
 private:
 	/** target to transmit data to */
 	GUIEngine* m_engine;
 };
 
+/** GUIEngine specific implementation of ISimpleTextureSource */
+class MenuTextureSource : public ISimpleTextureSource
+{
+public:
+	/**
+	 * default constructor
+	 * @param driver the video driver to load textures from
+	 */
+	MenuTextureSource(video::IVideoDriver *driver);
+
+	/**
+	 * destructor, removes all loaded textures
+	 */
+	virtual ~MenuTextureSource();
+
+	/**
+	 * get a texture, loading it if required
+	 * @param name path to the texture
+	 * @param id receives the texture ID, always 0 in this implementation
+	 */
+	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
+
+private:
+	/** driver to get textures from */
+	video::IVideoDriver *m_driver;
+	/** set of texture names to delete */
+	std::set<std::string> m_to_delete;
+};
+
+/** GUIEngine specific implementation of OnDemandSoundFetcher */
+class MenuMusicFetcher: public OnDemandSoundFetcher
+{
+public:
+	/**
+	 * get sound file paths according to sound name
+	 * @param name sound name
+	 * @param dst_paths receives possible paths to sound files
+	 * @param dst_datas receives binary sound data (not used here)
+	 */
+	void fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::string> &dst_datas);
+
+private:
+	/** set of fetched sound names */
+	std::set<std::string> m_fetched;
+};
 
 /** implementation of main menu based uppon formspecs */
 class GUIEngine {
-public:
-	/** TextDestGuiEngine needs to transfer data to engine */
-	friend class TextDestGuiEngine;
-	/** guiLuaApi is used to initialize contained stack */
-	friend class guiLuaApi;
+	/** grant ModApiMainMenu access to private members */
+	friend class ModApiMainMenu;
 
+public:
 	/**
 	 * default constructor
 	 * @param dev device to draw at
@@ -101,22 +146,18 @@ public:
 				gui::IGUIElement* parent,
 				IMenuManager *menumgr,
 				scene::ISceneManager* smgr,
-				MainMenuData* data);
+				MainMenuData* data,
+				bool& kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
 
-protected:
 	/**
-	 * process field data recieved from formspec
-	 * @param fields data in field format
+	 * return MainMenuScripting interface
 	 */
-	void handleButtons(std::map<std::string, std::string> fields);
-	/**
-	 * process events received from formspec
-	 * @param text events in textual form
-	 */
-	void handleEvent(std::string text);
+	MainMenuScripting* getScriptIface() {
+		return m_script;
+	}
 
 	/**
 	 * return dir of current menuscript
@@ -127,7 +168,10 @@ protected:
 
 private:
 
-	/* run main menu loop */
+	/** find and run the main menu script */
+	bool loadMainMenuScript();
+
+	/** run main menu loop */
 	void run();
 
 	/** handler to limit frame rate within main menu */
@@ -143,6 +187,10 @@ private:
 	scene::ISceneManager*	m_smgr;
 	/** pointer to data beeing transfered back to main game handling */
 	MainMenuData*			m_data;
+	/** pointer to texture source */
+	ISimpleTextureSource*	m_texture_source;
+	/** pointer to soundmanager*/
+	ISoundManager*			m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
 	FormspecFormSource*		m_formspecgui;
@@ -151,30 +199,14 @@ private:
 	/** the formspec menu */
 	GUIFormSpecMenu*		m_menu;
 
+	/** reference to kill variable managed by SIGINT handler */
+	bool&					m_kill;
+
 	/** variable used to abort menu and return back to main game handling */
 	bool					m_startgame;
 
-	/**
-	 * initialize lua stack
-	 * @param L stack to initialize
-	 */
-	void initalize_api(lua_State * L);
-
-	/**
-	 * run a lua script
-	 * @param script full path to script to run
-	 */
-	bool runScript(std::string script);
-
-	/**
-	 * script error handler to process errors within lua
-	 */
-	void scriptError(const char *fmt, ...);
-
-	/** lua stack */
-	lua_State*				m_engineluastack;
-	/** lua internal stack number of error handler*/
-	int						m_luaerrorhandler;
+	/** scripting interface */
+	MainMenuScripting*		m_script;
 
 	/** script basefolder */
 	std::string				m_scriptdir;
@@ -252,6 +284,12 @@ private:
 	bool					m_clouds_enabled;
 	/** data used to draw clouds */
 	clouddata 				m_cloud;
+
+	/** start playing a sound and return handle */
+	s32 playSound(SimpleSoundSpec spec, bool looped);
+	/** stop playing a sound started with playSound() */
+	void stopSound(s32 handle);
+
 
 };
 

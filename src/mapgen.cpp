@@ -35,7 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
+#include "serialization.h"
 #include "util/serialize.h"
+#include "filesys.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
@@ -91,18 +93,17 @@ void Ore::resolveNodeNames(INodeDefManager *ndef) {
 		if (ore == CONTENT_IGNORE) {
 			errorstream << "Ore::resolveNodeNames: ore node '"
 				<< ore_name << "' not defined";
-			ore     = CONTENT_AIR;
-			wherein = CONTENT_AIR;
+			ore = CONTENT_AIR;
+			wherein.push_back(CONTENT_AIR);
+			return;
 		}
 	}
 
-	if (wherein == CONTENT_IGNORE) {
-		wherein = ndef->getId(wherein_name);
-		if (wherein == CONTENT_IGNORE) {
-			errorstream << "Ore::resolveNodeNames: wherein node '"
-				<< wherein_name << "' not defined";
-			ore     = CONTENT_AIR;
-			wherein = CONTENT_AIR;
+	for (size_t i=0; i != wherein_names.size(); i++) {
+		std::string name = wherein_names[i];
+		content_t c = ndef->getId(name);
+		if (c != CONTENT_IGNORE) {
+			wherein.push_back(c);
 		}
 	}
 }
@@ -161,8 +162,9 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 				continue;
 
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
-			if (vm->m_data[i].getContent() == wherein)
-				vm->m_data[i] = n_ore;
+			for (size_t ii = 0; ii < wherein.size(); ii++)
+				if (vm->m_data[i].getContent() == wherein[ii])
+					vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -199,8 +201,9 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			if (!vm->m_area.contains(i))
 				continue;
 
-			if (vm->m_data[i].getContent() == wherein)
-				vm->m_data[i] = n_ore;
+			for (size_t ii = 0; ii < wherein.size(); ii++)
+				if (vm->m_data[i].getContent() == wherein[ii])
+					vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -505,12 +508,20 @@ void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
 	}
 	
 	for (size_t i = 0; i != node_names->size(); i++) {
-		content_t c = ndef->getId(node_names->at(i));
+		std::string name = node_names->at(i);
+		
+		std::map<std::string, std::string>::iterator it;
+		it = replacements.find(name);
+		if (it != replacements.end())
+			name = it->second;
+		
+		content_t c = ndef->getId(name);
 		if (c == CONTENT_IGNORE) {
 			errorstream << "DecoSchematic::resolveNodeNames: node '"
-				<< node_names->at(i) << "' not defined" << std::endl;
+				<< name << "' not defined" << std::endl;
 			c = CONTENT_AIR;
 		}
+		
 		c_nodes.push_back(c);
 	}
 		
@@ -599,6 +610,9 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 			
 			if (schematic[i].getContent() == CONTENT_IGNORE)
 				continue;
+				
+			if (schematic[i].param1 == MTSCHEM_PROB_NEVER)
+				continue;
 
 			if (!force_placement) {
 				content_t c = vm->m_data[vi].getContent();
@@ -606,7 +620,8 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 					continue;
 			}
 			
-			if (schematic[i].param1 && myrand_range(1, 256) > schematic[i].param1)
+			if (schematic[i].param1 != MTSCHEM_PROB_ALWAYS &&
+				myrand_range(1, 255) > schematic[i].param1)
 				continue;
 			
 			vm->m_data[vi] = schematic[i];
@@ -662,6 +677,9 @@ void DecoSchematic::placeStructure(Map *map, v3s16 p) {
 
 
 bool DecoSchematic::loadSchematicFile() {
+	content_t cignore = CONTENT_IGNORE;
+	bool have_cignore = false;
+	
 	std::ifstream is(filename.c_str(), std::ios_base::binary);
 
 	u32 signature = readU32(is);
@@ -672,7 +690,7 @@ bool DecoSchematic::loadSchematicFile() {
 	}
 	
 	u16 version = readU16(is);
-	if (version != 1) {
+	if (version > 2) {
 		errorstream << "loadSchematicFile: unsupported schematic "
 			"file version" << std::endl;
 		return false;
@@ -686,14 +704,28 @@ bool DecoSchematic::loadSchematicFile() {
 	node_names = new std::vector<std::string>;
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString(is);
+		if (name == "ignore") {
+			name = "air";
+			cignore = i;
+			have_cignore = true;
+		}
 		node_names->push_back(name);
 	}
 
 	delete schematic;
 	schematic = new MapNode[nodecount];
-	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schematic,
 				nodecount, 2, 2, true);
-				
+	
+	if (version == 1) { // fix up the probability values
+		for (int i = 0; i != nodecount; i++) {
+			if (schematic[i].param1 == 0)
+				schematic[i].param1 = MTSCHEM_PROB_ALWAYS;
+			if (have_cignore && schematic[i].getContent() == cignore)
+				schematic[i].param1 = MTSCHEM_PROB_NEVER;
+		}
+	}
+	
 	return true;
 }
 
@@ -703,7 +735,7 @@ bool DecoSchematic::loadSchematicFile() {
 
 	All values are stored in big-endian byte order.
 	[u32] signature: 'MTSM'
-	[u16] version: 1
+	[u16] version: 2
 	[u16] size X
 	[u16] size Y
 	[u16] size Z
@@ -720,26 +752,32 @@ bool DecoSchematic::loadSchematicFile() {
 	For each node in schematic:
 		[u8] param2
 	}
+	
+	Version changes:
+	1 - Initial version
+	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
 */
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
-	std::ofstream os(filename.c_str(), std::ios_base::binary);
+	std::ostringstream ss(std::ios_base::binary);
 
-	writeU32(os, MTSCHEM_FILE_SIGNATURE); // signature
-	writeU16(os, 1);      // version
-	writeV3S16(os, size); // schematic size
+	writeU32(ss, MTSCHEM_FILE_SIGNATURE); // signature
+	writeU16(ss, 2);      // version
+	writeV3S16(ss, size); // schematic size
 	
 	std::vector<content_t> usednodes;
 	int nodecount = size.X * size.Y * size.Z;
 	build_nnlist_and_update_ids(schematic, nodecount, &usednodes);
 	
 	u16 numids = usednodes.size();
-	writeU16(os, numids); // name count
+	writeU16(ss, numids); // name count
 	for (int i = 0; i != numids; i++)
-		os << serializeString(ndef->get(usednodes[i]).name); // node names
+		ss << serializeString(ndef->get(usednodes[i]).name); // node names
 		
 	// compressed bulk node data
-	MapNode::serializeBulk(os, SER_FMT_VER_HIGHEST, schematic,
+	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE, schematic,
 				nodecount, 2, 2, true);
+
+	fs::safeWriteToFile(filename, ss.str());
 }
 
 
@@ -783,7 +821,7 @@ bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
 		u32 vi = vm->m_area.index(p1.X, y, z);
 		for (s16 x = p1.X; x <= p2.X; x++, i++, vi++) {
 			schematic[i] = vm->m_data[vi];
-			schematic[i].param1 = 0;
+			schematic[i].param1 = MTSCHEM_PROB_ALWAYS;
 		}
 	}
 
@@ -792,16 +830,18 @@ bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
 }
 
 
-void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, s16> > *plist, v3s16 p0) {
+void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist,
+									v3s16 p0) {
 	for (size_t i = 0; i != plist->size(); i++) {
 		v3s16 p = (*plist)[i].first - p0;
 		int index = p.Z * (size.Y * size.X) + p.Y * size.X + p.X;
 		if (index < size.Z * size.Y * size.X) {
-			s16 prob = (*plist)[i].second;
-			if (prob != -1)
-				schematic[index].param1 = prob;
-			else
-				schematic[index].setContent(CONTENT_IGNORE);
+			u8 prob = (*plist)[i].second;
+			schematic[index].param1 = prob;
+			
+			// trim unnecessary node names from schematic
+			if (prob == MTSCHEM_PROB_NEVER)
+				schematic[index].setContent(CONTENT_AIR);
 		}
 	}
 }
@@ -1093,34 +1133,4 @@ void MapgenV7Params::writeParams(Settings *settings) {
 	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
 	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
-}
-
-
-/////////////////////////////////// legacy static functions for farmesh
-
-s16 Mapgen::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision) {
-	//just need to return something
-	s16 level = 5;
-	return level;
-}
-
-
-bool Mapgen::get_have_beach(u64 seed, v2s16 p2d) {
-	double sandnoise = noise2d_perlin(
-				0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
-				seed+59420, 3, 0.50);
- 
-	return (sandnoise > 0.15);
-}
-
-
-double Mapgen::tree_amount_2d(u64 seed, v2s16 p) {
-	double noise = noise2d_perlin(
-			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
-			seed+2, 4, 0.66);
-	double zeroval = -0.39;
-	if(noise < zeroval)
-		return 0;
-	else
-		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }

@@ -39,6 +39,8 @@ extern "C" {
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
 
+namespace Json { class Value; }
+
 struct MapNode;
 class INodeDefManager;
 struct PointedThing;
@@ -87,14 +89,13 @@ void               read_object_properties    (lua_State *L,
                                               int index,
                                               ObjectProperties *prop);
 
-//TODO fix parameter oreder!
-void               push_inventory_list       (Inventory *inv,
-                                              const char *name,
-                                              lua_State *L);
-void               read_inventory_list       (Inventory *inv,
-                                              const char *name,
-                                              lua_State *L,
+void               push_inventory_list       (lua_State *L,
+                                              Inventory *inv,
+                                              const char *name);
+void               read_inventory_list       (lua_State *L,
                                               int tableindex,
+                                              Inventory *inv,
+                                              const char *name,
                                               Server* srv,
                                               int forcesize=-1);
 
@@ -145,6 +146,10 @@ bool               read_schematic            (lua_State *L, int index,
                                               Server *server);
 
 void               luaentity_get             (lua_State *L,u16 id);
+
+bool               push_json_value           (lua_State *L,
+                                              const Json::Value &value,
+                                              int nullindex);
 
 extern struct EnumString es_TileAnimationType[];
 

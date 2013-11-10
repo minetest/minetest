@@ -433,9 +433,14 @@ void Sky::update(float time_of_day, float time_brightness,
 	//video::SColorf cloudcolor_bright_dawn_f(1.0, 0.65, 0.44);
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
 
+	float cloud_color_change_fraction = 0.95;
 	if(sunlight_seen){
-		//m_brightness = m_brightness * 0.95 + direct_brightness * 0.05;
-		m_brightness = m_brightness * 0.95 + time_brightness * 0.05;
+		if(fabs(time_brightness - m_brightness) < 0.2){
+			m_brightness = m_brightness * 0.95 + time_brightness * 0.05;
+		} else {
+			m_brightness = m_brightness * 0.80 + time_brightness * 0.20;
+			cloud_color_change_fraction = 0.0;
+		}
 	}
 	else{
 		if(direct_brightness < m_brightness)
@@ -493,8 +498,8 @@ void Sky::update(float time_of_day, float time_brightness,
 	} else {
 		cloud_direct_brightness = direct_brightness;
 	}
-	m_cloud_brightness = m_cloud_brightness * 0.95 +
-			cloud_direct_brightness * (1.0 - 0.95);
+	m_cloud_brightness = m_cloud_brightness * cloud_color_change_fraction +
+			cloud_direct_brightness * (1.0 - cloud_color_change_fraction);
 	m_cloudcolor_f = video::SColorf(
 			m_cloudcolor_bright_f.getRed() * m_cloud_brightness,
 			m_cloudcolor_bright_f.getGreen() * m_cloud_brightness,

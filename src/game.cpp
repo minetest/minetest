@@ -37,10 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "guiChatConsole.h"
 #include "config.h"
+#include "version.h"
 #include "clouds.h"
 #include "particles.h"
 #include "camera.h"
-#include "farmesh.h"
 #include "mapblock.h"
 #include "settings.h"
 #include "profiler.h"
@@ -795,9 +795,9 @@ public:
 		services->setPixelShaderConstant("skyBgColor", bgcolorfa, 4);
 
 		// Fog distance
-		float fog_distance = *m_fog_range;
-		if(*m_force_fog_off)
-			fog_distance = 10000*BS;
+		float fog_distance = 10000*BS;
+		if(g_settings->getBool("enable_fog") && !*m_force_fog_off)
+			fog_distance = *m_fog_range;
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
 
 		// Day-night ratio
@@ -807,7 +807,12 @@ public:
 		
 		// Normal map texture layer
 		int layer = 1;
+		// before 1.8 there isn't a "integer interface", only float
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
+#else
+		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer, 1);
+#endif
 	}
 };
 
@@ -911,7 +916,6 @@ void the_game(
 	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath,
 	ChatBackend &chat_backend,
 	const SubgameSpec &gamespec, // Used for local game,
 	bool simple_singleplayer_mode
@@ -997,7 +1001,7 @@ void the_game(
 		draw_load_screen(text, device, font,0,25);
 		delete[] text;
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath, gamespec,
+		server = new Server(map_dir, gamespec,
 				simple_singleplayer_mode);
 		server->start(port);
 	}
@@ -1303,16 +1307,6 @@ void the_game(
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 	
 	/*
-		FarMesh
-	*/
-
-	FarMesh *farmesh = NULL;
-	if(g_settings->getBool("enable_farmesh"))
-	{
-		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
-	}
-
-	/*
 		A copy of the local inventory
 	*/
 	Inventory local_inventory(itemdef);
@@ -1401,7 +1395,6 @@ void the_game(
 	bool ldown_for_dig = false;
 
 	float damage_flash = 0;
-	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
 	float jump_timer = 0;
 	bool reset_jump_timer = false;
@@ -1463,6 +1456,8 @@ void the_game(
 	*/
 	Hud hud(driver, guienv, font, text_height,
 			gamedef, player, &local_inventory);
+
+	bool use_weather = g_settings->getBool("weather");
 
 	for(;;)
 	{
@@ -1728,7 +1723,7 @@ void the_game(
 			GUIFormSpecMenu *menu =
 				new GUIFormSpecMenu(device, guiroot, -1,
 					&g_menumgr,
-					&client, gamedef);
+					&client, gamedef, tsrc);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
@@ -2267,7 +2262,7 @@ void the_game(
 						GUIFormSpecMenu *menu =
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
-										&client, gamedef);
+										&client, gamedef, tsrc);
 						menu->setFormSource(current_formspec);
 						menu->setTextDest(current_textdest);
 						menu->drop();
@@ -2451,10 +2446,12 @@ void the_game(
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.update(player, dtime, busytime, screensize,
+				tool_reload_ratio);
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
+		v3s16 pos_i = floatToInt(player_position, BS);
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
@@ -2488,7 +2485,12 @@ void the_game(
 		
 		//u32 t1 = device->getTimer()->getRealTime();
 		
-		f32 d = 4; // max. distance
+		f32 d = playeritem_def.range; // max. distance
+		f32 d_hand = itemdef->get("").range;
+		if(d < 0 && d_hand >= 0)
+			d = d_hand;
+		else if(d < 0)
+			d = 4.0;
 		core::line3d<f32> shootline(camera_position,
 				camera_position + camera_direction * BS * (d+1));
 
@@ -2756,7 +2758,7 @@ void the_game(
 					GUIFormSpecMenu *menu =
 						new GUIFormSpecMenu(device, guiroot, -1,
 							&g_menumgr,
-							&client, gamedef);
+							&client, gamedef, tsrc);
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
 					menu->setFormSource(new NodeMetadataFormSource(
@@ -2857,16 +2859,14 @@ void the_game(
 			Fog range
 		*/
 	
-		if(farmesh)
-		{
-			fog_range = BS*farmesh_range;
-		}
-		else
-		{
+		if(draw_control.range_all)
+			fog_range = 100000*BS;
+		else {
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
+			if(use_weather)
+				fog_range *= (1.5 - 1.4*(float)client.getEnv().getClientMap().getHumidity(pos_i)/100);
+			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
-			if(draw_control.range_all)
-				fog_range = 100000*BS;
 		}
 
 		/*
@@ -2905,7 +2905,6 @@ void the_game(
 		sky->update(time_of_day_smooth, time_brightness, direct_brightness,
 				sunlight_seen);
 		
-		float brightness = sky->getBrightness();
 		video::SColor bgcolor = sky->getBgColor();
 		video::SColor skycolor = sky->getSkyColor();
 
@@ -2924,22 +2923,6 @@ void the_game(
 		}
 		
 		/*
-			Update farmesh
-		*/
-		if(farmesh)
-		{
-			farmesh_range = draw_control.wanted_range * 10;
-			if(draw_control.range_all && farmesh_range < 500)
-				farmesh_range = 500;
-			if(farmesh_range > 1000)
-				farmesh_range = 1000;
-
-			farmesh->step(dtime);
-			farmesh->update(v2f(player_position.X, player_position.Z),
-					brightness, farmesh_range);
-		}
-
-		/*
 			Update particles
 		*/
 
@@ -2950,7 +2933,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings->getBool("enable_fog") == true && !force_fog_off)
+		if(g_settings->getBool("enable_fog") && !force_fog_off)
 		{
 			driver->setFog(
 				bgcolor,
@@ -2981,9 +2964,6 @@ void the_game(
 
 		//TimeTaker guiupdatetimer("Gui updating");
 		
-		const char program_name_and_version[] =
-			"Minetest " VERSION_STRING;
-
 		if(show_debug)
 		{
 			static float drawtime_avg = 0;
@@ -2997,7 +2977,7 @@ void the_game(
 			
 			std::ostringstream os(std::ios_base::binary);
 			os<<std::fixed
-				<<program_name_and_version
+				<<"Minetest "<<minetest_version_hash
 				<<" (R: range_all="<<draw_control.range_all<<")"
 				<<std::setprecision(0)
 				<<" drawtime = "<<drawtime_avg
@@ -3013,7 +2993,9 @@ void the_game(
 		}
 		else if(show_hud || show_chat)
 		{
-			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<"Minetest "<<minetest_version_hash;
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else
@@ -3029,7 +3011,9 @@ void the_game(
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
-				<<") (seed = "<<((unsigned long long)client.getMapSeed())
+				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
+				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
+				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
@@ -3219,6 +3203,11 @@ void the_game(
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
 
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
+
 
 				//Right eye...
 				irr::core::vector3df rightEye;
@@ -3242,6 +3231,11 @@ void the_game(
 				camera.getCameraNode()->setTarget( focusPoint );
 
 				smgr->drawAll(); // 'smgr->drawAll();' may go here
+
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+				if (show_hud)
+					hud.drawSelectionBoxes(hilightboxes);
 
 
 				//driver->endScene();
@@ -3271,9 +3265,11 @@ void the_game(
 		driver->setMaterial(m);
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-		if (show_hud)
+		if((!g_settings->getBool("anaglyph")) && (show_hud))
+		{
 			hud.drawSelectionBoxes(hilightboxes);
+		}
+
 		/*
 			Wielded tool
 		*/
@@ -3359,7 +3355,7 @@ void the_game(
 		*/
 		{
 			TimeTaker timer("endScene");
-			endSceneX(driver);
+			driver->endScene();
 			endscenetime = timer.stop(true);
 		}
 
@@ -3467,6 +3463,7 @@ void the_game(
 		infostream << "\t\t" << i << ":" << texture->getName().getPath().c_str()
 				<< std::endl;
 	}
+	clearTextureNameCache();
 	infostream << "\tRemaining materials: "
 		<< driver-> getMaterialRendererCount ()
 		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;

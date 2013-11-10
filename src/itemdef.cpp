@@ -76,6 +76,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	sound_place = def.sound_place;
+	range = def.range;
 	return *this;
 }
 
@@ -109,6 +110,7 @@ void ItemDefinition::reset()
 	}
 	groups.clear();
 	sound_place = SimpleSoundSpec();
+	range = -1;
 
 	node_placement_prediction = "";
 }
@@ -117,8 +119,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
 	if(protocol_version <= 17)
 		writeU8(os, 1); // version
-	else
+	else if(protocol_version <= 20)
 		writeU8(os, 2); // version
+	else
+		writeU8(os, 3); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -147,6 +151,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		os<<serializeString(sound_place.name);
 		writeF1000(os, sound_place.gain);
 	}
+	if(protocol_version > 20){
+		writeF1000(os, range);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -156,7 +163,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 1 && version != 2)
+	if(version < 1 || version > 3)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -189,16 +196,18 @@ void ItemDefinition::deSerialize(std::istream &is)
 		// Set the old default sound
 		sound_place.name = "default_place_node";
 		sound_place.gain = 0.5;
-	} else if(version == 2) {
+	} else if(version >= 2) {
 		node_placement_prediction = deSerializeString(is);
 		//deserializeSimpleSoundSpec(sound_place, is);
 		sound_place.name = deSerializeString(is);
 		sound_place.gain = readF1000(is);
 	}
+	if(version == 3) {
+		range = readF1000(is);
+	}
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		
 	}catch(SerializationError &e) {};
 }
 
@@ -519,7 +528,8 @@ public:
 
 		// Add the four builtin items:
 		//   "" is the hand
-		//   "unknown" is returned whenever an undefined item is accessed
+		//   "unknown" is returned whenever an undefined item
+		//     is accessed (is also the unknown node)
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
@@ -530,6 +540,7 @@ public:
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
+		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 

@@ -107,6 +107,8 @@
 #liquid_fast_flood = 1
 # Underground water and lava springs, its infnity sources if liquid_finite enabled
 #underground_springs = 1
+# Enable weather (cold-hot, water freeze-melt). use only with liquid_finite=1
+#weather = false
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
@@ -125,10 +127,6 @@
 #fast_move = false
 # Invert mouse
 #invert_mouse = false
-# FarMesh thingy
-#enable_farmesh = false
-#farmesh_trees = true
-#farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
@@ -168,10 +166,8 @@
 #trilinear_filter = false
 # Set to true to pre-generate all item visuals
 #preload_item_visuals = true
-# 0: disable shaders
-# (1: low level shaders; not implemented)
-# 2: enable high level shaders
-#enable_shaders = 2
+# Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
+#enable_shaders = true
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
 # The time in seconds it takes between repeated
@@ -187,10 +183,17 @@
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
+# Whether freetype fonts are used, requires freetype support to be compiled in
+#freetype = true
+# Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
 #font_size = 13
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
+
+# This font will be used for certain languages
+#fallback_font_path = fonts/DroidSansFallbackFull.ttf
+#fallback_font_size = 13
 
 #
 # Server stuff
@@ -215,7 +218,7 @@
 # Message of the Day
 #motd = Welcome to this awesome Minetest server!
 # Maximum number of players connected simultaneously
-#max_users = 100
+#max_users = 15
 # Set to true to disallow old clients from connecting
 #strict_protocol_version_checking = false
 # Set to true to enable creative mode (unlimited inventory)
@@ -268,10 +271,16 @@
 # Interval of sending time of day to clients
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
-#time_speed = 96
+#time_speed = 72
+# Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year. 30 days = 10 real hours
+#year_days = 30
 #server_unload_unused_data_timeout = 29
+# Maximum number of statically stored objects in a block
+#max_objects_per_block = 49
 # Interval of saving important changes in the world
 #server_map_save_interval = 5.3
+# http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
+#sqlite_synchronous = 2
 # To reduce lag, block transfers are slowed down when a player is building something.
 # This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
@@ -378,8 +387,16 @@
 # to IPv6 clients, depending on system configuration.
 #ipv6_server = false
 
+#main_menu_script =
 #main_menu_game_mgr = 0
-#main_menu_mod_mgr = 0
-#modstore_download_url = http://forum.minetest.net/media/
-#modstore_listmods_url = http://forum.minetest.net/mmdb/mods/
-#modstore_details_url  = http://forum.minetest.net/mmdb/mod/*/
+#main_menu_mod_mgr = 1
+#modstore_download_url = https://forum.minetest.net/media/
+#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
+#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+
+# Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true
+
+# Override language. When no value is provided (default) system language is used.
+# Check "locale" directory for the list of available translations.
+#language =

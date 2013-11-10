@@ -31,6 +31,7 @@ struct ObjectProperties
 	// Values are BS=1
 	s16 hp_max;
 	bool physical;
+	bool collideWithObjects;
 	float weight;
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
@@ -43,6 +44,9 @@ struct ObjectProperties
 	bool is_visible;
 	bool makes_footstep_sound;
 	float automatic_rotate;
+	f32 stepheight;
+	bool automatic_face_movement_dir;
+	f32 automatic_face_movement_dir_offset;
 
 
 	ObjectProperties();

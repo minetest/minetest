@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 
-std::string trim(const std::string &str);
-
 class Strfnd{
     std::string tek;
     unsigned int p;
@@ -173,44 +171,6 @@ public:
         start(s);
     }
 };
-
-inline std::string trim(const std::string &s)
-{
-	std::string str = s;
-    while( 
-            str.length()>0
-            &&
-            (
-             str.substr(0,               1)==" "     ||
-             str.substr(0,               1)=="\t"    ||
-             str.substr(0,               1)=="\r"    ||
-             str.substr(0,               1)=="\n"    ||
-             str.substr(str.length()-1,  1)==" "     ||
-             str.substr(str.length()-1,  1)=="\t"    ||
-             str.substr(str.length()-1,  1)=="\r"    ||
-             str.substr(str.length()-1,  1)=="\n"
-            )
-         )
-    {  
-        if      (str.substr(0,              1)==" ")
-			str = str.substr(1,str.length()-1);
-        else if (str.substr(0,              1)=="\t")
-			str = str.substr(1,str.length()-1);
-        else if (str.substr(0,              1)=="\r")
-			str = str.substr(1,str.length()-1);
-        else if (str.substr(0,              1)=="\n")
-			str = str.substr(1,str.length()-1);
-        else if (str.substr(str.length()-1, 1)==" ")
-			str = str.substr(0,str.length()-1);
-        else if (str.substr(str.length()-1, 1)=="\t")
-			str = str.substr(0,str.length()-1);
-        else if (str.substr(str.length()-1, 1)=="\r")
-			str = str.substr(0,str.length()-1);
-        else if (str.substr(str.length()-1, 1)=="\n")
-			str = str.substr(0,str.length()-1);
-    }
-    return str;
-}
 
 #endif
 

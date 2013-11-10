@@ -20,10 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_OBJECT_H_
 #define L_OBJECT_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
+#include "lua_api/l_base.h"
+#include "irrlichttypes.h"
 
 class ServerActiveObject;
 class LuaEntitySAO;
@@ -34,8 +32,7 @@ class Player;
 	ObjectRef
 */
 
-class ObjectRef
-{
+class ObjectRef : public ModApiBase {
 private:
 	ServerActiveObject *m_object;
 
@@ -179,6 +176,12 @@ private:
 	// set_look_yaw(self, radians)
 	static int l_set_look_yaw(lua_State *L);
 
+	// set_breath(self, breath)
+	static int l_set_breath(lua_State *L);
+
+	// get_breath(self, breath)
+	static int l_get_breath(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 
@@ -211,6 +214,12 @@ private:
 
 	// hud_set_hotbar_itemcount(self, hotbar_itemcount)
 	static int l_hud_set_hotbar_itemcount(lua_State *L);
+
+	// hud_set_hotbar_image(self, name)
+	static int l_hud_set_hotbar_image(lua_State *L);
+
+	// hud_set_hotbar_selected_image(self, name)
+	static int l_hud_set_hotbar_selected_image(lua_State *L);
 
 public:
 	ObjectRef(ServerActiveObject *object);

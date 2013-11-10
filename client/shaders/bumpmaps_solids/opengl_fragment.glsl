@@ -26,8 +26,7 @@ void main (void)
 	
 	
 	float specular = pow(clamp(dot(R, lVec), 0.0, 1.0),1.0);
-	vec4 vSpecular = 0.2*specular * diffuse;	
-    color += vSpecular;
+    color += vec3(0.2*specular*diffuse);
  
   
 	col = vec4(color.r, color.g, color.b, alpha);

@@ -33,7 +33,8 @@ struct MapDrawControl
 		wanted_max_blocks(0),
 		wanted_min_range(0),
 		blocks_drawn(0),
-		blocks_would_have_drawn(0)
+		blocks_would_have_drawn(0),
+		farthest_drawn(0)
 	{
 	}
 	// Overrides limits by drawing everything
@@ -48,6 +49,8 @@ struct MapDrawControl
 	u32 blocks_drawn;
 	// Number of blocks that would have been drawn in wanted_range
 	u32 blocks_would_have_drawn;
+	// Distance to the farthest block drawn
+	float farthest_drawn;
 };
 
 class Client;

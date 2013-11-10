@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class InventoryManager;
+class ISimpleTextureSource;
 
 typedef enum {
 	f_Button,
@@ -56,13 +57,6 @@ public:
 	// Fill in variables in field text
 	virtual std::string resolveText(std::string str){ return str; }
 };
-
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		IGameDef *gamedef);
 
 class GUIFormSpecMenu : public GUIModalMenu
 {
@@ -183,7 +177,8 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
-			IGameDef *gamedef
+			IGameDef *gamedef,
+			ISimpleTextureSource *tsrc
 			);
 
 	~GUIFormSpecMenu();
@@ -213,16 +208,13 @@ public:
 		m_allowclose = value;
 	}
 
-	void useGettext(bool value) {
-		m_use_gettext = true;
-	}
-
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
 	}
 
 	void removeChildren();
+	void setInitialFocus();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
@@ -235,9 +227,10 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput(int evttype=-1);
+	void acceptInput(bool quit);
+	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
-	
+
 	int getListboxIndex(std::string listboxname);
 
 protected:
@@ -254,6 +247,7 @@ protected:
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
+	ISimpleTextureSource *m_tsrc;
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
@@ -279,13 +273,26 @@ protected:
 	ItemStack m_selected_content_guess;
 	InventoryLocation m_selected_content_guess_inventory;
 
+	// WARNING: BLACK IRRLICHT MAGIC, see checkListboxClick()
+	std::wstring m_listbox_click_fname;
+	int m_listbox_click_index;
+	u32 m_listbox_click_time;
+	bool m_listbox_doubleclick;
+
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
 
 	bool m_allowclose;
-	bool m_use_gettext;
 	bool m_lock;
 	v2u32 m_lockscreensize;
+
+	bool m_bgfullscreen;
+	bool m_slotborder;
+	bool m_clipbackground;
+	video::SColor m_bgcolor;
+	video::SColor m_slotbg_n;
+	video::SColor m_slotbg_h;
+	video::SColor m_slotbordercolor;
 private:
 	typedef struct {
 		v2s32 size;
@@ -294,7 +301,9 @@ private:
 		v2s32 basepos;
 		int bp_set;
 		v2u32 screensize;
+		std::wstring focused_fieldname;
 		std::map<std::wstring,int> listbox_selections;
+		std::map<std::wstring,int> listbox_scroll;
 	} parserData;
 
 	typedef struct {
@@ -304,9 +313,13 @@ private:
 		bool key_escape;
 	} fs_key_pendig;
 
-	std::vector<video::ITexture *> m_Textures;
-
 	fs_key_pendig current_keys_pending;
+
+	// Determine whether listbox click was double click
+	// (Using some black Irrlicht magic)
+	bool checkListboxClick(std::wstring wlistboxname, int eventtype);
+
+	gui::IGUIScrollBar* getListboxScrollbar(gui::IGUIListBox *listbox);
 
 	void parseElement(parserData* data,std::string element);
 
@@ -329,8 +342,10 @@ private:
 	void parseItemImageButton(parserData* data,std::string element);
 	void parseTabHeader(parserData* data,std::string element);
 	void parseBox(parserData* data,std::string element);
+	void parseBackgroundColor(parserData* data,std::string element);
+	void parseListColors(parserData* data,std::string element);
 
-	bool parseColor(std::string color, irr::video::SColor& outcolor); 
+	bool parseColor(std::string &value, video::SColor &color, bool quiet);
 };
 
 class FormspecFormSource: public IFormSource

@@ -7,6 +7,7 @@
 minetest.register_entity("__builtin:falling_node", {
 	initial_properties = {
 		physical = true,
+		collide_with_objects = false,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 		visual = "wielditem",
 		textures = {},
@@ -53,10 +54,25 @@ minetest.register_entity("__builtin:falling_node", {
 		local pos = self.object:getpos()
 		local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
 		local bcn = minetest.get_node(bcp)
+		local bcd = minetest.registered_nodes[bcn.name]
 		-- Note: walkable is in the node definition, not in item groups
-		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable then
-			if minetest.registered_nodes[bcn.name].buildable_to then
+		if not bcd or
+				(bcd.walkable or
+				(minetest.get_node_group(self.node.name, "float") ~= 0 and
+				bcd.liquidtype ~= "none")) then
+			if bcd and bcd.leveled and
+					bcn.name == self.node.name then
+				local addlevel = self.node.level
+				if addlevel == nil or addlevel <= 0 then
+					addlevel = bcd.leveled
+				end
+				if minetest.add_node_level(bcp, addlevel) == 0 then
+					self.object:remove()
+					return
+				end
+			elseif bcd and bcd.buildable_to and
+					(minetest.get_node_group(self.node.name, "float") == 0 or
+					bcd.liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
 			end
@@ -148,11 +164,14 @@ function nodeupdate_single(p, delay)
 		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
+				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
+				(n.name ~= n_bottom.name or (minetest.registered_nodes[n_bottom.name].leveled and minetest.env:get_node_level(p_bottom) < minetest.env:get_node_max_level(p_bottom))) and
 				(not minetest.registered_nodes[n_bottom.name].walkable or 
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
 			else
+				n.level = minetest.env:get_node_level(p)
 				minetest.remove_node(p)
 				spawn_falling_node(p, n)
 				nodeupdate(p)
@@ -168,7 +187,7 @@ function nodeupdate_single(p, delay)
 	end
 end
 
-function nodeupdate(p)
+function nodeupdate(p, delay)
 	-- Round p to prevent falling entities to get stuck
 	p.x = math.floor(p.x+0.5)
 	p.y = math.floor(p.y+0.5)
@@ -177,7 +196,7 @@ function nodeupdate(p)
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, not (x==0 and y==0 and z==0))
+		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, delay or not (x==0 and y==0 and z==0))
 	end
 	end
 	end

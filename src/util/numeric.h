@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
-#include <irrList.h>
 #include <list>
 
 // Calculate the borders of a "d-radius" cube
@@ -223,6 +222,8 @@ int myrand_range(int min, int max);
 	Miscellaneous functions
 */
 
+u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
+
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
@@ -347,6 +348,13 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 			maxindex = 0;
 		}
 	}
+}
+
+inline float cycle_shift(float value, float by = 0, float max = 1)
+{
+    if (value + by < 0) return max + by + value;
+    if (value + by > max) return value + by - max;
+    return value + by;
 }
 
 #endif

@@ -71,7 +71,9 @@ struct collisionMoveResult
 collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f, v3f &accel_f,ActiveObject* self=0);
+		v3f &pos_f, v3f &speed_f,
+		v3f &accel_f,ActiveObject* self=0,
+		bool collideWithObjects=true);
 
 #if 0
 // This doesn't seem to work and isn't used

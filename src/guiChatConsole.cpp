@@ -94,13 +94,17 @@ GUIChatConsole::GUIChatConsole(
 
 	// load the font
 	// FIXME should a custom texture_path be searched too?
-	#if USE_FREETYPE
 	std::string font_name = g_settings->get("mono_font_path");
-	u16 font_size = g_settings->getU16("mono_font_size");
-	m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
+	#if USE_FREETYPE
+	m_use_freetype = g_settings->getBool("freetype");
+	if (m_use_freetype) {
+		u16 font_size = g_settings->getU16("mono_font_size");
+		m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
+	} else {
+		m_font = env->getFont(font_name.c_str());
+	}
 	#else
-	std::string font_name = "fontdejavusansmono.png";
-	m_font = env->getFont(getTexturePath(font_name).c_str());
+	m_font = env->getFont(font_name.c_str());
 	#endif
 	if (m_font == NULL)
 	{
@@ -122,7 +126,8 @@ GUIChatConsole::GUIChatConsole(
 GUIChatConsole::~GUIChatConsole()
 {
 #if USE_FREETYPE
-	m_font->drop();
+	if (m_use_freetype)
+		m_font->drop();
 #endif
 }
 

@@ -255,7 +255,7 @@ int MapgenMath::generateTerrain() {
 	*/
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-			Biome *biome = bmgr->biomes[biomemap[index]];
+			//Biome *biome = bmgr->biomes[biomemap[index]];
 			u32 i = vm->m_area.index(x, node_min.Y, z);
 			for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 				v3f vec = (v3f(x, y, z) - center) * scale ;

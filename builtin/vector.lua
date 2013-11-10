@@ -1,45 +1,46 @@
 
 vector = {}
 
+local function assert_vector(v)
+	assert(type(v) == "table" and v.x and v.y and v.z, "Invalid vector")
+end
+
 function vector.new(a, b, c)
-	v = {x=0, y=0, z=0}
 	if type(a) == "table" then
-		v = {x=a.x, y=a.y, z=a.z}
-	elseif a and b and c then
-		v = {x=a, y=b, z=c}
+		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
+		return {x=a.x, y=a.y, z=a.z}
+	elseif a then
+		assert(b and c, "Invalid arguments for vector.new()")
+		return {x=a, y=b, z=c}
 	end
-	setmetatable(v, {
-		__add = vector.add,
-		__sub = vector.subtract,
-		__mul = vector.multiply,
-		__div = vector.divide,
-		__umn = function(v) return vector.multiply(v, -1) end,
-		__len = vector.length,
-		__eq  = vector.equals,
-	})
-	return v
+	return {x=0, y=0, z=0}
 end
 
 function vector.equals(a, b)
+	assert_vector(a)
+	assert_vector(b)
 	return a.x == b.x and
 	       a.y == b.y and
 	       a.z == b.z
 end
 
 function vector.length(v)
+	assert_vector(v)
 	return math.hypot(v.x, math.hypot(v.y, v.z))
 end
 
 function vector.normalize(v)
+	assert_vector(v)
 	local len = vector.length(v)
 	if len == 0 then
-		return vector.new()
+		return {x=0, y=0, z=0}
 	else
 		return vector.divide(v, len)
 	end
 end
 
 function vector.round(v)
+	assert_vector(v)
 	return {
 		x = math.floor(v.x + 0.5),
 		y = math.floor(v.y + 0.5),
@@ -48,6 +49,8 @@ function vector.round(v)
 end
 
 function vector.distance(a, b)
+	assert_vector(a)
+	assert_vector(b)
 	local x = a.x - b.x
 	local y = a.y - b.y
 	local z = a.z - b.z
@@ -55,6 +58,8 @@ function vector.distance(a, b)
 end
 
 function vector.direction(pos1, pos2)
+	assert_vector(pos1)
+	assert_vector(pos2)
 	local x_raw = pos2.x - pos1.x
 	local y_raw = pos2.y - pos1.y
 	local z_raw = pos2.z - pos1.z
@@ -84,58 +89,58 @@ end
 
 
 function vector.add(a, b)
+	assert_vector(a)
 	if type(b) == "table" then
-		 return vector.new(
-			a.x + b.x,
-			a.y + b.y,
-			a.z + b.z)
+	    assert_vector(b)
+		return {x = a.x + b.x,
+			y = a.y + b.y,
+			z = a.z + b.z}
 	else
-		return vector.new(
-			a.x + b,
-			a.y + b,
-			a.z + b)
+		return {x = a.x + b,
+			y = a.y + b,
+			z = a.z + b}
 	end
 end
 
 function vector.subtract(a, b)
+	assert_vector(a)
 	if type(b) == "table" then
-		return vector.new(
-			a.x - b.x,
-			a.y - b.y,
-			a.z - b.z)
+	    assert_vector(b)
+		return {x = a.x - b.x,
+			y = a.y - b.y,
+			z = a.z - b.z}
 	else
-		return vector.new(
-			a.x - b,
-			a.y - b,
-			a.z - b)
+		return {x = a.x - b,
+			y = a.y - b,
+			z = a.z - b}
 	end
 end
 
 function vector.multiply(a, b)
+	assert_vector(a)
 	if type(b) == "table" then
-		return vector.new(
-			a.x * b.x,
-			a.y * b.y,
-			a.z * b.z)
+	    assert_vector(b)
+		return {x = a.x * b.x,
+			y = a.y * b.y,
+			z = a.z * b.z}
 	else
-		return vector.new(
-			a.x * b,
-			a.y * b,
-			a.z * b)
+		return {x = a.x * b,
+			y = a.y * b,
+			z = a.z * b}
 	end
 end
 
 function vector.divide(a, b)
+	assert_vector(a)
 	if type(b) == "table" then
-		return vector.new(
-			a.x / b.x,
-			a.y / b.y,
-			a.z / b.z)
+        assert_vector(b)
+		return {x = a.x / b.x,
+			y = a.y / b.y,
+			z = a.z / b.z}
 	else
-		return vector.new(
-			a.x / b,
-			a.y / b,
-			a.z / b)
+		return {x = a.x / b,
+			y = a.y / b,
+			z = a.z / b}
 	end
 end
 

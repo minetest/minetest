@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "chat.h"
+#include "config.h"
 
 class Client;
 
@@ -121,6 +122,9 @@ private:
 	// font
 	gui::IGUIFont* m_font;
 	v2u32 m_fontsize;
+#if USE_FREETYPE
+	bool m_use_freetype;
+#endif
 };
 
 

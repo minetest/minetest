@@ -15,6 +15,9 @@ set(VERSION_MINOR 4)
 set(VERSION_PATCH 7)
 if(VERSION_EXTRA)
 	set(VERSION_PATCH ${VERSION_PATCH}-${VERSION_EXTRA})
+else()
+	# Comment the following line during release
+	set(VERSION_PATCH ${VERSION_PATCH}-dev)
 endif()
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -153,7 +156,7 @@ if(BUILD_CLIENT)
 endif()
 if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/mods_here.txt" DESTINATION "${SHAREDIR}/mods")
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/all/textures_here.txt" DESTINATION "${SHAREDIR}/textures/all")
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")

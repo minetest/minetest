@@ -17,9 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
 #include "lua_api/l_nodetimer.h"
-#include "common/c_internal.h"
+#include "lua_api/l_internal.h"
+#include "environment.h"
 #include "map.h"
 
 
@@ -165,5 +165,3 @@ const luaL_reg NodeTimerRef::methods[] = {
 	luamethod(NodeTimerRef, get_elapsed),
 	{0,0}
 };
-
-REGISTER_LUA_REF(NodeTimerRef);

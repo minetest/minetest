@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "sound.h"
 #include "event.h"
+#include "profiler.h"
 #include "util/numeric.h"
 #include "util/mathconstants.h"
 
@@ -57,10 +58,10 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_fov_x(1.0),
 	m_fov_y(1.0),
 
-	m_added_frametime(0),
+	m_added_busytime(0),
 	m_added_frames(0),
 	m_range_old(0),
-	m_frametime_old(0),
+	m_busytime_old(0),
 	m_frametime_counter(0),
 	m_time_per_range(30. / 50), // a sane default of 30ms per 50 nodes of range
 
@@ -242,8 +243,8 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
-		f32 tool_reload_ratio)
+void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
+		v2u32 screensize, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -416,7 +417,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_wieldlight = player->light;
 
 	// Render distance feedback loop
-	updateViewingRange(frametime);
+	updateViewingRange(frametime, busytime);
 
 	// If the player seems to be walking on solid ground,
 	// view bobbing is enabled and free_move is off,
@@ -440,23 +441,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	}
 }
 
-void Camera::updateViewingRange(f32 frametime_in)
+void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 {
 	if (m_draw_control.range_all)
 		return;
 
-	m_added_frametime += frametime_in;
+	m_added_busytime += busytime_in;
 	m_added_frames += 1;
 
-	// Actually this counter kind of sucks because frametime is busytime
 	m_frametime_counter -= frametime_in;
 	if (m_frametime_counter > 0)
 		return;
-	m_frametime_counter = 0.2;
+	m_frametime_counter = 0.2; // Same as ClientMap::updateDrawList interval
 
 	/*dstream<<__FUNCTION_NAME
 			<<": Collected "<<m_added_frames<<" frames, total of "
-			<<m_added_frametime<<"s."<<std::endl;
+			<<m_added_busytime<<"s."<<std::endl;
 
 	dstream<<"m_draw_control.blocks_drawn="
 			<<m_draw_control.blocks_drawn
@@ -466,7 +466,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	// Get current viewing range and FPS settings
 	f32 viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
-	viewing_range_min = MYMAX(5.0, viewing_range_min);
+	viewing_range_min = MYMAX(15.0, viewing_range_min);
 
 	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
 	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
@@ -503,17 +503,17 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	// Calculate the average frametime in the case that all wanted
 	// blocks had been drawn
-	f32 frametime = m_added_frametime / m_added_frames / block_draw_ratio;
+	f32 frametime = m_added_busytime / m_added_frames / block_draw_ratio;
 
-	m_added_frametime = 0.0;
+	m_added_busytime = 0.0;
 	m_added_frames = 0;
 
 	f32 wanted_frametime_change = wanted_frametime - frametime;
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
+	g_profiler->avg("wanted_frametime_change", wanted_frametime_change);
 
 	// If needed frametime change is small, just return
 	// This value was 0.4 for many months until 2011-10-18 by c55;
-	// Let's see how this works out.
 	if (fabs(wanted_frametime_change) < wanted_frametime*0.33)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
@@ -524,22 +524,24 @@ void Camera::updateViewingRange(f32 frametime_in)
 	f32 new_range = range;
 
 	f32 d_range = range - m_range_old;
-	f32 d_frametime = frametime - m_frametime_old;
+	f32 d_busytime = busytime_in - m_busytime_old;
 	if (d_range != 0)
 	{
-		m_time_per_range = d_frametime / d_range;
+		m_time_per_range = d_busytime / d_range;
 	}
+	//dstream<<"time_per_range="<<m_time_per_range<<std::endl;
+	g_profiler->avg("time_per_range", m_time_per_range);
 
 	// The minimum allowed calculated frametime-range derivative:
 	// Practically this sets the maximum speed of changing the range.
 	// The lower this value, the higher the maximum changing speed.
 	// A low value here results in wobbly range (0.001)
+	// A low value can cause oscillation in very nonlinear time/range curves.
 	// A high value here results in slow changing range (0.0025)
 	// SUGG: This could be dynamically adjusted so that when
 	//       the camera is turning, this is lower
-	//f32 min_time_per_range = 0.0015;
-	f32 min_time_per_range = 0.0010;
-	//f32 min_time_per_range = 0.05 / range;
+	//f32 min_time_per_range = 0.0010; // Up to 0.4.7
+	f32 min_time_per_range = 0.0005;
 	if(m_time_per_range < min_time_per_range)
 	{
 		m_time_per_range = min_time_per_range;
@@ -572,10 +574,10 @@ void Camera::updateViewingRange(f32 frametime_in)
 	/*dstream<<"new_range="<<new_range_unclamped
 			<<", clamped to "<<new_range<<std::endl;*/
 
-	m_draw_control.wanted_range = new_range;
+	m_range_old = m_draw_control.wanted_range;
+	m_busytime_old = busytime_in;
 
-	m_range_old = new_range;
-	m_frametime_old = frametime;
+	m_draw_control.wanted_range = new_range;
 }
 
 void Camera::setDigging(s32 button)

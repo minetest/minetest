@@ -17,22 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "cpp_api/scriptapi.h"
-#include "common/c_converter.h"
-#include "lua_api/l_base.h"
 #include "lua_api/l_particles.h"
+#include "lua_api/l_internal.h"
+#include "common/c_converter.h"
 #include "server.h"
-#include "common/c_internal.h"
-
-bool ModApiParticles::Initialize(lua_State *L, int top) {
-	bool retval = true;
-
-	retval &= API_FCT(add_particle);
-	retval &= API_FCT(add_particlespawner);
-	retval &= API_FCT(delete_particlespawner);
-
-	return retval;
-}
 
 // add_particle(pos, velocity, acceleration, expirationtime,
 // 		size, collisiondetection, texture, player)
@@ -146,4 +134,10 @@ int ModApiParticles::l_delete_particlespawner(lua_State *L)
 	return 1;
 }
 
-ModApiParticles modapiparticles_prototyp;
+void ModApiParticles::Initialize(lua_State *L, int top)
+{
+	API_FCT(add_particle);
+	API_FCT(add_particlespawner);
+	API_FCT(delete_particlespawner);
+}
+

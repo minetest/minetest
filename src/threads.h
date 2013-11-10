@@ -20,16 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef THREADS_HEADER
 #define THREADS_HEADER
 
-#include <jmutex.h>
+#include "jthread/jmutex.h"
 
 #if (defined(WIN32) || defined(_WIN32_WCE))
 typedef DWORD threadid_t;
-#define __NORETURN __declspec(noreturn)
-#define __FUNCTION_NAME __FUNCTION__
 #else
 typedef pthread_t threadid_t;
-#define __NORETURN __attribute__ ((__noreturn__))
-#define __FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
 
 inline threadid_t get_current_thread_id()

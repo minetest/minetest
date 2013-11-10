@@ -448,7 +448,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
 	FastFace face;
-	
+
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
 
@@ -460,7 +460,9 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+
 	v3s16 t;
+	u16 t1;
 	switch (tile.rotation)
 	{
 	case 0:
@@ -471,6 +473,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1=li0;
+		li0=li3;
+		li3=li2;
+		li2=li1;
+		li1=t1;
 		break;
 	case 2: //R180
 		t = vertex_dirs[0];
@@ -479,6 +486,12 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		t = vertex_dirs[1];
 		vertex_dirs[1] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li2;
+		li2 = t1;
+		t1  = li1;
+		li1 = li3;
+		li3 = t1;
 		break;
 	case 3: //R270
 		t = vertex_dirs[0];
@@ -486,6 +499,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		break;
 	case 4: //FXR90
 		t = vertex_dirs[0];
@@ -493,6 +511,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
 		y0 += h;
 		h *= -1;
 		break;
@@ -502,6 +525,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		y0 += h;
 		h *= -1;
 		break;
@@ -511,6 +539,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[3] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[1];
 		vertex_dirs[1] = t;
+		t1  = li0;
+		li0 = li3;
+		li3 = li2;
+		li2 = li1;
+		li1 = t1;
 		x0 += w;
 		w *= -1;
 		break;
@@ -520,6 +553,11 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_dirs[1] = vertex_dirs[2];
 		vertex_dirs[2] = vertex_dirs[3];
 		vertex_dirs[3] = t;
+		t1  = li0;
+		li0 = li1;
+		li1 = li2;
+		li2 = li3;
+		li3 = t1;
 		x0 += w;
 		w *= -1;
 		break;
@@ -534,6 +572,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	default:
 		break;
 	}
+
 	for(u16 i=0; i<4; i++)
 	{
 		vertex_pos[i] = v3f(
@@ -551,7 +590,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		vertex_pos[i] += pos;
 	}
 
-	f32 abs_scale = 1.;
+	f32 abs_scale = 1.0;
 	if     (scale.X < 0.999 || scale.X > 1.001) abs_scale = scale.X;
 	else if(scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
 	else if(scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
@@ -574,7 +613,6 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
-	
 	dest.push_back(face);
 }
 
@@ -673,7 +711,8 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef);
-	assert(facedir <= 23);
+	if (facedir > 23)
+		facedir = 0;
 	static const u16 dir_to_tile[24 * 16] =
 	{
 		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation  
@@ -696,17 +735,17 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		   0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
 		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
 		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
-		   
+
 		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19  
 		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
 		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,  
 		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,  
-		
+
 		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
 		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,  
 		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,  
 		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2   
-		   
+
 	};
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
@@ -1095,12 +1134,17 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
 		{
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
-			std::string crack_basename = tsrc->getTextureName(p.tile.texture_id);
+			// Find the texture name plus ^[crack:N:
+			std::ostringstream os(std::ios::binary);
+			os<<tsrc->getTextureName(p.tile.texture_id)<<"^[crack";
 			if(p.tile.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-				crack_basename += "^[cracko";
-			else
-				crack_basename += "^[crack";
-			m_crack_materials.insert(std::make_pair(i, crack_basename));
+				os<<"o";  // use ^[cracko
+			os<<":"<<(u32)p.tile.animation_frame_count<<":";
+			m_crack_materials.insert(std::make_pair(i, os.str()));
+			// Replace tile texture with the cracked one
+			p.tile.texture = tsrc->getTexture(
+					os.str()+"0",
+					&p.tile.texture_id);
 		}
 		// - Texture animation
 		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
@@ -1250,7 +1294,7 @@ MapBlockMesh::~MapBlockMesh()
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
 {
-	bool enable_shaders = (g_settings->getS32("enable_shaders") > 0);
+	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	
 	if(!m_has_animation)
@@ -1275,8 +1319,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			ITextureSource *tsrc = m_gamedef->getTextureSource();
 			std::ostringstream os;
 			os<<basename<<crack;
-			buf->getMaterial().setTexture(0,
-					tsrc->getTexture(os.str()));
+			u32 new_texture_id = 0;
+			video::ITexture *new_texture =
+				tsrc->getTexture(os.str(), &new_texture_id);
+			buf->getMaterial().setTexture(0, new_texture);
+
+			// If the current material is also animated,
+			// update animation info
+			std::map<u32, TileSpec>::iterator anim_iter =
+				m_animation_tiles.find(i->first);
+			if(anim_iter != m_animation_tiles.end()){
+				TileSpec &tile = anim_iter->second;
+				tile.texture = new_texture;
+				tile.texture_id = new_texture_id;
+				// force animation update
+				m_animation_frames[i->first] = -1;
+			}
 		}
 
 		m_last_crack = crack;

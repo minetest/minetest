@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
 #include "light.h"
+#include <string>
 #include <vector>
 
 class INodeDefManager;
@@ -35,25 +36,41 @@ class INodeDefManager;
 	- Tile = TileSpec at some side of a node of some content type
 */
 typedef u16 content_t;
-#define MAX_CONTENT 0xfff
 
 /*
-	Ignored node.
-
-	Anything that stores MapNodes doesn't have to preserve parameters
-	associated with this material.
-	
-	Doesn't create faces with anything and is considered being
-	out-of-map in the game map.
+	The maximum node ID that can be registered by mods. This must
+	be significantly lower than the maximum content_t value, so that
+	there is enough room for dummy node IDs, which are created when
+	a MapBlock containing unknown node names is loaded from disk.
 */
-#define CONTENT_IGNORE 127
-#define CONTENT_IGNORE_DEFAULT_PARAM 0
+#define MAX_REGISTERED_CONTENT 0x7fffU
+
+/*
+	A solid walkable node with the texture unknown_node.png.
+
+	For example, used on the client to display unregistered node IDs
+	(instead of expanding the vector of node definitions each time
+	such a node is received).
+*/
+#define CONTENT_UNKNOWN 125
 
 /*
 	The common material through which the player can walk and which
 	is transparent to light
 */
 #define CONTENT_AIR 126
+
+/*
+	Ignored node.
+	
+	Unloaded chunks are considered to consist of this. Several other
+	methods return this when an error occurs. Also, during
+	map generation this means the node has not been set yet.
+	
+	Doesn't create faces with anything and is considered being
+	out-of-map in the game map.
+*/
+#define CONTENT_IGNORE 127
 
 enum LightBank
 {
@@ -88,7 +105,7 @@ enum Rotation {
 #define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
 // mask for param2, now as for liquid
-#define LEVELED_MASK 0x07
+#define LEVELED_MASK 0x3F
 #define LEVELED_MAX LEVELED_MASK
 
 /*
@@ -211,7 +228,11 @@ struct MapNode
 	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
 
 	/* Liquid helpers */
+	u8 getMaxLevel(INodeDefManager *nodemgr) const;
 	u8 getLevel(INodeDefManager *nodemgr) const;
+	u8 setLevel(INodeDefManager *nodemgr, s8 level = 1);
+	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
+	void freezeMelt(INodeDefManager *nodemgr);
 
 	/*
 		Serialization functions

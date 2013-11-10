@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAP_HEADER
 #define MAP_HEADER
 
-#include <jmutex.h>
-#include <jmutexautolock.h>
-#include <jthread.h>
 #include <iostream>
 #include <sstream>
 #include <set>
@@ -33,15 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapgen.h" //for BlockMakeData and EmergeManager
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
 
-extern "C" {
-	#include "sqlite3.h"
-}
-
+class Database;
 class ClientMap;
 class MapSector;
 class ServerMapSector;
@@ -50,8 +43,10 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
-class ScriptApi;
+class GameScripting;
+class ServerEnvironment;
 struct BlockMakeData;
+struct MapgenParams;
 
 /*
 	MapEditEvent
@@ -303,8 +298,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(ScriptApi *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	void transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	void transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
@@ -335,6 +330,9 @@ public:
 
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
+
+	virtual s16 getHeat(v3s16 p);
+	virtual s16 getHumidity(v3s16 p);
 
 protected:
 	friend class LuaVoxelManip;
@@ -424,13 +422,8 @@ public:
 	/*
 		Database functions
 	*/
-	// Create the database structure
-	void createDatabase();
 	// Verify we can read/write to the database
 	void verifyDatabase();
-	// Get an integer suitable for a block
-	static sqlite3_int64 getBlockAsInteger(const v3s16 pos);
-	static v3s16 getIntegerAsBlock(sqlite3_int64 i);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();
@@ -483,6 +476,10 @@ public:
 
 	// Parameters fed to the Mapgen
 	MapgenParams *m_mgparams;
+
+	virtual s16 updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+	virtual s16 updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+
 private:
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
@@ -506,14 +503,7 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed;
-
-	/*
-		SQLite database and statements
-	*/
-	sqlite3 *m_database;
-	sqlite3_stmt *m_database_read;
-	sqlite3_stmt *m_database_write;
-	sqlite3_stmt *m_database_list;
+	Database *dbase;
 };
 
 #define VMANIP_BLOCK_DATA_INEXIST     1

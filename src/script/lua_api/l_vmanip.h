@@ -20,19 +20,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_VMANIP_H_
 #define L_VMANIP_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
-
+#include "lua_api/l_base.h"
 #include "irr_v3d.h"
-#include "map.h"
+#include <map>
+
+class Map;
+class MapBlock;
+class ManualMapVoxelManipulator;
 
 /*
   VoxelManip
  */
-class LuaVoxelManip
-{
+class LuaVoxelManip : public ModApiBase {
 private:
 	ManualMapVoxelManipulator *vm;
 	std::map<v3s16, MapBlock *> modified_blocks;
@@ -67,4 +66,4 @@ public:
 	static void Register(lua_State *L);
 };
 
-#endif // L_VMANIP_H_
+#endif /* L_VMANIP_H_ */

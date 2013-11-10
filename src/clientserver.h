@@ -20,10 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "util/pointer.h"
-
-SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
-
 /*
 	changes by PROTOCOL_VERSION:
 
@@ -95,9 +91,18 @@ SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed);
 		TOCLIENT_HUDRM
 		TOCLIENT_HUDCHANGE
 		TOCLIENT_HUD_SET_FLAGS
+	PROTOCOL_VERSION 21:
+		TOCLIENT_BREATH
+		TOSERVER_BREATH
+		range added to ItemDefinition
+		drowning, leveled and liquid_range added to ContentFeatures
+		stepheight and collideWithObjects added to object properties
+		version, heat and humidity transfer in MapBock
+		automatic_face_movement_dir and automatic_face_movement_dir_offset
+			added to object properties
 */
 
-#define LATEST_PROTOCOL_VERSION 20
+#define LATEST_PROTOCOL_VERSION 21
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -488,6 +493,12 @@ enum ToClientCommand
 		u16 len
 		u8[len] value
 	*/
+
+	TOCLIENT_BREATH = 0x4e,
+	/*
+		u16 command
+		u16 breath
+	*/
 };
 
 enum ToServerCommand
@@ -497,7 +508,7 @@ enum ToServerCommand
 		Sent first after connected.
 
 		[0] u16 TOSERVER_INIT
-		[2] u8 SER_FMT_VER_HIGHEST
+		[2] u8 SER_FMT_VER_HIGHEST_READ
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)
 		[51] u16 minimum supported network protocol version (added sometime)
@@ -710,6 +721,12 @@ enum ToServerCommand
 	TOSERVER_RECEIVED_MEDIA = 0x41,
 	/*
 		u16 command
+	*/
+
+	TOSERVER_BREATH = 0x42,
+	/*
+		u16 command
+		u16 breath
 	*/
 };
 

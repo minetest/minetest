@@ -20,17 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_ENV_H_
 #define L_ENV_H_
 
-extern "C" {
-#include <lua.h>
-#include <lauxlib.h>
-}
-
-#include "environment.h"
 #include "lua_api/l_base.h"
+#include "environment.h"
 
-class ModApiEnvMod
-	:public ModApiBase
-{
+class ModApiEnvMod : public ModApiBase {
 private:
 	// minetest.set_node(pos, node)
 	// pos = {x=num, y=num, z=num}
@@ -67,6 +60,23 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_punch_node(lua_State *L);
 
+
+	// minetest.get_node_max_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_max_level(lua_State *L);
+
+	// minetest.get_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_level(lua_State *L);
+
+	// minetest.set_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_set_node_level(lua_State *L);
+
+	// minetest.add_node_level(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_node_level(lua_State *L);
+
 	// minetest.get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
@@ -94,6 +104,9 @@ private:
 	// minetest.get_timeofday() -> 0...1
 	static int l_get_timeofday(lua_State *L);
 
+	// minetest.get_gametime()
+	static int l_get_gametime(lua_State *L);
+
 	// minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L);
@@ -114,14 +127,6 @@ private:
 	// returns world-specific voxel manipulator
 	static int l_get_voxel_manip(lua_State *L);
 	
-	// minetest.get_mapgen_object(objectname)
-	// returns the requested object used during map generation
-	static int l_get_mapgen_object(lua_State *L);
-	
-	// minetest.set_mapgen_params(params)
-	// set mapgen parameters
-	static int l_set_mapgen_params(lua_State *L);
-
 	// minetest.clear_objects()
 	// clear all objects in the environment
 	static int l_clear_objects(lua_State *L);
@@ -140,9 +145,12 @@ private:
 	static int l_transforming_liquid_add(lua_State *L);
 	
 	static struct EnumString es_MapgenObject[];
+
+	static int l_get_heat(lua_State *L);
+	static int l_get_humidity(lua_State *L);
 	
 public:
-	bool Initialize(lua_State *L, int top);
+	static void Initialize(lua_State *L, int top);
 };
 
 class LuaABM : public ActiveBlockModifier

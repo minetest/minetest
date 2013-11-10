@@ -56,6 +56,7 @@ typedef int socket_t;
 #include <string.h>
 #include <errno.h>
 #include <sstream>
+#include <iomanip>
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -344,6 +345,8 @@ void UDPSocket::Bind(u16 port)
 	if(m_addr_family == AF_INET6)
 	{
 		struct sockaddr_in6 address;
+		memset(&address, 0, sizeof(address));
+
 		address.sin6_family = AF_INET6;
 		address.sin6_addr   = in6addr_any;
 		address.sin6_port   = htons(port);
@@ -359,6 +362,8 @@ void UDPSocket::Bind(u16 port)
 	else
 	{
 		struct sockaddr_in address;
+		memset(&address, 0, sizeof(address));
+
 		address.sin_family      = AF_INET;
 		address.sin_addr.s_addr = INADDR_ANY;
 		address.sin_port        = htons(port);
@@ -392,9 +397,10 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 		for(int i = 0; i < size && i < 20; i++)
 		{
 			if(i % 2 == 0)
-				DEBUGPRINT(" ");
+				dstream << " ";
 			unsigned int a = ((const unsigned char *) data)[i];
-			DEBUGPRINT("%.2X", a);
+			dstream << std::hex << std::setw(2) << std::setfill('0')
+				<< a;
 		}
 		
 		if(size > 20)
@@ -452,6 +458,7 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 	if(m_addr_family == AF_INET6)
 	{
 		struct sockaddr_in6 address;
+		memset(&address, 0, sizeof(address));
 		socklen_t address_len = sizeof(address);
 
 		received = recvfrom(m_handle, (char *) data,
@@ -468,6 +475,8 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 	else
 	{
 		struct sockaddr_in address;
+		memset(&address, 0, sizeof(address));
+
 		socklen_t address_len = sizeof(address);
 
 		received = recvfrom(m_handle, (char *) data,
@@ -494,9 +503,10 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 		for(int i = 0; i < received && i < 20; i++)
 		{
 			if(i % 2 == 0)
-				DEBUGPRINT(" ");
+				dstream << " ";
 			unsigned int a = ((const unsigned char *) data)[i];
-			DEBUGPRINT("%.2X", a);
+			dstream << std::hex << std::setw(2) << std::setfill('0')
+				<< a;
 		}
 		if(received > 20)
 			dstream << "...";
@@ -565,5 +575,3 @@ bool UDPSocket::WaitData(int timeout_ms)
 	// There is data
 	return true;
 }
-
-

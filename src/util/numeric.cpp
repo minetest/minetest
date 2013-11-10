@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../log.h"
 #include "../constants.h" // BS, MAP_BLOCKSIZE
+#include <string.h>
 #include <iostream>
 
 // Calculate the borders of a "d-radius" cube
@@ -138,6 +139,49 @@ int myrand_range(int min, int max)
 	}
 	return (myrand()%(max-min+1))+min;
 }
+
+// 64-bit unaligned version of MurmurHash
+u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
+{
+	const u64 m = 0xc6a4a7935bd1e995;
+	const int r = 47;
+	u64 h = seed ^ (len * m);
+
+	const u64 *data = (const u64 *)key;
+	const u64 *end = data + (len / 8);
+
+	while (data != end) {
+		u64 k;
+		memcpy(&k, data, sizeof(u64));
+		data++;
+
+		k *= m; 
+		k ^= k >> r; 
+		k *= m; 
+		
+		h ^= k;
+		h *= m; 
+	}
+
+	const unsigned char *data2 = (const unsigned char *)data;
+	switch (len & 7) {
+		case 7: h ^= (u64)data2[6] << 48;
+		case 6: h ^= (u64)data2[5] << 40;
+		case 5: h ^= (u64)data2[4] << 32;
+		case 4: h ^= (u64)data2[3] << 24;
+		case 3: h ^= (u64)data2[2] << 16;
+		case 2: h ^= (u64)data2[1] << 8;
+		case 1: h ^= (u64)data2[0];
+				h *= m;
+	}
+ 
+	h ^= h >> r;
+	h *= m;
+	h ^= h >> r;
+	
+	return h;
+} 
+
 
 /*
 	blockpos: position of block in block coordinates

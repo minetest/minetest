@@ -20,19 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_CRAFT_H_
 #define L_CRAFT_H_
 
+#include <string>
 #include <vector>
 
-extern "C" {
-#include <lua.h>
-}
-
 #include "lua_api/l_base.h"
-#include "craftdef.h"
+
+struct CraftReplacements;
 
 class ModApiCraft : public ModApiBase {
-public:
-	ModApiCraft();
-	bool Initialize(lua_State* L, int top);
 private:
 	static int l_register_craft(lua_State *L);
 	static int l_get_craft_recipe(lua_State *L);
@@ -47,6 +42,9 @@ private:
 			int &width, std::vector<std::string> &recipe);
 
 	static struct EnumString es_CraftMethod[];
+
+public:
+	static void Initialize(lua_State *L, int top);
 };
 
 #endif /* L_CRAFT_H_ */

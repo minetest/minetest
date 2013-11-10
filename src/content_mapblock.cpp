@@ -395,6 +395,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 			
+			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
+
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
 			std::map<v3s16, f32> neighbor_levels;
@@ -426,9 +428,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 					if(n2.getContent() == c_source)
 						level = (-0.5+node_liquid_level) * BS;
-					else if(n2.getContent() == c_flowing)
-						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
-								+ 0.5) / (float)LIQUID_LEVEL_SOURCE * node_liquid_level) * BS;
+					else if(n2.getContent() == c_flowing){
+						u8 liquid_level = (n2.param2&LIQUID_LEVEL_MASK);
+						if (liquid_level <= LIQUID_LEVEL_MAX+1-range)
+							liquid_level = 0;
+						else
+							liquid_level -= (LIQUID_LEVEL_MAX+1-range);
+						level = (-0.5 + ((float)liquid_level+ 0.5) / (float)range * node_liquid_level) * BS;
+					}
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -650,47 +657,35 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// -Z towards +Z, thus the direction is +Z.
 				// Rotate texture to make animation go in flow direction
 				// Positive if liquid moves towards +Z
-				int dz = (corner_levels[side_corners[3][0]] +
+				f32 dz = (corner_levels[side_corners[3][0]] +
 						corner_levels[side_corners[3][1]]) -
 						(corner_levels[side_corners[2][0]] +
 						corner_levels[side_corners[2][1]]);
 				// Positive if liquid moves towards +X
-				int dx = (corner_levels[side_corners[1][0]] +
+				f32 dx = (corner_levels[side_corners[1][0]] +
 						corner_levels[side_corners[1][1]]) -
 						(corner_levels[side_corners[0][0]] +
 						corner_levels[side_corners[0][1]]);
-				// -X
-				if(-dx >= abs(dz))
+				f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG ;
+				v2f tcoord_center(0.5, 0.5);
+				v2f tcoord_translate(
+						blockpos_nodes.Z + z,
+						blockpos_nodes.X + x);
+				tcoord_translate.rotateBy(tcoord_angle);
+				tcoord_translate.X -= floor(tcoord_translate.X);
+				tcoord_translate.Y -= floor(tcoord_translate.Y);
+
+				for(s32 i=0; i<4; i++)
 				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = t;
+					vertices[i].TCoords.rotateBy(
+							tcoord_angle,
+							tcoord_center);
+					vertices[i].TCoords += tcoord_translate;
 				}
-				// +X
-				if(dx >= abs(dz))
-				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-				}
-				// -Z
-				if(-dz >= abs(dx))
-				{
-					v2f t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-					t = vertices[0].TCoords;
-					vertices[0].TCoords = vertices[3].TCoords;
-					vertices[3].TCoords = vertices[2].TCoords;
-					vertices[2].TCoords = vertices[1].TCoords;
-					vertices[1].TCoords = t;
-				}
+
+				v2f t = vertices[0].TCoords;
+				vertices[0].TCoords = vertices[2].TCoords;
+				vertices[2].TCoords = t;
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
@@ -917,13 +912,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
+				video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
+				video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
 			for(s32 i=0; i<4; i++)
@@ -958,13 +954,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 				
 			float d = (float)BS/16;
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 0,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,  s,  s, 0,0,0, c, 0,0),
+				video::S3DVertex(BS/2-d,  s, -s, 0,0,0, c, 1,0),
+				video::S3DVertex(BS/2-d, -s, -s, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2-d, -s,  s, 0,0,0, c, 0,1),
 			};
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
@@ -999,16 +996,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
+
 			for(u32 j=0; j<2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 0,1),
-					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 1,1),
-					video::S3DVertex( BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 0,0),
+					video::S3DVertex(-s,-BS/2,      0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-BS/2,      0, 0,0,0, c, 1,1),
+					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
 
 				if(j == 0)

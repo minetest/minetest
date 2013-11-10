@@ -661,6 +661,10 @@ public:
 		return false;
 	}
 
+	bool collideWithObjects() {
+		return m_prop.collideWithObjects;
+	}
+
 	void initialize(const std::string &data)
 	{
 		infostream<<"GenericCAO: Got init data"<<std::endl;
@@ -1146,13 +1150,13 @@ public:
 				box.MaxEdge *= BS;
 				collisionMoveResult moveresult;
 				f32 pos_max_d = BS*0.125; // Distance per iteration
-				f32 stepheight = 0;
 				v3f p_pos = m_position;
 				v3f p_velocity = m_velocity;
 				v3f p_acceleration = m_acceleration;
 				moveresult = collisionMoveSimple(env,env->getGameDef(),
-						pos_max_d, box, stepheight, dtime,
-						p_pos, p_velocity, p_acceleration,this);
+						pos_max_d, box, m_prop.stepheight, dtime,
+						p_pos, p_velocity, p_acceleration,
+						this, m_prop.collideWithObjects);
 				// Apply results
 				m_position = p_pos;
 				m_velocity = p_velocity;
@@ -1204,6 +1208,12 @@ public:
 		}
 		if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001){
 			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
+			updateNodePos();
+		}
+
+		if (getParent() == NULL && m_prop.automatic_face_movement_dir &&
+				(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)){
+			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI + m_prop.automatic_face_movement_dir_offset;
 			updateNodePos();
 		}
 	}
@@ -1730,8 +1740,29 @@ public:
 		{
 			/*s16 damage =*/ readS16(is);
 			s16 result_hp = readS16(is);
-			
+
+			// Use this instead of the send damage to not interfere with prediction
+			s16 damage = m_hp - result_hp;
+
 			m_hp = result_hp;
+
+			if (damage > 0) {
+				if (m_hp <= 0) {
+					// TODO: Execute defined fast response
+					// As there is no definition, make a smoke puff
+					ClientSimpleObject *simple = createSmokePuff(
+							m_smgr, m_env, m_position,
+							m_prop.visual_size * BS);
+					m_env->addSimpleObject(simple);
+				} else {
+					// TODO: Execute defined fast response
+					// Flashing shall suffice as there is no definition
+					m_reset_textures_timer = 0.05;
+					if(damage >= 2)
+						m_reset_textures_timer += 0.05 * damage;
+					updateTextures("^[brighten");
+				}
+			}
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS)
 		{

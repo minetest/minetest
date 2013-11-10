@@ -29,8 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "server.h"
+#include "serverobject.h"
 #include "mapgen.h"
+#include "json/json.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -100,6 +101,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	}
 	lua_pop(L, 1);
 
+	def.range = getfloatfield_default(L, index, "range", def.range);
+
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
@@ -121,6 +124,7 @@ void read_object_properties(lua_State *L, int index,
 	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
 
 	getboolfield(L, -1, "physical", prop->physical);
+	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
 	getfloatfield(L, -1, "weight", prop->weight);
 
@@ -185,6 +189,17 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "is_visible", prop->is_visible);
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
+	getfloatfield(L, -1, "stepheight", prop->stepheight);
+	prop->stepheight*=BS;
+	lua_getfield(L, -1, "automatic_face_movement_dir");
+	if (lua_isnumber(L, -1)) {
+		prop->automatic_face_movement_dir = true;
+		prop->automatic_face_movement_dir_offset = luaL_checknumber(L, -1);
+	} else if (lua_isboolean(L, -1)) {
+		prop->automatic_face_movement_dir = lua_toboolean(L, -1);
+		prop->automatic_face_movement_dir_offset = 0.0;
+	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/
@@ -389,10 +404,14 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// the slowest possible
 	f.liquid_viscosity = getintfield_default(L, index,
 			"liquid_viscosity", f.liquid_viscosity);
+	f.liquid_range = getintfield_default(L, index,
+			"liquid_range", f.liquid_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
-	getboolfield(L, index, "drowning", f.drowning);
+	getstringfield(L, index, "freezemelt", f.freezemelt);
+	f.drowning = getintfield_default(L, index,
+			"drowning", f.drowning);
 	// Amount of light the node emits
 	f.light_source = getintfield_default(L, index,
 			"light_source", f.light_source);
@@ -684,8 +703,7 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
-void push_inventory_list(Inventory *inv, const char *name,
-		lua_State *L)
+void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 {
 	InventoryList *invlist = inv->getList(name);
 	if(invlist == NULL){
@@ -699,8 +717,8 @@ void push_inventory_list(Inventory *inv, const char *name,
 }
 
 /******************************************************************************/
-void read_inventory_list(Inventory *inv, const char *name,
-		lua_State *L, int tableindex, Server* srv,int forcesize)
+void read_inventory_list(lua_State *L, int tableindex,
+		Inventory *inv, const char *name, Server* srv, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
@@ -947,8 +965,24 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 		
 		lua_pushnil(L);
 		while (lua_next(L, -2)) {
-			if (i < numnodes)
-				schemdata[i] = readnode(L, -1, ndef);
+			if (i < numnodes) {
+				// same as readnode, except param1 default is MTSCHEM_PROB_CONST
+				lua_getfield(L, -1, "name");
+				const char *name = luaL_checkstring(L, -1);
+				lua_pop(L, 1);
+				
+				u8 param1;
+				lua_getfield(L, -1, "param1");
+				param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
+				lua_pop(L, 1);
+	
+				u8 param2;
+				lua_getfield(L, -1, "param2");
+				param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
+				lua_pop(L, 1);
+				
+				schemdata[i] = MapNode(ndef, name, param1, param2);
+			}
 			
 			i++;
 			lua_pop(L, 1);
@@ -972,4 +1006,85 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 	}
 	
 	return true;
+}
+
+/******************************************************************************/
+// Returns depth of json value tree
+static int push_json_value_getdepth(const Json::Value &value)
+{
+	if (!value.isArray() && !value.isObject())
+		return 1;
+
+	int maxdepth = 0;
+	for (Json::Value::const_iterator it = value.begin();
+			it != value.end(); ++it) {
+		int elemdepth = push_json_value_getdepth(*it);
+		if (elemdepth > maxdepth)
+			maxdepth = elemdepth;
+	}
+	return maxdepth + 1;
+}
+// Recursive function to convert JSON --> Lua table
+static bool push_json_value_helper(lua_State *L, const Json::Value &value,
+		int nullindex)
+{
+	switch(value.type()) {
+		case Json::nullValue:
+		default:
+			lua_pushvalue(L, nullindex);
+			break;
+		case Json::intValue:
+			lua_pushinteger(L, value.asInt());
+			break;
+		case Json::uintValue:
+			lua_pushinteger(L, value.asUInt());
+			break;
+		case Json::realValue:
+			lua_pushnumber(L, value.asDouble());
+			break;
+		case Json::stringValue:
+			{
+				const char *str = value.asCString();
+				lua_pushstring(L, str ? str : "");
+			}
+			break;
+		case Json::booleanValue:
+			lua_pushboolean(L, value.asInt());
+			break;
+		case Json::arrayValue:
+			lua_newtable(L);
+			for (Json::Value::const_iterator it = value.begin();
+					it != value.end(); ++it) {
+				push_json_value_helper(L, *it, nullindex);
+				lua_rawseti(L, -2, it.index() + 1);
+			}
+			break;
+		case Json::objectValue:
+			lua_newtable(L);
+			for (Json::Value::const_iterator it = value.begin();
+					it != value.end(); ++it) {
+				const char *str = it.memberName();
+				lua_pushstring(L, str ? str : "");
+				push_json_value_helper(L, *it, nullindex);
+				lua_rawset(L, -3);
+			}
+			break;
+	}
+	return true;
+}
+// converts JSON --> Lua table; returns false if lua stack limit exceeded
+// nullindex: Lua stack index of value to use in place of JSON null
+bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
+{
+	if(nullindex < 0)
+		nullindex = lua_gettop(L) + 1 + nullindex;
+
+	int depth = push_json_value_getdepth(value);
+
+	// The maximum number of Lua stack slots used at each recursion level
+	// of push_json_value_helper is 2, so make sure there a depth * 2 slots
+	if (lua_checkstack(L, depth * 2))
+		return push_json_value_helper(L, value, nullindex);
+	else
+		return false;
 }

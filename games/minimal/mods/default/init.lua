@@ -1001,6 +1001,7 @@ minetest.register_node("default:water_flowing", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
@@ -1024,6 +1025,7 @@ minetest.register_node("default:water_source", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "source",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
@@ -1055,6 +1057,7 @@ minetest.register_node("default:lava_flowing", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "default:lava_flowing",
 	liquid_alternative_source = "default:lava_source",
@@ -1082,6 +1085,7 @@ minetest.register_node("default:lava_source", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	drowning = 1,
 	liquidtype = "source",
 	liquid_alternative_flowing = "default:lava_flowing",
 	liquid_alternative_source = "default:lava_source",
@@ -1513,6 +1517,133 @@ minetest.register_node("default:apple", {
 	groups = {fleshy=3,dig_immediate=3},
 	on_use = minetest.item_eat(4),
 	sounds = default.node_sound_defaults(),
+})
+
+
+local c_air = minetest.get_content_id("air")
+local c_ignore = minetest.get_content_id("ignore")
+local c_tree = minetest.get_content_id("default:tree")
+local c_leaves = minetest.get_content_id("default:leaves")
+local c_apple = minetest.get_content_id("default:apple")
+function default.grow_tree(data, a, pos, is_apple_tree, seed)
+	--[[
+		NOTE: Tree-placing code is currently duplicated in the engine
+		and in games that have saplings; both are deprecated but not
+		replaced yet
+	]]--
+	local pr = PseudoRandom(seed)
+	local th = pr:next(4, 5)
+	local x, y, z = pos.x, pos.y, pos.z
+	for yy = y, y+th-1 do
+		local vi = a:index(x, yy, z)
+		if a:contains(x, yy, z) and (data[vi] == c_air or yy == y) then
+			data[vi] = c_tree
+		end
+	end
+	y = y+th-1 -- (x, y, z) is now last piece of trunk
+	local leaves_a = VoxelArea:new{MinEdge={x=-2, y=-1, z=-2}, MaxEdge={x=2, y=2, z=2}}
+	local leaves_buffer = {}
+	
+	-- Force leaves near the trunk
+	local d = 1
+	for xi = -d, d do
+	for yi = -d, d do
+	for zi = -d, d do
+		leaves_buffer[leaves_a:index(xi, yi, zi)] = true
+	end
+	end
+	end
+	
+	-- Add leaves randomly
+	for iii = 1, 8 do
+		local d = 1
+		local xx = pr:next(leaves_a.MinEdge.x, leaves_a.MaxEdge.x - d)
+		local yy = pr:next(leaves_a.MinEdge.y, leaves_a.MaxEdge.y - d)
+		local zz = pr:next(leaves_a.MinEdge.z, leaves_a.MaxEdge.z - d)
+		
+		for xi = 0, d do
+		for yi = 0, d do
+		for zi = 0, d do
+			leaves_buffer[leaves_a:index(xx+xi, yy+yi, zz+zi)] = true
+		end
+		end
+		end
+	end
+	
+	-- Add the leaves
+	for xi = leaves_a.MinEdge.x, leaves_a.MaxEdge.x do
+	for yi = leaves_a.MinEdge.y, leaves_a.MaxEdge.y do
+	for zi = leaves_a.MinEdge.z, leaves_a.MaxEdge.z do
+		if a:contains(x+xi, y+yi, z+zi) then
+			local vi = a:index(x+xi, y+yi, z+zi)
+			if data[vi] == c_air or data[vi] == c_ignore then
+				if leaves_buffer[leaves_a:index(xi, yi, zi)] then
+					if is_apple_tree and pr:next(1, 100) <=  10 then
+						data[vi] = c_apple
+					else
+						data[vi] = c_leaves
+					end
+				end
+			end
+		end
+	end
+	end
+	end
+end
+
+minetest.register_abm({
+	nodenames = {"default:sapling"},
+	interval = 10,
+	chance = 50,
+	action = function(pos, node)
+		local is_soil = minetest.registered_nodes[minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z}).name].groups.soil
+		if is_soil == nil or is_soil == 0 then return end
+		print("A sapling grows into a tree at "..minetest.pos_to_string(pos))
+		local vm = minetest.get_voxel_manip()
+		local minp, maxp = vm:read_from_map({x=pos.x-16, y=pos.y, z=pos.z-16}, {x=pos.x+16, y=pos.y+16, z=pos.z+16})
+		local a = VoxelArea:new{MinEdge=minp, MaxEdge=maxp}
+		local data = vm:get_data()
+		default.grow_tree(data, a, pos, math.random(1, 4) == 1, math.random(1,100000))
+		vm:set_data(data)
+		vm:write_to_map(data)
+		vm:update_map()
+	end
+})
+
+minetest.register_abm({
+	nodenames = {"default:dirt"},
+	interval = 2,
+	chance = 200,
+	action = function(pos, node)
+		local above = {x=pos.x, y=pos.y+1, z=pos.z}
+		local name = minetest.get_node(above).name
+		local nodedef = minetest.registered_nodes[name]
+		if nodedef and (nodedef.sunlight_propagates or nodedef.paramtype == "light")
+				and nodedef.liquidtype == "none"
+				and (minetest.get_node_light(above) or 0) >= 13 then
+			if name == "default:snow" or name == "default:snowblock" then
+				minetest.set_node(pos, {name = "default:dirt_with_snow"})
+			else
+				minetest.set_node(pos, {name = "default:dirt_with_grass"})
+			end
+		end
+	end
+})
+
+minetest.register_abm({
+	nodenames = {"default:dirt_with_grass"},
+	interval = 2,
+	chance = 20,
+	action = function(pos, node)
+		local above = {x=pos.x, y=pos.y+1, z=pos.z}
+		local name = minetest.get_node(above).name
+		local nodedef = minetest.registered_nodes[name]
+		if name ~= "ignore" and nodedef
+				and not ((nodedef.sunlight_propagates or nodedef.paramtype == "light")
+				and nodedef.liquidtype == "none") then
+			minetest.set_node(pos, {name = "default:dirt"})
+		end
+	end
 })
 
 --

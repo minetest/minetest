@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODETIMER_HEADER
 #define NODETIMER_HEADER
 
-#include "irrlichttypes_bloated.h"
+#include "irr_v3d.h"
 #include <iostream>
 #include <map>
 

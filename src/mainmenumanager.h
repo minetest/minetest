@@ -77,6 +77,15 @@ public:
 			m_stack.back()->setVisible(true);
 	}
 
+	// Returns true to prevent further processing
+	virtual bool preprocessEvent(const SEvent& event)
+	{
+		if(m_stack.size() != 0)
+			return m_stack.back()->preprocessEvent(event);
+		else
+			return false;
+	}
+
 	u32 menuCount()
 	{
 		return m_stack.size();

@@ -18,15 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_env.h"
+#include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 #include "log.h"
 #include "environment.h"
 #include "mapgen.h"
 #include "lua_api/l_env.h"
-
-extern "C" {
-#include "lauxlib.h"
-}
 
 void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 		u32 blockseed)
@@ -40,7 +37,7 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	push_v3s16(L, minp);
 	push_v3s16(L, maxp);
 	lua_pushnumber(L, blockseed);
-	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::environment_Step(float dtime)
@@ -53,7 +50,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	lua_getfield(L, -1, "registered_globalsteps");
 	// Call callbacks
 	lua_pushnumber(L, dtime);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::environment_OnMapgenInit(MapgenParams *mgparams)
@@ -80,7 +77,7 @@ void ScriptApiEnv::environment_OnMapgenInit(MapgenParams *mgparams)
 	lua_pushstring(L, flagstr.c_str());
 	lua_setfield(L, -2, "flags");
 	
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)

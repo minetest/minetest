@@ -82,6 +82,10 @@ engine.download_file(url,target)
 ^ returns true/false
 engine.get_version()
 ^ returns current minetest version
+engine.sound_play(spec, looped) -> handle
+^ spec = SimpleSoundSpec (see lua-api.txt)
+^ looped = bool
+engine.sound_stop(handle)
 
 GUI:
 engine.update_formspec(formspec)
@@ -123,11 +127,19 @@ engine.get_favorites(location) -> list of favorites
 }
 engine.delete_favorite(id, location) -> success
 
+Logging:
+engine.debug(line)
+^ Always printed to stderr and logfile (print() is redirected here)
+engine.log(line)
+engine.log(loglevel, line)
+^ loglevel one of "error", "action", "info", "verbose"
+
 Settings:
 engine.setting_set(name, value)
 engine.setting_get(name) -> string or nil
 engine.setting_setbool(name, value)
 engine.setting_getbool(name) -> bool or nil
+engine.setting_save() -> nil, save all settings to config file
 
 Worlds:
 engine.get_worlds() -> list of worlds
@@ -155,9 +167,24 @@ engine.file_open_dialog(formname,caption)
 ^ returns nil or selected file/folder
 
 Helpers:
+engine.formspec_escape(string) -> string
+^ escapes characters [ ] \ , ; that can not be used in formspecs
+engine.gettext(string) -> string
+^ look up the translation of a string in the gettext message catalog
+fgettext(string, ...) -> string
+^ call engine.gettext(string), replace "$1"..."$9" with the given
+^ extra arguments, call engine.formspec_escape and return the result
+engine.parse_json(string[, nullvalue]) -> something
+^ see minetest.parse_json (lua_api.txt)
 dump(obj, dumped={})
 ^ Return object serialized as a string
 string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
+
+Class reference
+----------------
+Settings: see lua_api.txt

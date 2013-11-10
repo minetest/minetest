@@ -18,16 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
-#include "lua_api/l_base.h"
 #include "lua_api/l_vmanip.h"
-
-///////
-
-#include "cpp_api/scriptapi.h"
+#include "lua_api/l_internal.h"
 #include "common/c_converter.h"
-#include "server.h"
 #include "emerge.h"
-#include "common/c_internal.h"
+#include "environment.h"
+#include "map.h"
+#include "server.h"
+#include "mapgen.h"
 
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
@@ -111,9 +109,13 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 int LuaVoxelManip::l_update_liquids(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
-	
-	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
-	Map *map = &(get_scriptapi(L)->getEnv()->getMap());
+
+	Environment *env = getEnv(L);
+	if (!env)
+		return 0;
+
+	Map *map = &(env->getMap());
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	ManualMapVoxelManipulator *vm = o->vm;
 
 	Mapgen mg;
@@ -134,8 +136,8 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	if (!o->is_mapgen_vm)
 		return 0;
 		
-	INodeDefManager *ndef = STACK_TO_SERVER(L)->getNodeDefManager();
-	EmergeManager *emerge = STACK_TO_SERVER(L)->getEmergeManager();
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	ManualMapVoxelManipulator *vm = o->vm;
 
 	Mapgen mg;
@@ -182,13 +184,18 @@ int LuaVoxelManip::l_update_map(lua_State *L)
 	if (o->is_mapgen_vm)
 		return 0;
 	
+	Environment *env = getEnv(L);
+	if (!env)
+		return 0;
+
+	Map *map = &(env->getMap());
+
 	// TODO: Optimize this by using Mapgen::calcLighting() instead
 	std::map<v3s16, MapBlock *> lighting_mblocks;
 	std::map<v3s16, MapBlock *> *mblocks = &o->modified_blocks;
 	
 	lighting_mblocks.insert(mblocks->begin(), mblocks->end());
 	
-	Map *map = &(get_scriptapi(L)->getEnv()->getMap());
 	map->updateLighting(lighting_mblocks, *mblocks);
 
 	MapEditEvent event;
@@ -228,7 +235,7 @@ int LuaVoxelManip::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	
-	Environment *env = get_scriptapi(L)->getEnv();
+	Environment *env = getEnv(L);
 	if (!env)
 		return 0;
 		
@@ -278,7 +285,7 @@ void LuaVoxelManip::Register(lua_State *L)
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
-	// Can be created from Lua (VoxelManip()
+	// Can be created from Lua (VoxelManip())
 	lua_register(L, className, create_object);
 }
 
@@ -294,5 +301,3 @@ const luaL_reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, set_lighting),
 	{0,0}
 };
-
-REGISTER_LUA_REF(LuaVoxelManip);
