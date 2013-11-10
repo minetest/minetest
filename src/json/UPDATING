@@ -1,6 +1,7 @@
 #!/bin/sh
 cd ..
-svn co https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp jsoncpp
+#svn co https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp jsoncpp
+svn co https://svn.code.sf.net/p/jsoncpp/code/trunk/jsoncpp jsoncpp
 svn up jsoncpp
 cd jsoncpp
 python amalgamate.py
