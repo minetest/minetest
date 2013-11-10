@@ -2385,21 +2385,21 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
-s16 Map::getHeat(v3s16 p)
+s16 Map::getHeat(v3s16 p, bool no_random)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if(block != NULL) {
-		return block->heat;
+		return block->heat + (no_random ? 0 : myrand_range(0, 1));
 	}
 	//errorstream << "No heat for " << p.X<<"," << p.Z << std::endl;
 	return 0;
 }
 
-s16 Map::getHumidity(v3s16 p)
+s16 Map::getHumidity(v3s16 p, bool no_random)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if(block != NULL) {
-		return block->humidity;
+		return block->humidity + (no_random ? 0 : myrand_range(0, 1));
 	}
 	//errorstream << "No humidity for " << p.X<<"," << p.Z << std::endl;
 	return 0;
@@ -3909,7 +3909,7 @@ s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 	
 	if (block) {
 		if (gametime < block->weather_update_time)
-			return block->heat;
+			return block->heat + myrand_range(0, 1);
 	} else {
 		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
@@ -3927,7 +3927,7 @@ s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 		else
 			block->weather_update_time = -1; //never update
 	}
-	return heat;
+	return heat + myrand_range(0, 1);
 }
 
 s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
@@ -3936,7 +3936,7 @@ s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *bl
 	
 	if (block) {
 		if (gametime < block->weather_update_time)
-			return block->humidity;
+			return block->humidity + myrand_range(0, 1);
 	} else {
 		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
@@ -3954,7 +3954,7 @@ s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *bl
 		else
 			block->weather_update_time = -1; //never update
 	}
-	return humidity;
+	return humidity + myrand_range(0, 1);
 }
 
 /*

@@ -331,8 +331,8 @@ public:
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
 
-	virtual s16 getHeat(v3s16 p);
-	virtual s16 getHumidity(v3s16 p);
+	virtual s16 getHeat(v3s16 p, bool no_random = 0);
+	virtual s16 getHumidity(v3s16 p, bool no_random = 0);
 
 protected:
 	friend class LuaVoxelManip;

@@ -3011,8 +3011,8 @@ void the_game(
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
-				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
-				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
+				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i, 1)
+				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i, 1)
 				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
