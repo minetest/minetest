@@ -205,6 +205,62 @@ function tbl.formspec_escape(text)
 	return text
 end
 
+
+function tbl.splittext(text,charlimit)
+	local retval = {}
+
+	local current_idx = 1
+	
+	local start,stop = string.find(text," ",current_idx)
+	local nl_start,nl_stop = string.find(text,"\n",current_idx)
+	local gotnewline = false
+	if nl_start ~= nil and (start == nil or nl_start < start) then
+		start = nl_start
+		stop = nl_stop
+		gotnewline = true
+	end
+	local last_line = ""
+	while start ~= nil do
+		if string.len(last_line) + (stop-start) > charlimit then
+			table.insert(retval,last_line)
+			last_line = ""
+		end
+		
+		if last_line ~= "" then
+			last_line = last_line .. " "
+		end
+		
+		last_line = last_line .. string.sub(text,current_idx,stop -1)
+		
+		if gotnewline then
+			table.insert(retval,last_line)
+			last_line = ""
+			gotnewline = false
+		end
+		current_idx = stop+1
+		
+		start,stop = string.find(text," ",current_idx)
+		nl_start,nl_stop = string.find(text,"\n",current_idx)
+	
+		if nl_start ~= nil and (start == nil or nl_start < start) then
+			start = nl_start
+			stop = nl_stop
+			gotnewline = true
+		end
+	end
+	
+	--add last part of text
+	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
+			table.insert(retval,last_line)
+			table.insert(retval,string.sub(text,current_idx))
+	else
+		last_line = last_line .. " " .. string.sub(text,current_idx)
+		table.insert(retval,last_line)
+	end
+	
+	return retval
+end
+
 --------------------------------------------------------------------------------
 
 if minetest then
