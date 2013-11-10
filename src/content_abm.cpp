@@ -197,7 +197,6 @@ class LiquidMeltHot : public ActiveBlockModifier {
 			s.insert("group:melts");
 			return s;
 		}
-
 		virtual std::set<std::string> getRequiredNeighbors() {
 			std::set<std::string> s;
 			s.insert("group:igniter");

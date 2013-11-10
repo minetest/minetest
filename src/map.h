@@ -48,6 +48,7 @@ class ServerEnvironment;
 struct BlockMakeData;
 struct MapgenParams;
 
+
 /*
 	MapEditEvent
 */
