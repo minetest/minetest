@@ -345,50 +345,52 @@ void MapgenIndev::generateFloatIslands(int min_y) {
 */
 
 void MapgenIndev::generateFloatIslands(int min_y) {
-	if (node_min.Y < min_y) return;
-	PseudoRandom pr(blockseed + 985);
-	// originally from http://forum.minetest.net/viewtopic.php?id=4776
-	float RAR = 0.8 * farscale(0.4, node_min.Y); // 0.4; // Island rarity in chunk layer. -0.4 = thick layer with holes, 0 = 50%, 0.4 = desert rarity, 0.7 = very rare.
-	float AMPY = 24; // 24; // Amplitude of island centre y variation.
-	float TGRAD = 24; // 24; // Noise gradient to create top surface. Tallness of island top.
-	float BGRAD = 24; // 24; // Noise gradient to create bottom surface. Tallness of island bottom.
+    if (node_min.Y < min_y) return;
+    PseudoRandom pr(blockseed + 985);
+    // originally from http://forum.minetest.net/viewtopic.php?id=4776
+    float RAR = 0.8 * farscale(0.4, node_min.Y); // 0.4; // Island rarity.
+    float AMPY = 24; // 24; // Amplitude of island centre y variation.
+    float TGRAD = 24; // 24; // Noise gradient to create top surface.
+    float BGRAD = 24; // 24; // Noise gradient to create bottom surface.
 
-	v3s16 p0(node_min.X, node_min.Y, node_min.Z);
-	MapNode n1(c_stone);
+    v3s16 p0(node_min.X, node_min.Y, node_min.Z);
+    MapNode n1(c_stone);
 
-	float xl = node_max.X - node_min.X;
-	float yl = node_max.Y - node_min.Y;
-	float zl = node_max.Z - node_min.Z;
-	float midy = node_min.Y + yl * 0.5;
-	u32 index = 0, index2d = 0;
-	for (int x1 = 0; x1 <= xl; ++x1)
-	{
-		for (int z1 = 0; z1 <= zl; ++z1, ++index2d)
-		{
-			float noise3 = noiseindev_float_islands3->result[index2d];
-			float pmidy = midy + noise3 / 1.5 * AMPY;
-			for (int y1 = 0; y1 <= yl; ++y1, ++index)
-			{
-				int y = y1 + node_min.Y;
-				float noise1 = noiseindev_float_islands1->result[index];
-				float offset = y > pmidy ? (y - pmidy) / TGRAD : (pmidy - y) / BGRAD;
-				float noise1off = noise1 - offset - RAR;
-				if (noise1off > 0 && noise1off < 0.7) {
-					float noise2 = noiseindev_float_islands2->result[index];
-					if (noise2 - noise1off > -0.7){
-						v3s16 p = p0 + v3s16(x1, y1, z1);
-						u32 i = vm->m_area.index(p);
-						if (!vm->m_area.contains(i))
-							continue;
-						// Cancel if not  air
-						if (vm->m_data[i].getContent() != CONTENT_AIR)
-							continue;
-						vm->m_data[i] = n1;
-					}
-				}
-			}
-		}
-	}
+    float xl = node_max.X - node_min.X;
+    float yl = node_max.Y - node_min.Y;
+    float zl = node_max.Z - node_min.Z;
+    u32 zstride = xl + 1;
+    float midy = node_min.Y + yl * 0.5;
+    u32 index = 0;
+    for (int z1 = 0; z1 <= zl; ++z1)
+    {
+        for (int y1 = 0; y1 <= yl; ++y1)
+        {
+            for (int x1 = 0; x1 <= xl; ++x1, ++index)
+            {
+                int y = y1 + node_min.Y;
+                u32 index2d = z1 * zstride + x1;
+                float noise3 = noiseindev_float_islands3->result[index2d];
+                float pmidy = midy + noise3 / 1.5 * AMPY;
+                float noise1 = noiseindev_float_islands1->result[index];
+                float offset = y > pmidy ? (y - pmidy) / TGRAD : (pmidy - y) / BGRAD;
+                float noise1off = noise1 - offset - RAR;
+                if (noise1off > 0 && noise1off < 0.7) {
+                    float noise2 = noiseindev_float_islands2->result[index];
+                    if (noise2 - noise1off > -0.7){
+                        v3s16 p = p0 + v3s16(x1, y1, z1);
+                        u32 i = vm->m_area.index(p);
+                        if (!vm->m_area.contains(i))
+                            continue;
+                        // Cancel if not  air
+                        if (vm->m_data[i].getContent() != CONTENT_AIR)
+                            continue;
+                        vm->m_data[i] = n1;
+                    }
+                }
+            }
+        }
+    }
 }
 
 void MapgenIndev::generateExperimental() {
