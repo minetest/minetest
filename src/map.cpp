@@ -1836,7 +1836,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		//relax up
-		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) &&
+		if (nodemgr->get(liquid_kind).liquid_renewable && relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) &&
 			level_max > 1 &&
 			liquid_levels[D_TOP] == 0 &&
 			liquid_levels[D_BOTTOM] == level_max &&
@@ -1863,7 +1863,7 @@ void Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		total_level -= want_level * can_liquid_same_level;
 
 		//relax down
-		if (relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 &&
+		if (nodemgr->get(liquid_kind).liquid_renewable && relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 &&
 			level_max > 1 &&
 			liquid_levels[D_BOTTOM] == level_max && want_level == 0 &&
 			total_level <= (can_liquid_same_level - relax) &&
