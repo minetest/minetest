@@ -39,6 +39,8 @@ extern "C" {
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
 
+namespace Json { class Value; }
+
 struct MapNode;
 class INodeDefManager;
 struct PointedThing;
@@ -144,6 +146,10 @@ bool               read_schematic            (lua_State *L, int index,
                                               Server *server);
 
 void               luaentity_get             (lua_State *L,u16 id);
+
+bool               push_json_value           (lua_State *L,
+                                              const Json::Value &value,
+                                              int nullindex);
 
 extern struct EnumString es_TileAnimationType[];
 

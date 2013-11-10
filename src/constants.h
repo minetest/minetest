@@ -89,5 +89,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Maximum hit points of a player
 #define PLAYER_MAX_HP 20
 
+/*
+	Environmental condition constants
+*/
+#define HEAT_UNDEFINED     (-0x7fff-1)
+#define HUMIDITY_UNDEFINED (-0x7fff-1)
+
 #endif
 

@@ -395,7 +395,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 			
-			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 0, 8);
+			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
@@ -429,7 +429,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					if(n2.getContent() == c_source)
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing){
-						u8 liquid_level = (n2.param2&LIQUID_LEVEL_MASK) - (LIQUID_LEVEL_MAX+1-range);
+						u8 liquid_level = (n2.param2&LIQUID_LEVEL_MASK);
+						if (liquid_level <= LIQUID_LEVEL_MAX+1-range)
+							liquid_level = 0;
+						else
+							liquid_level -= (LIQUID_LEVEL_MAX+1-range);
 						level = (-0.5 + ((float)liquid_level+ 0.5) / (float)range * node_liquid_level) * BS;
 					}
 
@@ -908,13 +912,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
+				video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
+				video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
 			for(s32 i=0; i<4; i++)
@@ -949,13 +954,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 				
 			float d = (float)BS/16;
+			float s = BS/2*f.visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 0,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,  s,  s, 0,0,0, c, 0,0),
+				video::S3DVertex(BS/2-d,  s, -s, 0,0,0, c, 1,0),
+				video::S3DVertex(BS/2-d, -s, -s, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2-d, -s,  s, 0,0,0, c, 0,1),
 			};
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
@@ -990,16 +996,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
+			float s = BS/2*f.visual_scale;
+
 			for(u32 j=0; j<2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 0,1),
-					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c, 1,1),
-					video::S3DVertex( BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2*f.visual_scale,
-						-BS/2 + f.visual_scale*BS,0, 0,0,0, c, 0,0),
+					video::S3DVertex(-s,-BS/2,      0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-BS/2,      0, 0,0,0, c, 1,1),
+					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
 
 				if(j == 0)

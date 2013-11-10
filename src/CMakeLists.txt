@@ -3,7 +3,6 @@ cmake_minimum_required( VERSION 2.6 )
 
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
-mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
 mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
 mark_as_advanced(JSON_INCLUDE_DIR JSON_LIBRARY)
 
@@ -169,7 +168,6 @@ else()
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
-find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
 find_package(OpenGLES2)
@@ -189,8 +187,10 @@ find_path(LUA_INCLUDE_DIR luajit.h
 message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
 message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
 
+set(USE_LUAJIT 0)
 if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
 	message (STATUS "LuaJIT found.")
+	set(USE_LUAJIT 1)
 else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT not found, using bundled Lua.")
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
@@ -201,15 +201,46 @@ endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 mark_as_advanced(LUA_LIBRARY)
 mark_as_advanced(LUA_INCLUDE_DIR)
 
+set(USE_LEVELDB 0)
+
+OPTION(ENABLE_LEVELDB "Enable LevelDB backend")
+
+if(ENABLE_LEVELDB)
+	find_library(LEVELDB_LIBRARY leveldb)
+	find_path(LEVELDB_INCLUDE_DIR db.h PATH_SUFFIXES leveldb)
+	message (STATUS "LevelDB library: ${LEVELDB_LIBRARY}")
+	message (STATUS "LevelDB headers: ${LEVELDB_INCLUDE_DIR}")
+	if(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+		set(USE_LEVELDB 1)
+		message(STATUS "LevelDB backend enabled")
+		include_directories(${LEVELDB_INCLUDE_DIR})
+	else(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+		set(USE_LEVELDB 0)
+		message(STATUS "LevelDB not found!")
+	endif(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
+endif(ENABLE_LEVELDB)
+
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
+# Add a target that always rebuilds cmake_config_githash.h
+add_custom_target(GenerateVersion
+	COMMAND ${CMAKE_COMMAND}
+	-D "GENERATE_VERSION_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+	-D "GENERATE_VERSION_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+	-D "VERSION_STRING=${VERSION_STRING}"
+	-D "VERSION_EXTRA=${VERSION_EXTRA}"
+	-P "${CMAKE_SOURCE_DIR}/cmake/Modules/GenerateVersion.cmake"
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
+add_subdirectory(jthread)
 add_subdirectory(script)
 add_subdirectory(util)
 
 set(common_SRCS
+	version.cpp
 	rollback_interface.cpp
 	rollback.cpp
 	genericobject.cpp
@@ -261,6 +292,10 @@ set(common_SRCS
 	mapblock.cpp
 	mapsector.cpp
 	map.cpp
+	database.cpp
+	database-dummy.cpp
+	database-leveldb.cpp
+	database-sqlite3.cpp
 	player.cpp
 	test.cpp
 	sha1.cpp
@@ -271,6 +306,7 @@ set(common_SRCS
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
+	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
 )
@@ -358,7 +394,6 @@ include_directories(
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
-	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
@@ -382,6 +417,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
+	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
@@ -393,7 +429,6 @@ if(BUILD_CLIENT)
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
 		${SOUND_LIBRARIES}
-		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${JSON_LIBRARY}
@@ -414,20 +449,26 @@ if(BUILD_CLIENT)
 			${CGUITTFONT_LIBRARY}
 		)
 	endif(USE_FREETYPE)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
 	add_executable(${PROJECT_NAME}server ${minetestserver_SRCS})
+	add_dependencies(${PROJECT_NAME}server GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
-		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
 		${GETTEXT_LIBRARY}
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	if (USE_LEVELDB)
+		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
+	endif(USE_LEVELDB)
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}server
@@ -592,11 +633,6 @@ if (USE_GETTEXT)
 endif(USE_GETTEXT)
 
 # Subdirectories
-
-if (JTHREAD_FOUND)
-else (JTHREAD_FOUND)
-	add_subdirectory(jthread)
-endif (JTHREAD_FOUND)
 
 if (SQLITE3_FOUND)
 else (SQLITE3_FOUND)

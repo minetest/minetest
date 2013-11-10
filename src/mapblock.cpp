@@ -44,9 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		heat(0),
-		heat_time(0),
 		humidity(0),
-		humidity_time(0),
+		weather_update_time(0),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),

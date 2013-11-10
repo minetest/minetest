@@ -877,15 +877,17 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = -1;
-	if (!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-
-	HudElementStat stat = (HudElementStat)getenumfield(L, 3, "stat",
-								es_HudElementStat, HUD_STAT_NUMBER);
-
+	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
 	if (id >= player->hud.size())
 		return 0;
+
+	HudElementStat stat = HUD_STAT_NUMBER;
+	if (!lua_isnil(L, 3)) {
+		int statint;
+		std::string statstr = lua_tostring(L, 3);
+		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
+				(HudElementStat)statint : HUD_STAT_NUMBER;
+	}
 
 	void *value = NULL;
 	HudElement *e = player->hud[id];
@@ -1022,6 +1024,34 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 	return 1;
 }
 
+// hud_set_hotbar_image(self, name)
+int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = lua_tostring(L, 2);
+
+	getServer(L)->hudSetHotbarImage(player, name);
+	return 1;
+}
+
+// hud_set_hotbar_selected_image(self, name)
+int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = lua_tostring(L, 2);
+
+	getServer(L)->hudSetHotbarSelectedImage(player, name);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1136,5 +1166,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
+	luamethod(ObjectRef, hud_set_hotbar_image),
+	luamethod(ObjectRef, hud_set_hotbar_selected_image),
 	{0,0}
 };

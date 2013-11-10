@@ -174,9 +174,17 @@ engine.gettext(string) -> string
 fgettext(string, ...) -> string
 ^ call engine.gettext(string), replace "$1"..."$9" with the given
 ^ extra arguments, call engine.formspec_escape and return the result
+engine.parse_json(string[, nullvalue]) -> something
+^ see minetest.parse_json (lua_api.txt)
 dump(obj, dumped={})
 ^ Return object serialized as a string
 string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
+minetest.is_yes(arg)
+^ returns whether arg can be interpreted as yes
+
+Class reference
+----------------
+Settings: see lua_api.txt

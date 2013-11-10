@@ -351,8 +351,11 @@ MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	if (!mgparams)
 		return NULL;
 	
+	std::string seedstr = settings->get(settings == g_settings ?
+									"fixed_map_seed" : "seed");
+	
 	mgparams->mg_name     = mg_name;
-	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
+	mgparams->seed        = read_seed(seedstr.c_str());
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
 	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
@@ -512,8 +515,7 @@ void *EmergeThread::Thread() {
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2
-						m_server->getScriptIface()->
-								environment_OnGenerated(
+						m_server->getScriptIface()->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
 					}
 
@@ -534,14 +536,6 @@ void *EmergeThread::Thread() {
 		// Add the originally fetched block to the modified list
 		if (block)
 			modified_blocks[p] = block;
-
-		// Update weather data in mapblock
-		for(std::map<v3s16, MapBlock *>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i) {
-			map->getHeat(m_server->m_env, MAP_BLOCKSIZE*i->first ,i->second);
-			map->getHumidity(m_server->m_env, MAP_BLOCKSIZE*i->first, i->second);
-		}
 
 		// Set the modified blocks unsent for all the clients
 		for (std::map<u16, RemoteClient*>::iterator

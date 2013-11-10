@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../irrlichttypes.h"
 #include "../exceptions.h"
-#include <jmutex.h>
-#include <jmutexautolock.h>
+#include "../jthread/jmutex.h"
+#include "../jthread/jmutexautolock.h"
 #include "../porting.h" // For sleep_ms
 #include <list>
 #include <vector>

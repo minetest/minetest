@@ -515,9 +515,8 @@ public:
 	StaticObjectList m_static_objects;
 	
 	s16 heat;
-	u32 heat_time;
 	s16 humidity;
-	u32 humidity_time;
+	u32 weather_update_time;
 
 private:
 	/*

@@ -73,6 +73,14 @@ extern std::ostream dstream_no_stderr;
 extern Nullstream dummyout;
 
 /*
+	Include assert.h and immediately undef assert so that it can't override
+	our assert later on. leveldb/slice.h is a notable offender.
+*/
+
+#include <assert.h>
+#undef assert
+
+/*
 	Assert
 */
 

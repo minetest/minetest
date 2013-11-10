@@ -82,22 +82,27 @@ struct TextureFromMeshParams
 	TextureSource creates and caches textures.
 */
 
-class ITextureSource
+class ISimpleTextureSource
+{
+public:
+	ISimpleTextureSource(){}
+	virtual ~ISimpleTextureSource(){}
+	virtual video::ITexture* getTexture(
+			const std::string &name, u32 *id = NULL) = 0;
+};
+
+class ITextureSource : public ISimpleTextureSource
 {
 public:
 	ITextureSource(){}
 	virtual ~ITextureSource(){}
-	virtual u32 getTextureId(const std::string &name){return 0;}
-	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
-	virtual std::string getTextureName(u32 id){return "";}
-	virtual video::ITexture* getTexture(u32 id){return NULL;}
+	virtual u32 getTextureId(const std::string &name)=0;
+	virtual u32 getTextureIdDirect(const std::string &name)=0;
+	virtual std::string getTextureName(u32 id)=0;
+	virtual video::ITexture* getTexture(u32 id)=0;
 	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = NULL){
-		if(id) *id = 0;
-		return NULL;
-	}
-	virtual IrrlichtDevice* getDevice()
-		{return NULL;}
+			const std::string &name, u32 *id = NULL)=0;
+	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
@@ -108,23 +113,20 @@ class IWritableTextureSource : public ITextureSource
 public:
 	IWritableTextureSource(){}
 	virtual ~IWritableTextureSource(){}
-	virtual u32 getTextureId(const std::string &name){return 0;}
-	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
-	virtual std::string getTextureName(u32 id){return "";}
-	virtual video::ITexture* getTexture(u32 id){return NULL;}
+	virtual u32 getTextureId(const std::string &name)=0;
+	virtual u32 getTextureIdDirect(const std::string &name)=0;
+	virtual std::string getTextureName(u32 id)=0;
+	virtual video::ITexture* getTexture(u32 id)=0;
 	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = NULL){
-		if(id) *id = 0;
-		return NULL;
-	}
-	virtual IrrlichtDevice* getDevice(){return NULL;}
+			const std::string &name, u32 *id = NULL)=0;
+	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	virtual video::ITexture* generateTextureFromMesh(
+			const TextureFromMeshParams &params)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
-	virtual video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);

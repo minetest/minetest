@@ -163,6 +163,12 @@ inline s32 mystoi(const std::string &s, s32 min, s32 max)
 	return i;
 }
 
+inline s64 stoi64(const std::string &s) {
+	std::stringstream tmp(s);
+	long long t;
+	tmp >> t;
+	return t;
+}
 
 // MSVC2010 includes it's own versions of these
 //#if !defined(_MSC_VER) || _MSC_VER < 1600
@@ -195,6 +201,12 @@ inline float mystof(const std::string &s)
 
 inline std::string itos(s32 i)
 {
+	std::ostringstream o;
+	o<<i;
+	return o.str();
+}
+
+inline std::string i64tos(s64 i) {
 	std::ostringstream o;
 	o<<i;
 	return o.str();
@@ -295,7 +307,7 @@ inline std::string unescape_string(std::string &s)
 {
 	std::string res;
 	
-	for (size_t i = 0; i <= s.length(); i++) {
+	for (size_t i = 0; i < s.length(); i++) {
 		if (s[i] == '\\')
 			i++;
 		res += s[i];
@@ -309,6 +321,7 @@ size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata);
 u32 readFlagString(std::string str, FlagDesc *flagdesc);
 std::string writeFlagString(u32 flags, FlagDesc *flagdesc);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
+u64 read_seed(const char *str);
 
 #endif
 

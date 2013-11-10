@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
+#include "version.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "keycode.h"
@@ -77,6 +78,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "serverlist.h"
 #include "guiEngine.h"
+#include "mapsector.h"
+
+#include "database-sqlite3.h"
+#ifdef USE_LEVELDB
+#include "database-leveldb.h"
+#endif
 
 /*
 	Settings.
@@ -765,6 +772,8 @@ int main(int argc, char *argv[])
 	std::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
 			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("version", ValueSpec(VALUETYPE_FLAG,
+			_("Show version information"))));
 	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
 			_("Load configuration from specified file"))));
 	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
@@ -789,6 +798,8 @@ int main(int argc, char *argv[])
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
+	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
+			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
 			_("Show available video modes"))));
@@ -833,6 +844,18 @@ int main(int argc, char *argv[])
 		}
 
 		return cmd_args.getFlag("help") ? 0 : 1;
+	}
+
+	if(cmd_args.getFlag("version"))
+	{
+#ifdef SERVER
+		dstream<<"minetestserver "<<minetest_version_hash<<std::endl;
+#else
+		dstream<<"Minetest "<<minetest_version_hash<<std::endl;
+		dstream<<"Using Irrlicht "<<IRRLICHT_SDK_VERSION<<std::endl;
+#endif
+		dstream<<"Build info: "<<minetest_build_info<<std::endl;
+		return 0;
 	}
 	
 	/*
@@ -895,7 +918,7 @@ int main(int argc, char *argv[])
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
-			<<", "<<BUILD_INFO
+			<<", "<<minetest_build_info
 			<<std::endl;
 	
 	/*
@@ -995,7 +1018,19 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-	
+
+	std::string language = g_settings->get("language");
+	if (language.length()) {
+#ifndef _WIN32
+		setenv("LANGUAGE", language.c_str(), 1);
+#else
+		char *lang_str = (char*)calloc(10 + language.length(), sizeof(char));
+		strcat(lang_str, "LANGUAGE=");
+		strcat(lang_str, language.c_str());
+		putenv(lang_str);
+#endif
+	}
+
 	/*
 		Game parameters
 	*/
@@ -1072,6 +1107,7 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 	}
+
 
 	/*
 		Run dedicated server if asked to or no other option
@@ -1195,6 +1231,65 @@ int main(int argc, char *argv[])
 
 		// Create server
 		Server server(world_path, gamespec, false);
+
+		// Database migration
+		if (cmd_args.exists("migrate")) {
+			std::string migrate_to = cmd_args.get("migrate");
+			Settings world_mt;
+			bool success = world_mt.readConfigFile((world_path + DIR_DELIM + "world.mt").c_str());
+			if (!success) {
+				errorstream << "Cannot read world.mt" << std::endl;
+				return 1;
+			}
+			if (!world_mt.exists("backend")) {
+				errorstream << "Please specify your current backend in world.mt file:"
+					<< std::endl << "	backend = {sqlite3|leveldb|dummy}" << std::endl;
+				return 1;
+			}
+			std::string backend = world_mt.get("backend");
+			Database *new_db;
+			if (backend == migrate_to) {
+				errorstream << "Cannot migrate: new backend is same as the old one" << std::endl;
+				return 1;
+			}
+			if (migrate_to == "sqlite3")
+				new_db = new Database_SQLite3(&(ServerMap&)server.getMap(), world_path);
+			#if USE_LEVELDB
+			else if (migrate_to == "leveldb")
+				new_db = new Database_LevelDB(&(ServerMap&)server.getMap(), world_path);
+			#endif
+			else {
+				errorstream << "Migration to " << migrate_to << " is not supported" << std::endl;
+				return 1;
+			}
+
+			std::list<v3s16> blocks;
+			ServerMap &old_map = ((ServerMap&)server.getMap());
+			old_map.listAllLoadableBlocks(blocks);
+			int count = 0;
+			new_db->beginSave();
+			for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); ++i) {
+				MapBlock *block = old_map.loadBlock(*i);
+				new_db->saveBlock(block);
+				MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
+				sector->deleteBlock(block);
+				++count;
+				if (count % 500 == 0)
+					actionstream << "Migrated " << count << " blocks "
+						<< (100.0 * count / blocks.size()) << "\% completed" << std::endl;
+			}
+			new_db->endSave();
+
+			actionstream << "Successfully migrated " << count << " blocks" << std::endl;
+			world_mt.set("backend", migrate_to);
+			if(!world_mt.updateConfigFile((world_path + DIR_DELIM + "world.mt").c_str()))
+				errorstream<<"Failed to update world.mt!"<<std::endl;
+			else
+				actionstream<<"world.mt updated"<<std::endl;
+
+			return 0;
+		}
+
 		server.start(port);
 		
 		// Run server
@@ -1393,10 +1488,14 @@ int main(int argc, char *argv[])
 	gui::IGUISkin* skin = guienv->getSkin();
 	std::string font_path = g_settings->get("font_path");
 	gui::IGUIFont *font;
-	bool use_freetype = g_settings->getBool("freetype");
 	#if USE_FREETYPE
+	bool use_freetype = g_settings->getBool("freetype");
 	if (use_freetype) {
-		u16 font_size = g_settings->getU16("font_size");
+		std::string fallback;
+		if (is_yes(gettext("needs_fallback_font")))
+			fallback = "fallback_";
+		u16 font_size = g_settings->getU16(fallback + "font_size");
+		font_path = g_settings->get(fallback + "font_path");
 		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
 	} else {
 		font = guienv->getFont(font_path.c_str());
@@ -1602,7 +1701,7 @@ int main(int argc, char *argv[])
 				g_settings->set("port", itos(port));
 
 				if((menudata.selected_world >= 0) &&
-						(menudata.selected_world < worldspecs.size()))
+						(menudata.selected_world < (int)worldspecs.size()))
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
 
@@ -1634,7 +1733,7 @@ int main(int argc, char *argv[])
 				
 				// Set world path to selected one
 				if ((menudata.selected_world >= 0) &&
-					(menudata.selected_world < worldspecs.size())) {
+					(menudata.selected_world < (int)worldspecs.size())) {
 					worldspec = worldspecs[menudata.selected_world];
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;

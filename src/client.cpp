@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include <iostream>
 #include "clientserver.h"
-#include "jmutexautolock.h"
+#include "jthread/jmutexautolock.h"
 #include "main.h"
 #include <sstream>
 #include "filesys.h"
@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "config.h"
 #include "util/directiontables.h"
+#include "version.h"
 
 #if USE_CURL
 #include <curl/curl.h>
@@ -245,6 +246,7 @@ void * MediaFetchThread::Thread()
 		std::ostringstream stream;
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 		res = curl_easy_perform(curl);
 		if (res == CURLE_OK) {
 			std::string data = stream.str();
@@ -2175,6 +2177,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			s32 hotbar_itemcount = readS32((u8*) value.c_str());
 			if(hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX)
 				player->hud_hotbar_itemcount = hotbar_itemcount;
+		} else if (param == HUD_PARAM_HOTBAR_IMAGE) {
+			((LocalPlayer *) player)->hotbar_image = value;
+		} else if (param == HUD_PARAM_HOTBAR_SELECTED_IMAGE) {
+			((LocalPlayer *) player)->hotbar_selected_image = value;
 		}
 	}
 	else

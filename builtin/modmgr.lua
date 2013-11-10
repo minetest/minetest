@@ -235,13 +235,14 @@ function modmgr.tab()
 	local retval = 
 		"vertlabel[0,-0.25;".. fgettext("MODS") .. "]" ..
 		"label[0.8,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
+		"textlist[0.75,0.25;4.5,4;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
-		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. fgettext("Install") .. "]" ..
-		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. fgettext("Download") .. "]"
+		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" .. 
+		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
+		"button[2.45,4.85;3.05,0.5;btn_mod_mgr_download;".. fgettext("Online mod repository") .. "]"
 		
 	local selected_mod = nil
 		
@@ -250,25 +251,66 @@ function modmgr.tab()
 	end
 	
 	if selected_mod ~= nil then
-		if selected_mod.is_modpack then
-			retval = retval 
-			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
-					 fgettext("Rename") .. "]"
+		local modscreenshot = nil
+		
+		--check for screenshot beeing available
+		local screenshotfilename = selected_mod.path .. DIR_DELIM .. "screenshot.png"
+		local error = nil
+		screenshotfile,error = io.open(screenshotfilename,"r")
+		if error == nil then
+			screenshotfile:close()
+			modscreenshot = screenshotfilename
+		end
+	
+		if modscreenshot == nil then
+				modscreenshot = modstore.basetexturedir .. "no_screenshot.png"
+		end
+		
+		retval = retval 
+				.. "image[5.5,0;3,2;" .. modscreenshot .. "]"
+				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
+				
+		local descriptionlines = nil
+		error = nil
+		local descriptionfilename = selected_mod.path .. "description.txt"
+		descriptionfile,error = io.open(descriptionfilename,"r")
+		if error == nil then
+			descriptiontext = descriptionfile:read("*all")
+			
+			descriptionlines = engine.splittext(descriptiontext,42)
+			descriptionfile:close()
 		else
-		--show dependencies
-			retval = retval .. 
-				"label[6,1.9;".. fgettext("Depends:") .. "]" ..
-				"textlist[6,2.4;5.7,2;deplist;"
+			descriptionlines = {}
+			table.insert(descriptionlines,fgettext("No mod description available"))
+		end
+	
+		retval = retval .. 
+			"label[5.5,1.7;".. fgettext("Mod information:") .. "]" ..
+			"textlist[5.5,2.2;6.2,2.4;description;"
+			
+		for i=1,#descriptionlines,1 do
+			retval = retval .. engine.formspec_escape(descriptionlines[i]) .. ","
+		end
+		
+		
+		if selected_mod.is_modpack then
+			retval = retval .. ";0]" .. 
+				"button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+				fgettext("Rename") .. "]"
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected modpack") .. "]"
+		else
+			--show dependencies
+
+			retval = retval .. ",Depends:,"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
 			
-			retval = retval .. toadd .. ";0;true,false]"
+			retval = retval .. toadd .. ";0]"
 			
-			--TODO read modinfo
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected mod") .. "]"
 		end
-		--show delete button
-		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Delete") .. "]"
 	end
 	return retval
 end
@@ -498,34 +540,18 @@ function modmgr.get_worldconfig(worldpath)
 	local filename = worldpath ..
 				DIR_DELIM .. "world.mt"
 
-	local worldfile = io.open(filename,"r")
+	local worldfile = Settings(filename)
 	
 	local worldconfig = {}
 	worldconfig.global_mods = {}
 	worldconfig.game_mods = {}
 	
-	if worldfile then
-		local dependency = worldfile:read("*l")
-		while dependency do
-			local parts = dependency:split("=")
-
-			local key = parts[1]:trim()
-
-			if key == "gameid" then
-				worldconfig.id = parts[2]:trim()
-			else
-				local key = parts[1]:trim():sub(10)
-				if parts[2]:trim() == "true" then
-					worldconfig.global_mods[key] = true
-				else
-					worldconfig.global_mods[key] = false
-				end
-			end
-			dependency = worldfile:read("*l")
+	for key,value in pairs(worldfile:to_table()) do
+		if key == "gameid" then
+			worldconfig.id = value
+		else
+			worldconfig.global_mods[key] = engine.is_yes(value)
 		end
-		worldfile:close()
-	else
-		print("Modmgr: " .. filename .. " not found")
 	end
 	
 	--read gamemods
@@ -674,7 +700,7 @@ function modmgr.handle_configure_world_buttons(fields)
 	end
 	
 	if fields["cb_mod_enable"] ~= nil then
-		local toset = (fields["cb_mod_enable"] == "true")
+		local toset = engine.is_yes(fields["cb_mod_enable"])
 		modmgr.world_config_enable_mod(toset)
 	end
 	
@@ -691,7 +717,7 @@ function modmgr.handle_configure_world_buttons(fields)
 			current = {}
 		end
 
-		if fields["cb_hide_gamemods"] == "true" then
+		if engine.is_yes(fields["cb_hide_gamemods"]) then
 			current.hide_game = true
 			modmgr.hide_gamemods = true
 		else
@@ -709,7 +735,7 @@ function modmgr.handle_configure_world_buttons(fields)
 			current = {}
 		end
 
-		if fields["cb_hide_mpcontent"] == "true" then
+		if engine.is_yes(fields["cb_hide_mpcontent"]) then
 			current.hide_modpackcontents = true
 			modmgr.hide_modpackcontents = true
 		else
@@ -725,29 +751,34 @@ function modmgr.handle_configure_world_buttons(fields)
 		
 		local filename = worldspec.path ..
 				DIR_DELIM .. "world.mt"
-
-		local worldfile = io.open(filename,"w")
 		
-		if worldfile then
-			worldfile:write("gameid = " .. modmgr.worldconfig.id .. "\n")
-			
-			local rawlist = filterlist.get_raw_list(modmgr.modlist)
-			
-			for i=1,#rawlist,1 do
-			
-				if not rawlist[i].is_modpack and
-					rawlist[i].typ ~= "game_mod" then
-					if rawlist[i].enabled then
-						worldfile:write("load_mod_" .. rawlist[i].name .. " = true" .. "\n")
-					else
-						worldfile:write("load_mod_" .. rawlist[i].name .. " = false" .. "\n")
-					end
+		local worldfile = Settings(filename)
+		local mods = worldfile:to_table()
+		
+		local rawlist = filterlist.get_raw_list(modmgr.modlist)
+		
+		local i,mod
+		for i,mod in ipairs(rawlist) do
+			if not mod.is_modpack and
+					mod.typ ~= "game_mod" then
+				if mod.enabled then
+					worldfile:set("load_mod_"..mod.name, "true")
+				else
+					worldfile:set("load_mod_"..mod.name, "false")
 				end
+				mods["load_mod_"..mod.name] = nil
 			end
-			
-			worldfile:close()
-		else
-			print("failed to open world config file")
+		end
+		
+		-- Remove mods that are not present anymore
+		for key,value in pairs(mods) do
+			if key:sub(1,9) == "load_mod_" then
+				worldfile:remove(key)
+			end
+		end
+		
+		if not worldfile:write() then
+			print("failed to write world config file")
 		end
 		
 		modmgr.modlist = nil
@@ -886,37 +917,24 @@ function modmgr.preparemodlist(data)
 	local filename = data.worldpath ..
 				DIR_DELIM .. "world.mt"
 
-	local worldfile = io.open(filename,"r")
-	if worldfile then
-		local dependency = worldfile:read("*l")
-		while dependency do
-			local parts = dependency:split("=")
-
-			local key = parts[1]:trim()
-
-			if key ~= "gameid" then
-				local key = parts[1]:trim():sub(10)
-				local element = nil
-				for i=1,#retval,1 do
-					if retval[i].name == key then
-						element = retval[i]
-						break
-					end
-				end
-				if element ~= nil then
-					if parts[2]:trim() == "true" then
-						element.enabled = true
-					else
-						element.enabled = false
-					end
-				else
-					print("Mod: " .. key .. " " .. dump(parts[2]) .. " but not found")
+	local worldfile = Settings(filename)
+	
+	for key,value in pairs(worldfile:to_table()) do
+		if key:sub(1, 9) == "load_mod_" then
+			key = key:sub(10)
+			local element = nil
+			for i=1,#retval,1 do
+				if retval[i].name == key then
+					element = retval[i]
+					break
 				end
 			end
-			dependency = worldfile:read("*l")
+			if element ~= nil then
+				element.enabled = engine.is_yes(value)
+			else
+				print("Mod: " .. key .. " " .. dump(value) .. " but not found")
+			end
 		end
-		worldfile:close()
-
 	end
 
 	return retval

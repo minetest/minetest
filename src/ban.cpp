@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ban.h"
 #include <fstream>
-#include <jmutexautolock.h>
+#include "jthread/jmutexautolock.h"
 #include <sstream>
 #include <set>
 #include "strfnd.h"

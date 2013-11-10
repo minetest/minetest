@@ -476,6 +476,16 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	return 1;
 }
 
+// minetest.get_gametime()
+int ModApiEnvMod::l_get_gametime(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	int game_time = env->getGameTime();
+	lua_pushnumber(L, game_time);
+	return 1;
+}
+
 
 // minetest.find_node_near(pos, radius, nodenames) -> pos or nil
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
@@ -754,7 +764,7 @@ int ModApiEnvMod::l_get_heat(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().getHeat(env, pos));
+	lua_pushnumber(L, env->getServerMap().updateBlockHeat(env, pos));
 	return 1;
 }
 
@@ -765,7 +775,7 @@ int ModApiEnvMod::l_get_humidity(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().getHumidity(env, pos));
+	lua_pushnumber(L, env->getServerMap().updateBlockHumidity(env, pos));
 	return 1;
 }
 
@@ -793,6 +803,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_objects_inside_radius);
 	API_FCT(set_timeofday);
 	API_FCT(get_timeofday);
+	API_FCT(get_gametime);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(get_perlin);
