@@ -1605,8 +1605,6 @@ void Map::PrintInfo(std::ostream &out)
 	out<<"Map: ";
 }
 
-#define WATER_DROP_BOOST 4
-
 enum NeighborType {
 	NEIGHBOR_UPPER,
 	NEIGHBOR_SAME_LEVEL,
@@ -1644,12 +1642,12 @@ const v3s16 g_7dirs[7] =
 #define D_TOP 6
 #define D_SELF 1
 
-void Map::transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
+s32 Map::transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 	
 	DSTACK(__FUNCTION_NAME);
-	//TimeTaker timer("transformLiquids()");
+	//TimeTaker timer("transformLiquidsFinite()");
 
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
@@ -1664,14 +1662,12 @@ void Map::transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlo
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
-	u16 loop_max = g_settings->getU16("liquid_loop_max");
-
-	//if (m_transforming_liquid.size() > 0) errorstream << "Liquid queue size="<<m_transforming_liquid.size()<<std::endl;
+	u32 end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 
 	while (m_transforming_liquid.size() > 0)
 	{
 		// This should be done here so that it is done when continue is used
-		if (loopcount >= initial_size || loopcount >= loop_max)
+		if (loopcount >= initial_size || porting::getTimeMs() > end_ms)
 			break;
 		loopcount++;
 		/*
@@ -1998,20 +1994,26 @@ void Map::transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlo
 			must_reflow.push_back(p0 + dirs[ii]);
 		}*/
 	}
-	/*
-	if (loopcount)
-		infostream<<"Map::transformLiquids(): loopcount="<<loopcount
+
+	s32 ret = loopcount >= initial_size ? 0 : m_transforming_liquid.size();
+
+	/*if (loopcount)
+		infostream<<"Map::transformLiquidsFinite(): loopcount="<<loopcount
 		<<" reflow="<<must_reflow.size()
-		<<" queue="<< m_transforming_liquid.size()<<std::endl;
-	*/
+		<<" queue="<< m_transforming_liquid.size()<< " per="<<timer.getTimerTime()<<" ret="<<ret<<std::endl;*/
+
 	while (must_reflow.size() > 0)
 		m_transforming_liquid.push_back(must_reflow.pop_front());
 	while (must_reflow_second.size() > 0)
 		m_transforming_liquid.push_back(must_reflow_second.pop_front());
 	updateLighting(lighting_modified_blocks, modified_blocks);
+
+	return ret;
 }
 
-void Map::transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
+#define WATER_DROP_BOOST 4
+
+s32 Map::transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks)
 {
 
 	if (g_settings->getBool("liquid_finite"))
@@ -2034,12 +2036,12 @@ void Map::transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> &
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
 
-	u16 loop_max = g_settings->getU16("liquid_loop_max");
+	u32 end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 
 	while(m_transforming_liquid.size() != 0)
 	{
 		// This should be done here so that it is done when continue is used
-		if(loopcount >= initial_size || loopcount >= loop_max)
+		if(loopcount >= initial_size || porting::getTimeMs() > end_ms)
 			break;
 		loopcount++;
 
@@ -2286,10 +2288,16 @@ void Map::transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> &
 				break;
 		}
 	}
-	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
+
+	s32 ret = loopcount >= initial_size ? 0 : m_transforming_liquid.size();
+
+	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<" per="<<timer.getTimerTime()<<" ret="<<ret<<std::endl;
+
 	while (must_reflow.size() > 0)
 		m_transforming_liquid.push_back(must_reflow.pop_front());
 	updateLighting(lighting_modified_blocks, modified_blocks);
+
+	return ret;
 }
 
 NodeMetadata* Map::getNodeMetadata(v3s16 p)

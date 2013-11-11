@@ -299,8 +299,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
