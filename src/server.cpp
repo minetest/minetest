@@ -4612,6 +4612,13 @@ void Server::DiePlayer(u16 peer_id)
 
 	SendPlayerHP(peer_id);
 	SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
+	std::wstring message;
+	if (isSingleplayer())
+		message += L"You";
+	else
+		message += narrow_to_wide(playersao->getPlayer()->getName());
+	message += L" died.";
+	BroadcastChatMessage(message);
 }
 
 void Server::RespawnPlayer(u16 peer_id)
