@@ -2235,6 +2235,7 @@ void the_game(
 							new GUIDeathScreen(guienv, guiroot, -1, 
 								&g_menumgr, respawner);
 					menu->drop();
+					
 
 					/* Handle visualization */
 
