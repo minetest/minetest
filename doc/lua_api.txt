@@ -1402,8 +1402,8 @@ minetest.handle_node_drops(pos, drops, digger)
 ^ Can be overridden to get different functionality (eg. dropping items on
   ground)
 
-Rollbacks:
-minetest.rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
+Rollback:
+minetest.rollback_get_node_actions(pos, range, seconds, limit) -> {{actor, pos, time, oldnode, newnode}, ...}
 ^ Find who has done something to a node, or near a node
 ^ actor: "player:<name>", also "liquid".
 minetest.rollback_revert_actions_by(actor, seconds) -> bool, log messages
