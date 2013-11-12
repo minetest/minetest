@@ -2841,6 +2841,8 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 			y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
+			MapBlock *block = getBlockNoCreateNoEx(p);
+			block->weather_update_time = 0;
 			updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
 			updateBlockHumidity(senv, p * MAP_BLOCKSIZE, NULL);
 		}
@@ -3507,7 +3509,7 @@ void ServerMap::loadMapMeta()
 		m_seed = mgparams->seed;
 	} else {
 		if (params.exists("seed")) {
-			m_seed = params.getU64("seed");
+			m_seed = read_seed(params.get("seed").c_str());
 			m_mgparams->seed = m_seed;
 		}
 	}

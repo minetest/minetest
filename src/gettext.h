@@ -1,4 +1,25 @@
+/*
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #ifndef GETTEXT_HEADER
+#define GETTEXT_HEADER
+
 #include "config.h" // for USE_GETTEXT
 #include "log.h"
 
@@ -18,34 +39,16 @@
 	#define _WIN32_WINNT 0x0501
 #endif
 #include <windows.h>
+
+#endif // #if defined(_WIN32)
+
+#ifdef _MSC_VER
+void init_gettext(const char *path,std::string configured_language,int argc, char** argv);
+#else
+void init_gettext(const char *path,std::string configured_language);
 #endif
 
-inline void init_gettext(const char *path) {
-#if USE_GETTEXT
-	// don't do this if MSVC compiler is used, it gives an assertion fail
-	#ifndef _MSC_VER
-		setlocale(LC_MESSAGES, "");
-	#endif
-	bindtextdomain(PROJECT_NAME, path);
-	textdomain(PROJECT_NAME);
-#if defined(_WIN32)
-	// As linux is successfully switched to UTF-8 completely at about year 2005
-	// Windows still uses obsolete codepage based locales because you
-	// cannot recompile closed-source applications
-
-	// Set character encoding for Win32
-	char *tdomain = textdomain( (char *) NULL );
-	if( tdomain == NULL )
-	{
-		fprintf( stderr, "warning: domainname parameter is the null pointer, default domain is not set\n" );
-		tdomain = (char *) "messages";
-	}
-	/*char *codeset = */bind_textdomain_codeset( tdomain, "UTF-8" );
-	//fprintf( stdout, "%s: debug: domainname = %s; codeset = %s\n", argv[0], tdomain, codeset );
-#endif // defined(_WIN32)
-#endif
-}
-
+/******************************************************************************/
 inline wchar_t* chartowchar_t(const char *str)
 {
 	wchar_t* nstr = 0;
@@ -69,26 +72,18 @@ inline wchar_t* chartowchar_t(const char *str)
 	return nstr;
 }
 
+/******************************************************************************/
 inline wchar_t* wgettext(const char *str)
 {
 	return chartowchar_t(gettext(str));
 }
 
-inline void changeCtype(const char *l)
-{
-	/*char *ret = NULL;
-	ret = setlocale(LC_CTYPE, l);
-	if(ret == NULL)
-		infostream<<"locale could not be set"<<std::endl;
-	else
-		infostream<<"locale has been set to:"<<ret<<std::endl;*/
-}
-
+/******************************************************************************/
 inline std::wstring wstrgettext(std::string text) {
 	wchar_t* wlabel = wgettext(text.c_str());
 	std::wstring out = (std::wstring)wlabel;
 	delete[] wlabel;
 	return out;
 }
-#define GETTEXT_HEADER
+
 #endif

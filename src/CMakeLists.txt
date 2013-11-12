@@ -306,6 +306,7 @@ set(common_SRCS
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
+	gettext.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}

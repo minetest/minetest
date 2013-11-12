@@ -89,7 +89,7 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 	/*
 		Add stuff
 	*/
-	changeCtype("");
+	
 	{
 		core::rect<s32> rect(0, 0, 400, 50);
 		rect = rect + v2s32(size.X/2-400/2, size.Y/2-50/2-25);
@@ -108,7 +108,6 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 		delete[] text;
 		Environment->setFocus(e);
 	}
-	changeCtype("C");
 }
 
 void GUIDeathScreen::drawMenu()

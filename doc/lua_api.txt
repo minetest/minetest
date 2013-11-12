@@ -100,6 +100,8 @@ Mod directory structure
 mods
 |-- modname
 |   |-- depends.txt
+|   |-- screenshot.png
+|   |-- description.txt
 |   |-- init.lua
 |   |-- textures
 |   |   |-- modname_stuff.png
@@ -120,6 +122,12 @@ depends.txt:
   Optional dependencies can be defined by appending a question mark
   to a single modname. Their meaning is that if the specified mod
   is missing, that does not prevent this mod from being loaded.
+
+screenshot.png:
+  A screenshot shown in modmanager within mainmenu.
+
+description.txt:
+  File containing desctiption to be shown within mainmenu.
 
 optdepends.txt:
   An alternative way of specifying optional dependencies.
@@ -1073,7 +1081,7 @@ vector.distance(p1, p2) -> number
 vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
-vector.equal(v1, v2) -> bool
+vector.equals(v1, v2) -> bool
 For the folowing x can be either a vector or a number.
 vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
@@ -1543,6 +1551,28 @@ minetest.is_protected(pos, name) -> bool
 minetest.record_protection_violation(pos, name)
 ^ This function calls functions registered with
   minetest.register_on_protection_violation.
+minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)
+^ Attempt to predict the desired orientation of the facedir-capable node
+  defined by itemstack, and place it accordingly (on-wall, on the floor, or
+  hanging from the ceiling). Stacks are handled normally if the infinitestacks
+  field is false or omitted (else, the itemstack is not changed). orient_flags
+  is an optional table containing extra tweaks to the placement code:
+  invert_wall:		if true, place wall-orientation on the ground and ground-
+					orientation on the wall.
+  force_wall:		if true, always place the node in wall orientation.
+  force_ceiling:	if true, always place on the ceiling.
+  force_floor:		if true, always place the node on the floor.
+
+  The above four options are mutually-exclusive; the last in the list takes
+  precedence over the first.
+
+  force_facedir:	if true, forcably reset the facedir to north when placing on
+					the floor or ceiling
+
+minetest.rotate_node(itemstack, placer, pointed_thing)
+^ calls rotate_and_place() with infinitestacks set according to the state of
+  the creative mode setting, and checks for "sneak" to set the invert_wall
+  parameter.
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.

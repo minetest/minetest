@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "config.h"
 #include "util/directiontables.h"
+#include "version.h"
 
 #if USE_CURL
 #include <curl/curl.h>
@@ -245,6 +246,7 @@ void * MediaFetchThread::Thread()
 		std::ostringstream stream;
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 		res = curl_easy_perform(curl);
 		if (res == CURLE_OK) {
 			std::string data = stream.str();

@@ -99,7 +99,7 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 		Environment->addStaticText(m_message_text.c_str(),
 			rect, false, true, this, -1);
 	}
-	changeCtype("");
+
 	int bw = 140;
 	{
 		core::rect<s32> rect(0, 0, bw, 30);
@@ -111,7 +111,6 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 		Environment->setFocus(e);
 		delete[] text;
 	}
-	changeCtype("C");
 }
 
 void GUIMessageMenu::drawMenu()
