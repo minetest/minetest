@@ -2173,20 +2173,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			// Send information about server to player in chat
 			SendChatMessage(peer_id, getStatusString());
-
-			// Send information about joining in chat
-			{
-				std::wstring name = L"unknown";
-				Player *player = m_env->getPlayer(peer_id);
-				if(player != NULL)
-					name = narrow_to_wide(player->getName());
-
-				std::wstring message;
-				message += L"*** ";
-				message += name;
-				message += L" joined the game.";
-				BroadcastChatMessage(message);
-			}
 		}
 
 		// Warnings about protocol version can be issued here
@@ -4612,13 +4598,6 @@ void Server::DiePlayer(u16 peer_id)
 
 	SendPlayerHP(peer_id);
 	SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
-	std::wstring message;
-	if (isSingleplayer())
-		message += L"You";
-	else
-		message += narrow_to_wide(playersao->getPlayer()->getName());
-	message += L" died.";
-	BroadcastChatMessage(message);
 }
 
 void Server::RespawnPlayer(u16 peer_id)

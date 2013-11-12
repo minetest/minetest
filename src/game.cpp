@@ -2235,8 +2235,6 @@ void the_game(
 							new GUIDeathScreen(guienv, guiroot, -1, 
 								&g_menumgr, respawner);
 					menu->drop();
-					
-					chat_backend.addMessage(L"", L"You died.");
 
 					/* Handle visualization */
 
