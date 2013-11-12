@@ -116,7 +116,6 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	const s32 btn_gap = 20;
 	const s32 btn_num = m_simple_singleplayer_mode ? 4 : 5;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
-	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
@@ -201,7 +200,6 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
-	changeCtype("C");
 }
 
 void GUIPauseMenu::drawMenu()

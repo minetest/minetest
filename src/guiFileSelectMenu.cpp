@@ -31,13 +31,11 @@ GUIModalMenu(env, parent, id, menumgr)
 	m_formname = formname;
 	m_text_dst = 0;
 	m_accepted = false;
-	m_previous_locale = setlocale(LC_ALL,0);
 }
 
 GUIFileSelectMenu::~GUIFileSelectMenu()
 {
 	removeChildren();
-	setlocale(LC_ALL,m_previous_locale.c_str());
 }
 
 void GUIFileSelectMenu::removeChildren()
