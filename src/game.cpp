@@ -2236,14 +2236,15 @@ void the_game(
 					if (g_settings->getBool("respawn_auto")) {
 						client.sendRespawn();
 					} else {
-						MainRespawnInitiator *respawner =
+					MainRespawnInitiator *respawner =
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
-						GUIDeathScreen *menu =
+					GUIDeathScreen *menu =
 							new GUIDeathScreen(guienv, guiroot, -1,
 								&g_menumgr, respawner);
-						menu->drop();
+					menu->drop();
 					}
+					
 
 					/* Handle visualization */
 
