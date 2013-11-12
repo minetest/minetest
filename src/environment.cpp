@@ -1417,8 +1417,8 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 		ServerActiveObject *object = i->second;
 		if(object == NULL)
 			continue;
-		// Discard if removed
-		if(object->m_removed)
+		// Discard if removed or deactivating
+		if(object->m_removed || object->m_pending_deactivation)
 			continue;
 		if(object->unlimitedTransferDistance() == false){
 			// Discard if too far
@@ -1468,7 +1468,7 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 			continue;
 		}
 
-		if(object->m_removed)
+		if(object->m_removed || object->m_pending_deactivation)
 		{
 			removed_objects.insert(id);
 			continue;
@@ -1556,9 +1556,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		StaticObject s_obj(object->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-		MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-		if(block)
-		{
+		MapBlock *block = m_map->emergeBlock(blockpos);
+		if(block){
 			block->m_static_objects.m_active[object->getId()] = s_obj;
 			object->m_static_exists = true;
 			object->m_static_block = blockpos;
@@ -1566,11 +1565,10 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			if(set_changed)
 				block->raiseModified(MOD_STATE_WRITE_NEEDED, 
 						"addActiveObjectRaw");
-		}
-		else{
+		} else {
 			v3s16 p = floatToInt(objectpos, BS);
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
-					<<"could not find block for storing id="<<object->getId()
+					<<"could not emerge block for storing id="<<object->getId()
 					<<" statically (pos="<<PP(p)<<")"<<std::endl;
 		}
 	}
@@ -1616,18 +1614,39 @@ void ServerEnvironment::removeRemovedObjects()
 			if (block) {
 				block->m_static_objects.remove(id);
 				block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						"removeRemovedObjects");
+						"removeRemovedObjects/remove");
 				obj->m_static_exists = false;
 			} else {
-				infostream << "failed to emerge block from which "
-					"an object to be removed was loaded from. id="<<id<<std::endl;
+				infostream<<"Failed to emerge block from which an object to "
+						<<"be removed was loaded from. id="<<id<<std::endl;
 			}
 		}
 
-		// If m_known_by_count > 0, don't actually remove.
+		// If m_known_by_count > 0, don't actually remove. On some future
+		// invocation this will be 0, which is when removal will continue.
 		if(obj->m_known_by_count > 0)
 			continue;
-		
+
+		/*
+			Move static data from active to stored if not marked as removed
+		*/
+		if(obj->m_static_exists && !obj->m_removed){
+			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+			if (block) {
+				std::map<u16, StaticObject>::iterator i =
+						block->m_static_objects.m_active.find(id);
+				if(i != block->m_static_objects.m_active.end()){
+					block->m_static_objects.m_stored.push_back(i->second);
+					block->m_static_objects.m_active.erase(id);
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+							"removeRemovedObjects/deactivate");
+				}
+			} else {
+				infostream<<"Failed to emerge block from which an object to "
+						<<"be deactivated was loaded from. id="<<id<<std::endl;
+			}
+		}
+
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
@@ -1708,10 +1727,9 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 				"large amount of objects");
 		return;
 	}
-	// A list for objects that couldn't be converted to active for some
-	// reason. They will be stored back.
+
+	// Activate stored objects
 	std::list<StaticObject> new_stored;
-	// Loop through stored static objects
 	for(std::list<StaticObject>::iterator
 			i = block->m_static_objects.m_stored.begin();
 			i != block->m_static_objects.m_stored.end(); ++i)
@@ -1750,6 +1768,19 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		StaticObject &s_obj = *i;
 		block->m_static_objects.m_stored.push_back(s_obj);
 	}
+
+	// Turn the active counterparts of activated objects not pending for
+	// deactivation
+	for(std::map<u16, StaticObject>::iterator
+			i = block->m_static_objects.m_active.begin();
+			i != block->m_static_objects.m_active.end(); ++i)
+	{
+		u16 id = i->first;
+		ServerActiveObject *object = getActiveObject(id);
+		assert(object);
+		object->m_pending_deactivation = false;
+	}
+
 	/*
 		Note: Block hasn't really been modified here.
 		The objects have just been activated and moved from the stored
@@ -1910,6 +1941,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				block = m_map->emergeBlock(blockpos);
 			} catch(InvalidPositionException &e){
 				// Handled via NULL pointer
+				// NOTE: emergeBlock's failure is usually determined by it
+				//       actually returning NULL
 			}
 
 			if(block)
@@ -1923,17 +1956,21 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 							<<" Forcing delete."<<std::endl;
 					force_delete = true;
 				} else {
-					// If static counterpart already exists, remove it first.
-					// This shouldn't happen, but happens rarely for some
-					// unknown reason. Unsuccessful attempts have been made to
-					// find said reason.
+					// If static counterpart already exists in target block,
+					// remove it first.
+					// This shouldn't happen because the object is removed from
+					// the previous block before this according to
+					// obj->m_static_block, but happens rarely for some unknown
+					// reason. Unsuccessful attempts have been made to find
+					// said reason.
 					if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
 						infostream<<"ServerEnv: WARNING: Performing hack #83274"
 								<<std::endl;
 						block->m_static_objects.remove(id);
 					}
-					//store static data
-					block->m_static_objects.insert(0, s_obj);
+					// Store static data
+					u16 store_id = pending_delete ? id : 0;
+					block->m_static_objects.insert(store_id, s_obj);
 					
 					// Only mark block as modified if data changed considerably
 					if(shall_be_written)
