@@ -546,13 +546,7 @@ void ShaderSource::processQueue()
 				<<"name=\""<<request.key<<"\""
 				<<std::endl;*/
 
-		GetResult<std::string, u32, u8, u8>
-				result;
-		result.key = request.key;
-		result.callers = request.callers;
-		result.item = getShaderIdDirect(request.key);
-
-		request.dest->push_back(result);
+		m_get_shader_queue.pushResult(request,getShaderIdDirect(request.key));
 	}
 }
 

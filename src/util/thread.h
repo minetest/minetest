@@ -106,13 +106,7 @@ public:
 	A single worker thread - multiple client threads queue framework.
 */
 
-template<typename Caller, typename Data>
-class CallerInfo
-{
-public:
-	Caller caller;
-	Data data;
-};
+
 
 template<typename Key, typename T, typename Caller, typename CallerData>
 class GetResult
@@ -120,12 +114,21 @@ class GetResult
 public:
 	Key key;
 	T item;
-	std::list<CallerInfo<Caller, CallerData> > callers;
+	std::pair<Caller, CallerData> caller;
 };
 
 template<typename Key, typename T, typename Caller, typename CallerData>
 class ResultQueue: public MutexedQueue< GetResult<Key, T, Caller, CallerData> >
 {
+};
+
+template<typename Caller, typename Data, typename Key, typename T>
+class CallerInfo
+{
+public:
+	Caller caller;
+	Data data;
+	ResultQueue< Key, T, Caller, Data>* dest;
 };
 
 template<typename Key, typename T, typename Caller, typename CallerData>
@@ -134,16 +137,9 @@ class GetRequest
 public:
 	GetRequest()
 	{
-		dest = NULL;
 	}
-	GetRequest(ResultQueue<Key,T, Caller, CallerData> *a_dest)
+	GetRequest(Key a_key)
 	{
-		dest = a_dest;
-	}
-	GetRequest(ResultQueue<Key,T, Caller, CallerData> *a_dest,
-			Key a_key)
-	{
-		dest = a_dest;
 		key = a_key;
 	}
 	~GetRequest()
@@ -151,8 +147,7 @@ public:
 	}
 	
 	Key key;
-	ResultQueue<Key, T, Caller, CallerData> *dest;
-	std::list<CallerInfo<Caller, CallerData> > callers;
+	std::list<CallerInfo<Caller, CallerData, Key, T> > callers;
 };
 
 template<typename Key, typename T, typename Caller, typename CallerData>
@@ -180,20 +175,21 @@ public:
 
 			if(request.key == key)
 			{
-				for(typename std::list< CallerInfo<Caller, CallerData> >::iterator
+				for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
 						i = request.callers.begin();
 						i != request.callers.end(); ++i)
 				{
-					CallerInfo<Caller, CallerData> &ca = *i;
+					CallerInfo<Caller, CallerData, Key, T> &ca = *i;
 					if(ca.caller == caller)
 					{
 						ca.data = callerdata;
 						return;
 					}
 				}
-				CallerInfo<Caller, CallerData> ca;
+				CallerInfo<Caller, CallerData, Key, T> ca;
 				ca.caller = caller;
 				ca.data = callerdata;
+				ca.dest = dest;
 				request.callers.push_back(ca);
 				return;
 			}
@@ -205,11 +201,11 @@ public:
 
 		GetRequest<Key, T, Caller, CallerData> request;
 		request.key = key;
-		CallerInfo<Caller, CallerData> ca;
+		CallerInfo<Caller, CallerData, Key, T> ca;
 		ca.caller = caller;
 		ca.data = callerdata;
+		ca.dest = dest;
 		request.callers.push_back(ca);
-		request.dest = dest;
 		
 		m_queue.getList().push_back(request);
 	}
@@ -217,6 +213,26 @@ public:
 	GetRequest<Key, T, Caller, CallerData> pop(bool wait_if_empty=false)
 	{
 		return m_queue.pop_front(wait_if_empty);
+	}
+
+	void pushResult(GetRequest<Key, T, Caller, CallerData> req,
+					T res) {
+
+		for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
+				i = req.callers.begin();
+				i != req.callers.end(); ++i)
+		{
+			CallerInfo<Caller, CallerData, Key, T> &ca = *i;
+
+			GetResult<Key,T,Caller,CallerData> result;
+
+			result.key = req.key;
+			result.item = res;
+			result.caller.first = ca.caller;
+			result.caller.second = ca.data;
+
+			ca.dest->push_back(result);
+		}
 	}
 
 private:

@@ -638,12 +638,9 @@ public:
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>
 					request = m_get_clientcached_queue.pop();
-			GetResult<std::string, ClientCached*, u8, u8>
-					result;
-			result.key = request.key;
-			result.callers = request.callers;
-			result.item = createClientCachedDirect(request.key, gamedef);
-			request.dest->push_back(result);
+
+			m_get_clientcached_queue.pushResult(request,
+					createClientCachedDirect(request.key, gamedef));
 		}
 #endif
 	}
