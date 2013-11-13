@@ -150,6 +150,13 @@ public:
 	std::list<CallerInfo<Caller, CallerData, Key, T> > callers;
 };
 
+/**
+ * Notes for RequestQueue usage
+ * @param Key unique key to identify a request for a specific resource
+ * @param T ?
+ * @param Caller unique id of calling thread
+ * @param CallerData data passed back to caller
+ */
 template<typename Key, typename T, typename Caller, typename CallerData>
 class RequestQueue
 {
