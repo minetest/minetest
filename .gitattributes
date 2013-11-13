@@ -1,2 +1,12 @@
-*.cpp diff=cpp
-*.h diff=cpp
+*.cpp  diff=cpp
+*.h    diff=cpp
+*.rc   diff=cpp
+*.lua  diff=lua
+*.py   diff=python
+*.sh   eol=lf
+*.bat  eol=crlf
+*.txt  text
+*.png  binary
+*.ico  binary
+*.svg  binary
+*.html diff=html
