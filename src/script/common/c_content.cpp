@@ -334,7 +334,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
-			if(i==6){
+			if(i==CF_SPECIAL_COUNT){
 				lua_pop(L, 1);
 				break;
 			}
