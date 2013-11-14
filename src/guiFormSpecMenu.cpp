@@ -1875,8 +1875,8 @@ void GUIFormSpecMenu::drawMenu()
 				core::dimension2d<s32> absrec_size = AbsoluteRect.getSize();
 				rect = core::rect<s32>(AbsoluteRect.UpperLeftCorner.X - spec.pos.X,
 									AbsoluteRect.UpperLeftCorner.Y - spec.pos.Y,
-									AbsoluteRect.UpperLeftCorner.X + absrec_size.Width + spec.pos.X*2,
-									AbsoluteRect.UpperLeftCorner.Y + absrec_size.Height + spec.pos.Y*2);
+									AbsoluteRect.UpperLeftCorner.X + absrec_size.Width + spec.pos.X,
+									AbsoluteRect.UpperLeftCorner.Y + absrec_size.Height + spec.pos.Y);
 			}
 
 			const video::SColor color(255,255,255,255);
