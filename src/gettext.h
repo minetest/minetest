@@ -56,7 +56,7 @@ inline wchar_t* chartowchar_t(const char *str)
 	int nResult = MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) str, -1, 0, 0 );
 	if( nResult == 0 )
 	{
-		fprintf( stderr, "error: MultiByteToWideChar returned null\n" );
+		errorstream<<"gettext: MultiByteToWideChar returned null"<<std::endl;
 	}
 	else
 	{
