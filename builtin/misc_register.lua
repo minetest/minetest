@@ -122,7 +122,7 @@ function minetest.register_item(name, itemdef)
 	end
 
 	-- Flowing liquid uses param2
-	if itemdef.type == "node" and itemdef.liquidtype == "flowing" then
+	if itemdef.type == "node" and itemdef.liquidtype == "flowing" and itemdef.paramtype2 == nil then
 		itemdef.paramtype2 = "flowingliquid"
 	end
 
