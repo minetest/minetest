@@ -477,21 +477,24 @@ public:
 		else
 		{
 			// We're gonna ask the result to be put into here
-			ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+
 			// Throw a request in
 			m_get_clientcached_queue.add(name, 0, 0, &result_queue);
 			try{
-				// Wait result for a second
-				GetResult<std::string, ClientCached*, u8, u8>
+				while(true) {
+					// Wait result for a second
+					GetResult<std::string, ClientCached*, u8, u8>
 						result = result_queue.pop_front(1000);
-				// Check that at least something worked OK
-				assert(result.key == name);
-				// Return it
-				return result.item;
+
+					if (result.key == name) {
+						return result.item;
+					}
+				}
 			}
 			catch(ItemNotFoundException &e)
 			{
-				errorstream<<"Waiting for clientcached timed out."<<std::endl;
+				errorstream<<"Waiting for clientcached " << name << " timed out."<<std::endl;
 				return &m_dummy_clientcached;
 			}
 		}
@@ -560,7 +563,7 @@ public:
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
 			assert(def.tool_capabilities != NULL);
-		
+
 		if(m_item_definitions.count(def.name) == 0)
 			m_item_definitions[def.name] = new ItemDefinition(def);
 		else

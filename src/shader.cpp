@@ -417,29 +417,31 @@ u32 ShaderSource::getShaderId(const std::string &name)
 	if(get_current_thread_id() == m_main_thread){
 		return getShaderIdDirect(name);
 	} else {
-		infostream<<"getShaderId(): Queued: name=\""<<name<<"\""<<std::endl;
+		/*errorstream<<"getShaderId(): Queued: name=\""<<name<<"\""<<std::endl;*/
 
 		// We're gonna ask the result to be put into here
-		ResultQueue<std::string, u32, u8, u8> result_queue;
+
+		static ResultQueue<std::string, u32, u8, u8> result_queue;
 
 		// Throw a request in
 		m_get_shader_queue.add(name, 0, 0, &result_queue);
 
-		infostream<<"Waiting for shader from main thread, name=\""
-				<<name<<"\""<<std::endl;
+		/* infostream<<"Waiting for shader from main thread, name=\""
+				<<name<<"\""<<std::endl;*/
 
 		try{
-			// Wait result for a second
-			GetResult<std::string, u32, u8, u8>
+			while(true) {
+				// Wait result for a second
+				GetResult<std::string, u32, u8, u8>
 					result = result_queue.pop_front(1000);
 
-			// Check that at least something worked OK
-			assert(result.key == name);
-
-			return result.item;
+				if (result.key == name) {
+					return result.item;
+				}
+			}
 		}
 		catch(ItemNotFoundException &e){
-			infostream<<"Waiting for shader timed out."<<std::endl;
+			errorstream<<"Waiting for shader " << name << " timed out."<<std::endl;
 			return 0;
 		}
 	}
@@ -541,10 +543,10 @@ void ShaderSource::processQueue()
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_shader_queue.pop();
 
-		/*infostream<<"ShaderSource::processQueue(): "
+		/**errorstream<<"ShaderSource::processQueue(): "
 				<<"got shader request with "
 				<<"name=\""<<request.key<<"\""
-				<<std::endl;*/
+				<<std::endl;**/
 
 		m_get_shader_queue.pushResult(request,getShaderIdDirect(request.key));
 	}
@@ -594,7 +596,7 @@ void ShaderSource::onSetConstants(video::IMaterialRendererServices *services,
 		setter->onSetConstants(services, is_highlevel);
 	}
 }
- 
+
 ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		video::IShaderConstantSetCallBack *callback,
 		SourceShaderCache *sourcecache)

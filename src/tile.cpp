@@ -58,7 +58,7 @@ static bool replace_ext(std::string &path, const char *ext)
 			last_dot_i = i;
 			break;
 		}
-		
+
 		if(path[i] == '\\' || path[i] == '/')
 			break;
 	}
@@ -97,7 +97,7 @@ std::string getImagePath(std::string path)
 			return path;
 	}
 	while((++ext) != NULL);
-	
+
 	return "";
 }
 
@@ -120,7 +120,7 @@ std::string getTexturePath(const std::string &filename)
 	bool incache = g_texturename_to_path_cache.get(filename, &fullpath);
 	if(incache)
 		return fullpath;
-	
+
 	/*
 		Check from texture_path
 	*/
@@ -143,10 +143,10 @@ std::string getTexturePath(const std::string &filename)
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 	}
-	
+
 	// Add to cache (also an empty result is cached)
 	g_texturename_to_path_cache.set(filename, fullpath);
-	
+
 	// Finally return it
 	return fullpath;
 }
@@ -302,14 +302,14 @@ public:
 		  getTextureId("stone.png^mineral_coal.png^crack0").
 
 	*/
-	
+
 	/*
 		Gets a texture id from cache or
 		- if main thread, from getTextureIdDirect
 		- if other thread, adds to request queue and waits for main thread
 	*/
 	u32 getTextureId(const std::string &name);
-	
+
 	/*
 		Example names:
 		"stone.png"
@@ -363,21 +363,21 @@ public:
 	// Processes queued texture requests from other threads.
 	// Shall be called from the main thread.
 	void processQueue();
-	
+
 	// Insert an image into the cache without touching the filesystem.
 	// Shall be called from the main thread.
 	void insertSourceImage(const std::string &name, video::IImage *img);
-	
+
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
-	
+
 	// Render a mesh to a texture.
 	// Returns NULL if render-to-texture failed.
 	// Shall be called from the main thread.
 	video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params);
-	
+
 	// Generates an image from a full string like
 	// "stone.png^mineral_coal.png^[crack:1:0".
 	// Shall be called from the main thread.
@@ -389,12 +389,12 @@ public:
 	bool generateImage(std::string part_of_name, video::IImage *& baseimg);
 
 private:
-	
+
 	// The id of the thread that is allowed to use irrlicht directly
 	threadid_t m_main_thread;
 	// The irrlicht device
 	IrrlichtDevice *m_device;
-	
+
 	// Cache of source images
 	// This should be only accessed from the main thread
 	SourceImageCache m_sourcecache;
@@ -409,7 +409,7 @@ private:
 	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
 	JMutex m_textureinfo_cache_mutex;
-	
+
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
 
@@ -432,15 +432,15 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 		m_device(device)
 {
 	assert(m_device);
-	
+
 	m_textureinfo_cache_mutex.Init();
-	
+
 	m_main_thread = get_current_thread_id();
-	
+
 	// Add a NULL TextureInfo as the first index, named ""
 	m_textureinfo_cache.push_back(TextureInfo(""));
 	m_name_to_id[""] = 0;
-	
+
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect
@@ -499,7 +499,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 			return n->second;
 		}
 	}
-	
+
 	/*
 		Get texture
 	*/
@@ -512,32 +512,33 @@ u32 TextureSource::getTextureId(const std::string &name)
 		infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
 		// We're gonna ask the result to be put into here
-		ResultQueue<std::string, u32, u8, u8> result_queue;
-		
+		static ResultQueue<std::string, u32, u8, u8> result_queue;
+
 		// Throw a request in
 		m_get_texture_queue.add(name, 0, 0, &result_queue);
-		
-		infostream<<"Waiting for texture from main thread, name=\""
-				<<name<<"\""<<std::endl;
-		
+
+		/*infostream<<"Waiting for texture from main thread, name=\""
+				<<name<<"\""<<std::endl;*/
+
 		try
 		{
-			// Wait result for a second
-			GetResult<std::string, u32, u8, u8>
+			while(true) {
+				// Wait result for a second
+				GetResult<std::string, u32, u8, u8>
 					result = result_queue.pop_front(1000);
-		
-			// Check that at least something worked OK
-			assert(result.key == name);
 
-			return result.item;
+				if (result.key == name) {
+					return result.item;
+				}
+			}
 		}
 		catch(ItemNotFoundException &e)
 		{
-			infostream<<"Waiting for texture timed out."<<std::endl;
+			errorstream<<"Waiting for texture " << name << " timed out."<<std::endl;
 			return 0;
 		}
 	}
-	
+
 	infostream<<"getTextureId(): Failed"<<std::endl;
 
 	return 0;
@@ -580,7 +581,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		infostream<<"getTextureIdDirect(): name is empty"<<std::endl;
 		return 0;
 	}
-	
+
 	/*
 		Calling only allowed from main thread
 	*/
@@ -609,7 +610,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 
 	/*infostream<<"getTextureIdDirect(): \""<<name
 			<<"\" NOT found in cache. Creating it."<<std::endl;*/
-	
+
 	/*
 		Get the base image
 	*/
@@ -622,7 +623,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		is made.
 	*/
 	u32 base_image_id = 0;
-	
+
 	// Find last meta separator in name
 	s32 last_separator_position = -1;
 	for(s32 i=name.size()-1; i>=0; i--)
@@ -647,9 +648,9 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
                 <<base_image_name<<"\""<<std::endl;*/
 		base_image_id = getTextureIdDirect(base_image_name);
 	}
-	
+
 	//infostream<<"base_image_id="<<base_image_id<<std::endl;
-	
+
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver);
 
@@ -659,14 +660,14 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		An image will be built from files and then converted into a texture.
 	*/
 	video::IImage *baseimg = NULL;
-	
+
 	// If a base image was found, copy it to baseimg
 	if(base_image_id != 0)
 	{
 		JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
 		TextureInfo *ti = &m_textureinfo_cache[base_image_id];
-		
+
 		if(ti->img == NULL)
 		{
 			infostream<<"getTextureIdDirect(): WARNING: NULL image in "
@@ -690,7 +691,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 					<<std::endl;*/
 		}
 	}
-	
+
 	/*
 		Parse out the last part of the name of the image and act
 		according to it
@@ -713,19 +714,19 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		errorstream<<"getTextureIdDirect(): baseimg is NULL (attempted to"
 				" create texture \""<<name<<"\""<<std::endl;
 	}
-	
+
 	if(baseimg != NULL)
 	{
 		// Create texture from resulting image
 		t = driver->addTexture(name.c_str(), baseimg);
 	}
-	
+
 	/*
 		Add texture to caches (add NULL textures too)
 	*/
 
 	JMutexAutoLock lock(m_textureinfo_cache_mutex);
-	
+
 	u32 id = m_textureinfo_cache.size();
 	TextureInfo ti(name, t, baseimg);
 	m_textureinfo_cache.push_back(ti);
@@ -733,7 +734,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 
 	/*infostream<<"getTextureIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
-	
+
 	return id;
 }
 
@@ -748,7 +749,7 @@ std::string TextureSource::getTextureName(u32 id)
 				<<m_textureinfo_cache.size()<<std::endl;
 		return "";
 	}
-	
+
 	return m_textureinfo_cache[id].name;
 }
 
@@ -793,9 +794,9 @@ void TextureSource::processQueue()
 void TextureSource::insertSourceImage(const std::string &name, video::IImage *img)
 {
 	//infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
-	
+
 	assert(get_current_thread_id() == m_main_thread);
-	
+
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
 	m_source_image_existence.set(name, true);
 }
@@ -932,14 +933,14 @@ video::IImage* TextureSource::generateImageFromScratch(std::string name)
 		base_image_name = name.substr(0, last_separator_position);
 		baseimg = generateImageFromScratch(base_image_name);
 	}
-	
+
 	/*
 		Parse out the last part of the name of the image and act
 		according to it
 	*/
 
 	std::string last_part_of_name = name.substr(last_separator_position+1);
-	
+
 	// Generate image according to part of name
 	if(!generateImage(last_part_of_name, baseimg))
 	{
@@ -948,7 +949,7 @@ video::IImage* TextureSource::generateImageFromScratch(std::string name)
 				<<std::endl;
 		return NULL;
 	}
-	
+
 	return baseimg;
 }
 
@@ -996,7 +997,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			//infostream<<"Setting "<<part_of_name<<" as base"<<std::endl;
 			/*
 				Copy it this way to get an alpha channel.
-				Otherwise images with alpha cannot be blitted on 
+				Otherwise images with alpha cannot be blitted on
 				images that don't have alpha in the original file.
 			*/
 			core::dimension2d<u32> dim = image->getDimension();
@@ -1031,7 +1032,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		/*infostream<<"generateImage(): generating special "
 				<<"modification \""<<part_of_name<<"\""
 				<<std::endl;*/
-		
+
 		/*
 			[crack:N:P
 			[cracko:N:P
@@ -1140,7 +1141,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			"[noalpha"
 			Make image completely opaque.
 			Used for the leaves texture when in old leaves mode, so
-			that the transparent parts don't look completely black 
+			that the transparent parts don't look completely black
 			when simple alpha channel is used for rendering.
 		*/
 		else if(part_of_name.substr(0,8) == "[noalpha")
@@ -1154,7 +1155,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			}
 
 			core::dimension2d<u32> dim = baseimg->getDimension();
-			
+
 			// Set alpha to full
 			for(u32 y=0; y<dim.Height; y++)
 			for(u32 x=0; x<dim.Width; x++)
@@ -1185,7 +1186,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			std::string filename = sf.next("");
 
 			core::dimension2d<u32> dim = baseimg->getDimension();
-			
+
 			/*video::IImage *oldbaseimg = baseimg;
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 			oldbaseimg->copyTo(baseimg);
@@ -1292,7 +1293,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			img_top->drop();
 			img_left->drop();
 			img_right->drop();
-			
+
 			/*
 				Draw a cube mesh into a render target texture
 			*/
@@ -1322,9 +1323,9 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			params.light_position.set(10, 100, -50);
 			params.light_color.set(1.0, 0.5, 0.5, 0.5);
 			params.light_radius = 1000;
-			
+
 			video::ITexture *rtt = generateTextureFromMesh(params);
-			
+
 			// Drop mesh
 			cube->drop();
 
@@ -1332,7 +1333,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			driver->removeTexture(texture_top);
 			driver->removeTexture(texture_left);
 			driver->removeTexture(texture_right);
-			
+
 			if(rtt == NULL)
 			{
 				baseimg = generateImageFromScratch(imagename_top);
@@ -1407,7 +1408,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 						<<"\", cancelling."<<std::endl;
 				return false;
 			}
-			
+
 			v2u32 frame_size = baseimg->getDimension();
 			frame_size.Y /= frame_count;
 
@@ -1566,7 +1567,7 @@ void brighten(video::IImage *image)
 {
 	if(image == NULL)
 		return;
-	
+
 	core::dimension2d<u32> dim = image->getDimension();
 
 	for(u32 y=0; y<dim.Height; y++)
@@ -1643,7 +1644,7 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 {
 	if(src == NULL || dst == NULL)
 		return;
-	
+
 	core::dimension2d<u32> srcdim = src->getDimension();
 	core::dimension2d<u32> dstdim = dst->getDimension();
 
