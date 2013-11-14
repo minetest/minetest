@@ -279,26 +279,11 @@ public:
 				middle_active = event.MouseInput.isMiddlePressed();
 				right_active = event.MouseInput.isRightPressed();
 
-				if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-				{
-					leftclicked = true;
-				}
-				if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-				{
-					rightclicked = true;
-				}
-				if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-				{
-					leftreleased = true;
-				}
-				if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-				{
-					rightreleased = true;
-				}
-				if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
-				{
-					mouse_wheel += event.MouseInput.Wheel;
-				}
+				if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) leftclicked = true;
+				if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) rightclicked = true;
+				if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) leftreleased = true;
+				if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) rightreleased = true;
+				if(event.MouseInput.Event == EMIE_MOUSE_WHEEL) mouse_wheel += event.MouseInput.Wheel;
 			}
 		}
 
