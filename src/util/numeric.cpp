@@ -143,7 +143,7 @@ int myrand_range(int min, int max)
 // 64-bit unaligned version of MurmurHash
 u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 {
-	const u64 m = 0xc6a4a7935bd1e995;
+	const u64 m = 0xc6a4a7935bd1e995ULL;
 	const int r = 47;
 	u64 h = seed ^ (len * m);
 

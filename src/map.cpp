@@ -927,7 +927,9 @@ void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
 			i != modified_blocks.end(); ++i)
 	{
 		MapBlock *block = i->second;
-		if(!block || block->isDummy())
+		if(!block)
+			continue;
+		if(block->isDummy())
 			continue;
 		block->expireDayNightDiff();
 	}
