@@ -905,14 +905,15 @@ void ServerEnvironment::clearAllObjects()
 {
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Removing all active objects"<<std::endl;
-	std::list<u16> objects_to_remove;
 	for(std::map<u16, ServerActiveObject*>::iterator
 			i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i)
+			i != m_active_objects.end();)
 	{
 		ServerActiveObject* obj = i->second;
-		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER){
+			++i;	
 			continue;
+		}
 		u16 id = i->first;
 		// Delete static object if block is loaded
 		if(obj->m_static_exists){
@@ -928,6 +929,7 @@ void ServerEnvironment::clearAllObjects()
 		if(obj->m_known_by_count > 0){
 			obj->m_pending_deactivation = true;
 			obj->m_removed = true;
+			++i;
 			continue;
 		}
 
@@ -939,14 +941,10 @@ void ServerEnvironment::clearAllObjects()
 		// Delete active object
 		if(obj->environmentDeletes())
 			delete obj;
-		// Id to be removed from m_active_objects
-		objects_to_remove.push_back(id);
-	}
-	// Remove references from m_active_objects
-	for(std::list<u16>::iterator i = objects_to_remove.begin();
-			i != objects_to_remove.end(); ++i)
-	{
-		m_active_objects.erase(*i);
+		//Remove active objects from map. Increment iterator before
+		//it.
+		++i;
+		m_active_objects.erase(id);
 	}
 
 	// Get list of loaded blocks
@@ -1593,10 +1591,9 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 */
 void ServerEnvironment::removeRemovedObjects()
 {
-	std::list<u16> objects_to_remove;
 	for(std::map<u16, ServerActiveObject*>::iterator
 			i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i)
+			i != m_active_objects.end();)
 	{
 		u16 id = i->first;
 		ServerActiveObject* obj = i->second;
@@ -1605,8 +1602,9 @@ void ServerEnvironment::removeRemovedObjects()
 		{
 			infostream<<"NULL object found in ServerEnvironment"
 					<<" while finding removed objects. id="<<id<<std::endl;
-			// Id to be removed from m_active_objects
-			objects_to_remove.push_back(id);
+			//Remove reference from active objects.
+			++i;
+			m_active_objects.erase(id);
 			continue;
 		}
 
@@ -1614,8 +1612,10 @@ void ServerEnvironment::removeRemovedObjects()
 			We will delete objects that are marked as removed or thatare
 			waiting for deletion after deactivation
 		*/
-		if(obj->m_removed == false && obj->m_pending_deactivation == false)
+		if(obj->m_removed == false && obj->m_pending_deactivation == false){
+			++i;
 			continue;
+		}
 
 		/*
 			Delete static data from block if is marked as removed
@@ -1635,9 +1635,10 @@ void ServerEnvironment::removeRemovedObjects()
 		}
 
 		// If m_known_by_count > 0, don't actually remove.
-		if(obj->m_known_by_count > 0)
+		if(obj->m_known_by_count > 0){
+			++i;
 			continue;
-		
+		}
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
@@ -1646,14 +1647,9 @@ void ServerEnvironment::removeRemovedObjects()
 		// Delete
 		if(obj->environmentDeletes())
 			delete obj;
-		// Id to be removed from m_active_objects
-		objects_to_remove.push_back(id);
-	}
-	// Remove references from m_active_objects
-	for(std::list<u16>::iterator i = objects_to_remove.begin();
-			i != objects_to_remove.end(); ++i)
-	{
-		m_active_objects.erase(*i);
+		//Remove reference from active objects.
+		++i;
+		m_active_objects.erase(id);
 	}
 }
 
