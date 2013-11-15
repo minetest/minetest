@@ -316,10 +316,10 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
-	m_blocks_added_last(0),
 	m_active_objects_last(0),
-	m_active_block_last(0),
-	m_active_block_interval_overload_skip(0),
+	m_active_block_abm_last(0),
+	m_active_block_timer_last(0),
+	m_blocks_added_last(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0),
 	m_recommended_send_interval(0.1),
@@ -1086,7 +1086,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active block list
 	*/
-	if(m_active_blocks_management_interval.step(dtime, 2.0))
+	if(m_blocks_added_last || m_active_blocks_management_interval.step(dtime, 2.0))
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg /2s", SPT_AVG);
 		/*
@@ -1181,16 +1181,24 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Mess around in active blocks
 	*/
-	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
+	if(m_active_block_timer_last || m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg /1s", SPT_AVG);
 		
 		float dtime = 1.0;
 
+		u32 n = 0, calls = 0, 
+			end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 		for(std::set<v3s16>::iterator
 				i = m_active_blocks.m_list.begin();
 				i != m_active_blocks.m_list.end(); ++i)
 		{
+			if (n++ < m_active_block_timer_last)
+				continue;
+			else
+				m_active_block_timer_last = 0;
+			++calls;
+
 			v3s16 p = *i;
 			
 			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
@@ -1225,17 +1233,19 @@ void ServerEnvironment::step(float dtime)
 						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 				}
 			}
+
+			if (porting::getTimeMs() > end_ms) {
+				m_active_block_timer_last = n;
+				break;
 		}
+	}
+		if (!calls)
+			m_active_block_timer_last = 0;
 	}
 	
 	const float abm_interval = 1.0;
-	if(m_active_block_modifier_interval.step(dtime, abm_interval))
-	do{ // breakable
-		if(!m_active_block_last && m_active_block_interval_overload_skip > 0){
-			ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-			m_active_block_interval_overload_skip--;
-			break;
-		}
+	if(m_active_block_abm_last || m_active_block_modifier_interval.step(dtime, abm_interval))
+	{
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /1s", SPT_AVG);
 		TimeTaker timer("modify in active blocks");
 		u32 max_time_ms = 1000 * g_settings->getFloat("dedicated_server_step");
@@ -1248,10 +1258,10 @@ void ServerEnvironment::step(float dtime)
 				i = m_active_blocks.m_list.begin();
 				i != m_active_blocks.m_list.end(); ++i)
 		{
-			if (n++ < m_active_block_last)
+			if (n++ < m_active_block_abm_last)
 				continue;
 			else
-				m_active_block_last = 0;
+				m_active_block_abm_last = 0;
 			++calls;
 
 			v3s16 p = *i;
@@ -1270,12 +1280,12 @@ void ServerEnvironment::step(float dtime)
 			abmhandler.apply(block);
 
 			if (timer.getTimerTime() > max_time_ms) {
-				m_active_block_last = n;
+				m_active_block_abm_last = n;
 				break;
 			}
 		}
 		if (!calls)
-			m_active_block_last = 0;
+			m_active_block_abm_last = 0;
 
 		u32 time_ms = timer.stop(true);
 		if(time_ms > max_time_ms){
@@ -1283,9 +1293,8 @@ void ServerEnvironment::step(float dtime)
 					<<calls<<"/"<<m_active_blocks.m_list.size()<<") took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
-			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
 		}
-	}while(0);
+	}
 	
 	/*
 		Step script environment (run global on_step())
