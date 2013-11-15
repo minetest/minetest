@@ -129,7 +129,7 @@
 #invert_mouse = false
 # Enable/disable clouds
 #enable_clouds = true
-#cloud_height = 120
+#cloud_height = 300
 #enable_3d_clouds = true
 # Use a cloud animation for the main menu background
 #menu_clouds = true
