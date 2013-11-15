@@ -23,32 +23,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 std::string script_get_backtrace(lua_State *L)
 {
 	std::string s;
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	lua_getglobal(L, "debug");
 	if(lua_istable(L, -1)){
 		lua_getfield(L, -1, "traceback");
-		if(lua_isfunction(L, -1)){
+		if(lua_isfunction(L, -1)) {
 			lua_call(L, 0, 1);
 			if(lua_isstring(L, -1)){
-				s += lua_tostring(L, -1);
+				s = lua_tostring(L, -1);
 			}
-			lua_pop(L, 1);
 		}
-		else{
-			lua_pop(L, 1);
-		}
+		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 	return s;
 }
 
-void script_error(lua_State *L, const char *fmt, ...)
+int script_error_handler(lua_State *L) {
+	lua_getglobal(L, "debug");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return 1;
+	}
+	lua_getfield(L, -1, "traceback");
+	if (!lua_isfunction(L, -1)) {
+		lua_pop(L, 2);
+		return 1;
+	}
+	lua_pushvalue(L, 1);
+	lua_pushinteger(L, 2);
+	lua_call(L, 2, 1);
+	return 1;
+}
+
+void script_error(lua_State *L)
 {
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	throw LuaError(L, buf);
+	throw LuaError(NULL, lua_tostring(L, -1));
 }
 
 // Push the list of callbacks (a lua table).
@@ -61,13 +70,20 @@ void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 {
 	// Insert the return value into the lua stack, below the table
 	assert(lua_gettop(L) >= nargs + 1);
-	lua_pushnil(L);
-	lua_insert(L, -(nargs + 1) - 1);
-	// Stack now looks like this:
-	// ... <return value = nil> <table> <arg#1> <arg#2> ... <arg#n>
 
+	lua_pushnil(L);
 	int rv = lua_gettop(L) - nargs - 1;
-	int table = rv + 1;
+	lua_insert(L, rv);
+
+	// Insert error handler after return value
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = rv + 1;
+	lua_insert(L, errorhandler);
+
+	// Stack now looks like this:
+	// ... <return value = nil> <error handler> <table> <arg#1> <arg#2> ... <arg#n>
+
+	int table = errorhandler + 1;
 	int arg = table + 1;
 
 	luaL_checktype(L, table, LUA_TTABLE);
@@ -81,8 +97,8 @@ void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 		// Call function
 		for(int i = 0; i < nargs; i++)
 			lua_pushvalue(L, arg+i);
-		if(lua_pcall(L, nargs, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+		if(lua_pcall(L, nargs, 1, errorhandler))
+			script_error(L);
 
 		// Move return value to designated space in stack
 		// Or pop it
