@@ -88,6 +88,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("vsync", "false");
 	settings->setDefault("address", "");
 	settings->setDefault("random_input", "false");
+	settings->setDefault("respawn_auto", "false");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fov", "72");
