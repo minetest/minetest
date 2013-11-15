@@ -1318,6 +1318,7 @@ void the_game(
 	{
 		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
+		if (size.X)
 		crack_animation_length = size.Y / size.X;
 	}
 
@@ -1458,6 +1459,7 @@ void the_game(
 			gamedef, player, &local_inventory);
 
 	bool use_weather = g_settings->getBool("weather");
+	bool no_output = device->getVideoDriver()->getDriverType() == video::EDT_NULL;
 
 	for(;;)
 	{
@@ -1613,6 +1615,7 @@ void the_game(
 		}
 
 		/* Process TextureSource's queue */
+		if (!no_output)
 		tsrc->processQueue();
 
 		/* Process ItemDefManager's queue */
@@ -1621,6 +1624,7 @@ void the_game(
 		/*
 			Process ShaderSource's queue
 		*/
+		if (!no_output)
 		shsrc->processQueue();
 
 		/*
@@ -2228,6 +2232,10 @@ void the_game(
 					camera_point_target.X = event.deathscreen.camera_point_target_x;
 					camera_point_target.Y = event.deathscreen.camera_point_target_y;
 					camera_point_target.Z = event.deathscreen.camera_point_target_z;*/
+
+					if (g_settings->getBool("respawn_auto")) { 
+						client.sendRespawn(); 
+					} else {
 					MainRespawnInitiator *respawner =
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
@@ -2235,8 +2243,8 @@ void the_game(
 							new GUIDeathScreen(guienv, guiroot, -1, 
 								&g_menumgr, respawner);
 					menu->drop();
-					
-					chat_backend.addMessage(L"", L"You died.");
+					}
+					//chat_backend.addMessage(L"", L"You died.");
 
 					/* Handle visualization */
 
@@ -2926,8 +2934,10 @@ void the_game(
 			Update particles
 		*/
 
+		if (!no_output) {
 		allparticles_step(dtime, client.getEnv());
 		allparticlespawners_step(dtime, client.getEnv());
+		}
 		
 		/*
 			Fog
@@ -3155,7 +3165,7 @@ void the_game(
 
 		TimeTaker tt_draw("mainloop: draw");
 		
-		{
+		if (!no_output) {
 			TimeTaker timer("beginScene");
 			//driver->beginScene(false, true, bgcolor);
 			//driver->beginScene(true, true, bgcolor);
@@ -3166,7 +3176,7 @@ void the_game(
 		//timer3.stop();
 	
 		//infostream<<"smgr->drawAll()"<<std::endl;
-		{
+		if (!no_output) {
 			TimeTaker timer("smgr");
 			smgr->drawAll();
 			
@@ -3283,7 +3293,7 @@ void the_game(
 		/*
 			Post effects
 		*/
-		{
+		if (!no_output) {
 			client.getEnv().getClientMap().renderPostFx();
 		}
 
@@ -3349,12 +3359,13 @@ void the_game(
 			Draw gui
 		*/
 		// 0-1ms
+		if (!no_output)
 		guienv->drawAll();
 
 		/*
 			End scene
 		*/
-		{
+		if (!no_output) {
 			TimeTaker timer("endScene");
 			driver->endScene();
 			endscenetime = timer.stop(true);

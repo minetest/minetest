@@ -1349,7 +1349,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		// Figure out current frame
 		int frameoffset = m_animation_frame_offsets[i->first];
 		int frame = (int)(time * 1000 / tile.animation_frame_length_ms
-				+ frameoffset) % tile.animation_frame_count;
+				+ frameoffset) % (tile.animation_frame_count ? tile.animation_frame_count : 1);
 		// If frame doesn't change, skip
 		if(frame == m_animation_frames[i->first])
 			continue;

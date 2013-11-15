@@ -85,6 +85,8 @@
 #address = 
 # Enable random user input, for testing
 #random_input = false
+# Disable death screen, respawn automaticaly
+#respawn_auto = false
 # Timeout for client to remove unused map data from memory
 #client_unload_unused_data_timeout = 600
 # Whether to fog out the end of the visible area
