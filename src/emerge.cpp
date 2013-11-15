@@ -551,7 +551,7 @@ void *EmergeThread::Thread() {
 			RemoteClient *client = i->second;
 			if (modified_blocks.size() > 0) {
 				// Remove block from sent history
-				client->SetBlocksNotSent(modified_blocks);
+				client->SetBlocksNotSent(modified_blocks, 1);
 			}
 		}
 	}

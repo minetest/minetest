@@ -230,7 +230,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 
 	// Reset periodically to workaround for some bugs or stuff
-	if(m_nearest_unsent_reset_timer > 20.0)
+	if(m_nearest_unsent_reset_timer > 60.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
@@ -650,8 +650,9 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 		m_blocks_sent.erase(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks, bool no_d_reset)
 {
+	if (!no_d_reset && blocks.size())
 	m_nearest_unsent_d = 0;
 
 	for(std::map<v3s16, MapBlock*>::iterator
