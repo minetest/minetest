@@ -1740,6 +1740,7 @@ s32 Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 						u8 my_max_level = MapNode(liquid_kind_flowing).getMaxLevel(nodemgr);
 						liquid_levels[i] = 
 							(float)my_max_level / melt_max_level * nb.n.getLevel(nodemgr);
+						if (liquid_levels[i])
 						nb.l = 1;
 					}
 					else if (	melt_kind != CONTENT_IGNORE &&
@@ -1747,6 +1748,7 @@ s32 Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 							nb.t != NEIGHBOR_UPPER &&
 							!(loopcount % 8)) {
 						liquid_levels[i] = nodemgr->get(liquid_kind_flowing).getMaxLevel();
+						if (liquid_levels[i])
 						nb.l = 1;
 					}
 					// todo: for erosion add something here..
@@ -1830,7 +1832,7 @@ s32 Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		//relax up
-		if (relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) &&
+		if (nodemgr->get(liquid_kind).liquid_renewable && relax && ((p0.Y == water_level) || (fast_flood && p0.Y <= water_level)) &&
 			level_max > 1 &&
 			liquid_levels[D_TOP] == 0 &&
 			liquid_levels[D_BOTTOM] == level_max &&
@@ -1857,7 +1859,7 @@ s32 Map::transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks)
 		total_level -= want_level * can_liquid_same_level;
 
 		//relax down
-		if (relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 &&
+		if (nodemgr->get(liquid_kind).liquid_renewable && relax && p0.Y == water_level + 1 && liquid_levels[D_TOP] == 0 &&
 			level_max > 1 &&
 			liquid_levels[D_BOTTOM] == level_max && want_level == 0 &&
 			total_level <= (can_liquid_same_level - relax) &&

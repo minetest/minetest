@@ -100,6 +100,8 @@ Mod directory structure
 mods
 |-- modname
 |   |-- depends.txt
+|   |-- screenshot.png
+|   |-- description.txt
 |   |-- init.lua
 |   |-- textures
 |   |   |-- modname_stuff.png
@@ -120,6 +122,12 @@ depends.txt:
   Optional dependencies can be defined by appending a question mark
   to a single modname. Their meaning is that if the specified mod
   is missing, that does not prevent this mod from being loaded.
+
+screenshot.png:
+  A screenshot shown in modmanager within mainmenu.
+
+description.txt:
+  File containing desctiption to be shown within mainmenu.
 
 optdepends.txt:
   An alternative way of specifying optional dependencies.

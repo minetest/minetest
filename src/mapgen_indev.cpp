@@ -360,17 +360,16 @@ void MapgenIndev::generateFloatIslands(int min_y) {
 	float xl = node_max.X - node_min.X;
 	float yl = node_max.Y - node_min.Y;
 	float zl = node_max.Z - node_min.Z;
+	u32 zstride = xl + 1;
 	float midy = node_min.Y + yl * 0.5;
-	u32 index = 0, index2d = 0;
-	for (int x1 = 0; x1 <= xl; ++x1)
-	{
-		for (int z1 = 0; z1 <= zl; ++z1, ++index2d)
-		{
+	u32 index = 0;
+	for (int z1 = 0; z1 <= zl; ++z1)
+	for (int y1 = 0; y1 <= yl; ++y1)
+	for (int x1 = 0; x1 <= xl; ++x1, ++index) {
+		int y = y1 + node_min.Y;
+		u32 index2d = z1 * zstride + x1;
 			float noise3 = noiseindev_float_islands3->result[index2d];
 			float pmidy = midy + noise3 / 1.5 * AMPY;
-			for (int y1 = 0; y1 <= yl; ++y1, ++index)
-			{
-				int y = y1 + node_min.Y;
 				float noise1 = noiseindev_float_islands1->result[index];
 				float offset = y > pmidy ? (y - pmidy) / TGRAD : (pmidy - y) / BGRAD;
 				float noise1off = noise1 - offset - RAR;
@@ -389,8 +388,6 @@ void MapgenIndev::generateFloatIslands(int min_y) {
 				}
 			}
 		}
-	}
-}
 
 void MapgenIndev::generateExperimental() {
 	int float_islands = g_settings->getS16("mgindev_float_islands");

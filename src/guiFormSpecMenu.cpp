@@ -721,8 +721,15 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				scrollbar->setPos(data->listbox_scroll[fname_w]);
 			}
 		}
+		else {
+			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
+			if (scrollbar) {
+				scrollbar->setPos(0);
+			}
+		}
 
-		if (str_initial_selection != "")
+		if ((str_initial_selection != "") &&
+				(str_initial_selection != "0"))
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
@@ -1622,7 +1629,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 
 	std::vector<std::string> elements = split(m_formspec_string,']');
-
 	for (unsigned int i=0;i< elements.size();i++) {
 		parseElement(&mydata,elements[i]);
 	}
@@ -1641,7 +1647,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		recalculateAbsolutePosition(false);
 		mydata.basepos = getBasePos();
 
-		changeCtype("");
 		{
 			v2s32 pos = mydata.basepos;
 			pos.Y = ((m_fields.size()+2)*60);
@@ -1652,7 +1657,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			Environment->addButton(mydata.rect, this, 257, text);
 			delete[] text;
 		}
-		changeCtype("C");
+
 	}
 
 	//set initial focus if parser didn't set it
