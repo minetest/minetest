@@ -93,9 +93,10 @@ void Clouds::render()
 		Clouds move from X+ towards X-
 	*/
 
+	const float cloud_mul = m_cloud_y/BS/120;
 	const s16 cloud_radius_i = 12;
-	const float cloud_size = BS*64;
-	const v2f cloud_speed(0, -BS*2);
+	const float cloud_size = BS*64*cloud_mul;
+	const v2f cloud_speed(0, -BS*2*cloud_mul);
 	
 	const float cloud_full_radius = cloud_size * cloud_radius_i;
 	
@@ -229,7 +230,7 @@ void Clouds::render()
 		}*/
 
 		f32 rx = cloud_size/2;
-		f32 ry = 8*BS;
+		f32 ry = 8*BS*cloud_mul;
 		f32 rz = cloud_size/2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
