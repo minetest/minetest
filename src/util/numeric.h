@@ -300,6 +300,8 @@ public:
 		if(m_accumulator < wanted_interval)
 			return false;
 		m_accumulator -= wanted_interval;
+		if (m_accumulator > wanted_interval*2)
+			m_accumulator = 0;
 		return true;
 	}
 protected:

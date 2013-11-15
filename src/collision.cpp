@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // float error is 10 - 9.96875 = 0.03125
 //#define COLL_ZERO 0.032 // broken unit tests
 #define COLL_ZERO 0
+#define COLL_ZEROY 0.032 // broken unit tests
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
@@ -45,9 +46,9 @@ int axisAlignedCollision(
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
+	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZEROY;     // reduce box size for solve collision stuck (flying sand)
 	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
-	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
+	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZEROY;
 
 	aabb3f relbox(
 			movingbox.MinEdge.X - staticbox.MinEdge.X,
@@ -115,9 +116,9 @@ int axisAlignedCollision(
 		{
 			dtime = (ysize - relbox.MinEdge.Y) / speed.Y;
 			if((relbox.MinEdge.X + speed.X * dtime < xsize) &&
-					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZERO) &&
+					(relbox.MaxEdge.X + speed.X * dtime > COLL_ZEROY) &&
 					(relbox.MinEdge.Z + speed.Z * dtime < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZERO))
+					(relbox.MaxEdge.Z + speed.Z * dtime > COLL_ZEROY))
 				return 1;
 		}
 		else if(relbox.MaxEdge.Y < 0)

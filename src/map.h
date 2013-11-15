@@ -43,6 +43,7 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackReportSink;
 class EmergeManager;
+class GameScripting;
 class ServerEnvironment;
 struct BlockMakeData;
 struct MapgenParams;
@@ -298,8 +299,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquids(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
+	s32 transformLiquidsFinite(GameScripting *m_script, std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
