@@ -2385,21 +2385,21 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
-s16 Map::getHeat(v3s16 p)
+s16 Map::getHeat(v3s16 p, bool no_random)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if(block != NULL) {
-		return block->heat;
+		return block->heat + (no_random ? 0 : myrand_range(0, 1));
 	}
 	//errorstream << "No heat for " << p.X<<"," << p.Z << std::endl;
 	return 0;
 }
 
-s16 Map::getHumidity(v3s16 p)
+s16 Map::getHumidity(v3s16 p, bool no_random)
 {
 	MapBlock *block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	if(block != NULL) {
-		return block->humidity;
+		return block->humidity + (no_random ? 0 : myrand_range(0, 1));
 	}
 	//errorstream << "No humidity for " << p.X<<"," << p.Z << std::endl;
 	return 0;
@@ -2828,39 +2828,17 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 			<<","<<blockpos_requested.Y<<","
 			<<blockpos_requested.Z<<")"<<std::endl;*/
 			
+#if 0
 	/*
 		Update weather data in blocks
 	*/
 	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
-	if (senv->m_use_weather) {
-		for(s16 x=blockpos_min.X-extra_borders.X;
-			x<=blockpos_max.X+extra_borders.X; x++)
-		for(s16 z=blockpos_min.Z-extra_borders.Z;
-			z<=blockpos_max.Z+extra_borders.Z; z++)
-		for(s16 y=blockpos_min.Y-extra_borders.Y;
-			y<=blockpos_max.Y+extra_borders.Y; y++)
-		{
-			v3s16 p(x, y, z);
-			MapBlock *block = getBlockNoCreateNoEx(p);
-			block->weather_update_time = 0;
-			updateBlockHeat(senv, p * MAP_BLOCKSIZE, NULL);
-			updateBlockHumidity(senv, p * MAP_BLOCKSIZE, NULL);
-		}
-	} else {
-		for(s16 x=blockpos_min.X-extra_borders.X;
-			x<=blockpos_max.X+extra_borders.X; x++)
-		for(s16 z=blockpos_min.Z-extra_borders.Z;
-			z<=blockpos_max.Z+extra_borders.Z; z++)
-		for(s16 y=blockpos_min.Y-extra_borders.Y;
-			y<=blockpos_max.Y+extra_borders.Y; y++)
-		{
-			MapBlock *block = getBlockNoCreateNoEx(v3s16(x, y, z));
-			block->heat     = HEAT_UNDEFINED;
-			block->humidity = HUMIDITY_UNDEFINED;
-			block->weather_update_time = 0;
-		}
-	}
-	
+	for(s16 x=blockpos_min.X-extra_borders.X;x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;z<=blockpos_max.Z+extra_borders.Z; z++)
+			for(s16 y=blockpos_min.Y-extra_borders.Y;y<=blockpos_max.Y+extra_borders.Y; y++)
+				updateBlockHeat(senv, v3s16(x, y, z) * MAP_BLOCKSIZE, NULL);
+#endif
+
 #if 0
 	if(enable_mapgen_debug_info)
 	{
@@ -3930,20 +3908,26 @@ s16 ServerMap::updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block)
 	u32 gametime = env->getGameTime();
 	
 	if (block) {
-		if (gametime - block->weather_update_time < 10)
-			return block->heat;
+		if (gametime < block->weather_update_time)
+			return block->heat + myrand_range(0, 1);
 	} else {
 		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
 
 	f32 heat = m_emerge->biomedef->calcBlockHeat(p, m_seed,
-			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed(), env->m_use_weather);
+	f32 humidity = m_emerge->biomedef->calcBlockHumidity(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed(), env->m_use_weather);
 
 	if(block) {
 		block->heat = heat;
-		block->weather_update_time = gametime;
+		block->humidity = humidity;
+		if (env->m_use_weather)
+			block->weather_update_time = gametime + 10;
+		else
+			block->weather_update_time = -1; //never update
 	}
-	return heat;
+	return heat + myrand_range(0, 1);
 }
 
 s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block)
@@ -3951,20 +3935,26 @@ s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *bl
 	u32 gametime = env->getGameTime();
 	
 	if (block) {
-		if (gametime - block->weather_update_time < 10)
-			return block->humidity;
+		if (gametime < block->weather_update_time)
+			return block->humidity + myrand_range(0, 1);
 	} else {
 		block = getBlockNoCreateNoEx(getNodeBlockPos(p));
 	}
 
+	f32 heat = m_emerge->biomedef->calcBlockHeat(p, m_seed,
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed(), env->m_use_weather);
 	f32 humidity = m_emerge->biomedef->calcBlockHumidity(p, m_seed,
-			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed());
+			env->getTimeOfDayF(), gametime * env->getTimeOfDaySpeed(), env->m_use_weather);
 			
 	if(block) {
+		block->heat = heat;
 		block->humidity = humidity;
-		block->weather_update_time = gametime;
+		if (env->m_use_weather)
+			block->weather_update_time = gametime + 10;
+		else
+			block->weather_update_time = -1; //never update
 	}
-	return humidity;
+	return humidity + myrand_range(0, 1);
 }
 
 /*
