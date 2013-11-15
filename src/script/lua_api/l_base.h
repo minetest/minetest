@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_BASE_H_
 
 #include "common/c_types.h"
+#include "common/c_internal.h"
 
 extern "C" {
 #include <lua.h>

@@ -78,25 +78,29 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	verbosestream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L,id);
+	luaentity_get(L, id);
 	int object = lua_gettop(L);
 
 	// Get on_activate function
-	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "on_activate");
-	if(!lua_isnil(L, -1)){
+	if(!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 		lua_pushvalue(L, object); // self
 		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
 		lua_pushinteger(L, dtime_s);
 		// Call with 3 arguments, 0 results
-		if(lua_pcall(L, 3, 0, 0))
-			scriptError("error running function on_activate: %s\n",
-					lua_tostring(L, -1));
+		if(lua_pcall(L, 3, 0, errorhandler))
+			scriptError();
+	} else {
+		lua_pop(L, 1);
 	}
+	lua_pop(L, 2); // Pop object and error handler
 }
 
 void ScriptApiEntity::luaentity_Remove(u16 id)
@@ -123,14 +127,16 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L,id);
+	luaentity_get(L, id);
 	int object = lua_gettop(L);
 
 	// Get get_staticdata function
-	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "get_staticdata");
 	if(lua_isnil(L, -1))
 		return "";
@@ -138,11 +144,12 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	// Call with 1 arguments, 1 results
-	if(lua_pcall(L, 1, 1, 0))
-		scriptError("error running function get_staticdata: %s\n",
-				lua_tostring(L, -1));
+	if(lua_pcall(L, 1, 1, errorhandler))
+		scriptError();
+	lua_remove(L, object); // Remove object
+	lua_remove(L, errorhandler); // Remove error handler
 
-	size_t len=0;
+	size_t len = 0;
 	const char *s = lua_tolstring(L, -1, &len);
 	return std::string(s, len);
 }
@@ -192,10 +199,13 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
 	// Get minetest.luaentities[id]
-	luaentity_get(L,id);
+	luaentity_get(L, id);
 	int object = lua_gettop(L);
 	// State: object is at top of stack
 	// Get step function
@@ -206,8 +216,10 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
 	// Call with 2 arguments, 0 results
-	if(lua_pcall(L, 2, 0, 0))
-		scriptError("error running function 'on_step': %s\n", lua_tostring(L, -1));
+	if(lua_pcall(L, 2, 0, errorhandler))
+		scriptError();
+	lua_remove(L, object); // Remove object
+	lua_remove(L, errorhandler); // Remove error handler
 }
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
@@ -217,6 +229,9 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 		const ToolCapabilities *toolcap, v3f dir)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
 
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
@@ -235,8 +250,10 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
 	// Call with 5 arguments, 0 results
-	if(lua_pcall(L, 5, 0, 0))
-		scriptError("error running function 'on_punch': %s\n", lua_tostring(L, -1));
+	if(lua_pcall(L, 5, 0, errorhandler))
+		scriptError();
+	lua_remove(L, object); // Remove object
+	lua_remove(L, errorhandler); // Remove error handler
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
@@ -244,6 +261,9 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 		ServerActiveObject *clicker)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
 
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
@@ -259,7 +279,9 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 	lua_pushvalue(L, object); // self
 	objectrefGetOrCreate(clicker); // Clicker reference
 	// Call with 2 arguments, 0 results
-	if(lua_pcall(L, 2, 0, 0))
-		scriptError("error running function 'on_rightclick': %s\n", lua_tostring(L, -1));
+	if(lua_pcall(L, 2, 0, errorhandler))
+		scriptError();
+	lua_remove(L, object); // Remove object
+	lua_remove(L, errorhandler); // Remove error handler
 }
 
