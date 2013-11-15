@@ -50,7 +50,11 @@ IF(GETTEXT_INCLUDE_DIR AND GETTEXT_MSGFMT)
 	ELSE(WIN32)
 		# *BSD variants require special linkage as they don't use glibc
 		IF(${CMAKE_SYSTEM_NAME} MATCHES "BSD")
-			SET(GETTEXT_LIBRARY "intl")
+			FIND_LIBRARY(GETTEXT_LIBRARY NAMES intl
+				PATHS
+				/usr/local/lib
+				/usr/lib
+			)
 		ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "BSD")
 		SET(GETTEXT_FOUND TRUE)
 	ENDIF(WIN32)

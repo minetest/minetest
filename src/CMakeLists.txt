@@ -170,7 +170,9 @@ endif()
 
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
-find_package(OpenGLES2)
+if(BUILD_CLIENT)
+	find_package(OpenGLES2)
+endif()
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
