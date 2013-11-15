@@ -25,11 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ban.h"
 #include "environment.h"
 #include "map.h"
-#include "jmutexautolock.h"
+#include "jthread/jmutexautolock.h"
 #include "main.h"
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
+#include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -672,7 +673,6 @@ Server::Server(
 	m_objectdata_timer = 0.0;
 	m_emergethread_trigger_timer = 0.0;
 	m_savemap_timer = 0.0;
-	m_clients_number = 0;
 
 	m_env_mutex.Init();
 	m_con_mutex.Init();
@@ -1243,7 +1243,7 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 
 			JMutexAutoLock lock2(m_con_mutex);
-			m_clients_number = 0;
+			m_clients_names.clear();
 			if(m_clients.size() != 0)
 				infostream<<"Players:"<<std::endl;
 			for(std::map<u16, RemoteClient*>::iterator
@@ -1257,7 +1257,7 @@ void Server::AsyncRunStep()
 					continue;
 				infostream<<"* "<<player->getName()<<"\t";
 				client->PrintInfo(infostream);
-				++m_clients_number;
+				m_clients_names.push_back(player->getName());
 			}
 		}
 	}
@@ -1269,7 +1269,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id, m_mods);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_names, m_uptime.get(), m_env->getGameTime(), m_gamespec.id, m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -1776,12 +1776,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// drop player if is ip is banned
 		if(m_banmanager->isIpBanned(addr_s)){
+			std::string ban_name = m_banmanager->getBanName(addr_s);
 			infostream<<"Server: A banned client tried to connect from "
 					<<addr_s<<"; banned name was "
-					<<m_banmanager->getBanName(addr_s)<<std::endl;
+					<<ban_name<<std::endl;
 			// This actually doesn't seem to transfer to the client
 			DenyAccess(peer_id, L"Your ip is banned. Banned name was "
-					+narrow_to_wide(m_banmanager->getBanName(addr_s)));
+					+narrow_to_wide(ban_name));
 			m_con.DeletePeer(peer_id);
 			return;
 		}
@@ -1854,7 +1855,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
+					+ narrow_to_wide(minetest_version_simple) + L"."
 			);
 			return;
 		}
@@ -1902,7 +1903,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L",\n"
+					+ narrow_to_wide(minetest_version_simple) + L",\n"
 					+ L"server's PROTOCOL_VERSION is "
 					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
 					+ L"..."
@@ -1924,7 +1925,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				DenyAccess(peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
-						+ narrow_to_wide(VERSION_STRING) + L",\n"
+						+ narrow_to_wide(minetest_version_simple) + L",\n"
 						+ L"server's PROTOCOL_VERSION (strict) is "
 						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
 						+ L", client's PROTOCOL_VERSION is "
@@ -4644,7 +4645,7 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 		client->denied = true;
 
 	// If there are way too many clients, get rid of denied new ones immediately
-	if(m_clients.size() > 2 * g_settings->getU16("max_users")){
+	if((int)m_clients.size() > 2 * g_settings->getU16("max_users")){
 		verbosestream<<"Server: DenyAccess: Too many clients; getting rid of "
 				<<"peer_id="<<peer_id<<" immediately"<<std::endl;
 		// Delete peer to stop sending it data
@@ -4774,7 +4775,10 @@ void Server::UpdateCrafting(u16 peer_id)
 
 	// Get a preview for crafting
 	ItemStack preview;
+	InventoryLocation loc;
+	loc.setPlayer(player->getName());
 	getCraftingResult(&player->inventory, preview, false, this);
+	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(), (&player->inventory)->getList("craft"), loc);
 
 	// Put the new preview in
 	InventoryList *plist = player->inventory.getList("craftpreview");
@@ -4822,7 +4826,7 @@ std::wstring Server::getStatusString()
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(VERSION_STRING);
+	os<<L"version="<<narrow_to_wide(minetest_version_simple);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Max lag estimate
@@ -4996,6 +5000,20 @@ bool Server::hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount) {
 	writeS32(os, hotbar_itemcount);
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
+}
+
+void Server::hudSetHotbarImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
+}
+
+void Server::hudSetHotbarSelectedImage(Player *player, std::string name) {
+	if (!player)
+		return;
+
+	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
 void Server::notifyPlayers(const std::wstring msg)

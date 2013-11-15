@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class InventoryManager;
+class ISimpleTextureSource;
 
 typedef enum {
 	f_Button,
@@ -176,7 +177,8 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
-			IGameDef *gamedef
+			IGameDef *gamedef,
+			ISimpleTextureSource *tsrc
 			);
 
 	~GUIFormSpecMenu();
@@ -225,7 +227,7 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	void acceptInput();
+	void acceptInput(bool quit);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
 
@@ -245,6 +247,7 @@ protected:
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
+	ISimpleTextureSource *m_tsrc;
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
@@ -282,6 +285,14 @@ protected:
 	bool m_allowclose;
 	bool m_lock;
 	v2u32 m_lockscreensize;
+
+	bool m_bgfullscreen;
+	bool m_slotborder;
+	bool m_clipbackground;
+	video::SColor m_bgcolor;
+	video::SColor m_slotbg_n;
+	video::SColor m_slotbg_h;
+	video::SColor m_slotbordercolor;
 private:
 	typedef struct {
 		v2s32 size;
@@ -301,8 +312,6 @@ private:
 		bool key_enter;
 		bool key_escape;
 	} fs_key_pendig;
-
-	std::vector<video::ITexture *> m_Textures;
 
 	fs_key_pendig current_keys_pending;
 
@@ -333,8 +342,10 @@ private:
 	void parseItemImageButton(parserData* data,std::string element);
 	void parseTabHeader(parserData* data,std::string element);
 	void parseBox(parserData* data,std::string element);
+	void parseBackgroundColor(parserData* data,std::string element);
+	void parseListColors(parserData* data,std::string element);
 
-	bool parseColor(std::string color, irr::video::SColor& outcolor); 
+	bool parseColor(std::string &value, video::SColor &color, bool quiet);
 };
 
 class FormspecFormSource: public IFormSource

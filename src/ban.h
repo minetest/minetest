@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include <string>
-#include <jthread.h>
-#include <jmutex.h>
+#include "jthread/jthread.h"
+#include "jthread/jmutex.h"
 #include "exceptions.h"
 
 class BanManager

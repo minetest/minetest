@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <algorithm>
 
+#include "version.h"
 #include "main.h" // for g_settings
 #include "settings.h"
 #include "serverlist.h"
@@ -193,34 +194,40 @@ static size_t ServerAnnounceCallback(void *contents, size_t size, size_t nmemb, 
     //((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
-void sendAnnounce(std::string action, u16 clients, double uptime, std::string gameid, std::vector<ModSpec> m_mods) {
+void sendAnnounce(std::string action, const std::vector<std::string> & clients_names, double uptime, u32 game_time, std::string gameid, std::vector<ModSpec> mods) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
-	server["port"] = g_settings->get("port");
+	server["port"]		= g_settings->get("port");
 	server["address"]	= g_settings->get("server_address");
 	if (action != "delete") {
 		server["name"]		= g_settings->get("server_name");
 		server["description"]	= g_settings->get("server_description");
-		server["version"]	= VERSION_STRING;
+		server["version"]	= minetest_version_simple;
 		server["url"]		= g_settings->get("server_url");
 		server["creative"]	= g_settings->get("creative_mode");
 		server["damage"]	= g_settings->get("enable_damage");
 		server["password"]	= g_settings->getBool("disallow_empty_password");
 		server["pvp"]		= g_settings->getBool("enable_pvp");
-		server["clients"]	= clients;
+		server["clients"]	= (int)clients_names.size();
 		server["clients_max"]	= g_settings->get("max_users");
-		if (uptime >=1) server["uptime"] = (int)uptime;
-		if (gameid!="") server["gameid"] = gameid;
+		server["clients_list"]	= Json::Value(Json::arrayValue);
+		for(u32 i = 0; i < clients_names.size(); ++i) {
+			server["clients_list"].append(clients_names[i]);
+		}
+		if (uptime >= 1)	server["uptime"]	= (int)uptime;
+		if (gameid != "")	server["gameid"]	= gameid;
+		if (game_time >= 1)	server["game_time"]	= game_time;
 	}
 
 	if(server["action"] == "start") {
 		server["dedicated"]	= g_settings->get("server_dedicated");
+		server["privs"]		= g_settings->get("default_privs");
 		server["rollback"]	= g_settings->getBool("enable_rollback_recording");
 		server["liquid_finite"]	= g_settings->getBool("liquid_finite");
 		server["mapgen"]	= g_settings->get("mg_name");
-		server["mods"] = Json::Value(Json::arrayValue);
-		for(std::vector<ModSpec>::iterator m = m_mods.begin(); m != m_mods.end(); m++) {
+		server["mods"]		= Json::Value(Json::arrayValue);
+		for(std::vector<ModSpec>::iterator m = mods.begin(); m != mods.end(); m++) {
 			server["mods"].append(m->name);
 		}
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
@@ -234,7 +241,7 @@ void sendAnnounce(std::string action, u16 clients, double uptime, std::string ga
 		CURLcode res;
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, (g_settings->get("serverlist_url")+std::string("/announce?json=")+curl_easy_escape(curl, writer.write( server ).c_str(), 0)).c_str());
-		//curl_easy_setopt(curl, CURLOPT_USERAGENT, "minetest");
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ServerList::ServerAnnounceCallback);
 		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &liststring);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1);

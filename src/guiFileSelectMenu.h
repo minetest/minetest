@@ -66,8 +66,6 @@ private:
 
 	gui::IGUIFileOpenDialog* m_fileOpenDialog;
 
-	std::string m_previous_locale;
-
 	bool m_running;
 
 	TextDest *m_text_dst;

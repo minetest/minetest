@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "serverobject.h"
 #include "mapgen.h"
+#include "json/json.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -190,7 +191,15 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	getfloatfield(L, -1, "stepheight", prop->stepheight);
 	prop->stepheight*=BS;
-	getboolfield(L, -1, "automatic_face_movement_dir", prop->automatic_face_movement_dir);
+	lua_getfield(L, -1, "automatic_face_movement_dir");
+	if (lua_isnumber(L, -1)) {
+		prop->automatic_face_movement_dir = true;
+		prop->automatic_face_movement_dir_offset = luaL_checknumber(L, -1);
+	} else if (lua_isboolean(L, -1)) {
+		prop->automatic_face_movement_dir = lua_toboolean(L, -1);
+		prop->automatic_face_movement_dir_offset = 0.0;
+	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/
@@ -997,4 +1006,85 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 	}
 	
 	return true;
+}
+
+/******************************************************************************/
+// Returns depth of json value tree
+static int push_json_value_getdepth(const Json::Value &value)
+{
+	if (!value.isArray() && !value.isObject())
+		return 1;
+
+	int maxdepth = 0;
+	for (Json::Value::const_iterator it = value.begin();
+			it != value.end(); ++it) {
+		int elemdepth = push_json_value_getdepth(*it);
+		if (elemdepth > maxdepth)
+			maxdepth = elemdepth;
+	}
+	return maxdepth + 1;
+}
+// Recursive function to convert JSON --> Lua table
+static bool push_json_value_helper(lua_State *L, const Json::Value &value,
+		int nullindex)
+{
+	switch(value.type()) {
+		case Json::nullValue:
+		default:
+			lua_pushvalue(L, nullindex);
+			break;
+		case Json::intValue:
+			lua_pushinteger(L, value.asInt());
+			break;
+		case Json::uintValue:
+			lua_pushinteger(L, value.asUInt());
+			break;
+		case Json::realValue:
+			lua_pushnumber(L, value.asDouble());
+			break;
+		case Json::stringValue:
+			{
+				const char *str = value.asCString();
+				lua_pushstring(L, str ? str : "");
+			}
+			break;
+		case Json::booleanValue:
+			lua_pushboolean(L, value.asInt());
+			break;
+		case Json::arrayValue:
+			lua_newtable(L);
+			for (Json::Value::const_iterator it = value.begin();
+					it != value.end(); ++it) {
+				push_json_value_helper(L, *it, nullindex);
+				lua_rawseti(L, -2, it.index() + 1);
+			}
+			break;
+		case Json::objectValue:
+			lua_newtable(L);
+			for (Json::Value::const_iterator it = value.begin();
+					it != value.end(); ++it) {
+				const char *str = it.memberName();
+				lua_pushstring(L, str ? str : "");
+				push_json_value_helper(L, *it, nullindex);
+				lua_rawset(L, -3);
+			}
+			break;
+	}
+	return true;
+}
+// converts JSON --> Lua table; returns false if lua stack limit exceeded
+// nullindex: Lua stack index of value to use in place of JSON null
+bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
+{
+	if(nullindex < 0)
+		nullindex = lua_gettop(L) + 1 + nullindex;
+
+	int depth = push_json_value_getdepth(value);
+
+	// The maximum number of Lua stack slots used at each recursion level
+	// of push_json_value_helper is 2, so make sure there a depth * 2 slots
+	if (lua_checkstack(L, depth * 2))
+		return push_json_value_helper(L, value, nullindex);
+	else
+		return false;
 }

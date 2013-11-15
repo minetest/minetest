@@ -59,6 +59,9 @@ private:
 	// setting_save()
 	static int l_setting_save(lua_State *L);
 
+	// parse_json(str[, nullvalue])
+	static int l_parse_json(lua_State *L);
+
 	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 	static int l_get_dig_params(lua_State *L);
 
@@ -67,6 +70,9 @@ private:
 
 	// get_password_hash(name, raw_password)
 	static int l_get_password_hash(lua_State *L);
+
+	// is_yes(arg)
+	static int l_is_yes(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

@@ -69,12 +69,14 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		InventoryManager *invmgr,
-		IGameDef *gamedef
+		IGameDef *gamedef,
+		ISimpleTextureSource *tsrc
 ):
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
 	m_invmgr(invmgr),
 	m_gamedef(gamedef),
+	m_tsrc(tsrc),
 	m_form_src(NULL),
 	m_text_dst(NULL),
 	m_selected_item(NULL),
@@ -124,11 +126,14 @@ void GUIFormSpecMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}*/
+
 	if(m_tooltip_element)
 	{
 		m_tooltip_element->remove();
+		m_tooltip_element->drop();
 		m_tooltip_element = NULL;
 	}
+
 }
 
 void GUIFormSpecMenu::setInitialFocus()
@@ -480,7 +485,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 	if (parts.size() == 3) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
+		std::string name = unescape_string(parts[2]);
 
 		MY_CHECKPOS("image",0);
 		MY_CHECKGEOM("image",1);
@@ -501,7 +506,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 
 	if (parts.size() == 2) {
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string name = parts[1];
+		std::string name = unescape_string(parts[1]);
 
 		MY_CHECKPOS("image",0);
 
@@ -599,10 +604,10 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,std::stri
 void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if ((parts.size() == 3) || (parts.size() == 4)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string name = parts[2];
+		std::string name = unescape_string(parts[2]);
 
 		MY_CHECKPOS("background",0);
 		MY_CHECKGEOM("background",1);
@@ -614,6 +619,14 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 		v2s32 geom;
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
+
+		if (parts.size() == 4) {
+			m_clipbackground = is_yes(parts[3]);
+			if (m_clipbackground) {
+				pos.X = stoi(v_pos[0]); //acts as offset
+				pos.Y = stoi(v_pos[1]); //acts as offset
+			}
+		}
 
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
@@ -681,16 +694,16 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 					e->addItem(narrow_to_wide(unescape_string(items[i])).c_str() +1);
 				}
 				else {
-					std::string color = items[i].substr(1,6);
+					std::string color = items[i].substr(0,7);
 					std::wstring toadd =
 						narrow_to_wide(unescape_string(items[i]).c_str() + 7);
 
 					e->addItem(toadd.c_str());
 
-					irr::video::SColor toset;
+					video::SColor tmp_color;
 
-					if (parseColor(color, toset))
-						e->setItemOverrideColor(i,toset);
+					if (parseColor(color, tmp_color, false))
+					e->setItemOverrideColor(i,tmp_color);
 				}
 			}
 			else {
@@ -708,8 +721,15 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 				scrollbar->setPos(data->listbox_scroll[fname_w]);
 			}
 		}
+		else {
+			gui::IGUIScrollBar *scrollbar = getListboxScrollbar(e);
+			if (scrollbar) {
+				scrollbar->setPos(0);
+			}
+		}
 
-		if (str_initial_selection != "")
+		if ((str_initial_selection != "") &&
+				(str_initial_selection != "0"))
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
@@ -766,11 +786,6 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element) {
 		if (str_initial_selection != "")
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
-		//if (data->listbox_selections.find(fname_w) != data->listbox_selections.end()) {
-		//	e->setSelected(data->listbox_selections[fname_w]);
-		//}
-
-		//m_listboxes.push_back(std::pair<FieldSpec,gui::IGUIListBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1069,7 +1084,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 
 	if (parts.size() == 2) {
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::string text = parts[1];
+		std::wstring text = narrow_to_wide(unescape_string(parts[1]));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1082,17 +1097,16 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
-		text = unescape_string(text);
-		std::string label = "";
+		std::wstring label = L"";
 
 		for (unsigned int i=0; i < text.length(); i++) {
-			label += text.c_str()[i];
-			label += "\n";
+			label += text[i];
+			label += L"\n";
 		}
 
 		FieldSpec spec = FieldSpec(
 			L"",
-			narrow_to_wide(label.c_str()),
+			label,
 			L"",
 			258+m_fields.size()
 		);
@@ -1145,8 +1159,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		if(data->bp_set != 2)
-			errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;
+			errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
 
+		image_name = unescape_string(image_name);
+		pressed_image_name = unescape_string(pressed_image_name);
 		label = unescape_string(label);
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
@@ -1163,24 +1179,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 
 		video::ITexture *texture = 0;
 		video::ITexture *pressed_texture = 0;
-		//if there's no gamedef specified try to get direct
-		//TODO check for possible texture leak
-		if (m_gamedef != 0) {
-			texture = m_gamedef->tsrc()->getTexture(image_name);
-			if ((parts.size() == 8)) {
-				pressed_texture = m_gamedef->tsrc()->getTexture(pressed_image_name);
-			}
-		} else {
-			if (fs::PathExists(image_name)) {
-				texture = Environment->getVideoDriver()->getTexture(image_name.c_str());
-				m_Textures.push_back(texture);
-			}
-			if (fs::PathExists(pressed_image_name)) {
-				pressed_texture = Environment->getVideoDriver()->getTexture(pressed_image_name.c_str());
-				m_Textures.push_back(pressed_texture);
-			}
-		}
-		if (parts.size() < 8)
+		texture = m_tsrc->getTexture(image_name);
+		if (parts.size() == 8)
+			pressed_texture = m_tsrc->getTexture(pressed_image_name);
+		else
 			pressed_texture = texture;
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
@@ -1342,7 +1344,6 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 	if (parts.size() == 3) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
-		std::string color_str = parts[2];
 
 		MY_CHECKPOS("box",0);
 		MY_CHECKGEOM("box",1);
@@ -1355,10 +1356,10 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-		irr::video::SColor color;
+		video::SColor tmp_color;
 
-		if (parseColor(color_str, color)) {
-			BoxDrawSpec spec(pos,geom,color);
+		if (parseColor(parts[2], tmp_color, false)) {
+			BoxDrawSpec spec(pos, geom, tmp_color);
 
 			m_boxes.push_back(spec);
 		}
@@ -1368,6 +1369,46 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 		return;
 	}
 	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element) {
+	std::vector<std::string> parts = split(element,';');
+
+	if ((parts.size() == 1) || (parts.size() == 2)) {
+		parseColor(parts[0],m_bgcolor,false);
+
+		if (parts.size() == 2) {
+			std::string fullscreen = parts[1];
+			m_bgfullscreen = is_yes(fullscreen);
+		}
+		return;
+	}
+	errorstream<< "Invalid bgcolor element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseListColors(parserData* data,std::string element) {
+	std::vector<std::string> parts = split(element,';');
+
+	if ((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
+		parseColor(parts[0], m_slotbg_n, false);
+		parseColor(parts[1], m_slotbg_h, false);
+		
+		if (parts.size() >= 3) {
+			if (parseColor(parts[2], m_slotbordercolor, false)) {
+				m_slotborder = true;
+			}
+		}
+		if (parts.size() == 5) {
+			video::SColor tmp_color;
+
+			if (parseColor(parts[3], tmp_color, false))
+				m_tooltip_element->setBackgroundColor(tmp_color);
+			if (parseColor(parts[4], tmp_color, false))
+				m_tooltip_element->setOverrideColor(tmp_color);
+		}
+		return;
+	}
+	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
 void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
@@ -1480,6 +1521,16 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
 		return;
 	}
 
+	if (type == "bgcolor") {
+		parseBackgroundColor(data,description);
+		return;
+	}
+
+	if (type == "listcolors") {
+		parseListColors(data,description);
+		return;
+	}
+
 	// Ignore others
 	infostream
 		<< "Unknown DrawSpec: type="<<type<<", data=\""<<description<<"\""
@@ -1550,25 +1601,38 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_fields.clear();
 	m_boxes.clear();
 
+	// Set default values (fits old formspec values)
+	m_bgcolor = video::SColor(140,0,0,0);
+	m_bgfullscreen = false;
+
+	m_slotbg_n = video::SColor(255,128,128,128);
+	m_slotbg_h = video::SColor(255,192,192,192);
+
+	m_slotbordercolor = video::SColor(200,0,0,0);
+	m_slotborder = false;
+
+	m_clipbackground = false;
+	// Add tooltip
+	{
+		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
+		m_tooltip_element = Environment->addStaticText(L"",core::rect<s32>(0,0,110,18));
+		m_tooltip_element->enableOverrideColor(true);
+		m_tooltip_element->setBackgroundColor(video::SColor(255,110,130,60));
+		m_tooltip_element->setDrawBackground(true);
+		m_tooltip_element->setDrawBorder(true);
+		m_tooltip_element->setOverrideColor(video::SColor(255,255,255,255));
+		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+		m_tooltip_element->setWordWrap(false);
+		//we're not parent so no autograb for this one!
+		m_tooltip_element->grab();
+	}
+
 
 	std::vector<std::string> elements = split(m_formspec_string,']');
-
 	for (unsigned int i=0;i< elements.size();i++) {
 		parseElement(&mydata,elements[i]);
 	}
 
-	// If there's inventory, put the usage string at the bottom
-	if (m_inventorylists.size())
-	{
-		changeCtype("");
-		core::rect<s32> rect(0, 0, mydata.size.X-padding.X*2, mydata.helptext_h);
-		rect = rect + v2s32((mydata.size.X/2 - mydata.rect.getWidth()/2) +5,
-				mydata.size.Y-5-mydata.helptext_h);
-		const wchar_t *text = wgettext("Left click: Move all items, Right click: Move single item");
-		Environment->addStaticText(text, rect, false, true, this, 256);
-		delete[] text;
-		changeCtype("C");
-	}
 	// If there's fields, add a Proceed button
 	if (m_fields.size() && mydata.bp_set != 2)
 	{
@@ -1583,7 +1647,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		recalculateAbsolutePosition(false);
 		mydata.basepos = getBasePos();
 
-		changeCtype("");
 		{
 			v2s32 pos = mydata.basepos;
 			pos.Y = ((m_fields.size()+2)*60);
@@ -1594,19 +1657,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			Environment->addButton(mydata.rect, this, 257, text);
 			delete[] text;
 		}
-		changeCtype("C");
-	}
-	// Add tooltip
-	{
-		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
-		m_tooltip_element = Environment->addStaticText(L"",core::rect<s32>(0,0,110,18));
-		m_tooltip_element->enableOverrideColor(true);
-		m_tooltip_element->setBackgroundColor(video::SColor(255,110,130,60));
-		m_tooltip_element->setDrawBackground(true);
-		m_tooltip_element->setDrawBorder(true);
-		m_tooltip_element->setOverrideColor(video::SColor(255,255,255,255));
-		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
-		m_tooltip_element->setWordWrap(false);
+
 	}
 
 	//set initial focus if parser didn't set it
@@ -1692,16 +1743,31 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 		if(phase == 0)
 		{
-			if(hovering && m_selected_item)
-			{
-				video::SColor bgcolor(255,192,192,192);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-			}
+			if(hovering)
+				driver->draw2DRectangle(m_slotbg_h, rect, &AbsoluteClippingRect);
 			else
-			{
-				video::SColor bgcolor(255,128,128,128);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-			}
+				driver->draw2DRectangle(m_slotbg_n, rect, &AbsoluteClippingRect);
+		}
+
+		//Draw inv slot borders
+		if (m_slotborder) {
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			s32 border = 1;
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y1 - border),
+								v2s32(x2 + border, y1)), NULL);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y2),
+								v2s32(x2 + border, y2 + border)), NULL);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y1),
+								v2s32(x1, y2)), NULL);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x2, y1),
+								v2s32(x2 + border, y2)), NULL);
 		}
 
 		if(phase == 1)
@@ -1782,8 +1848,12 @@ void GUIFormSpecMenu::drawMenu()
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	
-	video::SColor bgcolor(140,0,0,0);
-	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+	v2u32 screenSize = driver->getScreenSize();
+	core::rect<s32> allbg(0, 0, screenSize.X ,	screenSize.Y);
+	if (m_bgfullscreen) 
+		driver->draw2DRectangle(m_bgcolor, allbg, &allbg);
+	else
+		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
 
@@ -1793,21 +1863,22 @@ void GUIFormSpecMenu::drawMenu()
 	for(u32 i=0; i<m_backgrounds.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_backgrounds[i];
-		video::ITexture *texture = 0;
-
-		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTexture(spec.name);
-		else
-		{
-			texture = driver->getTexture(spec.name.c_str());
-			m_Textures.push_back(texture);
-		}
+		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
 		if (texture != 0) {
 			// Image size on screen
 			core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
 			// Image rectangle on screen
 			core::rect<s32> rect = imgrect + spec.pos;
+
+			if (m_clipbackground) {
+				core::dimension2d<s32> absrec_size = AbsoluteRect.getSize();
+				rect = core::rect<s32>(AbsoluteRect.UpperLeftCorner.X - spec.pos.X,
+									AbsoluteRect.UpperLeftCorner.Y - spec.pos.Y,
+									AbsoluteRect.UpperLeftCorner.X + absrec_size.Width + spec.pos.X,
+									AbsoluteRect.UpperLeftCorner.Y + absrec_size.Height + spec.pos.Y);
+			}
+
 			const video::SColor color(255,255,255,255);
 			const video::SColor colors[] = {color,color,color,color};
 			driver->draw2DImage(texture, rect,
@@ -1843,15 +1914,8 @@ void GUIFormSpecMenu::drawMenu()
 	for(u32 i=0; i<m_images.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_images[i];
-		video::ITexture *texture = 0;
+		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
-		if (m_gamedef != 0)
-			texture = m_gamedef->tsrc()->getTexture(spec.name);
-		else
-		{
-			texture = driver->getTexture(spec.name.c_str());
-			m_Textures.push_back(texture);
-		}
 		if (texture != 0) {
 			const core::dimension2d<u32>& img_origsize = texture->getOriginalSize();
 			// Image size on screen
@@ -1906,10 +1970,8 @@ void GUIFormSpecMenu::drawMenu()
 		Draw items
 		Phase 0: Item slot rectangles
 		Phase 1: Item images; prepare tooltip
-		If backgrounds used, do not draw Item slot rectangles
 	*/
 	int start_phase=0;
-	if (m_backgrounds.size() > 0) start_phase=1;
 	for(int phase=start_phase; phase<=1; phase++)
 	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
@@ -2067,11 +2129,15 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput()
+void GUIFormSpecMenu::acceptInput(bool quit=false)
 {
 	if(m_text_dst)
 	{
 		std::map<std::string, std::string> fields;
+
+		if (quit) {
+			fields["quit"] = "true";
+		}
 
 		if (current_keys_pending.key_down) {
 			fields["key_down"] = "true";
@@ -2214,10 +2280,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.KeyInput.PressedDown && (kp == EscapeKey ||
 			kp == getKeySetting("keymap_inventory")))
 		{
-			if (m_allowclose)
+			if (m_allowclose) {
+				acceptInput(true);
 				quitMenu();
-			else
+			 } else {
 				m_text_dst->gotText(narrow_to_wide("MenuQuit"));
+			}
 			return true;
 		}
 		if (event.KeyInput.PressedDown &&
@@ -2230,7 +2298,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			switch (event.KeyInput.Key) {
 				case KEY_RETURN:
 					if (m_allowclose) {
-						acceptInput();
+						acceptInput(true);
 						quitMenu();
 					}
 					else
@@ -2577,11 +2645,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			unsigned int btn_id = event.GUIEvent.Caller->getID();
 
 			if (btn_id == 257) {
-				acceptInput();
-				if (m_allowclose)
+				if (m_allowclose) {
+					acceptInput(true);
 					quitMenu();
-				else
+				} else {
+					acceptInput();
 					m_text_dst->gotText(narrow_to_wide("ExitButton"));
+				}
 				// quitMenu deallocates menu
 				return true;
 			}
@@ -2598,10 +2668,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = true;
 					acceptInput();
 					if(s.is_exit){
-						if (m_allowclose)
+						if (m_allowclose) {
+							acceptInput(true);
 							quitMenu();
-						else
+						} else {
 							m_text_dst->gotText(narrow_to_wide("ExitButton"));
+						}
 						return true;
 					}else{
 						s.send = false;
@@ -2616,7 +2688,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			{
 
 				if (m_allowclose) {
-					acceptInput();
+					acceptInput(true);
 					quitMenu();
 				}
 				else {
@@ -2659,18 +2731,78 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-bool GUIFormSpecMenu::parseColor(std::string color, irr::video::SColor& outcolor) {
-	outcolor = irr::video::SColor(0,0,0,0);
-
-	if (!string_allowed(color, "0123456789abcdefABCDEF"))
+static inline bool hex_digit_decode(char hexdigit, unsigned char &value)
+{
+	if(hexdigit >= '0' && hexdigit <= '9')
+		value = hexdigit - '0';
+	else if(hexdigit >= 'A' && hexdigit <= 'F')
+		value = hexdigit - 'A' + 10;
+	else if(hexdigit >= 'a' && hexdigit <= 'f')
+		value = hexdigit - 'a' + 10;
+	else
 		return false;
-
-	u32 color_value;
-	std::istringstream iss(color);
-	iss >> std::hex >> color_value;
-	
-	outcolor = irr::video::SColor(color_value);
-
-	outcolor.setAlpha(255);
 	return true;
+}
+
+bool GUIFormSpecMenu::parseColor(std::string &value, video::SColor &color, bool quiet)
+{
+	const char *hexpattern = NULL;
+	if (value[0] == '#') {
+		if (value.size() == 9)
+			hexpattern = "#RRGGBBAA";
+		else if (value.size() == 7)
+			hexpattern = "#RRGGBB";
+		else if (value.size() == 5)
+			hexpattern = "#RGBA";
+		else if (value.size() == 4)
+			hexpattern = "#RGB";
+	}
+
+	if (hexpattern) {
+		assert(strlen(hexpattern) == value.size());
+		video::SColor outcolor(255, 255, 255, 255);
+		for (size_t pos = 0; pos < value.size(); ++pos) {
+			// '#' in the pattern means skip that character
+			if (hexpattern[pos] == '#')
+				continue;
+
+			// Else assume hexpattern[pos] is one of 'R' 'G' 'B' 'A'
+			// Read one or two digits, depending on hexpattern
+			unsigned char c1, c2;
+			if (hexpattern[pos+1] == hexpattern[pos]) {
+				// Two digits, e.g. hexpattern == "#RRGGBB"
+				if (!hex_digit_decode(value[pos], c1) ||
+				    !hex_digit_decode(value[pos+1], c2))
+					goto fail;
+				++pos;
+			}
+			else {
+				// One digit, e.g. hexpattern == "#RGB"
+				if (!hex_digit_decode(value[pos], c1))
+					goto fail;
+				c2 = c1;
+			}
+			u32 colorpart = ((c1 & 0x0f) << 4) | (c2 & 0x0f);
+
+			// Update outcolor with newly read color part
+			if (hexpattern[pos] == 'R')
+				outcolor.setRed(colorpart);
+			else if (hexpattern[pos] == 'G')
+				outcolor.setGreen(colorpart);
+			else if (hexpattern[pos] == 'B')
+				outcolor.setBlue(colorpart);
+			else if (hexpattern[pos] == 'A')
+				outcolor.setAlpha(colorpart);
+		}
+
+		color = outcolor;
+		return true;
+	}
+
+	// Optionally, named colors could be implemented here
+
+fail:
+	if (!quiet)
+		errorstream<<"Invalid color: \""<<value<<"\""<<std::endl;
+	return false;
 }

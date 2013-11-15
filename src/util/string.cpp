@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "string.h"
 #include "pointer.h"
+#include "numeric.h"
 
 #include "../sha1.h"
 #include "../base64.h"
@@ -40,8 +41,9 @@ std::string wide_to_narrow(const std::wstring& wcs)
 	size_t mbl = wcs.size()*4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
-	if(l == (size_t)(-1))
-		mbs[0] = 0;
+	if(l == (size_t)(-1)) {
+		return "Character conversion failed!";
+	}
 	else
 		mbs[l] = 0;
 	return *mbs;
@@ -135,4 +137,19 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) {
 	
 	*lasts = t;
 	return s;
+}
+
+u64 read_seed(const char *str) {
+	char *endptr;
+	u64 num;
+	
+	if (str[0] == '0' && str[1] == 'x')
+		num = strtoull(str, &endptr, 16);
+	else
+		num = strtoull(str, &endptr, 10);
+		
+	if (*endptr)
+		num = murmur_hash_64_ua(str, (int)strlen(str), 0x1337);
+		
+	return num;
 }

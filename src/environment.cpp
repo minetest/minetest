@@ -322,6 +322,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_recommended_send_interval(0.1),
 	m_max_lag_estimate(0.1)
 {
+	m_use_weather = g_settings->getBool("weather");
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -808,6 +809,16 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	
 	// Activate stored objects
 	activateObjects(block, dtime_s);
+	
+	// Calculate weather conditions
+	if (m_use_weather) {
+		m_map->updateBlockHeat(this, block->getPos() *  MAP_BLOCKSIZE, block);
+		m_map->updateBlockHumidity(this, block->getPos() * MAP_BLOCKSIZE, block);
+	} else {
+		block->heat     = HEAT_UNDEFINED;
+		block->humidity = HUMIDITY_UNDEFINED;
+		block->weather_update_time = 0;
+	}
 
 	// Run node timers
 	std::map<v3s16, NodeTimer> elapsed_timers =
@@ -1793,6 +1804,47 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
+
+		// If object's static data is stored in a deactivated block and object
+		// is actually located in an active block, re-save to the block in
+		// which the object is actually located in.
+		if(!force_delete &&
+				obj->m_static_exists &&
+				!m_active_blocks.contains(obj->m_static_block) &&
+				 m_active_blocks.contains(blockpos_o))
+		{
+			v3s16 old_static_block = obj->m_static_block;
+
+			// Save to block where object is located
+			MapBlock *block = m_map->emergeBlock(blockpos_o, false);
+			if(!block){
+				errorstream<<"ServerEnvironment::deactivateFarObjects(): "
+						<<"Could not save object id="<<id
+						<<" to it's current block "<<PP(blockpos_o)
+						<<std::endl;
+				continue;
+			}
+			std::string staticdata_new = obj->getStaticData();
+			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
+			block->m_static_objects.insert(id, s_obj);
+			obj->m_static_block = blockpos_o;
+			block->raiseModified(MOD_STATE_WRITE_NEEDED,
+					"deactivateFarObjects: Static data moved in");
+
+			// Delete from block where object was located
+			block = m_map->emergeBlock(old_static_block, false);
+			if(!block){
+				errorstream<<"ServerEnvironment::deactivateFarObjects(): "
+						<<"Could not delete object id="<<id
+						<<" from it's previous block "<<PP(old_static_block)
+						<<std::endl;
+				continue;
+			}
+			block->m_static_objects.remove(id);
+			block->raiseModified(MOD_STATE_WRITE_NEEDED,
+					"deactivateFarObjects: Static data moved out");
+			continue;
+		}
 
 		// If block is active, don't remove
 		if(!force_delete && m_active_blocks.contains(blockpos_o))

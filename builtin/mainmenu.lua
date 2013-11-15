@@ -2,6 +2,12 @@ print = engine.debug
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
 
+local errorfct = error
+error = function(text)
+	print(debug.traceback(""))
+	errorfct(text)
+end
+
 local scriptpath = engine.get_scriptdir()
 
 mt_color_grey  = "#AAAAAA"
@@ -136,23 +142,22 @@ function init_globals()
 					
 	filterlist.add_sort_mechanism(worldlist,"alphabetic",sort_worlds_alphabetic)
 	filterlist.set_sortmode(worldlist,"alphabetic")
-					
 end
 
 --------------------------------------------------------------------------------
 function update_menu()
 
-	local formspec = "size[12,5.2]"
+	local formspec
 	
 	-- handle errors
 	if gamedata.errormessage ~= nil then
-		formspec = formspec ..
+		formspec = "size[12,5.2]" ..
 			"field[1,2;10,2;;ERROR: " ..
 			gamedata.errormessage .. 
 			";]"..
 			"button[4.5,4.2;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
 	else
-		formspec = formspec .. tabbuilder.gettab()
+		formspec = tabbuilder.gettab()
 	end
 
 	engine.update_formspec(formspec)
@@ -273,7 +278,8 @@ end
 function tabbuilder.dialog_create_world()
 	local mapgens = {"v6", "v7", "indev", "singlenode", "math"}
 
-	local current_mg = engine.setting_get("mg_name")
+	local current_seed = engine.setting_get("fixed_map_seed") or ""
+	local current_mg   = engine.setting_get("mg_name")
 
 	local mglist = ""
 	local selindex = 1
@@ -289,15 +295,20 @@ function tabbuilder.dialog_create_world()
 
 	local retval = 
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"label[2,1;" .. fgettext("Mapgen") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
-		"label[2,2;" .. fgettext("Game") .. "]"..
-		"button[5,4.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[7.5,4.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]" ..
-		"dropdown[4.2,1;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
-		"textlist[4.2,1.9;5.8,2.3;games;" ..
-		gamemgr.gamelist() ..
-		";" .. menu.last_game .. ";true]"
+
+		"label[2,1;" .. fgettext("Seed") .. "]"..
+		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
+
+		"label[2,2;" .. fgettext("Mapgen") .. "]"..
+		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+
+		"label[2,3;" .. fgettext("Game") .. "]"..
+		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
+		";" .. menu.last_game .. ";true]" ..
+
+		"button[5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[7.5,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 
 	return retval
 end
@@ -311,43 +322,18 @@ function tabbuilder.dialog_delete_world()
 end
 
 --------------------------------------------------------------------------------
+
 function tabbuilder.gettab()
-	local retval = ""
-	
+	local tsize = tabbuilder.tabsizes[tabbuilder.current_tab] or {width=12, height=5.2}
+	local retval = "size[" .. tsize.width .. "," .. tsize.height .. "]"
+
 	if tabbuilder.show_buttons then
 		retval = retval .. tabbuilder.tab_header()
 	end
 
-	if tabbuilder.current_tab == "singleplayer" then
-		retval = retval .. tabbuilder.tab_singleplayer()
-	end
-	
-	if tabbuilder.current_tab == "multiplayer" then
-		retval = retval .. tabbuilder.tab_multiplayer()
-	end
-
-	if tabbuilder.current_tab == "server" then
-		retval = retval .. tabbuilder.tab_server()
-	end
-	
-	if tabbuilder.current_tab == "settings" then
-		retval = retval .. tabbuilder.tab_settings()
-	end
-	
-	if tabbuilder.current_tab == "texture_packs" then
-		retval = retval .. tabbuilder.tab_texture_packs()
-	end
-	
-	if tabbuilder.current_tab == "credits" then
-		retval = retval .. tabbuilder.tab_credits()
-	end
-	
-	if tabbuilder.current_tab == "dialog_create_world" then
-		retval = retval .. tabbuilder.dialog_create_world()
-	end
-	
-	if tabbuilder.current_tab == "dialog_delete_world" then
-		retval = retval .. tabbuilder.dialog_delete_world()
+	local buildfunc = tabbuilder.tabfuncs[tabbuilder.current_tab]
+	if buildfunc ~= nil then
+		retval = retval .. buildfunc()
 	end
 	
 	retval = retval .. modmgr.gettab(tabbuilder.current_tab)
@@ -377,6 +363,8 @@ function tabbuilder.handle_create_world_buttons(fields)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
+
+			engine.setting_set("fixed_map_seed", fields["te_seed"])
 			
 			if message ~= nil then
 				gamedata.errormessage = message
@@ -493,8 +481,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 	end
 	
 	if fields["cb_public_serverlist"] ~= nil then
-		engine.setting_setbool("public_serverlist",
-			tabbuilder.tobool(fields["cb_public_serverlist"]))
+		engine.setting_set("public_serverlist", fields["cb_public_serverlist"])
 			
 		if engine.setting_getbool("public_serverlist") then
 			menu.favorites = engine.get_favorites("online")
@@ -565,15 +552,15 @@ function tabbuilder.handle_server_buttons(fields)
 	menu.handle_key_up_down(fields,"srv_worlds","mainmenu_last_selected_world")
 	
 	if fields["cb_creative_mode"] then
-		engine.setting_setbool("creative_mode",tabbuilder.tobool(fields["cb_creative_mode"]))
+		engine.setting_set("creative_mode", fields["cb_creative_mode"])
 	end
 	
 	if fields["cb_enable_damage"] then
-		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
+		engine.setting_set("enable_damage", fields["cb_enable_damage"])
 	end
 
 	if fields["cb_server_announce"] then
-		engine.setting_setbool("server_announce",tabbuilder.tobool(fields["cb_server_announce"]))
+		engine.setting_set("server_announce", fields["cb_server_announce"])
 	end
 	
 	if fields["start_server"] ~= nil or
@@ -630,53 +617,44 @@ function tabbuilder.handle_server_buttons(fields)
 end
 
 --------------------------------------------------------------------------------
-function tabbuilder.tobool(text)
-	if text == "true" then
-		return true
-	else
-		return false
-	end
-end
-
---------------------------------------------------------------------------------
 function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_fancy_trees"] then
-		engine.setting_setbool("new_style_leaves",tabbuilder.tobool(fields["cb_fancy_trees"]))
+		engine.setting_set("new_style_leaves", fields["cb_fancy_trees"])
 	end
 	if fields["cb_smooth_lighting"] then
-		engine.setting_setbool("smooth_lighting",tabbuilder.tobool(fields["cb_smooth_lighting"]))
+		engine.setting_set("smooth_lighting", fields["cb_smooth_lighting"])
 	end
 	if fields["cb_3d_clouds"] then
-		engine.setting_setbool("enable_3d_clouds",tabbuilder.tobool(fields["cb_3d_clouds"]))
+		engine.setting_set("enable_3d_clouds", fields["cb_3d_clouds"])
 	end
 	if fields["cb_opaque_water"] then
-		engine.setting_setbool("opaque_water",tabbuilder.tobool(fields["cb_opaque_water"]))
+		engine.setting_set("opaque_water", fields["cb_opaque_water"])
 	end
 	
 	if fields["cb_mipmapping"] then
-		engine.setting_setbool("mip_map",tabbuilder.tobool(fields["cb_mipmapping"]))
+		engine.setting_set("mip_map", fields["cb_mipmapping"])
 	end
 	if fields["cb_anisotrophic"] then
-		engine.setting_setbool("anisotropic_filter",tabbuilder.tobool(fields["cb_anisotrophic"]))
+		engine.setting_set("anisotropic_filter", fields["cb_anisotrophic"])
 	end
 	if fields["cb_bilinear"] then
-		engine.setting_setbool("bilinear_filter",tabbuilder.tobool(fields["cb_bilinear"]))
+		engine.setting_set("bilinear_filter", fields["cb_bilinear"])
 	end
 	if fields["cb_trilinear"] then
-		engine.setting_setbool("trilinear_filter",tabbuilder.tobool(fields["cb_trilinear"]))
+		engine.setting_set("trilinear_filter", fields["cb_trilinear"])
 	end
 			
 	if fields["cb_shaders"] then
-		engine.setting_setbool("enable_shaders",tabbuilder.tobool(fields["cb_shaders"]))
+		engine.setting_set("enable_shaders", fields["cb_shaders"])
 	end
 	if fields["cb_pre_ivis"] then
-		engine.setting_setbool("preload_item_visuals",tabbuilder.tobool(fields["cb_pre_ivis"]))
+		engine.setting_set("preload_item_visuals", fields["cb_pre_ivis"])
 	end
 	if fields["cb_particles"] then
-		engine.setting_setbool("enable_particles",tabbuilder.tobool(fields["cb_particles"]))
+		engine.setting_set("enable_particles", fields["cb_particles"])
 	end
 	if fields["cb_finite_liquid"] then
-		engine.setting_setbool("liquid_finite",tabbuilder.tobool(fields["cb_finite_liquid"]))
+		engine.setting_set("liquid_finite", fields["cb_finite_liquid"])
 	end
 
 	if fields["btn_change_keys"] ~= nil then
@@ -705,11 +683,11 @@ function tabbuilder.handle_singleplayer_buttons(fields)
 	menu.handle_key_up_down(fields,"sp_worlds","mainmenu_last_selected_world")
 	
 	if fields["cb_creative_mode"] then
-		engine.setting_setbool("creative_mode",tabbuilder.tobool(fields["cb_creative_mode"]))
+		engine.setting_set("creative_mode", fields["cb_creative_mode"])
 	end
 	
 	if fields["cb_enable_damage"] then
-		engine.setting_setbool("enable_damage",tabbuilder.tobool(fields["cb_enable_damage"]))
+		engine.setting_set("enable_damage", fields["cb_enable_damage"])
 	end
 
 	if fields["play"] ~= nil or
@@ -816,7 +794,7 @@ function tabbuilder.handle_tab_buttons(fields)
 	
 	--handle tab changes
 	if tabbuilder.current_tab ~= tabbuilder.old_tab then
-		if tabbuilder.current_tab ~= "singleplayer" then
+		if tabbuilder.current_tab ~= "singleplayer" and not tabbuilder.is_dialog then
 			menu.update_gametype(true)
 		end
 	end
@@ -826,50 +804,6 @@ function tabbuilder.handle_tab_buttons(fields)
 	end
 	
 	tabbuilder.old_tab = tabbuilder.current_tab
-end
-
---------------------------------------------------------------------------------
-function tabbuilder.init()
-	tabbuilder.current_tab = engine.setting_get("main_menu_tab")
-	
-	if tabbuilder.current_tab == nil or
-		tabbuilder.current_tab == "" then
-		tabbuilder.current_tab = "singleplayer"
-		engine.setting_set("main_menu_tab",tabbuilder.current_tab)
-	end
-	
-	--initialize tab buttons
-	tabbuilder.last_tab = nil
-	tabbuilder.show_buttons = true
-	
-	tabbuilder.current_buttons = {}
-	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption=fgettext("Singleplayer")})
-	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption=fgettext("Client")})
-	table.insert(tabbuilder.current_buttons,{name="server", caption=fgettext("Server")})
-	table.insert(tabbuilder.current_buttons,{name="settings", caption=fgettext("Settings")})
-	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption=fgettext("Texture Packs")})
-	
-	if engine.setting_getbool("main_menu_game_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption=fgettext("Games")})
-	end
-	
-	if engine.setting_getbool("main_menu_mod_mgr") then
-		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption=fgettext("Mods")})
-	end
-	table.insert(tabbuilder.current_buttons,{name="credits", caption=fgettext("Credits")})
-	
-	
-	for i=1,#tabbuilder.current_buttons,1 do
-		if tabbuilder.current_buttons[i].name == tabbuilder.current_tab then
-			tabbuilder.last_tab_index = i
-		end
-	end
-	
-	if tabbuilder.current_tab ~= "singleplayer" then
-		menu.update_gametype(true)
-	else
-		menu.update_gametype()
-	end
 end
 
 --------------------------------------------------------------------------------
@@ -1051,16 +985,17 @@ function tabbuilder.tab_texture_packs()
 	return	retval ..
 			menu.render_texture_pack_list(list) ..
 			";" .. index .. "]" ..
-			"image[0.65,0.25;4.0,3.7;"..(screenfile or no_screenshot).."]"..
+			"image[0.65,0.25;4.0,3.7;"..engine.formspec_escape(screenfile or no_screenshot).."]"..
 			"textarea[1.0,3.25;3.7,1.5;;"..engine.formspec_escape(infotext or "")..";]"
 end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_credits()
+	local logofile = menu.defaulttexturedir .. "logo.png"
 	return	"vertlabel[0,-0.5;CREDITS]" ..
 			"label[0.5,3;Minetest " .. engine.get_version() .. "]" ..
 			"label[0.5,3.3;http://minetest.net]" .. 
-			"image[0.5,1;" .. menu.defaulttexturedir .. "logo.png]" ..
+			"image[0.5,1;" .. engine.formspec_escape(logofile) .. "]" ..
 			"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
 			"#FFFF00" .. fgettext("Core Developers") .."," ..
 			"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
@@ -1072,14 +1007,16 @@ function tabbuilder.tab_credits()
 			"proller <proler@gmail.com>,"..
 			"sfan5 <sfan5@live.de>,"..
 			"kahrl <kahrl@gmx.net>,"..
+			"sapier,"..
+			"ShadowNinja <shadowninja@minetest.net>,"..
+			"Nathanaël Courant (Nore/Novatux) <nore@mesecons.net>,"..
+			"BlockMen,"..
 			","..
 			"#FFFF00" .. fgettext("Active Contributors") .. "," ..
-			"sapier,"..
 			"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
 			"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
 			"Jeija <jeija@mesecons.net>,"..
 			"MirceaKitsune <mirceakitsune@gmail.com>,"..
-			"ShadowNinja,"..
 			"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
 			"0gb.us <0gb.us@0gb.us>,"..
 			"," ..
@@ -1091,6 +1028,66 @@ function tabbuilder.tab_credits()
 			"matttpt <matttpt@gmail.com>,"..
 			"JacobF <queatz@gmail.com>,"..
 			";0;true]"
+end
+
+--------------------------------------------------------------------------------
+function tabbuilder.init()
+	tabbuilder.tabfuncs = {
+		singleplayer  = tabbuilder.tab_singleplayer,
+		multiplayer   = tabbuilder.tab_multiplayer,
+		server        = tabbuilder.tab_server,
+		settings      = tabbuilder.tab_settings,
+		texture_packs = tabbuilder.tab_texture_packs,
+		credits       = tabbuilder.tab_credits,
+		dialog_create_world = tabbuilder.dialog_create_world,
+		dialog_delete_world = tabbuilder.dialog_delete_world
+	}
+
+	tabbuilder.tabsizes = {
+		dialog_create_world = {width=12, height=7},
+		dialog_delete_world = {width=12, height=5.2}
+	}
+
+	tabbuilder.current_tab = engine.setting_get("main_menu_tab")
+	
+	if tabbuilder.current_tab == nil or
+		tabbuilder.current_tab == "" then
+		tabbuilder.current_tab = "singleplayer"
+		engine.setting_set("main_menu_tab",tabbuilder.current_tab)
+	end
+	
+	--initialize tab buttons
+	tabbuilder.last_tab = nil
+	tabbuilder.show_buttons = true
+	
+	tabbuilder.current_buttons = {}
+	table.insert(tabbuilder.current_buttons,{name="singleplayer", caption=fgettext("Singleplayer")})
+	table.insert(tabbuilder.current_buttons,{name="multiplayer", caption=fgettext("Client")})
+	table.insert(tabbuilder.current_buttons,{name="server", caption=fgettext("Server")})
+	table.insert(tabbuilder.current_buttons,{name="settings", caption=fgettext("Settings")})
+	table.insert(tabbuilder.current_buttons,{name="texture_packs", caption=fgettext("Texture Packs")})
+	
+	if engine.setting_getbool("main_menu_game_mgr") then
+		table.insert(tabbuilder.current_buttons,{name="game_mgr", caption=fgettext("Games")})
+	end
+	
+	if engine.setting_getbool("main_menu_mod_mgr") then
+		table.insert(tabbuilder.current_buttons,{name="mod_mgr", caption=fgettext("Mods")})
+	end
+	table.insert(tabbuilder.current_buttons,{name="credits", caption=fgettext("Credits")})
+	
+	
+	for i=1,#tabbuilder.current_buttons,1 do
+		if tabbuilder.current_buttons[i].name == tabbuilder.current_tab then
+			tabbuilder.last_tab_index = i
+		end
+	end
+	
+	if tabbuilder.current_tab ~= "singleplayer" then
+		menu.update_gametype(true)
+	else
+		menu.update_gametype()
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -1195,12 +1192,13 @@ end
 
 --------------------------------------------------------------------------------
 function menu.update_gametype(reset)
-	if reset then
+	local game = menu.lastgame()
+
+	if reset or game == nil then
 		mm_texture.reset()
 		engine.set_topleft_text("")
 		filterlist.set_filtercriteria(worldlist,nil)
 	else
-		local game = menu.lastgame()
 		mm_texture.update(tabbuilder.current_tab,game)
 		engine.set_topleft_text(game.name)
 		filterlist.set_filtercriteria(worldlist,game.id)

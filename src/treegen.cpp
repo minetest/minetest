@@ -33,6 +33,11 @@ namespace treegen
 void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 		bool is_apple_tree, INodeDefManager *ndef, int seed)
 {
+	/*
+		NOTE: Tree-placing code is currently duplicated in the engine
+		and in games that have saplings; both are deprecated but not
+		replaced yet
+	*/
 	MapNode treenode(ndef->getId("mapgen_tree"));
 	MapNode leavesnode(ndef->getId("mapgen_leaves"));
 	MapNode applenode(ndef->getId("mapgen_apple"));
@@ -511,6 +516,11 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef, int seed)
 {
+	/*
+		NOTE: Tree-placing code is currently duplicated in the engine
+		and in games that have saplings; both are deprecated but not
+		replaced yet
+	*/
 	content_t c_tree   = ndef->getId("mapgen_jungletree");
 	content_t c_leaves = ndef->getId("mapgen_jungleleaves");
 	if (c_tree == CONTENT_IGNORE)

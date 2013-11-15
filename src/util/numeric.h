@@ -222,6 +222,8 @@ int myrand_range(int min, int max);
 	Miscellaneous functions
 */
 
+u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
+
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 

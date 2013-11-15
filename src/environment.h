@@ -300,6 +300,10 @@ public:
 
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
+	
+	// is weather active in this environment?
+	bool m_use_weather;
+	
 private:
 
 	/*

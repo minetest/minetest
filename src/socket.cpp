@@ -345,6 +345,8 @@ void UDPSocket::Bind(u16 port)
 	if(m_addr_family == AF_INET6)
 	{
 		struct sockaddr_in6 address;
+		memset(&address, 0, sizeof(address));
+
 		address.sin6_family = AF_INET6;
 		address.sin6_addr   = in6addr_any;
 		address.sin6_port   = htons(port);
@@ -360,6 +362,8 @@ void UDPSocket::Bind(u16 port)
 	else
 	{
 		struct sockaddr_in address;
+		memset(&address, 0, sizeof(address));
+
 		address.sin_family      = AF_INET;
 		address.sin_addr.s_addr = INADDR_ANY;
 		address.sin_port        = htons(port);
@@ -454,6 +458,7 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 	if(m_addr_family == AF_INET6)
 	{
 		struct sockaddr_in6 address;
+		memset(&address, 0, sizeof(address));
 		socklen_t address_len = sizeof(address);
 
 		received = recvfrom(m_handle, (char *) data,
@@ -470,6 +475,8 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 	else
 	{
 		struct sockaddr_in address;
+		memset(&address, 0, sizeof(address));
+
 		socklen_t address_len = sizeof(address);
 
 		received = recvfrom(m_handle, (char *) data,
@@ -568,5 +575,3 @@ bool UDPSocket::WaitData(int timeout_ms)
 	// There is data
 	return true;
 }
-
-

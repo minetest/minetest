@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "scripting_mainmenu.h"
 #include "config.h"
+#include "version.h"
 #include "porting.h"
 #include "filesys.h"
 #include "main.h"
@@ -28,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "sound_openal.h"
+#include "clouds.h"
 
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
@@ -36,6 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <curl/curl.h>
 #endif
 
+/******************************************************************************/
+/** TextDestGuiEngine                                                         */
 /******************************************************************************/
 TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
 {
@@ -54,6 +58,38 @@ void TextDestGuiEngine::gotText(std::wstring text)
 	m_engine->getScriptIface()->handleMainMenuEvent(wide_to_narrow(text));
 }
 
+/******************************************************************************/
+/** MenuTextureSource                                                         */
+/******************************************************************************/
+MenuTextureSource::MenuTextureSource(video::IVideoDriver *driver)
+{
+	m_driver = driver;
+}
+
+/******************************************************************************/
+MenuTextureSource::~MenuTextureSource()
+{
+	for (std::set<std::string>::iterator it = m_to_delete.begin();
+			it != m_to_delete.end(); ++it) {
+		const char *tname = (*it).c_str();
+		video::ITexture *texture = m_driver->getTexture(tname);
+		m_driver->removeTexture(texture);
+	}
+}
+
+/******************************************************************************/
+video::ITexture* MenuTextureSource::getTexture(const std::string &name, u32 *id)
+{
+	if(id)
+		*id = 0;
+	if(name.empty())
+		return NULL;
+	m_to_delete.insert(name);
+	return m_driver->getTexture(name.c_str());
+}
+
+/******************************************************************************/
+/** MenuMusicFetcher                                                          */
 /******************************************************************************/
 void MenuMusicFetcher::fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
@@ -75,6 +111,8 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 }
 
 /******************************************************************************/
+/** GUIEngine                                                                 */
+/******************************************************************************/
 GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 						gui::IGUIElement* parent,
 						IMenuManager *menumgr,
@@ -86,6 +124,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_menumanager(menumgr),
 	m_smgr(smgr),
 	m_data(data),
+	m_texture_source(NULL),
 	m_sound_manager(NULL),
 	m_formspecgui(0),
 	m_buttonhandler(0),
@@ -105,6 +144,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
 
+	//create texture source
+	m_texture_source = new MenuTextureSource(m_device->getVideoDriver());
+
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
 #if USE_SOUND
@@ -116,7 +158,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	//create topleft header
 	core::rect<s32> rect(0, 0, 500, 40);
 	rect += v2s32(4, 0);
-	std::string t = "Minetest " VERSION_STRING;
+	std::string t = std::string("Minetest ") + minetest_version_hash;
 
 	m_irr_toplefttext =
 		m_device->getGUIEnvironment()->addStaticText(narrow_to_wide(t).c_str(),
@@ -132,7 +174,8 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 								-1,
 								m_menumanager,
 								0 /* &client */,
-								0 /* gamedef */);
+								0 /* gamedef */,
+								m_texture_source);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
@@ -264,11 +307,13 @@ GUIEngine::~GUIEngine()
 
 	m_irr_toplefttext->setText(L"");
 
-	//initialize texture pointers
+	//clean up texture pointers
 	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
 		if (m_textures[i] != 0)
 			driver->removeTexture(m_textures[i]);
 	}
+
+	delete m_texture_source;
 	
 	if (m_cloud.clouds)
 		m_cloud.clouds->drop();
@@ -345,7 +390,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 	}
 
 	/* Draw background texture */
-	v2u32 sourcesize = texture->getSize();
+	v2u32 sourcesize = texture->getOriginalSize();
 	driver->draw2DImage(texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
@@ -364,7 +409,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 		return;
 
 	/* Draw background texture */
-	v2u32 sourcesize = texture->getSize();
+	v2u32 sourcesize = texture->getOriginalSize();
 	driver->draw2DImage(texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
@@ -382,7 +427,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 	if(!texture)
 		return;
 
-	f32 mult = (((f32)screensize.Width / 2)) /
+	f32 mult = (((f32)screensize.Width / 2.0)) /
 			((f32)texture->getOriginalSize().Width);
 
 	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
@@ -400,7 +445,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 
 	driver->draw2DImage(texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
-		core::dimension2di(texture->getSize())),
+		core::dimension2di(texture->getOriginalSize())),
 		NULL, NULL, true);
 	}
 }
@@ -432,7 +477,7 @@ void GUIEngine::drawFooter(video::IVideoDriver* driver)
 
 		driver->draw2DImage(texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getSize())),
+			core::dimension2di(texture->getOriginalSize())),
 			NULL, NULL, true);
 	}
 }
@@ -487,7 +532,7 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, targetfile);
-
+			curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
 			res = curl_easy_perform(curl);
 			if (res != CURLE_OK) {
 				errorstream << "File at url \"" << url
@@ -509,7 +554,7 @@ bool GUIEngine::downloadFile(std::string url,std::string target) {
 
 /******************************************************************************/
 void GUIEngine::setTopleftText(std::string append) {
-	std::string toset = "Minetest " VERSION_STRING;
+	std::string toset = std::string("Minetest ") + minetest_version_hash;
 
 	if (append != "") {
 		toset += " / ";

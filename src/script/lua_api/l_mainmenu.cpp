@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiKeyChangeMenu.h"
 #include "guiFileSelectMenu.h"
 #include "subgame.h"
+#include "version.h"
 #include "porting.h"
 #include "filesys.h"
 #include "convert_json.h"
@@ -452,12 +453,11 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 		int top_lvl2 = lua_gettop(L);
 
 		if (servers[i]["clients"].asString().size()) {
-
-			const char* clients_raw = servers[i]["clients"].asString().c_str();
+			std::string clients_raw = servers[i]["clients"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(clients_raw,&endptr,10);
+			int numbervalue = strtol(clients_raw.c_str(),&endptr,10);
 
-			if ((*clients_raw != 0) && (*endptr == 0)) {
+			if ((clients_raw != "") && (*endptr == 0)) {
 				lua_pushstring(L,"clients");
 				lua_pushnumber(L,numbervalue);
 				lua_settable(L, top_lvl2);
@@ -466,11 +466,11 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (servers[i]["clients_max"].asString().size()) {
 
-			const char* clients_max_raw = servers[i]["clients_max"].asString().c_str();
+			std::string clients_max_raw = servers[i]["clients_max"].asString();
 			char* endptr = 0;
-			int numbervalue = strtol(clients_max_raw,&endptr,10);
+			int numbervalue = strtol(clients_max_raw.c_str(),&endptr,10);
 
-			if ((*clients_max_raw != 0) && (*endptr == 0)) {
+			if ((clients_max_raw != "") && (*endptr == 0)) {
 				lua_pushstring(L,"clients_max");
 				lua_pushnumber(L,numbervalue);
 				lua_settable(L, top_lvl2);
@@ -479,7 +479,8 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (servers[i]["version"].asString().size()) {
 			lua_pushstring(L,"version");
-			lua_pushstring(L,servers[i]["version"].asString().c_str());
+			std::string topush = servers[i]["version"].asString();
+			lua_pushstring(L,topush.c_str());
 			lua_settable(L, top_lvl2);
 		}
 
@@ -509,25 +510,29 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (servers[i]["description"].asString().size()) {
 			lua_pushstring(L,"description");
-			lua_pushstring(L,servers[i]["description"].asString().c_str());
+			std::string topush = servers[i]["description"].asString();
+			lua_pushstring(L,topush.c_str());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["name"].asString().size()) {
 			lua_pushstring(L,"name");
-			lua_pushstring(L,servers[i]["name"].asString().c_str());
+			std::string topush = servers[i]["name"].asString();
+			lua_pushstring(L,topush.c_str());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["address"].asString().size()) {
 			lua_pushstring(L,"address");
-			lua_pushstring(L,servers[i]["address"].asString().c_str());
+			std::string topush = servers[i]["address"].asString();
+			lua_pushstring(L,topush.c_str());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["port"].asString().size()) {
 			lua_pushstring(L,"port");
-			lua_pushstring(L,servers[i]["port"].asString().c_str());
+			std::string topush = servers[i]["port"].asString();
+			lua_pushstring(L,topush.c_str());
 			lua_settable(L, top_lvl2);
 		}
 
@@ -923,7 +928,7 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_version(lua_State *L)
 {
-	lua_pushstring(L,VERSION_STRING);
+	lua_pushstring(L, minetest_version_simple);
 	return 1;
 }
 
