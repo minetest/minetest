@@ -2236,7 +2236,6 @@ void the_game(
 								&g_menumgr, respawner);
 					menu->drop();
 					
-					chat_backend.addMessage(L"", L"You died.");
 
 					/* Handle visualization */
 
