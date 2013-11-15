@@ -1000,6 +1000,22 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 				if (block_is_underground)
 					continue;
 			} else if ((vm->m_data[i].param1 & 0x0F) != LIGHT_SUN) {
+				u32 ii = 0;
+				if (
+				(x < a.MaxEdge.X && (ii = vm->m_area.index(x + 1, a.MaxEdge.Y + 1, z    )) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(x > a.MinEdge.X && (ii = vm->m_area.index(x - 1, a.MaxEdge.Y + 1, z    )) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(z > a.MinEdge.Z && (ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z - 1)) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))||
+				(z < a.MaxEdge.Z && (ii = vm->m_area.index(x    , a.MaxEdge.Y + 1, z + 1)) &&
+				(vm->m_data[ii].getContent() != CONTENT_IGNORE) &&
+				((vm->m_data[ii].param1 & 0x0F) == LIGHT_SUN))
+				) {
+				} else
 				continue;
 			}
 			vm->m_area.add_y(em, i, -1);

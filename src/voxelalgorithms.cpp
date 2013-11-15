@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "voxelalgorithms.h"
 #include "nodedef.h"
+#include "log.h"
 
 namespace voxalgo
 {
@@ -73,6 +74,7 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 	}
 }
 
+
 SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		bool inexistent_top_provides_sunlight,
 		std::set<v3s16> & light_sources,
@@ -80,6 +82,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 {
 	// Return values
 	bool bottom_sunlight_valid = true;
+
 
 	// The full area we shall touch extends one extra at top and bottom
 	VoxelArea required_a = a;
@@ -89,6 +92,8 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 
 	s16 max_y = a.MaxEdge.Y;
 	s16 min_y = a.MinEdge.Y;
+
+errorstream<<"voxel propagateSunlight "<< " x="<<a.MinEdge.X<<" z="<< a.MinEdge.Z<<std::endl;
 
 	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
 	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
