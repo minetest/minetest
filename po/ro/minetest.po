@@ -3,606 +3,616 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-07 22:01+0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-11-16 20:43+0200\n"
+"Last-Translator: King Artur <david1989mail@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
-msgstr ""
+msgstr "Numele jocului"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:301
 msgid "Create"
-msgstr ""
+msgstr "Creează"
 
 #: builtin/gamemgr.lua:26 builtin/mainmenu.lua:302 builtin/modmgr.lua:289
 #: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Anulează"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "JOCURI"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
 msgid "Games"
-msgstr ""
+msgstr "Jocuri"
 
 #: builtin/gamemgr.lua:233
 msgid "Mods:"
-msgstr ""
+msgstr "Moduri:"
 
 #: builtin/gamemgr.lua:234
 msgid "edit game"
-msgstr ""
+msgstr "modifică jocul"
 
 #: builtin/gamemgr.lua:237
 msgid "new game"
-msgstr ""
+msgstr "joc nou"
 
 #: builtin/gamemgr.lua:247
 msgid "EDIT GAME"
-msgstr ""
+msgstr "MODIFICĂ JOCUL"
 
 #: builtin/gamemgr.lua:267
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Șterge modul selectat"
 
 #: builtin/gamemgr.lua:270
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- Adaugă modul"
 
 #: builtin/mainmenu.lua:159
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
-msgstr ""
+msgstr "Numele lumii"
 
 #: builtin/mainmenu.lua:298
 msgid "Mapgen"
-msgstr ""
+msgstr "Mapgen"
 
 #: builtin/mainmenu.lua:300
 msgid "Game"
-msgstr ""
+msgstr "Joc"
 
 #: builtin/mainmenu.lua:314
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Ștergi lumea \"$1\"?"
 
 #: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
 msgid "Yes"
-msgstr ""
+msgstr "Da"
 
 #: builtin/mainmenu.lua:316
 msgid "No"
-msgstr ""
+msgstr "Nu"
 
 #: builtin/mainmenu.lua:384
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "O lume cu numele \"$1\" deja există"
 
 #: builtin/mainmenu.lua:399
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Jocul nu are nume, sau nu ai selectat un joc"
 
 #: builtin/mainmenu.lua:852
 msgid "Singleplayer"
-msgstr ""
+msgstr "Singleplayer"
 
 #: builtin/mainmenu.lua:853
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #: builtin/mainmenu.lua:854
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: builtin/mainmenu.lua:855
 msgid "Settings"
-msgstr ""
+msgstr "Setări"
 
 #: builtin/mainmenu.lua:856
 msgid "Texture Packs"
-msgstr ""
+msgstr "Pachete de tetură"
 
 #: builtin/mainmenu.lua:863
 msgid "Mods"
-msgstr ""
+msgstr "Moduri"
 
 #: builtin/mainmenu.lua:865
 msgid "Credits"
-msgstr ""
+msgstr "Credits"
 
 #: builtin/mainmenu.lua:885
 msgid "CLIENT"
-msgstr ""
+msgstr "CLIENT"
 
 #: builtin/mainmenu.lua:886
 msgid "Favorites:"
-msgstr ""
+msgstr "Preferate:"
 
 #: builtin/mainmenu.lua:887
 msgid "Address/Port"
-msgstr ""
+msgstr "Adresă/Port"
 
 #: builtin/mainmenu.lua:888
 msgid "Name/Password"
-msgstr ""
+msgstr "Nume/Parolă"
 
 #: builtin/mainmenu.lua:891
 msgid "Public Serverlist"
-msgstr ""
+msgstr "Listă de servere publică"
 
 #: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
 #: builtin/modmgr.lua:271 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Șterge"
 
 #: builtin/mainmenu.lua:900
 msgid "Connect"
-msgstr ""
+msgstr "Conectează"
 
 #: builtin/mainmenu.lua:942 builtin/mainmenu.lua:1005
 msgid "New"
-msgstr ""
+msgstr "Nou"
 
 #: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
 msgid "Configure"
-msgstr ""
+msgstr "Configurează"
 
 #: builtin/mainmenu.lua:944
 msgid "Start Game"
-msgstr ""
+msgstr "Începe jocul"
 
 #: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
 msgid "Select World:"
-msgstr ""
+msgstr "Selectează lumea:"
 
 #: builtin/mainmenu.lua:946
 msgid "START SERVER"
-msgstr ""
+msgstr "DESCHIDE SERVERUL"
 
 #: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
 msgid "Creative Mode"
-msgstr ""
+msgstr "Modul Creativ"
 
 #: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
 msgid "Enable Damage"
-msgstr ""
+msgstr "Activează Daune"
 
 #: builtin/mainmenu.lua:951
 msgid "Public"
-msgstr ""
+msgstr "Public"
 
 #: builtin/mainmenu.lua:953
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: builtin/mainmenu.lua:955
 msgid "Password"
-msgstr ""
+msgstr "Parolă"
 
 #: builtin/mainmenu.lua:956
 msgid "Server Port"
-msgstr ""
+msgstr "Port server"
 
 #: builtin/mainmenu.lua:966
 msgid "SETTINGS"
-msgstr ""
+msgstr "SETĂRI"
 
 #: builtin/mainmenu.lua:967
 msgid "Fancy trees"
-msgstr ""
+msgstr "Copaci fantezici"
 
 #: builtin/mainmenu.lua:969
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Lumină mai bună"
 
 #: builtin/mainmenu.lua:971
 msgid "3D Clouds"
-msgstr ""
+msgstr "Nori 3D"
 
 #: builtin/mainmenu.lua:973
 msgid "Opaque Water"
-msgstr ""
+msgstr "Apă opacă"
 
 #: builtin/mainmenu.lua:976
 msgid "Mip-Mapping"
-msgstr ""
+msgstr "Mip Mapping"
 
 #: builtin/mainmenu.lua:978
 msgid "Anisotropic Filtering"
-msgstr ""
+msgstr "Filtru Anizotropic"
 
 #: builtin/mainmenu.lua:980
 msgid "Bi-Linear Filtering"
-msgstr ""
+msgstr "Filtrare Biliniară"
 
 #: builtin/mainmenu.lua:982
 msgid "Tri-Linear Filtering"
-msgstr ""
+msgstr "Filtrare Triliniară"
 
 #: builtin/mainmenu.lua:985
 msgid "Shaders"
-msgstr ""
+msgstr "Umbră"
 
 #: builtin/mainmenu.lua:987
 msgid "Preload item visuals"
-msgstr ""
+msgstr "Pre-încarcă imaginile obiectelor"
 
 #: builtin/mainmenu.lua:989
 msgid "Enable Particles"
-msgstr ""
+msgstr "Activează particulele"
 
 #: builtin/mainmenu.lua:991
 msgid "Finite Liquid"
-msgstr ""
+msgstr "Lichid finit"
 
 #: builtin/mainmenu.lua:994
 msgid "Change keys"
-msgstr ""
+msgstr "Modifică tastele"
 
 #: builtin/mainmenu.lua:1007 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Joacă"
 
 #: builtin/mainmenu.lua:1009
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "SINGLE PLAYER"
 
 #: builtin/mainmenu.lua:1022
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Selectează pachetul de textură:"
 
 #: builtin/mainmenu.lua:1023
 msgid "TEXTURE PACKS"
-msgstr ""
+msgstr "PACHETE DE TEXTURĂ"
 
 #: builtin/mainmenu.lua:1043
 msgid "No information available"
-msgstr ""
+msgstr "Nici o informație disponibilă"
 
 #: builtin/mainmenu.lua:1071
 msgid "Core Developers"
-msgstr ""
+msgstr "Dezvoltatori de bază"
 
 #: builtin/mainmenu.lua:1082
 msgid "Active Contributors"
-msgstr ""
+msgstr "Contribuitori activi"
 
 #: builtin/mainmenu.lua:1092
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Foști contribuitori"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "MODURI"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Moduri Instalate:"
 
 #: builtin/modmgr.lua:243 builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Instalează"
 
 #: builtin/modmgr.lua:244
 msgid "Download"
-msgstr ""
+msgstr "Descarcă"
 
 #: builtin/modmgr.lua:256
 msgid "Rename"
-msgstr ""
+msgstr "Redenumește"
 
 #: builtin/modmgr.lua:260 builtin/modmgr.lua:402
 msgid "Depends:"
-msgstr ""
+msgstr "Dependințe:"
 
 #: builtin/modmgr.lua:282
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Redenumește Pachetul de mod:"
 
 #: builtin/modmgr.lua:287 src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Acceptă"
 
 #: builtin/modmgr.lua:381
 msgid "World:"
-msgstr ""
+msgstr "Lume:"
 
 #: builtin/modmgr.lua:385 builtin/modmgr.lua:387
 msgid "Hide Game"
-msgstr ""
+msgstr "Ascunde Joc"
 
 #: builtin/modmgr.lua:391 builtin/modmgr.lua:393
 msgid "Hide mp content"
-msgstr ""
+msgstr "Ascunde conținutul mp"
 
 #: builtin/modmgr.lua:400
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
-msgstr ""
+msgstr "Salvează"
 
 #: builtin/modmgr.lua:422
 msgid "Enable MP"
-msgstr ""
+msgstr "Activează MP"
 
 #: builtin/modmgr.lua:424
 msgid "Disable MP"
-msgstr ""
+msgstr "Dezactivează MP"
 
 #: builtin/modmgr.lua:428 builtin/modmgr.lua:430
 msgid "enabled"
-msgstr ""
+msgstr "activat"
 
 #: builtin/modmgr.lua:436
 msgid "Enable all"
-msgstr ""
+msgstr "Activează tot"
 
 #: builtin/modmgr.lua:551
 msgid "Select Mod File:"
-msgstr ""
+msgstr "Selectează Fișierul Modului:"
 
 #: builtin/modmgr.lua:590
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Instalare Mod: fișier: \"$1\""
 
 #: builtin/modmgr.lua:591
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
+"\n"
+"Instalare Mod: tip de fișier neacceptat \"$1\""
 
 #: builtin/modmgr.lua:612
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Eșuare la instalarea $1 în $2"
 
 #: builtin/modmgr.lua:615
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
+"Instalare Mod: nu se poate găsi nume de folder potrivit pentru pachetul de "
+"mod $1"
 
 #: builtin/modmgr.lua:635
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Instalare mod: nu se poate găsi numele real pentru: $1"
 
 #: builtin/modmgr.lua:824
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: Eroare la ștergerea \"$1\""
 
 #: builtin/modmgr.lua:828
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: Pacht de mod invalid \"$1\""
 
 #: builtin/modmgr.lua:845
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Ești sigur că vrei să ștergi \"$1\"?"
 
 #: builtin/modmgr.lua:847
 msgid "No of course not!"
-msgstr ""
+msgstr "Nu, sigur că nu!"
 
 #: builtin/modstore.lua:183
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Pagina $1 din $2"
 
 #: builtin/modstore.lua:243
 msgid "Rating"
-msgstr ""
+msgstr "Notă"
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "Reinstalează"
 
 #: src/client.cpp:2915
 msgid "Item textures..."
-msgstr ""
+msgstr "Texturi..."
 
 #: src/game.cpp:939
 msgid "Loading..."
-msgstr ""
+msgstr "Se încarcă..."
 
 #: src/game.cpp:999
 msgid "Creating server...."
-msgstr ""
+msgstr "Se crează serverul..."
 
 #: src/game.cpp:1015
 msgid "Creating client..."
-msgstr ""
+msgstr "Se creează clientul..."
 
 #: src/game.cpp:1024
 msgid "Resolving address..."
-msgstr ""
+msgstr "Se rezolvă adresa..."
 
 #: src/game.cpp:1121
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Se conectează la server..."
 
 #: src/game.cpp:1218
 msgid "Item definitions..."
-msgstr ""
+msgstr "Definițiile obiectelor..."
 
 #: src/game.cpp:1225
 msgid "Node definitions..."
-msgstr ""
+msgstr "Definițiile Blocurilor..."
 
 #: src/game.cpp:1232
 msgid "Media..."
-msgstr ""
+msgstr "Media..."
 
 #: src/game.cpp:3405
 msgid "Shutting down stuff..."
-msgstr ""
+msgstr "Se închide..."
 
 #: src/game.cpp:3435
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Verifică deug.txt pentru detalii."
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Ai murit."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Reînviere"
 
 #: src/guiFormSpecMenu.cpp:1569
 msgid "Left click: Move all items, Right click: Move single item"
 msgstr ""
+"Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
 
 #: src/guiFormSpecMenu.cpp:1595 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:140
 msgid "Proceed"
-msgstr ""
+msgstr "Continuă"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Keybindings. (Dacă acest meniu apare, șterge lucrurile din minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Aleargă\" = coboară"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Apasă de 2 ori \"sari\" pentru a zbura"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Key already in use"
-msgstr ""
+msgstr "Tastă deja folosită"
 
 #: src/guiKeyChangeMenu.cpp:372
 msgid "press key"
-msgstr ""
+msgstr "apasă o tastă"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Forward"
-msgstr ""
+msgstr "Înainte"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Backward"
-msgstr ""
+msgstr "Înapoi"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Stânga"
 
 #: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Dreapta"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Use"
-msgstr ""
+msgstr "Aleargă"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Jump"
-msgstr ""
+msgstr "Sari"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Sneak"
-msgstr ""
+msgstr "Furișează"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Drop"
-msgstr ""
+msgstr "Aruncă"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Inventory"
-msgstr ""
+msgstr "Inventar"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Command"
-msgstr ""
+msgstr "Comandă"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Console"
-msgstr ""
+msgstr "Consloă"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fly"
-msgstr ""
+msgstr "Intră pe zbor"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle fast"
-msgstr ""
+msgstr "Intră pe rapid"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Intră pe noclip"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr ""
+msgstr "Selectare distanță"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
-msgstr ""
+msgstr "Salvează logurile"
 
 #: src/guiPasswordChange.cpp:107
 msgid "Old Password"
-msgstr ""
+msgstr "Vechea parolă"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr ""
+msgstr "Noua parolă"
 
 #: src/guiPasswordChange.cpp:142
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirmarea parolei"
 
 #: src/guiPasswordChange.cpp:160
 msgid "Change"
-msgstr ""
+msgstr "Schimbă"
 
 #: src/guiPasswordChange.cpp:169
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Parolele nu se potrivesc!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
-msgstr ""
+msgstr "Continuă"
 
 #: src/guiPauseMenu.cpp:133
 msgid "Change Password"
-msgstr ""
+msgstr "Schimbă Parola"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volum Sunet"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Ieși în Meniu"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr ""
+msgstr "Ieși din joc"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -618,323 +628,334 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Controale prestabilite:\n"
+"- WASD: mișcare\n"
+"- Spațiu: sărire/urcare\n"
+"- Shift: furișare/coborâre\n"
+"- Q: aruncă obiect\n"
+"- I: inventar\n"
+"- Mouse: întoarcere/vedere\n"
+"- Click stânga: săpare/lovire\n"
+"- Click dreapta: pune/folosește\n"
+"- Rotiță mouse: selectează obiect\n"
+"- T: chat\n"
 
 #: src/guiVolumeChange.cpp:108
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Volum sunet: "
 
 #: src/guiVolumeChange.cpp:122
 msgid "Exit"
-msgstr ""
+msgstr "Ieșire"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Stânga"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Rotiță"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Drepata"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "X Butonul 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr ""
+msgstr "Înapoi"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr ""
+msgstr "Șterge"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr ""
+msgstr "Înapoi"
 
 #: src/keycode.cpp:224
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "X Butonul 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr ""
+msgstr "Capital"
 
 #: src/keycode.cpp:225
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Meniu"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr ""
+msgstr "Pauză"
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "Convert"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nonconvert"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "Schimbă modul"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr ""
+msgstr "Următorul"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Anteriorul"
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Spațiu"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "Jos"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Execută"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "Print"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr ""
+msgstr "Selectează"
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Sus"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Ajutor"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "PrintScreen"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Windows Stânga"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "Aplicații"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Windows Dreapta"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr ""
+msgstr "Sleep"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Shift Stânga"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Shift Dreapta"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Ctrl Stânga"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Meniu Stânga"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Ctrl Dreapta"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Meniu Drepata"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Virgulă"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Minus"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Punct"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Ștergere OEF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "Curățare OEM"
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Mărire"
 
 #: src/main.cpp:1411
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "lipsă_tip_font"
 
 #: src/main.cpp:1486
 msgid "Main Menu"
-msgstr ""
+msgstr "Meniul Principal"
 
 #: src/main.cpp:1662
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Nici un cuvânt selectat și nici o adresă scrisă. Nimic de făcut."
 
 #: src/main.cpp:1670
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Nu se poate găsi sau încărca jocul \""
 
 #: src/main.cpp:1684
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Specificare invalidă"
 
 #: src/main.cpp:1729
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Eroare de conexiune (timeout?)"
