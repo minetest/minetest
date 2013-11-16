@@ -343,7 +343,12 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 	}
 	else // NODEBOX_REGULAR
 	{
-		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
+		const ContentFeatures &f = nodemgr->get(n);
+		float top = BS/2;
+		if (f.param_type_2 == CPT2_LEVELED || f.param_type_2 == CPT2_FLOWINGLIQUID)
+			top = -BS/2 + BS*((float)1/f.getMaxLevel()) * n.getLevel(nodemgr);
+
+		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,top,BS/2));
 	}
 	return boxes;
 }
@@ -362,31 +367,30 @@ std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
 
 u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const
 {
-	const ContentFeatures &f = nodemgr->get(*this);
-	// todo: after update in all games leave only if (f.param_type_2 ==
-	if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID)
-		return LIQUID_LEVEL_MAX;
-	if(f.leveled || f.param_type_2 == CPT2_LEVELED)
-		return LEVELED_MAX;
-	return 0;
+	return nodemgr->get(*this).getMaxLevel();
 }
 
 u8 MapNode::getLevel(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	// todo: after update in all games leave only if (f.param_type_2 ==
-	if(f.liquid_type == LIQUID_SOURCE)
-		return LIQUID_LEVEL_SOURCE;
-	if (f.param_type_2 == CPT2_FLOWINGLIQUID)
-		return getParam2() & LIQUID_LEVEL_MASK;
-	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 setted
-		return getParam2() & LIQUID_LEVEL_MASK;
-	if(f.leveled || f.param_type_2 == CPT2_LEVELED) {
-		 u8 level = getParam2() & LEVELED_MASK;
-		 if(level) return level;
-		 if(f.leveled > LEVELED_MAX) return LEVELED_MAX;
-		 return f.leveled; //default
+	if (f.param_type_2 == CPT2_LEVELED) {
+		u8 level = getParam2() & LEVELED_MASK;
+		if(level)
+			return level;
+	} 
+	if(f.leveled) {
+		if(f.leveled > LEVELED_MAX)
+			return LEVELED_MAX;
+		//if(f.leveled > f.getMaxLevel()) return f.getMaxLevel();
+		return f.leveled; //default
 	}
+	if(f.liquid_type == LIQUID_SOURCE) {
+		if (nodemgr->get(nodemgr->getId(f.liquid_alternative_flowing)).param_type_2 == CPT2_LEVELED)
+			return LEVELED_MAX;
+		return LIQUID_LEVEL_SOURCE;
+	}
+	if (f.param_type_2 == CPT2_FLOWINGLIQUID || f.liquid_type == LIQUID_FLOWING) //remove liquid_type later
+		return getParam2() & LIQUID_LEVEL_MASK;
 	return 0;
 }
 
@@ -398,7 +402,17 @@ u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
 		return 0;
 	}
 	const ContentFeatures &f = nodemgr->get(*this);
-	if (	   f.param_type_2 == CPT2_FLOWINGLIQUID
+	if (f.param_type_2 == CPT2_LEVELED) {
+		if (level > f.getMaxLevel()) {
+			rest = level - f.getMaxLevel();
+			level = f.getMaxLevel();
+		}
+		if (level == f.getMaxLevel() && !f.liquid_alternative_source.empty()) {
+			setContent(nodemgr->getId(f.liquid_alternative_source));
+		} else {
+			setParam2(level & LEVELED_MASK);
+		}
+	} else if (f.param_type_2 == CPT2_FLOWINGLIQUID
 		|| f.liquid_type == LIQUID_FLOWING
 		|| f.liquid_type == LIQUID_SOURCE) {
 		if (level >= LIQUID_LEVEL_SOURCE) {
@@ -408,12 +422,6 @@ u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
 			setContent(nodemgr->getId(f.liquid_alternative_flowing));
 			setParam2(level & LIQUID_LEVEL_MASK);
 		}
-	} else if (f.leveled || f.param_type_2 == CPT2_LEVELED) {
-		if (level > LEVELED_MAX) {
-			rest = level - LEVELED_MAX;
-			level = LEVELED_MAX;
-		}
-		setParam2(level & LEVELED_MASK);
 	}
 	return rest;
 }
@@ -427,9 +435,12 @@ u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
 }
 
 void MapNode::freezeMelt(INodeDefManager *ndef) {
+	content_t to = ndef->getId(ndef->get(*this).freezemelt);
+	if (to == CONTENT_IGNORE)
+		return;
 	u8 level_was_max = this->getMaxLevel(ndef);
 	u8 level_was = this->getLevel(ndef);
-	this->setContent(ndef->getId(ndef->get(*this).freezemelt));
+	this->setContent(to);
 	u8 level_now_max = this->getMaxLevel(ndef);
 	if (level_was_max && level_was_max != level_now_max) {
 		u8 want = (float)level_now_max / level_was_max * level_was;
@@ -437,7 +448,6 @@ void MapNode::freezeMelt(INodeDefManager *ndef) {
 			want = 1;
 		if (want != level_was)
 			this->setLevel(ndef, want);
-		//errorstream<<"was="<<(int)level_was<<"/"<<(int)level_was_max<<" nowm="<<(int)want<<"/"<<(int)level_now_max<< " => "<<(int)this->getLevel(ndef)<< std::endl;
 	}
 	if (this->getMaxLevel(ndef) && !this->getLevel(ndef))
 		this->addLevel(ndef);

@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
-		u32 active_object_count, u32 active_object_count_wider)
+		u32 active_object_count, u32 active_object_count_wider, MapNode neighbor)
 {
 	GameScripting *scriptIface = env->getScriptIface();
 	scriptIface->realityCheck();
@@ -78,7 +78,8 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	pushnode(L, n, env->getGameDef()->ndef());
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
-	if(lua_pcall(L, 4, 0, errorhandler))
+	pushnode(L, neighbor, env->getGameDef()->ndef());
+	if(lua_pcall(L, 5, 0, errorhandler))
 		script_error(L);
 	lua_pop(L, 1); // Pop error handler
 }

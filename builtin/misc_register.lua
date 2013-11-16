@@ -122,7 +122,7 @@ function minetest.register_item(name, itemdef)
 	end
 
 	-- Flowing liquid uses param2
-	if itemdef.type == "node" and itemdef.liquidtype == "flowing" then
+	if itemdef.type == "node" and itemdef.liquidtype == "flowing" and itemdef.paramtype2 == nil then
 		itemdef.paramtype2 = "flowingliquid"
 	end
 
@@ -346,3 +346,18 @@ minetest.registered_on_crafts, minetest.register_on_craft = make_registration()
 minetest.registered_craft_predicts, minetest.register_craft_predict = make_registration()
 minetest.registered_on_protection_violation, minetest.register_on_protection_violation = make_registration()
 
+minetest.register_on_joinplayer(function(player)
+	if minetest.is_singleplayer() then
+		return
+	end
+	local player_name =  player:get_player_name()
+	minetest.chat_send_all("*** " .. player_name .. " joined the game.")
+end)
+
+minetest.register_on_dieplayer(function(player)
+	local player_name =  player:get_player_name()
+	if minetest.is_singleplayer() then
+		player_name = "You"
+	end
+	minetest.chat_send_all(player_name .. " died.")
+end)

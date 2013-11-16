@@ -662,6 +662,18 @@ Known damage and digging time defining groups
    speed of a tool if the tool can dig at a faster speed than this
    suggests for the hand.
 
+Freezing and melting groups
+---------------------------
+All values - temperature in celsius, do not forget define freezemelt.
+Do not use value=0, groups with =0 ignored
+Not recomended hot>melt and cold<freeze - it will cause chain reactions
+- freeze: for liquids, transform to something defined in freezemelt
+          if temperature lower than value
+- melt: for non-liquids, transform to liquid defined in freezemelt
+        if temperature higher than value
+- hot: melt nodes around, if their melt lower than value
+- cold: freeze liquid nodes around, if their freeze higher than value
+
 Examples of custom groups
 --------------------------
 Item groups are often used for defining, well, //groups of items//.
@@ -2015,10 +2027,12 @@ ABM (ActiveBlockModifier) definition (register_abm)
     -- In the following two fields, also group:groupname will work.
     nodenames = {"default:lava_source"},
     neighbors = {"default:water_source", "default:water_flowing"}, -- (any of these)
-     ^ If left out or empty, any neighbor will do
+    ^ If left out or empty, any neighbor will do
+    neighbors_range = 1,
+    ^ find neighbors in max range from node, do not set big values (>3) - it can eat cpu
     interval = 1.0, -- (operation interval)
     chance = 1, -- (chance of trigger is 1.0/this)
-    action = func(pos, node, active_object_count, active_object_count_wider),
+    action = func(pos, node, active_object_count, active_object_count_wider, neighbor),
 }
 
 Item definition (register_node, register_craftitem, register_tool)
@@ -2127,8 +2141,12 @@ Node definition (register_node)
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
     freezemelt = "", -- water for snow/ice, ice/snow for water
-    leveled = 0, -- Block contain level in param2. value - default level, used for snow. Dont forget use "leveled" type nodebox
-    liquid_range = 8, -- number of flowing nodes arround source (max. 8)
+    leveled = 0, -- Block contain level in param2. value - default level, used for snow.
+    ^ Dont forget use "leveled" type nodebox.
+    ^ Special sense for liquids with paramtype2="leveled" and source :
+    ^ defines maximum number of liquid levels in node (default=8)
+    ^ Less levels -> faster flooding, more levels -> larger flood area, smoother and more cpu use for flow.
+    ^ possible values for liquids 2..63;  1 - special value for sand or gravel
     drowning = 0, -- Player will take this amount of damage if no bubbles are left
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused

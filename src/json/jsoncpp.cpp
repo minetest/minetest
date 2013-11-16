@@ -1057,7 +1057,11 @@ Reader::getLocationLineAndColumn( Location location ) const
    int line, column;
    getLocationLineAndColumn( location, line, column );
    char buffer[18+16+16+1];
-   sprintf( buffer, "Line %d, Column %d", line, column );
+#if defined(_MSC_VER) && defined(__STDC_SECURE_LIB__)
+   sprintf_s(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
+#else
+   snprintf(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
+#endif
    return buffer;
 }
 
@@ -1411,6 +1415,7 @@ ValueIteratorBase::copy( const SelfType &other )
 {
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    current_ = other.current_;
+   isNull_ = other.isNull_;
 #else
    if ( isArray_ )
       iterator_.array_ = other.iterator_.array_;
@@ -2045,7 +2050,10 @@ Value::Value( const Value &other )
          allocated_ = true;
       }
       else
+      {
          value_.string_ = 0;
+         allocated_ = false;
+      }
       break;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    case arrayValue:
@@ -3377,7 +3385,7 @@ Path::makePath( const std::string &path,
 
 
 void 
-Path::addPathInArg( const std::string &path, 
+Path::addPathInArg( const std::string &/*path*/, 
                     const InArgs &in, 
                     InArgs::const_iterator &itInArg, 
                     PathArgument::Kind kind )
@@ -3398,8 +3406,8 @@ Path::addPathInArg( const std::string &path,
 
 
 void 
-Path::invalidPath( const std::string &path, 
-                   int location )
+Path::invalidPath( const std::string &/*path*/, 
+                   int /*location*/ )
 {
    // Error: invalid path.
 }
@@ -3582,40 +3590,19 @@ std::string valueToString( UInt value )
 
 std::string valueToString( double value )
 {
+   // Allocate a buffer that is more than large enough to store the 16 digits of
+   // precision requested below.
    char buffer[32];
+
+   // Print into the buffer. We need not request the alternative representation
+   // that always has a decimal point because JSON doesn't distingish the
+   // concepts of reals and integers.
 #if defined(_MSC_VER) && defined(__STDC_SECURE_LIB__) // Use secure version with visual studio 2005 to avoid warning. 
-   sprintf_s(buffer, sizeof(buffer), "%#.16g", value); 
-#else	
-   sprintf(buffer, "%#.16g", value); 
+   sprintf_s(buffer, sizeof(buffer), "%.16g", value); 
+#else
+   snprintf(buffer, sizeof(buffer), "%.16g", value);
 #endif
-   char* ch = buffer + strlen(buffer) - 1;
-   if (*ch != '0') return buffer; // nothing to truncate, so save time
-   while(ch > buffer && *ch == '0'){
-     --ch;
-   }
-   char* last_nonzero = ch;
-   while(ch >= buffer){
-     switch(*ch){
-     case '0':
-     case '1':
-     case '2':
-     case '3':
-     case '4':
-     case '5':
-     case '6':
-     case '7':
-     case '8':
-     case '9':
-       --ch;
-       continue;
-     case '.':
-       // Truncate zeroes to save bytes in output, but keep one.
-       *(last_nonzero+2) = '\0';
-       return buffer;
-     default:
-       return buffer;
-     }
-   }
+
    return buffer;
 }
 

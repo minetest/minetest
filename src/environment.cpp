@@ -316,7 +316,10 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
-	m_active_block_interval_overload_skip(0),
+	m_active_objects_last(0),
+	m_active_block_abm_last(0),
+	m_active_block_timer_last(0),
+	m_blocks_added_last(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0),
 	m_recommended_send_interval(0.1),
@@ -633,6 +636,7 @@ struct ActiveABM
 {
 	ActiveBlockModifier *abm;
 	int chance;
+	int neighbors_range;
 	std::set<content_t> required_neighbors;
 };
 
@@ -662,6 +666,8 @@ public:
 				if(i->timer < trigger_interval)
 					continue;
 				i->timer -= trigger_interval;
+				if (i->timer > trigger_interval*2)
+					i->timer = 0;
 				actual_interval = trigger_interval;
 			}
 			float intervals = actual_interval / trigger_interval;
@@ -672,6 +678,7 @@ public:
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
+			aabm.neighbors_range = abm->getNeighborsRange();
 			aabm.chance = chance / intervals;
 			if(aabm.chance == 0)
 				aabm.chance = 1;
@@ -712,6 +719,8 @@ public:
 		if(m_aabms.empty())
 			return;
 
+		ScopeProfiler sp(g_profiler, "ABM apply", SPT_ADD);
+
 		ServerMap *map = &m_env->getServerMap();
 
 		v3s16 p0;
@@ -735,12 +744,14 @@ public:
 					continue;
 
 				// Check neighbors
+				MapNode neighbor;
 				if(!i->required_neighbors.empty())
 				{
 					v3s16 p1;
-					for(p1.X = p.X-1; p1.X <= p.X+1; p1.X++)
-					for(p1.Y = p.Y-1; p1.Y <= p.Y+1; p1.Y++)
-					for(p1.Z = p.Z-1; p1.Z <= p.Z+1; p1.Z++)
+					int neighbors_range = i->neighbors_range;
+					for(p1.X = p.X - neighbors_range; p1.X <= p.X + neighbors_range; ++p1.X)
+					for(p1.Y = p.Y - neighbors_range; p1.Y <= p.Y + neighbors_range; ++p1.Y)
+					for(p1.Z = p.Z - neighbors_range; p1.Z <= p.Z + neighbors_range; ++p1.Z)
 					{
 						if(p1 == p)
 							continue;
@@ -749,6 +760,7 @@ public:
 						std::set<content_t>::const_iterator k;
 						k = i->required_neighbors.find(c);
 						if(k != i->required_neighbors.end()){
+							neighbor = n;
 							goto neighbor_found;
 						}
 					}
@@ -761,7 +773,7 @@ neighbor_found:
 				u32 active_object_count = block->m_static_objects.m_active.size();
 				// Find out how many objects this and all the neighbors contain
 				u32 active_object_count_wider = 0;
-				u32 wider_unknown_count = 0;
+				//u32 wider_unknown_count = 0;
 				for(s16 x=-1; x<=1; x++)
 				for(s16 y=-1; y<=1; y++)
 				for(s16 z=-1; z<=1; z++)
@@ -769,7 +781,7 @@ neighbor_found:
 					MapBlock *block2 = map->getBlockNoCreateNoEx(
 							block->getPos() + v3s16(x,y,z));
 					if(block2==NULL){
-						wider_unknown_count = 0;
+						//wider_unknown_count = 0;
 						continue;
 					}
 					active_object_count_wider +=
@@ -777,13 +789,12 @@ neighbor_found:
 							+ block2->m_static_objects.m_stored.size();
 				}
 				// Extrapolate
-				u32 wider_known_count = 3*3*3 - wider_unknown_count;
-				active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
+				//u32 wider_known_count = 3*3*3; // - wider_unknown_count;
+				//active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
 				
-				// Call all the trigger variations
-				i->abm->trigger(m_env, p, n);
+				// Call trigger
 				i->abm->trigger(m_env, p, n,
-						active_object_count, active_object_count_wider);
+						active_object_count, active_object_count_wider, neighbor);
 			}
 		}
 	}
@@ -811,14 +822,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block, dtime_s);
 	
 	// Calculate weather conditions
-	if (m_use_weather) {
-		m_map->updateBlockHeat(this, block->getPos() *  MAP_BLOCKSIZE, block);
-		m_map->updateBlockHumidity(this, block->getPos() * MAP_BLOCKSIZE, block);
-	} else {
-		block->heat     = HEAT_UNDEFINED;
-		block->humidity = HUMIDITY_UNDEFINED;
-		block->weather_update_time = 0;
-	}
+	m_map->updateBlockHeat(this, block->getPos() *  MAP_BLOCKSIZE, block);
 
 	// Run node timers
 	std::map<v3s16, NodeTimer> elapsed_timers =
@@ -1082,7 +1086,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active block list
 	*/
-	if(m_active_blocks_management_interval.step(dtime, 2.0))
+	if(m_blocks_added_last || m_active_blocks_management_interval.step(dtime, 2.0))
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg /2s", SPT_AVG);
 		/*
@@ -1139,10 +1143,18 @@ void ServerEnvironment::step(float dtime)
 			Handle added blocks
 		*/
 
+		u32 n = 0, calls = 0, 
+			end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 		for(std::set<v3s16>::iterator
 				i = blocks_added.begin();
 				i != blocks_added.end(); ++i)
 		{
+			if (n++ < m_blocks_added_last)
+				continue;
+			else
+				m_blocks_added_last = 0;
+			++calls;
+
 			v3s16 p = *i;
 
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1157,22 +1169,36 @@ void ServerEnvironment::step(float dtime)
 			activateBlock(block);
 			/* infostream<<"Server: Block " << PP(p)
 				<< " became active"<<std::endl; */
+			if (porting::getTimeMs() > end_ms) {
+				m_blocks_added_last = n;
+				break;
+			}
 		}
+		if (!calls)
+			m_blocks_added_last = 0;
 	}
 
 	/*
 		Mess around in active blocks
 	*/
-	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
+	if(m_active_block_timer_last || m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg /1s", SPT_AVG);
 		
 		float dtime = 1.0;
 
+		u32 n = 0, calls = 0, 
+			end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 		for(std::set<v3s16>::iterator
 				i = m_active_blocks.m_list.begin();
 				i != m_active_blocks.m_list.end(); ++i)
 		{
+			if (n++ < m_active_block_timer_last)
+				continue;
+			else
+				m_active_block_timer_last = 0;
+			++calls;
+
 			v3s16 p = *i;
 			
 			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
@@ -1207,27 +1233,37 @@ void ServerEnvironment::step(float dtime)
 						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
 				}
 			}
+
+			if (porting::getTimeMs() > end_ms) {
+				m_active_block_timer_last = n;
+				break;
 		}
+	}
+		if (!calls)
+			m_active_block_timer_last = 0;
 	}
 	
 	const float abm_interval = 1.0;
-	if(m_active_block_modifier_interval.step(dtime, abm_interval))
-	do{ // breakable
-		if(m_active_block_interval_overload_skip > 0){
-			ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-			m_active_block_interval_overload_skip--;
-			break;
-		}
+	if(m_active_block_abm_last || m_active_block_modifier_interval.step(dtime, abm_interval))
+	{
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /1s", SPT_AVG);
 		TimeTaker timer("modify in active blocks");
+		u32 max_time_ms = 1000 * g_settings->getFloat("dedicated_server_step");
 		
 		// Initialize handling of ActiveBlockModifiers
 		ABMHandler abmhandler(m_abms, abm_interval, this, true);
 
+		u32 n = 0, calls = 0;
 		for(std::set<v3s16>::iterator
 				i = m_active_blocks.m_list.begin();
 				i != m_active_blocks.m_list.end(); ++i)
 		{
+			if (n++ < m_active_block_abm_last)
+				continue;
+			else
+				m_active_block_abm_last = 0;
+			++calls;
+
 			v3s16 p = *i;
 			
 			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
@@ -1242,17 +1278,23 @@ void ServerEnvironment::step(float dtime)
 
 			/* Handle ActiveBlockModifiers */
 			abmhandler.apply(block);
+
+			if (timer.getTimerTime() > max_time_ms) {
+				m_active_block_abm_last = n;
+				break;
+			}
 		}
+		if (!calls)
+			m_active_block_abm_last = 0;
 
 		u32 time_ms = timer.stop(true);
-		u32 max_time_ms = 200;
 		if(time_ms > max_time_ms){
-			infostream<<"WARNING: active block modifiers took "
+			infostream<<"WARNING: active block modifiers ("
+					<<calls<<"/"<<m_active_blocks.m_list.size()<<") took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
-			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
 		}
-	}while(0);
+	}
 	
 	/*
 		Step script environment (run global on_step())
@@ -1274,16 +1316,26 @@ void ServerEnvironment::step(float dtime)
 		if(m_send_recommended_timer > getSendRecommendedInterval())
 		{
 			m_send_recommended_timer -= getSendRecommendedInterval();
+			if (m_send_recommended_timer > getSendRecommendedInterval() * 2) {
+				m_send_recommended_timer = 0;
+			}
 			send_recommended = true;
 		}
-
+		bool only_peaceful_mobs = g_settings->getBool("only_peaceful_mobs");
+		u32 n = 0, calls = 0, 
+			end_ms = porting::getTimeMs() + 1000 * g_settings->getFloat("dedicated_server_step");
 		for(std::map<u16, ServerActiveObject*>::iterator
 				i = m_active_objects.begin();
 				i != m_active_objects.end(); ++i)
 		{
+			if (n++ < m_active_objects_last)
+				continue;
+			else
+				m_active_objects_last = 0;
+			++calls;
 			ServerActiveObject* obj = i->second;
 			// Remove non-peaceful mobs on peaceful mode
-			if(g_settings->getBool("only_peaceful_mobs")){
+			if(only_peaceful_mobs){
 				if(!obj->isPeaceful())
 					obj->m_removed = true;
 			}
@@ -1298,7 +1350,14 @@ void ServerEnvironment::step(float dtime)
 				m_active_object_messages.push_back(
 						obj->m_messages_out.pop_front());
 			}
+
+			if (porting::getTimeMs() > end_ms) {
+				m_active_objects_last = n;
+				break;
+			}
 		}
+		if (!calls)
+			m_active_objects_last = 0;
 	}
 	
 	/*
@@ -2102,6 +2161,7 @@ void ClientEnvironment::step(float dtime)
 	bool is_climbing = lplayer->is_climbing;
 	
 	f32 player_speed = lplayer->getSpeed().getLength();
+	v3f pf = lplayer->getPosition();
 	
 	/*
 		Maximum position increment
@@ -2159,21 +2219,30 @@ void ClientEnvironment::step(float dtime)
 			// Apply physics
 			if(free_move == false && is_climbing == false)
 			{
+				f32 viscosity_factor = 0;
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->in_liquid == false)
+				if(lplayer->in_liquid == false) {
 					speed.Y -= lplayer->movement_gravity * lplayer->physics_override_gravity * dtime_part * 2;
+					viscosity_factor = 0.96; // todo maybe depend on speed; 0.96 = ~100 nps max
+					viscosity_factor += (1.0-viscosity_factor) * 
+						(1-(MAP_GENERATION_LIMIT - pf.Y/BS)/
+							MAP_GENERATION_LIMIT);
+				}
 
 				// Liquid floating / sinking
 				if(lplayer->in_liquid && !lplayer->swimming_vertical)
 					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
 
-				// Liquid resistance
 				if(lplayer->in_liquid_stable || lplayer->in_liquid)
+				{
+					viscosity_factor = 0.3; // todo: must depend on speed^2
+				}
+				// Liquid resistance
+				if(viscosity_factor)
 				{
 					// How much the node's viscosity blocks movement, ranges between 0 and 1
 					// Should match the scale at which viscosity increase affects other liquid attributes
-					const f32 viscosity_factor = 0.3;
 
 					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
 					f32 dl = d_wanted.getLength();
@@ -2214,14 +2283,13 @@ void ClientEnvironment::step(float dtime)
 			i != player_collisions.end(); ++i)
 	{
 		CollisionInfo &info = *i;
-		v3f speed_diff = info.new_speed - info.old_speed;;
+		v3f speed_diff = info.new_speed - info.old_speed;
 		// Handle only fall damage
 		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+		if((speed_diff.Y < 0 || info.old_speed.Y >= 0) && 
+			speed_diff.getLength() <= lplayer->movement_speed_fast * 1.1) {
 			continue;
-		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
+		}
 		f32 pre_factor = 1; // 1 hp per node/s
 		f32 tolerance = BS*14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
@@ -2251,7 +2319,6 @@ void ClientEnvironment::step(float dtime)
 	*/
 	if(m_lava_hurt_interval.step(dtime, 1.0))
 	{
-		v3f pf = lplayer->getPosition();
 		
 		// Feet, middle and head
 		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);

@@ -88,6 +88,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("vsync", "false");
 	settings->setDefault("address", "");
 	settings->setDefault("random_input", "false");
+	settings->setDefault("respawn_auto", "false");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fov", "72");
@@ -108,7 +109,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.0");
 	settings->setDefault("enable_3d_clouds", "true");
-	settings->setDefault("cloud_height", "120");
+	settings->setDefault("cloud_height", "300");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
@@ -180,8 +181,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("active_block_range", "2");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_simultaneous_block_sends_per_client", "4");
-	settings->setDefault("max_simultaneous_block_sends_server_total", "20");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("max_block_generate_distance", "7");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
@@ -221,8 +221,8 @@ void set_default_settings(Settings *settings)
 
 	//liquid stuff
 	settings->setDefault("liquid_finite", "false");
-	settings->setDefault("liquid_loop_max", "1000");
-	settings->setDefault("liquid_update", "1.0");
+	settings->setDefault("liquid_update", "0.4");
+	settings->setDefault("liquid_send", "1.0");
 	settings->setDefault("liquid_relax", "2");
 	settings->setDefault("liquid_fast_flood", "1");
 	settings->setDefault("underground_springs", "1");

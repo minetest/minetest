@@ -259,7 +259,7 @@ public:
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks, bool no_d_reset = 0);
 
 	s32 SendingCount()
 	{
@@ -357,7 +357,7 @@ public:
 	void step(float dtime);
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep();
-	void Receive();
+	u16 Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
 	// Environment must be locked when called
@@ -665,7 +665,9 @@ private:
 
 	// Some timers
 	float m_liquid_transform_timer;
-	float m_liquid_transform_every;
+	float m_liquid_transform_interval;
+	float m_liquid_send_timer;
+	float m_liquid_send_interval;
 	float m_print_info_timer;
 	float m_masterserver_timer;
 	float m_objectdata_timer;
@@ -820,6 +822,8 @@ private:
 		Particles
 	*/
 	std::vector<u32> m_particlespawner_ids;
+
+	std::map<v3s16, MapBlock*> m_modified_blocks;
 };
 
 /*

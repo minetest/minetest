@@ -98,6 +98,8 @@ void * ServerThread::Thread()
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	f32 dedicated_server_step = g_settings->getFloat("dedicated_server_step");
+
 	while(getRun())
 	{
 		try{
@@ -109,7 +111,13 @@ void * ServerThread::Thread()
 			}
 
 			//infostream<<"Running m_server->Receive()"<<std::endl;
-			m_server->Receive();
+
+			// Loop used only when 100% cpu load or on old slow hardware. 
+			// usually only one packet recieved here
+			u32 end_ms = porting::getTimeMs() + 1000 * dedicated_server_step;
+			for (u16 i = 0; i < 1000; ++i)
+				if (!m_server->Receive() || porting::getTimeMs() > end_ms)
+					break;
 		}
 		catch(con::NoIncomingDataException &e)
 		{
@@ -222,7 +230,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 
 	// Reset periodically to workaround for some bugs or stuff
-	if(m_nearest_unsent_reset_timer > 20.0)
+	if(m_nearest_unsent_reset_timer > 60.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
@@ -283,6 +291,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	s32 nearest_sent_d = -1;
 	bool queue_is_full = false;
 
+	f32 speed_in_blocks = (playerspeed/(MAP_BLOCKSIZE*BS)).getLength();
+
 	s16 d;
 	for(d = d_start; d <= d_max; d++)
 	{
@@ -302,12 +312,36 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			last_nearest_unsent_d = m_nearest_unsent_d;
 		}*/
 
+		std::list<v3s16> list;
+		bool can_skip = true;
+		// Fast fall/move optimize. speed_in_blocks now limited to 6.4
+		if (speed_in_blocks>0.8 && d <= 2) {
+			can_skip = false;
+			if (d == 0) {
+				for(s16 addn = 0; addn < (speed_in_blocks+1)*2; ++addn)
+					list.push_back(floatToInt(playerspeeddir*addn, 1));
+			} else if (d == 1) {
+				for(s16 addn = 0; addn < (speed_in_blocks+1)*1.5; ++addn) {
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( 0,  0,  1)); // back
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( -1, 0,  0)); // left
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( 1,  0,  0)); // right
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( 0,  0, -1)); // front
+				}
+			} else if (d == 2) {
+				for(s16 addn = 0; addn < (speed_in_blocks+1)*1.5; ++addn) {
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( -1, 0,  1)); // back left
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( 1,  0,  1)); // left right
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( -1, 0, -1)); // right left
+					list.push_back(floatToInt(playerspeeddir*addn, 1) + v3s16( 1,  0, -1)); // front right
+				}
+			}
+		} else {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::list<v3s16> list;
-		getFacePositions(list, d);
+			getFacePositions(list, d);
+		}
 
 		std::list<v3s16>::iterator li;
 		for(li=list.begin(); li!=list.end(); ++li)
@@ -360,8 +394,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					generate = false;*/
 
 				// Limit the send area vertically to 1/2
-				if(abs(p.Y - center.Y) > d_max / 2)
-					continue;
+				if(can_skip && abs(p.Y - center.Y) > d_max / 2)
+					generate = false;
 			}
 
 #if 0
@@ -405,7 +439,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 
 			float camera_fov = (72.0*M_PI/180) * 4./3.;
-			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
+			if(can_skip && isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
 			{
 				continue;
 			}
@@ -616,8 +650,9 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 		m_blocks_sent.erase(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks, bool no_d_reset)
 {
+	if (!no_d_reset && blocks.size())
 	m_nearest_unsent_d = 0;
 
 	for(std::map<v3s16, MapBlock*>::iterator
@@ -667,7 +702,9 @@ Server::Server(
 	m_ignore_map_edit_events_peer_id(0)
 {
 	m_liquid_transform_timer = 0.0;
-	m_liquid_transform_every = 1.0;
+	m_liquid_transform_interval = 1.0;
+	m_liquid_send_timer = 0.0;
+	m_liquid_send_interval = 1.0;
 	m_print_info_timer = 0.0;
 	m_masterserver_timer = 0.0;
 	m_objectdata_timer = 0.0;
@@ -849,7 +886,8 @@ Server::Server(
 	*/
 	add_legacy_abms(m_env, m_nodedef);
 
-	m_liquid_transform_every = g_settings->getFloat("liquid_update");
+	m_liquid_transform_interval = g_settings->getFloat("liquid_update");
+	m_liquid_send_interval = g_settings->getFloat("liquid_send");
 }
 
 Server::~Server()
@@ -1187,37 +1225,33 @@ void Server::AsyncRunStep()
 
 	/* Transform liquids */
 	m_liquid_transform_timer += dtime;
-	if(m_liquid_transform_timer >= m_liquid_transform_every)
+	if(m_liquid_transform_timer >= m_liquid_transform_interval)
 	{
-		m_liquid_transform_timer -= m_liquid_transform_every;
+		m_liquid_transform_timer -= m_liquid_transform_interval;
+		if (m_liquid_transform_timer > m_liquid_transform_interval * 2)
+			m_liquid_transform_timer = 0;
 
 		JMutexAutoLock lock(m_env_mutex);
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
-		std::map<v3s16, MapBlock*> modified_blocks;
-		m_env->getMap().transformLiquids(modified_blocks);
-#if 0
-		/*
-			Update lighting
-		*/
-		core::map<v3s16, MapBlock*> lighting_modified_blocks;
-		ServerMap &map = ((ServerMap&)m_env->getMap());
-		map.updateLighting(modified_blocks, lighting_modified_blocks);
+		// not all liquid was processed per step, forcing on next step
+		if (m_env->getMap().transformLiquids(m_modified_blocks) > 0)
+			m_liquid_transform_timer = m_liquid_transform_interval*0.8;
+	}
 
-		// Add blocks modified by lighting to modified_blocks
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = lighting_modified_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			MapBlock *block = i.getNode()->getValue();
-			modified_blocks.insert(block->getPos(), block);
-		}
-#endif
 		/*
 			Set the modified blocks unsent for all the clients
 		*/
 
+	m_liquid_send_timer += dtime;
+	if(m_liquid_send_timer >= m_liquid_send_interval)
+	{
+		m_liquid_send_timer -= m_liquid_send_interval;
+		if (m_liquid_send_timer > m_liquid_send_interval * 2)
+			m_liquid_send_timer = 0;
+
+		// ? JMutexAutoLock lock(m_env_mutex);
 		JMutexAutoLock lock2(m_con_mutex);
 
 		for(std::map<u16, RemoteClient*>::iterator
@@ -1226,12 +1260,13 @@ void Server::AsyncRunStep()
 		{
 			RemoteClient *client = i->second;
 
-			if(modified_blocks.size() > 0)
+			if(m_modified_blocks.size() > 0)
 			{
 				// Remove block from sent history
-				client->SetBlocksNotSent(modified_blocks);
+				client->SetBlocksNotSent(m_modified_blocks);
 			}
 		}
+		m_modified_blocks.clear();
 	}
 
 	// Periodically print some info
@@ -1719,12 +1754,13 @@ void Server::AsyncRunStep()
 	}
 }
 
-void Server::Receive()
+u16 Server::Receive()
 {
 	DSTACK(__FUNCTION_NAME);
 	SharedBuffer<u8> data;
 	u16 peer_id;
 	u32 datasize;
+	u16 received = 0;
 	try{
 		{
 			JMutexAutoLock conlock(m_con_mutex);
@@ -1736,6 +1772,7 @@ void Server::Receive()
 		handlePeerChanges();
 
 		ProcessData(*data, datasize, peer_id);
+		++received;
 	}
 	catch(con::InvalidIncomingDataException &e)
 	{
@@ -1758,6 +1795,7 @@ void Server::Receive()
 
 		m_env->removePlayer(peer_id);*/
 	}
+	return received;
 }
 
 void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
@@ -2173,20 +2211,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			// Send information about server to player in chat
 			SendChatMessage(peer_id, getStatusString());
-
-			// Send information about joining in chat
-			{
-				std::wstring name = L"unknown";
-				Player *player = m_env->getPlayer(peer_id);
-				if(player != NULL)
-					name = narrow_to_wide(player->getName());
-
-				std::wstring message;
-				message += L"*** ";
-				message += name;
-				message += L" joined the game.";
-				BroadcastChatMessage(message);
-			}
 		}
 
 		// Warnings about protocol version can be issued here
@@ -4195,8 +4219,6 @@ void Server::SendBlocks(float dtime)
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
-	s32 total_sending = 0;
-
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
 
@@ -4211,8 +4233,6 @@ void Server::SendBlocks(float dtime)
 			// send MapBlocks either
 			if(!client->definitions_sent)
 				continue;
-
-			total_sending += client->SendingCount();
 
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
@@ -4229,9 +4249,6 @@ void Server::SendBlocks(float dtime)
 	for(u32 i=0; i<queue.size(); i++)
 	{
 		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings->getS32
-				("max_simultaneous_block_sends_server_total"))
-			break;
 
 		PrioritySortedBlockTransfer q = queue[i];
 
@@ -4254,8 +4271,6 @@ void Server::SendBlocks(float dtime)
 		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
 
 		client->SentBlock(q.pos);
-
-		total_sending++;
 	}
 }
 

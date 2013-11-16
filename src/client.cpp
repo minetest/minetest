@@ -2894,13 +2894,16 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	// ought to have
 	m_media_name_sha1_map.clear();
 
+	bool no_output = device->getVideoDriver()->getDriverType() == video::EDT_NULL;
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	m_tsrc->rebuildImagesAndTextures();
+	if (!no_output)
+		m_tsrc->rebuildImagesAndTextures();
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
-	m_shsrc->rebuildShaders();
+	if (!no_output)
+		m_shsrc->rebuildShaders();
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
@@ -2908,10 +2911,11 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 
 	// Update node textures
 	infostream<<"- Updating node textures"<<std::endl;
-	m_nodedef->updateTextures(m_tsrc);
+	if (!no_output)
+		m_nodedef->updateTextures(m_tsrc);
 
 	// Preload item textures and meshes if configured to
-	if(g_settings->getBool("preload_item_visuals"))
+	if(!no_output && g_settings->getBool("preload_item_visuals"))
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
 		wchar_t* text = wgettext("Item textures...");
@@ -2935,7 +2939,8 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
-	m_mesh_update_thread.Start();
+	if (!no_output)
+		m_mesh_update_thread.Start();
 	
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 }

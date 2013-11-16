@@ -92,8 +92,8 @@ public:
 	void resolveNodeNames(INodeDefManager *ndef);
 	u8 getBiomeIdByName(const char *name);
 	
-	s16 calcBlockHeat(v3s16 p, u64 seed, float timeofday, float totaltime);
-	s16 calcBlockHumidity(v3s16 p, u64 seed, float timeofday, float totaltime);
+	s16 calcBlockHeat(v3s16 p, u64 seed, float timeofday, float totaltime, bool use_weather = 1);
+	s16 calcBlockHumidity(v3s16 p, u64 seed, float timeofday, float totaltime, bool use_weather = 1);
 };
 
 #endif

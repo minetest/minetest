@@ -244,7 +244,7 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 					if (flooded && full_ymin < water_level && full_ymax > water_level) {
 						vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
 					} else if (flooded && full_ymax < water_level) {
-						vm->m_data[i] = (p.Y < startp.Y - 2) ? lavanode : airnode;
+						vm->m_data[i] = (p.Y < startp.Y - 2) ? (flooded_water ? waternode : lavanode) : airnode;
 					} else {
 						vm->m_data[i] = airnode;
 					}

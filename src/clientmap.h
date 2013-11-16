@@ -110,8 +110,10 @@ public:
 	virtual void render()
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		renderMap(driver, SceneManager->getSceneNodeRenderPass());
+		if (driver->getDriverType() != video::EDT_NULL) {
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+			renderMap(driver, SceneManager->getSceneNodeRenderPass());
+		}
 	}
 	
 	virtual const core::aabbox3d<f32>& getBoundingBox() const

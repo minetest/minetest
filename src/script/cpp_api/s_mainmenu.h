@@ -40,7 +40,7 @@ public:
 	void handleMainMenuEvent(std::string text);
 
 	/**
-	 * process field data recieved from formspec
+	 * process field data received from formspec
 	 * @param fields data in field format
 	 */
 	void handleMainMenuButtons(std::map<std::string, std::string> fields);

@@ -40,6 +40,7 @@ public:
 	bool large_cave;
 	bool large_cave_is_flat;
 	bool flooded;
+	bool flooded_water; // for indev
 
 	s16 max_stone_y;
 	v3s16 node_min;

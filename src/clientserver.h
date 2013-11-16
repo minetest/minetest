@@ -95,7 +95,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		TOCLIENT_BREATH
 		TOSERVER_BREATH
 		range added to ItemDefinition
-		drowning, leveled and liquid_range added to ContentFeatures
+		drowning, leveled added to ContentFeatures
 		stepheight and collideWithObjects added to object properties
 		version, heat and humidity transfer in MapBock
 		automatic_face_movement_dir and automatic_face_movement_dir_offset
