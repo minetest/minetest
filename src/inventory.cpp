@@ -957,6 +957,9 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 	}
 	else
 	{
+		//don't create list with invalid name
+		if (name.find(" ") != std::string::npos) return NULL;
+
 		InventoryList *list = new InventoryList(name, size, m_itemdef);
 		m_lists.push_back(list);
 		return list;
