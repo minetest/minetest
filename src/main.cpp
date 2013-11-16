@@ -275,30 +275,20 @@ public:
 			}
 			else
 			{
-				left_active = event.MouseInput.isLeftPressed();
+				  left_active = event.MouseInput.isLeftPressed();
 				middle_active = event.MouseInput.isMiddlePressed();
-				right_active = event.MouseInput.isRightPressed();
+				 right_active = event.MouseInput.isRightPressed();
 
 				if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-				{
 					leftclicked = true;
-				}
 				if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-				{
 					rightclicked = true;
-				}
 				if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-				{
 					leftreleased = true;
-				}
 				if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-				{
 					rightreleased = true;
-				}
 				if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
-				{
 					mouse_wheel += event.MouseInput.Wheel;
-				}
 			}
 		}
 
@@ -646,9 +636,8 @@ void SpeedTests()
 			tempstring = "";
 			tempstring2 = "";
 			const u32 ii = 10;
-			for(u32 i=0; i<ii; i++){
+			for(u32 i=0; i<ii; i++)
 				tempstring2 += "asd";
-			}
 			for(u32 i=0; i<ii+1; i++){
 				tempstring += "asd";
 				if(tempstring == tempstring2)
@@ -693,9 +682,8 @@ void SpeedTests()
 			}
 		}
 		for(s16 y=ii-1; y>=0; y--){
-			for(s16 x=0; x<ii; x++){
+			for(s16 x=0; x<ii; x++)
 				tempf = map1[v2s16(x,y)];
-			}
 		}
 	}
 
@@ -818,9 +806,7 @@ int main(int argc, char *argv[])
 		{
 			std::ostringstream os1(std::ios::binary);
 			os1<<"  --"<<i->first;
-			if(i->second.type == VALUETYPE_FLAG)
-				{}
-			else
+			if(!(i->second.type == VALUETYPE_FLAG))
 				os1<<_(" <value>");
 			dstream<<padStringRight(os1.str(), 24);
 
