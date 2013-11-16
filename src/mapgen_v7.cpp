@@ -180,7 +180,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	c_sand            = ndef->getId("mapgen_sand");
 	c_water_source    = ndef->getId("mapgen_water_source");
 	c_lava_source     = ndef->getId("mapgen_lava_source");
-	c_ice             = ndef->getId("default:ice");
+	c_ice             = ndef->getId("mapgen_ice");
 	if (c_ice == CONTENT_IGNORE)
 		c_ice = CONTENT_AIR;
 	
