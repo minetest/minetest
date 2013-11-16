@@ -405,7 +405,7 @@ public:
 	MapBlock * emergeBlock(v3s16 p, bool create_blank=true);
 
 	// Helper for placing objects on ground level
-	s16 findGroundLevel(v2s16 p2d);
+	s16 findGroundLevel(v2s16 p2d, bool cacheBlocks);
 
 	/*
 		Misc. helper functions for fiddling with directory and file
