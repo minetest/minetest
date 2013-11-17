@@ -429,6 +429,8 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	if (!block || block->isDummy() || !block->isGenerated()) {
 		EMERGE_DBG_OUT("not in memory, attempting to load from disk");
 		block = map->loadBlock(p);
+		if (block && block->isGenerated())
+			map->prepareBlock(block);
 	}
 
 	// If could not load and allowed to generate,
