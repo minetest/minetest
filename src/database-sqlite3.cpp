@@ -208,93 +208,104 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 MapBlock* Database_SQLite3::loadBlock(v3s16 blockpos)
 {
 	v2s16 p2d(blockpos.X, blockpos.Z);
-        verifyDatabase();
-        
-        if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
-                infostream<<"WARNING: Could not bind block position for load: "
-                        <<sqlite3_errmsg(m_database)<<std::endl;
-        if(sqlite3_step(m_database_read) == SQLITE_ROW) {
-                /*
-                        Make sure sector is loaded
-                */
-                MapSector *sector = srvmap->createSector(p2d);
-                
-                /*
-                        Load block
-                */
-                const char * data = (const char *)sqlite3_column_blob(m_database_read, 0);
-                size_t len = sqlite3_column_bytes(m_database_read, 0);
-                
-                std::string datastr(data, len);
-                
-//                srvmap->loadBlock(&datastr, blockpos, sector, false);
+	verifyDatabase();
+
+	if (sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK) {
+		infostream << "WARNING: Could not bind block position for load: "
+			<< sqlite3_errmsg(m_database)<<std::endl;
+	}
+
+	if (sqlite3_step(m_database_read) == SQLITE_ROW) {
+		/*
+			Make sure sector is loaded
+		*/
+		MapSector *sector = srvmap->createSector(p2d);
+
+		/*
+			Load block
+		*/
+		const char *data = (const char *)sqlite3_column_blob(m_database_read, 0);
+		size_t len = sqlite3_column_bytes(m_database_read, 0);
+		if (data == NULL || len == 0) {
+			errorstream << "Blank block data in database (data == NULL || len"
+				" == 0) (" << blockpos.X << "," << blockpos.Y << ","
+				<< blockpos.Z << ")" << std::endl;
+
+			if (g_settings->getBool("ignore_world_load_errors")) {
+				errorstream << "Ignoring block load error. Duck and cover! "
+					<< "(ignore_world_load_errors)" << std::endl;
+			} else {
+				throw SerializationError("Blank block data in database");
+			}
+		}
+
+		std::string datastr(data, len);
+
+		//srvmap->loadBlock(&datastr, blockpos, sector, false);
 
 		try {
-                	std::istringstream is(datastr, std::ios_base::binary);
-                     
-                   	u8 version = SER_FMT_VER_INVALID;
-                     	is.read((char*)&version, 1);
+			std::istringstream is(datastr, std::ios_base::binary);
 
-                     	if(is.fail())
-                             	throw SerializationError("ServerMap::loadBlock(): Failed"
-                                	             " to read MapBlock version");
+			u8 version = SER_FMT_VER_INVALID;
+			is.read((char*)&version, 1);
 
-                     	MapBlock *block = NULL;
-                     	bool created_new = false;
-                     	block = sector->getBlockNoCreateNoEx(blockpos.Y);
-                     	if(block == NULL)
-                     	{
-                             	block = sector->createBlankBlockNoInsert(blockpos.Y);
-                             	created_new = true;
-                     	}
-                     
-                     	// Read basic data
-                     	block->deSerialize(is, version, true);
-                     
-                     	// If it's a new block, insert it to the map
-                     	if(created_new)
-                             	sector->insertBlock(block);
-                     
-                     	/*
-                             	Save blocks loaded in old format in new format
-                     	*/
+			if (is.fail())
+				throw SerializationError("ServerMap::loadBlock(): Failed"
+					 " to read MapBlock version");
 
-                     	//if(version < SER_FMT_VER_HIGHEST || save_after_load)
-                     	// Only save if asked to; no need to update version
-                     	//if(save_after_load)
-                        //     	saveBlock(block);
-                     
-                     	// We just loaded it from, so it's up-to-date.
-                     	block->resetModified();
+			MapBlock *block = NULL;
+			bool created_new = false;
+			block = sector->getBlockNoCreateNoEx(blockpos.Y);
+			if (block == NULL)
+			{
+				block = sector->createBlankBlockNoInsert(blockpos.Y);
+				created_new = true;
+			}
 
-             	}
-             	catch(SerializationError &e)
-             	{
-                     	errorstream<<"Invalid block data in database"
-                                     <<" ("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
-                                     <<" (SerializationError): "<<e.what()<<std::endl;
-                     
-                     // TODO: Block should be marked as invalid in memory so that it is
-                     // not touched but the game can run
+			// Read basic data
+			block->deSerialize(is, version, true);
 
-                     	if(g_settings->getBool("ignore_world_load_errors")){
-                             errorstream<<"Ignoring block load error. Duck and cover! "
-                                             <<"(ignore_world_load_errors)"<<std::endl;
-                     	} else {
-                             throw SerializationError("Invalid block data in database");
-                             //assert(0);
-                     	}
-             	}
+			// If it's a new block, insert it to the map
+			if (created_new)
+				sector->insertBlock(block);
 
+			/*
+				Save blocks loaded in old format in new format
+			*/
+			//if(version < SER_FMT_VER_HIGHEST || save_after_load)
+			// Only save if asked to; no need to update version
+			//if(save_after_load)
+			//     	saveBlock(block);
 
-                sqlite3_step(m_database_read);
-                // We should never get more than 1 row, so ok to reset
-                sqlite3_reset(m_database_read);
+			// We just loaded it from, so it's up-to-date.
+			block->resetModified();
+		}
+		catch(SerializationError &e)
+		{
+			errorstream << "Invalid block data in database"
+				<< " (" << blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")"
+				<< " (SerializationError): " << e.what() << std::endl;
 
-                return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
-        }
-        sqlite3_reset(m_database_read);
-	return(NULL);
+			// TODO: Block should be marked as invalid in memory so that it is
+			// not touched but the game can run
+
+			if (g_settings->getBool("ignore_world_load_errors")) {
+				errorstream << "Ignoring block load error. Duck and cover! "
+					<< "(ignore_world_load_errors)" << std::endl;
+			} else {
+				throw SerializationError("Invalid block data in database");
+				//assert(0);
+			}
+		}
+
+		sqlite3_step(m_database_read);
+		// We should never get more than 1 row, so ok to reset
+		sqlite3_reset(m_database_read);
+
+		return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
+	}
+	sqlite3_reset(m_database_read);
+	return NULL;
 }
 
 void Database_SQLite3::createDatabase()
