@@ -53,7 +53,9 @@ end)
 function minetest.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
-		table.insert(temp_table, value)
+		if value:is_player_connected() then
+			table.insert(temp_table, value)
+		end
 	end
 	return temp_table
 end
