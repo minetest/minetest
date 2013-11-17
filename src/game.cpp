@@ -805,13 +805,38 @@ public:
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
 		
+		float time_of_day_f = m_client->getEnv().getTimeOfDayF();
+		services->setPixelShaderConstant("timeOfDay", &time_of_day_f, 1);
+		services->setVertexShaderConstant("timeOfDay", &time_of_day_f, 1);
+
+		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
+		v3f eye_position = player->getEyePosition(); 
+		services->setPixelShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
+		services->setVertexShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
+
+		float enable_bumpmapping = 0;
+		if (g_settings->getBool("enable_bumpmapping"))
+			enable_bumpmapping = 1;
+		services->setPixelShaderConstant("enableBumpmapping", &enable_bumpmapping, 1);
+
+		float parallax_mapping_mode = g_settings->getFloat("parallax_mapping_mode");
+		services->setPixelShaderConstant("parallaxMappingMode", &parallax_mapping_mode, 1);
+		if (parallax_mapping_mode > 0){
+			float parallax_mapping_scale = g_settings->getFloat("parallax_mapping_scale");
+			services->setPixelShaderConstant("parallaxMappingScale", &parallax_mapping_scale, 1);
+			float parallax_mapping_bias = g_settings->getFloat("parallax_mapping_bias");
+			services->setPixelShaderConstant("parallaxMappingBias", &parallax_mapping_bias, 1);
+		}
 		// Normal map texture layer
-		int layer = 1;
+		int layer1 = 1;
+		int layer2 = 2;
 		// before 1.8 there isn't a "integer interface", only float
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
+		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer1, 1);
+		services->setPixelShaderConstant("useNormalmap" , (irr::f32*)&layer2, 1);
 #else
-		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer, 1);
+		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer1, 1);
+		services->setPixelShaderConstant("useNormalmap" , (irr::s32*)&layer2, 1);
 #endif
 	}
 };

@@ -127,6 +127,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_bumpmapping", "false");
+	settings->setDefault("parallax_mapping_mode", "0");
+	settings->setDefault("parallax_mapping_scale", "0.08");
+	settings->setDefault("parallax_mapping_bias", "0.04");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
