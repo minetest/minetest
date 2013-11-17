@@ -1111,16 +1111,19 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	bool enable_shaders = g_settings->getBool("enable_shaders");
-	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
-			getShader("test_shader_1").material;
-	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
-			getShader("test_shader_2").material;
-	video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
-			getShader("test_shader_3").material;
-	video::E_MATERIAL_TYPE bumpmaps1 = m_gamedef->getShaderSource()->
-			getShader("bumpmaps_solids").material;
-	video::E_MATERIAL_TYPE bumpmaps2 = m_gamedef->getShaderSource()->
-			getShader("bumpmaps_liquids").material;
+
+	if (enable_shaders) {
+		video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
+				getShader("test_shader_1").material;
+		video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
+				getShader("test_shader_2").material;
+		video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
+				getShader("test_shader_3").material;
+		video::E_MATERIAL_TYPE bumpmaps1 = m_gamedef->getShaderSource()->
+				getShader("bumpmaps_solids").material;
+		video::E_MATERIAL_TYPE bumpmaps2 = m_gamedef->getShaderSource()->
+				getShader("bumpmaps_liquids").material;
+	}
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
