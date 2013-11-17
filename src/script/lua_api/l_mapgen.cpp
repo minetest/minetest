@@ -522,11 +522,11 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	if (!read_schematic(L, 2, &dschem, getServer(L)))
 		return 0;
 		
-	Rotation rot = ROTATE_0;
+	int rot = ROTATE_0;
 	if (lua_isstring(L, 3))
-		string_to_enum(es_Rotation, (int &)rot, std::string(lua_tostring(L, 3)));
+		string_to_enum(es_Rotation, rot, std::string(lua_tostring(L, 3)));
 		
-	dschem.rotation = rot;
+	dschem.rotation = (Rotation)rot;
 
 	if (lua_istable(L, 4)) {
 		int index = 4;
