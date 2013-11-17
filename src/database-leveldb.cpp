@@ -92,68 +92,81 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string datastr;
-	leveldb::Status s = m_database->Get(leveldb::ReadOptions(), i64tos(getBlockAsInteger(blockpos)), &datastr);
+	leveldb::Status s = m_database->Get(leveldb::ReadOptions(),
+		i64tos(getBlockAsInteger(blockpos)), &datastr);
+	if (datastr.length() == 0) {
+		errorstream << "Blank block data in database (datastr.length() == 0) ("
+			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
 
-        if(s.ok()) {
-                /*
-                        Make sure sector is loaded
-                */
-                MapSector *sector = srvmap->createSector(p2d);
+		if (g_settings->getBool("ignore_world_load_errors")) {
+			errorstream << "Ignoring block load error. Duck and cover! "
+				<< "(ignore_world_load_errors)" << std::endl;
+		} else {
+			throw SerializationError("Blank block data in database");
+		}
+	}
+
+	if (s.ok()) {
+		/*
+			Make sure sector is loaded
+		*/
+		MapSector *sector = srvmap->createSector(p2d);
 
 		try {
-                	std::istringstream is(datastr, std::ios_base::binary);
-                   	u8 version = SER_FMT_VER_INVALID;
-                     	is.read((char*)&version, 1);
+			std::istringstream is(datastr, std::ios_base::binary);
+			u8 version = SER_FMT_VER_INVALID;
+			is.read((char *)&version, 1);
 
-                     	if(is.fail())
-                             	throw SerializationError("ServerMap::loadBlock(): Failed"
-                                	             " to read MapBlock version");
+			if (is.fail())
+				throw SerializationError("ServerMap::loadBlock(): Failed"
+					" to read MapBlock version");
 
-                     	MapBlock *block = NULL;
-                     	bool created_new = false;
-                     	block = sector->getBlockNoCreateNoEx(blockpos.Y);
-                     	if(block == NULL)
-                     	{
-                             	block = sector->createBlankBlockNoInsert(blockpos.Y);
-                             	created_new = true;
-                     	}
-                     	// Read basic data
-                     	block->deSerialize(is, version, true);
-                     	// If it's a new block, insert it to the map
-                     	if(created_new)
-                             	sector->insertBlock(block);
-                     	/*
-                             	Save blocks loaded in old format in new format
-                     	*/
+			MapBlock *block = NULL;
+			bool created_new = false;
+			block = sector->getBlockNoCreateNoEx(blockpos.Y);
+			if (block == NULL)
+			{
+				block = sector->createBlankBlockNoInsert(blockpos.Y);
+				created_new = true;
+			}
 
-                     	//if(version < SER_FMT_VER_HIGHEST || save_after_load)
-                     	// Only save if asked to; no need to update version
-                     	//if(save_after_load)
-                        //     	saveBlock(block);
-                     	// We just loaded it from, so it's up-to-date.
-                     	block->resetModified();
+			// Read basic data
+			block->deSerialize(is, version, true);
 
-             	}
-             	catch(SerializationError &e)
-             	{
-                     	errorstream<<"Invalid block data in database"
-                                     <<" ("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
-                                     <<" (SerializationError): "<<e.what()<<std::endl;
-                     // TODO: Block should be marked as invalid in memory so that it is
-                     // not touched but the game can run
+			// If it's a new block, insert it to the map
+			if (created_new)
+				sector->insertBlock(block);
 
-                     	if(g_settings->getBool("ignore_world_load_errors")){
-                             errorstream<<"Ignoring block load error. Duck and cover! "
-                                             <<"(ignore_world_load_errors)"<<std::endl;
-                     	} else {
-                             throw SerializationError("Invalid block data in database");
-                             //assert(0);
-                     	}
-             	}
+			/*
+				Save blocks loaded in old format in new format
+			*/
+			//if(version < SER_FMT_VER_HIGHEST || save_after_load)
+			// Only save if asked to; no need to update version
+			//if(save_after_load)
+			//     	saveBlock(block);
+			// We just loaded it from, so it's up-to-date.
+			block->resetModified();
+		}
+		catch (SerializationError &e)
+		{
+			errorstream << "Invalid block data in database"
+				<< " (" << blockpos.X << "," << blockpos.Y << "," << blockpos.Z
+				<< ") (SerializationError): " << e.what() << std::endl;
+			// TODO: Block should be marked as invalid in memory so that it is
+			// not touched but the game can run
 
-                return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
-        }
-	return(NULL);
+			if (g_settings->getBool("ignore_world_load_errors")) {
+				errorstream << "Ignoring block load error. Duck and cover! "
+					<< "(ignore_world_load_errors)" << std::endl;
+			} else {
+				throw SerializationError("Invalid block data in database");
+				//assert(0);
+			}
+		}
+
+		return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
+	}
+	return NULL;
 }
 
 void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)

@@ -247,7 +247,7 @@ MapBlock* Database_SQLite3::loadBlock(v3s16 blockpos)
 			std::istringstream is(datastr, std::ios_base::binary);
 
 			u8 version = SER_FMT_VER_INVALID;
-			is.read((char*)&version, 1);
+			is.read((char *)&version, 1);
 
 			if (is.fail())
 				throw SerializationError("ServerMap::loadBlock(): Failed"
@@ -280,7 +280,7 @@ MapBlock* Database_SQLite3::loadBlock(v3s16 blockpos)
 			// We just loaded it from, so it's up-to-date.
 			block->resetModified();
 		}
-		catch(SerializationError &e)
+		catch (SerializationError &e)
 		{
 			errorstream << "Invalid block data in database"
 				<< " (" << blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")"
