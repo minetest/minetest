@@ -267,7 +267,7 @@ function modmgr.tab()
 		end
 		
 		retval = retval 
-				.. "image[5.5,0;3,2;" .. modscreenshot .. "]"
+				.. "image[5.5,0;3,2;" .. engine.formspec_escape(modscreenshot) .. "]"
 				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
 				
 		local descriptionlines = nil
