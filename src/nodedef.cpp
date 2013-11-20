@@ -617,6 +617,12 @@ public:
 			}
 
 			bool is_liquid = false;
+			u8 material_type;
+			if (is_liquid)
+				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
+			else
+				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+
 			switch(f->drawtype){
 			default:
 			case NDT_NORMAL:
@@ -661,6 +667,7 @@ public:
 					f->drawtype = NDT_ALLFACES;
 					f->solidness = 0;
 					f->visual_solidness = 1;
+					material_type = TILE_MATERIAL_LEAVES;
 				} else {
 					f->drawtype = NDT_NORMAL;
 					f->solidness = 2;
@@ -672,6 +679,7 @@ public:
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
+				material_type = TILE_MATERIAL_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
@@ -681,12 +689,6 @@ public:
 				f->solidness = 0;
 				break;
 			}
-
-			u8 material_type;
-			if (is_liquid)
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			else
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){

@@ -1112,14 +1112,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	bool enable_shaders     = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 
-	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3;
-	shadermat1 = shadermat2 = shadermat3 = video::EMT_SOLID;
+	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
+							shadermat4, shadermat5;
+	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 = 
+		video::EMT_SOLID;
 
 	if (enable_shaders) {
 		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
 		shadermat1 = shdrsrc->getShader("solids_shader").material;
 		shadermat2 = shdrsrc->getShader("liquids_shader").material;
 		shadermat3 = shdrsrc->getShader("alpha_shader").material;
+		shadermat4 = shdrsrc->getShader("leaves_shader").material;
+		shadermat5 = shdrsrc->getShader("plants_shader").material;
 	}
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
@@ -1182,8 +1186,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				finalColorBlend(vc, day, night, 1000);
 				if(day != night)
 					m_daynight_diffs[i][j] = std::make_pair(day, night);
-				// Brighten topside (no shaders)
-				if(p.vertices[j].Normal.Y > 0.5)
+				// Brighten topside (no shaders), exclude liquids
+				if((p.vertices[j].Normal.Y > 0.5 ) && (p.tile.material_type < 2 ))
 				{
 					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
 					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
@@ -1200,7 +1204,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture);
 
 		if (enable_shaders) {
@@ -1223,7 +1227,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 					material.setTexture(2, tsrc->getTexture("enable_img.png"));
 				}
 			}
-			p.tile.applyMaterialOptionsWithShaders(material, shadermat1, shadermat2, shadermat3);
+			p.tile.applyMaterialOptionsWithShaders(material,
+				shadermat1, shadermat2, shadermat3, shadermat4, shadermat5);
 		} else {
 			p.tile.applyMaterialOptions(material);
 		}
@@ -1392,13 +1397,13 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
-				// Brighten topside (no shaders)
-				if(vertices[vertexIndex].Normal.Y > 0.5)
+				// Brighten topside (no shaders), exclude liquids
+				if((vertices[vertexIndex].Normal.Y > 0.5) )
 				{
 					video::SColor &vc = vertices[vertexIndex].Color;
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.8, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.8, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.8, 255.0));
 				}
 			}
 		}
