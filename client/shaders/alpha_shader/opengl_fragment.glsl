@@ -55,7 +55,7 @@ void main (void)
 	}
 
 	if ((enable_bumpmapping == 1.0) && (use_normalmap > 0.0)) {
-		vec3 base = texture2D(baseTexture, uv);
+		vec3 base = texture2D(baseTexture, uv).rgb;
 		vec3 vVec = normalize(eyeVec);
 		vec3 bump = normalize(texture2D(normalTexture, uv).xyz * 2.0 - 1.0);
 		vec3 R = reflect(-vVec, bump);
