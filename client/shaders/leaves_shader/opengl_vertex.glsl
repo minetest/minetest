@@ -10,18 +10,25 @@ varying vec3 vPosition;
 varying vec3 eyeVec;
 varying vec3 tsEyeVec;
 
+float smoothCurve( float x ) {  
+  return x * x *( 3.0 - 2.0 * x );  
+}  
+float triangleWave( float x ) {  
+  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );  
+}  
+float smoothTriangleWave( float x ) {  
+  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;  
+} 
+
 void main(void)
 {
-	float wavelength = 40.0;
-	float waveheight = 0.5;
-	float wavespeed = 50.0;
-	vec4 pos2 = gl_Vertex;
-	float sin1 = sin (pos2.z/wavelength + timeOfDay * wavespeed * wavelength) * waveheight;
-	float sin2 = sin ((pos2.z/wavelength + timeOfDay * wavespeed * wavelength)/7) * waveheight;
-	pos2.y -= (sin1+sin2); 
-	pos2.x -= (sin1);
-	pos2.z -= (sin1);
-	gl_Position = mWorldViewProj * pos2;
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	vec4 pos = gl_Vertex;
+	vec4 pos2 = mTransWorld*gl_Vertex;
+	pos.x += (smoothTriangleWave(timeOfDay*100 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
+	pos.y += (smoothTriangleWave(timeOfDay*150 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
+	pos.z += (smoothTriangleWave(timeOfDay*100 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
+	gl_Position = mWorldViewProj * pos;
 
 	//gl_Position = mWorldViewProj * gl_Vertex;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;

@@ -618,10 +618,7 @@ public:
 
 			bool is_liquid = false;
 			u8 material_type;
-			if (is_liquid)
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			else
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+			material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			switch(f->drawtype){
 			default:
@@ -689,6 +686,9 @@ public:
 				f->solidness = 0;
 				break;
 			}
+
+			if (is_liquid)
+				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
