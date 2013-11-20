@@ -25,9 +25,9 @@ void main(void)
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	vec4 pos = gl_Vertex;
 	vec4 pos2 = mTransWorld*gl_Vertex;
-	pos.x += (smoothTriangleWave(timeOfDay*100 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
-	pos.y += (smoothTriangleWave(timeOfDay*150 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
-	pos.z += (smoothTriangleWave(timeOfDay*100 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
+	pos.x += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
+	pos.y += (smoothTriangleWave(timeOfDay*150.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
+	pos.z += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
 	gl_Position = mWorldViewProj * pos;
 
 	//gl_Position = mWorldViewProj * gl_Vertex;

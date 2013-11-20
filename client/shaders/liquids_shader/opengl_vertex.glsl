@@ -77,9 +77,9 @@ void main(void)
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
 	rg += max(0.0, (1.0 - abs(rg - 0.85)/0.15) * 0.065);
 
-	color.r = rg;
-	color.g = rg;
-	color.b = b;
+	color.r = clamp(rg,0.0,1.0);
+	color.g = clamp(rg,0.0,1.0);
+	color.b = clamp(b,0.0,1.0);
 	color.a = gl_Color.a;
 
 	gl_FrontColor = gl_BackColor = color;
