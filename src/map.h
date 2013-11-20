@@ -307,7 +307,22 @@ public:
 	*/
 
 	NodeMetadata* getNodeMetadata(v3s16 p);
-	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
+
+	/**
+	 * Sets metadata for a node.
+	 * This method sets the metadata for a given node.
+	 * On success, it returns @c true and the object pointed to
+	 * by @p meta is then managed by the system and should
+	 * not be deleted by the caller.
+	 *
+	 * In case of failure, the method returns @c false and the
+	 * caller is still responsible for deleting the object!
+	 *
+	 * @param p node coordinates
+	 * @param meta pointer to @c NodeMetadata object
+	 * @return @c true on success, false on failure
+	 */
+	bool setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
 
 	/*

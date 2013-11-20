@@ -39,6 +39,19 @@ private:
 
 	static NodeMetaRef *checkobject(lua_State *L, int narg);
 
+	/**
+	 * Retrieve metadata for a node.
+	 * If @p auto_create is set and the specified node has no metadata information
+	 * associated with it yet, the method attempts to attach a new metadata object
+	 * to the node and returns a pointer to the metadata when successful.
+	 *
+	 * However, it is NOT guaranteed that the method will return a pointer,
+	 * and @c NULL may be returned in case of an error regardless of @p auto_create.
+	 *
+	 * @param ref specifies the node for which the associated metadata is retrieved.
+	 * @param auto_create when true, try to create metadata information for the node if it has none.
+	 * @return pointer to a @c NodeMetadata object or @c NULL in case of error.
+	 */
 	static NodeMetadata* getmeta(NodeMetaRef *ref, bool auto_create);
 
 	static void reportMetadataChange(NodeMetaRef *ref);
