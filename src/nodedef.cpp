@@ -602,6 +602,9 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
+		bool waving_plants = g_settings->getBool("waving_plants");
+		bool waving_leaves = g_settings->getBool("waving_leaves");
+		
 
 		for(u32 i=0; i<m_content_features.size(); i++)
 		{
@@ -664,7 +667,6 @@ public:
 					f->drawtype = NDT_ALLFACES;
 					f->solidness = 0;
 					f->visual_solidness = 1;
-					material_type = TILE_MATERIAL_LEAVES;
 				} else {
 					f->drawtype = NDT_NORMAL;
 					f->solidness = 2;
@@ -672,11 +674,14 @@ public:
 						tiledef[i].name += std::string("^[noalpha");
 					}
 				}
+				if (f->param_type_2 == CPT2_WAVING)
+					material_type = TILE_MATERIAL_LEAVES;
 				break;
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
-				material_type = TILE_MATERIAL_PLANTS;
+				if (f->param_type_2 == CPT2_WAVING)
+					material_type = TILE_MATERIAL_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:

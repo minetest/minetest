@@ -130,6 +130,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("parallax_mapping_mode", "0");
 	settings->setDefault("parallax_mapping_scale", "0.08");
 	settings->setDefault("parallax_mapping_bias", "0.04");
+	settings->setDefault("waving_water", "false");
+	settings->setDefault("waving_leaves", "false");
+	settings->setDefault("waving_plants", "false");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");

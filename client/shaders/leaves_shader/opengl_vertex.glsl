@@ -8,7 +8,6 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
-varying vec3 tsEyeVec;
 
 float smoothCurve( float x ) {  
   return x * x *( 3.0 - 2.0 * x );  
@@ -33,42 +32,8 @@ void main(void)
 	//gl_Position = mWorldViewProj * gl_Vertex;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 
-	vec3 normal,tangent,binormal; 
-	normal = normalize(gl_NormalMatrix * gl_Normal);
-
-	if (gl_Normal.x > 0.5) {
-		//  1.0,  0.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 0.0,  0.0, -1.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.x < -0.5) {
-		// -1.0,  0.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.y > 0.5) {
-		//  0.0,  1.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-	} else if (gl_Normal.y < -0.5) {
-		//  0.0, -1.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-	} else if (gl_Normal.z > 0.5) {
-		//  0.0,  0.0,  1.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.z < -0.5) {
-		//  0.0,  0.0, -1.0
-		tangent  = normalize(gl_NormalMatrix * vec3(-1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	}
-	
-	mat3 tbnMatrix = mat3(tangent.x, binormal.x, normal.x,
-                          tangent.y, binormal.y, normal.y,
-                          tangent.z, binormal.z, normal.z);
-
 	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
-	tsEyeVec = normalize(eyeVec * tbnMatrix);
-	
+
 	vec4 color;
 	//color = vec4(1.0, 1.0, 1.0, 1.0);
 

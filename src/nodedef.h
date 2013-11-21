@@ -58,6 +58,8 @@ enum ContentParamType2
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
+	// 
+	CPT2_WAVING,
 };
 
 enum LiquidType
@@ -183,6 +185,7 @@ struct ContentFeatures
 	// Visual definition
 	enum NodeDrawType drawtype;
 	float visual_scale; // Misc. scale parameter
+	bool waving; // used for waving leaves and plants
 	TileDef tiledef[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
 	u8 alpha;

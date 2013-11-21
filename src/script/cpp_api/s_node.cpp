@@ -53,6 +53,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_FACEDIR, "facedir"},
 		{CPT2_WALLMOUNTED, "wallmounted"},
 		{CPT2_LEVELED, "leveled"},
+		{CPT2_WAVING, "waving"},
 		{0, NULL},
 	};
 
