@@ -35,6 +35,7 @@ void main(void)
 		pos.y -= (smoothTriangleWave(timeOfDay * 100.0 + pos2.x * -0.5 + pos2.z * -0.5) * 2.0 - 1.0) * 0.4;          
 	}
 	gl_Position = mWorldViewProj * pos;
+	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 
 	vec3 normal,tangent,binormal; 
 	normal = normalize(gl_NormalMatrix * gl_Normal);
