@@ -3,9 +3,9 @@ uniform sampler2D normalTexture;
 uniform sampler2D useNormalmap;
 
 uniform float enableBumpmapping;
-uniform float parallaxMappingMode;
-uniform float parallaxMappingScale;
-uniform float parallaxMappingBias;
+uniform float enableParallaxOclussion;
+uniform float parallaxOclussionScale;
+uniform float parallaxOclussionBias;
 
 
 uniform vec4 skyBgColor;
@@ -29,14 +29,14 @@ void main (void)
 	float height;
 	vec2 tsEye = vec2(tsEyeVec.x,-tsEyeVec.y);
 	
-	if ((parallaxMappingMode == 1.0) && (use_normalmap > 0.0)) {
+	if ((enableParallaxOclussion == 1.0) && (use_normalmap > 0.0)) {
 		float map_height = texture2D(normalTexture, uv).a;
 			if (map_height < 1.0){
-				float height = parallaxMappingScale * map_height - parallaxMappingBias;
+				float height = parallaxOclussionScale * map_height - parallaxOclussionBias;
 				uv = uv + height * tsEye;
 			}
 	}
-
+/*
 	if ((parallaxMappingMode == 2.0) && (use_normalmap > 0.0)) {
 		const float numSteps = 40.0;
 		float height = 1.0;
@@ -53,6 +53,7 @@ void main (void)
 		}
 		}
 	}
+*/
 
 	if ((enable_bumpmapping == 1.0) && (use_normalmap > 0.0)) {
 		vec3 base = texture2D(baseTexture, uv).rgb;

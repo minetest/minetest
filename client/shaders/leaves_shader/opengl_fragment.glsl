@@ -3,9 +3,6 @@ uniform sampler2D normalTexture;
 uniform sampler2D useNormalmap;
 
 uniform float enableBumpmapping;
-uniform float parallaxMappingMode;
-uniform float parallaxMappingScale;
-uniform float parallaxMappingBias;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;

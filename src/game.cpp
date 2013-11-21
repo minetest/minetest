@@ -819,14 +819,39 @@ public:
 			enable_bumpmapping = 1;
 		services->setPixelShaderConstant("enableBumpmapping", &enable_bumpmapping, 1);
 
-		float parallax_mapping_mode = g_settings->getFloat("parallax_mapping_mode");
-		services->setPixelShaderConstant("parallaxMappingMode", &parallax_mapping_mode, 1);
-		if (parallax_mapping_mode > 0){
-			float parallax_mapping_scale = g_settings->getFloat("parallax_mapping_scale");
-			services->setPixelShaderConstant("parallaxMappingScale", &parallax_mapping_scale, 1);
-			float parallax_mapping_bias = g_settings->getFloat("parallax_mapping_bias");
-			services->setPixelShaderConstant("parallaxMappingBias", &parallax_mapping_bias, 1);
+		float enable_parallax_oclussion = 0;
+		if  (g_settings->getBool("enable_parallax_oclussion"));{
+			enable_parallax_oclussion = 1;
+			float parallax_oclussion_scale = g_settings->getFloat("parallax_oclussion_scale");
+			services->setPixelShaderConstant("parallaxOclussionScale", &parallax_oclussion_scale, 1);
+			float parallax_oclussion_bias = g_settings->getFloat("parallax_oclussion_bias");
+			services->setPixelShaderConstant("parallaxOclussionBias", &parallax_oclussion_bias, 1);
 		}
+		services->setPixelShaderConstant("enableParallaxOclussion", &enable_parallax_oclussion, 1);
+
+		float enable_waving_water = 0;
+		if (g_settings->getBool("enable_waving_water")){
+			enable_waving_water = 1;
+			float water_wave_height_f = g_settings->getFloat("water_wave_height");
+			services->setVertexShaderConstant("waterWaveHeight", &water_wave_height_f, 1);
+			float water_wave_length_f = g_settings->getFloat("water_wave_length");
+			services->setVertexShaderConstant("waterWaveLength", &water_wave_length_f, 1);
+			float water_wave_speed_f = g_settings->getFloat("water_wave_speed");
+			services->setVertexShaderConstant("waterWaveSpeed", &water_wave_speed_f, 1);
+		}
+		services->setVertexShaderConstant("enableWavingWater", &enable_waving_water, 1);
+
+		float enable_waving_leaves = 0;
+		if (g_settings->getBool("enable_waving_leaves"))
+			enable_waving_leaves = 1;
+		services->setVertexShaderConstant("enableWavingLeaves", &enable_waving_leaves, 1);
+
+		float enable_waving_plants = 0;
+		if (g_settings->getBool("enable_waving_plants"))
+			enable_waving_plants = 1;
+		services->setVertexShaderConstant("enableWavingPlants", &enable_waving_plants, 1);
+
+
 		// Normal map texture layer
 		int layer1 = 1;
 		int layer2 = 2;

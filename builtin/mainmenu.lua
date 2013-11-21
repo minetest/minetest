@@ -630,7 +630,7 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_opaque_water"] then
 		engine.setting_set("opaque_water", fields["cb_opaque_water"])
 	end
-	
+
 	if fields["cb_mipmapping"] then
 		engine.setting_set("mip_map", fields["cb_mipmapping"])
 	end
@@ -643,10 +643,7 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_trilinear"] then
 		engine.setting_set("trilinear_filter", fields["cb_trilinear"])
 	end
-			
-	if fields["cb_shaders"] then
-		engine.setting_set("enable_shaders", fields["cb_shaders"])
-	end
+
 	if fields["cb_pre_ivis"] then
 		engine.setting_set("preload_item_visuals", fields["cb_pre_ivis"])
 	end
@@ -655,6 +652,25 @@ function tabbuilder.handle_settings_buttons(fields)
 	end
 	if fields["cb_finite_liquid"] then
 		engine.setting_set("liquid_finite", fields["cb_finite_liquid"])
+	end
+
+	if fields["cb_shaders"] then
+		engine.setting_set("enable_shaders", fields["cb_shaders"])
+	end
+	if fields["cb_bumpmapping"] then
+		engine.setting_set("enable_bumpmapping", fields["cb_bumpmapping"])
+	end
+	if fields["cb_parallax"] then
+		engine.setting_set("enable_parallax_oclussion", fields["cb_parallax"])
+	end
+	if fields["cb_waving_water"] then
+		engine.setting_set("enable_waving_water", fields["cb_waving_water"])
+	end
+	if fields["cb_waving_leaves"] then
+		engine.setting_set("enable_waving_leaves", fields["cb_waving_leaves"])
+	end
+	if fields["cb_waving_plants"] then
+		engine.setting_set("enable_waving_plants", fields["cb_waving_plants"])
 	end
 
 	if fields["btn_change_keys"] ~= nil then
@@ -891,35 +907,50 @@ end
 
 --------------------------------------------------------------------------------
 function tabbuilder.tab_settings()
-	return	"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
-			"checkbox[1,0.75;cb_fancy_trees;".. fgettext("Fancy trees") .. ";" 
+	tab_string =
+			"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
+			"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";" 
 					.. dump(engine.setting_getbool("new_style_leaves")) .. "]"..
-			"checkbox[1,1.25;cb_smooth_lighting;".. fgettext("Smooth Lighting") 
+			"checkbox[1,0.5;cb_smooth_lighting;".. fgettext("Smooth Lighting") 
 					.. ";".. dump(engine.setting_getbool("smooth_lighting")) .. "]"..
-			"checkbox[1,1.75;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
+			"checkbox[1,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 					.. dump(engine.setting_getbool("enable_3d_clouds")) .. "]"..
-			"checkbox[1,2.25;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
+			"checkbox[1,1.5;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
 					.. dump(engine.setting_getbool("opaque_water")) .. "]"..
-			
-			"checkbox[4,0.75;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
-					.. dump(engine.setting_getbool("mip_map")) .. "]"..
-			"checkbox[4,1.25;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
-					.. dump(engine.setting_getbool("anisotropic_filter")) .. "]"..
-			"checkbox[4,1.75;cb_bilinear;".. fgettext("Bi-Linear Filtering") .. ";"
-					.. dump(engine.setting_getbool("bilinear_filter")) .. "]"..
-			"checkbox[4,2.25;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
-					.. dump(engine.setting_getbool("trilinear_filter")) .. "]"..
-			
-			"checkbox[7.5,0.75;cb_shaders;".. fgettext("Shaders") .. ";"
-					.. dump(engine.setting_getbool("enable_shaders")) .. "]"..
-			"checkbox[7.5,1.25;cb_pre_ivis;".. fgettext("Preload item visuals") .. ";"
+			"checkbox[1,2.0;cb_pre_ivis;".. fgettext("Preload item visuals") .. ";"
 					.. dump(engine.setting_getbool("preload_item_visuals"))	.. "]"..
-			"checkbox[7.5,1.75;cb_particles;".. fgettext("Enable Particles") .. ";"
+			"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 					.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
-			"checkbox[7.5,2.25;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
+			"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
 					.. dump(engine.setting_getbool("liquid_finite")) .. "]"..
-			
-			"button[1,4.25;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
+
+			"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
+					.. dump(engine.setting_getbool("mip_map")) .. "]"..
+			"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
+					.. dump(engine.setting_getbool("anisotropic_filter")) .. "]"..
+			"checkbox[4.5,1.0;cb_bilinear;".. fgettext("Bi-Linear Filtering") .. ";"
+					.. dump(engine.setting_getbool("bilinear_filter")) .. "]"..
+			"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
+					.. dump(engine.setting_getbool("trilinear_filter")) .. "]"..
+
+			"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
+					.. dump(engine.setting_getbool("enable_shaders")) .. "]"..
+			"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
+
+if engine.setting_getbool("enable_shaders") then
+	tab_string = tab_string ..
+			"checkbox[8,0.5;cb_bumpmapping;".. fgettext("Bumpmapping") .. ";"
+					.. dump(engine.setting_getbool("enable_bumpmapping")) .. "]"..
+			"checkbox[8,1.0;cb_parallax;".. fgettext("Parallax Oclussion") .. ";"
+					.. dump(engine.setting_getbool("enable_parallax_oclussion")) .. "]"..
+			"checkbox[8,1.5;cb_waving_water;".. fgettext("Waving Water") .. ";"
+					.. dump(engine.setting_getbool("enable_waving_water")) .. "]"..
+			"checkbox[8,2.0;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
+					.. dump(engine.setting_getbool("enable_waving_leaves")) .. "]"..
+			"checkbox[8,2.5;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
+					.. dump(engine.setting_getbool("enable_waving_plants")) .. "]"
+	end
+return tab_string
 end
 
 --------------------------------------------------------------------------------
