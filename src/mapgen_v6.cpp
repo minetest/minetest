@@ -149,8 +149,8 @@ bool MapgenV6::block_is_underground(u64 seed, v3s16 blockpos)
 
 float MapgenV6::baseTerrainLevel(float terrain_base, float terrain_higher,
 									float steepness, float height_select) {	
-	float base   = water_level + terrain_base;
-	float higher = water_level + terrain_higher;
+	float base   = 1 + terrain_base;
+	float higher = 1 + terrain_higher;
 
 	// Limit higher ground level to at least base
 	if(higher < base)
