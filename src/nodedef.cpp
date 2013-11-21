@@ -602,8 +602,8 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
-		bool waving_plants = g_settings->getBool("waving_plants");
-		bool waving_leaves = g_settings->getBool("waving_leaves");
+		bool waving_plants = g_settings->getBool("enable_waving_plants");
+		bool waving_leaves = g_settings->getBool("enable_waving_leaves");
 		
 
 		for(u32 i=0; i<m_content_features.size(); i++)
