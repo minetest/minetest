@@ -163,8 +163,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 		return 0;
 
 	u8 light;
-	light  = (getintfield_default(L, 4, "day",   0) & 0x0F);
-	light |= (getintfield_default(L, 4, "night", 0) & 0x0F) << 8;
+	light  = (getintfield_default(L, 2, "day",   0) & 0x0F);
+	light |= (getintfield_default(L, 2, "night", 0) & 0x0F) << 8;
 	
 	ManualMapVoxelManipulator *vm = o->vm;
 	
