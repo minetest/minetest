@@ -4,6 +4,7 @@ uniform mat4 mTransWorld;
 uniform float dayNightRatio;
 uniform float timeOfDay;
 
+uniform float enableWavingLeaves;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
@@ -22,14 +23,17 @@ float smoothTriangleWave( float x ) {
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	vec4 pos = gl_Vertex;
-	vec4 pos2 = mTransWorld*gl_Vertex;
-	pos.x += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
-	pos.y += (smoothTriangleWave(timeOfDay*150.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
-	pos.z += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
-	gl_Position = mWorldViewProj * pos;
+	if (enableWavingLeaves == 1.0){	
+		vec4 pos = gl_Vertex;
+		vec4 pos2 = mTransWorld*gl_Vertex;
+		pos.x += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
+		pos.y += (smoothTriangleWave(timeOfDay*150.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
+		pos.z += (smoothTriangleWave(timeOfDay*100.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
+		gl_Position = mWorldViewProj * pos;
+	}
+	else 
+		gl_Position = mWorldViewProj * gl_Vertex;
 
-	//gl_Position = mWorldViewProj * gl_Vertex;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 
 	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
