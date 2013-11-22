@@ -2297,12 +2297,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			switch (event.KeyInput.Key) {
 				case KEY_RETURN:
-					if (m_allowclose) {
-						acceptInput(true);
-						quitMenu();
-					}
-					else
-						current_keys_pending.key_enter = true;
+					current_keys_pending.key_enter = true;
 					break;
 				case KEY_UP:
 					current_keys_pending.key_up = true;
@@ -2316,7 +2311,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					assert("reached a source line that can't ever been reached" == 0);
 					break;
 			}
-			acceptInput();
+			if (current_keys_pending.key_enter && m_allowclose) {
+				acceptInput(true);
+				quitMenu();
+			}
+			else {
+				acceptInput();
+			}
 			return true;
 		}
 
