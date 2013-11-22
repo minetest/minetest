@@ -9,9 +9,7 @@ uniform float fogDistance;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
-varying vec3 tsEyeVec;
 varying vec3 eyeVec;
-varying vec4 vColor;
 
 const float e = 2.718281828459;
 

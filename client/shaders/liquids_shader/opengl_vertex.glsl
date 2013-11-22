@@ -21,11 +21,12 @@ void main(void)
 		vec4 pos2 = gl_Vertex;
 		pos2.y -= 3.0;
 		pos2.y -= sin (pos2.z/waterWaveLength + timeOfDay * waterWaveSpeed * waterWaveLength) * waterWaveHeight
-			+ sin ((pos2.z/waterWaveLength + timeOfDay * waterWaveSpeed * waterWaveLength)/7) * waterWaveHeight;
+			+ sin ((pos2.z/waterWaveLength + timeOfDay * waterWaveSpeed * waterWaveLength) / 7.0) * waterWaveHeight;
 		gl_Position = mWorldViewProj * pos2;
 	} else
 		gl_Position = mWorldViewProj * gl_Vertex;
 
+	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 
 	vec4 color;

@@ -10,11 +10,6 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
-varying vec3 tsEyeVec;
-
-varying vec3 vertexWorldPos;
-varying vec4 vertexViewPos;
-varying vec4 vertexProjPos;
 
 float smoothCurve( float x ) {  
   return x * x *( 3.0 - 2.0 * x );  
@@ -43,6 +38,7 @@ void main(void)
 		gl_Position = mWorldViewProj * gl_Vertex;
 
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
+	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
 
 	vec4 color;
 	//color = vec4(1.0, 1.0, 1.0, 1.0);
