@@ -778,7 +778,7 @@ function modmgr.handle_configure_world_buttons(fields)
 		end
 		
 		if not worldfile:write() then
-			minetest.log("error", "Failed to write world config file")
+			engine.log("error", "Failed to write world config file")
 		end
 		
 		modmgr.modlist = nil
@@ -932,7 +932,7 @@ function modmgr.preparemodlist(data)
 			if element ~= nil then
 				element.enabled = engine.is_yes(value)
 			else
-				minetest.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+				engine.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end
 		end
 	end
