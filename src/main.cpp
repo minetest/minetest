@@ -1253,7 +1253,7 @@ int main(int argc, char *argv[])
 				++count;
 				if (count % 500 == 0)
 					actionstream << "Migrated " << count << " blocks "
-						<< (100.0 * count / blocks.size()) << "\% completed" << std::endl;
+						<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
 			}
 			new_db->endSave();
 
