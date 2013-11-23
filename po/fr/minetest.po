@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-09-09 22:32+0200\n"
+"PO-Revision-Date: 2013-11-23 18:03+0200\n"
 "Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
@@ -77,7 +77,7 @@ msgstr "Nom du monde"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr ""
+msgstr "Graine"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -109,7 +109,7 @@ msgstr "Nom du monde manquant ou aucun jeu sélectionné"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Pour activer les Shaders le pilote OpenGL doit être utilisé."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -309,28 +309,24 @@ msgid "Installed Mods:"
 msgstr "Mods installés :"
 
 #: builtin/modmgr.lua:243
-#, fuzzy
 msgid "Add mod:"
-msgstr "<<-- Ajouter un mod"
+msgstr "Ajouter un mod :"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Local install"
-msgstr "Installer"
+msgstr "Installation locale"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Dépôt de mods en ligne"
 
 #: builtin/modmgr.lua:284
-#, fuzzy
 msgid "No mod description available"
-msgstr "Pas d'information disponible"
+msgstr "Pas de description disponible"
 
 #: builtin/modmgr.lua:288
-#, fuzzy
 msgid "Mod information:"
-msgstr "Pas d'information disponible"
+msgstr "Information du mod :"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -338,12 +334,11 @@ msgstr "Renommer"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Désinstaller le pack de mods sélectionné"
 
 #: builtin/modmgr.lua:312
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Supprimer le mod sélectionné"
+msgstr "Désinstaller le mod sélectionné"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
