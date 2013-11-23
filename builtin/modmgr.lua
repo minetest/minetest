@@ -318,7 +318,7 @@ end
 --------------------------------------------------------------------------------
 function modmgr.dialog_rename_modpack()
 
-	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
+	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	local retval = 
 		"label[1.75,1;".. fgettext("Rename Modpack:") .. "]"..
@@ -672,10 +672,13 @@ end
 function modmgr.handle_rename_modpack_buttons(fields)
 	
 	if fields["dlg_rename_modpack_confirm"] ~= nil then
-		local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
+		local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 		local oldpath = engine.get_modpath() .. DIR_DELIM .. mod.name
 		local targetpath = engine.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
 		engine.copy_dir(oldpath,targetpath,false)
+		modmgr.refresh_globals()
+		modmgr.selected_mod = filterlist.get_current_index(modmgr.global_mods,
+			filterlist.raw_index_by_uid(modmgr.global_mods, fields["te_modpack_name"]))
 	end
 	
 	return {
