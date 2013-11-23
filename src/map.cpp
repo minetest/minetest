@@ -931,7 +931,8 @@ void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
 /*
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		std::map<v3s16, MapBlock*> &modified_blocks)
+		std::map<v3s16, MapBlock*> &modified_blocks,
+		bool remove_metadata)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 
@@ -1018,8 +1019,9 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Remove node metadata
 	*/
-
-	removeNodeMetadata(p);
+	if (remove_metadata) {
+		removeNodeMetadata(p);
+	}
 
 	/*
 		Set the node on the map
@@ -1358,6 +1360,35 @@ bool Map::removeNodeWithEvent(v3s16 p)
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
+
+		// Copy modified_blocks to event
+		for(std::map<v3s16, MapBlock*>::iterator
+				i = modified_blocks.begin();
+				i != modified_blocks.end(); ++i)
+		{
+			event.modified_blocks.insert(i->first);
+		}
+	}
+	catch(InvalidPositionException &e){
+		succeeded = false;
+	}
+
+	dispatchEvent(&event);
+
+	return succeeded;
+}
+
+bool Map::swapNodeWithEvent(v3s16 p, MapNode n)
+{
+	MapEditEvent event;
+	event.type = MEET_SWAPNODE;
+	event.p = p;
+	event.n = n;
+
+	bool succeeded = true;
+	try{
+		std::map<v3s16, MapBlock*> modified_blocks;
+		addNodeAndUpdate(p, n, modified_blocks, false);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator

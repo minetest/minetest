@@ -366,6 +366,7 @@ public:
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
 	void addNode(v3s16 p, MapNode n);
+	void swapNode(v3s16 p, MapNode n);
 	
 	void setPlayerControl(PlayerControl &control);
 

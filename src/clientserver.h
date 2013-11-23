@@ -499,6 +499,13 @@ enum ToClientCommand
 		u16 command
 		u16 breath
 	*/
+	
+	TOCLIENT_SWAPNODE = 0x4f,
+	/*
+		u16 command
+		v3s16 position
+		serialized mapnode
+	*/
 };
 
 enum ToServerCommand
