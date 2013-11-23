@@ -931,7 +931,8 @@ void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
 /*
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		std::map<v3s16, MapBlock*> &modified_blocks)
+		std::map<v3s16, MapBlock*> &modified_blocks,
+		bool remove_metadata)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 
@@ -1018,8 +1019,9 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Remove node metadata
 	*/
-
-	removeNodeMetadata(p);
+	if (remove_metadata) {
+		removeNodeMetadata(p);
+	}
 
 	/*
 		Set the node on the map
@@ -1319,17 +1321,17 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 }
 
-bool Map::addNodeWithEvent(v3s16 p, MapNode n)
+bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 {
 	MapEditEvent event;
-	event.type = MEET_ADDNODE;
+	event.type = remove_metadata ? MEET_ADDNODE : MEET_SWAPNODE;
 	event.p = p;
 	event.n = n;
 
 	bool succeeded = true;
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks);
+		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator

@@ -1318,18 +1318,13 @@ minetest.register_node("default:furnace_active", {
 	end,
 })
 
-function hacky_swap_node(pos,name)
+function swap_node(pos,name)
 	local node = minetest.get_node(pos)
-	local meta = minetest.get_meta(pos)
-	local meta0 = meta:to_table()
 	if node.name == name then
 		return
 	end
 	node.name = name
-	local meta0 = meta:to_table()
-	minetest.set_node(pos,node)
-	meta = minetest.get_meta(pos)
-	meta:from_table(meta0)
+	minetest.swap_node(pos, node)
 end
 
 minetest.register_abm({
@@ -1384,7 +1379,7 @@ minetest.register_abm({
 			local percent = math.floor(meta:get_float("fuel_time") /
 					meta:get_float("fuel_totaltime") * 100)
 			meta:set_string("infotext","Furnace active: "..percent.."%")
-			hacky_swap_node(pos,"default:furnace_active")
+			swap_node(pos,"default:furnace_active")
 			meta:set_string("formspec",
 				"size[8,9]"..
 				"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
@@ -1410,7 +1405,7 @@ minetest.register_abm({
 
 		if fuel.time <= 0 then
 			meta:set_string("infotext","Furnace out of fuel")
-			hacky_swap_node(pos,"default:furnace")
+			swap_node(pos,"default:furnace")
 			meta:set_string("formspec", default.furnace_inactive_formspec)
 			return
 		end
@@ -1418,7 +1413,7 @@ minetest.register_abm({
 		if cooked.item:is_empty() then
 			if was_active then
 				meta:set_string("infotext","Furnace is empty")
-				hacky_swap_node(pos,"default:furnace")
+				swap_node(pos,"default:furnace")
 				meta:set_string("formspec", default.furnace_inactive_formspec)
 			end
 			return

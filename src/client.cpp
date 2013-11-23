@@ -1262,7 +1262,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		MapNode n;
 		n.deSerialize(&data[8], ser_version);
 		
-		addNode(p, n);
+		bool remove_metadata = true;
+		u32 index = 8 + MapNode::serializedLength(ser_version);
+		if ((datasize >= index+1) && data[index]){
+			remove_metadata = false;
+		}	
+		
+		addNode(p, n, remove_metadata);
 	}
 	else if(command == TOCLIENT_BLOCKDATA)
 	{
@@ -2514,7 +2520,7 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
-void Client::addNode(v3s16 p, MapNode n)
+void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 {
 	TimeTaker timer1("Client::addNode()");
 
@@ -2523,7 +2529,7 @@ void Client::addNode(v3s16 p, MapNode n)
 	try
 	{
 		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
+		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 	}
 	catch(InvalidPositionException &e)
 	{}

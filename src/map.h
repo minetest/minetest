@@ -61,6 +61,8 @@ enum MapEditEventType{
 	MEET_ADDNODE,
 	// Node removed (changed to air)
 	MEET_REMOVENODE,
+	// Node swapped (changed without metadata change)
+	MEET_SWAPNODE,
 	// Node metadata of block changed (not knowing which node exactly)
 	// p stores block coordinate
 	MEET_BLOCK_NODE_METADATA_CHANGED,
@@ -98,6 +100,8 @@ struct MapEditEvent
 		case MEET_ADDNODE:
 			return VoxelArea(p);
 		case MEET_REMOVENODE:
+			return VoxelArea(p);
+		case MEET_SWAPNODE:
 			return VoxelArea(p);
 		case MEET_BLOCK_NODE_METADATA_CHANGED:
 		{
@@ -236,7 +240,8 @@ public:
 		These handle lighting but not faces.
 	*/
 	void addNodeAndUpdate(v3s16 p, MapNode n,
-			std::map<v3s16, MapBlock*> &modified_blocks);
+			std::map<v3s16, MapBlock*> &modified_blocks,
+			bool remove_metadata = true);
 	void removeNodeAndUpdate(v3s16 p,
 			std::map<v3s16, MapBlock*> &modified_blocks);
 
@@ -245,7 +250,7 @@ public:
 		These emit events.
 		Return true if succeeded, false if not.
 	*/
-	bool addNodeWithEvent(v3s16 p, MapNode n);
+	bool addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata = true);
 	bool removeNodeWithEvent(v3s16 p);
 
 	/*

@@ -120,6 +120,22 @@ int ModApiEnvMod::l_remove_node(lua_State *L)
 	return 1;
 }
 
+// minetest.swap_node(pos, node)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_swap_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+	// parameters
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = readnode(L, 2, ndef);
+	// Do it
+	bool succeeded = env->swapNode(pos, n);
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
 // minetest.get_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node(lua_State *L)
@@ -798,6 +814,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
 	API_FCT(add_node);
+	API_FCT(swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
 	API_FCT(get_node);
