@@ -645,7 +645,12 @@ function tabbuilder.handle_settings_buttons(fields)
 	end
 			
 	if fields["cb_shaders"] then
-		engine.setting_set("enable_shaders", fields["cb_shaders"])
+		if (engine.setting_get("video_driver") == "direct3d8" or engine.setting_get("video_driver") == "direct3d9") then
+			engine.setting_set("enable_shaders", "false")
+			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
+		else
+			engine.setting_set("enable_shaders", fields["cb_shaders"])
+		end
 	end
 	if fields["cb_pre_ivis"] then
 		engine.setting_set("preload_item_visuals", fields["cb_pre_ivis"])
