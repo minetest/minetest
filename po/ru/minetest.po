@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-07 22:01+0400\n"
+"POT-Creation-Date: 2013-11-23 17:37+0100\n"
 "PO-Revision-Date: 2013-11-22 11:45+0200\n"
 "Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
 "Language-Team: Russian\n"
@@ -15,20 +15,20 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
 msgstr "Название"
 
-#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:301
+#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
 msgid "Create"
 msgstr "Создать"
 
-#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:302 builtin/modmgr.lua:289
-#: builtin/modmgr.lua:406 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
+#: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -40,35 +40,35 @@ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру 
 msgid "GAMES"
 msgstr "ИГРЫ"
 
-#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:859
+#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
 msgid "Games"
 msgstr "Игры"
 
-#: builtin/gamemgr.lua:233
+#: builtin/gamemgr.lua:234
 msgid "Mods:"
 msgstr "Моды:"
 
-#: builtin/gamemgr.lua:234
+#: builtin/gamemgr.lua:235
 msgid "edit game"
 msgstr "Редактировать"
 
-#: builtin/gamemgr.lua:237
+#: builtin/gamemgr.lua:238
 msgid "new game"
 msgstr "Создать игру"
 
-#: builtin/gamemgr.lua:247
+#: builtin/gamemgr.lua:248
 msgid "EDIT GAME"
 msgstr "РЕДАКТИРОВАНИЕ"
 
-#: builtin/gamemgr.lua:267
+#: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
 msgstr "Удалить мод"
 
-#: builtin/gamemgr.lua:270
+#: builtin/gamemgr.lua:272
 msgid "<<-- Add mod"
 msgstr "<<-- Добавить мод"
 
-#: builtin/mainmenu.lua:159
+#: builtin/mainmenu.lua:158
 msgid "Ok"
 msgstr "Ok"
 
@@ -76,222 +76,230 @@ msgstr "Ok"
 msgid "World name"
 msgstr "Название мира"
 
-#: builtin/mainmenu.lua:298
+#: builtin/mainmenu.lua:300
+msgid "Seed"
+msgstr ""
+
+#: builtin/mainmenu.lua:303
 msgid "Mapgen"
 msgstr "Генератор карты"
 
-#: builtin/mainmenu.lua:300
+#: builtin/mainmenu.lua:306
 msgid "Game"
 msgstr "Игра"
 
-#: builtin/mainmenu.lua:314
+#: builtin/mainmenu.lua:319
 msgid "Delete World \"$1\"?"
 msgstr "Удалить мир \"$1\"?"
 
-#: builtin/mainmenu.lua:315 builtin/modmgr.lua:846
+#: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
 msgid "Yes"
 msgstr "Да"
 
-#: builtin/mainmenu.lua:316
+#: builtin/mainmenu.lua:321
 msgid "No"
 msgstr "Нет"
 
-#: builtin/mainmenu.lua:384
+#: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
 msgstr "Мир под названием \"$1\" уже существует"
 
-#: builtin/mainmenu.lua:399
+#: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
 msgstr "Не задано имя мира или не выбрана игра"
 
-#: builtin/mainmenu.lua:852
-msgid "Singleplayer"
-msgstr "Одиночная игра"
+#: builtin/mainmenu.lua:650
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr ""
 
-#: builtin/mainmenu.lua:853
-msgid "Client"
-msgstr "Клиент"
-
-#: builtin/mainmenu.lua:854
-msgid "Server"
-msgstr "Сервер"
-
-#: builtin/mainmenu.lua:855
-msgid "Settings"
-msgstr "Настройки"
-
-#: builtin/mainmenu.lua:856
-msgid "Texture Packs"
-msgstr "Пакеты текстур"
-
-#: builtin/mainmenu.lua:863
-msgid "Mods"
-msgstr "Моды"
-
-#: builtin/mainmenu.lua:865
-msgid "Credits"
-msgstr "Благодарности"
-
-#: builtin/mainmenu.lua:885
+#: builtin/mainmenu.lua:818
 msgid "CLIENT"
 msgstr "КЛИЕНТ"
 
-#: builtin/mainmenu.lua:886
+#: builtin/mainmenu.lua:819
 msgid "Favorites:"
 msgstr "Избранное:"
 
-#: builtin/mainmenu.lua:887
+#: builtin/mainmenu.lua:820
 msgid "Address/Port"
 msgstr "Адрес/Порт"
 
-#: builtin/mainmenu.lua:888
+#: builtin/mainmenu.lua:821
 msgid "Name/Password"
 msgstr "Имя/Пароль"
 
-#: builtin/mainmenu.lua:891
+#: builtin/mainmenu.lua:824
 msgid "Public Serverlist"
 msgstr "Список публичных серверов"
 
-#: builtin/mainmenu.lua:896 builtin/mainmenu.lua:941 builtin/mainmenu.lua:1004
-#: builtin/modmgr.lua:271 src/keycode.cpp:229
+#: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
+#: src/keycode.cpp:229
 msgid "Delete"
 msgstr "Удалить"
 
-#: builtin/mainmenu.lua:900
+#: builtin/mainmenu.lua:833
 msgid "Connect"
 msgstr "Подключиться"
 
-#: builtin/mainmenu.lua:942 builtin/mainmenu.lua:1005
+#: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
 msgid "New"
 msgstr "Новый"
 
-#: builtin/mainmenu.lua:943 builtin/mainmenu.lua:1006
+#: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
 msgid "Configure"
 msgstr "Настроить"
 
-#: builtin/mainmenu.lua:944
+#: builtin/mainmenu.lua:877
 msgid "Start Game"
 msgstr "Начать игру"
 
-#: builtin/mainmenu.lua:945 builtin/mainmenu.lua:1008
+#: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
 msgid "Select World:"
 msgstr "Выберите мир:"
 
-#: builtin/mainmenu.lua:946
+#: builtin/mainmenu.lua:879
 msgid "START SERVER"
 msgstr "СЕРВЕР"
 
-#: builtin/mainmenu.lua:947 builtin/mainmenu.lua:1010
+#: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
 msgid "Creative Mode"
 msgstr "Режим создания"
 
-#: builtin/mainmenu.lua:949 builtin/mainmenu.lua:1012
+#: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
 msgid "Enable Damage"
 msgstr "Включить урон"
 
-#: builtin/mainmenu.lua:951
+#: builtin/mainmenu.lua:884
 msgid "Public"
 msgstr "Публичные"
 
-#: builtin/mainmenu.lua:953
+#: builtin/mainmenu.lua:886
 msgid "Name"
 msgstr "Имя"
 
-#: builtin/mainmenu.lua:955
+#: builtin/mainmenu.lua:888
 msgid "Password"
 msgstr "Пароль"
 
-#: builtin/mainmenu.lua:956
+#: builtin/mainmenu.lua:889
 msgid "Server Port"
 msgstr "Порт"
 
-#: builtin/mainmenu.lua:966
+#: builtin/mainmenu.lua:899
 msgid "SETTINGS"
 msgstr "НАСТРОЙКИ"
 
-#: builtin/mainmenu.lua:967
+#: builtin/mainmenu.lua:900
 msgid "Fancy trees"
 msgstr "Красивые деревья"
 
-#: builtin/mainmenu.lua:969
+#: builtin/mainmenu.lua:902
 msgid "Smooth Lighting"
 msgstr "Мягкое освещение"
 
-#: builtin/mainmenu.lua:971
+#: builtin/mainmenu.lua:904
 msgid "3D Clouds"
 msgstr "3D облака"
 
-#: builtin/mainmenu.lua:973
+#: builtin/mainmenu.lua:906
 msgid "Opaque Water"
 msgstr "Непрозрачная вода"
 
-#: builtin/mainmenu.lua:976
+#: builtin/mainmenu.lua:909
 msgid "Mip-Mapping"
 msgstr "Mip-текстурирование"
 
-#: builtin/mainmenu.lua:978
+#: builtin/mainmenu.lua:911
 msgid "Anisotropic Filtering"
 msgstr "Анизотропная фильтрация"
 
-#: builtin/mainmenu.lua:980
+#: builtin/mainmenu.lua:913
 msgid "Bi-Linear Filtering"
 msgstr "Билинейная фильтрация"
 
-#: builtin/mainmenu.lua:982
+#: builtin/mainmenu.lua:915
 msgid "Tri-Linear Filtering"
 msgstr "Трилинейная фильтрация"
 
-#: builtin/mainmenu.lua:985
+#: builtin/mainmenu.lua:918
 msgid "Shaders"
 msgstr "Шейдеры"
 
-#: builtin/mainmenu.lua:987
+#: builtin/mainmenu.lua:920
 msgid "Preload item visuals"
 msgstr "Предзагрузка изображений"
 
-#: builtin/mainmenu.lua:989
+#: builtin/mainmenu.lua:922
 msgid "Enable Particles"
 msgstr "Включить частицы"
 
-#: builtin/mainmenu.lua:991
+#: builtin/mainmenu.lua:924
 msgid "Finite Liquid"
 msgstr "Конечные жидкости"
 
-#: builtin/mainmenu.lua:994
+#: builtin/mainmenu.lua:927
 msgid "Change keys"
 msgstr "Смена управления"
 
-#: builtin/mainmenu.lua:1007 src/keycode.cpp:248
+#: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
 msgstr "Играть"
 
-#: builtin/mainmenu.lua:1009
+#: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
 msgstr "ОДИНОЧНАЯ ИГРА"
 
-#: builtin/mainmenu.lua:1022
+#: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
 msgstr "Выберите пакет текстур:"
 
-#: builtin/mainmenu.lua:1023
+#: builtin/mainmenu.lua:956
 msgid "TEXTURE PACKS"
 msgstr "ПАКЕТЫ ТЕКСТУР"
 
-#: builtin/mainmenu.lua:1043
+#: builtin/mainmenu.lua:976
 msgid "No information available"
 msgstr "Описание отсутствует"
 
-#: builtin/mainmenu.lua:1071
+#: builtin/mainmenu.lua:1005
 msgid "Core Developers"
 msgstr "Основные разработчики"
 
-#: builtin/mainmenu.lua:1082
+#: builtin/mainmenu.lua:1020
 msgid "Active Contributors"
 msgstr "Активные контрибьюторы"
 
-#: builtin/mainmenu.lua:1092
+#: builtin/mainmenu.lua:1028
 msgid "Previous Contributors"
 msgstr "В отставке"
+
+#: builtin/mainmenu.lua:1069
+msgid "Singleplayer"
+msgstr "Одиночная игра"
+
+#: builtin/mainmenu.lua:1070
+msgid "Client"
+msgstr "Клиент"
+
+#: builtin/mainmenu.lua:1071
+msgid "Server"
+msgstr "Сервер"
+
+#: builtin/mainmenu.lua:1072
+msgid "Settings"
+msgstr "Настройки"
+
+#: builtin/mainmenu.lua:1073
+msgid "Texture Packs"
+msgstr "Пакеты текстур"
+
+#: builtin/mainmenu.lua:1080
+msgid "Mods"
+msgstr "Моды"
+
+#: builtin/mainmenu.lua:1082
+msgid "Credits"
+msgstr "Благодарности"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
@@ -301,77 +309,102 @@ msgstr "МОДЫ"
 msgid "Installed Mods:"
 msgstr "Установленные моды:"
 
-#: builtin/modmgr.lua:243 builtin/modstore.lua:253
-msgid "Install"
-msgstr "Установить"
+#: builtin/modmgr.lua:243
+#, fuzzy
+msgid "Add mod:"
+msgstr "<<-- Добавить мод"
 
 #: builtin/modmgr.lua:244
-msgid "Download"
-msgstr "Загрузить"
+#, fuzzy
+msgid "Local install"
+msgstr "Установить"
 
-#: builtin/modmgr.lua:256
+#: builtin/modmgr.lua:245
+msgid "Online mod repository"
+msgstr ""
+
+#: builtin/modmgr.lua:284
+#, fuzzy
+msgid "No mod description available"
+msgstr "Описание отсутствует"
+
+#: builtin/modmgr.lua:288
+#, fuzzy
+msgid "Mod information:"
+msgstr "Описание отсутствует"
+
+#: builtin/modmgr.lua:299
 msgid "Rename"
 msgstr "Переименовать"
 
-#: builtin/modmgr.lua:260 builtin/modmgr.lua:402
-msgid "Depends:"
-msgstr "Зависит от:"
+#: builtin/modmgr.lua:301
+msgid "Uninstall selected modpack"
+msgstr ""
 
-#: builtin/modmgr.lua:282
+#: builtin/modmgr.lua:312
+#, fuzzy
+msgid "Uninstall selected mod"
+msgstr "Удалить мод"
+
+#: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
 msgstr "Переименовать модпак:"
 
-#: builtin/modmgr.lua:287 src/keycode.cpp:227
+#: builtin/modmgr.lua:329 src/keycode.cpp:227
 msgid "Accept"
 msgstr "Принять"
 
-#: builtin/modmgr.lua:381
+#: builtin/modmgr.lua:423
 msgid "World:"
 msgstr "Мир:"
 
-#: builtin/modmgr.lua:385 builtin/modmgr.lua:387
+#: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 msgid "Hide Game"
 msgstr "Скрыть игру"
 
-#: builtin/modmgr.lua:391 builtin/modmgr.lua:393
+#: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
 msgstr "Скрыть содержимое модпака"
 
-#: builtin/modmgr.lua:400
+#: builtin/modmgr.lua:442
 msgid "Mod:"
 msgstr "Мод:"
 
-#: builtin/modmgr.lua:405 src/guiKeyChangeMenu.cpp:187
+#: builtin/modmgr.lua:444
+msgid "Depends:"
+msgstr "Зависит от:"
+
+#: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Сохранить"
 
-#: builtin/modmgr.lua:422
+#: builtin/modmgr.lua:464
 #, fuzzy
 msgid "Enable MP"
 msgstr "Включить Всё"
 
-#: builtin/modmgr.lua:424
+#: builtin/modmgr.lua:466
 #, fuzzy
 msgid "Disable MP"
 msgstr "Отключить Всё"
 
-#: builtin/modmgr.lua:428 builtin/modmgr.lua:430
+#: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
 msgstr "включено"
 
-#: builtin/modmgr.lua:436
+#: builtin/modmgr.lua:478
 msgid "Enable all"
 msgstr "Включить всё"
 
-#: builtin/modmgr.lua:551
+#: builtin/modmgr.lua:577
 msgid "Select Mod File:"
 msgstr "Выберите файл с модом:"
 
-#: builtin/modmgr.lua:590
+#: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
 msgstr "Установка мода: файл \"$1\""
 
-#: builtin/modmgr.lua:591
+#: builtin/modmgr.lua:617
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
@@ -379,32 +412,32 @@ msgstr ""
 "\n"
 "Установка мода: неподдерживаемый тип \"$1\""
 
-#: builtin/modmgr.lua:612
+#: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
 msgstr "Ошибка при установке $1 в $2"
 
-#: builtin/modmgr.lua:615
+#: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
 "Установка мода: невозможно найти подходящее имя директории для модпака $1"
 
-#: builtin/modmgr.lua:635
+#: builtin/modmgr.lua:661
 msgid "Install Mod: unable to find real modname for: $1"
 msgstr "Установка мода: невозможно определить название мода для $1"
 
-#: builtin/modmgr.lua:824
+#: builtin/modmgr.lua:855
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr: невозможно удалить \"$1\""
 
-#: builtin/modmgr.lua:828
+#: builtin/modmgr.lua:859
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modmgr: неправильный путь \"$1\""
 
-#: builtin/modmgr.lua:845
+#: builtin/modmgr.lua:876
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Уверены, что хотите удалить \"$1\"?"
 
-#: builtin/modmgr.lua:847
+#: builtin/modmgr.lua:878
 msgid "No of course not!"
 msgstr "Никак нет!"
 
@@ -420,47 +453,51 @@ msgstr "Рейтинг"
 msgid "re-Install"
 msgstr "Переустановить"
 
-#: src/client.cpp:2915
+#: builtin/modstore.lua:253
+msgid "Install"
+msgstr "Установить"
+
+#: src/client.cpp:2917
 msgid "Item textures..."
 msgstr "Текстуры предметов..."
 
-#: src/game.cpp:939
+#: src/game.cpp:940
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: src/game.cpp:999
+#: src/game.cpp:1000
 msgid "Creating server...."
 msgstr "Создание сервера..."
 
-#: src/game.cpp:1015
+#: src/game.cpp:1016
 msgid "Creating client..."
 msgstr "Создание клиента..."
 
-#: src/game.cpp:1024
+#: src/game.cpp:1025
 msgid "Resolving address..."
 msgstr "Получение адреса..."
 
-#: src/game.cpp:1121
+#: src/game.cpp:1122
 msgid "Connecting to server..."
 msgstr "Подключение к серверу..."
 
-#: src/game.cpp:1218
+#: src/game.cpp:1219
 msgid "Item definitions..."
 msgstr "Описания предметов..."
 
-#: src/game.cpp:1225
+#: src/game.cpp:1226
 msgid "Node definitions..."
 msgstr "Описания нод..."
 
-#: src/game.cpp:1232
+#: src/game.cpp:1233
 msgid "Media..."
 msgstr "Медиафайлы..."
 
-#: src/game.cpp:3405
+#: src/game.cpp:3409
 msgid "Shutting down stuff..."
 msgstr "Завершение работы..."
 
-#: src/game.cpp:3435
+#: src/game.cpp:3439
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -476,12 +513,8 @@ msgstr "Вы умерли."
 msgid "Respawn"
 msgstr "Возродиться"
 
-#: src/guiFormSpecMenu.cpp:1569
-msgid "Left click: Move all items, Right click: Move single item"
-msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
-
-#: src/guiFormSpecMenu.cpp:1595 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:140
+#: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:139
 msgid "Proceed"
 msgstr "Продолжить"
 
@@ -499,99 +532,99 @@ msgstr "\"Использовать\" = вниз"
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Двойной прыжок = летать"
 
-#: src/guiKeyChangeMenu.cpp:290
+#: src/guiKeyChangeMenu.cpp:288
 msgid "Key already in use"
 msgstr "Клавиша уже используется"
 
-#: src/guiKeyChangeMenu.cpp:372
+#: src/guiKeyChangeMenu.cpp:363
 msgid "press key"
 msgstr "нажмите клавишу"
 
-#: src/guiKeyChangeMenu.cpp:400
+#: src/guiKeyChangeMenu.cpp:389
 msgid "Forward"
 msgstr "Вперед"
 
-#: src/guiKeyChangeMenu.cpp:401
+#: src/guiKeyChangeMenu.cpp:390
 msgid "Backward"
 msgstr "Назад"
 
-#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:391 src/keycode.cpp:228
 msgid "Left"
 msgstr "Влево"
 
-#: src/guiKeyChangeMenu.cpp:403 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:392 src/keycode.cpp:228
 msgid "Right"
 msgstr "Вправо"
 
-#: src/guiKeyChangeMenu.cpp:404
+#: src/guiKeyChangeMenu.cpp:393
 msgid "Use"
 msgstr "Использовать"
 
-#: src/guiKeyChangeMenu.cpp:405
+#: src/guiKeyChangeMenu.cpp:394
 msgid "Jump"
 msgstr "Прыжок"
 
-#: src/guiKeyChangeMenu.cpp:406
+#: src/guiKeyChangeMenu.cpp:395
 msgid "Sneak"
 msgstr "Красться"
 
-#: src/guiKeyChangeMenu.cpp:407
+#: src/guiKeyChangeMenu.cpp:396
 msgid "Drop"
 msgstr "Бросить"
 
-#: src/guiKeyChangeMenu.cpp:408
+#: src/guiKeyChangeMenu.cpp:397
 msgid "Inventory"
 msgstr "Инвентарь"
 
-#: src/guiKeyChangeMenu.cpp:409
+#: src/guiKeyChangeMenu.cpp:398
 msgid "Chat"
 msgstr "Чат"
 
-#: src/guiKeyChangeMenu.cpp:410
+#: src/guiKeyChangeMenu.cpp:399
 msgid "Command"
 msgstr "Команда"
 
-#: src/guiKeyChangeMenu.cpp:411
+#: src/guiKeyChangeMenu.cpp:400
 msgid "Console"
 msgstr "Консоль"
 
-#: src/guiKeyChangeMenu.cpp:412
+#: src/guiKeyChangeMenu.cpp:401
 msgid "Toggle fly"
 msgstr "Полёт"
 
-#: src/guiKeyChangeMenu.cpp:413
+#: src/guiKeyChangeMenu.cpp:402
 msgid "Toggle fast"
 msgstr "Ускорение"
 
-#: src/guiKeyChangeMenu.cpp:414
+#: src/guiKeyChangeMenu.cpp:403
 msgid "Toggle noclip"
 msgstr "Включить noclip"
 
-#: src/guiKeyChangeMenu.cpp:415
+#: src/guiKeyChangeMenu.cpp:404
 msgid "Range select"
 msgstr "Зона видимости"
 
-#: src/guiKeyChangeMenu.cpp:416
+#: src/guiKeyChangeMenu.cpp:405
 msgid "Print stacks"
 msgstr "Печать стеков"
 
-#: src/guiPasswordChange.cpp:107
+#: src/guiPasswordChange.cpp:106
 msgid "Old Password"
 msgstr "Старый пароль"
 
-#: src/guiPasswordChange.cpp:125
+#: src/guiPasswordChange.cpp:122
 msgid "New Password"
 msgstr "Новый пароль"
 
-#: src/guiPasswordChange.cpp:142
+#: src/guiPasswordChange.cpp:137
 msgid "Confirm Password"
 msgstr "Подтверждение пароля"
 
-#: src/guiPasswordChange.cpp:160
+#: src/guiPasswordChange.cpp:153
 msgid "Change"
 msgstr "Изменить"
 
-#: src/guiPasswordChange.cpp:169
+#: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
 msgstr "Пароли не совпадают!"
 
@@ -641,11 +674,11 @@ msgstr ""
 "- Колесико мыши: выбор предмета\n"
 "- T: чат\n"
 
-#: src/guiVolumeChange.cpp:108
+#: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
 msgstr "Громкость звука: "
 
-#: src/guiVolumeChange.cpp:122
+#: src/guiVolumeChange.cpp:121
 msgid "Exit"
 msgstr "Выход"
 
@@ -937,77 +970,44 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Масштаб"
 
-#: src/main.cpp:1411
+#: src/main.cpp:1472
 msgid "needs_fallback_font"
 msgstr ""
 
-#: src/main.cpp:1486
+#: src/main.cpp:1547
 msgid "Main Menu"
 msgstr "Главное меню"
 
-#: src/main.cpp:1662
+#: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Не выбран мир и не введен адрес."
 
-#: src/main.cpp:1670
+#: src/main.cpp:1731
 msgid "Could not find or load game \""
 msgstr "Невозможно найти или загрузить игру \""
 
-#: src/main.cpp:1684
+#: src/main.cpp:1745
 msgid "Invalid gamespec."
 msgstr "Неправильная конфигурация игры."
 
-#: src/main.cpp:1729
+#: src/main.cpp:1790
 msgid "Connection error (timed out?)"
 msgstr "Ошибка соединения (таймаут?)"
 
-#~ msgid "is required by:"
-#~ msgstr "требуется для:"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды еще не настроены.\n"
+#~ "Их стандартные настройки будут установлены, когда вы сохраните "
+#~ "конфигурацию.  "
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Настройки сохранены.  "
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Предупреждение: Неверная конфигурация.  "
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
-
-#~ msgid "Multiplayer"
-#~ msgstr "Сетевая игра"
-
-#~ msgid "Advanced"
-#~ msgstr "Дополнительно"
-
-#~ msgid "Show Public"
-#~ msgstr "Публичные"
-
-#~ msgid "Show Favorites"
-#~ msgstr "Избранные"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
-
-#~ msgid "Create world"
-#~ msgstr "Создать мир"
-
-#~ msgid "Address required."
-#~ msgstr "Нужно ввести адрес."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Следующие файлы будут удалены"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Невозможно настроить мир: ничего не выбрано"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Ошибка при удалении файлов мира"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды не найдены.\n"
+#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -1034,17 +1034,56 @@ msgstr "Ошибка соединения (таймаут?)"
 #~ "- ESC: это меню\n"
 #~ "- T: чат\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды не найдены.\n"
-#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Ошибка при удалении файлов мира"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды еще не настроены.\n"
-#~ "Их стандартные настройки будут установлены, когда вы сохраните "
-#~ "конфигурацию.  "
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Невозможно настроить мир: ничего не выбрано"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Следующие файлы будут удалены"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
+
+#~ msgid "Address required."
+#~ msgstr "Нужно ввести адрес."
+
+#~ msgid "Create world"
+#~ msgstr "Создать мир"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Избранные"
+
+#~ msgid "Show Public"
+#~ msgstr "Публичные"
+
+#~ msgid "Advanced"
+#~ msgstr "Дополнительно"
+
+#~ msgid "Multiplayer"
+#~ msgstr "Сетевая игра"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Предупреждение: Неверная конфигурация.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Настройки сохранены.  "
+
+#~ msgid "is required by:"
+#~ msgstr "требуется для:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
+
+#~ msgid "Download"
+#~ msgstr "Загрузить"
