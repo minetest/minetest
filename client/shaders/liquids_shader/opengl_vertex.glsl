@@ -1,3 +1,5 @@
+#version 120
+
 uniform mat4 mWorldViewProj;
 uniform mat4 mInvWorld;
 uniform mat4 mTransWorld;
@@ -13,7 +15,6 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
-varying vec3 tsEyeVec;
 
 void main(void)
 {

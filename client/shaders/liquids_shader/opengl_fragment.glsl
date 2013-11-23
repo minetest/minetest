@@ -1,3 +1,5 @@
+#version 120
+
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D useNormalmap;
@@ -13,7 +15,6 @@ uniform float fogDistance;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
-varying vec3 tsEyeVec;
 varying vec3 eyeVec;
 
 const float e = 2.718281828459;
@@ -25,16 +26,6 @@ void main (void)
 
 	vec3 color;
 	vec2 uv = gl_TexCoord[0].st;
-	float height;
-	vec2 tsEye = vec2(tsEyeVec.x,-tsEyeVec.y);
-	
-	if ((enableParallaxOclussion == 1.0) && (use_normalmap > 0.0)) {
-		float map_height = texture2D(normalTexture, uv).a;
-			if (map_height < 1.0){
-				float height = parallaxOclussionScale * map_height - parallaxOclussionBias;
-				uv = uv + height * tsEye;
-			}
-	}
 
 	if ((enable_bumpmapping == 1.0) && (use_normalmap > 0.0)) {
 		vec3 base = texture2D(baseTexture, uv).rgb;
@@ -48,6 +39,7 @@ void main (void)
 	} else {
 		color = texture2D(baseTexture, uv).rgb;
 	}
+
 	float alpha = gl_Color.a;
 	vec4 col = vec4(color.r, color.g, color.b, alpha);
 	col *= gl_Color;
