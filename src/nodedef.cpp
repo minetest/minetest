@@ -602,6 +602,9 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
+		bool waving_plants = g_settings->getBool("enable_waving_plants");
+		bool waving_leaves = g_settings->getBool("enable_waving_leaves");
+		
 
 		for(u32 i=0; i<m_content_features.size(); i++)
 		{
@@ -617,6 +620,9 @@ public:
 			}
 
 			bool is_liquid = false;
+			u8 material_type;
+			material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+
 			switch(f->drawtype){
 			default:
 			case NDT_NORMAL:
@@ -668,10 +674,14 @@ public:
 						tiledef[i].name += std::string("^[noalpha");
 					}
 				}
+				if (f->param_type_2 == CPT2_WAVING)
+					material_type = TILE_MATERIAL_LEAVES;
 				break;
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
+				if (f->param_type_2 == CPT2_WAVING)
+					material_type = TILE_MATERIAL_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
@@ -682,11 +692,8 @@ public:
 				break;
 			}
 
-			u8 material_type;
 			if (is_liquid)
 				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			else
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
