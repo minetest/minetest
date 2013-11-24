@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
 				if( env == NULL) return 0
-				
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -632,7 +632,7 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 
 	Map *map = &(env->getMap());
 	LuaVoxelManip *o = new LuaVoxelManip(map);
-	
+
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, "VoxelManip");
 	lua_setmetatable(L, -2);
@@ -660,10 +660,12 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 	//read step size from lua
-	if (lua_isnumber(L, 3))
+	if (lua_isnumber(L, 3)) {
 		stepsize = lua_tonumber(L, 3);
+	}
 
-	return (env->line_of_sight(pos1,pos2,stepsize));
+	lua_pushboolean(L, env->line_of_sight(pos1,pos2,stepsize));
+	return 1;
 }
 
 // minetest.find_path(pos1, pos2, searchdistance,
