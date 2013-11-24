@@ -241,7 +241,8 @@ function modmgr.tab()
 
 	retval = retval ..
 		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" .. 
-		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
+--		TODO Disabled due to upcoming release 0.4.8 and irrlicht messing up localization
+--		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
 		"button[2.45,4.85;3.05,0.5;btn_mod_mgr_download;".. fgettext("Online mod repository") .. "]"
 		
 	local selected_mod = nil
