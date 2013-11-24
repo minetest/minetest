@@ -248,7 +248,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 		//invert = 0;
 		invert = params.get("invert", 0).asBool();
 		size = params.get("size", (MAP_GENERATION_LIMIT - 1000) / 2).asDouble();
-		if(!center.getLength()) center = v3f(-size / 2, -size + (-2 * -invert), 2);
+		if(!center.getLength()) center = v3f(-size / 2, -size + (-2 * -(int)invert), 2);
 		//scale = (double)1 / size; //ok
 	}
 
@@ -300,7 +300,7 @@ MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *e
 	//if (!size) size = (MAP_GENERATION_LIMIT - 1000);
 	//if (!scale) scale = (double)1 / size;
 	//if (!distance)  distance = scale;
-	if (params.get("center", Json::Value()).empty() && !center.getLength()) center = v3f(3, -size + (-5 - (-invert * 10)), 3);
+	if (params.get("center", Json::Value()).empty() && !center.getLength()) center = v3f(3, -size + (-5 - (-(int)invert * 10)), 3);
 	//size ||= params["size"].empty()?1000:params["size"].asDouble(); // = max_r
 
 

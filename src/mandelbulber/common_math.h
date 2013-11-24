@@ -8,6 +8,7 @@
 #ifndef COMMON_MATH_H_
 #define COMMON_MATH_H_
 
+#include "../util/mathconstants.h"
 #include "algebra.hpp"
 
 struct sVectorsAround
