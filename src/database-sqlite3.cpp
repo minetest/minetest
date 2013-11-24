@@ -237,6 +237,7 @@ MapBlock* Database_SQLite3::loadBlock(v3s16 blockpos)
 			} else {
 				throw SerializationError("Blank block data in database");
 			}
+			return NULL;
 		}
 
 		std::string datastr(data, len);

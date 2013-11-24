@@ -104,6 +104,7 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 		} else {
 			throw SerializationError("Blank block data in database");
 		}
+		return NULL;
 	}
 
 	if (s.ok()) {
