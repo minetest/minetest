@@ -235,13 +235,15 @@ function modmgr.tab()
 	local retval = 
 		"vertlabel[0,-0.25;".. fgettext("MODS") .. "]" ..
 		"label[0.8,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0.75,0.25;4.5,4.3;modlist;" ..
+		"textlist[0.75,0.25;4.5,4;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) .. 
 		";" .. modmgr.selected_mod .. "]"
 
 	retval = retval ..
-		"button[1,4.85;2,0.5;btn_mod_mgr_install_local;".. fgettext("Install") .. "]" ..
-		"button[3,4.85;2,0.5;btn_mod_mgr_download;".. fgettext("Download") .. "]"
+		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" .. 
+--		TODO Disabled due to upcoming release 0.4.8 and irrlicht messing up localization
+--		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
+		"button[2.45,4.85;3.05,0.5;btn_mod_mgr_download;".. fgettext("Online mod repository") .. "]"
 		
 	local selected_mod = nil
 		
@@ -250,25 +252,66 @@ function modmgr.tab()
 	end
 	
 	if selected_mod ~= nil then
-		if selected_mod.is_modpack then
-			retval = retval 
-			.. "button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
-					 fgettext("Rename") .. "]"
+		local modscreenshot = nil
+		
+		--check for screenshot beeing available
+		local screenshotfilename = selected_mod.path .. DIR_DELIM .. "screenshot.png"
+		local error = nil
+		screenshotfile,error = io.open(screenshotfilename,"r")
+		if error == nil then
+			screenshotfile:close()
+			modscreenshot = screenshotfilename
+		end
+	
+		if modscreenshot == nil then
+				modscreenshot = modstore.basetexturedir .. "no_screenshot.png"
+		end
+		
+		retval = retval 
+				.. "image[5.5,0;3,2;" .. engine.formspec_escape(modscreenshot) .. "]"
+				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
+				
+		local descriptionlines = nil
+		error = nil
+		local descriptionfilename = selected_mod.path .. "description.txt"
+		descriptionfile,error = io.open(descriptionfilename,"r")
+		if error == nil then
+			descriptiontext = descriptionfile:read("*all")
+			
+			descriptionlines = engine.splittext(descriptiontext,42)
+			descriptionfile:close()
 		else
-		--show dependencies
-			retval = retval .. 
-				"label[6,1.9;".. fgettext("Depends:") .. "]" ..
-				"textlist[6,2.4;5.7,2;deplist;"
+			descriptionlines = {}
+			table.insert(descriptionlines,fgettext("No mod description available"))
+		end
+	
+		retval = retval .. 
+			"label[5.5,1.7;".. fgettext("Mod information:") .. "]" ..
+			"textlist[5.5,2.2;6.2,2.4;description;"
+			
+		for i=1,#descriptionlines,1 do
+			retval = retval .. engine.formspec_escape(descriptionlines[i]) .. ","
+		end
+		
+		
+		if selected_mod.is_modpack then
+			retval = retval .. ";0]" .. 
+				"button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+				fgettext("Rename") .. "]"
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected modpack") .. "]"
+		else
+			--show dependencies
+
+			retval = retval .. ",Depends:,"
 				
 			toadd = modmgr.get_dependencies(selected_mod.path)
 			
-			retval = retval .. toadd .. ";0;true,false]"
+			retval = retval .. toadd .. ";0]"
 			
-			--TODO read modinfo
+			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall selected mod") .. "]"
 		end
-		--show delete button
-		retval = retval .. "button[8,4.85;2,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Delete") .. "]"
 	end
 	return retval
 end
@@ -276,7 +319,7 @@ end
 --------------------------------------------------------------------------------
 function modmgr.dialog_rename_modpack()
 
-	local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
+	local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 	
 	local retval = 
 		"label[1.75,1;".. fgettext("Rename Modpack:") .. "]"..
@@ -630,10 +673,13 @@ end
 function modmgr.handle_rename_modpack_buttons(fields)
 	
 	if fields["dlg_rename_modpack_confirm"] ~= nil then
-		local mod = filterlist.get_list(modmgr.modlist)[modmgr.selected_mod]
+		local mod = filterlist.get_list(modmgr.global_mods)[modmgr.selected_mod]
 		local oldpath = engine.get_modpath() .. DIR_DELIM .. mod.name
 		local targetpath = engine.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
 		engine.copy_dir(oldpath,targetpath,false)
+		modmgr.refresh_globals()
+		modmgr.selected_mod = filterlist.get_current_index(modmgr.global_mods,
+			filterlist.raw_index_by_uid(modmgr.global_mods, fields["te_modpack_name"]))
 	end
 	
 	return {
@@ -736,7 +782,7 @@ function modmgr.handle_configure_world_buttons(fields)
 		end
 		
 		if not worldfile:write() then
-			print("failed to write world config file")
+			engine.log("error", "Failed to write world config file")
 		end
 		
 		modmgr.modlist = nil
@@ -890,7 +936,7 @@ function modmgr.preparemodlist(data)
 			if element ~= nil then
 				element.enabled = engine.is_yes(value)
 			else
-				print("Mod: " .. key .. " " .. dump(value) .. " but not found")
+				engine.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end
 		end
 	end

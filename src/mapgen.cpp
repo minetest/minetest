@@ -382,7 +382,7 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 	Decoration::resolveNodeNames(ndef);
 	
-	if (c_deco == CONTENT_IGNORE) {
+	if (c_deco == CONTENT_IGNORE && !decolist_names.size()) {
 		c_deco = ndef->getId(deco_name);
 		if (c_deco == CONTENT_IGNORE) {
 			errorstream << "DecoSimple::resolveNodeNames: decoration node '"
@@ -394,7 +394,7 @@ void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
 		c_spawnby = ndef->getId(spawnby_name);
 		if (c_spawnby == CONTENT_IGNORE) {
 			errorstream << "DecoSimple::resolveNodeNames: spawnby node '"
-				<< deco_name << "' not defined" << std::endl;
+				<< spawnby_name << "' not defined" << std::endl;
 			nspawnby = -1;
 			c_spawnby = CONTENT_AIR;
 		}

@@ -90,8 +90,8 @@ end
 
 function vector.add(a, b)
 	assert_vector(a)
-	assert_vector(b)
 	if type(b) == "table" then
+	    assert_vector(b)
 		return {x = a.x + b.x,
 			y = a.y + b.y,
 			z = a.z + b.z}
@@ -104,8 +104,8 @@ end
 
 function vector.subtract(a, b)
 	assert_vector(a)
-	assert_vector(b)
 	if type(b) == "table" then
+	    assert_vector(b)
 		return {x = a.x - b.x,
 			y = a.y - b.y,
 			z = a.z - b.z}
@@ -118,8 +118,8 @@ end
 
 function vector.multiply(a, b)
 	assert_vector(a)
-	assert_vector(b)
 	if type(b) == "table" then
+	    assert_vector(b)
 		return {x = a.x * b.x,
 			y = a.y * b.y,
 			z = a.z * b.z}
@@ -132,8 +132,8 @@ end
 
 function vector.divide(a, b)
 	assert_vector(a)
-	assert_vector(b)
 	if type(b) == "table" then
+        assert_vector(b)
 		return {x = a.x / b.x,
 			y = a.y / b.y,
 			z = a.z / b.z}

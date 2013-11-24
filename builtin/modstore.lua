@@ -183,9 +183,9 @@ function modstore.getmodlist(list)
 	retval = retval .. "label[10,-0.4;" .. fgettext("Page $1 of $2", list.page+1, list.pagecount) .. "]"
 	
 	retval = retval .. "button[11.6,-0.1;0.5,0.5;btn_modstore_page_up;^]"
-	retval = retval .. "box[11.6,0.35;0.28,8.6;000000]"
+	retval = retval .. "box[11.6,0.35;0.28,8.6;#000000]"
 	local scrollbarpos = 0.35 + (8.1/(list.pagecount-1)) * list.page
-	retval = retval .. "box[11.6," ..scrollbarpos .. ";0.28,0.5;32CD32]"
+	retval = retval .. "box[11.6," ..scrollbarpos .. ";0.28,0.5;#32CD32]"
 	retval = retval .. "button[11.6,9.0;0.5,0.5;btn_modstore_page_down;v]"
 	
 	
@@ -206,7 +206,7 @@ function modstore.getmodlist(list)
 		if details ~= nil then
 			local screenshot_ypos = (i-1 - (list.page * modstore.modsperpage))*1.9 +0.2
 			
-			retval = retval .. "box[0," .. screenshot_ypos .. ";11.4,1.75;FFFFFF]"
+			retval = retval .. "box[0," .. screenshot_ypos .. ";11.4,1.75;#FFFFFF]"
 			
 			--screenshot
 			if details.screenshot_url ~= nil and

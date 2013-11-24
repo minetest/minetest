@@ -66,7 +66,7 @@ int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 		lua_pushvalue(L, table);
 		lua_pushstring(L, i->c_str());
 		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+			script_error(L);
 	}
 	lua_remove(L, -2); // Remove table
 	lua_remove(L, -2); // Remove insert

@@ -471,10 +471,10 @@ minetest.register_chatcommand("spawnentity", {
 			minetest.chat_send_player(name, "entityname required")
 			return
 		end
-		print('/spawnentity invoked, entityname="'..entityname..'"')
+		minetest.log("action", '/spawnentity invoked, entityname="'..entityname..'"')
 		local player = minetest.get_player_by_name(name)
 		if player == nil then
-			print("Unable to spawn entity, player is nil")
+			minetest.log("error", "Unable to spawn entity, player is nil")
 			return true -- Handled chat message
 		end
 		local p = player:getpos()
@@ -491,7 +491,7 @@ minetest.register_chatcommand("pulverize", {
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if player == nil then
-			print("Unable to pulverize, player is nil")
+			minetest.log("error", "Unable to pulverize, player is nil")
 			return true -- Handled chat message
 		end
 		if player:get_wielded_item():is_empty() then

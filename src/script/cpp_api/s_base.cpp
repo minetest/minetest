@@ -55,23 +55,6 @@ public:
 	}
 };
 
-static int loadScript_ErrorHandler(lua_State *L) {
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-	if (!lua_istable(L, -1)) {
-		lua_pop(L, 1);
-		return 1;
-	}
-	lua_getfield(L, -1, "traceback");
-	if (!lua_isfunction(L, -1)) {
-		lua_pop(L, 2);
-		return 1;
-	}
-	lua_pushvalue(L, 1);
-	lua_pushinteger(L, 2);
-	lua_call(L, 2, 1);
-	return 1;
-}
-
 
 /*
 	ScriptApiBase
@@ -133,7 +116,7 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 
 	lua_State *L = getStack();
 
-	lua_pushcfunction(L, loadScript_ErrorHandler);
+	lua_pushcfunction(L, script_error_handler);
 	int errorhandler = lua_gettop(L);
 
 	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, errorhandler);
@@ -144,7 +127,7 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 		errorstream<<std::endl;
 		errorstream<<lua_tostring(L, -1)<<std::endl;
 		errorstream<<std::endl;
-		errorstream<<"=======END OF ERROR FROM LUA ========"<<std::endl;
+		errorstream<<"======= END OF ERROR FROM LUA ========"<<std::endl;
 		lua_pop(L, 1); // Pop error message from stack
 		lua_pop(L, 1); // Pop the error handler from stack
 		return false;
@@ -159,19 +142,13 @@ void ScriptApiBase::realityCheck()
 	if(top >= 30){
 		dstream<<"Stack is over 30:"<<std::endl;
 		stackDump(dstream);
-		scriptError("Stack is over 30 (reality check)");
+		throw LuaError(m_luastack, "Stack is over 30 (reality check)");
 	}
 }
 
-void ScriptApiBase::scriptError(const char *fmt, ...)
+void ScriptApiBase::scriptError()
 {
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	//errorstream<<"SCRIPT ERROR: "<<buf;
-	throw LuaError(m_luastack, buf);
+	throw LuaError(NULL, lua_tostring(m_luastack, -1));
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)

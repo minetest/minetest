@@ -117,24 +117,38 @@ int InvRef::l_set_size(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
+
 	int newsize = luaL_checknumber(L, 3);
+	if (newsize < 0) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
 	Inventory *inv = getinv(L, ref);
 	if(inv == NULL){
-		return 0;
+		lua_pushboolean(L, false);
+		return 1;
 	}
 	if(newsize == 0){
 		inv->deleteList(listname);
 		reportInventoryChange(L, ref);
-		return 0;
+		lua_pushboolean(L, true);
+		return 1;
 	}
 	InventoryList *list = inv->getList(listname);
 	if(list){
 		list->setSize(newsize);
 	} else {
 		list = inv->addList(listname, newsize);
+		if (!list)
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
 	}
 	reportInventoryChange(L, ref);
-	return 0;
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // set_width(self, listname, size)

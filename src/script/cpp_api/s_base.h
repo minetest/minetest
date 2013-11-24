@@ -31,6 +31,7 @@ extern "C" {
 #include "jthread/jmutex.h"
 #include "jthread/jmutexautolock.h"
 #include "common/c_types.h"
+#include "common/c_internal.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
 
@@ -65,7 +66,7 @@ protected:
 		{ return m_luastack; }
 
 	void realityCheck();
-	void scriptError(const char *fmt, ...);
+	void scriptError();
 	void stackDump(std::ostream &o);
 
 	Server* getServer() { return m_server; }

@@ -621,6 +621,16 @@ int ObjectRef::l_is_player(lua_State *L)
 	return 1;
 }
 
+// is_player_connected(self)
+int ObjectRef::l_is_player_connected(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	lua_pushboolean(L, (player != NULL && player->peer_id != 0));
+	return 1;
+}
+
 // get_player_name(self)
 int ObjectRef::l_get_player_name(lua_State *L)
 {
@@ -1148,6 +1158,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_luaentity),
 	// Player-only
 	luamethod(ObjectRef, is_player),
+	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),

@@ -94,7 +94,7 @@
 # Constant volume liquids
 #liquid_finite = false
 # Max liquids processed per step
-#liquid_loop_max = 1000
+#liquid_loop_max = 10000
 # Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
 # Relax flowing blocks to source if level near max and N nearby

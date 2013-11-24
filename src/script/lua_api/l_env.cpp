@@ -53,28 +53,34 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Get minetest.registered_abms
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_abms");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_abms = lua_gettop(L);
+	lua_remove(L, -2); // Remove "minetest"
 
 	// Get minetest.registered_abms[m_id]
 	lua_pushnumber(L, m_id);
-	lua_gettable(L, registered_abms);
+	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
 		assert(0);
+	lua_remove(L, -2); // Remove "registered_abms"
 
 	// Call action
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, "action");
 	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_remove(L, -2); // Remove "registered_abms[m_id]"
 	push_v3s16(L, p);
 	pushnode(L, n, env->getGameDef()->ndef());
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
-	if(lua_pcall(L, 4, 0, 0))
-		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(lua_pcall(L, 4, 0, errorhandler))
+		script_error(L);
+	lua_pop(L, 1); // Pop error handler
 }
 
 // Exported functions
@@ -370,15 +376,21 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	ItemStack item = read_item(L, 2,getServer(L));
 	if(item.empty() || !item.isKnown(getServer(L)->idef()))
 		return 0;
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Use minetest.spawn_item to spawn a __builtin:item
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "spawn_item");
+	lua_remove(L, -2); // Remove minetest
 	if(lua_isnil(L, -1))
 		return 0;
 	lua_pushvalue(L, 1);
 	lua_pushstring(L, item.getItemString().c_str());
-	if(lua_pcall(L, 2, 1, 0))
-		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(lua_pcall(L, 2, 1, errorhandler))
+		script_error(L);
+	lua_remove(L, errorhandler); // Remove error handler
 	return 1;
 	/*lua_pushvalue(L, 1);
 	lua_pushstring(L, "__builtin:item");
@@ -441,7 +453,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 		lua_pushvalue(L, table);
 		getScriptApiBase(L)->objectrefGetOrCreate(obj);
 		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+			script_error(L);
 	}
 	return 1;
 }
@@ -569,7 +581,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 			lua_pushvalue(L, table);
 			push_v3s16(L, p);
 			if(lua_pcall(L, 2, 0, 0))
-				script_error(L, "error: %s", lua_tostring(L, -1));
+				script_error(L);
 		}
 	}
 	return 1;

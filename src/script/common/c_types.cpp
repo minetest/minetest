@@ -25,9 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 LuaError::LuaError(lua_State *L, const std::string &s)
 {
-	m_s = "LuaError: ";
-	m_s += s + "\n";
-	m_s += script_get_backtrace(L);
+	m_s = "LuaError: " + s;
+	if (L) m_s += '\n' + script_get_backtrace(L);
 }
 
 struct EnumString es_ItemType[] =

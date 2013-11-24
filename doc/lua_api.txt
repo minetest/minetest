@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.7
+Minetest Lua Modding API Reference 0.4.8
 ========================================
 More information at http://www.minetest.net/
 Developer Wiki: http://dev.minetest.net/
@@ -100,6 +100,8 @@ Mod directory structure
 mods
 |-- modname
 |   |-- depends.txt
+|   |-- screenshot.png
+|   |-- description.txt
 |   |-- init.lua
 |   |-- textures
 |   |   |-- modname_stuff.png
@@ -120,6 +122,12 @@ depends.txt:
   Optional dependencies can be defined by appending a question mark
   to a single modname. Their meaning is that if the specified mod
   is missing, that does not prevent this mod from being loaded.
+
+screenshot.png:
+  A screenshot shown in modmanager within mainmenu.
+
+description.txt:
+  File containing desctiption to be shown within mainmenu.
 
 optdepends.txt:
   An alternative way of specifying optional dependencies.
@@ -873,6 +881,22 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
+listcolors[<slot_bg_normal>;<slot_bg_hover>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+
+listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+^ Sets color of slots border
+
+listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]
+^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots on mouse hovering
+^ Sets color of slots border
+^ Sets background color of tooltips
+^ Sets font color of tooltips
+
 image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
@@ -881,10 +905,20 @@ item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Show an inventory image of registered item/node
 ^ Position and size units are inventory slots
 
+bgcolor[<color>;<fullscreen>]
+^ Sets background color of formspec in HEX-Color format
+^ If true the background color is drawn fullscreen (does not effect the size of the formspec)
+
 background[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Use a background. Inventory rectangles are not drawn then.
 ^ Position and size units are inventory slots
 ^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
+
+background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]
+^ Use a background. Inventory rectangles are not drawn then.
+^ Position and size units are inventory slots
+^ Example for formspec 8x4 in 16x resolution: image shall be sized 8*16px x 4*16px
+^ If true the background is clipped to formspec size (x and y are used as offset values, w and h are ignored)
 
 pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Textual password style field; will be sent to server when a button is clicked
@@ -972,7 +1006,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
-^ listelements can be prepended by #color in hexadecimal format RRGGBB,
+^ listelements can be prepended by #color in hexadecimal format RRGGBB (only),
 ^    if you want a listelement to start with # write ##
 
 textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
@@ -980,7 +1014,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
-^ listelements can be prepended by #RRGGBB in hexadecimal format
+^ listelements can be prepended by #RRGGBB (only) in hexadecimal format
 ^    if you want a listelement to start with # write ##
 ^ index to be selected within textlist
 ^ true/false draw transparent background
@@ -998,7 +1032,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ color in hexadecimal format RRGGBB
+^ color in HEX-Color format
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1007,7 +1041,7 @@ dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ fieldname data is transfered to lua
 ^ items to be shown in dropdown
 ^ index of currently selected dropdown item
-^ color in hexadecimal format RRGGBB
+^ color in hexadecimal format RRGGBB (only)
 
 checkbox[<X>,<Y>;<name>;<label>;<selected>]
 ^ show a checkbox
@@ -1027,6 +1061,17 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
+HEX-Color
+---------
+#RGB
+^ defines a color in hexadecimal format
+#RGBA
+^ defines a color in hexadecimal format and alpha channel
+#RRGGBB
+^ defines a color in hexadecimal format
+#RRGGBBAA
+^ defines a color in hexadecimal format and alpha channel
+
 Vector helpers
 ---------------
 vector.new([x[, y, z]]) -> vector
@@ -1036,7 +1081,7 @@ vector.distance(p1, p2) -> number
 vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
-vector.equal(v1, v2) -> bool
+vector.equals(v1, v2) -> bool
 For the folowing x can be either a vector or a number.
 vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
@@ -1506,6 +1551,28 @@ minetest.is_protected(pos, name) -> bool
 minetest.record_protection_violation(pos, name)
 ^ This function calls functions registered with
   minetest.register_on_protection_violation.
+minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)
+^ Attempt to predict the desired orientation of the facedir-capable node
+  defined by itemstack, and place it accordingly (on-wall, on the floor, or
+  hanging from the ceiling). Stacks are handled normally if the infinitestacks
+  field is false or omitted (else, the itemstack is not changed). orient_flags
+  is an optional table containing extra tweaks to the placement code:
+  invert_wall:		if true, place wall-orientation on the ground and ground-
+					orientation on the wall.
+  force_wall:		if true, always place the node in wall orientation.
+  force_ceiling:	if true, always place on the ceiling.
+  force_floor:		if true, always place the node on the floor.
+
+  The above four options are mutually-exclusive; the last in the list takes
+  precedence over the first.
+
+  force_facedir:	if true, forcably reset the facedir to north when placing on
+					the floor or ceiling
+
+minetest.rotate_node(itemstack, placer, pointed_thing)
+^ calls rotate_and_place() with infinitestacks set according to the state of
+  the creative mode setting, and checks for "sneak" to set the invert_wall
+  parameter.
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.
@@ -1659,6 +1726,7 @@ methods:
 - is_empty(listname): return true if list is empty
 - get_size(listname): get size of a list
 - set_size(listname, size): set size of a list
+  ^ returns false on error (e.g. invalid listname or listsize)
 - get_width(listname): get width of a list
 - set_width(listname, width): set width of list; currently used for crafting
 - get_stack(listname, i): get a copy of stack index i in list

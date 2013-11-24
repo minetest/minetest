@@ -158,6 +158,9 @@ private:
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 
+	// is_player_connected(self)
+	static int l_is_player_connected(lua_State *L);
+
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L);
 

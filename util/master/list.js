@@ -1,132 +1,99 @@
-var master_root, output_to;
 var master;
-if (!master) master = {
-    root: master_root,
-    output: output_to
-};
+if (!master) master = {};
+if (typeof(master.root)=='undefined')	master.root = "http://servers.minetest.net/";
+if (!master.output)	master.output = '#server_list';
+if (!master.list)	master.list = "list";
+if (!master.list_root)	master.list_root = master.root;
+if (!master.list_url)	master.list_url = master.list_root + master.list;
 
-function e(s) {
-    if (typeof s === "undefined") s = '';
-    if (typeof s === "number") return s;
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); //mc"
+function humanTime(seconds) {
+	if (!seconds) return '?';
+	var conv = {
+		y: 31536000,
+		d: 86400,
+		h: 3600,
+		m: 60
+	}
+	for (var i in conv) {
+		if (seconds >= conv[i]) {
+			return (seconds / conv[i]).toFixed(1) + i;
+		}
+	}
+	return seconds + 's';
 }
 
-function human_time(t, abs) {
-    var n = 's';
-    if (!t || t < 0) t = 0;
-    var f = 0;
-    var s = parseInt(abs ? (t || 0) : (new Date().getTime() / 1000 - (t || 0)));
-    if (!s || s <= 0) s = 0;
-    if (s == 0) return 'now';
-    if (s >= 60) {
-        s /= 60;
-        n = 'm';
-        if (s >= 60) {
-            s /= 60;
-            n = 'h';
-            f = 1;
-            if (s >= 24) {
-                s /= 24;
-                n = 'd';
-                f = 1;
-                if (s >= 30) {
-                    s /= 30;
-                    n = 'M';
-                    f = 1;
-                    if (s >= 12) {
-                        s /= 12;
-                        n = 'y';
-                        f = 1;
-                    }
-                }
-            }
-        }
-    }
-    return ((f ? parseFloat(s).toFixed(1) : parseInt(s)) + n);
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function success(r) {
-    if (!r || !r.list) return;
-    var h = '';
-    if (!master.no_total && r.total && r.total_max)
-        h += '<div class="mts_total">Players: ' + r.total.clients + ('/' + r.total_max.clients) + ' servers: ' + r.total.servers + ('/' + r.total_max.servers) + '</div>';
-    h += '<table class="mts_table">';
-    if (r.list.length) {
-        h += '<tr class="mts_head">';
-        if (!master.no_address) h += '<th>ip[:port]</th>';
-        if (!master.no_clients) h += '<th>players/max</th>';
-        if (!master.no_version) h += '<th>version gameid mapgen</th>';
-        if (!master.no_name) h += '<th>name</th>';
-        if (!master.no_description) h += '<th>description</th>';
-        if (!master.no_flags) h += '<th>flags</th>';
-        if (!master.no_uptime) h += '<th>uptime age</th>';
-        if (!master.no_ping) h += '<th>ping</th>';
-        h += '</tr>';
-    }
-    var count = 0;
-    for (var i = 0; i < r.list.length; ++i) {
-        if (++count > master.limit && master.limit) break;
-        var s = r.list[i];
-        if (!s) continue;
-        if (master.clients_min && s.clients < master.clients_min) continue;
-        if (/:/.test(s.address)) s.address = '[' + s.address + ']';
-        h += '<tr class="mts_row">';
-        if (!master.no_address) h += '<td class="mts_address">' + e(s.address) + (s.port != 30000 ? (':' + e(s.port)) : '') + '</td>';
-        if (!master.no_clients) {
-            h += '<td class="mts_clients' + (s.clients && s.clients_list ? ' mts_is_clients' : '') + '">';
-            if (!master.no_clients_list && s.clients && s.clients_list) {
-                h += '<div class="mts_clients_list">Players (' + e(s.clients) + '):<br/>';
-                for (var ii in s.clients_list)
-                    h += e(s.clients_list[ii]) + '<br/>';
-                h += '</div>';
-            }
-            h += e(s.clients) + (s.clients_max ? '/' + e(s.clients_max) : '') + (s.clients_top ? ', ' + e(s.clients_top) : '') + '</td>';
-        }
-        var mods = 0;
-        if (s.mods && jQuery.isArray(s.mods))
-            mods = s.mods.length;
-        if (!master.no_version) {
-            h += '<td class="mts_version' + (mods ? ' mts_is_mods' : '') + '">' + e(s.version) + ' ' + e(s.gameid) + ' ' + e(s.mapgen);
-            if (!master.no_mods && mods) {
-                h += '<div class="mts_mods">Mods (' + mods + '):<br/>';
-                for (var ii in s.mods)
-                    h += e(s.mods[ii]) + '<br/>';
-                h += '</div>';
-            }
-            h += '</td>';
-        }
-        if (!master.no_name) {
-            h += '<td class="mts_url">';
-            if (s.url) h += '<a href="' + e(s.url) + '">';
-            h += e(s.name || s.url);
-            if (s.url) h += '</a>';
-            h += '</td>';
-        }
-        if (!master.no_description) h += '<td class="mts_description">' + e(s.description) + '</td>';
-        if (!master.no_flags) {
-            h += '<td class="mts_flags">' +
-                (s.password ? 'Pwd ' : '') +
-                (s.creative ? 'Cre ' : '') +
-                (s.damage ? 'Dmg ' : '') +
-                (s.pvp ? 'Pvp ' : '') +
-                (s.dedicated ? 'Ded ' : '') +
-                (s.rollback ? 'Rol ' : '') +
-                (s.liquid_finite ? 'Liq ' : '') +
-                '</td>';
-        }
-        if (!s.start || s.start < 0) s.start = 0;
-        if (!master.no_uptime) h += '<td class="mts_uptime">' + (s.uptime ? human_time(s.uptime, 1) : s.start ? human_time(s.start) : '') + (s.game_time ? ' ' + human_time(s.game_time, 1) : '') + '</td>';
-        if (!master.no_ping) h += '<td class="mts_ping">' + (s.ping ? parseFloat(s.ping).toFixed(3) * 1000 : '') + '</td>';
-        h += '</tr>';
-    }
-    h += '</table>';
-    if (master.clients_min || master.limit)
-        h += '<a href="#" onclick="delete master.limit;delete master.clients_min; get(1);">more...</a>';
-    jQuery(master.output || '#servers_table').html(h);
+function addressString(server) {
+	var isIPv6 = server.address.indexOf(":") != -1;
+	var addrStr = (isIPv6 ? '[' : '') +
+		escapeHTML(server.address) +
+		(isIPv6 ? ']' : '');
+	var shortStr = addrStr;
+	addrStr += ':' + server.port;
+	var str = '<span'
+	if (shortStr.length > 25) {
+		shortStr = shortStr.substr(0, 23) + "&hellip;";
+		str += ' class="mts_tooltip" title="' + addrStr + '"'
+	}
+	if (server.port != 30000)
+		shortStr += ':' + server.port;
+	return str + '>' + shortStr + '</span>';
 }
 
-function get(refresh) {
-    jQuery.getJSON((master.root || '') + 'list', success);
-    if (!refresh && !master.no_refresh) setTimeout(get, 60000);
+function tooltipString(str, maxLen) {
+	str = escapeHTML(str);
+	var shortStr = str;
+	var ret = '<span';
+	if (shortStr.length > maxLen) {
+		shortStr = shortStr.substr(0, maxLen - 2) + "&hellip;";
+		ret += ' class="mts_tooltip" title="' + str + '"';
+	}
+	return ret + '>' + shortStr + '</span>';
 }
-get();
+
+function hoverList(name, list) {
+	if (!list || list.length == 0) return '';
+	var str = '<div class="mts_hover_list">'
+	str += name + '(' + list.length + ')<br />';
+	for (var i in list) {
+		str += escapeHTML(list[i]) + '<br />';
+	}
+	return str + '</div>';
+}
+
+function hoverString(name, string) {
+	if (!string) return '';
+	return  '<div class="mts_hover_list">'
+		+ name + ':<br />'
+		+ escapeHTML(string) + '<br />'
+		+ '</div>';
+}
+
+function draw(json) {
+	html = window.render.servers(json);
+	jQuery(master.output).html(html);
+}
+
+function get() {
+	jQuery.getJSON(master.list_url, draw);
+}
+
+function loaded(){
+	if (!master.no_refresh) {
+		setInterval(get, 60 * 1000);
+	}
+	get();
+}
+
+// https://github.com/pyrsmk/toast
+this.toast=function(){var e=document,t=e.getElementsByTagName("head")[0],n=this.setTimeout,r="createElement",i="appendChild",s="addEventListener",o="onreadystatechange",u="styleSheet",a=10,f=0,l=function(){--f},c,h=function(e,r,i,s){if(!t)n(function(){h(e)},a);else if(e.length){c=-1;while(i=e[++c]){if((s=typeof i)=="function"){r=function(){return i(),!0};break}if(s=="string")p(i);else if(i.pop){p(i[0]),r=i[1];break}}d(r,Array.prototype.slice.call(e,c+1))}},p=function(n,s){++f,/\.css$/.test(n)?(s=e[r]("link"),s.rel=u,s.href=n,t[i](s),v(s)):(s=e[r]("script"),s.src=n,t[i](s),s[o]===null?s[o]=m:s.onload=l)},d=function(e,t){if(!f)if(!e||e()){h(t);return}n(function(){d(e,t)},a)},v=function(e){if(e.sheet||e[u]){l();return}n(function(){v(e)},a)},m=function(){/ded|co/.test(this.readyState)&&l()};h(arguments)};
+
+toast(master.root+'style.css', master.root+'servers.js', function() {
+	if (typeof(jQuery)!='undefined')
+		loaded();
+	else
+		toast('//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', loaded);
+});
