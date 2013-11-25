@@ -1,16 +1,44 @@
+#version 120
 
 uniform mat4 mWorldViewProj;
 uniform mat4 mInvWorld;
 uniform mat4 mTransWorld;
 uniform float dayNightRatio;
+uniform float animationTimer;
+
+uniform float enableWavingLeaves;
+uniform vec3 eyePosition;
 
 varying vec3 vPosition;
+varying vec3 eyeVec;
+
+float smoothCurve( float x ) {  
+  return x * x *( 3.0 - 2.0 * x );  
+}  
+float triangleWave( float x ) {  
+  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );  
+}  
+float smoothTriangleWave( float x ) {  
+  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;  
+} 
 
 void main(void)
 {
-	gl_Position = mWorldViewProj * gl_Vertex;
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	if (enableWavingLeaves == 1.0){	
+		vec4 pos = gl_Vertex;
+		vec4 pos2 = mTransWorld*gl_Vertex;
+		pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
+		pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
+		pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
+		gl_Position = mWorldViewProj * pos;
+	}
+	else 
+		gl_Position = mWorldViewProj * gl_Vertex;
 
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
+
+	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
 
 	vec4 color;
 	//color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -24,7 +52,7 @@ void main(void)
 	color.b = color.r;*/
 
 	float rg = mix(night, day, dayNightRatio);
-	rg += light_source * 1.0; // Make light sources brighter
+	rg += light_source * 2.5; // Make light sources brighter
 	float b = rg;
 
 	// Moonlight is blue
@@ -39,9 +67,9 @@ void main(void)
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
 	rg += max(0.0, (1.0 - abs(rg - 0.85)/0.15) * 0.065);
 
-	color.r = rg;
-	color.g = rg;
-	color.b = b;
+	color.r = clamp(rg,0.0,1.0);
+	color.g = clamp(rg,0.0,1.0);
+	color.b = clamp(b,0.0,1.0);
 
 	// Make sides and bottom darker than the top
 	color = color * color; // SRGB -> Linear
@@ -55,4 +83,5 @@ void main(void)
 	gl_FrontColor = gl_BackColor = color;
 
 	gl_TexCoord[0] = gl_MultiTexCoord0;
+
 }
