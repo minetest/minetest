@@ -23,16 +23,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "mapgen_v7.h"
 #include "json/json.h"
+#include "mandelbulber/fractal.h"
 
 struct MapgenMathParams : public MapgenV7Params {
 
-	MapgenMathParams() {
-	}
+	MapgenMathParams() {};
 
 	Json::Value params;
 
-	bool readParams(Settings *settings);
-	void writeParams(Settings *settings);
+#ifdef FRACTAL_H_
+	sFractal par;
+#endif
+
+	bool readParams(Settings * settings);
+	void writeParams(Settings * settings);
 };
 
 class MapgenMath : public MapgenV7 {
@@ -45,6 +49,7 @@ class MapgenMath : public MapgenV7 {
 		int generateTerrain();
 		int getGroundLevelAtPoint(v2s16 p);
 
+		bool internal;
 		bool invert;
 		double size;
 		double scale;
@@ -52,7 +57,6 @@ class MapgenMath : public MapgenV7 {
 		int iterations;
 		double distance;
 		double (*func)(double, double, double, double, int);
-
 };
 
 struct MapgenFactoryMath : public MapgenFactory {
