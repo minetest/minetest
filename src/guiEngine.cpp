@@ -286,6 +286,8 @@ void GUIEngine::run()
 			cloudPostProcess();
 		else
 			sleep_ms(25);
+
+		m_script->Step();
 	}
 }
 
@@ -575,4 +577,10 @@ s32 GUIEngine::playSound(SimpleSoundSpec spec, bool looped)
 void GUIEngine::stopSound(s32 handle)
 {
 	m_sound_manager->stopSound(handle);
+}
+
+/******************************************************************************/
+unsigned int GUIEngine::DoAsync(std::string serialized_fct,
+		std::string serialized_params) {
+	return m_script->DoAsync(serialized_fct,serialized_params);
 }

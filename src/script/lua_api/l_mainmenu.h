@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
+class AsyncEngine;
+
 /** Implementation of lua api support for mainmenu */
 class ModApiMainMenu : public ModApiBase {
 
@@ -125,6 +127,8 @@ private:
 
 	static int l_download_file(lua_State *L);
 
+	// async
+	static int l_do_async_callback(lua_State *L);
 
 public:
 	/**
@@ -133,6 +137,8 @@ public:
 	 * @param top index (in lua stack) of global API table
 	 */
 	static void Initialize(lua_State *L, int top);
+
+	static void InitializeAsync(AsyncEngine& engine);
 
 };
 

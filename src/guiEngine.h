@@ -166,6 +166,9 @@ public:
 		return m_scriptdir;
 	}
 
+	/** pass async callback to scriptengine **/
+	unsigned int DoAsync(std::string serialized_fct,std::string serialized_params);
+
 private:
 
 	/** find and run the main menu script */
@@ -244,7 +247,7 @@ private:
 	 * @param url url to download
 	 * @param target file to store to
 	 */
-	bool downloadFile(std::string url,std::string target);
+	static bool downloadFile(std::string url,std::string target);
 
 	/** array containing pointers to current specified texture layers */
 	video::ITexture*		m_textures[TEX_LAYER_MAX];

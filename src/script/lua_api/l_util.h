@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
+class AsyncEngine;
+
 class ModApiUtil : public ModApiBase {
 private:
 	/*
@@ -76,6 +78,8 @@ private:
 
 public:
 	static void Initialize(lua_State *L, int top);
+
+	static void InitializeAsync(AsyncEngine& engine);
 
 };
 

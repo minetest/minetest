@@ -43,6 +43,7 @@ public:
 	JThread();
 	virtual ~JThread();
 	int Start();
+	void Stop();
 	int Kill();
 	virtual void *Thread() = 0;
 	bool IsRunning();
@@ -63,12 +64,12 @@ private:
 	HANDLE threadhandle;
 #else // pthread type threads
 	static void *TheThread(void *param);
-	
+
 	pthread_t threadid;
 #endif // WIN32
 	void *retval;
 	bool running;
-	
+
 	JMutex runningmutex;
 	JMutex continuemutex,continuemutex2;
 	bool mutexinit;
