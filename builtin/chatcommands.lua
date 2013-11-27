@@ -515,34 +515,45 @@ minetest.register_on_punchnode(function(pos, node, puncher)
 end)
 
 minetest.register_chatcommand("rollback_check", {
-	params = "[<range>] [<seconds>]",
+	params = "[<range>] [<seconds>] [limit]",
 	description = "check who has last touched a node or near it, "..
-			"max. <seconds> ago (default range=0, seconds=86400=24h)",
+			"max. <seconds> ago (default range=0, seconds=86400=24h, limit=5)",
 	privs = {rollback=true},
 	func = function(name, param)
-		local range, seconds = string.match(param, "(%d+) *(%d*)")
+		local range, seconds, limit =
+			param:match("(%d+) *(%d*) *(%d*)")
 		range = tonumber(range) or 0
 		seconds = tonumber(seconds) or 86400
-		minetest.chat_send_player(name, "Punch a node (limits set: range="..
-				dump(range).." seconds="..dump(seconds).."s)")
+		limit = tonumber(limit) or 5
+		if limit > 100 then
+			minetest.chat_send_player(name, "That limit is too high!")
+			return
+		end
+		minetest.chat_send_player(name, "Punch a node (range="..
+				range..", seconds="..seconds.."s, limit="..limit..")")
+
 		minetest.rollback_punch_callbacks[name] = function(pos, node, puncher)
 			local name = puncher:get_player_name()
-			minetest.chat_send_player(name, "Checking...")
-			local actor, act_p, act_seconds =
-					minetest.rollback_get_last_node_actor(pos, range, seconds)
-			if actor == "" then
+			minetest.chat_send_player(name, "Checking "..minetest.pos_to_string(pos).."...")
+			local actions = minetest.rollback_get_node_actions(pos, range, seconds, limit)
+			local num_actions = #actions
+			if num_actions == 0 then
 				minetest.chat_send_player(name, "Nobody has touched the "..
-						"specified location in "..dump(seconds).." seconds")
+						"specified location in "..seconds.." seconds")
 				return
 			end
-			local nodedesc = "this node"
-			if act_p.x ~= pos.x or act_p.y ~= pos.y or act_p.z ~= pos.z then
-				nodedesc = minetest.pos_to_string(act_p)
+			local time = os.time()
+			for i = num_actions, 1, -1 do
+				local action = actions[i]
+				minetest.chat_send_player(name,
+					("%s %s %s -> %s %d seconds ago.")
+						:format(
+							minetest.pos_to_string(action.pos),
+							action.actor,
+							action.oldnode.name,
+							action.newnode.name,
+							time - action.time))
 			end
-			local nodename = minetest.get_node(act_p).name
-			minetest.chat_send_player(name, "Last actor on "..nodedesc..
-					" was "..actor..", "..dump(act_seconds)..
-					"s ago (node is now "..nodename..")")
 		end
 	end,
 })
@@ -554,7 +565,7 @@ minetest.register_chatcommand("rollback", {
 	func = function(name, param)
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
 		if not target_name then
-			local player_name = nil;
+			local player_name = nil
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
 				minetest.chat_send_player(name, "Invalid parameters. See /help rollback and /help rollback_check")
@@ -564,13 +575,13 @@ minetest.register_chatcommand("rollback", {
 		end
 		seconds = tonumber(seconds) or 60
 		minetest.chat_send_player(name, "Reverting actions of "..
-				dump(target_name).." since "..dump(seconds).." seconds.")
+				target_name.." since "..seconds.." seconds.")
 		local success, log = minetest.rollback_revert_actions_by(
 				target_name, seconds)
-		if #log > 10 then
+		if #log > 100 then
 			minetest.chat_send_player(name, "(log is too long to show)")
 		else
-			for _,line in ipairs(log) do
+			for _, line in pairs(log) do
 				minetest.chat_send_player(name, line)
 			end
 		end

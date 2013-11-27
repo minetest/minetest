@@ -63,7 +63,7 @@ struct RollbackAction
 		TYPE_MODIFY_INVENTORY_STACK,
 	} type;
 
-	int unix_time;
+	time_t unix_time;
 	std::string actor;
 	bool actor_is_guess;
 
