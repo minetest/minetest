@@ -1193,6 +1193,13 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
 					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
 				}
+				// Brighten sides facing sun / moon (no shaders)
+				if(p.vertices[j].Normal.Z > -0.5 || p.vertices[j].Normal.Z < 0.5)
+				{
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
 			}
 		}
 
@@ -1402,10 +1409,17 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
+				video::SColor &vc = vertices[vertexIndex].Color;
 				// Brighten topside (no shaders)
 				if(vertices[vertexIndex].Normal.Y > 0.5)
 				{
-					video::SColor &vc = vertices[vertexIndex].Color;
+					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
+					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
+					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
+				}
+				// Brighten sides facing sun / moon (no shaders)
+				if(vertices[vertexIndex].Normal.Z > -0.5 || vertices[vertexIndex].Normal.Z < 0.5)
+				{
 					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
 					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
 					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
