@@ -1674,8 +1674,6 @@ int main(int argc, char *argv[])
 
 				// Save settings
 				g_settings->set("name", playername);
-				g_settings->set("address", address);
-				g_settings->set("port", itos(port));
 
 				if((menudata.selected_world >= 0) &&
 						(menudata.selected_world < (int)worldspecs.size()))
