@@ -22,8 +22,7 @@
 # Client and server
 #
 
-# Network port (UDP)
-#port = 
+
 # Name of player; on a server this is the main admin
 #name = 
 
@@ -31,6 +30,8 @@
 # Client stuff
 #
 
+# Port to connect to (UDP)
+#remote_port = 
 # Key mappings
 # See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
@@ -198,7 +199,8 @@
 #
 # Server stuff
 #
-
+# Network port to listen (UDP)
+#port = 
 # Name of server
 #server_name = Minetest server
 # Description of server
