@@ -429,7 +429,7 @@ bool SQL_registerRow(ActionRow row)
 	*/
 	sqlite3_reset(dbs_do);
 
-	int bind [20 + (((bool) row.id) ? 1 : 0)], ii = 0;
+	int bind [22], ii = 0;
 	bool nodeMeta = false;
 
 	bind[ii++] = sqlite3_bind_int(dbs_do, 1, row.actor);
