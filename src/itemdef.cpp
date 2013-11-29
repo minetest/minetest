@@ -390,16 +390,18 @@ public:
 			/*
 				Make a mesh from the node
 			*/
+			bool reenable_shaders = false;
+			if(g_settings->getBool("enable_shaders")){
+				reenable_shaders = true;
+				g_settings->setBool("enable_shaders",false);
+			}
 			MeshMakeData mesh_make_data(gamedef);
 			MapNode mesh_make_node(id, param1, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data);
-
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
 			video::SColor c(255, 255, 255, 255);
-			if(g_settings->getBool("enable_shaders"))
-				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
 			setMeshColor(node_mesh, c);
 
 			/*
@@ -455,6 +457,9 @@ public:
 
 			//no way reference count can be smaller than 2 in this place!
 			assert(cc->wield_mesh->getReferenceCount() >= 2);
+
+			if (reenable_shaders)
+				g_settings->setBool("enable_shaders",true);
 		}
 
 		// Put in cache
