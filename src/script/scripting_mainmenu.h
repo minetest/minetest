@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_mainmenu.h"
+#include "lua_api/l_async_events.h"
 
 /*****************************************************************************/
 /* Scripting <-> Main Menu Interface                                         */
@@ -37,8 +38,16 @@ public:
 	// use ScriptApiBase::loadMod() or ScriptApiBase::loadScript()
 	// to load scripts
 
+	/* global step handler to pass back async events */
+	void Step();
+
+	/* pass async events from engine to async threads */
+	unsigned int DoAsync(std::string serialized_fct,
+			std::string serialized_params);
 private:
 	void InitializeModApi(lua_State *L, int top);
+
+	AsyncEngine m_AsyncEngine;
 };
 
 

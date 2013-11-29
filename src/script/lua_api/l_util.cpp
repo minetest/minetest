@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "lua_api/l_async_events.h"
 #include "debug.h"
 #include "log.h"
 #include "tool.h"
@@ -257,3 +258,18 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(is_yes);
 }
 
+void ModApiUtil::InitializeAsync(AsyncEngine& engine)
+{
+	ASYNC_API_FCT(debug);
+	ASYNC_API_FCT(log);
+
+	//ASYNC_API_FCT(setting_set);
+	ASYNC_API_FCT(setting_get);
+	//ASYNC_API_FCT(setting_setbool);
+	ASYNC_API_FCT(setting_getbool);
+	//ASYNC_API_FCT(setting_save);
+
+	ASYNC_API_FCT(parse_json);
+
+	ASYNC_API_FCT(is_yes);
+}
