@@ -1112,18 +1112,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	bool enable_shaders     = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 
-	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3, bumpmaps1, bumpmaps2;
-	shadermat1 = shadermat2 = shadermat3 = bumpmaps1 = bumpmaps2 = video::EMT_SOLID;
+	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
+							shadermat4, shadermat5;
+	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 = 
+		video::EMT_SOLID;
 
 	if (enable_shaders) {
 		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
-		shadermat1 = shdrsrc->getShader("test_shader_1").material;
-		shadermat2 = shdrsrc->getShader("test_shader_2").material;
-		shadermat3 = shdrsrc->getShader("test_shader_3").material;
-		if (enable_bumpmapping) {
-			bumpmaps1 = shdrsrc->getShader("bumpmaps_solids").material;
-			bumpmaps2 = shdrsrc->getShader("bumpmaps_liquids").material;
-		}
+		shadermat1 = shdrsrc->getShader("solids_shader").material;
+		shadermat2 = shdrsrc->getShader("liquids_shader").material;
+		shadermat3 = shdrsrc->getShader("alpha_shader").material;
+		shadermat4 = shdrsrc->getShader("leaves_shader").material;
+		shadermat5 = shdrsrc->getShader("plants_shader").material;
 	}
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
@@ -1204,22 +1204,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture);
-	
-		if (enable_shaders) {
-			video::E_MATERIAL_TYPE smat1 = shadermat1;
-			video::E_MATERIAL_TYPE smat2 = shadermat2;
-			video::E_MATERIAL_TYPE smat3 = shadermat3;
-			
-			if (enable_bumpmapping) {
-				ITextureSource *tsrc = data->m_gamedef->tsrc();
-				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
 
+		if (enable_shaders) {
+			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			material.setTexture(2, tsrc->getTexture("disable_img.png"));
+			if (enable_bumpmapping) {
+				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
 				std::string normal_ext = "_normal.png";
 				size_t pos = fname_base.find(".");
 				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
-				
+
 				if (tsrc->isKnownSourceImage(fname_normal)) {
 					// look for image extension and replace it 
 					size_t i = 0;
@@ -1227,19 +1223,15 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 						fname_base.replace(i, 4, normal_ext);
 						i += normal_ext.length();
 					}
-					
 					material.setTexture(1, tsrc->getTexture(fname_base));
-					
-					smat1 = bumpmaps1;
-					smat2 = bumpmaps2;
+					material.setTexture(2, tsrc->getTexture("enable_img.png"));
 				}
 			}
-			
-			p.tile.applyMaterialOptionsWithShaders(material, smat1, smat2, smat3);
+			p.tile.applyMaterialOptionsWithShaders(material,
+				shadermat1, shadermat2, shadermat3, shadermat4, shadermat5);
 		} else {
 			p.tile.applyMaterialOptions(material);
 		}
-
 		// Create meshbuffer
 
 		// This is a "Standard MeshBuffer",
@@ -1369,18 +1361,21 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 		// Set the texture
 		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
+		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
 		if (enable_shaders && enable_bumpmapping)
 			{
-				std::string basename,normal;
-				basename = tsrc->getTextureName(tile.texture_id);
+				std::string fname_base,fname_normal;
+				fname_base = tsrc->getTextureName(tile.texture_id);
 				unsigned pos;
-				pos = basename.find(".");
-				normal = basename.substr (0, pos);
-				normal += "_normal.png";
-				os.str("");
-				os<<normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-				if (tsrc->isKnownSourceImage(normal))
+				pos = fname_base.find(".");
+				fname_normal = fname_base.substr (0, pos);
+				fname_normal += "_normal.png";
+				if (tsrc->isKnownSourceImage(fname_normal)){
+					os.str("");
+					os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+				}
 			}
 	}
 
