@@ -132,7 +132,7 @@ private:
 
 /** asynchornous thread and job management **/
 class AsyncEngine {
-	friend AsyncWorkerThread;
+	friend class AsyncWorkerThread;
 public:
 	/**
 	 * default constructor
