@@ -25,10 +25,11 @@ void set_default_settings(Settings *settings)
 {
 	// Client and server
 
+	settings->setDefault("port", "");
 	settings->setDefault("name", "");
 
 	// Client stuff
-	settings->setDefault("remote_port", "30000");
+
 	settings->setDefault("keymap_forward", "KEY_KEY_W");
 	settings->setDefault("keymap_backward", "KEY_KEY_S");
 	settings->setDefault("keymap_left", "KEY_KEY_A");
@@ -126,6 +127,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_bumpmapping", "false");
+	settings->setDefault("enable_parallax_occlusion", "false");
+	settings->setDefault("parallax_occlusion_scale", "0.08");
+	settings->setDefault("parallax_occlusion_bias", "0.04");
+	settings->setDefault("enable_waving_water", "false");
+	settings->setDefault("water_wave_height", "1.0");
+	settings->setDefault("water_wave_length", "20.0");
+	settings->setDefault("water_wave_speed", "5.0");
+	settings->setDefault("enable_waving_leaves", "false");
+	settings->setDefault("enable_waving_plants", "false");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
@@ -156,7 +166,6 @@ void set_default_settings(Settings *settings)
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
-	settings->setDefault("port", "30000");
 	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
