@@ -225,6 +225,7 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
+	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
 	sound_footstep = SimpleSoundSpec();
@@ -292,6 +293,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, liquid_range);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
+	writeU8(os, waving);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -359,6 +361,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
+	waving = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -602,6 +605,9 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
+		bool waving_plants = g_settings->getBool("enable_waving_plants");
+		bool waving_leaves = g_settings->getBool("enable_waving_leaves");
+		
 
 		for(u32 i=0; i<m_content_features.size(); i++)
 		{
@@ -617,6 +623,9 @@ public:
 			}
 
 			bool is_liquid = false;
+			u8 material_type;
+			material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+
 			switch(f->drawtype){
 			default:
 			case NDT_NORMAL:
@@ -668,10 +677,14 @@ public:
 						tiledef[i].name += std::string("^[noalpha");
 					}
 				}
+				if (f->waving == 1)
+					material_type = TILE_MATERIAL_LEAVES;
 				break;
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
+				if (f->waving == 1)
+					material_type = TILE_MATERIAL_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
@@ -682,11 +695,8 @@ public:
 				break;
 			}
 
-			u8 material_type;
 			if (is_liquid)
 				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			else
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){

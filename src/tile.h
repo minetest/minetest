@@ -136,6 +136,8 @@ enum MaterialType{
 	TILE_MATERIAL_ALPHA,
 	TILE_MATERIAL_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_LIQUID_OPAQUE,
+	TILE_MATERIAL_LEAVES,
+	TILE_MATERIAL_PLANTS
 };
 
 // Material flags
@@ -204,13 +206,21 @@ struct TileSpec
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
 			break;
+		case TILE_MATERIAL_LEAVES:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			break;
+		case TILE_MATERIAL_PLANTS:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
 	void applyMaterialOptionsWithShaders(video::SMaterial &material,
 			const video::E_MATERIAL_TYPE &basic,
 			const video::E_MATERIAL_TYPE &liquid,
-			const video::E_MATERIAL_TYPE &alpha) const
+			const video::E_MATERIAL_TYPE &alpha,
+			const video::E_MATERIAL_TYPE &leaves,
+			const video::E_MATERIAL_TYPE &plants) const
 	{
 		switch(material_type){
 		case TILE_MATERIAL_BASIC:
@@ -224,6 +234,12 @@ struct TileSpec
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = liquid;
+			break;
+		case TILE_MATERIAL_LEAVES:
+			material.MaterialType = leaves;
+			break;
+		case TILE_MATERIAL_PLANTS:
+			material.MaterialType = plants;
 			break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
