@@ -47,6 +47,7 @@ public:
 	int Kill();
 	virtual void *Thread() = 0;
 	bool IsRunning();
+	bool StopRequested();
 	void *GetReturnValue();
 	bool IsSameThread();
 protected:
@@ -69,6 +70,7 @@ private:
 #endif // WIN32
 	void *retval;
 	bool running;
+	bool requeststop;
 
 	JMutex runningmutex;
 	JMutex continuemutex,continuemutex2;
