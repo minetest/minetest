@@ -77,7 +77,7 @@ int JThread::Start()
 		runningmutex.Unlock();
 		return ERR_JTHREAD_ALREADYRUNNING;
 	}
-	requeststop = false;e
+	requeststop = false;
 	runningmutex.Unlock();
 
 	continuemutex.Lock();

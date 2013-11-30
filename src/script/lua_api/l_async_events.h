@@ -22,7 +22,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <map>
+
+#ifndef _MSC_VER
 #include <unistd.h>
+#else
+#define _WINSOCKAPI_
+#include <windows.h>
+static unsigned sleep(unsigned seconds) {
+	Sleep(seconds * 1000);
+	return 0;
+}
+#endif
 
 /******************************************************************************/
 /* Includes                                                                   */
