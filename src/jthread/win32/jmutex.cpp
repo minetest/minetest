@@ -29,7 +29,14 @@
 
 JMutex::JMutex()
 {
-	initialized = false;
+#ifdef JMUTEX_CRITICALSECTION
+	InitializeCriticalSection(&mutex);
+#else
+	mutex = CreateMutex(NULL,FALSE,NULL);
+	if (mutex == NULL)
+		return ERR_JMUTEX_CANTCREATEMUTEX;
+#endif // JMUTEX_CRITICALSECTION
+	initialized = true;
 }
 
 JMutex::~JMutex()
@@ -44,16 +51,6 @@ JMutex::~JMutex()
 
 int JMutex::Init()
 {
-	if (initialized)
-		return ERR_JMUTEX_ALREADYINIT;
-#ifdef JMUTEX_CRITICALSECTION
-	InitializeCriticalSection(&mutex);
-#else
-	mutex = CreateMutex(NULL,FALSE,NULL);
-	if (mutex == NULL)
-		return ERR_JMUTEX_CANTCREATEMUTEX;
-#endif // JMUTEX_CRITICALSECTION
-	initialized = true;
 	return 0;
 }
 

@@ -29,7 +29,8 @@
 
 JMutex::JMutex()
 {
-	initialized = false;
+	pthread_mutex_init(&mutex,NULL);
+	initialized = true;
 }
 
 JMutex::~JMutex()
@@ -40,19 +41,14 @@ JMutex::~JMutex()
 
 int JMutex::Init()
 {
-	if (initialized)
-		return ERR_JMUTEX_ALREADYINIT;
-	
-	pthread_mutex_init(&mutex,NULL);
-	initialized = true;
-	return 0;	
+	return 0;
 }
 
 int JMutex::Lock()
 {
 	if (!initialized)
 		return ERR_JMUTEX_NOTINIT;
-		
+
 	pthread_mutex_lock(&mutex);
 	return 0;
 }
@@ -61,7 +57,7 @@ int JMutex::Unlock()
 {
 	if (!initialized)
 		return ERR_JMUTEX_NOTINIT;
-	
+
 	pthread_mutex_unlock(&mutex);
 	return 0;
 }
