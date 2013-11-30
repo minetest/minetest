@@ -29,36 +29,7 @@ int luaopen_marshal(lua_State *L);
 #include "log.h"
 #include "filesys.h"
 #include "porting.h"
-
-//TODO replace by ShadowNinja version not yet merged to master
-static int script_error_handler(lua_State *L) {
-  lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-  if (!lua_istable(L, -1)) {
-    lua_pop(L, 1);
-    return 1;
-  }
-  lua_getfield(L, -1, "traceback");
-  if (!lua_isfunction(L, -1)) {
-    lua_pop(L, 2);
-    return 1;
-  }
-  lua_pushvalue(L, 1);
-  lua_pushinteger(L, 2);
-  lua_call(L, 2, 1);
-  return 1;
-}
-
-/******************************************************************************/
-static void scriptError(const char *fmt, ...)
-{
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	errorstream<<"ERROR: "<<buf;
-	fprintf(stderr,"ERROR: %s\n",buf);
-}
+#include "common/c_internal.h"
 
 /******************************************************************************/
 AsyncEngine::AsyncEngine() :
@@ -170,12 +141,13 @@ void AsyncEngine::putJobResult(LuaJobInfo result) {
 
 /******************************************************************************/
 void AsyncEngine::Step(lua_State *L) {
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+	lua_getglobal(L, "engine");
 	m_ResultQueueMutex.Lock();
 	while(!m_ResultQueue.empty()) {
-
 		LuaJobInfo jobdone = m_ResultQueue.front();
 		m_ResultQueue.erase(m_ResultQueue.begin());
-		lua_getglobal(L, "engine");
 
 		lua_getfield(L, -1, "async_event_handler");
 
@@ -186,15 +158,14 @@ void AsyncEngine::Step(lua_State *L) {
 
 		lua_pushinteger(L, jobdone.JobId);
 		lua_pushlstring(L, jobdone.serializedResult.c_str(),
-							jobdone.serializedResult.length());
+				jobdone.serializedResult.length());
 
-		if(lua_pcall(L, 2, 0, 0)) {
-			scriptError("Async ENGINE step: %s", lua_tostring(L, -1));
+		if(lua_pcall(L, 2, 0, errorhandler)) {
+			script_error(L);
 		}
-
-		lua_pop(L,1);
 	}
 	m_ResultQueueMutex.Unlock();
+	lua_pop(L, 2); // Pop engine and error handler
 }
 
 /******************************************************************************/
@@ -355,10 +326,9 @@ void* AsyncWorkerThread::worker_thread_main() {
 
 		if (StopRequested()) { continue; }
 		if(lua_pcall(m_LuaStack, 2, 2, errorhandler)) {
-			scriptError("Async WORKER thread: %s\n", lua_tostring(m_LuaStack, -1));
-			toprocess.serializedResult="ERROR";
-		}
-		else {
+			script_error(m_LuaStack);
+			toprocess.serializedResult = "ERROR";
+		} else {
 			//fetch result
 			const char *retval = lua_tostring(m_LuaStack, -2);
 			unsigned int lenght = lua_tointeger(m_LuaStack,-1);
