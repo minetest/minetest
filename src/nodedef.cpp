@@ -396,15 +396,16 @@ public:
 		// Set CONTENT_AIR
 		{
 			ContentFeatures f;
-			f.name = "air";
-			f.drawtype = NDT_AIRLIKE;
-			f.param_type = CPT_LIGHT;
-			f.light_propagates = true;
+			f.name                = "air";
+			f.drawtype            = NDT_AIRLIKE;
+			f.param_type          = CPT_LIGHT;
+			f.light_propagates    = true;
 			f.sunlight_propagates = true;
-			f.walkable = false;
-			f.pointable = false;
-			f.diggable = false;
-			f.buildable_to = true;
+			f.walkable            = false;
+			f.pointable           = false;
+			f.diggable            = false;
+			f.buildable_to        = true;
+			f.is_ground_content   = true;
 			// Insert directly into containers
 			content_t c = CONTENT_AIR;
 			m_content_features[c] = f;
@@ -414,16 +415,16 @@ public:
 		// Set CONTENT_IGNORE
 		{
 			ContentFeatures f;
-			f.name = "ignore";
-			f.drawtype = NDT_AIRLIKE;
-			f.param_type = CPT_NONE;
-			f.light_propagates = false;
+			f.name                = "ignore";
+			f.drawtype            = NDT_AIRLIKE;
+			f.param_type          = CPT_NONE;
+			f.light_propagates    = false;
 			f.sunlight_propagates = false;
-			f.walkable = false;
-			f.pointable = false;
-			f.diggable = false;
-			// A way to remove accidental CONTENT_IGNOREs
-			f.buildable_to = true;
+			f.walkable            = false;
+			f.pointable           = false;
+			f.diggable            = false;
+			f.buildable_to        = true; // A way to remove accidental CONTENT_IGNOREs
+			f.is_ground_content   = true;
 			// Insert directly into containers
 			content_t c = CONTENT_IGNORE;
 			m_content_features[c] = f;

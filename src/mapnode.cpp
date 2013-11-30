@@ -383,8 +383,10 @@ u8 MapNode::getLevel(INodeDefManager *nodemgr) const
 		return getParam2() & LIQUID_LEVEL_MASK;
 	if(f.leveled || f.param_type_2 == CPT2_LEVELED) {
 		 u8 level = getParam2() & LEVELED_MASK;
-		 if(level) return level;
-		 if(f.leveled > LEVELED_MAX) return LEVELED_MAX;
+		 if(level)
+			return level;
+		 if(f.leveled > LEVELED_MAX)
+		 	return LEVELED_MAX;
 		 return f.leveled; //default
 	}
 	return 0;
@@ -398,7 +400,7 @@ u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
 		return 0;
 	}
 	const ContentFeatures &f = nodemgr->get(*this);
-	if (	   f.param_type_2 == CPT2_FLOWINGLIQUID
+	if (f.param_type_2 == CPT2_FLOWINGLIQUID
 		|| f.liquid_type == LIQUID_FLOWING
 		|| f.liquid_type == LIQUID_SOURCE) {
 		if (level >= LIQUID_LEVEL_SOURCE) {
@@ -487,8 +489,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		param0 = readU16(source+0);
 		param1 = readU8(source+2);
 		param2 = readU8(source+3);
-	}
-	else{
+	}else{
 		param0 = readU8(source+0);
 		param1 = readU8(source+1);
 		param2 = readU8(source+2);
