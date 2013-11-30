@@ -2183,6 +2183,39 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			((LocalPlayer *) player)->hotbar_selected_image = value;
 		}
 	}
+	else if(command == TOCLIENT_SET_SKY)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		video::SColor *bgcolor = new video::SColor(readARGB8(is));
+		std::string *type = new std::string(deSerializeString(is));
+		u16 count = readU16(is);
+		std::vector<std::string> *params = new std::vector<std::string>;
+		for(size_t i=0; i<count; i++)
+			params->push_back(deSerializeString(is));
+
+		ClientEvent event;
+		event.type = CE_SET_SKY;
+		event.set_sky.bgcolor = bgcolor;
+		event.set_sky.type = type;
+		event.set_sky.params = params;
+		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		bool do_override = readU8(is);
+		float day_night_ratio_f = (float)readU16(is) / 65536;
+
+		ClientEvent event;
+		event.type = CE_OVERRIDE_DAY_NIGHT_RATIO;
+		event.override_day_night_ratio.do_override = do_override;
+		event.override_day_night_ratio.ratio_f = day_night_ratio_f;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

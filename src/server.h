@@ -499,6 +499,11 @@ public:
 	void hudSetHotbarImage(Player *player, std::string name);
 	void hudSetHotbarSelectedImage(Player *player, std::string name);
 
+	bool setSky(Player *player, const video::SColor &bgcolor,
+			const std::string &type, const std::vector<std::string> &params);
+	bool overrideDayNightRatio(Player *player, bool do_override,
+			float brightness);
+	
 private:
 
 	// con::PeerHandler implementation.
@@ -546,7 +551,10 @@ private:
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
-
+	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
+			const std::string &type, const std::vector<std::string> &params);
+	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
+	
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
