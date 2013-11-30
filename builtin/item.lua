@@ -501,7 +501,7 @@ minetest.nodedef_default = {
 	post_effect_color = {a=0, r=0, g=0, b=0},
 	paramtype = "none",
 	paramtype2 = "none",
-	is_ground_content = false,
+	is_ground_content = true,
 	sunlight_propagates = false,
 	walkable = true,
 	pointable = true,
