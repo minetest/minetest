@@ -1818,6 +1818,13 @@ methods:
 - set_lighting(light):  Set the lighting within the VoxelManip
   ^ light is a table, {day=<0...15>, night=<0...15>}
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
+
+- get_light_data(): Gets the light data read into the VoxelManip object
+  ^ Returns an array (indicies 1 to volume) of integers ranging from 0 to 255
+  ^ Each value is the bitwise combination of day and night light values (0..15 each)
+  ^ light = day + (night * 16)
+- set_light_data(light_data):  Sets the param1 (light) contents of each node in the VoxelManip
+  ^ expects lighting data in the same format that get_light_data() returns
 - calc_lighting():  Calculate lighting within the VoxelManip
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
 - update_liquids():  Update liquid flow
