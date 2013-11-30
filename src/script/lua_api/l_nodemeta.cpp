@@ -39,13 +39,28 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 	return *(NodeMetaRef**)ud;  // unbox pointer
 }
 
+/**
+ * Retrieve metadata for a node.
+ * If @p auto_create is set and the specified node has no metadata information
+ * associated with it yet, the method attempts to attach a new metadata object
+ * to the node and returns a pointer to the metadata when successful.
+ *  
+ * However, it is NOT guaranteed that the method will return a pointer,
+ * and @c NULL may be returned in case of an error regardless of @p auto_create. 
+ *
+ * @param ref specifies the node for which the associated metadata is retrieved.
+ * @param auto_create when true, try to create metadata information for the node if it has none.
+ * @return pointer to a @c NodeMetadata object or @c NULL in case of error.
+ */
 NodeMetadata* NodeMetaRef::getmeta(NodeMetaRef *ref, bool auto_create)
 {
 	NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
-	if(meta == NULL && auto_create)
-	{
+	if(meta == NULL && auto_create)	{
 		meta = new NodeMetadata(ref->m_env->getGameDef());
-		ref->m_env->getMap().setNodeMetadata(ref->m_p, meta);
+		if(!ref->m_env->getMap().setNodeMetadata(ref->m_p, meta)) {
+			delete meta;
+			return NULL;
+		}
 	}
 	return meta;
 }
@@ -227,17 +242,21 @@ int NodeMetaRef::l_from_table(lua_State *L)
 	NodeMetaRef *ref = checkobject(L, 1);
 	int base = 2;
 
+	// clear old metadata first
+	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
+
 	if(lua_isnil(L, base)){
 		// No metadata
-		ref->m_env->getMap().removeNodeMetadata(ref->m_p);
 		lua_pushboolean(L, true);
 		return 1;
 	}
 
-	// Has metadata; clear old one first
-	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
 	// Create new metadata
 	NodeMetadata *meta = getmeta(ref, true);
+	if(meta == NULL){
+		lua_pushboolean(L, false);
+		return 1;
+	}
 	// Set fields
 	lua_getfield(L, base, "fields");
 	int fieldstable = lua_gettop(L);

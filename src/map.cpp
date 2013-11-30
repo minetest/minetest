@@ -2299,23 +2299,37 @@ NodeMetadata* Map::getNodeMetadata(v3s16 p)
 	return meta;
 }
 
-void Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
+/**
+ * Sets metadata for a node.
+ * This method sets the metadata for a given node.
+ * On succes, it returns @c true and the object pointed to
+ * by @p meta is then managed by the system and should
+ * not be deleted by the caller.
+ *
+ * In case of failure however, the method returns @c false
+ * an the caller is still responsible for deleting the object!
+ *
+ * @param p node coordinates
+ * @param meta pointer to @c NodeMetadata object
+ * @return @c true on success, false on failure
+ */
+bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(!block){
+	if(!block) {
 		infostream<<"Map::setNodeMetadata(): Need to emerge "
 				<<PP(blockpos)<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
-	if(!block)
-	{
+	if(!block) {
 		infostream<<"WARNING: Map::setNodeMetadata(): Block not found"
 				<<std::endl;
-		return;
+		return false;
 	}
 	block->m_node_metadata.set(p_rel, meta);
+	return true;
 }
 
 void Map::removeNodeMetadata(v3s16 p)

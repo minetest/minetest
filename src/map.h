@@ -307,7 +307,7 @@ public:
 	*/
 
 	NodeMetadata* getNodeMetadata(v3s16 p);
-	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
+	bool setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
 
 	/*
