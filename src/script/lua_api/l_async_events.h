@@ -57,6 +57,8 @@ struct LuaJobInfo {
 	std::string serializedResult;
 	/** jobid used to identify a job and match it to callback **/
 	unsigned int JobId;
+	/** valid marker **/
+	bool valid;
 };
 
 /** class encapsulating a asynchronous working environment **/

@@ -34,6 +34,7 @@ JThread::JThread()
 {
 	retval = NULL;
 	mutexinit = false;
+	requeststop = false;
 	running = false;
 }
 
@@ -44,7 +45,7 @@ JThread::~JThread()
 
 void JThread::Stop() {
 	runningmutex.Lock();
-	running = false;
+	requeststop = true;
 	runningmutex.Unlock();
 }
 
@@ -78,6 +79,7 @@ int JThread::Start()
 		runningmutex.Unlock();
 		return ERR_JTHREAD_ALREADYRUNNING;
 	}
+	requeststop = false;
 	runningmutex.Unlock();
 
 	pthread_attr_t attr;
@@ -137,6 +139,15 @@ bool JThread::IsRunning()
 
 	runningmutex.Lock();
 	r = running;
+	runningmutex.Unlock();
+	return r;
+}
+
+bool JThread::StopRequested() {
+	bool r;
+
+	runningmutex.Lock();
+	r = requeststop;
 	runningmutex.Unlock();
 	return r;
 }

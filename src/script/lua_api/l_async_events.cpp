@@ -149,9 +149,11 @@ LuaJobInfo AsyncEngine::getJob() {
 	m_JobQueueMutex.Lock();
 
 	LuaJobInfo retval;
+	retval.valid = false;
 
 	if (m_JobQueue.size() != 0) {
 		retval = m_JobQueue.front();
+		retval.valid = true;
 		m_JobQueue.erase((m_JobQueue.begin()));
 	}
 	m_JobQueueMutex.Unlock();
@@ -322,11 +324,12 @@ void* AsyncWorkerThread::worker_thread_main() {
 			assert("no future with broken builtin async environment scripts" == 0);
 	}
 	/** main loop **/
-	while(IsRunning()) {
+	while(!StopRequested()) {
 		//wait for job
 		LuaJobInfo toprocess = m_JobDispatcher->getJob();
 
-		if (!IsRunning()) { continue; }
+		if (toprocess.valid == false) { continue; }
+		if (StopRequested()) { continue; }
 
 		//first push error handler
 		lua_pushcfunction(m_LuaStack, script_error_handler);
@@ -350,7 +353,7 @@ void* AsyncWorkerThread::worker_thread_main() {
 						toprocess.serializedParams.c_str(),
 						toprocess.serializedParams.length());
 
-		if (!IsRunning()) { continue; }
+		if (StopRequested()) { continue; }
 		if(lua_pcall(m_LuaStack, 2, 2, errorhandler)) {
 			scriptError("Async WORKER thread: %s\n", lua_tostring(m_LuaStack, -1));
 			toprocess.serializedResult="ERROR";
@@ -362,7 +365,7 @@ void* AsyncWorkerThread::worker_thread_main() {
 			toprocess.serializedResult = std::string(retval,lenght);
 		}
 
-		if (!IsRunning()) { continue; }
+		if (StopRequested()) { continue; }
 		//put job result
 		m_JobDispatcher->putJobResult(toprocess);
 	}
