@@ -1815,18 +1815,19 @@ methods:
 - update_map():  Update map after writing chunk back to map.
   ^ To be used only by VoxelManip objects created by the mod itself; not a VoxelManip that was 
   ^ retrieved from minetest.get_mapgen_object
-- set_lighting(light):  Set the lighting within the VoxelManip
+- set_lighting(light, p1, p2):  Set the lighting within the VoxelManip to a uniform value
   ^ light is a table, {day=<0...15>, night=<0...15>}
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
-
+  ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - get_light_data(): Gets the light data read into the VoxelManip object
   ^ Returns an array (indicies 1 to volume) of integers ranging from 0 to 255
   ^ Each value is the bitwise combination of day and night light values (0..15 each)
   ^ light = day + (night * 16)
 - set_light_data(light_data):  Sets the param1 (light) contents of each node in the VoxelManip
   ^ expects lighting data in the same format that get_light_data() returns
-- calc_lighting():  Calculate lighting within the VoxelManip
+- calc_lighting(p1, p2):  Calculate lighting within the VoxelManip
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
+  ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - update_liquids():  Update liquid flow
 
 VoxelArea: A helper class for voxel areas
