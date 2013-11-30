@@ -250,9 +250,8 @@ public:
 		These emit events.
 		Return true if succeeded, false if not.
 	*/
-	bool addNodeWithEvent(v3s16 p, MapNode n);
+	bool addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata = true);
 	bool removeNodeWithEvent(v3s16 p);
-	bool swapNodeWithEvent(v3s16 p, MapNode n);
 
 	/*
 		Takes the blocks at the edges into account

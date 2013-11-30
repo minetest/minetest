@@ -1260,24 +1260,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		MapNode n;
 		n.deSerialize(&data[8], ser_version);
 		
-		addNode(p, n);
-	}
-	else if(command == TOCLIENT_SWAPNODE)
-	{
-		if(datasize < 8 + MapNode::serializedLength(ser_version))
-			return;
-
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
+		bool remove_metadata = true;
+		u32 index = 8 + MapNode::serializedLength(ser_version);
+		if ((datasize >= index+1) && data[index]){
+			remove_metadata = false;
+		}	
 		
-		//TimeTaker t1("TOCLIENT_SWAPNODE");
-
-		MapNode n;
-		n.deSerialize(&data[8], ser_version);
-		
-		swapNode(p, n);
+		addNode(p, n, remove_metadata);
 	}
 	else if(command == TOCLIENT_BLOCKDATA)
 	{
@@ -2529,7 +2518,7 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
-void Client::addNode(v3s16 p, MapNode n)
+void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 {
 	TimeTaker timer1("Client::addNode()");
 
@@ -2538,29 +2527,7 @@ void Client::addNode(v3s16 p, MapNode n)
 	try
 	{
 		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
-	}
-	catch(InvalidPositionException &e)
-	{}
-	
-	for(std::map<v3s16, MapBlock * >::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i)
-	{
-		addUpdateMeshTaskWithEdge(i->first);
-	}
-}
-
-void Client::swapNode(v3s16 p, MapNode n)
-{
-	TimeTaker timer1("Client::swapNode()");
-
-	std::map<v3s16, MapBlock*> modified_blocks;
-
-	try
-	{
-		//TimeTaker timer3("Client::swapNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, false);
+		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 	}
 	catch(InvalidPositionException &e)
 	{}

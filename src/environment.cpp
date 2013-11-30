@@ -886,7 +886,7 @@ bool ServerEnvironment::removeNode(v3s16 p)
 
 bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 {
-	return m_map->swapNodeWithEvent(p, n);
+	return m_map->addNodeWithEvent(p, n, false);
 }
 
 std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)

@@ -1582,16 +1582,16 @@ void Server::AsyncRunStep()
 			// for them.
 			std::list<u16> far_players;
 
-			if(event->type == MEET_ADDNODE)
+			if(event->type == MEET_ADDNODE || event->type == MEET_SWAPNODE)
 			{
 				//infostream<<"Server: MEET_ADDNODE"<<std::endl;
 				prof.add("MEET_ADDNODE", 1);
 				if(disable_single_change_sending)
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 5);
+							&far_players, 5, event->type == MEET_ADDNODE);
 				else
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 30);
+							&far_players, 30, event->type == MEET_ADDNODE);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
@@ -1602,17 +1602,6 @@ void Server::AsyncRunStep()
 							&far_players, 5);
 				else
 					sendRemoveNode(event->p, event->already_known_by_peer,
-							&far_players, 30);
-			}
-			else if(event->type == MEET_SWAPNODE)
-			{
-				//infostream<<"Server: MEET_SWAPNODE"<<std::endl;
-				prof.add("MEET_SWAPNODE", 1);
-				if(disable_single_change_sending)
-					sendSwapNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 5);
-				else
-					sendSwapNode(event->p, event->n, event->already_known_by_peer,
 							&far_players, 30);
 			}
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
@@ -4081,7 +4070,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::list<u16> *far_players, float far_d_nodes)
+		std::list<u16> *far_players, float far_d_nodes,
+		bool remove_metadata)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -4117,63 +4107,23 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		}
 
 		// Create packet
-		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
+		u32 replysize = 9 + MapNode::serializedLength(client->serialization_version);
 		SharedBuffer<u8> reply(replysize);
 		writeU16(&reply[0], TOCLIENT_ADDNODE);
 		writeS16(&reply[2], p.X);
 		writeS16(&reply[4], p.Y);
 		writeS16(&reply[6], p.Z);
 		n.serialize(&reply[8], client->serialization_version);
-
-		// Send as reliable
-		m_con.Send(client->peer_id, 0, reply, true);
-	}
-}
-
-void Server::sendSwapNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::list<u16> *far_players, float far_d_nodes)
-{
-	float maxd = far_d_nodes*BS;
-	v3f p_f = intToFloat(p, BS);
-
-	for(std::map<u16, RemoteClient*>::iterator
-		i = m_clients.begin();
-		i != m_clients.end(); ++i)
-	{
-		// Get client and check that it is valid
-		RemoteClient *client = i->second;
-		assert(client->peer_id == i->first);
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-
-		// Don't send if it's the same one
-		if(client->peer_id == ignore_id)
-			continue;
-
-		if(far_players)
-		{
-			// Get player
-			Player *player = m_env->getPlayer(client->peer_id);
-			if(player)
-			{
-				// If player is far away, only set modified blocks not sent
-				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd)
-				{
-					far_players->push_back(client->peer_id);
-					continue;
-				}
+		u32 index = 8 + MapNode::serializedLength(client->serialization_version);
+		writeU8(&reply[index], remove_metadata ? 0 : 1);
+		
+		if (!remove_metadata) {
+			if (client->net_proto_version <= 21) {
+				// Old clients always clear metadata; fix it
+				// by sending the full block again.
+				client->SetBlockNotSent(p);
 			}
 		}
-
-		// Create packet
-		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
-		SharedBuffer<u8> reply(replysize);
-		writeU16(&reply[0], TOCLIENT_SWAPNODE);
-		writeS16(&reply[2], p.X);
-		writeS16(&reply[4], p.Y);
-		writeS16(&reply[6], p.Z);
-		n.serialize(&reply[8], client->serialization_version);
 
 		// Send as reliable
 		m_con.Send(client->peer_id, 0, reply, true);

@@ -1321,17 +1321,17 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 }
 
-bool Map::addNodeWithEvent(v3s16 p, MapNode n)
+bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 {
 	MapEditEvent event;
-	event.type = MEET_ADDNODE;
+	event.type = remove_metadata ? MEET_ADDNODE : MEET_SWAPNODE;
 	event.p = p;
 	event.n = n;
 
 	bool succeeded = true;
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks);
+		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator
@@ -1360,35 +1360,6 @@ bool Map::removeNodeWithEvent(v3s16 p)
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
-
-		// Copy modified_blocks to event
-		for(std::map<v3s16, MapBlock*>::iterator
-				i = modified_blocks.begin();
-				i != modified_blocks.end(); ++i)
-		{
-			event.modified_blocks.insert(i->first);
-		}
-	}
-	catch(InvalidPositionException &e){
-		succeeded = false;
-	}
-
-	dispatchEvent(&event);
-
-	return succeeded;
-}
-
-bool Map::swapNodeWithEvent(v3s16 p, MapNode n)
-{
-	MapEditEvent event;
-	event.type = MEET_SWAPNODE;
-	event.p = p;
-	event.n = n;
-
-	bool succeeded = true;
-	try{
-		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks, false);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator
