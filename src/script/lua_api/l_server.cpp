@@ -229,16 +229,13 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	// mods_sorted; not great performance but the number of mods on a
 	// server will likely be small.
 	for(std::list<std::string>::iterator i = mods_unsorted.begin();
-		i != mods_unsorted.end(); ++i)
-	{
+			i != mods_unsorted.end(); ++i) {
 		bool added = false;
 		for(std::list<std::string>::iterator x = mods_sorted.begin();
-			x != mods_sorted.end(); ++x)
-		{
+				x != mods_sorted.end(); ++x) {
 			// I doubt anybody using Minetest will be using
 			// anything not ASCII based :)
-			if((*i).compare(*x) <= 0)
-			{
+			if(i->compare(*x) <= 0) {
 				mods_sorted.insert(x, *i);
 				added = true;
 				break;
@@ -248,25 +245,12 @@ int ModApiServer::l_get_modnames(lua_State *L)
 			mods_sorted.push_back(*i);
 	}
 
-	// Get the table insertion function from Lua.
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int insertion_func = lua_gettop(L);
-
 	// Package them up for Lua
-	lua_newtable(L);
-	int new_table = lua_gettop(L);
-	std::list<std::string>::iterator i = mods_sorted.begin();
-	while(i != mods_sorted.end())
-	{
-		lua_pushvalue(L, insertion_func);
-		lua_pushvalue(L, new_table);
-		lua_pushstring(L, (*i).c_str());
-		if(lua_pcall(L, 2, 0, 0) != 0)
-		{
-			script_error(L);
-		}
-		++i;
+	lua_createtable(L, mods_sorted.size(), 0);
+	std::list<std::string>::iterator iter = mods_sorted.begin();
+	for (u16 i = 0; iter != mods_sorted.end(); iter++) {
+		lua_pushstring(L, iter->c_str());
+		lua_rawseti(L, -2, ++i);
 	}
 	return 1;
 }

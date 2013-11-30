@@ -389,67 +389,52 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input;
 	CraftOutput output(o_item,0);
-	std::vector<CraftDefinition*> recipes_list = cdef->getCraftRecipes(output, gdef);
-	if (recipes_list.empty())
-	{
+	std::vector<CraftDefinition*> recipes_list;
+	recipes_list = cdef->getCraftRecipes(output, gdef);
+	if (recipes_list.empty()) {
 		lua_pushnil(L);
 		return 1;
 	}
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for (std::vector<CraftDefinition*>::const_iterator
-		i = recipes_list.begin();
-		i != recipes_list.end(); i++)
-	{
+
+	lua_createtable(L, recipes_list.size(), 0);
+	std::vector<CraftDefinition*>::const_iterator iter = recipes_list.begin();
+	for (u16 i = 0; iter != recipes_list.end(); iter++) {
 		CraftOutput tmpout;
 		tmpout.item = "";
 		tmpout.time = 0;
-		CraftDefinition *def = *i;
-		tmpout = def->getOutput(input, gdef);
+		tmpout = (*iter)->getOutput(input, gdef);
 		std::string query = tmpout.item;
 		char *fmtpos, *fmt = &query[0];
-		if (strtok_r(fmt, " ", &fmtpos) == output.item)
-		{
-			input = def->getInput(output, gdef);
-			lua_pushvalue(L, table_insert);
-			lua_pushvalue(L, table);
+		if (strtok_r(fmt, " ", &fmtpos) == output.item) {
+			input = (*iter)->getInput(output, gdef);
 			lua_newtable(L);
-			int k = 1;
-			lua_newtable(L);
-			for(std::vector<ItemStack>::const_iterator
-				i = input.items.begin();
-				i != input.items.end(); i++, k++)
-			{
-				if (i->empty())
+			lua_newtable(L); // items
+			std::vector<ItemStack>::const_iterator iter = input.items.begin();
+			for (u16 j = 0; iter != input.items.end(); iter++) {
+				if (iter->empty())
 					continue;
-				lua_pushinteger(L,k);
-				lua_pushstring(L,i->name.c_str());
-				lua_settable(L, -3);
+				lua_pushstring(L, iter->name.c_str());
+				lua_rawseti(L, -2, ++j);
 			}
 			lua_setfield(L, -2, "items");
 			setintfield(L, -1, "width", input.width);
 			switch (input.method) {
 				case CRAFT_METHOD_NORMAL:
-					lua_pushstring(L,"normal");
+					lua_pushstring(L, "normal");
 					break;
 				case CRAFT_METHOD_COOKING:
-					lua_pushstring(L,"cooking");
+					lua_pushstring(L, "cooking");
 					break;
 				case CRAFT_METHOD_FUEL:
-					lua_pushstring(L,"fuel");
+					lua_pushstring(L, "fuel");
 					break;
 				default:
-					lua_pushstring(L,"unknown");
-				}
+					lua_pushstring(L, "unknown");
+			}
 			lua_setfield(L, -2, "type");
 			lua_pushstring(L, &tmpout.item[0]);
 			lua_setfield(L, -2, "output");
-			if (lua_pcall(L, 2, 0, 0))
-				script_error(L);
+			lua_rawseti(L, -2, ++i);
 		}
 	}
 	return 1;

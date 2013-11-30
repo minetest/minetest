@@ -50,7 +50,6 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 
 	lua_createtable(L, actions.size(), 0);
 	for (unsigned int i = 1; iter != actions.end(); ++iter, ++i) {
-		lua_pushnumber(L, i); // Push index
 		lua_createtable(L, 0, 5); // Make a table with enough space pre-allocated
 
 		lua_pushstring(L, iter->actor.c_str());
@@ -68,7 +67,7 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 		push_RollbackNode(L, iter->n_new);
 		lua_setfield(L, -2, "newnode");
 
-		lua_settable(L, -3); // Add action table to main table
+		lua_rawseti(L, -2, i); // Add action table to main table
 	}
 
 	return 1;
