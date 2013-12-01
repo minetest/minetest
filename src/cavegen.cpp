@@ -518,7 +518,8 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 				
-				if (!is_ravine && mg->heightmap && should_make_cave_hole) {
+				if (!is_ravine && mg->heightmap && should_make_cave_hole &&
+					p.X <= node_max.X && p.Z <= node_max.Z) {
 					int maplen = node_max.X - node_min.X + 1;
 					int idx = (p.Z - node_min.Z) * maplen + (p.X - node_min.X);
 					if (p.Y >= mg->heightmap[idx] - 2)
