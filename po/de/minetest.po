@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-11-23 17:46+0200\n"
+"PO-Revision-Date: 2013-12-01 23:46+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -105,7 +105,7 @@ msgstr "Eine Welt namens \"$1\" existiert bereits"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr "Keine Weltname gegeben oder kein Spiel ausgewählt"
+msgstr "Kein Weltname gegeben oder kein Spiel ausgewählt"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -314,7 +314,7 @@ msgstr "Mod hinzufügen:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
-msgstr "Lokale Installation"
+msgstr "Lokale Install."
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
