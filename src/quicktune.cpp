@@ -55,7 +55,6 @@ static void makeMutex()
 {
 	if(!g_mutex){
 		g_mutex = new JMutex();
-		g_mutex->Init();
 	}
 }
 

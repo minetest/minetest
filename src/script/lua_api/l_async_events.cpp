@@ -36,8 +36,6 @@ AsyncEngine::AsyncEngine() :
 	m_initDone(false),
 	m_JobIdCounter(0)
 {
-	assert(m_JobQueueMutex.Init() == 0);
-	assert(m_ResultQueueMutex.Init() == 0);
 }
 
 /******************************************************************************/

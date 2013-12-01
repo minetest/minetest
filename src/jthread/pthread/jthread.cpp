@@ -33,7 +33,6 @@
 JThread::JThread()
 {
 	retval = NULL;
-	mutexinit = false;
 	requeststop = false;
 	running = false;
 }
@@ -52,26 +51,6 @@ void JThread::Stop() {
 int JThread::Start()
 {
 	int status;
-
-	if (!mutexinit)
-	{
-		if (!runningmutex.IsInitialized())
-		{
-			if (runningmutex.Init() < 0)
-				return ERR_JTHREAD_CANTINITMUTEX;
-		}
-		if (!continuemutex.IsInitialized())
-		{
-			if (continuemutex.Init() < 0)
-				return ERR_JTHREAD_CANTINITMUTEX;
-		}
-		if (!continuemutex2.IsInitialized())
-		{
-			if (continuemutex2.Init() < 0)
-				return ERR_JTHREAD_CANTINITMUTEX;
-		}
-		mutexinit = true;
-	}
 
 	runningmutex.Lock();
 	if (running)

@@ -68,7 +68,6 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		reallocate();
 	
 #ifndef SERVER
-	//mesh_mutex.Init();
 	mesh = NULL;
 #endif
 }

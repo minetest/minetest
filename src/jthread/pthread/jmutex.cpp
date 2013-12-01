@@ -24,40 +24,27 @@
     DEALINGS IN THE SOFTWARE.
 
 */
-
+#include <assert.h>
 #include "jthread/jmutex.h"
 
 JMutex::JMutex()
 {
-	pthread_mutex_init(&mutex,NULL);
-	initialized = true;
+	assert(pthread_mutex_init(&mutex,NULL) == 0);
 }
 
 JMutex::~JMutex()
 {
-	if (initialized)
-		pthread_mutex_destroy(&mutex);
-}
-
-int JMutex::Init()
-{
-	return 0;
+	assert(pthread_mutex_destroy(&mutex) == 0);
 }
 
 int JMutex::Lock()
 {
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
-
-	pthread_mutex_lock(&mutex);
+	assert(pthread_mutex_lock(&mutex) == 0);
 	return 0;
 }
 
 int JMutex::Unlock()
 {
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
-
-	pthread_mutex_unlock(&mutex);
+	assert(pthread_mutex_unlock(&mutex) == 0);
 	return 0;
 }

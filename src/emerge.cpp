@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include <iostream>
 #include <queue>
+#include "jthread/jevent.h"
 #include "map.h"
 #include "environment.h"
 #include "util/container.h"
@@ -106,7 +107,6 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
-	queuemutex.Init();
 	
 	int nthreads;
 	if (g_settings->get("num_emerge_threads").empty()) {
@@ -385,7 +385,7 @@ void EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory)
 }
 
 
-////////////////////////////// Emerge Thread ////////////////////////////////// 
+////////////////////////////// Emerge Thread //////////////////////////////////
 
 bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 	std::map<v3s16, BlockEmergeData *>::iterator iter;
@@ -399,7 +399,7 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 	*pos = p;
 	
 	iter = emerge->blocks_enqueued.find(p);
-	if (iter == emerge->blocks_enqueued.end()) 
+	if (iter == emerge->blocks_enqueued.end())
 		return false; //uh oh, queue and map out of sync!!
 
 	BlockEmergeData *bedata = iter->second;
@@ -414,11 +414,11 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 }
 
 
-bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b, 
+bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 									BlockMakeData *data, bool allow_gen) {
 	v2s16 p2d(p.X, p.Z);
 	//envlock: usually takes <=1ms, sometimes 90ms or ~400ms to acquire
-	JMutexAutoLock envlock(m_server->m_env_mutex); 
+	JMutexAutoLock envlock(m_server->m_env_mutex);
 	
 	// Load sector if it isn't loaded
 	if (map->getSectorNoGenerateNoEx(p2d) == NULL)
@@ -496,7 +496,7 @@ void *EmergeThread::Thread() {
 
 			{
 				//envlock: usually 0ms, but can take either 30 or 400ms to acquire
-				JMutexAutoLock envlock(m_server->m_env_mutex); 
+				JMutexAutoLock envlock(m_server->m_env_mutex);
 				ScopeProfiler sp(g_profiler, "EmergeThread: after "
 						"Mapgen::makeChunk (envlock)", SPT_AVG);
 
@@ -513,7 +513,7 @@ void *EmergeThread::Thread() {
 
 					// Ignore map edit events, they will not need to be sent
 					// to anybody because the block hasn't been sent to anybody
-					MapEditEventAreaIgnorer 
+					MapEditEventAreaIgnorer
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
 					{  // takes about 90ms with -O1 on an e3-1230v2

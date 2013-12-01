@@ -433,8 +433,6 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 {
 	assert(m_device);
 
-	m_textureinfo_cache_mutex.Init();
-
 	m_main_thread = get_current_thread_id();
 
 	// Add a NULL TextureInfo as the first index, named ""

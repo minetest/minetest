@@ -373,8 +373,6 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 
 	m_shader_callback = new ShaderCallback(this, "default");
 
-	m_shaderinfo_cache_mutex.Init();
-
 	m_main_thread = get_current_thread_id();
 
 	// Add a dummy ShaderInfo as the first index, named ""

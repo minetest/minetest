@@ -16,26 +16,27 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+#include <assert.h>
 #include "jthread/jsemaphore.h"
 
 JSemaphore::JSemaphore() {
-	sem_init(&m_semaphore,0,0);
+	assert(sem_init(&m_semaphore,0,0) == 0);
 }
 
 JSemaphore::~JSemaphore() {
-	sem_destroy(&m_semaphore);
+	assert(sem_destroy(&m_semaphore) == 0);
 }
 
 JSemaphore::JSemaphore(int initval) {
-	sem_init(&m_semaphore,0,initval);
+	assert(sem_init(&m_semaphore,0,initval) == 0);
 }
 
 void JSemaphore::Post() {
-	sem_post(&m_semaphore);
+	assert(sem_post(&m_semaphore) == 0);
 }
 
 void JSemaphore::Wait() {
-	sem_wait(&m_semaphore);
+	assert(sem_wait(&m_semaphore) == 0);
 }
 
 int JSemaphore::GetValue() {
