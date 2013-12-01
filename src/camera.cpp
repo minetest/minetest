@@ -47,6 +47,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_wieldmgr(NULL),
 	m_wieldnode(NULL),
 	m_wieldlight(0),
+	m_wieldlight_add(0),
 
 	m_draw_control(draw_control),
 	m_gamedef(gamedef),
@@ -615,12 +616,20 @@ void Camera::wield(const ItemStack &item, u16 playeritem)
 		else
 			m_wield_change_timer = 0.125;
 	}
+	m_wieldlight_add = idef->get(itemname).wield_light*200/14;
 }
 
 void Camera::drawWieldedTool()
 {
 	// Set vertex colors of wield mesh according to light level
 	u8 li = m_wieldlight;
+	if (g_settings->getBool("enable_shaders"))
+	{
+		if (li+m_wieldlight_add < 200)
+			li += m_wieldlight_add;
+		else
+			li = 200;
+	}
 	video::SColor color(255,li,li,li);
 	setMeshColor(m_wieldnode->getMesh(), color);
 

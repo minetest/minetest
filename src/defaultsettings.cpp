@@ -129,6 +129,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
+	settings->setDefault("disable_wieldlight", "false");
 
 	settings->setDefault("media_fetch_threads", "8");
 

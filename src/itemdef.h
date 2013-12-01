@@ -57,6 +57,7 @@ struct ItemDefinition
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	v3f wield_scale;
+	u8 wield_light;
 
 	/*
 		Item stack and interaction properties

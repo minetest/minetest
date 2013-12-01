@@ -134,6 +134,7 @@ private:
 	scene::ISceneManager* m_wieldmgr;
 	scene::IMeshSceneNode* m_wieldnode;
 	u8 m_wieldlight;
+	u8 m_wieldlight_add;
 
 	// draw control
 	MapDrawControl& m_draw_control;

@@ -2,6 +2,7 @@
 uniform sampler2D myTexture;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
+uniform float wieldLight;
 
 varying vec3 vPosition;
 
@@ -10,7 +11,8 @@ void main (void)
     //vec4 col = vec4(1.0, 0.0, 0.0, 1.0);
     vec4 col = texture2D(myTexture, vec2(gl_TexCoord[0]));
 	float a = col.a;
-    col *= gl_Color;
+	float light = max((wieldLight/2.0)/vPosition.z, 0.0);
+	col *= min(gl_Color+vec4(light), 1.0);
 	col = col * col; // SRGB -> Linear
 	col *= 1.8;
 	col.r = 1.0 - exp(1.0 - col.r) / exp(1.0);
