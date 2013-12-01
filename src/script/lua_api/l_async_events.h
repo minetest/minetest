@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <map>
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #else
 #define _WINSOCKAPI_
