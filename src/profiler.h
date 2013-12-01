@@ -38,7 +38,6 @@ class Profiler
 public:
 	Profiler()
 	{
-		m_mutex.Init();
 	}
 
 	void add(const std::string &name, float value)

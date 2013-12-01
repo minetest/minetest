@@ -24,57 +24,21 @@
     DEALINGS IN THE SOFTWARE.
 
 */
+#include <assert.h>
+#include "jthread/jevent.h"
 
-#ifndef JTHREAD_H
+Event::Event() {
+	assert(sem_init(&sem, 0, 0) == 0);
+}
 
-#define JTHREAD_H
+Event::~Event() {
+	assert(sem_destroy(&sem) == 0);
+}
 
-#include "jthread/jmutex.h"
+void Event::wait() {
+	assert(sem_wait(&sem) == 0);
+}
 
-#define ERR_JTHREAD_CANTINITMUTEX						-1
-#define ERR_JTHREAD_CANTSTARTTHREAD						-2
-#define ERR_JTHREAD_THREADFUNCNOTSET						-3
-#define ERR_JTHREAD_NOTRUNNING							-4
-#define ERR_JTHREAD_ALREADYRUNNING						-5
-
-class JThread
-{
-public:
-	JThread();
-	virtual ~JThread();
-	int Start();
-	void Stop();
-	int Kill();
-	virtual void *Thread() = 0;
-	bool IsRunning();
-	bool StopRequested();
-	void *GetReturnValue();
-	bool IsSameThread();
-protected:
-	void ThreadStarted();
-private:
-
-#if (defined(WIN32) || defined(_WIN32_WCE))
-#ifdef _WIN32_WCE
-	DWORD threadid;
-	static DWORD WINAPI TheThread(void *param);
-#else
-	static UINT __stdcall TheThread(void *param);
-	UINT threadid;
-#endif // _WIN32_WCE
-	HANDLE threadhandle;
-#else // pthread type threads
-	static void *TheThread(void *param);
-
-	pthread_t threadid;
-#endif // WIN32
-	void *retval;
-	bool running;
-	bool requeststop;
-
-	JMutex runningmutex;
-	JMutex continuemutex,continuemutex2;
-};
-
-#endif // JTHREAD_H
-
+void Event::signal() {
+	assert(sem_post(&sem) == 0);
+}

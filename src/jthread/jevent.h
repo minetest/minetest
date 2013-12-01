@@ -25,56 +25,28 @@
 
 */
 
-#ifndef JTHREAD_H
+#ifndef JEVENT_H_
+#define JEVENT_H_
 
-#define JTHREAD_H
-
-#include "jthread/jmutex.h"
-
-#define ERR_JTHREAD_CANTINITMUTEX						-1
-#define ERR_JTHREAD_CANTSTARTTHREAD						-2
-#define ERR_JTHREAD_THREADFUNCNOTSET						-3
-#define ERR_JTHREAD_NOTRUNNING							-4
-#define ERR_JTHREAD_ALREADYRUNNING						-5
-
-class JThread
-{
-public:
-	JThread();
-	virtual ~JThread();
-	int Start();
-	void Stop();
-	int Kill();
-	virtual void *Thread() = 0;
-	bool IsRunning();
-	bool StopRequested();
-	void *GetReturnValue();
-	bool IsSameThread();
-protected:
-	void ThreadStarted();
-private:
-
-#if (defined(WIN32) || defined(_WIN32_WCE))
-#ifdef _WIN32_WCE
-	DWORD threadid;
-	static DWORD WINAPI TheThread(void *param);
+#ifdef _WIN32
+#include <windows.h>
 #else
-	static UINT __stdcall TheThread(void *param);
-	UINT threadid;
-#endif // _WIN32_WCE
-	HANDLE threadhandle;
-#else // pthread type threads
-	static void *TheThread(void *param);
+#include <semaphore.h>
+#endif
 
-	pthread_t threadid;
-#endif // WIN32
-	void *retval;
-	bool running;
-	bool requeststop;
 
-	JMutex runningmutex;
-	JMutex continuemutex,continuemutex2;
+class Event {
+#ifdef _WIN32
+	HANDLE hEvent;
+#else
+	sem_t sem;
+#endif
+
+public:
+	Event();
+	~Event();
+	void wait();
+	void signal();
 };
 
-#endif // JTHREAD_H
-
+#endif /* JEVENT_H_ */

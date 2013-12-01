@@ -62,8 +62,6 @@ public:
 
 ScriptApiBase::ScriptApiBase()
 {
-	m_luastackmutex.Init();
-
 	#ifdef SCRIPTAPI_LOCK_DEBUG
 	m_locked = false;
 	#endif

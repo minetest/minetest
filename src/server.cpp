@@ -674,9 +674,6 @@ Server::Server(
 	m_emergethread_trigger_timer = 0.0;
 	m_savemap_timer = 0.0;
 
-	m_env_mutex.Init();
-	m_con_mutex.Init();
-	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
 
 	if(path_world == "")
@@ -722,7 +719,7 @@ Server::Server(
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if(!modconf.isConsistent())	
+	if(!modconf.isConsistent())
 	{
 		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
@@ -741,10 +738,10 @@ Server::Server(
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> load_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin(); 
+	for(std::vector<std::string>::iterator it = names.begin();
 		it != names.end(); ++it)
-	{	
-		std::string name = *it;  
+	{
+		std::string name = *it;
 		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
 			load_mod_names.insert(name.substr(9));
 	}
@@ -756,7 +753,7 @@ Server::Server(
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
-	{		
+	{
 		errorstream << "The following mods could not be found:";
 		for(std::set<std::string>::iterator it = load_mod_names.begin();
 			it != load_mod_names.end(); ++it)

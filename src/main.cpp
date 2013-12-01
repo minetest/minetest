@@ -86,7 +86,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #if USE_CURL
-#include "curl.h"
+#include "curl/curl.h"
 #endif
 
 /*
@@ -708,7 +708,6 @@ void SpeedTests()
 		TimeTaker timer("Testing mutex speed");
 
 		JMutex m;
-		m.Init();
 		u32 n = 0;
 		u32 i = 0;
 		do{

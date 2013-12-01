@@ -32,7 +32,6 @@ public:
 	MutexedVariable(T value):
 		m_value(value)
 	{
-		m_mutex.Init();
 	}
 
 	T get()
@@ -75,7 +74,6 @@ public:
 		JThread(),
 		run(true)
 	{
-		run_mutex.Init();
 	}
 
 	virtual ~SimpleThread()
