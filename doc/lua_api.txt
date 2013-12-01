@@ -1491,7 +1491,7 @@ minetest.delete_particlespawner(id, player)
 ^ otherwise on all clients
 
 Schematics:
-minetest.create_schematic(p1, p2, probability_list, filename)
+minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)
 ^ Create a schematic from the volume of map specified by the box formed by p1 and p2.
 ^ Apply the specified probability values to the specified nodes in probability_list.
    ^ probability_list is an array of tables containing two fields, pos and prob.
@@ -1500,6 +1500,9 @@ minetest.create_schematic(p1, p2, probability_list, filename)
    ^ If there are two or more entries with the same pos value, the last occuring in the array is used.
    ^ If pos is not inside the box formed by p1 and p2, it is ignored.
    ^ If probability_list is nil, no probabilities are applied.
+   ^ Slice probability works in the same manner, except takes a field called ypos instead which indicates
+   ^ the y position of the slice with a probability applied.
+   ^ If slice probability list is nil, no slice probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
 minetest.place_schematic(pos, schematic, rotation, replacements)

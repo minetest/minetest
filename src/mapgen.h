@@ -256,6 +256,9 @@ public:
 };
 
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
+#define MTSCHEM_FILE_VER_HIGHEST_READ  3
+#define MTSCHEM_FILE_VER_HIGHEST_WRITE 3
+
 #define MTSCHEM_PROB_NEVER  0x00
 #define MTSCHEM_PROB_ALWAYS 0xFF
 
@@ -271,6 +274,7 @@ public:
 	Rotation rotation;
 	v3s16 size;
 	MapNode *schematic;
+	u8 *slice_probs;
 
 	DecoSchematic();
 	~DecoSchematic();
@@ -288,7 +292,9 @@ public:
 	
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 	void placeStructure(Map *map, v3s16 p);
-	void applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist, v3s16 p0);
+	void applyProbabilities(v3s16 p0,
+		std::vector<std::pair<v3s16, u8> > *plist,
+		std::vector<std::pair<s16, u8> > *splist);
 };
 
 void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,

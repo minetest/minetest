@@ -482,16 +482,18 @@ std::string DecoSimple::getName() {
 
 
 DecoSchematic::DecoSchematic() {
-	node_names = NULL;
-	schematic  = NULL;
-	flags      = 0;
-	size       = v3s16(0, 0, 0);
+	node_names  = NULL;
+	schematic   = NULL;
+	slice_probs = NULL;
+	flags       = 0;
+	size        = v3s16(0, 0, 0);
 }
 
 
 DecoSchematic::~DecoSchematic() {
 	delete node_names;
 	delete []schematic;
+	delete []slice_probs;
 }
 
 
@@ -599,37 +601,44 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 			i_step_x = xstride;
 			i_step_z = zstride;
 	}
-	
-	for (s16 z = 0; z != sz; z++)
-	for (s16 y = 0; y != sy; y++) {
-		u32 i = z * i_step_z + y * ystride + i_start;
-		for (s16 x = 0; x != sx; x++, i += i_step_x) {
-			u32 vi = vm->m_area.index(p.X + x, p.Y + y, p.Z + z);
-			if (!vm->m_area.contains(vi))
-				continue;
-			
-			if (schematic[i].getContent() == CONTENT_IGNORE)
-				continue;
-				
-			if (schematic[i].param1 == MTSCHEM_PROB_NEVER)
-				continue;
 
-			if (!force_placement) {
-				content_t c = vm->m_data[vi].getContent();
-				if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+	s16 y_map = p.Y;
+	for (s16 y = 0; y != sy; y++) {
+		if (slice_probs[y] != MTSCHEM_PROB_ALWAYS &&
+			myrand_range(1, 255) > slice_probs[y])
+			continue;
+
+		for (s16 z = 0; z != sz; z++) {
+			u32 i = z * i_step_z + y * ystride + i_start;
+			for (s16 x = 0; x != sx; x++, i += i_step_x) {
+				u32 vi = vm->m_area.index(p.X + x, y_map, p.Z + z);
+				if (!vm->m_area.contains(vi))
 					continue;
+
+				if (schematic[i].getContent() == CONTENT_IGNORE)
+					continue;
+
+				if (schematic[i].param1 == MTSCHEM_PROB_NEVER)
+					continue;
+
+				if (!force_placement) {
+					content_t c = vm->m_data[vi].getContent();
+					if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+						continue;
+				}
+
+				if (schematic[i].param1 != MTSCHEM_PROB_ALWAYS &&
+					myrand_range(1, 255) > schematic[i].param1)
+					continue;
+
+				vm->m_data[vi] = schematic[i];
+				vm->m_data[vi].param1 = 0;
+
+				if (rot)
+					vm->m_data[vi].rotateAlongYAxis(ndef, rot);
 			}
-			
-			if (schematic[i].param1 != MTSCHEM_PROB_ALWAYS &&
-				myrand_range(1, 255) > schematic[i].param1)
-				continue;
-			
-			vm->m_data[vi] = schematic[i];
-			vm->m_data[vi].param1 = 0;
-			
-			if (rot)
-				vm->m_data[vi].rotateAlongYAxis(ndef, rot);
 		}
+		y_map++;
 	}
 }
 
@@ -690,13 +699,24 @@ bool DecoSchematic::loadSchematicFile() {
 	}
 	
 	u16 version = readU16(is);
-	if (version > 2) {
+	if (version > MTSCHEM_FILE_VER_HIGHEST_READ) {
 		errorstream << "loadSchematicFile: unsupported schematic "
 			"file version" << std::endl;
 		return false;
 	}
 
 	size = readV3S16(is);
+
+	delete []slice_probs;
+	slice_probs = new u8[size.Y];
+	if (version >= 3) {
+		for (int y = 0; y != size.Y; y++)
+			slice_probs[y] = readU8(is);
+	} else {
+		for (int y = 0; y != size.Y; y++)
+			slice_probs[y] = MTSCHEM_PROB_ALWAYS;
+	}
+
 	int nodecount = size.X * size.Y * size.Z;
 	
 	u16 nidmapcount = readU16(is);
@@ -712,7 +732,7 @@ bool DecoSchematic::loadSchematicFile() {
 		node_names->push_back(name);
 	}
 
-	delete schematic;
+	delete []schematic;
 	schematic = new MapNode[nodecount];
 	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schematic,
 				nodecount, 2, 2, true);
@@ -735,10 +755,12 @@ bool DecoSchematic::loadSchematicFile() {
 
 	All values are stored in big-endian byte order.
 	[u32] signature: 'MTSM'
-	[u16] version: 2
+	[u16] version: 3
 	[u16] size X
 	[u16] size Y
 	[u16] size Z
+	For each Y:
+		[u8] slice probability value
 	[Name-ID table] Name ID Mapping Table
 		[u16] name-id count
 		For each name-id mapping:
@@ -760,10 +782,13 @@ bool DecoSchematic::loadSchematicFile() {
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 	std::ostringstream ss(std::ios_base::binary);
 
-	writeU32(ss, MTSCHEM_FILE_SIGNATURE); // signature
-	writeU16(ss, 2);      // version
-	writeV3S16(ss, size); // schematic size
-	
+	writeU32(ss, MTSCHEM_FILE_SIGNATURE);         // signature
+	writeU16(ss, MTSCHEM_FILE_VER_HIGHEST_WRITE); // version
+	writeV3S16(ss, size);                         // schematic size
+
+	for (int y = 0; y != size.Y; y++)             // Y slice probabilities
+		writeU8(ss, slice_probs[y]);
+
 	std::vector<content_t> usednodes;
 	int nodecount = size.X * size.Y * size.Z;
 	build_nnlist_and_update_ids(schematic, nodecount, &usednodes);
@@ -813,6 +838,11 @@ bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
 	vm->initialEmerge(bp1, bp2);
 	
 	size = p2 - p1 + 1;
+
+	slice_probs = new u8[size.Y];
+	for (s16 y = 0; y != size.Y; y++)
+		slice_probs[y] = MTSCHEM_PROB_ALWAYS;
+
 	schematic = new MapNode[size.X * size.Y * size.Z];
 	
 	u32 i = 0;
@@ -830,8 +860,10 @@ bool DecoSchematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2) {
 }
 
 
-void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist,
-									v3s16 p0) {
+void DecoSchematic::applyProbabilities(v3s16 p0,
+	std::vector<std::pair<v3s16, u8> > *plist,
+	std::vector<std::pair<s16, u8> > *splist) {
+
 	for (size_t i = 0; i != plist->size(); i++) {
 		v3s16 p = (*plist)[i].first - p0;
 		int index = p.Z * (size.Y * size.X) + p.Y * size.X + p.X;
@@ -843,6 +875,11 @@ void DecoSchematic::applyProbabilities(std::vector<std::pair<v3s16, u8> > *plist
 			if (prob == MTSCHEM_PROB_NEVER)
 				schematic[index].setContent(CONTENT_AIR);
 		}
+	}
+
+	for (size_t i = 0; i != splist->size(); i++) {
+		s16 y = (*splist)[i].first - p0.Y;
+		slice_probs[y] = (*splist)[i].second;
 	}
 }
 
