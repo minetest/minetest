@@ -17,22 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef C_ASYNC_EVENTS_H_
-#define C_ASYNC_EVENTS_H_
+#ifndef L_ASYNC_EVENTS_H_
+#define L_ASYNC_EVENTS_H_
 
 #include <vector>
 #include <map>
-
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#define _WINSOCKAPI_
-#include <windows.h>
-static unsigned sleep(unsigned seconds) {
-	Sleep(seconds * 1000);
-	return 0;
-}
-#endif
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -91,15 +80,6 @@ public:
 	void* Thread() {
 			ThreadStarted();
 			return worker_thread_wrapper(this);
-	}
-
-	/**
-	 * wait for thread to stop
-	 */
-	void Wait() {
-		while(IsRunning()) {
-			sleep(1);
-		}
 	}
 
 private:
@@ -237,4 +217,4 @@ private:
 	JSemaphore m_JobQueueCounter;
 };
 
-#endif /* C_ASYNC_EVENTS_H_ */
+#endif /* L_ASYNC_EVENTS_H_ */

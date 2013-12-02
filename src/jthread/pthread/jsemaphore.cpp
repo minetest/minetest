@@ -18,25 +18,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #include <assert.h>
 #include "jthread/jsemaphore.h"
-
+#define UNUSED(expr) do { (void)(expr); } while (0)
 JSemaphore::JSemaphore() {
-	assert(sem_init(&m_semaphore,0,0) == 0);
+	int sem_init_retval = sem_init(&m_semaphore,0,0);
+	assert(sem_init_retval == 0);
+	UNUSED(sem_init_retval);
 }
 
 JSemaphore::~JSemaphore() {
-	assert(sem_destroy(&m_semaphore) == 0);
+	int sem_destroy_retval = sem_destroy(&m_semaphore);
+	assert(sem_destroy_retval == 0);
+	UNUSED(sem_destroy_retval);
 }
 
 JSemaphore::JSemaphore(int initval) {
-	assert(sem_init(&m_semaphore,0,initval) == 0);
+	int sem_init_retval = sem_init(&m_semaphore,0,initval);
+	assert(sem_init_retval == 0);
+	UNUSED(sem_init_retval);
 }
 
 void JSemaphore::Post() {
-	assert(sem_post(&m_semaphore) == 0);
+	int sem_post_retval = sem_post(&m_semaphore);
+	assert(sem_post_retval == 0);
+	UNUSED(sem_post_retval);
 }
 
 void JSemaphore::Wait() {
-	assert(sem_wait(&m_semaphore) == 0);
+	int sem_wait_retval = sem_wait(&m_semaphore);
+	assert(sem_wait_retval == 0);
+	UNUSED(sem_wait_retval);
 }
 
 int JSemaphore::GetValue() {

@@ -27,18 +27,28 @@
 #include <assert.h>
 #include "jthread/jevent.h"
 
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
 Event::Event() {
-	assert(sem_init(&sem, 0, 0) == 0);
+	int sem_init_retval = sem_init(&sem, 0, 0);
+	assert(sem_init_retval == 0);
+	UNUSED(sem_init_retval);
 }
 
 Event::~Event() {
-	assert(sem_destroy(&sem) == 0);
+	int sem_destroy_retval = sem_destroy(&sem);
+	assert(sem_destroy_retval == 0);
+	UNUSED(sem_destroy_retval);
 }
 
 void Event::wait() {
-	assert(sem_wait(&sem) == 0);
+	int sem_wait_retval = sem_wait(&sem);
+	assert(sem_wait_retval == 0);
+	UNUSED(sem_wait_retval);
 }
 
 void Event::signal() {
-	assert(sem_post(&sem) == 0);
+	int sem_post_retval = sem_post(&sem);
+	assert(sem_post_retval == 0);
+	UNUSED(sem_post_retval);
 }
