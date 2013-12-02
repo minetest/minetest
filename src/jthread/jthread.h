@@ -50,6 +50,13 @@ public:
 	bool StopRequested();
 	void *GetReturnValue();
 	bool IsSameThread();
+
+	/*
+	 * Wait for thread to finish
+	 * Note: this does not stop a thread you have to do this on your own
+	 * WARNING: never ever call this on a thread not started or already killed!
+	 */
+	void Wait();
 protected:
 	void ThreadStarted();
 private:
@@ -67,6 +74,8 @@ private:
 	static void *TheThread(void *param);
 
 	pthread_t threadid;
+
+	bool started;
 #endif // WIN32
 	void *retval;
 	bool running;

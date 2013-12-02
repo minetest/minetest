@@ -26,25 +26,33 @@
 */
 #include <assert.h>
 #include "jthread/jmutex.h"
-
+#define UNUSED(expr) do { (void)(expr); } while (0)
 JMutex::JMutex()
 {
-	assert(pthread_mutex_init(&mutex,NULL) == 0);
+	int mutex_init_retval = pthread_mutex_init(&mutex,NULL);
+	assert( mutex_init_retval == 0 );
+	UNUSED(mutex_init_retval);
 }
 
 JMutex::~JMutex()
 {
-	assert(pthread_mutex_destroy(&mutex) == 0);
+	int mutex_dextroy_retval = pthread_mutex_destroy(&mutex);
+	assert( mutex_dextroy_retval == 0 );
+	UNUSED(mutex_dextroy_retval);
 }
 
 int JMutex::Lock()
 {
-	assert(pthread_mutex_lock(&mutex) == 0);
-	return 0;
+	int mutex_lock_retval = pthread_mutex_lock(&mutex);
+	assert( mutex_lock_retval == 0 );
+	return mutex_lock_retval;
+	UNUSED(mutex_lock_retval);
 }
 
 int JMutex::Unlock()
 {
-	assert(pthread_mutex_unlock(&mutex) == 0);
-	return 0;
+	int mutex_unlock_retval = pthread_mutex_unlock(&mutex);
+	assert( mutex_unlock_retval == 0 );
+	return mutex_unlock_retval;
+	UNUSED(mutex_unlock_retval);
 }

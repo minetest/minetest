@@ -26,7 +26,8 @@
 */
 
 #include "jthread/jthread.h"
-
+#include <assert.h>
+#define UNUSED(expr) do { (void)(expr); } while (0)
 #ifndef _WIN32_WCE
 	#include <process.h>
 #endif // _WIN32_WCE
@@ -47,6 +48,12 @@ void JThread::Stop() {
 	runningmutex.Lock();
 	requeststop = false;
 	runningmutex.Unlock();
+}
+
+void JThread::Wait() {
+	int WaitForSingleObject_retval = WaitForSingleObject(threadhandle, INFINITE);
+	assert(WaitForSingleObject_retval == 0);
+	UNUSED(WaitForSingleObject_retval);
 }
 
 int JThread::Start()

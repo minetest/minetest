@@ -26,15 +26,19 @@
 */
 
 #include "jthread/jthread.h"
+#include <assert.h>
 #include <sys/time.h>
 #include <time.h>
 #include <stdlib.h>
+
+#define UNUSED(expr) do { (void)(expr); } while (0)
 
 JThread::JThread()
 {
 	retval = NULL;
 	requeststop = false;
 	running = false;
+	started = false;
 }
 
 JThread::~JThread()
@@ -45,6 +49,20 @@ JThread::~JThread()
 void JThread::Stop() {
 	runningmutex.Lock();
 	requeststop = true;
+	runningmutex.Unlock();
+}
+
+void JThread::Wait() {
+	void* status;
+	runningmutex.Lock();
+	if (started) {
+		runningmutex.Unlock();
+		int pthread_join_retval = pthread_join(threadid,&status);
+		assert(pthread_join_retval == 0);
+		UNUSED(pthread_join_retval);
+		runningmutex.Lock();
+		started = false;
+	}
 	runningmutex.Unlock();
 }
 
@@ -63,7 +81,7 @@ int JThread::Start()
 
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+	//pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
 
 	continuemutex.Lock();
 	status = pthread_create(&threadid,&attr,TheThread,this);
@@ -89,6 +107,7 @@ int JThread::Start()
 
 		runningmutex.Lock();
 	}
+	started = true;
 	runningmutex.Unlock();
 
 	continuemutex.Unlock();
@@ -100,13 +119,30 @@ int JThread::Start()
 
 int JThread::Kill()
 {
+	void* status;
 	runningmutex.Lock();
 	if (!running)
 	{
+		if (started) {
+			runningmutex.Unlock();
+			int pthread_join_retval = pthread_join(threadid,&status);
+			assert(pthread_join_retval == 0);
+			UNUSED(pthread_join_retval);
+			runningmutex.Lock();
+			started = false;
+		}
 		runningmutex.Unlock();
 		return ERR_JTHREAD_NOTRUNNING;
 	}
 	pthread_cancel(threadid);
+	if (started) {
+		runningmutex.Unlock();
+		int pthread_join_retval = pthread_join(threadid,&status);
+		assert(pthread_join_retval == 0);
+		UNUSED(pthread_join_retval);
+		runningmutex.Lock();
+		started = false;
+	}
 	running = false;
 	runningmutex.Unlock();
 	return 0;
