@@ -171,6 +171,22 @@
 #enable_shaders = true
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
+# Set to true enables parallax occlusion mapping. Requires shaders enabled.
+#enable_parallax_occlusion = false
+# Scale of parallax occlusion effect
+#parallax_mapping_scale = 0.08
+# Bias of parallax occlusion effect, usually scale/2
+#parallax_mapping_scale = 0.04
+# Set to true enables waving water. Requires shaders enabled.
+#enable_waving_water = false
+# Parameters for waving water:
+#water_wave_height = 1.0
+#water_wave_length = 20.0
+#water_wave_speed = 5.0
+# Set to true enables waving leaves. Requires shaders enabled.
+#enable_waving_leaves = false
+# Set to true enables waving plants. Requires shaders enabled.
+#enable_waving_plants = false
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25

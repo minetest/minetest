@@ -126,6 +126,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "true");
 	settings->setDefault("enable_bumpmapping", "false");
+	settings->setDefault("enable_parallax_occlusion", "false");
+	settings->setDefault("parallax_occlusion_scale", "0.08");
+	settings->setDefault("parallax_occlusion_bias", "0.04");
+	settings->setDefault("enable_waving_water", "false");
+	settings->setDefault("water_wave_height", "1.0");
+	settings->setDefault("water_wave_length", "20.0");
+	settings->setDefault("water_wave_speed", "5.0");
+	settings->setDefault("enable_waving_leaves", "false");
+	settings->setDefault("enable_waving_plants", "false");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");

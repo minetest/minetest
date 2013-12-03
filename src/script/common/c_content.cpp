@@ -428,6 +428,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		f.selection_box = read_nodebox(L, -1);
  	lua_pop(L, 1);
 
+	f.waving = getintfield_default(L, index,
+			"waving", f.waving);
+
 	// Set to true if paramtype used to be 'facedir_simple'
 	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
 	// Set to true if wall_mounted used to be set to true
