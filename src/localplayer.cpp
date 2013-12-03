@@ -261,8 +261,10 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 				// The node to be sneaked on has to be walkable
 				if(nodemgr->get(map->getNode(p)).walkable == false)
 					continue;
-				// And the node above it has to be nonwalkable
+				// And the 2 nodes above it have to be nonwalkable
 				if(nodemgr->get(map->getNode(p+v3s16(0,1,0))).walkable == true)
+					continue;
+				if(nodemgr->get(map->getNode(p+v3s16(0,2,0))).walkable == true)
 					continue;
 			}
 			catch(InvalidPositionException &e)
