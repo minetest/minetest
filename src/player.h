@@ -266,6 +266,8 @@ public:
 	float physics_override_speed;
 	float physics_override_jump;
 	float physics_override_gravity;
+	bool physics_override_sneak;
+	bool physics_override_sneak_glitch;
 
 	u16 hp;
 
