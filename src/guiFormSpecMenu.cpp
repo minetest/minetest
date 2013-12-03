@@ -2462,12 +2462,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						move_amount = 0;
 					}
 				}
-				else if(getAbsoluteClippingRect().isPointInside(m_pointer))
-				{
-					// Clicked somewhere else: deselect
-					m_selected_amount = 0;
-				}
-				else
+				else if (!getAbsoluteClippingRect().isPointInside(m_pointer))
 				{
 					// Clicked outside of the window: drop
 					if(button == 1)  // right
