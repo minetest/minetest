@@ -103,7 +103,7 @@ struct MeshUpdateResult
 	}
 };
 
-class MeshUpdateThread : public SimpleThread
+class MeshUpdateThread : public JThread
 {
 public:
 

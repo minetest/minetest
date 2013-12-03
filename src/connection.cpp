@@ -556,7 +556,7 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 
 Connection::~Connection()
 {
-	stop();
+	Stop();
 	// Delete peers
 	for(std::map<u16, Peer*>::iterator
 			j = m_peers.begin();
@@ -578,7 +578,7 @@ void * Connection::Thread()
 	u32 curtime = porting::getTimeMs();
 	u32 lasttime = curtime;
 
-	while(getRun())
+	while(!StopRequested())
 	{
 		BEGIN_DEBUG_EXCEPTION_HANDLER
 		

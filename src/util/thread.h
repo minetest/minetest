@@ -60,52 +60,8 @@ private:
 };
 
 /*
-	A base class for simple background thread implementation
-*/
-
-class SimpleThread : public JThread
-{
-	bool run;
-	JMutex run_mutex;
-
-public:
-
-	SimpleThread():
-		JThread(),
-		run(true)
-	{
-	}
-
-	virtual ~SimpleThread()
-	{}
-
-	virtual void * Thread() = 0;
-
-	bool getRun()
-	{
-		JMutexAutoLock lock(run_mutex);
-		return run;
-	}
-	void setRun(bool a_run)
-	{
-		JMutexAutoLock lock(run_mutex);
-		run = a_run;
-	}
-
-	void stop()
-	{
-		setRun(false);
-		while(IsRunning())
-			sleep_ms(100);
-	}
-};
-
-/*
 	A single worker thread - multiple client threads queue framework.
 */
-
-
-
 template<typename Key, typename T, typename Caller, typename CallerData>
 class GetResult
 {

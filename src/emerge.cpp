@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_math.h"
 
 
-class EmergeThread : public SimpleThread
+class EmergeThread : public JThread
 {
 public:
 	Server *m_server;
@@ -61,26 +61,17 @@ public:
 	std::queue<v3s16> blockqueue;
 
 	EmergeThread(Server *server, int ethreadid):
-		SimpleThread(),
+		JThread(),
 		m_server(server),
 		map(NULL),
 		emerge(NULL),
 		mapgen(NULL),
+		enable_mapgen_debug_info(false),
 		id(ethreadid)
 	{
 	}
 
 	void *Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
-
 	bool popBlockEmerge(v3s16 *pos, u8 *flags);
 	bool getBlockOrStartGen(v3s16 p, MapBlock **b,
 			BlockMakeData *data, bool allow_generate);
@@ -137,9 +128,9 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 
 EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i != emergethread.size(); i++) {
-		emergethread[i]->setRun(false);
+		emergethread[i]->Stop();
 		emergethread[i]->qevent.signal();
-		emergethread[i]->stop();
+		emergethread[i]->Wait();
 		delete emergethread[i];
 		delete mapgen[i];
 	}
@@ -261,9 +252,9 @@ Mapgen *EmergeManager::getCurrentMapgen() {
 }
 
 
-void EmergeManager::triggerAllThreads() {
+void EmergeManager::startAllThreads() {
 	for (unsigned int i = 0; i != emergethread.size(); i++)
-		emergethread[i]->trigger();
+		emergethread[i]->Start();
 }
 
 
@@ -499,7 +490,7 @@ void *EmergeThread::Thread() {
 	mapgen = emerge->mapgen[id];
 	enable_mapgen_debug_info = emerge->mapgen_debug_info;
 
-	while (getRun())
+	while (!StopRequested())
 	try {
 		if (!popBlockEmerge(&p, &flags)) {
 			qevent.wait();
