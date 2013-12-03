@@ -349,7 +349,8 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	return 0;
 }
 
-// set_physics_override(self, physics_override_speed, physics_override_jump, physics_override_gravity)
+// set_physics_override(self, physics_override_speed, physics_override_jump,
+//                      physics_override_gravity, sneak, sneak_glitch)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
@@ -366,6 +367,14 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	}
 	if(!lua_isnil(L, 4)){
 		co->m_physics_override_gravity = lua_tonumber(L, 4);
+		co->m_physics_override_sent = false;
+	}
+	if (lua_isboolean(L, 5)) {
+		co->m_physics_override_sneak = lua_toboolean(L, 5);
+		co->m_physics_override_sent = false;
+	}
+	if (lua_isboolean(L, 6)) {
+		co->m_physics_override_sneak_glitch = lua_toboolean(L, 6);
 		co->m_physics_override_sent = false;
 	}
 	return 0;
