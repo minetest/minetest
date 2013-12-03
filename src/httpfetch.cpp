@@ -319,7 +319,7 @@ struct HTTPFetchOngoing
 	}
 };
 
-class CurlFetchThread : public SimpleThread
+class CurlFetchThread : public JThread
 {
 protected:
 	enum RequestType {
@@ -539,7 +539,6 @@ protected:
 
 	void * Thread()
 	{
-		ThreadStarted();
 		log_register_thread("CurlFetchThread");
 		DSTACK(__FUNCTION_NAME);
 
@@ -553,7 +552,7 @@ protected:
 
 		assert(m_all_ongoing.empty());
 
-		while (getRun()) {
+		while (!StopRequested()) {
 			BEGIN_DEBUG_EXCEPTION_HANDLER
 
 			/*
@@ -641,9 +640,9 @@ void httpfetch_cleanup()
 {
 	verbosestream<<"httpfetch_cleanup: cleaning up"<<std::endl;
 
-	g_httpfetch_thread->setRun(false);
+	g_httpfetch_thread->Stop();
 	g_httpfetch_thread->requestWakeUp();
-	g_httpfetch_thread->stop();
+	g_httpfetch_thread->Wait();
 	delete g_httpfetch_thread;
 
 	curl_global_cleanup();
@@ -652,8 +651,6 @@ void httpfetch_cleanup()
 void httpfetch_async(const HTTPFetchRequest &fetchrequest)
 {
 	g_httpfetch_thread->requestFetch(fetchrequest);
-	if (!g_httpfetch_thread->IsRunning())
-		g_httpfetch_thread->Start();
 }
 
 static void httpfetch_request_clear(unsigned long caller)

@@ -119,7 +119,7 @@ public:
 	Mapgen *createMapgen(std::string mgname, int mgid,
 						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
-	void triggerAllThreads();
+	void startAllThreads();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
 
 	void registerMapgen(std::string name, MapgenFactory *mgfactory);

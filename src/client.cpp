@@ -177,7 +177,7 @@ void * MeshUpdateThread::Thread()
 	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
-	while(getRun())
+	while(!StopRequested())
 	{
 		/*// Wait for output queue to flush.
 		// Allow 2 in queue, this makes less frametime jitter.
@@ -302,9 +302,8 @@ Client::~Client()
 		m_con.Disconnect();
 	}
 
-	m_mesh_update_thread.setRun(false);
-	while(m_mesh_update_thread.IsRunning())
-		sleep_ms(100);
+	m_mesh_update_thread.Stop();
+	m_mesh_update_thread.Wait();
 	while(!m_mesh_update_thread.m_queue_out.empty()) {
 		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
 		delete r.mesh;
