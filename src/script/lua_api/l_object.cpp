@@ -357,25 +357,27 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	PlayerSAO *co = (PlayerSAO *) getobject(ref);
 	if(co == NULL) return 0;
 	// Do it
-	if(!lua_isnil(L, 2)){
-		co->m_physics_override_speed = lua_tonumber(L, 2);
+	if (lua_istable(L, 2)) {
+		co->m_physics_override_speed = getfloatfield_default(L, 2, "speed", co->m_physics_override_speed);
+		co->m_physics_override_jump = getfloatfield_default(L, 2, "jump", co->m_physics_override_jump);
+		co->m_physics_override_gravity = getfloatfield_default(L, 2, "gravity", co->m_physics_override_gravity);
+		co->m_physics_override_sneak = getboolfield_default(L, 2, "sneak", co->m_physics_override_sneak);
+		co->m_physics_override_sneak_glitch = getboolfield_default(L, 2, "sneak_glitch", co->m_physics_override_sneak_glitch);
 		co->m_physics_override_sent = false;
-	}
-	if(!lua_isnil(L, 3)){
-		co->m_physics_override_jump = lua_tonumber(L, 3);
-		co->m_physics_override_sent = false;
-	}
-	if(!lua_isnil(L, 4)){
-		co->m_physics_override_gravity = lua_tonumber(L, 4);
-		co->m_physics_override_sent = false;
-	}
-	if (lua_isboolean(L, 5)) {
-		co->m_physics_override_sneak = lua_toboolean(L, 5);
-		co->m_physics_override_sent = false;
-	}
-	if (lua_isboolean(L, 6)) {
-		co->m_physics_override_sneak_glitch = lua_toboolean(L, 6);
-		co->m_physics_override_sent = false;
+	} else {
+		// old, non-table format
+		if(!lua_isnil(L, 2)){
+			co->m_physics_override_speed = lua_tonumber(L, 2);
+			co->m_physics_override_sent = false;
+		}
+		if(!lua_isnil(L, 3)){
+			co->m_physics_override_jump = lua_tonumber(L, 3);
+			co->m_physics_override_sent = false;
+		}
+		if(!lua_isnil(L, 4)){
+			co->m_physics_override_gravity = lua_tonumber(L, 4);
+			co->m_physics_override_sent = false;
+		}
 	}
 	return 0;
 }
