@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <errno.h>
+#include "jthread/jevent.h"
 #include "config.h"
 #include "exceptions.h"
 #include "debug.h"
