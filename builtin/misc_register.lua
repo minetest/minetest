@@ -24,17 +24,15 @@ minetest.registered_aliases = {}
 
 -- For tables that are indexed by item name:
 -- If table[X] does not exist, default to table[minetest.registered_aliases[X]]
-local function set_alias_metatable(table)
-	setmetatable(table, {
-		__index = function(name)
-			return rawget(table, minetest.registered_aliases[name])
-		end
-	})
-end
-set_alias_metatable(minetest.registered_items)
-set_alias_metatable(minetest.registered_nodes)
-set_alias_metatable(minetest.registered_craftitems)
-set_alias_metatable(minetest.registered_tools)
+local alias_metatable = {
+	__index = function(t, name)
+		return rawget(t, minetest.registered_aliases[name])
+	end
+}
+setmetatable(minetest.registered_items, alias_metatable)
+setmetatable(minetest.registered_nodes, alias_metatable)
+setmetatable(minetest.registered_craftitems, alias_metatable)
+setmetatable(minetest.registered_tools, alias_metatable)
 
 -- These item names may not be used because they would interfere
 -- with legacy itemstrings
