@@ -27,7 +27,7 @@ JSemaphore::JSemaphore() {
 }
 
 JSemaphore::~JSemaphore() {
-	CloseHandle(&m_hSemaphore);
+	CloseHandle(m_hSemaphore);
 }
 
 JSemaphore::JSemaphore(int initval) {

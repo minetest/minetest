@@ -46,14 +46,21 @@ JThread::~JThread()
 
 void JThread::Stop() {
 	runningmutex.Lock();
-	requeststop = false;
+	requeststop = true;
 	runningmutex.Unlock();
 }
 
 void JThread::Wait() {
-	int WaitForSingleObject_retval = WaitForSingleObject(threadhandle, INFINITE);
-	assert(WaitForSingleObject_retval == 0);
-	UNUSED(WaitForSingleObject_retval);
+	runningmutex.Lock();
+	if (running)
+	{
+		runningmutex.Unlock();
+		WaitForSingleObject(threadhandle, INFINITE);
+	}
+	else
+	{
+		runningmutex.Unlock();
+	}
 }
 
 int JThread::Start()
