@@ -278,6 +278,8 @@
 #active_object_send_range_blocks = 3
 # how large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
 #active_block_range = 2
+# if entities are allowed to force load the world
+#enable_force_load = true
 # how many blocks are flying in the wire simultaneously per client
 #max_simultaneous_block_sends_per_client = 2
 # how many blocks are flying in the wire simultaneously per server

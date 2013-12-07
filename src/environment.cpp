@@ -1096,7 +1096,24 @@ void ServerEnvironment::step(float dtime)
 					floatToInt(player->getPosition(), BS));
 			players_blockpos.push_back(blockpos);
 		}
-		
+		if (g_settings->getBool("enable_force_load")) {
+			for(std::map<u16, ServerActiveObject*>::iterator
+				i = m_active_objects.begin();
+				i != m_active_objects.end(); ++i)
+			{
+				ServerActiveObject* obj = i->second;
+				if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+					continue;
+				ObjectProperties* props = obj->accessObjectProperties();
+				if(props->force_load){
+					v3f objectpos = obj->getBasePosition();
+					v3s16 blockpos = getNodeBlockPos(
+					floatToInt(objectpos, BS));
+					players_blockpos.push_back(blockpos);
+				}
+			}
+		}
+
 		/*
 			Update list of active blocks, collecting changes
 		*/

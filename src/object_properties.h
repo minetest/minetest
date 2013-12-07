@@ -47,6 +47,7 @@ struct ObjectProperties
 	f32 stepheight;
 	bool automatic_face_movement_dir;
 	f32 automatic_face_movement_dir_offset;
+	bool force_load;
 
 
 	ObjectProperties();

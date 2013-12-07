@@ -189,6 +189,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_mapgen_debug_info", "false");
 	settings->setDefault("active_object_send_range_blocks", "3");
 	settings->setDefault("active_block_range", "2");
+	settings->setDefault("enable_force_load", "true");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_simultaneous_block_sends_per_client", "4");
