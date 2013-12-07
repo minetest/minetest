@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-11-16 20:43+0200\n"
-"Last-Translator: King Artur <david1989mail@yahoo.com>\n"
+"PO-Revision-Date: 2013-12-07 12:18+0200\n"
+"Last-Translator: Mitchell Ward <mitchie1234@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
@@ -78,7 +78,7 @@ msgstr "Numele lumii"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr ""
+msgstr "Seminţe"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -110,7 +110,7 @@ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Pentru a permite shaders OpenGL de şofer trebuie să fie utilizat."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -310,28 +310,24 @@ msgid "Installed Mods:"
 msgstr "Moduri Instalate:"
 
 #: builtin/modmgr.lua:243
-#, fuzzy
 msgid "Add mod:"
-msgstr "<<-- Adaugă modul"
+msgstr "Adăugaţi mod:"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Local install"
-msgstr "Instalează"
+msgstr "Instalaţi Locale"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Repozitoriu Online mod"
 
 #: builtin/modmgr.lua:284
-#, fuzzy
 msgid "No mod description available"
-msgstr "Nici o informație disponibilă"
+msgstr "Nu mod descriere disponibile"
 
 #: builtin/modmgr.lua:288
-#, fuzzy
 msgid "Mod information:"
-msgstr "Nici o informație disponibilă"
+msgstr "Mod informaţii:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -339,12 +335,11 @@ msgstr "Redenumește"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Dezinstalaţi modpack selectat"
 
 #: builtin/modmgr.lua:312
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Șterge modul selectat"
+msgstr "Dezinstalaţi selectat mod"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
