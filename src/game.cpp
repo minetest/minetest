@@ -821,7 +821,7 @@ public:
 		services->setPixelShaderConstant("enableBumpmapping", &enable_bumpmapping, 1);
 
 		float enable_parallax_occlusion = 0;
-		if  (g_settings->getBool("enable_parallax_occlusion"));{
+		if (g_settings->getBool("enable_parallax_occlusion")) {
 			enable_parallax_occlusion = 1;
 			float parallax_occlusion_scale = g_settings->getFloat("parallax_occlusion_scale");
 			services->setPixelShaderConstant("parallaxOcclusionScale", &parallax_occlusion_scale, 1);
