@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-09-11 16:25+0200\n"
-"Last-Translator: Rutger NL <r.minetest@rutger.nl>\n"
+"PO-Revision-Date: 2013-12-07 12:20+0200\n"
+"Last-Translator: Mitchell Ward <mitchie1234@hotmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -76,8 +76,9 @@ msgid "World name"
 msgstr "Naam wereld"
 
 #: builtin/mainmenu.lua:300
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "Jizz in my panties"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
