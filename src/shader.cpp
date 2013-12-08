@@ -673,6 +673,15 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 	if(vertex_program == "" && pixel_program == "" && geometry_program == "")
 		return shaderinfo;
 
+	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion")) {
+		if(vertex_program != "")
+			vertex_program = "#define NORMALS\n" + vertex_program;
+		if(pixel_program != "")
+			pixel_program = "#define NORMALS\n" + pixel_program;
+		if(geometry_program != "")
+			geometry_program = "#define NORMALS\n" + geometry_program;
+	}
+	
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;
 	const c8* pixel_program_ptr = 0;
