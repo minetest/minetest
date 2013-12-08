@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /////////////////// Ore generation flags
 // Use absolute value of height to determine ore placement
-#define OREFLAG_ABSHEIGHT 0x01 
+#define OREFLAG_ABSHEIGHT 0x01
 // Use 3d noise to get density of ore placement, instead of just the position
 #define OREFLAG_DENSITY   0x02 // not yet implemented
 // For claylike ore types, place ore if the number of surrounding
@@ -81,7 +81,7 @@ struct MapgenParams {
 		chunksize   = 5;
 		flags       = MG_TREES | MG_CAVES | MGV6_BIOME_BLEND;
 	}
-	
+
 	virtual bool readParams(Settings *settings) { return true; }
 	virtual void writeParams(Settings *settings) {}
 	virtual ~MapgenParams() {}
@@ -95,7 +95,7 @@ public:
 	int id;
 	ManualMapVoxelManipulator *vm;
 	INodeDefManager *ndef;
-	
+
 	s16 *heightmap;
 	u8 *biomemap;
 	v3s16 csize;
@@ -153,18 +153,18 @@ public:
 	s16 height_max;
 	u8 ore_param2;		// to set node-specific attributes
 	u32 flags;          // attributes for this ore
-	float nthresh;      // threshhold for noise at which an ore is placed 
+	float nthresh;      // threshhold for noise at which an ore is placed
 	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
-	
+
 	Ore() {
 		ore     = CONTENT_IGNORE;
 		np      = NULL;
 		noise   = NULL;
 	}
-	
+
 	virtual ~Ore();
-	
+
 	void resolveNodeNames(INodeDefManager *ndef);
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
@@ -199,7 +199,7 @@ struct CutoffData {
 	//v3s16 p;
 	//v3s16 size;
 	//s16 height;
-	
+
 	CutoffData(s16 x, s16 y, s16 z, s16 h) {
 		p = v3s16(x, y, z);
 		height = h;
@@ -210,25 +210,25 @@ struct CutoffData {
 class Decoration {
 public:
 	INodeDefManager *ndef;
-	
+
 	int mapseed;
 	std::string place_on_name;
 	content_t c_place_on;
 	s16 sidelen;
 	float fill_ratio;
 	NoiseParams *np;
-	
+
 	std::set<u8> biomes;
 	//std::list<CutoffData> cutoffs;
 	//JMutex cutoff_mutex;
 
 	Decoration();
 	virtual ~Decoration();
-	
+
 	virtual void resolveNodeNames(INodeDefManager *ndef);
 	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	
+
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 	virtual std::string getName() = 0;
@@ -243,12 +243,12 @@ public:
 	s16 deco_height;
 	s16 deco_height_max;
 	s16 nspawnby;
-	
+
 	std::vector<std::string> decolist_names;
 	std::vector<content_t> c_decolist;
 
 	~DecoSimple() {}
-	
+
 	void resolveNodeNames(INodeDefManager *ndef);
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
@@ -265,7 +265,7 @@ public:
 class DecoSchematic : public Decoration {
 public:
 	std::string filename;
-	
+
 	std::vector<std::string> *node_names;
 	std::vector<content_t> c_nodes;
 	std::map<std::string, std::string> replacements;
@@ -278,18 +278,18 @@ public:
 
 	DecoSchematic();
 	~DecoSchematic();
-	
+
 	void resolveNodeNames(INodeDefManager *ndef);
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
-	
+
 	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 					Rotation rot, bool force_placement);
-	
+
 	bool loadSchematicFile();
 	void saveSchematicFile(INodeDefManager *ndef);
-	
+
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 	void placeStructure(Map *map, v3s16 p);
 	void applyProbabilities(v3s16 p0,
