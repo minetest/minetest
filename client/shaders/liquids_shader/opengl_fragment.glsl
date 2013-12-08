@@ -17,11 +17,12 @@ const float e = 2.718281828459;
 
 void main (void)
 {
-	float use_normalmap = texture2D(useNormalmap,vec2(1.0,1.0)).r;
-	float enable_bumpmapping = enableBumpmapping;
-
 	vec3 color;
 	vec2 uv = gl_TexCoord[0].st;
+	
+#ifdef NORMALS
+	float use_normalmap = texture2D(useNormalmap,vec2(1.0,1.0)).r;
+	float enable_bumpmapping = enableBumpmapping;
 
 	if ((enable_bumpmapping == 1.0) && (use_normalmap > 0.0)) {
 		vec3 base = texture2D(baseTexture, uv).rgb;
@@ -35,6 +36,9 @@ void main (void)
 	} else {
 		color = texture2D(baseTexture, uv).rgb;
 	}
+#else
+	color = texture2D(baseTexture, uv).rgb;
+#endif
 
 	float alpha = gl_Color.a;
 	vec4 col = vec4(color.r, color.g, color.b, alpha);

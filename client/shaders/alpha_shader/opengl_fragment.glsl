@@ -21,13 +21,15 @@ const float e = 2.718281828459;
 
 void main (void)
 {
-	float use_normalmap = texture2D(useNormalmap,vec2(1.0,1.0)).r;
-	float enable_bumpmapping = enableBumpmapping;
-
 	vec3 color;
 	vec2 uv = gl_TexCoord[0].st;
+	
+#ifdef NORMALS
 	float height;
 	vec2 tsEye = vec2(tsEyeVec.x,-tsEyeVec.y);
+	
+	float use_normalmap = texture2D(useNormalmap,vec2(1.0,1.0)).r;
+	float enable_bumpmapping = enableBumpmapping;
 	
 	if ((enableParallaxOcclusion == 1.0) && (use_normalmap > 0.0)) {
 		float map_height = texture2D(normalTexture, uv).a;
@@ -49,6 +51,9 @@ void main (void)
 	} else {
 		color = texture2D(baseTexture, uv).rgb;
 	}
+#else
+	color = texture2D(baseTexture, uv).rgb;
+#endif
 
 	float alpha = texture2D(baseTexture, uv).a;
 	vec4 col = vec4(color.r, color.g, color.b, alpha);
