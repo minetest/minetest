@@ -393,10 +393,22 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	c_cobble          = ndef->getId("mapgen_cobble");
 	c_desert_sand     = ndef->getId("mapgen_desert_sand");
 	c_desert_stone    = ndef->getId("mapgen_desert_stone");
+	c_mossycobble     = ndef->getId("mapgen_mossycobble");
+	c_sandbrick       = ndef->getId("mapgen_sandstonebrick");
+	c_stair_cobble    = ndef->getId("mapgen_stair_cobble");
+	c_stair_sandstone = ndef->getId("mapgen_stair_sandstone");
 	if (c_desert_sand == CONTENT_IGNORE)
 		c_desert_sand = c_sand;
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
+	if (c_mossycobble == CONTENT_IGNORE)
+		c_mossycobble = c_cobble;
+	if (c_sandbrick == CONTENT_IGNORE)
+		c_sandbrick = c_desert_stone;
+	if (c_stair_cobble == CONTENT_IGNORE)
+		c_stair_cobble = c_cobble;
+	if (c_stair_sandstone == CONTENT_IGNORE)
+		c_stair_sandstone = c_sandbrick;
 
 	// Maximum height of the stone surface and obstacles.
 	// This is used to guide the cave generation
@@ -432,7 +444,33 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	
 	// Add dungeons
 	if (flags & MG_DUNGEONS) {
-		DungeonGen dgen(ndef, data->seed, water_level);
+		DungeonParams dp;
+
+		dp.np_rarity  = nparams_dungeon_rarity;
+		dp.np_density = nparams_dungeon_density;
+		dp.np_wetness = nparams_dungeon_wetness;
+		dp.c_water = c_water_source;
+		if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_NORMAL) {
+			dp.c_cobble  = c_cobble;
+			dp.c_moss    = c_mossycobble;
+			dp.c_stair   = c_stair_cobble;
+
+			dp.diagonal_dirs = false;
+			dp.mossratio = 3.0;
+			dp.holesize  = v3s16(1, 2, 1);
+			dp.roomsize  = v3s16(0, 0, 0);
+		} else {
+			dp.c_cobble  = c_sandbrick;
+			dp.c_moss    = c_sandbrick; // should make this 'cracked sandstone' later
+			dp.c_stair   = c_stair_sandstone;
+
+			dp.diagonal_dirs = true;
+			dp.mossratio = 0.0;
+			dp.holesize  = v3s16(2, 3, 2);
+			dp.roomsize  = v3s16(2, 5, 2);
+		}
+
+		DungeonGen dgen(ndef, data->seed, water_level, &dp);
 		dgen.generate(vm, blockseed, full_node_min, full_node_max);
 	}
 	

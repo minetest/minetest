@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "main.h" // For g_profiler
 
+//#define DGEN_USE_TORCHES
+
 NoiseParams nparams_dungeon_rarity = 
 	{0.0, 1.0, v3f(500.0, 500.0, 500.0), 0, 2, 0.8};
 NoiseParams nparams_dungeon_wetness =
@@ -40,41 +42,48 @@ NoiseParams nparams_dungeon_density =
 ///////////////////////////////////////////////////////////////////////////////
 
 
-DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel) {
+DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel,
+						DungeonParams *dparams) {
 	this->ndef        = ndef;
 	this->mapseed     = seed;
 	this->water_level = waterlevel;
+
+#ifdef DGEN_USE_TORCHES
+	c_torch  = ndef->getId("default:torch");
+#endif
 	
-	np_rarity  = &nparams_dungeon_rarity;
-	np_wetness = &nparams_dungeon_wetness;
-	np_density = &nparams_dungeon_density;
-	/*
-	cid_water_source = ndef->getId("mapgen_water_source");
-	cid_cobble       = ndef->getId("mapgen_cobble");
-	cid_mossycobble  = ndef->getId("mapgen_mossycobble");
-	cid_torch        = ndef->getId("default:torch");
-	*/
+	if (dparams) {
+		memcpy(&dp, dparams, sizeof(dp));
+	} else {
+		dp.c_water  = ndef->getId("mapgen_water_source");
+		dp.c_cobble = ndef->getId("mapgen_cobble");
+		dp.c_moss   = ndef->getId("mapgen_mossycobble");
+		dp.c_stair  = ndef->getId("mapgen_stair_cobble");
+
+		dp.diagonal_dirs = false;
+		dp.mossratio = 3.0;
+		dp.holesize  = v3s16(1, 2, 1);
+		dp.roomsize  = v3s16(0,0,0);
+
+		dp.np_rarity  = nparams_dungeon_rarity;
+		dp.np_wetness = nparams_dungeon_wetness;
+		dp.np_density = nparams_dungeon_density;
+	}
 }
 
 
 void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
-						 v3s16 nmin, v3s16 nmax) {
+						v3s16 nmin, v3s16 nmax) {
 	//TimeTaker t("gen dungeons");
 	int approx_groundlevel = 10 + water_level;
 
 	if ((nmin.Y + nmax.Y) / 2 >= approx_groundlevel ||
-		NoisePerlin3D(np_rarity, nmin.X, nmin.Y, nmin.Z, mapseed) < 0.2)
+		NoisePerlin3D(&dp.np_rarity, nmin.X, nmin.Y, nmin.Z, mapseed) < 0.2)
 		return;
 		
 	this->vmanip    = vm;
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
-
-	cid_water_source = ndef->getId("mapgen_water_source");
-	cid_cobble       = ndef->getId("mapgen_cobble");
-	cid_mossycobble  = ndef->getId("mapgen_mossycobble");
-	//cid_torch        = ndef->getId("default:torch");
-	cid_cobblestair  = ndef->getId("mapgen_stair_cobble");
 
 	// Dungeon generator doesn't modify places which have this set
 	vmanip->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
@@ -86,7 +95,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 			u32 i = vmanip->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				content_t c = vmanip->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == cid_water_source)
+				if (c == CONTENT_AIR || c == dp.c_water)
 					vmanip->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}
@@ -95,17 +104,18 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	
 	// Add it
 	makeDungeon(v3s16(1,1,1) * MAP_BLOCKSIZE);
-	
+
 	// Convert some cobble to mossy cobble
-	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
+	if (dp.mossratio != 0.0) {
+		for (s16 z = nmin.Z; z <= nmax.Z; z++)
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 			u32 i = vmanip->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
-				if (vmanip->m_data[i].getContent() == cid_cobble) {
-					float wetness = NoisePerlin3D(np_wetness, x, y, z, mapseed);
-					float density = NoisePerlin3D(np_density, x, y, z, blockseed);
-					if (density < wetness / 3.0)
-						vmanip->m_data[i].setContent(cid_mossycobble);
+				if (vmanip->m_data[i].getContent() == dp.c_cobble) {
+					float wetness = NoisePerlin3D(&dp.np_wetness, x, y, z, mapseed);
+					float density = NoisePerlin3D(&dp.np_density, x, y, z, blockseed);
+					if (density < wetness / dp.mossratio)
+						vmanip->m_data[i].setContent(dp.c_moss);
 				}
 				i++;
 			}
@@ -132,7 +142,8 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		roomsize = is_large_room ?
 			v3s16(random.range(8, 16),random.range(8, 16),random.range(8, 16)) :
 			v3s16(random.range(4,  8),random.range(4,  6),random.range(4, 8));
-		
+		roomsize += dp.roomsize;
+
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
 		roomplace = vmanip->m_area.MinEdge + start_padding + v3s16(
@@ -184,8 +195,10 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 		v3s16 room_center = roomplace + v3s16(roomsize.X / 2, 1, roomsize.Z / 2);
 
+#ifdef DGEN_USE_TORCHES
 		// Place torch at room center (for testing)
-		//vmanip->m_data[vmanip->m_area.index(room_center)] = MapNode(cid_torch);
+		vmanip->m_data[vmanip->m_area.index(room_center)] = MapNode(c_torch);
+#endif
 
 		// Quit if last room
 		if (i == room_count - 1)
@@ -231,6 +244,8 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 		// Find a place for a random sized room
 		roomsize = v3s16(random.range(4,8),random.range(4,6),random.range(4,8));
+		roomsize += dp.roomsize;
+
 		m_pos = corridor_end;
 		m_dir = corridor_end_dir;
 		r = findPlaceForRoomDoor(roomsize, doorplace, doordir, roomplace);
@@ -250,7 +265,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 {
-	MapNode n_cobble(cid_cobble);
+	MapNode n_cobble(dp.c_cobble);
 	MapNode n_air(CONTENT_AIR);
 	
 	// Make +-X walls
@@ -361,16 +376,19 @@ void DungeonGen::makeFill(v3s16 place, v3s16 size,
 
 void DungeonGen::makeHole(v3s16 place)
 {
-	makeFill(place, v3s16(1, 2, 1), 0, MapNode(CONTENT_AIR),
-			VMANIP_FLAG_DUNGEON_INSIDE);
+	makeFill(place, dp.holesize, 0,
+		MapNode(CONTENT_AIR), VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
 
 void DungeonGen::makeDoor(v3s16 doorplace, v3s16 doordir)
 {
 	makeHole(doorplace);
+
+#ifdef DGEN_USE_TORCHES
 	// Place torch (for testing)
-	//vmanip->m_data[vmanip->m_area.index(doorplace)] = MapNode(cid_torch);
+	vmanip->m_data[vmanip->m_area.index(doorplace)] = MapNode(c_torch);
+#endif
 }
 
 
@@ -401,30 +419,32 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 		if (vmanip->m_area.contains(p) == true &&
 			vmanip->m_area.contains(p + v3s16(0, 1, 0)) == true) {
 			if (make_stairs) {
-				makeFill(p + v3s16(-1, -1, -1), v3s16(3, 5, 3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(cid_cobble), 0);
+				makeFill(p + v3s16(-1, -1, -1), dp.holesize + v3s16(2, 3, 2),
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(dp.c_cobble), 0);
 				makeHole(p);
 				makeHole(p - dir);
 				
 				// TODO: fix stairs code so it works 100% (quite difficult)
 
 				// exclude stairs from the bottom step
-				if (((make_stairs ==  1) && i != 0) ||
-					((make_stairs == -1) && i != length - 1)) {
+				// exclude stairs from diagonal steps
+				if (((dir.X ^ dir.Z) & 1) &&
+					(((make_stairs ==  1) && i != 0) ||
+					((make_stairs == -1) && i != length - 1))) {
 					// rotate face 180 deg if making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
 					
 					u32 vi = vmanip->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
-					if (vmanip->m_data[vi].getContent() == cid_cobble)
-						vmanip->m_data[vi] = MapNode(cid_cobblestair, 0, facedir);
+					if (vmanip->m_data[vi].getContent() == dp.c_cobble)
+						vmanip->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 					
 					vi = vmanip->m_area.index(p.X, p.Y, p.Z);
-					if (vmanip->m_data[vi].getContent() == cid_cobble)
-						vmanip->m_data[vi] = MapNode(cid_cobblestair, 0, facedir);
+					if (vmanip->m_data[vi].getContent() == dp.c_cobble)
+						vmanip->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 				}
 			} else {
-				makeFill(p + v3s16(-1, -1, -1), v3s16(3, 4, 3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(cid_cobble), 0);
+				makeFill(p + v3s16(-1, -1, -1), dp.holesize + v3s16(2, 2, 2),
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(dp.c_cobble), 0);
 				makeHole(p);
 			}
 
@@ -469,8 +489,8 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 			randomizeDir();
 			continue;
 		}
-		if (vmanip->getNodeNoExNoEmerge(p).getContent()  == cid_cobble
-		 && vmanip->getNodeNoExNoEmerge(p1).getContent() == cid_cobble)
+		if (vmanip->getNodeNoExNoEmerge(p).getContent()  == dp.c_cobble
+		 && vmanip->getNodeNoExNoEmerge(p1).getContent() == dp.c_cobble)
 		{
 			// Found wall, this is a good place!
 			result_place = p;
@@ -483,12 +503,12 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 			Determine where to move next
 		*/
 		// Jump one up if the actual space is there
-		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == cid_cobble
+		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == dp.c_cobble
 		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == CONTENT_AIR
 		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,2,0)).getContent() == CONTENT_AIR)
 			p += v3s16(0,1,0);
 		// Jump one down if the actual space is there
-		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == cid_cobble
+		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == dp.c_cobble
 		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == CONTENT_AIR
 		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,-1,0)).getContent() == CONTENT_AIR)
 			p += v3s16(0,-1,0);
@@ -577,12 +597,25 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 }
 
 
-v3s16 rand_ortho_dir(PseudoRandom &random)
+v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 {
-	if (random.next() % 2 == 0)
-		return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
-	else
-		return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
+	// Make diagonal directions somewhat rare
+	if (diagonal_dirs && (random.next() % 4 == 0)) {
+		v3s16 dir;
+		int trycount = 0;
+
+		do {
+			trycount++;
+			dir = v3s16(random.next() % 3 - 1, 0, random.next() % 3 - 1);
+		} while ((dir.X == 0 && dir.Z == 0) && trycount < 10);
+
+		return dir;
+	} else {
+		if (random.next() % 2 == 0)
+			return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
+		else
+			return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
+	}
 }
 
 

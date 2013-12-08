@@ -207,7 +207,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 		generateCaves(stone_surface_max_y);
 
 	if (flags & MG_DUNGEONS) {
-		DungeonGen dgen(ndef, data->seed, water_level);
+		DungeonGen dgen(ndef, data->seed, water_level, NULL);
 		dgen.generate(vm, blockseed, full_node_min, full_node_max);
 	}
 

@@ -107,7 +107,7 @@ public:
 	NoiseParams *np_apple_trees;
 	float freq_desert;
 	float freq_beach;
-	
+
 	content_t c_stone;
 	content_t c_dirt;
 	content_t c_dirt_with_grass;
@@ -118,6 +118,11 @@ public:
 	content_t c_cobble;
 	content_t c_desert_sand;
 	content_t c_desert_stone;
+
+	content_t c_mossycobble;
+	content_t c_sandbrick;
+	content_t c_stair_cobble;
+	content_t c_stair_sandstone;
 
 	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
 	~MapgenV6();
