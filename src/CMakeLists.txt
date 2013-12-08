@@ -178,7 +178,19 @@ if(ENABLE_GLES)
 endif(ENABLE_GLES)
 
 if(USE_FREETYPE)
-	find_package(Freetype REQUIRED)
+	if(UNIX)
+		include(FindPkgConfig)
+		if(PKG_CONFIG_FOUND)
+			pkg_check_modules(FREETYPE QUIET freetype2)
+			if(FREETYPE_FOUND)
+				SET(FREETYPE_PKGCONFIG_FOUND TRUE)
+				SET(FREETYPE_LIBRARY ${FREETYPE_LIBRARIES})
+			endif(FREETYPE_FOUND)
+		endif(PKG_CONFIG_FOUND)
+	endif(UNIX)
+	if(NOT FREETYPE_FOUND)
+		find_package(Freetype REQUIRED)
+	endif(NOT FREETYPE_FOUND)
 	set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
 	set(CGUITTFONT_LIBRARY cguittfont)
 endif(USE_FREETYPE)
@@ -451,6 +463,12 @@ if(BUILD_CLIENT)
 		)
 	endif(USE_CURL)
 	if(USE_FREETYPE)
+		if(FREETYPE_PKGCONFIG_FOUND)
+			set_target_properties(${PROJECT_NAME}
+				PROPERTIES
+				COMPILE_FLAGS "${FREETYPE_CFLAGS}"
+			)
+		endif(FREETYPE_PKGCONFIG_FOUND)
 		target_link_libraries(
 			${PROJECT_NAME}
 			${FREETYPE_LIBRARY}
