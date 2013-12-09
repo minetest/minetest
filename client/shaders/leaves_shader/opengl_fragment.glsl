@@ -1,10 +1,6 @@
-#version 120
-
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D useNormalmap;
-
-uniform float enableBumpmapping;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
@@ -12,7 +8,6 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
-varying vec4 vColor;
 
 const float e = 2.718281828459;
 
@@ -21,11 +16,12 @@ void main (void)
 	vec3 color;
 	vec2 uv = gl_TexCoord[0].st;
 
-#ifdef NORMALS
+#ifdef USE_NORMALMAPS
 	float use_normalmap = texture2D(useNormalmap,vec2(1.0,1.0)).r;
-	float enable_bumpmapping = enableBumpmapping;
+#endif
 
-	if ((enable_bumpmapping == 1.0) && (use_normalmap > 0.0)) {
+#ifdef ENABLE_BUMPMAPPING
+	if (use_normalmap > 0.0) {
 		vec3 base = texture2D(baseTexture, uv).rgb;
 		vec3 vVec = normalize(eyeVec);
 		vec3 bump = normalize(texture2D(normalTexture, uv).xyz * 2.0 - 1.0);
@@ -54,5 +50,5 @@ void main (void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
-    gl_FragColor = vec4(col.r, col.g, col.b, alpha);   
+    gl_FragColor = vec4(col.r, col.g, col.b, alpha);
 }

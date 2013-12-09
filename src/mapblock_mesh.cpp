@@ -1111,6 +1111,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	*/
 	bool enable_shaders     = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 
 	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
 							shadermat4, shadermat5;
@@ -1210,7 +1211,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		if (enable_shaders) {
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			material.setTexture(2, tsrc->getTexture("disable_img.png"));
-			if (enable_bumpmapping) {
+			if (enable_bumpmapping || enable_parallax_occlusion) {
 				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
 				std::string normal_ext = "_normal.png";
 				size_t pos = fname_base.find(".");
@@ -1292,7 +1293,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 {
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	
+	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+
 	if(!m_has_animation)
 	{
 		m_animation_force_timer = 100000;
@@ -1362,7 +1364,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		// Set the texture
 		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
 		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
-		if (enable_shaders && enable_bumpmapping)
+		if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
 			{
 				std::string fname_base,fname_normal;
 				fname_base = tsrc->getTextureName(tile.texture_id);

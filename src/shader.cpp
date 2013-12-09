@@ -673,15 +673,51 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 	if(vertex_program == "" && pixel_program == "" && geometry_program == "")
 		return shaderinfo;
 
-	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion")) {
-		if(vertex_program != "")
-			vertex_program = "#define NORMALS\n" + vertex_program;
-		if(pixel_program != "")
-			pixel_program = "#define NORMALS\n" + pixel_program;
-		if(geometry_program != "")
-			geometry_program = "#define NORMALS\n" + geometry_program;
-	}
+	// Create shaders header
+	std::string shaders_header = "#version 120\n";
 	
+	if (g_settings->getBool("enable_bumpmapping"))
+		shaders_header += "#define ENABLE_BUMPMAPPING\n";
+
+	if (g_settings->getBool("enable_parallax_occlusion")){
+		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
+		shaders_header += "#define PARALLAX_OCCLUSION_SCALE ";
+		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_scale"));
+		shaders_header += "\n";
+		shaders_header += "#define PARALLAX_OCCLUSION_BIAS ";
+		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_bias"));
+		shaders_header += "\n";
+		}
+
+	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
+		shaders_header += "#define USE_NORMALMAPS\n";
+
+	if (g_settings->getBool("enable_waving_water")){
+		shaders_header += "#define ENABLE_WAVING_WATER\n";
+		shaders_header += "#define WATER_WAVE_HEIGHT ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_height"));
+		shaders_header += "\n";
+		shaders_header += "#define WATER_WAVE_LENGTH ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_length"));
+		shaders_header += "\n";
+		shaders_header += "#define WATER_WAVE_SPEED ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_speed"));
+		shaders_header += "\n";
+	}
+
+	if (g_settings->getBool("enable_waving_leaves"))
+		shaders_header += "#define ENABLE_WAVING_LEAVES\n";
+
+	if (g_settings->getBool("enable_waving_plants"))
+		shaders_header += "#define ENABLE_WAVING_PLANTS\n";
+
+	if(pixel_program != "")
+		pixel_program = shaders_header + pixel_program;
+	if(vertex_program != "")
+		vertex_program = shaders_header + vertex_program;
+	if(geometry_program != "")
+		geometry_program = shaders_header + geometry_program;
+
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;
 	const c8* pixel_program_ptr = 0;

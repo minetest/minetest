@@ -1,15 +1,8 @@
-#version 120
-
 uniform mat4 mWorldViewProj;
 uniform mat4 mInvWorld;
 uniform mat4 mTransWorld;
 uniform float dayNightRatio;
 uniform float animationTimer;
-
-uniform float enableWavingWater;
-uniform float waterWaveLength;
-uniform float waterWaveHeight;
-uniform float waterWaveSpeed;
 
 uniform vec3 eyePosition;
 
@@ -18,14 +11,15 @@ varying vec3 eyeVec;
 
 void main(void)
 {
-	if (enableWavingWater == 1.0){
-		vec4 pos2 = gl_Vertex;
-		pos2.y -= 2.0;
-		pos2.y -= sin (pos2.z/waterWaveLength + animationTimer * waterWaveSpeed * waterWaveLength) * waterWaveHeight
-			+ sin ((pos2.z/waterWaveLength + animationTimer * waterWaveSpeed * waterWaveLength) / 7.0) * waterWaveHeight;
-		gl_Position = mWorldViewProj * pos2;
-	} else
-		gl_Position = mWorldViewProj * gl_Vertex;
+#ifdef ENABLE_WAVING_WATER
+	vec4 pos2 = gl_Vertex;
+	pos2.y -= 2.0;
+	pos2.y -= sin (pos2.z/WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH) * WATER_WAVE_HEIGHT
+		+ sin ((pos2.z/WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH) / 7.0) * WATER_WAVE_HEIGHT;
+	gl_Position = mWorldViewProj * pos2;
+#else
+	gl_Position = mWorldViewProj * gl_Vertex;
+#endif
 
 	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;

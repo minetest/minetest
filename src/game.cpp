@@ -815,44 +815,6 @@ public:
 		services->setPixelShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 		services->setVertexShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 
-		float enable_bumpmapping = 0;
-		if (g_settings->getBool("enable_bumpmapping"))
-			enable_bumpmapping = 1;
-		services->setPixelShaderConstant("enableBumpmapping", &enable_bumpmapping, 1);
-
-		float enable_parallax_occlusion = 0;
-		if (g_settings->getBool("enable_parallax_occlusion")) {
-			enable_parallax_occlusion = 1;
-			float parallax_occlusion_scale = g_settings->getFloat("parallax_occlusion_scale");
-			services->setPixelShaderConstant("parallaxOcclusionScale", &parallax_occlusion_scale, 1);
-			float parallax_occlusion_bias = g_settings->getFloat("parallax_occlusion_bias");
-			services->setPixelShaderConstant("parallaxOcclusionBias", &parallax_occlusion_bias, 1);
-		}
-		services->setPixelShaderConstant("enableParallaxOcclusion", &enable_parallax_occlusion, 1);
-
-		float enable_waving_water = 0;
-		if (g_settings->getBool("enable_waving_water")){
-			enable_waving_water = 1;
-			float water_wave_height_f = g_settings->getFloat("water_wave_height");
-			services->setVertexShaderConstant("waterWaveHeight", &water_wave_height_f, 1);
-			float water_wave_length_f = g_settings->getFloat("water_wave_length");
-			services->setVertexShaderConstant("waterWaveLength", &water_wave_length_f, 1);
-			float water_wave_speed_f = g_settings->getFloat("water_wave_speed");
-			services->setVertexShaderConstant("waterWaveSpeed", &water_wave_speed_f, 1);
-		}
-		services->setVertexShaderConstant("enableWavingWater", &enable_waving_water, 1);
-
-		float enable_waving_leaves = 0;
-		if (g_settings->getBool("enable_waving_leaves"))
-			enable_waving_leaves = 1;
-		services->setVertexShaderConstant("enableWavingLeaves", &enable_waving_leaves, 1);
-
-		float enable_waving_plants = 0;
-		if (g_settings->getBool("enable_waving_plants"))
-			enable_waving_plants = 1;
-		services->setVertexShaderConstant("enableWavingPlants", &enable_waving_plants, 1);
-
-
 		// Normal map texture layer
 		int layer1 = 1;
 		int layer2 = 2;

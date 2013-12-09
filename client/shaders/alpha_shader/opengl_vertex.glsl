@@ -1,5 +1,3 @@
-#version 120
-
 uniform mat4 mWorldViewProj;
 uniform mat4 mInvWorld;
 uniform mat4 mTransWorld;
@@ -9,14 +7,19 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
+
+#ifdef ENABLE_PARALLAX_OCCLUSION
 varying vec3 tsEyeVec;
+#endif
 
 void main(void)
 {
 	gl_Position = mWorldViewProj * gl_Vertex;
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
+	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
 
-	vec3 normal,tangent,binormal; 
+#ifdef ENABLE_PARALLAX_OCCLUSION
+	vec3 normal,tangent,binormal;
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	if (gl_Normal.x > 0.5) {
@@ -44,14 +47,14 @@ void main(void)
 		tangent  = normalize(gl_NormalMatrix * vec3(-1.0,  0.0,  0.0));
 		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
 	}
-	
-	mat3 tbnMatrix = mat3(tangent.x, binormal.x, normal.x,
-                          tangent.y, binormal.y, normal.y,
-                          tangent.z, binormal.z, normal.z);
 
-	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
+	mat3 tbnMatrix = mat3(	tangent.x, binormal.x, normal.x,
+							tangent.y, binormal.y, normal.y,
+							tangent.z, binormal.z, normal.z);
+
 	tsEyeVec = normalize(eyeVec * tbnMatrix);
-	
+#endif
+
 	vec4 color;
 	//color = vec4(1.0, 1.0, 1.0, 1.0);
 

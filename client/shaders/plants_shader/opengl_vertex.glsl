@@ -1,43 +1,42 @@
-#version 120
-
 uniform mat4 mWorldViewProj;
 uniform mat4 mInvWorld;
 uniform mat4 mTransWorld;
 uniform float dayNightRatio;
 uniform float animationTimer;
 
-uniform float enableWavingPlants;
-
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 eyeVec;
 
-float smoothCurve( float x ) {  
-  return x * x *( 3.0 - 2.0 * x );  
-}  
-float triangleWave( float x ) {  
-  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );  
-}  
-float smoothTriangleWave( float x ) {  
-  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;  
-} 
+#ifdef ENABLE_WAVING_PLANTS
+float smoothCurve( float x ) {
+  return x * x *( 3.0 - 2.0 * x );
+}
+float triangleWave( float x ) {
+  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );
+}
+float smoothTriangleWave( float x ) {
+  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;
+}
+#endif
 
 void main(void)
 {
 
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	if (enableWavingPlants == 1.0){
-		vec4 pos = gl_Vertex;
-		vec4 pos2 = mTransWorld * gl_Vertex;
-		if (gl_TexCoord[0].y < 0.05) {
-			pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2.x * 0.1 + pos2.z * 0.1) * 2.0 - 1.0) * 0.8;
-			pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2.x * -0.5 + pos2.z * -0.5) * 2.0 - 1.0) * 0.4;          
-		}
-		gl_Position = mWorldViewProj * pos;
+
+#ifdef ENABLE_WAVING_PLANTS
+	vec4 pos = gl_Vertex;
+	vec4 pos2 = mTransWorld * gl_Vertex;
+	if (gl_TexCoord[0].y < 0.05) {
+		pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2.x * 0.1 + pos2.z * 0.1) * 2.0 - 1.0) * 0.8;
+		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2.x * -0.5 + pos2.z * -0.5) * 2.0 - 1.0) * 0.4;
 	}
-	else 
-		gl_Position = mWorldViewProj * gl_Vertex;
+	gl_Position = mWorldViewProj * pos;
+#else
+	gl_Position = mWorldViewProj * gl_Vertex;
+#endif
 
 	vPosition = (mWorldViewProj * gl_Vertex).xyz;
 	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
