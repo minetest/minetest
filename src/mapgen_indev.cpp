@@ -274,7 +274,9 @@ void MapgenIndev::generateCaves(int max_stone_y) {
 
 CaveIndev::CaveIndev(MapgenIndev *mg, PseudoRandom *ps, PseudoRandom *ps2,
 				v3s16 node_min, bool is_large_cave) {
+	this->mg = mg;
 	this->vm = mg->vm;
+	this->ndef = mg->ndef;
 	this->water_level = mg->water_level;
 	this->large_cave = is_large_cave;
 	this->ps  = ps;
