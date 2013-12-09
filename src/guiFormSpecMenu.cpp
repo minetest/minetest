@@ -421,6 +421,12 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element) {
 		s32 start_i = 0;
 		if(startindex != "")
 			start_i = stoi(startindex);
+
+		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
+			errorstream<< "Invalid list element: '" << element << "'"  << std::endl;
+			return;
+		}
+
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of list without a size[] element"<<std::endl;
 		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
