@@ -250,6 +250,11 @@ popd
 echo Failed.
 exit /b 1
 
+Curl
+----
+To use curl add "-DENABLE_CURL=1" to cmake command line.
+NOTE: minetest automaticaly downloads serverlist on each start if curl is enabled
+
 License of Minetest textures and sounds
 ---------------------------------------
 
@@ -294,7 +299,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 Irrlicht
----------------
+--------
 
 This program uses the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
@@ -321,7 +326,7 @@ it freely, subject to the following restrictions:
 
 
 JThread
----------------
+-------
 
 This program uses the JThread library. License for JThread follows:
 
@@ -346,7 +351,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 Lua
----------------
+---
 
 Lua is licensed under the terms of the MIT license reproduced below.
 This means that Lua is free software and can be used for both academic
@@ -375,7 +380,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 Fonts
----------------
+-----
 
 DejaVu Sans Mono:
 
