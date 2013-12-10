@@ -120,6 +120,30 @@ os.tempfolder = function()
 end
 
 --------------------------------------------------------------------------------
+function text2textlist(xpos,ypos,width,height,tl_name,textlen,text,transparency)
+	local textlines = engine.splittext(text,textlen)
+	
+	local retval = "textlist[" .. xpos .. "," .. ypos .. ";"
+								.. width .. "," .. height .. ";"
+								.. tl_name .. ";"
+	
+	for i=1, #textlines, 1 do
+		textlines[i] = textlines[i]:gsub("\r","")
+		retval = retval .. engine.formspec_escape(textlines[i]) .. ","
+	end
+	
+	retval = retval .. ";0;"
+	
+	if transparency then
+		retval = retval .. "true"
+	end
+	
+	retval = retval .. "]"
+
+	return retval
+end
+
+--------------------------------------------------------------------------------
 function init_globals()
 	--init gamedata
 	gamedata.worldindex = 0
@@ -939,9 +963,9 @@ end
 function tabbuilder.tab_settings()
 	tab_string =
 			"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
-			"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";" 
+			"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
 					.. dump(engine.setting_getbool("new_style_leaves")) .. "]"..
-			"checkbox[1,0.5;cb_smooth_lighting;".. fgettext("Smooth Lighting") 
+			"checkbox[1,0.5;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 					.. ";".. dump(engine.setting_getbool("smooth_lighting")) .. "]"..
 			"checkbox[1,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 					.. dump(engine.setting_getbool("enable_3d_clouds")) .. "]"..
@@ -979,7 +1003,7 @@ if engine.setting_getbool("enable_shaders") then
 					.. dump(engine.setting_getbool("enable_waving_leaves")) .. "]"..
 			"checkbox[8,2.5;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
 					.. dump(engine.setting_getbool("enable_waving_plants")) .. "]"
-else 
+else
 	tab_string = tab_string ..
 			"textlist[8.33,0.7;4,1;;#888888" .. fgettext("Bumpmapping") .. ";0;true]" ..
 			"textlist[8.33,1.2;4,1;;#888888" .. fgettext("Parallax Occlusion") .. ";0;true]" ..
