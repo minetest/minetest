@@ -19,16 +19,16 @@ msgstr ""
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
-msgstr ""
+msgstr "Žaidimo pavadinimas"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
 msgid "Create"
-msgstr ""
+msgstr "Sukurti"
 
 #: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
 #: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Atsisakyti"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
@@ -36,23 +36,23 @@ msgstr ""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "ŽAIDIMAI"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
 msgid "Games"
-msgstr ""
+msgstr "Žaidimai"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr ""
+msgstr "Papildiniai:"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
-msgstr ""
+msgstr "keisti žaidimą"
 
 #: builtin/gamemgr.lua:238
 msgid "new game"
-msgstr ""
+msgstr "naujas žaidimas"
 
 #: builtin/gamemgr.lua:248
 msgid "EDIT GAME"
@@ -60,19 +60,19 @@ msgstr ""
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Pašalinti pasirinktą papildinį"
 
 #: builtin/gamemgr.lua:272
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- Pridėti papildinį"
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
-msgstr ""
+msgstr "Gerai"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
-msgstr ""
+msgstr "Pasaulio pavadinimas"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
@@ -84,19 +84,19 @@ msgstr ""
 
 #: builtin/mainmenu.lua:306
 msgid "Game"
-msgstr ""
+msgstr "Žaidimas"
 
 #: builtin/mainmenu.lua:319
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Ištrinti pasaulį „$1“?"
 
 #: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
 msgid "Yes"
-msgstr ""
+msgstr "Taip"
 
 #: builtin/mainmenu.lua:321
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
@@ -112,52 +112,52 @@ msgstr ""
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
-msgstr ""
+msgstr "ŽAISTI TINKLE"
 
 #: builtin/mainmenu.lua:819
 msgid "Favorites:"
-msgstr ""
+msgstr "Mėgiami:"
 
 #: builtin/mainmenu.lua:820
 msgid "Address/Port"
-msgstr ""
+msgstr "Adresas/Prievadas"
 
 #: builtin/mainmenu.lua:821
 msgid "Name/Password"
-msgstr ""
+msgstr "Vardas/slaptažodis"
 
 #: builtin/mainmenu.lua:824
 msgid "Public Serverlist"
-msgstr ""
+msgstr "Viešų serverių sąrašas"
 
 #: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
 #: src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Ištrinti"
 
 #: builtin/mainmenu.lua:833
 msgid "Connect"
-msgstr ""
+msgstr "Jungtis"
 
 #: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
 msgid "New"
-msgstr ""
+msgstr "Naujas"
 
 #: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
 msgid "Configure"
-msgstr ""
+msgstr "Konfigūruoti"
 
 #: builtin/mainmenu.lua:877
 msgid "Start Game"
-msgstr ""
+msgstr "Pradėti žaidimą"
 
 #: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
 msgid "Select World:"
-msgstr ""
+msgstr "Pasirinkite pasaulį:"
 
 #: builtin/mainmenu.lua:879
 msgid "START SERVER"
-msgstr ""
+msgstr "PALEISTI SERVERĮ"
 
 #: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
 msgid "Creative Mode"
@@ -165,27 +165,27 @@ msgstr ""
 
 #: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
 msgid "Enable Damage"
-msgstr ""
+msgstr "Leisti sužeidimus"
 
 #: builtin/mainmenu.lua:884
 msgid "Public"
-msgstr ""
+msgstr "Viešas"
 
 #: builtin/mainmenu.lua:886
 msgid "Name"
-msgstr ""
+msgstr "Vardas"
 
 #: builtin/mainmenu.lua:888
 msgid "Password"
-msgstr ""
+msgstr "Slaptažodis"
 
 #: builtin/mainmenu.lua:889
 msgid "Server Port"
-msgstr ""
+msgstr "Serverio prievadas"
 
 #: builtin/mainmenu.lua:899
 msgid "SETTINGS"
-msgstr ""
+msgstr "NUSTATYMAI"
 
 #: builtin/mainmenu.lua:900
 msgid "Fancy trees"
@@ -197,11 +197,11 @@ msgstr ""
 
 #: builtin/mainmenu.lua:904
 msgid "3D Clouds"
-msgstr ""
+msgstr "Trimačiai debesys"
 
 #: builtin/mainmenu.lua:906
 msgid "Opaque Water"
-msgstr ""
+msgstr "Nepermatomas vanduo"
 
 #: builtin/mainmenu.lua:909
 msgid "Mip-Mapping"
@@ -237,15 +237,15 @@ msgstr ""
 
 #: builtin/mainmenu.lua:927
 msgid "Change keys"
-msgstr ""
+msgstr "Nustatyti klavišus"
 
 #: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Žaisti"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
-msgstr ""
+msgstr "VIENAS ŽAIDĖJAS"
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
@@ -261,11 +261,11 @@ msgstr ""
 
 #: builtin/mainmenu.lua:1005
 msgid "Core Developers"
-msgstr ""
+msgstr "Pagrindiniai kūrėjai"
 
 #: builtin/mainmenu.lua:1020
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktyvūs pagalbininkai"
 
 #: builtin/mainmenu.lua:1028
 msgid "Previous Contributors"
@@ -273,19 +273,19 @@ msgstr ""
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr ""
+msgstr "Žaisti vienam"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
-msgstr ""
+msgstr "Žaisti tinkle(klientas)"
 
 #: builtin/mainmenu.lua:1071
 msgid "Server"
-msgstr ""
+msgstr "Serveris"
 
 #: builtin/mainmenu.lua:1072
 msgid "Settings"
-msgstr ""
+msgstr "Nustatymai"
 
 #: builtin/mainmenu.lua:1073
 msgid "Texture Packs"
@@ -293,23 +293,23 @@ msgstr ""
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
-msgstr ""
+msgstr "Papildiniai"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
-msgstr ""
+msgstr "Padėkos"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr ""
+msgstr "PAPILDINIAI"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Įdiegti papildiniai:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr ""
+msgstr "Pridėti papildinį:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
@@ -317,31 +317,31 @@ msgstr ""
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Papildiniai internete"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
-msgstr ""
+msgstr "Papildinio aprašymas nepateiktas"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr ""
+msgstr "Papildinio informacija:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
-msgstr ""
+msgstr "Pervadinti"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Pašalinti pasirinktą papildinį"
 
 #: builtin/modmgr.lua:312
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "Pašalinti pasirinktą papildinį"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Pervadinti papildinių paką:"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
 msgid "Accept"
@@ -349,47 +349,47 @@ msgstr ""
 
 #: builtin/modmgr.lua:423
 msgid "World:"
-msgstr ""
+msgstr "Pasaulis:"
 
 #: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 msgid "Hide Game"
-msgstr ""
+msgstr "Slėpti vidinius"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr ""
+msgstr "Slėpti papild. pakų turinį"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
-msgstr ""
+msgstr "Papildinys:"
 
 #: builtin/modmgr.lua:444
 msgid "Depends:"
-msgstr ""
+msgstr "Priklauso:"
 
 #: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
-msgstr ""
+msgstr "Įrašyti"
 
 #: builtin/modmgr.lua:464
 msgid "Enable MP"
-msgstr ""
+msgstr "Įjungti papildinį"
 
 #: builtin/modmgr.lua:466
 msgid "Disable MP"
-msgstr ""
+msgstr "Išjungti papildinį"
 
 #: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
-msgstr ""
+msgstr "įjungtas"
 
 #: builtin/modmgr.lua:478
 msgid "Enable all"
-msgstr ""
+msgstr "Įjungti visus"
 
 #: builtin/modmgr.lua:577
 msgid "Select Mod File:"
-msgstr ""
+msgstr "Pasirinkite papildinio failą:"
 
 #: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
@@ -403,7 +403,7 @@ msgstr ""
 
 #: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Nepavyko įdiegti $1 į $2"
 
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -439,11 +439,11 @@ msgstr ""
 
 #: builtin/modstore.lua:251
 msgid "re-Install"
-msgstr ""
+msgstr "Įdiegti iš naujo"
 
 #: builtin/modstore.lua:253
 msgid "Install"
-msgstr ""
+msgstr "Įdiegti"
 
 #: src/client.cpp:2917
 msgid "Item textures..."
@@ -451,11 +451,11 @@ msgstr ""
 
 #: src/game.cpp:940
 msgid "Loading..."
-msgstr ""
+msgstr "Įkeliama..."
 
 #: src/game.cpp:1000
 msgid "Creating server...."
-msgstr ""
+msgstr "Kuriamas serveris...."
 
 #: src/game.cpp:1016
 msgid "Creating client..."
@@ -463,11 +463,11 @@ msgstr ""
 
 #: src/game.cpp:1025
 msgid "Resolving address..."
-msgstr ""
+msgstr "Ieškoma adreso..."
 
 #: src/game.cpp:1122
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Jungiamasi prie serverio..."
 
 #: src/game.cpp:1219
 msgid "Item definitions..."
@@ -493,11 +493,11 @@ msgstr ""
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Jūs numirėte."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Prisikelti"
 
 #: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
@@ -518,35 +518,35 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:288
 msgid "Key already in use"
-msgstr ""
+msgstr "Klavišas jau naudojamas"
 
 #: src/guiKeyChangeMenu.cpp:363
 msgid "press key"
-msgstr ""
+msgstr "paspauskite klavišą"
 
 #: src/guiKeyChangeMenu.cpp:389
 msgid "Forward"
-msgstr ""
+msgstr "Pirmyn"
 
 #: src/guiKeyChangeMenu.cpp:390
 msgid "Backward"
-msgstr ""
+msgstr "Atgal"
 
 #: src/guiKeyChangeMenu.cpp:391 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Kairėn"
 
 #: src/guiKeyChangeMenu.cpp:392 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Dešinėn"
 
 #: src/guiKeyChangeMenu.cpp:393
 msgid "Use"
-msgstr ""
+msgstr "Naudoti"
 
 #: src/guiKeyChangeMenu.cpp:394
 msgid "Jump"
-msgstr ""
+msgstr "Pašokti"
 
 #: src/guiKeyChangeMenu.cpp:395
 msgid "Sneak"
@@ -554,19 +554,19 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:396
 msgid "Drop"
-msgstr ""
+msgstr "Mesti"
 
 #: src/guiKeyChangeMenu.cpp:397
 msgid "Inventory"
-msgstr ""
+msgstr "Inventorius"
 
 #: src/guiKeyChangeMenu.cpp:398
 msgid "Chat"
-msgstr ""
+msgstr "Susirašinėti"
 
 #: src/guiKeyChangeMenu.cpp:399
 msgid "Command"
-msgstr ""
+msgstr "Komanda"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Console"
@@ -594,31 +594,31 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:106
 msgid "Old Password"
-msgstr ""
+msgstr "Senas slaptažodis"
 
 #: src/guiPasswordChange.cpp:122
 msgid "New Password"
-msgstr ""
+msgstr "Naujas slaptažodis"
 
 #: src/guiPasswordChange.cpp:137
 msgid "Confirm Password"
-msgstr ""
+msgstr "Patvirtinti slaptažodį"
 
 #: src/guiPasswordChange.cpp:153
 msgid "Change"
-msgstr ""
+msgstr "Pakeisti"
 
 #: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Slaptažodžiai nesutampa!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
-msgstr ""
+msgstr "Tęsti"
 
 #: src/guiPauseMenu.cpp:133
 msgid "Change Password"
-msgstr ""
+msgstr "Keisti slaptažodį"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
@@ -626,11 +626,11 @@ msgstr ""
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Grįžti į meniu"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr ""
+msgstr "Išeiti iš žaidimo"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -653,19 +653,19 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "Išeiti"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "Kairysis mygtukas"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "Vidurinis mygtukas"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "Dešinysis mygtukas"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -705,7 +705,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr ""
+msgstr "Meniu"
 
 #: src/keycode.cpp:225
 msgid "Pause"
@@ -713,7 +713,7 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Shift"
-msgstr ""
+msgstr "Shift (Lyg2)"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -761,15 +761,15 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Tarpas"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr ""
+msgstr "Žemyn"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Vykdyti"
 
 #: src/keycode.cpp:228
 msgid "Print"
@@ -781,15 +781,15 @@ msgstr ""
 
 #: src/keycode.cpp:228
 msgid "Up"
-msgstr ""
+msgstr "Aukštyn"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr ""
+msgstr "Pagalba"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Įterpti"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
@@ -877,15 +877,15 @@ msgstr ""
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Kairysis Shift"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Dešinysis Shift"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr ""
+msgstr "Kairysis Control"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
@@ -893,7 +893,7 @@ msgstr ""
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr ""
+msgstr "Dešinysis Control"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
@@ -901,7 +901,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Kablelis"
 
 #: src/keycode.cpp:243
 msgid "Minus"
@@ -913,7 +913,7 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Plius"
 
 #: src/keycode.cpp:247
 msgid "Attn"
@@ -949,7 +949,7 @@ msgstr ""
 
 #: src/main.cpp:1547
 msgid "Main Menu"
-msgstr ""
+msgstr "Pagrindinis meniu"
 
 #: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
