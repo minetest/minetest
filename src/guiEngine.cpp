@@ -156,7 +156,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		m_sound_manager = &dummySoundManager;
 
 	//create topleft header
-	core::rect<s32> rect(0, 0, 500, 40);
+	core::rect<s32> rect(0, 0, 500, 20);
 	rect += v2s32(4, 0);
 	std::string t = std::string("Minetest ") + minetest_version_hash;
 

@@ -56,10 +56,12 @@ function modmgr.extract(modfile)
 		if tempfolder ~= nil and
 			tempfolder ~= "" then
 			engine.create_dir(tempfolder)
-			engine.extract_zip(modfile.name,tempfolder)
-			return tempfolder
+			if engine.extract_zip(modfile.name,tempfolder) then
+				return tempfolder
+			end
 		end
 	end
+	return nil
 end
 
 -------------------------------------------------------------------------------
@@ -615,7 +617,7 @@ function modmgr.installmod(modfilename,basename)
 
 	if modpath == nil then
 		gamedata.errormessage = fgettext("Install Mod: file: \"$1\"", modfile.name) ..
-			fgettext("\nInstall Mod: unsupported filetype \"$1\"", modfile.type)
+			fgettext("\nInstall Mod: unsupported filetype \"$1\" or broken archive", modfile.type)
 		return
 	end
 
