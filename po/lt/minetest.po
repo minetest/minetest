@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-12-11 19:23+0200\n"
+"Last-Translator: Jonas Kriaučiūnas <jonukas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%"
+"100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
@@ -55,8 +57,9 @@ msgid "new game"
 msgstr "naujas žaidimas"
 
 #: builtin/gamemgr.lua:248
+#, fuzzy
 msgid "EDIT GAME"
-msgstr ""
+msgstr "KEISTI ŽAIDIMĄ"
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
@@ -75,8 +78,9 @@ msgid "World name"
 msgstr "Pasaulio pavadinimas"
 
 #: builtin/mainmenu.lua:300
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "Sėkla"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -100,7 +104,7 @@ msgstr "Ne"
 
 #: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Pasaulis, pavadintas „$1“ jau yra"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
@@ -160,8 +164,9 @@ msgid "START SERVER"
 msgstr "PALEISTI SERVERĮ"
 
 #: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
+#, fuzzy
 msgid "Creative Mode"
-msgstr ""
+msgstr "Kūrybinė veiksena"
 
 #: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
 msgid "Enable Damage"
@@ -192,8 +197,9 @@ msgid "Fancy trees"
 msgstr ""
 
 #: builtin/mainmenu.lua:902
+#, fuzzy
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Apšvietimo efektai"
 
 #: builtin/mainmenu.lua:904
 msgid "3D Clouds"
@@ -220,8 +226,9 @@ msgid "Tri-Linear Filtering"
 msgstr ""
 
 #: builtin/mainmenu.lua:918
+#, fuzzy
 msgid "Shaders"
-msgstr ""
+msgstr "Šešėliai"
 
 #: builtin/mainmenu.lua:920
 msgid "Preload item visuals"
@@ -344,8 +351,9 @@ msgid "Rename Modpack:"
 msgstr "Pervadinti papildinių paką:"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
+#, fuzzy
 msgid "Accept"
-msgstr ""
+msgstr "Priimti"
 
 #: builtin/modmgr.lua:423
 msgid "World:"
@@ -458,8 +466,9 @@ msgid "Creating server...."
 msgstr "Kuriamas serveris...."
 
 #: src/game.cpp:1016
+#, fuzzy
 msgid "Creating client..."
-msgstr ""
+msgstr "Kuriamas klientas..."
 
 #: src/game.cpp:1025
 msgid "Resolving address..."
@@ -501,8 +510,9 @@ msgstr "Prisikelti"
 
 #: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
+#, fuzzy
 msgid "Proceed"
-msgstr ""
+msgstr "Tęsti"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -940,8 +950,9 @@ msgid "PA1"
 msgstr ""
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "Zoom"
-msgstr ""
+msgstr "Pritraukti"
 
 #: src/main.cpp:1472
 msgid "needs_fallback_font"
