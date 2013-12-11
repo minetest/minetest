@@ -1856,7 +1856,7 @@ void GUIFormSpecMenu::drawMenu()
 	
 	v2u32 screenSize = driver->getScreenSize();
 	core::rect<s32> allbg(0, 0, screenSize.X ,	screenSize.Y);
-	if (m_bgfullscreen) 
+	if (m_bgfullscreen)
 		driver->draw2DRectangle(m_bgcolor, allbg, &allbg);
 	else
 		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
@@ -1959,7 +1959,7 @@ void GUIFormSpecMenu::drawMenu()
 		IItemDefManager *idef = m_gamedef->idef();
 		ItemStack item;
 		item.deSerialize(spec.name, idef);
-		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);		
+		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 		// Image size on screen
 		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
 		// Image rectangle on screen
@@ -1998,7 +1998,7 @@ void GUIFormSpecMenu::drawMenu()
 		if (spec.tooltip != "")
 		{
 			core::rect<s32> rect = spec.rect;
-			if (rect.isPointInside(m_pointer)) 
+			if (rect.isPointInside(m_pointer))
 			{
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
@@ -2168,7 +2168,7 @@ void GUIFormSpecMenu::acceptInput(bool quit=false)
 		for(u32 i=0; i<m_fields.size(); i++)
 		{
 			const FieldSpec &s = m_fields[i];
-			if(s.send) 
+			if(s.send)
 			{
 				if(s.ftype == f_Button)
 				{
@@ -2194,8 +2194,11 @@ void GUIFormSpecMenu::acceptInput(bool quit=false)
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
 						e = static_cast<gui::IGUIComboBox*>(element);
 					}
-					fields[wide_to_narrow(s.fname.c_str())] =
-							wide_to_narrow(e->getItem(e->getSelected()));
+					s32 selected = e->getSelected();
+					if (selected >= 0) {
+						fields[wide_to_narrow(s.fname.c_str())] =
+							wide_to_narrow(e->getItem(selected));
+					}
 				}
 				else if (s.ftype == f_TabHeader) {
 					// no dynamic cast possible due to some distributions shipped
@@ -2662,7 +2665,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			for(u32 i=0; i<m_fields.size(); i++)
 			{
 				FieldSpec &s = m_fields[i];
-				// if its a button, set the send field so 
+				// if its a button, set the send field so
 				// lua knows which button was pressed
 				if (((s.ftype == f_Button) || (s.ftype == f_CheckBox)) &&
 						(s.fid == event.GUIEvent.Caller->getID()))

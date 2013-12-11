@@ -336,6 +336,26 @@ int ModApiMainMenu::l_get_modstore_details(lua_State *L)
 			lua_pushstring(L,current_mod.versions[0].file.c_str());
 			lua_settable(L, top);
 
+			lua_pushstring(L,"versions");
+			lua_newtable(L);
+			int versionstop = lua_gettop(L);
+			for (unsigned int i=0;i < current_mod.versions.size(); i++) {
+				lua_pushnumber(L,i+1);
+				lua_newtable(L);
+				int current_element = lua_gettop(L);
+
+				lua_pushstring(L,"date");
+				lua_pushstring(L,current_mod.versions[i].date.c_str());
+				lua_settable(L,current_element);
+
+				lua_pushstring(L,"download_url");
+				lua_pushstring(L,current_mod.versions[i].file.c_str());
+				lua_settable(L,current_element);
+
+				lua_settable(L,versionstop);
+			}
+			lua_settable(L, top);
+
 			lua_pushstring(L,"screenshot_url");
 			lua_pushstring(L,current_mod.titlepic.file.c_str());
 			lua_settable(L, top);
@@ -782,7 +802,10 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 
 		io::IFileSystem* fs = engine->m_device->getFileSystem();
 
-		fs->addFileArchive(zipfile,true,false,io::EFAT_ZIP);
+		if (!fs->addFileArchive(zipfile,true,false,io::EFAT_ZIP)) {
+			lua_pushboolean(L,false);
+			return 1;
+		}
 
 		assert(fs->getFileArchiveCount() > 0);
 
