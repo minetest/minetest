@@ -1481,7 +1481,8 @@ int main(int argc, char *argv[])
 			fallback = "fallback_";
 		u16 font_size = g_settings->getU16(fallback + "font_size");
 		font_path = g_settings->get(fallback + "font_path");
-		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+		u32 font_shadow = g_settings->getU16(fallback + "font_shadow");
+		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size, true, true, font_shadow);
 	} else {
 		font = guienv->getFont(font_path.c_str());
 	}

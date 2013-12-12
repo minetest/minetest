@@ -205,12 +205,15 @@
 # Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
 #font_size = 13
+# Font shadow offset, if 0 then shadow will not be drawn.
+#font_shadow = 1
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
 
 # This font will be used for certain languages
 #fallback_font_path = fonts/DroidSansFallbackFull.ttf
 #fallback_font_size = 13
+#fallback_font_shadow = 1
 
 #
 # Server stuff
