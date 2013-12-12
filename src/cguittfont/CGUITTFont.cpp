@@ -199,7 +199,7 @@ void SGUITTGlyph::unload()
 
 //////////////////////
 
-CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
+CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias, const bool transparency, const u32 shadow)
 {
 	if (!c_libraryLoaded)
 	{
@@ -215,6 +215,8 @@ CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env, const io::path& filen
 		font->drop();
 		return 0;
 	}
+
+	font->shadow_offset = shadow;
 
 	return font;
 }
@@ -625,6 +627,14 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 		CGUITTGlyphPage* page = n->getValue();
 
 		if (!use_transparency) color.color |= 0xff000000;
+
+		if (shadow_offset) {
+			for (size_t i = 0; i < page->render_positions.size(); ++i)
+				page->render_positions[i] += core::vector2di(shadow_offset, shadow_offset);
+			Driver->draw2DImageBatch(page->texture, page->render_positions, page->render_source_rects, clip, video::SColor(255, 0, 0, 0), true);
+			for (size_t i = 0; i < page->render_positions.size(); ++i)
+				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
+		}
 		Driver->draw2DImageBatch(page->texture, page->render_positions, page->render_source_rects, clip, color, true);
 	}
 }
