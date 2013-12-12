@@ -1970,6 +1970,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
+		{
+			std::string reason;
+			if(m_script->on_prejoinplayer(playername, addr_s, reason))
+			{
+				actionstream<<"Server: Player with the name \""<<playername<<"\" "
+						<<"tried to connect from "<<addr_s<<" "
+						<<"but it was disallowed for the following reason: "
+						<<reason<<std::endl;
+				DenyAccess(peer_id, narrow_to_wide(reason.c_str()));
+				return;
+			}
+		}
+
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
 				<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
 

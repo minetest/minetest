@@ -1175,6 +1175,9 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ Called when player is to be respawned
 ^ Called _before_ repositioning of player occurs
 ^ return true in func to disable regular player placement
+minetest.register_on_prejoinplayer(func(name, ip))
+^ Called before a player joins the game
+^ If it returns a string, the player is disconnected with that string as reason
 minetest.register_on_joinplayer(func(ObjectRef))
 ^ Called when a player joins the game
 minetest.register_on_leaveplayer(func(ObjectRef))
