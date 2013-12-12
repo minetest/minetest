@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_internal.h"
+#include "util/string.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 {
@@ -56,6 +57,23 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_OR);
 	bool positioning_handled_by_some = lua_toboolean(L, -1);
 	return positioning_handled_by_some;
+}
+
+bool ScriptApiPlayer::on_prejoinplayer(std::string name, std::string ip, std::string &reason)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get minetest.registered_on_prejoinplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_prejoinplayers");
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, ip.c_str());
+	script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_OR);
+	if (lua_isstring(L, -1)) {
+		reason.assign(lua_tostring(L, -1));
+		return true;
+	}
+	return false;
 }
 
 void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
