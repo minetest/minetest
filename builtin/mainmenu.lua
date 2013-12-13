@@ -253,7 +253,7 @@ function menu.init()
 		menu.favorites = engine.get_favorites("local")
 	end
 
-	menu.defaulttexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" ..
+	menu.defaulttexturedir = engine.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 end
 
@@ -1070,8 +1070,7 @@ function tabbuilder.tab_texture_packs()
 	local no_screenshot = nil
 	if not file_exists(screenfile) then
 		screenfile = nil
-		no_screenshot = engine.get_texturepath()..DIR_DELIM..
-					"base"..DIR_DELIM.."pack"..DIR_DELIM.."no_screenshot.png"
+		no_screenshot = menu.defaulttexturedir .. "no_screenshot.png"
 	end
 
 	return	retval ..

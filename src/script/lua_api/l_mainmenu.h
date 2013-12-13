@@ -111,6 +111,8 @@ private:
 	
 	static int l_get_texturepath(lua_State *L);
 
+	static int l_get_texturepath_share(lua_State *L);
+
 	static int l_get_dirlist(lua_State *L);
 
 	static int l_create_dir(lua_State *L);
