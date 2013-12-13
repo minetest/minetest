@@ -1649,6 +1649,8 @@ public:
 			m_acceleration = readV3F1000(is);
 			if(fabs(m_prop.automatic_rotate) < 0.001)
 				m_yaw = readF1000(is);
+			else
+				readF1000(is);
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
