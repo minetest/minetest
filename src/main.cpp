@@ -86,10 +86,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-leveldb.h"
 #endif
 
-#if USE_CURL
-#include "curl/curl.h"
-#endif
-
 /*
 	Settings.
 	These are loaded from the config file.
@@ -996,11 +992,6 @@ int main(int argc, char *argv[])
 	// Initialize random seed
 	srand(time(0));
 	mysrand(time(0));
-
-#if USE_CURL
-	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
-	assert(res == CURLE_OK);
-#endif
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
