@@ -77,16 +77,6 @@ void parseModContents(ModSpec &spec)
 				}
 			}
 		}
-
-		// FIXME: optdepends.txt is deprecated
-		// remove this code at some point in the future
-		std::ifstream is2((spec.path+DIR_DELIM+"optdepends.txt").c_str());
-		while(is2.good()){
-			std::string dep;
-			std::set<char> symbols;
-			if(parseDependsLine(is2, dep, symbols))
-				spec.optdepends.insert(dep);
-		}
 	}
 }
 

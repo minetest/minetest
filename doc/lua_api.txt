@@ -129,13 +129,6 @@ screenshot.png:
 description.txt:
   File containing desctiption to be shown within mainmenu.
 
-optdepends.txt:
-  An alternative way of specifying optional dependencies.
-  Like depends.txt, a single line contains a single modname.
-
-  NOTE: This file exists for compatibility purposes only and
-  support for it will be removed from the engine by the end of 2013.
-
 init.lua:
   The main Lua script. Running this script should register everything it
   wants to register. Subsequent execution depends on minetest calling the
