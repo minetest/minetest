@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client.h"
 #include <iostream>
+#include <algorithm>
 #include "clientserver.h"
 #include "jthread/jmutexautolock.h"
 #include "main.h"
@@ -37,17 +38,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "shader.h"
 #include <IFileSystem.h>
-#include "sha1.h"
 #include "base64.h"
 #include "clientmap.h"
-#include "filecache.h"
+#include "clientmedia.h"
 #include "sound.h"
 #include "util/string.h"
-#include "hex.h"
 #include "IMeshCache.h"
+#include "serialization.h"
 #include "util/serialize.h"
 #include "config.h"
 #include "util/directiontables.h"
+#include "util/pointedthing.h"
 #include "version.h"
 
 #if USE_CURL
@@ -222,46 +223,9 @@ void * MeshUpdateThread::Thread()
 	return NULL;
 }
 
-void * MediaFetchThread::Thread()
-{
-	ThreadStarted();
-
-	log_register_thread("MediaFetchThread");
-
-	DSTACK(__FUNCTION_NAME);
-
-	BEGIN_DEBUG_EXCEPTION_HANDLER
-
-	#if USE_CURL
-	CURL *curl;
-	CURLcode res;
-	for (std::list<MediaRequest>::iterator i = m_file_requests.begin();
-			i != m_file_requests.end(); ++i) {
-		curl = curl_easy_init();
-		assert(curl);
-		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(curl, CURLOPT_URL, (m_remote_url + i->name).c_str());
-		curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
-		std::ostringstream stream;
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stream);
-		curl_easy_setopt(curl, CURLOPT_USERAGENT, (std::string("Minetest ")+minetest_version_hash).c_str());
-		res = curl_easy_perform(curl);
-		if (res == CURLE_OK) {
-			std::string data = stream.str();
-			m_file_data.push_back(make_pair(i->name, data));
-		} else {
-			m_failed.push_back(*i);
-			infostream << "cURL request failed for " << i->name << " (" << curl_easy_strerror(res) << ")"<< std::endl;
-		}
-		curl_easy_cleanup(curl);
-	}
-	#endif
-
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-
-	return NULL;
-}
+/*
+	Client
+*/
 
 Client::Client(
 		IrrlichtDevice *device,
@@ -303,12 +267,9 @@ Client::Client(
 	m_map_seed(0),
 	m_password(password),
 	m_access_denied(false),
-	m_media_cache(getMediaCacheDir()),
-	m_media_receive_started(false),
-	m_media_count(0),
-	m_media_received_count(0),
 	m_itemdef_received(false),
 	m_nodedef_received(false),
+	m_media_downloader(new ClientMediaDownloader()),
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
@@ -332,9 +293,6 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
-
-	for (size_t i = 0; i < g_settings->getU16("media_fetch_threads"); ++i)
-		m_media_fetch_threads.push_back(new MediaFetchThread(this));
 }
 
 Client::~Client()
@@ -363,10 +321,6 @@ Client::~Client()
 			delete i->second;
 		}
 	}
-
-	for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
-			i != m_media_fetch_threads.end(); ++i)
-		delete *i;
 
 	// cleanup 3d model meshes on client shutdown
 	while (m_device->getSceneManager()->getMeshCache()->getMeshCount() != 0) {
@@ -797,57 +751,11 @@ void Client::step(float dtime)
 	/*
 		Load fetched media
 	*/
-	if (m_media_receive_started) {
-		bool all_stopped = true;
-		for (std::list<MediaFetchThread*>::iterator thread = m_media_fetch_threads.begin();
-				thread != m_media_fetch_threads.end(); ++thread) {
-			all_stopped &= !(*thread)->IsRunning();
-			while (!(*thread)->m_file_data.empty()) {
-				std::pair <std::string, std::string> out = (*thread)->m_file_data.pop_front();
-				if(m_media_received_count < m_media_count)
-					m_media_received_count++;
-
-				bool success = loadMedia(out.second, out.first);
-				if(success){
-					verbosestream<<"Client: Loaded received media: "
-							<<"\""<<out.first<<"\". Caching."<<std::endl;
-				} else{
-					infostream<<"Client: Failed to load received media: "
-							<<"\""<<out.first<<"\". Not caching."<<std::endl;
-					continue;
-				}
-
-				bool did = fs::CreateAllDirs(getMediaCacheDir());
-				if(!did){
-					errorstream<<"Could not create media cache directory"
-							<<std::endl;
-				}
-
-				{
-					std::map<std::string, std::string>::iterator n;
-					n = m_media_name_sha1_map.find(out.first);
-					if(n == m_media_name_sha1_map.end())
-						errorstream<<"The server sent a file that has not "
-								<<"been announced."<<std::endl;
-					else
-						m_media_cache.update_sha1(out.second);
-				}
-			}
-		}
-		if (all_stopped) {
-			std::list<MediaRequest> fetch_failed;
-			for (std::list<MediaFetchThread*>::iterator thread = m_media_fetch_threads.begin();
-					thread != m_media_fetch_threads.end(); ++thread) {
-				for (std::list<MediaRequest>::iterator request = (*thread)->m_failed.begin();
-						request != (*thread)->m_failed.end(); ++request)
-					fetch_failed.push_back(*request);
-				(*thread)->m_failed.clear();
-			}
-			if (fetch_failed.size() > 0) {
-				infostream << "Failed to remote-fetch " << fetch_failed.size() << " files. "
-						<< "Requesting them the usual way." << std::endl;
-				request_media(fetch_failed);
-			}
+	if (m_media_downloader && m_media_downloader->isStarted()) {
+		m_media_downloader->step(this);
+		if (m_media_downloader->isDone()) {
+			delete m_media_downloader;
+			m_media_downloader = NULL;
 		}
 	}
 
@@ -1048,15 +956,15 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 		string name
 	}
 */
-void Client::request_media(const std::list<MediaRequest> &file_requests)
+void Client::request_media(const std::list<std::string> &file_requests)
 {
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
 	writeU16(os, file_requests.size());
 
-	for(std::list<MediaRequest>::const_iterator i = file_requests.begin();
+	for(std::list<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
-		os<<serializeString(i->name);
+		os<<serializeString(*i);
 	}
 
 	// Make data buffer
@@ -1066,6 +974,19 @@ void Client::request_media(const std::list<MediaRequest> &file_requests)
 	Send(0, data, true);
 	infostream<<"Client: Sending media request list to server ("
 			<<file_requests.size()<<" files)"<<std::endl;
+}
+
+void Client::received_media()
+{
+	// notify server we received everything
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOSERVER_RECEIVED_MEDIA);
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+	infostream<<"Client: Notifying server that we received all media"
+			<<std::endl;
 }
 
 void Client::ReceiveAll()
@@ -1660,96 +1581,54 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		// Mesh update thread must be stopped while
-		// updating content definitions
-		assert(!m_mesh_update_thread.IsRunning());
-
 		int num_files = readU16(is);
 		
 		infostream<<"Client: Received media announcement: packet size: "
 				<<datasize<<std::endl;
 
-		std::list<MediaRequest> file_requests;
+		if (m_media_downloader == NULL ||
+				m_media_downloader->isStarted()) {
+			const char *problem = m_media_downloader ?
+				"we already saw another announcement" :
+				"all media has been received already";
+			errorstream<<"Client: Received media announcement but "
+				<<problem<<"! "
+				<<" files="<<num_files
+				<<" size="<<datasize<<std::endl;
+			return;
+		}
+
+		// Mesh update thread must be stopped while
+		// updating content definitions
+		assert(!m_mesh_update_thread.IsRunning());
 
 		for(int i=0; i<num_files; i++)
 		{
-			//read file from cache
 			std::string name = deSerializeString(is);
 			std::string sha1_base64 = deSerializeString(is);
-
-			// if name contains illegal characters, ignore the file
-			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Client: ignoring illegal file name "
-						<<"sent by server: \""<<name<<"\""<<std::endl;
-				continue;
-			}
-
 			std::string sha1_raw = base64_decode(sha1_base64);
-			std::string sha1_hex = hex_encode(sha1_raw);
-			std::ostringstream tmp_os(std::ios_base::binary);
-			bool found_in_cache = m_media_cache.load_sha1(sha1_raw, tmp_os);
-			m_media_name_sha1_map[name] = sha1_raw;
-
-			// If found in cache, try to load it from there
-			if(found_in_cache)
-			{
-				bool success = loadMedia(tmp_os.str(), name);
-				if(success){
-					verbosestream<<"Client: Loaded cached media: "
-							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
-					continue;
-				} else{
-					infostream<<"Client: Failed to load cached media: "
-							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
-				}
-			}
-			// Didn't load from cache; queue it to be requested
-			verbosestream<<"Client: Adding file to request list: \""
-					<<sha1_hex<<" \""<<name<<"\""<<std::endl;
-			file_requests.push_back(MediaRequest(name));
+			m_media_downloader->addFile(name, sha1_raw);
 		}
 
-		std::string remote_media = "";
+		std::vector<std::string> remote_media;
 		try {
-			remote_media = deSerializeString(is);
+			Strfnd sf(deSerializeString(is));
+			while(!sf.atend()) {
+				std::string baseurl = trim(sf.next(","));
+				if(baseurl != "")
+					m_media_downloader->addRemoteServer(baseurl);
+			}
 		}
 		catch(SerializationError) {
 			// not supported by server or turned off
 		}
 
-		m_media_count = file_requests.size();
-		m_media_receive_started = true;
-
-		if (remote_media == "" || !USE_CURL) {
-			request_media(file_requests);
-		} else {
-			#if USE_CURL
-			std::list<MediaFetchThread*>::iterator cur = m_media_fetch_threads.begin();
-			for(std::list<MediaRequest>::iterator i = file_requests.begin();
-					i != file_requests.end(); ++i) {
-				(*cur)->m_file_requests.push_back(*i);
-				cur++;
-				if (cur == m_media_fetch_threads.end())
-					cur = m_media_fetch_threads.begin();
-			}
-			for (std::list<MediaFetchThread*>::iterator i = m_media_fetch_threads.begin();
-					i != m_media_fetch_threads.end(); ++i) {
-				(*i)->m_remote_url = remote_media;
-				(*i)->Start();
-			}
-			#endif
-
-			// notify server we received everything
-			std::ostringstream os(std::ios_base::binary);
-			writeU16(os, TOSERVER_RECEIVED_MEDIA);
-			std::string s = os.str();
-			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-			// Send as reliable
-			Send(0, data, true);
+		m_media_downloader->step(this);
+		if (m_media_downloader->isDone()) {
+			// might be done already if all media is in the cache
+			delete m_media_downloader;
+			m_media_downloader = NULL;
 		}
-		ClientEvent event;
-		event.type = CE_TEXTURES_UPDATED;
-		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_MEDIA)
 	{
@@ -1775,67 +1654,37 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				<<num_bunches<<" files="<<num_files
 				<<" size="<<datasize<<std::endl;
 
-		// Check total and received media count
-		assert(m_media_received_count <= m_media_count);
-		if (num_files > m_media_count - m_media_received_count) {
-			errorstream<<"Client: Received more files than requested:"
-				<<" total count="<<m_media_count
-				<<" total received="<<m_media_received_count
+		if (num_files == 0)
+			return;
+
+		if (m_media_downloader == NULL ||
+				!m_media_downloader->isStarted()) {
+			const char *problem = m_media_downloader ?
+				"media has not been requested" :
+				"all media has been received already";
+			errorstream<<"Client: Received media but "
+				<<problem<<"! "
 				<<" bunch "<<bunch_i<<"/"<<num_bunches
 				<<" files="<<num_files
 				<<" size="<<datasize<<std::endl;
-			num_files = m_media_count - m_media_received_count;
-		}
-		if (num_files == 0)
 			return;
+		}
 
 		// Mesh update thread must be stopped while
 		// updating content definitions
 		assert(!m_mesh_update_thread.IsRunning());
 
 		for(u32 i=0; i<num_files; i++){
-			assert(m_media_received_count < m_media_count);
-			m_media_received_count++;
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);
-
-			// if name contains illegal characters, ignore the file
-			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Client: ignoring illegal file name "
-						<<"sent by server: \""<<name<<"\""<<std::endl;
-				continue;
-			}
-			
-			bool success = loadMedia(data, name);
-			if(success){
-				verbosestream<<"Client: Loaded received media: "
-						<<"\""<<name<<"\". Caching."<<std::endl;
-			} else{
-				infostream<<"Client: Failed to load received media: "
-						<<"\""<<name<<"\". Not caching."<<std::endl;
-				continue;
-			}
-
-			bool did = fs::CreateAllDirs(getMediaCacheDir());
-			if(!did){
-				errorstream<<"Could not create media cache directory"
-						<<std::endl;
-			}
-
-			{
-				std::map<std::string, std::string>::iterator n;
-				n = m_media_name_sha1_map.find(name);
-				if(n == m_media_name_sha1_map.end())
-					errorstream<<"The server sent a file that has not "
-							<<"been announced."<<std::endl;
-				else
-					m_media_cache.update_sha1(data);
-			}
+			m_media_downloader->conventionalTransferDone(
+					name, data, this);
 		}
 
-		ClientEvent event;
-		event.type = CE_TEXTURES_UPDATED;
-		m_client_event_queue.push_back(event);
+		if (m_media_downloader->isDone()) {
+			delete m_media_downloader;
+			m_media_downloader = NULL;
+		}
 	}
 	else if(command == TOCLIENT_TOOLDEF)
 	{
@@ -2885,6 +2734,14 @@ ClientEvent Client::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
+float Client::mediaReceiveProgress()
+{
+	if (m_media_downloader)
+		return m_media_downloader->getProgress();
+	else
+		return 1.0; // downloader only exists when not yet done
+}
+
 void draw_load_screen(const std::wstring &text,
 		IrrlichtDevice* device, gui::IGUIFont* font,
 		float dtime=0 ,int percent=0, bool clouds=true);
@@ -2893,12 +2750,8 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
-	assert(texturesReceived());
+	assert(mediaReceived());
 	
-	// remove the information about which checksum each texture
-	// ought to have
-	m_media_name_sha1_map.clear();
-
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
 	m_tsrc->rebuildImagesAndTextures();

@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
+#include "hex.h"
 #include "util/string.h"
 #include "util/numeric.h"
 #include "filesys.h"
@@ -2734,19 +2735,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
-}
-
-static inline bool hex_digit_decode(char hexdigit, unsigned char &value)
-{
-	if(hexdigit >= '0' && hexdigit <= '9')
-		value = hexdigit - '0';
-	else if(hexdigit >= 'A' && hexdigit <= 'F')
-		value = hexdigit - 'A' + 10;
-	else if(hexdigit >= 'a' && hexdigit <= 'f')
-		value = hexdigit - 'a' + 10;
-	else
-		return false;
-	return true;
 }
 
 bool GUIFormSpecMenu::parseColor(std::string &value, video::SColor &color, bool quiet)

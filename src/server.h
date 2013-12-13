@@ -153,15 +153,6 @@ struct PrioritySortedBlockTransfer
 	u16 peer_id;
 };
 
-struct MediaRequest
-{
-	std::string name;
-
-	MediaRequest(const std::string &name_=""):
-		name(name_)
-	{}
-};
-
 struct MediaInfo
 {
 	std::string path;
@@ -569,7 +560,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
-			const std::list<MediaRequest> &tosend);
+			const std::list<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);

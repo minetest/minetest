@@ -31,32 +31,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "filecache.h"
 #include "localplayer.h"
-#include "server.h"
+#include "hud.h"
 #include "particles.h"
-#include "util/pointedthing.h"
-#include <algorithm>
 
 struct MeshMakeData;
 class MapBlockMesh;
-class IGameDef;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
-class ClientEnvironment;
+class ClientMediaDownloader;
 struct MapDrawControl;
 class MtEventManager;
-
-class ClientNotReadyException : public BaseException
-{
-public:
-	ClientNotReadyException(const char *s):
-		BaseException(s)
-	{}
-};
+struct PointedThing;
 
 struct QueuedMeshUpdate
 {
@@ -132,31 +121,12 @@ public:
 	IGameDef *m_gamedef;
 };
 
-class MediaFetchThread : public SimpleThread
-{
-public:
-
-	MediaFetchThread(IGameDef *gamedef):
-		m_gamedef(gamedef)
-	{
-	}
-
-	void * Thread();
-
-	std::list<MediaRequest> m_file_requests;
-	MutexedQueue<std::pair<std::string, std::string> > m_file_data;
-	std::list<MediaRequest> m_failed;
-	std::string m_remote_url;
-	IGameDef *m_gamedef;
-};
-
 enum ClientEventType
 {
 	CE_NONE,
 	CE_PLAYER_DAMAGE,
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
-	CE_TEXTURES_UPDATED,
 	CE_SHOW_FORMSPEC,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
@@ -426,19 +396,15 @@ public:
 	std::wstring accessDeniedReason()
 	{ return m_access_denied_reason; }
 
-	float mediaReceiveProgress()
-	{
-		if (!m_media_receive_started) return 0;
-		return 1.0 * m_media_received_count / m_media_count;
-	}
-
-	bool texturesReceived()
-	{ return m_media_receive_started && m_media_received_count == m_media_count; }
 	bool itemdefReceived()
 	{ return m_itemdef_received; }
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
-	
+	bool mediaReceived()
+	{ return m_media_downloader == NULL; }
+
+	float mediaReceiveProgress();
+
 	void afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font);
 
 	float getRTT(void);
@@ -455,12 +421,15 @@ public:
 	virtual bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 
-private:
-	
+	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
+	// Send a request for conventional media transfer
+	void request_media(const std::list<std::string> &file_requests);
+	// Send a notification that no conventional media transfer is needed
+	void received_media();
 
-	void request_media(const std::list<MediaRequest> &file_requests);
+private:
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
@@ -488,7 +457,6 @@ private:
 	MtEventManager *m_event;
 
 	MeshUpdateThread m_mesh_update_thread;
-	std::list<MediaFetchThread*> m_media_fetch_threads;
 	ClientEnvironment m_env;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
@@ -514,14 +482,9 @@ private:
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
 	Queue<ClientEvent> m_client_event_queue;
-	FileCache m_media_cache;
-	// Mapping from media file name to SHA1 checksum
-	std::map<std::string, std::string> m_media_name_sha1_map;
-	bool m_media_receive_started;
-	u32 m_media_count;
-	u32 m_media_received_count;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
+	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set;
