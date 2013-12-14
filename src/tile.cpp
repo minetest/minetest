@@ -775,6 +775,7 @@ void TextureSource::processQueue()
 	/*
 		Fetch textures
 	*/
+	//NOTE this is only thread safe for ONE consumer thread!
 	if(!m_get_texture_queue.empty())
 	{
 		GetRequest<std::string, u32, u8, u8>
