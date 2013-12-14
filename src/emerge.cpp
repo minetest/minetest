@@ -91,11 +91,11 @@ public:
 
 EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
-	registerMapgen("v6", new MapgenFactoryV6());
-	registerMapgen("v7", new MapgenFactoryV7());
-	registerMapgen("indev", new MapgenFactoryIndev());
+	registerMapgen("v6",         new MapgenFactoryV6());
+	registerMapgen("v7",         new MapgenFactoryV7());
+	registerMapgen("indev",      new MapgenFactoryIndev());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
-	registerMapgen("math", new MapgenFactoryMath());
+	registerMapgen("math",       new MapgenFactoryMath());
 
 	this->ndef     = gamedef->getNodeDefManager();
 	this->biomedef = new BiomeDefManager();

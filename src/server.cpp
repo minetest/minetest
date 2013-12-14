@@ -823,6 +823,7 @@ Server::Server(
 	
 	// Initialize mapgens
 	m_emerge->initMapgens(mgparams);
+	servermap->setMapgenParams(m_emerge->params);
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
