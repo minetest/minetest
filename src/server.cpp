@@ -762,23 +762,7 @@ void Server::AsyncRunStep()
 
 		std::map<v3s16, MapBlock*> modified_blocks;
 		m_env->getMap().transformLiquids(modified_blocks);
-#if 0
-		/*
-			Update lighting
-		*/
-		core::map<v3s16, MapBlock*> lighting_modified_blocks;
-		ServerMap &map = ((ServerMap&)m_env->getMap());
-		map.updateLighting(modified_blocks, lighting_modified_blocks);
 
-		// Add blocks modified by lighting to modified_blocks
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = lighting_modified_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			MapBlock *block = i.getNode()->getValue();
-			modified_blocks.insert(block->getPos(), block);
-		}
-#endif
 		/*
 			Set the modified blocks unsent for all the clients
 		*/
@@ -971,33 +955,6 @@ void Server::AsyncRunStep()
 					<<added_objects.size()<<" added, "
 					<<"packet size is "<<reply.getSize()<<std::endl;
 		}
-
-#if 0
-		/*
-			Collect a list of all the objects known by the clients
-			and report it back to the environment.
-		*/
-
-		core::map<u16, bool> all_known_objects;
-
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-			// Go through all known objects of client
-			for(core::map<u16, bool>::Iterator
-					i = client->m_known_objects.getIterator();
-					i.atEnd()==false; i++)
-			{
-				u16 id = i.getNode()->getKey();
-				all_known_objects[id] = true;
-			}
-		}
-
-		m_env->setKnownActiveObjects(whatever);
-#endif
-
 	}
 
 	/*
@@ -2044,27 +2001,6 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 
 	v3s16 p = block->getPos();
 
-#if 0
-	// Analyze it a bit
-	bool completely_air = true;
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-	{
-		if(block->getNodeNoEx(v3s16(x0,y0,z0)).d != CONTENT_AIR)
-		{
-			completely_air = false;
-			x0 = y0 = z0 = MAP_BLOCKSIZE; // Break out
-		}
-	}
-
-	// Print result
-	infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
-	if(completely_air)
-		infostream<<"[completely air] ";
-	infostream<<std::endl;
-#endif
-
 	/*
 		Create a packet with the block in the right format
 	*/
@@ -3010,12 +2946,6 @@ v3f findSpawnPos(ServerMap &map)
 
 	v3s16 nodepos;
 
-#if 0
-	nodepos = v2s16(0,0);
-	groundheight = 20;
-#endif
-
-#if 1
 	s16 water_level = map.m_mgparams->water_level;
 
 	// Try to find a good place a few times
@@ -3056,7 +2986,6 @@ v3f findSpawnPos(ServerMap &map)
 			break;
 		}
 	}
-#endif
 
 	return intToFloat(nodepos, BS);
 }
