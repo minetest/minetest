@@ -231,40 +231,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					continue;
 			}
 
-#if 0
-			/*
-				If block is far away, don't generate it unless it is
-				near ground level.
-			*/
-			if(d >= 4)
-			{
-	#if 1
-				// Block center y in nodes
-				f32 y = (f32)(p.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
-				// Don't generate if it's very high or very low
-				if(y < -64 || y > 64)
-					generate = false;
-	#endif
-	#if 0
-				v2s16 p2d_nodes_center(
-					MAP_BLOCKSIZE*p.X,
-					MAP_BLOCKSIZE*p.Z);
-
-				// Get ground height in nodes
-				s16 gh = server->m_env->getServerMap().findGroundLevel(
-						p2d_nodes_center);
-
-				// If differs a lot, don't generate
-				if(fabs(gh - y) > MAP_BLOCKSIZE*2)
-					generate = false;
-					// Actually, don't even send it
-					//continue;
-	#endif
-			}
-#endif
-
-			//infostream<<"d="<<d<<std::endl;
-#if 1
 			/*
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
@@ -276,7 +242,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			{
 				continue;
 			}
-#endif
+
 			/*
 				Don't send already sent blocks
 			*/
@@ -317,16 +283,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					block_is_invalid = true;
 				}*/
 
-#if 0
-				v2s16 p2d(p.X, p.Z);
-				ServerMap *map = (ServerMap*)(&server->m_env->getMap());
-				v2s16 chunkpos = map->sector_to_chunk(p2d);
-				if(map->chunkNonVolatile(chunkpos) == false)
-					block_is_invalid = true;
-#endif
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
-#if 1
+
 				/*
 					If block is not close, don't send it unless it is near
 					ground level.
@@ -339,7 +298,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					if(block->getDayNightDiff() == false)
 						continue;
 				}
-#endif
 			}
 
 			/*
@@ -499,6 +457,3 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 			m_blocks_sent.erase(p);
 	}
 }
-
-
-
