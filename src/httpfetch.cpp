@@ -569,7 +569,7 @@ protected:
 			*/
 
 			while (!m_requests.empty()) {
-				Request req = m_requests.pop_front();
+				Request req = m_requests.pop_frontNoEx();
 				processRequest(req);
 			}
 			processQueued(&pool);
