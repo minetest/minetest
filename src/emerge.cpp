@@ -554,9 +554,11 @@ void *EmergeThread::Thread() {
 					MapEditEventAreaIgnorer
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
-					{  // takes about 90ms with -O1 on an e3-1230v2
+					try {  // takes about 90ms with -O1 on an e3-1230v2
 						m_server->getScriptIface()->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
+					} catch(LuaError &e) {
+						m_server->setAsyncFatalError(e.what());
 					}
 
 					EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
