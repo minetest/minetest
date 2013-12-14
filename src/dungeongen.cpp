@@ -42,11 +42,9 @@ NoiseParams nparams_dungeon_density =
 ///////////////////////////////////////////////////////////////////////////////
 
 
-DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel,
-						DungeonParams *dparams) {
-	this->ndef        = ndef;
-	this->mapseed     = seed;
-	this->water_level = waterlevel;
+DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams) {
+	this->mg = mapgen;
+	this->vm = mapgen->vm;
 
 #ifdef DGEN_USE_TORCHES
 	c_torch  = ndef->getId("default:torch");
@@ -55,15 +53,16 @@ DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel,
 	if (dparams) {
 		memcpy(&dp, dparams, sizeof(dp));
 	} else {
-		dp.c_water  = ndef->getId("mapgen_water_source");
-		dp.c_cobble = ndef->getId("mapgen_cobble");
-		dp.c_moss   = ndef->getId("mapgen_mossycobble");
-		dp.c_stair  = ndef->getId("mapgen_stair_cobble");
+		dp.c_water  = mg->ndef->getId("mapgen_water_source");
+		dp.c_cobble = mg->ndef->getId("mapgen_cobble");
+		dp.c_moss   = mg->ndef->getId("mapgen_mossycobble");
+		dp.c_stair  = mg->ndef->getId("mapgen_stair_cobble");
 
 		dp.diagonal_dirs = false;
-		dp.mossratio = 3.0;
-		dp.holesize  = v3s16(1, 2, 1);
-		dp.roomsize  = v3s16(0,0,0);
+		dp.mossratio  = 3.0;
+		dp.holesize   = v3s16(1, 2, 1);
+		dp.roomsize   = v3s16(0,0,0);
+		dp.notifytype = GENNOTIFY_DUNGEON;
 
 		dp.np_rarity  = nparams_dungeon_rarity;
 		dp.np_wetness = nparams_dungeon_wetness;
@@ -72,31 +71,29 @@ DungeonGen::DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel,
 }
 
 
-void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
-						v3s16 nmin, v3s16 nmax) {
+void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax) {
 	//TimeTaker t("gen dungeons");
-	int approx_groundlevel = 10 + water_level;
+	int approx_groundlevel = 10 + mg->water_level;
 
 	if ((nmin.Y + nmax.Y) / 2 >= approx_groundlevel ||
-		NoisePerlin3D(&dp.np_rarity, nmin.X, nmin.Y, nmin.Z, mapseed) < 0.2)
+		NoisePerlin3D(&dp.np_rarity, nmin.X, nmin.Y, nmin.Z, mg->seed) < 0.2)
 		return;
-		
-	this->vmanip    = vm;
+
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
 
 	// Dungeon generator doesn't modify places which have this set
-	vmanip->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
+	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	// Set all air and water to be untouchable to make dungeons open
 	// to caves and open air
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
-			u32 i = vmanip->m_area.index(nmin.X, y, z);
+			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
-				content_t c = vmanip->m_data[i].getContent();
+				content_t c = vm->m_data[i].getContent();
 				if (c == CONTENT_AIR || c == dp.c_water)
-					vmanip->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
+					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}
 		}
@@ -109,13 +106,13 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 	if (dp.mossratio != 0.0) {
 		for (s16 z = nmin.Z; z <= nmax.Z; z++)
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
-			u32 i = vmanip->m_area.index(nmin.X, y, z);
+			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
-				if (vmanip->m_data[i].getContent() == dp.c_cobble) {
-					float wetness = NoisePerlin3D(&dp.np_wetness, x, y, z, mapseed);
+				if (vm->m_data[i].getContent() == dp.c_cobble) {
+					float wetness = NoisePerlin3D(&dp.np_wetness, x, y, z, mg->seed);
 					float density = NoisePerlin3D(&dp.np_density, x, y, z, blockseed);
 					if (density < wetness / dp.mossratio)
-						vmanip->m_data[i].setContent(dp.c_moss);
+						vm->m_data[i].setContent(dp.c_moss);
 				}
 				i++;
 			}
@@ -128,7 +125,7 @@ void DungeonGen::generate(ManualMapVoxelManipulator *vm, u32 bseed,
 
 void DungeonGen::makeDungeon(v3s16 start_padding)
 {
-	v3s16 areasize = vmanip->m_area.getExtent();
+	v3s16 areasize = vm->m_area.getExtent();
 	v3s16 roomsize;
 	v3s16 roomplace;
 
@@ -136,7 +133,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		Find place for first room
 	*/
 	bool fits = false;
-	for (u32 i = 0; i < 100; i++)
+	for (u32 i = 0; i < 100 && !fits; i++)
 	{
 		bool is_large_room = ((random.next() & 3) == 1);
 		roomsize = is_large_room ?
@@ -146,7 +143,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
-		roomplace = vmanip->m_area.MinEdge + start_padding + v3s16(
+		roomplace = vm->m_area.MinEdge + start_padding + v3s16(
 			random.range(0,areasize.X-roomsize.X-1-start_padding.X),
 			random.range(0,areasize.Y-roomsize.Y-1-start_padding.Y),
 			random.range(0,areasize.Z-roomsize.Z-1-start_padding.Z));
@@ -161,20 +158,13 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		for (s16 x = 1; x < roomsize.X - 1; x++)
 		{
 			v3s16 p = roomplace + v3s16(x, y, z);
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_INSIDE)
-			{
-				fits = false;
-				break;
-			}
-			if (vmanip->m_data[vi].getContent() == CONTENT_IGNORE)
-			{
+			u32 vi = vm->m_area.index(p);
+			if ((vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_INSIDE) ||
+				vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 				fits = false;
 				break;
 			}
 		}
-		if (fits)
-			break;
 	}
 	// No place found
 	if (fits == false)
@@ -194,10 +184,14 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		makeRoom(roomsize, roomplace);
 
 		v3s16 room_center = roomplace + v3s16(roomsize.X / 2, 1, roomsize.Z / 2);
+		if (mg->gennotify & (1 << dp.notifytype)) {
+			std::vector <v3s16> *nvec = mg->gen_notifications[dp.notifytype];
+			nvec->push_back(room_center);
+		}
 
 #ifdef DGEN_USE_TORCHES
 		// Place torch at room center (for testing)
-		vmanip->m_data[vmanip->m_area.index(room_center)] = MapNode(c_torch);
+		vm->m_data[vm->m_area.index(room_center)] = MapNode(c_torch);
 #endif
 
 		// Quit if last room
@@ -210,12 +204,9 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 		v3s16 walker_start_place;
 
-		if(start_in_last_room)
-		{
+		if (start_in_last_room) {
 			walker_start_place = last_room_center;
-		}
-		else
-		{
+		} else {
 			walker_start_place = room_center;
 			// Store center of current room as the last one
 			last_room_center = room_center;
@@ -226,8 +217,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		v3s16 doordir;
 		
 		m_pos = walker_start_place;
-		bool r = findPlaceForDoor(doorplace, doordir);
-		if (r == false)
+		if (!findPlaceForDoor(doorplace, doordir))
 			return;
 
 		if (random.range(0,1) == 0)
@@ -248,8 +238,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 		m_pos = corridor_end;
 		m_dir = corridor_end_dir;
-		r = findPlaceForRoomDoor(roomsize, doorplace, doordir, roomplace);
-		if (r == false)
+		if (!findPlaceForRoomDoor(roomsize, doorplace, doordir, roomplace))
 			return;
 
 		if (random.range(0,1) == 0)
@@ -274,21 +263,21 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 	{
 		{
 			v3s16 p = roomplace + v3s16(0, y, z);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 		{
 			v3s16 p = roomplace + v3s16(roomsize.X - 1, y, z);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 	}
 
@@ -298,21 +287,21 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 	{
 		{
 			v3s16 p = roomplace + v3s16(x, y, 0);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 		{
 			v3s16 p = roomplace + v3s16(x, y, roomsize.Z - 1);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 	}
 
@@ -322,21 +311,21 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 	{
 		{
 			v3s16 p = roomplace + v3s16(x, 0, z);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 		{
 			v3s16 p = roomplace + v3s16(x,roomsize. Y - 1, z);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 				continue;
-			u32 vi = vmanip->m_area.index(p);
-			if (vmanip->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
+			u32 vi = vm->m_area.index(p);
+			if (vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip->m_data[vi] = n_cobble;
+			vm->m_data[vi] = n_cobble;
 		}
 	}
 
@@ -346,11 +335,11 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 	for (s16 x = 1; x < roomsize.X - 1; x++)
 	{
 		v3s16 p = roomplace + v3s16(x, y, z);
-		if (vmanip->m_area.contains(p) == false)
+		if (vm->m_area.contains(p) == false)
 			continue;
-		u32 vi = vmanip->m_area.index(p);
-		vmanip->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
-		vmanip->m_data[vi]   = n_air;
+		u32 vi = vm->m_area.index(p);
+		vm->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
+		vm->m_data[vi]   = n_air;
 	}
 }
 
@@ -363,13 +352,13 @@ void DungeonGen::makeFill(v3s16 place, v3s16 size,
 	for (s16 x = 0; x < size.X; x++)
 	{
 		v3s16 p = place + v3s16(x, y, z);
-		if (vmanip->m_area.contains(p) == false)
+		if (vm->m_area.contains(p) == false)
 			continue;
-		u32 vi = vmanip->m_area.index(p);
-		if (vmanip->m_flags[vi] & avoid_flags)
+		u32 vi = vm->m_area.index(p);
+		if (vm->m_flags[vi] & avoid_flags)
 			continue;
-		vmanip->m_flags[vi] |= or_flags;
-		vmanip->m_data[vi]   = n;
+		vm->m_flags[vi] |= or_flags;
+		vm->m_data[vi]   = n;
 	}
 }
 
@@ -387,7 +376,7 @@ void DungeonGen::makeDoor(v3s16 doorplace, v3s16 doordir)
 
 #ifdef DGEN_USE_TORCHES
 	// Place torch (for testing)
-	vmanip->m_data[vmanip->m_area.index(doorplace)] = MapNode(c_torch);
+	vm->m_data[vm->m_area.index(doorplace)] = MapNode(c_torch);
 #endif
 }
 
@@ -416,8 +405,8 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 		if (partcount != 0)
 			p.Y += make_stairs;
 
-		if (vmanip->m_area.contains(p) == true &&
-			vmanip->m_area.contains(p + v3s16(0, 1, 0)) == true) {
+		if (vm->m_area.contains(p) == true &&
+			vm->m_area.contains(p + v3s16(0, 1, 0)) == true) {
 			if (make_stairs) {
 				makeFill(p + v3s16(-1, -1, -1), dp.holesize + v3s16(2, 3, 2),
 						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(dp.c_cobble), 0);
@@ -434,13 +423,13 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 					// rotate face 180 deg if making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
 					
-					u32 vi = vmanip->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
-					if (vmanip->m_data[vi].getContent() == dp.c_cobble)
-						vmanip->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+					u32 vi = vm->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
+					if (vm->m_data[vi].getContent() == dp.c_cobble)
+						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 					
-					vi = vmanip->m_area.index(p.X, p.Y, p.Z);
-					if (vmanip->m_data[vi].getContent() == dp.c_cobble)
-						vmanip->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+					vi = vm->m_area.index(p.X, p.Y, p.Z);
+					if (vm->m_data[vi].getContent() == dp.c_cobble)
+						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 				}
 			} else {
 				makeFill(p + v3s16(-1, -1, -1), dp.holesize + v3s16(2, 2, 2),
@@ -482,15 +471,15 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 	{
 		v3s16 p = m_pos + m_dir;
 		v3s16 p1 = p + v3s16(0, 1, 0);
-		if (vmanip->m_area.contains(p) == false
-		 || vmanip->m_area.contains(p1) == false
+		if (vm->m_area.contains(p) == false
+		 || vm->m_area.contains(p1) == false
 		 || i % 4 == 0)
 		{
 			randomizeDir();
 			continue;
 		}
-		if (vmanip->getNodeNoExNoEmerge(p).getContent()  == dp.c_cobble
-		 && vmanip->getNodeNoExNoEmerge(p1).getContent() == dp.c_cobble)
+		if (vm->getNodeNoExNoEmerge(p).getContent()  == dp.c_cobble
+		 && vm->getNodeNoExNoEmerge(p1).getContent() == dp.c_cobble)
 		{
 			// Found wall, this is a good place!
 			result_place = p;
@@ -503,18 +492,18 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 			Determine where to move next
 		*/
 		// Jump one up if the actual space is there
-		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == dp.c_cobble
-		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == CONTENT_AIR
-		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,2,0)).getContent() == CONTENT_AIR)
+		if (vm->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == dp.c_cobble
+		 && vm->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == CONTENT_AIR
+		 && vm->getNodeNoExNoEmerge(p+v3s16(0,2,0)).getContent() == CONTENT_AIR)
 			p += v3s16(0,1,0);
 		// Jump one down if the actual space is there
-		if (vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == dp.c_cobble
-		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == CONTENT_AIR
-		 && vmanip->getNodeNoExNoEmerge(p+v3s16(0,-1,0)).getContent() == CONTENT_AIR)
+		if (vm->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() == dp.c_cobble
+		 && vm->getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent() == CONTENT_AIR
+		 && vm->getNodeNoExNoEmerge(p+v3s16(0,-1,0)).getContent() == CONTENT_AIR)
 			p += v3s16(0,-1,0);
 		// Check if walking is now possible
-		if (vmanip->getNodeNoExNoEmerge(p).getContent() != CONTENT_AIR
-		 || vmanip->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() != CONTENT_AIR)
+		if (vm->getNodeNoExNoEmerge(p).getContent() != CONTENT_AIR
+		 || vm->getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent() != CONTENT_AIR)
 		{
 			// Cannot continue walking here
 			randomizeDir();
@@ -571,12 +560,12 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 		for (s16 x = 1; x < roomsize.X - 1; x++)
 		{
 			v3s16 p = roomplace + v3s16(x, y, z);
-			if (vmanip->m_area.contains(p) == false)
+			if (vm->m_area.contains(p) == false)
 			{
 				fits = false;
 				break;
 			}
-			if (vmanip->m_flags[vmanip->m_area.index(p)]
+			if (vm->m_flags[vm->m_area.index(p)]
 					& VMANIP_FLAG_DUNGEON_INSIDE)
 			{
 				fits = false;

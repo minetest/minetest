@@ -73,6 +73,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge) 
 	this->seed     = (int)params->seed;
 	this->water_level = params->water_level;
 	this->flags    = params->flags | MGV7_MOUNTAINS | MGV7_RIDGES;
+	this->gennotify = emerge->gennotify;
 
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 
@@ -207,8 +208,8 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 		generateCaves(stone_surface_max_y);
 
 	if (flags & MG_DUNGEONS) {
-		DungeonGen dgen(ndef, data->seed, water_level, NULL);
-		dgen.generate(vm, blockseed, full_node_min, full_node_max);
+		DungeonGen dgen(this, NULL);
+		dgen.generate(blockseed, full_node_min, full_node_max);
 	}
 
 	for (size_t i = 0; i != emerge->decorations.size(); i++) {

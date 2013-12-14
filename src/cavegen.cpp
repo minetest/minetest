@@ -110,9 +110,21 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 		(float)(ps->next() % ar.Z) + 0.5
 	);
 
+	int notifytype = large_cave ? GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
+	if (mg->gennotify & (1 << notifytype)) {
+		std::vector <v3s16> *nvec = mg->gen_notifications[notifytype];
+		nvec->push_back(v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z));
+	}
+
 	// Generate some tunnel starting from orp
 	for (u16 j = 0; j < tunnel_routepoints; j++)
 		makeTunnel(j % dswitchint == 0);
+
+	notifytype = large_cave ? GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
+	if (mg->gennotify & (1 << notifytype)) {
+		std::vector <v3s16> *nvec = mg->gen_notifications[notifytype];
+		nvec->push_back(v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z));
+	}
 }
 
 
@@ -347,9 +359,21 @@ void CaveV7::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 		(float)(ps->next() % ar.Z) + 0.5
 	);
 
+	int notifytype = large_cave ? GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
+	if (mg->gennotify & (1 << notifytype)) {
+		std::vector <v3s16> *nvec = mg->gen_notifications[notifytype];
+		nvec->push_back(v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z));
+	}
+
 	// Generate some tunnel starting from orp
 	for (u16 j = 0; j < tunnel_routepoints; j++)
 		makeTunnel(j % dswitchint == 0);
+
+	notifytype = large_cave ? GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
+	if (mg->gennotify & (1 << notifytype)) {
+		std::vector <v3s16> *nvec = mg->gen_notifications[notifytype];
+		nvec->push_back(v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z));
+	}
 }
 
 

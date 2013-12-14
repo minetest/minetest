@@ -74,6 +74,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge) 
 	this->water_level = params->water_level;
 	this->flags   = params->flags;
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
+	this->gennotify = emerge->gennotify;
 
 	this->freq_desert = params->freq_desert;
 	this->freq_beach  = params->freq_beach;
@@ -456,22 +457,24 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 			dp.c_stair   = c_stair_cobble;
 
 			dp.diagonal_dirs = false;
-			dp.mossratio = 3.0;
-			dp.holesize  = v3s16(1, 2, 1);
-			dp.roomsize  = v3s16(0, 0, 0);
+			dp.mossratio  = 3.0;
+			dp.holesize   = v3s16(1, 2, 1);
+			dp.roomsize   = v3s16(0, 0, 0);
+			dp.notifytype = GENNOTIFY_DUNGEON;
 		} else {
 			dp.c_cobble  = c_sandbrick;
 			dp.c_moss    = c_sandbrick; // should make this 'cracked sandstone' later
 			dp.c_stair   = c_stair_sandstone;
 
 			dp.diagonal_dirs = true;
-			dp.mossratio = 0.0;
-			dp.holesize  = v3s16(2, 3, 2);
-			dp.roomsize  = v3s16(2, 5, 2);
+			dp.mossratio  = 0.0;
+			dp.holesize   = v3s16(2, 3, 2);
+			dp.roomsize   = v3s16(2, 5, 2);
+			dp.notifytype = GENNOTIFY_TEMPLE;
 		}
 
-		DungeonGen dgen(ndef, data->seed, water_level, &dp);
-		dgen.generate(vm, blockseed, full_node_min, full_node_max);
+		DungeonGen dgen(this, &dp);
+		dgen.generate(blockseed, full_node_min, full_node_max);
 	}
 	
 	// Add top and bottom side of water to transforming_liquid queue

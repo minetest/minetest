@@ -1289,6 +1289,10 @@ minetest.get_perlin(seeddiff, octaves, persistence, scale)
 ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 minetest.get_voxel_manip()
 ^ Return voxel manipulator object
+minetest.set_gen_notify(flags)
+^ Set the types of on-generate notifications that should be collected
+^ flags is a comma-delimited combination of:
+^ dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end
 minetest.get_mapgen_object(objectname)
 ^ Return requested mapgen object if available (see Mapgen objects)
 minetest.set_mapgen_params(MapgenParams)
@@ -1893,6 +1897,12 @@ the current mapgen.
 - humiditymap
     Returns an array containing the humidity values of nodes in the most recently generated chunk by the 
 current mapgen.
+
+- gennotify
+    Returns a table mapping requested generation notification types to arrays of positions at which the
+corresponding generated structures are located at within the current chunk.  To set the capture of positions
+of interest to be recorded on generate, use minetest.set_gen_notify().
+Possible fields of the table returned are:  dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end
 
 Registered entities
 --------------------

@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ManualMapVoxelManipulator;
 class INodeDefManager;
-
+class Mapgen;
 
 v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
 v3s16 turn_xz(v3s16 olddir, int t);
@@ -44,6 +44,7 @@ struct DungeonParams {
 	content_t c_moss;
 	content_t c_stair;
 
+	int notifytype;
 	bool diagonal_dirs;
 	float mossratio;
 	v3s16 holesize;
@@ -56,13 +57,11 @@ struct DungeonParams {
 
 class DungeonGen {
 public:
+	ManualMapVoxelManipulator *vm;
+	Mapgen *mg;
 	u32 blockseed;
-	u64 mapseed;
-	ManualMapVoxelManipulator *vmanip;
-	INodeDefManager *ndef;
 	PseudoRandom random;
 	v3s16 csize;
-	s16 water_level;
 
 	content_t c_torch;
 	DungeonParams dp;
@@ -71,9 +70,8 @@ public:
 	v3s16 m_pos;
 	v3s16 m_dir;
 
-	DungeonGen(INodeDefManager *ndef, u64 seed, s16 waterlevel, DungeonParams *dparams);
-	void generate(ManualMapVoxelManipulator *vm, u32 bseed,
-		v3s16 full_node_min, v3s16 full_node_max);
+	DungeonGen(Mapgen *mg, DungeonParams *dparams);
+	void generate(u32 bseed, v3s16 full_node_min, v3s16 full_node_max);
 	
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);

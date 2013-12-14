@@ -54,6 +54,7 @@ struct EnumString ModApiMapgen::es_MapgenObject[] =
 	{MGOBJ_BIOMEMAP,  "biomemap"},
 	{MGOBJ_HEATMAP,   "heatmap"},
 	{MGOBJ_HUMIDMAP,  "humiditymap"},
+	{MGOBJ_GENNOTIFY, "gennotify"},
 	{0, NULL},
 };
 
@@ -95,8 +96,6 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 	size_t maplen = mg->csize.X * mg->csize.Z;
 
-	int nargs = 1;
-
 	switch (mgobj) {
 		case MGOBJ_VMANIP: {
 			ManualMapVoxelManipulator *vm = mg->vm;
@@ -113,9 +112,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			// emerged max pos
 			push_v3s16(L, vm->m_area.MaxEdge);
 
-			nargs = 3;
-
-			break; }
+			return 3; }
 		case MGOBJ_HEIGHTMAP: {
 			if (!mg->heightmap)
 				return 0;
@@ -125,7 +122,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_pushinteger(L, mg->heightmap[i]);
 				lua_rawseti(L, -2, i + 1);
 			}
-			break; }
+
+			return 1; }
 		case MGOBJ_BIOMEMAP: {
 			if (!mg->biomemap)
 				return 0;
@@ -135,7 +133,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_pushinteger(L, mg->biomemap[i]);
 				lua_rawseti(L, -2, i + 1);
 			}
-			break; }
+
+			return 1; }
 		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
 		case MGOBJ_HUMIDMAP:
 			if (strcmp(emerge->params->mg_name.c_str(), "v7"))
@@ -153,10 +152,32 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_pushnumber(L, arr[i]);
 				lua_rawseti(L, -2, i + 1);
 			}
-			break; }
+
+			return 1; }
+		case MGOBJ_GENNOTIFY: {
+			lua_newtable(L);
+			for (int i = 0; flagdesc_gennotify[i].name; i++) {
+				if (!(emerge->gennotify & flagdesc_gennotify[i].flag))
+					continue;
+
+				std::vector<v3s16> *posvec = mg->gen_notifications[i];
+				if (!posvec)
+					return 0;
+
+				lua_newtable(L);
+				for (unsigned int j = 0; j != posvec->size(); j++) {
+					push_v3s16(L, (*posvec)[j]);
+					lua_rawseti(L, -2, j + 1);
+				}
+				lua_setfield(L, -2, flagdesc_gennotify[i].name);
+
+				posvec->clear();
+			}
+
+			return 1; }
 	}
 
-	return nargs;
+	return 0;
 }
 
 // minetest.set_mapgen_params(params)
@@ -211,6 +232,16 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	emerge->luaoverride_params_modified = paramsmodified;
 	emerge->luaoverride_flagmask        = flagmask;
 
+	return 0;
+}
+
+// set_gen_notify(string)
+int ModApiMapgen::l_set_gen_notify(lua_State *L)
+{
+	if (lua_isstring(L, 1)) {
+		EmergeManager *emerge = getServer(L)->getEmergeManager();
+		emerge->gennotify = readFlagString(lua_tostring(L, 1), flagdesc_gennotify);
+	}
 	return 0;
 }
 
@@ -581,6 +612,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_mapgen_object);
 
 	API_FCT(set_mapgen_params);
+	API_FCT(set_gen_notify);
 
 	API_FCT(register_biome);
 	API_FCT(register_decoration);

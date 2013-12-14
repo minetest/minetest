@@ -105,8 +105,9 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	this->luaoverride_params_modified = 0;
 	this->luaoverride_flagmask        = 0;
 
-	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	this->gennotify = 0;
 
+	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	int nthreads;
 	if (g_settings->get("num_emerge_threads").empty()) {

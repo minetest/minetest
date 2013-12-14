@@ -64,6 +64,16 @@ FlagDesc flagdesc_deco_schematic[] = {
 	{NULL,             0}
 };
 
+FlagDesc flagdesc_gennotify[] = {
+	{"dungeon",          1 << GENNOTIFY_DUNGEON},
+	{"temple",           1 << GENNOTIFY_TEMPLE},
+	{"cave_begin",       1 << GENNOTIFY_CAVE_BEGIN},
+	{"cave_end",         1 << GENNOTIFY_CAVE_END},
+	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
+	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
+	{NULL,               0}
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -896,6 +906,15 @@ Mapgen::Mapgen() {
 	ndef        = NULL;
 	heightmap   = NULL;
 	biomemap    = NULL;
+
+	for (unsigned int i = 0; i != NUM_GEN_NOTIFY; i++)
+		gen_notifications[i] = new std::vector<v3s16>;
+}
+
+
+Mapgen::~Mapgen() {
+	for (unsigned int i = 0; i != NUM_GEN_NOTIFY; i++)
+		delete gen_notifications[i];
 }
 
 
