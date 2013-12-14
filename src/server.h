@@ -795,6 +795,39 @@ private:
 		Particles
 	*/
 	std::vector<u32> m_particlespawner_ids;
+
+	/*
+		incoming message processing
+	*/
+
+	void processInit           (u8* data, unsigned int datasize, u16 peer_id,
+								std::string& addr_s);
+	void processInit2          (u8* data, unsigned int datasize, u16 peer_id,
+								std::string& addr_s);
+	void processPlayerPos      (u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processGotBlocks      (u8* data, unsigned int datasize, u16 peer_id);
+	void processDeletedBlocks  (u8* data, unsigned int datasize, u16 peer_id);
+	void processInventoryAction(u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processChatMessage    (u8* data,unsigned int datasize,u16 peer_id,
+								Player *player);
+	void processDamage         (u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processBreath         (u8* data, unsigned int datasize, u16 peer_id,
+								PlayerSAO *playersao);
+	void processPassword       (u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processRequestMedia   (u8* data, unsigned int datasize, u16 peer_id);
+	void processInteract       (u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processPlayeritem     (u8* data, unsigned int datasize, u16 peer_id,
+								PlayerSAO *playersao);
+	void processRemovedSounds  (u8* data, unsigned int datasize, u16 peer_id);
+	void processNodemetaFields (u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
+	void processInventoryFields(u8* data, unsigned int datasize, u16 peer_id,
+								Player *player, PlayerSAO *playersao);
 };
 
 /*
