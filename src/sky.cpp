@@ -556,7 +556,7 @@ void Sky::update(float time_of_day, float time_brightness,
 			m_cloudcolor_bright_f.b * m_cloud_brightness,
 			1.0);
 	if (m_directional_colored_fog) {
-		m_cloudcolor_f = m_mix_scolorf(m_cloudcolor_f, video::SColorf(pointcolor), m_horizon_blend() * 0.75);
+		m_cloudcolor_f = m_mix_scolorf(m_cloudcolor_f, video::SColorf(pointcolor), m_horizon_blend() * 0.25);
 	}
 
 }
