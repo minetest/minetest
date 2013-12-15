@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include <ISceneNode.h>
+#include "localplayer.h"
 
 #ifndef SKY_HEADER
 #define SKY_HEADER
@@ -31,7 +32,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
+	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlayer* player);
 
 	virtual void OnRegisterSceneNode();
 
@@ -61,7 +62,42 @@ public:
 private:
 	core::aabbox3d<f32> Box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
-	
+
+	// How much sun & moon transition should affect horizon color
+	float m_horizon_blend()
+	{
+		if (!m_sunlight_seen)
+			return 0;
+		float x; m_time_of_day >= 0.5 ? x = (1 - m_time_of_day) * 2 : x = m_time_of_day * 2;
+		if (x <= 0.3)
+			return 0;
+		if (x <= 0.4) // when the sun and moon are aligned
+			return (x - 0.3) * 10;
+		if (x <= 0.5)
+			return (0.5 - x) * 10;
+		return 0;
+	}
+
+	// Mix two colors by a given amount
+	video::SColor m_mix_scolor(video::SColor col1, video::SColor col2, f32 factor)
+	{
+		video::SColor result = video::SColor(
+			col1.getAlpha() * (1 - factor) + col2.getAlpha() * factor,
+			col1.getRed() * (1 - factor) + col2.getRed() * factor,
+			col1.getGreen() * (1 - factor) + col2.getGreen() * factor,
+			col1.getBlue() * (1 - factor) + col2.getBlue() * factor);
+		return result;
+	}
+	video::SColorf m_mix_scolorf(video::SColorf col1, video::SColorf col2, f32 factor)
+	{
+		video::SColorf result = video::SColorf(
+			col1.r * (1 - factor) + col2.r * factor,
+			col1.g * (1 - factor) + col2.g * factor,
+			col1.b * (1 - factor) + col2.b * factor,
+			col1.a * (1 - factor) + col2.a * factor);
+		return result;
+	}
+
 	bool m_first_update;
 	float m_time_of_day;
 	float m_time_brightness;
@@ -78,6 +114,7 @@ private:
 	v3f m_stars[SKY_STAR_COUNT];
 	u16 m_star_indices[SKY_STAR_COUNT*4];
 	video::S3DVertex m_star_vertices[SKY_STAR_COUNT*4];
+	LocalPlayer* m_player;
 };
 
 #endif
