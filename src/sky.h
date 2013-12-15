@@ -105,6 +105,7 @@ private:
 	float m_brightness;
 	float m_cloud_brightness;
 	bool m_clouds_visible;
+	bool m_directional_colored_fog;
 	video::SColorf m_bgcolor_bright_f;
 	video::SColorf m_skycolor_bright_f;
 	video::SColorf m_cloudcolor_bright_f;

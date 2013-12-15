@@ -22,16 +22,15 @@
 # Client and server
 #
 
-
 # Name of player; on a server this is the main admin
-#name = 
+#name =
 
 #
 # Client stuff
 #
 
 # Port to connect to (UDP)
-#remote_port = 
+#remote_port =
 # Key mappings
 # See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
@@ -83,7 +82,7 @@
 #vsync = false
 #fov = 72
 # Address to connect to (#blank = start local server)
-#address = 
+#address =
 # Enable random user input, for testing
 #random_input = false
 # Timeout for client to remove unused map data from memory
@@ -116,7 +115,7 @@
 # disable for speed or for different looks.
 #smooth_lighting = true
 # Path to texture directory. All textures are first searched from here.
-#texture_path = 
+#texture_path =
 # Video back-end.
 # Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
 #video_driver = opengl
@@ -190,6 +189,8 @@
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
+# Make fog and sky colors depend on daytime (dawn/sunset) and view direction
+#directional_colored_fog = true
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL
@@ -228,7 +229,7 @@
 # Server stuff
 #
 # Network port to listen (UDP)
-#port = 
+#port =
 # Name of server
 #server_name = Minetest server
 # Description of server
@@ -262,7 +263,7 @@
 # Gives some stuff to players at the beginning
 #give_initial_stuff = false
 # New users need to input this password
-#default_password = 
+#default_password =
 # Available privileges: interact, shout, teleport, settime, privs, ...
 # See /privs in game for a full list on your server and mod configuration.
 #default_privs = interact, shout
@@ -278,7 +279,7 @@
 #disable_anticheat = false
 # If true, actions are recorded for rollback
 #enable_rollback_recording = false
-# If true, blocks are cached (and generated if not before) before a player is spawned. 
+# If true, blocks are cached (and generated if not before) before a player is spawned.
 #cache_block_before_spawn = true
 # Defines the maximum height a player can spawn in a map, above water level
 #max_spawn_height = 50
@@ -342,7 +343,7 @@
 #emergequeue_limit_diskonly =
 # Maximum number of blocks to be queued that are to be generated.
 # Leave blank for an appropriate amount to be chosen automatically.
-#emergequeue_limit_generate = 
+#emergequeue_limit_generate =
 # Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
 # On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
 #num_emerge_threads = 1
