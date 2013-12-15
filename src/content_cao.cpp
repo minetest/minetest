@@ -540,11 +540,12 @@ void ItemCAO::initialize(const std::string &data)
 
 GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		ClientActiveObject(0, gamedef, env),
-		//
+
 		m_is_player(false),
 		m_is_local_player(false),
 		m_id(0),
-		//
+
+		m_prop(),
 		m_smgr(NULL),
 		m_irr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
@@ -552,32 +553,42 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animated_meshnode(NULL),
 		m_spritenode(NULL),
 		m_textnode(NULL),
+
+		m_armor_groups(),
 		m_position(v3f(0,10*BS,0)),
 		m_velocity(v3f(0,0,0)),
 		m_acceleration(v3f(0,0,0)),
 		m_yaw(0),
 		m_hp(1),
-		m_tx_size(1,1),
-		m_tx_basepos(0,0),
-		m_initial_tx_basepos_set(false),
-		m_tx_select_horiz_by_yawpitch(false),
+
+		m_is_visible(false),
+		m_visuals_expired(false),
+		m_texture_modifier_timer(-1),
+		m_step_distance_counter(0),
+		m_last_light(255),
+		pos_translator(),
+
+		m_sprite_size(1,1),
+		m_sprite_basepos(0,0),
+		m_sprite_initial_basepos_set(false),
+		m_sprite_select_horiz_by_yawpitch(false),
 		m_animation_range(v2s32(0,0)),
 		m_animation_speed(15),
 		m_animation_blend(0),
-		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
-		m_attachment_bone(""),
+		m_anim_framelength(0.2),
+		m_anim_timer(0),
+		m_anim_frame(0),
+		m_anim_num_frames(1),
+		m_anim_last_updated_velocity(1),
+		m_anim_base_velocity(-1.0),
+
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
 		m_attached_to_local(false),
-		m_anim_frame(0),
-		m_anim_num_frames(1),
-		m_anim_framelength(0.2),
-		m_anim_timer(0),
-		m_reset_textures_timer(-1),
-		m_visuals_expired(false),
-		m_step_distance_counter(0),
-		m_last_light(255),
-		m_is_visible(false)
+		m_attachment_bone(""),
+		m_children(),
+
+		m_bone_position(std::map<std::string, core::vector2d<v3f> >())
 {
 	if(gamedef == NULL)
 		ClientActiveObject::registerType(getType(), create);
@@ -737,7 +748,7 @@ ClientActiveObject* GenericCAO::getParent()
 void GenericCAO::removeFromScene(bool permanent)
 {
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
-	if((m_env != NULL) && (permanent)) 
+	if((m_env != NULL) && (permanent))
 	{
 		for(std::vector<u16>::iterator ci = m_children.begin();
 						ci != m_children.end(); ci++)
@@ -1225,11 +1236,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 	updateTexturePos();
 
-	if(m_reset_textures_timer >= 0)
+	if(m_texture_modifier_timer >= 0)
 	{
-		m_reset_textures_timer -= dtime;
-		if(m_reset_textures_timer <= 0){
-			m_reset_textures_timer = -1;
+		m_texture_modifier_timer -= dtime;
+		if(m_texture_modifier_timer <= 0){
+			m_texture_modifier_timer = -1;
 			updateTextures("");
 		}
 	}
@@ -1246,6 +1257,29 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				+ m_prop.automatic_face_movement_dir_offset;
 		updateNodePos();
 	}
+	updateAnimationSpeed();
+}
+
+void GenericCAO::updateAnimationSpeed()
+{
+	if(m_animated_meshnode == NULL)
+		return;
+
+	if (m_anim_base_velocity > 0)
+	{
+		//calculate current velocity
+		float current_velocity = XZScalar(m_velocity.X,m_velocity.Z);
+
+		if (fabs(m_anim_last_updated_velocity-current_velocity) > 0.05)
+		{
+			//calculate new animation speed
+			float new_speed = current_velocity/m_anim_base_velocity * 15;
+
+			m_animated_meshnode->setAnimationSpeed(new_speed);
+
+			m_anim_last_updated_velocity = current_velocity;
+		}
+	}
 }
 
 void GenericCAO::updateTexturePos()
@@ -1260,10 +1294,10 @@ void GenericCAO::updateTexturePos()
 				- camera->getAbsolutePosition();
 		cam_to_entity.normalize();
 
-		int row = m_tx_basepos.Y;
-		int col = m_tx_basepos.X;
+		int row = m_sprite_basepos.Y;
+		int col = m_sprite_basepos.X;
 
-		if(m_tx_select_horiz_by_yawpitch)
+		if(m_sprite_select_horiz_by_yawpitch)
 		{
 			if(cam_to_entity.Y > 0.75)
 				col += 5;
@@ -1291,8 +1325,8 @@ void GenericCAO::updateTexturePos()
 		// Animation goes downwards
 		row += m_anim_frame;
 
-		float txs = m_tx_size.X;
-		float tys = m_tx_size.Y;
+		float txs = m_sprite_size.X;
+		float tys = m_sprite_size.Y;
 		setBillboardTextureMatrix(m_spritenode,
 				txs, tys, col, row);
 	}
@@ -1683,12 +1717,12 @@ void GenericCAO::processMessage(const std::string &data)
 		m_selection_box.MinEdge *= BS;
 		m_selection_box.MaxEdge *= BS;
 
-		m_tx_size.X = 1.0 / m_prop.spritediv.X;
-		m_tx_size.Y = 1.0 / m_prop.spritediv.Y;
+		m_sprite_size.X = 1.0 / m_prop.spritediv.X;
+		m_sprite_size.Y = 1.0 / m_prop.spritediv.Y;
 
-		if(!m_initial_tx_basepos_set){
-			m_initial_tx_basepos_set = true;
-			m_tx_basepos = m_prop.initial_sprite_basepos;
+		if(!m_sprite_initial_basepos_set){
+			m_sprite_initial_basepos_set = true;
+			m_sprite_basepos = m_prop.initial_sprite_basepos;
 		}
 
 		expireVisuals();
@@ -1735,10 +1769,10 @@ void GenericCAO::processMessage(const std::string &data)
 		float framelength = readF1000(is);
 		bool select_horiz_by_yawpitch = readU8(is);
 
-		m_tx_basepos = p;
+		m_sprite_basepos = p;
 		m_anim_num_frames = num_frames;
 		m_anim_framelength = framelength;
-		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
+		m_sprite_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
 		updateTexturePos();
 	}
@@ -1768,6 +1802,10 @@ void GenericCAO::processMessage(const std::string &data)
 			m_animation_range = v2s32((s32)range.X, (s32)range.Y);
 			m_animation_speed = readF1000(is);
 			m_animation_blend = readF1000(is);
+			try {
+				m_anim_base_velocity = readF1000(is);
+			}
+			catch (SerializationError &e) {}
 			updateAnimation();
 		} else {
 			LocalPlayer *player = m_env->getLocalPlayer();
@@ -1831,9 +1869,9 @@ void GenericCAO::processMessage(const std::string &data)
 			} else {
 				// TODO: Execute defined fast response
 				// Flashing shall suffice as there is no definition
-				m_reset_textures_timer = 0.05;
+				m_texture_modifier_timer = 0.05;
 				if(damage >= 2)
-					m_reset_textures_timer += 0.05 * damage;
+					m_texture_modifier_timer += 0.05 * damage;
 				updateTextures("^[brighten");
 			}
 		}
@@ -1878,9 +1916,9 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 		}
 		// TODO: Execute defined fast response
 		// Flashing shall suffice as there is no definition
-		m_reset_textures_timer = 0.05;
+		m_texture_modifier_timer = 0.05;
 		if(result.damage >= 2)
-			m_reset_textures_timer += 0.05 * result.damage;
+			m_texture_modifier_timer += 0.05 * result.damage;
 		updateTextures("^[brighten");
 	}
 

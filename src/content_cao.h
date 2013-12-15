@@ -59,50 +59,60 @@ class GenericCAO : public ClientActiveObject
 private:
 	// Only set at initialization
 	std::string m_name;
-	bool m_is_player;
-	bool m_is_local_player;
-	int m_id;
+	bool        m_is_player;
+	bool        m_is_local_player;
+	int         m_id;
+
 	// Property-ish things
-	ObjectProperties m_prop;
-	//
-	scene::ISceneManager *m_smgr;
-	IrrlichtDevice *m_irr;
-	core::aabbox3d<f32> m_selection_box;
-	scene::IMeshSceneNode *m_meshnode;
+	ObjectProperties              m_prop;
+
+	scene::ISceneManager          *m_smgr;
+	IrrlichtDevice                *m_irr;
+	core::aabbox3d<f32>            m_selection_box;
+	scene::IMeshSceneNode         *m_meshnode;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
-	scene::IBillboardSceneNode *m_spritenode;
-	scene::ITextSceneNode* m_textnode;
-	v3f m_position;
-	v3f m_velocity;
-	v3f m_acceleration;
+	scene::IBillboardSceneNode    *m_spritenode;
+	scene::ITextSceneNode         *m_textnode;
+
+	ItemGroupList                  m_armor_groups;
+	v3f   m_position;
+	v3f   m_velocity;
+	v3f   m_acceleration;
 	float m_yaw;
-	s16 m_hp;
+	s16   m_hp;
+
+	// Movement / transmission update stuff
+	bool  m_is_visible;
+	bool  m_visuals_expired;
+	float m_texture_modifier_timer;
+	float m_step_distance_counter;
+	u8    m_last_light;
 	SmoothTranslator pos_translator;
-	// Spritesheet/animation stuff
-	v2f m_tx_size;
-	v2s16 m_tx_basepos;
-	bool m_initial_tx_basepos_set;
-	bool m_tx_select_horiz_by_yawpitch;
+
+	// Spritesheet / animation stuff
+	v2f   m_sprite_size;
+	v2s16 m_sprite_basepos;
+	bool  m_sprite_initial_basepos_set;
+	bool  m_sprite_select_horiz_by_yawpitch;
 	v2s32 m_animation_range;
-	int m_animation_speed;
-	int m_animation_blend;
-	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
-	std::string m_attachment_bone;
-	v3f m_attachment_position;
-	v3f m_attachment_rotation;
-	bool m_attached_to_local;
-	int m_anim_frame;
-	int m_anim_num_frames;
+	float m_animation_speed;
+	float m_animation_blend;
 	float m_anim_framelength;
 	float m_anim_timer;
-	ItemGroupList m_armor_groups;
-	float m_reset_textures_timer;
-	bool m_visuals_expired;
-	float m_step_distance_counter;
-	u8 m_last_light;
-	bool m_is_visible;
+	int   m_anim_frame;
+	int   m_anim_num_frames;
+	float m_anim_last_updated_velocity;
+	float m_anim_base_velocity;
 
+	// attachement variables
+	v3f   m_attachment_position;
+	v3f   m_attachment_rotation;
+	bool  m_attached_to_local;
+	std::string      m_attachment_bone;
 	std::vector<u16> m_children;
+
+	// stores position and rotation for each bone name
+	std::map<std::string, core::vector2d<v3f> > m_bone_position;
 
 public:
 	GenericCAO(IGameDef *gamedef, ClientEnvironment *env);
@@ -176,6 +186,8 @@ public:
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);
+
+	void updateAnimationSpeed();
 
 	void updateTexturePos();
 

@@ -381,6 +381,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_armor_groups_sent(false),
 	m_animation_speed(0),
 	m_animation_blend(0),
+	m_animation_base_velocity(-1),
 	m_animation_sent(false),
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
@@ -569,7 +570,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(m_animation_sent == false){
 		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
+		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend,m_animation_base_velocity);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -611,7 +612,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
+		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend,m_animation_base_velocity)); // 3
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
@@ -778,11 +779,12 @@ void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend)
+void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, float base_velocity)
 {
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
+	m_animation_range			= frame_range;
+	m_animation_speed			= frame_speed;
+	m_animation_blend			= frame_blend;
+	m_animation_base_velocity	= base_velocity;
 	m_animation_sent = false;
 }
 
@@ -1059,7 +1061,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeU8(os, 5 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
+		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend,m_animation_base_velocity)); // 3
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
@@ -1203,7 +1205,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if(m_animation_sent == false){
 		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend);
+		std::string str = gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend, m_animation_base_velocity);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
@@ -1371,12 +1373,13 @@ void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend)
+void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend,float base_velocity)
 {
 	// store these so they can be updated to clients
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
+	m_animation_range			= frame_range;
+	m_animation_speed			= frame_speed;
+	m_animation_blend			= frame_blend;
+	m_animation_base_velocity	= base_velocity;
 	m_animation_sent = false;
 }
 

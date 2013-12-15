@@ -1886,7 +1886,12 @@ methods:
 - get_wielded_item() -> ItemStack
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
-- set_animation({x=1,y=1}, frame_speed=15, frame_blend=0)
+- set_animation({x=1,y=1}, frame_speed=15, frame_blend=0, base_velocity=-1)
+  ^ x=?,y=?
+  ^ frame_speed animation frame rate
+  ^ frame_blend
+  ^ base_velocity if this is set animation framerate is adjusted  dependent on 
+                  frame speed, this velocity and objects xz velocity
 - set_attach(parent, bone, position, rotation)
   ^ bone = string
   ^ position = {x=num, y=num, z=num} (relative)

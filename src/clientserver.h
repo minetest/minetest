@@ -105,6 +105,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		add swap_node
 	PROTOCOL_VERSION 23:
 		TOSERVER_CLIENT_READY
+		Add parameter to GENERIC_CMD_SET_ANIMATION
+		Add support for anim framerate prediction based uppon base_velocity
 */
 
 #define LATEST_PROTOCOL_VERSION 23
