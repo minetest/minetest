@@ -51,15 +51,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "version.h"
 
-#if USE_CURL
-#include <curl/curl.h>
-#endif
-
-static std::string getMediaCacheDir()
-{
-	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "media";
-}
-
 /*
 	QueuedMeshUpdate
 */
