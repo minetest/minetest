@@ -539,6 +539,7 @@ protected:
 
 	void * Thread()
 	{
+		ThreadStarted();
 		log_register_thread("CurlFetchThread");
 		DSTACK(__FUNCTION_NAME);
 
@@ -651,6 +652,8 @@ void httpfetch_cleanup()
 void httpfetch_async(const HTTPFetchRequest &fetchrequest)
 {
 	g_httpfetch_thread->requestFetch(fetchrequest);
+	if (!g_httpfetch_thread->IsRunning())
+		g_httpfetch_thread->Start();
 }
 
 static void httpfetch_request_clear(unsigned long caller)
