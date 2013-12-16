@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "socket.h" // for select()
 #include "httpfetch.h"
 #include <iostream>
 #include <sstream>
@@ -30,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/container.h"
 #include "util/thread.h"
-#include "socket.h" // for select()
 
 JMutex g_httpfetch_mutex;
 std::map<unsigned long, std::list<HTTPFetchResult> > g_httpfetch_results;
