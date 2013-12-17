@@ -843,7 +843,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
 			Environment->setFocus(e);
 		}
 
-		if (label.length() > 1)
+		if (label.length() >= 1)
 		{
 			rect.UpperLeftCorner.Y -= 15;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
@@ -934,7 +934,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string>
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
-		if (label.length() > 1)
+		if (label.length() >= 1)
 		{
 			rect.UpperLeftCorner.Y -= 15;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
@@ -1026,7 +1026,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 			e->OnEvent(evt);
 		}
 
-		if (label.length() > 1)
+		if (label.length() >= 1)
 		{
 			rect.UpperLeftCorner.Y -= 15;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
