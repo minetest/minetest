@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-12-01 23:46+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
+"PO-Revision-Date: 2013-12-18 21:31+0200\n"
+"Last-Translator: Jabo Babo <bb7b@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -310,15 +310,15 @@ msgstr "Installierte Mods:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr "Mod hinzufügen:"
+msgstr "Modifikation hinzufügen:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
-msgstr "Lokale Install."
+msgstr "Lokale Installation"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr "Online Mod Repository"
+msgstr "Online Mod Speicher"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
