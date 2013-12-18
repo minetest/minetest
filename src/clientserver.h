@@ -102,7 +102,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			added to object properties
 */
 
-#define LATEST_PROTOCOL_VERSION 21
+#define LATEST_PROTOCOL_VERSION 22
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -139,6 +139,12 @@ enum ToClientCommand
 
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
+	/*
+		u16 command
+		v3s16 position
+		serialized mapnode
+		u8 keep_metadata // Added in protocol version 22
+	*/
 	TOCLIENT_REMOVENODE = 0x22,
 	
 	TOCLIENT_PLAYERPOS = 0x23, // Obsolete

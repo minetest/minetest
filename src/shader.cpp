@@ -373,8 +373,6 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 
 	m_shader_callback = new ShaderCallback(this, "default");
 
-	m_shaderinfo_cache_mutex.Init();
-
 	m_main_thread = get_current_thread_id();
 
 	// Add a dummy ShaderInfo as the first index, named ""
@@ -417,29 +415,31 @@ u32 ShaderSource::getShaderId(const std::string &name)
 	if(get_current_thread_id() == m_main_thread){
 		return getShaderIdDirect(name);
 	} else {
-		infostream<<"getShaderId(): Queued: name=\""<<name<<"\""<<std::endl;
+		/*errorstream<<"getShaderId(): Queued: name=\""<<name<<"\""<<std::endl;*/
 
 		// We're gonna ask the result to be put into here
-		ResultQueue<std::string, u32, u8, u8> result_queue;
+
+		static ResultQueue<std::string, u32, u8, u8> result_queue;
 
 		// Throw a request in
 		m_get_shader_queue.add(name, 0, 0, &result_queue);
 
-		infostream<<"Waiting for shader from main thread, name=\""
-				<<name<<"\""<<std::endl;
+		/* infostream<<"Waiting for shader from main thread, name=\""
+				<<name<<"\""<<std::endl;*/
 
 		try{
-			// Wait result for a second
-			GetResult<std::string, u32, u8, u8>
+			while(true) {
+				// Wait result for a second
+				GetResult<std::string, u32, u8, u8>
 					result = result_queue.pop_front(1000);
 
-			// Check that at least something worked OK
-			assert(result.key == name);
-
-			return result.item;
+				if (result.key == name) {
+					return result.item;
+				}
+			}
 		}
 		catch(ItemNotFoundException &e){
-			infostream<<"Waiting for shader timed out."<<std::endl;
+			errorstream<<"Waiting for shader " << name << " timed out."<<std::endl;
 			return 0;
 		}
 	}
@@ -541,18 +541,12 @@ void ShaderSource::processQueue()
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_shader_queue.pop();
 
-		/*infostream<<"ShaderSource::processQueue(): "
+		/**errorstream<<"ShaderSource::processQueue(): "
 				<<"got shader request with "
 				<<"name=\""<<request.key<<"\""
-				<<std::endl;*/
+				<<std::endl;**/
 
-		GetResult<std::string, u32, u8, u8>
-				result;
-		result.key = request.key;
-		result.callers = request.callers;
-		result.item = getShaderIdDirect(request.key);
-
-		request.dest->push_back(result);
+		m_get_shader_queue.pushResult(request,getShaderIdDirect(request.key));
 	}
 }
 
@@ -600,7 +594,7 @@ void ShaderSource::onSetConstants(video::IMaterialRendererServices *services,
 		setter->onSetConstants(services, is_highlevel);
 	}
 }
- 
+
 ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		video::IShaderConstantSetCallBack *callback,
 		SourceShaderCache *sourcecache)
@@ -678,6 +672,51 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 	// If no shaders are used, don't make a separate material type
 	if(vertex_program == "" && pixel_program == "" && geometry_program == "")
 		return shaderinfo;
+
+	// Create shaders header
+	std::string shaders_header = "#version 120\n";
+	
+	if (g_settings->getBool("enable_bumpmapping"))
+		shaders_header += "#define ENABLE_BUMPMAPPING\n";
+
+	if (g_settings->getBool("enable_parallax_occlusion")){
+		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
+		shaders_header += "#define PARALLAX_OCCLUSION_SCALE ";
+		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_scale"));
+		shaders_header += "\n";
+		shaders_header += "#define PARALLAX_OCCLUSION_BIAS ";
+		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_bias"));
+		shaders_header += "\n";
+		}
+
+	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
+		shaders_header += "#define USE_NORMALMAPS\n";
+
+	if (g_settings->getBool("enable_waving_water")){
+		shaders_header += "#define ENABLE_WAVING_WATER\n";
+		shaders_header += "#define WATER_WAVE_HEIGHT ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_height"));
+		shaders_header += "\n";
+		shaders_header += "#define WATER_WAVE_LENGTH ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_length"));
+		shaders_header += "\n";
+		shaders_header += "#define WATER_WAVE_SPEED ";
+		shaders_header += ftos(g_settings->getFloat("water_wave_speed"));
+		shaders_header += "\n";
+	}
+
+	if (g_settings->getBool("enable_waving_leaves"))
+		shaders_header += "#define ENABLE_WAVING_LEAVES\n";
+
+	if (g_settings->getBool("enable_waving_plants"))
+		shaders_header += "#define ENABLE_WAVING_PLANTS\n";
+
+	if(pixel_program != "")
+		pixel_program = shaders_header + pixel_program;
+	if(vertex_program != "")
+		vertex_program = shaders_header + vertex_program;
+	if(geometry_program != "")
+		geometry_program = shaders_header + geometry_program;
 
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;

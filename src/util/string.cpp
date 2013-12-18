@@ -19,9 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "string.h"
 #include "pointer.h"
+#include "numeric.h"
+
+#include <sstream>
+#include <iomanip>
 
 #include "../sha1.h"
 #include "../base64.h"
+#include "../hex.h"
 #include "../porting.h"
 
 std::wstring narrow_to_wide(const std::string& mbs)
@@ -40,8 +45,9 @@ std::string wide_to_narrow(const std::wstring& wcs)
 	size_t mbl = wcs.size()*4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
-	if(l == (size_t)(-1))
-		mbs[0] = 0;
+	if(l == (size_t)(-1)) {
+		return "Character conversion failed!";
+	}
 	else
 		mbs[l] = 0;
 	return *mbs;
@@ -66,11 +72,40 @@ std::string translatePassword(std::string playername, std::wstring password)
 	return pwd;
 }
 
-size_t curl_write_data(char *ptr, size_t size, size_t nmemb, void *userdata) {
-    std::ostringstream *stream = (std::ostringstream*)userdata;
-    size_t count = size * nmemb;
-    stream->write(ptr, count);
-    return count;
+std::string urlencode(std::string str)
+{
+	// Encodes non-unreserved URI characters by a percent sign
+	// followed by two hex digits. See RFC 3986, section 2.3.
+	static const char url_hex_chars[] = "0123456789ABCDEF";
+	std::ostringstream oss(std::ios::binary);
+	for (u32 i = 0; i < str.size(); i++) {
+		unsigned char c = str[i];
+		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~')
+			oss << c;
+		else
+			oss << "%"
+				<< url_hex_chars[(c & 0xf0) >> 4]
+				<< url_hex_chars[c & 0x0f];
+	}
+	return oss.str();
+}
+
+std::string urldecode(std::string str)
+{
+	// Inverse of urlencode
+	std::ostringstream oss(std::ios::binary);
+	for (u32 i = 0; i < str.size(); i++) {
+		unsigned char highvalue, lowvalue;
+		if (str[i] == '%' &&
+				hex_digit_decode(str[i+1], highvalue) &&
+				hex_digit_decode(str[i+2], lowvalue)) {
+			oss << (char) ((highvalue << 4) | lowvalue);
+			i += 2;
+		}
+		else
+			oss << str[i];
+	}
+	return oss.str();
 }
 
 u32 readFlagString(std::string str, FlagDesc *flagdesc) {
@@ -135,4 +170,19 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) {
 	
 	*lasts = t;
 	return s;
+}
+
+u64 read_seed(const char *str) {
+	char *endptr;
+	u64 num;
+	
+	if (str[0] == '0' && str[1] == 'x')
+		num = strtoull(str, &endptr, 16);
+	else
+		num = strtoull(str, &endptr, 10);
+		
+	if (*endptr)
+		num = murmur_hash_64_ua(str, (int)strlen(str), 0x1337);
+		
+	return num;
 }

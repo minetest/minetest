@@ -31,7 +31,6 @@ BanManager::BanManager(const std::string &banfilepath):
 		m_banfilepath(banfilepath),
 		m_modified(false)
 {
-	m_mutex.Init();
 	try{
 		load();
 	}

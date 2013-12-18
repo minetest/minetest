@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "porting.h"
 #include "config.h"
+#include "version.h"
 #include "main.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
@@ -115,7 +116,6 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	const s32 btn_gap = 20;
 	const s32 btn_num = m_simple_singleplayer_mode ? 4 : 5;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
-	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
@@ -195,12 +195,11 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 
 		std::ostringstream os;
 		os<<"Minetest\n";
-		os<<BUILD_INFO<<"\n";
+		os<<minetest_build_info<<"\n";
 		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
-	changeCtype("C");
 }
 
 void GUIPauseMenu::drawMenu()

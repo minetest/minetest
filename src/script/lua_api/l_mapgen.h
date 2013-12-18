@@ -32,6 +32,9 @@ private:
 	// set mapgen parameters
 	static int l_set_mapgen_params(lua_State *L);
 
+	// set_gen_notify(flagstring)
+	static int l_set_gen_notify(lua_State *L);
+
 	// register_biome({lots of stuff})
 	static int l_register_biome(lua_State *L);
 

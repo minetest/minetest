@@ -340,7 +340,13 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				if(n_old.meta != ""){
 					if(!meta){
 						meta = new NodeMetadata(gamedef);
-						map->setNodeMetadata(p, meta);
+						if(!map->setNodeMetadata(p, meta)){
+							delete meta;
+							infostream<<"RollbackAction::applyRevert(): "
+									<<"setNodeMetadata failed at "
+									<<PP(p)<<" for "<<n_old.name<<std::endl;
+							return false;
+						}
 					}
 					std::istringstream is(n_old.meta, std::ios::binary);
 					meta->deSerialize(is);

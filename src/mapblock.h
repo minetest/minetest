@@ -516,7 +516,8 @@ public:
 	
 	s16 heat;
 	s16 humidity;
-	u32 weather_update_time;
+	u32 heat_last_update;
+	u32 humidity_last_update;
 
 private:
 	/*

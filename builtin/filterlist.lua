@@ -17,6 +17,20 @@
 
 --------------------------------------------------------------------------------
 -- Generic implementation of a filter/sortable list                           --
+-- Usage:                                                                     --
+-- Filterlist needs to be initialized on creation. To achieve this you need to --
+-- pass following functions:                                                  --
+-- raw_fct() (mandatory):                                                     --
+--     function returning a table containing the elements to be filtered      --
+-- compare_fct(element1,element2) (mandatory):                                --
+--     function returning true/false if element1 is same element as element2  --
+-- uid_match_fct(element1,uid) (optional)                                     --
+--     function telling if uid is attached to element1                        --
+-- filter_fct(element,filtercriteria) (optional)                              --
+--     function returning true/false if filtercriteria met to element         --
+-- fetch_param (optional)                                                     --
+--     parameter passed to raw_fct to aquire correct raw data                 --
+--                                                                            --
 --------------------------------------------------------------------------------
 filterlist = {}
 
@@ -157,7 +171,7 @@ function filterlist.process(this)
 	this.m_processed_list = {}
 	
 	for k,v in pairs(this.m_raw_list) do
-		if this.m_filtercriteria == nil or 
+		if this.m_filtercriteria == nil or
 			this.m_filter_fct(v,this.m_filtercriteria) then
 			table.insert(this.m_processed_list,v)
 		end
@@ -167,7 +181,7 @@ function filterlist.process(this)
 		return
 	end
 	
-	if this.m_sort_list[this.m_sortmode] ~= nil and 
+	if this.m_sort_list[this.m_sortmode] ~= nil and
 		type(this.m_sort_list[this.m_sortmode]) == "function" then
 		
 		this.m_sort_list[this.m_sortmode](this)
@@ -237,7 +251,7 @@ function compare_worlds(world1,world2)
 end
 
 --------------------------------------------------------------------------------
-function sort_worlds_alphabetic(this) 
+function sort_worlds_alphabetic(this)
 
 	table.sort(this.m_processed_list, function(a, b)
 		--fixes issue #857 (crash due to sorting nil in worldlist)

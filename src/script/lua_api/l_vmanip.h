@@ -49,8 +49,11 @@ private:
 
 	static int l_update_map(lua_State *L);
 	static int l_update_liquids(lua_State *L);
+
 	static int l_calc_lighting(lua_State *L);
 	static int l_set_lighting(lua_State *L);
+	static int l_get_light_data(lua_State *L);
+	static int l_set_light_data(lua_State *L);
 
 public:
 	LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool is_mapgen_vm);

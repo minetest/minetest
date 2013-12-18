@@ -33,9 +33,9 @@ engine.close()
 Filesystem:
 engine.get_scriptdir()
 ^ returns directory of script
-engine.get_modpath()
+engine.get_modpath() (possible in async calls)
 ^ returns path to global modpath
-engine.get_modstore_details(modid)
+engine.get_modstore_details(modid) (possible in async calls)
 ^ modid numeric id of mod in modstore
 ^ returns {
 	id			= <numeric id of mod in modstore>,
@@ -47,7 +47,7 @@ engine.get_modstore_details(modid)
 	license		= <short description of license>,
 	rating		= <float value of current rating>
 }
-engine.get_modstore_list()
+engine.get_modstore_list() (possible in async calls)
 ^ returns {
 	[1] = {
 		id		 = <numeric id of mod in modstore>,
@@ -55,19 +55,21 @@ engine.get_modstore_list()
 		basename = <basename for mod>
 	}
 }
-engine.get_gamepath()
+engine.get_gamepath() (possible in async calls)
 ^ returns path to global gamepath
-engine.get_dirlist(path,onlydirs)
+engine.get_texturepath() (possible in async calls)
+^ returns path to default textures
+engine.get_dirlist(path,onlydirs) (possible in async calls)
 ^ path to get subdirs from
 ^ onlydirs should result contain only dirs?
 ^ returns list of folders within path
-engine.create_dir(absolute_path)
+engine.create_dir(absolute_path) (possible in async calls)
 ^ absolute_path to directory to create (needs to be absolute)
 ^ returns true/false
-engine.delete_dir(absolute_path)
+engine.delete_dir(absolute_path) (possible in async calls)
 ^ absolute_path to directory to delete (needs to be absolute)
 ^ returns true/false
-engine.copy_dir(source,destination,keep_soure)
+engine.copy_dir(source,destination,keep_soure) (possible in async calls)
 ^ source folder
 ^ destination folder
 ^ keep_source DEFAULT true --> if set to false source is deleted after copying
@@ -76,11 +78,11 @@ engine.extract_zip(zipfile,destination) [unzip within path required]
 ^ zipfile to extract
 ^ destination folder to extract to
 ^ returns true/false
-engine.download_file(url,target)
+engine.download_file(url,target) (possible in async calls)
 ^ url to download
 ^ target to store to
 ^ returns true/false
-engine.get_version()
+engine.get_version() (possible in async calls)
 ^ returns current minetest version
 engine.sound_play(spec, looped) -> handle
 ^ spec = SimpleSoundSpec (see lua-api.txt)
@@ -105,10 +107,10 @@ engine.get_game(index)
 	DEPRECATED:
 	addon_mods_paths = {[1] = <path>,},
 }
-engine.get_games() -> table of all games in upper format
+engine.get_games() -> table of all games in upper format (possible in async calls)
 
 Favorites:
-engine.get_favorites(location) -> list of favorites
+engine.get_favorites(location) -> list of favorites (possible in async calls)
 ^ location: "local" or "online"
 ^ returns {
 	[1] = {
@@ -128,21 +130,21 @@ engine.get_favorites(location) -> list of favorites
 engine.delete_favorite(id, location) -> success
 
 Logging:
-engine.debug(line)
+engine.debug(line) (possible in async calls)
 ^ Always printed to stderr and logfile (print() is redirected here)
-engine.log(line)
-engine.log(loglevel, line)
+engine.log(line) (possible in async calls)
+engine.log(loglevel, line) (possible in async calls)
 ^ loglevel one of "error", "action", "info", "verbose"
 
 Settings:
 engine.setting_set(name, value)
-engine.setting_get(name) -> string or nil
+engine.setting_get(name) -> string or nil (possible in async calls)
 engine.setting_setbool(name, value)
-engine.setting_getbool(name) -> bool or nil
+engine.setting_getbool(name) -> bool or nil (possible in async calls)
 engine.setting_save() -> nil, save all settings to config file
 
 Worlds:
-engine.get_worlds() -> list of worlds
+engine.get_worlds() -> list of worlds (possible in async calls)
 ^ returns {
 	[1] = {
 	path   = <full path to world>,
@@ -174,7 +176,7 @@ engine.gettext(string) -> string
 fgettext(string, ...) -> string
 ^ call engine.gettext(string), replace "$1"..."$9" with the given
 ^ extra arguments, call engine.formspec_escape and return the result
-engine.parse_json(string[, nullvalue]) -> something
+engine.parse_json(string[, nullvalue]) -> something (possible in async calls)
 ^ see minetest.parse_json (lua_api.txt)
 dump(obj, dumped={})
 ^ Return object serialized as a string
@@ -182,8 +184,23 @@ string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
-minetest.is_yes(arg)
+minetest.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
+
+Async:
+engine.handle_async(async_job,parameters,finished)
+^ execute a function asynchronously
+^ async_job is a function receiving one parameter and returning one parameter
+^ parameters parameter table passed to async_job
+^ finished function to be called once async_job has finished 
+^    the result of async_job is passed to this function
+
+Limitations of Async operations
+ -No access to global lua variables, don't even try
+ -Limited set of available functions
+	e.g. No access to functions modifying menu like engine.start,engine.close,
+	engine.file_open_dialog
+			
 
 Class reference
 ----------------

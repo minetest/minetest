@@ -29,6 +29,8 @@ class ServerActiveObject;
 struct ItemDefinition;
 class LuaItemStack;
 class ModApiItemMod;
+class InventoryList;
+class InventoryLocation;
 
 class ScriptApiItem
 : virtual public ScriptApiBase
@@ -40,6 +42,10 @@ public:
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);
+	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
+			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
+	bool item_CraftPredict(ItemStack &item, ServerActiveObject *user,
+			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 
 protected:
 	friend class LuaItemStack;

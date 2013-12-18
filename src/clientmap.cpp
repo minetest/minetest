@@ -50,9 +50,6 @@ ClientMap::ClientMap(
 	m_camera_direction(0,0,1),
 	m_camera_fov(M_PI)
 {
-	m_camera_mutex.Init();
-	assert(m_camera_mutex.IsInitialized());
-	
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
 }

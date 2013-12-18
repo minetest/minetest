@@ -23,11 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_internal.h"
 #include "itemdef.h"
 
-LuaError::LuaError(lua_State *L, const std::string &s)
+LuaError::LuaError(lua_State *L, const std::string &s) :
+	ServerError(s)
 {
-	m_s = "LuaError: ";
-	m_s += s + "\n";
-	m_s += script_get_backtrace(L);
+	if (L) {
+		m_s += '\n' + script_get_backtrace(L);
+	}
 }
 
 struct EnumString es_ItemType[] =

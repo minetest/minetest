@@ -20,6 +20,10 @@ if( UNIX )
 else( UNIX )
   FIND_PATH(CURL_INCLUDE_DIR NAMES curl/curl.h) # Look for the header file.
   FIND_LIBRARY(CURL_LIBRARY NAMES curl) # Look for the library.
+  FIND_FILE(CURL_DLL NAMES libcurl.dll
+			PATHS
+			"c:/windows/system32"
+			DOC "Path of the cURL dll (for installation)")
   INCLUDE(FindPackageHandleStandardArgs) # handle the QUIETLY and REQUIRED arguments and set CURL_FOUND to TRUE if
   FIND_PACKAGE_HANDLE_STANDARD_ARGS(CURL DEFAULT_MSG CURL_LIBRARY CURL_INCLUDE_DIR) # all listed variables are TRUE
 endif( UNIX )
@@ -40,3 +44,4 @@ endif ( WIN32 )
 
 MESSAGE(STATUS "CURL_INCLUDE_DIR = ${CURL_INCLUDE_DIR}")
 MESSAGE(STATUS "CURL_LIBRARY = ${CURL_LIBRARY}")
+MESSAGE(STATUS "CURL_DLL = ${CURL_DLL}")

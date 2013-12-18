@@ -36,17 +36,17 @@ public:
 	virtual bool isActorGuess() = 0;
 	virtual void setActor(const std::string &actor, bool is_guess) = 0;
 	virtual std::string getSuspect(v3s16 p, float nearness_shortcut,
-			float min_nearness) = 0;
+	                               float min_nearness) = 0;
 
-	virtual ~IRollbackManager(){}
+	virtual ~IRollbackManager() {}
 	virtual void flush() = 0;
-	// Get last actor that did something to position p, but not further than
+	// Get all actors that did something to position p, but not further than
 	// <seconds> in history
-	virtual std::string getLastNodeActor(v3s16 p, int range, int seconds,
-			v3s16 *act_p, int *act_seconds) = 0;
+	virtual std::list<RollbackAction> getNodeActors(v3s16 pos, int range,
+	                time_t seconds, int limit) = 0;
 	// Get actions to revert <seconds> of history made by <actor>
 	virtual std::list<RollbackAction> getRevertActions(const std::string &actor,
-			int seconds) = 0;
+	                time_t seconds) = 0;
 };
 
 IRollbackManager *createRollbackManager(const std::string &filepath, IGameDef *gamedef);

@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern "C" {
 #include "lualib.h"
+#if USE_LUAJIT
+	#include "luajit.h"
+#endif
 }
 
 #include <stdio.h>
@@ -55,23 +58,6 @@ public:
 	}
 };
 
-static int loadScript_ErrorHandler(lua_State *L) {
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-	if (!lua_istable(L, -1)) {
-		lua_pop(L, 1);
-		return 1;
-	}
-	lua_getfield(L, -1, "traceback");
-	if (!lua_isfunction(L, -1)) {
-		lua_pop(L, 2);
-		return 1;
-	}
-	lua_pushvalue(L, 1);
-	lua_pushinteger(L, 2);
-	lua_call(L, 2, 1);
-	return 1;
-}
-
 
 /*
 	ScriptApiBase
@@ -79,8 +65,6 @@ static int loadScript_ErrorHandler(lua_State *L) {
 
 ScriptApiBase::ScriptApiBase()
 {
-	m_luastackmutex.Init();
-
 	#ifdef SCRIPTAPI_LOCK_DEBUG
 	m_locked = false;
 	#endif
@@ -91,6 +75,14 @@ ScriptApiBase::ScriptApiBase()
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
 	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
+
+	// If we are using LuaJIT add a C++ wrapper function to catch
+	// exceptions thrown in Lua -> C++ calls
+#if USE_LUAJIT
+	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
+	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
+	lua_pop(m_luastack, 1);
+#endif
 
 	m_server = 0;
 	m_environment = 0;
@@ -133,7 +125,7 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 
 	lua_State *L = getStack();
 
-	lua_pushcfunction(L, loadScript_ErrorHandler);
+	lua_pushcfunction(L, script_error_handler);
 	int errorhandler = lua_gettop(L);
 
 	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, errorhandler);
@@ -144,7 +136,7 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 		errorstream<<std::endl;
 		errorstream<<lua_tostring(L, -1)<<std::endl;
 		errorstream<<std::endl;
-		errorstream<<"=======END OF ERROR FROM LUA ========"<<std::endl;
+		errorstream<<"======= END OF ERROR FROM LUA ========"<<std::endl;
 		lua_pop(L, 1); // Pop error message from stack
 		lua_pop(L, 1); // Pop the error handler from stack
 		return false;
@@ -159,19 +151,13 @@ void ScriptApiBase::realityCheck()
 	if(top >= 30){
 		dstream<<"Stack is over 30:"<<std::endl;
 		stackDump(dstream);
-		scriptError("Stack is over 30 (reality check)");
+		throw LuaError(m_luastack, "Stack is over 30 (reality check)");
 	}
 }
 
-void ScriptApiBase::scriptError(const char *fmt, ...)
+void ScriptApiBase::scriptError()
 {
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	//errorstream<<"SCRIPT ERROR: "<<buf;
-	throw LuaError(m_luastack, buf);
+	throw LuaError(NULL, lua_tostring(m_luastack, -1));
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)

@@ -34,6 +34,10 @@ private:
 	// minetest.remove_node(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_remove_node(lua_State *L);
+	
+	// minetest.swap_node(pos, node)
+	// pos = {x=num, y=num, z=num}
+	static int l_swap_node(lua_State *L);
 
 	// minetest.get_node(pos)
 	// pos = {x=num, y=num, z=num}

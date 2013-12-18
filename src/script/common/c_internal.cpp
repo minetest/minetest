@@ -23,126 +23,90 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 std::string script_get_backtrace(lua_State *L)
 {
 	std::string s;
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	lua_getglobal(L, "debug");
 	if(lua_istable(L, -1)){
 		lua_getfield(L, -1, "traceback");
-		if(lua_isfunction(L, -1)){
+		if(lua_isfunction(L, -1)) {
 			lua_call(L, 0, 1);
 			if(lua_isstring(L, -1)){
-				s += lua_tostring(L, -1);
+				s = lua_tostring(L, -1);
 			}
-			lua_pop(L, 1);
 		}
-		else{
-			lua_pop(L, 1);
-		}
+		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 	return s;
 }
 
-void script_error(lua_State *L, const char *fmt, ...)
+int script_error_handler(lua_State *L) {
+	lua_getglobal(L, "debug");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return 1;
+	}
+	lua_getfield(L, -1, "traceback");
+	if (!lua_isfunction(L, -1)) {
+		lua_pop(L, 2);
+		return 1;
+	}
+	lua_pushvalue(L, 1);
+	lua_pushinteger(L, 2);
+	lua_call(L, 2, 1);
+	return 1;
+}
+
+int script_exception_wrapper(lua_State *L, lua_CFunction f)
 {
-	va_list argp;
-	va_start(argp, fmt);
-	char buf[10000];
-	vsnprintf(buf, 10000, fmt, argp);
-	va_end(argp);
-	throw LuaError(L, buf);
+	try {
+		return f(L);  // Call wrapped function and return result.
+	} catch (const char *s) {  // Catch and convert exceptions.
+		lua_pushstring(L, s);
+	} catch (LuaError& e) {
+		lua_pushstring(L, e.what());
+	}
+	return lua_error(L);  // Rethrow as a Lua error.
+}
+
+void script_error(lua_State *L)
+{
+	const char *s = lua_tostring(L, -1);
+	std::string str(s ? s : "");
+	throw LuaError(NULL, str);
 }
 
 // Push the list of callbacks (a lua table).
 // Then push nargs arguments.
 // Then call this function, which
 // - runs the callbacks
-// - removes the table and arguments from the lua stack
-// - pushes the return value, computed depending on mode
+// - replaces the table and arguments with the return value,
+//     computed depending on mode
 void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 {
-	// Insert the return value into the lua stack, below the table
 	assert(lua_gettop(L) >= nargs + 1);
-	lua_pushnil(L);
-	lua_insert(L, -(nargs + 1) - 1);
+
+	// Insert error handler
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L) - nargs - 1;
+	lua_insert(L, errorhandler);
+
+	// Insert minetest.run_callbacks between error handler and table
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "run_callbacks");
+	lua_remove(L, -2);
+	lua_insert(L, errorhandler + 1);
+
+	// Insert mode after table
+	lua_pushnumber(L, (int) mode);
+	lua_insert(L, errorhandler + 3);
+
 	// Stack now looks like this:
-	// ... <return value = nil> <table> <arg#1> <arg#2> ... <arg#n>
+	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
 
-	int rv = lua_gettop(L) - nargs - 1;
-	int table = rv + 1;
-	int arg = table + 1;
-
-	luaL_checktype(L, table, LUA_TTABLE);
-
-	// Foreach
-	lua_pushnil(L);
-	bool first_loop = true;
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		for(int i = 0; i < nargs; i++)
-			lua_pushvalue(L, arg+i);
-		if(lua_pcall(L, nargs, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-
-		// Move return value to designated space in stack
-		// Or pop it
-		if(first_loop){
-			// Result of first callback is always moved
-			lua_replace(L, rv);
-			first_loop = false;
-		} else {
-			// Otherwise, what happens depends on the mode
-			if(mode == RUN_CALLBACKS_MODE_FIRST)
-				lua_pop(L, 1);
-			else if(mode == RUN_CALLBACKS_MODE_LAST)
-				lua_replace(L, rv);
-			else if(mode == RUN_CALLBACKS_MODE_AND ||
-					mode == RUN_CALLBACKS_MODE_AND_SC){
-				if((bool)lua_toboolean(L, rv) == true &&
-						(bool)lua_toboolean(L, -1) == false)
-					lua_replace(L, rv);
-				else
-					lua_pop(L, 1);
-			}
-			else if(mode == RUN_CALLBACKS_MODE_OR ||
-					mode == RUN_CALLBACKS_MODE_OR_SC){
-				if((bool)lua_toboolean(L, rv) == false &&
-						(bool)lua_toboolean(L, -1) == true)
-					lua_replace(L, rv);
-				else
-					lua_pop(L, 1);
-			}
-			else
-				assert(0);
-		}
-
-		// Handle short circuit modes
-		if(mode == RUN_CALLBACKS_MODE_AND_SC &&
-				(bool)lua_toboolean(L, rv) == false)
-			break;
-		else if(mode == RUN_CALLBACKS_MODE_OR_SC &&
-				(bool)lua_toboolean(L, rv) == true)
-			break;
-
-		// value removed, keep key for next iteration
+	if (lua_pcall(L, nargs + 2, 1, errorhandler)) {
+		script_error(L);
 	}
 
-	// Remove stuff from stack, leaving only the return value
-	lua_settop(L, rv);
-
-	// Fix return value in case no callbacks were called
-	if(first_loop){
-		if(mode == RUN_CALLBACKS_MODE_AND ||
-				mode == RUN_CALLBACKS_MODE_AND_SC){
-			lua_pop(L, 1);
-			lua_pushboolean(L, true);
-		}
-		else if(mode == RUN_CALLBACKS_MODE_OR ||
-				mode == RUN_CALLBACKS_MODE_OR_SC){
-			lua_pop(L, 1);
-			lua_pushboolean(L, false);
-		}
-	}
+	lua_remove(L, -2); // Remove error handler
 }
 
 

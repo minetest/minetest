@@ -46,4 +46,17 @@ static inline std::string hex_encode(const std::string &data)
     return hex_encode(data.c_str(), data.size());
 }
 
+static inline bool hex_digit_decode(char hexdigit, unsigned char &value)
+{
+	if(hexdigit >= '0' && hexdigit <= '9')
+		value = hexdigit - '0';
+	else if(hexdigit >= 'A' && hexdigit <= 'F')
+		value = hexdigit - 'A' + 10;
+	else if(hexdigit >= 'a' && hexdigit <= 'f')
+		value = hexdigit - 'a' + 10;
+	else
+		return false;
+	return true;
+}
+
 #endif

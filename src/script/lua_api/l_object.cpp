@@ -349,24 +349,35 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	return 0;
 }
 
-// set_physics_override(self, physics_override_speed, physics_override_jump, physics_override_gravity)
+// set_physics_override(self, physics_override_speed, physics_override_jump,
+//                      physics_override_gravity, sneak, sneak_glitch)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO *co = (PlayerSAO *) getobject(ref);
 	if(co == NULL) return 0;
 	// Do it
-	if(!lua_isnil(L, 2)){
-		co->m_physics_override_speed = lua_tonumber(L, 2);
+	if (lua_istable(L, 2)) {
+		co->m_physics_override_speed = getfloatfield_default(L, 2, "speed", co->m_physics_override_speed);
+		co->m_physics_override_jump = getfloatfield_default(L, 2, "jump", co->m_physics_override_jump);
+		co->m_physics_override_gravity = getfloatfield_default(L, 2, "gravity", co->m_physics_override_gravity);
+		co->m_physics_override_sneak = getboolfield_default(L, 2, "sneak", co->m_physics_override_sneak);
+		co->m_physics_override_sneak_glitch = getboolfield_default(L, 2, "sneak_glitch", co->m_physics_override_sneak_glitch);
 		co->m_physics_override_sent = false;
-	}
-	if(!lua_isnil(L, 3)){
-		co->m_physics_override_jump = lua_tonumber(L, 3);
-		co->m_physics_override_sent = false;
-	}
-	if(!lua_isnil(L, 4)){
-		co->m_physics_override_gravity = lua_tonumber(L, 4);
-		co->m_physics_override_sent = false;
+	} else {
+		// old, non-table format
+		if(!lua_isnil(L, 2)){
+			co->m_physics_override_speed = lua_tonumber(L, 2);
+			co->m_physics_override_sent = false;
+		}
+		if(!lua_isnil(L, 3)){
+			co->m_physics_override_jump = lua_tonumber(L, 3);
+			co->m_physics_override_sent = false;
+		}
+		if(!lua_isnil(L, 4)){
+			co->m_physics_override_gravity = lua_tonumber(L, 4);
+			co->m_physics_override_sent = false;
+		}
 	}
 	return 0;
 }
@@ -618,6 +629,16 @@ int ObjectRef::l_is_player(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	lua_pushboolean(L, (player != NULL));
+	return 1;
+}
+
+// is_player_connected(self)
+int ObjectRef::l_is_player_connected(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	lua_pushboolean(L, (player != NULL && player->peer_id != 0));
 	return 1;
 }
 
@@ -877,15 +898,17 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = -1;
-	if (!lua_isnil(L, 2))
-		id = lua_tonumber(L, 2);
-
-	HudElementStat stat = (HudElementStat)getenumfield(L, 3, "stat",
-								es_HudElementStat, HUD_STAT_NUMBER);
-
+	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
 	if (id >= player->hud.size())
 		return 0;
+
+	HudElementStat stat = HUD_STAT_NUMBER;
+	if (!lua_isnil(L, 3)) {
+		int statint;
+		std::string statstr = lua_tostring(L, 3);
+		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
+				(HudElementStat)statint : HUD_STAT_NUMBER;
+	}
 
 	void *value = NULL;
 	HudElement *e = player->hud[id];
@@ -1146,6 +1169,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_luaentity),
 	// Player-only
 	luamethod(ObjectRef, is_player),
+	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),

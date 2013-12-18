@@ -165,7 +165,9 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak && m_sneak_node_exists && !(fly_allowed && g_settings->getBool("free_move")) && !in_liquid)
+	if(control.sneak && m_sneak_node_exists &&
+			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
+			physics_override_sneak)
 	{
 		f32 maxd = 0.5*BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
@@ -225,7 +227,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		// node.
 		m_need_to_get_new_sneak_node = true;
 	}
-	if(m_need_to_get_new_sneak_node)
+	if(m_need_to_get_new_sneak_node && physics_override_sneak)
 	{
 		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS);
 		v2f player_p2df(position.X, position.Z);
@@ -264,6 +266,10 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 				// And the node above it has to be nonwalkable
 				if(nodemgr->get(map->getNode(p+v3s16(0,1,0))).walkable == true)
 					continue;
+				if (!physics_override_sneak_glitch) {
+					if (nodemgr->get(map->getNode(p+v3s16(0,2,0))).walkable)
+						continue;
+				}
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -576,6 +582,6 @@ v3s16 LocalPlayer::getStandingNodePos()
 {
 	if(m_sneak_node_exists)
 		return m_sneak_node;
-	return floatToInt(getPosition(), BS);
+	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
 

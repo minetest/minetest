@@ -83,8 +83,6 @@ class MutexedMap
 public:
 	MutexedMap()
 	{
-		m_mutex.Init();
-		assert(m_mutex.IsInitialized());
 	}
 	
 	void set(const Key &name, const Value &value)
@@ -150,8 +148,6 @@ class MutexedIdGenerator
 public:
 	MutexedIdGenerator()
 	{
-		m_mutex.Init();
-		assert(m_mutex.IsInitialized());
 	}
 	
 	// Returns true if found
@@ -253,7 +249,6 @@ class MutexedQueue
 public:
 	MutexedQueue()
 	{
-		m_mutex.Init();
 	}
 	bool empty()
 	{
@@ -302,7 +297,8 @@ public:
 
 				if(!m_list.empty())
 				{
-					typename std::list<T>::iterator last = m_list.back();
+					typename std::list<T>::iterator last = m_list.end();
+					last--;
 					T t = *last;
 					m_list.erase(last);
 					return t;

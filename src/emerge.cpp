@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include <iostream>
 #include <queue>
+#include "jthread/jevent.h"
 #include "map.h"
 #include "environment.h"
 #include "util/container.h"
@@ -46,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_math.h"
 
 
-class EmergeThread : public SimpleThread
+class EmergeThread : public JThread
 {
 public:
 	Server *m_server;
@@ -55,31 +56,22 @@ public:
 	Mapgen *mapgen;
 	bool enable_mapgen_debug_info;
 	int id;
-	
+
 	Event qevent;
 	std::queue<v3s16> blockqueue;
-	
+
 	EmergeThread(Server *server, int ethreadid):
-		SimpleThread(),
+		JThread(),
 		m_server(server),
 		map(NULL),
 		emerge(NULL),
 		mapgen(NULL),
+		enable_mapgen_debug_info(false),
 		id(ethreadid)
 	{
 	}
 
 	void *Thread();
-
-	void trigger()
-	{
-		setRun(true);
-		if(IsRunning() == false)
-		{
-			Start();
-		}
-	}
-
 	bool popBlockEmerge(v3s16 *pos, u8 *flags);
 	bool getBlockOrStartGen(v3s16 p, MapBlock **b,
 			BlockMakeData *data, bool allow_generate);
@@ -90,24 +82,24 @@ public:
 
 EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
-	registerMapgen("v6", new MapgenFactoryV6());
-	registerMapgen("v7", new MapgenFactoryV7());
-	registerMapgen("indev", new MapgenFactoryIndev());
+	registerMapgen("v6",         new MapgenFactoryV6());
+	registerMapgen("v7",         new MapgenFactoryV7());
+	registerMapgen("indev",      new MapgenFactoryIndev());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
-	registerMapgen("math", new MapgenFactoryMath());
+	registerMapgen("math",       new MapgenFactoryMath());
 
 	this->ndef     = gamedef->getNodeDefManager();
 	this->biomedef = new BiomeDefManager();
 	this->params   = NULL;
-	
+
 	this->luaoverride_params          = NULL;
 	this->luaoverride_params_modified = 0;
 	this->luaoverride_flagmask        = 0;
-	
+
+	this->gennotify = 0;
+
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
-	queuemutex.Init();
-	
 	int nthreads;
 	if (g_settings->get("num_emerge_threads").empty()) {
 		int nprocs = porting::getNumberOfProcessors();
@@ -118,7 +110,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	}
 	if (nthreads < 1)
 		nthreads = 1;
-	
+
 	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
 	qlimit_diskonly = g_settings->get("emergequeue_limit_diskonly").empty() ?
 		nthreads * 5 + 1 :
@@ -126,19 +118,19 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	qlimit_generate = g_settings->get("emergequeue_limit_generate").empty() ?
 		nthreads + 1 :
 		g_settings->getU16("emergequeue_limit_generate");
-	
+
 	for (int i = 0; i != nthreads; i++)
 		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
-		
+
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }
 
 
 EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i != emergethread.size(); i++) {
-		emergethread[i]->setRun(false);
+		emergethread[i]->Stop();
 		emergethread[i]->qevent.signal();
-		emergethread[i]->stop();
+		emergethread[i]->Wait();
 		delete emergethread[i];
 		delete mapgen[i];
 	}
@@ -152,7 +144,7 @@ EmergeManager::~EmergeManager() {
 	for (unsigned int i = 0; i < decorations.size(); i++)
 		delete decorations[i];
 	decorations.clear();
-	
+
 	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
 			iter != mglist.end(); iter ++) {
 		delete iter->second;
@@ -165,52 +157,88 @@ EmergeManager::~EmergeManager() {
 
 void EmergeManager::initMapgens(MapgenParams *mgparams) {
 	Mapgen *mg;
-	
+
 	if (mapgen.size())
 		return;
-	
+
 	// Resolve names of nodes for things that were registered
 	// (at this point, the registration period is over)
 	biomedef->resolveNodeNames(ndef);
-	
+
 	for (size_t i = 0; i != ores.size(); i++)
 		ores[i]->resolveNodeNames(ndef);
-		
+
 	for (size_t i = 0; i != decorations.size(); i++)
 		decorations[i]->resolveNodeNames(ndef);
-	
+
 	// Apply mapgen parameter overrides from Lua
 	if (luaoverride_params) {
-		if (luaoverride_params_modified & MGPARAMS_SET_MGNAME)
-			mgparams->mg_name = luaoverride_params->mg_name;
-		
+		if (luaoverride_params_modified & MGPARAMS_SET_MGNAME) {
+			MapgenParams *mgp = setMapgenType(mgparams, luaoverride_params->mg_name);
+			if (!mgp) {
+				errorstream << "EmergeManager: Failed to set new mapgen name"
+							<< std::endl;
+			} else {
+				mgparams = mgp;
+			}
+		}
+
 		if (luaoverride_params_modified & MGPARAMS_SET_SEED)
 			mgparams->seed = luaoverride_params->seed;
-		
+
 		if (luaoverride_params_modified & MGPARAMS_SET_WATER_LEVEL)
 			mgparams->water_level = luaoverride_params->water_level;
-		
+
 		if (luaoverride_params_modified & MGPARAMS_SET_FLAGS) {
 			mgparams->flags &= ~luaoverride_flagmask;
 			mgparams->flags |= luaoverride_params->flags;
 		}
-		
+
 		delete luaoverride_params;
 		luaoverride_params = NULL;
 	}
-	
+
 	// Create the mapgens
 	this->params = mgparams;
 	for (size_t i = 0; i != emergethread.size(); i++) {
-		mg = createMapgen(params->mg_name, 0, params);
+		mg = createMapgen(params->mg_name, i, params);
 		if (!mg) {
-			infostream << "EmergeManager: falling back to mapgen v6" << std::endl;
-			delete params;
-			params = createMapgenParams("v6");
-			mg = createMapgen("v6", 0, params);
+			infostream << "EmergeManager: Falling back to Mapgen V6" << std::endl;
+
+			params = setMapgenType(params, "v6");
+			mg = createMapgen(params->mg_name, i, params);
+			if (!mg) {
+				errorstream << "EmergeManager: CRITICAL ERROR: Failed to fall"
+					"back to Mapgen V6, not generating map" << std::endl;
+			}
 		}
 		mapgen.push_back(mg);
 	}
+}
+
+
+MapgenParams *EmergeManager::setMapgenType(MapgenParams *mgparams,
+	std::string newname) {
+	MapgenParams *newparams = createMapgenParams(newname);
+	if (!newparams) {
+		errorstream << "EmergeManager: Mapgen override failed" << std::endl;
+		return NULL;
+	}
+
+	newparams->mg_name     = newname;
+	newparams->seed        = mgparams->seed;
+	newparams->water_level = mgparams->water_level;
+	newparams->chunksize   = mgparams->chunksize;
+	newparams->flags       = mgparams->flags;
+
+	if (!newparams->readParams(g_settings)) {
+		errorstream << "EmergeManager: Mapgen override failed" << std::endl;
+		delete newparams;
+		return NULL;
+	}
+
+	delete mgparams;
+	return newparams;
 }
 
 
@@ -219,15 +247,16 @@ Mapgen *EmergeManager::getCurrentMapgen() {
 		if (emergethread[i]->IsSameThread())
 			return emergethread[i]->mapgen;
 	}
-	
+
 	return NULL;
 }
 
 
-void EmergeManager::triggerAllThreads() {
+void EmergeManager::startAllThreads() {
 	for (unsigned int i = 0; i != emergethread.size(); i++)
-		emergethread[i]->trigger();
+		emergethread[i]->Start();
 }
+
 
 bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate) {
 	std::map<v3s16, BlockEmergeData *>::const_iterator iter;
@@ -235,13 +264,13 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	u16 count;
 	u8 flags = 0;
 	int idx = 0;
-	
+
 	if (allow_generate)
 		flags |= BLOCK_EMERGE_ALLOWGEN;
 
 	{
 		JMutexAutoLock queuelock(queuemutex);
-		
+
 		count = blocks_enqueued.size();
 		if (count >= qlimit_total)
 			return false;
@@ -250,7 +279,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		u16 qlimit_peer = allow_generate ? qlimit_generate : qlimit_diskonly;
 		if (count >= qlimit_peer)
 			return false;
-		
+
 		iter = blocks_enqueued.find(p);
 		if (iter != blocks_enqueued.end()) {
 			bedata = iter->second;
@@ -262,9 +291,9 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		bedata->flags = flags;
 		bedata->peer_requested = peer_id;
 		blocks_enqueued.insert(std::make_pair(p, bedata));
-		
+
 		peer_queue_count[peer_id] = count + 1;
-		
+
 		// insert into the EmergeThread queue with the least items
 		int lowestitems = emergethread[0]->blockqueue.size();
 		for (unsigned int i = 1; i != emergethread.size(); i++) {
@@ -274,11 +303,11 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 				lowestitems = nitems;
 			}
 		}
-		
+
 		emergethread[idx]->blockqueue.push(p);
 	}
 	emergethread[idx]->qevent.signal();
-	
+
 	return true;
 }
 
@@ -286,10 +315,10 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 int EmergeManager::getGroundLevelAtPoint(v2s16 p) {
 	if (mapgen.size() == 0 || !mapgen[0]) {
 		errorstream << "EmergeManager: getGroundLevelAtPoint() called"
-		" before mapgen initialized" << std::endl;
+			" before mapgen initialized" << std::endl;
 		return 0;
 	}
-	
+
 	return mapgen[0]->getGroundLevelAtPoint(p);
 }
 
@@ -325,7 +354,7 @@ Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
 		 " not registered" << std::endl;
 		return NULL;
 	}
-	
+
 	MapgenFactory *mgfactory = iter->second;
 	return mgfactory->createMapgen(mgid, mgparams, this);
 }
@@ -339,7 +368,7 @@ MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
 		 " not registered" << std::endl;
 		return NULL;
 	}
-	
+
 	MapgenFactory *mgfactory = iter->second;
 	return mgfactory->createMapgenParams();
 }
@@ -350,9 +379,12 @@ MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
 	MapgenParams *mgparams = createMapgenParams(mg_name);
 	if (!mgparams)
 		return NULL;
-	
+
+	std::string seedstr = settings->get(settings == g_settings ?
+									"fixed_map_seed" : "seed");
+
 	mgparams->mg_name     = mg_name;
-	mgparams->seed        = settings->getU64(settings == g_settings ? "fixed_map_seed" : "seed");
+	mgparams->seed        = read_seed(seedstr.c_str());
 	mgparams->water_level = settings->getS16("water_level");
 	mgparams->chunksize   = settings->getS16("chunksize");
 	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
@@ -382,7 +414,7 @@ void EmergeManager::registerMapgen(std::string mgname, MapgenFactory *mgfactory)
 }
 
 
-////////////////////////////// Emerge Thread ////////////////////////////////// 
+////////////////////////////// Emerge Thread //////////////////////////////////
 
 bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 	std::map<v3s16, BlockEmergeData *>::iterator iter;
@@ -392,31 +424,31 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, u8 *flags) {
 		return false;
 	v3s16 p = blockqueue.front();
 	blockqueue.pop();
-	
+
 	*pos = p;
-	
+
 	iter = emerge->blocks_enqueued.find(p);
-	if (iter == emerge->blocks_enqueued.end()) 
+	if (iter == emerge->blocks_enqueued.end())
 		return false; //uh oh, queue and map out of sync!!
 
 	BlockEmergeData *bedata = iter->second;
 	*flags = bedata->flags;
-	
+
 	emerge->peer_queue_count[bedata->peer_requested]--;
 
 	delete bedata;
 	emerge->blocks_enqueued.erase(iter);
-	
+
 	return true;
 }
 
 
-bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b, 
+bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 									BlockMakeData *data, bool allow_gen) {
 	v2s16 p2d(p.X, p.Z);
 	//envlock: usually takes <=1ms, sometimes 90ms or ~400ms to acquire
-	JMutexAutoLock envlock(m_server->m_env_mutex); 
-	
+	JMutexAutoLock envlock(m_server->m_env_mutex);
+
 	// Load sector if it isn't loaded
 	if (map->getSectorNoGenerateNoEx(p2d) == NULL)
 		map->loadSectorMeta(p2d);
@@ -426,6 +458,8 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	if (!block || block->isDummy() || !block->isGenerated()) {
 		EMERGE_DBG_OUT("not in memory, attempting to load from disk");
 		block = map->loadBlock(p);
+		if (block && block->isGenerated())
+			map->prepareBlock(block);
 	}
 
 	// If could not load and allowed to generate,
@@ -435,7 +469,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 		*b = block;
 		return map->initBlockMake(data, p);
 	}
-	
+
 	*b = block;
 	return false;
 }
@@ -450,13 +484,13 @@ void *EmergeThread::Thread() {
 	v3s16 last_tried_pos(-32768,-32768,-32768); // For error output
 	v3s16 p;
 	u8 flags;
-	
+
 	map    = (ServerMap *)&(m_server->m_env->getMap());
 	emerge = m_server->m_emerge;
 	mapgen = emerge->mapgen[id];
 	enable_mapgen_debug_info = emerge->mapgen_debug_info;
-	
-	while (getRun())
+
+	while (!StopRequested())
 	try {
 		if (!popBlockEmerge(&p, &flags)) {
 			qevent.wait();
@@ -469,7 +503,7 @@ void *EmergeThread::Thread() {
 
 		bool allow_generate = flags & BLOCK_EMERGE_ALLOWGEN;
 		EMERGE_DBG_OUT("p=" PP(p) " allow_generate=" << allow_generate);
-		
+
 		/*
 			Try to fetch block from memory or disk.
 			If not found and asked to generate, initialize generator.
@@ -477,8 +511,8 @@ void *EmergeThread::Thread() {
 		BlockMakeData data;
 		MapBlock *block = NULL;
 		std::map<v3s16, MapBlock *> modified_blocks;
-		
-		if (getBlockOrStartGen(p, &block, &data, allow_generate)) {
+
+		if (getBlockOrStartGen(p, &block, &data, allow_generate) && mapgen) {
 			{
 				ScopeProfiler sp(g_profiler, "EmergeThread: Mapgen::makeChunk", SPT_AVG);
 				TimeTaker t("mapgen::make_block()");
@@ -491,12 +525,12 @@ void *EmergeThread::Thread() {
 
 			{
 				//envlock: usually 0ms, but can take either 30 or 400ms to acquire
-				JMutexAutoLock envlock(m_server->m_env_mutex); 
+				JMutexAutoLock envlock(m_server->m_env_mutex);
 				ScopeProfiler sp(g_profiler, "EmergeThread: after "
 						"Mapgen::makeChunk (envlock)", SPT_AVG);
 
 				map->finishBlockMake(&data, modified_blocks);
-				
+
 				block = map->getBlockNoCreateNoEx(p);
 				if (block) {
 					/*
@@ -508,16 +542,18 @@ void *EmergeThread::Thread() {
 
 					// Ignore map edit events, they will not need to be sent
 					// to anybody because the block hasn't been sent to anybody
-					MapEditEventAreaIgnorer 
+					MapEditEventAreaIgnorer
 						ign(&m_server->m_ignore_map_edit_events_area,
 						VoxelArea(minp, maxp));
-					{  // takes about 90ms with -O1 on an e3-1230v2
+					try {  // takes about 90ms with -O1 on an e3-1230v2
 						m_server->getScriptIface()->environment_OnGenerated(
 								minp, maxp, emerge->getBlockSeed(minp));
+					} catch(LuaError &e) {
+						m_server->setAsyncFatalError(e.what());
 					}
 
 					EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
-					
+
 					m_server->m_env->activateBlock(block, 0);
 				}
 			}
@@ -563,7 +599,7 @@ void *EmergeThread::Thread() {
 		err << "You can ignore this using [ignore_world_load_errors = true]."<<std::endl;
 		m_server->setAsyncFatalError(err.str());
 	}
-	
+
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	log_deregister_thread();
 	return NULL;

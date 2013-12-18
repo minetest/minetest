@@ -24,43 +24,30 @@
     DEALINGS IN THE SOFTWARE.
 
 */
-
+#include <assert.h>
 #include "jthread/jmutex.h"
 
 JMutex::JMutex()
 {
-	initialized = false;
-}
-
-JMutex::~JMutex()
-{
-	if (initialized)
-#ifdef JMUTEX_CRITICALSECTION
-		DeleteCriticalSection(&mutex);
-#else
-		CloseHandle(mutex);
-#endif // JMUTEX_CRITICALSECTION
-}
-
-int JMutex::Init()
-{
-	if (initialized)
-		return ERR_JMUTEX_ALREADYINIT;
 #ifdef JMUTEX_CRITICALSECTION
 	InitializeCriticalSection(&mutex);
 #else
 	mutex = CreateMutex(NULL,FALSE,NULL);
-	if (mutex == NULL)
-		return ERR_JMUTEX_CANTCREATEMUTEX;
+	assert(mutex != NULL);
 #endif // JMUTEX_CRITICALSECTION
-	initialized = true;
-	return 0;
+}
+
+JMutex::~JMutex()
+{
+#ifdef JMUTEX_CRITICALSECTION
+	DeleteCriticalSection(&mutex);
+#else
+	CloseHandle(mutex);
+#endif // JMUTEX_CRITICALSECTION
 }
 
 int JMutex::Lock()
 {
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
 #ifdef JMUTEX_CRITICALSECTION
 	EnterCriticalSection(&mutex);
 #else
@@ -71,8 +58,6 @@ int JMutex::Lock()
 
 int JMutex::Unlock()
 {
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
 #ifdef JMUTEX_CRITICALSECTION
 	LeaveCriticalSection(&mutex);
 #else

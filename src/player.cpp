@@ -85,9 +85,11 @@ Player::Player(IGameDef *gamedef):
 	movement_gravity                = 9.81 * BS;
 
 	// Movement overrides are multipliers and must be 1 by default
-	physics_override_speed   = 1;
-	physics_override_jump    = 1;
-	physics_override_gravity = 1;
+	physics_override_speed        = 1;
+	physics_override_jump         = 1;
+	physics_override_gravity      = 1;
+	physics_override_sneak        = true;
+	physics_override_sneak_glitch = true;
 
 	hud_flags = HUD_FLAG_HOTBAR_VISIBLE | HUD_FLAG_HEALTHBAR_VISIBLE |
 			 HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |

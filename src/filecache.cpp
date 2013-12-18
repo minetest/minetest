@@ -23,12 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientserver.h"
 #include "log.h"
 #include "filesys.h"
-#include "hex.h"
-#include "sha1.h"
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <stdlib.h>
 
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
@@ -85,36 +82,8 @@ bool FileCache::update(const std::string &name, const std::string &data)
 	std::string path = m_dir + DIR_DELIM + name;
 	return updateByPath(path, data);
 }
-bool FileCache::update_sha1(const std::string &data)
-{
-	SHA1 sha1;
-	sha1.addBytes(data.c_str(), data.size());
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_raw((char*)digest, 20);
-	free(digest);
-	std::string sha1_hex = hex_encode(sha1_raw);
-	return update(sha1_hex, data);
-}
 bool FileCache::load(const std::string &name, std::ostream &os)
 {
 	std::string path = m_dir + DIR_DELIM + name;
 	return loadByPath(path, os);
-}
-bool FileCache::load_sha1(const std::string &sha1_raw, std::ostream &os)
-{
-	std::ostringstream tmp_os(std::ios_base::binary);
-	if(!load(hex_encode(sha1_raw), tmp_os))
-		return false;
-	SHA1 sha1;
-	sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_real_raw((char*)digest, 20);
-	free(digest);
-	if(sha1_real_raw != sha1_raw){
-		verbosestream<<"FileCache["<<m_dir<<"]: filename "<<sha1_real_raw
-				<<" mismatches actual checksum"<<std::endl;
-		return false;
-	}
-	os<<tmp_os.str();
-	return true;
 }

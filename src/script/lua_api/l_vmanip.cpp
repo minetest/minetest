@@ -135,18 +135,23 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 	if (!o->is_mapgen_vm)
 		return 0;
-		
+
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	ManualMapVoxelManipulator *vm = o->vm;
+
+	v3s16 p1 = lua_istable(L, 2) ? read_v3s16(L, 2) :
+		vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	v3s16 p2 = lua_istable(L, 3) ? read_v3s16(L, 3) :
+		vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	sortBoxVerticies(p1, p2);
 
 	Mapgen mg;
 	mg.vm          = vm;
 	mg.ndef        = ndef;
 	mg.water_level = emerge->params->water_level;
 	
-	mg.calcLighting(vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE,
-					vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE);
+	mg.calcLighting(p1, p2);
 
 	return 0;
 }
@@ -163,17 +168,63 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 		return 0;
 
 	u8 light;
-	light  = (getintfield_default(L, 4, "day",   0) & 0x0F);
-	light |= (getintfield_default(L, 4, "night", 0) & 0x0F) << 8;
+	light  = (getintfield_default(L, 2, "day",   0) & 0x0F);
+	light |= (getintfield_default(L, 2, "night", 0) & 0x0F) << 4;
 	
 	ManualMapVoxelManipulator *vm = o->vm;
 	
+	v3s16 p1 = lua_istable(L, 3) ? read_v3s16(L, 3) :
+		vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	v3s16 p2 = lua_istable(L, 4) ? read_v3s16(L, 4) :
+		vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	sortBoxVerticies(p1, p2);
+
 	Mapgen mg;
 	mg.vm = vm;
 	
-	mg.setLighting(vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE,
-				   vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE,
-				   light);
+	mg.setLighting(p1, p2, light);
+
+	return 0;
+}
+
+int LuaVoxelManip::l_get_light_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+
+	int volume = vm->m_area.getVolume();
+
+	lua_newtable(L);
+	for (int i = 0; i != volume; i++) {
+		lua_Integer light = vm->m_data[i].param1;
+		lua_pushinteger(L, light);
+		lua_rawseti(L, -2, i + 1);
+	}
+
+	return 1;
+}
+
+int LuaVoxelManip::l_set_light_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+
+	if (!lua_istable(L, 2))
+		return 0;
+
+	int volume = vm->m_area.getVolume();
+	for (int i = 0; i != volume; i++) {
+		lua_rawgeti(L, 2, i + 1);
+		u8 light = lua_tointeger(L, -1);
+
+		vm->m_data[i].param1 = light;
+
+		lua_pop(L, 1);
+	}
 
 	return 0;
 }
@@ -299,5 +350,7 @@ const luaL_reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, update_liquids),
 	luamethod(LuaVoxelManip, calc_lighting),
 	luamethod(LuaVoxelManip, set_lighting),
+	luamethod(LuaVoxelManip, get_light_data),
+	luamethod(LuaVoxelManip, set_light_data),
 	{0,0}
 };

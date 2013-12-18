@@ -4,7 +4,6 @@
 -- Aliases for map generator outputs
 --
 
-minetest.register_alias("mapgen_air", "air")
 minetest.register_alias("mapgen_stone", "default:stone")
 minetest.register_alias("mapgen_tree", "default:tree")
 minetest.register_alias("mapgen_leaves", "default:leaves")

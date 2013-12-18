@@ -133,7 +133,6 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 		evt.KeyInput.Shift = 0;
 		e->OnEvent(evt);
 	}
-	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
@@ -142,7 +141,6 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 			text);
 		delete[] text;
 	}
-	changeCtype("C");
 }
 
 void GUITextInputMenu::drawMenu()

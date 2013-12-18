@@ -45,7 +45,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		heat(0),
 		humidity(0),
-		weather_update_time(0),
+		heat_last_update(0),
+		humidity_last_update(0),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),
@@ -67,7 +68,6 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		reallocate();
 	
 #ifndef SERVER
-	//mesh_mutex.Init();
 	mesh = NULL;
 #endif
 }

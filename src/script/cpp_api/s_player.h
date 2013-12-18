@@ -34,6 +34,7 @@ public:
 	void on_newplayer(ServerActiveObject *player);
 	void on_dieplayer(ServerActiveObject *player);
 	bool on_respawnplayer(ServerActiveObject *player);
+	bool on_prejoinplayer(std::string name, std::string ip, std::string &reason);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);

@@ -34,6 +34,9 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -42,30 +45,27 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_move"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_move"))
 		return count;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
-	// pos
-	push_v3s16(L, p);
-	// from_list
-	lua_pushstring(L, from_list.c_str());
-	// from_index
-	lua_pushinteger(L, from_index + 1);
-	// to_list
-	lua_pushstring(L, to_list.c_str());
-	// to_index
-	lua_pushinteger(L, to_index + 1);
-	// count
-	lua_pushinteger(L, count);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 7, 1, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                     // pos
+	lua_pushstring(L, from_list.c_str()); // from_list
+	lua_pushinteger(L, from_index + 1);   // from_index
+	lua_pushstring(L, to_list.c_str());   // to_list
+	lua_pushinteger(L, to_index + 1);     // to_index
+	lua_pushinteger(L, count);            // count
+	objectrefGetOrCreate(player);         // player
+	if(lua_pcall(L, 7, 1, errorhandler))
+		scriptError();
+	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_move should return a number");
-	return luaL_checkinteger(L, -1);
+		throw LuaError(NULL, "allow_metadata_inventory_move should"
+				" return a number, guilty node: " + nodename);
+	int num = luaL_checkinteger(L, -1);
+	lua_pop(L, 1); // Pop integer
+	return num;
 }
 
 // Return number of accepted items to be put
@@ -75,6 +75,9 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -83,26 +86,25 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_put"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_put"))
 		return stack.count;
 
 	// Call function(pos, listname, index, stack, player)
-	// pos
-	push_v3s16(L, p);
-	// listname
-	lua_pushstring(L, listname.c_str());
-	// index
-	lua_pushinteger(L, index + 1);
-	// stack
-	LuaItemStack::create(L, stack);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 5, 1, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                    // pos
+	lua_pushstring(L, listname.c_str()); // listname
+	lua_pushinteger(L, index + 1);       // index
+	LuaItemStack::create(L, stack);      // stack
+	objectrefGetOrCreate(player);        // player
+	if(lua_pcall(L, 5, 1, errorhandler))
+		scriptError();
+	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_put should return a number");
-	return luaL_checkinteger(L, -1);
+		throw LuaError(NULL, "allow_metadata_inventory_put should"
+				" return a number, guilty node: " + nodename);
+	int num = luaL_checkinteger(L, -1);
+	lua_pop(L, 1); // Pop integer
+	return num;
 }
 
 // Return number of accepted items to be taken
@@ -112,6 +114,9 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -120,26 +125,25 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_take"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_take"))
 		return stack.count;
 
 	// Call function(pos, listname, index, count, player)
-	// pos
-	push_v3s16(L, p);
-	// listname
-	lua_pushstring(L, listname.c_str());
-	// index
-	lua_pushinteger(L, index + 1);
-	// stack
-	LuaItemStack::create(L, stack);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 5, 1, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                    // pos
+	lua_pushstring(L, listname.c_str()); // listname
+	lua_pushinteger(L, index + 1);       // index
+	LuaItemStack::create(L, stack);      // stack
+	objectrefGetOrCreate(player);        // player
+	if(lua_pcall(L, 5, 1, errorhandler))
+		scriptError();
+	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_take should return a number");
-	return luaL_checkinteger(L, -1);
+		throw LuaError(NULL, "allow_metadata_inventory_take should"
+				" return a number, guilty node: " + nodename);
+	int num = luaL_checkinteger(L, -1);
+	lua_pop(L, 1); // Pop integer
+	return num;
 }
 
 // Report moved items
@@ -150,6 +154,9 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -158,27 +165,21 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_move"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_move"))
 		return;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
-	// pos
-	push_v3s16(L, p);
-	// from_list
-	lua_pushstring(L, from_list.c_str());
-	// from_index
-	lua_pushinteger(L, from_index + 1);
-	// to_list
-	lua_pushstring(L, to_list.c_str());
-	// to_index
-	lua_pushinteger(L, to_index + 1);
-	// count
-	lua_pushinteger(L, count);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 7, 0, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                     // pos
+	lua_pushstring(L, from_list.c_str()); // from_list
+	lua_pushinteger(L, from_index + 1);   // from_index
+	lua_pushstring(L, to_list.c_str());   // to_list
+	lua_pushinteger(L, to_index + 1);     // to_index
+	lua_pushinteger(L, count);            // count
+	objectrefGetOrCreate(player);         // player
+	if(lua_pcall(L, 7, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
 }
 
 // Report put items
@@ -188,6 +189,9 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -196,23 +200,19 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_put"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_put"))
 		return;
 
 	// Call function(pos, listname, index, stack, player)
-	// pos
-	push_v3s16(L, p);
-	// listname
-	lua_pushstring(L, listname.c_str());
-	// index
-	lua_pushinteger(L, index + 1);
-	// stack
-	LuaItemStack::create(L, stack);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 5, 0, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                    // pos
+	lua_pushstring(L, listname.c_str()); // listname
+	lua_pushinteger(L, index + 1);       // index
+	LuaItemStack::create(L, stack);      // stack
+	objectrefGetOrCreate(player);        // player
+	if(lua_pcall(L, 5, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
 }
 
 // Report taken items
@@ -222,6 +222,9 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
@@ -230,23 +233,19 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_take"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_take"))
 		return;
 
 	// Call function(pos, listname, index, stack, player)
-	// pos
-	push_v3s16(L, p);
-	// listname
-	lua_pushstring(L, listname.c_str());
-	// index
-	lua_pushinteger(L, index + 1);
-	// stack
-	LuaItemStack::create(L, stack);
-	// player
-	objectrefGetOrCreate(player);
-	if(lua_pcall(L, 5, 0, 0))
-		scriptError("error: %s", lua_tostring(L, -1));
+	push_v3s16(L, p);                    // pos
+	lua_pushstring(L, listname.c_str()); // listname
+	lua_pushinteger(L, index + 1);       // index
+	LuaItemStack::create(L, stack);      // stack
+	objectrefGetOrCreate(player);        // player
+	if(lua_pcall(L, 5, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
 }
 
 ScriptApiNodemeta::ScriptApiNodemeta() {

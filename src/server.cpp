@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
+#include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -72,14 +73,14 @@ public:
 	{}
 };
 
-class ServerThread : public SimpleThread
+class ServerThread : public JThread
 {
 	Server *m_server;
 
 public:
 
 	ServerThread(Server *server):
-		SimpleThread(),
+		JThread(),
 		m_server(server)
 	{
 	}
@@ -97,7 +98,7 @@ void * ServerThread::Thread()
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
-	while(getRun())
+	while(!StopRequested())
 	{
 		try{
 			//TimeTaker timer("AsyncRunStep() + Receive()");
@@ -672,11 +673,7 @@ Server::Server(
 	m_objectdata_timer = 0.0;
 	m_emergethread_trigger_timer = 0.0;
 	m_savemap_timer = 0.0;
-	m_clients_number = 0;
 
-	m_env_mutex.Init();
-	m_con_mutex.Init();
-	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
 
 	if(path_world == "")
@@ -722,7 +719,7 @@ Server::Server(
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if(!modconf.isConsistent())	
+	if(!modconf.isConsistent())
 	{
 		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
@@ -741,10 +738,10 @@ Server::Server(
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> load_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin(); 
+	for(std::vector<std::string>::iterator it = names.begin();
 		it != names.end(); ++it)
-	{	
-		std::string name = *it;  
+	{
+		std::string name = *it;
 		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
 			load_mod_names.insert(name.substr(9));
 	}
@@ -756,7 +753,7 @@ Server::Server(
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
-	{		
+	{
 		errorstream << "The following mods could not be found:";
 		for(std::set<std::string>::iterator it = load_mod_names.begin();
 			it != load_mod_names.end(); ++it)
@@ -826,6 +823,7 @@ Server::Server(
 	
 	// Initialize mapgens
 	m_emerge->initMapgens(mgparams);
+	servermap->setMapgenParams(m_emerge->params);
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
@@ -965,14 +963,13 @@ void Server::start(unsigned short port)
 	infostream<<"Starting server on port "<<port<<"..."<<std::endl;
 
 	// Stop thread if already running
-	m_thread->stop();
+	m_thread->Stop();
 
 	// Initialize connection
 	m_con.SetTimeoutMs(30);
 	m_con.Serve(port);
 
 	// Start thread
-	m_thread->setRun(true);
 	m_thread->Start();
 
 	// ASCII art for the win!
@@ -995,9 +992,9 @@ void Server::stop()
 	infostream<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
-	m_thread->setRun(false);
+	m_thread->Stop();
 	//m_emergethread.setRun(false);
-	m_thread->stop();
+	m_thread->Wait();
 	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
@@ -1243,7 +1240,7 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 
 			JMutexAutoLock lock2(m_con_mutex);
-			m_clients_number = 0;
+			m_clients_names.clear();
 			if(m_clients.size() != 0)
 				infostream<<"Players:"<<std::endl;
 			for(std::map<u16, RemoteClient*>::iterator
@@ -1257,7 +1254,7 @@ void Server::AsyncRunStep()
 					continue;
 				infostream<<"* "<<player->getName()<<"\t";
 				client->PrintInfo(infostream);
-				++m_clients_number;
+				m_clients_names.push_back(player->getName());
 			}
 		}
 	}
@@ -1269,7 +1266,7 @@ void Server::AsyncRunStep()
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_number, m_uptime.get(), m_gamespec.id, m_mods);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_names, m_uptime.get(), m_env->getGameTime(), m_gamespec.id, m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -1582,16 +1579,16 @@ void Server::AsyncRunStep()
 			// for them.
 			std::list<u16> far_players;
 
-			if(event->type == MEET_ADDNODE)
+			if(event->type == MEET_ADDNODE || event->type == MEET_SWAPNODE)
 			{
 				//infostream<<"Server: MEET_ADDNODE"<<std::endl;
 				prof.add("MEET_ADDNODE", 1);
 				if(disable_single_change_sending)
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 5);
+							&far_players, 5, event->type == MEET_ADDNODE);
 				else
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 30);
+							&far_players, 30, event->type == MEET_ADDNODE);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
@@ -1684,7 +1681,7 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
-			m_emerge->triggerAllThreads();
+			m_emerge->startAllThreads();
 
 			// Update m_enable_rollback_recording here too
 			m_enable_rollback_recording =
@@ -1855,7 +1852,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
+					+ narrow_to_wide(minetest_version_simple) + L"."
 			);
 			return;
 		}
@@ -1903,7 +1900,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			DenyAccess(peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L",\n"
+					+ narrow_to_wide(minetest_version_simple) + L",\n"
 					+ L"server's PROTOCOL_VERSION is "
 					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
 					+ L"..."
@@ -1925,7 +1922,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				DenyAccess(peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
-						+ narrow_to_wide(VERSION_STRING) + L",\n"
+						+ narrow_to_wide(minetest_version_simple) + L",\n"
 						+ L"server's PROTOCOL_VERSION (strict) is "
 						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
 						+ L", client's PROTOCOL_VERSION is "
@@ -1971,6 +1968,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<"tried to connect from "<<addr_s<<std::endl;
 			DenyAccess(peer_id, L"Name is not allowed");
 			return;
+		}
+
+		{
+			std::string reason;
+			if(m_script->on_prejoinplayer(playername, addr_s, reason))
+			{
+				actionstream<<"Server: Player with the name \""<<playername<<"\" "
+						<<"tried to connect from "<<addr_s<<" "
+						<<"but it was disallowed for the following reason: "
+						<<reason<<std::endl;
+				DenyAccess(peer_id, narrow_to_wide(reason.c_str()));
+				return;
+			}
 		}
 
 		infostream<<"Server: New connection: \""<<playername<<"\" from "
@@ -2288,8 +2298,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
-				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
-				<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
+															<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
+															<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
+
 	}
 	else if(command == TOSERVER_GOTBLOCKS)
 	{
@@ -2734,7 +2745,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		std::list<MediaRequest> tosend;
+		std::list<std::string> tosend;
 		u16 numfiles = readU16(is);
 
 		infostream<<"Sending "<<numfiles<<" files to "
@@ -2743,7 +2754,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		for(int i = 0; i < numfiles; i++) {
 			std::string name = deSerializeString(is);
-			tosend.push_back(MediaRequest(name));
+			tosend.push_back(name);
 			verbosestream<<"TOSERVER_REQUEST_MEDIA: requested file "
 					<<name<<std::endl;
 		}
@@ -4070,7 +4081,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::list<u16> *far_players, float far_d_nodes)
+		std::list<u16> *far_players, float far_d_nodes,
+		bool remove_metadata)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -4106,13 +4118,23 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		}
 
 		// Create packet
-		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
+		u32 replysize = 9 + MapNode::serializedLength(client->serialization_version);
 		SharedBuffer<u8> reply(replysize);
 		writeU16(&reply[0], TOCLIENT_ADDNODE);
 		writeS16(&reply[2], p.X);
 		writeS16(&reply[4], p.Y);
 		writeS16(&reply[6], p.Z);
 		n.serialize(&reply[8], client->serialization_version);
+		u32 index = 8 + MapNode::serializedLength(client->serialization_version);
+		writeU8(&reply[index], remove_metadata ? 0 : 1);
+		
+		if (!remove_metadata) {
+			if (client->net_proto_version <= 21) {
+				// Old clients always clear metadata; fix it
+				// by sending the full block again.
+				client->SetBlockNotSent(p);
+			}
+		}
 
 		// Send as reliable
 		m_con.Send(client->peer_id, 0, reply, true);
@@ -4431,7 +4453,7 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(u16 peer_id,
-		const std::list<MediaRequest> &tosend)
+		const std::list<std::string> &tosend)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4448,17 +4470,19 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 	u32 file_size_bunch_total = 0;
 
-	for(std::list<MediaRequest>::const_iterator i = tosend.begin();
+	for(std::list<std::string>::const_iterator i = tosend.begin();
 			i != tosend.end(); ++i)
 	{
-		if(m_media.find(i->name) == m_media.end()){
+		const std::string &name = *i;
+
+		if(m_media.find(name) == m_media.end()){
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
-					<<"unknown file \""<<(i->name)<<"\""<<std::endl;
+					<<"unknown file \""<<(name)<<"\""<<std::endl;
 			continue;
 		}
 
 		//TODO get path + name
-		std::string tpath = m_media[(*i).name].path;
+		std::string tpath = m_media[name].path;
 
 		// Read data
 		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
@@ -4484,14 +4508,14 @@ void Server::sendRequestedMedia(u16 peer_id,
 		}
 		if(bad){
 			errorstream<<"Server::sendRequestedMedia(): Failed to read \""
-					<<(*i).name<<"\""<<std::endl;
+					<<name<<"\""<<std::endl;
 			continue;
 		}
 		/*infostream<<"Server::sendRequestedMedia(): Loaded \""
 				<<tname<<"\""<<std::endl;*/
 		// Put in list
 		file_bunches[file_bunches.size()-1].push_back(
-				SendableMedia((*i).name, tpath, tmp_os.str()));
+				SendableMedia(name, tpath, tmp_os.str()));
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch){
@@ -4775,7 +4799,10 @@ void Server::UpdateCrafting(u16 peer_id)
 
 	// Get a preview for crafting
 	ItemStack preview;
+	InventoryLocation loc;
+	loc.setPlayer(player->getName());
 	getCraftingResult(&player->inventory, preview, false, this);
+	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(), (&player->inventory)->getList("craft"), loc);
 
 	// Put the new preview in
 	InventoryList *plist = player->inventory.getList("craftpreview");
@@ -4823,7 +4850,7 @@ std::wstring Server::getStatusString()
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(VERSION_STRING);
+	os<<L"version="<<narrow_to_wide(minetest_version_simple);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Max lag estimate
@@ -5307,10 +5334,10 @@ v3f findSpawnPos(ServerMap &map)
 				-range + (myrand() % (range * 2)));
 
 		// Get ground height at point
-		s16 groundheight = map.findGroundLevel(nodepos2d);
+		s16 groundheight = map.findGroundLevel(nodepos2d, g_settings->getBool("cache_block_before_spawn"));
 		if (groundheight <= water_level) // Don't go underwater
 			continue;
-		if (groundheight > water_level + 6) // Don't go to high places
+		if (groundheight > water_level + g_settings->getS16("max_spawn_height")) // Don't go to high places
 			continue;
 
 		nodepos = v3s16(nodepos2d.X, groundheight, nodepos2d.Y);
