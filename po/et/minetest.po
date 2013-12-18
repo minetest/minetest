@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-06-21 15:47+0200\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2013-12-18 21:28+0200\n"
+"Last-Translator: Jabo Babo <bb7b@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
 #, fuzzy
@@ -38,40 +38,42 @@ msgstr ""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "MÄNGUD"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
-#, fuzzy
 msgid "Games"
-msgstr "Mäng"
+msgstr "Mängud"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
 msgstr ""
 
 #: builtin/gamemgr.lua:235
+#, fuzzy
 msgid "edit game"
-msgstr ""
+msgstr "Muuda mängu"
 
 #: builtin/gamemgr.lua:238
 msgid "new game"
-msgstr ""
+msgstr "uus mängu"
 
 #: builtin/gamemgr.lua:248
 msgid "EDIT GAME"
-msgstr ""
+msgstr "MUUDA MÄNGU"
 
 #: builtin/gamemgr.lua:269
+#, fuzzy
 msgid "Remove selected mod"
-msgstr ""
+msgstr "Eemalda valitud muutus"
 
 #: builtin/gamemgr.lua:272
+#, fuzzy
 msgid "<<-- Add mod"
-msgstr ""
+msgstr "<<-- Lisama muutus"
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
-msgstr ""
+msgstr "kinnitama"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
@@ -82,8 +84,9 @@ msgid "Seed"
 msgstr ""
 
 #: builtin/mainmenu.lua:303
+#, fuzzy
 msgid "Mapgen"
-msgstr ""
+msgstr "Põlvkonna kaardid"
 
 #: builtin/mainmenu.lua:306
 msgid "Game"
@@ -92,7 +95,7 @@ msgstr "Mäng"
 #: builtin/mainmenu.lua:319
 #, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Kustuta maailm"
+msgstr "Kustuta maailm: \"$1\"?"
 
 #: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
 msgid "Yes"
@@ -109,11 +112,11 @@ msgstr "Maailma loomine ebaõnnestus: Samanimeline maailm on juba olemas"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "No nimi või no mäng valitud"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Aktiveerimiseks varjud, nad vajavad OpenGL draiver."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -154,9 +157,8 @@ msgid "Configure"
 msgstr "Konfigureeri"
 
 #: builtin/mainmenu.lua:877
-#, fuzzy
 msgid "Start Game"
-msgstr "Alusta mängu / Liitu"
+msgstr "Alusta mängu"
 
 #: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
 msgid "Select World:"
@@ -180,12 +182,11 @@ msgstr "Avalik"
 
 #: builtin/mainmenu.lua:886
 msgid "Name"
-msgstr ""
+msgstr "Nimi"
 
 #: builtin/mainmenu.lua:888
-#, fuzzy
 msgid "Password"
-msgstr "Vana parool"
+msgstr "Parool"
 
 #: builtin/mainmenu.lua:889
 msgid "Server Port"
@@ -193,7 +194,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:899
 msgid "SETTINGS"
-msgstr ""
+msgstr "Seaded"
 
 #: builtin/mainmenu.lua:900
 msgid "Fancy trees"
@@ -259,7 +260,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Vali graafika:"
 
 #: builtin/mainmenu.lua:956
 msgid "TEXTURE PACKS"
@@ -267,19 +268,19 @@ msgstr ""
 
 #: builtin/mainmenu.lua:976
 msgid "No information available"
-msgstr ""
+msgstr "Informatsioon ei ole kättesaadav"
 
 #: builtin/mainmenu.lua:1005
 msgid "Core Developers"
-msgstr ""
+msgstr "Põhiline arendaja"
 
 #: builtin/mainmenu.lua:1020
 msgid "Active Contributors"
-msgstr ""
+msgstr "Co-arendaja"
 
 #: builtin/mainmenu.lua:1028
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Early arendajad"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
