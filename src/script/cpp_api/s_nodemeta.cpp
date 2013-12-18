@@ -45,8 +45,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_move"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_move"))
 		return count;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
@@ -61,7 +61,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_metadata_inventory_move should return a number");
+		throw LuaError(NULL, "allow_metadata_inventory_move should"
+				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer
 	return num;
@@ -85,8 +86,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_put"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_put"))
 		return stack.count;
 
 	// Call function(pos, listname, index, stack, player)
@@ -99,7 +100,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_metadata_inventory_put should return a number");
+		throw LuaError(NULL, "allow_metadata_inventory_put should"
+				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer
 	return num;
@@ -123,8 +125,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 		return 0;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"allow_metadata_inventory_take"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "allow_metadata_inventory_take"))
 		return stack.count;
 
 	// Call function(pos, listname, index, count, player)
@@ -137,7 +139,8 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_metadata_inventory_take should return a number");
+		throw LuaError(NULL, "allow_metadata_inventory_take should"
+				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer
 	return num;
@@ -162,8 +165,8 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_move"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_move"))
 		return;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
@@ -197,8 +200,8 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_put"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_put"))
 		return;
 
 	// Call function(pos, listname, index, stack, player)
@@ -230,8 +233,8 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(),
-			"on_metadata_inventory_take"))
+	std::string nodename = ndef->get(node).name;
+	if(!getItemCallback(nodename.c_str(), "on_metadata_inventory_take"))
 		return;
 
 	// Call function(pos, listname, index, stack, player)
