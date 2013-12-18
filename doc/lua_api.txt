@@ -1531,7 +1531,7 @@ minetest.parse_json(string[, nullvalue]) -> something
 ^ On success returns a table, a string, a number, a boolean or nullvalue
 ^ On failure outputs an error message and returns nil
 ^ Example: parse_json("[10, {\"a\":false}]") -> {10, {a = false}}
-minetest.write_json(data[, styled]) -> string
+minetest.write_json(data[, styled]) -> string or nil and error message
 ^ Convert a Lua table into a JSON string
 ^ styled: Outputs in a human-readable format if this is set, defaults to false
 ^ Un-serializable things like functions and userdata are saved as null.

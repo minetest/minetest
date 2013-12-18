@@ -1106,26 +1106,26 @@ void get_json_value(lua_State *L, Json::Value &root, int index)
 			if (keytype == LUA_TNUMBER) {
 				lua_Number key = lua_tonumber(L, -1);
 				if (roottype != Json::nullValue && roottype != Json::arrayValue) {
-					throw LuaError(NULL, "Can't mix array and object values in JSON");
+					throw SerializationError("Can't mix array and object values in JSON");
 				} else if (key < 1) {
-					throw LuaError(NULL, "Can't use zero-based or negative indexes in JSON");
+					throw SerializationError("Can't use zero-based or negative indexes in JSON");
 				} else if (floor(key) != key) {
-					throw LuaError(NULL, "Can't use indexes with a fractional part in JSON");
+					throw SerializationError("Can't use indexes with a fractional part in JSON");
 				}
 				root[(Json::ArrayIndex) key - 1] = value;
 			} else if (keytype == LUA_TSTRING) {
 				if (roottype != Json::nullValue && roottype != Json::objectValue) {
-					throw LuaError(NULL, "Can't mix array and object values in JSON");
+					throw SerializationError("Can't mix array and object values in JSON");
 				}
 				root[lua_tostring(L, -1)] = value;
 			} else {
-				throw LuaError(NULL, "Lua key to convert to JSON is not a string or number");
+				throw SerializationError("Lua key to convert to JSON is not a string or number");
 			}
 		}
 	} else if (type == LUA_TNIL) {
 		root = Json::nullValue;
 	} else {
-		throw LuaError(NULL, "Can only store booleans, numbers, strings, objects, arrays, and null in JSON");
+		throw SerializationError("Can only store booleans, numbers, strings, objects, arrays, and null in JSON");
 	}
 	lua_pop(L, 1); // Pop value
 }

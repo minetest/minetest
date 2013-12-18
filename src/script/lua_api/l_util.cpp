@@ -179,7 +179,7 @@ int ModApiUtil::l_parse_json(lua_State *L)
 	return 1;
 }
 
-// write_json(data[, styled]) -> string
+// write_json(data[, styled]) -> string or nil and error message
 int ModApiUtil::l_write_json(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -191,7 +191,13 @@ int ModApiUtil::l_write_json(lua_State *L)
 	}
 
 	Json::Value root;
-	get_json_value(L, root, 1);
+	try {
+		get_json_value(L, root, 1);
+	} catch (SerializationError &e) {
+		lua_pushnil(L);
+		lua_pushstring(L, e.what());
+		return 2;
+	}
 
 	std::string out;
 	if (styled) {
