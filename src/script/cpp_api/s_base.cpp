@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern "C" {
 #include "lualib.h"
+#if USE_LUAJIT
+	#include "luajit.h"
+#endif
 }
 
 #include <stdio.h>
@@ -72,6 +75,14 @@ ScriptApiBase::ScriptApiBase()
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
 	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
+
+	// If we are using LuaJIT add a C++ wrapper function to catch
+	// exceptions thrown in Lua -> C++ calls
+#if USE_LUAJIT
+	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
+	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
+	lua_pop(m_luastack, 1);
+#endif
 
 	m_server = 0;
 	m_environment = 0;

@@ -653,7 +653,7 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	}
 	else
 	{
-		throw LuaError(L, "Expecting itemstack, itemstring, table or nil");
+		throw LuaError(NULL, "Expecting itemstack, itemstring, table or nil");
 	}
 }
 

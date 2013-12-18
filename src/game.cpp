@@ -3438,14 +3438,12 @@ void the_game(
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 	}
-	catch(ServerError &e)
-	{
+	catch(ServerError &e) {
 		error_message = narrow_to_wide(e.what());
-		errorstream<<wide_to_narrow(error_message)<<std::endl;
+		errorstream << "ServerError: " << e.what() << std::endl;
 	}
-	catch(ModError &e)
-	{
-		errorstream<<e.what()<<std::endl;
+	catch(ModError &e) {
+		errorstream << "ModError: " << e.what() << std::endl;
 		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
 	}
 

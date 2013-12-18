@@ -55,23 +55,6 @@ class ServerEnvironment;
 struct SimpleSoundSpec;
 
 
-class ServerError : public std::exception
-{
-public:
-	ServerError(const std::string &s)
-	{
-		m_s = "ServerError: ";
-		m_s += s;
-	}
-	virtual ~ServerError() throw()
-	{}
-	virtual const char * what() const throw()
-	{
-		return m_s.c_str();
-	}
-	std::string m_s;
-};
-
 /*
 	Some random functions
 */

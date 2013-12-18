@@ -470,7 +470,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		name = lua_tostring(L, -1);
 		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
-		throw LuaError(L, "register_item_raw: name is not defined or not a string");
+		throw LuaError(NULL, "register_item_raw: name is not defined or not a string");
 	}
 
 	// Check if on_use is defined
@@ -500,7 +500,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		content_t id = ndef->set(f.name, f);
 
 		if(id > MAX_REGISTERED_CONTENT){
-			throw LuaError(L, "Number of registerable nodes ("
+			throw LuaError(NULL, "Number of registerable nodes ("
 					+ itos(MAX_REGISTERED_CONTENT+1)
 					+ ") exceeded (" + name + ")");
 		}

@@ -55,6 +55,18 @@ int script_error_handler(lua_State *L) {
 	return 1;
 }
 
+int script_exception_wrapper(lua_State *L, lua_CFunction f)
+{
+	try {
+		return f(L);  // Call wrapped function and return result.
+	} catch (const char *s) {  // Catch and convert exceptions.
+		lua_pushstring(L, s);
+	} catch (LuaError& e) {
+		lua_pushstring(L, e.what());
+	}
+	return lua_error(L);  // Rethrow as a Lua error.
+}
+
 void script_error(lua_State *L)
 {
 	const char *s = lua_tostring(L, -1);

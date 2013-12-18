@@ -14,6 +14,7 @@
 #define USE_FREETYPE 0
 #define STATIC_SHAREDIR ""
 #define USE_LEVELDB 0
+#define USE_LUAJIT 0
 
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
@@ -33,6 +34,8 @@
 	#define STATIC_SHAREDIR CMAKE_STATIC_SHAREDIR
 	#undef USE_LEVELDB
 	#define USE_LEVELDB CMAKE_USE_LEVELDB
+	#undef USE_LUAJIT
+	#define USE_LUAJIT CMAKE_USE_LUAJIT
 #endif
 
 #endif
