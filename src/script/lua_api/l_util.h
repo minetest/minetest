@@ -64,6 +64,9 @@ private:
 	// parse_json(str[, nullvalue])
 	static int l_parse_json(lua_State *L);
 
+	// write_json(data[, styled])
+	static int l_write_json(lua_State *L);
+
 	// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 	static int l_get_dig_params(lua_State *L);
 

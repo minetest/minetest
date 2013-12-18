@@ -1530,7 +1530,16 @@ minetest.parse_json(string[, nullvalue]) -> something
 ^ nullvalue: returned in place of the JSON null; defaults to nil
 ^ On success returns a table, a string, a number, a boolean or nullvalue
 ^ On failure outputs an error message and returns nil
-^ Example: parse_json("[10, {\"a\":false}]") -> {[1] = 10, [2] = {a = false}}
+^ Example: parse_json("[10, {\"a\":false}]") -> {10, {a = false}}
+minetest.write_json(data[, styled]) -> string
+^ Convert a Lua table into a JSON string
+^ styled: Outputs in a human-readable format if this is set, defaults to false
+^ Un-serializable things like functions and userdata are saved as null.
+^ Warning: JSON is more strict than the Lua table format.
+    1. You can only use strings and positive integers of at least one as keys.
+    2. You can not mix string and integer keys.
+    This is due to the fact that Javascript has two distinct array and object values.
+^ Example: write_json({10, {a = false}}) -> "[10, {\"a\": false}]"
 minetest.serialize(table) -> string
 ^ Convert a table containing tables, strings, numbers, booleans and nils
   into string form readable by minetest.deserialize
