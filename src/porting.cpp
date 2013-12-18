@@ -373,8 +373,13 @@ void initializePaths()
 	//TODO: Get path of executable. This assumes working directory is bin/
 	dstream<<"WARNING: Relative path not properly supported on this platform"
 			<<std::endl;
-	path_share = std::string("..");
-	path_user = std::string("..");
+
+	/* scriptapi no longer allows paths that start with "..", so assuming that
+	   the current working directory is bin/, strip off the last component. */
+	char *cwd = getcwd(NULL, 0);
+	pathRemoveFile(cwd, '/');
+	path_share = std::string(cwd);
+	path_user = std::string(cwd);
 
 	#endif
 
@@ -477,7 +482,7 @@ void initializePaths()
 
 	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
-	#elif defined(__FreeBSD__)
+	#else // FreeBSD, and probably many other POSIX-like systems.
 
 	path_share = STATIC_SHAREDIR;
 	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;

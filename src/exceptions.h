@@ -21,132 +21,99 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define EXCEPTIONS_HEADER
 
 #include <exception>
+#include <string>
+
 
 class BaseException : public std::exception
 {
 public:
-	BaseException(const char *s)
+	BaseException(const std::string s) throw()
 	{
 		m_s = s;
 	}
+	~BaseException() throw() {}
 	virtual const char * what() const throw()
 	{
-		return m_s;
+		return m_s.c_str();
 	}
-	const char *m_s;
+protected:
+	std::string m_s;
 };
 
-class AsyncQueuedException : public BaseException
-{
+class AsyncQueuedException : public BaseException {
 public:
-	AsyncQueuedException(const char *s):
-		BaseException(s)
-	{}
+	AsyncQueuedException(std::string s): BaseException(s) {}
 };
 
-class NotImplementedException : public BaseException
-{
+class NotImplementedException : public BaseException {
 public:
-	NotImplementedException(const char *s):
-		BaseException(s)
-	{}
+	NotImplementedException(std::string s): BaseException(s) {}
 };
 
-class AlreadyExistsException : public BaseException
-{
+class AlreadyExistsException : public BaseException {
 public:
-	AlreadyExistsException(const char *s):
-		BaseException(s)
-	{}
+	AlreadyExistsException(std::string s): BaseException(s) {}
 };
 
-class VersionMismatchException : public BaseException
-{
+class VersionMismatchException : public BaseException {
 public:
-	VersionMismatchException(const char *s):
-		BaseException(s)
-	{}
+	VersionMismatchException(std::string s): BaseException(s) {}
 };
 
-class FileNotGoodException : public BaseException
-{
+class FileNotGoodException : public BaseException {
 public:
-	FileNotGoodException(const char *s):
-		BaseException(s)
-	{}
+	FileNotGoodException(std::string s): BaseException(s) {}
 };
 
-class SerializationError : public BaseException
-{
+class SerializationError : public BaseException {
 public:
-	SerializationError(const char *s):
-		BaseException(s)
-	{}
+	SerializationError(std::string s): BaseException(s) {}
 };
 
-class LoadError : public BaseException
-{
+class LoadError : public BaseException {
 public:
-	LoadError(const char *s):
-		BaseException(s)
-	{}
+	LoadError(std::string s): BaseException(s) {}
 };
 
-class ContainerFullException : public BaseException
-{
+class ContainerFullException : public BaseException {
 public:
-	ContainerFullException(const char *s):
-		BaseException(s)
-	{}
+	ContainerFullException(std::string s): BaseException(s) {}
 };
 
-class SettingNotFoundException : public BaseException
-{
+class SettingNotFoundException : public BaseException {
 public:
-	SettingNotFoundException(const char *s):
-		BaseException(s)
-	{}
+	SettingNotFoundException(std::string s): BaseException(s) {}
 };
 
-class InvalidFilenameException : public BaseException
-{
+class InvalidFilenameException : public BaseException {
 public:
-	InvalidFilenameException(const char *s):
-		BaseException(s)
-	{}
+	InvalidFilenameException(std::string s): BaseException(s) {}
 };
 
-class ProcessingLimitException : public BaseException
-{
+class ProcessingLimitException : public BaseException {
 public:
-	ProcessingLimitException(const char *s):
-		BaseException(s)
-	{}
+	ProcessingLimitException(std::string s): BaseException(s) {}
 };
 
-class CommandLineError : public BaseException
-{
+class CommandLineError : public BaseException {
 public:
-	CommandLineError(const char *s):
-		BaseException(s)
-	{}
+	CommandLineError(std::string s): BaseException(s) {}
 };
 
-class ItemNotFoundException : public BaseException
-{
+class ItemNotFoundException : public BaseException {
 public:
-	ItemNotFoundException(const char *s):
-		BaseException(s)
-	{}
+	ItemNotFoundException(std::string s): BaseException(s) {}
+};
+
+class ServerError : public BaseException {
+public:
+	ServerError(std::string s): BaseException(s) {}
 };
 
 // Only used on Windows (SEH)
-class FatalSystemException : public BaseException
-{
+class FatalSystemException : public BaseException {
 public:
-	FatalSystemException(const char *s):
-		BaseException(s)
-	{}
+	FatalSystemException(std::string s): BaseException(s) {}
 };
 
 /*
@@ -159,7 +126,7 @@ public:
 	InvalidPositionException():
 		BaseException("Somebody tried to get/set something in a nonexistent position.")
 	{}
-	InvalidPositionException(const char *s):
+	InvalidPositionException(std::string s):
 		BaseException(s)
 	{}
 };

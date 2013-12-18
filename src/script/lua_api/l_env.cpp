@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
 				if( env == NULL) return 0
-				
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,28 +53,34 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Get minetest.registered_abms
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_abms");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_abms = lua_gettop(L);
+	lua_remove(L, -2); // Remove "minetest"
 
 	// Get minetest.registered_abms[m_id]
 	lua_pushnumber(L, m_id);
-	lua_gettable(L, registered_abms);
+	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
 		assert(0);
+	lua_remove(L, -2); // Remove "registered_abms"
 
 	// Call action
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, "action");
 	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_remove(L, -2); // Remove "registered_abms[m_id]"
 	push_v3s16(L, p);
 	pushnode(L, n, env->getGameDef()->ndef());
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
-	if(lua_pcall(L, 4, 0, 0))
-		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(lua_pcall(L, 4, 0, errorhandler))
+		script_error(L);
+	lua_pop(L, 1); // Pop error handler
 }
 
 // Exported functions
@@ -110,6 +116,22 @@ int ModApiEnvMod::l_remove_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
 	bool succeeded = env->removeNode(pos);
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
+// minetest.swap_node(pos, node)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_swap_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+	// parameters
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = readnode(L, 2, ndef);
+	// Do it
+	bool succeeded = env->swapNode(pos, n);
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
@@ -370,15 +392,21 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	ItemStack item = read_item(L, 2,getServer(L));
 	if(item.empty() || !item.isKnown(getServer(L)->idef()))
 		return 0;
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
 	// Use minetest.spawn_item to spawn a __builtin:item
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "spawn_item");
+	lua_remove(L, -2); // Remove minetest
 	if(lua_isnil(L, -1))
 		return 0;
 	lua_pushvalue(L, 1);
 	lua_pushstring(L, item.getItemString().c_str());
-	if(lua_pcall(L, 2, 1, 0))
-		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(lua_pcall(L, 2, 1, errorhandler))
+		script_error(L);
+	lua_remove(L, errorhandler); // Remove error handler
 	return 1;
 	/*lua_pushvalue(L, 1);
 	lua_pushstring(L, "__builtin:item");
@@ -420,28 +448,20 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 // minetest.get_objects_inside_radius(pos, radius)
 int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 {
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-
 	GET_ENV_PTR;
 
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
 	float radius = luaL_checknumber(L, 2) * BS;
 	std::set<u16> ids = env->getObjectsInsideRadius(pos, radius);
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(std::set<u16>::const_iterator
-			i = ids.begin(); i != ids.end(); i++){
-		ServerActiveObject *obj = env->getActiveObject(*i);
+	ScriptApiBase *script = getScriptApiBase(L);
+	lua_createtable(L, ids.size(), 0);
+	std::set<u16>::const_iterator iter = ids.begin();
+	for(u32 i = 0; iter != ids.end(); iter++) {
+		ServerActiveObject *obj = env->getActiveObject(*iter);
 		// Insert object reference into table
-		lua_pushvalue(L, table_insert);
-		lua_pushvalue(L, table);
-		getScriptApiBase(L)->objectrefGetOrCreate(obj);
-		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+		script->objectrefGetOrCreate(obj);
+		lua_rawseti(L, -2, ++i);
 	}
 	return 1;
 }
@@ -551,25 +571,16 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-
 	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(s16 x=minp.X; x<=maxp.X; x++)
-	for(s16 y=minp.Y; y<=maxp.Y; y++)
-	for(s16 z=minp.Z; z<=maxp.Z; z++)
-	{
-		v3s16 p(x,y,z);
+	u64 i = 0;
+	for(s16 x = minp.X; x <= maxp.X; x++)
+	for(s16 y = minp.Y; y <= maxp.Y; y++)
+	for(s16 z = minp.Z; z <= maxp.Z; z++) {
+		v3s16 p(x, y, z);
 		content_t c = env->getMap().getNodeNoEx(p).getContent();
-		if(filter.count(c) != 0){
-			lua_pushvalue(L, table_insert);
-			lua_pushvalue(L, table);
+		if(filter.count(c) != 0) {
 			push_v3s16(L, p);
-			if(lua_pcall(L, 2, 0, 0))
-				script_error(L, "error: %s", lua_tostring(L, -1));
+			lua_rawseti(L, -2, ++i);
 		}
 	}
 	return 1;
@@ -620,7 +631,7 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 
 	Map *map = &(env->getMap());
 	LuaVoxelManip *o = new LuaVoxelManip(map);
-	
+
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, "VoxelManip");
 	lua_setmetatable(L, -2);
@@ -637,7 +648,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 	return 0;
 }
 
-// minetest.line_of_sight(pos1, pos2, stepsize) -> true/false
+// minetest.line_of_sight(pos1, pos2, stepsize) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	float stepsize = 1.0;
 
@@ -648,10 +659,18 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
 	//read step size from lua
-	if (lua_isnumber(L, 3))
+	if (lua_isnumber(L, 3)) {
 		stepsize = lua_tonumber(L, 3);
+	}
 
-	return (env->line_of_sight(pos1,pos2,stepsize));
+	v3s16 p;
+	bool success = env->line_of_sight(pos1, pos2, stepsize, &p);
+	lua_pushboolean(L, success);
+	if (!success) {
+		push_v3s16(L, p);
+		return 2;
+	}
+	return 1;
 }
 
 // minetest.find_path(pos1, pos2, searchdistance,
@@ -784,6 +803,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
 	API_FCT(add_node);
+	API_FCT(swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
 	API_FCT(get_node);

@@ -55,23 +55,6 @@ class ServerEnvironment;
 struct SimpleSoundSpec;
 
 
-class ServerError : public std::exception
-{
-public:
-	ServerError(const std::string &s)
-	{
-		m_s = "ServerError: ";
-		m_s += s;
-	}
-	virtual ~ServerError() throw()
-	{}
-	virtual const char * what() const throw()
-	{
-		return m_s.c_str();
-	}
-	std::string m_s;
-};
-
 /*
 	Some random functions
 */
@@ -151,15 +134,6 @@ struct PrioritySortedBlockTransfer
 	float priority;
 	v3s16 pos;
 	u16 peer_id;
-};
-
-struct MediaRequest
-{
-	std::string name;
-
-	MediaRequest(const std::string &name_=""):
-		name(name_)
-	{}
 };
 
 struct MediaInfo
@@ -556,7 +530,8 @@ private:
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
 			std::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			std::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::list<u16> *far_players=NULL, float far_d_nodes=100,
+			bool remove_metadata=true);
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
@@ -568,7 +543,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
-			const std::list<MediaRequest> &tosend);
+			const std::list<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventoryToAll(const std::string &name);
@@ -685,7 +660,7 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	std::map<u16, RemoteClient*> m_clients;
-	u16 m_clients_number; //for announcing masterserver
+	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Ban checking
 	BanManager *m_banmanager;

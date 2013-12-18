@@ -42,10 +42,12 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 NodeMetadata* NodeMetaRef::getmeta(NodeMetaRef *ref, bool auto_create)
 {
 	NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
-	if(meta == NULL && auto_create)
-	{
+	if(meta == NULL && auto_create)	{
 		meta = new NodeMetadata(ref->m_env->getGameDef());
-		ref->m_env->getMap().setNodeMetadata(ref->m_p, meta);
+		if(!ref->m_env->getMap().setNodeMetadata(ref->m_p, meta)) {
+			delete meta;
+			return NULL;
+		}
 	}
 	return meta;
 }
@@ -227,17 +229,21 @@ int NodeMetaRef::l_from_table(lua_State *L)
 	NodeMetaRef *ref = checkobject(L, 1);
 	int base = 2;
 
+	// clear old metadata first
+	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
+
 	if(lua_isnil(L, base)){
 		// No metadata
-		ref->m_env->getMap().removeNodeMetadata(ref->m_p);
 		lua_pushboolean(L, true);
 		return 1;
 	}
 
-	// Has metadata; clear old one first
-	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
 	// Create new metadata
 	NodeMetadata *meta = getmeta(ref, true);
+	if(meta == NULL){
+		lua_pushboolean(L, false);
+		return 1;
+	}
 	// Set fields
 	lua_getfield(L, base, "fields");
 	int fieldstable = lua_gettop(L);

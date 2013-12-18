@@ -1109,18 +1109,23 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	/*
 		Convert MeshCollector to SMesh
 	*/
+	bool enable_shaders     = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	bool enable_shaders = g_settings->getBool("enable_shaders");
-	video::E_MATERIAL_TYPE shadermat1 = m_gamedef->getShaderSource()->
-			getShader("test_shader_1").material;
-	video::E_MATERIAL_TYPE shadermat2 = m_gamedef->getShaderSource()->
-			getShader("test_shader_2").material;
-	video::E_MATERIAL_TYPE shadermat3 = m_gamedef->getShaderSource()->
-			getShader("test_shader_3").material;
-	video::E_MATERIAL_TYPE bumpmaps1 = m_gamedef->getShaderSource()->
-			getShader("bumpmaps_solids").material;
-	video::E_MATERIAL_TYPE bumpmaps2 = m_gamedef->getShaderSource()->
-			getShader("bumpmaps_liquids").material;
+	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+
+	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
+							shadermat4, shadermat5;
+	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 = 
+		video::EMT_SOLID;
+
+	if (enable_shaders) {
+		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
+		shadermat1 = shdrsrc->getShader("solids_shader").material;
+		shadermat2 = shdrsrc->getShader("liquids_shader").material;
+		shadermat3 = shdrsrc->getShader("alpha_shader").material;
+		shadermat4 = shdrsrc->getShader("leaves_shader").material;
+		shadermat5 = shdrsrc->getShader("plants_shader").material;
+	}
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
@@ -1200,22 +1205,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture);
-	
-		if (enable_shaders) {
-			video::E_MATERIAL_TYPE smat1 = shadermat1;
-			video::E_MATERIAL_TYPE smat2 = shadermat2;
-			video::E_MATERIAL_TYPE smat3 = shadermat3;
-			
-			if (enable_bumpmapping) {
-				ITextureSource *tsrc = data->m_gamedef->tsrc();
-				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
 
+		if (enable_shaders) {
+			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			material.setTexture(2, tsrc->getTexture("disable_img.png"));
+			if (enable_bumpmapping || enable_parallax_occlusion) {
+				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
 				std::string normal_ext = "_normal.png";
 				size_t pos = fname_base.find(".");
 				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
-				
+
 				if (tsrc->isKnownSourceImage(fname_normal)) {
 					// look for image extension and replace it 
 					size_t i = 0;
@@ -1223,19 +1224,15 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 						fname_base.replace(i, 4, normal_ext);
 						i += normal_ext.length();
 					}
-					
 					material.setTexture(1, tsrc->getTexture(fname_base));
-					
-					smat1 = bumpmaps1;
-					smat2 = bumpmaps2;
+					material.setTexture(2, tsrc->getTexture("enable_img.png"));
 				}
 			}
-			
-			p.tile.applyMaterialOptionsWithShaders(material, smat1, smat2, smat3);
+			p.tile.applyMaterialOptionsWithShaders(material,
+				shadermat1, shadermat2, shadermat3, shadermat4, shadermat5);
 		} else {
 			p.tile.applyMaterialOptions(material);
 		}
-
 		// Create meshbuffer
 
 		// This is a "Standard MeshBuffer",
@@ -1296,7 +1293,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 {
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	
+	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+
 	if(!m_has_animation)
 	{
 		m_animation_force_timer = 100000;
@@ -1365,18 +1363,21 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 		// Set the texture
 		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
-		if (enable_shaders && enable_bumpmapping)
+		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
+		if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
 			{
-				std::string basename,normal;
-				basename = tsrc->getTextureName(tile.texture_id);
+				std::string fname_base,fname_normal;
+				fname_base = tsrc->getTextureName(tile.texture_id);
 				unsigned pos;
-				pos = basename.find(".");
-				normal = basename.substr (0, pos);
-				normal += "_normal.png";
-				os.str("");
-				os<<normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-				if (tsrc->isKnownSourceImage(normal))
+				pos = fname_base.find(".");
+				fname_normal = fname_base.substr (0, pos);
+				fname_normal += "_normal.png";
+				if (tsrc->isKnownSourceImage(fname_normal)){
+					os.str("");
+					os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+				}
 			}
 	}
 

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "lua_api/l_async_events.h"
 #include "debug.h"
 #include "log.h"
 #include "tool.h"
@@ -178,6 +179,32 @@ int ModApiUtil::l_parse_json(lua_State *L)
 	return 1;
 }
 
+// write_json(data[, styled]) -> string
+int ModApiUtil::l_write_json(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	bool styled = false;
+	if (!lua_isnone(L, 2)) {
+		styled = lua_toboolean(L, 2);
+		lua_pop(L, 1);
+	}
+
+	Json::Value root;
+	get_json_value(L, root, 1);
+
+	std::string out;
+	if (styled) {
+		Json::StyledWriter writer;
+		out = writer.write(root);
+	} else {
+		Json::FastWriter writer;
+		out = writer.write(root);
+	}
+	lua_pushlstring(L, out.c_str(), out.size());
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, time_from_last_punch])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
@@ -248,6 +275,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(setting_save);
 
 	API_FCT(parse_json);
+	API_FCT(write_json);
 
 	API_FCT(get_dig_params);
 	API_FCT(get_hit_params);
@@ -257,3 +285,18 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(is_yes);
 }
 
+void ModApiUtil::InitializeAsync(AsyncEngine& engine)
+{
+	ASYNC_API_FCT(debug);
+	ASYNC_API_FCT(log);
+
+	//ASYNC_API_FCT(setting_set);
+	ASYNC_API_FCT(setting_get);
+	//ASYNC_API_FCT(setting_setbool);
+	ASYNC_API_FCT(setting_getbool);
+	//ASYNC_API_FCT(setting_save);
+
+	ASYNC_API_FCT(parse_json);
+
+	ASYNC_API_FCT(is_yes);
+}

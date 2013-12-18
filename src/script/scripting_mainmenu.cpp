@@ -28,8 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern "C" {
 #include "lualib.h"
+	int luaopen_marshal(lua_State *L);
 }
-
+/******************************************************************************/
 MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 {
 	setGuiEngine(guiengine);
@@ -37,6 +38,7 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	//TODO add security
 
 	luaL_openlibs(getStack());
+	luaopen_marshal(getStack());
 
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -58,6 +60,7 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	infostream << "SCRIPTAPI: initialized mainmenu modules" << std::endl;
 }
 
+/******************************************************************************/
 void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 {
 	// Initialize mod api modules
@@ -66,4 +69,23 @@ void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 
 	// Register reference classes (userdata)
 	LuaSettings::Register(L);
+
+	// Register functions to async environment
+	ModApiMainMenu::InitializeAsync(m_AsyncEngine);
+	ModApiUtil::InitializeAsync(m_AsyncEngine);
+
+	// Initialize async environment
+	//TODO possibly make number of async threads configurable
+	m_AsyncEngine.Initialize(MAINMENU_NUMBER_OF_ASYNC_THREADS);
+}
+
+/******************************************************************************/
+void MainMenuScripting::Step() {
+	m_AsyncEngine.Step(getStack());
+}
+
+/******************************************************************************/
+unsigned int MainMenuScripting::DoAsync(std::string serialized_fct,
+		std::string serialized_params) {
+	return m_AsyncEngine.doAsyncJob(serialized_fct,serialized_params);
 }

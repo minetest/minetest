@@ -187,8 +187,10 @@ find_path(LUA_INCLUDE_DIR luajit.h
 message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
 message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
 
-if(LUA_LIBRARY AND LUA_INCLUDE_DIR) 
+set(USE_LUAJIT 0)
+if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT found.")
+	set(USE_LUAJIT 1)
 else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT not found, using bundled Lua.")
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
@@ -223,11 +225,22 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
+# Add a target that always rebuilds cmake_config_githash.h
+add_custom_target(GenerateVersion
+	COMMAND ${CMAKE_COMMAND}
+	-D "GENERATE_VERSION_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+	-D "GENERATE_VERSION_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+	-D "VERSION_STRING=${VERSION_STRING}"
+	-D "VERSION_EXTRA=${VERSION_EXTRA}"
+	-P "${CMAKE_SOURCE_DIR}/cmake/Modules/GenerateVersion.cmake"
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
 add_subdirectory(jthread)
 add_subdirectory(script)
 add_subdirectory(util)
 
 set(common_SRCS
+	version.cpp
 	rollback_interface.cpp
 	rollback.cpp
 	genericobject.cpp
@@ -293,6 +306,8 @@ set(common_SRCS
 	serverlist.cpp
 	pathfinder.cpp
 	convert_json.cpp
+	gettext.cpp
+	httpfetch.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -345,6 +360,7 @@ set(minetest_SRCS
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	client.cpp
+	clientmedia.cpp
 	filecache.cpp
 	tile.cpp
 	shader.cpp
@@ -404,6 +420,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
+	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
@@ -442,6 +459,7 @@ endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
 	add_executable(${PROJECT_NAME}server ${minetestserver_SRCS})
+	add_dependencies(${PROJECT_NAME}server GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
@@ -484,7 +502,7 @@ if(MSVC)
 	# Flags for C files (sqlite)
 	# /MT = Link statically with standard library stuff
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
@@ -492,13 +510,13 @@ if(MSVC)
 
 else()
 	# Probably GCC
-	
+
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
-	
+
 	if(NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
@@ -521,7 +539,7 @@ else()
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
 	endif()
-	
+
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")

@@ -22,10 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-class ModApiRollback : public ModApiBase {
+class ModApiRollback : public ModApiBase
+{
 private:
-	// rollback_get_last_node_actor(p, range, seconds) -> actor, p, seconds
-	static int l_rollback_get_last_node_actor(lua_State *L);
+	// rollback_get_node_actions(pos, range, seconds) -> {{actor, pos, time, oldnode, newnode}, ...}
+	static int l_rollback_get_node_actions(lua_State *L);
 
 	// rollback_revert_actions_by(actor, seconds) -> bool, log messages
 	static int l_rollback_revert_actions_by(lua_State *L);

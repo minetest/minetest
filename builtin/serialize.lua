@@ -178,7 +178,7 @@ function minetest.deserialize(sdata)
 	if okay then
 		return results
 	end
-	print('error:'.. results)
+	minetest.log('error', 'minetest.deserialize(): '.. results)
 	return nil
 end
 

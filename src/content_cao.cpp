@@ -1649,6 +1649,8 @@ public:
 			m_acceleration = readV3F1000(is);
 			if(fabs(m_prop.automatic_rotate) < 0.001)
 				m_yaw = readF1000(is);
+			else
+				readF1000(is);
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
@@ -1693,12 +1695,18 @@ public:
 			float override_speed = readF1000(is);
 			float override_jump = readF1000(is);
 			float override_gravity = readF1000(is);
+			// these are sent inverted so we get true when the server sends nothing
+			bool sneak = !readU8(is);
+			bool sneak_glitch = !readU8(is);
+			
 			if(m_is_local_player)
 			{
 				LocalPlayer *player = m_env->getLocalPlayer();
 				player->physics_override_speed = override_speed;
 				player->physics_override_jump = override_jump;
 				player->physics_override_gravity = override_gravity;
+				player->physics_override_sneak = sneak;
+				player->physics_override_sneak_glitch = sneak_glitch;
 			}
 		}
 		else if(cmd == GENERIC_CMD_SET_ANIMATION)

@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "guiChatConsole.h"
 #include "config.h"
+#include "version.h"
 #include "clouds.h"
 #include "particles.h"
 #include "camera.h"
@@ -68,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <list>
 #include "util/directiontables.h"
+#include "util/pointedthing.h"
 
 /*
 	Text input system
@@ -804,13 +806,26 @@ public:
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
 		
+		u32 animation_timer = porting::getTimeMs() % 100000;
+		float animation_timer_f = (float)animation_timer / 100000.0;
+		services->setPixelShaderConstant("animationTimer", &animation_timer_f, 1);
+		services->setVertexShaderConstant("animationTimer", &animation_timer_f, 1);
+
+		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
+		v3f eye_position = player->getEyePosition(); 
+		services->setPixelShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
+		services->setVertexShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
+
 		// Normal map texture layer
-		int layer = 1;
+		int layer1 = 1;
+		int layer2 = 2;
 		// before 1.8 there isn't a "integer interface", only float
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer, 1);
+		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer1, 1);
+		services->setPixelShaderConstant("useNormalmap" , (irr::f32*)&layer2, 1);
 #else
-		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer, 1);
+		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer1, 1);
+		services->setPixelShaderConstant("useNormalmap" , (irr::s32*)&layer2, 1);
 #endif
 	}
 };
@@ -1193,7 +1208,7 @@ void the_game(
 				server->step(dtime);
 			
 			// End condition
-			if(client.texturesReceived() &&
+			if(client.mediaReceived() &&
 					client.itemdefReceived() &&
 					client.nodedefReceived()){
 				got_content = true;
@@ -1303,7 +1318,7 @@ void the_game(
 	*/
 
 	Sky *sky = NULL;
-	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
+	sky = new Sky(smgr->getRootSceneNode(), smgr, -1, client.getEnv().getLocalPlayer());
 	
 	/*
 		A copy of the local inventory
@@ -1408,7 +1423,7 @@ void the_game(
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	bool respawn_menu_active = false;
-	bool update_wielded_item_trigger = false;
+	bool update_wielded_item_trigger = true;
 
 	bool show_hud = true;
 	bool show_chat = true;
@@ -2276,10 +2291,6 @@ void the_game(
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
-				else if(event.type == CE_TEXTURES_UPDATED)
-				{
-					update_wielded_item_trigger = true;
-				}
 				else if(event.type == CE_SPAWN_PARTICLE)
 				{
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
@@ -2963,9 +2974,6 @@ void the_game(
 
 		//TimeTaker guiupdatetimer("Gui updating");
 		
-		const char program_name_and_version[] =
-			"Minetest " VERSION_STRING;
-
 		if(show_debug)
 		{
 			static float drawtime_avg = 0;
@@ -2979,7 +2987,7 @@ void the_game(
 			
 			std::ostringstream os(std::ios_base::binary);
 			os<<std::fixed
-				<<program_name_and_version
+				<<"Minetest "<<minetest_version_hash
 				<<" (R: range_all="<<draw_control.range_all<<")"
 				<<std::setprecision(0)
 				<<" drawtime = "<<drawtime_avg
@@ -2995,7 +3003,9 @@ void the_game(
 		}
 		else if(show_hud || show_chat)
 		{
-			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
+			std::ostringstream os(std::ios_base::binary);
+			os<<"Minetest "<<minetest_version_hash;
+			guitext->setText(narrow_to_wide(os.str()).c_str());
 			guitext->setVisible(true);
 		}
 		else
@@ -3428,14 +3438,12 @@ void the_game(
 				L" running a different version of Minetest.";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 	}
-	catch(ServerError &e)
-	{
+	catch(ServerError &e) {
 		error_message = narrow_to_wide(e.what());
-		errorstream<<wide_to_narrow(error_message)<<std::endl;
+		errorstream << "ServerError: " << e.what() << std::endl;
 	}
-	catch(ModError &e)
-	{
-		errorstream<<e.what()<<std::endl;
+	catch(ModError &e) {
+		errorstream << "ModError: " << e.what() << std::endl;
 		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
 	}
 

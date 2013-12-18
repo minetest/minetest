@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
+#include "version.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "keycode.h"
@@ -76,6 +77,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "quicktune.h"
 #include "serverlist.h"
+#include "httpfetch.h"
 #include "guiEngine.h"
 #include "mapsector.h"
 
@@ -308,7 +310,7 @@ public:
 	{
 		return keyIsDown[keyCode];
 	}
-	
+
 	// Checks whether a key was down and resets the state
 	bool WasKeyDown(const KeyPress &keyCode)
 	{
@@ -360,7 +362,7 @@ public:
 
 private:
 	IrrlichtDevice *m_device;
-	
+
 	// The current state of keys
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
@@ -404,7 +406,7 @@ public:
 	{
 		return m_receiver->right_active;
 	}
-	
+
 	virtual bool getLeftClicked()
 	{
 		return m_receiver->leftclicked;
@@ -655,7 +657,7 @@ void SpeedTests()
 			}
 		}
 	}
-	
+
 	infostream<<"All of the following tests should take around 100ms each."
 			<<std::endl;
 
@@ -667,7 +669,7 @@ void SpeedTests()
 			tempf += 0.001;
 		}
 	}
-	
+
 	{
 		TimeTaker timer("Testing floating-point vector speed");
 
@@ -681,7 +683,7 @@ void SpeedTests()
 
 	{
 		TimeTaker timer("Testing std::map speed");
-		
+
 		std::map<v2s16, f32> map1;
 		tempf = -324;
 		const s16 ii=300;
@@ -701,9 +703,8 @@ void SpeedTests()
 	{
 		infostream<<"Around 5000/ms should do well here."<<std::endl;
 		TimeTaker timer("Testing mutex speed");
-		
+
 		JMutex m;
-		m.Init();
 		u32 n = 0;
 		u32 i = 0;
 		do{
@@ -749,28 +750,16 @@ int main(int argc, char *argv[])
 	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
 
 	log_register_thread("main");
-
-	// This enables internatonal characters input
-	if( setlocale(LC_ALL, "") == NULL )
-	{
-		fprintf( stderr, "%s: warning: could not set default locale\n", argv[0] );
-	}
-
-	// Set locale. This is for forcing '.' as the decimal point.
-	try {
-		std::locale::global(std::locale(std::locale(""), "C", std::locale::numeric));
-		setlocale(LC_NUMERIC, "C");
-	} catch (const std::exception& ex) {
-		errorstream<<"Could not set numeric locale to C"<<std::endl;
-	}
 	/*
 		Parse command line
 	*/
-	
+
 	// List all allowed options
 	std::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
 			_("Show allowed options"))));
+	allowed_options.insert(std::make_pair("version", ValueSpec(VALUETYPE_FLAG,
+			_("Show version information"))));
 	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
 			_("Load configuration from specified file"))));
 	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
@@ -817,7 +806,7 @@ int main(int argc, char *argv[])
 #endif
 
 	Settings cmd_args;
-	
+
 	bool ret = cmd_args.parseCommandLine(argc, argv, allowed_options);
 
 	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
@@ -842,11 +831,23 @@ int main(int argc, char *argv[])
 
 		return cmd_args.getFlag("help") ? 0 : 1;
 	}
-	
+
+	if(cmd_args.getFlag("version"))
+	{
+#ifdef SERVER
+		dstream<<"minetestserver "<<minetest_version_hash<<std::endl;
+#else
+		dstream<<"Minetest "<<minetest_version_hash<<std::endl;
+		dstream<<"Using Irrlicht "<<IRRLICHT_SDK_VERSION<<std::endl;
+#endif
+		dstream<<"Build info: "<<minetest_build_info<<std::endl;
+		return 0;
+	}
+
 	/*
 		Low-level initialization
 	*/
-	
+
 	// If trace is enabled, enable logging of certain things
 	if(cmd_args.getFlag("trace")){
 		dstream<<_("Enabling trace level debug output")<<std::endl;
@@ -864,13 +865,11 @@ int main(int argc, char *argv[])
 
 	porting::signal_handler_init();
 	bool &kill = *porting::signal_handler_killstatus();
-	
+
 	porting::initializePaths();
 
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
-
-	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str());
 
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
@@ -881,7 +880,7 @@ int main(int argc, char *argv[])
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
-	
+
 	// List gameids if requested
 	if(cmd_args.exists("gameid") && cmd_args.get("gameid") == "list")
 	{
@@ -891,7 +890,7 @@ int main(int argc, char *argv[])
 			dstream<<(*i)<<std::endl;
 		return 0;
 	}
-	
+
 	// List worlds if requested
 	if(cmd_args.exists("world") && cmd_args.get("world") == "list"){
 		dstream<<_("Available worlds:")<<std::endl;
@@ -903,27 +902,27 @@ int main(int argc, char *argv[])
 	// Print startup message
 	infostream<<PROJECT_NAME<<
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
-			<<", "<<BUILD_INFO
+			<<", "<<minetest_build_info
 			<<std::endl;
-	
+
 	/*
 		Basic initialization
 	*/
 
 	// Initialize default settings
 	set_default_settings(g_settings);
-	
+
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
-	
+
 	/*
 		Read config file
 	*/
-	
+
 	// Path of configuration file in use
 	g_settings_path = "";
-	
+
 	if(cmd_args.exists("config"))
 	{
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
@@ -959,12 +958,12 @@ int main(int argc, char *argv[])
 				break;
 			}
 		}
-		
+
 		// If no path found, use the first one (menu creates the file)
 		if(g_settings_path == "")
 			g_settings_path = filenames[0];
 	}
-	
+
 	// Initialize debug streams
 #define DEBUGFILE "debug.txt"
 #if RUN_IN_PLACE
@@ -974,7 +973,7 @@ int main(int argc, char *argv[])
 #endif
 	if(cmd_args.exists("logfile"))
 		logfile = cmd_args.get("logfile");
-	
+
 	log_remove_output(&main_dstream_no_stderr_log_out);
 	int loglevel = g_settings->getS32("debug_log_level");
 
@@ -987,12 +986,15 @@ int main(int argc, char *argv[])
 		debugstreams_init(false, logfile.c_str());
 	else
 		debugstreams_init(false, NULL);
-		
+
 	infostream<<"logfile    = "<<logfile<<std::endl;
 
 	// Initialize random seed
 	srand(time(0));
 	mysrand(time(0));
+
+	// Initialize HTTP fetcher
+	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
 
 	/*
 		Run unit tests
@@ -1003,18 +1005,11 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-
-	std::string language = g_settings->get("language");
-	if (language.length()) {
-#ifndef _WIN32
-		setenv("LANGUAGE", language.c_str(), 1);
+#ifdef _MSC_VER
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),g_settings->get("language"),argc,argv);
 #else
-		char *lang_str = (char*)calloc(10 + language.length(), sizeof(char));
-		strcat(lang_str, "LANGUAGE=");
-		strcat(lang_str, language.c_str());
-		putenv(lang_str);
+	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),g_settings->get("language"));
 #endif
-	}
 
 	/*
 		Game parameters
@@ -1028,7 +1023,7 @@ int main(int argc, char *argv[])
 		port = g_settings->getU16("port");
 	if(port == 0)
 		port = 30000;
-	
+
 	// World directory
 	std::string commanded_world = "";
 	if(cmd_args.exists("world"))
@@ -1039,12 +1034,12 @@ int main(int argc, char *argv[])
 		commanded_world = cmd_args.get("nonopt0");
 	else if(g_settings->exists("map-dir"))
 		commanded_world = g_settings->get("map-dir");
-	
+
 	// World name
 	std::string commanded_worldname = "";
 	if(cmd_args.exists("worldname"))
 		commanded_worldname = cmd_args.get("worldname");
-	
+
 	// Strip world.mt from commanded_world
 	{
 		std::string worldmt = "world.mt";
@@ -1056,7 +1051,7 @@ int main(int argc, char *argv[])
 					0, commanded_world.size()-worldmt.size());
 		}
 	}
-	
+
 	// If a world name was specified, convert it to a path
 	if(commanded_worldname != ""){
 		// Get information about available worlds
@@ -1261,7 +1256,7 @@ int main(int argc, char *argv[])
 				++count;
 				if (count % 500 == 0)
 					actionstream << "Migrated " << count << " blocks "
-						<< (100.0 * count / blocks.size()) << "\% completed" << std::endl;
+						<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
 			}
 			new_db->endSave();
 
@@ -1276,7 +1271,7 @@ int main(int argc, char *argv[])
 		}
 
 		server.start(port);
-		
+
 		// Run server
 		dedicated_server_loop(server, kill);
 
@@ -1288,17 +1283,17 @@ int main(int argc, char *argv[])
 	/*
 		More parameters
 	*/
-	
+
 	std::string address = g_settings->get("address");
 	if(commanded_world != "")
 		address = "";
 	else if(cmd_args.exists("address"))
 		address = cmd_args.get("address");
-	
+
 	std::string playername = g_settings->get("name");
 	if(cmd_args.exists("name"))
 		playername = cmd_args.get("name");
-	
+
 	bool skip_main_menu = cmd_args.getFlag("go");
 
 	/*
@@ -1306,7 +1301,7 @@ int main(int argc, char *argv[])
 	*/
 
 	// Resolution selection
-	
+
 	bool fullscreen = g_settings->getBool("fullscreen");
 	u16 screenW = g_settings->getU16("screenW");
 	u16 screenH = g_settings->getU16("screenH");
@@ -1320,7 +1315,7 @@ int main(int argc, char *argv[])
 	// Determine driver
 
 	video::E_DRIVER_TYPE driverType;
-	
+
 	std::string driverstring = g_settings->get("video_driver");
 
 	if(driverstring == "null")
@@ -1427,7 +1422,7 @@ int main(int argc, char *argv[])
 
 	if (device == 0)
 		return 1; // could not create selected driver.
-	
+
 	/*
 		Continue initialization
 	*/
@@ -1442,10 +1437,10 @@ int main(int argc, char *argv[])
 
 	// Create time getter
 	g_timegetter = new IrrlichtTimeGetter(device);
-	
+
 	// Create game callback for menus
 	g_gamecallback = new MainGameCallback(device);
-	
+
 	/*
 		Speed tests (done after irrlicht is loaded to get timer)
 	*/
@@ -1456,7 +1451,7 @@ int main(int argc, char *argv[])
 		device->drop();
 		return 0;
 	}
-	
+
 	device->setResizable(true);
 
 	bool random_input = g_settings->getBool("random_input")
@@ -1466,7 +1461,7 @@ int main(int argc, char *argv[])
 		input = new RandomInputHandler();
 	else
 		input = new RealInputHandler(device, &receiver);
-	
+
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	guienv = device->getGUIEnvironment();
@@ -1481,7 +1476,9 @@ int main(int argc, char *argv[])
 			fallback = "fallback_";
 		u16 font_size = g_settings->getU16(fallback + "font_size");
 		font_path = g_settings->get(fallback + "font_path");
-		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size);
+		u32 font_shadow = g_settings->getU16(fallback + "font_shadow");
+		u32 font_shadow_alpha = g_settings->getU16(fallback + "font_shadow_alpha");
+		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size, true, true, font_shadow, font_shadow_alpha);
 	} else {
 		font = guienv->getFont(font_path.c_str());
 	}
@@ -1496,7 +1493,7 @@ int main(int argc, char *argv[])
 	// If font was not found, this will get us one
 	font = skin->getFont();
 	assert(font);
-	
+
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
 	infostream<<"text_height="<<text_height<<std::endl;
 
@@ -1564,7 +1561,7 @@ int main(int argc, char *argv[])
 				Clear everything from the GUIEnvironment
 			*/
 			guienv->clear();
-			
+
 			/*
 				We need some kind of a root node to be able to add
 				custom gui elements directly on the screen.
@@ -1572,7 +1569,7 @@ int main(int argc, char *argv[])
 			*/
 			guiroot = guienv->addStaticText(L"",
 					core::rect<s32>(0, 0, 10000, 10000));
-			
+
 			SubgameSpec gamespec;
 			WorldSpec worldspec;
 			bool simple_singleplayer_mode = false;
@@ -1596,13 +1593,13 @@ int main(int argc, char *argv[])
 					break;
 				}
 				first_loop = false;
-				
+
 				// Cursor can be non-visible when coming from the game
 				device->getCursorControl()->setVisible(true);
 				// Some stuff are left to scene manager when coming from the game
 				// (map at least?)
 				smgr->clear();
-				
+
 				// Initialize menu data
 				MainMenuData menudata;
 				menudata.address = address;
@@ -1651,7 +1648,7 @@ int main(int argc, char *argv[])
 					infostream<<"Waited for other menus"<<std::endl;
 
 					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata,kill);
-					
+
 					delete temp;
 					//once finished you'll never end up here
 					smgr->clear();
@@ -1682,8 +1679,6 @@ int main(int argc, char *argv[])
 
 				// Save settings
 				g_settings->set("name", playername);
-				g_settings->set("address", address);
-				g_settings->set("port", itos(port));
 
 				if((menudata.selected_world >= 0) &&
 						(menudata.selected_world < (int)worldspecs.size()))
@@ -1693,7 +1688,7 @@ int main(int argc, char *argv[])
 				// Break out of menu-game loop to shut down cleanly
 				if(device->run() == false || kill == true)
 					break;
-				
+
 				current_playername = playername;
 				current_password = password;
 				current_address = address;
@@ -1715,7 +1710,7 @@ int main(int argc, char *argv[])
 					server["description"] = menudata.serverdescription;
 					ServerList::insert(server);
 				}
-				
+
 				// Set world path to selected one
 				if ((menudata.selected_world >= 0) &&
 					(menudata.selected_world < (int)worldspecs.size())) {
@@ -1723,7 +1718,7 @@ int main(int argc, char *argv[])
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;
 				}
-				
+
 				// If local game
 				if(current_address == "")
 				{
@@ -1838,11 +1833,11 @@ int main(int argc, char *argv[])
 #endif
 
 #endif // !SERVER
-	
+
 	// Update configuration file
 	if(g_settings_path != "")
 		g_settings->updateConfigFile(g_settings_path.c_str());
-	
+
 	// Print modified quicktune values
 	{
 		bool header_printed = false;
@@ -1859,10 +1854,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// Stop httpfetch thread (if started)
+	httpfetch_cleanup();
+
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-	
+
 	debugstreams_deinit();
-	
+
 	return retval;
 }
 

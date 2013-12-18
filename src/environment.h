@@ -286,6 +286,7 @@ public:
 	// Script-aware node setters
 	bool setNode(v3s16 p, const MapNode &n);
 	bool removeNode(v3s16 p);
+	bool swapNode(v3s16 p, const MapNode &n);
 	
 	// Find all active objects inside a radius around a point
 	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
@@ -299,7 +300,7 @@ public:
 	void stepAIPlayers(f32 dtime);
 	
 	//check if there's a line of sight between two positions
-	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);
+	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
 
 	u32 getGameTime() { return m_game_time; }
 

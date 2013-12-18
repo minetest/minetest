@@ -46,3 +46,8 @@ setmetatable(minetest.env, {
 		return rawget(table, key)
 	end
 })
+
+function minetest.rollback_get_last_node_actor(pos, range, seconds)
+	return minetest.rollback_get_node_actions(pos, range, seconds, 1)[1]
+end
+

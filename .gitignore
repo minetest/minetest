@@ -31,6 +31,7 @@ CMakeFiles/*
 src/CMakeFiles/*
 src/Makefile
 src/cmake_config.h
+src/cmake_config_githash.h
 src/cmake_install.cmake
 src/script/CMakeFiles/*
 src/script/common/CMakeFiles/*

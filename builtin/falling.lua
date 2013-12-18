@@ -54,19 +54,25 @@ minetest.register_entity("__builtin:falling_node", {
 		local pos = self.object:getpos()
 		local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
 		local bcn = minetest.get_node(bcp)
+		local bcd = minetest.registered_nodes[bcn.name]
 		-- Note: walkable is in the node definition, not in item groups
-		if minetest.registered_nodes[bcn.name] and
-				minetest.registered_nodes[bcn.name].walkable or
-				(minetest.get_node_group(self.node.name, "float") ~= 0 and minetest.registered_nodes[bcn.name].liquidtype ~= "none")
-			then
-			if minetest.registered_nodes[bcn.name].leveled and bcn.name == self.node.name then
+		if not bcd or
+				(bcd.walkable or
+				(minetest.get_node_group(self.node.name, "float") ~= 0 and
+				bcd.liquidtype ~= "none")) then
+			if bcd and bcd.leveled and
+					bcn.name == self.node.name then
 				local addlevel = self.node.level
-				if addlevel == nil or addlevel <= 0 then addlevel = minetest.registered_nodes[bcn.name].leveled end
-				if minetest.env:add_node_level(bcp, addlevel) == 0 then
+				if addlevel == nil or addlevel <= 0 then
+					addlevel = bcd.leveled
+				end
+				if minetest.add_node_level(bcp, addlevel) == 0 then
 					self.object:remove()
 					return
 				end
-			elseif minetest.registered_nodes[bcn.name].buildable_to and (minetest.get_node_group(self.node.name, "float") == 0 or minetest.registered_nodes[bcn.name].liquidtype == "none") then
+			elseif bcd and bcd.buildable_to and
+					(minetest.get_node_group(self.node.name, "float") == 0 or
+					bcd.liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
 			end

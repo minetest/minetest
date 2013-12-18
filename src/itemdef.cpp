@@ -390,16 +390,18 @@ public:
 			/*
 				Make a mesh from the node
 			*/
+			bool reenable_shaders = false;
+			if(g_settings->getBool("enable_shaders")){
+				reenable_shaders = true;
+				g_settings->setBool("enable_shaders",false);
+			}
 			MeshMakeData mesh_make_data(gamedef);
 			MapNode mesh_make_node(id, param1, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data);
-
 			scene::IMesh *node_mesh = mapblock_mesh.getMesh();
 			assert(node_mesh);
 			video::SColor c(255, 255, 255, 255);
-			if(g_settings->getBool("enable_shaders"))
-				c = MapBlock_LightColor(255, 0xffff, decode_light(f.light_source));
 			setMeshColor(node_mesh, c);
 
 			/*
@@ -455,6 +457,9 @@ public:
 
 			//no way reference count can be smaller than 2 in this place!
 			assert(cc->wield_mesh->getReferenceCount() >= 2);
+
+			if (reenable_shaders)
+				g_settings->setBool("enable_shaders",true);
 		}
 
 		// Put in cache
@@ -477,21 +482,24 @@ public:
 		else
 		{
 			// We're gonna ask the result to be put into here
-			ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+
 			// Throw a request in
 			m_get_clientcached_queue.add(name, 0, 0, &result_queue);
 			try{
-				// Wait result for a second
-				GetResult<std::string, ClientCached*, u8, u8>
+				while(true) {
+					// Wait result for a second
+					GetResult<std::string, ClientCached*, u8, u8>
 						result = result_queue.pop_front(1000);
-				// Check that at least something worked OK
-				assert(result.key == name);
-				// Return it
-				return result.item;
+
+					if (result.key == name) {
+						return result.item;
+					}
+				}
 			}
 			catch(ItemNotFoundException &e)
 			{
-				errorstream<<"Waiting for clientcached timed out."<<std::endl;
+				errorstream<<"Waiting for clientcached " << name << " timed out."<<std::endl;
 				return &m_dummy_clientcached;
 			}
 		}
@@ -560,7 +568,7 @@ public:
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
 			assert(def.tool_capabilities != NULL);
-		
+
 		if(m_item_definitions.count(def.name) == 0)
 			m_item_definitions[def.name] = new ItemDefinition(def);
 		else
@@ -638,12 +646,9 @@ public:
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>
 					request = m_get_clientcached_queue.pop();
-			GetResult<std::string, ClientCached*, u8, u8>
-					result;
-			result.key = request.key;
-			result.callers = request.callers;
-			result.item = createClientCachedDirect(request.key, gamedef);
-			request.dest->push_back(result);
+
+			m_get_clientcached_queue.pushResult(request,
+					createClientCachedDirect(request.key, gamedef));
 		}
 #endif
 	}

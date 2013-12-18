@@ -64,9 +64,11 @@ enum RunCallbacksMode
 	// are converted by lua_toboolean to true or false, respectively.
 };
 
-std::string script_get_backtrace   (lua_State *L);
-void        script_error           (lua_State *L, const char *fmt, ...);
-void        script_run_callbacks   (lua_State *L, int nargs,
-                                    RunCallbacksMode mode);
+std::string script_get_backtrace(lua_State *L);
+int script_error_handler(lua_State *L);
+int script_exception_wrapper(lua_State *L, lua_CFunction f);
+void script_error(lua_State *L);
+void script_run_callbacks(lua_State *L, int nargs,
+		RunCallbacksMode mode);
 
 #endif /* C_INTERNAL_H_ */

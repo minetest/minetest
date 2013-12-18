@@ -225,6 +225,7 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
+	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
 	sound_footstep = SimpleSoundSpec();
@@ -292,6 +293,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, liquid_range);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
+	writeU8(os, waving);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -359,6 +361,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
+	waving = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -396,15 +399,16 @@ public:
 		// Set CONTENT_AIR
 		{
 			ContentFeatures f;
-			f.name = "air";
-			f.drawtype = NDT_AIRLIKE;
-			f.param_type = CPT_LIGHT;
-			f.light_propagates = true;
+			f.name                = "air";
+			f.drawtype            = NDT_AIRLIKE;
+			f.param_type          = CPT_LIGHT;
+			f.light_propagates    = true;
 			f.sunlight_propagates = true;
-			f.walkable = false;
-			f.pointable = false;
-			f.diggable = false;
-			f.buildable_to = true;
+			f.walkable            = false;
+			f.pointable           = false;
+			f.diggable            = false;
+			f.buildable_to        = true;
+			f.is_ground_content   = true;
 			// Insert directly into containers
 			content_t c = CONTENT_AIR;
 			m_content_features[c] = f;
@@ -414,16 +418,16 @@ public:
 		// Set CONTENT_IGNORE
 		{
 			ContentFeatures f;
-			f.name = "ignore";
-			f.drawtype = NDT_AIRLIKE;
-			f.param_type = CPT_NONE;
-			f.light_propagates = false;
+			f.name                = "ignore";
+			f.drawtype            = NDT_AIRLIKE;
+			f.param_type          = CPT_NONE;
+			f.light_propagates    = false;
 			f.sunlight_propagates = false;
-			f.walkable = false;
-			f.pointable = false;
-			f.diggable = false;
-			// A way to remove accidental CONTENT_IGNOREs
-			f.buildable_to = true;
+			f.walkable            = false;
+			f.pointable           = false;
+			f.diggable            = false;
+			f.buildable_to        = true; // A way to remove accidental CONTENT_IGNOREs
+			f.is_ground_content   = true;
 			// Insert directly into containers
 			content_t c = CONTENT_IGNORE;
 			m_content_features[c] = f;
@@ -617,6 +621,9 @@ public:
 			}
 
 			bool is_liquid = false;
+			u8 material_type;
+			material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+
 			switch(f->drawtype){
 			default:
 			case NDT_NORMAL:
@@ -668,10 +675,14 @@ public:
 						tiledef[i].name += std::string("^[noalpha");
 					}
 				}
+				if (f->waving == 1)
+					material_type = TILE_MATERIAL_LEAVES;
 				break;
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
+				if (f->waving == 1)
+					material_type = TILE_MATERIAL_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
@@ -682,11 +693,8 @@ public:
 				break;
 			}
 
-			u8 material_type;
 			if (is_liquid)
 				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			else
-				material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){

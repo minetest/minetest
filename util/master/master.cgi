@@ -3,7 +3,7 @@
 =info
 install:
  cpan JSON JSON::XS
- touch list_full list
+ touch list_full list log.log
  chmod a+rw list_full list log.log
 
 freebsd:
@@ -48,6 +48,7 @@ use strict;
 no strict qw(refs);
 use warnings "NONFATAL" => "all";
 no warnings qw(uninitialized);
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
 use utf8;
 use Socket;
 BEGIN {
@@ -72,7 +73,7 @@ our %config = (
     list_full    => $root_path . 'list_full',
     list_pub     => $root_path . 'list',
     log          => $root_path . 'log.log',
-    time_purge   => 86400 * 30,
+    time_purge   => 86400 * 1,
     time_alive   => 650,
     source_check => 1,
     ping_timeout => 3,
@@ -190,11 +191,13 @@ sub request (;$) {
             $param->{$_} = $j->{$_} for keys %$j;
             delete $param->{json};
         }
+        #printlog 'recv', Dumper $param;
         if (%$param) {
             s/^false$// for values %$param;
             $param->{ip} = $r->{REMOTE_ADDR};
             $param->{ip} =~ s/^::ffff://;
             for (@{$config{blacklist}}) {
+                #printlog("blacklist", $param->{ip} ~~ $_) if $config{debug};
                 return if $param->{ip} ~~ $_;
             }
             $param->{address} ||= $param->{ip};
@@ -223,35 +226,52 @@ sub request (;$) {
                     $param->{ping} = $duration if $pingret;
                     printlog " PING t=$config{ping_timeout}, $param->{address}:$param->{port} = ( $pingret, $duration, $ip )" if $config{debug};
                 }
+                return if !$param->{ping};
             }
             my $list = read_json($config{list_full}) || {};
-            printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}};
+            printlog "readed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
             my $listk = {map { $_->{key} => $_ } @{$list->{list}}};
             my $old = $listk->{$param->{key}};
             $param->{time} = $old->{time} if $param->{off};
             $param->{time} ||= int time;
             $param->{start} = $param->{action} ~~ 'start' ? $param->{time} : $old->{start} || $param->{time};
             delete $param->{start} if $param->{off};
+            $param->{clients} ||= scalar @{$param->{clients_list}} if ref $param->{clients_list} eq 'ARRAY';
             $param->{first} ||= $old->{first} || $old->{time} || $param->{time};
             $param->{clients_top} = $old->{clients_top} if $old->{clients_top} > $param->{clients};
             $param->{clients_top} ||= $param->{clients} || 0;
             # params reported once on start, must be same as src/serverlist.cpp:~221 if(server["action"] == "start") { ...
-            for (qw(dedicated rollback liquid_finite mapgen mods)) {
+            for (qw(dedicated rollback liquid_finite mapgen mods privs)) {
                 $param->{$_} ||= $old->{$_} if $old->{$_} and !($param->{action} ~~ 'start');
             }
+            $param->{pop_n} = $old->{pop_n} + 1;
+            $param->{pop_c} = $old->{pop_c} + $param->{clients};
+            $param->{pop_v} = $param->{pop_c} / $param->{pop_n};
             delete $param->{action};
             $listk->{$param->{key}} = $param;
-            #printlog Dumper $param;
-            $list->{list} = [grep { $_->{time} > time - $config{time_purge} } values %$listk];
-            file_rewrite($config{list_full}, JSON->new->encode($list));
-            printlog "writed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
+            #printlog 'write', Dumper $param if $config{debug};
+            my $list_full = [grep { $_->{time} > time - $config{time_purge} } values %$listk];
+
             $list->{list} = [
                 sort { $b->{clients} <=> $a->{clients} || $a->{start} <=> $b->{start} }
                   grep { $_->{time} > time - $config{time_alive} and !$_->{off} and (!$config{ping} or !$config{pingable} or $_->{ping}) }
-                  @{$list->{list}}
+                  @{$list_full}
             ];
+            $list->{total} = {clients => 0, servers => 0};
+            for (@{$list->{list}}) {
+                $list->{total}{clients} += $_->{clients};
+                ++$list->{total}{servers};
+            }
+            $list->{total_max}{clients} = $list->{total}{clients} if $list->{total_max}{clients} < $list->{total}{clients};
+            $list->{total_max}{servers} = $list->{total}{servers} if $list->{total_max}{servers} < $list->{total}{servers};
+
             file_rewrite($config{list_pub}, JSON->new->encode($list));
             printlog "writed[$config{list_pub}] list size=", scalar @{$list->{list}} if $config{debug};
+
+            $list->{list} = $list_full;
+            file_rewrite($config{list_full}, JSON->new->encode($list));
+            printlog "writed[$config{list_full}] list size=", scalar @{$list->{list}} if $config{debug};
+
         }
     };
     return [200, ["Content-type", "application/json"], [JSON->new->encode({})]], $after;

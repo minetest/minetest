@@ -450,11 +450,11 @@ struct ConnectionEvent
 			return "CONNEVENT_NONE";
 		case CONNEVENT_DATA_RECEIVED:
 			return "CONNEVENT_DATA_RECEIVED";
-		case CONNEVENT_PEER_ADDED: 
+		case CONNEVENT_PEER_ADDED:
 			return "CONNEVENT_PEER_ADDED";
-		case CONNEVENT_PEER_REMOVED: 
+		case CONNEVENT_PEER_REMOVED:
 			return "CONNEVENT_PEER_REMOVED";
-		case CONNEVENT_BIND_FAILED: 
+		case CONNEVENT_BIND_FAILED:
 			return "CONNEVENT_BIND_FAILED";
 		}
 		return "Invalid ConnectionEvent";
@@ -544,7 +544,7 @@ struct ConnectionCommand
 	}
 };
 
-class Connection: public SimpleThread
+class Connection: public JThread
 {
 public:
 	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6);

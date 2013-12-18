@@ -334,7 +334,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
-			if(i==6){
+			if(i==CF_SPECIAL_COUNT){
 				lua_pop(L, 1);
 				break;
 			}
@@ -427,6 +427,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);
  	lua_pop(L, 1);
+
+	f.waving = getintfield_default(L, index,
+			"waving", f.waving);
 
 	// Set to true if paramtype used to be 'facedir_simple'
 	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
@@ -650,7 +653,7 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	}
 	else
 	{
-		throw LuaError(L, "Expecting itemstack, itemstring, table or nil");
+		throw LuaError(NULL, "Expecting itemstack, itemstring, table or nil");
 	}
 }
 
@@ -871,23 +874,13 @@ void read_groups(lua_State *L, int index,
 /******************************************************************************/
 void push_items(lua_State *L, const std::vector<ItemStack> &items)
 {
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
 	// Create and fill table
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(u32 i=0; i<items.size(); i++){
-		ItemStack item = items[i];
-		lua_pushvalue(L, table_insert);
-		lua_pushvalue(L, table);
-		LuaItemStack::create(L, item);
-		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
+	lua_createtable(L, items.size(), 0);
+	std::vector<ItemStack>::const_iterator iter = items.begin();
+	for (u32 i = 0; iter != items.end(); iter++) {
+		LuaItemStack::create(L, *iter);
+		lua_rawseti(L, -2, ++i);
 	}
-	lua_remove(L, -2); // Remove table
-	lua_remove(L, -2); // Remove insert
 }
 
 /******************************************************************************/
@@ -1088,3 +1081,52 @@ bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
 	else
 		return false;
 }
+
+// Converts Lua table --> JSON
+void get_json_value(lua_State *L, Json::Value &root, int index)
+{
+	int type = lua_type(L, index);
+	if (type == LUA_TBOOLEAN) {
+		root = (bool) lua_toboolean(L, index);
+	} else if (type == LUA_TNUMBER) {
+		root = lua_tonumber(L, index);
+	} else if (type == LUA_TSTRING) {
+		size_t len;
+		const char *str = lua_tolstring(L, index, &len);
+		root = std::string(str, len);
+	} else if (type == LUA_TTABLE) {
+		lua_pushnil(L);
+		while (lua_next(L, index)) {
+			// Key is at -2 and value is at -1
+			Json::Value value;
+			get_json_value(L, value, lua_gettop(L));
+
+			Json::ValueType roottype = root.type();
+			int keytype = lua_type(L, -1);
+			if (keytype == LUA_TNUMBER) {
+				lua_Number key = lua_tonumber(L, -1);
+				if (roottype != Json::nullValue && roottype != Json::arrayValue) {
+					throw LuaError(NULL, "Can't mix array and object values in JSON");
+				} else if (key < 1) {
+					throw LuaError(NULL, "Can't use zero-based or negative indexes in JSON");
+				} else if (floor(key) != key) {
+					throw LuaError(NULL, "Can't use indexes with a fractional part in JSON");
+				}
+				root[(Json::ArrayIndex) key - 1] = value;
+			} else if (keytype == LUA_TSTRING) {
+				if (roottype != Json::nullValue && roottype != Json::objectValue) {
+					throw LuaError(NULL, "Can't mix array and object values in JSON");
+				}
+				root[lua_tostring(L, -1)] = value;
+			} else {
+				throw LuaError(NULL, "Lua key to convert to JSON is not a string or number");
+			}
+		}
+	} else if (type == LUA_TNIL) {
+		root = Json::nullValue;
+	} else {
+		throw LuaError(NULL, "Can only store booleans, numbers, strings, objects, arrays, and null in JSON");
+	}
+	lua_pop(L, 1); // Pop value
+}
+

@@ -206,7 +206,6 @@ JMutex g_debug_stacks_mutex;
 
 void debug_stacks_init()
 {
-	g_debug_stacks_mutex.Init();
 }
 
 void debug_stacks_print_to(std::ostream &os)
