@@ -50,6 +50,7 @@ class ServerMap;
 class ClientMap;
 class GameScripting;
 class Player;
+class AIPlayer;
 
 class Environment
 {
@@ -103,6 +104,8 @@ public:
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::list<Player*> m_players;
+	// AI players
+	std::list<AIPlayer*> m_ai_players;	
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
@@ -292,6 +295,8 @@ public:
 	
 	// This makes stuff happen
 	void step(f32 dtime);
+
+	void stepAIPlayers(f32 dtime);
 	
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0);

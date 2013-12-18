@@ -43,6 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "util/serialize.h"
 
+#include "aiplayer.h"
+
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 Environment::Environment():
@@ -1034,6 +1036,27 @@ void ServerEnvironment::clearAllObjects()
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
 			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
+}
+
+void ServerEnvironment::stepAIPlayers(float dtime)
+{
+	/* Handle AI
+	*/
+	{
+		ScopeProfiler sp(g_profiler, "SEnv: handle AI avg", SPT_AVG);
+		for(std::list<AIPlayer*>::iterator i = m_ai_players.begin();
+				i != m_ai_players.end(); ++i)
+		{
+			AIPlayer* aiPlayer = *i;
+			
+			// Ignore disconnected players
+			if(aiPlayer->getActiveStatus() == AI_PLAYER_NOT_ACTIVE)
+				continue;
+			
+			// Move
+			aiPlayer->step(dtime);
+		}
+	}
 }
 
 void ServerEnvironment::step(float dtime)

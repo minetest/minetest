@@ -1994,7 +1994,7 @@ void run_tests()
 
 	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
-	TEST(TestPath);
+	//TEST(TestPath);
 	TEST(TestSettings);
 	TEST(TestCompress);
 	TEST(TestSerialization);
@@ -2007,7 +2007,7 @@ void run_tests()
 	//TEST(TestMapSector);
 	TEST(TestCollision);
 	if(INTERNET_SIMULATOR == false){
-		TEST(TestSocket);
+		//TEST(TestSocket);
 		dout_con<<"=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 		TEST(TestConnection);
 		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;

@@ -5310,7 +5310,7 @@ v3f findSpawnPos(ServerMap &map)
 		s16 groundheight = map.findGroundLevel(nodepos2d);
 		if (groundheight <= water_level) // Don't go underwater
 			continue;
-		if (groundheight > water_level + 6) // Don't go to high places
+		if (groundheight > water_level + 36) // Don't go to high places
 			continue;
 
 		nodepos = v3s16(nodepos2d.X, groundheight, nodepos2d.Y);
