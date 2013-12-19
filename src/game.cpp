@@ -1215,6 +1215,12 @@ void the_game(
 				break;
 			}
 			// Break conditions
+			if(client.accessDenied()){
+				error_message = L"Access denied. Reason: "
+						+client.accessDeniedReason();
+				errorstream<<wide_to_narrow(error_message)<<std::endl;
+				break;
+			}
 			if(!client.connectedAndInitialized()){
 				error_message = L"Client disconnected";
 				errorstream<<wide_to_narrow(error_message)<<std::endl;
