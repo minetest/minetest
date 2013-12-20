@@ -171,6 +171,7 @@ void set_default_settings(Settings *settings)
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
+	settings->setDefault("workaround_window_size","5");
 	settings->setDefault("port", "30000");
 	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");

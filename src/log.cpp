@@ -93,6 +93,7 @@ static std::string get_lev_string(enum LogMessageLevel lev)
 
 void log_printline(enum LogMessageLevel lev, const std::string &text)
 {
+	log_threadnamemutex.Lock();
 	std::string threadname = "(unknown thread)";
 	std::map<threadid_t, std::string>::const_iterator i;
 	i = log_threadnames.find(get_current_thread_id());
@@ -108,6 +109,7 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 		out->printLog(os.str(), lev);
 		out->printLog(lev, text);
 	}
+	log_threadnamemutex.Unlock();
 }
 
 class Logbuf : public std::streambuf
