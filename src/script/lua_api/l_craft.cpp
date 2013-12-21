@@ -410,11 +410,11 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 			lua_newtable(L);
 			lua_newtable(L); // items
 			std::vector<ItemStack>::const_iterator iter = input.items.begin();
-			for (u16 j = 0; iter != input.items.end(); iter++) {
+			for (u16 j = 1; iter != input.items.end(); iter++, j++) {
 				if (iter->empty())
 					continue;
 				lua_pushstring(L, iter->name.c_str());
-				lua_rawseti(L, -2, ++j);
+				lua_rawseti(L, -2, j);
 			}
 			lua_setfield(L, -2, "items");
 			setintfield(L, -1, "width", input.width);
