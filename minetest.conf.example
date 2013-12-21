@@ -173,9 +173,9 @@
 # Set to true enables parallax occlusion mapping. Requires shaders enabled.
 #enable_parallax_occlusion = false
 # Scale of parallax occlusion effect
-#parallax_mapping_scale = 0.08
+#parallax_occlusion_scale = 0.08
 # Bias of parallax occlusion effect, usually scale/2
-#parallax_mapping_scale = 0.04
+#parallax_occlusion_bias = 0.04
 # Set to true enables waving water. Requires shaders enabled.
 #enable_waving_water = false
 # Parameters for waving water:
