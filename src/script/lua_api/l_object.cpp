@@ -43,7 +43,8 @@ struct EnumString es_HudElementType[] =
 
 struct EnumString es_HudElementStat[] =
 {
-	{HUD_STAT_POS,    "pos"},
+	{HUD_STAT_POS,    "position"},
+	{HUD_STAT_POS,    "pos"}, /* Deprecated, only for compatibility's sake */
 	{HUD_STAT_NAME,   "name"},
 	{HUD_STAT_SCALE,  "scale"},
 	{HUD_STAT_TEXT,   "text"},
