@@ -37,6 +37,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "mapgen_v6.h"
 
+#define		ISLE_SIZE			64
+#define		ISROOTINT			4096
+#define		ISROOT				4096.0f
+#define		ISLE_MAX_HEIGHT	    7 - AVERAGE_MUD_AMOUNT
+//below water level
+#define		ISLE_SEA_BED		24
+
 /////////////////// Mapgen V6 perlin noise default values
 NoiseParams nparams_v6_def_terrain_base =
 	{-AVERAGE_MUD_AMOUNT, 20.0, v3f(250.0, 250.0, 250.0), 82341, 5, 0.6};
@@ -418,6 +425,9 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 	// Generate general ground level to full area
 	stone_surface_max_y = generateGround();
 
+	flags &= ~MG_CAVES;
+	flags &= ~MG_DUNGEONS;
+
 	generateExperimental();
 
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
@@ -558,8 +568,29 @@ int MapgenV6::generateGround() {
 	
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		// Surface height
-		s16 surface_y = (s16)baseTerrainLevelFromMap(index);
+
+		s16 surface_y = water_level - 2; 
+
+		// limit map size to single finite island
+		float rs = float(z * z + x * x);
+		if ( rs < ISROOT * 2 ) {
+			// Surface height
+			surface_y = (s16)baseTerrainLevelFromMap(index);
+
+			if (surface_y > ISLE_MAX_HEIGHT ) {
+				surface_y = ISLE_MAX_HEIGHT;
+			}
+
+			float ratio = (ISROOT - float(rs)) / ISROOT;
+			surface_y -= s16(( 1.0f - ratio) * (ISLE_MAX_HEIGHT + 1));
+
+			if (surface_y < water_level - ISLE_SEA_BED) {
+				surface_y = water_level - ISLE_SEA_BED;
+			}
+
+		} else {
+			surface_y = water_level - ISLE_SEA_BED;
+		}
 		
 		// Log it
 		if (surface_y > stone_surface_max_y)
@@ -599,6 +630,12 @@ void MapgenV6::addMud() {
 	u32 index = 0;
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+
+		//limit map size
+		if (z * z + x * x > ISROOTINT) {
+			continue;
+		}
+
 		// Randomize mud amount
 		s16 mud_add_amount = getMudAmount(index) / 2.0 + 0.5;
 
