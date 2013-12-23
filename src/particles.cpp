@@ -221,7 +221,7 @@ void allparticles_step (float dtime, ClientEnvironment &env)
 		{
 			(*i)->remove();
 			delete *i;
-			all_particles.erase(i);
+			i = all_particles.erase(i);
 		}
 		else
 		{
@@ -375,7 +375,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment &env)
 					m_texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0));
-				m_spawntimes.erase(i);
+				i = m_spawntimes.erase(i);
 			}
 			else
 			{
@@ -462,6 +462,6 @@ void clear_particles ()
 	{
 		(*i)->remove();
 		delete *i;
-		all_particles.erase(i);
-	}	
+		i = all_particles.erase(i);
+	}
 }
