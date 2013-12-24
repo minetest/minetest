@@ -169,6 +169,8 @@ void SGUITTGlyph::preload(u32 char_index, FT_Face face, video::IVideoDriver* dri
 
 	glyph_page = parent->getLastGlyphPageIndex();
 	u32 texture_side_length = page->texture->getOriginalSize().Width;
+	if (!texture_side_length)
+		texture_side_length = 255;
 	core::vector2di page_position(
 		(page->used_slots % (texture_side_length / font_size)) * font_size,
 		(page->used_slots / (texture_side_length / font_size)) * font_size

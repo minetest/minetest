@@ -812,7 +812,7 @@ public:
 		services->setVertexShaderConstant("animationTimer", &animation_timer_f, 1);
 
 		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
-		v3f eye_position = player->getEyePosition(); 
+		v3f eye_position = player->getEyePosition();
 		services->setPixelShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 		services->setVertexShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 
@@ -1338,7 +1338,8 @@ void the_game(
 	{
 		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
-		crack_animation_length = size.Y / size.X;
+		if (size.X)
+			crack_animation_length = size.Y / size.X;
 	}
 
 	/*
@@ -1868,12 +1869,12 @@ void the_game(
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
-			irr::video::IImage* const image = driver->createScreenShot(); 
-			if (image) { 
-				irr::c8 filename[256]; 
-				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png", 
+			irr::video::IImage* const image = driver->createScreenShot();
+			if (image) {
+				irr::c8 filename[256];
+				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png",
 						 g_settings->get("screenshot_path").c_str(),
-						 device->getTimer()->getRealTime()); 
+						 device->getTimer()->getRealTime());
 				if (driver->writeImageToFile(image, filename)) {
 					std::wstringstream sstr;
 					sstr<<"Saved screenshot to '"<<filename<<"'";
@@ -1883,8 +1884,8 @@ void the_game(
 				} else{
 					infostream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
 				}
-				image->drop(); 
-			}			 
+				image->drop();
+			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
@@ -2252,7 +2253,7 @@ void the_game(
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
 					GUIDeathScreen *menu =
-							new GUIDeathScreen(guienv, guiroot, -1, 
+							new GUIDeathScreen(guienv, guiroot, -1,
 								&g_menumgr, respawner);
 					menu->drop();
 					
@@ -2744,7 +2745,7 @@ void the_game(
 				
 				// Sign special case, at least until formspec is properly implemented.
 				// Deprecated?
-				if(meta && meta->getString("formspec") == "hack:sign_text_input" 
+				if(meta && meta->getString("formspec") == "hack:sign_text_input"
 						&& !random_input
 						&& !input->isKeyDown(getKeySetting("keymap_sneak")))
 				{
@@ -3208,7 +3209,7 @@ void the_game(
 
 				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_RED;
 				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
-				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX + 
+				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
 															 irr::scene::ESNRP_SOLID +
 															 irr::scene::ESNRP_TRANSPARENT +
 															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
