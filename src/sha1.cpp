@@ -146,7 +146,7 @@ void SHA1::process()
 void SHA1::addBytes( const char* data, int num )
 {
 	assert( data );
-	assert( num > 0 );
+	assert( num >= 0 );
 	// add these bytes to the running total
 	size += num;
 	// repeat until all data is processed
