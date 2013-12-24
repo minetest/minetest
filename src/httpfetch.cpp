@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "socket.h" // for select()
+#include "porting.h" // for sleep_ms()
 #include "httpfetch.h"
 #include <iostream>
 #include <sstream>
@@ -520,19 +521,26 @@ protected:
 			select_timeout = timeout;
 
 		if (select_timeout > 0) {
-			select_tv.tv_sec = select_timeout / 1000;
-			select_tv.tv_usec = (select_timeout % 1000) * 1000;
-			int retval = select(max_fd + 1, &read_fd_set,
-					&write_fd_set, &exc_fd_set,
-					&select_tv);
-			if (retval == -1) {
-				#ifdef _WIN32
-				errorstream<<"select returned error code "
-					<<WSAGetLastError()<<std::endl;
-				#else
-				errorstream<<"select returned error code "
-					<<errno<<std::endl;
-				#endif
+			// in Winsock it is forbidden to pass three empty
+			// fd_sets to select(), so in that case use sleep_ms
+			if (max_fd == -1) {
+				select_tv.tv_sec = select_timeout / 1000;
+				select_tv.tv_usec = (select_timeout % 1000) * 1000;
+				int retval = select(max_fd + 1, &read_fd_set,
+						&write_fd_set, &exc_fd_set,
+						&select_tv);
+				if (retval == -1) {
+					#ifdef _WIN32
+					errorstream<<"select returned error code "
+						<<WSAGetLastError()<<std::endl;
+					#else
+					errorstream<<"select returned error code "
+						<<errno<<std::endl;
+					#endif
+				}
+			}
+			else {
+				sleep_ms(select_timeout);
 			}
 		}
 	}
