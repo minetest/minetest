@@ -1479,6 +1479,11 @@ void the_game(
 
 	bool use_weather = g_settings->getBool("weather");
 
+	core::stringw str = L"Minetest [";
+	str += driver->getName();
+	str += "]";
+	device->setWindowCaption(str.c_str());
+
 	for(;;)
 	{
 		if(device->run() == false || kill == true)
@@ -2990,10 +2995,13 @@ void the_game(
 			scenetime_avg = scenetime_avg * 0.95 + (float)scenetime*0.05;
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
-			
+
+			u16 fps = (1.0/dtime_avg1);
+
 			std::ostringstream os(std::ios_base::binary);
 			os<<std::fixed
 				<<"Minetest "<<minetest_version_hash
+				<<" FPS = "<<fps
 				<<" (R: range_all="<<draw_control.range_all<<")"
 				<<std::setprecision(0)
 				<<" drawtime = "<<drawtime_avg
@@ -3381,21 +3389,6 @@ void the_game(
 		/*
 			End of drawing
 		*/
-
-		static s16 lastFPS = 0;
-		//u16 fps = driver->getFPS();
-		u16 fps = (1.0/dtime_avg1);
-
-		if (lastFPS != fps)
-		{
-			core::stringw str = L"Minetest [";
-			str += driver->getName();
-			str += "] FPS=";
-			str += fps;
-
-			device->setWindowCaption(str.c_str());
-			lastFPS = fps;
-		}
 
 		/*
 			Log times and stuff for visualization
