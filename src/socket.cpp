@@ -546,7 +546,10 @@ bool UDPSocket::WaitData(int timeout_ms)
 
 	if(result == 0)
 		return false;
-	else if(result < 0 && errno == EINTR)
+	else if(result < 0 && (errno == EINTR || errno == EBADF))
+		// N.B. select() fails when sockets are destroyed on Connection's dtor
+		// with EBADF.  Instead of doing tricky synchronization, allow this
+		// thread to exit but don't throw an exception.
 		return false;
 	else if(result < 0)
 	{
@@ -557,9 +560,9 @@ bool UDPSocket::WaitData(int timeout_ms)
 		int e = WSAGetLastError();
 		dstream << (int) m_handle << ": WSAGetLastError()="
 		        << e << std::endl;
-		if(e == 10004 /* = WSAEINTR */)
+		if(e == 10004 /* = WSAEINTR */ || e == 10009 /*WSAEBADF*/)
 		{
-			dstream << "WARNING: Ignoring WSAEINTR." << std::endl;
+			dstream << "WARNING: Ignoring WSAEINTR/WSAEBADF." << std::endl;
 			return false;
 		}
 #endif
