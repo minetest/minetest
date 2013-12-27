@@ -433,6 +433,47 @@ minetest_client_commands[0x38] = { "RESPAWN", 2 }
 
 
 
+-- TOSERVER_INTERACT
+
+minetest_client_commands[0x39] = { "TOSERVER_INTERACT", 2 }
+
+
+
+-- TOSERVER_REMOVED_SOUNDS
+
+minetest_client_commands[0x3a] = { "TOSERVER_REMOVED_SOUNDS", 2 }
+
+
+
+-- TOSERVER_NODEMETA_FIELDS
+
+minetest_client_commands[0x3b] = { "TOSERVER_NODEMETA_FIELDS", 2 }
+
+
+
+-- TOSERVER_INVENTORY_FIELDS
+
+minetest_client_commands[0x3c] = { "TOSERVER_INVENTORY_FIELDS", 2 }
+
+
+
+-- TOSERVER_REQUEST_MEDIA
+
+minetest_client_commands[0x40] = { "TOSERVER_REQUEST_MEDIA", 2 }
+
+
+
+-- TOSERVER_RECEIVED_MEDIA
+
+minetest_client_commands[0x41] = { "TOSERVER_RECEIVED_MEDIA", 2 }
+
+
+
+-- TOSERVER_BREATH
+
+minetest_client_commands[0x42] = { "TOSERVER_BREATH", 2 }
+
+
 
 --------------------------------------------
 -- Part 2                                 --
@@ -974,9 +1015,71 @@ do
 	}
 end
 
+-- TOCLIENT_MEDIA
+minetest_server_commands[0x38] = { "TOCLIENT_MEDIA",2 }
 
+--TOCLIENT_TOOLDEF
+minetest_server_commands[0x39] = { "TOCLIENT_TOOLDEF",2 }
 
+--TOCLIENT_NODEDEF
+minetest_server_commands[0x3a] = { "TOCLIENT_NODEDEF",2 }
 
+--TOCLIENT_CRAFTITEMDEF
+minetest_server_commands[0x3b] = { "TOCLIENT_CRAFTITEMDEF",2 }
+
+--TOCLIENT_ANNOUNCE_MEDIA
+minetest_server_commands[0x3c] = { "TOCLIENT_ANNOUNCE_MEDIA",2 }
+
+--TOCLIENT_ITEMDEF
+minetest_server_commands[0x3d] = { "TOCLIENT_ITEMDEF",2 }
+
+--TOCLIENT_PLAY_SOUND
+minetest_server_commands[0x3f] = { "TOCLIENT_PLAY_SOUND",2 }
+
+--TOCLIENT_STOP_SOUND
+minetest_server_commands[0x40] = { "TOCLIENT_STOP_SOUND",2 }
+
+--TOCLIENT_PRIVILEGES
+minetest_server_commands[0x41] = { "TOCLIENT_PRIVILEGES",2 }
+
+--TOCLIENT_INVENTORY_FORMSPEC
+minetest_server_commands[0x42] = { "TOCLIENT_INVENTORY_FORMSPEC",2 }
+
+--TOCLIENT_DETACHED_INVENTORY
+minetest_server_commands[0x43] = { "TOCLIENT_DETACHED_INVENTORY",2 }
+
+--TOCLIENT_SHOW_FORMSPEC
+minetest_server_commands[0x44] = { "TOCLIENT_SHOW_FORMSPEC",2 }
+
+--TOCLIENT_MOVEMENT
+minetest_server_commands[0x45] = { "TOCLIENT_MOVEMENT",2 }
+
+--TOCLIENT_SPAWN_PARTICLE
+minetest_server_commands[0x46] = { "TOCLIENT_SPAWN_PARTICLE",2 }
+
+--TOCLIENT_ADD_PARTICLESPAWNER
+minetest_server_commands[0x47] = { "TOCLIENT_ADD_PARTICLESPAWNER",2 }
+
+--TOCLIENT_DELETE_PARTICLESPAWNER
+minetest_server_commands[0x48] = { "TOCLIENT_DELETE_PARTICLESPAWNER",2 }
+
+--TOCLIENT_HUDADD
+minetest_server_commands[0x49] = { "TOCLIENT_HUDADD",2 }
+
+--TOCLIENT_HUDRM
+minetest_server_commands[0x4a] = { "TOCLIENT_HUDRM",2 }
+
+--TOCLIENT_HUDCHANGE
+minetest_server_commands[0x4b] = { "TOCLIENT_HUDCHANGE",2 }
+
+--TOCLIENT_HUD_SET_FLAGS
+minetest_server_commands[0x4c] = { "TOCLIENT_HUD_SET_FLAGS",2 }
+
+--TOCLIENT_HUD_SET_PARAM
+minetest_server_commands[0x4d] = { "TOCLIENT_HUD_SET_PARAM",2 }
+
+--TOCLIENT_BREATH
+minetest_server_commands[0x4e] = { "TOCLIENT_BREATH",2 }
 ------------------------------------
 -- Part 3                         --
 -- Wrapper protocol subdissectors --
@@ -991,7 +1094,9 @@ do
 		[0] = "Ack",
 		[1] = "Set Peer ID",
 		[2] = "Ping",
-		[3] = "Disco"
+		[3] = "Disco",
+		[4] = "Enable large send window",
+		[5] = "not supported on UDP"
 	}
 
 	local f_control_type = ProtoField.uint8("minetest.control.type", "Control Type", base.DEC, vs_control_type)
@@ -1022,9 +1127,65 @@ do
 			pinfo.cols.info = "Ping"
 		elseif buffer(0,1):uint() == 3 then
 			pinfo.cols.info = "Disco"
+		elseif buffer(0,1):uint() == 4 then
+			pinfo.cols.info = "Enable large send window"
+		elseif buffer(0,1):uint() == 5 then
+			pinfo.cols.info = "not supported on UDP"
 		end
-
+		
 		data_dissector:call(buffer(pos):tvb(), pinfo, tree)
+	end
+end
+
+-- minetest.control dissector
+
+do
+	local p_control = Proto("minetest_tcp.control", "Minetest Control TCP")
+
+	local vs_control_type = {
+		[0] = "not supported on TCP",
+		[1] = "Set Peer ID",
+		[2] = "Ping",
+		[3] = "Disco",
+		[4] = "not supported on TCP",
+		[5] = "Ping reply"
+	}
+
+	local f_control_type = ProtoField.uint8("minetest.control.type", "Control Type", base.DEC, vs_control_type)
+	local f_control_ack = ProtoField.uint16("minetest.control.ack", "ACK sequence number", base.DEC)
+	local f_control_peerid = ProtoField.uint8("minetest.control.peerid", "New peer ID", base.DEC)
+	p_control.fields = { f_control_type, f_control_ack, f_control_peerid }
+
+	local data_dissector = Dissector.get("data")
+
+	function p_control.dissector(buffer, pinfo, tree)
+		local t = tree:add(p_control, buffer(0,1))
+		t:add(f_control_type, buffer(0,1))
+
+		pinfo.cols.info = "Control message"
+
+		local pos = 1
+		if buffer(0,1):uint() == 0 then
+			pos = 3
+			t:set_len(3)
+			t:add(f_control_ack, buffer(1,2))
+			pinfo.cols.info = "Ack " .. buffer(1,2):uint()
+		elseif buffer(0,1):uint() == 1 then
+			pos = 3
+			t:set_len(3)
+			t:add(f_control_peerid, buffer(1,2))
+			pinfo.cols.info = "Set peer ID " .. buffer(1,2):uint()
+		elseif buffer(0,1):uint() == 2 then
+			pinfo.cols.info = "Ping"
+		elseif buffer(0,1):uint() == 3 then
+			pinfo.cols.info = "Disco"
+		elseif buffer(0,1):uint() == 4 then
+			pinfo.cols.info = "not supported on TCP"
+		elseif buffer(0,1):uint() == 5 then
+			pinfo.cols.info = "Ping reply"
+		end
+		
+		data_dissector:call(buffer(pos,buffer:len()-pos-1):tvb(), pinfo, tree)
 	end
 end
 
@@ -1145,7 +1306,7 @@ do
 		t:add(f_split_chunkcount, buffer(2,2))
 		t:add(f_split_chunknum, buffer(4,2))
 		t:add(f_split_data, buffer(6))
-		pinfo.cols.info:append(" " .. buffer(0,2):uint() .. " chunk " .. buffer(4,2):uint() .. "/" .. buffer(2,2):uint())
+		pinfo.cols.info:append(" " .. buffer(0,2):uint() .. " chunk " .. buffer(4,2):uint()+1 .. "/" .. buffer(2,2):uint())
 	end
 end
 
@@ -1161,6 +1322,7 @@ end
 
 do
 	local p_minetest = Proto("minetest", "Minetest")
+	local p_minetest_tcp = Proto("minetest_tcp", "Minetest TCP")
 
 	local minetest_id = 0x4f457403
 	local vs_id = {
@@ -1187,9 +1349,19 @@ do
 	local f_subtype = ProtoField.uint8("minetest.subtype", "Subtype", base.DEC, vs_type)
 
 	p_minetest.fields = { f_id, f_peer, f_channel, f_type, f_seq, f_subtype }
+	
+	
+	local f_id_tcp = ProtoField.uint32("minetest_tcp.id", "ID", base.HEX, vs_id)
+	local f_peer_tcp = ProtoField.uint16("minetest_tcp.peer", "Peer", base.DEC, vs_peer)
+	local f_channel_tcp = ProtoField.uint8("minetest_tcp.channel", "Channel", base.DEC)
+	local f_type_tcp = ProtoField.uint8("minetest_tcp.type", "Type", base.DEC, vs_type)
+	local f_subtype_tcp = ProtoField.uint8("minetest_tcp.subtype", "Subtype", base.DEC, vs_type)
+	
+	p_minetest_tcp.fields = { f_id_tcp, f_peer_tcp, f_channel_tcp, f_type_tcp, f_subtype_tcp }
 
 	local data_dissector = Dissector.get("data")
 	local control_dissector = Dissector.get("minetest.control")
+	local control_dissector_tcp = Dissector.get("minetest_tcp.control")
 	local client_dissector = Dissector.get("minetest.client")
 	local server_dissector = Dissector.get("minetest.server")
 	local split_dissector = Dissector.get("minetest.split")
@@ -1256,10 +1428,69 @@ do
 		pinfo.cols.info:append(" (" .. reliability_info .. ")")
 
 	end
+	
+	function p_minetest_tcp.dissector(buffer, pinfo, tree)
+	  -- Add Minetest tree item and verify the ID
+	  local t = tree:add(p_minetest_tcp, buffer(1,8))
+	  t:add(f_id, buffer(1,4))
+	  if buffer(1,4):uint() ~= minetest_id then
+		  t:add_expert_info(PI_UNDECODED, PI_WARN, "Invalid ID, this is not a Minetest packet")
+		  return
+	  end
+	  
+	  -- ID is valid, so replace packet's shown protocol
+	  pinfo.cols.protocol = "Minetest TCP"
+	  pinfo.cols.info = "Minetest TCP"
+	  
+	  local escape_offset = 0
+	  
+	  -- Set the other header fields	  
+	  local peer_id = buffer(escape_offset + 5,2):uint()
+	  if (buffer(escape_offset + 5,1):uint() == 0xEE) then
+	    escape_offset = escape_offset +1
+	    peer_id = buffer(escape_offset + 5,2):uint()
+	    if (buffer(escape_offset + 6,1):uint() == 0xEE) then
+	      escape_offset = escape_offset +1
+	      peer_id = peer_id - 0xEE
+	      peer_id = peer_id + buffer(escape_offset + 6,1):uint()
+	    end
+	  end
+	  
+	  t:add(f_peer, peer_id )
+	  t:add(f_channel, buffer(escape_offset + 7,1))
+	  t:add(f_type, buffer(escape_offset + 8,1))
+	  t:set_text("Minetest, Peer: " .. peer_id .. ", Channel: " .. buffer(escape_offset +7,1):uint())
+	  
+	  if buffer:len() < (escape_offset + 8) then
+	    return 0
+	  end
+	  
+	  if buffer(escape_offset + 8,1):uint() == 0 then
+	    control_dissector_tcp:call(buffer(escape_offset + 9):tvb(), pinfo, tree)
+	    
+	  elseif buffer(escape_offset + 8,1):uint() == 1 then
+	    if peer_id ~= 1 then
+	       client_dissector:call(buffer(escape_offset +9):tvb(), pinfo, tree)
+	    else
+	      server_dissector:call(buffer(escape_offset +9):tvb(), pinfo, tree)  
+	    end
+	  end
+	  
+	  
+	  --TODO handle end of packet
+	  --TODO handle multiple packets
+	  if buffer( buffer:len()-1,1):uint() ~= 0xbb then
+	    pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
+	  end
+	  
+	  return
+	end
 
 	-- FIXME Is there a way to let the dissector table check if the first payload bytes are 0x4f457403?
 	DissectorTable.get("udp.port"):add(30000, p_minetest)
 	DissectorTable.get("udp.port"):add(30001, p_minetest)
+	
+	DissectorTable.get("tcp.port"):add(30000, p_minetest_tcp)
 end
 
 

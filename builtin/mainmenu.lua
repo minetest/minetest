@@ -726,6 +726,17 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_waving_plants"] then
 		engine.setting_set("enable_waving_plants", fields["cb_waving_plants"])
 	end
+	if fields["cb_tcp_connect"] then
+		if engine.is_yes(fields["cb_tcp_connect"]) then
+			engine.setting_set("client_protocol", "tcp")
+		end
+	end
+	if fields["cb_legacy_connect"] then
+		if engine.is_yes(fields["cb_legacy_connect"]) then
+			engine.setting_set("client_protocol", "legacy")
+		end
+	end
+	
 	if fields["btn_change_keys"] ~= nil then
 		engine.show_keys_menu()
 	end
@@ -1011,6 +1022,25 @@ else
 			"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
 			"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
 	end
+	
+	local connect_mode = engine.setting_get("client_protocol")
+	
+	local tcp_enabled = "false"
+	local legacy_enabled = "false"
+	
+	if connect_mode == "tcp" then
+		tcp_enabled = "true"
+	end
+	if connect_mode == "legacy" then
+		legacy_enabled = "true"
+	end
+	
+	tab_string = tab_string ..
+			"checkbox[8,3;cb_tcp_connect;".. fgettext("TCP Client") .. ";"
+					.. tcp_enabled .. "]"
+	tab_string = tab_string ..
+			"checkbox[8,3.5;cb_legacy_connect;".. fgettext("Legacy Client") .. ";"
+					.. legacy_enabled .. "]"
 return tab_string
 end
 

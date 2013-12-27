@@ -60,6 +60,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
 	settings->setDefault("directional_colored_fog", "true");
+	settings->setDefault("client_protocol","tcp");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
