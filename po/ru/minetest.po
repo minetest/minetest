@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-11-26 19:57+0200\n"
-"Last-Translator: Ilya Zhuravlev <zhuravlevilya@ya.ru>\n"
+"PO-Revision-Date: 2013-12-29 16:58+0200\n"
+"Last-Translator: Сергей Голубев <seria-2@mail.ru>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -78,7 +78,7 @@ msgstr "Название мира"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr ""
+msgstr "Сид"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -110,7 +110,7 @@ msgstr "Не задано имя мира или не выбрана игра"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Для включения шейдеров необходим драйвер OpenGL."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -310,28 +310,24 @@ msgid "Installed Mods:"
 msgstr "Установленные моды:"
 
 #: builtin/modmgr.lua:243
-#, fuzzy
 msgid "Add mod:"
-msgstr "<<-- Добавить мод"
+msgstr "Добавить мод:"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Local install"
-msgstr "Установить"
+msgstr "Локальная установка"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Онлайн хранилище модов"
 
 #: builtin/modmgr.lua:284
-#, fuzzy
 msgid "No mod description available"
-msgstr "Описание отсутствует"
+msgstr "Описание к моду отсутствует"
 
 #: builtin/modmgr.lua:288
-#, fuzzy
 msgid "Mod information:"
-msgstr "Описание отсутствует"
+msgstr "Описание мода:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -339,12 +335,11 @@ msgstr "Переименовать"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Удалить выбранный мод-пак"
 
 #: builtin/modmgr.lua:312
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Удалить мод"
+msgstr "Удалить выбранный мод"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
@@ -379,14 +374,12 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: builtin/modmgr.lua:464
-#, fuzzy
 msgid "Enable MP"
-msgstr "Включить Всё"
+msgstr "Включить мультиплеер"
 
 #: builtin/modmgr.lua:466
-#, fuzzy
 msgid "Disable MP"
-msgstr "Отключить Всё"
+msgstr "Отключить мультиплеер"
 
 #: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
