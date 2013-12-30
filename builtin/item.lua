@@ -98,7 +98,7 @@ function minetest.facedir_to_dir(facedir)
 
 					--indexed into by a table of correlating facedirs
 					[({[0]=1, 2, 3, 4, 
-						5, 4, 6, 2,
+						5, 2, 6, 4,
 						6, 2, 5, 4,
 						1, 5, 3, 6,
 						1, 6, 3, 5,
