@@ -288,6 +288,10 @@ set(common_SRCS
 	connection.cpp
 	environment.cpp
 	server.cpp
+	serverhudhandling.cpp
+	serverparticlehandling.cpp
+	servermessageprocessing.cpp
+	remoteclient.cpp
 	socket.cpp
 	mapblock.cpp
 	mapsector.cpp
