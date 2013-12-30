@@ -257,6 +257,9 @@ void SQL_databaseCheck(void)
 	infostream << "Database connection setup" << std::endl;
 
 	bool needsCreate = !fs::PathExists(dbp);
+	if (needsCreate) {
+		fs::CreateAllDirs(fs::RemoveLastPathComponent(dbp));
+	}
 	int  dbo = sqlite3_open_v2(dbp.c_str(), &dbh, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
 	                           NULL);
 
@@ -1156,4 +1159,3 @@ IRollbackManager *createRollbackManager(const std::string &filepath, IGameDef *g
 {
 	return new RollbackManager(filepath, gamedef);
 }
-
