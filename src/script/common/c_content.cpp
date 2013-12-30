@@ -884,7 +884,7 @@ void push_items(lua_State *L, const std::vector<ItemStack> &items)
 }
 
 /******************************************************************************/
-std::vector<ItemStack> read_items(lua_State *L, int index,Server* srv)
+std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -892,10 +892,15 @@ std::vector<ItemStack> read_items(lua_State *L, int index,Server* srv)
 	std::vector<ItemStack> items;
 	luaL_checktype(L, index, LUA_TTABLE);
 	lua_pushnil(L);
-	while(lua_next(L, index) != 0){
-		// key at index -2 and value at index -1
-		items.push_back(read_item(L, -1, srv));
-		// removes value, keeps key for next iteration
+	while (lua_next(L, index)) {
+		s32 key = luaL_checkinteger(L, -2);
+		if (key < 1) {
+			throw LuaError(NULL, "Invalid inventory list index");
+		}
+		if (items.size() < (u32) key) {
+			items.resize(key);
+		}
+		items[key - 1] = read_item(L, -1, srv);
 		lua_pop(L, 1);
 	}
 	return items;
