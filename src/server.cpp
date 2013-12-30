@@ -703,6 +703,10 @@ Server::Server(
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
 
+	// Create world if it doesn't exist
+	if(!initializeWorld(m_path_world, m_gamespec.id))
+		throw ServerError("Failed to initialize world");
+
 	// Create ban manager
 	std::string ban_path = m_path_world+DIR_DELIM+"ipban.txt";
 	m_banmanager = new BanManager(ban_path);
@@ -710,10 +714,6 @@ Server::Server(
 	// Create rollback manager
 	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
 	m_rollback = createRollbackManager(rollback_path, this);
-
-	// Create world if it doesn't exist
-	if(!initializeWorld(m_path_world, m_gamespec.id))
-		throw ServerError("Failed to initialize world");
 
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
