@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-10-19 08:15+0200\n"
-"Last-Translator: Pablo Lezaeta <prflr88@gmail.com>\n"
+"PO-Revision-Date: 2014-01-02 22:09+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -109,7 +109,7 @@ msgstr "No se a dado un nombre al mundo o no se ha seleccionado uno"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Para habilitar los sombreadores debe utilizar el controlador OpenGL."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -309,41 +309,37 @@ msgid "Installed Mods:"
 msgstr "Mods instalados:"
 
 #: builtin/modmgr.lua:243
-#, fuzzy
 msgid "Add mod:"
-msgstr "Añadir modificación"
+msgstr "Añadir mod:"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Local install"
-msgstr "Instalar"
+msgstr "Instalación local"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Repositorio de mods en línea"
 
 #: builtin/modmgr.lua:284
-#, fuzzy
 msgid "No mod description available"
-msgstr "Sin informacion disponible"
+msgstr "No hay descripción del mod disponible"
 
 #: builtin/modmgr.lua:288
-#, fuzzy
 msgid "Mod information:"
-msgstr "Sin informacion disponible"
+msgstr "Informacion de mod:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
 msgstr "Renombrar"
 
 #: builtin/modmgr.lua:301
+#, fuzzy
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Desinstalar paquete de mods"
 
 #: builtin/modmgr.lua:312
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Eliminar mod seleccionado"
+msgstr "Desinstalar mod seleccionado"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
