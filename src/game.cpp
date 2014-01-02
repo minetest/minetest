@@ -239,6 +239,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	INodeDefManager *nodedef = client->getNodeDefManager();
 	ClientMap &map = client->getEnv().getClientMap();
 
+	f32 mindistance = BS * 1001;
+
 	// First try to find a pointed at active object
 	if(look_for_object)
 	{
@@ -260,16 +262,15 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 						selection_box->MaxEdge + pos));
 			}
 
+			mindistance = (selected_object->getPosition() - camera_position).getLength();
 
 			result.type = POINTEDTHING_OBJECT;
 			result.object_id = selected_object->getId();
-			return result;
 		}
 	}
 
 	// That didn't work, try to find a pointed at node
 
-	f32 mindistance = BS * 1001;
 	
 	v3s16 pos_i = floatToInt(player_position, BS);
 
