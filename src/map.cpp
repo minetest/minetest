@@ -3979,6 +3979,42 @@ s16 ServerMap::updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *bl
 	return humidity;
 }
 
+int ServerMap::getSurface(v3s16 basepos, int searchup, bool walkable_only) {
+
+	s16 max = MYMIN(searchup + basepos.Y,0x7FFF);
+
+	MapNode last_node = getNodeNoEx(basepos);
+	MapNode node = last_node;
+	v3s16 runpos = basepos;
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
+	bool last_was_walkable = nodemgr->get(node).walkable;
+
+	while ((runpos.Y < max) && (node.param0 != CONTENT_AIR)) {
+		runpos.Y += 1;
+		last_node = node;
+		node = getNodeNoEx(runpos);
+
+		if (!walkable_only) {
+			if ((last_node.param0 != CONTENT_AIR) &&
+				(last_node.param0 != CONTENT_IGNORE) &&
+				(node.param0 == CONTENT_AIR)) {
+				return runpos.Y;
+			}
+		}
+		else {
+			bool is_walkable = nodemgr->get(node).walkable;
+
+			if (last_was_walkable && (!is_walkable)) {
+				return runpos.Y;
+			}
+			last_was_walkable = is_walkable;
+		}
+	}
+
+	return basepos.Y -1;
+}
+
 /*
 	MapVoxelManipulator
 */

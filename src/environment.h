@@ -304,7 +304,7 @@ public:
 	
 	// is weather active in this environment?
 	bool m_use_weather;
-	
+
 private:
 
 	/*

@@ -354,6 +354,10 @@ public:
 	virtual s16 getHeat(v3s16 p);
 	virtual s16 getHumidity(v3s16 p);
 
+	virtual int getSurface(v3s16 basepos, int searchup, bool walkable_only) {
+		return basepos.Y -1;
+	}
+
 protected:
 	friend class LuaVoxelManip;
 
@@ -503,6 +507,12 @@ public:
 
 	virtual s16 updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
 	virtual s16 updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
+
+	//getSurface level starting on basepos.y up to basepos.y + searchup
+	//returns basepos.y -1 if no surface has been found
+	// (due to limited data range of basepos.y this will always give a unique
+	// return value as long as minetest is compiled at least on 32bit architecture)
+	int getSurface(v3s16 basepos, int searchup, bool walkable_only);
 
 private:
 	// Seed used for all kinds of randomness in generation
