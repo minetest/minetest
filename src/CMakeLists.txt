@@ -170,7 +170,12 @@ endif()
 
 find_package(Sqlite3 REQUIRED)
 find_package(Json REQUIRED)
-find_package(OpenGLES2)
+
+option(ENABLE_GLES "Enable OpenGL ES support" 0)
+mark_as_advanced(ENABLE_GLES)
+if(ENABLE_GLES)
+	find_package(OpenGLES2)
+endif(ENABLE_GLES)
 
 if(USE_FREETYPE)
 	find_package(Freetype REQUIRED)
