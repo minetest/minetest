@@ -180,16 +180,23 @@ void ClientMediaDownloader::initialStep(Client *client)
 		FileStatus *filestatus = it->second;
 		const std::string &sha1 = filestatus->sha1;
 
-		std::ostringstream tmp_os(std::ios_base::binary);
-		bool found_in_cache = m_media_cache.load(hex_encode(sha1), tmp_os);
+		//don't even try to download files if in null video mode
+		if (g_settings->get("video_driver") == "null") {
+			filestatus->received = true;
+			m_uncached_count--;
+		}
+		else {
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool found_in_cache = m_media_cache.load(hex_encode(sha1), tmp_os);
 
-		// If found in cache, try to load it from there
-		if (found_in_cache) {
-			bool success = checkAndLoad(name, sha1,
-					tmp_os.str(), true, client);
-			if (success) {
-				filestatus->received = true;
-				m_uncached_count--;
+			// If found in cache, try to load it from there
+			if (found_in_cache) {
+				bool success = checkAndLoad(name, sha1,
+						tmp_os.str(), true, client);
+				if (success) {
+					filestatus->received = true;
+					m_uncached_count--;
+				}
 			}
 		}
 	}
@@ -480,7 +487,8 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 {
 	assert(m_httpfetch_active == 0);
 
-	if (m_uncached_received_count == m_uncached_count) {
+	if (m_uncached_received_count == m_uncached_count)
+	{
 		// In this case all media was found in the cache or
 		// has been downloaded from some remote server;
 		// report this fact to the server
