@@ -7,8 +7,8 @@ add_library(cguittfont xCGUITTFont.cpp)
 if(FREETYPE_PKGCONFIG_FOUND)
 	set_target_properties(cguittfont
 		PROPERTIES
-		COMPILE_FLAGS "${FREETYPE_CFLAGS}"
-		LINK_FLAGS "${FREETYPE_LDFLAGS}"
+		COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
+		LINK_FLAGS "${FREETYPE_LDFLAGS_STR}"
 	)
 
 	include_directories(
