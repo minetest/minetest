@@ -241,6 +241,52 @@ int InvRef::l_set_list(lua_State *L)
 	return 0;
 }
 
+// get_lists(self) -> list of InventoryLists
+int InvRef::l_get_lists(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	InvRef *ref = checkobject(L, 1);
+	Inventory *inv = getinv(L, ref);
+	if (!inv) {
+		return 0;
+	}
+	std::vector<const InventoryList*> lists = inv->getLists();
+	std::vector<const InventoryList*>::iterator iter = lists.begin();
+	lua_createtable(L, 0, lists.size());
+	for (; iter != lists.end(); iter++) {
+		const char* name = (*iter)->getName().c_str();
+		lua_pushstring(L, name);
+		push_inventory_list(L, inv, name);
+		lua_rawset(L, -3);
+	}
+	return 1;
+}
+
+// set_lists(self, lists)
+int InvRef::l_set_lists(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	InvRef *ref = checkobject(L, 1);
+	Inventory *inv = getinv(L, ref);
+	if (!inv) {
+		return 0;
+	}
+	lua_pushnil(L);
+	while (lua_next(L, 2)) {
+		const char* listname = lua_tostring(L, -2);
+		InventoryList *list = inv->getList(listname);
+		if (list) {
+			read_inventory_list(L, -1, inv, listname,
+					getServer(L), list->getSize());
+		} else {
+			read_inventory_list(L, -1, inv, listname,
+					getServer(L));
+		}
+		lua_pop(L, 1);
+	}
+	return 0;
+}
+
 // add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 // Returns the leftover stack
 int InvRef::l_add_item(lua_State *L)
@@ -426,6 +472,8 @@ const luaL_reg InvRef::methods[] = {
 	luamethod(InvRef, set_stack),
 	luamethod(InvRef, get_list),
 	luamethod(InvRef, set_list),
+	luamethod(InvRef, get_lists),
+	luamethod(InvRef, set_lists),
 	luamethod(InvRef, add_item),
 	luamethod(InvRef, room_for_item),
 	luamethod(InvRef, contains_item),

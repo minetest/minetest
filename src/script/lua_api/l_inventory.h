@@ -79,6 +79,12 @@ private:
 	// set_list(self, listname, list)
 	static int l_set_list(lua_State *L);
 
+	// get_lists(self) -> list of InventoryLists
+	static int l_get_lists(lua_State *L);
+
+	// set_lists(self, lists)
+	static int l_set_lists(lua_State *L);
+
 	// add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
 	// Returns the leftover stack
 	static int l_add_item(lua_State *L);

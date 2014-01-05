@@ -1761,6 +1761,8 @@ methods:
 - set_stack(listname, i, stack): copy stack to index i in list
 - get_list(listname): return full list
 - set_list(listname, list): set full list (size will not change)
+- get_lists(): returns list of inventory lists
+- set_lists(lists): sets inventory lists (size will not change)
 - add_item(listname, stack): add item somewhere in list, returns leftover ItemStack
 - room_for_item(listname, stack): returns true if the stack of items
     can be fully added to the list
