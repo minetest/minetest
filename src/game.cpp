@@ -1379,6 +1379,11 @@ void the_game(
 			core::rect<s32>(0,0,0,0),
 			//false, false); // Disable word wrap as of now
 			false, true);
+	// Slightly shaded so it's easier to read.
+	// I'd like to set the shadow to the width of the text.
+	// Irrlicht IGUIStaticText has getTextWidth,
+	// but it seems to have no effect on the core::rect above.
+	guitext_chat->setBackgroundColor(video::SColor(40,0,0,0));
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend.clearRecentChat();
 	// Chat backend and console
