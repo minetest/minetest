@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <errno.h>
+#ifndef _MSC_VER
+#include <sys/utsname.h>
+#endif
 #include "jthread/jevent.h"
 #include "config.h"
 #include "exceptions.h"
@@ -32,9 +35,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/container.h"
 #include "util/thread.h"
+#include "version.h"
+#include "main.h"
+#include "settings.h"
 
 JMutex g_httpfetch_mutex;
 std::map<unsigned long, std::list<HTTPFetchResult> > g_httpfetch_results;
+
+	HTTPFetchRequest::HTTPFetchRequest()
+	{
+		url = "";
+		caller = HTTPFETCH_DISCARD;
+		request_id = 0;
+		timeout = g_settings->getS32("curl_timeout");
+		connect_timeout = timeout * 5;
+		
+		useragent = std::string("Minetest ") + minetest_version_hash;
+#ifdef _MSC_VER
+		useragent += "Windows";
+#else
+		struct utsname osinfo;
+		uname(&osinfo);
+		useragent += std::string(" (") + osinfo.sysname + "; " + osinfo.release + "; " + osinfo.machine + ")";
+#endif
+	}
+
 
 static void httpfetch_deliver_result(const HTTPFetchResult &fetchresult)
 {
