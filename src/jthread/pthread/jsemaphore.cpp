@@ -17,8 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 #include <assert.h>
+#include <errno.h>
+#include <sys/time.h>
 #include "jthread/jsemaphore.h"
+
 #define UNUSED(expr) do { (void)(expr); } while (0)
+
 JSemaphore::JSemaphore() {
 	int sem_init_retval = sem_init(&m_semaphore,0,0);
 	assert(sem_init_retval == 0);
@@ -47,6 +51,33 @@ void JSemaphore::Wait() {
 	int sem_wait_retval = sem_wait(&m_semaphore);
 	assert(sem_wait_retval == 0);
 	UNUSED(sem_wait_retval);
+}
+
+bool JSemaphore::Wait(unsigned int time_ms) {
+	struct timespec waittime;
+	struct timeval now;
+
+	if (gettimeofday(&now, NULL) == -1) {
+		assert("Unable to get time by clock_gettime!" == 0);
+		return false;
+	}
+
+	waittime.tv_nsec = ((time_ms % 1000) * 1000 * 1000) + (now.tv_usec * 1000);
+	waittime.tv_sec  = (time_ms / 1000) + (waittime.tv_nsec / (1000*1000*1000)) + now.tv_sec;
+	waittime.tv_nsec %= 1000*1000*1000;
+
+	errno = 0;
+	int sem_wait_retval = sem_timedwait(&m_semaphore,&waittime);
+
+	if (sem_wait_retval == 0)
+	{
+		return true;
+	}
+	else {
+		assert((errno == ETIMEDOUT) || (errno == EINTR));
+		return false;
+	}
+	return sem_wait_retval == 0 ? true : false;
 }
 
 int JSemaphore::GetValue() {

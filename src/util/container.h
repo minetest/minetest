@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../exceptions.h"
 #include "../jthread/jmutex.h"
 #include "../jthread/jmutexautolock.h"
-#include "../porting.h" // For sleep_ms
+#include "../jthread/jsemaphore.h"
 #include <list>
 #include <vector>
 #include <map>
@@ -201,6 +201,12 @@ public:
 		++m_list_size;
 	}
 	
+	void push_front(T t)
+	{
+		m_list.push_front(t);
+		++m_list_size;
+	}
+
 	T pop_front()
 	{
 		if(m_list.empty())
@@ -247,86 +253,141 @@ template<typename T>
 class MutexedQueue
 {
 public:
+	template<typename Key, typename U, typename Caller, typename CallerData>
+	friend class RequestQueue;
+
 	MutexedQueue()
 	{
 	}
 	bool empty()
 	{
 		JMutexAutoLock lock(m_mutex);
-		return m_list.empty();
+		return (m_size.GetValue() == 0);
 	}
 	void push_back(T t)
 	{
 		JMutexAutoLock lock(m_mutex);
 		m_list.push_back(t);
+		m_size.Post();
 	}
-	T pop_front(u32 wait_time_max_ms=0)
+
+	/* this version of pop_front returns a empty element of T on timeout.
+	 * Make sure default constructor of T creates a recognizable "empty" element
+	 */
+	T pop_frontNoEx(u32 wait_time_max_ms)
 	{
-		u32 wait_time_ms = 0;
-
-		for(;;)
+		if (m_size.Wait(wait_time_max_ms))
 		{
-			{
-				JMutexAutoLock lock(m_mutex);
+			JMutexAutoLock lock(m_mutex);
 
-				if(!m_list.empty())
-				{
-					typename std::list<T>::iterator begin = m_list.begin();
-					T t = *begin;
-					m_list.erase(begin);
-					return t;
-				}
-
-				if(wait_time_ms >= wait_time_max_ms)
-					throw ItemNotFoundException("MutexedQueue: queue is empty");
-			}
-
-			// Wait a while before trying again
-			sleep_ms(10);
-			wait_time_ms += 10;
+			typename std::list<T>::iterator begin = m_list.begin();
+			T t = *begin;
+			m_list.erase(begin);
+			return t;
+		}
+		else
+		{
+			return T();
 		}
 	}
+
+	T pop_front(u32 wait_time_max_ms)
+	{
+		if (m_size.Wait(wait_time_max_ms))
+		{
+			JMutexAutoLock lock(m_mutex);
+
+			typename std::list<T>::iterator begin = m_list.begin();
+			T t = *begin;
+			m_list.erase(begin);
+			return t;
+		}
+		else
+		{
+			throw ItemNotFoundException("MutexedQueue: queue is empty");
+		}
+	}
+
+	T pop_frontNoEx()
+	{
+		m_size.Wait();
+
+		JMutexAutoLock lock(m_mutex);
+
+		typename std::list<T>::iterator begin = m_list.begin();
+		T t = *begin;
+		m_list.erase(begin);
+		return t;
+	}
+
 	T pop_back(u32 wait_time_max_ms=0)
 	{
-		u32 wait_time_ms = 0;
-
-		for(;;)
+		if (m_size.Wait(wait_time_max_ms))
 		{
-			{
-				JMutexAutoLock lock(m_mutex);
+			JMutexAutoLock lock(m_mutex);
 
-				if(!m_list.empty())
-				{
-					typename std::list<T>::iterator last = m_list.end();
-					last--;
-					T t = *last;
-					m_list.erase(last);
-					return t;
-				}
-
-				if(wait_time_ms >= wait_time_max_ms)
-					throw ItemNotFoundException("MutexedQueue: queue is empty");
-			}
-
-			// Wait a while before trying again
-			sleep_ms(10);
-			wait_time_ms += 10;
+			typename std::list<T>::iterator last = m_list.end();
+			last--;
+			T t = *last;
+			m_list.erase(last);
+			return t;
+		}
+		else
+		{
+			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
 	}
 
+	/* this version of pop_back returns a empty element of T on timeout.
+	 * Make sure default constructor of T creates a recognizable "empty" element
+	 */
+	T pop_backNoEx(u32 wait_time_max_ms=0)
+	{
+		if (m_size.Wait(wait_time_max_ms))
+		{
+			JMutexAutoLock lock(m_mutex);
+
+			typename std::list<T>::iterator last = m_list.end();
+			last--;
+			T t = *last;
+			m_list.erase(last);
+			return t;
+		}
+		else
+		{
+			return T();
+		}
+	}
+
+	T pop_backNoEx()
+	{
+		m_size.Wait();
+
+		JMutexAutoLock lock(m_mutex);
+
+		typename std::list<T>::iterator last = m_list.end();
+		last--;
+		T t = *last;
+		m_list.erase(last);
+		return t;
+	}
+
+protected:
 	JMutex & getMutex()
 	{
 		return m_mutex;
 	}
 
+	// NEVER EVER modify the >>list<< you got by using this function!
+	// You may only modify it's content
 	std::list<T> & getList()
 	{
 		return m_list;
 	}
 
-protected:
 	JMutex m_mutex;
 	std::list<T> m_list;
+	JSemaphore m_size;
 };
 
 #endif

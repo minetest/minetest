@@ -286,6 +286,20 @@ Client::Client(
 	}
 }
 
+void Client::Stop()
+{
+	//request all client managed threads to stop
+	m_mesh_update_thread.Stop();
+}
+
+bool Client::isShutdown()
+{
+
+	if (!m_mesh_update_thread.IsRunning()) return true;
+
+	return false;
+}
+
 Client::~Client()
 {
 	{
@@ -296,7 +310,7 @@ Client::~Client()
 	m_mesh_update_thread.Stop();
 	m_mesh_update_thread.Wait();
 	while(!m_mesh_update_thread.m_queue_out.empty()) {
-		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 		delete r.mesh;
 	}
 
@@ -692,7 +706,7 @@ void Client::step(float dtime)
 		while(!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
-			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if(block)
 			{
