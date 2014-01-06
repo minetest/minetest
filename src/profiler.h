@@ -164,6 +164,25 @@ public:
 		m_graphvalues.clear();
 	}
 
+	void removeAVG(std::string name)
+	{
+		JMutexAutoLock lock(m_mutex);
+		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+		if(n == m_avgcounts.end())
+			return;
+
+		m_avgcounts.erase(n);
+	}
+
+	void removeADD(std::string name)
+	{
+		JMutexAutoLock lock(m_mutex);
+		std::map<std::string, float>::iterator n = m_data.find(name);
+		if(n == m_data.end())
+			return;
+
+		m_data.erase(n);
+	}
 private:
 	JMutex m_mutex;
 	std::map<std::string, float> m_data;
