@@ -957,10 +957,11 @@ public:
 		}
 		else if(m_prop.visual == "mesh"){
 			infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
-			scene::IAnimatedMesh *mesh = smgr->getMesh(m_prop.mesh.c_str());
+			scene::IAnimatedMesh *mesh = m_gamedef->getMesh(m_prop.mesh);
 			if(mesh)
 			{
 				m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+				mesh->drop(); // The scene node took hold of it
 				m_animated_meshnode->animateJoints(); // Needed for some animations
 				m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
 						m_prop.visual_size.Y,

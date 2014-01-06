@@ -68,6 +68,8 @@
 # If FPS would go higher than this, limit it by sleeping
 # (to not waste CPU power for no benefit)
 #fps_max = 60
+# Maximum FPS when game is paused
+#pause_fps_max = 20
 # The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 160
 #viewing_range_nodes_min = 35

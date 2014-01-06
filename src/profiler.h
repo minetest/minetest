@@ -164,6 +164,13 @@ public:
 		m_graphvalues.clear();
 	}
 
+	void remove(const std::string& name)
+	{
+		JMutexAutoLock lock(m_mutex);
+		m_avgcounts.erase(name);
+		m_data.erase(name);
+	}
+
 private:
 	JMutex m_mutex;
 	std::map<std::string, float> m_data;

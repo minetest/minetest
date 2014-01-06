@@ -91,6 +91,17 @@ public:
 		return m_stack.size();
 	}
 
+	bool pausesGame()
+	{
+		for(std::list<GUIModalMenu*>::iterator
+				i = m_stack.begin(); i != m_stack.end(); ++i)
+		{
+			if((*i)->pausesGame())
+				return true;
+		}
+		return false;
+	}
+
 	std::list<GUIModalMenu*> m_stack;
 };
 

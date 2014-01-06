@@ -893,30 +893,12 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	name = removeStringEnd(filename, model_ext);
 	if(name != "")
 	{
-		verbosestream<<"Client: Storing model into Irrlicht: "
+		verbosestream<<"Client: Storing model into memory: "
 				<<"\""<<filename<<"\""<<std::endl;
-		scene::ISceneManager *smgr = m_device->getSceneManager();
-
-		//check if mesh was already cached
-		scene::IAnimatedMesh *mesh =
-			smgr->getMeshCache()->getMeshByName(filename.c_str());
-
-		if (mesh != NULL) {
-			errorstream << "Multiple models with name: " << filename.c_str() <<
-					" found replacing previous model!" << std::endl;
-
-			smgr->getMeshCache()->removeMesh(mesh);
-			mesh = 0;
-		}
-
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				*data_rw, data_rw.getSize(), filename.c_str());
-		assert(rfile);
-		
-		mesh = smgr->getMesh(rfile);
-		smgr->getMeshCache()->addMesh(filename.c_str(), mesh);
-		rfile->drop();
+		if(m_mesh_data.count(filename))
+			errorstream<<"Multiple models with name \""<<filename.c_str()
+					<<"\" found; replacing previous model"<<std::endl;
+		m_mesh_data[filename] = data;
 		return true;
 	}
 
@@ -2834,5 +2816,33 @@ ISoundManager* Client::getSoundManager()
 MtEventManager* Client::getEventManager()
 {
 	return m_event;
+}
+
+scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
+{
+	std::map<std::string, std::string>::const_iterator i =
+			m_mesh_data.find(filename);
+	if(i == m_mesh_data.end()){
+		errorstream<<"Client::getMesh(): Mesh not found: \""<<filename<<"\""
+				<<std::endl;
+		return NULL;
+	}
+	const std::string &data = i->second;
+	scene::ISceneManager *smgr = m_device->getSceneManager();
+
+	// Create the mesh, remove it from cache and return it
+	// This allows unique vertex colors and other properties for each instance
+	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
+	io::IFileSystem *irrfs = m_device->getFileSystem();
+	io::IReadFile *rfile = irrfs->createMemoryReadFile(
+			*data_rw, data_rw.getSize(), filename.c_str());
+	assert(rfile);
+	scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
+	rfile->drop();
+	// NOTE: By playing with Irrlicht refcounts, maybe we could cache a bunch
+	// of uniquely named instances and re-use them
+	mesh->grab();
+	smgr->getMeshCache()->removeMesh(mesh);
+	return mesh;
 }
 

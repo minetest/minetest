@@ -1513,7 +1513,9 @@ void the_game(
 		*/
 
 		{
-			float fps_max = g_settings->getFloat("fps_max");
+			float fps_max = g_menumgr.pausesGame() ?
+					g_settings->getFloat("pause_fps_max") :
+					g_settings->getFloat("fps_max");
 			u32 frametime_min = 1000./fps_max;
 			
 			if(busytime_u32 < frametime_min)
@@ -2192,25 +2194,28 @@ void the_game(
 			LocalPlayer* player = client.getEnv().getLocalPlayer();
 			player->keyPressed=keyPressed;
 		}
-		
-		/*
-			Run server
-		*/
 
-		if(server != NULL)
+		/*
+			Run server, client (and process environments)
+		*/
+		bool can_be_and_is_paused =
+				(simple_singleplayer_mode && g_menumgr.pausesGame());
+		if(can_be_and_is_paused)
 		{
-			//TimeTaker timer("server->step(dtime)");
-			server->step(dtime);
+			// No time passes
+			dtime = 0;
 		}
-
-		/*
-			Process environment
-		*/
-		
+		else
 		{
-			//TimeTaker timer("client.step(dtime)");
-			client.step(dtime);
-			//client.step(dtime_avg1);
+			if(server != NULL)
+			{
+				//TimeTaker timer("server->step(dtime)");
+				server->step(dtime);
+			}
+			{
+				//TimeTaker timer("client.step(dtime)");
+				client.step(dtime);
+			}
 		}
 
 		{

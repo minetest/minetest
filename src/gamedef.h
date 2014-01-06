@@ -31,6 +31,9 @@ class ISoundManager;
 class IShaderSource;
 class MtEventManager;
 class IRollbackReportSink;
+namespace irr { namespace scene {
+	class IAnimatedMesh;
+}}
 
 /*
 	An interface for fetching game-global definitions like tool and
@@ -58,6 +61,8 @@ public:
 	// Only usable on the client
 	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
+	virtual scene::IAnimatedMesh* getMesh(const std::string &filename)
+	{ return NULL; }
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.

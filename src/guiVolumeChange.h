@@ -44,6 +44,8 @@ public:
 
 	bool OnEvent(const SEvent& event);
 	
+	bool pausesGame(){ return true; }
+
 private:
 	Client* m_client;
 

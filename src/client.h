@@ -420,6 +420,7 @@ public:
 	virtual MtEventManager* getEventManager();
 	virtual bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
+	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
 
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
@@ -509,6 +510,9 @@ private:
 	// Detached inventories
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+
+	// Storage for mesh data for creating multiple instances of the same mesh
+	std::map<std::string, std::string> m_mesh_data;
 };
 
 #endif // !CLIENT_HEADER
