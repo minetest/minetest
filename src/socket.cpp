@@ -39,6 +39,7 @@ typedef int socklen_t;
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
+	#include <netinet/tcp.h>
 	#include <fcntl.h>
 	#include <netdb.h>
 	#include <unistd.h>
@@ -577,4 +578,118 @@ bool UDPSocket::WaitData(int timeout_ms)
 	
 	// There is data
 	return true;
+}
+
+TCPServerSocket::TCPServerSocket() :
+	m_socket(0),
+	m_ipv6(false),
+	m_initialized(false)
+{
+}
+
+TCPServerSocket::TCPServerSocket(unsigned int port,bool ipv6) :
+		m_ipv6(ipv6)
+{
+	Bind(port,ipv6);
+}
+
+TCPServerSocket::~TCPServerSocket()
+{
+	if (m_initialized)
+	{
+		close(m_socket);
+	}
+}
+
+void TCPServerSocket::Bind(unsigned int port,bool ipv6)
+{
+	m_ipv6 = ipv6;
+	m_port = port;
+
+	assert(m_initialized == false);
+	if (m_ipv6)
+	{
+		//TODO
+	}
+	else
+	{
+		m_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+		if(m_socket <= 0)
+		{
+			throw SocketException("Failed to create TCP socket");
+		}
+
+		int opt = 0;
+		if (setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt)) < 0) {
+			throw SocketException("Failed to set SO_REUSEADDR flag");
+		}
+
+		if (setsockopt(m_socket,IPPROTO_TCP,TCP_NODELAY,&opt,sizeof(opt)) < 0) {
+			throw SocketException("Failed to set TCP_NODELAY flag");
+		}
+
+		struct sockaddr_in server_addr;
+		memset(&server_addr,0,sizeof(server_addr));
+
+		server_addr.sin_family = AF_INET;
+		server_addr.sin_port = htons(port);
+
+		if (bind(m_socket,(const sockaddr*) &server_addr,sizeof(server_addr)) < 0)
+		{
+			throw SocketException("Failed to bind TCP socket");
+		}
+
+		if (listen(m_socket, 5) < 0)
+		{
+			throw SocketException("Failed to listen TCP socket");
+		}
+	}
+	m_initialized = true;
+}
+
+int TCPServerSocket::WaitForClient(Address& address, unsigned int timeout_ms)
+{
+	struct timeval tv;
+
+	fd_set readfds;
+	FD_ZERO(&readfds);
+	FD_SET(m_socket, &readfds);
+
+	tv.tv_sec = (timeout_ms / 1000);
+	tv.tv_usec = (timeout_ms - tv.tv_sec) * 1000;
+
+	if (m_ipv6)
+	{
+		//TODO
+	}
+	else {
+		int select_retval = select(m_socket+1,&readfds, 0, 0, &tv);
+
+		if (select_retval > 0)
+		{
+			struct sockaddr incoming_address;
+			socklen_t incoming_addrlen;
+			memset(&incoming_address,0,sizeof(struct sockaddr));
+			int client_fd = accept(m_socket,
+									&incoming_address,
+									&incoming_addrlen);
+
+			if (client_fd > 0) {
+				u32 address_ip = ntohl(*(unsigned int*) incoming_address.sa_data);
+
+				address = Address(address_ip, m_port);
+				return client_fd;
+			}
+		}
+	}
+
+	return -1;
+}
+
+void TCPServerSocket::Close()
+{
+	m_initialized = false;
+	shutdown(m_socket,SHUT_RDWR);
+	close(m_socket);
 }

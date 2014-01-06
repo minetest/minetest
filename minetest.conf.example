@@ -191,6 +191,8 @@
 #repeat_rightclick_time = 0.25
 # Make fog and sky colors depend on daytime (dawn/sunset) and view direction
 #directional_colored_fog = true
+#select client protocol tcp|legacy
+#client_protocol = tcp
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL

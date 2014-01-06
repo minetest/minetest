@@ -36,6 +36,7 @@ public:
 
 	void Post();
 	void Wait();
+	bool Wait(unsigned int time_ms);
 
 	int GetValue();
 

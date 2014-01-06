@@ -1526,7 +1526,7 @@ void Server::AsyncRunStep()
 				memcpy((char*)&reply[2], unreliable_data.c_str(),
 						unreliable_data.size());
 				// Send as unreliable
-				m_con.Send(client->peer_id, 0, reply, false);
+				m_con.Send(client->peer_id, 1, reply, false);
 			}
 
 			/*if(reliable_data.size() > 0 || unreliable_data.size() > 0)
@@ -3720,7 +3720,7 @@ void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_con.Send(peer_id, 0, data, true);
+	m_con.Send(peer_id, 1, data, true);
 }
 
 void Server::SendHUDRemove(u16 peer_id, u32 id)
@@ -3735,7 +3735,8 @@ void Server::SendHUDRemove(u16 peer_id, u32 id)
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_con.Send(peer_id, 0, data, true);
+
+	m_con.Send(peer_id, 1, data, true);
 }
 
 void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value)
@@ -4203,7 +4204,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 	/*
 		Send packet
 	*/
-	m_con.Send(peer_id, 1, reply, true);
+	m_con.Send(peer_id, 2, reply, true);
 }
 
 void Server::SendBlocks(float dtime)
@@ -4565,7 +4566,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 				<<" size=" <<s.size()<<std::endl;
 		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 		// Send as reliable
-		m_con.Send(peer_id, 0, data, true);
+		m_con.Send(peer_id, 2, data, true);
 	}
 }
 

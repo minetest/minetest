@@ -131,5 +131,23 @@ private:
 	int m_addr_family;
 };
 
+class TCPServerSocket{
+	public:
+	TCPServerSocket(unsigned int port,bool ipv6);
+	TCPServerSocket();
+	~TCPServerSocket();
+
+	void Bind(unsigned int port, bool ipv6);
+
+	int WaitForClient(Address& address,unsigned int timeout_ms);
+
+	void Close();
+private:
+	int m_socket;
+	bool m_ipv6;
+	bool m_initialized;
+	unsigned int m_port;
+};
+
 #endif
 

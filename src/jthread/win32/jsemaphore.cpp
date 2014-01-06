@@ -51,6 +51,21 @@ void JSemaphore::Wait() {
 			INFINITE);
 }
 
+bool JSemaphore::Wait(unsigned int time_ms) {
+	unsigned int retval = WaitForSingleObject(
+			m_hSemaphore,
+			time_ms);
+
+	if (retval == WAIT_OBJECT_0)
+	{
+		return true;
+	}
+	else {
+		assert(retval == WAIT_TIMEOUT);
+		return false;
+	}
+}
+
 int JSemaphore::GetValue() {
 
 	long int retval = 0;
