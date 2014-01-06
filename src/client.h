@@ -289,6 +289,14 @@ public:
 	);
 	
 	~Client();
+
+	/*
+	 request all threads managed by client to be stopped
+	 */
+	void Stop();
+
+
+	bool isShutdown();
 	/*
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
