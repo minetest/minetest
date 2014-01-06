@@ -228,7 +228,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
 	} else {
 		if (lag)
-			server["step"]	= lag;
+			server["lag"]	= lag;
 	}
 
 	Json::FastWriter writer;
