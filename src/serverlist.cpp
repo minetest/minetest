@@ -231,7 +231,7 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 			server["step"]	= lag;
 	}
 
-	Json::StyledWriter writer;
+	Json::FastWriter writer;
 	HTTPFetchRequest fetchrequest;
 	fetchrequest.url = g_settings->get("serverlist_url") + std::string("/announce");
 	std::string query = std::string("json=") + urlencode(writer.write(server));
