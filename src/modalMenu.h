@@ -124,6 +124,7 @@ public:
 	virtual void drawMenu() = 0;
 	virtual bool preprocessEvent(const SEvent& event) { return false; };
 	virtual bool OnEvent(const SEvent& event) { return false; };
+	virtual bool pausesGame(){ return false; } // Used for pause menu
 
 protected:
 	//bool m_force_regenerate_gui;

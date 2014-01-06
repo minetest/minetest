@@ -51,7 +51,9 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
+
+	bool pausesGame(){ return true; }
+
 private:
 	IGameCallback *m_gamecallback;
 	bool m_simple_singleplayer_mode;
