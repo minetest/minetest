@@ -701,6 +701,8 @@ private:
 	float m_step_dtime;
 	JMutex m_step_dtime_mutex;
 
+	float m_lag;
+
 	// The server mainly operates in this thread
 	ServerThread *m_thread;
 

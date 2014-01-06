@@ -13,7 +13,7 @@
 		{{? !master.no_description}}<th>Description</th>{{?}}
 		{{? !master.no_flags}}<th>Flags</th>{{?}}
 		{{? !master.no_uptime}}<th>Uptime, Age</th>{{?}}
-		{{? !master.no_ping}}<th>Ping</th>{{?}}
+		{{? !master.no_ping}}<th>Ping, Lag</th>{{?}}
 	</tr>
 	{{~it.list :server:index}}
 	{{ if (master.limit && index + 1 > master.limit) break;}}
@@ -64,7 +64,7 @@
 		</td>{{?}}
 		{{? !master.no_ping}}
 		<td class="ping">
-			{{=Math.floor(server.ping * 1000)}}
+			{{=Math.floor(server.ping * 1000)}}{{? server.lag}}, {{= Math.floor(server.lag * 1000)}}{{?}}
 		</td>{{?}}
 	</tr>
 	{{~}}

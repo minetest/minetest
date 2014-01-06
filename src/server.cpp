@@ -675,6 +675,7 @@ Server::Server(
 	m_savemap_timer = 0.0;
 
 	m_step_dtime = 0.0;
+	m_lag = g_settings->getFloat("dedicated_server_step");
 
 	if(path_world == "")
 		throw ServerError("Supplied empty world path");
@@ -1260,13 +1261,14 @@ void Server::AsyncRunStep()
 	}
 
 
+	m_lag += (m_lag > dtime ? -1 : 1) * dtime/100;
 #if USE_CURL
 	// send masterserver announce
 	{
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) && g_settings->getBool("server_announce") == true)
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_names, m_uptime.get(), m_env->getGameTime(), m_gamespec.id, m_mods);
+			ServerList::sendAnnounce(!counter ? "start" : "update", m_clients_names, m_uptime.get(), m_env->getGameTime(), m_lag, m_gamespec.id, m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;

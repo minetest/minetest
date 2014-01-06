@@ -188,7 +188,7 @@ std::string serializeJson(std::vector<ServerListSpec> serverlist)
 
 
 #if USE_CURL
-void sendAnnounce(std::string action, const std::vector<std::string> & clients_names, double uptime, u32 game_time, std::string gameid, std::vector<ModSpec> mods) {
+void sendAnnounce(std::string action, const std::vector<std::string> & clients_names, double uptime, u32 game_time, float lag, std::string gameid, std::vector<ModSpec> mods) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
@@ -226,6 +226,9 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 			server["mods"].append(m->name);
 		}
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
+	} else {
+		if (lag)
+			server["step"]	= lag;
 	}
 
 	Json::StyledWriter writer;

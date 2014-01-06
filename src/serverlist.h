@@ -41,7 +41,7 @@ namespace ServerList
 	std::string serializeJson(std::vector<ServerListSpec>);
 	#if USE_CURL
 	void sendAnnounce(std::string action = "", const std::vector<std::string> & clients_names = std::vector<std::string>(), 
-				double uptime = 0, u32 game_time = 0,std::string gameid = "", 
+				double uptime = 0, u32 game_time = 0, float lag = 0, std::string gameid = "", 
 				std::vector<ModSpec> mods = std::vector<ModSpec>());
 	#endif
 } //ServerList namespace
