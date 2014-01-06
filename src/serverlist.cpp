@@ -188,7 +188,7 @@ std::string serializeJson(std::vector<ServerListSpec> serverlist)
 
 
 #if USE_CURL
-void sendAnnounce(std::string action, const std::vector<std::string> & clients_names, double uptime, u32 game_time, std::string gameid, std::vector<ModSpec> mods) {
+void sendAnnounce(std::string action, const std::vector<std::string> & clients_names, double uptime, u32 game_time, float lag, std::string gameid, std::vector<ModSpec> mods) {
 	Json::Value server;
 	if (action.size())
 		server["action"]	= action;
@@ -226,16 +226,19 @@ void sendAnnounce(std::string action, const std::vector<std::string> & clients_n
 			server["mods"].append(m->name);
 		}
 		actionstream << "announcing to " << g_settings->get("serverlist_url") << std::endl;
+	} else {
+		if (lag)
+			server["step"]	= lag;
 	}
 
-	Json::StyledWriter writer;
+	Json::FastWriter writer;
 	HTTPFetchRequest fetchrequest;
-	fetchrequest.url = g_settings->get("serverlist_url")
-		+ std::string("/announce?json=")
-		+ urlencode(writer.write(server));
-	fetchrequest.useragent = std::string("Minetest ")+minetest_version_hash;
-	fetchrequest.caller = HTTPFETCH_DISCARD;
-	fetchrequest.timeout = g_settings->getS32("curl_timeout");
+	fetchrequest.url = g_settings->get("serverlist_url") + std::string("/announce");
+	std::string query = std::string("json=") + urlencode(writer.write(server));
+	if (query.size() < 1000)
+		fetchrequest.url += "?" + query;
+	else
+		fetchrequest.post_fields = query;
 	httpfetch_async(fetchrequest);
 }
 #endif

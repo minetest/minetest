@@ -58,14 +58,7 @@ struct HTTPFetchRequest
 	//useragent to use
 	std::string useragent;
 
-	HTTPFetchRequest()
-	{
-		url = "";
-		caller = HTTPFETCH_DISCARD;
-		request_id = 0;
-		timeout = 0;
-		connect_timeout = 0;
-	}
+	HTTPFetchRequest();
 };
 
 struct HTTPFetchResult

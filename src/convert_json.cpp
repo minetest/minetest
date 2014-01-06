@@ -37,8 +37,6 @@ Json::Value                 fetchJsonValue(const std::string url,
 	HTTPFetchRequest fetchrequest;
 	HTTPFetchResult fetchresult;
 	fetchrequest.url = url;
-	fetchrequest.useragent = std::string("Minetest ")+minetest_version_hash;
-	fetchrequest.timeout = g_settings->getS32("curl_timeout");
 	fetchrequest.caller = HTTPFETCH_SYNC;
 
 	struct curl_slist* runptr = chunk;
