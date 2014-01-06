@@ -177,7 +177,7 @@ function update_menu()
 	-- handle errors
 	if gamedata.errormessage ~= nil then
 		formspec = "size[12,5.2]" ..
-			"field[1,2;10,2;;ERROR: " ..
+			"textarea[1,2;10,2;;ERROR: " ..
 			gamedata.errormessage ..
 			";]"..
 			"button[4.5,4.2;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
