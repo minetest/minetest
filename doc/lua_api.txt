@@ -2188,7 +2188,7 @@ Node definition (register_node)
     ^ Node destructor; always called after removing node
     ^ default: nil
 
-    after_place_node = func(pos, placer, itemstack),
+    after_place_node = func(pos, placer, itemstack, pointed_thing),
     ^ Called after constructing node when node was placed using
       minetest.item_place_node / minetest.place_node
     ^ If return true no item is taken from itemstack

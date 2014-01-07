@@ -272,7 +272,13 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	if def.after_place_node then
 		-- Copy place_to because callback can modify it
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
-		if def.after_place_node(place_to_copy, placer, itemstack) then
+		local pointed_thing_copy = {
+			type = pointed_thing.type,
+			under = pointed_thing.under,
+			above = pointed_thing.above
+		}
+		if def.after_place_node(place_to_copy, placer, itemstack,
+				pointed_thing_copy) then
 			take_item = false
 		end
 	end
