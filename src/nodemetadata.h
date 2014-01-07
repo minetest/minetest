@@ -55,7 +55,7 @@ public:
 		i = m_stringvars.find(name);
 		if(i == m_stringvars.end())
 			return "";
-		return resolveString(i->second);
+		return i->second;
 	}
 	void setString(const std::string &name, const std::string &var)
 	{
@@ -68,7 +68,7 @@ public:
 	std::string resolveString(const std::string &str) const
 	{
 		if(str.substr(0,2) == "${" && str[str.length()-1] == '}')
-			return resolveString(getString(str.substr(2,str.length()-3)));
+			return getString(str.substr(2,str.length()-3));
 		return str;
 	}
 	std::map<std::string, std::string> getStrings() const
