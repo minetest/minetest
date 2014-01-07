@@ -264,78 +264,86 @@ end
 --------------------------------------------------------------------------------
 
 if minetest then
-	local dirs1 = { 9, 18, 7, 12 }
-	local dirs2 = { 20, 23, 22, 21 }
+	local dirs1 = {9, 18, 7, 12}
+	local dirs2 = {20, 23, 22, 21}
 
-	function minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)
+	function minetest.rotate_and_place(itemstack, placer, pointed_thing,
+				infinitestacks, orient_flags)
 		orient_flags = orient_flags or {}
 
-		local node = minetest.get_node(pointed_thing.under)
-		if not minetest.registered_nodes[node.name]
-		   or not minetest.registered_nodes[node.name].on_rightclick then
+		local unode = minetest.get_node_or_nil(pointed_thing.under)
+		if not unode then
+			return
+		end
+		local undef = minetest.registered_nodes[unode.name]
+		if undef and undef.on_rightclick then
+			undef.on_rightclick(pointed_thing.under, node, placer,
+					itemstack)
+			return
+		end
+		local pitch = placer:get_look_pitch()
+		local fdir = minetest.dir_to_facedir(placer:get_look_dir())
+		local wield_name = itemstack:get_name()
 
-			local above = pointed_thing.above
-			local under = pointed_thing.under
-			local pitch = placer:get_look_pitch()
-			local pname = minetest.get_node(under).name
-			local node = minetest.get_node(above)
-			local fdir = minetest.dir_to_facedir(placer:get_look_dir())
-			local wield_name = itemstack:get_name()
-			local reg_node = minetest.registered_nodes[pname]
+		local above = pointed_thing.above
+		local under = pointed_thing.under
+		local iswall = (above.y == under.y)
+		local isceiling = not iswall and (above.y < under.y)
+		local anode = minetest.get_node_or_nil(above)
+		if not anode then
+			return
+		end
+		local pos = pointed_thing.above
+		local node = anode
 
-			if not reg_node or not reg_node.on_rightclick then
+		if undef and undef.buildable_to then
+			pos = pointed_thing.under
+			node = unode
+			iswall = false
+		end
 
-				local iswall = (above.x ~= under.x) or (above.z ~= under.z)
-				local isceiling = (above.x == under.x) and (above.z == under.z)
-								  and (pitch > 0)
-				local pos1 = above
+		local ndef = minetest.registered_nodes[node.name]
+		if not ndef or not ndef.buildable_to then
+			return
+		end
 
-				if reg_node and reg_node.buildable_to then
-					pos1 = under
-					iswall = false
-				end
+		if orient_flags.force_floor then
+			iswall = false
+			isceiling = false
+		elseif orient_flags.force_ceiling then
+			iswall = false
+			isceiling = true
+		elseif orient_flags.force_wall then
+			iswall = true
+			isceiling = false
+		elseif orient_flags.invert_wall then
+			iswall = not iswall
+		end
 
-				reg_node = minetest.registered_nodes[minetest.get_node(pos1).name]
-				if not reg_node or not reg_node.buildable_to then
-					return
-				end
-
-				if orient_flags.force_floor then
-					iswall = false
-					isceiling = false
-				elseif orient_flags.force_ceiling then 
-					iswall = false
-					isceiling = true
-				elseif orient_flags.force_wall then					
-					iswall = true
-					isceiling = false
-				elseif orient_flags.invert_wall then
-					iswall = not iswall
-				end
-
-				if iswall then
-					minetest.add_node(pos1, {name = wield_name, param2 = dirs1[fdir+1] })
-				elseif isceiling then
-					if orient_flags.force_facedir then
-						minetest.add_node(pos1, {name = wield_name, param2 = 20 })
-					else
-						minetest.add_node(pos1, {name = wield_name, param2 = dirs2[fdir+1] })
-					end
-				else -- place right side up
-					if orient_flags.force_facedir then
-						minetest.add_node(pos1, {name = wield_name, param2 = 0 })
-					else
-						minetest.add_node(pos1, {name = wield_name, param2 = fdir })
-					end
-				end
-
-				if not infinitestacks then
-					itemstack:take_item()
-					return itemstack
-				end
+		if iswall then
+			minetest.set_node(pos, {name = wield_name,
+					param2 = dirs1[fdir+1]})
+		elseif isceiling then
+			if orient_flags.force_facedir then
+				minetest.set_node(pos, {name = wield_name,
+						param2 = 20})
+			else
+				minetest.set_node(pos, {name = wield_name,
+						param2 = dirs2[fdir+1]})
 			end
-		else
-			minetest.registered_nodes[node.name].on_rightclick(pointed_thing.under, node, placer, itemstack)
+		else -- place right side up
+			if orient_flags.force_facedir then
+				minetest.set_node(pos, {name = wield_name,
+						param2 = 0})
+			else
+				minetest.set_node(pos, {name = wield_name,
+						param2 = fdir})
+			end
+		end
+
+		if not infinitestacks then
+			itemstack:take_item()
+			return itemstack
 		end
 	end
 
@@ -348,8 +356,8 @@ if minetest then
 
 	minetest.rotate_node = function(itemstack, placer, pointed_thing)
 		minetest.rotate_and_place(itemstack, placer, pointed_thing,
-		minetest.setting_getbool("creative_mode"), 
-		{invert_wall = placer:get_player_control().sneak})
+				minetest.setting_getbool("creative_mode"),
+				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
 end
