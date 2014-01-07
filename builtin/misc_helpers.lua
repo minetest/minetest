@@ -302,6 +302,12 @@ if minetest then
 			iswall = false
 		end
 
+		if minetest.is_protected(pos, placer:get_player_name()) then
+			minetest.record_protection_violation(pos,
+					placer:get_player_name())
+			return
+		end
+
 		local ndef = minetest.registered_nodes[node.name]
 		if not ndef or not ndef.buildable_to then
 			return
