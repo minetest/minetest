@@ -281,10 +281,6 @@
 #disable_anticheat = false
 # If true, actions are recorded for rollback
 #enable_rollback_recording = false
-# If true, blocks are cached (and generated if not before) before a player is spawned.
-#cache_block_before_spawn = true
-# Defines the maximum height a player can spawn in a map, above water level
-#max_spawn_height = 50
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0

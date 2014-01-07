@@ -428,7 +428,7 @@ public:
 	void prepareBlock(MapBlock *block);
 
 	// Helper for placing objects on ground level
-	s16 findGroundLevel(v2s16 p2d, bool cacheBlocks);
+	s16 findGroundLevel(v2s16 p2d);
 
 	/*
 		Misc. helper functions for fiddling with directory and file
