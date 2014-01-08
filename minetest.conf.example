@@ -361,6 +361,7 @@
 # try reducing it, but don't reduce it to a number below double of targeted
 # client number
 #max_packets_per_iteration = 1024
+
 #
 # Physics stuff
 #

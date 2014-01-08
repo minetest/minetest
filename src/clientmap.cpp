@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
+#include "game.h" // CameraModes
 #include "util/mathconstants.h"
 #include <algorithm>
 
@@ -866,13 +867,16 @@ void ClientMap::renderPostFx()
 	v3f camera_position = m_camera_position;
 	m_camera_mutex.Unlock();
 
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+
 	MapNode n = getNodeNoEx(floatToInt(camera_position, BS));
 
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
+	// - Do not if player is in third person mode
 	const ContentFeatures& features = nodemgr->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") && m_gamedef->checkLocalPrivilege("noclip")))
+	if(features.solidness == 2 && !(g_settings->getBool("noclip") && m_gamedef->checkLocalPrivilege("noclip")) && player->camera_mode == CAMERA_MODE_FIRST)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);
 	}
