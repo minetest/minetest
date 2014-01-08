@@ -530,6 +530,16 @@ enum ToClientCommand
 		u8 do_override (boolean)
 		u16 day-night ratio 0...65535
 	*/
+	
+	TOCLIENT_LOCAL_PLAYER_ANIMATIONS = 0x51,
+	/*
+		u16 command
+		v2f1000 stand/idle
+		v2f1000 walk
+		v2f1000 dig
+		v2f1000 walk+dig
+		f1000 frame_speed
+	*/
 };
 
 enum ToServerCommand

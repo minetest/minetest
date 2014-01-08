@@ -40,6 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CAMERA_OFFSET_STEP 200
 
+#include "nodedef.h"
+#include "game.h" // CameraModes
+
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		IGameDef *gamedef):
 	m_smgr(smgr),
@@ -248,7 +251,8 @@ void Camera::step(f32 dtime)
 }
 
 void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
-		v2u32 screensize, f32 tool_reload_ratio)
+		v2u32 screensize, f32 tool_reload_ratio,
+		int current_camera_mode, ClientEnvironment &c_env)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -276,7 +280,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 	// Fall bobbing animation
 	float fall_bobbing = 0;
-	if(player->camera_impact >= 1)
+	if(player->camera_impact >= 1 && current_camera_mode < CAMERA_MODE_THIRD)
 	{
 		if(m_view_bobbing_fall == -1) // Effect took place and has finished
 			player->camera_impact = m_view_bobbing_fall = 0;
@@ -303,7 +307,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f rel_cam_target = v3f(0,0,1);
 	v3f rel_cam_up = v3f(0,1,0);
 
-	if (m_view_bobbing_anim != 0)
+	if (m_view_bobbing_anim != 0 && current_camera_mode < CAMERA_MODE_THIRD)
 	{
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
@@ -352,19 +356,60 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 
+	// Seperate camera position for calculation
+	v3f my_cp = m_camera_position;
+	
+	// Reposition the camera for third person view
+	if (current_camera_mode > CAMERA_MODE_FIRST) {
+		
+		if (current_camera_mode == CAMERA_MODE_THIRD_FRONT)
+			m_camera_direction *= -1;
+
+		my_cp.Y += 2;
+
+		// Calculate new position
+		bool abort = false;
+		for (int i = BS; i <= BS*2; i++) {
+			my_cp.X = m_camera_position.X + m_camera_direction.X*-i;
+			my_cp.Z = m_camera_position.Z + m_camera_direction.Z*-i;
+			if (i > 12)
+				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y*-i);
+
+			// Prevent camera positioned inside nodes
+			INodeDefManager *nodemgr = m_gamedef->ndef();
+			MapNode n = c_env.getClientMap().getNodeNoEx(floatToInt(my_cp, BS));
+			const ContentFeatures& features = nodemgr->get(n);
+			if(features.walkable) {
+				my_cp.X += m_camera_direction.X*-1*-BS/2;
+				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
+				my_cp.Y += m_camera_direction.Y*-1*-BS/2;
+				abort = true;
+				break;
+			}
+		}
+
+		// If node blocks camera position don't move y to heigh
+		if (abort && my_cp.Y > player_position.Y+BS*2)
+			my_cp.Y = player_position.Y+BS*2;
+	}
+
 	// Update offset if too far away from the center of the map
 	m_camera_offset.X += CAMERA_OFFSET_STEP*
-			(((s16)(m_camera_position.X/BS) - m_camera_offset.X)/CAMERA_OFFSET_STEP);
+			(((s16)(my_cp.X/BS) - m_camera_offset.X)/CAMERA_OFFSET_STEP);
 	m_camera_offset.Y += CAMERA_OFFSET_STEP*
-			(((s16)(m_camera_position.Y/BS) - m_camera_offset.Y)/CAMERA_OFFSET_STEP);
+			(((s16)(my_cp.Y/BS) - m_camera_offset.Y)/CAMERA_OFFSET_STEP);
 	m_camera_offset.Z += CAMERA_OFFSET_STEP*
-			(((s16)(m_camera_position.Z/BS) - m_camera_offset.Z)/CAMERA_OFFSET_STEP);
+			(((s16)(my_cp.Z/BS) - m_camera_offset.Z)/CAMERA_OFFSET_STEP);
 	
 	// Set camera node transformation
-	m_cameranode->setPosition(m_camera_position-intToFloat(m_camera_offset, BS));
+	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
 	m_cameranode->setUpVector(abs_cam_up);
 	// *100.0 helps in large map coordinates
-	m_cameranode->setTarget(m_camera_position-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
+	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
+
+	// update the camera position in front-view mode to render blocks behind player
+	if (current_camera_mode == CAMERA_MODE_THIRD_FRONT)
+		m_camera_position = my_cp;
 
 	// Get FOV setting
 	f32 fov_degrees = g_settings->getFloat("fov");

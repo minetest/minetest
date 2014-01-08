@@ -269,6 +269,9 @@ public:
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
 
+	v2f local_animations[4];
+	float local_animation_speed;
+
 	u16 hp;
 
 	float hurt_tilt_timer;

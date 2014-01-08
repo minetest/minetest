@@ -1874,6 +1874,12 @@ Player-only: (no-op for other objects)
 - override_day_night_ratio(ratio or nil)
   ^ 0...1: Overrides day-night ratio, controlling sunlight to a specific amount
   ^ nil: Disables override, defaulting to sunlight based on day-night cycle
+- set_local_animation({x=0, y=79}, {x=168, y=187}, {x=189, y=198}, {x=200, y=219}, frame_speed=30): set animation for player model in third person view
+  ^ stand/idle animation key frames
+  ^ walk animation key frames
+  ^ dig animation key frames
+  ^ walk+dig animation key frames
+  ^ animation frame speed
 
 InvRef: Reference to an inventory
 methods:

@@ -406,6 +406,31 @@ int ObjectRef::l_set_animation(lua_State *L)
 	return 0;
 }
 
+// set_local_animation(self, {stand/ilde}, {walk}, {dig}, {walk+dig}, frame_speed)
+int ObjectRef::l_set_local_animation(lua_State *L)
+{
+	//NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// Do it
+	v2f frames[4];
+	for (int i=0;i<4;i++) {
+		if(!lua_isnil(L, 2+1))
+			frames[i] = read_v2f(L, 2+i);
+	}
+	float frame_speed = 30;
+	if(!lua_isnil(L, 6))
+		frame_speed = lua_tonumber(L, 6);
+
+	if (!getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 0;
+}
+
 // set_bone_position(self, std::string bone, v3f position, v3f rotation)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
@@ -1270,5 +1295,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, override_day_night_ratio),
+	luamethod(ObjectRef, set_local_animation),
 	{0,0}
 };

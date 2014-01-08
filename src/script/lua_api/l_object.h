@@ -231,6 +231,9 @@ private:
 	// override_day_night_ratio(self, type, list)
 	static int l_override_day_night_ratio(lua_State *L);
 
+	// set_local_animation(self, {stand/ilde}, {walk}, {dig}, {walk+dig}, frame_speed)
+	static int l_set_local_animation(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 
