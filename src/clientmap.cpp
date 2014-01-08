@@ -890,6 +890,56 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	}
 }
 
+void ClientMap::renderBlockBoundaries()
+{
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	video::SMaterial mat;
+	mat.Lighting = false;
+	mat.ZWriteEnable = false;
+
+	const v3f inset(BS/2);
+	const v3f blocksize(MAP_BLOCKSIZE);
+
+	for (int pass = 0; pass < 2; ++pass) {
+		video::SColor color_offset(0, 0, 0, 0);
+		if (pass == 0) {
+			mat.Thickness = 1;
+			mat.ZBuffer = video::ECFN_ALWAYS;
+			color_offset.setGreen(64);
+		} else {
+			mat.Thickness = 3;
+			mat.ZBuffer = video::ECFN_LESSEQUAL;
+		}
+		driver->setMaterial(mat);
+
+		for(std::map<v3s16, MapBlock*>::iterator
+				i = m_drawlist.begin();
+				i != m_drawlist.end(); ++i)
+		{
+			video::SColor color(255, 0, 0, 0);
+			if (i->second->isDummy()) {
+				color.setRed(255);
+				color.setGreen(128);
+			} else {
+				color.setBlue(255);
+			}
+
+			v3s16 bpos = i->first;
+			core::aabbox3d<f32> bound;
+			bound.MinEdge = intToFloat(bpos, BS)*blocksize
+				+ inset
+				- v3f(BS)*0.5;
+			bound.MaxEdge = bound.MinEdge
+				+ blocksize*BS
+				- inset
+				- inset;
+			color = color + color_offset;
+
+			driver->draw3DBox(bound, color);
+		}
+	}
+}
+
 void ClientMap::PrintInfo(std::ostream &out)
 {
 	out<<"ClientMap: ";
