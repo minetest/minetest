@@ -642,6 +642,7 @@ public:
 	void processQueue(IGameDef *gamedef)
 	{
 #ifndef SERVER
+		//NOTE this is only thread safe for ONE consumer thread!
 		while(!m_get_clientcached_queue.empty())
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>

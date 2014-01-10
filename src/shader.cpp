@@ -427,21 +427,18 @@ u32 ShaderSource::getShaderId(const std::string &name)
 		/* infostream<<"Waiting for shader from main thread, name=\""
 				<<name<<"\""<<std::endl;*/
 
-		try{
-			while(true) {
-				// Wait result for a second
-				GetResult<std::string, u32, u8, u8>
-					result = result_queue.pop_front(1000);
+		while(true) {
+			GetResult<std::string, u32, u8, u8>
+				result = result_queue.pop_frontNoEx();
 
-				if (result.key == name) {
-					return result.item;
-				}
+			if (result.key == name) {
+				return result.item;
+			}
+			else {
+				errorstream << "Got shader with invalid name: " << result.key << std::endl;
 			}
 		}
-		catch(ItemNotFoundException &e){
-			errorstream<<"Waiting for shader " << name << " timed out."<<std::endl;
-			return 0;
-		}
+
 	}
 
 	infostream<<"getShaderId(): Failed"<<std::endl;
@@ -537,6 +534,7 @@ void ShaderSource::processQueue()
 	/*
 		Fetch shaders
 	*/
+	//NOTE this is only thread safe for ONE consumer thread!
 	if(!m_get_shader_queue.empty()){
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_shader_queue.pop();
