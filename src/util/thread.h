@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../jthread/jthread.h"
 #include "../jthread/jmutex.h"
 #include "../jthread/jmutexautolock.h"
+#include "porting.h"
 
 template<typename T>
 class MutexedVariable
@@ -123,36 +124,38 @@ public:
 	void add(Key key, Caller caller, CallerData callerdata,
 			ResultQueue<Key, T, Caller, CallerData> *dest)
 	{
-		JMutexAutoLock lock(m_queue.getMutex());
-		
-		/*
-			If the caller is already on the list, only update CallerData
-		*/
-		for(typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
-				i = m_queue.getList().begin();
-				i != m_queue.getList().end(); ++i)
 		{
-			GetRequest<Key, T, Caller, CallerData> &request = *i;
+			JMutexAutoLock lock(m_queue.getMutex());
 
-			if(request.key == key)
+			/*
+				If the caller is already on the list, only update CallerData
+			*/
+			for(typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
+					i = m_queue.getList().begin();
+					i != m_queue.getList().end(); ++i)
 			{
-				for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
-						i = request.callers.begin();
-						i != request.callers.end(); ++i)
+				GetRequest<Key, T, Caller, CallerData> &request = *i;
+
+				if(request.key == key)
 				{
-					CallerInfo<Caller, CallerData, Key, T> &ca = *i;
-					if(ca.caller == caller)
+					for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
+							i = request.callers.begin();
+							i != request.callers.end(); ++i)
 					{
-						ca.data = callerdata;
-						return;
+						CallerInfo<Caller, CallerData, Key, T> &ca = *i;
+						if(ca.caller == caller)
+						{
+							ca.data = callerdata;
+							return;
+						}
 					}
+					CallerInfo<Caller, CallerData, Key, T> ca;
+					ca.caller = caller;
+					ca.data = callerdata;
+					ca.dest = dest;
+					request.callers.push_back(ca);
+					return;
 				}
-				CallerInfo<Caller, CallerData, Key, T> ca;
-				ca.caller = caller;
-				ca.data = callerdata;
-				ca.dest = dest;
-				request.callers.push_back(ca);
-				return;
 			}
 		}
 
@@ -168,12 +171,17 @@ public:
 		ca.dest = dest;
 		request.callers.push_back(ca);
 		
-		m_queue.getList().push_back(request);
+		m_queue.push_back(request);
 	}
 
-	GetRequest<Key, T, Caller, CallerData> pop(bool wait_if_empty=false)
+	GetRequest<Key, T, Caller, CallerData> pop(unsigned int timeout_ms)
 	{
-		return m_queue.pop_front(wait_if_empty);
+		return m_queue.pop_front(timeout_ms);
+	}
+
+	GetRequest<Key, T, Caller, CallerData> pop()
+	{
+		return m_queue.pop_frontNoEx();
 	}
 
 	void pushResult(GetRequest<Key, T, Caller, CallerData> req,

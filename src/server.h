@@ -330,7 +330,7 @@ public:
 	// Actual processing is done in an another thread.
 	void step(float dtime);
 	// This is run by ServerThread and does the actual processing
-	void AsyncRunStep();
+	void AsyncRunStep(bool initial_step=false);
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 

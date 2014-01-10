@@ -345,7 +345,10 @@
 # Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
 # On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
 #num_emerge_threads = 1
-
+# maximum number of packets sent per send step, if you have a slow connection
+# try reducing it, but don't reduce it to a number below double of targeted
+# client number
+#max_packets_per_iteration = 1024
 #
 # Physics stuff
 #
