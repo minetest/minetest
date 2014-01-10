@@ -548,7 +548,7 @@ protected:
 		if (select_timeout > 0) {
 			// in Winsock it is forbidden to pass three empty
 			// fd_sets to select(), so in that case use sleep_ms
-			if (max_fd == -1) {
+			if (max_fd != -1) {
 				select_tv.tv_sec = select_timeout / 1000;
 				select_tv.tv_usec = (select_timeout % 1000) * 1000;
 				int retval = select(max_fd + 1, &read_fd_set,
