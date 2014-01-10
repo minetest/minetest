@@ -621,8 +621,8 @@ void Connection::processCommand(ConnectionCommand &c)
 		return;
 	case CONNCMD_SERVE:
 		dout_con<<getDesc()<<" processing CONNCMD_SERVE port="
-				<<c.port<<std::endl;
-		serve(c.port);
+				<<c.address.getPort()<<std::endl;
+		serve(c.address);
 		return;
 	case CONNCMD_CONNECT:
 		dout_con<<getDesc()<<" processing CONNCMD_CONNECT"<<std::endl;
@@ -1020,14 +1020,14 @@ nextpeer:
 	}
 }
 
-void Connection::serve(u16 port)
+void Connection::serve(Address bind_addr)
 {
-	dout_con<<getDesc()<<" serving at port "<<port<<std::endl;
-	try{
-		m_socket.Bind(port);
+	dout_con << getDesc() << " serving at [" << bind_addr.serializeString()
+	         << "]:" << bind_addr.getPort() << std::endl;
+	try {
+		m_socket.Bind(bind_addr);
 		m_peer_id = PEER_ID_SERVER;
-	}
-	catch(SocketException &e){
+	} catch(SocketException &e) {
 		// Create event
 		ConnectionEvent ce;
 		ce.bindFailed();
@@ -1037,8 +1037,8 @@ void Connection::serve(u16 port)
 
 void Connection::connect(Address address)
 {
-	dout_con<<getDesc()<<" connecting to "<<address.serializeString()
-			<<":"<<address.getPort()<<std::endl;
+	dout_con << getDesc() << " connecting to [" << address.serializeString()
+	         << "]:" << address.getPort() << std::endl;
 
 	std::map<u16, Peer*>::iterator node = m_peers.find(PEER_ID_SERVER);
 	if(node != m_peers.end()){
@@ -1052,8 +1052,14 @@ void Connection::connect(Address address)
 	ConnectionEvent e;
 	e.peerAdded(peer->id, peer->address);
 	putEvent(e);
-	
-	m_socket.Bind(0);
+
+	Address bind_addr;
+	if (address.isIPv6()) {
+		bind_addr.setAddress((IPv6AddressBytes*) NULL);
+	} else {
+		bind_addr.setAddress(0,0,0,0);
+	}
+	m_socket.Bind(bind_addr);
 	
 	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
 	m_peer_id = PEER_ID_INEXISTENT;
@@ -1575,10 +1581,10 @@ void Connection::putCommand(ConnectionCommand &c)
 	m_command_queue.push_back(c);
 }
 
-void Connection::Serve(unsigned short port)
+void Connection::Serve(Address bind_addr)
 {
 	ConnectionCommand c;
-	c.serve(port);
+	c.serve(bind_addr);
 	putCommand(c);
 }
 
