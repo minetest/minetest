@@ -152,7 +152,8 @@ bool               push_json_value           (lua_State *L,
                                               int nullindex);
 void               read_json_value           (lua_State *L,
                                               Json::Value &root,
-                                              int index);
+                                              int index,
+                                              u8 recursion = 0);
 
 extern struct EnumString es_TileAnimationType[];
 
