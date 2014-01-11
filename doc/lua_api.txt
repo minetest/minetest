@@ -1590,6 +1590,15 @@ minetest.rotate_node(itemstack, placer, pointed_thing)
   the creative mode setting, and checks for "sneak" to set the invert_wall
   parameter.
 
+minetest.forceload_block(pos)
+^ forceloads the position pos.
+^ returns true if area could be forceloaded
+
+minetest.forceload_free_block(pos)
+^ stops forceloading the position pos.
+
+Please note that forceloaded areas are saved when the server restarts.
+
 Global objects:
 minetest.env - EnvRef of the server environment and world.
 ^ Any function in the minetest namespace can be called using the syntax

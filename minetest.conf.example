@@ -301,6 +301,8 @@
 # This is a trade-off between sqlite transaction overhead and
 # memory consumption (4096=100MB, as a rule of thumb)
 #max_clearobjects_extra_loaded_blocks = 4096
+# Maximum number of forceloaded blocks
+#max_forceloaded_blocks = 16
 # Interval of sending time of day to clients
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
