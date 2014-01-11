@@ -1088,7 +1088,7 @@ bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
 }
 
 // Converts Lua table --> JSON
-void get_json_value(lua_State *L, Json::Value &root, int index)
+void read_json_value(lua_State *L, Json::Value &root, int index)
 {
 	int type = lua_type(L, index);
 	if (type == LUA_TBOOLEAN) {
@@ -1104,7 +1104,7 @@ void get_json_value(lua_State *L, Json::Value &root, int index)
 		while (lua_next(L, index)) {
 			// Key is at -2 and value is at -1
 			Json::Value value;
-			get_json_value(L, value, lua_gettop(L));
+			read_json_value(L, value, lua_gettop(L));
 
 			Json::ValueType roottype = root.type();
 			int keytype = lua_type(L, -1);

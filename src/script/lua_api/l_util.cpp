@@ -192,7 +192,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 
 	Json::Value root;
 	try {
-		get_json_value(L, root, 1);
+		read_json_value(L, root, 1);
 	} catch (SerializationError &e) {
 		lua_pushnil(L);
 		lua_pushstring(L, e.what());

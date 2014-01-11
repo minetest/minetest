@@ -150,7 +150,7 @@ void               luaentity_get             (lua_State *L,u16 id);
 bool               push_json_value           (lua_State *L,
                                               const Json::Value &value,
                                               int nullindex);
-void               get_json_value            (lua_State *L,
+void               read_json_value           (lua_State *L,
                                               Json::Value &root,
                                               int index);
 
