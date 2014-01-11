@@ -278,7 +278,7 @@ if minetest then
 		local undef = minetest.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
 			undef.on_rightclick(pointed_thing.under, node, placer,
-					itemstack)
+					itemstack, pointed_thing)
 			return
 		end
 		local pitch = placer:get_look_pitch()

@@ -2205,10 +2205,12 @@ Node definition (register_node)
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
-    on_rightclick = func(pos, node, clicker, itemstack),
+    on_rightclick = func(pos, node, clicker, itemstack, pointed_thing),
     ^ default: nil
     ^ if defined, itemstack will hold clicker's wielded item
-      Shall return the leftover itemstack
+    ^ Shall return the leftover itemstack
+    ^ Note: pointed_thing can be nil, if a mod calls this function
+     
     on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node
