@@ -882,7 +882,7 @@ bool Inventory::operator == (const Inventory &other) const
 
 	for(u32 i=0; i<m_lists.size(); i++)
 	{
-		if(m_lists[i] != other.m_lists[i])
+		if(*m_lists[i] != *other.m_lists[i])
 			return false;
 	}
 	return true;
