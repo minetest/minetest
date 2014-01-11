@@ -562,7 +562,7 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 	return *this;
 }
 
-bool InventoryList::operator == (const InventoryList &other)
+bool InventoryList::operator == (const InventoryList &other) const
 {
 	if(m_size != other.m_size)
 		return false;
@@ -875,7 +875,7 @@ Inventory & Inventory::operator = (const Inventory &other)
 	return *this;
 }
 
-bool Inventory::operator == (const Inventory &other)
+bool Inventory::operator == (const Inventory &other) const
 {
 	if(m_lists.size() != other.m_lists.size())
 		return false;

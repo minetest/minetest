@@ -182,7 +182,11 @@ public:
 
 	InventoryList(const InventoryList &other);
 	InventoryList & operator = (const InventoryList &other);
-	bool operator == (const InventoryList &other);
+	bool operator == (const InventoryList &other) const;
+	bool operator != (const InventoryList &other) const
+	{
+		return !(*this == other);
+	}
 
 	const std::string &getName() const;
 	u32 getSize() const;
@@ -258,8 +262,12 @@ public:
 	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
-	bool operator == (const Inventory &other);
-	
+	bool operator == (const Inventory &other) const;
+	bool operator != (const Inventory &other) const
+	{
+		return !(*this == other);
+	}
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
