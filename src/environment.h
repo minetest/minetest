@@ -170,6 +170,7 @@ public:
 	}
 
 	std::set<v3s16> m_list;
+	std::set<v3s16> m_forceloaded_list;
 
 private:
 };
@@ -304,6 +305,8 @@ public:
 	
 	// is weather active in this environment?
 	bool m_use_weather;
+	
+	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; };
 	
 private:
 
