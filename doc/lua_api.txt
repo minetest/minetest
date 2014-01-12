@@ -1517,6 +1517,8 @@ Random:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
 ^ Gives a unique hash number for a node position (16+16+16=48bit)
+minetest.get_position_from_hash(hash) -> postion
+^ Inverse transform of minetest.hash_node_postion
 minetest.get_item_group(name, group) -> rating
 ^ Get rating of a group of an item. (0 = not in group)
 minetest.get_node_group(name, group) -> rating

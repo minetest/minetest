@@ -22,7 +22,7 @@ function minetest.forceload_block(pos)
 		blocks_forceloaded[hash] = blocks_forceloaded[hash] + 1
 		return true
 	else
-		if total_forceloaded >= (minetest.setting_get("max_forceloaded_blocks") or 16) then
+		if total_forceloaded >= (tonumber(minetest.setting_get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
 		total_forceloaded = total_forceloaded+1
