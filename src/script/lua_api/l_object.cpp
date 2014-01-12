@@ -944,12 +944,15 @@ int ObjectRef::l_hud_change(lua_State *L)
 		case HUD_STAT_DIR:
 			e->dir = lua_tonumber(L, 4);
 			value = &e->dir;
+			break;
 		case HUD_STAT_ALIGN:
 			e->align = read_v2f(L, 4);
 			value = &e->align;
+			break;
 		case HUD_STAT_OFFSET:
 			e->offset = read_v2f(L, 4);
 			value = &e->offset;
+			break;
 	}
 
 	getServer(L)->hudChange(player, id, stat, value);
