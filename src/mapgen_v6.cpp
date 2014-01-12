@@ -439,7 +439,8 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 		addDirtGravelBlobs();
 
 		// Flow mud away from steep edges
-		flowMud(mudflow_minpos, mudflow_maxpos);
+		if (!(flags & MGV6_NOMUDFLOW))
+			flowMud(mudflow_minpos, mudflow_maxpos);
 
 	}
 	

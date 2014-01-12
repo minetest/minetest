@@ -47,6 +47,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
 	{"nolight",        MG_NOLIGHT},
+	{"v6_nomudflow",   MGV6_NOMUDFLOW},
 	{NULL,             0}
 };
 
