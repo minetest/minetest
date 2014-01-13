@@ -21,7 +21,7 @@ public:
 	void addWire(Map& map, INodeDefManager* ndef, v3s16 pos);
 	void removeWire(Map& map, INodeDefManager* ndef, v3s16 pos);
 	void update(float dtime, Map& map,  INodeDefManager* ndef);
-	void updateElement(MapNode& node, const unsigned char* func);
+	void updateElement(MapNode& node, INodeDefManager* ndef, const unsigned char* func);
 	void pushElementToQueue(v3s16 pos);
 	void processElementsQueue(Map& map, INodeDefManager* ndef);
 private:
