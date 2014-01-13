@@ -344,8 +344,6 @@ ServerEnvironment::~ServerEnvironment()
 			i = m_abms.begin(); i != m_abms.end(); ++i){
 		delete i->abm;
 	}
-
-	delete m_circuit;
 }
 
 Map & ServerEnvironment::getMap()
