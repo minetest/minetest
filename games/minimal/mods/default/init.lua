@@ -709,6 +709,103 @@ end
 
 --
 
+minetest.register_node("default:logic_gate", {
+	description = "Gate",
+	circuit_states = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	tiles = {"default_logic_gate.png", "default_logic_gate_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	paramtype2 = "facedir",
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("default:logic_source", {
+	description = "Source",
+	circuit_states = {63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63},
+	tiles = {"default_logic_source.png", "default_logic_source_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("default:wire", {
+	description = "Wire",
+	is_wire = true,
+	tiles = {"default_wire.png", "default_wire_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+
+minetest.register_node("default:wire2", {
+	description = "Wire2",
+	is_wire = true,
+	tiles = {"default_wire2.png", "default_wire2_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+
+minetest.register_node("default:lever", {
+	description = "Lever",
+	circuit_states = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	on_rightclick = function(pos)
+		node = minetest.get_node(pos)
+		minetest.swap_node(pos, {name = "default:active_lever",
+		                   param1 = node.param1, param2 = node.param2})
+	end,
+	tiles = {"default_lever.png", "default_lever_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("default:active_lever", {
+	description = "Active lever",
+	circuit_states = {63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+	                  63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63},
+	on_rightclick = function(pos)
+		node = minetest.get_node(pos)
+		minetest.swap_node(pos, {name = "default:lever",
+		                   param1 = node.param1, param2 = node.param2})
+	end,
+	tiles = {"default_active_lever.png", "default_active_lever_side.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("default:lamp", {
+	description = "Lamp",
+	on_activate = function(pos)
+		node = minetest.get_node(pos)
+		node.name = "default:active_lamp"
+		minetest.swap_node(pos, node)
+	end,
+	tiles = {"default_lamp.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_node("default:active_lamp", {
+	description = "Active lamp",
+	on_deactivate = function(pos)
+		node = minetest.get_node(pos)
+		minetest.swap_node(pos, {name = "default:lamp",
+		                   param1 = node.param1, param2 = node.param2})
+	end,
+	tiles = {"default_active_lamp.png"},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
 minetest.register_node("default:stone", {
 	description = "Stone",
 	tiles ={"default_stone.png"},
