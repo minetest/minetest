@@ -254,9 +254,16 @@ void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 }
 
 
-void Circuit::updateElement(MapNode& node, const unsigned char* func)
+void Circuit::updateElement(MapNode& node, INodeDefManager* ndef, const unsigned char* func)
 {
-	node.circuit_element_iterator -> m_func = func;
+	const unsigned char* node_func;
+	if(ndef->get(node).param_type_2 == CPT2_FACEDIR)
+	{
+		node_func = circuit_element_states.addState(func, node.param2);
+	} else {
+		node_func = circuit_element_states.addState(func);
+	}
+	node.circuit_element_iterator -> m_func = node_func;
 	node.circuit_element_iterator -> m_node = node;
 }
 
