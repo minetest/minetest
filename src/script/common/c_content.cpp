@@ -261,6 +261,20 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_getfield(L, index, "after_destruct");
 	if(!lua_isnil(L, -1)) f.has_after_destruct = true;
 	lua_pop(L, 1);
+	lua_getfield(L, index, "on_activate");
+	if(!lua_isnil(L, -1))
+	{
+		f.has_on_activate = true;
+		f.is_circuit_element = true;
+	}
+	lua_pop(L, 1);
+	lua_getfield(L, index, "on_deactivate");
+	if(!lua_isnil(L, -1))
+	{
+		f.has_on_deactivate = true;
+		f.is_circuit_element = true;
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "on_rightclick");
 	f.rightclickable = lua_isfunction(L, -1);
@@ -311,6 +325,37 @@ ContentFeatures read_content_features(lua_State *L, int index)
 				f.tiledef[i] = lasttile;
 				i++;
 			}
+		}
+	}
+	lua_pop(L, 1);
+	
+	/* Circuit options */
+	lua_getfield(L, index, "is_wire");
+	if(!lua_isnil(L, -1))
+	{
+		f.is_wire = true;
+	} else {
+		f.is_wire = false;
+	}
+	
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "circuit_states");
+	if(lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+	}
+	if(lua_istable(L, -1))
+	{
+		f.is_circuit_element = true;
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while(lua_next(L, table) != 0)
+		{
+			f.circuit_element_states[i] = lua_tonumber(L, -1);
+			lua_pop(L, 1);
+			++i;
 		}
 	}
 	lua_pop(L, 1);

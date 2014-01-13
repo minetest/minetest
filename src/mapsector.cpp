@@ -185,6 +185,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 		IGameDef *gamedef
 	)
 {
+	dstream << "Deserialize: " << p2d.X << " " << p2d.Y << std::endl;
 	/*
 		[0] u8 serialization version
 		+ heightmap data

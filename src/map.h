@@ -46,6 +46,7 @@ class EmergeManager;
 class ServerEnvironment;
 struct BlockMakeData;
 struct MapgenParams;
+class Circuit;
 
 
 /*
@@ -139,8 +140,8 @@ public:
 class Map /*: public NodeContainer*/
 {
 public:
-
 	Map(std::ostream &dout, IGameDef *gamedef);
+	Map(std::ostream &dout, IGameDef *gamedef, Circuit* circuit);
 	virtual ~Map();
 
 	/*virtual u16 nodeContainerId() const
@@ -353,6 +354,9 @@ public:
 
 	virtual s16 getHeat(v3s16 p);
 	virtual s16 getHumidity(v3s16 p);
+	
+	Circuit* getCircuit();
+	INodeDefManager* getNodeDefManager();
 
 protected:
 	friend class LuaVoxelManip;
@@ -360,6 +364,7 @@ protected:
 	std::ostream &m_dout; // A bit deprecated, could be removed
 
 	IGameDef *m_gamedef;
+	Circuit* m_circuit;
 
 	std::set<MapEventReceiver*> m_event_receivers;
 
@@ -385,7 +390,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge);
+	ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge, Circuit* m_circuit);
 	~ServerMap();
 
 	s32 mapType() const

@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_indev.h"
 #include "mapgen_singlenode.h"
 #include "mapgen_math.h"
+#include "circuit.h"
 
 
 class EmergeThread : public JThread
@@ -52,6 +53,7 @@ class EmergeThread : public JThread
 public:
 	Server *m_server;
 	ServerMap *map;
+	Circuit* m_circuit;
 	EmergeManager *emerge;
 	Mapgen *mapgen;
 	bool enable_mapgen_debug_info;
@@ -458,6 +460,8 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	if (!block || block->isDummy() || !block->isGenerated()) {
 		EMERGE_DBG_OUT("not in memory, attempting to load from disk");
 		block = map->loadBlock(p);
+		block->pushElementsToCircuit(m_circuit);
+		m_circuit->processElementsQueue(*map, map->getNodeDefManager());
 		if (block && block->isGenerated())
 			map->prepareBlock(block);
 	}
@@ -485,9 +489,10 @@ void *EmergeThread::Thread() {
 	v3s16 p;
 	u8 flags;
 
-	map    = (ServerMap *)&(m_server->m_env->getMap());
-	emerge = m_server->m_emerge;
-	mapgen = emerge->mapgen[id];
+	map       = (ServerMap *)&(m_server->m_env->getMap());
+	m_circuit = m_server->m_circuit;
+	emerge    = m_server->m_emerge;
+	mapgen    = emerge->mapgen[id];
 	enable_mapgen_debug_info = emerge->mapgen_debug_info;
 
 	while (!StopRequested())

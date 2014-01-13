@@ -195,6 +195,47 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 	lua_pop(L, 1); // Pop error handler
 }
 
+void ScriptApiNode::node_on_activate(v3s16 p, MapNode node)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
+	INodeDefManager *ndef = getServer()->ndef();
+
+	// Push callback function on stack
+	if(!getItemCallback(ndef->get(node).name.c_str(), "on_activate"))
+	{
+		return;
+	}
+	// Call function
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
+}
+
+void ScriptApiNode::node_on_deactivate(v3s16 p, MapNode node)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L);
+
+	INodeDefManager *ndef = getServer()->ndef();
+
+	// Push callback function on stack
+	if(!getItemCallback(ndef->get(node).name.c_str(), "on_deactivate"))
+		return;
+
+	// Call function
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, errorhandler))
+		scriptError();
+	lua_pop(L, 1); // Pop error handler
+}
+
 bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER

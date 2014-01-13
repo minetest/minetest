@@ -26,8 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <string>
 #include <vector>
+#include <list>
 
 class INodeDefManager;
+class CircuitElement;
+class Circuit;
 
 /*
 	Naming scheme:
@@ -135,6 +138,8 @@ struct MapNode
 		E.g. direction for torches and flowing water.
 	*/
 	u8 param2;
+	
+	std::list <CircuitElement>::iterator circuit_element_iterator;
 
 	MapNode(const MapNode & n)
 	{

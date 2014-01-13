@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "util/serialize.h"
+#include "circuit.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -308,10 +309,11 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-		GameScripting *scriptIface,
+		GameScripting *scriptIface, Circuit* circuit,
 		IGameDef *gamedef, IBackgroundBlockEmerger *emerger):
 	m_map(map),
 	m_script(scriptIface),
+	m_circuit(circuit),
 	m_gamedef(gamedef),
 	m_emerger(emerger),
 	m_random_spawn_timer(3),
@@ -342,6 +344,8 @@ ServerEnvironment::~ServerEnvironment()
 			i = m_abms.begin(); i != m_abms.end(); ++i){
 		delete i->abm;
 	}
+
+	delete m_circuit;
 }
 
 Map & ServerEnvironment::getMap()
@@ -849,6 +853,17 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	bool succeeded = m_map->addNodeWithEvent(p, n);
 	if(!succeeded)
 		return false;
+	
+	if(ndef->get(n).is_wire)
+	{
+		m_circuit->addWire(getMap(), ndef, p);
+	}
+	// Call circuit update
+	if(ndef->get(n).is_circuit_element)
+	{
+		m_circuit->addElement(getMap(), ndef, p, ndef->get(n).circuit_element_states);
+	}
+	
 	// Call post-destructor
 	if(ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
@@ -870,6 +885,15 @@ bool ServerEnvironment::removeNode(v3s16 p)
 	bool succeeded = m_map->removeNodeWithEvent(p);
 	if(!succeeded)
 		return false;
+	if(ndef->get(n_old).is_wire)
+	{
+		m_circuit->removeWire(*m_map, ndef, p);
+	}
+	if(ndef->get(n_old).is_circuit_element)
+	{
+		m_circuit->removeElement(n_old.circuit_element_iterator);
+	}
+	
 	// Call post-destructor
 	if(ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
@@ -879,7 +903,30 @@ bool ServerEnvironment::removeNode(v3s16 p)
 
 bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 {
-	return m_map->addNodeWithEvent(p, n, false);
+	INodeDefManager *ndef = m_gamedef->ndef();
+	MapNode n_old = m_map->getNodeNoEx(p);
+	bool succeeded = m_map->addNodeWithEvent(p, n, false);
+	if(succeeded)
+	{
+		MapNode n_new = m_map->getNodeNoEx(p);
+		if(ndef->get(n).is_circuit_element)
+		{
+			if(ndef->get(n_new).is_circuit_element)
+			{
+				n_new.circuit_element_iterator = n_old.circuit_element_iterator;
+				m_map->setNode(p, n_new);
+				m_circuit->updateElement(n_new, ndef->get(n_new).circuit_element_states);
+			} else {
+			}
+		} else {
+			m_circuit->removeElement(n.circuit_element_iterator);
+			if(ndef->get(n).is_wire)
+			{
+				m_circuit->addWire(*m_map, ndef, p);
+			}
+		}
+	}
+	return succeeded;
 }
 
 std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)
@@ -1076,6 +1123,11 @@ void ServerEnvironment::step(float dtime)
 			player->move(dtime, *m_map, 100*BS);
 		}
 	}
+	
+	/*
+	 * Update circuit
+	 */
+	m_circuit -> update(dtime, *m_map, m_gamedef->ndef());
 
 	/*
 		Manage active block list

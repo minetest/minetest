@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
 #include "log.h"
+#include "circuit_element.h"
 #include <string>
 #include <sstream>
 
@@ -552,6 +553,8 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
+	
+// 	dstream << "Count: " << nodecount << std::endl;
 
 	assert(version >= 22);
 	assert(content_width == 1 || content_width == 2);
