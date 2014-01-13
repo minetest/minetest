@@ -98,7 +98,7 @@ void CircuitElement::updateState(GameScripting* m_script, Map& map, INodeDefMana
 
 
 void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,
-                                   Map& map, INodeDefManager* ndef, v3s16 pos)
+                                   Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& current_node)
 {
 	static v3s16 directions[6] = {v3s16(0, -1, 0),
 	                              v3s16(0, 0, 1),
@@ -107,7 +107,7 @@ void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int 
 	                              v3s16(0, 0, -1),
 	                              v3s16(1, 0, 0),
 	};
-	content_t node_type = map.getNodeNoEx(pos).getContent();
+	content_t node_type = current_node.getContent();
 	std::set <v3s16> used;
 	used.insert(pos);
 	std::queue <v3s16> q;

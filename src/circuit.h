@@ -19,7 +19,7 @@ public:
 	void addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsigned char* func);
 	void removeElement(std::list <CircuitElement>::iterator iter);
 	void addWire(Map& map, INodeDefManager* ndef, v3s16 pos);
-	void removeWire(Map& map, INodeDefManager* ndef, v3s16 pos);
+	void removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node);
 	void update(float dtime, Map& map,  INodeDefManager* ndef);
 	void updateElement(MapNode& node, INodeDefManager* ndef, const unsigned char* func);
 	void pushElementToQueue(v3s16 pos);

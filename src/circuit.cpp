@@ -87,7 +87,8 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	std::vector <std::vector <bool> > is_joint_created;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
-	CircuitElement::findConnected(all_connected, map, ndef, pos);
+	MapNode node = map.getNode(pos);
+	CircuitElement::findConnected(all_connected, map, ndef, pos, node);
 	is_joint_created.resize(all_connected.size());
 	for(unsigned int i = 0; i < all_connected.size(); ++i)
 	{
@@ -153,14 +154,14 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	}
 }
 
-void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos)
+void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node)
 {
 	// This is used for converting elements of current_face_connected to their ids in all_connected.
 	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
 	std::vector <std::vector <bool> > is_joint_created;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
-	CircuitElement::findConnected(all_connected, map, ndef, pos);
+	CircuitElement::findConnected(all_connected, map, ndef, pos, node);
 	is_joint_created.resize(all_connected.size());
 	for(unsigned int i = 0; i < all_connected.size(); ++i)
 	{
