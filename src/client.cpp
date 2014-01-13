@@ -1843,6 +1843,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		float expirationtime = readF1000(is);
 		float size = readF1000(is);
 		bool collisiondetection = readU8(is);
+		bool vertical = readU8(is);
 		std::string texture = deSerializeLongString(is);
 		bool vertical = false;
 		try {
@@ -1882,6 +1883,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		float minsize = readF1000(is);
 		float maxsize = readF1000(is);
 		bool collisiondetection = readU8(is);
+		bool vertical = readU8(is);
 		std::string texture = deSerializeLongString(is);
 		u32 id = readU32(is);
 		bool vertical = false;
