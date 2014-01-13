@@ -116,26 +116,6 @@ function math.hypot(x, y)
 end
 
 --------------------------------------------------------------------------------
-function explode_textlist_event(text)
-	
-	local retval = {}
-	retval.typ = "INV"
-	
-	local parts = text:split(":")
-				
-	if #parts == 2 then
-		retval.typ = parts[1]:trim()
-		retval.index= tonumber(parts[2]:trim())
-		
-		if type(retval.index) ~= "number" then
-			retval.typ = "INV"
-		end
-	end
-	
-	return retval
-end
-
---------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 	
@@ -366,6 +346,37 @@ if minetest then
 				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
+end
+
+--------------------------------------------------------------------------------
+function tbl.explode_table_event(evt)
+	if evt ~= nil then
+		local parts = evt:split(":")
+		if #parts == 3 then
+			local t = parts[1]:trim()
+			local r = tonumber(parts[2]:trim())
+			local c = tonumber(parts[3]:trim())
+			if type(r) == "number" and type(c) == "number" and t ~= "INV" then
+				return {type=t, row=r, column=c}
+			end
+		end
+	end
+	return {type="INV", row=0, column=0}
+end
+
+--------------------------------------------------------------------------------
+function tbl.explode_textlist_event(evt)
+	if evt ~= nil then
+		local parts = evt:split(":")
+		if #parts == 2 then
+			local t = parts[1]:trim()
+			local r = tonumber(parts[2]:trim())
+			if type(r) == "number" and t ~= "INV" then
+				return {type=t, index=r}
+			end
+		end
+	end
+	return {type="INV", index=0}
 end
 
 --------------------------------------------------------------------------------
