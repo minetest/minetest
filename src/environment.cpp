@@ -906,19 +906,30 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	bool succeeded = m_map->addNodeWithEvent(p, n, false);
 	if(succeeded)
 	{
-		MapNode n_new = m_map->getNodeNoEx(p);
-		if(ndef->get(n).is_circuit_element)
+		MapNode n_new = n;
+		if(ndef->get(n_new).is_circuit_element)
 		{
-			if(ndef->get(n_new).is_circuit_element)
+			if(ndef->get(n_old).is_circuit_element)
 			{
 				n_new.circuit_element_iterator = n_old.circuit_element_iterator;
 				m_map->setNode(p, n_new);
-				m_circuit->updateElement(n_new, ndef->get(n_new).circuit_element_states);
+				m_circuit->updateElement(n_new, ndef, ndef->get(n_new).circuit_element_states);
 			} else {
+				if(ndef->get(n_old).is_wire)
+				{
+					m_circuit->removeWire(*m_map, ndef, p);
+				}
+				m_circuit->addElement(*m_map, ndef, p, ndef->get(n_new).circuit_element_states);
 			}
 		} else {
-			m_circuit->removeElement(n.circuit_element_iterator);
-			if(ndef->get(n).is_wire)
+			if(ndef->get(n_old).is_circuit_element)
+			{
+				m_circuit->removeElement(n.circuit_element_iterator);
+			} else if(ndef->get(n_old).is_wire)
+			{
+				m_circuit->removeWire(*m_map, ndef, p);
+			}
+			if(ndef->get(n_new).is_wire)
 			{
 				m_circuit->addWire(*m_map, ndef, p);
 			}
