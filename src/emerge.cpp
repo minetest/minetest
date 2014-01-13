@@ -460,8 +460,11 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	if (!block || block->isDummy() || !block->isGenerated()) {
 		EMERGE_DBG_OUT("not in memory, attempting to load from disk");
 		block = map->loadBlock(p);
-		block->pushElementsToCircuit(m_circuit);
-		m_circuit->processElementsQueue(*map, map->getNodeDefManager());
+		if(block)
+		{
+			block->pushElementsToCircuit(m_circuit);
+			m_circuit->processElementsQueue(*map, map->getNodeDefManager());
+		}
 		if (block && block->isGenerated())
 			map->prepareBlock(block);
 	}
