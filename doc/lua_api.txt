@@ -1189,6 +1189,10 @@ minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
 minetest.register_ore(ore definition)
 minetest.register_decoration(decoration definition)
+minetest.override_item(name, redefinition)
+^ Overrides fields of an item registered with register_node/tool/craftitem.
+^ Note: Item must already be defined, (opt)depend on the mod defining it.
+^ Example: minetest.override_item("default:mese", {light_source=LIGHT_MAX})
 
 Global callback registration functions: (Call these only at load time)
 minetest.register_globalstep(func(dtime))
