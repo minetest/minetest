@@ -66,14 +66,41 @@ bool JSemaphore::Wait(unsigned int time_ms) {
 	}
 }
 
+typedef LONG (NTAPI *_NtQuerySemaphore)(
+    HANDLE SemaphoreHandle,
+    DWORD SemaphoreInformationClass,
+    PVOID SemaphoreInformation,
+    ULONG SemaphoreInformationLength,
+    PULONG ReturnLength OPTIONAL
+);
+
+typedef struct _SEMAPHORE_BASIC_INFORMATION {
+    ULONG CurrentCount;
+    ULONG MaximumCount;
+} SEMAPHORE_BASIC_INFORMATION;
+
+/* Note: this will only work as long as jthread is directly linked to application */
+/* it's gonna fail if someone tries to build jthread as dll */
+static _NtQuerySemaphore NtQuerySemaphore = 
+		(_NtQuerySemaphore)
+		GetProcAddress 
+		(GetModuleHandle ("ntdll.dll"), "NtQuerySemaphore");
+
 int JSemaphore::GetValue() {
+	SEMAPHORE_BASIC_INFORMATION BasicInfo;
+	LONG retval;
 
-	long int retval = 0;
-	ReleaseSemaphore(
-			m_hSemaphore,
-			0,
-			&retval);
+	assert(NtQuerySemaphore);
+	
+	retval = NtQuerySemaphore (m_hSemaphore, 0,
+		&BasicInfo, sizeof (SEMAPHORE_BASIC_INFORMATION), NULL);
 
-	return retval;
+	if (retval == ERROR_SUCCESS)
+	{
+		return BasicInfo.CurrentCount;
+	}
+	else {
+		assert("unable to read semaphore count" == 0);
+	}
 }
 
