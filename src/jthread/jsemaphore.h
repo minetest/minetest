@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if defined(WIN32)
 #include <windows.h>
+#include <assert.h>
 #define MAX_SEMAPHORE_COUNT 1024
 #else
 #include <pthread.h>
