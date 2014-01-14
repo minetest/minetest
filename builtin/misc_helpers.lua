@@ -339,13 +339,28 @@ if minetest then
 --implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
 
-
 	minetest.rotate_node = function(itemstack, placer, pointed_thing)
 		minetest.rotate_and_place(itemstack, placer, pointed_thing,
 				minetest.setting_getbool("creative_mode"),
 				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
+
+--------------------------------------------------------------------------------
+-- Function to make a copy of an existing node definition, to be used
+-- by mods that need to redefine some aspect of a node, but without
+-- them having to copy&paste the entire node definition.
+--------------------------------------------------------------------------------
+
+	function minetest.clone_node(name)
+		node2={}
+		node=minetest.registered_nodes[name]
+		for k,v in pairs(node) do
+			node2[k]=v
+		end
+		return node2
+	end
+
 end
 
 --------------------------------------------------------------------------------
@@ -425,4 +440,3 @@ if minetest ~= nil then
 		return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 	end
 end
-
