@@ -52,7 +52,17 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
 		    j != connected.end(); ++j)
 		{
-			if(j -> first -> m_faces[j -> second].begin() -> element != &(*current_element_iterator))
+			bool exist_in_other = false;
+			std::list<CircuitElementContainer>* tmp_face = j -> first -> m_faces + j -> second;
+			for(std::list<CircuitElementContainer>::iterator k = tmp_face -> begin(); k != tmp_face -> end(); ++k)
+			{
+				if((k -> element == &(*current_element_iterator)) && (k -> shift == i))
+				{
+					exist_in_other = true;
+					break;
+				}
+			}
+			if(!exist_in_other)
 			{
 				CircuitElement* tmp_element = j -> first;
 				std::list <CircuitElementContainer>::iterator first_iterator =
@@ -191,7 +201,7 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 					for(std::list <CircuitElementContainer>::iterator l = face -> begin();
 					    l != face -> end();)
 					{
-						if(l -> element == all_connected[j].first)
+						if((l -> element == all_connected[j].first) && ((l -> shift) == all_connected[j].second))
 						{
 							/*
 							 * Save and increment iterator because erase invalidates

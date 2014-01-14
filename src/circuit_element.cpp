@@ -138,13 +138,12 @@ void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int 
 // 					dstream << "Wire at: " << next_pos.X << " " << next_pos.Y << " " << next_pos.Z << std::endl;
 					used.insert(next_pos);
 					q.push(next_pos);
-				} else if(node_features.is_circuit_element)
-				{
-// 					dstream << "Circuit at: " << next_pos.X << " " << next_pos.Y << " " << next_pos.Z << std::endl;
-					used.insert(next_pos);
-					connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
-					                                   OPPOSITE_SHIFT(i)));
 				}
+			}
+			if(node_features.is_circuit_element)
+			{
+				connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
+				                    OPPOSITE_SHIFT(i)));
 			}
 		}
 	}
@@ -197,12 +196,12 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElemen
 					{
 						used.insert(next_pos);
 						q.push(next_pos);
-					} else if(node_features.is_circuit_element)
-					{
-						used.insert(next_pos);
-						connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
-						                                   OPPOSITE_SHIFT(i)));
 					}
+				}
+				if(node_features.is_circuit_element && !((next_pos == pos) && (OPPOSITE_FACE(face) == SHIFT_TO_FACE(i))))
+				{
+					connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
+					                    OPPOSITE_SHIFT(i)));
 				}
 			}
 		}
