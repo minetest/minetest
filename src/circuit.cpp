@@ -39,15 +39,14 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	std::list <CircuitElement>::iterator current_element_iterator =
 	 elements.insert(elements.begin(), CircuitElement(pos, node, node_func));
 	CircuitElementContainer tmp_container;
+	pos_to_iterator[pos] = current_element_iterator;
 
-	
-	node.circuit_element_iterator = current_element_iterator;
 	map.addNodeWithEvent(pos, node);
 	
 	for(int i = 0; i < 6; ++i)
 	{	
 		connected.clear();
-		CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(i));
+		CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
 		
 		tmp_container.shift = i;
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
@@ -75,9 +74,10 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	}
 }
 
-void Circuit::removeElement(std::list <CircuitElement>::iterator iter)
+void Circuit::removeElement(v3s16 pos)
 {
-	elements.erase(iter);
+	elements.erase(pos_to_iterator[pos]);
+	pos_to_iterator.erase(pos);
 }
 
 void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
@@ -88,7 +88,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
 	MapNode node = map.getNode(pos);
-	CircuitElement::findConnected(all_connected, map, ndef, pos, node);
+	CircuitElement::findConnected(all_connected, map, ndef, pos, node, pos_to_iterator);
 	is_joint_created.resize(all_connected.size());
 	for(unsigned int i = 0; i < all_connected.size(); ++i)
 	{
@@ -99,7 +99,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	for(unsigned int i = 0; i < 6; ++i)
 	{
 		current_face_connected.clear();
-		CircuitElement::findConnectedWithFace(current_face_connected, map, ndef, pos, SHIFT_TO_FACE(i));
+		CircuitElement::findConnectedWithFace(current_face_connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
 		
 		for(unsigned int j = 0; j < all_connected.size(); ++j)
 		{
@@ -158,21 +158,18 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 {
 	// This is used for converting elements of current_face_connected to their ids in all_connected.
 	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
-	std::vector <std::vector <bool> > is_joint_created;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
-	CircuitElement::findConnected(all_connected, map, ndef, pos, node);
-	is_joint_created.resize(all_connected.size());
+	CircuitElement::findConnected(all_connected, map, ndef, pos, node, pos_to_iterator);
 	for(unsigned int i = 0; i < all_connected.size(); ++i)
 	{
 		pair_to_id_converter[all_connected[i]] = i;
-		is_joint_created[i].resize(all_connected.size());
 	}
 	
 	for(unsigned int i = 0; i < 6; ++i)
 	{
 		current_face_connected.clear();
-		CircuitElement::findConnectedWithFace(current_face_connected, map, ndef, pos, SHIFT_TO_FACE(i));
+		CircuitElement::findConnectedWithFace(current_face_connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
 		for(unsigned int j = 0; j < all_connected.size(); ++j)
 		{
 			bool exist_in_current = false;
@@ -255,7 +252,7 @@ void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 }
 
 
-void Circuit::updateElement(MapNode& node, INodeDefManager* ndef, const unsigned char* func)
+void Circuit::updateElement(MapNode& node, v3s16 pos, INodeDefManager* ndef, const unsigned char* func)
 {
 	const unsigned char* node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR)
@@ -264,8 +261,8 @@ void Circuit::updateElement(MapNode& node, INodeDefManager* ndef, const unsigned
 	} else {
 		node_func = circuit_element_states.addState(func);
 	}
-	node.circuit_element_iterator -> m_func = node_func;
-	node.circuit_element_iterator -> m_node = node;
+	pos_to_iterator[pos] -> m_func = node_func;
+	pos_to_iterator[pos] -> m_node = node;
 }
 
 void Circuit::pushElementToQueue(v3s16 pos)
@@ -296,8 +293,8 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			} else {
 				node_func = circuit_element_states.addState(ndef->get(node).circuit_element_states);
 			}
-			node.circuit_element_iterator = elements.insert(elements.begin(), CircuitElement(elements_queue[i], node, node_func));
-			elements_queue_iterators[i] = node.circuit_element_iterator;
+			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i], node, node_func));
+			elements_queue_iterators[i] = pos_to_iterator[elements_queue[i]];
 			map.setNode(elements_queue[i], node);
 		}
 		
@@ -307,7 +304,7 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			for(int j = 0; j < 6; ++j)
 			{
 				connected.clear();
-				CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(j));
+				CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(j), pos_to_iterator);
 				for(unsigned int k = 0; k < connected.size(); ++k)
 				{
 					current_element_iterator = pos_to_id_converter.find(connected[k].first -> m_pos);

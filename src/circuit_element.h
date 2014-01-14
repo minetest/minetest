@@ -6,6 +6,7 @@
 
 #include <list>
 #include <vector>
+#include <map>
 
 #define OPPOSITE_SHIFT(x) (CircuitElement::opposite_shift[(x)])
 #define OPPOSITE_FACE(x) ((((x)<<3) | ((x)>>3)) & 0x3f)
@@ -62,9 +63,11 @@ public:
 	// First - pointer to object to which connected.
 	// Second - face id.
 	static void findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,
-	                          Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node);
+	                          Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node,
+	                          std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator);
 	static void findConnectedWithFace(std::vector <std::pair <CircuitElement*, int > >& connected,
-	                                  Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face);
+	                                  Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face,
+	                                  std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator);
 	std::list <CircuitElementContainer>& getFace(int id);
 	
 	static unsigned char face_to_shift[33];

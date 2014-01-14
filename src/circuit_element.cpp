@@ -8,6 +8,7 @@
 #include <queue>
 #include <iomanip>
 #include <cassert>
+#include <map>
 
 unsigned char CircuitElement::face_to_shift[] =
 {
@@ -98,7 +99,8 @@ void CircuitElement::updateState(GameScripting* m_script, Map& map, INodeDefMana
 
 
 void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,
-                                   Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& current_node)
+                                   Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& current_node,
+                                   std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator)
 {
 	static v3s16 directions[6] = {v3s16(0, -1, 0),
 	                              v3s16(0, 0, 1),
@@ -140,7 +142,7 @@ void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int 
 				{
 // 					dstream << "Circuit at: " << next_pos.X << " " << next_pos.Y << " " << next_pos.Z << std::endl;
 					used.insert(next_pos);
-					connected.push_back(std::make_pair(&(*node.circuit_element_iterator),
+					connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
 					                                   OPPOSITE_SHIFT(i)));
 				}
 			}
@@ -150,7 +152,8 @@ void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int 
 }
 
 void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElement*, int > >& connected,
-                                           Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face)
+                                           Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face,
+                                           std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator)
 {
 	static v3s16 directions[6] = {v3s16(0, -1, 0),
 	                             v3s16(0, 0, 1),
@@ -197,7 +200,7 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElemen
 					} else if(node_features.is_circuit_element)
 					{
 						used.insert(next_pos);
-						connected.push_back(std::make_pair(&(*node.circuit_element_iterator),
+						connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
 						                                   OPPOSITE_SHIFT(i)));
 					}
 				}
@@ -205,7 +208,7 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElemen
 		}
 	} else if(ndef->get(map.getNodeNoEx(current_pos)).is_circuit_element)
 	{
-		connected.push_back(std::make_pair(&(*map.getNodeNoEx(current_pos).circuit_element_iterator),
+		connected.push_back(std::make_pair(&(*pos_to_iterator[current_pos]),
 		                                   FACE_TO_SHIFT(OPPOSITE_FACE(face))));
 	}
 }
