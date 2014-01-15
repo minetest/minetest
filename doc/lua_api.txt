@@ -2201,6 +2201,27 @@ Node definition (register_node)
     can_dig = function(pos,player)
     ^ returns true if node can be dug, or false if not
     ^ default: nil
+	
+	circuit_states = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	^ Each element of circuit MUST have this table
+	^ Each circuit element should be defined by a table of values on input and output.
+	^ Index of element - value on input, and value at index - value on output.
+	^ Each bit of value represents one face of the block (Looking towards Z+).
+	^ 1. Bottom face (LSB).
+	^ 2. Back face.
+	^ 3. Left face.
+	^ 4. Top face.
+	^ 5. Front face.
+	^ 6. Right face.
+	^ For example if there is 4 at index 2, then if all faces except back
+	^ face are deactivated, then there will be output signal on the left face.
+	^ Each definition table must have exactly 64 integer elements (0 <= a[i] <= 63).
+	
+	is_wire = true,
+	^ Note: if 2 blocks of wire have different ids, then signal between them WILL NOT be transmitted
     
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
@@ -2250,6 +2271,12 @@ Node definition (register_node)
     ^ intensity: 1.0 = mid range of regular TNT
     ^ If defined, called when an explosion touches the node, instead of
       removing the node
+	on_activate = func(pos),
+	^ If defined, node becomes element of circuit
+	^ Called when block changes it's input input state from zero to non zero
+	on_deactivate = func(pos),
+	^ If defined, node becomes element of circuit
+	^ Called when block changes it's input input state from non zero to zero
 }
 
 Recipe for register_craft: (shaped)
