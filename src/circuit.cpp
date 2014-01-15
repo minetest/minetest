@@ -31,6 +31,7 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	const unsigned char* node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR)
 	{
+		// If block is rotatable, then rotate it's function.
 		node_func = circuit_element_states.addState(func, node.param2);
 	} else {
 		node_func = circuit_element_states.addState(func);
@@ -43,6 +44,7 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 
 	map.addNodeWithEvent(pos, node);
 	
+	// For each face add al other connected faces.
 	for(int i = 0; i < 6; ++i)
 	{	
 		connected.clear();
@@ -106,6 +108,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 		is_joint_created[i].resize(all_connected.size());
 	}
 	
+	// For each face connect faces, that are not yet connected.
 	for(unsigned int i = 0; i < 6; ++i)
 	{
 		current_face_connected.clear();
@@ -176,6 +179,7 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 		pair_to_id_converter[all_connected[i]] = i;
 	}
 	
+	// For each face remove connections that depend on this block of wire.
 	for(unsigned int i = 0; i < 6; ++i)
 	{
 		current_face_connected.clear();
@@ -226,11 +230,13 @@ void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 	if(m_since_last_update > m_min_update_delay)
 	{
 		m_since_last_update -= m_min_update_delay;
+		// Each element send signal to other connected elements.
 		for(std::list <CircuitElement>::iterator i = elements.begin();
 		    i != elements.end(); ++i)
 		{
 			i -> update();
 		}
+		// Update state of each element.
 		for(std::list <CircuitElement>::iterator i = elements.begin();
 		i != elements.end(); ++i)
 		{
@@ -299,6 +305,7 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			node = map.getNode(elements_queue[i]);
 			if(ndef->get(node).param_type_2 == CPT2_FACEDIR)
 			{
+				// If block is rotatable, then rotate it's function.
 				node_func = circuit_element_states.addState(ndef->get(node).circuit_element_states, node.param2);
 			} else {
 				node_func = circuit_element_states.addState(ndef->get(node).circuit_element_states);
@@ -311,6 +318,7 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 		for(unsigned int i = 0; i < elements_queue.size(); ++i)
 		{
 			pos = elements_queue[i];
+			// For each face joint if it doesn't exist yet.
 			for(int j = 0; j < 6; ++j)
 			{
 				connected.clear();
