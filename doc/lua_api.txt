@@ -2273,10 +2273,10 @@ Node definition (register_node)
       removing the node
 	on_activate = func(pos),
 	^ If defined, node becomes element of circuit
-	^ Called when block changes it's input input state from zero to non zero
+	^ Called when block changes it's input state from zero to non zero
 	on_deactivate = func(pos),
 	^ If defined, node becomes element of circuit
-	^ Called when block changes it's input input state from non zero to zero
+	^ Called when block changes it's input state from non zero to zero
 }
 
 Recipe for register_craft: (shaped)
