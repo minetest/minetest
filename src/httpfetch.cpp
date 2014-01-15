@@ -50,13 +50,14 @@ std::map<unsigned long, std::list<HTTPFetchResult> > g_httpfetch_results;
 		timeout = g_settings->getS32("curl_timeout");
 		connect_timeout = timeout * 5;
 		
-		useragent = std::string("Minetest ") + minetest_version_hash;
+		useragent = std::string("Minetest/") + minetest_version_hash + " ";
 #ifdef _WIN32
-		useragent += "Windows";
+		useragent += "(Windows)";
 #else
 		struct utsname osinfo;
 		uname(&osinfo);
-		useragent += std::string(" (") + osinfo.sysname + "; " + osinfo.release + "; " + osinfo.machine + ")";
+		useragent += std::string("(") + osinfo.sysname + "/"
+				+ osinfo.release + " " + osinfo.machine + ")";
 #endif
 	}
 
