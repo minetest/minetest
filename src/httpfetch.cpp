@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <errno.h>
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <sys/utsname.h>
 #endif
 #include "jthread/jevent.h"
@@ -51,7 +51,7 @@ std::map<unsigned long, std::list<HTTPFetchResult> > g_httpfetch_results;
 		connect_timeout = timeout * 5;
 		
 		useragent = std::string("Minetest ") + minetest_version_hash;
-#ifdef _MSC_VER
+#ifdef _WIN32
 		useragent += "Windows";
 #else
 		struct utsname osinfo;
