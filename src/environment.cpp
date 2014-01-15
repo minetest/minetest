@@ -852,13 +852,11 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	if(!succeeded)
 		return false;
 
-	if(ndef->get(n).is_wire)
-	{
+	if(ndef->get(n).is_wire) {
 		m_circuit->addWire(getMap(), ndef, p);
 	}
 	// Call circuit update
-	if(ndef->get(n).is_circuit_element)
-	{
+	if(ndef->get(n).is_circuit_element) {
 		m_circuit->addElement(getMap(), ndef, p, ndef->get(n).circuit_element_states);
 	}
 
@@ -883,12 +881,10 @@ bool ServerEnvironment::removeNode(v3s16 p)
 	bool succeeded = m_map->removeNodeWithEvent(p);
 	if(!succeeded)
 		return false;
-	if(ndef->get(n_old).is_wire)
-	{
+	if(ndef->get(n_old).is_wire) {
 		m_circuit->removeWire(*m_map, ndef, p, n_old);
 	}
-	if(ndef->get(n_old).is_circuit_element)
-	{
+	if(ndef->get(n_old).is_circuit_element) {
 		m_circuit->removeElement(p);
 	}
 
@@ -904,31 +900,24 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	INodeDefManager *ndef = m_gamedef->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 	bool succeeded = m_map->addNodeWithEvent(p, n, false);
-	if(succeeded)
-	{
+	if(succeeded) {
 		MapNode n_new = n;
-		if(ndef->get(n_new).is_circuit_element)
-		{
-			if(ndef->get(n_old).is_circuit_element)
-			{
+		if(ndef->get(n_new).is_circuit_element) {
+			if(ndef->get(n_old).is_circuit_element) {
 				m_circuit->updateElement(n_new, p, ndef, ndef->get(n_new).circuit_element_states);
 			} else {
-				if(ndef->get(n_old).is_wire)
-				{
+				if(ndef->get(n_old).is_wire) {
 					m_circuit->removeWire(*m_map, ndef, p, n_old);
 				}
 				m_circuit->addElement(*m_map, ndef, p, ndef->get(n_new).circuit_element_states);
 			}
 		} else {
-			if(ndef->get(n_old).is_circuit_element)
-			{
+			if(ndef->get(n_old).is_circuit_element) {
 				m_circuit->removeElement(p);
-			} else if(ndef->get(n_old).is_wire)
-			{
+			} else if(ndef->get(n_old).is_wire) {
 				m_circuit->removeWire(*m_map, ndef, p, n_old);
 			}
-			if(ndef->get(n_new).is_wire)
-			{
+			if(ndef->get(n_new).is_wire) {
 				m_circuit->addWire(*m_map, ndef, p);
 			}
 		}
