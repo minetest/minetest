@@ -905,9 +905,20 @@ bool nodePlacementPrediction(Client &client,
 		// Add node to client map
 		MapNode n(id, 0, param2);
 		try{
-			// This triggers the required mesh update too
-			client.addNode(p, n);
-			return true;
+			LocalPlayer* player = client.getEnv().getLocalPlayer();
+
+			// Dont place node when player would be inside new node
+			// NOTE: This is to be eventually implemented by a mod as client-side Lua
+			if (!nodedef->get(n).walkable || 
+				(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) || 
+				(nodedef->get(n).walkable &&
+				neighbourpos != player->getStandingNodePos() + v3s16(0,1,0) &&
+				neighbourpos != player->getStandingNodePos() + v3s16(0,2,0))) {
+
+					// This triggers the required mesh update too
+					client.addNode(p, n);
+					return true;
+				}
 		}catch(InvalidPositionException &e){
 			errorstream<<"Node placement prediction failed for "
 					<<playeritem_def.name<<" (places "
@@ -2798,23 +2809,28 @@ void the_game(
 				// Otherwise report right click to server
 				else
 				{
-					// Report to server
-					client.interact(3, pointed);
-					camera.setDigging(1);  // right click animation
-					
+					camera.setDigging(1);  // right click animation (always shown for feedback)
+
 					// If the wielded item has node placement prediction,
 					// make that happen
 					bool placed = nodePlacementPrediction(client,
-							playeritem_def,
-							nodepos, neighbourpos);
-					
-					// Read the sound
-					if(placed)
+						playeritem_def,
+						nodepos, neighbourpos);
+
+					if(placed) {
+						// Report to server
+						client.interact(3, pointed);
+						// Read the sound
 						soundmaker.m_player_rightpunch_sound =
-								playeritem_def.sound_place;
-					else
+							playeritem_def.sound_place;
+					} else {
 						soundmaker.m_player_rightpunch_sound =
-								SimpleSoundSpec();
+							SimpleSoundSpec();
+					}
+
+					if (playeritem_def.node_placement_prediction == "" ||
+						nodedef->get(map.getNode(nodepos)).rightclickable)
+						client.interact(3, pointed); // Report to server
 				}
 			}
 		}
