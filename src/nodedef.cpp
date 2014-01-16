@@ -236,6 +236,11 @@ void ContentFeatures::reset()
 
 	is_circuit_element = false;
 	is_wire = false;
+	is_connector = false;
+	for(int i = 0; i < 6; ++i)
+	{
+		wire_connections[i] = 0;
+	}
 	for(int i = 0; i < 64; ++i)
 	{
 		circuit_element_states[i] = 0;

@@ -8,16 +8,17 @@
 class CircuitElementStates
 {
 public:
-	CircuitElementStates();
+	CircuitElementStates(int states_num, bool use_shifts);
 	~CircuitElementStates();
 	const unsigned char* addState(const unsigned char* state);
 	const unsigned char* addState(const unsigned char* state, unsigned char facedir);
 	void rotateStatesArray(const unsigned char* input_state, unsigned char* output_state, FaceId face);
-	unsigned char rotateState(const unsigned char state, FaceId face);
+	static unsigned char rotateState(const unsigned char state, FaceId face);
 	unsigned int getId(const unsigned char* state);
 private:
-	std::vector<const unsigned char*> states;
-	static const int states_num;
+	std::vector<const unsigned char*> m_states;
+	const int m_states_num;
+	const bool m_use_shifts;
 };
 
 #endif

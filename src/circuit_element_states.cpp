@@ -3,39 +3,38 @@
 #include "log.h"
 #include "debug.h"
 
-const int CircuitElementStates::states_num = 64;
-
-CircuitElementStates::CircuitElementStates()
+CircuitElementStates::CircuitElementStates(int states_num, bool use_shifts) : m_states_num(states_num),
+    m_use_shifts(use_shifts)
 {
 }
 
 CircuitElementStates::~CircuitElementStates()
 {
-	for(unsigned int i = 0; i < states.size(); ++i) {
-		delete states[i];
+	for(unsigned int i = 0; i < m_states.size(); ++i) {
+		delete m_states[i];
 	}
 }
 
 const unsigned char* CircuitElementStates::addState(const unsigned char* state)
 {
 	unsigned int id = getId(state);
-	if(id != states.size()) {
-		return states[id];
+	if(id != m_states.size()) {
+		return m_states[id];
 	} else {
-		unsigned char* tmp_state = new unsigned char[states_num];
-		for(int i = 0; i < states_num; ++i) {
+		unsigned char* tmp_state = new unsigned char[m_states_num];
+		for(int i = 0; i < m_states_num; ++i) {
 			tmp_state[i] = state[i];
 		}
-		states.push_back(tmp_state);
-		return states[states.size() - 1];
+		m_states.push_back(tmp_state);
+		return m_states[m_states.size() - 1];
 	}
 }
 
 const unsigned char* CircuitElementStates::addState(const unsigned char* state, unsigned char facedir)
 {
 	FaceId face = FACEDIR_TO_FACE(facedir);
-	unsigned char rotated_state[states_num];
-	for(int i = 0; i < states_num; ++i) {
+	unsigned char rotated_state[m_states_num];
+	for(int i = 0; i < m_states_num; ++i) {
 		rotated_state[i] = 0;
 	}
 	rotateStatesArray(state, rotated_state, face);
@@ -44,11 +43,11 @@ const unsigned char* CircuitElementStates::addState(const unsigned char* state, 
 
 unsigned int CircuitElementStates::getId(const unsigned char* state)
 {
-	unsigned int result = states.size();
-	for(unsigned int i = 0; i < states.size(); ++i) {
+	unsigned int result = m_states.size();
+	for(unsigned int i = 0; i < m_states.size(); ++i) {
 		bool equal = true;
-		for(int j = 0; j < states_num; ++j) {
-			if(states[i][j] != state[j]) {
+		for(int j = 0; j < m_states_num; ++j) {
+			if(m_states[i][j] != state[j]) {
 				equal = false;
 				break;
 			}
@@ -65,14 +64,23 @@ void CircuitElementStates::rotateStatesArray(const unsigned char* input_state, u
 {
 	int id;
 	unsigned char value;
-	for(int i = 0; i < states_num; ++i) {
-		id = rotateState(static_cast<unsigned char>(i), face);
-		value = rotateState(input_state[i], face);
-		output_state[id] = value;
+	if(m_use_shifts) {
+		for(int i = 0; i < m_states_num; ++i) {
+			id = rotateState(SHIFT_TO_FACE(static_cast<unsigned char>(i)), face);
+			id = FACE_TO_SHIFT(id);
+			value = rotateState(input_state[i], face);
+			output_state[id] = value;
+		}
+	} else {
+		for(int i = 0; i < m_states_num; ++i) {
+			id = rotateState(static_cast<unsigned char>(i), face);
+			value = rotateState(input_state[i], face);
+			output_state[id] = value;
+		}
 	}
 }
 
-inline unsigned char CircuitElementStates::rotateState(const unsigned char state, FaceId face)
+unsigned char CircuitElementStates::rotateState(const unsigned char state, FaceId face)
 {
 	unsigned char result = 0;
 	switch(face) {

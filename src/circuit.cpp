@@ -17,8 +17,8 @@ void printStateFunc(const unsigned char* func)
 	}
 }
 
-Circuit::Circuit(GameScripting* script) : m_script(script), m_min_update_delay(0.1f),
-	m_since_last_update(0.0f)
+Circuit::Circuit(GameScripting* script) :  circuit_elements_states(64, false),
+        m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f)
 {
 }
 
@@ -30,9 +30,9 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	const unsigned char* node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
 		// If block is rotatable, then rotate it's function.
-		node_func = circuit_element_states.addState(func, node.param2);
+		node_func = circuit_elements_states.addState(func, node.param2);
 	} else {
-		node_func = circuit_element_states.addState(func);
+		node_func = circuit_elements_states.addState(func);
 	}
 
 	std::list <CircuitElement>::iterator current_element_iterator =
@@ -42,10 +42,11 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 
 	map.addNodeWithEvent(pos, node);
 
-	// For each face add al other connected faces.
+	// For each face add all other connected faces.
 	for(int i = 0; i < 6; ++i) {
 		connected.clear();
 		CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
+		dstream << connected.size() << std::endl;
 
 		tmp_container.shift = i;
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
@@ -242,9 +243,9 @@ void Circuit::updateElement(MapNode& node, v3s16 pos, INodeDefManager* ndef, con
 {
 	const unsigned char* node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
-		node_func = circuit_element_states.addState(func, node.param2);
+		node_func = circuit_elements_states.addState(func, node.param2);
 	} else {
-		node_func = circuit_element_states.addState(func);
+		node_func = circuit_elements_states.addState(func);
 	}
 	pos_to_iterator[pos] -> m_func = node_func;
 	pos_to_iterator[pos] -> m_node = node;
@@ -272,9 +273,9 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			node = map.getNode(elements_queue[i]);
 			if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
 				// If block is rotatable, then rotate it's function.
-				node_func = circuit_element_states.addState(ndef->get(node).circuit_element_states, node.param2);
+				node_func = circuit_elements_states.addState(ndef->get(node).circuit_element_states, node.param2);
 			} else {
-				node_func = circuit_element_states.addState(ndef->get(node).circuit_element_states);
+				node_func = circuit_elements_states.addState(ndef->get(node).circuit_element_states);
 			}
 			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i], node, node_func));
 			elements_queue_iterators[i] = pos_to_iterator[elements_queue[i]];

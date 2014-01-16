@@ -29,7 +29,7 @@ private:
 	std::list <CircuitElement> elements;
 	std::map <v3s16, std::list<CircuitElement>::iterator> pos_to_iterator;
 	std::vector <v3s16> elements_queue;
-	CircuitElementStates circuit_element_states;
+	CircuitElementStates circuit_elements_states;
 	GameScripting* m_script;
 	float m_min_update_delay;
 	float m_since_last_update;

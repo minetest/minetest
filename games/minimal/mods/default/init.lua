@@ -741,9 +741,11 @@ minetest.register_node("default:wire", {
 })
 
 
-minetest.register_node("default:wire2", {
-	description = "Wire2",
+minetest.register_node("default:wire_connector", {
+	description = "Wire connector",
 	is_wire = true,
+	is_connector = true,
+	wire_connections = {3, 4, 5, 0, 1, 2},
 	tiles = {"default_wire2.png", "default_wire2_side.png"},
 	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2,dig_immediate=3},
 	sounds = default.node_sound_stone_defaults(),

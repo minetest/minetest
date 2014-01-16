@@ -1,4 +1,5 @@
 ﻿#include "circuit_element.h"
+#include "circuit_element_states.h"
 #include "nodedef.h"
 #include "mapnode.h"
 #include "map.h"
@@ -95,38 +96,63 @@ void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int 
 	                              v3s16(-1, 0, 0),
 	                              v3s16(0, 1, 0),
 	                              v3s16(0, 0, -1),
-	                              v3s16(1, 0, 0),
-	                             };
+	                              v3s16(1, 0, 0)};
 	content_t node_type = current_node.getContent();
-	std::set <v3s16> used;
-	used.insert(pos);
-	std::queue <v3s16> q;
+	std::map <v3s16, unsigned char> used;
+	used[pos] = 0;
+	// first - position
+	// second - faces that can send signal
+	std::queue <std::pair <v3s16, unsigned char> > q;
 	v3s16 current_pos;
 	v3s16 next_pos;
+	unsigned char acceptable_faces;
+	std::map <v3s16, unsigned char>::iterator current_used_iterator;
+	std::map <v3s16, unsigned char>::iterator tmp_used_iterator;
 	ContentFeatures node_features;
 	MapNode node;
 
-	q.push(pos);
+	q.push(std::make_pair(pos, 0x3F));
 	while(!q.empty()) {
-		current_pos = q.front();
+		current_pos = q.front().first;
+		acceptable_faces = q.front().second;
 		q.pop();
 
 		for(int i = 0; i < 6; ++i) {
-			next_pos.X = current_pos.X + directions[i].X;
-			next_pos.Y = current_pos.Y + directions[i].Y;
-			next_pos.Z = current_pos.Z + directions[i].Z;
-			node = map.getNodeNoEx(next_pos);
-			node_features = ndef->get(node);
-			if(used.find(next_pos) == used.end()) {
-				if(node_features.is_wire && (node.getContent() == node_type)) {
-// 					dstream << "Wire at: " << next_pos.X << " " << next_pos.Y << " " << next_pos.Z << std::endl;
-					used.insert(next_pos);
-					q.push(next_pos);
+			if(acceptable_faces & SHIFT_TO_FACE(i)) {
+				used[pos] |= SHIFT_TO_FACE(i);
+				next_pos.X = current_pos.X + directions[i].X;
+				next_pos.Y = current_pos.Y + directions[i].Y;
+				next_pos.Z = current_pos.Z + directions[i].Z;
+				node = map.getNodeNoEx(next_pos);
+				node_features = ndef->get(node);
+				current_used_iterator = used.find(next_pos);
+				if((current_used_iterator == used.end()) || !(current_used_iterator->second & SHIFT_TO_FACE(OPPOSITE_SHIFT(i)))) {
+					if(node_features.is_connector || (node_features.is_wire && (node.getContent() == node_type))) {
+						if(node_features.param_type_2 == CPT2_FACEDIR) {
+							q.push(std::make_pair(next_pos, CircuitElementStates::rotateState(
+							        node_features.wire_connections[i], FACEDIR_TO_FACE(node.param2))));
+						} else {
+							q.push(std::make_pair(next_pos, node_features.wire_connections[i]));
+						}
+						tmp_used_iterator = used.find(next_pos);
+						if(tmp_used_iterator != used.end()) {
+							tmp_used_iterator -> second |= SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+						} else {
+							used[next_pos] = SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+						}
+					}
+					
+					if(node_features.is_circuit_element) {
+						tmp_used_iterator = used.find(next_pos);
+						if(tmp_used_iterator != used.end()) {
+							tmp_used_iterator -> second |= SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+						} else {
+							used[next_pos] = SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+						}
+						connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
+										OPPOSITE_SHIFT(i)));
+					}
 				}
-			}
-			if(node_features.is_circuit_element) {
-				connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
-				                                   OPPOSITE_SHIFT(i)));
 			}
 		}
 	}
@@ -144,11 +170,14 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElemen
 	                              v3s16(0, 0, -1),
 	                              v3s16(1, 0, 0),
 	                             };
-	std::set <v3s16> used;
-	used.insert(pos);
-	std::queue <v3s16> q;
+	std::map <v3s16, unsigned char> used;
+	used[pos] = face;
+	std::queue <std::pair <v3s16, unsigned char> > q;
 	v3s16 current_pos;
 	v3s16 next_pos;
+	unsigned char acceptable_faces;
+	std::map <v3s16, unsigned char>::iterator current_used_iterator;
+	std::map <v3s16, unsigned char>::iterator tmp_used_iterator;
 	ContentFeatures node_features;
 	MapNode node;
 
@@ -156,29 +185,52 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <CircuitElemen
 	current_pos.X = pos.X + directions[face_id].X;
 	current_pos.Y = pos.Y + directions[face_id].Y;
 	current_pos.Z = pos.Z + directions[face_id].Z;
-	q.push(current_pos);
+	node = map.getNodeNoEx(current_pos);
+	node_features = ndef->get(node);
+	q.push(std::make_pair(current_pos, node_features.wire_connections[FACE_TO_SHIFT(OPPOSITE_FACE(face))]));
 	content_t node_type = map.getNodeNoEx(current_pos).getContent();
 
 	if(ndef->get(map.getNodeNoEx(current_pos)).is_wire) {
 		while(!q.empty()) {
-			current_pos = q.front();
+			current_pos = q.front().first;
+			acceptable_faces = q.front().second;
 			q.pop();
 
 			for(int i = 0; i < 6; ++i) {
-				next_pos.X = current_pos.X + directions[i].X;
-				next_pos.Y = current_pos.Y + directions[i].Y;
-				next_pos.Z = current_pos.Z + directions[i].Z;
-				node = map.getNodeNoEx(next_pos);
-				node_features = ndef->get(node);
-				if(used.find(next_pos) == used.end()) {
-					if(node_features.is_wire && (node.getContent() == node_type)) {
-						used.insert(next_pos);
-						q.push(next_pos);
+				if(acceptable_faces & (SHIFT_TO_FACE(i))) {
+					next_pos.X = current_pos.X + directions[i].X;
+					next_pos.Y = current_pos.Y + directions[i].Y;
+					next_pos.Z = current_pos.Z + directions[i].Z;
+					node = map.getNodeNoEx(next_pos);
+					node_features = ndef->get(node);
+					current_used_iterator = used.find(next_pos);
+					if((current_used_iterator == used.end()) || !(current_used_iterator->second & SHIFT_TO_FACE(OPPOSITE_SHIFT(i)))) {
+						if(node_features.is_connector || (node_features.is_wire && (node.getContent() == node_type))) {
+							if(node_features.param_type_2 == CPT2_FACEDIR) {
+								q.push(std::make_pair(next_pos, CircuitElementStates::rotateState(
+								       node_features.wire_connections[i], FACEDIR_TO_FACE(node.param2))));
+							} else {
+								q.push(std::make_pair(next_pos, node_features.wire_connections[i]));
+							}
+							tmp_used_iterator = used.find(next_pos);
+							if(tmp_used_iterator != used.end()) {
+								tmp_used_iterator -> second |= SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+							} else {
+								used[next_pos] = SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+							}
+						}
+						
+						if(node_features.is_circuit_element) {
+							tmp_used_iterator = used.find(next_pos);
+							if(tmp_used_iterator != used.end()) {
+								tmp_used_iterator -> second |= SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+							} else {
+								used[next_pos] = SHIFT_TO_FACE(OPPOSITE_SHIFT(i));
+							}
+							connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
+							                                   OPPOSITE_SHIFT(i)));
+						}
 					}
-				}
-				if(node_features.is_circuit_element && !((next_pos == pos) && (OPPOSITE_FACE(face) == SHIFT_TO_FACE(i)))) {
-					connected.push_back(std::make_pair(&(*pos_to_iterator[next_pos]),
-					                                   OPPOSITE_SHIFT(i)));
 				}
 			}
 		}
