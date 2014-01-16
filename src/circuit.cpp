@@ -46,7 +46,6 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	for(int i = 0; i < 6; ++i) {
 		connected.clear();
 		CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
-		dstream << connected.size() << std::endl;
 
 		tmp_container.shift = i;
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
