@@ -256,12 +256,12 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 				// ALWAYS return immediately after quitMenu()
 				return true;
 			case 261:
-				quitMenu();
 				m_gamecallback->changePassword();
+				quitMenu();
 				return true;
 			case 262:
-				quitMenu();
 				m_gamecallback->changeVolume();
+				quitMenu();
 				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();
