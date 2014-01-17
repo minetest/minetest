@@ -3,6 +3,7 @@
 
 #include "irr_v3d.h"
 #include "mapnode.h"
+#include "circuit_element_list.h"
 
 #include <list>
 #include <vector>
@@ -32,12 +33,9 @@ class CircuitElement;
 class Circuit;
 class GameScripting;
 
+
 struct CircuitElementContainer
 {
-	/*
-	 * Pointer to CircuitElement, which contains this object.
-	*/
-	CircuitElement* element;
 	/*
 	 * shift = face to which this object is connected
 	 */
@@ -45,17 +43,18 @@ struct CircuitElementContainer
 	/*
 	 * iterator of CircuitElement::faces[index], which contains pointer to this object
 	 */
-	std::list <CircuitElementContainer>::iterator list_iterator;
+	CircuitElementList::iterator list_iterator;
 	/*
 	 * pointer to the CircuitElement::faces[index], which contains pointer to this object
 	 */
-	std::list <CircuitElementContainer>* list_pointer;
+	CircuitElementList* list_pointer;
 };
 
 class CircuitElement
 {
 public:
 	CircuitElement(v3s16 pos, MapNode& node, const unsigned char* func);
+	CircuitElement(const CircuitElement& element);
 	~CircuitElement();
 	void addConnectedElement();
 	void update();
@@ -68,7 +67,7 @@ public:
 	static void findConnectedWithFace(std::vector <std::pair <CircuitElement*, int > >& connected,
 	                                  Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face,
 	                                  std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator);
-	std::list <CircuitElementContainer>& getFace(int id);
+	CircuitElementList& getFace(int id);
 	
 	static unsigned char face_to_shift[33];
 	static unsigned char opposite_shift[6];
@@ -83,7 +82,7 @@ private:
 	unsigned char m_next_input_state;
 	unsigned char m_current_output_state;
 	unsigned char m_next_output_state;
-	std::list <CircuitElementContainer> m_faces[6];
+	CircuitElementList m_faces[6];
 };
 
 #endif

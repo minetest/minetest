@@ -1,4 +1,5 @@
 ﻿#include "circuit.h"
+#include "circuit_element_list.h"
 #include "debug.h"
 #include "nodedef.h"
 #include "mapnode.h"
@@ -35,7 +36,7 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 		node_func = circuit_elements_states.addState(func);
 	}
 
-	std::list <CircuitElement>::iterator current_element_iterator =
+	std::list<CircuitElement>::iterator current_element_iterator =
 	    elements.insert(elements.begin(), CircuitElement(pos, node, node_func));
 	CircuitElementContainer tmp_container;
 	pos_to_iterator[pos] = current_element_iterator;
@@ -46,33 +47,29 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	for(int i = 0; i < 6; ++i) {
 		connected.clear();
 		CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
-		dstream << connected.size() << std::endl;
 
 		tmp_container.shift = i;
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
 		    j != connected.end(); ++j) {
 			bool exist_in_other = false;
-			std::list<CircuitElementContainer>* tmp_face = j -> first -> m_faces + j -> second;
-			for(std::list<CircuitElementContainer>::iterator k = tmp_face -> begin(); k != tmp_face -> end(); ++k) {
-				if((k -> element == &(*current_element_iterator)) && (k -> shift == i)) {
+			CircuitElementList* tmp_face = j ->first -> m_faces + j -> second;
+			for(CircuitElementList::iterator k = tmp_face -> begin(); k != tmp_face -> end(); ++k) {
+				if((tmp_face -> element == &(*current_element_iterator)) && (k -> shift == i)) {
 					exist_in_other = true;
 					break;
 				}
 			}
 			if(!exist_in_other) {
-				CircuitElement* tmp_element = j -> first;
-				std::list <CircuitElementContainer>::iterator first_iterator =
+				CircuitElementList::iterator first_iterator =
 				    current_element_iterator -> m_faces[i].insert(
 				        current_element_iterator -> m_faces[i].begin(), tmp_container);
-				std::list <CircuitElementContainer>::iterator second_iterator =
+				CircuitElementList::iterator second_iterator =
 				    j -> first -> m_faces[j -> second].insert(j -> first -> m_faces[j -> second].begin(), tmp_container);
 
 				first_iterator -> shift = j -> second;
-				first_iterator -> element = tmp_element;
 				first_iterator -> list_iterator = second_iterator;
 				first_iterator -> list_pointer = j -> first -> m_faces + j -> second;
 				second_iterator -> shift = i;
-				second_iterator -> element = &(*current_element_iterator);
 				second_iterator -> list_iterator = first_iterator;
 				second_iterator -> list_pointer = current_element_iterator -> m_faces + i;
 			}
@@ -123,21 +120,19 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 					   [pair_to_id_converter[current_face_connected[k]]]) {
 						// Create joint
 						tmp_container.shift = current_face_connected[k].second;
-						std::list <CircuitElementContainer>::iterator first_iterator =
+						CircuitElementList::iterator first_iterator =
 						    all_connected[j].first -> m_faces[all_connected[j].second].insert(
 						        all_connected[j].first -> m_faces[all_connected[j].second].begin(), tmp_container);
 
 						tmp_container.shift = all_connected[j].second;
-						std::list <CircuitElementContainer>::iterator second_iterator =
+						CircuitElementList::iterator second_iterator =
 						    current_face_connected[k].first -> m_faces[current_face_connected[k].second].
 						    insert(current_face_connected[k].first -> m_faces[current_face_connected[k].second].
 						           begin(), tmp_container);
 
-						first_iterator -> element = current_face_connected[k].first;
 						first_iterator -> list_iterator = second_iterator;
 						first_iterator -> list_pointer = current_face_connected[k].first
 						                                 -> m_faces + current_face_connected[k].second;
-						second_iterator -> element = all_connected[j].first;
 						second_iterator -> list_iterator = first_iterator;
 						second_iterator -> list_pointer = all_connected[j].first -> m_faces + i;
 
@@ -179,16 +174,16 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 			if(!exist_in_current) {
 				// Remove edges from graph
 				for(unsigned int k = 0; k < current_face_connected.size(); ++k) {
-					std::list <CircuitElementContainer>* face =
+					CircuitElementList* face =
 					    current_face_connected[k].first -> m_faces + current_face_connected[k].second;
-					for(std::list <CircuitElementContainer>::iterator l = face -> begin();
+					for(CircuitElementList::iterator l = face -> begin();
 					    l != face -> end();) {
-						if((l -> element == all_connected[j].first) && ((l -> shift) == all_connected[j].second)) {
+						if((face -> element == all_connected[j].first) && ((l -> shift) == all_connected[j].second)) {
 							/*
 							 * Save and increment iterator because erase invalidates
 							 * only iterators to the erased elements.
 							 */
-							std::list <CircuitElementContainer>::iterator tmp_l = l;
+							CircuitElementList::iterator tmp_l = l;
 							++l;
 							tmp_l -> list_pointer -> erase(tmp_l -> list_iterator);
 							face -> erase(tmp_l);
@@ -223,10 +218,10 @@ void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 			dstream << PP(i -> m_pos) << " " << &(*i) << ": ";
 			for(int j = 0; j < 6; ++j) {
 				dstream << " (";
-				std::list <CircuitElementContainer> tmp_face = i -> getFace(j);
-				for(std::list <CircuitElementContainer>::iterator k = tmp_face.begin();
+				CircuitElementList tmp_face = i -> getFace(j);
+				for(CircuitElementList::iterator k = tmp_face.begin();
 				    k != tmp_face.end(); ++k) {
-					dstream << k -> element << ", ";
+					dstream << k -> list_pointer->element << ", ";
 				}
 				dstream << "), ";
 			}
@@ -293,22 +288,20 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 					if(!((current_element_iterator != pos_to_id_converter.end()) && processed[current_element_iterator -> second])) {
 						// Create joint
 						tmp_container.shift = connected[k].second;
-						std::list <CircuitElementContainer>::iterator first_iterator =
+						CircuitElementList::iterator first_iterator =
 						    elements_queue_iterators[i] -> m_faces[j].insert(
 						        elements_queue_iterators[i] -> m_faces[j].begin(), tmp_container);
 
 						tmp_container.shift = j;
-						std::list <CircuitElementContainer>::iterator second_iterator =
+						CircuitElementList::iterator second_iterator =
 						    connected[k].first -> m_faces[connected[k].second].
 						    insert(connected[k].first -> m_faces[connected[k].second].
 						           begin(), tmp_container);
 
-						first_iterator -> element = connected[k].first;
 						first_iterator -> list_iterator = second_iterator;
 						first_iterator -> list_pointer = connected[k].first -> m_faces + connected[k].second;
-						second_iterator -> element = &(*elements_queue_iterators[i]);
 						second_iterator -> list_iterator = first_iterator;
-						second_iterator -> list_pointer = elements_queue_iterators[i] -> m_faces + i;
+						second_iterator -> list_pointer = elements_queue_iterators[i] -> m_faces + j;
 					}
 				}
 			}

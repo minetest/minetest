@@ -348,8 +348,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		int table = lua_gettop(L);
 		lua_pushnil(L);
 		int i;
+		unsigned char current_shift = 1;
 		for(i = 0; (i < 6) && (lua_next(L, table) != 0); ++i) {
 			f.wire_connections[i] = lua_tonumber(L, -1);
+			f.wire_connections[i] |= current_shift;
+			current_shift <<= 1;
 			lua_pop(L, 1);
 		}
 		if(i < 6) {
