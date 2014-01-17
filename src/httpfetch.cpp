@@ -42,24 +42,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 JMutex g_httpfetch_mutex;
 std::map<unsigned long, std::list<HTTPFetchResult> > g_httpfetch_results;
 
-	HTTPFetchRequest::HTTPFetchRequest()
-	{
-		url = "";
-		caller = HTTPFETCH_DISCARD;
-		request_id = 0;
-		timeout = g_settings->getS32("curl_timeout");
-		connect_timeout = timeout * 5;
-		
-		useragent = std::string("Minetest/") + minetest_version_hash + " ";
+HTTPFetchRequest::HTTPFetchRequest()
+{
+	url = "";
+	caller = HTTPFETCH_DISCARD;
+	request_id = 0;
+	timeout = g_settings->getS32("curl_timeout");
+	connect_timeout = timeout * 5;
+	
+	useragent = std::string("Minetest/") + minetest_version_hash + " ";
 #ifdef _WIN32
-		useragent += "(Windows)";
+	useragent += "(Windows)";
 #else
-		struct utsname osinfo;
-		uname(&osinfo);
-		useragent += std::string("(") + osinfo.sysname + "/"
-				+ osinfo.release + " " + osinfo.machine + ")";
+	struct utsname osinfo;
+	uname(&osinfo);
+	useragent += std::string("(") + osinfo.sysname + "/"
+			+ osinfo.release + " " + osinfo.machine + ")";
 #endif
-	}
+}
 
 
 static void httpfetch_deliver_result(const HTTPFetchResult &fetchresult)
