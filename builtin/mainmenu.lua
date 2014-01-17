@@ -559,7 +559,7 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 
 		local fav_idx = engine.get_textlist_index("favourites")
 
-		if fav_idx > 0 and fav_idx <= #menu.favorites and
+		if fav_idx and fav_idx > 0 and fav_idx <= #menu.favorites and
 			menu.favorites[fav_idx].address == fields["te_address"] and
 			menu.favorites[fav_idx].port    == fields["te_port"] then
 
