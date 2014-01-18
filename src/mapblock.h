@@ -37,6 +37,7 @@ class NodeMetadataList;
 class IGameDef;
 class MapBlockMesh;
 class VoxelManipulator;
+class Circuit;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 

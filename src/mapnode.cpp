@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
 #include "log.h"
-#include "circuit_element.h"
 #include <string>
 #include <sstream>
 

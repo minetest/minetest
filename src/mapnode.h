@@ -29,8 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 
 class INodeDefManager;
-class CircuitElement;
-class Circuit;
 
 /*
 	Naming scheme:

@@ -52,7 +52,7 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 		for(std::vector <std::pair <CircuitElement*, int> >::iterator j = connected.begin();
 		    j != connected.end(); ++j) {
 			bool exist_in_other = false;
-			CircuitElementList* tmp_face = j ->first -> m_faces + j -> second;
+			CircuitElementList* tmp_face = j -> first -> m_faces + j -> second;
 			for(CircuitElementList::iterator k = tmp_face -> begin(); k != tmp_face -> end(); ++k) {
 				if((tmp_face -> element == &(*current_element_iterator)) && (k -> shift == i)) {
 					exist_in_other = true;
@@ -102,6 +102,14 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	for(unsigned int i = 0; i < 6; ++i) {
 		current_face_connected.clear();
 		CircuitElement::findConnectedWithFace(current_face_connected, map, ndef, pos, SHIFT_TO_FACE(i), pos_to_iterator);
+		
+		all_connected.clear();
+		for(unsigned int j = 0; j < 6; ++j) {
+			if((ndef -> get(node).wire_connections[i] & (SHIFT_TO_FACE(j))) && (i != j))
+			{
+				CircuitElement::findConnectedWithFace(all_connected, map, ndef, pos, SHIFT_TO_FACE(j), pos_to_iterator);
+			}
+		}
 
 		for(unsigned int j = 0; j < all_connected.size(); ++j) {
 			bool exist_in_current = false;
@@ -178,7 +186,7 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 					    current_face_connected[k].first -> m_faces + current_face_connected[k].second;
 					for(CircuitElementList::iterator l = face -> begin();
 					    l != face -> end();) {
-						if((face -> element == all_connected[j].first) && ((l -> shift) == all_connected[j].second)) {
+						if(l -> list_pointer == all_connected[j].first -> m_faces + all_connected[j].second) {
 							/*
 							 * Save and increment iterator because erase invalidates
 							 * only iterators to the erased elements.

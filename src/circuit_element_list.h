@@ -1,8 +1,9 @@
 #ifndef CIRCUIT_ELEMENT_LIST_H
 #define CIRCUIT_ELEMENT_LIST_H
 
-#include "circuit_element.h"
 #include <list>
+
+class CircuitElement;
 
 struct CircuitElementContainer;
 

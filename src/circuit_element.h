@@ -62,7 +62,7 @@ public:
 	// First - pointer to object to which connected.
 	// Second - face id.
 	static void findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,
-	                          Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node,
+	                          Map& map, INodeDefManager* ndef, v3s16 pos, MapNode node,
 	                          std::map<v3s16, std::list<CircuitElement>::iterator>& pos_to_iterator);
 	static void findConnectedWithFace(std::vector <std::pair <CircuitElement*, int > >& connected,
 	                                  Map& map, INodeDefManager* ndef, v3s16 pos, FaceId face,
