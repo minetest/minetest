@@ -1913,6 +1913,8 @@ methods:
   ^ light = day + (night * 16)
 - set_light_data(light_data):  Sets the param1 (light) contents of each node in the VoxelManip
   ^ expects lighting data in the same format that get_light_data() returns
+- get_param2_data(): Gets the raw param2 data read into the VoxelManip object
+- set_param2_data(param2_data): Sets the param2 contents of each node in the VoxelManip
 - calc_lighting(p1, p2):  Calculate lighting within the VoxelManip
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
   ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
@@ -2432,14 +2434,20 @@ Decoration definition (register_decoration)
     schematic = "foobar.mts",
     ^ If schematic is a string, it is the filepath relative to the current working directory of the
     ^ specified Minetest schematic file.
-    ^  - OR -, could instead be a table containing two fields, size and data:
+    ^  - OR -, could instead be a table containing two mandatory fields, size and data,
+    ^ and an optional table yslice_prob:
     schematic = {
         size = {x=4, y=6, z=4},
         data = {
             {name="cobble", param1=255, param2=0},
             {name="dirt_with_grass", param1=255, param2=0},
              ...
-        }
+        },
+        yslice_prob = {
+            {ypos=2, prob=128},
+            {ypos=5, prob=64},
+             ...
+        },
     },
     ^ See 'Schematic specifier' for details.
     replacements = {{"oldname", "convert_to"}, ...},
