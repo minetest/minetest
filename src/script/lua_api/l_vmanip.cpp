@@ -229,6 +229,48 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	return 0;
 }
 
+int LuaVoxelManip::l_get_param2_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+
+	int volume = vm->m_area.getVolume();
+
+	lua_newtable(L);
+	for (int i = 0; i != volume; i++) {
+		lua_Integer param2 = vm->m_data[i].param2;
+		lua_pushinteger(L, param2);
+		lua_rawseti(L, -2, i + 1);
+	}
+
+	return 1;
+}
+
+int LuaVoxelManip::l_set_param2_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+
+	if (!lua_istable(L, 2))
+		return 0;
+
+	int volume = vm->m_area.getVolume();
+	for (int i = 0; i != volume; i++) {
+		lua_rawgeti(L, 2, i + 1);
+		u8 param2 = lua_tointeger(L, -1);
+
+		vm->m_data[i].param2 = param2;
+
+		lua_pop(L, 1);
+	}
+
+	return 0;
+}
+
 int LuaVoxelManip::l_update_map(lua_State *L)
 {
 	LuaVoxelManip *o = checkobject(L, 1);
@@ -352,5 +394,7 @@ const luaL_reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, set_lighting),
 	luamethod(LuaVoxelManip, get_light_data),
 	luamethod(LuaVoxelManip, set_light_data),
+	luamethod(LuaVoxelManip, get_param2_data),
+	luamethod(LuaVoxelManip, set_param2_data),
 	{0,0}
 };

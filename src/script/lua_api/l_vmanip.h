@@ -55,6 +55,9 @@ private:
 	static int l_get_light_data(lua_State *L);
 	static int l_set_light_data(lua_State *L);
 
+	static int l_get_param2_data(lua_State *L);
+	static int l_set_param2_data(lua_State *L);
+
 public:
 	LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool is_mapgen_vm);
 	LuaVoxelManip(Map *map);
