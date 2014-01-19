@@ -149,6 +149,12 @@ bool threadBindToProcessor(threadid_t tid, int pnumber);
 bool threadSetPriority(threadid_t tid, int prio);
 
 /*
+	Return system information
+	e.g. "Linux/3.12.7 x86_64"
+*/
+std::string get_sysinfo();
+
+/*
 	Resolution is 10-20ms.
 	Remember to check for overflows.
 	Overflow can occur at any value higher than 10000000.

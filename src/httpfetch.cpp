@@ -18,16 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "socket.h" // for select()
-#include "porting.h" // for sleep_ms()
+#include "porting.h" // for sleep_ms(), get_sysinfo()
 #include "httpfetch.h"
 #include <iostream>
 #include <sstream>
 #include <list>
 #include <map>
 #include <errno.h>
-#ifndef _WIN32
-#include <sys/utsname.h>
-#endif
 #include "jthread/jevent.h"
 #include "config.h"
 #include "exceptions.h"
@@ -50,15 +47,7 @@ HTTPFetchRequest::HTTPFetchRequest()
 	timeout = g_settings->getS32("curl_timeout");
 	connect_timeout = timeout * 5;
 	
-	useragent = std::string("Minetest/") + minetest_version_hash + " ";
-#ifdef _WIN32
-	useragent += "(Windows)";
-#else
-	struct utsname osinfo;
-	uname(&osinfo);
-	useragent += std::string("(") + osinfo.sysname + "/"
-			+ osinfo.release + " " + osinfo.machine + ")";
-#endif
+	useragent = std::string("Minetest/") + minetest_version_hash + " (" + porting::get_sysinfo() + ")";
 }
 
 
