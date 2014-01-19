@@ -23,15 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	See comments in porting.h
 */
 
-#if defined(linux)
-	#include <unistd.h>
-#elif defined(__APPLE__)
-	#include <unistd.h>
+#if defined(__APPLE__)
 	#include <mach-o/dyld.h>
+	#include "CoreFoundation/CoreFoundation.h"
 #elif defined(__FreeBSD__)
-	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
+#elif defined(_WIN32)
+	#include <algorithm>
+#endif
+#if !defined(_WIN32)
+	#include <unistd.h>
+	#include <sys/utsname.h>
 #endif
 
 #include "porting.h"
@@ -41,10 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/string.h"
 #include <list>
-
-#ifdef __APPLE__
-	#include "CoreFoundation/CoreFoundation.h"
-#endif
 
 namespace porting
 {
@@ -282,6 +281,42 @@ bool detectMSVCBuildDir(char *c_path)
 	std::string path(c_path);
 	const char *ends[] = {"bin\\Release", "bin\\Build", NULL};
 	return (removeStringEnd(path, ends) != "");
+}
+
+std::string get_sysinfo()
+{
+#ifdef _WIN32
+	OSVERSIONINFO osvi;
+	std::ostringstream oss;
+	std::string tmp;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+	tmp = osvi.szCSDVersion;
+	std::replace(tmp.begin(), tmp.end(), ' ', '_');
+
+	oss << "Windows/" << osvi.dwMajorVersion << "."
+		<< osvi.dwMinorVersion;
+	if(osvi.szCSDVersion[0])
+		oss << "-" << tmp;
+	oss << " ";
+	#ifdef _WIN64
+	oss << "x86_64";
+	#else
+	BOOL is64 = FALSE;
+	if(IsWow64Process(GetCurrentProcess(), &is64) && is64)
+		oss << "x86_64"; // 32-bit app on 64-bit OS
+	else
+		oss << "x86";
+	#endif
+
+	return oss.str();
+#else
+	struct utsname osinfo;
+	uname(&osinfo);
+	return std::string(osinfo.sysname) + "/"
+		+ osinfo.release + " " + osinfo.machine;
+#endif
 }
 
 void initializePaths()
