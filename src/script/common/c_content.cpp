@@ -958,6 +958,7 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 		MapNode *schemdata = new MapNode[numnodes];
 		int i = 0;
 		
+		// Get schematic data
 		lua_getfield(L, index, "data");
 		luaL_checktype(L, -1, LUA_TTABLE);
 		
@@ -986,15 +987,34 @@ bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *serv
 			lua_pop(L, 1);
 		}
 		
-		dschem->size      = size;
-		dschem->schematic = schemdata;
-		
 		if (i != numnodes) {
 			errorstream << "read_schematic: incorrect number of "
 				"nodes provided in raw schematic data (got " << i <<
 				", expected " << numnodes << ")." << std::endl;
 			return false;
 		}
+
+		u8 *sliceprobs = new u8[size.Y];
+		for (i = 0; i != size.Y; i++)
+			sliceprobs[i] = MTSCHEM_PROB_ALWAYS;
+
+		// Get Y-slice probability values (if present)
+		lua_getfield(L, index, "yslice_prob");
+		if (lua_istable(L, -1)) {
+			lua_pushnil(L);
+			while (lua_next(L, -2)) {
+				if (getintfield(L, -1, "ypos", i) && i >= 0 && i < size.Y) {
+					sliceprobs[i] = getintfield_default(L, -1,
+						"prob", MTSCHEM_PROB_ALWAYS);
+				}
+				lua_pop(L, 1);
+			}
+		}
+
+		dschem->size        = size;
+		dschem->schematic   = schemdata;
+		dschem->slice_probs = sliceprobs;
+
 	} else if (lua_isstring(L, index)) {
 		dschem->filename = std::string(lua_tostring(L, index));
 	} else {

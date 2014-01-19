@@ -789,6 +789,7 @@ bool DecoSchematic::loadSchematicFile() {
 	Version changes:
 	1 - Initial version
 	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
+	3 - Added y-slice probabilities; this allows for variable height structures
 */
 void DecoSchematic::saveSchematicFile(INodeDefManager *ndef) {
 	std::ostringstream ss(std::ios_base::binary);
