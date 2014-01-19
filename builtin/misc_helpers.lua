@@ -257,7 +257,7 @@ if minetest then
 		end
 		local undef = minetest.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
-			undef.on_rightclick(pointed_thing.under, node, placer,
+			undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 			return
 		end
