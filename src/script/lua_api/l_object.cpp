@@ -38,6 +38,7 @@ struct EnumString es_HudElementType[] =
 	{HUD_ELEM_TEXT,      "text"},
 	{HUD_ELEM_STATBAR,   "statbar"},
 	{HUD_ELEM_INVENTORY, "inventory"},
+	{HUD_ELEM_WAYPOINT,  "waypoint"},
 {0, NULL},
 };
 
@@ -53,6 +54,7 @@ struct EnumString es_HudElementStat[] =
 	{HUD_STAT_DIR,    "direction"},
 	{HUD_STAT_ALIGN,  "alignment"},
 	{HUD_STAT_OFFSET, "offset"},
+	{HUD_STAT_WORLD_POS, "world_pos"},
 	{0, NULL},
 };
 
@@ -862,6 +864,10 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
 
+	lua_getfield(L, 2, "world_pos");
+	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
+	lua_pop(L, 1);
+
 	u32 id = getServer(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {
 		delete elem;
@@ -953,6 +959,10 @@ int ObjectRef::l_hud_change(lua_State *L)
 			e->offset = read_v2f(L, 4);
 			value = &e->offset;
 			break;
+		case HUD_STAT_WORLD_POS:
+			e->world_pos = read_v3f(L, 4);
+			value = &e->world_pos;
+			break;
 	}
 
 	getServer(L)->hudChange(player, id, stat, value);
@@ -1002,6 +1012,9 @@ int ObjectRef::l_hud_get(lua_State *L)
 
 	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
+
+	push_v3f(L, e->world_pos);
+	lua_setfield(L, -2, "world_pos");
 
 	return 1;
 }
