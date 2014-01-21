@@ -263,13 +263,13 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	path_gridnode& endpos   = getIndexElement(EndIndex);
 
 	if (!startpos.valid) {
-		ERROR_TARGET << "invalid startpos" <<
+		ERROR_TARGET << "pathfinder:invalid startpos " <<
 				"Index: " << PPOS(StartIndex) <<
 				"Realpos: " << PPOS(getRealPos(StartIndex)) << std::endl;
 		return retval;
 	}
 	if (!endpos.valid) {
-		ERROR_TARGET << "invalid stoppos" <<
+		ERROR_TARGET << "pathfinder:invalid stoppos " <<
 				"Index: " << PPOS(EndIndex) <<
 				"Realpos: " << PPOS(getRealPos(EndIndex)) << std::endl;
 		return retval;
