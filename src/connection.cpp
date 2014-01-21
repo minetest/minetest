@@ -2036,6 +2036,7 @@ void ConnectionReceiveThread::receive()
 					<<"Receive(): Invalid incoming packet, "
 					<<"size: " << received_size
 					<<", protocol: " << readU32(&packetdata[0]) <<std::endl);
+			continue;
 		}
 
 		u16 peer_id          = readPeerId(*packetdata);
