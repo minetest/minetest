@@ -557,6 +557,33 @@ int ObjectRef::l_getyaw(lua_State *L)
 	return 1;
 }
 
+// set_fov(self, degrees)
+int ObjectRef::l_set_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if(player == NULL) return 0;
+	f32 fov = luaL_checknumber(L, 2);
+	// Do it
+	getServer(L)->setPlayerFOV(player, fov);
+	//player->setFOV(fov);
+	return 0;
+}
+
+// get_fov(self)
+int ObjectRef::l_get_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if(co == NULL) return 0;
+	// Do it
+	f32 fov = co->getFOV();
+	lua_pushnumber(L, fov);
+	return 1;
+}
+
 // settexturemod(self, mod)
 int ObjectRef::l_settexturemod(lua_State *L)
 {
@@ -1167,6 +1194,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, getacceleration),
 	luamethod(ObjectRef, setyaw),
 	luamethod(ObjectRef, getyaw),
+	luamethod(ObjectRef, set_fov),
+	luamethod(ObjectRef, get_fov),
 	luamethod(ObjectRef, settexturemod),
 	luamethod(ObjectRef, setsprite),
 	luamethod(ObjectRef, get_entity_name),

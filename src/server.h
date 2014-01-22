@@ -472,6 +472,7 @@ public:
 	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
 	void hudSetHotbarImage(Player *player, std::string name);
 	void hudSetHotbarSelectedImage(Player *player, std::string name);
+	void setPlayerFOV(Player *player, f32 fov);
 
 private:
 
@@ -520,6 +521,7 @@ private:
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
+	void SendPlayerSetFOV(u16 peer_id, f32 fov);
 
 	/*
 		Send a node removal/addition event to all clients except ignore_id.

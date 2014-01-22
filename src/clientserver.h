@@ -100,6 +100,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		version, heat and humidity transfer in MapBock
 		automatic_face_movement_dir and automatic_face_movement_dir_offset
 			added to object properties
+	PROTOCOL_VERSION 22:
+		TOCLIENT_SET_FOV
 */
 
 #define LATEST_PROTOCOL_VERSION 22
@@ -506,6 +508,11 @@ enum ToClientCommand
 	/*
 		u16 command
 		u16 breath
+	*/
+
+	TOCLIENT_SET_FOV = 0x4f,
+	/*
+		f32 fov
 	*/
 };
 

@@ -372,6 +372,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
 	m_yaw(0),
+	m_fov(-100),
 	m_properties_sent(true),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
@@ -847,6 +848,16 @@ void LuaEntitySAO::setYaw(float yaw)
 float LuaEntitySAO::getYaw()
 {
 	return m_yaw;
+}
+
+void LuaEntitySAO::setFOV(f32 fov)
+{
+	m_fov = fov;
+}
+
+f32 LuaEntitySAO::getFOV()
+{
+	return m_fov;
 }
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)

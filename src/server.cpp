@@ -3862,6 +3862,21 @@ void Server::SendPlayerBreath(u16 peer_id)
 	SendBreath(m_con, peer_id, playersao->getBreath());
 }
 
+void Server::SendPlayerSetFOV(u16 peer_id, f32 fov)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	// Write command
+	writeU16(os, TOCLIENT_SET_FOV);
+	writeF1000(os, fov);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 void Server::SendMovePlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -5153,6 +5168,14 @@ void Server::deleteParticleSpawnerAll(u32 id)
 			m_particlespawner_ids.end(), id),
 			m_particlespawner_ids.end());
 	SendDeleteParticleSpawnerAll(id);
+}
+
+void Server::setPlayerFOV(Player *player, f32 fov)
+{
+	if (!player)
+		return;
+
+	SendPlayerSetFOV(player->peer_id, fov);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)
