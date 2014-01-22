@@ -292,11 +292,22 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Run script hook
 	local _, callback
 	for _, callback in ipairs(minetest.registered_on_placenodes) do
-		-- Copy pos and node because callback can modify them
+		-- Deepcopy pos, node and poined_thing because callback can modify them
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
-		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack) then
+		local pointed_thing_copy = {
+			type = pointed_thing.type,
+			under = {
+				x = pointed_thing.under.x,
+				y = pointed_thing.under.y,
+				z = pointed_thing.under.z},
+			above = {
+				x = pointed_thing.above.x,
+				y = pointed_thing.above.y,
+				z = pointed_thing.above.z}
+		}
+		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, poined_thing_copy) then
 			take_item = false
 		end
 	end

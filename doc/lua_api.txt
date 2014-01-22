@@ -1202,7 +1202,7 @@ minetest.register_on_shutdown(func())
 ^ WARNING: If the server terminates abnormally (i.e. crashes), the registered
            callbacks WILL LIKELY NOT BE RUN.  Data should be saved at
            semi-frequent intervals as well as on server shutdown.
-minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack))
+minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack, pointed_thing))
 ^ Called when a node has been placed
 ^ If return true no item is taken from itemstack
 ^ Not recommended; use on_construct or after_place_node in node definition
