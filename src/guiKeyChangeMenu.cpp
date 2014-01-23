@@ -58,6 +58,14 @@ enum
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
+	// mouse controls
+	GUI_ID_KEY_TURNLEFT_BUTTON,
+	GUI_ID_KEY_TURNRIGHT_BUTTON,
+	GUI_ID_KEY_LOOKUP_BUTTON,
+	GUI_ID_KEY_LOOKDOWN_BUTTON,
+	GUI_ID_KEY_LBUTTON_BUTTON,
+	GUI_ID_KEY_RBUTTON_BUTTON,
+
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -403,4 +411,10 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"), "keymap_noclip");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),  "keymap_rangeselect");
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),  "keymap_print_debug_stacks");
+	this->add_key(GUI_ID_KEY_TURNLEFT_BUTTON,  wgettext("Turn left"),     "keymap_turnleft");
+	this->add_key(GUI_ID_KEY_TURNRIGHT_BUTTON, wgettext("Turn right"),    "keymap_turnright");
+	this->add_key(GUI_ID_KEY_LOOKUP_BUTTON,    wgettext("Look up"),       "keymap_lookup");
+	this->add_key(GUI_ID_KEY_LOOKDOWN_BUTTON,  wgettext("Look down"),     "keymap_lookdown");
+	this->add_key(GUI_ID_KEY_LBUTTON_BUTTON,   wgettext("Left button"),   "keymap_lbutton");
+	this->add_key(GUI_ID_KEY_RBUTTON_BUTTON,   wgettext("Right button"),  "keymap_rbutton");
 }

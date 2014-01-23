@@ -34,7 +34,7 @@ Default Controls
 - Shift: sneak/go down
 - Q: drop item
 - I: inventory
-- Mouse: turn/look
+- Mouse (or arrow keys): turn/look
 - Mouse left: dig/punch
 - Mouse right: place/use
 - Mouse wheel: select item

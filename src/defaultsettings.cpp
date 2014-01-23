@@ -35,6 +35,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_right", "KEY_KEY_D");
 	settings->setDefault("keymap_jump", "KEY_SPACE");
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
+	settings->setDefault("keymap_turnleft", "KEY_LEFT");
+	settings->setDefault("keymap_turnright", "KEY_RIGHT");
+	settings->setDefault("keymap_lookup", "KEY_UP");
+	settings->setDefault("keymap_lookdown", "KEY_DOWN");
+	settings->setDefault("keymap_lbutton", "KEY_LBUTTON");
+	settings->setDefault("keymap_rbutton", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
 	settings->setDefault("keymap_special1", "KEY_KEY_E");
