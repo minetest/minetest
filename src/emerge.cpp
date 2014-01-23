@@ -462,8 +462,8 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 		block = map->loadBlock(p);
 		if(block)
 		{
-			block->pushElementsToCircuit(m_circuit);
-			m_circuit->processElementsQueue(*map, map->getNodeDefManager());
+// 			block->pushElementsToCircuit(m_circuit);
+// 			m_circuit->processElementsQueue(*map, map->getNodeDefManager());
 		}
 		if (block && block->isGenerated())
 			map->prepareBlock(block);

@@ -5,10 +5,22 @@
 #include "mapnode.h"
 #include "scripting_game.h"
 
+#include "map.h"
+#include "serialization.h"
+#include "main.h"
+#include "settings.h"
+#include "log.h"
+
 #include <map>
 #include <iomanip>
+#include <cassert>
+#include <string>
+#include <sstream>
 
 #define PP(x) ((x).X)<<" "<<((x).Y)<<" "<<((x).Z)<<" "
+
+const std::string Circuit::m_database_states_key = "states";
+const std::string Circuit::m_database_states_container_key = "states_container";
 
 void printStateFunc(const unsigned char* func)
 {
@@ -18,30 +30,99 @@ void printStateFunc(const unsigned char* func)
 	}
 }
 
-Circuit::Circuit(GameScripting* script) :  circuit_elements_states(64, false),
-        m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f)
+Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements_states(64u, false),
+        m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f), max_id(0ull)
 {
+	unsigned long element_id;
+	unsigned char element_state;
+	int elements_num = 0;
+	std::istringstream in(std::ios_base::binary);
+	std::string str;
+	leveldb::Options options;
+	options.create_if_missing = true;
+	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "circuit.db", &m_database);
+	assert(status.ok());
+	
+	status = m_database -> Get(leveldb::ReadOptions(), m_database_states_container_key, &str);
+	// If database already exist
+	if(status.ok())
+	{
+		in.str(str);
+		circuit_elements_states.deSerialize(in);
+		
+		// Filling list with empty elements
+		leveldb::Iterator* it = m_database -> NewIterator(leveldb::ReadOptions());
+		std::map<unsigned long, std::list<CircuitElement>::iterator> id_to_pointer;
+		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
+			if(isElementKey(it -> key().ToString())) {
+				id_to_pointer[stoi(it -> key().ToString())] = elements.insert(elements.begin(), CircuitElement());
+			}
+		}
+		assert(it -> status().ok());
+		// Loading elements data
+		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
+			if(isElementKey(it -> key().ToString())) {
+				in.clear();
+				in.str(it -> value().ToString());
+				std::string test = it -> value().ToString();
+				element_id = stoi(it -> key().ToString());
+				if(element_id + 1 > max_id)
+				{
+					max_id = element_id + 1;
+				}
+				std::list<CircuitElement>::iterator current_element = id_to_pointer[element_id];
+				current_element -> deSerialize(in, id_to_pointer);
+				current_element -> m_func = circuit_elements_states.getFunc(current_element -> m_func_id);
+				pos_to_id[current_element -> m_pos] = element_id;
+				pos_to_iterator[current_element -> m_pos] = id_to_pointer[element_id];
+				++elements_num;
+			}
+		}
+		assert(it -> status().ok());
+		delete it;
+		
+		// Loading elements states
+		status = m_database -> Get(leveldb::ReadOptions(), m_database_states_key, &str);
+		in.str(str);
+		for(int i = 0; i < elements_num; ++i)
+		{
+			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
+			in.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
+			id_to_pointer[element_id] -> m_current_input_state = element_state;
+		}
+		
+		assert(status.ok());
+	}
+}
+
+Circuit::~Circuit()
+{
+	save();
+	delete m_database;
 }
 
 void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsigned char* func)
 {
 	std::vector <std::pair <CircuitElement*, int > > connected;
 	MapNode node = map.getNode(pos);
+	pos_to_id[pos] = max_id;
+	++max_id;
 
-	const unsigned char* node_func;
+	std::pair<const unsigned char*, unsigned long> node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
 		// If block is rotatable, then rotate it's function.
 		node_func = circuit_elements_states.addState(func, node.param2);
 	} else {
 		node_func = circuit_elements_states.addState(func);
 	}
+	
+	saveCircuitElementsStates();
 
 	std::list<CircuitElement>::iterator current_element_iterator =
-	    elements.insert(elements.begin(), CircuitElement(pos, node, node_func));
+	    elements.insert(elements.begin(), CircuitElement(pos, ndef->get(node).has_on_activate, ndef->get(node).has_on_deactivate,
+	                                                     node_func.first, node_func.second));
 	CircuitElementContainer tmp_container;
 	pos_to_iterator[pos] = current_element_iterator;
-
-	map.addNodeWithEvent(pos, node);
 
 	// For each face add all other connected faces.
 	for(int i = 0; i < 6; ++i) {
@@ -75,12 +156,28 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 			}
 		}
 	}
+	
+	saveElementConnections(current_element_iterator);
 }
 
 void Circuit::removeElement(v3s16 pos)
 {
+	std::vector <CircuitElement*> neighbors_pointers;
+	std::list <CircuitElement>::iterator current_element = pos_to_iterator[pos];
+	current_element -> getNeighbors(neighbors_pointers);
 	elements.erase(pos_to_iterator[pos]);
+	leveldb::Status status = m_database -> Delete(leveldb::WriteOptions(), itos(pos_to_id[pos]));
+	assert(status.ok());
+	for(unsigned int i = 0; i < neighbors_pointers.size(); ++i)
+	{
+		std::ostringstream out(std::ios_base::binary);
+		neighbors_pointers[i] -> serialize(out, pos_to_id);
+		std::string str = out.str();
+		status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[neighbors_pointers[i] -> m_pos]), str);
+		assert(status.ok());
+	}
 	pos_to_iterator.erase(pos);
+	pos_to_id.erase(pos);
 }
 
 void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
@@ -90,6 +187,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	std::vector <std::vector <bool> > is_joint_created;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
+	std::set <CircuitElement*> changed_elements;
 	MapNode node = map.getNode(pos);
 	CircuitElement::findConnected(all_connected, map, ndef, pos, node, pos_to_iterator);
 	is_joint_created.resize(all_connected.size());
@@ -149,10 +247,23 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 						[pair_to_id_converter[current_face_connected[k]]] = true;
 						is_joint_created[pair_to_id_converter[current_face_connected[k]]]
 						[pair_to_id_converter[all_connected[j]]] = true;
+						
+						changed_elements.insert(current_face_connected[k].first);
+						changed_elements.insert(all_connected[j].first);
 					}
 				}
 			}
 		}
+	}
+	
+	leveldb::Status status;
+	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i)
+	{
+		std::ostringstream out(std::ios_base::binary);
+		(*i) -> serialize(out, pos_to_id);
+		std::string str = out.str();
+		status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[(*i) -> m_pos]), str);
+		assert(status.ok());
 	}
 }
 
@@ -162,6 +273,8 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
+	std::set <CircuitElement*> changed_elements;
+	
 	CircuitElement::findConnected(all_connected, map, ndef, pos, node, pos_to_iterator);
 	for(unsigned int i = 0; i < all_connected.size(); ++i) {
 		pair_to_id_converter[all_connected[i]] = i;
@@ -187,11 +300,14 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 					for(CircuitElementList::iterator l = face -> begin();
 					    l != face -> end();) {
 						if(l -> list_pointer == all_connected[j].first -> m_faces + all_connected[j].second) {
+							CircuitElementList::iterator tmp_l = l;
+							
+							changed_elements.insert(tmp_l -> list_pointer -> element);
+							
 							/*
 							 * Save and increment iterator because erase invalidates
 							 * only iterators to the erased elements.
 							 */
-							CircuitElementList::iterator tmp_l = l;
 							++l;
 							tmp_l -> list_pointer -> erase(tmp_l -> list_iterator);
 							face -> erase(tmp_l);
@@ -202,6 +318,16 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 				}
 			}
 		}
+	}
+	
+	leveldb::Status status;
+	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i)
+	{
+		std::ostringstream out(std::ios_base::binary);
+		(*i) -> serialize(out, pos_to_id);
+		std::string str = out.str();
+		status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[(*i) -> m_pos]), str);
+		assert(status.ok());
 	}
 }
 
@@ -244,19 +370,23 @@ void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 
 void Circuit::updateElement(MapNode& node, v3s16 pos, INodeDefManager* ndef, const unsigned char* func)
 {
-	const unsigned char* node_func;
+	std::pair<const unsigned char*, unsigned long> node_func;
 	if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
 		node_func = circuit_elements_states.addState(func, node.param2);
 	} else {
 		node_func = circuit_elements_states.addState(func);
 	}
-	pos_to_iterator[pos] -> m_func = node_func;
-	pos_to_iterator[pos] -> m_node = node;
+	pos_to_iterator[pos] -> m_func = node_func.first;
+	pos_to_iterator[pos] -> m_func_id = node_func.second;
+	pos_to_iterator[pos] -> m_has_on_activate = ndef->get(node).has_on_activate;
+	pos_to_iterator[pos] -> m_has_on_deactivate = ndef->get(node).has_on_deactivate;
 }
 
 void Circuit::pushElementToQueue(v3s16 pos)
 {
 	elements_queue.push_back(pos);
+	pos_to_id[pos] = max_id;
+	++max_id;
 }
 void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 {
@@ -269,25 +399,26 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 		MapNode node;
 		CircuitElementContainer tmp_container;
 		std::vector <bool> processed(elements_queue.size(), false);
-		const unsigned char* node_func;
 
 		for(unsigned int i = 0; i < elements_queue.size(); ++i) {
 			pos_to_id_converter[elements_queue[i]] = i;
 			node = map.getNode(elements_queue[i]);
+			std::pair <const unsigned char*, unsigned long> node_func;
 			if(ndef->get(node).param_type_2 == CPT2_FACEDIR) {
 				// If block is rotatable, then rotate it's function.
 				node_func = circuit_elements_states.addState(ndef->get(node).circuit_element_states, node.param2);
 			} else {
 				node_func = circuit_elements_states.addState(ndef->get(node).circuit_element_states);
 			}
-			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i], node, node_func));
+			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i],
+			                                                     ndef->get(node).has_on_activate, ndef->get(node).has_on_deactivate, node_func.first, node_func.second));
 			elements_queue_iterators[i] = pos_to_iterator[elements_queue[i]];
 			map.setNode(elements_queue[i], node);
 		}
 
 		for(unsigned int i = 0; i < elements_queue.size(); ++i) {
 			pos = elements_queue[i];
-			// For each face joint if it doesn't exist yet.
+			// For each face create joint if it doesn't exist yet.
 			for(int j = 0; j < 6; ++j) {
 				connected.clear();
 				CircuitElement::findConnectedWithFace(connected, map, ndef, pos, SHIFT_TO_FACE(j), pos_to_iterator);
@@ -315,7 +446,64 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			}
 			processed[i] = true;
 		}
+		
+		for(unsigned int i = 0; i < elements_queue.size(); ++i) {
+			std::ostringstream out(std::ios_base::binary);
+			pos_to_iterator[elements_queue[i]] -> serialize(out, pos_to_id);
+			std::string str = out.str();
+			leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[elements_queue[i]]), str);
+			assert(status.ok());
+		}
 
 		elements_queue.clear();
+
+		saveCircuitElementsStates();
 	}
+}
+
+void Circuit::save()
+{
+	std::ostringstream ostr(std::ios_base::binary);	
+	for(std::list<CircuitElement>::iterator i = elements.begin(); i != elements.end(); ++i) {
+		i -> serializeState(ostr, pos_to_id);
+	}
+	std::string str = ostr.str();
+	leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), m_database_states_key, str);
+	assert(status.ok());
+}
+
+void Circuit::saveElementConnections(std::list<CircuitElement>::iterator id)
+{
+	std::ostringstream out(std::ios_base::binary);
+	id -> serialize(out, pos_to_id);
+	std::string str = out.str();
+	leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[id -> m_pos]), str);
+	assert(status.ok());
+	for(int i = 0; i < 6; ++i) {
+		for(CircuitElementList::iterator j = id -> m_faces[i].begin(); j != id -> m_faces[i].begin(); ++j) {
+			out.clear();
+			j -> list_pointer -> element -> serialize(out, pos_to_id);
+			str = out.str();
+			leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), itos(pos_to_id[j -> list_pointer -> element -> m_pos]), str);
+			assert(status.ok());
+		}
+	}
+}
+
+void Circuit::saveCircuitElementsStates()
+{
+	std::ostringstream out(std::ios_base::binary);
+	circuit_elements_states.serialize(out);
+	std::string str = out.str();
+	leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), m_database_states_container_key, str);
+}
+
+bool Circuit::isElementKey(std::string s)
+{
+	for(unsigned int i = 0; i < s.length(); ++i) {
+		if((s[i] < '0') || (s[i] > '9')) {
+			return false;
+		}
+	}
+	return true;
 }

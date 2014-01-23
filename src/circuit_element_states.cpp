@@ -3,7 +3,7 @@
 #include "log.h"
 #include "debug.h"
 
-CircuitElementStates::CircuitElementStates(int states_num, bool use_shifts) : m_states_num(states_num),
+CircuitElementStates::CircuitElementStates(unsigned int states_num, bool use_shifts) : m_states_num(states_num),
     m_use_shifts(use_shifts)
 {
 }
@@ -15,49 +15,30 @@ CircuitElementStates::~CircuitElementStates()
 	}
 }
 
-const unsigned char* CircuitElementStates::addState(const unsigned char* state)
+std::pair<const unsigned char*, unsigned long> CircuitElementStates::addState(const unsigned char* state)
 {
 	unsigned int id = getId(state);
 	if(id != m_states.size()) {
-		return m_states[id];
+		return std::make_pair(m_states[id], static_cast<unsigned long>(id));
 	} else {
 		unsigned char* tmp_state = new unsigned char[m_states_num];
-		for(int i = 0; i < m_states_num; ++i) {
+		for(unsigned int i = 0; i < m_states_num; ++i) {
 			tmp_state[i] = state[i];
 		}
 		m_states.push_back(tmp_state);
-		return m_states[m_states.size() - 1];
+		return std::make_pair(m_states[m_states.size() - 1], static_cast<unsigned long>(m_states.size() - 1));
 	}
 }
 
-const unsigned char* CircuitElementStates::addState(const unsigned char* state, unsigned char facedir)
+std::pair<const unsigned char*, unsigned long> CircuitElementStates::addState(const unsigned char* state, unsigned char facedir)
 {
 	FaceId face = FACEDIR_TO_FACE(facedir);
 	unsigned char rotated_state[m_states_num];
-	for(int i = 0; i < m_states_num; ++i) {
+	for(unsigned int i = 0; i < m_states_num; ++i) {
 		rotated_state[i] = 0;
 	}
 	rotateStatesArray(state, rotated_state, face);
 	return addState(rotated_state);
-}
-
-unsigned int CircuitElementStates::getId(const unsigned char* state)
-{
-	unsigned int result = m_states.size();
-	for(unsigned int i = 0; i < m_states.size(); ++i) {
-		bool equal = true;
-		for(int j = 0; j < m_states_num; ++j) {
-			if(m_states[i][j] != state[j]) {
-				equal = false;
-				break;
-			}
-		}
-		if(equal) {
-			result = i;
-			break;
-		}
-	}
-	return result;
 }
 
 void CircuitElementStates::rotateStatesArray(const unsigned char* input_state, unsigned char* output_state, FaceId face)
@@ -65,14 +46,14 @@ void CircuitElementStates::rotateStatesArray(const unsigned char* input_state, u
 	int id;
 	unsigned char value;
 	if(m_use_shifts) {
-		for(int i = 0; i < m_states_num; ++i) {
+		for(unsigned int i = 0; i < m_states_num; ++i) {
 			id = rotateState(SHIFT_TO_FACE(static_cast<unsigned char>(i)), face);
 			id = FACE_TO_SHIFT(id);
 			value = rotateState(input_state[i], face);
 			output_state[id] = value;
 		}
 	} else {
-		for(int i = 0; i < m_states_num; ++i) {
+		for(unsigned int i = 0; i < m_states_num; ++i) {
 			id = rotateState(static_cast<unsigned char>(i), face);
 			value = rotateState(input_state[i], face);
 			output_state[id] = value;
@@ -136,4 +117,56 @@ unsigned char CircuitElementStates::rotateState(const unsigned char state, FaceI
 		errorstream << "CircuitElementStates::rotateState(): Unknown face." << std::endl;
 	}
 	return result;
+}
+
+unsigned int CircuitElementStates::getId(const unsigned char* state)
+{
+	unsigned int result = m_states.size();
+	for(unsigned int i = 0; i < m_states.size(); ++i) {
+		bool equal = true;
+		for(unsigned int j = 0; j < m_states_num; ++j) {
+			if(m_states[i][j] != state[j]) {
+				equal = false;
+				break;
+			}
+		}
+		if(equal) {
+			result = i;
+			break;
+		}
+	}
+	return result;
+}
+
+unsigned char* CircuitElementStates::getFunc(unsigned int id)
+{
+	return m_states[id];
+}
+
+void CircuitElementStates::serialize(std::ostream& out)
+{
+	unsigned long states_size = m_states.size();
+	out.write(reinterpret_cast<char*>(&states_size), sizeof(states_size));
+	for(unsigned int i = 0; i < m_states.size(); ++i)
+	{
+		for(unsigned int j = 0; j < m_states_num; ++j)
+		{
+			out.write(reinterpret_cast<char*>(&m_states[i][j]), sizeof(m_states[i][j]));
+		}
+	}
+}
+
+void CircuitElementStates::deSerialize(std::istream& in)
+{
+	unsigned long states_size = m_states.size();
+	in.read(reinterpret_cast<char*>(&states_size), sizeof(states_size));
+	m_states.resize(states_size);
+	for(unsigned int i = 0; i < m_states.size(); ++i)
+	{
+		m_states[i] = new unsigned char[m_states_num];
+		for(unsigned int j = 0; j < m_states_num; ++j)
+		{
+			in.read(reinterpret_cast<char*>(&m_states[i][j]), sizeof(m_states[i][j]));
+		}
+	}
 }

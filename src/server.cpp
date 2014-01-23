@@ -777,7 +777,7 @@ Server::Server(
 
 	m_script = new GameScripting(this);
 	
-	m_circuit = new Circuit(m_script);
+	m_circuit = new Circuit(m_script, path_world);
 
 
 	// Load and run builtin.lua

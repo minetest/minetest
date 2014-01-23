@@ -53,12 +53,20 @@ struct CircuitElementContainer
 class CircuitElement
 {
 public:
-	CircuitElement(v3s16 pos, MapNode& node, const unsigned char* func);
+	CircuitElement(v3s16 pos, bool has_on_activate, bool has_on_deactivate, const unsigned char* func, unsigned long func_id);
 	CircuitElement(const CircuitElement& element);
+	CircuitElement();
 	~CircuitElement();
 	void addConnectedElement();
 	void update();
 	void updateState(GameScripting* m_script, Map& map, INodeDefManager* ndef);
+	
+	void serialize(std::ostream& out, std::map<v3s16, unsigned long>& pos_to_id);
+	void serializeState(std::ostream& out, std::map<v3s16, unsigned long>& pos_to_id);
+	void deSerialize(std::istream& is, std::map<unsigned long, std::list<CircuitElement>::iterator>& id_to_pointer);
+	
+	void getNeighbors(std::vector <CircuitElement*>& neighbors);
+	
 	// First - pointer to object to which connected.
 	// Second - face id.
 	static void findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,
@@ -76,8 +84,10 @@ public:
 	friend Circuit;
 private:
 	v3s16 m_pos;
-	MapNode m_node;
+	bool m_has_on_activate;
+	bool m_has_on_deactivate;
 	const unsigned char* m_func;
+	unsigned long m_func_id;
 	unsigned char m_current_input_state;
 	unsigned char m_next_input_state;
 	unsigned char m_current_output_state;

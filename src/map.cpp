@@ -76,6 +76,7 @@ Map::Map(std::ostream &dout, IGameDef *gamedef):
 	m_gamedef(gamedef),
 	m_sector_cache(NULL)
 {
+	m_circuit = NULL;
 }
 
 Map::Map(std::ostream &dout, IGameDef *gamedef, Circuit* circuit):
@@ -1508,6 +1509,10 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		{
 			sector_deletion_queue.push_back(si->first);
 		}
+	}
+	if(m_circuit != NULL)
+	{
+		m_circuit->save();
 	}
 	endSave();
 
