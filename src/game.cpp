@@ -2131,15 +2131,15 @@ void the_game(
 					dy = -dy;
 				//infostream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
-				/*const float keyspeed = 500;
-				if(input->isKeyDown(irr::KEY_UP))
+				const float keyspeed = 500;
+				if(input->isKeyDown(getKeySetting("keymap_lookup")))
 					dy -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_DOWN))
+				if(input->isKeyDown(getKeySetting("keymap_lookdown")))
 					dy += dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_LEFT))
+				if(input->isKeyDown(getKeySetting("keymap_turnleft")))
 					dx -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_RIGHT))
-					dx += dtime * keyspeed;*/
+				if(input->isKeyDown(getKeySetting("keymap_turnright")))
+					dx += dtime * keyspeed;
 				
 				float d = g_settings->getFloat("mouse_sensitivity");
 				d = rangelim(d, 0.01, 100.0);
@@ -2186,8 +2186,8 @@ void the_game(
 				input->isKeyDown(getKeySetting("keymap_jump")),
 				input->isKeyDown(getKeySetting("keymap_special1")),
 				input->isKeyDown(getKeySetting("keymap_sneak")),
-				input->getLeftState(),
-				input->getRightState(),
+				input->isKeyDown(getKeySetting("keymap_lbutton")),
+				input->isKeyDown(getKeySetting("keymap_rbutton")),
 				camera_pitch,
 				camera_yaw
 			);
@@ -2200,8 +2200,8 @@ void the_game(
 			16*(int)input->isKeyDown(getKeySetting("keymap_jump"))+
 			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
 			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
-			128*(int)input->getLeftState()+
-			256*(int)input->getRightState();
+			128*(int)input->isKeyDown(getKeySetting("keymap_lbutton"))+
+			256*(int)input->isKeyDown(getKeySetting("keymap_lbutton"));
 			LocalPlayer* player = client.getEnv().getLocalPlayer();
 			player->keyPressed=keyPressed;
 		}
