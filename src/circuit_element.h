@@ -53,7 +53,7 @@ struct CircuitElementContainer
 class CircuitElement
 {
 public:
-	CircuitElement(v3s16 pos, bool has_on_activate, bool has_on_deactivate, const unsigned char* func, unsigned long func_id);
+	CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id);
 	CircuitElement(const CircuitElement& element);
 	CircuitElement();
 	~CircuitElement();
@@ -66,6 +66,7 @@ public:
 	void deSerialize(std::istream& is, std::map<unsigned long, std::list<CircuitElement>::iterator>& id_to_pointer);
 	
 	void getNeighbors(std::vector <CircuitElement*>& neighbors);
+	void setFunc(unsigned char* func);
 	
 	// First - pointer to object to which connected.
 	// Second - face id.
@@ -84,8 +85,6 @@ public:
 	friend Circuit;
 private:
 	v3s16 m_pos;
-	bool m_has_on_activate;
-	bool m_has_on_deactivate;
 	const unsigned char* m_func;
 	unsigned long m_func_id;
 	unsigned char m_current_input_state;

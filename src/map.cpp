@@ -1510,8 +1510,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 			sector_deletion_queue.push_back(si->first);
 		}
 	}
-	if(m_circuit != NULL)
-	{
+	if(m_circuit != NULL) {
 		m_circuit->save();
 	}
 	endSave();

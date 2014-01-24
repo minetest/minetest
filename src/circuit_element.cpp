@@ -32,9 +32,8 @@ FaceId CircuitElement::facedir_to_face[] = {
 	FACE_RIGHT, FACE_BOTTOM, FACE_TOP
 };
 
-CircuitElement::CircuitElement(v3s16 pos, bool has_on_activate, bool has_on_deactivate, const unsigned char* func, unsigned long func_id) :
-	m_pos(pos), m_has_on_activate(has_on_activate), m_has_on_deactivate(has_on_deactivate),
-	m_func(func), m_func_id(func_id), m_current_input_state(0), m_next_input_state(0),
+CircuitElement::CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id) :
+	m_pos(pos), m_func(func), m_func_id(func_id), m_current_input_state(0), m_next_input_state(0),
 	m_current_output_state(0), m_next_output_state(0)
 {
 	m_current_output_state = m_func[m_current_input_state];
@@ -56,22 +55,19 @@ CircuitElement::CircuitElement(v3s16 pos, bool has_on_activate, bool has_on_deac
 CircuitElement::CircuitElement(const CircuitElement& element)
 {
 	m_pos = element.m_pos;
-	m_has_on_activate = element.m_has_on_activate;
-	m_has_on_deactivate = element.m_has_on_deactivate;
 	m_func = element.m_func;
 	m_func_id = element.m_func_id;
 	m_current_input_state = element.m_current_input_state;
 	m_current_output_state = element.m_current_output_state;
 	m_next_input_state = element.m_next_input_state;
 	m_next_output_state = element.m_next_output_state;
-	for(int i = 0; i < 6; ++i)
-	{
+	for(int i = 0; i < 6; ++i) {
 		m_faces[i] = element.m_faces[i];
 		m_faces[i].element = this;
 	}
 }
 
-CircuitElement::CircuitElement() : m_pos(v3s16(0, 0, 0)), m_has_on_activate(false), m_has_on_deactivate(false),
+CircuitElement::CircuitElement() : m_pos(v3s16(0, 0, 0)),
 	m_func(0), m_func_id(0), m_current_input_state(0), m_next_input_state(0),
 	m_current_output_state(0), m_next_output_state(0)
 {
@@ -105,9 +101,12 @@ void CircuitElement::updateState(GameScripting* m_script, Map& map, INodeDefMana
 {
 	m_current_output_state = m_func[m_next_input_state];
 	MapNode node = map.getNodeNoEx(m_pos);
-	if(m_next_input_state && !m_current_input_state && m_has_on_activate) {
+	bool has_on_activate = ndef -> get(node).has_on_activate;
+	bool has_on_deactivate = ndef -> get(node).has_on_deactivate;
+	if(m_next_input_state && !m_current_input_state && has_on_activate) {
 		m_script -> node_on_activate(m_pos, node);
-	} else if(!m_next_input_state && m_current_input_state && m_has_on_deactivate) {
+	}
+	if(!m_next_input_state && m_current_input_state && has_on_deactivate) {
 		m_script -> node_on_deactivate(m_pos, node);
 	}
 	m_current_input_state = m_next_input_state;
@@ -117,15 +116,11 @@ void CircuitElement::updateState(GameScripting* m_script, Map& map, INodeDefMana
 void CircuitElement::serialize(std::ostream& out, std::map<v3s16, unsigned long>& pos_to_id)
 {
 	out.write(reinterpret_cast<char*>(&m_pos), sizeof(m_pos));
-	out.write(reinterpret_cast<char*>(&m_has_on_activate), sizeof(m_has_on_activate));
-	out.write(reinterpret_cast<char*>(&m_has_on_deactivate), sizeof(m_has_on_deactivate));
 	out.write(reinterpret_cast<char*>(&m_func_id), sizeof(m_func_id));
-	for(int i = 0; i < 6; ++i)
-	{
+	for(int i = 0; i < 6; ++i) {
 		unsigned long tmp = m_faces[i].size();
 		out.write(reinterpret_cast<char*>(&tmp), sizeof(tmp));
-		for(CircuitElementList::iterator j = m_faces[i].begin(); j != m_faces[i].end(); ++j)
-		{
+		for(CircuitElementList::iterator j = m_faces[i].begin(); j != m_faces[i].end(); ++j) {
 			tmp = pos_to_id[j -> list_pointer -> element -> m_pos];
 			out.write(reinterpret_cast<char*>(&tmp), sizeof(tmp));
 			out.write(reinterpret_cast<char*>(&(j -> shift)), sizeof(j -> shift));
@@ -146,29 +141,23 @@ void CircuitElement::deSerialize(std::istream& in, std::map<unsigned long, std::
 	unsigned long element_id;
 	unsigned char shift;
 	in.read(reinterpret_cast<char*>(&m_pos), sizeof(m_pos));
-	in.read(reinterpret_cast<char*>(&m_has_on_activate), sizeof(m_has_on_activate));
-	in.read(reinterpret_cast<char*>(&m_has_on_deactivate), sizeof(m_has_on_deactivate));
 	in.read(reinterpret_cast<char*>(&m_func_id), sizeof(m_func_id));
 	CircuitElementContainer tmp_container;
 	for(int i = 0; i < 6; ++i)
 	{
 		in.read(reinterpret_cast<char*>(&current_face_size), sizeof(current_face_size));
-		for(unsigned long j = 0; j < current_face_size; ++j)
-		{
+		for(unsigned long j = 0; j < current_face_size; ++j) {
 			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
 			in.read(reinterpret_cast<char*>(&shift), sizeof(shift));
 			CircuitElement* current_element_pointer = &(*id_to_pointer[element_id]);
 			bool found = false;
-			for(CircuitElementList::iterator k = m_faces[i].begin(); k != m_faces[i].end(); ++k)
-			{
-				if((k -> shift == shift) && (k -> list_pointer -> element == current_element_pointer))
-				{
+			for(CircuitElementList::iterator k = m_faces[i].begin(); k != m_faces[i].end(); ++k) {
+				if((k -> shift == shift) && (k -> list_pointer -> element == current_element_pointer)) {
 					found = true;
 					break;
 				}
 			}
-			if(!found)
-			{
+			if(!found) {
 				// Create joint
 				CircuitElementList::iterator first_iterator = m_faces[i].insert(m_faces[i].begin(), tmp_container);
 				
@@ -189,13 +178,19 @@ void CircuitElement::deSerialize(std::istream& in, std::map<unsigned long, std::
 
 void CircuitElement::getNeighbors(std::vector <CircuitElement*>& neighbors)
 {
-	for(int i = 0; i < 6; ++i)
-	{
-		for(CircuitElementList::iterator j = m_faces[i].begin(); j != m_faces[i].end(); ++j)
-		{
-			neighbors.push_back(j -> list_pointer -> element);
+	for(int i = 0; i < 6; ++i) {
+		for(CircuitElementList::iterator j = m_faces[i].begin(); j != m_faces[i].end(); ++j) {
+			if(j -> list_pointer -> element -> m_pos != m_pos) {
+				neighbors.push_back(j -> list_pointer -> element);
+			}
 		}
 	}
+}
+
+void CircuitElement::setFunc(unsigned char* func)
+{
+	m_func = func;
+	m_current_output_state = m_func[m_current_input_state];
 }
 
 void CircuitElement::findConnected(std::vector <std::pair <CircuitElement*, int > >& connected,

@@ -47,6 +47,8 @@ private:
 	
 	leveldb::DB *m_database;
 	
+	JMutex m_elements_mutex;
+	
 	static const std::string m_database_states_key;
 	static const std::string m_database_states_container_key;
 };

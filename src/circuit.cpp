@@ -4,12 +4,12 @@
 #include "nodedef.h"
 #include "mapnode.h"
 #include "scripting_game.h"
-
 #include "map.h"
 #include "serialization.h"
 #include "main.h"
 #include "settings.h"
 #include "log.h"
+#include "jthread/jmutexautolock.h"
 
 #include <map>
 #include <iomanip>
@@ -21,14 +21,6 @@
 
 const std::string Circuit::m_database_states_key = "states";
 const std::string Circuit::m_database_states_container_key = "states_container";
-
-void printStateFunc(const unsigned char* func)
-{
-	dstream << "Func: " << std::endl;
-	for(int i = 0; i < 64; ++i) {
-		dstream << std::hex << i << " " << static_cast<unsigned int>(func[i]) << std::endl;
-	}
-}
 
 Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements_states(64u, false),
         m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f), max_id(0ull)
@@ -56,9 +48,22 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
 			if(isElementKey(it -> key().ToString())) {
 				id_to_pointer[stoi(it -> key().ToString())] = elements.insert(elements.begin(), CircuitElement());
+				++elements_num;
 			}
 		}
 		assert(it -> status().ok());
+		
+		// Loading elements states
+		status = m_database -> Get(leveldb::ReadOptions(), m_database_states_key, &str);
+		assert(status.ok());
+		in.str(str);
+		for(int i = 0; i < elements_num; ++i)
+		{
+			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
+			in.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
+			id_to_pointer[element_id] -> m_current_input_state = element_state;
+		}
+		
 		// Loading elements data
 		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
 			if(isElementKey(it -> key().ToString())) {
@@ -72,26 +77,13 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 				}
 				std::list<CircuitElement>::iterator current_element = id_to_pointer[element_id];
 				current_element -> deSerialize(in, id_to_pointer);
-				current_element -> m_func = circuit_elements_states.getFunc(current_element -> m_func_id);
+				current_element -> setFunc(circuit_elements_states.getFunc(current_element -> m_func_id));
 				pos_to_id[current_element -> m_pos] = element_id;
 				pos_to_iterator[current_element -> m_pos] = id_to_pointer[element_id];
-				++elements_num;
 			}
 		}
 		assert(it -> status().ok());
 		delete it;
-		
-		// Loading elements states
-		status = m_database -> Get(leveldb::ReadOptions(), m_database_states_key, &str);
-		in.str(str);
-		for(int i = 0; i < elements_num; ++i)
-		{
-			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
-			in.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
-			id_to_pointer[element_id] -> m_current_input_state = element_state;
-		}
-		
-		assert(status.ok());
 	}
 }
 
@@ -103,6 +95,8 @@ Circuit::~Circuit()
 
 void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsigned char* func)
 {
+	JMutexAutoLock lock(m_elements_mutex);
+	
 	std::vector <std::pair <CircuitElement*, int > > connected;
 	MapNode node = map.getNode(pos);
 	pos_to_id[pos] = max_id;
@@ -119,8 +113,7 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	saveCircuitElementsStates();
 
 	std::list<CircuitElement>::iterator current_element_iterator =
-	    elements.insert(elements.begin(), CircuitElement(pos, ndef->get(node).has_on_activate, ndef->get(node).has_on_deactivate,
-	                                                     node_func.first, node_func.second));
+	    elements.insert(elements.begin(), CircuitElement(pos, node_func.first, node_func.second));
 	CircuitElementContainer tmp_container;
 	pos_to_iterator[pos] = current_element_iterator;
 
@@ -162,6 +155,8 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 
 void Circuit::removeElement(v3s16 pos)
 {
+	JMutexAutoLock lock(m_elements_mutex);
+	
 	std::vector <CircuitElement*> neighbors_pointers;
 	std::list <CircuitElement>::iterator current_element = pos_to_iterator[pos];
 	current_element -> getNeighbors(neighbors_pointers);
@@ -182,6 +177,8 @@ void Circuit::removeElement(v3s16 pos)
 
 void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 {
+	JMutexAutoLock lock(m_elements_mutex);
+	
 	// This is used for converting elements of current_face_connected to their ids in all_connected.
 	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
 	std::vector <std::vector <bool> > is_joint_created;
@@ -203,8 +200,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 		
 		all_connected.clear();
 		for(unsigned int j = 0; j < 6; ++j) {
-			if((ndef -> get(node).wire_connections[i] & (SHIFT_TO_FACE(j))) && (i != j))
-			{
+			if((ndef -> get(node).wire_connections[i] & (SHIFT_TO_FACE(j))) && (i != j)) {
 				CircuitElement::findConnectedWithFace(all_connected, map, ndef, pos, SHIFT_TO_FACE(j), pos_to_iterator);
 			}
 		}
@@ -269,6 +265,8 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 
 void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& node)
 {
+	JMutexAutoLock lock(m_elements_mutex);
+	
 	// This is used for converting elements of current_face_connected to their ids in all_connected.
 	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
@@ -334,6 +332,8 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 void Circuit::update(float dtime, Map& map,  INodeDefManager* ndef)
 {
 	if(m_since_last_update > m_min_update_delay) {
+		JMutexAutoLock lock(m_elements_mutex);
+		
 		m_since_last_update -= m_min_update_delay;
 		// Each element send signal to other connected elements.
 		for(std::list <CircuitElement>::iterator i = elements.begin();
@@ -378,8 +378,6 @@ void Circuit::updateElement(MapNode& node, v3s16 pos, INodeDefManager* ndef, con
 	}
 	pos_to_iterator[pos] -> m_func = node_func.first;
 	pos_to_iterator[pos] -> m_func_id = node_func.second;
-	pos_to_iterator[pos] -> m_has_on_activate = ndef->get(node).has_on_activate;
-	pos_to_iterator[pos] -> m_has_on_deactivate = ndef->get(node).has_on_deactivate;
 }
 
 void Circuit::pushElementToQueue(v3s16 pos)
@@ -391,6 +389,8 @@ void Circuit::pushElementToQueue(v3s16 pos)
 void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 {
 	if(elements_queue.size() > 0) {
+		JMutexAutoLock lock(m_elements_mutex);
+		
 		std::map <v3s16, int> pos_to_id_converter;
 		std::map <v3s16, int>::iterator current_element_iterator;
 		std::vector <std::pair <CircuitElement*, int > > connected;
@@ -410,8 +410,7 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			} else {
 				node_func = circuit_elements_states.addState(ndef->get(node).circuit_element_states);
 			}
-			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i],
-			                                                     ndef->get(node).has_on_activate, ndef->get(node).has_on_deactivate, node_func.first, node_func.second));
+			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(), CircuitElement(elements_queue[i], node_func.first, node_func.second));
 			elements_queue_iterators[i] = pos_to_iterator[elements_queue[i]];
 			map.setNode(elements_queue[i], node);
 		}
@@ -463,6 +462,7 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 
 void Circuit::save()
 {
+	JMutexAutoLock lock(m_elements_mutex);
 	std::ostringstream ostr(std::ios_base::binary);	
 	for(std::list<CircuitElement>::iterator i = elements.begin(); i != elements.end(); ++i) {
 		i -> serializeState(ostr, pos_to_id);
