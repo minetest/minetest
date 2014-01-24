@@ -1211,7 +1211,7 @@ minetest.register_on_dignode(func(pos, oldnode, digger))
 ^ Called when a node has been dug.
 ^ Not recommended: Use on_destruct or after_dig_node in node definition
 ^                  whenever possible
-minetest.register_on_punchnode(func(pos, node, puncher))
+minetest.register_on_punchnode(func(pos, node, puncher, pointed_thing))
 ^ Called when a node is punched
 minetest.register_on_generated(func(minp, maxp, blockseed))
 ^ Called after generating a piece of world. Modifying nodes inside the area
@@ -1500,7 +1500,7 @@ minetest.item_eat(hp_change, replace_with_item)
 ^ Eat the item. replace_with_item can be nil.
 
 Defaults for the on_punch and on_dig node definition callbacks:
-minetest.node_punch(pos, node, puncher)
+minetest.node_punch(pos, node, puncher, pointed_thing)
 ^ Calls functions registered by minetest.register_on_punchnode()
 minetest.node_dig(pos, node, digger)
 ^ Checks if node can be dug, puts item into inventory, removes node
@@ -2273,9 +2273,9 @@ Node definition (register_node)
     ^ returns true if node can be dug, or false if not
     ^ default: nil
     
-    on_punch = func(pos, node, puncher),
+    on_punch = func(pos, node, puncher, pointed_thing),
     ^ default: minetest.node_punch
-    ^ By default: does nothing
+    ^ By default: Calls minetest.register_on_punchnode callbacks
     on_rightclick = func(pos, node, clicker, itemstack, pointed_thing),
     ^ default: nil
     ^ if defined, itemstack will hold clicker's wielded item

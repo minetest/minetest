@@ -2918,7 +2918,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
-					m_script->node_on_punch(p_under, n, playersao);
+					m_script->node_on_punch(p_under, n, playersao, pointed);
 				// Cheat prevention
 				playersao->noCheatDigStart(p_under);
 			}

@@ -273,7 +273,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	}
 	// Punch it with a NULL puncher (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL);
+	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }

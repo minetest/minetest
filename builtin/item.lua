@@ -1,5 +1,14 @@
 -- Minetest: builtin/item.lua
 
+local function copy_pointed_thing(pointed_thing)
+	return {
+		type  = pointed_thing.type,
+		above = vector.new(pointed_thing.above),
+		under = vector.new(pointed_thing.under),
+		ref   = pointed_thing.ref,
+	}
+end
+
 --
 -- Item definition helpers
 --
@@ -272,17 +281,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	if def.after_place_node then
 		-- Deepcopy place_to and pointed_thing because callback can modify it
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
-		local pointed_thing_copy = {
-			type = pointed_thing.type,
-			under = {
-				x = pointed_thing.under.x,
-				y = pointed_thing.under.y,
-				z = pointed_thing.under.z},
-			above = {
-				x = pointed_thing.above.x,
-				y = pointed_thing.above.y,
-				z = pointed_thing.above.z}
-		}
+		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
 		if def.after_place_node(place_to_copy, placer, itemstack,
 				pointed_thing_copy) then
 			take_item = false
@@ -292,22 +291,12 @@ function minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Run script hook
 	local _, callback
 	for _, callback in ipairs(minetest.registered_on_placenodes) do
-		-- Deepcopy pos, node and poined_thing because callback can modify them
+		-- Deepcopy pos, node and pointed_thing because callback can modify them
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
-		local pointed_thing_copy = {
-			type = pointed_thing.type,
-			under = {
-				x = pointed_thing.under.x,
-				y = pointed_thing.under.y,
-				z = pointed_thing.under.z},
-			above = {
-				x = pointed_thing.above.x,
-				y = pointed_thing.above.y,
-				z = pointed_thing.above.z}
-		}
-		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, poined_thing_copy) then
+		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, pointed_thing_copy) then
 			take_item = false
 		end
 	end
@@ -372,14 +361,14 @@ function minetest.item_eat(hp_change, replace_with_item)
 	end
 end
 
-function minetest.node_punch(pos, node, puncher)
+function minetest.node_punch(pos, node, puncher, pointed_thing)
 	-- Run script hook
-	local _, callback
 	for _, callback in ipairs(minetest.registered_on_punchnodes) do
 		-- Copy pos and node because callback can modify them
-		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
+		local pos_copy = vector.new(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		callback(pos_copy, node_copy, puncher)
+		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+		callback(pos_copy, node_copy, puncher, pointed_thing_copy)
 	end
 end
 
