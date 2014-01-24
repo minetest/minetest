@@ -301,7 +301,7 @@ function modstore.handle_buttons(current_tab,fields)
 								}
 							else
 								return {
-									modtitle = param.title,
+									moddetails = param.moddetails,
 									successfull = false
 								}
 							end
