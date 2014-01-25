@@ -45,12 +45,14 @@ private:
 	float m_since_last_update;
 	unsigned long max_id;
 	
+	std::string m_savedir;
+	
 	leveldb::DB *m_database;
 	
 	JMutex m_elements_mutex;
 	
-	static const std::string m_database_states_key;
-	static const std::string m_database_states_container_key;
+	static const char elements_states_file[];
+	static const char elements_func_file[];
 };
 
 #endif

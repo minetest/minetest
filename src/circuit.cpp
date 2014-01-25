@@ -19,11 +19,11 @@
 
 #define PP(x) ((x).X)<<" "<<((x).Y)<<" "<<((x).Z)<<" "
 
-const std::string Circuit::m_database_states_key = "states";
-const std::string Circuit::m_database_states_container_key = "states_container";
+const char Circuit::elements_states_file[] = "circuit_elements_states";
+const char Circuit::elements_func_file[] = "circuit_elements_func";
 
 Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements_states(64u, false),
-        m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f), max_id(0ull)
+        m_script(script), m_min_update_delay(0.1f), m_since_last_update(0.0f), max_id(0ull), m_savedir(savedir)
 {
 	unsigned long element_id;
 	unsigned char element_state;
@@ -35,56 +35,50 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "circuit.db", &m_database);
 	assert(status.ok());
 	
-	status = m_database -> Get(leveldb::ReadOptions(), m_database_states_container_key, &str);
-	// If database already exist
-	if(status.ok())
+	std::ifstream input_elements_func((savedir + DIR_DELIM + elements_func_file).c_str(), std::ios_base::binary);
+	if(input_elements_func.good())
 	{
-		in.str(str);
-		circuit_elements_states.deSerialize(in);
-		
-		// Filling list with empty elements
-		leveldb::Iterator* it = m_database -> NewIterator(leveldb::ReadOptions());
-		std::map<unsigned long, std::list<CircuitElement>::iterator> id_to_pointer;
-		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
-			if(isElementKey(it -> key().ToString())) {
-				id_to_pointer[stoi(it -> key().ToString())] = elements.insert(elements.begin(), CircuitElement());
-				++elements_num;
-			}
-		}
-		assert(it -> status().ok());
-		
-		// Loading elements states
-		status = m_database -> Get(leveldb::ReadOptions(), m_database_states_key, &str);
-		assert(status.ok());
-		in.str(str);
+		circuit_elements_states.deSerialize(input_elements_func);
+	}
+
+	// Filling list with empty elements
+	leveldb::Iterator* it = m_database -> NewIterator(leveldb::ReadOptions());
+	std::map<unsigned long, std::list<CircuitElement>::iterator> id_to_pointer;
+	for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
+		id_to_pointer[stoi(it -> key().ToString())] = elements.insert(elements.begin(), CircuitElement());
+		++elements_num;
+	}
+	assert(it -> status().ok());
+	
+	std::ifstream input_elements_states((savedir + DIR_DELIM + elements_states_file).c_str());
+	if(input_elements_states.good())
+	{
 		for(int i = 0; i < elements_num; ++i)
 		{
-			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
-			in.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
+			input_elements_states.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
+			input_elements_states.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
 			id_to_pointer[element_id] -> m_current_input_state = element_state;
 		}
-		
-		// Loading elements data
-		for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
-			if(isElementKey(it -> key().ToString())) {
-				in.clear();
-				in.str(it -> value().ToString());
-				std::string test = it -> value().ToString();
-				element_id = stoi(it -> key().ToString());
-				if(element_id + 1 > max_id)
-				{
-					max_id = element_id + 1;
-				}
-				std::list<CircuitElement>::iterator current_element = id_to_pointer[element_id];
-				current_element -> deSerialize(in, id_to_pointer);
-				current_element -> setFunc(circuit_elements_states.getFunc(current_element -> m_func_id));
-				pos_to_id[current_element -> m_pos] = element_id;
-				pos_to_iterator[current_element -> m_pos] = id_to_pointer[element_id];
-			}
-		}
-		assert(it -> status().ok());
-		delete it;
 	}
+	
+	// Loading elements data
+	for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
+		in.clear();
+		in.str(it -> value().ToString());
+		std::string test = it -> value().ToString();
+		element_id = stoi(it -> key().ToString());
+		if(element_id + 1 > max_id)
+		{
+			max_id = element_id + 1;
+		}
+		std::list<CircuitElement>::iterator current_element = id_to_pointer[element_id];
+		current_element -> deSerialize(in, id_to_pointer);
+		current_element -> setFunc(circuit_elements_states.getFunc(current_element -> m_func_id));
+		pos_to_id[current_element -> m_pos] = element_id;
+		pos_to_iterator[current_element -> m_pos] = id_to_pointer[element_id];
+	}
+	assert(it -> status().ok());
+	delete it;
 }
 
 Circuit::~Circuit()
@@ -463,13 +457,10 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 void Circuit::save()
 {
 	JMutexAutoLock lock(m_elements_mutex);
-	std::ostringstream ostr(std::ios_base::binary);	
+	std::ofstream ostr((m_savedir + DIR_DELIM + elements_states_file).c_str(), std::ios_base::binary);
 	for(std::list<CircuitElement>::iterator i = elements.begin(); i != elements.end(); ++i) {
 		i -> serializeState(ostr, pos_to_id);
 	}
-	std::string str = ostr.str();
-	leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), m_database_states_key, str);
-	assert(status.ok());
 }
 
 void Circuit::saveElementConnections(std::list<CircuitElement>::iterator id)
@@ -492,10 +483,8 @@ void Circuit::saveElementConnections(std::list<CircuitElement>::iterator id)
 
 void Circuit::saveCircuitElementsStates()
 {
-	std::ostringstream out(std::ios_base::binary);
+	std::ofstream out((m_savedir + DIR_DELIM + elements_func_file).c_str(), std::ios_base::binary);
 	circuit_elements_states.serialize(out);
-	std::string str = out.str();
-	leveldb::Status status = m_database -> Put(leveldb::WriteOptions(), m_database_states_container_key, str);
 }
 
 bool Circuit::isElementKey(std::string s)
