@@ -143,8 +143,7 @@ void CircuitElement::deSerialize(std::istream& in, std::map<unsigned long, std::
 	in.read(reinterpret_cast<char*>(&m_pos), sizeof(m_pos));
 	in.read(reinterpret_cast<char*>(&m_func_id), sizeof(m_func_id));
 	CircuitElementContainer tmp_container;
-	for(int i = 0; i < 6; ++i)
-	{
+	for(int i = 0; i < 6; ++i) {
 		in.read(reinterpret_cast<char*>(&current_face_size), sizeof(current_face_size));
 		for(unsigned long j = 0; j < current_face_size; ++j) {
 			in.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));

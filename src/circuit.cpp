@@ -36,8 +36,7 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	assert(status.ok());
 	
 	std::ifstream input_elements_func((savedir + DIR_DELIM + elements_func_file).c_str(), std::ios_base::binary);
-	if(input_elements_func.good())
-	{
+	if(input_elements_func.good()) {
 		circuit_elements_states.deSerialize(input_elements_func);
 	}
 
@@ -51,13 +50,19 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	assert(it -> status().ok());
 	
 	std::ifstream input_elements_states((savedir + DIR_DELIM + elements_states_file).c_str());
-	if(input_elements_states.good())
-	{
-		for(int i = 0; i < elements_num; ++i)
-		{
+	if(input_elements_states.good()) {
+		bool is_data_corruption = false;
+		for(int i = 0; i < elements_num; ++i) {
 			input_elements_states.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
 			input_elements_states.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
-			id_to_pointer[element_id] -> m_current_input_state = element_state;
+			if(id_to_pointer.find(element_id) != id_to_pointer.end()) {
+				id_to_pointer[element_id] -> m_current_input_state = element_state;
+			} else {
+				is_data_corruption = true;
+			}
+		}
+		if(is_data_corruption) {
+			dstream << "ERORR: file \"circuit_elements_states\" is corrupted." << std::endl;
 		}
 	}
 	
@@ -67,8 +72,7 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 		in.str(it -> value().ToString());
 		std::string test = it -> value().ToString();
 		element_id = stoi(it -> key().ToString());
-		if(element_id + 1 > max_id)
-		{
+		if(element_id + 1 > max_id) {
 			max_id = element_id + 1;
 		}
 		std::list<CircuitElement>::iterator current_element = id_to_pointer[element_id];
@@ -157,8 +161,7 @@ void Circuit::removeElement(v3s16 pos)
 	elements.erase(pos_to_iterator[pos]);
 	leveldb::Status status = m_database -> Delete(leveldb::WriteOptions(), itos(pos_to_id[pos]));
 	assert(status.ok());
-	for(unsigned int i = 0; i < neighbors_pointers.size(); ++i)
-	{
+	for(unsigned int i = 0; i < neighbors_pointers.size(); ++i) {
 		std::ostringstream out(std::ios_base::binary);
 		neighbors_pointers[i] -> serialize(out, pos_to_id);
 		std::string str = out.str();
@@ -247,8 +250,7 @@ void Circuit::addWire(Map& map, INodeDefManager* ndef, v3s16 pos)
 	}
 	
 	leveldb::Status status;
-	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i)
-	{
+	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i) {
 		std::ostringstream out(std::ios_base::binary);
 		(*i) -> serialize(out, pos_to_id);
 		std::string str = out.str();
@@ -313,8 +315,7 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 	}
 	
 	leveldb::Status status;
-	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i)
-	{
+	for(std::set<CircuitElement*>::iterator i = changed_elements.begin(); i != changed_elements.end(); ++i) {
 		std::ostringstream out(std::ios_base::binary);
 		(*i) -> serialize(out, pos_to_id);
 		std::string str = out.str();
