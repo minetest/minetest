@@ -1409,7 +1409,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			}
 
 			v2u32 frame_size = baseimg->getDimension();
-			frame_size.Y /= frame_count;
+			if (frame_count)
+				frame_size.Y /= frame_count;
 
 			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8,
 					frame_size);

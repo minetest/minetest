@@ -117,7 +117,7 @@ void NodeBox::deSerialize(std::istream &is)
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
 	if(protocol_version >= 17)
-		writeU8(os, 1); 
+		writeU8(os, 1);
 	else
 		writeU8(os, 0);
 	os<<serializeString(name);
@@ -720,9 +720,9 @@ public:
 					// aspect ratio
 					v2u32 size = f->tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
-							(float)tiledef[j].animation.aspect_w *
-							(float)tiledef[j].animation.aspect_h;
-					int frame_count = size.Y / frame_height;
+							(tiledef[j].animation.aspect_w ? (float)tiledef[j].animation.aspect_w : 1) *
+							(tiledef[j].animation.aspect_h ? (float)tiledef[j].animation.aspect_h : 1);
+					int frame_count = size.Y / (frame_height ? frame_height : size.Y ? size.Y : 1);
 					int frame_length_ms = 1000.0 *
 							tiledef[j].animation.length / frame_count;
 					f->tiles[j].animation_frame_count = frame_count;
@@ -762,9 +762,9 @@ public:
 					// aspect ratio
 					v2u32 size = f->special_tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
-							(float)f->tiledef_special[j].animation.aspect_w *
-							(float)f->tiledef_special[j].animation.aspect_h;
-					int frame_count = size.Y / frame_height;
+							(f->tiledef_special[j].animation.aspect_w ? (float)f->tiledef_special[j].animation.aspect_w : 1) *
+							(f->tiledef_special[j].animation.aspect_h ? (float)f->tiledef_special[j].animation.aspect_h : 1);
+					int frame_count = size.Y / (frame_height ? frame_height : size.Y ? size.Y : 1);
 					int frame_length_ms = 1000.0 *
 							f->tiledef_special[j].animation.length / frame_count;
 					f->special_tiles[j].animation_frame_count = frame_count;

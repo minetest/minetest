@@ -1350,7 +1350,8 @@ void the_game(
 	{
 		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
 		v2u32 size = t->getOriginalSize();
-		crack_animation_length = size.Y / size.X;
+		if (size.X)
+			crack_animation_length = size.Y / size.X;
 	}
 
 	/*
