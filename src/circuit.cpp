@@ -457,10 +457,12 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 void Circuit::save()
 {
 	JMutexAutoLock lock(m_elements_mutex);
-	std::ofstream ostr((m_savedir + DIR_DELIM + elements_states_file).c_str(), std::ios_base::binary);
+	std::ostringstream ostr(std::ios_base::binary);
+	std::ofstream out((m_savedir + DIR_DELIM + elements_states_file).c_str(), std::ios_base::binary);
 	for(std::list<CircuitElement>::iterator i = elements.begin(); i != elements.end(); ++i) {
 		i -> serializeState(ostr, pos_to_id);
 	}
+	out << ostr.str();
 }
 
 void Circuit::saveElementConnections(std::list<CircuitElement>::iterator id)
@@ -483,8 +485,10 @@ void Circuit::saveElementConnections(std::list<CircuitElement>::iterator id)
 
 void Circuit::saveCircuitElementsStates()
 {
+	std::ostringstream ostr(std::ios_base::binary);
 	std::ofstream out((m_savedir + DIR_DELIM + elements_func_file).c_str(), std::ios_base::binary);
-	circuit_elements_states.serialize(out);
+	circuit_elements_states.serialize(ostr);
+	out << ostr.str();
 }
 
 bool Circuit::isElementKey(std::string s)
