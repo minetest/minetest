@@ -173,6 +173,14 @@
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
 # Set to true enables parallax occlusion mapping. Requires shaders enabled.
+#generate_normalmaps = false
+# Set to true enables on the fly normalmap generation (Emboss effect).
+# Requires bumpmapping enabled.
+#normalmaps_strength = 0.6
+# Strength of generated normalmaps
+#normalmaps_smooth = 1
+# Defines sampling step of texture (0 - 2) 
+# Higher the value normal maps will be smoother
 #enable_parallax_occlusion = false
 # Scale of parallax occlusion effect
 #parallax_occlusion_scale = 0.08
