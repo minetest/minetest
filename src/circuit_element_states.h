@@ -28,7 +28,7 @@ public:
 	void deSerialize(std::istream& in);
 private:
 	std::vector<unsigned char*> m_states;
-	unsigned int m_states_num;
+	const unsigned int m_states_num;
 	const bool m_use_shifts;
 };
 

@@ -11,7 +11,7 @@ CircuitElementStates::CircuitElementStates(unsigned int states_num, bool use_shi
 CircuitElementStates::~CircuitElementStates()
 {
 	for(unsigned int i = 0; i < m_states.size(); ++i) {
-		delete m_states[i];
+		delete[] m_states[i];
 	}
 }
 
@@ -33,12 +33,14 @@ std::pair<const unsigned char*, unsigned long> CircuitElementStates::addState(co
 std::pair<const unsigned char*, unsigned long> CircuitElementStates::addState(const unsigned char* state, unsigned char facedir)
 {
 	FaceId face = FACEDIR_TO_FACE(facedir);
-	unsigned char rotated_state[m_states_num];
+	unsigned char* rotated_state = new unsigned char[m_states_num];
 	for(unsigned int i = 0; i < m_states_num; ++i) {
 		rotated_state[i] = 0;
 	}
 	rotateStatesArray(state, rotated_state, face);
-	return addState(rotated_state);
+	std::pair <const unsigned char*, unsigned long> result = addState(rotated_state);
+	delete[] rotated_state;
+	return result;
 }
 
 void CircuitElementStates::rotateStatesArray(const unsigned char* input_state, unsigned char* output_state, FaceId face)
