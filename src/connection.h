@@ -800,7 +800,7 @@ protected:
 	*/
 	void reportRTT(float rtt);
 
-	void RunCommandQueues(
+	bool RunCommandQueues(
 					unsigned int max_packet_size,
 					unsigned int maxcommands,
 					unsigned int maxtransfer);
