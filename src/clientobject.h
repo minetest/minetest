@@ -65,6 +65,7 @@ public:
 	virtual bool isLocalPlayer(){return false;}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
+	virtual void updateCameraOffset(v3s16 camera_offset){};
 	
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}

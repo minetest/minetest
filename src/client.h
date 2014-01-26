@@ -119,6 +119,8 @@ public:
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 	IGameDef *m_gamedef;
+	
+	v3s16 m_camera_offset;
 };
 
 enum ClientEventType
@@ -406,6 +408,8 @@ public:
 	// Including blocks at appropriate edges
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
+	
+	void updateCameraOffset(v3s16 camera_offset){ m_mesh_update_thread.m_camera_offset = camera_offset; }
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();

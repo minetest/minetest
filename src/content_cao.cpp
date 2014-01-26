@@ -1058,23 +1058,24 @@ public:
 		if(getParent() != NULL)
 			return;
 
+		v3s16 camera_offset = m_env->getCameraOffset();
 		if(m_meshnode){
-			m_meshnode->setPosition(pos_translator.vect_show);
+			m_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 			v3f rot = m_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_meshnode->setRotation(rot);
 		}
 		if(m_animated_meshnode){
-			m_animated_meshnode->setPosition(pos_translator.vect_show);
+			m_animated_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 			v3f rot = m_animated_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_animated_meshnode->setRotation(rot);
 		}
 		if(m_spritenode){
-			m_spritenode->setPosition(pos_translator.vect_show);
+			m_spritenode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 		}
 	}
-
+	
 	void step(float dtime, ClientEnvironment *env)
 	{
 		if(m_visuals_expired && m_smgr && m_irr){

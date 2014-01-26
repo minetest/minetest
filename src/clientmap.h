@@ -86,12 +86,13 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(v3f pos, v3f dir, f32 fov)
+	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	{
 		JMutexAutoLock lock(m_camera_mutex);
 		m_camera_position = pos;
 		m_camera_direction = dir;
 		m_camera_fov = fov;
+		m_camera_offset = offset;
 	}
 
 	/*
@@ -146,6 +147,7 @@ private:
 	v3f m_camera_position;
 	v3f m_camera_direction;
 	f32 m_camera_fov;
+	v3s16 m_camera_offset;
 	JMutex m_camera_mutex;
 
 	std::map<v3s16, MapBlock*> m_drawlist;

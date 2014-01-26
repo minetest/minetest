@@ -79,6 +79,12 @@ public:
 	{
 		return m_camera_direction;
 	}
+	
+	// Get the camera offset
+	inline v3s16 getOffset() const
+	{
+		return m_camera_offset;
+	}
 
 	// Horizontal field of view
 	inline f32 getFovX() const
@@ -144,6 +150,8 @@ private:
 	v3f m_camera_position;
 	// Absolute camera direction
 	v3f m_camera_direction;
+	// Camera offset
+	v3s16 m_camera_offset;
 
 	// Field of view and aspect ratio stuff
 	f32 m_aspect;
