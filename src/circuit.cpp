@@ -29,7 +29,6 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	unsigned char element_state;
 	int elements_num = 0;
 	std::istringstream in(std::ios_base::binary);
-	std::string str;
 	leveldb::Options options;
 	options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "circuit.db", &m_database);
@@ -70,7 +69,6 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	for(it -> SeekToFirst(); it -> Valid(); it -> Next()) {
 		in.clear();
 		in.str(it -> value().ToString());
-		std::string test = it -> value().ToString();
 		element_id = stoi(it -> key().ToString());
 		if(element_id + 1 > max_id) {
 			max_id = element_id + 1;
@@ -264,15 +262,11 @@ void Circuit::removeWire(Map& map, INodeDefManager* ndef, v3s16 pos, MapNode& no
 	JMutexAutoLock lock(m_elements_mutex);
 	
 	// This is used for converting elements of current_face_connected to their ids in all_connected.
-	std::map <std::pair <CircuitElement*, int > , int> pair_to_id_converter;
 	std::vector <std::pair <CircuitElement*, int > > all_connected;
 	std::vector <std::pair <CircuitElement*, int > > current_face_connected;
 	std::set <CircuitElement*> changed_elements;
 	
 	CircuitElement::findConnected(all_connected, map, ndef, pos, node, pos_to_iterator);
-	for(unsigned int i = 0; i < all_connected.size(); ++i) {
-		pair_to_id_converter[all_connected[i]] = i;
-	}
 
 	// For each face remove connections that depend on this block of wire.
 	for(unsigned int i = 0; i < 6; ++i) {

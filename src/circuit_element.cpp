@@ -71,6 +71,10 @@ CircuitElement::CircuitElement() : m_pos(v3s16(0, 0, 0)),
 	m_func(0), m_func_id(0), m_current_input_state(0), m_next_input_state(0),
 	m_current_output_state(0), m_next_output_state(0)
 {
+	for(int i = 0; i < 6; ++i)
+	{
+		m_faces[i].element = this;
+	}
 }
 
 CircuitElement::~CircuitElement()
