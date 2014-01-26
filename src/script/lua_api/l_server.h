@@ -79,6 +79,9 @@ private:
 	// unban_player_or_ip()
 	static int l_unban_player_or_ip(lua_State *L);
 
+	// kick_player(name, [message]) -> success
+	static int l_kick_player(lua_State *L);
+
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 

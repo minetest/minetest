@@ -34,6 +34,7 @@ minetest.register_privilege("basic_privs", "Can modify 'shout' and 'interact' pr
 minetest.register_privilege("server", "Can do server maintenance stuff")
 minetest.register_privilege("shout", "Can speak in chat")
 minetest.register_privilege("ban", "Can ban and unban players")
+minetest.register_privilege("kick", "Can kick players")
 minetest.register_privilege("give", "Can use /give and /giveme")
 minetest.register_privilege("password", "Can use /setpassword and /clearpassword")
 minetest.register_privilege("fly", {
