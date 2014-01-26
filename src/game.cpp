@@ -228,6 +228,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		core::line3d<f32> shootline, f32 d,
 		bool liquids_pointable,
 		bool look_for_object,
+		v3s16 camera_offset,
 		std::vector<aabb3f> &hilightboxes,
 		ClientActiveObject *&selected_object)
 {
@@ -258,8 +259,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 				v3f pos = selected_object->getPosition();
 				hilightboxes.push_back(aabb3f(
-						selection_box->MinEdge + pos,
-						selection_box->MaxEdge + pos));
+						selection_box->MinEdge + pos - intToFloat(camera_offset, BS),
+						selection_box->MaxEdge + pos - intToFloat(camera_offset, BS)));
 			}
 
 			mindistance = (selected_object->getPosition() - camera_position).getLength();
@@ -361,8 +362,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 						i2 != boxes.end(); i2++)
 				{
 					aabb3f box = *i2;
-					box.MinEdge += npf + v3f(-d,-d,-d);
-					box.MaxEdge += npf + v3f(d,d,d);
+					box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
+					box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
 					hilightboxes.push_back(box);
 				}
 			}
@@ -2495,10 +2496,14 @@ void the_game(
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
+		v3s16 camera_offset = camera.getOffset();
 		
 		if(!disable_camera_update){
 			client.getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov);
+				camera_direction, camera_fov, camera_offset);
+			client.updateCameraOffset(camera_offset);
+			client.getEnv().updateObjectsCameraOffset(camera_offset);
+			update_particles_camera_offset(camera_offset);
 		}
 		
 		// Update sound listener
@@ -2541,6 +2546,7 @@ void the_game(
 				&client, player_position, camera_direction,
 				camera_position, shootline, d,
 				playeritem_def.liquids_pointable, !ldown_for_dig,
+				camera_offset,
 				// output
 				hilightboxes,
 				selected_object);

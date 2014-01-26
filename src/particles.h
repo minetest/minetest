@@ -71,6 +71,11 @@ class Particle : public scene::ISceneNode
 
 	bool get_expired ()
 	{ return m_expiration < m_time; }
+	
+	void updateCameraOffset(v3s16 camera_offset)
+	{
+		m_camera_offset = camera_offset;
+	}
 
 private:
 	void updateLight(ClientEnvironment &env);
@@ -94,6 +99,7 @@ private:
 	u8 m_light;
 	bool m_collisiondetection;
 	bool m_vertical;
+	v3s16 m_camera_offset;
 };
 
 class ParticleSpawner
@@ -161,5 +167,7 @@ void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
 void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 	LocalPlayer *player, ClientEnvironment &env, v3s16 pos,
 	const TileSpec tiles[]);
+
+void update_particles_camera_offset (v3s16 camera_offset);
 
 #endif

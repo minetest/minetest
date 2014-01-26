@@ -495,6 +495,7 @@ public:
 	{ m_player_names.push_back(name); }
 	void removePlayerName(std::string name)
 	{ m_player_names.remove(name); }
+	void updateObjectsCameraOffset(v3s16 camera_offset);
 	
 private:
 	ClientMap *m_map;

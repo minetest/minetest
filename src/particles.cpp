@@ -66,6 +66,7 @@ Particle::Particle(
 {
 	// Misc
 	m_gamedef = gamedef;
+	m_camera_offset = v3s16(0,0,0);
 
 	// Texture
 	m_material.setFlag(video::EMF_LIGHTING, false);
@@ -209,10 +210,9 @@ void Particle::updateVertices()
 			m_vertices[i].Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(m_vertices[i].Pos);
-		m_vertices[i].Pos += m_pos*BS;
+		m_vertices[i].Pos += m_pos*BS - intToFloat(m_camera_offset, BS);
 	}
 }
-
 
 /*
 	Helpers
@@ -474,5 +474,15 @@ void clear_particles ()
 		(*i)->remove();
 		delete *i;
 		i = all_particles.erase(i);
+	}
+}
+
+void update_particles_camera_offset (v3s16 camera_offset)
+{
+	for(std::vector<Particle*>::iterator i =
+			all_particles.begin();
+			i != all_particles.end(); i++)
+	{
+		(*i)->updateCameraOffset(camera_offset);
 	}
 }

@@ -1030,7 +1030,7 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	MapBlockMesh
 */
 
-MapBlockMesh::MapBlockMesh(MeshMakeData *data):
+MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_mesh(new scene::SMesh()),
 	m_gamedef(data->m_gamedef),
 	m_animation_force_timer(0), // force initial animation
@@ -1248,11 +1248,13 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				&p.indices[0], p.indices.size());
 	}
 
+	m_camera_offset = camera_offset;
+	
 	/*
 		Do some stuff to the mesh
 	*/
 
-	translateMesh(m_mesh, intToFloat(data->m_blockpos * MAP_BLOCKSIZE, BS));
+	translateMesh(m_mesh, intToFloat(data->m_blockpos * MAP_BLOCKSIZE - camera_offset, BS));
 
 	if(m_mesh)
 	{
@@ -1413,6 +1415,14 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	return true;
+}
+
+void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
+{
+	if (camera_offset != m_camera_offset) {
+		translateMesh(m_mesh, intToFloat(m_camera_offset-camera_offset, BS));
+		m_camera_offset = camera_offset;
+	}
 }
 
 /*
