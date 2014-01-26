@@ -261,6 +261,20 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_getfield(L, index, "after_destruct");
 	if(!lua_isnil(L, -1)) f.has_after_destruct = true;
 	lua_pop(L, 1);
+	lua_getfield(L, index, "on_activate");
+	if(!lua_isnil(L, -1))
+	{
+		f.has_on_activate = true;
+		f.is_circuit_element = true;
+	}
+	lua_pop(L, 1);
+	lua_getfield(L, index, "on_deactivate");
+	if(!lua_isnil(L, -1))
+	{
+		f.has_on_deactivate = true;
+		f.is_circuit_element = true;
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "on_rightclick");
 	f.rightclickable = lua_isfunction(L, -1);
@@ -311,6 +325,60 @@ ContentFeatures read_content_features(lua_State *L, int index)
 				f.tiledef[i] = lasttile;
 				i++;
 			}
+		}
+	}
+	lua_pop(L, 1);
+	
+	/* Circuit options */
+	lua_getfield(L, index, "is_wire");
+	if(!lua_isnil(L, -1)) {
+		f.is_wire = true;
+	}
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "is_connector");
+	if(!lua_isnil(L, -1)) {
+		f.is_connector = true;
+	}
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "wire_connections");
+	if(!lua_isnil(L, -1) && lua_istable(L, -1)) {
+		f.is_wire = true;
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i;
+		unsigned char current_shift = 1;
+		for(i = 0; (i < 6) && (lua_next(L, table) != 0); ++i) {
+			f.wire_connections[i] = lua_tonumber(L, -1);
+			f.wire_connections[i] |= current_shift;
+			current_shift <<= 1;
+			lua_pop(L, 1);
+		}
+		if(i < 6) {
+			luaL_error(L, "Wire connectins table must have exactly 6 integer numbers.");
+		}
+	} else if(f.is_wire) {
+		// Assuming that it's a standart wire
+		for(int i = 0; i < 6; ++i)
+		{
+			f.wire_connections[i] = 0x3F;
+		}
+	}
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "circuit_states");
+	if(!lua_isnil(L, -1) && lua_istable(L, -1)) {
+		f.is_circuit_element = true;
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i;
+		for(i = 0; (i < 64) && (lua_next(L, table) != 0); ++i) {
+			f.circuit_element_states[i] = lua_tonumber(L, -1);
+			lua_pop(L, 1);
+		}
+		if(i < 64) {
+			luaL_error(L, "Circuit states table must have exactly 64 integer numbers.");
 		}
 	}
 	lua_pop(L, 1);

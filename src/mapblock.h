@@ -37,6 +37,7 @@ class NodeMetadataList;
 class IGameDef;
 class MapBlockMesh;
 class VoxelManipulator;
+class Circuit;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -475,6 +476,8 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
 	void deSerializeNetworkSpecific(std::istream &is);
+	
+	void pushElementsToCircuit(Circuit* circuit);
 
 private:
 	/*

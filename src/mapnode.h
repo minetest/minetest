@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <string>
 #include <vector>
+#include <list>
 
 class INodeDefManager;
 

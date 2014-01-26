@@ -64,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "circuit.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -656,6 +657,7 @@ Server::Server(
 	m_enable_rollback_recording(false),
 	m_emerge(NULL),
 	m_script(NULL),
+	m_circuit(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -775,6 +777,8 @@ Server::Server(
 	infostream<<"Server: Initializing Lua"<<std::endl;
 
 	m_script = new GameScripting(this);
+	
+	m_circuit = new Circuit(m_script, path_world);
 
 
 	// Load and run builtin.lua
@@ -816,8 +820,8 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Initialize Environment
-	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_script, this, m_emerge);
+	ServerMap *servermap = new ServerMap(path_world, this, m_emerge, m_circuit);
+	m_env = new ServerEnvironment(servermap, m_script, m_circuit, this, m_emerge);
 	
 	// Run some callbacks after the MG params have been set up but before activation
 	MapgenParams *mgparams = servermap->getMapgenParams();
@@ -949,6 +953,7 @@ Server::~Server()
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
+	delete m_circuit;
 
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
