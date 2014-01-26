@@ -1130,11 +1130,12 @@ bool UDPPeer::processReliableSendCommand(
 	}
 }
 
-void UDPPeer::RunCommandQueues(
+bool UDPPeer::RunCommandQueues(
 							unsigned int max_packet_size,
 							unsigned int maxcommands,
 							unsigned int maxtransfer)
 {
+	bool retrigger = false;
 
 	for (unsigned int i = 0; i < CHANNEL_COUNT; i++)
 	{
@@ -1153,13 +1154,18 @@ void UDPPeer::RunCommandQueues(
 							<< " Failed to queue packets for peer_id: " << c.peer_id
 							<< ", delaying sending of " << c.data.getSize() << " bytes" << std::endl);
 					channels[i].queued_commands.push_front(c);
+					retrigger = true;
 				}
 			}
 			catch (ItemNotFoundException e) {
 				// intentionally empty
 			}
 		}
+
+		if ((!retrigger) && (channels[i].queued_commands.size() > 0))
+			retrigger = true;
 	}
+	return retrigger;
 }
 
 u16 UDPPeer::getNextSplitSequenceNumber(u8 channel)
@@ -1401,9 +1407,12 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			}
 		}
 
-		dynamic_cast<UDPPeer*>(&peer)->RunCommandQueues(m_max_packet_size,
+		if (dynamic_cast<UDPPeer*>(&peer)->RunCommandQueues(m_max_packet_size,
 								m_max_commands_per_iteration,
-								m_max_packets_requeued);
+								m_max_packets_requeued))
+		{
+			Trigger();
+		}
 	}
 
 	// Remove timed out peers
@@ -1877,6 +1886,11 @@ void ConnectionSendThread::sendPackets(float dtime)
 		else {
 			m_outgoing_queue.push_back(packet);
 		}
+	}
+
+	if (m_outgoing_queue.size() > 0)
+	{
+		Trigger();
 	}
 }
 
