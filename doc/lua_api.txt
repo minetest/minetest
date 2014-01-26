@@ -507,7 +507,13 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
     - number: Number of items in the inventory to be displayed.
     - item: Position of item that is selected.
     - direction
-
+- waypoint
+	Displays distance to selected world position.
+    - name: The name of the waypoint.
+    - text: Distance suffix. Can be blank.
+    - number: An integer containing the RGB value of the color used to draw the text.
+    - world_pos: World position of the waypoint.
+    
 Representations of simple things
 --------------------------------
 Position/vector:

@@ -204,6 +204,7 @@ struct ClientEvent
 			u32 dir;
 			v2f *align;
 			v2f *offset;
+			v3f *world_pos;
 		} hudadd;
 		struct{
 			u32 id;
@@ -214,6 +215,7 @@ struct ClientEvent
 			v2f *v2fdata;
 			std::string *sdata;
 			u32 data;
+			v3f *v3fdata;
 		} hudchange;
 	};
 };
