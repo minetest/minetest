@@ -1486,7 +1486,7 @@ void the_game(
 	/*
 		HUD object
 	*/
-	Hud hud(driver, guienv, font, text_height,
+	Hud hud(driver, smgr, guienv, font, text_height,
 			gamedef, player, &local_inventory);
 
 	bool use_weather = g_settings->getBool("weather");
@@ -2376,6 +2376,7 @@ void the_game(
 						delete event.hudadd.text;
 						delete event.hudadd.align;
 						delete event.hudadd.offset;
+						delete event.hudadd.world_pos;
 						continue;
 					}
 					
@@ -2390,6 +2391,7 @@ void the_game(
 					e->dir    = event.hudadd.dir;
 					e->align  = *event.hudadd.align;
 					e->offset = *event.hudadd.offset;
+					e->world_pos = *event.hudadd.world_pos;
 					
 					if (id == nhudelem)
 						player->hud.push_back(e);
@@ -2402,6 +2404,7 @@ void the_game(
 					delete event.hudadd.text;
 					delete event.hudadd.align;
 					delete event.hudadd.offset;
+					delete event.hudadd.world_pos;
 				}
 				else if (event.type == CE_HUDRM)
 				{
@@ -2415,6 +2418,7 @@ void the_game(
 				{
 					u32 id = event.hudchange.id;
 					if (id >= player->hud.size() || !player->hud[id]) {
+						delete event.hudchange.v3fdata;
 						delete event.hudchange.v2fdata;
 						delete event.hudchange.sdata;
 						continue;
@@ -2449,8 +2453,12 @@ void the_game(
 						case HUD_STAT_OFFSET:
 							e->offset = *event.hudchange.v2fdata;
 							break;
+						case HUD_STAT_WORLD_POS:
+							e->world_pos = *event.hudchange.v3fdata;
+							break;
 					}
 					
+					delete event.hudchange.v3fdata;
 					delete event.hudchange.v2fdata;
 					delete event.hudchange.sdata;
 				}
