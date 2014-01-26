@@ -82,7 +82,7 @@ public:
 	static unsigned char opposite_shift[6];
 	static FaceId shift_to_face[6];
 	static FaceId facedir_to_face[6];
-	friend Circuit;
+	friend class Circuit;
 private:
 	v3s16 m_pos;
 	const unsigned char* m_func;
