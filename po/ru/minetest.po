@@ -110,7 +110,7 @@ msgstr "Не задано имя мира или не выбрана игра"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Для включения шейдеров нужны драйвера OpenGL"
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -339,7 +339,7 @@ msgstr "Переименовать"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Удалить выделеный пакет модов"
 
 #: builtin/modmgr.lua:312
 #, fuzzy
@@ -768,11 +768,11 @@ msgstr "Не преобразовано"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr "End"
+msgstr "Конец"
 
 #: src/keycode.cpp:227
 msgid "Home"
-msgstr "Home"
+msgstr "Дом"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
@@ -780,7 +780,7 @@ msgstr "Mode Change"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr "Next"
+msgstr "Следующий"
 
 #: src/keycode.cpp:227
 msgid "Prior"
@@ -800,7 +800,7 @@ msgstr "Выполнить"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr "Print"
+msgstr "Печать"
 
 #: src/keycode.cpp:228
 msgid "Select"
@@ -816,7 +816,7 @@ msgstr "Справка"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr "Insert"
+msgstr "Вставить"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
