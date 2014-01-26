@@ -87,6 +87,8 @@ public:
 	std::vector<Mapgen *> mapgen;
 	std::vector<EmergeThread *> emergethread;
 
+	bool threads_active;
+
 	//settings
 	MapgenParams *params;
 	bool mapgen_debug_info;
@@ -119,7 +121,8 @@ public:
 	Mapgen *createMapgen(std::string mgname, int mgid,
 						MapgenParams *mgparams);
 	MapgenParams *createMapgenParams(std::string mgname);
-	void startAllThreads();
+	void startThreads();
+	void stopThreads();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
 
 	void registerMapgen(std::string name, MapgenFactory *mgfactory);

@@ -917,8 +917,9 @@ Server::~Server()
 	stop();
 	delete m_thread;
 
-	//shutdown all emerge threads first!
-	delete m_emerge;
+	// stop all emerge threads before deleting players that may have
+	// requested blocks to be emerged
+	m_emerge->stopThreads();
 
 	/*
 		Delete clients
@@ -938,6 +939,10 @@ Server::~Server()
 
 	// Delete things in the reverse order of creation
 	delete m_env;
+
+	// N.B. the EmergeManager should be deleted after the Environment since Map
+	// depends on EmergeManager to write its current params to the map meta
+	delete m_emerge;
 	delete m_rollback;
 	delete m_banmanager;
 	delete m_event;
@@ -1684,7 +1689,7 @@ void Server::AsyncRunStep(bool initial_step)
 		{
 			counter = 0.0;
 
-			m_emerge->startAllThreads();
+			m_emerge->startThreads();
 
 			// Update m_enable_rollback_recording here too
 			m_enable_rollback_recording =
