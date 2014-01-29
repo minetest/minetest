@@ -2543,10 +2543,11 @@ Decoration definition (register_decoration)
 
 Chatcommand definition (register_chatcommand)
 {
-    params = "<name> <privilege>", -- short parameter description
-    description = "Remove privilege from player", -- full description
-    privs = {privs=true}, -- require the "privs" privilege to run
-    func = function(name, param), -- called when command is run
+    params = "<name> <privilege>", -- Short parameter description
+    description = "Remove privilege from player", -- Full description
+    privs = {privs=true}, -- Require the "privs" privilege to run
+    func = function(name, param), -- Called when command is run.
+                                  -- Returns boolean success and text output.
 }
 
 Detached inventory callbacks
