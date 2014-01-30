@@ -592,23 +592,12 @@ void *EmergeThread::Thread() {
 		/*
 			Set sent status of modified blocks on clients
 		*/
-
-		// NOTE: Server's clients are also behind the connection mutex
-		//conlock: consistently takes 30-40ms to acquire
-		JMutexAutoLock lock(m_server->m_con_mutex);
 		// Add the originally fetched block to the modified list
 		if (block)
 			modified_blocks[p] = block;
 
-		// Set the modified blocks unsent for all the clients
-		for (std::map<u16, RemoteClient*>::iterator
-			 i = m_server->m_clients.begin();
-			 i != m_server->m_clients.end(); ++i) {
-			RemoteClient *client = i->second;
-			if (modified_blocks.size() > 0) {
-				// Remove block from sent history
-				client->SetBlocksNotSent(modified_blocks);
-			}
+		if (modified_blocks.size() > 0) {
+			m_server->SetBlocksNotSent(modified_blocks);
 		}
 	}
 	catch (VersionMismatchException &e) {
