@@ -44,35 +44,20 @@ JThread::~JThread()
 	Kill();
 }
 
-void JThread::Stop() {
-	runningmutex.Lock();
-	requeststop = true;
-	runningmutex.Unlock();
-}
-
 void JThread::Wait() {
-	runningmutex.Lock();
 	if (running)
 	{
-		runningmutex.Unlock();
 		WaitForSingleObject(threadhandle, INFINITE);
-	}
-	else
-	{
-		runningmutex.Unlock();
 	}
 }
 
 int JThread::Start()
 {
-	runningmutex.Lock();
 	if (running)
 	{
-		runningmutex.Unlock();
 		return ERR_JTHREAD_ALREADYRUNNING;
 	}
 	requeststop = false;
-	runningmutex.Unlock();
 
 	continuemutex.Lock();
 #ifndef _WIN32_WCE
@@ -87,15 +72,10 @@ int JThread::Start()
 	}
 
 	/* Wait until 'running' is set */
-
-	runningmutex.Lock();
 	while (!running)
 	{
-		runningmutex.Unlock();
 		Sleep(1);
-		runningmutex.Lock();
 	}
-	runningmutex.Unlock();
 
 	continuemutex.Unlock();
 
@@ -107,48 +87,24 @@ int JThread::Start()
 
 int JThread::Kill()
 {
-	runningmutex.Lock();
 	if (!running)
 	{
-		runningmutex.Unlock();
 		return ERR_JTHREAD_NOTRUNNING;
 	}
 	TerminateThread(threadhandle,0);
 	CloseHandle(threadhandle);
 	running = false;
-	runningmutex.Unlock();
 	return 0;
-}
-
-bool JThread::IsRunning()
-{
-	bool r;
-
-	runningmutex.Lock();
-	r = running;
-	runningmutex.Unlock();
-	return r;
-}
-
-bool JThread::StopRequested() {
-	bool r;
-
-	runningmutex.Lock();
-	r = requeststop;
-	runningmutex.Unlock();
-	return r;
 }
 
 void *JThread::GetReturnValue()
 {
 	void *val;
 
-	runningmutex.Lock();
-	if (running)
+	if (running) {
 		val = NULL;
-	else
+	} else {
 		val = retval;
-	runningmutex.Unlock();
 	return val;
 }
 
@@ -169,20 +125,16 @@ DWORD WINAPI JThread::TheThread(void *param)
 	jthread = (JThread *)param;
 
 	jthread->continuemutex2.Lock();
-	jthread->runningmutex.Lock();
 	jthread->running = true;
-	jthread->runningmutex.Unlock();
 
 	jthread->continuemutex.Lock();
 	jthread->continuemutex.Unlock();
 
 	ret = jthread->Thread();
 
-	jthread->runningmutex.Lock();
 	jthread->running = false;
 	jthread->retval = ret;
 	CloseHandle(jthread->threadhandle);
-	jthread->runningmutex.Unlock();
 	return 0;
 }
 
