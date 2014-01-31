@@ -480,13 +480,7 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 {
 	assert(m_httpfetch_active == 0);
 
-	if (m_uncached_received_count == m_uncached_count) {
-		// In this case all media was found in the cache or
-		// has been downloaded from some remote server;
-		// report this fact to the server
-		client->received_media();
-	}
-	else {
+	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
 		// conventional slow method (minetest protocol) to get them
 		std::list<std::string> file_requests;

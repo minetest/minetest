@@ -71,14 +71,6 @@ public:
 	{}
 };
 
-/*class ThrottlingException : public BaseException
-{
-public:
-	ThrottlingException(const char *s):
-		BaseException(s)
-	{}
-};*/
-
 class InvalidIncomingDataException : public BaseException
 {
 public:
@@ -406,7 +398,6 @@ enum ConnectionCommandType{
 	CONNCMD_DISCONNECT_PEER,
 	CONNCMD_SEND,
 	CONNCMD_SEND_TO_ALL,
-	CONNCMD_DELETE_PEER,
 	CONCMD_ACK,
 	CONCMD_CREATE_PEER,
 	CONCMD_DISABLE_LEGACY
@@ -459,11 +450,6 @@ struct ConnectionCommand
 		channelnum = channelnum_;
 		data = data_;
 		reliable = reliable_;
-	}
-	void deletePeer(u16 peer_id_)
-	{
-		type = CONNCMD_DELETE_PEER;
-		peer_id = peer_id_;
 	}
 
 	void ack(u16 peer_id_, u8 channelnum_, SharedBuffer<u8> data_)
@@ -580,16 +566,29 @@ private:
 
 class Peer;
 
+enum PeerChangeType
+{
+	PEER_ADDED,
+	PEER_REMOVED
+};
+struct PeerChange
+{
+	PeerChangeType type;
+	u16 peer_id;
+	bool timeout;
+};
+
 class PeerHandler
 {
 public:
+
 	PeerHandler()
 	{
 	}
 	virtual ~PeerHandler()
 	{
 	}
-	
+
 	/*
 		This is called after the Peer has been inserted into the
 		Connection's peer container.
@@ -771,7 +770,7 @@ public:
 	friend class ConnectionSendThread;
 
 	UDPPeer(u16 a_id, Address a_address, Connection* connection);
-	virtual ~UDPPeer();
+	virtual ~UDPPeer() {};
 
 	void PutReliableSendCommand(ConnectionCommand &c,
 							unsigned int max_packet_size);
@@ -781,8 +780,7 @@ public:
 
 	bool getAddress(MTProtocols type, Address& toset);
 
-	void setNonLegacyPeer()
-	{ m_legacy_peer = false; }
+	void setNonLegacyPeer();
 
 	bool getLegacyPeer()
 	{ return m_legacy_peer; }
@@ -793,6 +791,8 @@ public:
 	SharedBuffer<u8> addSpiltPacket(u8 channel,
 									BufferedPacket toadd,
 									bool reliable);
+
+
 protected:
 	/*
 		Calculates avg_rtt and resend_timeout.
@@ -813,6 +813,7 @@ protected:
 	bool Ping(float dtime,SharedBuffer<u8>& data);
 
 	Channel channels[CHANNEL_COUNT];
+	bool m_pending_disconnect;
 private:
 	// This is changed dynamically
 	float resend_timeout;
@@ -1002,13 +1003,12 @@ public:
 	u32 Receive(u16 &peer_id, SharedBuffer<u8> &data);
 	void SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable);
 	void Send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
-	void RunTimeouts(float dtime); // dummy
 	u16 GetPeerID(){ return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);
 	float GetPeerAvgRTT(u16 peer_id);
-	void DeletePeer(u16 peer_id);
 	const u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
+	void DisconnectPeer(u16 peer_id);
 
 protected:
 	PeerHelper getPeer(u16 peer_id);
@@ -1033,6 +1033,8 @@ protected:
 
 	void putEvent(ConnectionEvent &e);
 
+	void TriggerSend()
+		{ m_sendThread.Trigger(); }
 private:
 	std::list<Peer*> getPeers();
 
@@ -1054,6 +1056,8 @@ private:
 	int m_bc_receive_timeout;
 
 	bool m_shutting_down;
+
+	u16 m_next_remote_peer_id;
 };
 
 } // namespace
