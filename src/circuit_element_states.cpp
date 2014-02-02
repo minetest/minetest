@@ -142,7 +142,7 @@ unsigned int CircuitElementStates::getId(const unsigned char* state)
 
 unsigned char* CircuitElementStates::getFunc(unsigned int id)
 {
-	return m_states[id];
+	return (id < m_states.size()) ? m_states[id] : NULL;
 }
 
 void CircuitElementStates::serialize(std::ostream& out)

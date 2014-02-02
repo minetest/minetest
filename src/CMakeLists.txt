@@ -262,6 +262,7 @@ add_subdirectory(util)
 set(common_SRCS
 	circuit.cpp
 	circuit_element.cpp
+	circuit_element_virtual.cpp
 	circuit_element_states.cpp
 	version.cpp
 	rollback_interface.cpp
