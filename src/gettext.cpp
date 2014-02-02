@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "util/string.h"
 
-#if USE_GETTEXT and defined(_MSC_VER)
+#if USE_GETTEXT && defined(_MSC_VER)
 #include <WinNls.h>
 #include <map>
 #include <direct.h>
