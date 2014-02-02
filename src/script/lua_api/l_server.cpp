@@ -165,7 +165,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char * name = luaL_checkstring(L, 1);
-	std::string message = "Kicked by mod, reason: ";
+	std::string message = "Kicked: ";
 	if (lua_isstring(L,2))
 	{
 		message += std::string(luaL_checkstring(L, 2));
@@ -176,7 +176,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 		lua_pushboolean(L, false); // no such player
 		return 1;
 	}
-	getServer(L)->DenyAccess(player->peer_id,narrow_to_wide(message));
+	getServer(L)->DenyAccess(player->peer_id, narrow_to_wide(message));
 	lua_pushboolean(L, true);
 	return 1;
 }
