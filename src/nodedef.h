@@ -249,6 +249,7 @@ struct ContentFeatures
 	bool is_circuit_element;
 	unsigned char wire_connections[6];
 	unsigned char circuit_element_states[64];
+	unsigned int circuit_element_delay;
 
 	// Sound properties
 	SimpleSoundSpec sound_footstep;

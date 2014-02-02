@@ -245,6 +245,7 @@ void ContentFeatures::reset()
 	{
 		circuit_element_states[i] = 0;
 	}
+	circuit_element_delay = 0;
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)

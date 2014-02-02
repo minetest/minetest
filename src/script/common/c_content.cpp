@@ -356,12 +356,20 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			lua_pop(L, 1);
 		}
 		if(i < 6) {
-			luaL_error(L, "Wire connectins table must have exactly 6 integer numbers.");
+			luaL_error(L, "Wire connectins array must have exactly 6 integer numbers.");
 		}
+
+		// Convert to two-way wire (one-way may cause undefined behavior)
+		for(i = 0; i < 6; ++i) {
+			for(int j = 0; j < 6; ++j) {
+				f.wire_connections[i] |= f.wire_connections[j] & (1 << i);
+				f.wire_connections[j] |= f.wire_connections[i] & (1 << j);
+			}
+		}
+		
 	} else if(f.is_wire) {
 		// Assuming that it's a standart wire
-		for(int i = 0; i < 6; ++i)
-		{
+		for(int i = 0; i < 6; ++i) {
 			f.wire_connections[i] = 0x3F;
 		}
 	}
@@ -382,6 +390,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		}
 	}
 	lua_pop(L, 1);
+
+	f.circuit_element_delay = getintfield_default(L, index, "circuit_element_delay", f.circuit_element_delay + 1) - 1;
+	if(f.circuit_element_delay > 100) {
+		luaL_error(L, "\"circuit_element_delay\" must be a positive integer number less than 101");
+	}
 
 	// special_tiles = {}
 	lua_getfield(L, index, "special_tiles");

@@ -2221,7 +2221,18 @@ Node definition (register_node)
 	^ Each definition table must have exactly 64 integer elements (0 <= a[i] <= 63).
 	
 	is_wire = true,
-	^ Note: if 2 blocks of wire have different ids, then signal between them WILL NOT be transmitted
+	^ Note: if 2 blocks of wire have different ids, then signal between them WILL NOT be transmitted.
+
+	is_connector = true,
+	^ The same as is_wire, but can connect wire blocks with different ids.
+
+	wire_connections = {8, 16, 32, 1, 2, 4},
+	^ This array must contain 6 elements. Each element describes faces to which face with id equal
+	^ to the id of this element is connected (numeration is the same as described above).
+	^ Now only two-way wire is supported (if face A connected to face B, than B connected to A).
+
+	circuit_element_delay = 2,
+	^ Delay of circuit element in ticks. It must be a positive integer number less than 101.
     
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch

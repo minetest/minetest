@@ -32,7 +32,8 @@ FaceId CircuitElement::facedir_to_face[] = {
 	FACE_RIGHT, FACE_BOTTOM, FACE_TOP
 };
 
-CircuitElement::CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id, unsigned long element_id) :
+CircuitElement::CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id,
+                               unsigned long element_id, unsigned int delay) :
 	m_pos(pos), m_func(func), m_func_id(func_id), m_current_input_state(0), m_next_input_state(0),
 	m_current_output_state(0), m_next_output_state(0)
 {
@@ -42,6 +43,7 @@ CircuitElement::CircuitElement(v3s16 pos, const unsigned char* func, unsigned lo
 	{
 		m_faces[i].is_connected = false;
 	}
+	setDelay(delay);
 #ifdef CIRCUIT_DEBUG
 	dstream << (OPPOSITE_FACE(FACE_TOP) == FACE_BOTTOM);
 	dstream << (OPPOSITE_FACE(FACE_BACK) == FACE_FRONT);
@@ -68,6 +70,7 @@ CircuitElement::CircuitElement(const CircuitElement& element)
 		m_faces[i].list_pointer  = element.m_faces[i].list_pointer;
 		m_faces[i].is_connected  = element.m_faces[i].is_connected;
 	}
+	setDelay(element.m_states_queue.size());
 }
 
 CircuitElement::CircuitElement(unsigned long element_id) : m_pos(v3s16(0, 0, 0)),
@@ -102,14 +105,21 @@ void CircuitElement::update()
 
 void CircuitElement::updateState(GameScripting* m_script, Map& map, INodeDefManager* ndef)
 {
-	m_current_output_state = m_func[m_next_input_state];
 	MapNode node = map.getNodeNoEx(m_pos);
-	bool has_on_activate = ndef->get(node).has_on_activate;
-	bool has_on_deactivate = ndef->get(node).has_on_deactivate;
-	if(m_next_input_state && !m_current_input_state && has_on_activate) {
+	// Update delay (may be not synchronized)
+	unsigned long delay = ndef->get(node).circuit_element_delay;
+	if(delay != m_states_queue.size()) {
+		setDelay(delay);
+	}
+
+	m_states_queue.push_back(m_next_input_state);
+	m_next_input_state = m_states_queue.front();
+	m_states_queue.pop_front();
+	m_current_output_state = m_func[m_next_input_state];
+	if(m_next_input_state && !m_current_input_state && ndef->get(node).has_on_activate) {
 		m_script->node_on_activate(m_pos, node);
 	}
-	if(!m_next_input_state && m_current_input_state && has_on_deactivate) {
+	if(!m_next_input_state && m_current_input_state && ndef->get(node).has_on_deactivate) {
 		m_script->node_on_deactivate(m_pos, node);
 	}
 	m_current_input_state = m_next_input_state;
@@ -133,6 +143,11 @@ void CircuitElement::serializeState(std::ostream& out) const
 {
 	out.write(reinterpret_cast<const char*>(&m_element_id), sizeof(m_element_id));
 	out.write(reinterpret_cast<const char*>(&m_current_input_state), sizeof(m_current_input_state));
+	unsigned long queue_size = m_states_queue.size();
+	out.write(reinterpret_cast<const char*>(&queue_size), sizeof(queue_size));
+	for(std::deque <unsigned char>::const_iterator i = m_states_queue.begin(); i != m_states_queue.end(); ++i) {
+		out.write(reinterpret_cast<const char*>(&(*i)), sizeof(*i));
+	}
 }
 
 void CircuitElement::deSerialize(std::istream& in,
@@ -141,7 +156,6 @@ void CircuitElement::deSerialize(std::istream& in,
 	unsigned long current_element_id;
 	in.read(reinterpret_cast<char*>(&m_pos), sizeof(m_pos));
 	in.read(reinterpret_cast<char*>(&m_func_id), sizeof(m_func_id));
-	CircuitElementContainer tmp_container;
 	for(int i = 0; i < 6; ++i) {
 		in.read(reinterpret_cast<char*>(&current_element_id), sizeof(current_element_id));
 		if(current_element_id > 0){
@@ -150,6 +164,18 @@ void CircuitElement::deSerialize(std::istream& in,
 		} else {
 			m_faces[i].is_connected = false;
 		}
+	}
+}
+
+void CircuitElement::deSerializeState(std::istream& in)
+{
+	unsigned long queue_size;
+	unsigned char input_state;
+	in.read(reinterpret_cast<char*>(&m_current_input_state), sizeof(m_current_input_state));
+	in.read(reinterpret_cast<char*>(&queue_size), sizeof(queue_size));
+	for(unsigned long i = 0; i < queue_size; ++i) {
+		in.read(reinterpret_cast<char*>(&input_state), sizeof(input_state));
+		m_states_queue.push_back(input_state);
 	}
 }
 
@@ -313,4 +339,17 @@ void CircuitElement::setFunc(const unsigned char* func, unsigned long func_id)
 	m_func = func;
 	m_func_id = func_id;
 	m_current_output_state = m_func[m_current_input_state];
+}
+
+void CircuitElement::setDelay(unsigned int delay)
+{
+	if(m_states_queue.size() >= delay) {
+		while(m_states_queue.size() > delay) {
+			m_states_queue.pop_front();
+		}
+	} else {
+		while(m_states_queue.size() < delay) {
+			m_states_queue.push_back(0);
+		}		
+	}
 }

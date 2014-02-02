@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <deque>
 
 #define OPPOSITE_SHIFT(x) (CircuitElement::opposite_shift[(x)])
 #define OPPOSITE_FACE(x) ((((x)<<3) | ((x)>>3)) & 0x3f)
@@ -52,7 +53,7 @@ struct CircuitElementContainer
 class CircuitElement
 {
 public:
-	CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id, unsigned long id);
+	CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id, unsigned long id, unsigned int delay);
 	CircuitElement(const CircuitElement& element);
 	CircuitElement(unsigned long id);
 	~CircuitElement();
@@ -64,6 +65,7 @@ public:
 	void serializeState(std::ostream& out) const;
 	void deSerialize(std::istream& is,
 	                 std::map <unsigned long, std::list <CircuitElementVirtual>::iterator>& id_to_virtual_pointer);
+	void deSerializeState(std::istream& is);
 	
 	void getNeighbors(std::vector <std::list <CircuitElementVirtual>::iterator>& neighbors) const;
 	
@@ -85,6 +87,7 @@ public:
 	void setId(unsigned long id);
 	void setInputState(unsigned char state);
 	void setFunc(const unsigned char* func, unsigned long func_id);
+	void setDelay(unsigned int delay);
 
 	inline void addState(unsigned char state)
 		{
@@ -104,6 +107,7 @@ private:
 	unsigned char m_next_input_state;
 	unsigned char m_current_output_state;
 	unsigned char m_next_output_state;
+	std::deque <unsigned char> m_states_queue;
 	CircuitElementContainer m_faces[6];
 };
 

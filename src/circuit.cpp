@@ -77,9 +77,8 @@ Circuit::Circuit(GameScripting* script, std::string savedir) :  circuit_elements
 	if(input_elements_states.good()) {
 		for(unsigned long i = 0; i < elements.size(); ++i) {
 			input_elements_states.read(reinterpret_cast<char*>(&element_id), sizeof(element_id));
-			input_elements_states.read(reinterpret_cast<char*>(&element_state), sizeof(element_state));
 			if(id_to_pointer.find(element_id) != id_to_pointer.end()) {
-				id_to_pointer[element_id]->setInputState(element_state);
+				id_to_pointer[element_id]->deSerializeState(input_elements_states);
 			} else {
 				throw SerializationError(static_cast<std::string>("File \"")
 				                         + elements_states_file + "\" seems to be corrupted.");
@@ -138,7 +137,8 @@ void Circuit::addElement(Map& map, INodeDefManager* ndef, v3s16 pos, const unsig
 	}
 	saveCircuitElementsStates();
 	std::list <CircuitElement>::iterator current_element_iterator =
-		elements.insert(elements.begin(), CircuitElement(pos, node_func.first, node_func.second, max_id++));
+		elements.insert(elements.begin(), CircuitElement(pos, node_func.first, node_func.second,
+		                                                 max_id++, ndef->get(node).circuit_element_delay));
 	pos_to_iterator[pos] = current_element_iterator;
 
 	// For each face add all other connected faces.
@@ -432,9 +432,11 @@ void Circuit::updateElement(MapNode& node, v3s16 pos, INodeDefManager* ndef, con
 	} else {
 		node_func = circuit_elements_states.addState(func);
 	}
-	pos_to_iterator[pos]->setFunc(node_func.first, node_func.second);
+	std::list <CircuitElement>::iterator current_element = pos_to_iterator[pos];
+	current_element->setFunc(node_func.first, node_func.second);
+	current_element->setDelay(ndef->get(node).circuit_element_delay);
 	saveCircuitElementsStates();
-	saveElement(pos_to_iterator[pos], false);
+	saveElement(current_element, false);
 }
 
 void Circuit::pushElementToQueue(v3s16 pos)
@@ -466,7 +468,8 @@ void Circuit::processElementsQueue(Map& map, INodeDefManager* ndef)
 			}
 			pos_to_iterator[elements_queue[i]] = elements.insert(elements.begin(),
 			                                                     CircuitElement(elements_queue[i],
-			                                                                    node_func.first, node_func.second, max_id++));
+			                                                                    node_func.first, node_func.second,
+			                                                                    max_id++, ndef->get(node).circuit_element_delay));
 			elements_queue_iterators[i] = pos_to_iterator[elements_queue[i]];
 		}
 
