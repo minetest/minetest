@@ -2093,7 +2093,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_block_boundaries")))
 		{
 			show_block_boundaries = !show_block_boundaries;
-			if(show_chat)
+			if(show_block_boundaries)
 				statustext = L"Block boundaries shown";
 			else
 				statustext = L"Block boundaries hidden";
