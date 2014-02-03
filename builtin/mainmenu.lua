@@ -210,12 +210,12 @@ end
 function menu.render_texture_pack_list(list)
 	local retval = ""
 
-	for i,v in ipairs(list) do
+	for i, v in ipairs(list) do
 		if retval ~= "" then
 			retval = retval ..","
 		end
 
-		retval = retval .. v
+		retval = retval .. engine.formspec_escape(v)
 	end
 
 	return retval
