@@ -107,7 +107,7 @@ minetest.register_chatcommand("grant", {
 	description = "Give privilege to player",
 	privs = {},
 	func = function(name, param)
-		if not minetest.check_player_privs(name, {privs=true}) and 
+		if not minetest.check_player_privs(name, {privs=true}) and
 				not minetest.check_player_privs(name, {basic_privs=true}) then
 			minetest.chat_send_player(name, "Your privileges are insufficient.")
 			return
@@ -153,7 +153,7 @@ minetest.register_chatcommand("revoke", {
 	description = "Remove privilege from player",
 	privs = {},
 	func = function(name, param)
-		if not minetest.check_player_privs(name, {privs=true}) and 
+		if not minetest.check_player_privs(name, {privs=true}) and
 				not minetest.check_player_privs(name, {basic_privs=true}) then
 			minetest.chat_send_player(name, "Your privileges are insufficient.")
 			return
@@ -666,6 +666,20 @@ minetest.register_chatcommand("unban", {
 		else
 			minetest.chat_send_player(name, "Unbanned " .. param)
 			minetest.log("action", name .. " unbans " .. param)
+		end
+	end,
+})
+
+minetest.register_chatcommand("kick", {
+	params = "<name>",
+	description = "kick a player",
+	privs = {kick=true},
+	func = function(name, param)
+		if not minetest.kick_player(param) then
+			minetest.chat_send_player(name, "Failed to kick player")
+		else
+			minetest.chat_send_player(name, "kicked " .. param)
+			minetest.log("action", name .. " kicked " .. param)
 		end
 	end,
 })
