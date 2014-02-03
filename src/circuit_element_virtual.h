@@ -30,9 +30,9 @@ public:
 	unsigned long getId();
 
 	inline void addState(const bool state)
-		{
-			m_state |= state;
-		}
+	{
+		m_state |= state;
+	}
 
 private:
 	unsigned long m_element_id;

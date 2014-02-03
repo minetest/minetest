@@ -15,8 +15,8 @@
 
 unsigned char CircuitElement::face_to_shift[] = {
 	0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0,
-	4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
-};
+		4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
+		};
 
 unsigned char CircuitElement::opposite_shift[] = {
 	3, 4, 5, 0, 1, 2
@@ -34,8 +34,8 @@ FaceId CircuitElement::facedir_to_face[] = {
 
 CircuitElement::CircuitElement(v3s16 pos, const unsigned char* func, unsigned long func_id,
                                unsigned long element_id, unsigned int delay) :
-	m_pos(pos), m_func(func), m_func_id(func_id), m_current_input_state(0), m_next_input_state(0),
-	m_current_output_state(0), m_next_output_state(0)
+	m_pos(pos), m_func(func), m_func_id(func_id), m_current_input_state(0),
+	m_next_input_state(0), m_current_output_state(0), m_next_output_state(0)
 {
 	m_current_output_state = m_func[m_current_input_state];
 	m_element_id = element_id;
@@ -74,8 +74,9 @@ CircuitElement::CircuitElement(const CircuitElement& element)
 }
 
 CircuitElement::CircuitElement(unsigned long element_id) : m_pos(v3s16(0, 0, 0)),
-                                   m_func(0), m_func_id(0), m_current_input_state(0), m_next_input_state(0),
-                                   m_current_output_state(0), m_next_output_state(0)
+                                                           m_func(0), m_func_id(0), m_current_input_state(0),
+                                                           m_next_input_state(0), m_current_output_state(0),
+                                                           m_next_output_state(0)
 {
 	m_element_id = element_id;
 	for(int i = 0; i < 6; ++i) {
@@ -214,7 +215,6 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <std::list<Cir
 	std::queue <std::pair <v3s16, unsigned char> > q;
 	v3s16 current_pos;
 	v3s16 next_pos;
-	unsigned char acceptable_faces;
 	std::map <v3s16, unsigned char>::iterator current_used_iterator;
 	std::map <v3s16, unsigned char>::iterator tmp_used_iterator;
 	ContentFeatures node_features, current_node_features;
@@ -231,6 +231,7 @@ void CircuitElement::findConnectedWithFace(std::vector <std::pair <std::list<Cir
 
 	if(ndef->get(map.getNodeNoEx(current_pos)).is_wire || ndef->get(map.getNodeNoEx(current_pos)).is_connector) {
 		while(!q.empty()) {
+			unsigned char acceptable_faces;
 			current_pos = q.front().first;
 			acceptable_faces = q.front().second;
 			q.pop();

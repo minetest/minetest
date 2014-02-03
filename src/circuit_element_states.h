@@ -18,11 +18,11 @@ public:
 	std::pair<const unsigned char*, unsigned long> addState(const unsigned char* state);
 	std::pair<const unsigned char*, unsigned long> addState(const unsigned char* state, unsigned char facedir);
 	
-	void rotateStatesArray(const unsigned char* input_state, unsigned char* output_state, FaceId face);
+	void rotateStatesArray(const unsigned char* input_state, unsigned char* output_state, FaceId face) const;
 	static unsigned char rotateState(const unsigned char state, FaceId face);
 	
-	unsigned int getId(const unsigned char* state);
-	unsigned char* getFunc(unsigned int id);
+	unsigned int getId(const unsigned char* state) const;
+	const unsigned char* getFunc(unsigned int id) const;
 	
 	void serialize(std::ostream& out);
 	void deSerialize(std::istream& in);

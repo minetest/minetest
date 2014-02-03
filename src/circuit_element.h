@@ -90,9 +90,9 @@ public:
 	void setDelay(unsigned int delay);
 
 	inline void addState(unsigned char state)
-		{
-			m_next_input_state |= state;
-		}
+	{
+		m_next_input_state |= state;
+	}
 	
 	static unsigned char face_to_shift[33];
 	static unsigned char opposite_shift[6];

@@ -29,28 +29,31 @@ public:
 	void pushElementToQueue(v3s16 pos);
 	void processElementsQueue(Map& map, INodeDefManager* ndef);
 	
+	void load();
 	void save();
 	void saveElement(std::list <CircuitElement>::iterator element, bool save_edges);
 	void saveVirtualElement(std::list <CircuitElementVirtual>::iterator element, bool save_edges);
 	void saveCircuitElementsStates();
 	
 private:
-	std::list <CircuitElement> elements;
-	std::list <CircuitElementVirtual> virtual_elements;
+	std::list <CircuitElement> m_elements;
+	std::list <CircuitElementVirtual> m_virtual_elements;
 
-	std::map <v3s16, std::list<CircuitElement>::iterator> pos_to_iterator;
-	std::map <const unsigned char*, unsigned long> func_to_id;
+	std::map <v3s16, std::list<CircuitElement>::iterator> m_pos_to_iterator;
+	std::map <const unsigned char*, unsigned long> m_func_to_id;
 
-	std::vector <v3s16> elements_queue;
-	CircuitElementStates circuit_elements_states;
+	std::vector <v3s16> m_elements_queue;
+	CircuitElementStates m_circuit_elements_states;
 	GameScripting* m_script;
 	float m_min_update_delay;
 	float m_since_last_update;
 
-	unsigned long max_id;
-	unsigned long max_virtual_id;
+	unsigned long m_max_id;
+	unsigned long m_max_virtual_id;
 	
 	std::string m_savedir;
+
+	bool m_updating_process;
 	
 	leveldb::DB *m_database;
 	leveldb::DB *m_virtual_database;
