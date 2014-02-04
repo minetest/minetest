@@ -467,6 +467,7 @@ public:
 		return n->second;
 	}
 
+	//////////// Get setting
 	bool getBool(std::string name)
 	{
 		return is_yes(get(name));
@@ -581,13 +582,19 @@ public:
 	{
 		size_t len = olen;
 		std::vector<std::string *> strs_alloced;
-		std::string *str;
-		std::string valstr = get(name);
+		std::string *str, valstr;
+		char *f, *snext;
+		size_t pos;
+
+		try {
+			valstr = get(name);
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+
 		char *s = &valstr[0];
 		char *buf = new char[len];
 		char *bufpos = buf;
-		char *f, *snext;
-		size_t pos;
 
 		char *fmtpos, *fmt = &format[0];
 		while ((f = strtok_r(fmt, ",", &fmtpos)) && s) {
@@ -737,6 +744,118 @@ fail:
 		return true;
 	}
 
+	//////////// Try to get value, no exception thrown
+	bool tryGet(std::string name, std::string &val)
+	{
+		try {
+			val = get(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetFlagStr(std::string name, u32 &val, FlagDesc *flagdesc)
+	{
+		try {
+			val = getFlagStr(name, flagdesc);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetFloat(std::string name, float &val)
+	{
+		try {
+			val = getFloat(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetU16(std::string name, int &val)
+	{
+		try {
+			val = getU16(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetU16(std::string name, u16 &val)
+	{
+		try {
+			val = getU16(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetS16(std::string name, int &val)
+	{
+		try {
+			val = getU16(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetS16(std::string name, s16 &val)
+	{
+		try {
+			val = getS16(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetS32(std::string name, s32 &val)
+	{
+		try {
+			val = getS32(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetV3F(std::string name, v3f &val)
+	{
+		try {
+			val = getV3F(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetV2F(std::string name, v2f &val)
+	{
+		try {
+			val = getV2F(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	bool tryGetU64(std::string name, u64 &val)
+	{
+		try {
+			val = getU64(name);
+			return true;
+		} catch (SettingNotFoundException &e) {
+			return false;
+		}
+	}
+
+	//////////// Set setting
 	bool setStruct(std::string name, std::string format, void *value)
 	{
 		char sbuf[2048];
