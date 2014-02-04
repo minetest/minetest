@@ -39,15 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "filesys.h"
 
+
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",          MG_TREES},
 	{"caves",          MG_CAVES},
 	{"dungeons",       MG_DUNGEONS},
-	{"v6_jungles",     MGV6_JUNGLES},
-	{"v6_biome_blend", MGV6_BIOME_BLEND},
 	{"flat",           MG_FLAT},
 	{"nolight",        MG_NOLIGHT},
-	{"v6_nomudflow",   MGV6_NOMUDFLOW},
 	{NULL,             0}
 };
 
@@ -1123,72 +1121,4 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 		vm->unspreadLight(bank, unlight_from, light_sources, ndef);
 		vm->spreadLight(bank, light_sources, ndef);
 	}
-}
-
-
-//////////////////////// Mapgen V6 parameter read/write
-
-bool MapgenV6Params::readParams(Settings *settings) {
-	freq_desert = settings->getFloat("mgv6_freq_desert");
-	freq_beach  = settings->getFloat("mgv6_freq_beach");
-
-	bool success =
-		settings->getNoiseParams("mgv6_np_terrain_base",   np_terrain_base)   &&
-		settings->getNoiseParams("mgv6_np_terrain_higher", np_terrain_higher) &&
-		settings->getNoiseParams("mgv6_np_steepness",      np_steepness)      &&
-		settings->getNoiseParams("mgv6_np_height_select",  np_height_select)  &&
-		settings->getNoiseParams("mgv6_np_mud",            np_mud)            &&
-		settings->getNoiseParams("mgv6_np_beach",          np_beach)          &&
-		settings->getNoiseParams("mgv6_np_biome",          np_biome)          &&
-		settings->getNoiseParams("mgv6_np_cave",           np_cave)           &&
-		settings->getNoiseParams("mgv6_np_humidity",       np_humidity)       &&
-		settings->getNoiseParams("mgv6_np_trees",          np_trees)          &&
-		settings->getNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
-	return success;
-}
-
-
-void MapgenV6Params::writeParams(Settings *settings) {
-	settings->setFloat("mgv6_freq_desert", freq_desert);
-	settings->setFloat("mgv6_freq_beach",  freq_beach);
-
-	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
-	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
-	settings->setNoiseParams("mgv6_np_steepness",      np_steepness);
-	settings->setNoiseParams("mgv6_np_height_select",  np_height_select);
-	settings->setNoiseParams("mgv6_np_mud",            np_mud);
-	settings->setNoiseParams("mgv6_np_beach",          np_beach);
-	settings->setNoiseParams("mgv6_np_biome",          np_biome);
-	settings->setNoiseParams("mgv6_np_cave",           np_cave);
-	settings->setNoiseParams("mgv6_np_humidity",       np_humidity);
-	settings->setNoiseParams("mgv6_np_trees",          np_trees);
-	settings->setNoiseParams("mgv6_np_apple_trees",    np_apple_trees);
-}
-
-
-bool MapgenV7Params::readParams(Settings *settings) {
-	bool success =
-		settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base)    &&
-		settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt)     &&
-		settings->getNoiseParams("mgv7_np_terrain_persist", np_terrain_persist) &&
-		settings->getNoiseParams("mgv7_np_height_select",   np_height_select)   &&
-		settings->getNoiseParams("mgv7_np_filler_depth",    np_filler_depth)    &&
-		settings->getNoiseParams("mgv7_np_mount_height",    np_mount_height)    &&
-		settings->getNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater)    &&
-		settings->getNoiseParams("mgv7_np_mountain",        np_mountain)        &&
-		settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
-	return success;
-}
-
-
-void MapgenV7Params::writeParams(Settings *settings) {
-	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
-	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
-	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
-	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
-	settings->setNoiseParams("mgv7_np_filler_depth",    np_filler_depth);
-	settings->setNoiseParams("mgv7_np_mount_height",    np_mount_height);
-	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
-	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
-	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
 }

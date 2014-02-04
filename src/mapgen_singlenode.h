@@ -22,12 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-struct MapgenSinglenodeParams : public MapgenParams {
+struct MapgenSinglenodeParams : public MapgenSpecificParams {
 	
 	MapgenSinglenodeParams() {}
 	~MapgenSinglenodeParams() {}
 	
-	bool readParams(Settings *settings);
+	void readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
 
@@ -35,7 +35,7 @@ class MapgenSinglenode : public Mapgen {
 public:
 	u32 flags;
 
-	MapgenSinglenode(int mapgenid, MapgenSinglenodeParams *params);
+	MapgenSinglenode(int mapgenid, MapgenParams *params);
 	~MapgenSinglenode();
 	
 	void makeChunk(BlockMakeData *data);
@@ -44,10 +44,10 @@ public:
 
 struct MapgenFactorySinglenode : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenSinglenode(mgid, (MapgenSinglenodeParams *)params);
+		return new MapgenSinglenode(mgid, params);
 	};
 	
-	MapgenParams *createMapgenParams() {
+	MapgenSpecificParams *createMapgenParams() {
 		return new MapgenSinglenodeParams();
 	};
 };

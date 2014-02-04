@@ -250,41 +250,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "trees, caves, v6_biome_blend");
-	settings->setDefault("mgv6_freq_desert", "0.45");
-	settings->setDefault("mgv6_freq_beach", "0.15");
-
-	settings->setDefault("mgv6_np_terrain_base",   "-4, 20, (250, 250, 250), 82341, 5, 0.6");
-	settings->setDefault("mgv6_np_terrain_higher", "20, 16, (500, 500, 500), 85039, 5, 0.6");
-	settings->setDefault("mgv6_np_steepness",      "0.85, 0.5, (125, 125, 125), -932, 5, 0.7");
-	settings->setDefault("mgv6_np_height_select",  "0.5, 1, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv6_np_mud",            "4, 2, (200, 200, 200), 91013, 3, 0.55");
-	settings->setDefault("mgv6_np_beach",          "0, 1, (250, 250, 250), 59420, 3, 0.50");
-	settings->setDefault("mgv6_np_biome",          "0, 1, (250, 250, 250), 9130, 3, 0.50");
-	settings->setDefault("mgv6_np_cave",           "6, 6, (250, 250, 250), 34329, 3, 0.50");
-	settings->setDefault("mgv6_np_humidity",       "0.5, 0.5, (500, 500, 500), 72384, 4, 0.66");
-	settings->setDefault("mgv6_np_trees",          "0, 1, (125, 125, 125), 2, 4, 0.66");
-	settings->setDefault("mgv6_np_apple_trees",    "0, 1, (100, 100, 100), 342902, 3, 0.45");
-
-	settings->setDefault("mgv7_np_terrain_base",     "4, 70, (300, 300, 300), 82341, 6, 0.7");
-	settings->setDefault("mgv7_np_terrain_alt",      "4, 25, (600, 600, 600), 5934, 5, 0.6");
-	settings->setDefault("mgv7_np_terrain_persist",  "0.6, 0.1, (500, 500, 500), 539, 3, 0.6");
-	settings->setDefault("mgv7_np_height_select",    "-0.5, 1, (250, 250, 250), 4213, 5, 0.69");
-	settings->setDefault("mgv7_np_filler_depth",     "0, 1.2, (150, 150, 150), 261, 4, 0.7");
-	settings->setDefault("mgv7_np_mount_height",     "100, 30, (500, 500, 500), 72449, 4, 0.6");
-	settings->setDefault("mgv7_np_ridge_uwater",     "0, 1, (500, 500, 500), 85039, 4, 0.6");
-	settings->setDefault("mgv7_np_mountain",         "0, 1, (250, 350, 250), 5333, 5, 0.68");
-	settings->setDefault("mgv7_np_ridge",            "0, 1, (100, 120, 100), 6467, 4, 0.75");
-
-	settings->setDefault("mgindev_np_terrain_base",   "-4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10");
-	settings->setDefault("mgindev_np_terrain_higher", "20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10");
-	settings->setDefault("mgindev_np_steepness",      "0.85, 0.5, (125, 125, 125), -932,  5, 0.7,  2,   10");
-	settings->setDefault("mgindev_np_mud",            "4,    2,   (200, 200, 200), 91013, 3, 0.55, 1,   1");
-	settings->setDefault("mgindev_np_float_islands1", "0,    1,   (256, 256, 256), 3683,  6, 0.6,  1,   1.5");
-	settings->setDefault("mgindev_np_float_islands2", "0,    1,   (8,   8,   8  ), 9292,  2, 0.5,  1,   1.5");
-	settings->setDefault("mgindev_np_float_islands3", "0,    1,   (256, 256, 256), 6412,  2, 0.5,  1,   0.5");
-	settings->setDefault("mgindev_np_biome",          "0,    1,   (250, 250, 250), 9130,  3, 0.50, 1,   10");
-	settings->setDefault("mgindev_float_islands", "500");
+	settings->setDefault("mg_flags", "trees, caves");
 
 	settings->setDefault("mgmath_generator", "mandelbox");
 

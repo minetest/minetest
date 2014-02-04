@@ -68,6 +68,19 @@ struct NoiseParams {
 	int seed;
 	int octaves;
 	float persist;
+
+	NoiseParams() {}
+
+	NoiseParams(float offset_, float scale_, v3f spread_,
+		int seed_, int octaves_, float persist_)
+	{
+		offset  = offset_;
+		scale   = scale_;
+		spread  = spread_;
+		seed    = seed_;
+		octaves = octaves_;
+		persist = persist_;
+	}
 };
 
 

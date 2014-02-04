@@ -149,7 +149,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	Mapgen mg;
 	mg.vm          = vm;
 	mg.ndef        = ndef;
-	mg.water_level = emerge->params->water_level;
+	mg.water_level = emerge->params.water_level;
 	
 	mg.calcLighting(p1, p2);
 

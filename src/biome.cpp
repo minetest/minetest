@@ -25,10 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "util/mathconstants.h"
 
-NoiseParams nparams_biome_def_heat =
-	{50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.70};
-NoiseParams nparams_biome_def_humidity =
-	{50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.55};
+NoiseParams nparams_biome_def_heat(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.70);
+NoiseParams nparams_biome_def_humidity(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.55);
 
 
 BiomeDefManager::BiomeDefManager() {

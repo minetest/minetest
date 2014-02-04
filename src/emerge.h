@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "map.h" // for ManualMapVoxelManipulator
+#include "mapgen.h" // for MapgenParams
 
 #define MGPARAMS_SET_MGNAME      1
 #define MGPARAMS_SET_SEED        2
@@ -37,9 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	infostream << "EmergeThread: " x << std::endl; }
 
 class EmergeThread;
-class Mapgen;
-struct MapgenParams;
-struct MapgenFactory;
+//class Mapgen;
+//struct MapgenFactory;
 class Biome;
 class BiomeDefManager;
 class Decoration;
@@ -90,17 +90,13 @@ public:
 	bool threads_active;
 
 	//settings
-	MapgenParams *params;
+	MapgenParams params;
 	bool mapgen_debug_info;
 	u16 qlimit_total;
 	u16 qlimit_diskonly;
 	u16 qlimit_generate;
 
 	u32 gennotify;
-
-	MapgenParams *luaoverride_params;
-	u32 luaoverride_params_modified;
-	u32 luaoverride_flagmask;
 
 	//block emerge queue data structures
 	JMutex queuemutex;
@@ -115,19 +111,18 @@ public:
 	EmergeManager(IGameDef *gamedef);
 	~EmergeManager();
 
-	void initMapgens(MapgenParams *mgparams);
-	MapgenParams *setMapgenType(MapgenParams *mgparams, std::string newname);
+	void initMapgens();
 	Mapgen *getCurrentMapgen();
 	Mapgen *createMapgen(std::string mgname, int mgid,
 						MapgenParams *mgparams);
-	MapgenParams *createMapgenParams(std::string mgname);
+	MapgenSpecificParams *createMapgenParams(std::string mgname);
 	void startThreads();
 	void stopThreads();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
 
 	void registerMapgen(std::string name, MapgenFactory *mgfactory);
-	MapgenParams *getParamsFromSettings(Settings *settings);
-	void setParamsToSettings(Settings *settings);
+	void loadParamsFromSettings(Settings *settings);
+	void saveParamsToSettings(Settings *settings);
 
 	//mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);

@@ -90,44 +90,42 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 
 	this->ndef     = gamedef->getNodeDefManager();
 	this->biomedef = new BiomeDefManager();
-	this->params   = NULL;
+	this->gennotify = 0;
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping
 	// EmergeThreads should be the ServerThread.
 	this->threads_active = false;
 
-	this->luaoverride_params          = NULL;
-	this->luaoverride_params_modified = 0;
-	this->luaoverride_flagmask        = 0;
-
-	this->gennotify = 0;
-
 	mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
-	int nthreads;
-	if (g_settings->get("num_emerge_threads").empty()) {
-		int nprocs = porting::getNumberOfProcessors();
-		// leave a proc for the main thread and one for some other misc threads
-		nthreads = (nprocs > 2) ? nprocs - 2 : 1;
-	} else {
-		nthreads = g_settings->getU16("num_emerge_threads");
-	}
+	// if unspecified, leave a proc for the main thread and one for
+	// some other misc thread
+	int nthreads = 0;
+	if (!g_settings->tryGetS16("num_emerge_threads", nthreads))
+		nthreads = porting::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;
 
-	qlimit_total    = g_settings->getU16("emergequeue_limit_total");
-	qlimit_diskonly = g_settings->get("emergequeue_limit_diskonly").empty() ?
-		nthreads * 5 + 1 :
-		g_settings->getU16("emergequeue_limit_diskonly");
-	qlimit_generate = g_settings->get("emergequeue_limit_generate").empty() ?
-		nthreads + 1 :
-		g_settings->getU16("emergequeue_limit_generate");
+	qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	if (!g_settings->tryGetU16("emergequeue_limit_diskonly", qlimit_diskonly))
+		qlimit_diskonly = nthreads * 5 + 1;
+	if (!g_settings->tryGetU16("emergequeue_limit_generate", qlimit_generate))
+		qlimit_generate = nthreads + 1;
 
 	for (int i = 0; i != nthreads; i++)
 		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
+
+	loadParamsFromSettings(g_settings);
+
+	if (g_settings->get("fixed_map_seed").empty()) {
+		params.seed = (((u64)(myrand() & 0xffff) << 0)
+					 | ((u64)(myrand() & 0xffff) << 16)
+					 | ((u64)(myrand() & 0xffff) << 32)
+					 | ((u64)(myrand() & 0xffff) << 48));
+	}
 }
 
 
@@ -162,9 +160,7 @@ EmergeManager::~EmergeManager() {
 }
 
 
-void EmergeManager::initMapgens(MapgenParams *mgparams) {
-	Mapgen *mg;
-
+void EmergeManager::initMapgens() {
 	if (mapgen.size())
 		return;
 
@@ -178,74 +174,22 @@ void EmergeManager::initMapgens(MapgenParams *mgparams) {
 	for (size_t i = 0; i != decorations.size(); i++)
 		decorations[i]->resolveNodeNames(ndef);
 
-	// Apply mapgen parameter overrides from Lua
-	if (luaoverride_params) {
-		if (luaoverride_params_modified & MGPARAMS_SET_MGNAME) {
-			MapgenParams *mgp = setMapgenType(mgparams, luaoverride_params->mg_name);
-			if (!mgp) {
-				errorstream << "EmergeManager: Failed to set new mapgen name"
-							<< std::endl;
-			} else {
-				mgparams = mgp;
-			}
+	if (!params.sparams) {
+		params.sparams = createMapgenParams(params.mg_name);
+		if (!params.sparams) {
+			params.mg_name = DEFAULT_MAPGEN;
+			params.sparams = createMapgenParams(params.mg_name);
+			assert(params.sparams);
 		}
-
-		if (luaoverride_params_modified & MGPARAMS_SET_SEED)
-			mgparams->seed = luaoverride_params->seed;
-
-		if (luaoverride_params_modified & MGPARAMS_SET_WATER_LEVEL)
-			mgparams->water_level = luaoverride_params->water_level;
-
-		if (luaoverride_params_modified & MGPARAMS_SET_FLAGS) {
-			mgparams->flags &= ~luaoverride_flagmask;
-			mgparams->flags |= luaoverride_params->flags;
-		}
-
-		delete luaoverride_params;
-		luaoverride_params = NULL;
+		params.sparams->readParams(g_settings);
 	}
 
 	// Create the mapgens
-	this->params = mgparams;
 	for (size_t i = 0; i != emergethread.size(); i++) {
-		mg = createMapgen(params->mg_name, i, params);
-		if (!mg) {
-			infostream << "EmergeManager: Falling back to Mapgen V6" << std::endl;
-
-			params = setMapgenType(params, "v6");
-			mg = createMapgen(params->mg_name, i, params);
-			if (!mg) {
-				errorstream << "EmergeManager: CRITICAL ERROR: Failed to fall"
-					"back to Mapgen V6, not generating map" << std::endl;
-			}
-		}
+		Mapgen *mg = createMapgen(params.mg_name, i, &params);
+		assert(mg);
 		mapgen.push_back(mg);
 	}
-}
-
-
-MapgenParams *EmergeManager::setMapgenType(MapgenParams *mgparams,
-	std::string newname) {
-	MapgenParams *newparams = createMapgenParams(newname);
-	if (!newparams) {
-		errorstream << "EmergeManager: Mapgen override failed" << std::endl;
-		return NULL;
-	}
-
-	newparams->mg_name     = newname;
-	newparams->seed        = mgparams->seed;
-	newparams->water_level = mgparams->water_level;
-	newparams->chunksize   = mgparams->chunksize;
-	newparams->flags       = mgparams->flags;
-
-	if (!newparams->readParams(g_settings)) {
-		errorstream << "EmergeManager: Mapgen override failed" << std::endl;
-		delete newparams;
-		return NULL;
-	}
-
-	delete mgparams;
-	return newparams;
 }
 
 
@@ -363,12 +307,12 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos) {
 
 	//yuck, but then again, should i bother being accurate?
 	//the height of the nodes in a single block is quite variable
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params->water_level;
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params.water_level;
 }
 
 
 u32 EmergeManager::getBlockSeed(v3s16 p) {
-	return (u32)(params->seed & 0xFFFFFFFF) +
+	return (u32)(params.seed & 0xFFFFFFFF) +
 		p.Z * 38134234 +
 		p.Y * 42123 +
 		p.X * 23;
@@ -390,7 +334,7 @@ Mapgen *EmergeManager::createMapgen(std::string mgname, int mgid,
 }
 
 
-MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
+MapgenSpecificParams *EmergeManager::createMapgenParams(std::string mgname) {
 	std::map<std::string, MapgenFactory *>::const_iterator iter;
 	iter = mglist.find(mgname);
 	if (iter == mglist.end()) {
@@ -404,37 +348,35 @@ MapgenParams *EmergeManager::createMapgenParams(std::string mgname) {
 }
 
 
-MapgenParams *EmergeManager::getParamsFromSettings(Settings *settings) {
-	std::string mg_name = settings->get("mg_name");
-	MapgenParams *mgparams = createMapgenParams(mg_name);
-	if (!mgparams)
-		return NULL;
+void EmergeManager::loadParamsFromSettings(Settings *settings) {
+	std::string seed_str;
+	const char *setname = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	std::string seedstr = settings->get(settings == g_settings ?
-									"fixed_map_seed" : "seed");
+	if (settings->tryGet(setname, seed_str))
+		params.seed = read_seed(seed_str.c_str());
 
-	mgparams->mg_name     = mg_name;
-	mgparams->seed        = read_seed(seedstr.c_str());
-	mgparams->water_level = settings->getS16("water_level");
-	mgparams->chunksize   = settings->getS16("chunksize");
-	mgparams->flags       = settings->getFlagStr("mg_flags", flagdesc_mapgen);
+	settings->tryGet("mg_name",         params.mg_name);
+	settings->tryGetS16("water_level",  params.water_level);
+	settings->tryGetS16("chunksize",    params.chunksize);
+	settings->tryGetFlagStr("mg_flags", params.flags, flagdesc_mapgen);
 
-	if (!mgparams->readParams(settings)) {
-		delete mgparams;
-		return NULL;
-	}
-	return mgparams;
+	delete params.sparams;
+	params.sparams = createMapgenParams(params.mg_name);
+	if (params.sparams)
+		params.sparams->readParams(settings);
+
 }
 
 
-void EmergeManager::setParamsToSettings(Settings *settings) {
-	settings->set("mg_name",         params->mg_name);
-	settings->setU64("seed",         params->seed);
-	settings->setS16("water_level",  params->water_level);
-	settings->setS16("chunksize",    params->chunksize);
-	settings->setFlagStr("mg_flags", params->flags, flagdesc_mapgen);
+void EmergeManager::saveParamsToSettings(Settings *settings) {
+	settings->set("mg_name",         params.mg_name);
+	settings->setU64("seed",         params.seed);
+	settings->setS16("water_level",  params.water_level);
+	settings->setS16("chunksize",    params.chunksize);
+	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen);
 
-	params->writeParams(settings);
+	if (params.sparams)
+		params.sparams->writeParams(settings);
 }
 
 

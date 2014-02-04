@@ -29,8 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 //////////////////////// Mapgen Singlenode parameter read/write
 
-bool MapgenSinglenodeParams::readParams(Settings *settings) {
-	return true;
+void MapgenSinglenodeParams::readParams(Settings *settings) {
 }
 
 
@@ -39,7 +38,7 @@ void MapgenSinglenodeParams::writeParams(Settings *settings) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MapgenSinglenode::MapgenSinglenode(int mapgenid, MapgenSinglenodeParams *params) {
+MapgenSinglenode::MapgenSinglenode(int mapgenid, MapgenParams *params) {
 	flags = params->flags;
 }
 

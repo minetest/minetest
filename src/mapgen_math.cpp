@@ -147,7 +147,7 @@ double sphere(double x, double y, double z, double d, int ITR = 1) {
 
 //////////////////////// Mapgen Math parameter read/write
 
-bool MapgenMathParams::readParams(Settings *settings) {
+void MapgenMathParams::readParams(Settings *settings) {
 	//params = settings->getJson("mg_math");
 	// can be counfigured from here.
 	std::string value = "{}";
@@ -157,8 +157,6 @@ bool MapgenMathParams::readParams(Settings *settings) {
 	}
 
 	if (params["generator"].empty()) params["generator"] = settings->get("mgmath_generator");
-
-	return true;
 }
 
 
@@ -169,8 +167,8 @@ void MapgenMathParams::writeParams(Settings *settings) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MapgenMath::MapgenMath(int mapgenid, MapgenMathParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
-	mg_params = params_;
+MapgenMath::MapgenMath(int mapgenid, MapgenParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
+	mg_params = (MapgenMathParams *)params_;
 	this->flags |= MG_NOLIGHT;
 
 	Json::Value & params = mg_params->params;

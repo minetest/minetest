@@ -348,12 +348,10 @@ Server::Server(
 	m_clients.setEnv(m_env);
 
 	// Run some callbacks after the MG params have been set up but before activation
-	MapgenParams *mgparams = servermap->getMapgenParams();
-	m_script->environment_OnMapgenInit(mgparams);
+	m_script->environment_OnMapgenInit(&m_emerge->params);
 
 	// Initialize mapgens
-	m_emerge->initMapgens(mgparams);
-	servermap->setMapgenParams(m_emerge->params);
+	m_emerge->initMapgens();
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
@@ -4779,7 +4777,7 @@ v3f findSpawnPos(ServerMap &map)
 #endif
 
 #if 1
-	s16 water_level = map.m_mgparams->water_level;
+	s16 water_level = map.getWaterLevel();
 
 	// Try to find a good place a few times
 	for(s32 i=0; i<1000; i++)
