@@ -752,6 +752,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -772,6 +774,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -781,6 +785,8 @@ fail:
 			val = getU16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
+			return false;
+		} catch (NumericException &e) {
 			return false;
 		}
 	}
@@ -792,6 +798,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -801,6 +809,8 @@ fail:
 			val = getU16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
+			return false;
+		} catch (NumericException &e) {
 			return false;
 		}
 	}
@@ -812,6 +822,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -821,6 +833,8 @@ fail:
 			val = getS32(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
+			return false;
+		} catch (NumericException &e) {
 			return false;
 		}
 	}
@@ -832,6 +846,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -842,6 +858,8 @@ fail:
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
+		} catch (NumericException &e) {
+			return false;
 		}
 	}
 
@@ -851,6 +869,8 @@ fail:
 			val = getU64(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
+			return false;
+		} catch (NumericException &e) {
 			return false;
 		}
 	}
