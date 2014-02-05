@@ -219,8 +219,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "2");
 	settings->setDefault("emergequeue_limit_total", "256");
-	settings->setDefault("emergequeue_limit_diskonly", "");
-	settings->setDefault("emergequeue_limit_generate", "");
 	settings->setDefault("num_emerge_threads", "1");
 	
 	// physics stuff
