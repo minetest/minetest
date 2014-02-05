@@ -745,19 +745,17 @@ fail:
 	}
 
 	//////////// Try to get value, no exception thrown
-	bool getNoEx(std::string name, std::string &val)
+	bool tryGet(std::string name, std::string &val)
 	{
 		try {
 			val = get(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getFlagStrNoEx(std::string name, u32 &val, FlagDesc *flagdesc)
+	bool tryGetFlagStr(std::string name, u32 &val, FlagDesc *flagdesc)
 	{
 		try {
 			val = getFlagStr(name, flagdesc);
@@ -767,110 +765,92 @@ fail:
 		}
 	}
 
-	bool getFloatNoEx(std::string name, float &val)
+	bool tryGetFloat(std::string name, float &val)
 	{
 		try {
 			val = getFloat(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getU16NoEx(std::string name, int &val)
+	bool tryGetU16(std::string name, int &val)
 	{
 		try {
 			val = getU16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getU16NoEx(std::string name, u16 &val)
+	bool tryGetU16(std::string name, u16 &val)
 	{
 		try {
 			val = getU16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getS16NoEx(std::string name, int &val)
+	bool tryGetS16(std::string name, int &val)
 	{
 		try {
 			val = getU16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getS16NoEx(std::string name, s16 &val)
+	bool tryGetS16(std::string name, s16 &val)
 	{
 		try {
 			val = getS16(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getS32NoEx(std::string name, s32 &val)
+	bool tryGetS32(std::string name, s32 &val)
 	{
 		try {
 			val = getS32(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getV3FNoEx(std::string name, v3f &val)
+	bool tryGetV3F(std::string name, v3f &val)
 	{
 		try {
 			val = getV3F(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getV2FNoEx(std::string name, v2f &val)
+	bool tryGetV2F(std::string name, v2f &val)
 	{
 		try {
 			val = getV2F(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
-		} catch (NumericException &e) {
-			return false;
 		}
 	}
 
-	bool getU64NoEx(std::string name, u64 &val)
+	bool tryGetU64(std::string name, u64 &val)
 	{
 		try {
 			val = getU64(name);
 			return true;
 		} catch (SettingNotFoundException &e) {
-			return false;
-		} catch (NumericException &e) {
 			return false;
 		}
 	}

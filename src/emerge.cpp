@@ -102,15 +102,15 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	// if unspecified, leave a proc for the main thread and one for
 	// some other misc thread
 	int nthreads = 0;
-	if (!g_settings->getS16NoEx("num_emerge_threads", nthreads))
+	if (!g_settings->tryGetS16("num_emerge_threads", nthreads))
 		nthreads = porting::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;
 
 	qlimit_total = g_settings->getU16("emergequeue_limit_total");
-	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", qlimit_diskonly))
+	if (!g_settings->tryGetU16("emergequeue_limit_diskonly", qlimit_diskonly))
 		qlimit_diskonly = nthreads * 5 + 1;
-	if (!g_settings->getU16NoEx("emergequeue_limit_generate", qlimit_generate))
+	if (!g_settings->tryGetU16("emergequeue_limit_generate", qlimit_generate))
 		qlimit_generate = nthreads + 1;
 
 	for (int i = 0; i != nthreads; i++)
@@ -352,13 +352,13 @@ void EmergeManager::loadParamsFromSettings(Settings *settings) {
 	std::string seed_str;
 	const char *setname = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings->getNoEx(setname, seed_str))
+	if (settings->tryGet(setname, seed_str))
 		params.seed = read_seed(seed_str.c_str());
 
-	settings->getNoEx("mg_name",         params.mg_name);
-	settings->getS16NoEx("water_level",  params.water_level);
-	settings->getS16NoEx("chunksize",    params.chunksize);
-	settings->getFlagStrNoEx("mg_flags", params.flags, flagdesc_mapgen);
+	settings->tryGet("mg_name",         params.mg_name);
+	settings->tryGetS16("water_level",  params.water_level);
+	settings->tryGetS16("chunksize",    params.chunksize);
+	settings->tryGetFlagStr("mg_flags", params.flags, flagdesc_mapgen);
 
 	delete params.sparams;
 	params.sparams = createMapgenParams(params.mg_name);

@@ -126,7 +126,7 @@ MapgenV7Params::MapgenV7Params() {
 
 
 void MapgenV7Params::readParams(Settings *settings) {
-	settings->getFlagStrNoEx("mgv7_spflags", spflags, flagdesc_mapgen_v7);
+	settings->tryGetFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7);
 
 	settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);

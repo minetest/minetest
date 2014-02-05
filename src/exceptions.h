@@ -85,11 +85,6 @@ public:
 	SettingNotFoundException(std::string s): BaseException(s) {}
 };
 
-class NumericException : public BaseException {
-public:
-	NumericException(std::string s): BaseException(s) {}
-};
-
 class InvalidFilenameException : public BaseException {
 public:
 	InvalidFilenameException(std::string s): BaseException(s) {}

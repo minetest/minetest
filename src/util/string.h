@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <vector>
 #include <sstream>
-#include "exceptions.h"
 
 struct FlagDesc {
 	const char *name;
@@ -146,31 +145,17 @@ inline std::string trim(const std::string &s)
 	return s.substr(front, back - front);
 }
 
-inline s32 mystoi(const std::string &s)
-{
-	char* endptr = NULL;
-	s32 retval = strtol(s.c_str(),&endptr,10);
-
-	if ((endptr == NULL) || (*endptr != 0) || (endptr == s.c_str()))
-		throw NumericException("string to convert");
-
-	return retval;
-}
-
 inline bool is_yes(const std::string &s)
 {
 	std::string s2 = lowercase(trim(s));
-	try {
-		if(s2 == "y" || s2 == "yes" || s2 == "true" || mystoi(s2) != 0)
-			return true;
-	}
-	catch(NumericException&e) {}
+	if(s2 == "y" || s2 == "yes" || s2 == "true" || atoi(s2.c_str()) != 0)
+		return true;
 	return false;
 }
 
 inline s32 mystoi(const std::string &s, s32 min, s32 max)
 {
-	s32 i = mystoi(s);
+	s32 i = atoi(s.c_str());
 	if(i < min)
 		i = min;
 	if(i > max)
@@ -188,20 +173,25 @@ inline s64 stoi64(const std::string &s) {
 // MSVC2010 includes it's own versions of these
 //#if !defined(_MSC_VER) || _MSC_VER < 1600
 
+inline s32 mystoi(const std::string &s)
+{
+	return atoi(s.c_str());
+}
+
 inline s32 mystoi(const std::wstring &s)
 {
-	return mystoi(wide_to_narrow(s).c_str());
+	return atoi(wide_to_narrow(s).c_str());
 }
 
 inline float mystof(const std::string &s)
 {
-	char* endptr = NULL;
-	float retval = strtof(s.c_str(),&endptr);
-
-	if ((endptr == NULL) || (*endptr != 0) || (endptr == s.c_str()))
-		throw NumericException("string to convert");
-
-	return retval;
+	// This crap causes a segfault in certain cases on MinGW
+	/*float f;
+	std::istringstream ss(s);
+	ss>>f;
+	return f;*/
+	// This works in that case
+	return atof(s.c_str());
 }
 
 //#endif
