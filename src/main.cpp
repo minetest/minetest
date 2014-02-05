@@ -1259,6 +1259,7 @@ int main(int argc, char *argv[])
 						<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
 			}
 			new_db->endSave();
+			delete new_db;
 
 			actionstream << "Successfully migrated " << count << " blocks" << std::endl;
 			world_mt.set("backend", migrate_to);
