@@ -1597,8 +1597,8 @@ void ConnectionSendThread::processNonReliableCommand(ConnectionCommand &c)
 		return;
 	case CONNCMD_SERVE:
 		LOG(dout_con<<m_connection->getDesc()<<" UDP processing CONNCMD_SERVE port="
-				<<c.port<<std::endl);
-		serve(c.port);
+				<<c.address.serializeString()<<std::endl);
+		serve(c.address);
 		return;
 	case CONNCMD_CONNECT:
 		LOG(dout_con<<m_connection->getDesc()<<" UDP processing CONNCMD_CONNECT"<<std::endl);
@@ -1631,11 +1631,12 @@ void ConnectionSendThread::processNonReliableCommand(ConnectionCommand &c)
 	}
 }
 
-void ConnectionSendThread::serve(u16 port)
+void ConnectionSendThread::serve(Address bind_address)
 {
-	LOG(dout_con<<m_connection->getDesc()<<"UDP serving at port "<<port<<std::endl);
+	LOG(dout_con<<m_connection->getDesc()
+			<<"UDP serving at port " << bind_address.serializeString() <<std::endl);
 	try{
-		m_connection->m_udpSocket.Bind(port);
+		m_connection->m_udpSocket.Bind(bind_address);
 		m_connection->SetPeerID(PEER_ID_SERVER);
 	}
 	catch(SocketException &e){
@@ -1658,7 +1659,14 @@ void ConnectionSendThread::connect(Address address)
 	e.peerAdded(peer->id, peer->address);
 	m_connection->putEvent(e);
 
-	m_connection->m_udpSocket.Bind(0);
+	Address bind_addr;
+
+	if (address.isIPv6())
+		bind_addr.setAddress((IPv6AddressBytes*) NULL);
+	else
+		bind_addr.setAddress(0,0,0,0);
+
+	m_connection->m_udpSocket.Bind(bind_addr);
 
 	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
 	m_connection->SetPeerID(PEER_ID_INEXISTENT);
@@ -1716,7 +1724,8 @@ void ConnectionSendThread::send(u16 peer_id, u8 channelnum,
 	assert(channelnum < CHANNEL_COUNT);
 
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
-	if(!peer) {
+	if(!peer)
+	{
 		LOG(dout_con<<m_connection->getDesc()<<" peer: peer_id="<<peer_id
 				<< ">>>NOT<<< found on sending packet"
 				<< ", channel " << (channelnum % 0xFF)
@@ -2766,10 +2775,10 @@ void Connection::putCommand(ConnectionCommand &c)
 	}
 }
 
-void Connection::Serve(unsigned short port)
+void Connection::Serve(Address bind_addr)
 {
 	ConnectionCommand c;
-	c.serve(port);
+	c.serve(bind_addr);
 	putCommand(c);
 }
 

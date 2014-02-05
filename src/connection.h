@@ -406,7 +406,6 @@ enum ConnectionCommandType{
 struct ConnectionCommand
 {
 	enum ConnectionCommandType type;
-	u16 port;
 	Address address;
 	u16 peer_id;
 	u8 channelnum;
@@ -416,10 +415,10 @@ struct ConnectionCommand
 
 	ConnectionCommand(): type(CONNCMD_NONE), peer_id(PEER_ID_INEXISTENT), reliable(false), raw(false) {}
 
-	void serve(u16 port_)
+	void serve(Address address_)
 	{
 		type = CONNCMD_SERVE;
-		port = port_;
+		address = address_;
 	}
 	void connect(Address address_)
 	{
@@ -912,7 +911,7 @@ private:
 
 	void processReliableCommand (ConnectionCommand &c);
 	void processNonReliableCommand (ConnectionCommand &c);
-	void serve          (u16 port);
+	void serve          (Address bind_address);
 	void connect        (Address address);
 	void disconnect     ();
 	void disconnect_peer(u16 peer_id);
@@ -996,7 +995,7 @@ public:
 	void putCommand(ConnectionCommand &c);
 	
 	void SetTimeoutMs(int timeout){ m_bc_receive_timeout = timeout; }
-	void Serve(unsigned short port);
+	void Serve(Address bind_addr);
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
