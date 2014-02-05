@@ -164,7 +164,7 @@ MapgenIndevParams::MapgenIndevParams() {
 void MapgenIndevParams::readParams(Settings *settings) {
 	MapgenV6Params::readParams(settings);
 
-	settings->tryGetS16("mgindev_float_islands", float_islands);
+	settings->getS16NoEx("mgindev_float_islands", float_islands);
 
 	settings->getNoiseIndevParams("mgindev_np_terrain_base",   npindev_terrain_base);
 	settings->getNoiseIndevParams("mgindev_np_terrain_higher", npindev_terrain_higher);

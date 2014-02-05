@@ -1671,9 +1671,10 @@ int main(int argc, char *argv[])
 				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
 				address = menudata.address;
-				int newport = stoi(menudata.port);
-				if(newport != 0)
-					port = newport;
+				try {
+					port = stoi(menudata.port);
+				}
+				catch (NumericException&e) {}
 
 				simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 

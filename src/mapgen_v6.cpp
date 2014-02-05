@@ -112,9 +112,9 @@ MapgenV6Params::MapgenV6Params() {
 
 
 void MapgenV6Params::readParams(Settings *settings) {
-	settings->tryGetFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6);
-	settings->tryGetFloat("mgv6_freq_desert", freq_desert);
-	settings->tryGetFloat("mgv6_freq_beach",  freq_beach);
+	settings->getFlagStrNoEx("mgv6_spflags", spflags, flagdesc_mapgen_v6);
+	settings->getFloatNoEx("mgv6_freq_desert", freq_desert);
+	settings->getFloatNoEx("mgv6_freq_beach",  freq_beach);
 
 	settings->getNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
 	settings->getNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
