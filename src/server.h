@@ -177,7 +177,7 @@ public:
 		bool simple_singleplayer_mode
 	);
 	~Server();
-	void start(unsigned short port);
+	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in an another thread.

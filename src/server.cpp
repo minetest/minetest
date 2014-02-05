@@ -452,17 +452,18 @@ Server::~Server()
 	}
 }
 
-void Server::start(unsigned short port)
+void Server::start(Address bind_addr)
 {
 	DSTACK(__FUNCTION_NAME);
-	infostream<<"Starting server on port "<<port<<"..."<<std::endl;
+	infostream<<"Starting server on "
+			<< bind_addr.serializeString() <<"..."<<std::endl;
 
 	// Stop thread if already running
 	m_thread->Stop();
 
 	// Initialize connection
 	m_con.SetTimeoutMs(30);
-	m_con.Serve(port);
+	m_con.Serve(bind_addr);
 
 	// Start thread
 	m_thread->Start();
@@ -477,7 +478,8 @@ void Server::start(unsigned short port)
 	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
 	actionstream<<"World at ["<<m_path_world<<"]"<<std::endl;
 	actionstream<<"Server for gameid=\""<<m_gamespec.id
-			<<"\" listening on port "<<port<<"."<<std::endl;
+			<<"\" listening on "<<bind_addr.serializeString()<<":"
+			<<bind_addr.getPort() << "."<<std::endl;
 }
 
 void Server::stop()

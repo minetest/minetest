@@ -1024,6 +1024,21 @@ int main(int argc, char *argv[])
 	if(port == 0)
 		port = 30000;
 
+	// Bind address
+	std::string bind_str = g_settings->get("bind_address");
+	Address bind_addr(0,0,0,0, port);
+	try {
+		bind_addr.Resolve(bind_str.c_str());
+	} catch (ResolveError &e) {
+		infostream << "Resolving bind address \"" << bind_str
+		           << "\" failed: " << e.what()
+		           << " -- Listening on all addresses." << std::endl;
+
+		if (g_settings->getBool("ipv6_server")) {
+			bind_addr.setAddress((IPv6AddressBytes*) NULL);
+		}
+	}
+
 	// World directory
 	std::string commanded_world = "";
 	if(cmd_args.exists("world"))
@@ -1270,7 +1285,7 @@ int main(int argc, char *argv[])
 			return 0;
 		}
 
-		server.start(port);
+		server.start(bind_addr);
 
 		// Run server
 		dedicated_server_loop(server, kill);

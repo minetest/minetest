@@ -626,6 +626,9 @@ function tabbuilder.handle_server_buttons(fields)
 			gamedata.selected_world	= filterlist.get_raw_index(worldlist,selected)
 
 			engine.setting_set("port",gamedata.port)
+			if fields["te_serveraddr"] ~= nil then
+				engine.setting_set("bind_address",fields["te_serveraddr"])
+			end
 
 			menu.update_last_game(gamedata.selected_world)
 			engine.start()
@@ -950,11 +953,24 @@ function tabbuilder.tab_server()
 		dump(engine.setting_getbool("enable_damage")) .. "]"..
 		"checkbox[0.5,1.15;cb_server_announce;".. fgettext("Public") .. ";" ..
 		dump(engine.setting_getbool("server_announce")) .. "]"..
-		"field[0.8,3.2;3,0.5;te_playername;".. fgettext("Name") .. ";" ..
+		"field[0.8,3.2;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
 		engine.setting_get("name") .. "]" ..
-		"pwdfield[0.8,4.2;3,0.5;te_passwd;".. fgettext("Password") .. "]" ..
-		"field[0.8,5.2;3,0.5;te_serverport;".. fgettext("Server Port") .. ";" ..
-		engine.setting_get("port") .."]" ..
+		"pwdfield[0.8,4.2;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"
+		
+	local bind_addr = engine.setting_get("bind_address")
+	if bind_addr ~= nil and bind_addr ~= "" then
+		retval = retval ..
+			"field[0.8,5.2;2.25,0.5;te_serveraddr;".. fgettext("Bind Address") .. ";" ..
+			engine.setting_get("bind_address") .."]" ..
+			"field[3.05,5.2;1.25,0.5;te_serverport;".. fgettext("Port") .. ";" ..
+			engine.setting_get("port") .."]"
+	else
+		retval = retval ..
+			"field[0.8,5.2;3.5,0.5;te_serverport;".. fgettext("Server Port") .. ";" ..
+			engine.setting_get("port") .."]"
+	end
+	
+	retval = retval ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
 		menu.render_world_list() ..
 		";" .. index .. "]"

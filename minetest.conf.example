@@ -231,7 +231,9 @@
 # Server stuff
 #
 # Network port to listen (UDP)
-#port =
+#port = 30000
+# Bind address
+#bind_address =
 # Name of server
 #server_name = Minetest server
 # Description of server

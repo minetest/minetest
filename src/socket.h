@@ -115,7 +115,7 @@ class UDPSocket
 public:
 	UDPSocket(bool ipv6);
 	~UDPSocket();
-	void Bind(unsigned short port);
+	void Bind(Address addr);
 	//void Close();
 	//bool IsOpen();
 	void Send(const Address & destination, const void * data, int size);
