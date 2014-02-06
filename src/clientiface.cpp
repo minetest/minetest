@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"              // TODO this is used for cleanup of only
 
 #include "util/numeric.h"
+#include "util/mathconstants.h"
 
 #include "main.h"                      // for g_settings
 
