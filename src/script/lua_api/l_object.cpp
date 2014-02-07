@@ -478,6 +478,17 @@ int ObjectRef::l_set_properties(lua_State *L)
 	return 0;
 }
 
+// set_autonomous(self, autonomous)
+int ObjectRef::l_set_autonomous(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if(co == NULL) return 0;
+	u16 autonomous = luaL_checknumber(L, 2);
+	return co->setAutonomous(autonomous == 1);
+}
+
 /* LuaEntitySAO-only */
 
 // setvelocity(self, {x=num, y=num, z=num})
@@ -1234,6 +1245,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
+	luamethod(ObjectRef, set_autonomous),
 	// LuaEntitySAO-only
 	luamethod(ObjectRef, setvelocity),
 	luamethod(ObjectRef, getvelocity),

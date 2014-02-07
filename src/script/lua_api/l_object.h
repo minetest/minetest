@@ -120,6 +120,9 @@ private:
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L);
 
+	// set_autonomous(self, autonomous)
+	static int l_set_autonomous(lua_State *L);
+
 	/* LuaEntitySAO-only */
 
 	// setvelocity(self, {x=num, y=num, z=num})

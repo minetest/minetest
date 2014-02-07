@@ -169,9 +169,11 @@ class ActiveBlockList
 {
 public:
 	void update(std::list<v3s16> &active_positions,
-			s16 radius,
-			std::set<v3s16> &blocks_removed,
-			std::set<v3s16> &blocks_added);
+		s16 radius,
+		std::list<v3s16> &object_positions,
+		s16 object_radius,
+		std::set<v3s16> &blocks_removed,
+		std::set<v3s16> &blocks_added);
 
 	bool contains(v3s16 p){
 		return (m_list.find(p) != m_list.end());

@@ -384,7 +384,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_animation_sent(false),
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
-	m_attachment_sent(false)
+	m_attachment_sent(false),
+	m_autonomous(false)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -456,6 +457,19 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	sao->m_velocity = velocity;
 	sao->m_yaw = yaw;
 	return sao;
+}
+
+bool LuaEntitySAO::isAutonomous()
+{
+	return m_autonomous;
+}
+
+bool LuaEntitySAO::setAutonomous(bool autonomous)
+{
+	if(!g_settings->getBool("autonomous_objects_allowed"))
+		return false;
+	m_autonomous = autonomous;
+	return true;
 }
 
 bool LuaEntitySAO::isAttached()

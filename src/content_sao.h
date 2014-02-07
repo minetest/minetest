@@ -80,6 +80,8 @@ public:
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset);
 	bool collideWithObjects();
+	bool isAutonomous();
+	bool setAutonomous(bool);
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -116,6 +118,8 @@ private:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent;
+
+	bool m_autonomous;
 };
 
 /*
