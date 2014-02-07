@@ -864,9 +864,8 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 
 					unsigned int bytes_read =
 							toread->read(read_buffer,sizeof(read_buffer));
-					unsigned int bytes_written;
-					if ((bytes_read < 0 ) ||
-						(bytes_written = fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
+					if ((bytes_read == 0 ) ||
+						(fwrite(read_buffer, 1, bytes_read, targetfile) != bytes_read))
 					{
 						fclose(targetfile);
 						fs->removeFileArchive(fs->getFileArchiveCount()-1);
