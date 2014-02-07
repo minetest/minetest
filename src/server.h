@@ -177,7 +177,7 @@ public:
 		bool simple_singleplayer_mode
 	);
 	~Server();
-	void start(unsigned short port);
+	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in an another thread.
@@ -330,6 +330,8 @@ public:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
+	void DenyAccess(u16 peer_id, const std::wstring &reason);
+
 private:
 
 	friend class EmergeThread;
@@ -415,7 +417,6 @@ private:
 
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
-	void DenyAccess(u16 peer_id, const std::wstring &reason);
 	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(u16 peer_id);
 

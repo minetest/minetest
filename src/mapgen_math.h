@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapgenMathParams : public MapgenV7Params {
 
-	MapgenMathParams() {
-	}
+	MapgenMathParams() {}
+	~MapgenMathParams() {}
 
 	Json::Value params;
 
-	bool readParams(Settings *settings);
+	void readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
 
@@ -39,7 +39,7 @@ class MapgenMath : public MapgenV7 {
 	public:
 		MapgenMathParams * mg_params;
 
-		MapgenMath(int mapgenid, MapgenMathParams *mg_params, EmergeManager *emerge);
+		MapgenMath(int mapgenid, MapgenParams *mg_params, EmergeManager *emerge);
 		~MapgenMath();
 
 		int generateTerrain();
@@ -57,10 +57,10 @@ class MapgenMath : public MapgenV7 {
 
 struct MapgenFactoryMath : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenMath(mgid, (MapgenMathParams *)params, emerge);
+		return new MapgenMath(mgid, params, emerge);
 	};
 
-	MapgenParams *createMapgenParams() {
+	MapgenSpecificParams *createMapgenParams() {
 		return new MapgenMathParams();
 	};
 };

@@ -137,7 +137,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			return 1; }
 		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
 		case MGOBJ_HUMIDMAP:
-			if (strcmp(emerge->params->mg_name.c_str(), "v7"))
+			if (strcmp(emerge->params.mg_name.c_str(), "v7"))
 				return 0;
 
 			MapgenV7 *mgv7 = (MapgenV7 *)mg;
@@ -188,49 +188,36 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 		return 0;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	if (!emerge || emerge->mapgen.size())
-		return 0;
+	ASSERT(emerge);
 
-	MapgenParams *oparams = new MapgenParams;
-	u32 paramsmodified = 0;
-	u32 flagmask = 0;
+	std::string flagstr;
 
 	lua_getfield(L, 1, "mgname");
 	if (lua_isstring(L, -1)) {
-		oparams->mg_name = std::string(lua_tostring(L, -1));
-		paramsmodified |= MGPARAMS_SET_MGNAME;
+		emerge->params.mg_name = std::string(lua_tostring(L, -1));
+		delete emerge->params.sparams;
+		emerge->params.sparams = NULL;
 	}
 
 	lua_getfield(L, 1, "seed");
-	if (lua_isnumber(L, -1)) {
-		oparams->seed = lua_tointeger(L, -1);
-		paramsmodified |= MGPARAMS_SET_SEED;
-	}
+	if (lua_isnumber(L, -1))
+		emerge->params.seed = lua_tointeger(L, -1);
 
 	lua_getfield(L, 1, "water_level");
-	if (lua_isnumber(L, -1)) {
-		oparams->water_level = lua_tointeger(L, -1);
-		paramsmodified |= MGPARAMS_SET_WATER_LEVEL;
+	if (lua_isnumber(L, -1))
+		emerge->params.water_level = lua_tointeger(L, -1);
+
+	lua_getfield(L, 1, "flagmask");
+	if (lua_isstring(L, -1)) {
+		flagstr = lua_tostring(L, -1);
+		emerge->params.flags &= ~readFlagString(flagstr, flagdesc_mapgen);
 	}
 
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1)) {
-		std::string flagstr = std::string(lua_tostring(L, -1));
-		oparams->flags = readFlagString(flagstr, flagdesc_mapgen);
-		paramsmodified |= MGPARAMS_SET_FLAGS;
-
-		lua_getfield(L, 1, "flagmask");
-		if (lua_isstring(L, -1)) {
-			flagstr = std::string(lua_tostring(L, -1));
-			flagmask = readFlagString(flagstr, flagdesc_mapgen);
-		}
+		flagstr = lua_tostring(L, -1);
+		emerge->params.flags |= readFlagString(flagstr, flagdesc_mapgen);
 	}
-
-	delete emerge->luaoverride_params;
-
-	emerge->luaoverride_params          = oparams;
-	emerge->luaoverride_params_modified = paramsmodified;
-	emerge->luaoverride_flagmask        = flagmask;
 
 	return 0;
 }

@@ -24,25 +24,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define AVERAGE_MUD_AMOUNT 4
 
+/////////////////// Mapgen V6 flags
+#define MGV6_JUNGLES     0x01
+#define MGV6_BIOME_BLEND 0x02
+#define MGV6_NOMUDFLOW   0x04
+
+
+extern FlagDesc flagdesc_mapgen_v6[];
+
+
 enum BiomeType
 {
 	BT_NORMAL,
 	BT_DESERT
 };
 
-extern NoiseParams nparams_v6_def_terrain_base;
-extern NoiseParams nparams_v6_def_terrain_higher;
-extern NoiseParams nparams_v6_def_steepness;
-extern NoiseParams nparams_v6_def_height_select;
-extern NoiseParams nparams_v6_def_mud;
-extern NoiseParams nparams_v6_def_beach;
-extern NoiseParams nparams_v6_def_biome;
-extern NoiseParams nparams_v6_def_cave;
-extern NoiseParams nparams_v6_def_humidity;
-extern NoiseParams nparams_v6_def_trees;
-extern NoiseParams nparams_v6_def_apple_trees;
-
-struct MapgenV6Params : public MapgenParams {
+struct MapgenV6Params : public MapgenSpecificParams {
+	u32 spflags;
 	float freq_desert;
 	float freq_beach;
 	NoiseParams np_terrain_base;
@@ -57,25 +55,10 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams np_trees;
 	NoiseParams np_apple_trees;
 	
-	MapgenV6Params() {
-		freq_desert       = 0.45;
-		freq_beach        = 0.15;
-		np_terrain_base   = nparams_v6_def_terrain_base;
-		np_terrain_higher = nparams_v6_def_terrain_higher;
-		np_steepness      = nparams_v6_def_steepness;
-		np_height_select  = nparams_v6_def_height_select;
-		np_mud            = nparams_v6_def_mud;
-		np_beach          = nparams_v6_def_beach;
-		np_biome          = nparams_v6_def_biome;
-		np_cave           = nparams_v6_def_cave;
-		np_humidity       = nparams_v6_def_humidity;
-		np_trees          = nparams_v6_def_trees;
-		np_apple_trees    = nparams_v6_def_apple_trees;
-	}
-	
+	MapgenV6Params();
 	~MapgenV6Params() {}
 	
-	bool readParams(Settings *settings);
+	void readParams(Settings *settings);
 	void writeParams(Settings *settings);
 };
 
@@ -85,6 +68,7 @@ public:
 
 	int ystride;
 	u32 flags;
+	u32 spflags;
 
 	u32 blockseed;
 	v3s16 node_min;
@@ -124,7 +108,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_sandstone;
 
-	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
+	MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV6();
 	
 	void makeChunk(BlockMakeData *data);
@@ -165,10 +149,10 @@ public:
 
 struct MapgenFactoryV6 : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenV6(mgid, (MapgenV6Params *)params, emerge);
+		return new MapgenV6(mgid, params, emerge);
 	};
 	
-	MapgenParams *createMapgenParams() {
+	MapgenSpecificParams *createMapgenParams() {
 		return new MapgenV6Params();
 	};
 };

@@ -51,9 +51,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ERROR_TARGET     std::cout
 #else
 #define DEBUG_OUT(a)     while(0)
-#define INFO_TARGET      infostream
-#define VERBOSE_TARGET   verbosestream
-#define ERROR_TARGET     errorstream
+#define INFO_TARGET      infostream << "pathfinder: "
+#define VERBOSE_TARGET   verbosestream << "pathfinder: "
+#define ERROR_TARGET     errorstream << "pathfinder: "
 #endif
 
 /******************************************************************************/
@@ -263,13 +263,13 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	path_gridnode& endpos   = getIndexElement(EndIndex);
 
 	if (!startpos.valid) {
-		ERROR_TARGET << "invalid startpos" <<
+		VERBOSE_TARGET << "invalid startpos" <<
 				"Index: " << PPOS(StartIndex) <<
 				"Realpos: " << PPOS(getRealPos(StartIndex)) << std::endl;
 		return retval;
 	}
 	if (!endpos.valid) {
-		ERROR_TARGET << "invalid stoppos" <<
+		VERBOSE_TARGET << "invalid stoppos" <<
 				"Index: " << PPOS(EndIndex) <<
 				"Realpos: " << PPOS(getRealPos(EndIndex)) << std::endl;
 		return retval;

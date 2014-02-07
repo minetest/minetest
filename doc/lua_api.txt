@@ -393,7 +393,7 @@ All default ores are of the uniformly-distributed scatter type.
 
 - scatter
     Randomly chooses a location and generates a cluster of ore.
-    If noise_params is specified, the ore will be placed if the 3d perlin noise at 
+    If noise_params is specified, the ore will be placed if the 3d perlin noise at
     that point is greater than the noise_threshhold, giving the ability to create a non-equal
     distribution of ore.
 - sheet
@@ -439,7 +439,7 @@ or through raw data supplied through Lua, in the form of a table.  This table mu
  - The 'data' field is a flat table of MapNodes making up the schematic, in the order of [z [y [x]]].
 Important:  The default value for param1 in MapNodes here is 255, which represents "always place".
 
-In the bulk MapNode data, param1, instead of the typical light values, instead represents the 
+In the bulk MapNode data, param1, instead of the typical light values, instead represents the
 probability of that node appearing in the structure.
 When passed to minetest.create_schematic, probability is an integer value ranging from 0 to 255:
  - A probability value of 0 means that node will never appear (0% chance).
@@ -542,7 +542,7 @@ eg. 'default:pick_wood 21323'
 eg. 'default:apple'
 
 Table format:
-eg. {name="default:dirt", count=5, wear=0, metadata=""} 
+eg. {name="default:dirt", count=5, wear=0, metadata=""}
     ^ 5 dirt nodes
 eg. {name="default:pick_wood", count=1, wear=21323, metadata=""}
     ^ a wooden pick about 1/3 weared out
@@ -1102,7 +1102,7 @@ tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]
 ^^    span=<value>    number of following columns to affect (default infinite)
 
 Note: do NOT use a element name starting with "key_" those names are reserved to
-pass key press events to formspec! 
+pass key press events to formspec!
 
 Inventory location:
 
@@ -1458,7 +1458,7 @@ minetest.get_all_craft_recipes(query item) -> table or nil
 ^ returns indexed table with all registered recipes for query item (node)
   or nil if no recipe was found
   recipe entry table:
-  { 
+  {
    method = 'normal' or 'cooking' or 'fuel'
    width = 0-3, 0 means shapeless recipe
    items = indexed [1-9] table with recipe items
@@ -1532,6 +1532,7 @@ minetest.get_ban_list() -> ban list (same as minetest.get_ban_description(""))
 minetest.get_ban_description(ip_or_name) -> ban description (string)
 minetest.ban_player(name) -> ban a player
 minetest.unban_player_or_ip(name) -> unban player or IP address
+minetest.kick_player(name, [reason]) -> disconnect a player with a optional reason
 
 Particles:
 minetest.add_particle(particle definition)
@@ -1918,7 +1919,7 @@ methods:
   ^ returns raw node data is in the form of an array of node content ids
 - set_data(data):  Sets the data contents of the VoxelManip object
 - update_map():  Update map after writing chunk back to map.
-  ^ To be used only by VoxelManip objects created by the mod itself; not a VoxelManip that was 
+  ^ To be used only by VoxelManip objects created by the mod itself; not a VoxelManip that was
   ^ retrieved from minetest.get_mapgen_object
 - set_lighting(light, p1, p2):  Set the lighting within the VoxelManip to a uniform value
   ^ light is a table, {day=<0...15>, night=<0...15>}
@@ -1968,31 +1969,31 @@ methods:
 
 Mapgen objects
 ---------------
-A mapgen object is a construct used in map generation.  Mapgen objects can be used by an on_generate 
-callback to speed up operations by avoiding unnecessary recalculations; these can be retrieved using the 
-minetest.get_mapgen_object() function.  If the requested Mapgen object is unavailable, or 
+A mapgen object is a construct used in map generation.  Mapgen objects can be used by an on_generate
+callback to speed up operations by avoiding unnecessary recalculations; these can be retrieved using the
+minetest.get_mapgen_object() function.  If the requested Mapgen object is unavailable, or
 get_mapgen_object() was called outside of an on_generate() callback, nil is returned.
 
 The following Mapgen objects are currently available:
 
 - voxelmanip
-    This returns three values; the VoxelManip object to be used, minimum and maximum emerged position, in that 
+    This returns three values; the VoxelManip object to be used, minimum and maximum emerged position, in that
 order.  All mapgens support this object.
 
 - heightmap
-    Returns an array containing the y coordinates of the ground levels of nodes in the most recently 
+    Returns an array containing the y coordinates of the ground levels of nodes in the most recently
 generated chunk by the current mapgen.
 
 - biomemap
-    Returns an array containing the biome IDs of nodes in the most recently generated chunk by the 
+    Returns an array containing the biome IDs of nodes in the most recently generated chunk by the
 current mapgen.
 
 - heatmap
-    Returns an array containing the temperature values of nodes in the most recently generated chunk by 
+    Returns an array containing the temperature values of nodes in the most recently generated chunk by
 the current mapgen.
 
 - humiditymap
-    Returns an array containing the humidity values of nodes in the most recently generated chunk by the 
+    Returns an array containing the humidity values of nodes in the most recently generated chunk by the
 current mapgen.
 
 - gennotify

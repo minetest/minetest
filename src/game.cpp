@@ -909,8 +909,8 @@ bool nodePlacementPrediction(Client &client,
 
 			// Dont place node when player would be inside new node
 			// NOTE: This is to be eventually implemented by a mod as client-side Lua
-			if (!nodedef->get(n).walkable || 
-				(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) || 
+			if (!nodedef->get(n).walkable ||
+				(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
 				(nodedef->get(n).walkable &&
 				neighbourpos != player->getStandingNodePos() + v3s16(0,1,0) &&
 				neighbourpos != player->getStandingNodePos() + v3s16(0,2,0))) {
@@ -1029,7 +1029,27 @@ void the_game(
 		infostream<<"Creating server"<<std::endl;
 		server = new Server(map_dir, gamespec,
 				simple_singleplayer_mode);
-		server->start(port);
+
+		std::string bind_str = g_settings->get("bind_address");
+		Address bind_addr(0,0,0,0, port);
+
+		if (bind_str != "")
+		{
+			try {
+				bind_addr.Resolve(bind_str.c_str());
+				address = bind_str;
+			} catch (ResolveError &e) {
+				infostream << "Resolving bind address \"" << bind_str
+						   << "\" failed: " << e.what()
+						   << " -- Listening on all addresses." << std::endl;
+
+				if (g_settings->getBool("ipv6_server")) {
+					bind_addr.setAddress((IPv6AddressBytes*) NULL);
+				}
+			}
+		}
+
+		server->start(bind_addr);
 	}
 
 	do{ // Client scope (breakable do-while(0))
