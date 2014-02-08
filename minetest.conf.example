@@ -292,9 +292,9 @@
 # how large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
 #active_block_range = 2
 # how many blocks are flying in the wire simultaneously per client
-#max_simultaneous_block_sends_per_client = 2
+#max_simultaneous_block_sends_per_client = 10
 # how many blocks are flying in the wire simultaneously per server
-#max_simultaneous_block_sends_server_total = 8
+#max_simultaneous_block_sends_server_total = 40
 # From how far blocks are sent to clients (value * 16 nodes)
 #max_block_send_distance = 10
 # From how far blocks are generated for clients (value * 16 nodes)
@@ -341,11 +341,11 @@
 # Maximum number of blocks that can be queued for loading.
 #emergequeue_limit_total = 256
 # Maximum number of blocks to be queued that are to be loaded from file.
-# Leave blank for an appropriate amount to be chosen automatically.
-#emergequeue_limit_diskonly =
+# Set to blank for an appropriate amount to be chosen automatically.
+#emergequeue_limit_diskonly = 32
 # Maximum number of blocks to be queued that are to be generated.
-# Leave blank for an appropriate amount to be chosen automatically.
-#emergequeue_limit_generate =
+# Set to blank for an appropriate amount to be chosen automatically.
+#emergequeue_limit_generate = 32
 # Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
 # On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
 #num_emerge_threads = 1
