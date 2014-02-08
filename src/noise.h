@@ -69,7 +69,10 @@ struct NoiseParams {
 	int octaves;
 	float persist;
 
-	NoiseParams() {}
+	NoiseParams() {
+		assert("not meant to be called at all!" == 0);
+	}
+//	virtual ~NoiseParams() {}
 
 	NoiseParams(float offset_, float scale_, v3f spread_,
 		int seed_, int octaves_, float persist_)

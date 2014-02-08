@@ -47,7 +47,8 @@ FlagDesc flagdesc_mapgen_v6[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
+MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+{
 	this->generating  = false;
 	this->id       = mapgenid;
 	this->emerge   = emerge;
@@ -60,7 +61,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 
 	this->ystride = csize.X; //////fix this
 	
-	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
+	MapgenV6Params *sp = dynamic_cast<MapgenV6Params*>(params->sparams);
 
 	this->spflags     = sp->spflags;
 	this->freq_desert = sp->freq_desert;
@@ -96,20 +97,7 @@ MapgenV6Params::MapgenV6Params() {
 	spflags     = MGV6_BIOMEBLEND | MGV6_MUDFLOW;
 	freq_desert = 0.45;
 	freq_beach  = 0.15;
-
-	np_terrain_base   = NoiseParams(-4,  20.0, v3f(250.0, 250.0, 250.0), 82341,  5, 0.6);
-	np_terrain_higher = NoiseParams(20,  16.0, v3f(500.0, 500.0, 500.0), 85039,  5, 0.6);
-	np_steepness      = NoiseParams(0.85,0.5,  v3f(125.0, 125.0, 125.0), -932,   5, 0.7);
-	np_height_select  = NoiseParams(0.5, 1.0,  v3f(250.0, 250.0, 250.0), 4213,   5, 0.69);
-	np_mud            = NoiseParams(4,   2.0,  v3f(200.0, 200.0, 200.0), 91013,  3, 0.55);
-	np_beach          = NoiseParams(0,   1.0,  v3f(250.0, 250.0, 250.0), 59420,  3, 0.50);
-	np_biome          = NoiseParams(0,   1.0,  v3f(250.0, 250.0, 250.0), 9130,   3, 0.50);
-	np_cave           = NoiseParams(6,   6.0,  v3f(250.0, 250.0, 250.0), 34329,  3, 0.50);
-	np_humidity       = NoiseParams(0.5, 0.5,  v3f(500.0, 500.0, 500.0), 72384,  4, 0.66);
-	np_trees          = NoiseParams(0,   1.0,  v3f(125.0, 125.0, 125.0), 2,      4, 0.66);
-	np_apple_trees    = NoiseParams(0,   1.0,  v3f(100.0, 100.0, 100.0), 342902, 3, 0.45);
 }
-
 
 void MapgenV6Params::readParams(Settings *settings) {
 	settings->getFlagStrNoEx("mgv6_spflags", spflags, flagdesc_mapgen_v6);
@@ -191,7 +179,7 @@ bool MapgenV6::block_is_underground(u64 seed, v3s16 blockpos)
 //////////////////////// Base terrain height functions
 
 float MapgenV6::baseTerrainLevel(float terrain_base, float terrain_higher,
-									float steepness, float height_select) {	
+									float steepness, float height_select) {
 	float base   = 1 + terrain_base;
 	float higher = 1 + terrain_higher;
 
@@ -394,7 +382,7 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 		   data->blockpos_requested.Z <= data->blockpos_max.Z);
 			
 	this->generating = true;
-	this->vm   = data->vmanip;	
+	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
 	
 	// Hack: use minimum block coords for old code that assumes a single block
@@ -616,7 +604,7 @@ int MapgenV6::generateGround() {
 		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
 				if (y <= surface_y) {
-					vm->m_data[i] = (y > water_level && bt == BT_DESERT) ? 
+					vm->m_data[i] = (y > water_level && bt == BT_DESERT) ?
 						n_desert_stone : n_stone;
 				} else if (y <= water_level) {
 					vm->m_data[i] = n_water_source;
@@ -917,7 +905,7 @@ void MapgenV6::placeTreesAndJungleGrass() {
 		}
 
 		// Add jungle grass
-		if (is_jungle) {			
+		if (is_jungle) {
 			u32 grass_count = 5 * humidity * tree_count;
 			for (u32 i = 0; i < grass_count; i++) {
 				s16 x = grassrandom.range(p2d_min.X, p2d_max.X);

@@ -61,9 +61,12 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, Environment *env_ptr, f32 pos_max_d,
 		std::list<CollisionInfo> *collision_info)
 {
+	ClientEnvironment* env = dynamic_cast<ClientEnvironment*>(env_ptr);
+	assert(env != NULL);
+
 	Map *map = &env->getMap();
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -356,7 +359,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		m_can_jump = false;
 }
 
-void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
 	move(dtime, env, pos_max_d, NULL);
 }
@@ -500,7 +503,7 @@ void LocalPlayer::applyControl(float dtime)
 	if(control.jump)
 	{
 		if(free_move)
-		{			
+		{
 			if(g_settings->getBool("aux1_descends") || g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)

@@ -670,7 +670,7 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
 	
@@ -1274,7 +1274,7 @@ int PlayerSAO::punch(v3f dir,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
 {
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
 
@@ -1527,12 +1527,13 @@ bool PlayerSAO::checkMovementCheat()
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 	//update collision box
-	*toset = m_player->getCollisionbox();
+	if (m_player->getCollisionbox(toset)) {
+		toset->MinEdge += m_base_position;
+		toset->MaxEdge += m_base_position;
 
-	toset->MinEdge += m_base_position;
-	toset->MaxEdge += m_base_position;
-
-	return true;
+		return true;
+	}
+	return false;
 }
 
 bool PlayerSAO::collideWithObjects(){
