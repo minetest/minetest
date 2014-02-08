@@ -143,7 +143,7 @@ void Hud::drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 				steppos = v2s32(padding, -(padding + i * fullimglen));
 				break;
 			default:
-				steppos = v2s32(padding + i * fullimglen, padding);	
+				steppos = v2s32(padding + i * fullimglen, padding);
 		}
 			
 		core::rect<s32> rect = imgrect + pos + steppos;
@@ -334,7 +334,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 			steppos = v2s32(0, -1);
 			break;
 		default:
-			steppos = v2s32(1, 0);	
+			steppos = v2s32(1, 0);
 	}
 	steppos.X *= srcd.Width;
 	steppos.Y *= srcd.Height;
@@ -363,7 +363,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture, s
 void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, s32 breath) {
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
-		errorstream << "draw_hotbar(): mainlist == NULL" << std::endl;
+		//silently ignore this we may not be initialized completely
 		return;
 	}
 	

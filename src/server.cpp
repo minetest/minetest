@@ -1189,6 +1189,107 @@ void Server::Receive()
 	}
 }
 
+void Server::StageTwoClientInit(u16 peer_id)
+{
+	std::string playername = "";
+	PlayerSAO *playersao = NULL;
+	m_clients.Lock();
+	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,DefinitionsSent);
+	if (client != NULL) {
+		playername = client->getName();
+		playersao = emergePlayer(playername.c_str(), peer_id);
+	}
+	m_clients.Unlock();
+
+	RemotePlayer *player =
+		static_cast<RemotePlayer*>(m_env->getPlayer(playername.c_str()));
+
+	// If failed, cancel
+	if((playersao == NULL) || (player == NULL))
+	{
+		if(player && player->peer_id != 0){
+			errorstream<<"Server: "<<playername<<": Failed to emerge player"
+					<<" (player allocated to an another client)"<<std::endl;
+			DenyAccess(peer_id, L"Another client is connected with this "
+					L"name. If your client closed unexpectedly, try again in "
+					L"a minute.");
+		} else {
+			errorstream<<"Server: "<<playername<<": Failed to emerge player"
+					<<std::endl;
+			DenyAccess(peer_id, L"Could not allocate player.");
+		}
+		return;
+	}
+
+	/*
+		Send complete position information
+	*/
+	SendMovePlayer(peer_id);
+
+	// Send privileges
+	SendPlayerPrivileges(peer_id);
+
+	// Send inventory formspec
+	SendPlayerInventoryFormspec(peer_id);
+
+	// Send inventory
+	UpdateCrafting(peer_id);
+	SendInventory(peer_id);
+
+	// Send HP
+	if(g_settings->getBool("enable_damage"))
+		SendPlayerHP(peer_id);
+
+	// Send Breath
+	SendPlayerBreath(peer_id);
+
+	// Show death screen if necessary
+	if(player->hp == 0)
+		SendDeathscreen(peer_id, false, v3f(0,0,0));
+
+	// Note things in chat if not in simple singleplayer mode
+	if(!m_simple_singleplayer_mode)
+	{
+		// Send information about server to player in chat
+		SendChatMessage(peer_id, getStatusString());
+
+		// Send information about joining in chat
+		{
+			std::wstring name = L"unknown";
+			Player *player = m_env->getPlayer(peer_id);
+			if(player != NULL)
+				name = narrow_to_wide(player->getName());
+
+			std::wstring message;
+			message += L"*** ";
+			message += name;
+			message += L" joined the game.";
+			SendChatMessage(PEER_ID_INEXISTENT,message);
+		}
+	}
+
+	actionstream<<player->getName() <<" joins game. " << std::endl;
+	/*
+		Print out action
+	*/
+	{
+		std::vector<std::string> names = m_clients.getPlayerNames();
+
+		actionstream<<player->getName() <<" joins game. List of players: ";
+
+		for (std::vector<std::string>::iterator i = names.begin();
+				i != names.end(); i++)
+		{
+			actionstream << *i << " ";
+		}
+
+		actionstream<<std::endl;
+	}
+
+	m_clients.event(peer_id,SetMediaSent);
+	m_script->on_joinplayer(playersao);
+}
+
 void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -1546,6 +1647,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		infostream<<"Server: Sending content to "
 				<<getPlayerName(peer_id)<<std::endl;
 
+		// UGLY workaround for <=0.4.9 client versions
+		if (protocol_version <= 22) {
+			m_clients.event(peer_id, SetDefinitionsSent);
+			StageTwoClientInit(peer_id);
+		}
+
 		// Send player movement settings
 		SendMovement(peer_id);
 
@@ -1555,7 +1662,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send node definitions
 		SendNodeDef(peer_id, m_nodedef, protocol_version);
 
-		m_clients.event(peer_id, SetDefinitionsSent);
+		if (protocol_version > 22) {
+			m_clients.event(peer_id, SetDefinitionsSent);
+		}
 
 		// Send media announcement
 		sendMediaAnnouncement(peer_id);
@@ -1579,6 +1688,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 
 	u8 peer_ser_ver = getClient(peer_id,InitDone)->serialization_version;
+	u16 peer_proto_ver = getClient(peer_id,InitDone)->net_proto_version;
 
 	if(peer_ser_ver == SER_FMT_VER_INVALID)
 	{
@@ -1611,104 +1721,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 	else if(command == TOSERVER_RECEIVED_MEDIA) {
-		std::string playername = "";
-		PlayerSAO *playersao = NULL;
-		m_clients.Lock();
-		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,DefinitionsSent);
-		if (client != NULL) {
-			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id);
+		// UGLY workaround for <=0.4.9 client versions
+		if (peer_proto_ver > 22) {
+			StageTwoClientInit(peer_id);
 		}
-		m_clients.Unlock();
-
-		RemotePlayer *player =
-			static_cast<RemotePlayer*>(m_env->getPlayer(playername.c_str()));
-
-		// If failed, cancel
-		if((playersao == NULL) || (player == NULL))
-		{
-			if(player && player->peer_id != 0){
-				errorstream<<"Server: "<<playername<<": Failed to emerge player"
-						<<" (player allocated to an another client)"<<std::endl;
-				DenyAccess(peer_id, L"Another client is connected with this "
-						L"name. If your client closed unexpectedly, try again in "
-						L"a minute.");
-			} else {
-				errorstream<<"Server: "<<playername<<": Failed to emerge player"
-						<<std::endl;
-				DenyAccess(peer_id, L"Could not allocate player.");
-			}
-			return;
-		}
-
-		/*
-			Send complete position information
-		*/
-		SendMovePlayer(peer_id);
-
-		// Send privileges
-		SendPlayerPrivileges(peer_id);
-
-		// Send inventory formspec
-		SendPlayerInventoryFormspec(peer_id);
-
-		// Send inventory
-		UpdateCrafting(peer_id);
-		SendInventory(peer_id);
-
-		// Send HP
-		if(g_settings->getBool("enable_damage"))
-			SendPlayerHP(peer_id);
-
-		// Send Breath
-		SendPlayerBreath(peer_id);
-
-		// Show death screen if necessary
-		if(player->hp == 0)
-			SendDeathscreen(peer_id, false, v3f(0,0,0));
-
-		// Note things in chat if not in simple singleplayer mode
-		if(!m_simple_singleplayer_mode)
-		{
-			// Send information about server to player in chat
-			SendChatMessage(peer_id, getStatusString());
-
-			// Send information about joining in chat
-			{
-				std::wstring name = L"unknown";
-				Player *player = m_env->getPlayer(peer_id);
-				if(player != NULL)
-					name = narrow_to_wide(player->getName());
-
-				std::wstring message;
-				message += L"*** ";
-				message += name;
-				message += L" joined the game.";
-				SendChatMessage(PEER_ID_INEXISTENT,message);
-			}
-		}
-
-		actionstream<<player->getName()<<" ["<<addr_s<<"] "<<"joins game. " << std::endl;
-		/*
-			Print out action
-		*/
-		{
-			std::vector<std::string> names = m_clients.getPlayerNames();
-
-			actionstream<<player->getName()<<" ["<<addr_s<<"] "
-					<<"joins game. List of players: ";
-
-			for (std::vector<std::string>::iterator i = names.begin();
-					i != names.end(); i++)
-			{
-				actionstream << *i << " ";
-			}
-
-			actionstream<<std::endl;
-		}
-
-		m_clients.event(peer_id,SetMediaSent);
-		m_script->on_joinplayer(playersao);
 		return;
 	}
 	else if(command == TOSERVER_GOTBLOCKS)
