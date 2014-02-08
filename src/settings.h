@@ -572,12 +572,15 @@ public:
 		return value;
 	}
 
-	u32 getFlagStr(std::string name, FlagDesc *flagdesc)
+	u32 getFlagStr(std::string name, FlagDesc *flagdesc, u32 *flagmask)
 	{
 		std::string val = get(name);
-		return (isdigit(val[0])) ? stoi(val) : readFlagString(val, flagdesc);
+		return (isdigit(val[0])) ? stoi(val) :
+			readFlagString(val, flagdesc, flagmask);
 	}
 
+	// N.B. if getStruct() is used to read a non-POD aggregate type,
+	// the behavior is undefined.
 	bool getStruct(std::string name, std::string format, void *out, size_t olen)
 	{
 		size_t len = olen;
@@ -755,10 +758,19 @@ fail:
 		}
 	}
 
+	// N.B. getFlagStrNoEx() does not set val, but merely modifies it.  Thus,
+	// val must be initialized before using getFlagStrNoEx().  The intention of
+	// this is to simplify modifying a flags field from a default value.
 	bool getFlagStrNoEx(std::string name, u32 &val, FlagDesc *flagdesc)
 	{
 		try {
-			val = getFlagStr(name, flagdesc);
+			u32 flags, flagmask;
+
+			flags = getFlagStr(name, flagdesc, &flagmask);
+
+			val &= ~flagmask;
+			val |=  flags;
+
 			return true;
 		} catch (SettingNotFoundException &e) {
 			return false;
@@ -856,6 +868,9 @@ fail:
 	}
 
 	//////////// Set setting
+
+	// N.B. if setStruct() is used to write a non-POD aggregate type,
+	// the behavior is undefined.
 	bool setStruct(std::string name, std::string format, void *value)
 	{
 		char sbuf[2048];
@@ -959,10 +974,11 @@ fail:
 		set(name, std::string(sbuf));
 		return true;
 	}
-	
-	void setFlagStr(std::string name, u32 flags, FlagDesc *flagdesc)
+
+	void setFlagStr(std::string name, u32 flags,
+		FlagDesc *flagdesc, u32 flagmask)
 	{
-		set(name, writeFlagString(flags, flagdesc));
+		set(name, writeFlagString(flags, flagdesc, flagmask));
 	}
 
 	void setBool(std::string name, bool value)

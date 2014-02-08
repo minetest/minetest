@@ -210,13 +210,20 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	lua_getfield(L, 1, "flagmask");
 	if (lua_isstring(L, -1)) {
 		flagstr = lua_tostring(L, -1);
-		emerge->params.flags &= ~readFlagString(flagstr, flagdesc_mapgen);
+		emerge->params.flags &= ~readFlagString(flagstr, flagdesc_mapgen, NULL);
+		errorstream << "set_mapgen_params(): flagmask field is deprecated, "
+			"see lua_api.txt" << std::endl;
 	}
 
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1)) {
+		u32 flags, flagmask;
+
 		flagstr = lua_tostring(L, -1);
-		emerge->params.flags |= readFlagString(flagstr, flagdesc_mapgen);
+		flags   = readFlagString(flagstr, flagdesc_mapgen, &flagmask);
+
+		emerge->params.flags &= ~flagmask;
+		emerge->params.flags |= flags;
 	}
 
 	return 0;
@@ -227,7 +234,8 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		EmergeManager *emerge = getServer(L)->getEmergeManager();
-		emerge->gennotify = readFlagString(lua_tostring(L, 1), flagdesc_gennotify);
+		emerge->gennotify = readFlagString(lua_tostring(L, 1),
+			flagdesc_gennotify, NULL);
 	}
 	return 0;
 }
@@ -371,9 +379,10 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 			break; }
 		case DECO_SCHEMATIC: {
 			DecoSchematic *dschem = (DecoSchematic *)deco;
-			dschem->flags    = getflagsfield(L, index, "flags", flagdesc_deco_schematic);
+			dschem->flags = getflagsfield(L, index, "flags",
+				flagdesc_deco_schematic, NULL);
 			dschem->rotation = (Rotation)getenumfield(L, index,
-								"rotation", es_Rotation, ROTATE_0);
+				"rotation", es_Rotation, ROTATE_0);
 
 			lua_getfield(L, index, "replacements");
 			if (lua_istable(L, -1)) {
@@ -445,7 +454,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
 	ore->height_min     = getintfield_default(L, index, "height_min", 0);
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
-	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore);
+	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore, NULL);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
 
 	lua_getfield(L, index, "wherein");

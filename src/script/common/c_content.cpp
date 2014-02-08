@@ -839,12 +839,11 @@ void push_hit_params(lua_State *L,const HitParams &params)
 }
 
 /******************************************************************************/
-u32 getflagsfield(lua_State *L, int table,
-	const char *fieldname, FlagDesc *flagdesc) {
-	std::string flagstring;
-
-	flagstring = getstringfield_default(L, table, fieldname, "");
-	return readFlagString(flagstring, flagdesc);
+u32 getflagsfield(lua_State *L, int table, const char *fieldname,
+	FlagDesc *flagdesc, u32 *flagmask)
+{
+	std::string flagstring = getstringfield_default(L, table, fieldname, "");
+	return readFlagString(flagstring, flagdesc, flagmask);
 }
 
 /******************************************************************************/

@@ -87,6 +87,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtoll(x, y, z) _strtoi64(x, y, z)
 	#define strtoull(x, y, z) _strtoui64(x, y, z)
 	#define strcasecmp(x, y) stricmp(x, y)
+	#define strncasecmp(x, y, n) strnicmp(x, y, n)
 #else
 	#define ALIGNOF(x) __alignof__(x)
 #endif

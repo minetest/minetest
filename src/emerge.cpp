@@ -372,7 +372,6 @@ void EmergeManager::loadParamsFromSettings(Settings *settings) {
 	params.sparams = createMapgenParams(params.mg_name);
 	if (params.sparams)
 		params.sparams->readParams(settings);
-
 }
 
 
@@ -381,7 +380,7 @@ void EmergeManager::saveParamsToSettings(Settings *settings) {
 	settings->setU64("seed",         params.seed);
 	settings->setS16("water_level",  params.water_level);
 	settings->setS16("chunksize",    params.chunksize);
-	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen);
+	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen, (u32)-1);
 
 	if (params.sparams)
 		params.sparams->writeParams(settings);

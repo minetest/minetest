@@ -319,8 +319,8 @@ inline std::string unescape_string(std::string &s)
 std::string translatePassword(std::string playername, std::wstring password);
 std::string urlencode(std::string str);
 std::string urldecode(std::string str);
-u32 readFlagString(std::string str, FlagDesc *flagdesc);
-std::string writeFlagString(u32 flags, FlagDesc *flagdesc);
+u32 readFlagString(std::string str, FlagDesc *flagdesc, u32 *flagmask);
+std::string writeFlagString(u32 flags, FlagDesc *flagdesc, u32 flagmask);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
 u64 read_seed(const char *str);
 

@@ -25,9 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define AVERAGE_MUD_AMOUNT 4
 
 /////////////////// Mapgen V6 flags
-#define MGV6_JUNGLES     0x01
-#define MGV6_BIOME_BLEND 0x02
-#define MGV6_NOMUDFLOW   0x04
+#define MGV6_JUNGLES    0x01
+#define MGV6_BIOMEBLEND 0x02
+#define MGV6_MUDFLOW    0x04
 
 
 extern FlagDesc flagdesc_mapgen_v6[];

@@ -41,12 +41,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen[] = {
-	{"trees",          MG_TREES},
-	{"caves",          MG_CAVES},
-	{"dungeons",       MG_DUNGEONS},
-	{"flat",           MG_FLAT},
-	{"nolight",        MG_NOLIGHT},
-	{NULL,             0}
+	{"trees",    MG_TREES},
+	{"caves",    MG_CAVES},
+	{"dungeons", MG_DUNGEONS},
+	{"flat",     MG_FLAT},
+	{"light",    MG_LIGHT},
+	{NULL,       0}
 };
 
 FlagDesc flagdesc_ore[] = {

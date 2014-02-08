@@ -1360,11 +1360,10 @@ minetest.get_mapgen_object(objectname)
 minetest.set_mapgen_params(MapgenParams)
 ^ Set map generation parameters
 ^ Function cannot be called after the registration period; only initialization and on_mapgen_init
-^ Takes a table as an argument with the fields mgname, seed, water_level, flags, and flagmask.
+^ Takes a table as an argument with the fields mgname, seed, water_level, and flags.
 ^ Leave field unset to leave that parameter unchanged
-^ flagmask field must be set to all mapgen flags that are being modified
-^ flags contains only the flags that are being set
-^ flags and flagmask are in the same format and have the same options as 'mgflags' in minetest.conf
+^ flags contains a comma-delimited string of flags to set, or if the prefix "no" is attached, clears instead.
+^ flags is in the same format and has the same options as 'mg_flags' in minetest.conf
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1, pos2, stepsize) -> true/false, pos

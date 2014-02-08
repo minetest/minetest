@@ -108,46 +108,63 @@ std::string urldecode(std::string str)
 	return oss.str();
 }
 
-u32 readFlagString(std::string str, FlagDesc *flagdesc) {
-	u32 result = 0;
+u32 readFlagString(std::string str, FlagDesc *flagdesc, u32 *flagmask)
+{
+	u32 result = 0, mask = 0;
 	char *s = &str[0];
 	char *flagstr, *strpos = NULL;
-	
+
 	while ((flagstr = strtok_r(s, ",", &strpos))) {
 		s = NULL;
-		
+
 		while (*flagstr == ' ' || *flagstr == '\t')
 			flagstr++;
-		
+
+		bool flagset = true;
+		if (!strncasecmp(flagstr, "no", 2)) {
+			flagset = false;
+			flagstr += 2;
+		}
+
 		for (int i = 0; flagdesc[i].name; i++) {
 			if (!strcasecmp(flagstr, flagdesc[i].name)) {
-				result |= flagdesc[i].flag;
+				mask |= flagdesc[i].flag;
+				if (flagset)
+					result |= flagdesc[i].flag;
 				break;
 			}
 		}
 	}
-	
+
+	if (flagmask)
+		*flagmask = mask;
+
 	return result;
 }
 
-std::string writeFlagString(u32 flags, FlagDesc *flagdesc) {
+std::string writeFlagString(u32 flags, FlagDesc *flagdesc, u32 flagmask)
+{
 	std::string result;
-	
+
 	for (int i = 0; flagdesc[i].name; i++) {
-		if (flags & flagdesc[i].flag) {
+		if (flagmask & flagdesc[i].flag) {
+			if (!(flags & flagdesc[i].flag))
+				result += "no";
+
 			result += flagdesc[i].name;
 			result += ", ";
 		}
 	}
-	
+
 	size_t len = result.length();
 	if (len >= 2)
 		result.erase(len - 2, 2);
-	
+
 	return result;
 }
 
-char *mystrtok_r(char *s, const char *sep, char **lasts) {
+char *mystrtok_r(char *s, const char *sep, char **lasts)
+{
 	char *t;
 
 	if (!s)
@@ -172,7 +189,8 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) {
 	return s;
 }
 
-u64 read_seed(const char *str) {
+u64 read_seed(const char *str)
+{
 	char *endptr;
 	u64 num;
 	

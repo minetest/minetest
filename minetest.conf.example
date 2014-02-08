@@ -381,10 +381,12 @@
 #water_level = 1
 # Size of chunks to be generated.
 #chunksize = 5
-# Map generation attributes.  Currently supported: trees, caves, flat, dungeons, nolight
+# Map generation attributes.  Currently supported: trees, caves, flat, dungeons, light
+# Flags that are not specified in the flag string are not modified from the default.
+# To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
 #mg_flags = trees, caves
-# Map generation attributes specific to Mapgen V6.  Currently supported: v6_biome_blend, v6_jungles, v6_nomudflow
-#mgv6_spflags = v6_biome_blend
+# Map generation attributes specific to Mapgen V6.  Currently supported: biomeblend, jungles, mudflow
+#mgv6_spflags = biomeblend
 # How large deserts and beaches are
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
@@ -402,7 +404,7 @@
 #mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66
 #mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45
 
-#mgv7_spflags = v7_mountains, v7_ridges
+#mgv7_spflags = mountains, ridges
 #mgv7_np_terrain = 10, 12, (350, 350, 350), 82341, 5, 0.6
 #mgv7_np_bgroup = 0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6
 #mgv7_np_heat = 25, 50, (500, 500, 500), 35293, 1, 0

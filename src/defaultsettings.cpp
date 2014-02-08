@@ -249,7 +249,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "trees, caves");
+	settings->setDefault("mg_flags", "");
 
 	settings->setDefault("mgmath_generator", "mandelbox");
 
