@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
+#include "porting.h"
 #include "mapgen.h"
 #include "json/json.h"
 
