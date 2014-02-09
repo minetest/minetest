@@ -70,15 +70,7 @@ struct BlockEmergeData {
 	u8 flags;
 };
 
-class IBackgroundBlockEmerger
-{
-public:
-	virtual bool enqueueBlockEmerge(u16 peer_id, v3s16 p,
-			bool allow_generate) = 0;
-	virtual ~IBackgroundBlockEmerger() {}
-};
-
-class EmergeManager : public IBackgroundBlockEmerger {
+class EmergeManager {
 public:
 	INodeDefManager *ndef;
 

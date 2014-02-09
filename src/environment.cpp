@@ -312,12 +312,10 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-		GameScripting *scriptIface,
-		IGameDef *gamedef, IBackgroundBlockEmerger *emerger):
+		GameScripting *scriptIface, IGameDef *gamedef):
 	m_map(map),
 	m_script(scriptIface),
 	m_gamedef(gamedef),
-	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
@@ -1148,11 +1146,8 @@ void ServerEnvironment::step(float dtime)
 		{
 			v3s16 p = *i;
 
-			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			MapBlock *block = m_map->getBlockOrEmerge(p);
 			if(block==NULL){
-				// Block needs to be fetched first
-				m_emerger->enqueueBlockEmerge(
-						PEER_ID_INEXISTENT, p, false);
 				m_active_blocks.m_list.erase(p);
 				continue;
 			}
