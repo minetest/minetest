@@ -88,6 +88,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtoull(x, y, z) _strtoui64(x, y, z)
 	#define strcasecmp(x, y) stricmp(x, y)
 	#define strncasecmp(x, y, n) strnicmp(x, y, n)
+
+	// We can't simply alias strlcpy() to MSVC's strcpy_s(), since strcpy_s
+	// by default raises an assertion error and aborts the program if the
+	// buffer is too small.  So we need to define our own.
+	#define strlcpy(x, y, n) mystrlcpy(x, y, n)
 #else
 	#define ALIGNOF(x) __alignof__(x)
 #endif

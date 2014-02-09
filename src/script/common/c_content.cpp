@@ -842,8 +842,45 @@ void push_hit_params(lua_State *L,const HitParams &params)
 u32 getflagsfield(lua_State *L, int table, const char *fieldname,
 	FlagDesc *flagdesc, u32 *flagmask)
 {
-	std::string flagstring = getstringfield_default(L, table, fieldname, "");
-	return readFlagString(flagstring, flagdesc, flagmask);
+	u32 flags = 0;
+	
+	lua_getfield(L, table, fieldname);
+
+	if (lua_isstring(L, -1)) {
+		std::string flagstr = lua_tostring(L, -1);
+		flags = readFlagString(flagstr, flagdesc, flagmask);
+	} else if (lua_istable(L, -1)) {
+		flags = read_flags_table(L, -1, flagdesc, flagmask);
+	}
+
+	lua_pop(L, 1);
+
+	return flags;
+}
+
+u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
+{
+	u32 flags = 0, mask = 0;
+	char fnamebuf[64] = "no";
+
+	for (int i = 0; flagdesc[i].name; i++) {
+		bool result;
+
+		if (getboolfield(L, table, flagdesc[i].name, result)) {
+			mask |= flagdesc[i].flag;
+			if (result)
+				flags |= flagdesc[i].flag;
+		}
+
+		strlcpy(fnamebuf + 2, flagdesc[i].name, sizeof(fnamebuf) - 2);
+		if (getboolfield(L, table, fnamebuf, result))
+			mask |= flagdesc[i].flag;
+	}
+
+	if (flagmask)
+		*flagmask = mask;
+
+	return flags;
 }
 
 /******************************************************************************/

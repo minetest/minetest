@@ -456,7 +456,6 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
 	ore->flags          = getflagsfield(L, index, "flags", flagdesc_ore, NULL);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
-
 	lua_getfield(L, index, "wherein");
 	if (lua_istable(L, -1)) {
 		int  i = lua_gettop(L);

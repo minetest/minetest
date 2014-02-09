@@ -163,6 +163,19 @@ std::string writeFlagString(u32 flags, FlagDesc *flagdesc, u32 flagmask)
 	return result;
 }
 
+size_t mystrlcpy(char *dst, const char *src, size_t size)
+{
+	size_t srclen  = strlen(src) + 1;
+	size_t copylen = MYMIN(srclen, size);
+
+	if (copylen > 0) {
+		memcpy(dst, src, copylen);
+		dst[copylen - 1] = '\0';
+	}
+
+	return srclen;
+}
+
 char *mystrtok_r(char *s, const char *sep, char **lasts)
 {
 	char *t;
