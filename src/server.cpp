@@ -4222,9 +4222,10 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 						<<" List of players: "<<os.str()<<std::endl;
 			}
 		}
-		m_env_mutex.Lock();
-		m_clients.DeleteClient(peer_id);
-		m_env_mutex.Unlock();
+		{
+			JMutexAutoLock env_lock(m_env_mutex);
+			m_clients.DeleteClient(peer_id);
+		}
 	}
 
 	// Send leave chat message to all remaining clients
