@@ -1,6 +1,8 @@
 project(minetest)
 cmake_minimum_required( VERSION 2.6 )
 
+INCLUDE(CheckCSourceRuns)
+
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
@@ -198,25 +200,66 @@ if(USE_FREETYPE)
 	set(CGUITTFONT_LIBRARY cguittfont)
 endif(USE_FREETYPE)
 
-
-find_library(LUA_LIBRARY luajit
-		NAMES luajit-5.1)
-find_path(LUA_INCLUDE_DIR luajit.h
-	NAMES luajit.h
-	PATH_SUFFIXES luajit-2.0)
-message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
-message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
+if (NOT DISABLE_LUAJIT)
+	find_library(LUA_LIBRARY luajit
+			NAMES luajit-5.1)
+	find_path(LUA_INCLUDE_DIR luajit.h
+		NAMES luajit.h
+		PATH_SUFFIXES luajit-2.0)
+	message (STATUS "LuaJIT library: ${LUA_LIBRARY}")
+	message (STATUS "LuaJIT headers: ${LUA_INCLUDE_DIR}")
+else (NOT ${DISABLE_LUAJIT} MATCHES "1")
+	message (STATUS "LuaJIT detection disabled! (DISABLE_LUAJIT=1)")
+	set(LUA_LIBRARY "")
+	set(LUA_INCLUDE_DIR "")
+endif (NOT DISABLE_LUAJIT)
 
 set(USE_LUAJIT 0)
 if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
-	message (STATUS "LuaJIT found.")
-	set(USE_LUAJIT 1)
-else(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+	message (STATUS "LuaJIT found, checking for broken versions...")
+	set(BACKUP_REQUIRED_INCS CMAKE_REQUIRED_INCLUDES)
+	set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${LUA_INCLUDE_DIR}")
+	CHECK_C_SOURCE_RUNS("
+		#include <luajit.h>
+		#include <stdio.h>
+		#include <string.h>
+		
+		static char** broken_luajit_versions = (char *[]) {
+				\"LuaJIT 2.0.0-beta7\",
+				\"LuaJIT 2.0.0-beta6\",
+				\"LuaJIT 2.0.0-beta5\",
+				\"LuaJIT 2.0.0-beta4\",
+				\"LuaJIT 2.0.0-beta3\",
+				\"LuaJIT 2.0.0-beta2\",
+				\"LuaJIT 2.0.0-beta1\"
+		};
+		int main(int argc,char** argv) {
+			unsigned int i = 0;
+			for (i=0; i < sizeof(broken_luajit_versions); i++) {
+				if (strcmp(LUAJIT_VERSION,broken_luajit_versions[i]) == 0) {
+					return 1;
+				}
+			}
+			return 0;
+		}
+		"
+		VALID_LUAJIT_VERSION)
+	set(CMAKE_REQUIRED_INCLUDES BACKUP_REQUIRED_INCS)
+	if (VALID_LUAJIT_VERSION)
+		message (STATUS "LuaJIT version ok")
+		set(USE_LUAJIT 1)
+	else (VALID_LUAJIT_VERSION)
+		message (STATUS "LuaJIT versions till 2.0.0beta7 known to be broken, update to at least beta8")
+		set(USE_LUAJIT 0)
+	endif (VALID_LUAJIT_VERSION)
+endif (LUA_LIBRARY AND LUA_INCLUDE_DIR)
+
+if(NOT USE_LUAJIT)
 	message (STATUS "LuaJIT not found, using bundled Lua.")
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
 	set(LUA_LIBRARY "lua")
 	add_subdirectory(lua)
-endif(LUA_LIBRARY AND LUA_INCLUDE_DIR)
+endif(NOT USE_LUAJIT)
 
 mark_as_advanced(LUA_LIBRARY)
 mark_as_advanced(LUA_INCLUDE_DIR)
