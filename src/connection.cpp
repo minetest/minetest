@@ -2875,11 +2875,11 @@ Address Connection::GetPeerAddress(u16 peer_id)
 	return peer_address;
 }
 
-float Connection::GetPeerAvgRTT(u16 peer_id)
+float Connection::getPeerStat(u16 peer_id, rtt_stat_type type)
 {
 	PeerHelper peer = getPeerNoEx(peer_id);
 	if (!peer) return -1;
-	return peer->getStat(AVG_RTT);
+	return peer->getStat(type);
 }
 
 u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)

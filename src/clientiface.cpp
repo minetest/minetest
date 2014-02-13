@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <sstream>
+
 #include "clientiface.h"
 #include "player.h"
 #include "settings.h"
@@ -397,10 +399,11 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 
 void RemoteClient::notifyEvent(ClientStateEvent event)
 {
+	std::ostringstream myerror;
 	switch (m_state)
 	{
 	case Invalid:
-		assert("State update for client in invalid state" != 0);
+		//intentionally do nothing
 		break;
 
 	case Created:
@@ -420,7 +423,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* GotInit2 SetDefinitionsSent SetMediaSent */
 		default:
-			assert("Invalid client state transition!" == 0);
+			myerror << "Created: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
 		}
 		break;
 
@@ -446,7 +450,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init SetDefinitionsSent SetMediaSent */
 		default:
-			assert("Invalid client state transition!" == 0);
+			myerror << "InitSent: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
 		}
 		break;
 
@@ -467,14 +472,15 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init GotInit2 SetMediaSent */
 		default:
-			assert("Invalid client state transition!" == 0);
+			myerror << "InitDone: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
 		}
 		break;
 
 	case DefinitionsSent:
 		switch(event)
 		{
-		case SetMediaSent:
+		case SetClientReady:
 			m_state = Active;
 			break;
 
@@ -488,7 +494,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init GotInit2 SetDefinitionsSent */
 		default:
-			assert("Invalid client state transition!" == 0);
+			myerror << "DefinitionsSent: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
 		}
 		break;
 
@@ -505,7 +512,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
 		default:
-			assert("Invalid client state transition!" == 0);
+			myerror << "Active: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
 			break;
 		}
 		break;
@@ -514,6 +522,11 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		/* we are already disconnecting */
 		break;
 	}
+}
+
+u32 RemoteClient::uptime()
+{
+	return getTime(PRECISION_SECONDS) - m_connection_time;
 }
 
 ClientInterface::ClientInterface(con::Connection* con)
@@ -749,7 +762,7 @@ void ClientInterface::event(u16 peer_id, ClientStateEvent event)
 		n->second->notifyEvent(event);
 	}
 
-	if ((event == SetMediaSent) || (event == Disconnect) || (event == SetDenied))
+	if ((event == SetClientReady) || (event == Disconnect) || (event == SetDenied))
 	{
 		UpdatePlayerList();
 	}
@@ -763,9 +776,24 @@ u16 ClientInterface::getProtocolVersion(u16 peer_id)
 	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
 
-	// No client to deliver event
+	// No client to get version
 	if (n == m_clients.end())
 		return 0;
 
 	return n->second->net_proto_version;
+}
+
+void ClientInterface::setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch, std::string full)
+{
+	JMutexAutoLock conlock(m_clients_mutex);
+
+	// Error check
+	std::map<u16, RemoteClient*>::iterator n;
+	n = m_clients.find(peer_id);
+
+	// No client to set versions
+	if (n == m_clients.end())
+		return;
+
+	n->second->setVersionInfo(major,minor,patch,full);
 }
