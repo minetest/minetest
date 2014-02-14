@@ -30,7 +30,7 @@ JSemaphore::~JSemaphore() {
 	CloseHandle(m_hSemaphore);
 }
 
-JSemaphore::JSemaphore(int initval) {
+JSemaphore::JSemaphore(unsigned int initval) {
 	m_hSemaphore = CreateSemaphore(
 			0,
 			initval,
@@ -81,9 +81,9 @@ typedef struct _SEMAPHORE_BASIC_INFORMATION {
 
 /* Note: this will only work as long as jthread is directly linked to application */
 /* it's gonna fail if someone tries to build jthread as dll */
-static _NtQuerySemaphore NtQuerySemaphore = 
+static _NtQuerySemaphore NtQuerySemaphore =
 		(_NtQuerySemaphore)
-		GetProcAddress 
+		GetProcAddress
 		(GetModuleHandle ("ntdll.dll"), "NtQuerySemaphore");
 
 int JSemaphore::GetValue() {

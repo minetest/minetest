@@ -546,5 +546,5 @@ ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 		return m;
 	delete m;
 	return NULL;
-};
+}
 

@@ -59,7 +59,7 @@ enum RunCallbacksMode
 	RUN_CALLBACKS_MODE_OR,
 	// Like above, but stops calling callbacks (short circuit)
 	// after seeing the first true value
-	RUN_CALLBACKS_MODE_OR_SC,
+	RUN_CALLBACKS_MODE_OR_SC
 	// Note: "a true value" and "a false value" refer to values that
 	// are converted by lua_toboolean to true or false, respectively.
 };

@@ -42,7 +42,7 @@ typedef std::list<std::pair<content_t, int> > GroupItems;
 enum ContentParamType
 {
 	CPT_NONE,
-	CPT_LIGHT,
+	CPT_LIGHT
 };
 
 enum ContentParamType2
@@ -57,14 +57,14 @@ enum ContentParamType2
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
-	CPT2_LEVELED,
+	CPT2_LEVELED
 };
 
 enum LiquidType
 {
 	LIQUID_NONE,
 	LIQUID_FLOWING,
-	LIQUID_SOURCE,
+	LIQUID_SOURCE
 };
 
 enum NodeBoxType
@@ -72,7 +72,7 @@ enum NodeBoxType
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box(es)
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
-	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
+	NODEBOX_LEVELED // Same as fixed, but with dynamic height from param2. for snow, ...
 };
 
 struct NodeBox
@@ -102,7 +102,7 @@ class NodeMetadata;
 */
 enum TileAnimationType{
 	TAT_NONE=0,
-	TAT_VERTICAL_FRAMES=1,
+	TAT_VERTICAL_FRAMES=1
 };
 struct TileDef
 {
@@ -144,7 +144,7 @@ enum NodeDrawType
 	NDT_FENCELIKE,
 	NDT_RAILLIKE,
 	NDT_NODEBOX,
-	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
+	NDT_GLASSLIKE_FRAMED  // Glass-like, draw connected frames and all all
 	                      // visible faces
 						  // uses 2 textures, one for frames, second for faces
 };
@@ -158,7 +158,7 @@ struct ContentFeatures
 	*/
 #ifndef SERVER
 	// 0     1     2     3     4     5
-	// up    down  right left  back  front 
+	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
 	// - Currently used for flowing liquids

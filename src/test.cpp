@@ -59,12 +59,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTEST(x, fmt, ...)\
 {\
 	if(!(x)){\
-		LOGLINEF(LMT_ERROR, "Test (%s) failed: " fmt, #x, ##__VA_ARGS__);\
+		LOGLINEF(LMT_ERROR, "Test (%s) failed: " fmt, #x, __VA_ARGS__);\
 		test_failed = true;\
 	}\
 }
 
-#define UASSERT(x) UTEST(x, "UASSERT")
+#define UASSERT(x) UTEST(x, "UASSERT%s", "")
 
 /*
 	A few item and node definitions for those tests that need them

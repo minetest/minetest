@@ -31,7 +31,7 @@ class ActiveObject;
 enum CollisionType
 {
 	COLLISION_NODE,
-	COLLISION_OBJECT,
+	COLLISION_OBJECT
 };
 
 struct CollisionInfo

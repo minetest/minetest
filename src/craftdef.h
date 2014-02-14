@@ -40,7 +40,7 @@ enum CraftMethod
 	// Cooking something in a furnace
 	CRAFT_METHOD_COOKING,
 	// Using something as fuel for a furnace
-	CRAFT_METHOD_FUEL,
+	CRAFT_METHOD_FUEL
 };
 
 /*
@@ -378,7 +378,7 @@ public:
 			bool decrementInput, IGameDef *gamedef) const=0;
 	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
 			IGameDef *gamedef) const=0;
-	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output, 
+	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef) const=0;
 
 	// Print crafting recipes for debugging

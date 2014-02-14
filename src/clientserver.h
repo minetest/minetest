@@ -129,7 +129,7 @@ enum ToClientCommand
 
 		[0] u16 TOSERVER_INIT
 		[2] u8 deployed version
-		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd 
+		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
 		[12] u64 map seed (new as of 2011-02-27)
 		[20] f1000 recommended send interval (in seconds) (new as of 14)
 
@@ -520,7 +520,7 @@ enum ToClientCommand
 			u8[len] param
 	*/
 
-	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
+	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50
 	/*
 		u16 command
 		u8 do_override (boolean)
@@ -750,7 +750,7 @@ enum ToServerCommand
 		u16 command
 	*/
 
-	TOSERVER_BREATH = 0x42,
+	TOSERVER_BREATH = 0x42
 	/*
 		u16 command
 		u16 breath
