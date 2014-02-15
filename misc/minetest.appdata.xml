@@ -6,21 +6,20 @@
 	<summary>Multiplayer infinite-world block sandbox</summary>
 	<description>
 		<p>Minetest is an infinite-world block sandbox game and game engine.</p>
+		<p>Players can create and destroy various types of blocks in a three-dimensional open world. This allows forming structures in every possible creation, on multiplayer servers or in singleplayer.</p>
 		<p>Minetest is designed to be simple, stable, and portable. It is lightweight enough to run on fairly old hardware.</p>
-		<p>Minetest has many features, including:
+		<p>Minetest has many features, including:</p>
 			<ul>
-				<li>Walk around, dig and build in an infinite voxel world, and craft stuff from raw materials to help you along the way.</li>
-				<li>Simple Modding API that supports many kinds of additions and modifications to the game.</li>
-				<li>Multiplayer support for tens of players, via servers hosted by users.</li>
-				<li>Voxel based lighting with gameplay consequences (light caves and buildings with torches)</li>
-				<li>Almost infinite world and a beautiful map generator</li>
+				<li>Walk around, dig and build in an infinite voxel world, and craft stuff from raw materials</li>
+				<li>Simple Modding API that supports many kinds of additions and modifications to the game</li>
+				<li>Multiplayer support via servers hosted by users</li>
+				<li>Near-infinite world and a beautiful map generator</li>
 			</ul>
-		</p>
 	</description>
 	<screenshots>
-		<screenshot type="default" width="1440" height="810">http://minetest.net/screenshots/INSERT.png</screenshot>
-		<screenshot type="default" width="1440" height="810">http://minetest.net/screenshots/INSERT.png</screenshot>
+		<screenshot type="default" width="1440" height="851">http://minetest.net/_media/screen2.png</screenshot>
+		<screenshot width="1440" height="851">http://minetest.net/_media/screenshot_4032289578.png</screenshot>
 	</screenshots>
 	<url type="homepage">http://minetest.net</url>
-	<updatecontact>MAINTAINER@ADDRESS</updatecontact>
+	<updatecontact>davidzgumberg@gmail.com</updatecontact>
 </application>
