@@ -35,7 +35,8 @@ Clouds::Clouds(
 	scene::ISceneNode(parent, mgr, id),
 	m_seed(seed),
 	m_camera_pos(0,0),
-	m_time(0)
+	m_time(0),
+	m_camera_offset(0,0,0)
 {
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -318,6 +319,7 @@ void Clouds::render()
 			}
 
 			v3f pos(p0.X, m_cloud_y, p0.Y);
+			pos -= intToFloat(m_camera_offset, BS);
 
 			for(u16 i=0; i<4; i++)
 				v[i].Pos += pos;

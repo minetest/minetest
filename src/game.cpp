@@ -2483,6 +2483,8 @@ void the_game(
 			Update camera
 		*/
 
+		v3s16 old_camera_offset = camera.getOffset();
+
 		LocalPlayer* player = client.getEnv().getLocalPlayer();
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
@@ -2497,6 +2499,8 @@ void the_game(
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
 		v3s16 camera_offset = camera.getOffset();
+
+		bool camera_offset_changed = (camera_offset != old_camera_offset);
 		
 		if(!disable_camera_update){
 			client.getEnv().getClientMap().updateCamera(camera_position,
@@ -2504,6 +2508,8 @@ void the_game(
 			client.updateCameraOffset(camera_offset);
 			client.getEnv().updateObjectsCameraOffset(camera_offset);
 			update_particles_camera_offset(camera_offset);
+			if (clouds)
+				clouds->updateCameraOffset(camera_offset);
 		}
 		
 		// Update sound listener
@@ -3196,7 +3202,8 @@ void the_game(
 		*/
 		update_draw_list_timer += dtime;
 		if(update_draw_list_timer >= 0.2 ||
-				update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2){
+				update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2 ||
+				camera_offset_changed){
 			update_draw_list_timer = 0;
 			client.getEnv().getClientMap().updateDrawList(driver);
 			update_draw_list_last_cam_dir = camera_direction;

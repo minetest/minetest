@@ -66,6 +66,11 @@ public:
 	void step(float dtime);
 
 	void update(v2f camera_p, video::SColorf color);
+	
+	void updateCameraOffset(v3s16 camera_offset)
+	{
+		m_camera_offset = camera_offset;
+	}
 
 private:
 	video::SMaterial m_material;
@@ -76,6 +81,7 @@ private:
 	u32 m_seed;
 	v2f m_camera_pos;
 	float m_time;
+	v3s16 m_camera_offset;
 };
 
 

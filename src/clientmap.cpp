@@ -251,6 +251,9 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				if not seen on display
 			*/
 			
+			if (block->mesh != NULL)
+				block->mesh->updateCameraOffset(m_camera_offset);
+			
 			float range = 100000 * BS;
 			if(m_control.range_all == false)
 				range = m_control.wanted_range * BS;
@@ -281,8 +284,6 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 					continue;
 				}
 			}
-			
-			block->mesh->updateCameraOffset(m_camera_offset);
 
 			/*
 				Occlusion culling
