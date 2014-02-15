@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
 	<id type="desktop">minetest.desktop</id>
-	<license>CC0</license>
+	<licence>CC0</licence>
 	<name>Minetest</name>
 	<summary>Multiplayer infinite-world block sandbox</summary>
 	<description>
