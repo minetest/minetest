@@ -229,6 +229,33 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	return 0;
 }
 
+// minetest.set_noiseparam_defaults({np1={noise params}, ...})
+// set default values for noise parameters if not present in global settings
+int ModApiMapgen::l_set_noiseparam_defaults(lua_State *L)
+{
+	NoiseParams np;
+	std::string val, name;
+
+	if (!lua_istable(L, 1))
+		return 0;
+
+	lua_pushnil(L);
+	while (lua_next(L, 1)) {
+		if (read_noiseparams_nc(L, -1, &np)) {
+			if (!serializeStructToString(&val, NOISEPARAMS_FMT_STR, &np))
+				continue;
+			if (!lua_isstring(L, -2))
+				continue;
+
+			name = lua_tostring(L, -2);
+			g_settings->setDefault(name, val);
+		}
+		lua_pop(L, 1);
+	}
+
+	return 0;
+}
+
 // set_gen_notify(string)
 int ModApiMapgen::l_set_gen_notify(lua_State *L)
 {
@@ -607,6 +634,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_mapgen_object);
 
 	API_FCT(set_mapgen_params);
+	API_FCT(set_noiseparam_defaults);
 	API_FCT(set_gen_notify);
 
 	API_FCT(register_biome);

@@ -144,6 +144,9 @@ bool               string_to_enum            (const EnumString *spec,
 
 NoiseParams*       read_noiseparams          (lua_State *L, int index);
 
+bool               read_noiseparams_nc       (lua_State *L, int index,
+                                              NoiseParams *np);
+
 bool               read_schematic            (lua_State *L, int index,
                                               DecoSchematic *dschem,
                                               Server *server);

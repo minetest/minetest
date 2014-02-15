@@ -85,8 +85,11 @@ struct NoiseParams {
 
 
 // Convenience macros for getting/setting NoiseParams in Settings
-#define getNoiseParams(x, y) getStruct((x), "f,f,v3,s32,s32,f", &(y), sizeof(y))
-#define setNoiseParams(x, y) setStruct((x), "f,f,v3,s32,s32,f", &(y))
+
+#define NOISEPARAMS_FMT_STR "f,f,v3,s32,s32,f"
+
+#define getNoiseParams(x, y) getStruct((x), NOISEPARAMS_FMT_STR, &(y), sizeof(y))
+#define setNoiseParams(x, y) setStruct((x), NOISEPARAMS_FMT_STR, &(y))
 
 class Noise {
 public:

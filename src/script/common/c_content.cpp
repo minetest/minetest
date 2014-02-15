@@ -959,24 +959,35 @@ void luaentity_get(lua_State *L, u16 id)
 /******************************************************************************/
 NoiseParams *read_noiseparams(lua_State *L, int index)
 {
+	NoiseParams *np = new NoiseParams;
+
+	if (!read_noiseparams_nc(L, index, np)) {
+		delete np;
+		np = NULL;
+	}
+
+	return np;
+}
+
+bool read_noiseparams_nc(lua_State *L, int index, NoiseParams *np)
+{
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
 	if (!lua_istable(L, index))
-		return NULL;
+		return false;
 
-	NoiseParams *np = new NoiseParams;
+	np->offset  = getfloatfield_default(L, index, "offset",  0.0);
+	np->scale   = getfloatfield_default(L, index, "scale",   0.0);
+	np->persist = getfloatfield_default(L, index, "persist", 0.0);
+	np->seed    = getintfield_default(L,   index, "seed",    0);
+	np->octaves = getintfield_default(L,   index, "octaves", 0);
 
-	np->offset  = getfloatfield_default(L, index, "offset", 0.0);
-	np->scale   = getfloatfield_default(L, index, "scale", 0.0);
 	lua_getfield(L, index, "spread");
 	np->spread  = read_v3f(L, -1);
 	lua_pop(L, 1);
-	np->seed    = getintfield_default(L, index, "seed", 0);
-	np->octaves = getintfield_default(L, index, "octaves", 0);
-	np->persist = getfloatfield_default(L, index, "persist", 0.0);
 
-	return np;
+	return true;
 }
 
 /******************************************************************************/
