@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+	<id type="desktop">minetest.desktop</id>
+	<license>CC0</license>
+	<name>Minetest</name>
+	<summary>Multiplayer infinite-world block sandbox</summary>
+	<description>
+		<p>Minetest is an infinite-world block sandbox game and game engine.</p>
+		<p>Minetest is designed to be simple, stable, and portable. It is lightweight enough to run on fairly old hardware.</p>
+		<p>Minetest has many features, including:
+			<ul>
+				<li>Walk around, dig and build in an infinite voxel world, and craft stuff from raw materials to help you along the way.</li>
+				<li>Simple Modding API that supports many kinds of additions and modifications to the game.</li>
+				<li>Multiplayer support for tens of players, via servers hosted by users.</li>
+				<li>Voxel based lighting with gameplay consequences (light caves and buildings with torches)</li>
+				<li>Almost infinite world and a beautiful map generator</li>
+			</ul>
+		</p>
+	</description>
+	<screenshots>
+		<screenshot type="default" width="1440" height="810">http://minetest.net/screenshots/INSERT.png</screenshot>
+		<screenshot type="default" width="1440" height="810">http://minetest.net/screenshots/INSERT.png</screenshot>
+	</screenshots>
+	<url type="homepage">http://minetest.net</url>
+	<updatecontact>MAINTAINER@ADDRESS</updatecontact>
+</application>
