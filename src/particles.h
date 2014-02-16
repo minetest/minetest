@@ -67,24 +67,20 @@ class Particle : public scene::ISceneNode
 	virtual void OnRegisterSceneNode();
 	virtual void render();
 
-	void step(float dtime, ClientEnvironment &env);
+	void step(float dtime);
 
 	bool get_expired ()
 	{ return m_expiration < m_time; }
-	
-	void updateCameraOffset(v3s16 camera_offset)
-	{
-		m_camera_offset = camera_offset;
-	}
 
 private:
-	void updateLight(ClientEnvironment &env);
+	void updateLight();
 	void updateVertices();
 
 	video::S3DVertex m_vertices[4];
 	float m_time;
 	float m_expiration;
 
+	ClientEnvironment *m_env;
 	IGameDef *m_gamedef;
 	core::aabbox3d<f32> m_box;
 	core::aabbox3d<f32> m_collisionbox;
@@ -150,7 +146,7 @@ class ParticleSpawner
 	bool m_vertical;
 };
 
-void allparticles_step (float dtime, ClientEnvironment &env);
+void allparticles_step (float dtime);
 void allparticlespawners_step (float dtime, ClientEnvironment &env);
 
 void delete_particlespawner (u32 id);
@@ -167,7 +163,5 @@ void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
 void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 	LocalPlayer *player, ClientEnvironment &env, v3s16 pos,
 	const TileSpec tiles[]);
-
-void update_particles_camera_offset (v3s16 camera_offset);
 
 #endif

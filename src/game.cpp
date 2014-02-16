@@ -2505,11 +2505,12 @@ void the_game(
 		if(!disable_camera_update){
 			client.getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset);
-			client.updateCameraOffset(camera_offset);
-			client.getEnv().updateObjectsCameraOffset(camera_offset);
-			update_particles_camera_offset(camera_offset);
-			if (clouds)
-				clouds->updateCameraOffset(camera_offset);
+			if (camera_offset_changed){
+				client.updateCameraOffset(camera_offset);
+				client.getEnv().updateCameraOffset(camera_offset);
+				if (clouds)
+					clouds->updateCameraOffset(camera_offset);
+			}
 		}
 		
 		// Update sound listener
@@ -2983,7 +2984,7 @@ void the_game(
 			Update particles
 		*/
 
-		allparticles_step(dtime, client.getEnv());
+		allparticles_step(dtime);
 		allparticlespawners_step(dtime, client.getEnv());
 		
 		/*
