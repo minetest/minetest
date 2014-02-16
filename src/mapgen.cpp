@@ -652,7 +652,7 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 }
 
 
-void DecoSchematic::placeStructure(Map *map, v3s16 p) {
+void DecoSchematic::placeStructure(Map *map, v3s16 p, bool force_placement) {
 	assert(schematic != NULL);
 	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
 
@@ -673,7 +673,7 @@ void DecoSchematic::placeStructure(Map *map, v3s16 p) {
 	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1,1,1));
 	vm->initialEmerge(bp1, bp2);
 
-	blitToVManip(p, vm, rot, true);
+	blitToVManip(p, vm, rot, force_placement);
 
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;

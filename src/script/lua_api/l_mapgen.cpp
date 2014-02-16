@@ -599,9 +599,8 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	dschem.rotation = (Rotation)rot;
 
 	if (lua_istable(L, 4)) {
-		int index = 4;
 		lua_pushnil(L);
-		while (lua_next(L, index) != 0) {
+		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			lua_rawgeti(L, -1, 1);
 			std::string replace_from = lua_tostring(L, -1);
@@ -615,6 +614,10 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		}
 	}
 
+	bool force_placement = true;
+	if (lua_isboolean(L, 5))
+		force_placement = lua_toboolean(L, 5);
+
 	if (!dschem.filename.empty()) {
 		if (!dschem.loadSchematicFile()) {
 			errorstream << "place_schematic: failed to load schematic file '"
@@ -624,7 +627,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		dschem.resolveNodeNames(ndef);
 	}
 
-	dschem.placeStructure(map, p);
+	dschem.placeStructure(map, p, force_placement);
 
 	return 1;
 }

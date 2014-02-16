@@ -313,7 +313,7 @@ public:
 	void saveSchematicFile(INodeDefManager *ndef);
 
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
-	void placeStructure(Map *map, v3s16 p);
+	void placeStructure(Map *map, v3s16 p, bool force_placement);
 	void applyProbabilities(v3s16 p0,
 		std::vector<std::pair<v3s16, u8> > *plist,
 		std::vector<std::pair<s16, u8> > *splist);

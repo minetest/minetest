@@ -1595,11 +1595,13 @@ minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)
    ^ If slice probability list is nil, no slice probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic, rotation, replacements)
+minetest.place_schematic(pos, schematic, rotation, replacements, force_placement)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
 ^ replacements = {{"oldname", "convert_to"}, ...}
+^ force_placement is a boolean indicating whether nodes other than air and
+^ ignore are replaced by the schematic
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
