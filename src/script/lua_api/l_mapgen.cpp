@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "biome.h"
 #include "emerge.h"
 #include "mapgen_v7.h"
+#include "main.h"
 
 
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
