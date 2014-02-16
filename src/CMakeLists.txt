@@ -217,34 +217,39 @@ endif (NOT DISABLE_LUAJIT)
 set(USE_LUAJIT 0)
 if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	message (STATUS "LuaJIT found, checking for broken versions...")
-	set(BACKUP_REQUIRED_INCS CMAKE_REQUIRED_INCLUDES)
-	set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${LUA_INCLUDE_DIR}")
-	CHECK_C_SOURCE_RUNS("
-		#include <luajit.h>
-		#include <stdio.h>
-		#include <string.h>
+	if(CMAKE_CROSSCOMPILING)
+		message(WARNING "Cross-compiling enabled, assuming LuaJIT is not broken")
+		set(VALID_LUAJIT_VERSION 1)
+	elseif(CMAKE_CROSSCOMPILING)
+		set(BACKUP_REQUIRED_INCS CMAKE_REQUIRED_INCLUDES)
+		set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${LUA_INCLUDE_DIR}")
+		CHECK_C_SOURCE_RUNS("
+			#include <luajit.h>
+			#include <stdio.h>
+			#include <string.h>
 		
-		static char** broken_luajit_versions = (char *[]) {
-				\"LuaJIT 2.0.0-beta7\",
-				\"LuaJIT 2.0.0-beta6\",
-				\"LuaJIT 2.0.0-beta5\",
-				\"LuaJIT 2.0.0-beta4\",
-				\"LuaJIT 2.0.0-beta3\",
-				\"LuaJIT 2.0.0-beta2\",
-				\"LuaJIT 2.0.0-beta1\"
-		};
-		int main(int argc,char** argv) {
-			unsigned int i = 0;
-			for (i=0; i < sizeof(broken_luajit_versions); i++) {
-				if (strcmp(LUAJIT_VERSION,broken_luajit_versions[i]) == 0) {
-					return 1;
+			static char** broken_luajit_versions = (char *[]) {
+					\"LuaJIT 2.0.0-beta7\",
+					\"LuaJIT 2.0.0-beta6\",
+					\"LuaJIT 2.0.0-beta5\",
+					\"LuaJIT 2.0.0-beta4\",
+					\"LuaJIT 2.0.0-beta3\",
+					\"LuaJIT 2.0.0-beta2\",
+					\"LuaJIT 2.0.0-beta1\"
+			};
+			int main(int argc,char** argv) {
+				unsigned int i = 0;
+				for (i=0; i < sizeof(broken_luajit_versions); i++) {
+					if (strcmp(LUAJIT_VERSION,broken_luajit_versions[i]) == 0) {
+						return 1;
+					}
 				}
+				return 0;
 			}
-			return 0;
-		}
-		"
-		VALID_LUAJIT_VERSION)
-	set(CMAKE_REQUIRED_INCLUDES BACKUP_REQUIRED_INCS)
+			"
+			VALID_LUAJIT_VERSION)
+		set(CMAKE_REQUIRED_INCLUDES BACKUP_REQUIRED_INCS)
+	endif(CMAKE_CROSSCOMPILING)
 	if (VALID_LUAJIT_VERSION)
 		message (STATUS "LuaJIT version ok")
 		set(USE_LUAJIT 1)
