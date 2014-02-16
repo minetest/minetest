@@ -495,7 +495,10 @@ public:
 	{ m_player_names.push_back(name); }
 	void removePlayerName(std::string name)
 	{ m_player_names.remove(name); }
-	void updateObjectsCameraOffset(v3s16 camera_offset);
+	void updateCameraOffset(v3s16 camera_offset)
+	{ m_camera_offset = camera_offset; }
+	v3s16 getCameraOffset()
+	{ return m_camera_offset; }
 	
 private:
 	ClientMap *m_map;
@@ -511,6 +514,7 @@ private:
 	IntervalLimiter m_drowning_interval;
 	IntervalLimiter m_breathing_interval;
 	std::list<std::string> m_player_names;
+	v3s16 m_camera_offset;
 };
 
 #endif

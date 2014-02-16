@@ -2663,16 +2663,6 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 	return event;
 }
 
-void ClientEnvironment::updateObjectsCameraOffset(v3s16 camera_offset)
-{
-	for(std::map<u16, ClientActiveObject*>::iterator
-			i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i)
-	{
-		i->second->updateCameraOffset(camera_offset);
-	}
-}
-
 #endif // #ifndef SERVER
 
 

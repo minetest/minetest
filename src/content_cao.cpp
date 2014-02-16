@@ -598,7 +598,6 @@ private:
 	float m_step_distance_counter;
 	u8 m_last_light;
 	bool m_is_visible;
-	v3s16 m_camera_offset;
 
 public:
 	GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -640,8 +639,7 @@ public:
 		m_visuals_expired(false),
 		m_step_distance_counter(0),
 		m_last_light(255),
-		m_is_visible(false),
-		m_camera_offset(v3s16(0,0,0))
+		m_is_visible(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -1060,26 +1058,22 @@ public:
 		if(getParent() != NULL)
 			return;
 
+		v3s16 camera_offset = m_env->getCameraOffset();
 		if(m_meshnode){
-			m_meshnode->setPosition(pos_translator.vect_show-intToFloat(m_camera_offset, BS));
+			m_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 			v3f rot = m_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_meshnode->setRotation(rot);
 		}
 		if(m_animated_meshnode){
-			m_animated_meshnode->setPosition(pos_translator.vect_show-intToFloat(m_camera_offset, BS));
+			m_animated_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 			v3f rot = m_animated_meshnode->getRotation();
 			rot.Y = -m_yaw;
 			m_animated_meshnode->setRotation(rot);
 		}
 		if(m_spritenode){
-			m_spritenode->setPosition(pos_translator.vect_show-intToFloat(m_camera_offset, BS));
+			m_spritenode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 		}
-	}
-	
-	void updateCameraOffset(v3s16 camera_offset)
-	{
-		m_camera_offset = camera_offset;
 	}
 	
 	void step(float dtime, ClientEnvironment *env)
