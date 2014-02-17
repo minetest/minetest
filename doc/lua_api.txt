@@ -1407,7 +1407,7 @@ minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)
 ^ searchdistance: number of blocks to search in each direction
 ^ max_jump: maximum height difference to consider walkable
 ^ max_drop: maximum height difference to consider droppable
-^ algorithm: A*_noprefetch(default), A*, Dijkstra
+^ Algorithm: A*
 minetest.spawn_tree (pos, {treedef})
 ^ spawns L-System tree at given pos with definition in treedef table
 minetest.transforming_liquid_add(pos)
