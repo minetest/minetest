@@ -816,46 +816,6 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
-int ModApiEnvMod::l_set_start_point(lua_State* L)
-{
-	GET_ENV_PTR;
-
-	start_pos = read_v3s16(L, 1);
-}
-
-int ModApiEnvMod::l_set_end_point(lua_State* L)
-{
-	GET_ENV_PTR;
-
-	v3s16 end_pos = read_v3s16(L, 1);
-
-	unsigned int searchdistance = 10;
-	unsigned int max_jump       = 1;
-	unsigned int max_drop       = 1;
-	Algorithm algo              = A_STAR;
-
-	std::vector<v3s16> path =
-		getPath(env, start_pos, end_pos, searchdistance,
-		        max_jump, max_drop, algo, ADJACENCY_4);
-
-	if (path.size() > 0)
-	{
-		lua_newtable(L);
-		int top = lua_gettop(L);
-		unsigned int index = 1;
-		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end();i++)
-		{
-			lua_pushnumber(L,index);
-			push_v3s16(L, *i);
-			lua_settable(L, top);
-			index++;
-		}
-		return 1;
-	}
-
-	return 0;
-}
-
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -895,6 +855,4 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_humidity);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
-	API_FCT(set_start_point);
-	API_FCT(set_end_point);
 }

@@ -34,26 +34,6 @@ end)
 --
 -- Chat commands
 --
-minetest.register_chatcommand("setstart",
-{
-   params = "(nothing)",
-   func = function(name)
-	  minetest.set_start_point(minetest.get_player_by_name("singleplayer"):getpos())
-   end,
-})
-
-minetest.register_chatcommand("setend",
-{
-   params = "(nothing)",
-   func = function(name)
-	  local data =  minetest.set_end_point(minetest.get_player_by_name("singleplayer"):getpos())
-	  if data ~= nil then
-		 for i, pos in pairs(data) do
-			minetest.set_node(pos, {name = "wood"})
-		 end
-	  end
-   end,
-})
 
 minetest.register_chatcommand("me", {
 	params = "<action>",

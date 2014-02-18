@@ -41,16 +41,6 @@ class ServerEnvironment;
 /* Typedefs and macros                                                        */
 /******************************************************************************/
 
-// #define PATHFINDER_DEBUG
-
-enum PathDirections
-{
-	DIR_XP,
-	DIR_XM,
-	DIR_ZP,
-	DIR_ZM
-};
-
 /** List of supported algorithms */
 enum Algorithm
 {
@@ -129,14 +119,6 @@ private:
 
 	unsigned int getDirectionCost(unsigned int id);
 
-	/**
-	 * translate position to float position
-	 * @param pos integer position
-	 * @return float position
-	 */
-	v3f tov3f(v3s16 pos);
-
-
 	/* algorithm functions */
 
 	/**
@@ -161,16 +143,9 @@ private:
 	 */
 	void buildPath(std::vector<v3s16>& path, v3s16 start_pos, v3s16 end_pos);
 
-	/* variables */
-	int m_max_index_x;          /**< max index of search area in x direction  */
-	int m_max_index_y;          /**< max index of search area in y direction  */
-	int m_max_index_z;          /**< max index of search area in z direction  */
-
-
 	int m_searchdistance;       /**< max distance to search in each direction */
 	int m_maxdrop;              /**< maximum number of blocks a path may drop */
 	int m_maxjump;              /**< maximum number of blocks a path may jump */
-	int m_min_target_distance;  /**< current smalest path to target           */
 
 	v3s16 m_start;              /**< source position                          */
 	v3s16 m_destination;        /**< destination position                     */
@@ -187,7 +162,7 @@ private:
 	std::vector <unsigned int> m_adjacency_4_cost;
 	std::vector <unsigned int> m_adjacency_8_cost;
 
-	std::map <v3s16, v3s16> used;
+	std::map <v3s16, std::pair <v3s16, unsigned int> > used;
 };
 
 inline unsigned int PathFinder::getManhattanDistance(v3s16 pos1, v3s16 pos2)
