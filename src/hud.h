@@ -126,7 +126,7 @@ public:
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 	void drawLuaElements();
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
-					 std::string texture, s32 count, v2s32 offset);
+					 std::string texture, s32 count, v2s32 offset, v2f size=v2f());
 	
 	void drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, s32 breath);
 	void resizeHotbar();
