@@ -796,6 +796,14 @@ neighbor_found:
 
 void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 {
+	// Reset usage timer immediately, otherwise a block that becomes active
+	// again at around the same time as it would normally be unloaded will
+	// get unloaded incorrectly. (I think this still leaves a small possibility
+	// of a race condition between this and server::AsyncRunStep, which only
+	// some kind of synchronisation will fix, but it at least reduces the window
+	// of opportunity for it to break from seconds to nanoseconds)
+	block->resetUsageTimer();
+
 	// Get time difference
 	u32 dtime_s = 0;
 	u32 stamp = block->getTimestamp();
