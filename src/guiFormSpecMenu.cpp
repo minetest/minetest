@@ -2182,14 +2182,13 @@ void GUIFormSpecMenu::acceptInput(bool quit=false)
 					// no dynamic cast possible due to some distributions shipped
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
-					gui::IGUIComboBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
-						e = static_cast<gui::IGUIComboBox*>(element);
-					}
-					s32 selected = e->getSelected();
-					if (selected >= 0) {
-						fields[wide_to_narrow(s.fname.c_str())] =
-							wide_to_narrow(e->getItem(selected));
+						gui::IGUIComboBox *e = static_cast<gui::IGUIComboBox*>(element);
+						s32 selected = e->getSelected();
+						if (selected >= 0) {
+							fields[wide_to_narrow(s.fname.c_str())] =
+								wide_to_narrow(e->getItem(selected));
+						}
 					}
 				}
 				else if (s.ftype == f_TabHeader) {
@@ -2693,6 +2692,25 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					acceptInput();
 				}
 				// quitMenu deallocates menu
+				return true;
+			}
+		}
+
+		if(event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED)
+		{
+			int current_id = event.GUIEvent.Caller->getID();
+			if(current_id > 257)
+			{
+				for(u32 i=0; i<m_fields.size(); i++)
+				{
+					FieldSpec &s = m_fields[i];
+					if ((s.ftype == f_DropDown) && (s.fid == current_id))
+					{
+						s.send = true;
+						acceptInput();
+						s.send = false;
+					}
+				}
 				return true;
 			}
 		}
