@@ -220,15 +220,17 @@ if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 	if(CMAKE_CROSSCOMPILING)
 		message(WARNING "Cross-compiling enabled, assuming LuaJIT is not broken")
 		set(VALID_LUAJIT_VERSION 1)
-	elseif(CMAKE_CROSSCOMPILING)
+	else(CMAKE_CROSSCOMPILING)
 		set(BACKUP_REQUIRED_INCS CMAKE_REQUIRED_INCLUDES)
 		set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${LUA_INCLUDE_DIR}")
 		CHECK_C_SOURCE_RUNS("
 			#include <luajit.h>
 			#include <stdio.h>
 			#include <string.h>
-		
-			static char** broken_luajit_versions = (char *[]) {
+
+			#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+
+			static char *broken_luajit_versions[] = {
 					\"LuaJIT 2.0.0-beta7\",
 					\"LuaJIT 2.0.0-beta6\",
 					\"LuaJIT 2.0.0-beta5\",
@@ -237,10 +239,11 @@ if(LUA_LIBRARY AND LUA_INCLUDE_DIR)
 					\"LuaJIT 2.0.0-beta2\",
 					\"LuaJIT 2.0.0-beta1\"
 			};
-			int main(int argc,char** argv) {
-				unsigned int i = 0;
-				for (i=0; i < sizeof(broken_luajit_versions); i++) {
-					if (strcmp(LUAJIT_VERSION,broken_luajit_versions[i]) == 0) {
+
+			int main(int argc, char *argv[]) {
+				unsigned int i;
+				for (i = 0; i < ARRAYSIZE(broken_luajit_versions); i++) {
+					if (strcmp(LUAJIT_VERSION, broken_luajit_versions[i]) == 0) {
 						return 1;
 					}
 				}
