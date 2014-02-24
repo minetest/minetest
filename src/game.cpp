@@ -1518,6 +1518,9 @@ void the_game(
 	str += "]";
 	device->setWindowCaption(str.c_str());
 
+	// Info text
+	std::wstring infotext;
+
 	for(;;)
 	{
 		if(device->run() == false || kill == true)
@@ -1700,23 +1703,9 @@ void the_game(
 		
 		// Hilight boxes collected during the loop and displayed
 		std::vector<aabb3f> hilightboxes;
-		
-		// Info text
-		std::wstring infotext;
 
-		/*
-			Debug info for client
-		*/
-		{
-			static float counter = 0.0;
-			counter -= dtime;
-			if(counter < 0)
-			{
-				counter = 30.0;
-				client.printDebugInfo(infostream);
-			}
-		}
-
+		/* reset infotext */
+		infotext = L"";
 		/*
 			Profiler
 		*/

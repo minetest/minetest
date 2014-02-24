@@ -315,8 +315,10 @@ void ClientMediaDownloader::remoteHashSetReceived(
 	// For compatibility: If index.mth is not found, assume that the
 	// server contains files named like the original files (not their sha1)
 
-	if (!fetchresult.succeeded && !fetchresult.timeout &&
-			fetchresult.response_code == 404) {
+	// Do NOT check for any particular response code (e.g. 404) here,
+	// because different servers respond differently
+
+	if (!fetchresult.succeeded && !fetchresult.timeout) {
 		infostream << "Client: Enabling compatibility mode for remote "
 			<< "server \"" << remote->baseurl << "\"" << std::endl;
 		remote->request_by_filename = true;

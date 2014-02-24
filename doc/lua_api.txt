@@ -410,6 +410,7 @@ All default ores are of the uniformly-distributed scatter type.
 
 Ore attributes
 -------------------
+See section Flag Specifier Format.
 Currently supported flags:  absheight
  - absheight
     Also produce this same ore between the height range of -height_max and -height_min.
@@ -451,6 +452,7 @@ Important note: Node aliases cannot be used for a raw schematic provided when re
 
 Schematic attributes
 ---------------------
+See section Flag Specifier Format.
 Currently supported flags:  place_center_x, place_center_y, place_center_z
  - place_center_x
     Placement of this decoration is centered along the X axis.
@@ -524,6 +526,26 @@ pointed_thing:
   {type="nothing"}
   {type="node", under=pos, above=pos}
   {type="object", ref=ObjectRef}
+
+Flag Specifier Format
+-----------------------
+Flags using the standardized flag specifier format can be specified in either of two ways, by string or table.
+The string format is a comma-delimited set of flag names; whitespace and unrecognized flag fields are ignored.
+Specifying a flag in the string sets the flag, and specifying a flag prefixed by the string "no" explicitly
+clears the flag from whatever the default may be.
+In addition to the standard string flag format, the schematic flags field can also be a table of flag names
+to boolean values representing whether or not the flag is set.  Additionally, if a field with the flag name
+prefixed with "no" is present, mapped to a boolean of any value, the specified flag is unset.
+
+e.g. A flag field of value
+  {place_center_x = true, place_center_y=false, place_center_z=true}
+is equivalent to
+  {place_center_x = true, noplace_center_y=true, place_center_z=true}
+which is equivalent to
+  "place_center_x, noplace_center_y, place_center_z"
+or even
+  "place_center_x, place_center_z"
+since, by default, no schematic attributes are set.
 
 Items
 ------
@@ -1360,11 +1382,14 @@ minetest.get_mapgen_object(objectname)
 minetest.set_mapgen_params(MapgenParams)
 ^ Set map generation parameters
 ^ Function cannot be called after the registration period; only initialization and on_mapgen_init
-^ Takes a table as an argument with the fields mgname, seed, water_level, flags, and flagmask.
+^ Takes a table as an argument with the fields mgname, seed, water_level, and flags.
 ^ Leave field unset to leave that parameter unchanged
-^ flagmask field must be set to all mapgen flags that are being modified
-^ flags contains only the flags that are being set
-^ flags and flagmask are in the same format and have the same options as 'mgflags' in minetest.conf
+^ flags contains a comma-delimited string of flags to set, or if the prefix "no" is attached, clears instead.
+^ flags is in the same format and has the same options as 'mg_flags' in minetest.conf
+minetest.set_noiseparam_defaults({np1=NoiseParams, np2= NoiseParams, ...})
+^ Sets the default value of a noiseparam setting
+^ Takes a table as an argument that maps one or more setting names to NoiseParams structures
+^ Possible setting names consist of any NoiseParams setting exposed through the global settings
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1, pos2, stepsize) -> true/false, pos
@@ -1570,11 +1595,13 @@ minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)
    ^ If slice probability list is nil, no slice probabilities are applied.
 ^ Saves schematic in the Minetest Schematic format to filename.
 
-minetest.place_schematic(pos, schematic, rotation, replacements)
+minetest.place_schematic(pos, schematic, rotation, replacements, force_placement)
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
 ^ replacements = {{"oldname", "convert_to"}, ...}
+^ force_placement is a boolean indicating whether nodes other than air and
+^ ignore are replaced by the schematic
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs

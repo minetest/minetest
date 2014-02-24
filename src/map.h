@@ -424,6 +424,14 @@ public:
 	*/
 	MapBlock * emergeBlock(v3s16 p, bool create_blank=true);
 	
+	/*
+		Try to get a block.
+		If it does not exist in memory, add it to the emerge queue.
+		- Memory
+		- Emerge Queue (deferred disk or generate)
+	*/
+	MapBlock *getBlockOrEmerge(v3s16 p3d);
+
 	// Carries out any initialization necessary before block is sent
 	void prepareBlock(MapBlock *block);
 

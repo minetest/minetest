@@ -78,7 +78,8 @@ void ScriptApiEnv::environment_OnMapgenInit(MapgenParams *mgparams)
 	lua_pushinteger(L, mgparams->water_level);
 	lua_setfield(L, -2, "water_level");
 	
-	std::string flagstr = writeFlagString(mgparams->flags, flagdesc_mapgen);
+	std::string flagstr = writeFlagString(mgparams->flags,
+		flagdesc_mapgen, (u32)-1);
 	lua_pushstring(L, flagstr.c_str());
 	lua_setfield(L, -2, "flags");
 	

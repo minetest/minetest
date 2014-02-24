@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-09-17 15:15+0200\n"
+"PO-Revision-Date: 2013-11-25 02:13+0200\n"
 "Last-Translator: Frederico Guimarães <frederico@teia.bio.br>\n"
 "Language-Team: LANGUAGE <contato@ejweb.com.br>\n"
 "Language: pt_BR\n"
@@ -77,7 +77,7 @@ msgstr "Nome do mundo"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr ""
+msgstr "Seed"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -110,7 +110,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Para habilitar os sombreadores é necessário usar o driver OpenGL."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -291,7 +291,7 @@ msgstr "Configurações"
 
 #: builtin/mainmenu.lua:1073
 msgid "Texture Packs"
-msgstr "Texturas"
+msgstr "Pacotes de texturas"
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
@@ -310,28 +310,24 @@ msgid "Installed Mods:"
 msgstr "Módulos instalados:"
 
 #: builtin/modmgr.lua:243
-#, fuzzy
 msgid "Add mod:"
-msgstr "<<-- Adicionar módulo"
+msgstr "Adicionar módulo:"
 
 #: builtin/modmgr.lua:244
-#, fuzzy
 msgid "Local install"
-msgstr "Instalar"
+msgstr "Instalação local"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Repositório de módulos online"
 
 #: builtin/modmgr.lua:284
-#, fuzzy
 msgid "No mod description available"
-msgstr "Nenhuma informação disponível"
+msgstr "Nenhuma descrição disponível do módulo"
 
 #: builtin/modmgr.lua:288
-#, fuzzy
 msgid "Mod information:"
-msgstr "Nenhuma informação disponível"
+msgstr "Informação do módulo:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -339,12 +335,11 @@ msgstr "Renomear"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Desinstalar o pacote de módulos selecionado"
 
 #: builtin/modmgr.lua:312
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Remover o módulo selecionado"
+msgstr "Desinstalar o módulo selecionado"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"

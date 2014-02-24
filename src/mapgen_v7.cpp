@@ -39,9 +39,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen_v7[] = {
-	{"v7_mountains", MGV7_MOUNTAINS},
-	{"v7_ridges",    MGV7_RIDGES},
-	{NULL,           0}
+	{"mountains", MGV7_MOUNTAINS},
+	{"ridges",    MGV7_RIDGES},
+	{NULL,        0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,10 +53,10 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 	this->emerge = emerge;
 	this->bmgr   = emerge->biomedef;
 
-	this->seed     = (int)params->seed;
+	this->seed        = (int)params->seed;
 	this->water_level = params->water_level;
-	this->flags    = params->flags | MGV7_MOUNTAINS | MGV7_RIDGES;
-	this->gennotify = emerge->gennotify;
+	this->flags       = params->flags;
+	this->gennotify   = emerge->gennotify;
 
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 
@@ -141,7 +141,7 @@ void MapgenV7Params::readParams(Settings *settings) {
 
 
 void MapgenV7Params::writeParams(Settings *settings) {
-	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7);
+	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, (u32)-1);
 
 	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
@@ -262,7 +262,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 	
-	if (!(flags & MG_NOLIGHT))
+	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 					 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,

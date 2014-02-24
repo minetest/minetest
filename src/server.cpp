@@ -341,9 +341,13 @@ Server::Server(
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
 
+	// Load the mapgen params from global settings now after any
+	// initial overrides have been set by the mods
+	m_emerge->loadMapgenParams();
+
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_script, this, m_emerge);
+	m_env = new ServerEnvironment(servermap, m_script, this);
 
 	m_clients.setEnv(m_env);
 
@@ -4222,9 +4226,10 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 						<<" List of players: "<<os.str()<<std::endl;
 			}
 		}
-		m_env_mutex.Lock();
-		m_clients.DeleteClient(peer_id);
-		m_env_mutex.Unlock();
+		{
+			JMutexAutoLock env_lock(m_env_mutex);
+			m_clients.DeleteClient(peer_id);
+		}
 	}
 
 	// Send leave chat message to all remaining clients

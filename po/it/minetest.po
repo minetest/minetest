@@ -8,20 +8,19 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-03-30 20:50+0200\n"
-"Last-Translator: Fabio Luongo <e249260@rmqkr.net>\n"
+"PO-Revision-Date: 2013-12-18 21:40+0200\n"
+"Last-Translator: King Artur <david1989mail@yahoo.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.7-dev\n"
 
 #: builtin/gamemgr.lua:23
-#, fuzzy
 msgid "Game Name"
-msgstr "Gioco"
+msgstr "Nome del gioco"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
 msgid "Create"
@@ -34,16 +33,15 @@ msgstr "Annulla"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr: non è stato possibile copiare la mod \"$1\" nel gioco \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
-msgstr ""
+msgstr "GIOCHI"
 
 #: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
-#, fuzzy
 msgid "Games"
-msgstr "Gioco"
+msgstr "Giochi"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"

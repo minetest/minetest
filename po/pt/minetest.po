@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2013-09-05 12:47+0200\n"
-"Last-Translator: Leonardo Costa <k95leo@gmail.com>\n"
+"PO-Revision-Date: 2014-01-06 01:45+0200\n"
+"Last-Translator: João Farias <jgfd@cin.ufpe.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -321,7 +321,7 @@ msgstr "Instalar"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Repositório Online de Mods"
 
 #: builtin/modmgr.lua:284
 #, fuzzy
@@ -339,7 +339,7 @@ msgstr "Renomear"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Desinstalar mode selecionado"
 
 #: builtin/modmgr.lua:312
 #, fuzzy

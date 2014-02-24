@@ -125,15 +125,6 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
-
-	loadParamsFromSettings(g_settings);
-
-	if (g_settings->get("fixed_map_seed").empty()) {
-		params.seed = (((u64)(myrand() & 0xffff) << 0)
-					 | ((u64)(myrand() & 0xffff) << 16)
-					 | ((u64)(myrand() & 0xffff) << 32)
-					 | ((u64)(myrand() & 0xffff) << 48));
-	}
 }
 
 
@@ -165,6 +156,18 @@ EmergeManager::~EmergeManager() {
 	mglist.clear();
 
 	delete biomedef;
+}
+
+
+void EmergeManager::loadMapgenParams() {
+	loadParamsFromSettings(g_settings);
+
+	if (g_settings->get("fixed_map_seed").empty()) {
+		params.seed = (((u64)(myrand() & 0xffff) << 0)
+					 | ((u64)(myrand() & 0xffff) << 16)
+					 | ((u64)(myrand() & 0xffff) << 32)
+					 | ((u64)(myrand() & 0xffff) << 48));
+	}
 }
 
 
@@ -372,7 +375,6 @@ void EmergeManager::loadParamsFromSettings(Settings *settings) {
 	params.sparams = createMapgenParams(params.mg_name);
 	if (params.sparams)
 		params.sparams->readParams(settings);
-
 }
 
 
@@ -381,7 +383,7 @@ void EmergeManager::saveParamsToSettings(Settings *settings) {
 	settings->setU64("seed",         params.seed);
 	settings->setS16("water_level",  params.water_level);
 	settings->setS16("chunksize",    params.chunksize);
-	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen);
+	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen, (u32)-1);
 
 	if (params.sparams)
 		params.sparams->writeParams(settings);

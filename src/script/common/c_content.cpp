@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
+#include "porting.h"
 #include "mapgen.h"
 #include "json/json.h"
 
@@ -839,12 +840,48 @@ void push_hit_params(lua_State *L,const HitParams &params)
 }
 
 /******************************************************************************/
-u32 getflagsfield(lua_State *L, int table,
-	const char *fieldname, FlagDesc *flagdesc) {
-	std::string flagstring;
+u32 getflagsfield(lua_State *L, int table, const char *fieldname,
+	FlagDesc *flagdesc, u32 *flagmask)
+{
+	u32 flags = 0;
+	
+	lua_getfield(L, table, fieldname);
 
-	flagstring = getstringfield_default(L, table, fieldname, "");
-	return readFlagString(flagstring, flagdesc);
+	if (lua_isstring(L, -1)) {
+		std::string flagstr = lua_tostring(L, -1);
+		flags = readFlagString(flagstr, flagdesc, flagmask);
+	} else if (lua_istable(L, -1)) {
+		flags = read_flags_table(L, -1, flagdesc, flagmask);
+	}
+
+	lua_pop(L, 1);
+
+	return flags;
+}
+
+u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
+{
+	u32 flags = 0, mask = 0;
+	char fnamebuf[64] = "no";
+
+	for (int i = 0; flagdesc[i].name; i++) {
+		bool result;
+
+		if (getboolfield(L, table, flagdesc[i].name, result)) {
+			mask |= flagdesc[i].flag;
+			if (result)
+				flags |= flagdesc[i].flag;
+		}
+
+		strlcpy(fnamebuf + 2, flagdesc[i].name, sizeof(fnamebuf) - 2);
+		if (getboolfield(L, table, fnamebuf, result))
+			mask |= flagdesc[i].flag;
+	}
+
+	if (flagmask)
+		*flagmask = mask;
+
+	return flags;
 }
 
 /******************************************************************************/
@@ -922,24 +959,35 @@ void luaentity_get(lua_State *L, u16 id)
 /******************************************************************************/
 NoiseParams *read_noiseparams(lua_State *L, int index)
 {
+	NoiseParams *np = new NoiseParams;
+
+	if (!read_noiseparams_nc(L, index, np)) {
+		delete np;
+		np = NULL;
+	}
+
+	return np;
+}
+
+bool read_noiseparams_nc(lua_State *L, int index, NoiseParams *np)
+{
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
 	if (!lua_istable(L, index))
-		return NULL;
+		return false;
 
-	NoiseParams *np = new NoiseParams;
+	np->offset  = getfloatfield_default(L, index, "offset",  0.0);
+	np->scale   = getfloatfield_default(L, index, "scale",   0.0);
+	np->persist = getfloatfield_default(L, index, "persist", 0.0);
+	np->seed    = getintfield_default(L,   index, "seed",    0);
+	np->octaves = getintfield_default(L,   index, "octaves", 0);
 
-	np->offset  = getfloatfield_default(L, index, "offset", 0.0);
-	np->scale   = getfloatfield_default(L, index, "scale", 0.0);
 	lua_getfield(L, index, "spread");
 	np->spread  = read_v3f(L, -1);
 	lua_pop(L, 1);
-	np->seed    = getintfield_default(L, index, "seed", 0);
-	np->octaves = getintfield_default(L, index, "octaves", 0);
-	np->persist = getfloatfield_default(L, index, "persist", 0.0);
 
-	return np;
+	return true;
 }
 
 /******************************************************************************/
