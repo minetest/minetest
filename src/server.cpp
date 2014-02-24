@@ -2802,7 +2802,7 @@ std::wstring Server::getStatusString()
 		os<<name;
 	}
 	os<<L"}";
-	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
+	if(dynamic_cast<ServerMap*>(&m_env->getMap())->isSavingEnabled() == false)
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 	if(g_settings->get("motd") != "")
 		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
@@ -3159,7 +3159,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 		std::list<std::string> *log)
 {
 	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
-	ServerMap *map = (ServerMap*)(&m_env->getMap());
+	ServerMap *map = dynamic_cast<ServerMap*>(&m_env->getMap());
 
 	// Fail if no actions to handle
 	if(actions.empty()){

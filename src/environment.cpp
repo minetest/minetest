@@ -2043,7 +2043,7 @@ LocalPlayer * ClientEnvironment::getLocalPlayer()
 			i != m_players.end(); ++i) {
 		Player *player = *i;
 		if(player->isLocal())
-			return (LocalPlayer*)player;
+			return dynamic_cast<LocalPlayer*>(player);
 	}
 	return NULL;
 }

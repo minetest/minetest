@@ -221,7 +221,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 
 		MapSector *sector = n->second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
-		return (ServerMapSector*)sector;
+		return dynamic_cast<ServerMapSector*>(sector);
 	}
 	else
 	{

@@ -132,7 +132,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef)
 		qlimit_generate = 1;
 
 	for (s16 i = 0; i < nthreads; i++)
-		emergethread.push_back(new EmergeThread((Server *) gamedef, i));
+		emergethread.push_back(new EmergeThread(dynamic_cast<Server*>(gamedef), i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }

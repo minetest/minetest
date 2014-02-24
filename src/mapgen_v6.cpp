@@ -55,7 +55,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->m_emerge = emerge;
 	this->ystride = csize.X; //////fix this
 
-	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
+	
+	MapgenV6Params *sp = dynamic_cast<MapgenV6Params*>(params->sparams);
 	this->spflags     = sp->spflags;
 	this->freq_desert = sp->freq_desert;
 	this->freq_beach  = sp->freq_beach;

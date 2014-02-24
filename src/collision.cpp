@@ -311,7 +311,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			for (size_t i=0; i < clientobjects.size(); i++)
 			{
 				if ((self == 0) || (self != clientobjects[i].obj)) {
-					objects.push_back((ActiveObject*)clientobjects[i].obj);
+					objects.push_back(dynamic_cast<ActiveObject*>(clientobjects[i].obj));
 				}
 			}
 		}
@@ -327,7 +327,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				{
 					ServerActiveObject *current = s_env->getActiveObject(*iter);
 					if ((self == 0) || (self != current)) {
-						objects.push_back((ActiveObject*)current);
+						objects.push_back(dynamic_cast<ActiveObject*>(current));
 					}
 				}
 			}
