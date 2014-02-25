@@ -1327,8 +1327,7 @@ minetest.get_player_ip(name) -> IP address string
 
 Chat:
 minetest.chat_send_all(text)
-minetest.chat_send_player(name, text, prepend)
-^ prepend: optional, if it is set to false "Server -!- " will not be prepended to the message
+minetest.chat_send_player(name, text)
 
 Environment access:
 
