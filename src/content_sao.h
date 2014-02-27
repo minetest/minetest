@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 
 ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
-		const std::string itemstring);
+                                  const std::string &itemstring);
 
 /*
 	LuaEntitySAO needs some internals exposed.
@@ -37,7 +37,7 @@ class LuaEntitySAO : public ServerActiveObject
 {
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
-			const std::string &name, const std::string &state);
+	             const std::string &name, const std::string &state);
 	~LuaEntitySAO();
 	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }

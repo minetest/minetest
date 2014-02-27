@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "porting.h"
 
-Json::Value                 fetchJsonValue(const std::string url,
-													struct curl_slist *chunk) {
+Json::Value                 fetchJsonValue(const std::string &url,
+                                           struct curl_slist *chunk) {
 #if USE_CURL
 
 	HTTPFetchRequest fetchrequest;

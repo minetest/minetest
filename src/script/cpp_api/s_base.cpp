@@ -43,7 +43,7 @@ class ModNameStorer
 private:
 	lua_State *L;
 public:
-	ModNameStorer(lua_State *L_, const std::string modname):
+	ModNameStorer(lua_State *L_, const std::string &modname):
 		L(L_)
 	{
 		// Store current modname in registry
