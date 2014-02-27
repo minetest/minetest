@@ -229,7 +229,7 @@ public:
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
 
-	void notifyPlayer(const char *name, const std::wstring msg, const bool prepend);
+	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
