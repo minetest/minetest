@@ -391,7 +391,7 @@ public:
 	}
 
 	/* If buffer does not exist, consult the fetcher */
-	SoundBuffer* getFetchBuffer(const std::string name)
+	SoundBuffer* getFetchBuffer(const std::string &name)
 	{
 		SoundBuffer *buf = getBuffer(name);
 		if(buf)

@@ -122,8 +122,8 @@ struct MediaInfo
 	std::string path;
 	std::string sha1_digest;
 
-	MediaInfo(const std::string path_="",
-			const std::string sha1_digest_=""):
+	MediaInfo(const std::string &path_="",
+	          const std::string &sha1_digest_=""):
 		path(path_),
 		sha1_digest(sha1_digest_)
 	{
@@ -229,8 +229,8 @@ public:
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
 
-	void notifyPlayer(const char *name, const std::wstring msg);
-	void notifyPlayers(const std::wstring msg);
+	void notifyPlayer(const char *name, const std::wstring &msg);
+	void notifyPlayers(const std::wstring &msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
@@ -357,7 +357,7 @@ private:
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
-	void SendShowFormspecMessage(u16 peer_id, const std::string formspec, const std::string formname);
+	void SendShowFormspecMessage(u16 peer_id, const std::string &formspec, const std::string &formname);
 	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
