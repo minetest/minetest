@@ -385,7 +385,7 @@ set(common_SRCS
 	${UTIL_SRCS}
 )
 
-# This gives us the icon
+# This gives us the icon and file version information
 if(WIN32)
 	set(WINRESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc)
 	if(MINGW)
@@ -396,7 +396,8 @@ if(WIN32)
 			COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}
 			-i${WINRESOURCE_FILE}
 			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			DEPENDS ${WINRESOURCE_FILE})
 		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
 		set(common_SRCS ${common_SRCS} ${WINRESOURCE_FILE})
