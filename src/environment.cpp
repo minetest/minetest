@@ -719,6 +719,29 @@ public:
 
 		ServerMap *map = &m_env->getServerMap();
 
+		// Find out how many objects the block contains
+		u32 active_object_count = block->m_static_objects.m_active.size();
+		// Find out how many objects this and all the neighbors contain
+		u32 active_object_count_wider = 0;
+		u32 wider_unknown_count = 0;
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			MapBlock *block2 = map->getBlockNoCreateNoEx(
+					block->getPos() + v3s16(x,y,z));
+			if(block2==NULL){
+				wider_unknown_count = 0;
+				continue;
+			}
+			active_object_count_wider +=
+					block2->m_static_objects.m_active.size()
+					+ block2->m_static_objects.m_stored.size();
+		}
+		// Extrapolate
+		u32 wider_known_count = 3*3*3 - wider_unknown_count;
+		active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
+				
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
@@ -762,29 +785,6 @@ public:
 				}
 neighbor_found:
 
-				// Find out how many objects the block contains
-				u32 active_object_count = block->m_static_objects.m_active.size();
-				// Find out how many objects this and all the neighbors contain
-				u32 active_object_count_wider = 0;
-				u32 wider_unknown_count = 0;
-				for(s16 x=-1; x<=1; x++)
-				for(s16 y=-1; y<=1; y++)
-				for(s16 z=-1; z<=1; z++)
-				{
-					MapBlock *block2 = map->getBlockNoCreateNoEx(
-							block->getPos() + v3s16(x,y,z));
-					if(block2==NULL){
-						wider_unknown_count = 0;
-						continue;
-					}
-					active_object_count_wider +=
-							block2->m_static_objects.m_active.size()
-							+ block2->m_static_objects.m_stored.size();
-				}
-				// Extrapolate
-				u32 wider_known_count = 3*3*3 - wider_unknown_count;
-				active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
-				
 				// Call all the trigger variations
 				i->abm->trigger(m_env, p, n);
 				i->abm->trigger(m_env, p, n,
