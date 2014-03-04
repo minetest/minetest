@@ -849,7 +849,7 @@ Example stuff:
 
 local meta = minetest.get_meta(pos)
 meta:set_string("formspec",
-        "invsize[8,9;]"..
+        "size[8,9]"..
         "list[context;main;0,0;8,4;]"..
         "list[current_player;main;0,5;8,4;]")
 meta:set_string("infotext", "Chest");
@@ -861,7 +861,7 @@ meta:from_table({
         main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "", [5] = "", [6] = "", [7] = "", [8] = "", [9] = "", [10] = "", [11] = "", [12] = "", [13] = "", [14] = "default:cobble", [15] = "", [16] = "", [17] = "", [18] = "", [19] = "", [20] = "default:cobble", [21] = "", [22] = "", [23] = "", [24] = "", [25] = "", [26] = "", [27] = "", [28] = "", [29] = "", [30] = "", [31] = "", [32] = ""}
     },
     fields = {
-        formspec = "invsize[8,9;]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
+        formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
         infotext = "Chest"
     }
 })
@@ -876,17 +876,17 @@ examples.
 
 Examples:
 - Chest:
-    invsize[8,9;]
+    size[8,9]
     list[context;main;0,0;8,4;]
     list[current_player;main;0,5;8,4;]
 - Furnace:
-    invsize[8,9;]
+    size[8,9]
     list[context;fuel;2,3;1,1;]
     list[context;src;2,1;1,1;]
     list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 - Minecraft-like player inventory
-    invsize[8,7.5;]
+    size[8,7.5]
     image[1,0.6;1,2;player.png]
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
@@ -894,8 +894,9 @@ Examples:
 
 Elements:
 
-size[<W>,<H>]
+size[<W>,<H>,<fixed_size>]
 ^ Define the size of the menu in inventory slots
+^ fixed_size true/false (optional)
 ^ deprecated: invsize[<W>,<H>;]
 
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
