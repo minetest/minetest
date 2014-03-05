@@ -85,19 +85,17 @@ void Environment::addPlayer(Player *player)
 void Environment::removePlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
-re_search:
+
 	for(std::list<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i)
+			i != m_players.end();)
 	{
 		Player *player = *i;
-		if(player->peer_id != peer_id)
-			continue;
-		
-		delete player;
-		m_players.erase(i);
-		// See if there is an another one
-		// (shouldn't be, but just to be sure)
-		goto re_search;
+		if(player->peer_id == peer_id) {
+			delete player;
+			i = m_players.erase(i);
+		} else {
+			++i;
+		}
 	}
 }
 
