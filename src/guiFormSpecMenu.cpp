@@ -66,12 +66,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
-		gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr,
-		InventoryManager *invmgr,
-		IGameDef *gamedef,
-		ISimpleTextureSource *tsrc
-):
+		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
+		InventoryManager *invmgr, IGameDef *gamedef,
+		ISimpleTextureSource *tsrc) :
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
 	m_invmgr(invmgr),
@@ -248,10 +245,11 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return tokens;
 }
 
-void GUIFormSpecMenu::parseSize(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,',');
 
-	if (parts.size() == 2) {
+	if ((parts.size() == 2) || parts.size() == 3) {
 		v2f invsize;
 
 		if (parts[1].find(';') != std::string::npos)
@@ -259,6 +257,13 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element) {
 
 		invsize.X = stof(parts[0]);
 		invsize.Y = stof(parts[1]);
+
+		lockSize(false);
+		if (parts.size() == 3) {
+			if (parts[2] == "true") {
+				lockSize(true,v2u32(800,600));
+			}
+		}
 
 		if (m_lock) {
 			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
@@ -305,8 +310,8 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element) {
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseList(parserData* data,std::string element) {
-
+void GUIFormSpecMenu::parseList(parserData* data,std::string element)
+{
 	if (m_gamedef == 0) {
 		errorstream<<"WARNING: invalid use of 'list' with m_gamedef==0"<<std::endl;
 		return;
@@ -358,7 +363,8 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element) {
 	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 3) || (parts.size() == 4)) {
@@ -408,7 +414,8 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element) {
 	errorstream<< "Invalid checkbox element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 3) {
@@ -451,7 +458,8 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element) {
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 3) {
@@ -478,7 +486,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element) {
 	errorstream<< "Invalid ItemImage element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseButton(parserData* data,std::string element,std::string type) {
+void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
+		std::string type)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 4) {
@@ -530,7 +540,8 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,std::stri
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 3) || (parts.size() == 4)) {
@@ -565,7 +576,8 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element) {
 	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTableOptions(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseTableOptions(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	data->table_options.clear();
@@ -576,7 +588,8 @@ void GUIFormSpecMenu::parseTableOptions(parserData* data,std::string element) {
 	}
 }
 
-void GUIFormSpecMenu::parseTableColumns(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseTableColumns(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	data->table_columns.clear();
@@ -595,7 +608,8 @@ void GUIFormSpecMenu::parseTableColumns(parserData* data,std::string element) {
 	}
 }
 
-void GUIFormSpecMenu::parseTable(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 4) || (parts.size() == 5)) {
@@ -664,7 +678,8 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element) {
 	errorstream<< "Invalid table element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 4) || (parts.size() == 5) || (parts.size() == 6)) {
@@ -737,7 +752,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element) {
 }
 
 
-void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 5) {
@@ -790,7 +806,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element) {
 				<< element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
+void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 4) {
@@ -856,7 +873,9 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element) {
 	errorstream<< "Invalid pwdfield element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string> &parts) {
+void GUIFormSpecMenu::parseSimpleField(parserData* data,
+		std::vector<std::string> &parts)
+{
 	std::string name = parts[0];
 	std::string label = parts[1];
 	std::string default_val = parts[2];
@@ -935,7 +954,9 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,std::vector<std::string>
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& parts,std::string type) {
+void GUIFormSpecMenu::parseTextArea(parserData* data,
+		std::vector<std::string>& parts,std::string type)
+{
 
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
@@ -1026,7 +1047,9 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,std::vector<std::string>& p
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseField(parserData* data,std::string element,std::string type) {
+void GUIFormSpecMenu::parseField(parserData* data,std::string element,
+		std::string type)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 3) {
@@ -1041,7 +1064,8 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,std::strin
 	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseLabel(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 2) {
@@ -1076,7 +1100,8 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element) {
 	errorstream<< "Invalid label element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 2) {
@@ -1116,7 +1141,9 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element) {
 	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std::string type) {
+void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
+		std::string type)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 5) || (parts.size() == 7) || (parts.size() == 8)) {
@@ -1202,7 +1229,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,std:
 	errorstream<< "Invalid imagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 4) || (parts.size() == 6)) {
@@ -1269,7 +1297,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element) {
 	errorstream<< "Invalid TabHeader element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
+{
 
 	if (m_gamedef == 0) {
 		errorstream<<"WARNING: invalid use of item_image_button with m_gamedef==0"<<std::endl;
@@ -1335,7 +1364,8 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseBox(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if (parts.size() == 3) {
@@ -1368,7 +1398,8 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element) {
 	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 1) || (parts.size() == 2)) {
@@ -1383,7 +1414,8 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element)
 	errorstream<< "Invalid bgcolor element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseListColors(parserData* data,std::string element) {
+void GUIFormSpecMenu::parseListColors(parserData* data,std::string element)
+{
 	std::vector<std::string> parts = split(element,';');
 
 	if ((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
@@ -1408,8 +1440,8 @@ void GUIFormSpecMenu::parseListColors(parserData* data,std::string element) {
 	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseElement(parserData* data,std::string element) {
-
+void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
+{
 	//some prechecks
 	if (element == "")
 		return;
@@ -2132,14 +2164,20 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput(bool quit=false)
+void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 {
 	if(m_text_dst)
 	{
 		std::map<std::string, std::string> fields;
 
-		if (quit) {
+		if (quitmode == quit_mode_accept) {
 			fields["quit"] = "true";
+		}
+
+		if (quitmode == quit_mode_cancel) {
+			fields["quit"] = "true";
+			m_text_dst->gotText(fields);
+			return;
 		}
 
 		if (current_keys_pending.key_down) {
@@ -2281,10 +2319,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.KeyInput.PressedDown && (kp == EscapeKey ||
 			kp == getKeySetting("keymap_inventory")))
 		{
-			if (m_allowclose) {
-				acceptInput(true);
+			if (m_allowclose){
+				acceptInput(quit_mode_cancel);
 				quitMenu();
-			 } else {
+			} else {
 				m_text_dst->gotText(narrow_to_wide("MenuQuit"));
 			}
 			return true;
@@ -2313,7 +2351,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					break;
 			}
 			if (current_keys_pending.key_enter && m_allowclose) {
-				acceptInput(true);
+				acceptInput(quit_mode_accept);
 				quitMenu();
 			}
 			else {
@@ -2643,7 +2681,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			if (btn_id == 257) {
 				if (m_allowclose) {
-					acceptInput(true);
+					acceptInput(quit_mode_accept);
 					quitMenu();
 				} else {
 					acceptInput();
@@ -2666,7 +2704,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					acceptInput();
 					if(s.is_exit){
 						if (m_allowclose) {
-							acceptInput(true);
+							acceptInput(quit_mode_accept);
 							quitMenu();
 						} else {
 							m_text_dst->gotText(narrow_to_wide("ExitButton"));
@@ -2685,7 +2723,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			{
 
 				if (m_allowclose) {
-					acceptInput(true);
+					acceptInput(quit_mode_accept);
 					quitMenu();
 				}
 				else {
@@ -2723,7 +2761,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-bool GUIFormSpecMenu::parseColor(const std::string &value, video::SColor &color, bool quiet)
+bool GUIFormSpecMenu::parseColor(const std::string &value, video::SColor &color,
+		bool quiet)
 {
 	const char *hexpattern = NULL;
 	if (value[0] == '#') {

@@ -422,7 +422,7 @@ function modmgr.dialog_configure_world()
 	local mod = filterlist.get_list(modmgr.modlist)[modmgr.world_config_selected_mod]
 
 	local retval =
-		"size[11,6.5]" ..
+		"size[11,6.5,true]" ..
 		"label[0.5,-0.25;" .. fgettext("World:") .. "]" ..
 		"label[1.75,-0.25;" .. worldspec.name .. "]"
 

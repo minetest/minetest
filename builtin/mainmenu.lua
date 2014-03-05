@@ -176,7 +176,7 @@ function update_menu()
 
 	-- handle errors
 	if gamedata.errormessage ~= nil then
-		formspec = "size[12,5.2]" ..
+		formspec = "size[12,5.2,true]" ..
 			"textarea[1,2;10,2;;ERROR: " ..
 			engine.formspec_escape(gamedata.errormessage) ..
 			";]"..
@@ -365,7 +365,7 @@ end
 
 function tabbuilder.gettab()
 	local tsize = tabbuilder.tabsizes[tabbuilder.current_tab] or {width=12, height=5.2}
-	local retval = "size[" .. tsize.width .. "," .. tsize.height .. "]"
+	local retval = "size[" .. tsize.width .. "," .. tsize.height .. ",true]"
 
 	if tabbuilder.show_buttons then
 		retval = retval .. tabbuilder.tab_header()

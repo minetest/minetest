@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "IMeshCache.h"
 #include "client.h"
 #include "server.h"
-#include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
 #include "guiFormSpecMenu.h"
@@ -75,24 +74,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Text input system
 */
 
-struct TextDestChat : public TextDest
-{
-	TextDestChat(Client *client)
-	{
-		m_client = client;
-	}
-	void gotText(std::wstring text)
-	{
-		m_client->typeChatMessage(text);
-	}
-	void gotText(std::map<std::string, std::string> fields)
-	{
-		m_client->typeChatMessage(narrow_to_wide(fields["text"]));
-	}
-
-	Client *m_client;
-};
-
 struct TextDestNodeMetadata : public TextDest
 {
 	TextDestNodeMetadata(v3s16 p, Client *client)
@@ -136,12 +117,76 @@ struct TextDestPlayerInventory : public TextDest
 		m_client->sendInventoryFields(m_formname, fields);
 	}
 
-	void setFormName(std::string formname) {
+	Client *m_client;
+};
+
+struct LocalFormspecHandler : public TextDest
+{
+	LocalFormspecHandler();
+	LocalFormspecHandler(std::string formname) {
 		m_formname = formname;
 	}
 
+	LocalFormspecHandler(std::string formname,Client *client) {
+		m_formname = formname;
+		m_client = client;
+	}
+
+	void gotText(std::string message) {
+		errorstream << "LocalFormspecHandler::gotText old style message received" << std::endl;
+	}
+
+	void gotText(std::map<std::string, std::string> fields)
+	{
+		if (m_formname == "MT_PAUSE_MENU") {
+			if (fields.find("btn_sound") != fields.end()) {
+				g_gamecallback->changeVolume();
+				return;
+			}
+
+			if (fields.find("btn_exit_menu") != fields.end()) {
+				g_gamecallback->disconnect();
+				return;
+			}
+
+			if (fields.find("btn_exit_os") != fields.end()) {
+				g_gamecallback->exitToOS();
+				return;
+			}
+
+			if (fields.find("quit") != fields.end()) {
+				return;
+			}
+
+			if (fields.find("btn_continue") != fields.end()) {
+				return;
+			}
+		}
+		if (m_formname == "MT_CHAT_MENU") {
+			if ((fields.find("btn_send") != fields.end()) ||
+					(fields.find("quit") != fields.end())) {
+				if (fields.find("f_text") != fields.end()) {
+					if (m_client != 0) {
+						m_client->typeChatMessage(narrow_to_wide(fields["f_text"]));
+					}
+					else {
+						errorstream << "LocalFormspecHandler::gotText received chat message but m_client is NULL" << std::endl;
+					}
+				}
+				return;
+			}
+		}
+
+		errorstream << "LocalFormspecHandler::gotText unhandled >" << m_formname << "< event" << std::endl;
+		int i = 0;
+		for (std::map<std::string,std::string>::iterator iter = fields.begin();
+				iter != fields.end(); iter++) {
+			errorstream << "\t"<< i << ": " << iter->first << "=" << iter->second << std::endl;
+			i++;
+		}
+	}
+
 	Client *m_client;
-	std::string m_formname;
 };
 
 /* Respawn menu callback */
@@ -224,13 +269,9 @@ inline bool isPointableNode(const MapNode& n,
 	Find what the player is pointing at
 */
 PointedThing getPointedThing(Client *client, v3f player_position,
-		v3f camera_direction, v3f camera_position,
-		core::line3d<f32> shootline, f32 d,
-		bool liquids_pointable,
-		bool look_for_object,
-		v3s16 camera_offset,
-		std::vector<aabb3f> &hilightboxes,
-		ClientActiveObject *&selected_object)
+		v3f camera_direction, v3f camera_position, core::line3d<f32> shootline,
+		f32 d, bool liquids_pointable, bool look_for_object, v3s16 camera_offset,
+		std::vector<aabb3f> &hilightboxes, ClientActiveObject *&selected_object)
 {
 	PointedThing result;
 
@@ -379,9 +420,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 /*gui::IGUIStaticText **/
-void draw_load_screen(const std::wstring &text,
-		IrrlichtDevice* device, gui::IGUIFont* font,
-		float dtime=0 ,int percent=0, bool clouds=true)
+void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
+		gui::IGUIFont* font, float dtime=0 ,int percent=0, bool clouds=true)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	v2u32 screensize = driver->getScreenSize();
@@ -430,8 +470,8 @@ void draw_load_screen(const std::wstring &text,
 /* Profiler display */
 
 void update_profiler_gui(gui::IGUIStaticText *guitext_profiler,
-		gui::IGUIFont *font, u32 text_height,
-		u32 show_profiler, u32 show_profiler_max)
+		gui::IGUIFont *font, u32 text_height, u32 show_profiler,
+		u32 show_profiler_max)
 {
 	if(show_profiler == 0)
 	{
@@ -833,8 +873,7 @@ public:
 };
 
 bool nodePlacementPrediction(Client &client,
-		const ItemDefinition &playeritem_def,
-		v3s16 nodepos, v3s16 neighbourpos)
+		const ItemDefinition &playeritem_def, v3s16 nodepos, v3s16 neighbourpos)
 {
 	std::string prediction = playeritem_def.node_placement_prediction;
 	INodeDefManager *nodedef = client.ndef();
@@ -930,26 +969,86 @@ bool nodePlacementPrediction(Client &client,
 	return false;
 }
 
+static void show_chat_menu(FormspecFormSource* current_formspec,
+		TextDest* current_textdest, IWritableTextureSource* tsrc,
+		IrrlichtDevice * device, Client* client, std::string text)
+{
+	std::string formspec =
+		"size[11,5.5,true]"
+		"field[3,2.35;6,0.5;f_text;;" + text + "]"
+		"button_exit[4,3;3,0.5;btn_send;"  + std::string(gettext("Proceed"))     + "]"
+		;
 
-void the_game(
-	bool &kill,
-	bool random_input,
-	InputHandler *input,
-	IrrlichtDevice *device,
-	gui::IGUIFont* font,
-	std::string map_dir,
-	std::string playername,
-	std::string password,
-	std::string address, // If "", local server is used
-	u16 port,
-	std::wstring &error_message,
-	ChatBackend &chat_backend,
-	const SubgameSpec &gamespec, // Used for local game,
-	bool simple_singleplayer_mode
-)
+	/* Create menu */
+	/* Note: FormspecFormSource and LocalFormspecHandler
+	 * are deleted by guiFormSpecMenu                     */
+	current_formspec = new FormspecFormSource(formspec,&current_formspec);
+	current_textdest = new LocalFormspecHandler("MT_CHAT_MENU",client);
+	GUIFormSpecMenu *menu =
+			new GUIFormSpecMenu(device, guiroot, -1,
+					&g_menumgr,
+					NULL, NULL, tsrc);
+	menu->setFormSource(current_formspec);
+	menu->setTextDest(current_textdest);
+	menu->drop();
+}
+
+/******************************************************************************/
+static void show_pause_menu(FormspecFormSource* current_formspec,
+		TextDest* current_textdest, IWritableTextureSource* tsrc,
+		IrrlichtDevice * device)
+{
+	const char* control_text = gettext("Default Controls:\n"
+			"- WASD: move\n"
+			"- Space: jump/climb\n"
+			"- Shift: sneak/go down\n"
+			"- Q: drop item\n"
+			"- I: inventory\n"
+			"- Mouse: turn/look\n"
+			"- Mouse left: dig/punch\n"
+			"- Mouse right: place/use\n"
+			"- Mouse wheel: select item\n"
+			"- T: chat\n"
+			);
+
+	std::ostringstream os;
+	os<<"Minetest\n";
+	os<<minetest_build_info<<"\n";
+	os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
+
+	std::string formspec =
+		"size[11,5.5,true]"
+		"button_exit[4,1;3,0.5;btn_continue;"  + std::string(gettext("Continue"))+ "]"
+		"button[4,2;3,0.5;btn_sound;"     + std::string(gettext("Sound Volume")) + "]"
+		"button[4,3;3,0.5;btn_exit_menu;" + std::string(gettext("Exit to Menu")) + "]"
+		"button[4,4;3,0.5;btn_exit_os;"   + std::string(gettext("Exit to OS"))   + "]"
+		"textarea[7.5,0.25;3.75,6;;" + std::string(control_text) + ";]"
+		"textarea[0.4,0.25;3.5,6;;" + os.str() + ";]"
+		;
+
+	/* Create menu */
+	/* Note: FormspecFormSource and LocalFormspecHandler  *
+	 * are deleted by guiFormSpecMenu                     */
+	current_formspec = new FormspecFormSource(formspec,&current_formspec);
+	current_textdest = new LocalFormspecHandler("MT_PAUSE_MENU");
+	GUIFormSpecMenu *menu =
+		new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr, NULL, NULL, tsrc);
+	menu->setFormSource(current_formspec);
+	menu->setTextDest(current_textdest);
+	menu->drop();
+}
+
+/******************************************************************************/
+void the_game(bool &kill, bool random_input, InputHandler *input,
+	IrrlichtDevice *device, gui::IGUIFont* font, std::string map_dir,
+	std::string playername, std::string password,
+	std::string address /* If "", local server is used */,
+	u16 port, std::wstring &error_message, ChatBackend &chat_backend,
+	const SubgameSpec &gamespec /* Used for local game */,
+	bool simple_singleplayer_mode)
 {
 	FormspecFormSource* current_formspec = 0;
-	TextDestPlayerInventory* current_textdest = 0;
+	TextDest* current_textdest = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -1788,33 +1887,15 @@ void the_game(
 		}
 		else if(input->wasKeyDown(EscapeKey))
 		{
-			infostream<<"the_game: "
-					<<"Launching pause menu"<<std::endl;
-			// It will delete itself by itself
-			(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
-					&g_menumgr, simple_singleplayer_mode))->drop();
-
-			// Move mouse cursor on top of the disconnect button
-			if(simple_singleplayer_mode)
-				input->setMousePos(displaycenter.X, displaycenter.Y+0);
-			else
-				input->setMousePos(displaycenter.X, displaycenter.Y+25);
+			show_pause_menu(current_formspec, current_textdest, tsrc, device);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
-			TextDest *dest = new TextDestChat(&client);
-
-			(new GUITextInputMenu(guienv, guiroot, -1,
-					&g_menumgr, dest,
-					L""))->drop();
+			show_chat_menu(current_formspec, current_textdest, tsrc, device, &client,"");
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
 		{
-			TextDest *dest = new TextDestChat(&client);
-
-			(new GUITextInputMenu(guienv, guiroot, -1,
-					&g_menumgr, dest,
-					L"/"))->drop();
+			show_chat_menu(current_formspec, current_textdest, tsrc, device, &client,"/");
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_console")))
 		{

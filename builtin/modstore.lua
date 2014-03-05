@@ -98,7 +98,7 @@ end
 -- @function [parent=#modstore] getsuccessfuldialog
 function modstore.getsuccessfuldialog()
 	local retval = ""
-	retval = retval .. "size[6,2]"
+	retval = retval .. "size[6,2,true]"
 	if modstore.lastmodentry ~= nil then
 		retval = retval .. "label[0,0.25;" .. fgettext("Successfully installed:") .. "]"
 		retval = retval .. "label[3,0.25;" .. modstore.lastmodentry.moddetails.title .. "]"
@@ -152,7 +152,7 @@ end
 --------------------------------------------------------------------------------
 -- @function [parent=#modstore] tabheader
 function modstore.tabheader(tabname)
-	local retval  = "size[12,10.25]"
+	local retval  = "size[12,10.25,true]"
 	retval = retval .. "tabheader[-0.3,-0.99;modstore_tab;" ..
 				"Unsorted,Search;" ..
 				modstore.nametoindex(tabname) .. ";true;false]" ..
