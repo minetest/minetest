@@ -99,6 +99,8 @@ void * ServerThread::Thread()
 
 	ThreadStarted();
 
+	porting::setThreadName("ServerThread");
+
 	while(!StopRequested())
 	{
 		try{

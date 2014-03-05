@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
 #include "socket.h" // for select()
 #include "porting.h" // for sleep_ms(), get_sysinfo()
 #include "httpfetch.h"
@@ -565,6 +564,8 @@ protected:
 		ThreadStarted();
 		log_register_thread("CurlFetchThread");
 		DSTACK(__FUNCTION_NAME);
+
+		porting::setThreadName("CurlFetchThread");
 
 		CurlHandlePool pool;
 

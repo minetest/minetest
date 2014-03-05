@@ -1075,7 +1075,7 @@ public:
 			m_spritenode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 		}
 	}
-	
+
 	void step(float dtime, ClientEnvironment *env)
 	{
 		if(m_visuals_expired && m_smgr && m_irr){

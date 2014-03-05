@@ -226,7 +226,8 @@ bool GUIEngine::loadMainMenuScript()
 		}
 		else {
 			infostream
-				<< "GUIEngine: execution of custom menu failed!"
+				<< "GUIEngine: execution of custom menu: \""
+				<< menuscript << "\" failed!"
 				<< std::endl
 				<< "\tfalling back to builtin menu"
 				<< std::endl;
@@ -317,7 +318,7 @@ GUIEngine::~GUIEngine()
 	}
 
 	delete m_texture_source;
-	
+
 	if (m_cloud.clouds)
 		m_cloud.clouds->drop();
 }

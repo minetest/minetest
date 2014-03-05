@@ -143,7 +143,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		v2s32 geom;
 		bool scale;
 	};
-	
+
 	struct FieldSpec
 	{
 		FieldSpec()
@@ -202,7 +202,7 @@ public:
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
 	}
-	
+
 	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
@@ -231,7 +231,7 @@ public:
 		Remove and re-add (or reposition) stuff
 	*/
 	void regenerateGui(v2u32 screensize);
-	
+
 	ItemSpec getItemAtPos(v2s32 p) const;
 	void drawList(const ListDrawSpec &s, int phase);
 	void drawSelectedItem();
@@ -260,7 +260,7 @@ protected:
 	v2s32 spacing;
 	v2s32 imgsize;
 	v2s32 offset;
-	
+
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
@@ -283,7 +283,7 @@ protected:
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
 	bool m_selected_dragging;
-	
+
 	// WARNING: BLACK MAGIC
 	// Used to guess and keep up with some special things the server can do.
 	// If name is "", no guess exists.
@@ -355,6 +355,15 @@ private:
 	void parseBox(parserData* data,std::string element);
 	void parseBackgroundColor(parserData* data,std::string element);
 	void parseListColors(parserData* data,std::string element);
+
+
+	bool DoubleClickDetection(const SEvent event);
+
+	struct clickpos {
+		v2s32 pos;
+		s32 time;
+	};
+	clickpos m_doubleclickdetect[2];
 };
 
 class FormspecFormSource: public IFormSource
