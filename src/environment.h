@@ -105,6 +105,9 @@ public:
 		m_day_night_ratio_override = value;
 	}
 
+	// counter used internally when triggering ABMs
+	u32 m_added_objects;
+
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::list<Player*> m_players;
@@ -118,6 +121,7 @@ protected:
 	// Overriding the day-night ratio is useful for custom sky visuals
 	bool m_enable_day_night_ratio_override;
 	u32 m_day_night_ratio_override;
+
 };
 
 /*
