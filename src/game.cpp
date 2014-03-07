@@ -1147,27 +1147,34 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		draw_load_screen(text, device, font,0,25);
 		delete[] text;
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, gamespec,
-				simple_singleplayer_mode);
 
 		std::string bind_str = g_settings->get("bind_address");
 		Address bind_addr(0,0,0,0, port);
 
-		if (bind_str != "")
-		{
-			try {
-				bind_addr.Resolve(bind_str.c_str());
-				address = bind_str;
-			} catch (ResolveError &e) {
-				infostream << "Resolving bind address \"" << bind_str
-						   << "\" failed: " << e.what()
-						   << " -- Listening on all addresses." << std::endl;
-
-				if (g_settings->getBool("ipv6_server")) {
-					bind_addr.setAddress((IPv6AddressBytes*) NULL);
-				}
-			}
+		if (g_settings->getBool("ipv6_server")) {
+			bind_addr.setAddress((IPv6AddressBytes*) NULL);
 		}
+		try {
+			bind_addr.Resolve(bind_str.c_str());
+			address = bind_str;
+		} catch (ResolveError &e) {
+			infostream << "Resolving bind address \"" << bind_str
+					   << "\" failed: " << e.what()
+					   << " -- Listening on all addresses." << std::endl;
+		}
+
+		if(bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+			error_message = L"Unable to listen on " +
+				narrow_to_wide(bind_addr.serializeString()) +
+				L" because IPv6 is disabled";
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
+			// Break out of client scope
+			return;
+		}
+
+		server = new Server(map_dir, gamespec,
+				simple_singleplayer_mode,
+				bind_addr.isIPv6());
 
 		server->start(bind_addr);
 	}
@@ -1193,27 +1200,29 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		delete[] text;
 	}
 	Address connect_address(0,0,0,0, port);
-	try{
-		if(address == "")
-		{
+	try {
+		connect_address.Resolve(address.c_str());
+		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
 			//connect_address.Resolve("localhost");
-			if(g_settings->getBool("enable_ipv6") && g_settings->getBool("ipv6_server"))
-			{
+			if (connect_address.isIPv6()) {
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
 				connect_address.setAddress(&addr_bytes);
-			}
-			else
-			{
+			} else {
 				connect_address.setAddress(127,0,0,1);
 			}
 		}
-		else
-			connect_address.Resolve(address.c_str());
 	}
-	catch(ResolveError &e)
-	{
+	catch(ResolveError &e) {
 		error_message = L"Couldn't resolve address: " + narrow_to_wide(e.what());
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
+		// Break out of client scope
+		break;
+	}
+	if(connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+		error_message = L"Unable to connect to " +
+			narrow_to_wide(connect_address.serializeString()) +
+			L" because IPv6 is disabled";
 		errorstream<<wide_to_narrow(error_message)<<std::endl;
 		// Break out of client scope
 		break;

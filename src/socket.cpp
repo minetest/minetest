@@ -143,6 +143,15 @@ bool Address::operator!=(Address &address)
 
 void Address::Resolve(const char *name)
 {
+	if (!name || name[0] == 0) {
+		if (m_addr_family == AF_INET) {
+			setAddress((u32) 0);
+		} else if (m_addr_family == AF_INET6) {
+			setAddress((IPv6AddressBytes*) 0);
+		}
+		return;
+	}
+
 	struct addrinfo *resolved, hints;
 	memset(&hints, 0, sizeof(hints));
 	
@@ -249,6 +258,18 @@ int Address::getFamily() const
 bool Address::isIPv6() const
 {
 	return m_addr_family == AF_INET6;
+}
+
+bool Address::isZero() const
+{
+	if (m_addr_family == AF_INET) {
+		return m_address.ipv4.sin_addr.s_addr == 0;
+	} else if (m_addr_family == AF_INET6) {
+		static const char zero[16] = {0};
+		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
+		              zero, 16) == 0;
+	}
+	return false;
 }
 
 void Address::setAddress(u32 address)
