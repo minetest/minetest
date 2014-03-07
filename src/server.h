@@ -174,7 +174,8 @@ public:
 	Server(
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
-		bool simple_singleplayer_mode
+		bool simple_singleplayer_mode,
+		bool ipv6
 	);
 	~Server();
 	void start(Address bind_addr);

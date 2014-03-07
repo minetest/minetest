@@ -438,6 +438,7 @@
 #enable_ipv6 = true
 # Enable/disable running an IPv6 server.  An IPv6 server may be restricted
 # to IPv6 clients, depending on system configuration.
+# Ignored if bind_address is set.
 #ipv6_server = false
 
 #main_menu_script =
