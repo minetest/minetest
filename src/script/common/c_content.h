@@ -119,9 +119,14 @@ int                getenumfield              (lua_State *L,
                                               const EnumString *spec,
                                               int default_);
 
-u32                getflagsfield             (lua_State *L, int table,
+bool               getflagsfield             (lua_State *L, int table,
                                               const char *fieldname,
-                                              FlagDesc *flagdesc, u32 *flagmask);
+                                              FlagDesc *flagdesc,
+                                              u32 *flags, u32 *flagmask);
+
+bool               read_flags                (lua_State *L, int index,
+                                              FlagDesc *flagdesc,
+                                              u32 *flags, u32 *flagmask);
 
 u32                read_flags_table          (lua_State *L, int table,
                                               FlagDesc *flagdesc, u32 *flagmask);
