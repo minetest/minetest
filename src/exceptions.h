@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BaseException : public std::exception
 {
 public:
-	BaseException(const std::string s) throw()
+	BaseException(const std::string &s) throw()
 	{
 		m_s = s;
 	}
@@ -42,78 +42,78 @@ protected:
 
 class AsyncQueuedException : public BaseException {
 public:
-	AsyncQueuedException(std::string s): BaseException(s) {}
+	AsyncQueuedException(const std::string &s): BaseException(s) {}
 };
 
 class NotImplementedException : public BaseException {
 public:
-	NotImplementedException(std::string s): BaseException(s) {}
+	NotImplementedException(const std::string &s): BaseException(s) {}
 };
 
 class AlreadyExistsException : public BaseException {
 public:
-	AlreadyExistsException(std::string s): BaseException(s) {}
+	AlreadyExistsException(const std::string &s): BaseException(s) {}
 };
 
 class VersionMismatchException : public BaseException {
 public:
-	VersionMismatchException(std::string s): BaseException(s) {}
+	VersionMismatchException(const std::string &s): BaseException(s) {}
 };
 
 class FileNotGoodException : public BaseException {
 public:
-	FileNotGoodException(std::string s): BaseException(s) {}
+	FileNotGoodException(const std::string &s): BaseException(s) {}
 };
 
 class SerializationError : public BaseException {
 public:
-	SerializationError(std::string s): BaseException(s) {}
+	SerializationError(const std::string &s): BaseException(s) {}
 };
 
 class LoadError : public BaseException {
 public:
-	LoadError(std::string s): BaseException(s) {}
+	LoadError(const std::string &s): BaseException(s) {}
 };
 
 class ContainerFullException : public BaseException {
 public:
-	ContainerFullException(std::string s): BaseException(s) {}
+	ContainerFullException(const std::string &s): BaseException(s) {}
 };
 
 class SettingNotFoundException : public BaseException {
 public:
-	SettingNotFoundException(std::string s): BaseException(s) {}
+	SettingNotFoundException(const std::string &s): BaseException(s) {}
 };
 
 class InvalidFilenameException : public BaseException {
 public:
-	InvalidFilenameException(std::string s): BaseException(s) {}
+	InvalidFilenameException(const std::string &s): BaseException(s) {}
 };
 
 class ProcessingLimitException : public BaseException {
 public:
-	ProcessingLimitException(std::string s): BaseException(s) {}
+	ProcessingLimitException(const std::string &s): BaseException(s) {}
 };
 
 class CommandLineError : public BaseException {
 public:
-	CommandLineError(std::string s): BaseException(s) {}
+	CommandLineError(const std::string &s): BaseException(s) {}
 };
 
 class ItemNotFoundException : public BaseException {
 public:
-	ItemNotFoundException(std::string s): BaseException(s) {}
+	ItemNotFoundException(const std::string &s): BaseException(s) {}
 };
 
 class ServerError : public BaseException {
 public:
-	ServerError(std::string s): BaseException(s) {}
+	ServerError(const std::string &s): BaseException(s) {}
 };
 
 // Only used on Windows (SEH)
 class FatalSystemException : public BaseException {
 public:
-	FatalSystemException(std::string s): BaseException(s) {}
+	FatalSystemException(const std::string &s): BaseException(s) {}
 };
 
 /*
@@ -126,7 +126,7 @@ public:
 	InvalidPositionException():
 		BaseException("Somebody tried to get/set something in a nonexistent position.")
 	{}
-	InvalidPositionException(std::string s):
+	InvalidPositionException(const std::string &s):
 		BaseException(s)
 	{}
 };
