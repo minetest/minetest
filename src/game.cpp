@@ -3214,7 +3214,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
 				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
 				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
-				<<"%) (seed = "<<((unsigned long long)client.getMapSeed())
+				<<"%) (seed = "<<((u64)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);

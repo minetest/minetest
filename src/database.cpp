@@ -36,13 +36,13 @@ static s64 pythonmodulo(s64 i, s64 mod)
 	return mod - ((-i) % mod);
 }
 
-long long Database::getBlockAsInteger(const v3s16 pos) {
-	return (unsigned long long)pos.Z*16777216 +
-		(unsigned long long)pos.Y*4096 + 
-		(unsigned long long)pos.X;
+s64 Database::getBlockAsInteger(const v3s16 pos) {
+	return (u64) pos.Z * 16777216 +
+		(u64) pos.Y * 4096 +
+		(u64) pos.X;
 }
 
-v3s16 Database::getIntegerAsBlock(long long i) {
+v3s16 Database::getIntegerAsBlock(s64 i) {
 	s32 x = unsignedToSigned(pythonmodulo(i, 4096), 2048);
 	i = (i - x) / 4096;
 	s32 y = unsignedToSigned(pythonmodulo(i, 4096), 2048);
