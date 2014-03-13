@@ -976,7 +976,7 @@ static void show_chat_menu(FormspecFormSource* current_formspec,
 	std::string formspec =
 		"size[11,5.5,true]"
 		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;"  + std::string(gettext("Proceed"))     + "]"
+		"button_exit[4,3;3,0.5;btn_send;"  + wide_to_narrow(wstrgettext("Proceed")) + "]"
 		;
 
 	/* Create menu */
@@ -998,7 +998,8 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 		TextDest* current_textdest, IWritableTextureSource* tsrc,
 		IrrlichtDevice * device)
 {
-	const char* control_text = gettext("Default Controls:\n"
+
+	std::string control_text = wide_to_narrow(wstrgettext("Default Controls:\n"
 			"- WASD: move\n"
 			"- Space: jump/climb\n"
 			"- Shift: sneak/go down\n"
@@ -1009,7 +1010,7 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 			"- Mouse right: place/use\n"
 			"- Mouse wheel: select item\n"
 			"- T: chat\n"
-			);
+			));
 
 	std::ostringstream os;
 	os<<"Minetest\n";
@@ -1018,11 +1019,11 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 
 	std::string formspec =
 		"size[11,5.5,true]"
-		"button_exit[4,1;3,0.5;btn_continue;"  + std::string(gettext("Continue"))     + "]"
-		"button_exit[4,2;3,0.5;btn_sound;"     + std::string(gettext("Sound Volume")) + "]"
-		"button_exit[4,3;3,0.5;btn_exit_menu;" + std::string(gettext("Exit to Menu")) + "]"
-		"button_exit[4,4;3,0.5;btn_exit_os;"   + std::string(gettext("Exit to OS"))   + "]"
-		"textarea[7.5,0.25;3.75,6;;" + std::string(control_text) + ";]"
+		"button_exit[4,1;3,0.5;btn_continue;"  + wide_to_narrow(wstrgettext("Continue"))     + "]"
+		"button_exit[4,2;3,0.5;btn_sound;"     + wide_to_narrow(wstrgettext("Sound Volume")) + "]"
+		"button_exit[4,3;3,0.5;btn_exit_menu;" + wide_to_narrow(wstrgettext("Exit to Menu")) + "]"
+		"button_exit[4,4;3,0.5;btn_exit_os;"   + wide_to_narrow(wstrgettext("Exit to OS"))   + "]"
+		"textarea[7.5,0.25;3.75,6;;" + control_text + ";]"
 		"textarea[0.4,0.25;3.5,6;;" + os.str() + ";]"
 		;
 
