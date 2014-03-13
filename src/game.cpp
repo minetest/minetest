@@ -988,6 +988,7 @@ static void show_chat_menu(FormspecFormSource* current_formspec,
 			new GUIFormSpecMenu(device, guiroot, -1,
 					&g_menumgr,
 					NULL, NULL, tsrc);
+	menu->doPause = false;
 	menu->setFormSource(current_formspec);
 	menu->setTextDest(current_textdest);
 	menu->drop();
@@ -1034,6 +1035,7 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 	current_textdest = new LocalFormspecHandler("MT_PAUSE_MENU");
 	GUIFormSpecMenu *menu =
 		new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr, NULL, NULL, tsrc);
+	menu->doPause = true;
 	menu->setFormSource(current_formspec);
 	menu->setTextDest(current_textdest);
 	menu->drop();
@@ -1881,6 +1883,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 			PlayerInventoryFormSource *src = new PlayerInventoryFormSource(&client);
 			assert(src);
+			menu->doPause = false;
 			menu->setFormSpec(src->getForm(), inventoryloc);
 			menu->setFormSource(src);
 			menu->setTextDest(new TextDestPlayerInventory(&client));
@@ -2399,6 +2402,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 								new GUIFormSpecMenu(device, guiroot, -1,
 										&g_menumgr,
 										&client, gamedef, tsrc);
+						menu->doPause = false;
 						menu->setFormSource(current_formspec);
 						menu->setTextDest(current_textdest);
 						menu->drop();
@@ -2953,6 +2957,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 						new GUIFormSpecMenu(device, guiroot, -1,
 							&g_menumgr,
 							&client, gamedef, tsrc);
+					menu->doPause = false;
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
 					menu->setFormSource(new NodeMetadataFormSource(

@@ -242,6 +242,8 @@ public:
 	void acceptInput(FormspecQuitMode quitmode);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
+	bool doPause;
+	bool pausesGame() { return doPause; }
 
 	GUITable* getTable(std::wstring tablename);
 

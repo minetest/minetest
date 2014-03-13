@@ -2320,6 +2320,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			kp == getKeySetting("keymap_inventory")))
 		{
 			if (m_allowclose){
+				doPause = false;
 				acceptInput(quit_mode_cancel);
 				quitMenu();
 			} else {
