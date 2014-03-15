@@ -2659,7 +2659,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		
 		// Update sound listener
-		sound->updateListener(camera.getCameraNode()->getPosition(),
+		sound->updateListener(camera.getCameraNode()->getPosition()+intToFloat(camera_offset, BS),
 				v3f(0,0,0), // velocity
 				camera.getDirection(),
 				camera.getCameraNode()->getUpVector());
