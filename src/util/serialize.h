@@ -403,7 +403,7 @@ std::string deSerializeJsonString(std::istream &is);
 
 // Creates a string containing comma delimited values of a struct whose layout is
 // described by the parameter format
-bool serializeStructToString(std::string *outstr,
+bool serializeStructToString(std::string *out,
 	std::string format, void *value);
 
 // Reads a comma delimited string of values into a struct whose layout is

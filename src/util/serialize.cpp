@@ -385,23 +385,20 @@ fail:
 }
 
 
-bool serializeStructToString(std::string *outstr,
+bool serializeStructToString(std::string *out,
 	std::string format, void *value)
 {
-	char sbuf[2048];
-	int sbuflen = sizeof(sbuf) - 1;
-	sbuf[sbuflen] = 0;
+	std::ostringstream os;
 	std::string str;
-	int pos = 0;
-	size_t fpos;
 	char *f;
+	size_t strpos;
 
-	char *bufpos = (char *)value;
+	char *bufpos = (char *) value;
 	char *fmtpos, *fmt = &format[0];
 	while ((f = strtok_r(fmt, ",", &fmtpos))) {
 		fmt = NULL;
 		bool is_unsigned = false;
-		int width = 0, nprinted = 0;
+		int width = 0;
 		char valtype = *f;
 
 		width = (int)strtol(f + 1, &f, 10);
@@ -415,79 +412,65 @@ bool serializeStructToString(std::string *outstr,
 			case 'i':
 				if (width == 16) {
 					bufpos += PADDING(bufpos, u16);
-					nprinted = snprintf(sbuf + pos, sbuflen,
-								is_unsigned ? "%u, " : "%d, ",
-								*((u16 *)bufpos));
+					os << *((u16 *) bufpos);
 					bufpos += sizeof(u16);
 				} else if (width == 32) {
 					bufpos += PADDING(bufpos, u32);
-					nprinted = snprintf(sbuf + pos, sbuflen,
-								is_unsigned ? "%u, " : "%d, ",
-								*((u32 *)bufpos));
+					os << *((u32 *) bufpos);
 					bufpos += sizeof(u32);
 				} else if (width == 64) {
 					bufpos += PADDING(bufpos, u64);
-					nprinted = snprintf(sbuf + pos, sbuflen,
-								is_unsigned ? "%llu, " : "%lli, ",
-								(unsigned long long)*((u64 *)bufpos));
+					os << *((u64 *) bufpos);
 					bufpos += sizeof(u64);
 				}
 				break;
 			case 'b':
 				bufpos += PADDING(bufpos, bool);
-				nprinted = snprintf(sbuf + pos, sbuflen, "%s, ",
-									*((bool *)bufpos) ? "true" : "false");
+				os << std::boolalpha << *((bool *) bufpos);
 				bufpos += sizeof(bool);
 				break;
 			case 'f':
 				bufpos += PADDING(bufpos, float);
-				nprinted = snprintf(sbuf + pos, sbuflen, "%f, ",
-									*((float *)bufpos));
+				os << *((float *) bufpos);
 				bufpos += sizeof(float);
 				break;
 			case 's':
 				bufpos += PADDING(bufpos, std::string *);
-				str = **((std::string **)bufpos);
+				str = **((std::string **) bufpos);
 
-				fpos = 0;
-				while ((fpos = str.find('"', fpos)) != std::string::npos) {
-					str.insert(fpos, 1, '\\');
-					fpos += 2;
+				strpos = 0;
+				while ((strpos = str.find('"', strpos)) != std::string::npos) {
+					str.insert(strpos, 1, '\\');
+					strpos += 2;
 				}
 
-				nprinted = snprintf(sbuf + pos, sbuflen, "\"%s\", ",
-									(*((std::string **)bufpos))->c_str());
+				os << str;
 				bufpos += sizeof(std::string *);
 				break;
 			case 'v':
 				if (width == 2) {
 					bufpos += PADDING(bufpos, v2f);
-					v2f *v = (v2f *)bufpos;
-					nprinted = snprintf(sbuf + pos, sbuflen,
-										"(%f, %f), ", v->X, v->Y);
+					v2f *v = (v2f *) bufpos;
+					os << '(' << v->X << ", " << v->Y << ')';
 					bufpos += sizeof(v2f);
 				} else {
 					bufpos += PADDING(bufpos, v3f);
-					v3f *v = (v3f *)bufpos;
-					nprinted = snprintf(sbuf + pos, sbuflen,
-										"(%f, %f, %f), ", v->X, v->Y, v->Z);
+					v3f *v = (v3f *) bufpos;
+					os << '(' << v->X << ", " << v->Y << ", " << v->Z << ')';
 					bufpos += sizeof(v3f);
 				}
 				break;
 			default:
 				return false;
 		}
-		if (nprinted < 0) //error, buffer too small
-			return false;
-		pos     += nprinted;
-		sbuflen -= nprinted;
+		os << ", ";
 	}
+	*out = os.str();
 
-	// this is to trim off the trailing comma
-	if (pos >= 2)
-		sbuf[pos - 2] = 0;
-
-	*outstr = sbuf;
+	// Trim off the trailing comma and space
+	if (out->size() >= 2) {
+		out->resize(out->size() - 2);
+	}
 
 	return true;
 }
