@@ -150,16 +150,16 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	if(type == "shaped"){
 		std::string output = getstringfield_default(L, table, "output", "");
 		if(output == "")
-			throw LuaError(NULL, "Crafting definition is missing an output");
+			throw LuaError(L, "Crafting definition is missing an output");
 
 		int width = 0;
 		std::vector<std::string> recipe;
 		lua_getfield(L, table, "recipe");
 		if(lua_isnil(L, -1))
-			throw LuaError(NULL, "Crafting definition is missing a recipe"
+			throw LuaError(L, "Crafting definition is missing a recipe"
 					" (output=\"" + output + "\")");
 		if(!readCraftRecipeShaped(L, -1, width, recipe))
-			throw LuaError(NULL, "Invalid crafting recipe"
+			throw LuaError(L, "Invalid crafting recipe"
 					" (output=\"" + output + "\")");
 
 		CraftReplacements replacements;
@@ -167,7 +167,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 		if(!lua_isnil(L, -1))
 		{
 			if(!readCraftReplacements(L, -1, replacements))
-				throw LuaError(NULL, "Invalid replacements"
+				throw LuaError(L, "Invalid replacements"
 						" (output=\"" + output + "\")");
 		}
 
@@ -181,17 +181,17 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	else if(type == "shapeless"){
 		std::string output = getstringfield_default(L, table, "output", "");
 		if(output == "")
-			throw LuaError(NULL, "Crafting definition (shapeless)"
+			throw LuaError(L, "Crafting definition (shapeless)"
 					" is missing an output");
 
 		std::vector<std::string> recipe;
 		lua_getfield(L, table, "recipe");
 		if(lua_isnil(L, -1))
-			throw LuaError(NULL, "Crafting definition (shapeless)"
+			throw LuaError(L, "Crafting definition (shapeless)"
 					" is missing a recipe"
 					" (output=\"" + output + "\")");
 		if(!readCraftRecipeShapeless(L, -1, recipe))
-			throw LuaError(NULL, "Invalid crafting recipe"
+			throw LuaError(L, "Invalid crafting recipe"
 					" (output=\"" + output + "\")");
 
 		CraftReplacements replacements;
@@ -199,7 +199,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 		if(!lua_isnil(L, -1))
 		{
 			if(!readCraftReplacements(L, -1, replacements))
-				throw LuaError(NULL, "Invalid replacements"
+				throw LuaError(L, "Invalid replacements"
 						" (output=\"" + output + "\")");
 		}
 
@@ -224,12 +224,12 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	else if(type == "cooking"){
 		std::string output = getstringfield_default(L, table, "output", "");
 		if(output == "")
-			throw LuaError(NULL, "Crafting definition (cooking)"
+			throw LuaError(L, "Crafting definition (cooking)"
 					" is missing an output");
 
 		std::string recipe = getstringfield_default(L, table, "recipe", "");
 		if(recipe == "")
-			throw LuaError(NULL, "Crafting definition (cooking)"
+			throw LuaError(L, "Crafting definition (cooking)"
 					" is missing a recipe"
 					" (output=\"" + output + "\")");
 
@@ -240,7 +240,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 		if(!lua_isnil(L, -1))
 		{
 			if(!readCraftReplacements(L, -1, replacements))
-				throw LuaError(NULL, "Invalid replacements"
+				throw LuaError(L, "Invalid replacements"
 						" (cooking output=\"" + output + "\")");
 		}
 
@@ -254,7 +254,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	else if(type == "fuel"){
 		std::string recipe = getstringfield_default(L, table, "recipe", "");
 		if(recipe == "")
-			throw LuaError(NULL, "Crafting definition (fuel)"
+			throw LuaError(L, "Crafting definition (fuel)"
 					" is missing a recipe");
 
 		float burntime = getfloatfield_default(L, table, "burntime", 1.0);
@@ -264,7 +264,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 		if(!lua_isnil(L, -1))
 		{
 			if(!readCraftReplacements(L, -1, replacements))
-				throw LuaError(NULL, "Invalid replacements"
+				throw LuaError(L, "Invalid replacements"
 						" (fuel recipe=\"" + recipe + "\")");
 		}
 
@@ -274,7 +274,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	}
 	else
 	{
-		throw LuaError(NULL, "Unknown crafting definition type: \"" + type + "\"");
+		throw LuaError(L, "Unknown crafting definition type: \"" + type + "\"");
 	}
 
 	lua_pop(L, 1);

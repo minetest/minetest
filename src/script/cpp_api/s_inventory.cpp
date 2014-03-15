@@ -54,7 +54,7 @@ int ScriptApiDetached::detached_inventory_AllowMove(
 	if(lua_pcall(L, 7, 1, errorhandler))
 		scriptError();
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_move should return a number");
+		throw LuaError(L, "allow_move should return a number");
 	int ret = luaL_checkinteger(L, -1);
 	lua_pop(L, 2); // Pop integer and error handler
 	return ret;
@@ -86,7 +86,7 @@ int ScriptApiDetached::detached_inventory_AllowPut(
 	if(lua_pcall(L, 5, 1, errorhandler))
 		scriptError();
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_put should return a number");
+		throw LuaError(L, "allow_put should return a number");
 	int ret = luaL_checkinteger(L, -1);
 	lua_pop(L, 2); // Pop integer and error handler
 	return ret;
@@ -118,7 +118,7 @@ int ScriptApiDetached::detached_inventory_AllowTake(
 	if(lua_pcall(L, 5, 1, errorhandler))
 		scriptError();
 	if(!lua_isnumber(L, -1))
-		throw LuaError(NULL, "allow_take should return a number");
+		throw LuaError(L, "allow_take should return a number");
 	int ret = luaL_checkinteger(L, -1);
 	lua_pop(L, 2); // Pop integer and error handler
 	return ret;

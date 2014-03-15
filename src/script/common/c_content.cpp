@@ -654,7 +654,7 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	}
 	else
 	{
-		throw LuaError(NULL, "Expecting itemstack, itemstring, table or nil");
+		throw LuaError(L, "Expecting itemstack, itemstring, table or nil");
 	}
 }
 
@@ -941,7 +941,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 	while (lua_next(L, index)) {
 		s32 key = luaL_checkinteger(L, -2);
 		if (key < 1) {
-			throw LuaError(NULL, "Invalid inventory list index");
+			throw LuaError(L, "Invalid inventory list index");
 		}
 		if (items.size() < (u32) key) {
 			items.resize(key);
