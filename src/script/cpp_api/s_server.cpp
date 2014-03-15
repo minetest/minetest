@@ -33,7 +33,7 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 	getAuthHandler();
 	lua_getfield(L, -1, "get_auth");
 	if(lua_type(L, -1) != LUA_TFUNCTION)
-		throw LuaError(L, "Authentication handler missing get_auth");
+		throw LuaError(NULL, "Authentication handler missing get_auth");
 	lua_pushstring(L, playername.c_str());
 	if(lua_pcall(L, 1, 1, errorhandler))
 		scriptError();
@@ -48,13 +48,13 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 	std::string password;
 	bool found = getstringfield(L, -1, "password", password);
 	if(!found)
-		throw LuaError(L, "Authentication handler didn't return password");
+		throw LuaError(NULL, "Authentication handler didn't return password");
 	if(dst_password)
 		*dst_password = password;
 
 	lua_getfield(L, -1, "privileges");
 	if(!lua_istable(L, -1))
-		throw LuaError(L, "Authentication handler didn't return privilege table");
+		throw LuaError(NULL, "Authentication handler didn't return privilege table");
 	if(dst_privs)
 		readPrivileges(-1, *dst_privs);
 	lua_pop(L, 1);
@@ -74,7 +74,7 @@ void ScriptApiServer::getAuthHandler()
 	}
 	lua_remove(L, -2); // Remove minetest
 	if(lua_type(L, -1) != LUA_TTABLE)
-		throw LuaError(L, "Authentication handler table not valid");
+		throw LuaError(NULL, "Authentication handler table not valid");
 }
 
 void ScriptApiServer::readPrivileges(int index, std::set<std::string> &result)
@@ -108,7 +108,7 @@ void ScriptApiServer::createAuth(const std::string &playername,
 	lua_getfield(L, -1, "create_auth");
 	lua_remove(L, -2); // Remove auth handler
 	if(lua_type(L, -1) != LUA_TFUNCTION)
-		throw LuaError(L, "Authentication handler missing create_auth");
+		throw LuaError(NULL, "Authentication handler missing create_auth");
 	lua_pushstring(L, playername.c_str());
 	lua_pushstring(L, password.c_str());
 	if(lua_pcall(L, 2, 0, errorhandler))
@@ -128,7 +128,7 @@ bool ScriptApiServer::setPassword(const std::string &playername,
 	lua_getfield(L, -1, "set_password");
 	lua_remove(L, -2); // Remove auth handler
 	if(lua_type(L, -1) != LUA_TFUNCTION)
-		throw LuaError(L, "Authentication handler missing set_password");
+		throw LuaError(NULL, "Authentication handler missing set_password");
 	lua_pushstring(L, playername.c_str());
 	lua_pushstring(L, password.c_str());
 	if(lua_pcall(L, 2, 1, errorhandler))

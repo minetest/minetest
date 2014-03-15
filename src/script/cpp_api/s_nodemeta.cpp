@@ -61,7 +61,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_move should"
+		throw LuaError(NULL, "allow_metadata_inventory_move should"
 				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer
@@ -100,7 +100,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_put should"
+		throw LuaError(NULL, "allow_metadata_inventory_put should"
 				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer
@@ -139,7 +139,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 		scriptError();
 	lua_remove(L, errorhandler); // Remove error handler
 	if(!lua_isnumber(L, -1))
-		throw LuaError(L, "allow_metadata_inventory_take should"
+		throw LuaError(NULL, "allow_metadata_inventory_take should"
 				" return a number, guilty node: " + nodename);
 	int num = luaL_checkinteger(L, -1);
 	lua_pop(L, 1); // Pop integer

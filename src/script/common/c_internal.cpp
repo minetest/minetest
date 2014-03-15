@@ -71,7 +71,7 @@ void script_error(lua_State *L)
 {
 	const char *s = lua_tostring(L, -1);
 	std::string str(s ? s : "");
-	throw LuaError(L, str);
+	throw LuaError(NULL, str);
 }
 
 // Push the list of callbacks (a lua table).
