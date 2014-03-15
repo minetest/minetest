@@ -55,14 +55,7 @@ public:
 class LuaError : public ServerError
 {
 public:
-	LuaError(lua_State *L, const std::string &s);
-
-	virtual ~LuaError() throw()
-	{}
-	virtual const char * what() const throw()
-	{
-		return m_s.c_str();
-	}
+	LuaError(const std::string &s) : ServerError(s) {}
 };
 
 

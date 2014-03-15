@@ -330,10 +330,10 @@ int LuaPseudoRandom::l_next(lua_State *L)
 		max = luaL_checkinteger(L, 3);
 	if(max < min){
 		errorstream<<"PseudoRandom.next(): max="<<max<<" min="<<min<<std::endl;
-		throw LuaError(NULL, "PseudoRandom.next(): max < min");
+		throw LuaError("PseudoRandom.next(): max < min");
 	}
 	if(max - min != 32767 && max - min > 32767/5)
-		throw LuaError(NULL, "PseudoRandom.next() max-min is not 32767"
+		throw LuaError("PseudoRandom.next() max-min is not 32767"
 				" and is > 32768/5. This is disallowed due to"
 				" the bad random distribution the"
 				" implementation would otherwise make.");

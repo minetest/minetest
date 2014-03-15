@@ -151,13 +151,14 @@ void ScriptApiBase::realityCheck()
 	if(top >= 30){
 		dstream<<"Stack is over 30:"<<std::endl;
 		stackDump(dstream);
-		throw LuaError(m_luastack, "Stack is over 30 (reality check)");
+		std::string traceback = script_get_backtrace(m_luastack);
+		throw LuaError("Stack is over 30 (reality check)\n" + traceback);
 	}
 }
 
 void ScriptApiBase::scriptError()
 {
-	throw LuaError(NULL, lua_tostring(m_luastack, -1));
+	throw LuaError(lua_tostring(m_luastack, -1));
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)

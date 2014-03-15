@@ -1120,7 +1120,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 	}
 
 	if (type == "skybox" && params.size() != 6)
-		throw LuaError(L, "skybox expects 6 textures");
+		throw LuaError("skybox expects 6 textures");
 
 	if (!getServer(L)->setSky(player, bgcolor, type, params))
 		return 0;
