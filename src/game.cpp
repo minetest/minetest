@@ -858,14 +858,17 @@ public:
 		services->setPixelShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 		services->setVertexShaderConstant("eyePosition", (irr::f32*)&eye_position, 3);
 
-		// Normal map texture layer
+		// Uniform sampler layers
+		int layer0 = 0;
 		int layer1 = 1;
 		int layer2 = 2;
 		// before 1.8 there isn't a "integer interface", only float
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		services->setPixelShaderConstant("baseTexture" , (irr::f32*)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::f32*)&layer1, 1);
 		services->setPixelShaderConstant("useNormalmap" , (irr::f32*)&layer2, 1);
 #else
+		services->setPixelShaderConstant("baseTexture" , (irr::s32*)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::s32*)&layer1, 1);
 		services->setPixelShaderConstant("useNormalmap" , (irr::s32*)&layer2, 1);
 #endif
