@@ -1790,6 +1790,8 @@ LuaEntitySAO-only: (no-op for other objects)
 - getacceleration() -> {x=num, y=num, z=num}
 - setyaw(radians)
 - getyaw() -> radians
+- get_last_collision_result() -> {touching_ground=bool, collides=bool,
+    collides_xz=bool, standing_on_unloaded=bool}
 - settexturemod(mod)
 - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -           select_horiz_by_yawpitch=false)

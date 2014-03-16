@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "player.h"
 #include "object_properties.h"
+#include "collision.h"
 
 ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
                                   const std::string &itemstring);
@@ -74,6 +75,7 @@ public:
 	v3f getAcceleration();
 	void setYaw(float yaw);
 	float getYaw();
+	collisionMoveResult* getLastCollisionResult();
 	void setTextureMod(const std::string &mod);
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
@@ -102,6 +104,8 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
+
+	collisionMoveResult m_last_collision_result;
 
 	v2f m_animation_range;
 	float m_animation_speed;
