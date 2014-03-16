@@ -68,7 +68,8 @@ struct collisionMoveResult
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime
-collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
+void collisionMoveSimple(collisionMoveResult& result,
+		Environment *env,IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f &pos_f, v3f &speed_f,
