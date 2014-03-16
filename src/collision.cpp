@@ -193,7 +193,8 @@ bool wouldCollideWithCeiling(
 }
 
 
-collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
+void collisionMoveSimple(collisionMoveResult& result,
+		Environment *env, IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f &pos_f, v3f &speed_f,
@@ -203,8 +204,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	Map *map = &env->getMap();
 	//TimeTaker tt("collisionMoveSimple");
     ScopeProfiler sp(g_profiler, "collisionMoveSimple avg", SPT_AVG);
-
-	collisionMoveResult result;
 
 	/*
 		Calculate new velocity
@@ -217,7 +216,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	// If there is no speed, there are no collisions
 	if(speed_f.getLength() == 0)
-		return result;
+		return;
 
 	// Limit speed for avoiding hangs
 	speed_f.Y=rangelim(speed_f.Y,-5000,5000);
@@ -562,7 +561,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		}
 	}
 
-	return result;
 }
 
 #if 0
@@ -619,7 +617,8 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 			dtime_downcount = 0;
 		}
 
-		collisionMoveResult result = collisionMoveSimple(map, gamedef,
+		collisionMoveResult result;
+		collisionMoveSimple(result, map, gamedef,
 				pos_max_d, box_0, stepheight, dtime_part,
 				pos_f, speed_f, accel_f);
 

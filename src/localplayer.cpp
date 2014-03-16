@@ -191,7 +191,8 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 
 	v3f accel_f = v3f(0,0,0);
 
-	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
+	collisionMoveResult result;
+	collisionMoveSimple(result, env, m_gamedef,
 			pos_max_d, m_collisionbox, player_stepheight, dtime,
 			position, m_speed, accel_f);
 

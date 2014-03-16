@@ -225,7 +225,7 @@ public:
 		v3f pos_f_old = pos_f;
 		v3f accel_f = v3f(0,0,0);
 		f32 stepheight = 0;
-		moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
+		collisionMoveSimple(moveresult, m_env,m_env->getGameDef(),
 				pos_max_d, box, stepheight, dtime,
 				pos_f, m_speed_f, accel_f);
 		
@@ -512,7 +512,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
+			collisionMoveSimple(moveresult, m_env,m_env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
 					p_pos, p_velocity, p_acceleration,
 					this, m_prop.collideWithObjects);
