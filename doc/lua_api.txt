@@ -1303,7 +1303,7 @@ string:trim()
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
-^ Same but in reverse
+^ Same but in reverse. Returns nil if the string can't be parsed to a position.
 minetest.formspec_escape(string) -> string
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
 minetest.is_yes(arg)
@@ -1505,6 +1505,7 @@ minetest.place_node(pos, node)
 ^ Place node with the same effects that a player would cause
 minetest.dig_node(pos)
 ^ Dig node with the same effects that a player would cause
+  Returns true if successful, false on failure (e.g. protected location)
 minetest.punch_node(pos)
 ^ Punch node with the same effects that a player would cause
 
@@ -1885,7 +1886,7 @@ Class reference
 ----------------
 NodeMetaRef: Node metadata - reference extra data and functionality stored
              in a node
-- Can be gotten via minetest.get_nodemeta(pos)
+- Can be gotten via minetest.get_meta(pos)
 methods:
 - set_string(name, value)
 - get_string(name)
@@ -2052,8 +2053,11 @@ methods:
     can be fully added to the list
 - contains_item(listname, stack): returns true if the stack of items
     can be fully taken from the list
-  remove_item(listname, stack): take as many items as specified from the list,
-    returns the items that were actually removed (as an ItemStack)
+- remove_item(listname, stack): take as many items as specified from the list,
+    returns the items that were actually removed (as an ItemStack) - note that
+    any item metadata is ignored, so attempting to remove a specific unique
+    item this way will likely remove the wrong one - to do that use set_stack
+    with an empty ItemStack
 - get_location() -> location compatible to minetest.get_inventory(location)
                  -> {type="undefined"} in case location is not known
 
@@ -2224,7 +2228,9 @@ Registered entities
   - on_activate(self, staticdata)
     ^ Called when the object is instantiated.
   - on_step(self, dtime)
-    ^ Called on every server tick (dtime is usually 0.1 seconds)
+    ^ Called on every server tick, after movement and collision processing.
+      dtime is usually 0.1 seconds, as per the dedicated_server_step setting
+      in minetest.conf.
   - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
     ^ Called when somebody punches the object.
     ^ Note that you probably want to handle most punches using the
