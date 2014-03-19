@@ -449,7 +449,6 @@ set(minetest_SRCS
 	guiTable.cpp
 	guiPasswordChange.cpp
 	guiVolumeChange.cpp
-	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	client.cpp
 	clientmedia.cpp
