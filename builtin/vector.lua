@@ -2,7 +2,9 @@
 vector = {}
 
 local function assert_vector(v)
-	assert(type(v) == "table" and v.x and v.y and v.z, "Invalid vector")
+	if not (type(v) == "table" and v.x and v.y and v.z) then
+		error("Invalid vector "..dump(v))
+	end
 end
 
 function vector.new(a, b, c)
@@ -87,6 +89,14 @@ function vector.direction(pos1, pos2)
 	return {x=x_raw, y=y_raw, z=z_raw}
 end
 
+
+function vector.interpolate(pos1, pos2, factor)
+	assert_vector(pos1)
+	assert_vector(pos2)
+	return {x = pos1.x + (pos2.x - pos1.x) * factor,
+	        y = pos1.y + (pos2.y - pos1.y) * factor,
+		z = pos1.z + (pos2.z - pos1.z) * factor}
+end
 
 function vector.add(a, b)
 	assert_vector(a)

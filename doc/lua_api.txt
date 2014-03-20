@@ -1152,6 +1152,9 @@ vector.new([x[, y, z]]) -> vector
  ^ x is a table or the x position.
 vector.direction(p1, p2) -> vector
 vector.distance(p1, p2) -> number
+vector.interpolate(p1, p2, factor) -> vector
+^ Where factor is, for example, 0.5 for the midpoint between p1 and p2.
+^ A factor of 0 would return p1, and a factor of 1 would return p2.
 vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
