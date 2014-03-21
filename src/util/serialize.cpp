@@ -385,6 +385,9 @@ fail:
 }
 
 
+// Casts *buf to a signed or unsigned fixed-width integer of 'w' width
+#define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *) buf) : *((s##w *) buf))
+
 bool serializeStructToString(std::string *out,
 	std::string format, void *value)
 {
@@ -412,15 +415,15 @@ bool serializeStructToString(std::string *out,
 			case 'i':
 				if (width == 16) {
 					bufpos += PADDING(bufpos, u16);
-					os << *((u16 *) bufpos);
+					os << SIGN_CAST(16, bufpos);
 					bufpos += sizeof(u16);
 				} else if (width == 32) {
 					bufpos += PADDING(bufpos, u32);
-					os << *((u32 *) bufpos);
+					os << SIGN_CAST(32, bufpos);
 					bufpos += sizeof(u32);
 				} else if (width == 64) {
 					bufpos += PADDING(bufpos, u64);
-					os << *((u64 *) bufpos);
+					os << SIGN_CAST(64, bufpos);
 					bufpos += sizeof(u64);
 				}
 				break;
@@ -474,3 +477,5 @@ bool serializeStructToString(std::string *out,
 
 	return true;
 }
+
+#undef SIGN_CAST
