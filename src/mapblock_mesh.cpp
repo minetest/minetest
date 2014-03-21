@@ -1212,20 +1212,25 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			material.setTexture(2, tsrc->getTexture("disable_img.png"));
 			if (enable_bumpmapping || enable_parallax_occlusion) {
-				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
-				std::string normal_ext = "_normal.png";
-				size_t pos = fname_base.find(".");
-				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
-
-				if (tsrc->isKnownSourceImage(fname_normal)) {
-					// look for image extension and replace it 
-					size_t i = 0;
-					while ((i = fname_base.find(".", i)) != std::string::npos) {
-						fname_base.replace(i, 4, normal_ext);
-						i += normal_ext.length();
-					}
-					material.setTexture(1, tsrc->getTexture(fname_base));
+				if (tsrc->isKnownSourceImage("override_normal.png")){
+					material.setTexture(1, tsrc->getTexture("override_normal.png"));
 					material.setTexture(2, tsrc->getTexture("enable_img.png"));
+				} else {
+					std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
+					std::string normal_ext = "_normal.png";
+					size_t pos = fname_base.find(".");
+					std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
+
+					if (tsrc->isKnownSourceImage(fname_normal)) {
+						// look for image extension and replace it 
+						size_t i = 0;
+						while ((i = fname_base.find(".", i)) != std::string::npos) {
+							fname_base.replace(i, 4, normal_ext);
+							i += normal_ext.length();
+						}
+						material.setTexture(1, tsrc->getTexture(fname_base));
+						material.setTexture(2, tsrc->getTexture("enable_img.png"));
+					}
 				}
 			}
 			p.tile.applyMaterialOptionsWithShaders(material,
@@ -1368,17 +1373,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
 		if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
 			{
-				std::string fname_base,fname_normal;
-				fname_base = tsrc->getTextureName(tile.texture_id);
-				unsigned pos;
-				pos = fname_base.find(".");
-				fname_normal = fname_base.substr (0, pos);
-				fname_normal += "_normal.png";
-				if (tsrc->isKnownSourceImage(fname_normal)){
-					os.str("");
-					os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+				if (tsrc->isKnownSourceImage("override_normal.png")){
+					buf->getMaterial().setTexture(1, tsrc->getTexture("override_normal.png"));
 					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+				} else {
+					std::string fname_base,fname_normal;
+					fname_base = tsrc->getTextureName(tile.texture_id);
+					unsigned pos;
+					pos = fname_base.find(".");
+					fname_normal = fname_base.substr (0, pos);
+					fname_normal += "_normal.png";
+					if (tsrc->isKnownSourceImage(fname_normal)){
+						os.str("");
+						os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
+						buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+						buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+					}
 				}
 			}
 	}

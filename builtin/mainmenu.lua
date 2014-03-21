@@ -723,6 +723,9 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_parallax"] then
 		engine.setting_set("enable_parallax_occlusion", fields["cb_parallax"])
 	end
+	if fields["cb_generate_normalmaps"] then
+		engine.setting_set("generate_normalmaps", fields["cb_generate_normalmaps"])
+	end
 	if fields["cb_waving_water"] then
 		engine.setting_set("enable_waving_water", fields["cb_waving_water"])
 	end
@@ -1010,27 +1013,30 @@ function tabbuilder.tab_settings()
 					.. dump(engine.setting_getbool("enable_shaders")) .. "]"..
 			"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
 
-if engine.setting_getbool("enable_shaders") then
-	tab_string = tab_string ..
+	if engine.setting_getbool("enable_shaders") then
+		tab_string = tab_string ..
 			"checkbox[8,0.5;cb_bumpmapping;".. fgettext("Bumpmapping") .. ";"
 					.. dump(engine.setting_getbool("enable_bumpmapping")) .. "]"..
 			"checkbox[8,1.0;cb_parallax;".. fgettext("Parallax Occlusion") .. ";"
 					.. dump(engine.setting_getbool("enable_parallax_occlusion")) .. "]"..
-			"checkbox[8,1.5;cb_waving_water;".. fgettext("Waving Water") .. ";"
+			"checkbox[8,1.5;cb_generate_normalmaps;".. fgettext("Generate Normalmaps") .. ";"
+					.. dump(engine.setting_getbool("generate_normalmaps")) .. "]"..
+			"checkbox[8,2.0;cb_waving_water;".. fgettext("Waving Water") .. ";"
 					.. dump(engine.setting_getbool("enable_waving_water")) .. "]"..
-			"checkbox[8,2.0;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
+			"checkbox[8,2.5;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
 					.. dump(engine.setting_getbool("enable_waving_leaves")) .. "]"..
-			"checkbox[8,2.5;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
+			"checkbox[8,3.0;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
 					.. dump(engine.setting_getbool("enable_waving_plants")) .. "]"
-else
-	tab_string = tab_string ..
+	else
+		tab_string = tab_string ..
 			"textlist[8.33,0.7;4,1;;#888888" .. fgettext("Bumpmapping") .. ";0;true]" ..
 			"textlist[8.33,1.2;4,1;;#888888" .. fgettext("Parallax Occlusion") .. ";0;true]" ..
-			"textlist[8.33,1.7;4,1;;#888888" .. fgettext("Waving Water") .. ";0;true]" ..
-			"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
-			"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
+			"textlist[8.33,1.7;4,1;;#888888" .. fgettext("Generate Normalmaps") .. ";0;true]" ..
+			"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Water") .. ";0;true]" ..
+			"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
+			"textlist[8.33,3.2;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
 	end
-return tab_string
+	return tab_string
 end
 
 --------------------------------------------------------------------------------
