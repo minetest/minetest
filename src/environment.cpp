@@ -795,8 +795,7 @@ neighbor_found:
 				// Call all the trigger variations
 				i->abm->trigger(m_env, p, n);
 				i->abm->trigger(m_env, p, n,
-						active_object_count,
-						active_object_count_wider + active_object_count);
+						active_object_count, active_object_count_wider);
 
 				// Count surrounding objects again if the abms added any
 				if(m_env->m_added_objects > 0) {
