@@ -48,7 +48,6 @@ struct ObjectProperties
 	bool automatic_face_movement_dir;
 	f32 automatic_face_movement_dir_offset;
 
-
 	ObjectProperties();
 	std::string dump();
 	void serialize(std::ostream &os) const;

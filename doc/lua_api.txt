@@ -1790,6 +1790,13 @@ LuaEntitySAO-only: (no-op for other objects)
 - getacceleration() -> {x=num, y=num, z=num}
 - setyaw(radians)
 - getyaw() -> radians
+- set_autonomous(mode)
+  When mode is 1, sets the entity to autonomous mode. This means it will
+  remain active even when there is no player in range of it - effectively
+  loading and activating map blocks like a player would. This should be
+  used with caution, and set back to 0 when no longer required.
+  In any case, it will have no effect without a global configuration change
+  on the server to enable it.
 - settexturemod(mod)
 - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -           select_horiz_by_yawpitch=false)

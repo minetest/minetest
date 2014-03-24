@@ -136,7 +136,10 @@ public:
 	*/
 	virtual bool isStaticAllowed() const
 	{return true;}
-	
+
+	virtual bool isAutonomous()
+	{return true;}
+
 	// Returns tool wear
 	virtual int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,

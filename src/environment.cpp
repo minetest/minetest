@@ -254,6 +254,8 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 
 void ActiveBlockList::update(std::list<v3s16> &active_positions,
 		s16 radius,
+		std::list<v3s16> &object_positions,
+		s16 object_radius,
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added)
 {
@@ -265,6 +267,11 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 			i != active_positions.end(); ++i)
 	{
 		fillRadiusBlock(*i, radius, newlist);
+	}
+	for(std::list<v3s16>::iterator i = object_positions.begin();
+			i != object_positions.end(); ++i)
+	{
+		fillRadiusBlock(*i, object_radius, newlist);
 	}
 
 	/*
@@ -1122,15 +1129,37 @@ void ServerEnvironment::step(float dtime)
 			v3s16 blockpos = getNodeBlockPos(
 					floatToInt(player->getPosition(), BS));
 			players_blockpos.push_back(blockpos);
+
+
 		}
-		
+
+		// In addition to players, include active objects that are currently
+		// flagged as being autonomous
+		std::list<v3s16> objects_blockpos;
+		if(g_settings->getBool("autonomous_objects_allowed")) {
+			for(std::map<u16, ServerActiveObject*>::iterator
+					i = m_active_objects.begin();
+					i != m_active_objects.end(); ++i)
+			{
+				ServerActiveObject* obj = i->second;
+				if(obj->isAutonomous()) {
+					v3f objectpos = obj->getBasePosition();
+					v3s16 blockpos = getNodeBlockPos(
+						floatToInt(objectpos, BS));
+					objects_blockpos.push_back(blockpos);
+				}
+			}
+		}
+
 		/*
 			Update list of active blocks, collecting changes
 		*/
 		const s16 active_block_range = g_settings->getS16("active_block_range");
+		const s16 objects_block_range = g_settings->getS16("objects_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
+				objects_blockpos, objects_block_range,
 				blocks_removed, blocks_added);
 
 		/*

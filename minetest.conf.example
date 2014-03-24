@@ -361,6 +361,17 @@
 # try reducing it, but don't reduce it to a number below double of targeted
 # client number
 #max_packets_per_iteration = 1024
+
+#
+# Autonomous objects
+#
+# Set to true to allow objects (lua entities) to remain active outside the
+# range of any player. Enable with caution.
+#autonomous_objects_allowed = false
+# As for active_block_range, but for objects. Can usually be set lower than
+# the player's setting.
+#objects_block_range = 1
+
 #
 # Physics stuff
 #
