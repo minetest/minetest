@@ -511,16 +511,17 @@ function tabbuilder.handle_multiplayer_buttons(fields)
 				fav_idx = fav_idx -1
 			else if fields["key_down"] and fav_idx < #menu.favorites then
 				fav_idx = fav_idx +1
-			end end
-		end
+			end
 
-		local address = menu.favorites[fav_idx].address
-		local port = menu.favorites[fav_idx].port
+			local address = menu.favorites[fav_idx].address
+			local port = menu.favorites[fav_idx].port
 
-		if address ~= nil and
-			port ~= nil then
-			engine.setting_set("address",address)
-			engine.setting_set("remote_port",port)
+			if address ~= nil and
+				port ~= nil then
+				engine.setting_set("address",address)
+				engine.setting_set("remote_port",port)
+			end
+
 		end
 
 		menu.fav_selected = fav_idx
