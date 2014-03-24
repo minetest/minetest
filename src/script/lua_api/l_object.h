@@ -134,6 +134,9 @@ private:
 	// getacceleration(self)
 	static int l_getacceleration(lua_State *L);
 
+	// get_last_collision_result(self)
+	static int l_get_last_collision_result(lua_State *L);
+
 	// setyaw(self, radians)
 	static int l_setyaw(lua_State *L);
 

@@ -1155,7 +1155,7 @@ public:
 				v3f p_pos = m_position;
 				v3f p_velocity = m_velocity;
 				v3f p_acceleration = m_acceleration;
-				moveresult = collisionMoveSimple(env,env->getGameDef(),
+				collisionMoveSimple(moveresult, env,env->getGameDef(),
 						pos_max_d, box, m_prop.stepheight, dtime,
 						p_pos, p_velocity, p_acceleration,
 						this, m_prop.collideWithObjects);
