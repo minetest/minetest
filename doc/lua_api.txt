@@ -2228,7 +2228,9 @@ Registered entities
   - on_activate(self, staticdata)
     ^ Called when the object is instantiated.
   - on_step(self, dtime)
-    ^ Called on every server tick (dtime is usually 0.1 seconds)
+    ^ Called on every server tick, after movement and collision processing.
+      dtime is usually 0.1 seconds, as per the dedicated_server_step setting
+      in minetest.conf.
   - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
     ^ Called when somebody punches the object.
     ^ Note that you probably want to handle most punches using the
