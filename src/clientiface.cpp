@@ -140,7 +140,8 @@ void RemoteClient::GetNextBlocks(
 	*/
 	s32 new_nearest_unsent_d = -1;
 
-	s16 d_max = g_settings->getS16("max_block_send_distance");
+	const s16 full_d_max = g_settings->getS16("max_block_send_distance");
+	s16 d_max = full_d_max;
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 
 	// Don't loop very much at a time
@@ -214,7 +215,7 @@ void RemoteClient::GetNextBlocks(
 					generate = false;*/
 
 				// Limit the send area vertically to 1/2
-				if(abs(p.Y - center.Y) > d_max / 2)
+				if(abs(p.Y - center.Y) > full_d_max / 2)
 					continue;
 			}
 
