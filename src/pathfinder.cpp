@@ -31,6 +31,7 @@
 
 #include <set>
 #include <climits>
+#include <algorithm>
 
 #define PPOS(pos) "(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 
@@ -282,7 +283,7 @@ bool PathFinder::findPathHeuristic(v3s16 pos, std::vector <v3s16>& directions,
 					++test_pos.Y;
 					node_at_test_pos = m_env->getMap().getNodeNoEx(test_pos);
 				}
- 
+
 				// Did we find surface?
 				if((test_pos.Y <= m_limits.Y.max) &&
 				   (node_at_test_pos.param0 == CONTENT_AIR) &&
@@ -317,6 +318,6 @@ void PathFinder::buildPath(std::vector<v3s16>& path, v3s16 start_pos, v3s16 end_
 		path.push_back(current_pos);
 		current_pos = used[current_pos].first;
 	}
-	path.push_back(start_pos); 
+	path.push_back(start_pos);
+	std::reverse(path.begin(), path.end());
 }
-
