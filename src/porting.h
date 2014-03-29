@@ -37,9 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht.h"
 #include "irrlichttypes.h" // u32
 #include "irrlichttypes_extrabloated.h"
-#include "debug.h"
 #include "constants.h"
-#include "gettime.h"
 #include "threads.h"
 
 #ifdef _MSC_VER
@@ -272,21 +270,6 @@ void initIrrlicht(irr::IrrlichtDevice * );
 		return tb.time * 1000 + tb.millitm;
 	}*/
 #endif
-
-inline u32 getTime(TimePrecision prec)
-{
-	switch (prec) {
-		case PRECISION_SECONDS:
-			return getTimeS();
-		case PRECISION_MILLI:
-			return getTimeMs();
-		case PRECISION_MICRO:
-			return getTimeUs();
-		case PRECISION_NANO:
-			return getTimeNs();
-	}
-	return 0;
-}
 
 /**
  * Delta calculation function taking two 32bit arguments.

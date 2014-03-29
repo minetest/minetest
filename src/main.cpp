@@ -115,25 +115,6 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 
 /**********************************************************************/
 
-/*
-	gettime.h implementation
-*/
-
-#ifdef SERVER
-
-u32 getTimeMs()
-{
-	/* Use imprecise system calls directly (from porting.h) */
-	return porting::getTime(PRECISION_MILLI);
-}
-
-u32 getTime(TimePrecision prec)
-{
-	return porting::getTime(prec);
-}
-
-#endif
-
 FileLogOutput file_log_output;
 
 static OptionList allowed_options;
@@ -977,4 +958,3 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 
 	return true;
 }
-

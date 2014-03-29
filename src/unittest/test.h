@@ -25,15 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "porting.h"
+#include "gettime.h"
 #include "filesys.h"
 #include "mapnode.h"
+#include "log.h"
 
 class TestFailedException : public std::exception {
 };
 
 // Runs a unit test and reports results
 #define TEST(fxn, ...) do {                                                   \
-	u32 t1 = porting::getTime(PRECISION_MILLI);                               \
+	u32 t1 = getTimeMs();                                                     \
 	try {                                                                     \
 		fxn(__VA_ARGS__);                                                     \
 		rawstream << "[PASS] ";                                               \
@@ -46,7 +48,7 @@ class TestFailedException : public std::exception {
 		num_tests_failed++;                                                   \
 	}                                                                         \
 	num_tests_run++;                                                          \
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                       \
+	u32 tdiff = getTimeMs() - t1;                                             \
 	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 } while (0)
 
