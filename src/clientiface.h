@@ -265,7 +265,7 @@ public:
 		m_version_patch(0),
 		m_full_version("unknown"),
 		m_deployed_compression(0),
-		m_connection_time(getTime(PRECISION_SECONDS))
+		m_connection_time(getTimeS())
 	{
 	}
 	~RemoteClient()

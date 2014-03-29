@@ -21,16 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GETTIME_HEADER
 
 #include "irrlichttypes.h"
+#include "porting.h"
 
-/*
-	Get a millisecond counter value.
-	Precision depends on implementation.
-	Overflows at any value above 10000000.
+using porting::getTimeS;
+using porting::getTimeMs;
+using porting::getTimeUs;
+using porting::getTimeNs;
 
-	Implementation of this is done in:
-		Normal build: main.cpp
-		Server build: servermain.cpp
-*/
 enum TimePrecision
 {
 	PRECISION_SECONDS = 0,
@@ -39,8 +36,20 @@ enum TimePrecision
 	PRECISION_NANO
 };
 
-extern u32 getTimeMs();
-extern u32 getTime(TimePrecision prec);
+inline u32 getTime(TimePrecision prec)
+{
+	switch (prec) {
+		case PRECISION_SECONDS:
+			return getTimeS();
+		case PRECISION_MILLI:
+			return getTimeMs();
+		case PRECISION_MICRO:
+			return getTimeUs();
+		case PRECISION_NANO:
+			return getTimeNs();
+	}
+	return 0;
+}
 
 /*
 	Timestamp stuff

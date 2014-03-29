@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../threading/mutex.h"
 #include "../threading/mutex_auto_lock.h"
 #include "porting.h"
+#include "debug.h"
 #include "log.h"
 
 template<typename T>
@@ -236,4 +237,3 @@ private:
 };
 
 #endif
-

@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #if USE_CPP11_THREADS
 	#include <chrono>
 	#include <system_error>
+	#include <cassert>
 #elif USE_WIN_THREADS
 	#ifndef _WIN32_WCE
 		#include <process.h>
@@ -442,4 +443,3 @@ bool Thread::setPriority(int prio)
 
 #endif
 }
-
