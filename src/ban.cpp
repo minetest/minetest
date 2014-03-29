@@ -57,18 +57,16 @@ void BanManager::load()
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 	
-	for(;;)
+	while(!is.eof() && is.good())
 	{
-		if(is.eof() || is.good() == false)
-			break;
 		std::string line;
 		std::getline(is, line, '\n');
 		Strfnd f(line);
 		std::string ip = trim(f.next("|"));
 		std::string name = trim(f.next("|"));
-		if(ip.empty())
-			continue;
-		m_ips[ip] = name;
+		if(!ip.empty()) {
+			m_ips[ip] = name;
+		}
 	}
 	m_modified = false;
 }
@@ -135,22 +133,15 @@ void BanManager::add(const std::string &ip, const std::string &name)
 void BanManager::remove(const std::string &ip_or_name)
 {
 	JMutexAutoLock lock(m_mutex);
-	//m_ips.erase(m_ips.find(ip));
-	// Find out all ip-name pairs that match the ip or name
-	std::set<std::string> ips_to_delete;
 	for(std::map<std::string, std::string>::iterator
 			i = m_ips.begin();
-			i != m_ips.end(); i++)
+			i != m_ips.end();)
 	{
-		if(i->first == ip_or_name || i->second == ip_or_name)
-			ips_to_delete.insert(i->first);
-	}
-	// Erase them
-	for(std::set<std::string>::iterator
-			i = ips_to_delete.begin();
-			i != ips_to_delete.end(); i++)
-	{
-		m_ips.erase(*i);
+		if((i->first == ip_or_name) || (i->second == ip_or_name)) {
+			m_ips.erase(i++);
+		} else {
+			++i;
+		}
 	}
 	m_modified = true;
 }
