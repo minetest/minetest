@@ -154,6 +154,11 @@ struct LocalFormspecHandler : public TextDest
 				return;
 			}
 
+			if (fields.find("btn_change_password") != fields.end()) {
+				g_gamecallback->changePassword();
+				return;
+			}
+
 			if (fields.find("quit") != fields.end()) {
 				return;
 			}
@@ -1000,7 +1005,7 @@ static void show_chat_menu(FormspecFormSource* current_formspec,
 /******************************************************************************/
 static void show_pause_menu(FormspecFormSource* current_formspec,
 		TextDest* current_textdest, IWritableTextureSource* tsrc,
-		IrrlichtDevice * device)
+		IrrlichtDevice * device, bool singleplayermode)
 {
 
 	std::string control_text = wide_to_narrow(wstrgettext("Default Controls:\n"
@@ -1016,25 +1021,34 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 			"- T: chat\n"
 			));
 
+	float ypos = singleplayermode ? 1.0 : 0.5;
 	std::ostringstream os;
-	os<<"Minetest\n";
-	os<<minetest_build_info<<"\n";
-	os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 
-	std::string formspec =
-		"size[11,5.5,true]"
-		"button_exit[4,1;3,0.5;btn_continue;"  + wide_to_narrow(wstrgettext("Continue"))     + "]"
-		"button_exit[4,2;3,0.5;btn_sound;"     + wide_to_narrow(wstrgettext("Sound Volume")) + "]"
-		"button_exit[4,3;3,0.5;btn_exit_menu;" + wide_to_narrow(wstrgettext("Exit to Menu")) + "]"
-		"button_exit[4,4;3,0.5;btn_exit_os;"   + wide_to_narrow(wstrgettext("Exit to OS"))   + "]"
-		"textarea[7.5,0.25;3.75,6;;" + control_text + ";]"
-		"textarea[0.4,0.25;3.5,6;;" + os.str() + ";]"
-		;
+	os << "size[11,5.5,true]"
+			<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
+					<< wide_to_narrow(wstrgettext("Continue"))     << "]";
+
+	if (!singleplayermode) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
+					<< wide_to_narrow(wstrgettext("Change Password")) << "]";
+		}
+
+	os 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+					<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
+					<< wide_to_narrow(wstrgettext("Exit to Menu")) << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
+					<< wide_to_narrow(wstrgettext("Exit to OS"))   << "]"
+			<< "textarea[7.5,0.25;3.75,6;;" << control_text << ";]"
+			<< "textarea[0.4,0.25;3.5,6;;" << "Minetest\n"
+			<< minetest_build_info << "\n"
+			<< "path_user = " << wrap_rows(porting::path_user, 20)
+			<< "\n;]";
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
 	 * are deleted by guiFormSpecMenu                     */
-	current_formspec = new FormspecFormSource(formspec,&current_formspec);
+	current_formspec = new FormspecFormSource(os.str(),&current_formspec);
 	current_textdest = new LocalFormspecHandler("MT_PAUSE_MENU");
 	GUIFormSpecMenu *menu =
 		new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr, NULL, NULL, tsrc);
@@ -1894,7 +1908,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(EscapeKey))
 		{
-			show_pause_menu(current_formspec, current_textdest, tsrc, device);
+			show_pause_menu(current_formspec, current_textdest, tsrc, device,
+					simple_singleplayer_mode);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
