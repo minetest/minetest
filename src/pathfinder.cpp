@@ -142,6 +142,11 @@ std::vector<v3s16> PathFinder::getPath(ServerEnvironment* env,
 		std::vector<v3s16> path;
 		buildPath(path, source, destination);
 
+		// Support bug of previous pathfinder
+		if(path.size() == 1) {
+			path.push_back(path[path.size() - 1]);
+		}
+
 #ifdef PATHFINDER_CALC_TIME
 		timespec ts2;
 		clock_gettime(CLOCK_REALTIME, &ts2);
