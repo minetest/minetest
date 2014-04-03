@@ -2307,18 +2307,17 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				camera_yaw
 			);
 			client.setPlayerControl(control);
-			u32 keyPressed=
-			1*(int)input->isKeyDown(getKeySetting("keymap_forward"))+
-			2*(int)input->isKeyDown(getKeySetting("keymap_backward"))+
-			4*(int)input->isKeyDown(getKeySetting("keymap_left"))+
-			8*(int)input->isKeyDown(getKeySetting("keymap_right"))+
-			16*(int)input->isKeyDown(getKeySetting("keymap_jump"))+
-			32*(int)input->isKeyDown(getKeySetting("keymap_special1"))+
-			64*(int)input->isKeyDown(getKeySetting("keymap_sneak"))+
-			128*(int)input->getLeftState()+
-			256*(int)input->getRightState();
 			LocalPlayer* player = client.getEnv().getLocalPlayer();
-			player->keyPressed=keyPressed;
+			player->keyPressed=
+			(((int)input->isKeyDown(getKeySetting("keymap_forward"))  & 0x1) << 0) |
+			(((int)input->isKeyDown(getKeySetting("keymap_backward")) & 0x1) << 1) |
+			(((int)input->isKeyDown(getKeySetting("keymap_left"))     & 0x1) << 2) |
+			(((int)input->isKeyDown(getKeySetting("keymap_right"))    & 0x1) << 3) |
+			(((int)input->isKeyDown(getKeySetting("keymap_jump"))     & 0x1) << 4) |
+			(((int)input->isKeyDown(getKeySetting("keymap_special1")) & 0x1) << 5) |
+			(((int)input->isKeyDown(getKeySetting("keymap_sneak"))    & 0x1) << 6) |
+			(((int)input->getLeftState()  & 0x1) << 7) |
+			(((int)input->getRightState() & 0x1) << 8);
 		}
 
 		/*
