@@ -1227,6 +1227,8 @@ void * ConnectionSendThread::Thread()
 	PROFILE(std::stringstream ThreadIdentifier);
 	PROFILE(ThreadIdentifier << "ConnectionSend: [" << m_connection->getDesc() << "]");
 
+	porting::setThreadName("ConnectionSend");
+
 	/* if stop is requested don't stop immediately but try to send all        */
 	/* packets first */
 	while(!StopRequested() || packetsQueued()) {
@@ -1954,6 +1956,8 @@ void * ConnectionReceiveThread::Thread()
 
 	PROFILE(std::stringstream ThreadIdentifier);
 	PROFILE(ThreadIdentifier << "ConnectionReceive: [" << m_connection->getDesc() << "]");
+
+	porting::setThreadName("ConnectionReceive");
 
 #ifdef DEBUG_CONNECTION_KBPS
 	u32 curtime = porting::getTimeMs();

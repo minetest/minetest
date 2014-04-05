@@ -169,6 +169,8 @@ void * MeshUpdateThread::Thread()
 	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	porting::setThreadName("MeshUpdateThread");
+
 	while(!StopRequested())
 	{
 		QueuedMeshUpdate *q = m_queue_in.pop();
@@ -1212,7 +1214,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_time_of_day_set = true;
 
 		u32 dr = m_env.getDayNightRatio();
-		verbosestream<<"Client: time_of_day="<<time_of_day
+		infostream<<"Client: time_of_day="<<time_of_day
 				<<" time_speed="<<time_speed
 				<<" dr="<<dr<<std::endl;
 	}

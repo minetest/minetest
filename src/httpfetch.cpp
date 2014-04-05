@@ -566,6 +566,8 @@ protected:
 		log_register_thread("CurlFetchThread");
 		DSTACK(__FUNCTION_NAME);
 
+		porting::setThreadName("CurlFetchThread");
+
 		CurlHandlePool pool;
 
 		m_multi = curl_multi_init();
