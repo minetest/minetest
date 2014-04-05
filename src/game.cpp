@@ -1099,7 +1099,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	// Calculate text height using the font
 	u32 text_height = font->getDimension(L"Random test string").Height;
 
-	v2u32 last_screensize(0,0);
 	v2u32 screensize = driver->getScreenSize();
 	
 	/*
@@ -1842,15 +1841,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		/*
 			Random calculations
 		*/
-		last_screensize = screensize;
-		screensize = driver->getScreenSize();
-		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
-		//bool screensize_changed = screensize != last_screensize;
-
-			
-		// Update HUD values
-		hud.screensize    = screensize;
-		hud.displaycenter = displaycenter;
 		hud.resizeHotbar();
 		
 		// Hilight boxes collected during the loop and displayed
@@ -2267,10 +2257,11 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				first_loop_after_window_activation = false;
 			}
 			else{
-				s32 dx = input->getMousePos().X - displaycenter.X;
-				s32 dy = input->getMousePos().Y - displaycenter.Y;
-				if(invert_mouse || player->camera_mode == CAMERA_MODE_THIRD_FRONT)
+				s32 dx = input->getMousePos().X - (driver->getScreenSize().Width/2);
+				s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height/2);
+				if(invert_mouse || player->camera_mode == CAMERA_MODE_THIRD_FRONT) {
 					dy = -dy;
+				}
 				//infostream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
 				/*const float keyspeed = 500;
@@ -2292,7 +2283,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				
 				turn_amount = v2f(dx, dy).getLength() * d;
 			}
-			input->setMousePos(displaycenter.X, displaycenter.Y);
+			input->setMousePos((driver->getScreenSize().Width/2),
+					(driver->getScreenSize().Height/2));
 		}
 		else{
 			// Mac OSX gets upset if this is set every frame
@@ -2657,7 +2649,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		player->camera_mode = current_camera_mode;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-		camera.update(player, dtime, busytime, screensize, tool_reload_ratio,
+		camera.update(player, dtime, busytime, tool_reload_ratio,
 				current_camera_mode, client.getEnv());
 		camera.step(dtime);
 
@@ -3538,8 +3530,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		*/
 		if (show_hud)
 		{
-			hud.drawHotbar(v2s32(displaycenter.X, screensize.Y),
-					client.getHP(), client.getPlayerItem(), client.getBreath());
+			hud.drawHotbar(client.getHP(), client.getPlayerItem(),
+					client.getBreath());
 		}
 
 		/*

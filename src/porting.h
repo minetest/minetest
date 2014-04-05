@@ -28,12 +28,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#ifdef _WIN32_WINNT
 		#undef _WIN32_WINNT
 	#endif
-	#define _WIN32_WINNT 0x0501 // We need to do this before any other headers 
+	#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
 		// because those might include sdkddkver.h which defines _WIN32_WINNT if not already set
 #endif
 
 #include <string>
+#include "irrlicht.h"
 #include "irrlichttypes.h" // u32
+#include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "constants.h"
 #include "gettime.h"
@@ -178,6 +180,8 @@ bool threadSetPriority(threadid_t tid, int prio);
 */
 std::string get_sysinfo();
 
+void initIrrlicht(irr::IrrlichtDevice * );
+
 /*
 	Resolution is 10-20ms.
 	Remember to check for overflows.
@@ -316,6 +320,13 @@ inline u32 getTime(TimePrecision prec)
 #else
 	#warning "Unrecognized platform, thread names will not be available."
 	inline void setThreadName(const char* name) {}
+#endif
+
+#ifndef SERVER
+float getDisplayDensity();
+
+v2u32 getDisplaySize();
+v2u32 getWindowSize();
 #endif
 
 } // namespace porting

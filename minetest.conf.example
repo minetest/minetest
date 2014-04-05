@@ -140,6 +140,8 @@
 #crosshair_color = (255,255,255)
 # Cross alpha (opaqueness, between 0 and 255)
 #crosshair_alpha = 255
+# scale gui by a user specified value
+#gui_scaling = 1.0
 # Sensitivity multiplier
 #mouse_sensitivity = 0.2
 # Sound settings
@@ -147,6 +149,9 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# maximum percentage of current window to be used for hotbar
+# (usefull if you've there's something to be displayed right or left of hotbar)
+#hud_hotbar_max_width = 1.0
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
@@ -165,7 +170,7 @@
 #normalmaps_strength = 0.6
 # Strength of generated normalmaps
 #normalmaps_smooth = 1
-# Defines sampling step of texture (0 - 2) 
+# Defines sampling step of texture (0 - 2)
 # Higher the value normal maps will be smoother
 #enable_parallax_occlusion = false
 # Scale of parallax occlusion effect
