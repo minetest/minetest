@@ -456,7 +456,6 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 	return false;
 }
 
-
 void *EmergeThread::Thread() {
 	ThreadStarted();
 	log_register_thread("EmergeThread" + itos(id));
@@ -471,6 +470,8 @@ void *EmergeThread::Thread() {
 	emerge = m_server->m_emerge;
 	mapgen = emerge->mapgen[id];
 	enable_mapgen_debug_info = emerge->mapgen_debug_info;
+
+	porting::setThreadName("EmergeThread");
 
 	while (!StopRequested())
 	try {

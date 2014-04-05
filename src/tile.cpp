@@ -730,9 +730,6 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	m_textureinfo_cache.push_back(ti);
 	m_name_to_id[name] = id;
 
-	/*infostream<<"getTextureIdDirect(): "
-			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
-
 	return id;
 }
 
@@ -961,6 +958,20 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 	if(part_of_name.size() == 0 || part_of_name[0] != '[')
 	{
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name, m_device);
+
+		if (image != NULL) {
+			if (!driver->queryFeature(irr::video::EVDF_TEXTURE_NPOT)) {
+				core::dimension2d<u32> dim = image->getDimension();
+
+
+				if ((dim.Height %2 != 0) ||
+						(dim.Width %2 != 0)) {
+					errorstream << "TextureSource::generateImage "
+							<< part_of_name << " size npot2 x=" << dim.Width
+							<< " y=" << dim.Height << std::endl;
+				}
+			}
+		}
 
 		if(image == NULL)
 		{
