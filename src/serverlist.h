@@ -30,9 +30,7 @@ typedef Json::Value ServerListSpec;
 namespace ServerList
 {
 	std::vector<ServerListSpec> getLocal();
-	#if USE_CURL
 	std::vector<ServerListSpec> getOnline();
-	#endif
 	bool deleteEntry(ServerListSpec server);
 	bool insert(ServerListSpec server);
 	std::vector<ServerListSpec> deSerialize(std::string liststring);
