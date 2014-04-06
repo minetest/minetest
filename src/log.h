@@ -29,11 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 enum LogMessageLevel {
-	LMT_ERROR, /* Something failed ("invalid map data on disk, block (2,2,1)") */
-	LMT_ACTION, /* In-game actions ("celeron55 placed block at (12,4,-5)") */
-	LMT_INFO, /* More deep info ("saving map on disk (only_modified=true)") */
-	LMT_VERBOSE, /* Flood-style ("loaded block (2,2,2) from disk") */
-	LMT_NUM_VALUES,
+	LMT_ERROR,      /* Something failed ("invalid map data on disk, block (2,2,1)") */
+	LMT_ACTION,     /* In-game actions ("celeron55 placed block at (12,4,-5)")      */
+	LMT_INFO,       /* More deep info ("saving map on disk (only_modified=true)")   */
+	LMT_VERBOSE,    /* Flood-style ("loaded block (2,2,2) from disk")               */
+	LMT_NUM_VALUES
 };
 
 class ILogOutput

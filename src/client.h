@@ -137,7 +137,7 @@ enum ClientEventType
 	CE_HUDRM,
 	CE_HUDCHANGE,
 	CE_SET_SKY,
-	CE_OVERRIDE_DAY_NIGHT_RATIO,
+	CE_OVERRIDE_DAY_NIGHT_RATIO
 };
 
 struct ClientEvent

@@ -50,7 +50,7 @@ enum HudElementType {
 	HUD_ELEM_TEXT      = 1,
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
-	HUD_ELEM_WAYPOINT  = 4,
+	HUD_ELEM_WAYPOINT  = 4
 };
 
 enum HudElementStat {

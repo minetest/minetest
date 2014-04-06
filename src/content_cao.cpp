@@ -165,7 +165,7 @@ public:
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
-	void removeFromScene();
+	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
 	void updateNodePos();
@@ -235,7 +235,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateNodePos();
 }
 
-void TestCAO::removeFromScene()
+void TestCAO::removeFromScene(bool permanent)
 {
 	if(m_node == NULL)
 		return;
@@ -309,7 +309,7 @@ public:
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
-	void removeFromScene();
+	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
 	void updateNodePos();
@@ -411,7 +411,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateTexture();
 }
 
-void ItemCAO::removeFromScene()
+void ItemCAO::removeFromScene(bool permanent)
 {
 	if(m_node == NULL)
 		return;

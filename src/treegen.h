@@ -81,5 +81,5 @@ namespace treegen {
 
 	v3f transposeMatrix(irr::core::matrix4 M ,v3f v);
 
-}; // namespace treegen
+} // namespace treegen
 #endif

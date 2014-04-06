@@ -341,7 +341,7 @@ protected:
 	enum RequestType {
 		RT_FETCH,
 		RT_CLEAR,
-		RT_WAKEUP,
+		RT_WAKEUP
 	};
 
 	struct Request {

@@ -33,7 +33,7 @@ class JSemaphore {
 public:
 	JSemaphore();
 	~JSemaphore();
-	JSemaphore(int initval);
+	JSemaphore(unsigned int initval);
 
 	void Post();
 	void Wait();

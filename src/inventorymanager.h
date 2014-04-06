@@ -32,7 +32,7 @@ struct InventoryLocation
 		CURRENT_PLAYER,
 		PLAYER,
 		NODEMETA,
-        DETACHED,
+		DETACHED
 	} type;
 
 	std::string name; // PLAYER, DETACHED

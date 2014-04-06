@@ -30,7 +30,7 @@ enum ModifiedState
 	MOD_RESERVED3 = 3,
 	// Has been modified, and will be saved as soon as possible.
 	MOD_STATE_WRITE_NEEDED = 4,
-	MOD_RESERVED5 = 5,
+	MOD_RESERVED5 = 5
 };
 
 #endif

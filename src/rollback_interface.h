@@ -60,7 +60,7 @@ struct RollbackAction
 	enum Type{
 		TYPE_NOTHING,
 		TYPE_SET_NODE,
-		TYPE_MODIFY_INVENTORY_STACK,
+		TYPE_MODIFY_INVENTORY_STACK
 	} type;
 
 	time_t unix_time;

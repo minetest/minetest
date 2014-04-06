@@ -86,7 +86,7 @@ enum Rotation {
 	ROTATE_90,
 	ROTATE_180,
 	ROTATE_270,
-	ROTATE_RAND,
+	ROTATE_RAND
 };
 
 /*

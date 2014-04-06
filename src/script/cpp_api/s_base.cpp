@@ -79,7 +79,9 @@ ScriptApiBase::ScriptApiBase()
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
-	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
+	/* Function pointers and object pointers must be same size for this to work! */
+	ct_assert(sizeof(void*) == sizeof(int(*)(lua_State*,lua_CFunction)));
+	lua_pushlightuserdata(m_luastack, reinterpret_cast<void*>(script_exception_wrapper));
 	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
 	lua_pop(m_luastack, 1);
 #endif

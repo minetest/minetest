@@ -83,7 +83,7 @@ struct PlayerControl
 	float yaw;
 };
 
-class Map;
+class Environment;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
@@ -96,8 +96,14 @@ public:
 	Player(IGameDef *gamedef);
 	virtual ~Player() = 0;
 
-	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
-	{}
+	virtual void move(
+			f32 dtime,
+			Environment *,
+			f32 pos_max_d
+			)
+	{
+		//infostream << "called unimplemented function \"move\" << std::endl;
+	}
 
 	v3f getSpeed()
 	{
@@ -190,8 +196,12 @@ public:
 		return m_name;
 	}
 
-	core::aabbox3d<f32> getCollisionbox() {
-		return m_collisionbox;
+	bool getCollisionbox(core::aabbox3d<f32>* toset) {
+		if (toset != NULL)
+		{
+			*toset = m_collisionbox;
+		}
+		return false;
 	}
 
 	u32 getFreeHudID() const {

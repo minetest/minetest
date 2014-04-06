@@ -35,7 +35,7 @@ JSemaphore::~JSemaphore() {
 	UNUSED(sem_destroy_retval);
 }
 
-JSemaphore::JSemaphore(int initval) {
+JSemaphore::JSemaphore(unsigned int initval) {
 	int sem_init_retval = sem_init(&m_semaphore,0,initval);
 	assert(sem_init_retval == 0);
 	UNUSED(sem_init_retval);
@@ -77,7 +77,6 @@ bool JSemaphore::Wait(unsigned int time_ms) {
 		assert((errno == ETIMEDOUT) || (errno == EINTR));
 		return false;
 	}
-	return sem_wait_retval == 0 ? true : false;
 }
 
 int JSemaphore::GetValue() {

@@ -48,7 +48,7 @@ void SHA1::hexPrinter( unsigned char* c, int l )
 Uint32 SHA1::lrot( Uint32 x, int bits )
 {
 	return (x<<bits) | (x>>(32 - bits));
-};
+}
 
 // Save a 32-bit unsigned integer to memory, in big-endian order
 void SHA1::storeBigEndianUint32( unsigned char* byte, Uint32 num )

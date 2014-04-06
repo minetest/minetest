@@ -39,7 +39,7 @@ enum ItemType
 	ITEM_NONE,
 	ITEM_NODE,
 	ITEM_CRAFT,
-	ITEM_TOOL,
+	ITEM_TOOL
 };
 
 struct ItemDefinition
