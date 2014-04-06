@@ -48,6 +48,10 @@ void init_gettext(const char *path,std::string configured_language,int argc, cha
 void init_gettext(const char *path,std::string configured_language);
 #endif
 
+extern std::wstring narrow_to_wide(const std::string& mbs);
+#include "util/numeric.h"
+
+
 /******************************************************************************/
 inline wchar_t* chartowchar_t(const char *str)
 {
@@ -66,7 +70,10 @@ inline wchar_t* chartowchar_t(const char *str)
 #else
 	size_t l = strlen(str)+1;
 	nstr = new wchar_t[l];
-	mbstowcs(nstr, str, l);
+
+	std::wstring intermediate = narrow_to_wide(str);
+	memset(nstr,0,l);
+	memcpy(nstr,intermediate.c_str(),l*sizeof(wchar_t));
 #endif
 
 	return nstr;
