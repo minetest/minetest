@@ -456,15 +456,12 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 	}
 
 	std::vector<ServerListSpec> servers;
-#if USE_CURL
+
 	if(listtype == "online") {
 		servers = ServerList::getOnline();
 	} else {
 		servers = ServerList::getLocal();
 	}
-#else
-	servers = ServerList::getLocal();
-#endif
 
 	lua_newtable(L);
 	int top = lua_gettop(L);
@@ -582,15 +579,12 @@ int ModApiMainMenu::l_delete_favorite(lua_State *L)
 		(listtype != "online"))
 		return 0;
 
-#if USE_CURL
+
 	if(listtype == "online") {
 		servers = ServerList::getOnline();
 	} else {
 		servers = ServerList::getLocal();
 	}
-#else
-	servers = ServerList::getLocal();
-#endif
 
 	int fav_idx	= luaL_checkinteger(L,1) -1;
 
