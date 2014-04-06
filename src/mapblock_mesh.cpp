@@ -150,9 +150,8 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Single light bank.
 */
 static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
-		MeshMakeData *data)
+		INodeDefManager *ndef)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
 	u8 light = n.getLight(bank, ndef);
 
 	while(increment > 0)
@@ -173,10 +172,10 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	Calculate non-smooth lighting at interior of node.
 	Both light banks.
 */
-u16 getInteriorLight(MapNode n, s32 increment, MeshMakeData *data)
+u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 {
-	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, data);
-	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, data);
+	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
+	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
 	return day | (night << 8);
 }
 
@@ -185,10 +184,8 @@ u16 getInteriorLight(MapNode n, s32 increment, MeshMakeData *data)
 	Single light bank.
 */
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-		v3s16 face_dir, MeshMakeData *data)
+		v3s16 face_dir, INodeDefManager *ndef)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
-
 	u8 light;
 	u8 l1 = n.getLight(bank, ndef);
 	u8 l2 = n2.getLight(bank, ndef);
@@ -227,10 +224,10 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, MeshMakeData *data)
+u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 {
-	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, data);
-	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, data);
+	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
+	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
 	return day | (night << 8);
 }
 
@@ -812,7 +809,7 @@ static void getTileInfo(
 	if(data->m_smooth_lighting == false)
 	{
 		lights[0] = lights[1] = lights[2] = lights[3] =
-				getFaceLight(n0, n1, face_dir, data);
+				getFaceLight(n0, n1, face_dir, ndef);
 	}
 	else
 	{
