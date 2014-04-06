@@ -441,6 +441,7 @@ set(minetest_SRCS
 	guiEngine.cpp
 	guiFileSelectMenu.cpp
 	convert_json.cpp
+	gsmapper.cpp
 	${minetest_SCRIPT_SRCS}
 )
 
