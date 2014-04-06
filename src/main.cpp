@@ -266,6 +266,7 @@ public:
 			} else {
 				keyIsDown.unset(event.KeyInput);
 			}
+			return true;
 		}
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
@@ -1484,10 +1485,11 @@ int main(int argc, char *argv[])
 	bool random_input = g_settings->getBool("random_input")
 			|| cmd_args.getFlag("random-input");
 	InputHandler *input = NULL;
-	if(random_input)
+	if(random_input) {
 		input = new RandomInputHandler();
-	else
+	} else {
 		input = new RealInputHandler(device, &receiver);
+	}
 
 	scene::ISceneManager* smgr = device->getSceneManager();
 

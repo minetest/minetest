@@ -191,7 +191,7 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 
 #elif defined(__sun) || defined(sun)
 
-	return processor_bind(P_LWPID, MAKE_LWPID_PTHREAD(tid), 
+	return processor_bind(P_LWPID, MAKE_LWPID_PTHREAD(tid),
 						pnumber, NULL) == 0;
 
 #elif defined(_AIX)
@@ -477,7 +477,7 @@ void initializePaths()
 			i != trylist.end(); i++)
 	{
 		const std::string &trypath = *i;
-		if(!fs::PathExists(trypath) || !fs::PathExists(trypath + "/builtin")){
+		if(!fs::PathExists(trypath) || !fs::PathExists(trypath + DIR_DELIM + "builtin")){
 			dstream<<"WARNING: system-wide share not found at \""
 					<<trypath<<"\""<<std::endl;
 			continue;
@@ -491,37 +491,37 @@ void initializePaths()
 		break;
 	}
 
-	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + PROJECT_NAME;
 
 	/*
 		OS X
 	*/
 	#elif defined(__APPLE__)
 
-    // Code based on
-    // http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
-    CFBundleRef main_bundle = CFBundleGetMainBundle();
-    CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
-    char path[PATH_MAX];
-    if(CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX))
+	// Code based on
+	// http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
+	CFBundleRef main_bundle = CFBundleGetMainBundle();
+	CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
+	char path[PATH_MAX];
+	if(CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX))
 	{
 		dstream<<"Bundle resource path: "<<path<<std::endl;
 		//chdir(path);
-		path_share = std::string(path) + "/share";
+		path_share = std::string(path) + DIR_DELIM + "share";
 	}
 	else
-    {
-        // error!
+	{
+		// error!
 		dstream<<"WARNING: Could not determine bundle resource path"<<std::endl;
-    }
-    CFRelease(resources_url);
+	}
+	CFRelease(resources_url);
 
 	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
 	#else // FreeBSD, and probably many other POSIX-like systems.
 
 	path_share = STATIC_SHAREDIR;
-	path_user = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + PROJECT_NAME;
 
 	#endif
 
