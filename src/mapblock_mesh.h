@@ -172,8 +172,8 @@ inline video::SColor MapBlock_LightColor(u8 alpha, u16 light, u8 light_source=0)
 }
 
 // Compute light at node
-u16 getInteriorLight(MapNode n, s32 increment, MeshMakeData *data);
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, MeshMakeData *data);
+u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);
+u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef);
 u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data);
 
 // Retrieves the TileSpec of a face of a node
