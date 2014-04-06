@@ -268,8 +268,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				if(nodemgr->get(map->getNode(p)).walkable == false)
 					continue;
 				// And the node above it has to be nonwalkable
-				if(nodemgr->get(map->getNode(p+v3s16(0,1,0))).walkable == true)
+				if(nodemgr->get(map->getNode(p+v3s16(0,1,0))).walkable == true) {
 					continue;
+				}
 				if (!physics_override_sneak_glitch) {
 					if (nodemgr->get(map->getNode(p+v3s16(0,2,0))).walkable)
 						continue;

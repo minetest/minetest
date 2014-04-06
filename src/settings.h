@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include "filesys.h"
+#include <cctype>
 
 enum ValueType
 {
@@ -575,7 +576,7 @@ public:
 	u32 getFlagStr(std::string name, FlagDesc *flagdesc, u32 *flagmask)
 	{
 		std::string val = get(name);
-		return (isdigit(val[0])) ? stoi(val) :
+		return (std::isdigit(val[0])) ? stoi(val) :
 			readFlagString(val, flagdesc, flagmask);
 	}
 
