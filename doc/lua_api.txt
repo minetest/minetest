@@ -1886,7 +1886,7 @@ Class reference
 ----------------
 NodeMetaRef: Node metadata - reference extra data and functionality stored
              in a node
-- Can be gotten via minetest.get_nodemeta(pos)
+- Can be gotten via minetest.get_meta(pos)
 methods:
 - set_string(name, value)
 - get_string(name)
