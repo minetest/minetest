@@ -84,6 +84,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef USE_LEVELDB
 #include "database-leveldb.h"
 #endif
+#if USE_REDIS
+#include "database-redis.h"
+#endif
 
 /*
 	Settings.
@@ -1242,7 +1245,7 @@ int main(int argc, char *argv[])
 			}
 			if (!world_mt.exists("backend")) {
 				errorstream << "Please specify your current backend in world.mt file:"
-					<< std::endl << "	backend = {sqlite3|leveldb|dummy}" << std::endl;
+					<< std::endl << "	backend = {sqlite3|leveldb|redis|dummy}" << std::endl;
 				return 1;
 			}
 			std::string backend = world_mt.get("backend");
@@ -1256,6 +1259,10 @@ int main(int argc, char *argv[])
 			#if USE_LEVELDB
 			else if (migrate_to == "leveldb")
 				new_db = new Database_LevelDB(&(ServerMap&)server.getMap(), world_path);
+			#endif
+			#if USE_REDIS
+			else if (migrate_to == "redis")
+				new_db = new Database_Redis(&(ServerMap&)server.getMap(), world_path);
 			#endif
 			else {
 				errorstream << "Migration to " << migrate_to << " is not supported" << std::endl;
