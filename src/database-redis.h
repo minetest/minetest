@@ -44,7 +44,6 @@ public:
 private:
 	ServerMap *srvmap;
 	redisContext *ctx;
-	unsigned int written_blocks;
 };
 #endif
 #endif

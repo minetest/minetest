@@ -70,20 +70,12 @@ void Database_Redis::beginSave() {
 	redisReply *reply;
 	REDIS_CMD(reply, ctx, "MULTI");
 	freeReplyObject(reply);
-	written_blocks = 0;
 }
 
 void Database_Redis::endSave() {
 	redisReply *reply;
 	REDIS_CMD(reply, ctx, "EXEC");
 	freeReplyObject(reply);
-	if(written_blocks > 0)
-	{
-		// We only tell redis to save the data to disk when we actually wrote some MapBlocks
-		// This is needed because this is method is called very often without actually writing blocks (e.g. when idle)
-		REDIS_CMD(reply, ctx, "BGSAVE");
-		freeReplyObject(reply);
-	}
 }
 
 void Database_Redis::saveBlock(MapBlock *block)
@@ -96,8 +88,6 @@ void Database_Redis::saveBlock(MapBlock *block)
 	{
 		return;
 	}
-
-	written_blocks++;
 
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
