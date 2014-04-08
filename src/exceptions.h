@@ -116,6 +116,11 @@ public:
 	FatalSystemException(const std::string &s): BaseException(s) {}
 };
 
+class ClientStateError : public BaseException {
+public:
+	ClientStateError(std::string s): BaseException(s) {}
+};
+
 /*
 	Some "old-style" interrupts:
 */

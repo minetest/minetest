@@ -100,9 +100,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		version, heat and humidity transfer in MapBock
 		automatic_face_movement_dir and automatic_face_movement_dir_offset
 			added to object properties
+	PROTOCOL_VERSION 22:
+		add swap_node
+	PROTOCOL_VERSION 23:
+		TOSERVER_CLIENT_READY
 */
 
-#define LATEST_PROTOCOL_VERSION 22
+#define LATEST_PROTOCOL_VERSION 23
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -129,7 +133,7 @@ enum ToClientCommand
 
 		[0] u16 TOSERVER_INIT
 		[2] u8 deployed version
-		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd 
+		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
 		[12] u64 map seed (new as of 2011-02-27)
 		[20] f1000 recommended send interval (in seconds) (new as of 14)
 
@@ -754,6 +758,16 @@ enum ToServerCommand
 	/*
 		u16 command
 		u16 breath
+	*/
+
+	TOSERVER_CLIENT_READY = 0x43,
+	/*
+		u8 major
+		u8 minor
+		u8 patch
+		u8 reserved
+		u16 len
+		u8[len] full_version_string
 	*/
 };
 

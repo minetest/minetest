@@ -1004,7 +1004,7 @@ public:
 	void Send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
 	u16 GetPeerID(){ return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);
-	float GetPeerAvgRTT(u16 peer_id);
+	float getPeerStat(u16 peer_id, rtt_stat_type type);
 	const u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(u16 peer_id);
