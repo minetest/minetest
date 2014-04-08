@@ -46,6 +46,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_LEVELDB
 #include "database-leveldb.h"
 #endif
+#if USE_REDIS
+#include "database-redis.h"
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -2433,6 +2436,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 		#if USE_LEVELDB
 		else if (backend == "leveldb")
 			dbase = new Database_LevelDB(this, savedir);
+		#endif
+		#if USE_REDIS
+		else if (backend == "redis")
+			dbase = new Database_Redis(this, savedir);
 		#endif
 		else
 			throw BaseException("Unknown map backend");

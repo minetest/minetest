@@ -28,6 +28,10 @@
 	#define USE_LUAJIT 0
 #endif
 
+#ifndef USE_REDIS
+	#define USE_REDIS 0
+#endif
+
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
 	#undef PROJECT_NAME
@@ -48,6 +52,8 @@
 	#define USE_LEVELDB CMAKE_USE_LEVELDB
 	#undef USE_LUAJIT
 	#define USE_LUAJIT CMAKE_USE_LUAJIT
+	#undef USE_REDIS
+	#define USE_REDIS CMAKE_USE_REDIS
 	#undef VERSION_MAJOR
 	#define VERSION_MAJOR CMAKE_VERSION_MAJOR
 	#undef VERSION_MINOR
