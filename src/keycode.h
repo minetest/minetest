@@ -65,5 +65,22 @@ KeyPress getKeySetting(const char *settingname);
 // Clear fast lookup cache
 void clearKeyCache();
 
+
+typedef struct {
+	KeyPress key;
+	bool modifier_shift;
+	bool modifier_control;
+	std::string setting_name;
+	std::string command;
+} KeyCommand;
+
+// Command Key configuration getter
+KeyCommand getCommandKeySetting(size_t i);
+size_t getCommandKeySettingCount();
+
+// Clear fast lookup cache
+void clearCommandKeyCache();
+
+
 #endif
 
