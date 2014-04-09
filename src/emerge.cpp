@@ -472,6 +472,8 @@ void *EmergeThread::Thread() {
 	mapgen = emerge->mapgen[id];
 	enable_mapgen_debug_info = emerge->mapgen_debug_info;
 
+	porting::setThreadName("EmergeThread");
+
 	while (!StopRequested())
 	try {
 		if (!popBlockEmerge(&p, &flags)) {
