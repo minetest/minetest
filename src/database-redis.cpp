@@ -36,8 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
-#include "sha1.h"
-
 #define REDIS_CMD(_r , _ctx, _cmd, ...) \
 	_r = (redisReply*) redisCommand(_ctx, _cmd, ##__VA_ARGS__); \
 	if(_r == NULL) \
@@ -47,7 +45,8 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 {
 	Settings conf;
 	conf.readConfigFile((std::string(savedir) + DIR_DELIM + "world.mt").c_str());
-	const char *addr = conf.get("redis_address").c_str(); // This will raise an error if that setting does not exist
+	std::string tmp = conf.get("redis_address"); // This will raise an error if that setting does not exist
+	const char *addr = tmp.c_str();
 	int port = conf.exists("redis_port")? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
 	if(ctx == NULL || ctx->err) {
