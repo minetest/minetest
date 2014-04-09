@@ -387,11 +387,6 @@ int ModApiMainMenu::l_get_modstore_details(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_modstore_list(lua_State *L)
 {
-	std::string listtype = "local";
-
-	if (!lua_isnone(L,1)) {
-		listtype = luaL_checkstring(L,1);
-	}
 	Json::Value mods;
 	std::string url = "";
 	try{
@@ -990,6 +985,9 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 			lua_pushboolean(L,true);
 			return 1;
 		}
+	} else {
+		errorstream << "DOWNLOAD denied: " << absolute_destination
+				<< " isn't a allowed path" << std::endl;
 	}
 	lua_pushboolean(L,false);
 	return 1;
