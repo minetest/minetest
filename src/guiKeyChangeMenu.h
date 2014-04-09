@@ -29,6 +29,7 @@
 #include "keycode.h"
 #include <string>
 #include <vector>
+#include <set>
 
 typedef struct {
 	int id;
@@ -37,6 +38,13 @@ typedef struct {
 	std::string setting_name;
 	gui::IGUIButton *button;
 } key_setting;
+
+typedef struct {
+	int id;
+	KeyCommand key;
+	std::string setting_name;
+	std::string command_alias;
+} key_alias_setting;
 
 
 class GUIKeyChangeMenu: public GUIModalMenu
@@ -65,14 +73,32 @@ private:
 	bool resetMenu();
 
 	void add_key(int id, wchar_t* button_name, std::string setting_name);
+    void add_command_alias_key(const KeyCommand &key);
+
+    void commandComboChanged();
 
 	bool shift_down;
-	
+	bool control_down;
+
 	s32 activeKey;
-	
+
 	std::vector<KeyPress> key_used;
 	gui::IGUIStaticText *key_used_text;
 	std::vector<key_setting *> key_settings;
+	std::vector<KeyCommand> key_alias_settings;
+	IMenuManager *m_menumgr_copy;
+	gui::IGUIElement* m_parent;
+
+    s32 m_command_active_id;
+    gui::IGUIEditBox *m_command_name;
+    gui::IGUIStaticText *m_command_label;
+    gui::IGUIEditBox *m_command;
+    gui::IGUIStaticText *m_command_key_label;
+    gui::IGUIButton *m_command_key;
+    gui::IGUIButton *m_command_add;
+    gui::IGUIButton *m_command_remove;
+    gui::IGUIComboBox *m_command_combo;
+    bool m_command_adding;
 };
 
 #endif
