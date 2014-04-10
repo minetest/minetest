@@ -333,6 +333,13 @@ public:
 	bool m_physics_override_sneak;
 	bool m_physics_override_sneak_glitch;
 	bool m_physics_override_sent;
+
+	v3f m_camera_override_position;
+	v3f m_camera_override_rotation;
+	float m_camera_override_fov;
+	float m_camera_override_speed;
+	bool m_camera_override_eye;
+	bool m_camera_override_sent;
 };
 
 #endif

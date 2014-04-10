@@ -105,6 +105,10 @@ private:
 	//                      physics_override_gravity, sneak, sneak_glitch)
 	static int l_set_physics_override(lua_State *L);
 
+	// set_camera_override(self, camera_position, camera_rotation, camera_fov,
+	//                      camera_speed, camera_eye)
+	static int l_set_camera_override(lua_State *L);
+
 	// set_animation(self, frame_range, frame_speed, frame_blend)
 	static int l_set_animation(lua_State *L);
 

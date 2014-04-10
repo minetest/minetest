@@ -153,6 +153,11 @@ private:
 	// Camera offset
 	v3s16 m_camera_offset;
 
+	// Lua offsets
+	v3f m_camera_lua_position;
+	v3f m_camera_lua_rotation;
+	float m_camera_lua_fov;
+
 	// Field of view and aspect ratio stuff
 	f32 m_aspect;
 	f32 m_fov_x;

@@ -385,6 +385,42 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	return 0;
 }
 
+// set_camera_override(self, camera_position, camera_rotation, camera_fov,
+//                      camera_speed, camera_eye)
+int ObjectRef::l_set_camera_override(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = (PlayerSAO *) getobject(ref);
+	if(co == NULL) return 0;
+	// Do it
+	if(!lua_isnil(L, 2))
+	{
+		co->m_camera_override_position = read_v3f(L, 2);
+		co->m_camera_override_sent = false;
+	}
+	if(!lua_isnil(L, 3))
+	{
+		co->m_camera_override_rotation = read_v3f(L, 3);
+		co->m_camera_override_sent = false;
+	}
+	if(!lua_isnil(L, 4))
+	{
+		co->m_camera_override_fov = lua_tonumber(L, 4);
+		co->m_camera_override_sent = false;
+	}
+	if(!lua_isnil(L, 5))
+	{
+		co->m_camera_override_speed = lua_tonumber(L, 5);
+		co->m_camera_override_sent = false;
+	}
+	if(!lua_isnil(L, 6))
+	{
+		co->m_camera_override_eye = lua_toboolean(L, 6);
+		co->m_camera_override_sent = false;
+	}
+	return 0;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -1229,6 +1265,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_wielded_item),
 	luamethod(ObjectRef, set_armor_groups),
 	luamethod(ObjectRef, set_physics_override),
+	luamethod(ObjectRef, set_camera_override),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, set_attach),

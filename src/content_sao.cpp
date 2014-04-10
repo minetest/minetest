@@ -971,7 +971,13 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_physics_override_gravity(1),
 	m_physics_override_sneak(true),
 	m_physics_override_sneak_glitch(true),
-	m_physics_override_sent(false)
+	m_physics_override_sent(false),
+	m_camera_override_position(0,0,0),
+	m_camera_override_rotation(0,0,0),
+	m_camera_override_fov(1),
+	m_camera_override_speed(1),
+	m_camera_override_eye(true),
+	m_camera_override_sent(false)
 {
 	assert(m_player);
 	assert(m_peer_id != 0);
@@ -1194,6 +1200,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		std::string str = gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity,
 				m_physics_override_sneak, m_physics_override_sneak_glitch);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
+	if(m_camera_override_sent == false){
+		m_camera_override_sent = true;
+		std::string str = gob_cmd_update_camera_override(m_camera_override_position,
+				m_camera_override_rotation, m_camera_override_fov,
+				m_camera_override_speed, m_camera_override_eye);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
