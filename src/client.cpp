@@ -487,24 +487,28 @@ void Client::step(float dtime)
 			// [23] u8[28] password (new in some version)
 			// [51] u16 minimum supported network protocol version (added sometime)
 			// [53] u16 maximum supported network protocol version (added later than the previous one)
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2);
-			writeU16(&data[0], TOSERVER_INIT);
-			writeU8(&data[2], SER_FMT_VER_HIGHEST_READ);
+			// [55] u16 length of system information
+			// [57] u8[len] system information
+			std::ostringstream os(std::ios_base::binary);
+			writeU16(os, TOSERVER_INIT);
+			writeU8(os, SER_FMT_VER_HIGHEST_READ);
 
-			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
-			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
-
-			/*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
-					<<std::endl;*/
-
-			memset((char*)&data[23], 0, PASSWORD_SIZE);
-			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+			SharedBuffer<u8> data(PLAYERNAME_SIZE+PASSWORD_SIZE);
+			memset((char*) &data[0], 0, PLAYERNAME_SIZE);
+			snprintf((char*) &data[0], PLAYERNAME_SIZE, "%s", myplayer->getName());
+			memset((char*) &data[PLAYERNAME_SIZE], 0, PASSWORD_SIZE);
+			snprintf((char*) &data[PLAYERNAME_SIZE], PASSWORD_SIZE, "%s", m_password.c_str());
+			os<<std::string((const char*) &data[0], data.getSize());
 			
-			writeU16(&data[51], CLIENT_PROTOCOL_VERSION_MIN);
-			writeU16(&data[53], CLIENT_PROTOCOL_VERSION_MAX);
+			writeU16(os, CLIENT_PROTOCOL_VERSION_MIN);
+			writeU16(os, CLIENT_PROTOCOL_VERSION_MAX);
+			os<<serializeString(porting::get_sysinfo());
+			
+			std::string s = os.str();
+			SharedBuffer<u8> packetdata((u8*) s.c_str(), s.size());
 
 			// Send as unreliable
-			Send(1, data, false);
+			Send(1, packetdata, false);
 		}
 
 		// Not connected, return

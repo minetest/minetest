@@ -319,6 +319,9 @@ public:
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
+
+	inline std::string getPeerSysinfo(u16 peer_id)
+			{ return m_clients.getClientNoEx(peer_id)->m_sysinfo; }
 			
 	bool setSky(Player *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);

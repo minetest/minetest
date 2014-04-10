@@ -85,6 +85,9 @@ private:
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 
+	// get_player_sysinfo()
+	static int l_get_player_sysinfo(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 

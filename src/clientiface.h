@@ -100,6 +100,7 @@ public:
 		serialization_version(SER_FMT_VER_INVALID),
 		net_proto_version(0),
 		m_time_from_building(9999),
+		m_sysinfo(""),
 		m_pending_serialization_version(SER_FMT_VER_INVALID),
 		m_state(Created),
 		m_nearest_unsent_d(0),
@@ -158,6 +159,8 @@ public:
 		Value is dummy.
 	*/
 	std::set<u16> m_known_objects;
+
+	std::string m_sysinfo;
 
 	ClientState getState()
 		{ return m_state; }
