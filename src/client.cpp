@@ -502,7 +502,10 @@ void Client::step(float dtime)
 			
 			writeU16(os, CLIENT_PROTOCOL_VERSION_MIN);
 			writeU16(os, CLIENT_PROTOCOL_VERSION_MAX);
-			os<<serializeString(porting::get_sysinfo());
+			if(g_settings->getBool("send_sysinfo_to_server"))
+				os<<serializeString(porting::get_sysinfo());
+			else
+				os<<serializeString("");
 			
 			std::string s = os.str();
 			SharedBuffer<u8> packetdata((u8*) s.c_str(), s.size());

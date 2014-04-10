@@ -144,6 +144,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
+	settings->setDefault("send_sysinfo_to_server", "true");
 
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
