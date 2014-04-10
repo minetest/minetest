@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 sfan5 <sfan5@live.de>
+Copyright (C) 2014 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
