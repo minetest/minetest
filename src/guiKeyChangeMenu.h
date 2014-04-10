@@ -67,14 +67,11 @@ public:
 	bool OnEvent(const SEvent& event);
 
 private:
-
 	void init_keys();
-
 	bool resetMenu();
-
+    std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift, bool modifier_control);
 	void add_key(int id, wchar_t* button_name, std::string setting_name);
     void add_command_alias_key(const KeyCommand &key);
-
     void commandComboChanged();
 
 	bool shift_down;
@@ -82,7 +79,6 @@ private:
 
 	s32 activeKey;
 
-	std::vector<KeyPress> key_used;
 	gui::IGUIStaticText *key_used_text;
 	std::vector<key_setting *> key_settings;
 	std::vector<KeyCommand> key_alias_settings;

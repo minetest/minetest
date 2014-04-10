@@ -102,8 +102,6 @@ GUIModalMenu(env, parent, id, menumgr)
 	activeKey = -1;
 	this->key_used_text = NULL;
 	init_keys();
-	for(size_t i=0; i<key_settings.size(); i++)
-		this->key_used.push_back(key_settings.at(i)->key);
 }
 
 GUIKeyChangeMenu::~GUIKeyChangeMenu()
@@ -456,14 +454,16 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			this->key_used_text = NULL;
 		}
 		// Display Key already in use message
-		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
+		std::wstring ku = keyUsedBy(activeKey, kp, shift_down, control_down);
+		if (ku != L"")
 		{
 			core::rect < s32 > rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
-			wchar_t* text = wgettext("Key already in use");
-			this->key_used_text = Environment->addStaticText(text,
+			std::wstring text = std::wstring(L"Key already in use by ")+ku;
+//			wchar_t* text = std::wstring("Key already in use by ")+ku;
+			this->key_used_text = Environment->addStaticText(text.c_str(),
 									rect, false, true, this, -1);
-			delete[] text;
+//			delete[] text;
 			//infostream << "Key already in use" << std::endl;
 		}
 
@@ -485,7 +485,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			k->button->setText(text);
 			delete[] text;
 
-			this->key_used.push_back(kp);// Allow characters made with shift or control
 		}
 		else
         {
@@ -556,14 +555,27 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
                         {
                             KeyCommand kc;
                             kc.setting_name = wide_to_narrow(m_command_name->getText());
-                            kc.modifier_control = false;
-                            kc.modifier_shift = false;
-                            kc.command = "Enter a command";
-                            add_command_alias_key(kc);
-                            wchar_t* text = wgettext(kc.setting_name.c_str());
-                            m_command_combo->addItem(text,key_alias_settings.size()-1);
-                            delete[] text;
-                            m_command_combo->setSelected(key_alias_settings.size()-1);
+                            std::replace(kc.setting_name.begin(), kc.setting_name.end(), ' ', '_');
+                            bool exists = false;
+                            for (std::vector<KeyCommand>::iterator it = key_alias_settings.begin();
+                                 it != key_alias_settings.end(); ++it)
+                                if (it->setting_name == kc.setting_name)
+                                {
+                                    exists = true;
+                                    m_command_combo->setSelected(it - key_alias_settings.begin());
+                                    break;
+                                }
+                            if (!exists)
+                            {
+                                kc.modifier_control = false;
+                                kc.modifier_shift = false;
+                                kc.command = "";
+                                add_command_alias_key(kc);
+                                wchar_t* text = wgettext(kc.setting_name.c_str());
+                                m_command_combo->addItem(text,key_alias_settings.size()-1);
+                                delete[] text;
+                                m_command_combo->setSelected(key_alias_settings.size()-1);
+                            }
                             commandComboChanged();
 
                             m_command_adding = false;
@@ -612,11 +624,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
                         shift_down = false;
                         control_down = false;
                         activeKey = GUI_ID_KEY_ALIAS_BUTTON;
-                        wchar_t* text = wgettext("press key");
-                        m_command_key->setText(text);
-                        delete[] text;
-    //					this->key_used.erase(std::remove(this->key_used.begin(),
-    //							this->key_used.end(), k->key), this->key_used.end());
+                        set_text(m_command_key, "press key");
                         return true;
                     }
 				default:
@@ -635,11 +643,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					shift_down = false;
 					control_down = false;
 					activeKey = event.GUIEvent.Caller->getID();
-					wchar_t* text = wgettext("press key");
-					k->button->setText(text);
-					delete[] text;
-					this->key_used.erase(std::remove(this->key_used.begin(),
-							this->key_used.end(), k->key), this->key_used.end());
+					set_text(k->button,"press key");
 					break;
 			}
 			Environment->setFocus(this);
@@ -675,6 +679,32 @@ void GUIKeyChangeMenu::commandComboChanged()
         m_command_remove->setEnabled(false);
     }
     m_command_active_id = active_id;
+}
+
+std::wstring GUIKeyChangeMenu::keyUsedBy(int id, const KeyPress &key, bool modifier_shift, bool modifier_control)
+{
+    for (std::vector<key_setting *>::iterator it = key_settings.begin(); it != key_settings.end(); ++it)
+    {
+        if ((*it)->id == id)
+            continue;
+        if ((*it)->key == key)
+            return std::wstring((*it)->button_name);
+    }
+    for (std::vector<KeyCommand>::iterator it = key_alias_settings.begin(); it != key_alias_settings.end(); ++it)
+    {
+        if (id == GUI_ID_KEY_ALIAS_BUTTON && m_command_active_id == it - key_alias_settings.begin())
+            continue;
+        if (it->key == key)
+        {
+            if (id != GUI_ID_KEY_ALIAS_BUTTON)
+                return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
+            else
+                if (it->modifier_shift == modifier_shift
+                    && it->modifier_control == modifier_control)
+                    return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
+        }
+    }
+    return L"";
 }
 
 void GUIKeyChangeMenu::add_key(int id, wchar_t* button_name, std::string setting_name)
