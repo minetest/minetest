@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "database-redis.h"
-#include "hiredis.h"
+#include <hiredis.h>
 
 #include "map.h"
 #include "mapsector.h"
@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REDIS_CMD(_r , _ctx, _cmd, ...) \
 	_r = (redisReply*) redisCommand(_ctx, _cmd, ##__VA_ARGS__); \
 	if(_r == NULL) \
-		throw FileNotGoodException("redis command '" _cmd "' failed");
+		throw FileNotGoodException(std::string("redis command '" _cmd "' failed: ") + _ctx->errstr);
 
 Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 {
@@ -49,13 +49,12 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 	const char *addr = tmp.c_str();
 	int port = conf.exists("redis_port")? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
-	if(ctx == NULL || ctx->err) {
-		if (ctx) {
-			std::string err = std::string("Connection error: ") + ctx->errstr;
-			redisFree(ctx);
-			throw FileNotGoodException(err);
-		} else
-			throw FileNotGoodException("Cannot allocate redis context");
+	if(!ctx)
+		throw FileNotGoodException("Cannot allocate redis context");
+	else if(ctx->err) {
+		std::string err = std::string("Connection error: ") + ctx->errstr;
+		redisFree(ctx);
+		throw FileNotGoodException(err);
 	}
 	srvmap = map;
 }
@@ -107,7 +106,7 @@ void Database_Redis::saveBlock(MapBlock *block)
 	std::string tmp2 = i64tos(getBlockAsInteger(p3d));
 
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "SET %s %b", tmp2.c_str(), tmp1.c_str(), tmp1.size());
+	REDIS_CMD(reply, ctx, "HSET minetest %s %b", tmp2.c_str(), tmp1.c_str(), tmp1.size());
 	if(reply->type == REDIS_REPLY_ERROR)
 		throw FileNotGoodException("Failed to store block in Database");
 
@@ -121,7 +120,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 
 	std::string tmp = i64tos(getBlockAsInteger(blockpos));
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "GET %s", tmp.c_str());
+	REDIS_CMD(reply, ctx, "HGET minetest %s", tmp.c_str());
 
 	if (reply->type == REDIS_REPLY_STRING && reply->len == 0) {
 		freeReplyObject(reply);
@@ -169,13 +168,6 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 			if (created_new)
 				sector->insertBlock(block);
 
-			/*
-				Save blocks loaded in old format in new format
-			*/
-			//if(version < SER_FMT_VER_HIGHEST || save_after_load)
-			// Only save if asked to; no need to update version
-			//if(save_after_load)
-			//	saveBlock(block);
 			// We just loaded it from, so it's up-to-date.
 			block->resetModified();
 		}
@@ -192,7 +184,6 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 					<< "(ignore_world_load_errors)" << std::endl;
 			} else {
 				throw SerializationError("Invalid block data in database");
-				//assert(0);
 			}
 		}
 
@@ -204,7 +195,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "KEYS *");
+	REDIS_CMD(reply, ctx, "HKEYS minetest");
 	if(reply->type != REDIS_REPLY_ARRAY)
 		throw FileNotGoodException("Failed to get keys from database");
 	for(size_t i = 0; i < reply->elements; i++)
