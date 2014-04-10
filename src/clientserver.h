@@ -104,9 +104,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		add swap_node
 	PROTOCOL_VERSION 23:
 		TOSERVER_CLIENT_READY
+	PROTOCOL_VERSION 24:
+		GENERIC_CMD_SET_CAMERA_OVERRIDE
 */
 
-#define LATEST_PROTOCOL_VERSION 23
+#define LATEST_PROTOCOL_VERSION 24
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13

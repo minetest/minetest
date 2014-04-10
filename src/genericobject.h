@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_SET_BONE_POSITION 7
 #define GENERIC_CMD_SET_ATTACHMENT 8
 #define GENERIC_CMD_SET_PHYSICS_OVERRIDE 9
+#define GENERIC_CMD_SET_CAMERA_OVERRIDE 10
 
 #include "object_properties.h"
 std::string gob_cmd_set_properties(const ObjectProperties &prop);
@@ -65,6 +66,9 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 
 std::string gob_cmd_update_physics_override(float physics_override_speed,
 		float physics_override_jump, float physics_override_gravity, bool sneak, bool sneak_glitch);
+
+std::string gob_cmd_update_camera_override(v3f camera_position, v3f camera_rotation,
+		float camera_fov, float camera_speed, bool camera_eye);
 
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend);
 

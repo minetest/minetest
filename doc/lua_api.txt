@@ -1848,6 +1848,13 @@ Player-only: (no-op for other objects)
     sneak = true, -- whether player can sneak
     sneak_glitch = true, -- whether player can use the sneak glitch
   })
+- set_camera_override(
+    position = {x=0, y=0, z=0}, -- offset to default value
+    rotation = {x=0, y=0, z=0}, -- offset to default value
+    fov = 1.0, -- multiplier to default value
+	speed = 1.0 -- 0 = never, 1 = instant
+	eye = true -- first person or third person camera
+  )
 - hud_add(hud definition): add a HUD element described by HUD def, returns ID number on success
 - hud_remove(id): remove the HUD element of the specified id
 - hud_change(id, stat, value): change a value of a previously added HUD element

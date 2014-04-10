@@ -133,6 +133,22 @@ std::string gob_cmd_update_physics_override(float physics_override_speed, float 
 	return os.str();
 }
 
+std::string gob_cmd_update_camera_override(v3f camera_position, v3f camera_rotation,
+		float camera_fov, float camera_speed, bool camera_eye)
+{
+	std::ostringstream os(std::ios::binary);
+	// command 
+	writeU8(os, GENERIC_CMD_SET_CAMERA_OVERRIDE);
+	// parameters
+	writeV3F1000(os, camera_position);
+	writeV3F1000(os, camera_rotation);
+	writeF1000(os, camera_fov);
+	writeF1000(os, camera_speed);
+	// these are sent inverted so we get true when the server sends nothing
+	writeU8(os, !camera_eye);
+	return os.str();
+}
+
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
 {
 	std::ostringstream os(std::ios::binary);

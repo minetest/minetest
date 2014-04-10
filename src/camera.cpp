@@ -58,6 +58,10 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_camera_direction(0,0,0),
 	m_camera_offset(0,0,0),
 
+	m_camera_lua_position(0,0,0),
+	m_camera_lua_rotation(0,0,0),
+	m_camera_lua_fov(1),
+
 	m_aspect(1.0),
 	m_fov_x(1.0),
 	m_fov_y(1.0),
@@ -293,9 +297,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		fall_bobbing *= g_settings->getFloat("fall_bobbing_amount");
 	}
 
-	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
+	// Set head node transformation and apply Lua offset
+	float lua_fade = MYMAX(0, MYMIN(1, player->camera_override_speed));
+
+	m_camera_lua_position = m_camera_lua_position * (1 - lua_fade) + player->camera_override_position * lua_fade;
+	m_camera_lua_rotation = m_camera_lua_rotation * (1 - lua_fade) + player->camera_override_rotation * lua_fade;
+	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0)+m_camera_lua_position);
+	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength)+m_camera_lua_rotation);
 	m_headnode->updateAbsolutePosition();
 
 	// Compute relative camera position and target
@@ -366,8 +374,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(m_camera_position-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
 
-	// Get FOV setting
-	f32 fov_degrees = g_settings->getFloat("fov");
+	// Get FOV setting and apply Lua offset
+	m_camera_lua_fov = m_camera_lua_fov * (1 - lua_fade) + player->camera_override_fov * lua_fade;
+	f32 fov_degrees = g_settings->getFloat("fov") * m_camera_lua_fov;
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 

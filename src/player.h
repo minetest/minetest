@@ -269,6 +269,12 @@ public:
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
 
+	v3f camera_override_position;
+	v3f camera_override_rotation;
+	float camera_override_fov;
+	float camera_override_speed;
+	bool camera_override_eye;
+
 	u16 hp;
 
 	float hurt_tilt_timer;

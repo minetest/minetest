@@ -3500,8 +3500,10 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		*/
 		if(show_hud && (player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE))
 		{
+			// Don't draw wielded tool when using 3rd person camera
 			// Warning: This clears the Z buffer.
-			camera.drawWieldedTool();
+			if(player->camera_override_eye)
+				camera.drawWieldedTool();
 		}
 
 		/*

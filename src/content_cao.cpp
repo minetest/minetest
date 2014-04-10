@@ -858,7 +858,7 @@ public:
 		
 		m_visuals_expired = false;
 
-		if(!m_prop.is_visible || m_is_local_player)
+		if(!m_prop.is_visible)
 			return;
 	
 		//video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -1078,6 +1078,16 @@ public:
 	
 	void step(float dtime, ClientEnvironment *env)
 	{
+		// Only show the local player when third person camera is used
+		if(m_is_local_player)
+		{
+			LocalPlayer *player = m_env->getLocalPlayer();
+			if(player->camera_override_eye)
+				m_is_visible = false;
+			else
+				m_is_visible = true;
+		}
+
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
 
@@ -1709,6 +1719,25 @@ public:
 				player->physics_override_gravity = override_gravity;
 				player->physics_override_sneak = sneak;
 				player->physics_override_sneak_glitch = sneak_glitch;
+			}
+		}
+		else if(cmd == GENERIC_CMD_SET_CAMERA_OVERRIDE)
+		{
+			v3f override_position = readV3F1000(is);
+			v3f override_rotation = readV3F1000(is);
+			float override_fov = readF1000(is);
+			float override_speed = readF1000(is);
+			bool override_eye = readU8(is);
+			
+			if(m_is_local_player)
+			{
+				LocalPlayer *player = m_env->getLocalPlayer();
+				player->camera_override_position = override_position;
+				player->camera_override_rotation = override_rotation;
+				player->camera_override_fov = override_fov;
+				player->camera_override_speed = override_speed;
+				// these are sent inverted so we get true when the server sends nothing
+				player->camera_override_eye = !override_eye;
 			}
 		}
 		else if(cmd == GENERIC_CMD_SET_ANIMATION)
