@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_REDIS
 
 #include "database.h"
-#include "hiredis.h"
+#include <hiredis.h>
 #include <string>
 
 class ServerMap;
@@ -44,6 +44,7 @@ public:
 private:
 	ServerMap *srvmap;
 	redisContext *ctx;
+	std::string hash;
 };
 #endif
 #endif

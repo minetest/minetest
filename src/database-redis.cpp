@@ -47,7 +47,7 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 	conf.readConfigFile((std::string(savedir) + DIR_DELIM + "world.mt").c_str());
 	std::string tmp = conf.get("redis_address"); // This will raise an error if that setting does not exist
 	const char *addr = tmp.c_str();
-	int port = conf.exists("redis_port")? conf.getU16("redis_port") : 6379;
+	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
 	if(!ctx)
 		throw FileNotGoodException("Cannot allocate redis context");
@@ -56,6 +56,7 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 		redisFree(ctx);
 		throw FileNotGoodException(err);
 	}
+	hash = conf.exists("redis_hash") ? conf.get("redis_hash") : "minetest";
 	srvmap = map;
 }
 
@@ -106,7 +107,7 @@ void Database_Redis::saveBlock(MapBlock *block)
 	std::string tmp2 = i64tos(getBlockAsInteger(p3d));
 
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HSET minetest %s %b", tmp2.c_str(), tmp1.c_str(), tmp1.size());
+	REDIS_CMD(reply, ctx, "HSET %s %s %b", hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
 	if(reply->type == REDIS_REPLY_ERROR)
 		throw FileNotGoodException("Failed to store block in Database");
 
@@ -120,7 +121,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 
 	std::string tmp = i64tos(getBlockAsInteger(blockpos));
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HGET minetest %s", tmp.c_str());
+	REDIS_CMD(reply, ctx, "HGET %s %s", hash.c_str(), tmp.c_str());
 
 	if (reply->type == REDIS_REPLY_STRING && reply->len == 0) {
 		freeReplyObject(reply);
@@ -195,7 +196,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HKEYS minetest");
+	REDIS_CMD(reply, ctx, "HKEYS %s", hash.c_str());
 	if(reply->type != REDIS_REPLY_ARRAY)
 		throw FileNotGoodException("Failed to get keys from database");
 	for(size_t i = 0; i < reply->elements; i++)
