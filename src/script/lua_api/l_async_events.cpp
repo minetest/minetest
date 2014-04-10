@@ -262,6 +262,9 @@ void* AsyncWorkerThread::worker_thread_main() {
 	snprintf(number,sizeof(number),"%d",m_threadnum);
 	log_register_thread(std::string("AsyncWorkerThread_") + number);
 
+	porting::setThreadName(
+			std::string(std::string("AsyncWorkTh_") + number).c_str());
+
 	/** prepare job lua environment **/
 	lua_newtable(m_LuaStack);
 	lua_setglobal(m_LuaStack, "engine");

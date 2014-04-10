@@ -55,7 +55,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "porting.h"
 #include "gettime.h"
-#include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
 #include "version.h"

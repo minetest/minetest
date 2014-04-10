@@ -20,9 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef DATABASE_DUMMY_HEADER
 #define DATABASE_DUMMY_HEADER
 
-#include "database.h"
 #include <map>
 #include <string>
+#include "database.h"
+#include "irrlichttypes.h"
 
 class ServerMap;
 
@@ -39,6 +40,6 @@ public:
 	~Database_Dummy();
 private:
 	ServerMap *srvmap;
-	std::map<unsigned long long, std::string> m_database;
+	std::map<u64, std::string> m_database;
 };
 #endif

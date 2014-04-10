@@ -240,12 +240,20 @@ public:
 			services->setVertexShaderConstant(worldViewProj.pointer(), 4, 4);
 
 		// set transposed world matrix
-		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
-		world = world.getTransposed();
+		core::matrix4 transWorld = driver->getTransform(video::ETS_WORLD);
+		transWorld = transWorld.getTransposed();
 		if(is_highlevel)
-			services->setVertexShaderConstant("mTransWorld", world.pointer(), 16);
+			services->setVertexShaderConstant("mTransWorld", transWorld.pointer(), 16);
+		else
+			services->setVertexShaderConstant(transWorld.pointer(), 8, 4);
+
+		// set world matrix
+		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
+		if(is_highlevel)
+			services->setVertexShaderConstant("mWorld", world.pointer(), 16);
 		else
 			services->setVertexShaderConstant(world.pointer(), 8, 4);
+
 	}
 
 private:
@@ -673,7 +681,33 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 
 	// Create shaders header
 	std::string shaders_header = "#version 120\n";
-	
+
+	if (g_settings->getBool("generate_normalmaps")){
+		shaders_header += "#define GENERATE_NORMALMAPS\n";
+		shaders_header += "#define NORMALMAPS_STRENGTH ";
+		shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
+		shaders_header += "\n";
+		float sample_step;
+		int smooth = (int)g_settings->getFloat("normalmaps_smooth");
+		switch (smooth){
+		case 0:
+			sample_step = 0.0078125; // 1.0 / 128.0
+			break;
+		case 1:
+			sample_step = 0.00390625; // 1.0 / 256.0
+			break;
+		case 2:
+			sample_step = 0.001953125; // 1.0 / 512.0
+			break;
+		default:
+			sample_step = 0.0078125;
+			break;
+		}
+		shaders_header += "#define SAMPLE_STEP ";
+		shaders_header += ftos(sample_step);
+		shaders_header += "\n";
+	}
+
 	if (g_settings->getBool("enable_bumpmapping"))
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
@@ -685,7 +719,7 @@ ShaderInfo generate_shader(std::string name, IrrlichtDevice *device,
 		shaders_header += "#define PARALLAX_OCCLUSION_BIAS ";
 		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_bias"));
 		shaders_header += "\n";
-		}
+	}
 
 	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
 		shaders_header += "#define USE_NORMALMAPS\n";

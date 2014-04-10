@@ -85,19 +85,17 @@ void Environment::addPlayer(Player *player)
 void Environment::removePlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
-re_search:
+
 	for(std::list<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i)
+			i != m_players.end();)
 	{
 		Player *player = *i;
-		if(player->peer_id != peer_id)
-			continue;
-		
-		delete player;
-		m_players.erase(i);
-		// See if there is an another one
-		// (shouldn't be, but just to be sure)
-		goto re_search;
+		if(player->peer_id == peer_id) {
+			delete player;
+			i = m_players.erase(i);
+		} else {
+			++i;
+		}
 	}
 }
 
@@ -712,12 +710,44 @@ public:
 			}
 		}
 	}
+	// Find out how many objects the given block and its neighbours contain.
+	// Returns the number of objects in the block, and also in 'wider' the
+	// number of objects in the block and all its neighbours. The latter
+	// may an estimate if any neighbours are unloaded.
+	u32 countObjects(MapBlock *block, ServerMap * map, u32 &wider)
+	{
+		wider = 0;
+		u32 wider_unknown_count = 0;
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			MapBlock *block2 = map->getBlockNoCreateNoEx(
+					block->getPos() + v3s16(x,y,z));
+			if(block2==NULL){
+				wider_unknown_count++;
+				continue;
+			}
+			wider += block2->m_static_objects.m_active.size()
+					+ block2->m_static_objects.m_stored.size();
+		}
+		// Extrapolate
+		u32 active_object_count = block->m_static_objects.m_active.size();
+		u32 wider_known_count = 3*3*3 - wider_unknown_count;
+		wider += wider_unknown_count * wider / wider_known_count;
+		return active_object_count;
+
+	}
 	void apply(MapBlock *block)
 	{
 		if(m_aabms.empty())
 			return;
 
 		ServerMap *map = &m_env->getServerMap();
+
+		u32 active_object_count_wider;
+		u32 active_object_count = this->countObjects(block, map, active_object_count_wider);
+		m_env->m_added_objects = 0;
 
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -762,33 +792,16 @@ public:
 				}
 neighbor_found:
 
-				// Find out how many objects the block contains
-				u32 active_object_count = block->m_static_objects.m_active.size();
-				// Find out how many objects this and all the neighbors contain
-				u32 active_object_count_wider = 0;
-				u32 wider_unknown_count = 0;
-				for(s16 x=-1; x<=1; x++)
-				for(s16 y=-1; y<=1; y++)
-				for(s16 z=-1; z<=1; z++)
-				{
-					MapBlock *block2 = map->getBlockNoCreateNoEx(
-							block->getPos() + v3s16(x,y,z));
-					if(block2==NULL){
-						wider_unknown_count = 0;
-						continue;
-					}
-					active_object_count_wider +=
-							block2->m_static_objects.m_active.size()
-							+ block2->m_static_objects.m_stored.size();
-				}
-				// Extrapolate
-				u32 wider_known_count = 3*3*3 - wider_unknown_count;
-				active_object_count_wider += wider_unknown_count * active_object_count_wider / wider_known_count;
-				
 				// Call all the trigger variations
 				i->abm->trigger(m_env, p, n);
 				i->abm->trigger(m_env, p, n,
 						active_object_count, active_object_count_wider);
+
+				// Count surrounding objects again if the abms added any
+				if(m_env->m_added_objects > 0) {
+					active_object_count = countObjects(block, map, active_object_count_wider);
+					m_env->m_added_objects = 0;
+				}
 			}
 		}
 	}
@@ -1358,6 +1371,7 @@ u16 getFreeServerActiveObjectId(
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);
+	m_added_objects++;
 	u16 id = addActiveObjectRaw(object, true, 0);
 	return id;
 }

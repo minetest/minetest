@@ -116,6 +116,7 @@ minetest.register_entity("__builtin:item", {
 				return
 			end
 		end
+		self.itemstring = ''
 		self.object:remove()
 	end,
 })

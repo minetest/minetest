@@ -165,7 +165,7 @@ inline s32 mystoi(const std::string &s, s32 min, s32 max)
 
 inline s64 stoi64(const std::string &s) {
 	std::stringstream tmp(s);
-	long long t;
+	s64 t;
 	tmp >> t;
 	return t;
 }

@@ -654,7 +654,7 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	}
 	else
 	{
-		throw LuaError(NULL, "Expecting itemstack, itemstring, table or nil");
+		throw LuaError("Expecting itemstack, itemstring, table or nil");
 	}
 }
 
@@ -840,23 +840,32 @@ void push_hit_params(lua_State *L,const HitParams &params)
 }
 
 /******************************************************************************/
-u32 getflagsfield(lua_State *L, int table, const char *fieldname,
-	FlagDesc *flagdesc, u32 *flagmask)
+
+bool getflagsfield(lua_State *L, int table, const char *fieldname,
+	FlagDesc *flagdesc, u32 *flags, u32 *flagmask)
 {
-	u32 flags = 0;
-	
 	lua_getfield(L, table, fieldname);
 
-	if (lua_isstring(L, -1)) {
-		std::string flagstr = lua_tostring(L, -1);
-		flags = readFlagString(flagstr, flagdesc, flagmask);
-	} else if (lua_istable(L, -1)) {
-		flags = read_flags_table(L, -1, flagdesc, flagmask);
-	}
+	bool success = read_flags(L, -1, flagdesc, flags, flagmask);
 
 	lua_pop(L, 1);
 
-	return flags;
+	return success;
+}
+
+bool read_flags(lua_State *L, int index, FlagDesc *flagdesc,
+	u32 *flags, u32 *flagmask)
+{
+	if (lua_isstring(L, index)) {
+		std::string flagstr = lua_tostring(L, index);
+		*flags = readFlagString(flagstr, flagdesc, flagmask);
+	} else if (lua_istable(L, index)) {
+		*flags = read_flags_table(L, index, flagdesc, flagmask);
+	} else {
+		return false;
+	}
+
+	return true;
 }
 
 u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
@@ -932,7 +941,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 	while (lua_next(L, index)) {
 		s32 key = luaL_checkinteger(L, -2);
 		if (key < 1) {
-			throw LuaError(NULL, "Invalid inventory list index");
+			throw LuaError("Invalid inventory list index");
 		}
 		if (items.size() < (u32) key) {
 			items.resize(key);

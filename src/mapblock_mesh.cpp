@@ -150,9 +150,8 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Single light bank.
 */
 static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
-		MeshMakeData *data)
+		INodeDefManager *ndef)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
 	u8 light = n.getLight(bank, ndef);
 
 	while(increment > 0)
@@ -173,10 +172,10 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	Calculate non-smooth lighting at interior of node.
 	Both light banks.
 */
-u16 getInteriorLight(MapNode n, s32 increment, MeshMakeData *data)
+u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 {
-	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, data);
-	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, data);
+	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
+	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
 	return day | (night << 8);
 }
 
@@ -185,10 +184,8 @@ u16 getInteriorLight(MapNode n, s32 increment, MeshMakeData *data)
 	Single light bank.
 */
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-		v3s16 face_dir, MeshMakeData *data)
+		v3s16 face_dir, INodeDefManager *ndef)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
-
 	u8 light;
 	u8 l1 = n.getLight(bank, ndef);
 	u8 l2 = n2.getLight(bank, ndef);
@@ -227,10 +224,10 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, MeshMakeData *data)
+u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 {
-	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, data);
-	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, data);
+	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
+	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
 	return day | (night << 8);
 }
 
@@ -812,7 +809,7 @@ static void getTileInfo(
 	if(data->m_smooth_lighting == false)
 	{
 		lights[0] = lights[1] = lights[2] = lights[3] =
-				getFaceLight(n0, n1, face_dir, data);
+				getFaceLight(n0, n1, face_dir, ndef);
 	}
 	else
 	{
@@ -1212,20 +1209,25 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			material.setTexture(2, tsrc->getTexture("disable_img.png"));
 			if (enable_bumpmapping || enable_parallax_occlusion) {
-				std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
-				std::string normal_ext = "_normal.png";
-				size_t pos = fname_base.find(".");
-				std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
-
-				if (tsrc->isKnownSourceImage(fname_normal)) {
-					// look for image extension and replace it 
-					size_t i = 0;
-					while ((i = fname_base.find(".", i)) != std::string::npos) {
-						fname_base.replace(i, 4, normal_ext);
-						i += normal_ext.length();
-					}
-					material.setTexture(1, tsrc->getTexture(fname_base));
+				if (tsrc->isKnownSourceImage("override_normal.png")){
+					material.setTexture(1, tsrc->getTexture("override_normal.png"));
 					material.setTexture(2, tsrc->getTexture("enable_img.png"));
+				} else {
+					std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
+					std::string normal_ext = "_normal.png";
+					size_t pos = fname_base.find(".");
+					std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
+
+					if (tsrc->isKnownSourceImage(fname_normal)) {
+						// look for image extension and replace it 
+						size_t i = 0;
+						while ((i = fname_base.find(".", i)) != std::string::npos) {
+							fname_base.replace(i, 4, normal_ext);
+							i += normal_ext.length();
+						}
+						material.setTexture(1, tsrc->getTexture(fname_base));
+						material.setTexture(2, tsrc->getTexture("enable_img.png"));
+					}
 				}
 			}
 			p.tile.applyMaterialOptionsWithShaders(material,
@@ -1368,17 +1370,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
 		if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
 			{
-				std::string fname_base,fname_normal;
-				fname_base = tsrc->getTextureName(tile.texture_id);
-				unsigned pos;
-				pos = fname_base.find(".");
-				fname_normal = fname_base.substr (0, pos);
-				fname_normal += "_normal.png";
-				if (tsrc->isKnownSourceImage(fname_normal)){
-					os.str("");
-					os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-					buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+				if (tsrc->isKnownSourceImage("override_normal.png")){
+					buf->getMaterial().setTexture(1, tsrc->getTexture("override_normal.png"));
 					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+				} else {
+					std::string fname_base,fname_normal;
+					fname_base = tsrc->getTextureName(tile.texture_id);
+					unsigned pos;
+					pos = fname_base.find(".");
+					fname_normal = fname_base.substr (0, pos);
+					fname_normal += "_normal.png";
+					if (tsrc->isKnownSourceImage(fname_normal)){
+						os.str("");
+						os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
+						buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
+						buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+					}
 				}
 			}
 	}

@@ -48,7 +48,7 @@ protected:
 		ScriptApiBase *scriptIface = getScriptApiBase(L);
 		T *scriptIfaceDowncast = dynamic_cast<T*>(scriptIface);
 		if (!scriptIfaceDowncast) {
-			throw LuaError(NULL, "Requested unavailable ScriptApi - core engine bug!");
+			throw LuaError("Requested unavailable ScriptApi - core engine bug!");
 		}
 		return scriptIfaceDowncast;
 	}

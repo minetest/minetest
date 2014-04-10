@@ -367,7 +367,7 @@ function minetest.node_punch(pos, node, puncher, pointed_thing)
 		-- Copy pos and node because callback can modify them
 		local pos_copy = vector.new(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+		local pointed_thing_copy = pointed_thing and copy_pointed_thing(pointed_thing) or nil
 		callback(pos_copy, node_copy, puncher, pointed_thing_copy)
 	end
 end

@@ -219,7 +219,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 
-			u16 l = getInteriorLight(n, 0, data);
+			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 
 			/*
@@ -389,10 +389,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 			// Use the light of the node on top if possible
 			else if(nodedef->get(ntop).param_type == CPT_LIGHT)
-				l = getInteriorLight(ntop, 0, data);
+				l = getInteriorLight(ntop, 0, nodedef);
 			// Otherwise use the light of this node (the liquid)
 			else
-				l = getInteriorLight(n, 0, data);
+				l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = MapBlock_LightColor(f.alpha, l, decode_light(f.light_source));
 			
 			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
@@ -696,7 +696,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
 
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			for(u32 j=0; j<6; j++)
@@ -758,7 +758,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tiles[2];
 			tiles[0] = getNodeTile(n, p, dirs[0], data);
 			tiles[1] = getNodeTile(n, p, dirs[1], data);
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 			v3f pos = intToFloat(p, BS);
 			static const float a=BS/2;
@@ -876,7 +876,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile_leaves = getNodeTile(n, p,
 					v3s16(0,0,0), data);
 
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			v3f pos = intToFloat(p, BS);
@@ -909,7 +909,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			float s = BS/2*f.visual_scale;
@@ -950,7 +950,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-			u16 l = getInteriorLight(n, 0, data);
+			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 				
 			float d = (float)BS/16;
@@ -993,7 +993,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 			
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			float s = BS/2*f.visual_scale;
@@ -1045,7 +1045,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					texturestring_rot,
 					&tile_rot.texture_id);
 			
-			u16 l = getInteriorLight(n, 1, data);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			const f32 post_rad=(f32)BS/8;
@@ -1294,7 +1294,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-			u16 l = getInteriorLight(n, 0, data);
+			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			float d = (float)BS/64;
@@ -1333,7 +1333,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			};
 			TileSpec tiles[6];
 			
-			u16 l = getInteriorLight(n, 0, data);
+			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
 			v3f pos = intToFloat(p, BS);

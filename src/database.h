@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <list>
 #include "irr_v3d.h"
+#include "irrlichttypes.h"
 
 class MapBlock;
 
@@ -33,8 +34,8 @@ public:
 
 	virtual void saveBlock(MapBlock *block)=0;
 	virtual MapBlock* loadBlock(v3s16 blockpos)=0;
-	long long getBlockAsInteger(const v3s16 pos);
-	v3s16 getIntegerAsBlock(long long i);
+	s64 getBlockAsInteger(const v3s16 pos);
+	v3s16 getIntegerAsBlock(s64 i);
 	virtual void listAllLoadableBlocks(std::list<v3s16> &dst)=0;
 	virtual int Initialized(void)=0;
 	virtual ~Database() {};

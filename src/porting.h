@@ -266,6 +266,26 @@ inline u32 getTime(TimePrecision prec)
 	return 0;
 }
 
+#if (defined(linux) || defined(__linux))
+
+#include <sys/prctl.h>
+
+inline void setThreadName(const char* name) {
+	prctl(PR_SET_NAME,name);
+}
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+/* BSD doesn't seem to support thread names. If you know about a way 
+ * to add this feature please create a pull request.
+ * "setproctitle" doesn't work for threadnames.
+ */
+#define setThreadName(a)
+#elif defined(_WIN32)
+// threadnames are not supported on windows
+#define setThreadName(a)
+#else
+#warning "Unknown platform for setThreadName support, you wont have threadname support."
+#define setThreadName(a)
+#endif
 
 } // namespace porting
 

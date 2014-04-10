@@ -34,6 +34,109 @@ class MapBlock;
 class ServerEnvironment;
 class EmergeManager;
 
+/*
+ * State Transitions
+
+      Start
+  (peer connect)
+        |
+        v
+      /-----------------\
+      |                 |
+      |    Created      |
+      |                 |
+      \-----------------/
+               |
+               |
++-----------------------------+            invalid playername, password
+|IN:                          |                    or denied by mod
+| TOSERVER_INIT               |------------------------------
++-----------------------------+                             |
+               |                                            |
+               | Auth ok                                    |
+               |                                            |
++-----------------------------+                             |
+|OUT:                         |                             |
+| TOCLIENT_INIT               |                             |
++-----------------------------+                             |
+               |                                            |
+               v                                            |
+      /-----------------\                                   |
+      |                 |                                   |
+      |    InitSent     |                                   |
+      |                 |                                   |
+      \-----------------/                                   +------------------
+               |                                            |                 |
++-----------------------------+             +-----------------------------+   |
+|IN:                          |             |OUT:                         |   |
+| TOSERVER_INIT2              |             | TOCLIENT_ACCESS_DENIED      |   |
++-----------------------------+             +-----------------------------+   |
+               |                                            |                 |
+               v                                            v                 |
+      /-----------------\                           /-----------------\       |
+      |                 |                           |                 |       |
+      |    InitDone     |                           |     Denied      |       |
+      |                 |                           |                 |       |
+      \-----------------/                           \-----------------/       |
+               |                                                              |
++-----------------------------+                                               |
+|OUT:                         |                                               |
+| TOCLIENT_MOVEMENT           |                                               |
+| TOCLIENT_ITEMDEF            |                                               |
+| TOCLIENT_NODEDEF            |                                               |
+| TOCLIENT_ANNOUNCE_MEDIA     |                                               |
+| TOCLIENT_DETACHED_INVENTORY |                                               |
+| TOCLIENT_TIME_OF_DAY        |                                               |
++-----------------------------+                                               |
+               |                                                              |
+               |                                                              |
+               |      -----------------------------------                     |
+               v      |                                 |                     |
+      /-----------------\                               v                     |
+      |                 |                   +-----------------------------+   |
+      | DefinitionsSent |                   |IN:                          |   |
+      |                 |                   | TOSERVER_REQUEST_MEDIA      |   |
+      \-----------------/                   | TOSERVER_RECEIVED_MEDIA     |   |
+               |                            +-----------------------------+   |
+               |      ^                                 |                     |
+               |      -----------------------------------                     |
+               |                                                              |
++-----------------------------+                                               |
+|IN:                          |                                               |
+| TOSERVER_CLIENT_READY       |                                               |
++-----------------------------+                                               |
+               |                                                    async     |
+               v                                                  mod action  |
++-----------------------------+                                   (ban,kick)  |
+|OUT:                         |                                               |
+| TOCLIENT_MOVE_PLAYER        |                                               |
+| TOCLIENT_PRIVILEGES         |                                               |
+| TOCLIENT_INVENTORY_FORMSPEC |                                               |
+| UpdateCrafting              |                                               |
+| TOCLIENT_INVENTORY          |                                               |
+| TOCLIENT_HP (opt)           |                                               |
+| TOCLIENT_BREATH             |                                               |
+| TOCLIENT_DEATHSCREEN        |                                               |
++-----------------------------+                                               |
+              |                                                               |
+              v                                                               |
+      /-----------------\                                                     |
+      |                 |------------------------------------------------------
+      |     Active      |
+      |                 |----------------------------------
+      \-----------------/      timeout                    |
+               |                            +-----------------------------+
+               |                            |OUT:                         |
+               |                            | TOCLIENT_DISCONNECT         |
+               |                            +-----------------------------+
+               |                                          |
+               |                                          v
++-----------------------------+                    /-----------------\
+|IN:                          |                    |                 |
+| TOSERVER_DISCONNECT         |------------------->|  Disconnecting  |
++-----------------------------+                    |                 |
+                                                   \-----------------/
+*/
 namespace con {
 	class Connection;
 }
@@ -50,13 +153,24 @@ enum ClientState
 	Active
 };
 
+static const char** statenames = (const char*[]) {
+	"Invalid",
+	"Disconnecting",
+	"Denied",
+	"Created",
+	"InitSent",
+	"InitDone",
+	"DefinitionsSent",
+	"Active"
+};
+
 enum ClientStateEvent
 {
 	Init,
 	GotInit2,
 	SetDenied,
 	SetDefinitionsSent,
-	SetMediaSent,
+	SetClientReady,
 	Disconnect
 };
 
@@ -107,7 +221,12 @@ public:
 		m_excess_gotblocks(0),
 		m_nothing_to_send_counter(0),
 		m_nothing_to_send_pause_timer(0.0),
-		m_name("")
+		m_name(""),
+		m_version_major(0),
+		m_version_minor(0),
+		m_version_patch(0),
+		m_full_version("unknown"),
+		m_connection_time(getTime(PRECISION_SECONDS))
 	{
 	}
 	~RemoteClient()
@@ -178,6 +297,23 @@ public:
 	void confirmSerializationVersion()
 		{ serialization_version = m_pending_serialization_version; }
 
+	/* get uptime */
+	u32 uptime();
+
+
+	/* set version information */
+	void setVersionInfo(u8 major, u8 minor, u8 patch, std::string full) {
+		m_version_major = major;
+		m_version_minor = minor;
+		m_version_patch = patch;
+		m_full_version = full;
+	}
+
+	/* read version information */
+	u8 getMajor() { return m_version_major; }
+	u8 getMinor() { return m_version_minor; }
+	u8 getPatch() { return m_version_patch; }
+	std::string getVersion() { return m_full_version; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version;
@@ -221,7 +357,25 @@ private:
 	// CPU usage optimization
 	u32 m_nothing_to_send_counter;
 	float m_nothing_to_send_pause_timer;
+
+	/*
+		name of player using this client
+	*/
 	std::string m_name;
+
+	/*
+		client information
+	 */
+	u8 m_version_major;
+	u8 m_version_minor;
+	u8 m_version_patch;
+
+	std::string m_full_version;
+
+	/*
+		time this client was created
+	 */
+	const u32 m_connection_time;
 };
 
 class ClientInterface {
@@ -268,12 +422,20 @@ public:
 	/* get protocol version of client */
 	u16 getProtocolVersion(u16 peer_id);
 
+	/* set client version */
+	void setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch, std::string full);
+
 	/* event to update client state */
 	void event(u16 peer_id, ClientStateEvent event);
 
 	/* set environment */
 	void setEnv(ServerEnvironment* env)
 	{ assert(m_env == 0); m_env = env; }
+
+	static std::string state2Name(ClientState state) {
+		assert(state < sizeof(statenames));
+		return statenames[state];
+	}
 
 protected:
 	//TODO find way to avoid this functions
