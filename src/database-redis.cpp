@@ -46,6 +46,7 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 	Settings conf;
 	conf.readConfigFile((std::string(savedir) + DIR_DELIM + "world.mt").c_str());
 	std::string tmp = conf.get("redis_address"); // This will raise an error if that setting does not exist
+	hash = conf.exists("redis_hash"); // see above comment
 	const char *addr = tmp.c_str();
 	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
@@ -56,7 +57,6 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 		redisFree(ctx);
 		throw FileNotGoodException(err);
 	}
-	hash = conf.exists("redis_hash") ? conf.get("redis_hash") : "minetest";
 	srvmap = map;
 }
 
