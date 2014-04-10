@@ -45,8 +45,13 @@ Database_Redis::Database_Redis(ServerMap *map, std::string savedir)
 {
 	Settings conf;
 	conf.readConfigFile((std::string(savedir) + DIR_DELIM + "world.mt").c_str());
-	std::string tmp = conf.get("redis_address"); // This will raise an error if that setting does not exist
-	hash = conf.get("redis_hash"); // see above comment
+	std::string tmp;
+	try {
+	tmp = conf.get("redis_address");
+	hash = conf.get("redis_hash");
+	} catch(SettingNotFoundException e) {
+		throw SettingNotFoundException("Set redis_address and redis_hash in world.mt to use the redis backend");
+	}
 	const char *addr = tmp.c_str();
 	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
