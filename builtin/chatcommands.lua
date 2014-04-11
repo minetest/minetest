@@ -261,9 +261,12 @@ minetest.register_chatcommand("teleport", {
 			}
 			for _, d in ipairs(tries) do
 				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = minetest.get_node(p)
-				if not minetest.registered_nodes[n.name].walkable then
-					return p, true
+				local n = minetest.get_node_or_nil(p)
+				if n and n.name then
+					local def = minetest.registered_nodes[n.name]
+					if def and not def.walkable then
+						return p, true
+					end
 				end
 			end
 			return pos, false
