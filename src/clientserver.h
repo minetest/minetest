@@ -540,6 +540,13 @@ enum ToClientCommand
 		v2f1000 walk+dig
 		f1000 frame_speed
 	*/
+
+	TOCLIENT_EYE_OFFSET = 0x52,
+	/*
+		u16 command
+		v3f1000 first
+		v3f1000 third
+	*/
 };
 
 enum ToServerCommand

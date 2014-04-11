@@ -3502,6 +3502,20 @@ void Server::SendLocalPlayerAnimations(u16 peer_id, v2f animation_frames[4], f32
 	m_clients.send(peer_id, 0, data, true);
 }
 
+void Server::SendEyeOffset(u16 peer_id, v3f first, v3f third)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_EYE_OFFSET);
+	writeV3F1000(os, first);
+	writeV3F1000(os, third);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8 *)s.c_str(), s.size());
+	// Send as reliable
+	m_clients.send(peer_id, 0, data, true);
+}
 void Server::SendPlayerPrivileges(u16 peer_id)
 {
 	Player *player = m_env->getPlayer(peer_id);
@@ -4602,6 +4616,15 @@ bool Server::setLocalPlayerAnimations(Player *player, v2f animation_frames[4], f
 		return false;
 
 	SendLocalPlayerAnimations(player->peer_id, animation_frames, frame_speed);
+	return true;
+}
+
+bool Server::setPlayerEyeOffset(Player *player, v3f first, v3f third)
+{
+	if (!player)
+		return false;
+
+	SendEyeOffset(player->peer_id, first, third);
 	return true;
 }
 

@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "localplayer.h"
 #include "camera.h"
-#include "game.h" // CameraModes
 
 #include <IGUIStaticText.h>
 

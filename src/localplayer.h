@@ -27,7 +27,7 @@ class ClientEnvironment;
 
 class ClientActiveObject;
 
-enum localPlayerAnimations {NO_ANIM, WALK_ANIM, DIG_ANIM, WD_ANIM};  // no local animation, walking, digging, both
+enum LocalPlayerAnimations {NO_ANIM, WALK_ANIM, DIG_ANIM, WD_ANIM};  // no local animation, walking, digging, both
 
 class LocalPlayer : public Player
 {
@@ -63,6 +63,9 @@ public:
 
 	float camera_impact;
 	int camera_mode;
+	v3f eye_offset_first;
+	v3f eye_offset_third;
+
 	int last_animation;
 	float last_animation_speed;
 

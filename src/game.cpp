@@ -977,8 +977,6 @@ bool nodePlacementPrediction(Client &client,
 	return false;
 }
 
-bool is_third_person = false;
-
 static void show_chat_menu(FormspecFormSource* current_formspec,
 		TextDest* current_textdest, IWritableTextureSource* tsrc,
 		IrrlichtDevice * device, Client* client, std::string text)
