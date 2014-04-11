@@ -202,7 +202,8 @@ std::string Address::serializeString() const
 #ifdef _WIN32
 	if(m_addr_family == AF_INET)
 	{
-		u8 a, b, c, d, addr;
+		u8 a, b, c, d;
+		u32 addr;
 		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
 		a = (addr & 0xFF000000) >> 24;
 		b = (addr & 0x00FF0000) >> 16;
