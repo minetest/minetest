@@ -1880,6 +1880,9 @@ Player-only: (no-op for other objects)
   ^ dig animation key frames
   ^ walk+dig animation key frames
   ^ animation frame speed
+- set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0}): defines offset value for camera per player
+  ^ in first person view
+  ^ in third person view (max. values {x=-10/10,y=-10,15,z=-5/5})
 
 InvRef: Reference to an inventory
 methods:

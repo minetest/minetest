@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAMERA_OFFSET_STEP 200
 
 #include "nodedef.h"
-#include "game.h" // CameraModes
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		IGameDef *gamedef):
@@ -297,8 +296,15 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		fall_bobbing *= g_settings->getFloat("fall_bobbing_amount");
 	}
 
+	// Calculate players eye offset for different camera modes
+	v3f PlayerEyeOffset = player->getEyeOffset();
+	if (current_camera_mode == CAMERA_MODE_FIRST)
+		PlayerEyeOffset += player->eye_offset_first;
+	else
+		PlayerEyeOffset += player->eye_offset_third;
+	
 	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
+	m_headnode->setPosition(PlayerEyeOffset+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
 	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
 	m_headnode->updateAbsolutePosition();
 

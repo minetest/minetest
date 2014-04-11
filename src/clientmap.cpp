@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
-#include "game.h" // CameraModes
+#include "camera.h" // CameraModes
 #include "util/mathconstants.h"
 #include <algorithm>
 

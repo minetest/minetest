@@ -33,6 +33,8 @@ class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
 
+enum CameraModes {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
 	and performs view bobbing etc. It also displays the wielded tool in front of the

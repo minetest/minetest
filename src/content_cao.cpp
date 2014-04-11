@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "map.h"
 #include "main.h" // g_settings
-#include "game.h" // CameraModes
+#include "camera.h" // CameraModes
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <IBoneSceneNode.h>
@@ -1099,8 +1099,14 @@ public:
 					walking = true;
 
 				m_animation_speed = player->local_animation_speed;
+				if(!player->touching_ground &&
+					g_settings->getBool("free_move") &&
+				m_gamedef->checkLocalPrivilege("fly") &&
+					g_settings->getBool("fast_move") &&
+				m_gamedef->checkLocalPrivilege("fast"))
+					m_animation_speed *= 1.5;
 				if(controls.sneak && walking)
-					m_animation_speed = player->local_animation_speed/2;
+					m_animation_speed /= 2;
 
 				player->last_animation_speed = m_animation_speed;
 

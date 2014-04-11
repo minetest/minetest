@@ -406,7 +406,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 	return 0;
 }
 
-// set_local_animation(self, {stand/ilde}, {walk}, {dig}, {walk+dig}, frame_speed)
+// set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
 int ObjectRef::l_set_local_animation(lua_State *L)
 {
 	//NO_MAP_LOCK_REQUIRED;
@@ -425,6 +425,36 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 		frame_speed = lua_tonumber(L, 6);
 
 	if (!getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 0;
+}
+
+// set_eye_offset(self, v3f first pv, v3f third pv)
+int ObjectRef::l_set_eye_offset(lua_State *L)
+{
+	//NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// Do it
+	v3f offset_first = v3f(0, 0, 0);
+	v3f offset_third = v3f(0, 0, 0);
+	
+	if(!lua_isnil(L, 2))
+		offset_first = read_v3f(L, 2);
+	if(!lua_isnil(L, 3))
+		offset_third = read_v3f(L, 3);
+
+	// Prevent abuse of offset values (keep player always visible)
+	offset_third.X = rangelim(offset_third.X,-10,10);
+	offset_third.Z = rangelim(offset_third.Z,-5,5);
+	/* TODO: if possible: improve the camera colision detetion to allow Y <= -1.5) */
+	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
+
+	if (!getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1296,5 +1326,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
+	luamethod(ObjectRef, set_eye_offset),
 	{0,0}
 };
