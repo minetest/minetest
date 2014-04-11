@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #define REDIS_CMD(_r , _ctx, _cmd, ...) \
-	_r = (redisReply*) redisCommand(_ctx, _cmd, __VA_ARGS__); \
+	_r = (redisReply*) redisCommand(_ctx, _cmd, ##__VA_ARGS__); \
 	if(_r == NULL) \
 		throw FileNotGoodException(std::string("redis command '" _cmd "' failed: ") + _ctx->errstr);
 
