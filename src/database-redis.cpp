@@ -36,8 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
-#define REDIS_CMD(_r , _ctx, _cmd, ...) \
-	_r = (redisReply*) redisCommand(_ctx, _cmd, ##__VA_ARGS__); \
+#define REDIS_CMD(_r , _ctx, _cmd) \
+	_r = (redisReply*) redisCommand(_ctx, _cmd); \
+	if(_r == NULL) \
+		throw FileNotGoodException(std::string("redis command '" _cmd "' failed: ") + _ctx->errstr);
+
+#define REDIS_CMDM(_r , _ctx, _cmd, ...) \
+	_r = (redisReply*) redisCommand(_ctx, _cmd, __VA_ARGS__); \
 	if(_r == NULL) \
 		throw FileNotGoodException(std::string("redis command '" _cmd "' failed: ") + _ctx->errstr);
 
@@ -112,7 +117,7 @@ void Database_Redis::saveBlock(MapBlock *block)
 	std::string tmp2 = i64tos(getBlockAsInteger(p3d));
 
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HSET %s %s %b", hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
+	REDIS_CMDM(reply, ctx, "HSET %s %s %b", hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
 	if(reply->type == REDIS_REPLY_ERROR)
 		throw FileNotGoodException("Failed to store block in Database");
 
@@ -126,7 +131,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 
 	std::string tmp = i64tos(getBlockAsInteger(blockpos));
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HGET %s %s", hash.c_str(), tmp.c_str());
+	REDIS_CMDM(reply, ctx, "HGET %s %s", hash.c_str(), tmp.c_str());
 
 	if (reply->type == REDIS_REPLY_STRING && reply->len == 0) {
 		freeReplyObject(reply);
@@ -201,7 +206,7 @@ MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
 void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	redisReply *reply;
-	REDIS_CMD(reply, ctx, "HKEYS %s", hash.c_str());
+	REDIS_CMDM(reply, ctx, "HKEYS %s", hash.c_str());
 	if(reply->type != REDIS_REPLY_ARRAY)
 		throw FileNotGoodException("Failed to get keys from database");
 	for(size_t i = 0; i < reply->elements; i++)
