@@ -212,7 +212,9 @@ SharedBuffer<u8> create_TOCLIENT_DEATHSCREEN(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_DEATHSCREEN);
+	writeU8(os, set_camera_point_target);
+	writeV3F1000(os, camera_point_target);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -222,12 +224,20 @@ SharedBuffer<u8> create_TOCLIENT_MEDIA(
 		u16 net_proto_version, // Always
 		u16 num_bunches,
 		u16 bunch_i,
-		const std::list<SendableMedia> &files,
-		std::string remote_media_url
+		const std::list<SendableMedia> &files
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_MEDIA);
+	writeU16(os, num_bunches);
+	writeU16(os, bunch_i);
+	writeU32(os, files.size());
+	for(std::list<SendableMedia>::const_iterator
+			j = files.begin();
+			j != files.end(); ++j){
+		os<<serializeString(j->name);
+		os<<serializeLongString(j->data);
+	}
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -247,7 +257,8 @@ SharedBuffer<u8> create_TOCLIENT_NODEDEF(
 
 SharedBuffer<u8> create_TOCLIENT_ANNOUNCE_MEDIA(
 		u16 net_proto_version, // Always
-		const std::list<SendableMediaAnnouncement> &announcements
+		const std::list<SendableMediaAnnouncement> &announcements,
+		std::string remote_media_url
 ){
 	std::ostringstream os(std::ios_base::binary);
 

@@ -317,8 +317,6 @@ enum ToClientCommand
 			u32 length of data
 			data
 		}
-		u16 length of remote media server url (if applicable)
-		string url
 	*/
 	
 	TOCLIENT_TOOLDEF = 0x39, // Obsolete
@@ -353,6 +351,8 @@ enum ToClientCommand
 			u16 length of sha1_digest
 			string sha1_digest
 		}
+		u16 length of remote media server url (if applicable)
+		string url
 	*/
 
 	TOCLIENT_ITEMDEF = 0x3d,
@@ -913,8 +913,7 @@ namespace protocol
 			u16 net_proto_version, // Always
 			u16 num_bunches,
 			u16 bunch_i,
-			const std::list<SendableMedia> &files,
-			std::string remote_media_url
+			const std::list<SendableMedia> &files
 	);
 
 	SharedBuffer<u8> create_TOCLIENT_NODEDEF(
@@ -924,7 +923,8 @@ namespace protocol
 
 	SharedBuffer<u8> create_TOCLIENT_ANNOUNCE_MEDIA(
 			u16 net_proto_version, // Always
-			const std::list<SendableMediaAnnouncement> &announcements
+			const std::list<SendableMediaAnnouncement> &announcements,
+			std::string remote_media_url
 	);
 
 	SharedBuffer<u8> create_TOCLIENT_ITEMDEF(

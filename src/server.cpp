@@ -2935,6 +2935,7 @@ void Server::SendMovement(u16 peer_id)
 	m_clients.send(peer_id, 0, data, true);
 }
 
+// TODO: Remove
 void Server::SendBreath(u16 peer_id, u16 breath)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2950,21 +2951,18 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	m_clients.send(peer_id, 0, data, true);
 }
 
-void Server::SendDeathscreen(u16 peer_id,bool set_camera_point_target,
+void Server::SendDeathscreen(u16 peer_id, bool set_camera_point_target,
 		v3f camera_point_target)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
 
-	writeU16(os, TOCLIENT_DEATHSCREEN);
-	writeU8(os, set_camera_point_target);
-	writeV3F1000(os, camera_point_target);
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
+	m_clients.send(peer_id, 0,
+		protocol::create_TOCLIENT_DEATHSCREEN(
+				0,
+				set_camera_point_target,
+				camera_point_target
+	), true);
 }
 
 void Server::SendItemDef(u16 peer_id,
@@ -3955,42 +3953,18 @@ void Server::sendRequestedMedia(u16 peer_id,
 	u32 num_bunches = file_bunches.size();
 	for(u32 i=0; i<num_bunches; i++)
 	{
-		std::ostringstream os(std::ios_base::binary);
-
-		/*
-			u16 command
-			u16 total number of texture bunches
-			u16 index of this bunch
-			u32 number of files in this bunch
-			for each file {
-				u16 length of name
-				string name
-				u32 length of data
-				data
-			}
-		*/
-
-		writeU16(os, TOCLIENT_MEDIA);
-		writeU16(os, num_bunches);
-		writeU16(os, i);
-		writeU32(os, file_bunches[i].size());
-
-		for(std::list<SendableMedia>::iterator
-				j = file_bunches[i].begin();
-				j != file_bunches[i].end(); ++j){
-			os<<serializeString(j->name);
-			os<<serializeLongString(j->data);
-		}
-
-		// Make data buffer
-		std::string s = os.str();
 		verbosestream<<"Server::sendRequestedMedia(): bunch "
 				<<i<<"/"<<num_bunches
-				<<" files="<<file_bunches[i].size()
-				<<" size=" <<s.size()<<std::endl;
-		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+				<<" files="<<file_bunches[i].size()<<std::endl;
+
 		// Send as reliable
-		m_clients.send(peer_id, 2, data, true);
+		m_clients.send(peer_id, 2,
+			protocol::create_TOCLIENT_MEDIA(
+					0,
+					num_bunches,
+					i,
+					file_bunches[i]
+		), true);
 	}
 }
 
@@ -4086,7 +4060,6 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 	m_clients.send(peer_id, 0,
 		protocol::create_TOCLIENT_ACCESS_DENIED(
 				0,
-				peer_id,
 				reason
 	), true);
 
