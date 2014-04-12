@@ -153,7 +153,7 @@ enum ClientState
 	Active
 };
 
-static const char** statenames = (const char*[]) {
+static const char* statenames[] = {
 	"Invalid",
 	"Disconnecting",
 	"Denied",
