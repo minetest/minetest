@@ -2,6 +2,7 @@
 #include "util/serialize.h"
 #include "mapblock.h"
 #include "inventory.h"
+#include "activeobject.h"
 
 namespace protocol {
 
@@ -150,7 +151,12 @@ SharedBuffer<u8> create_TOCLIENT_ACTIVE_OBJECT_MESSAGES(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_ACTIVE_OBJECT_MESSAGES);
+	for(size_t i=0; i<messages.size(); i++){
+		const ActiveObjectMessage &aom = messages[i];
+		writeU16(os, aom.id);
+		os<<serializeString(aom.datastring);
+	}
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -162,7 +168,8 @@ SharedBuffer<u8> create_TOCLIENT_HP(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_HP);
+	writeU8(os, hp);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -176,7 +183,10 @@ SharedBuffer<u8> create_TOCLIENT_MOVE_PLAYER(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_MOVE_PLAYER);
+	writeV3F1000(os, p);
+	writeF1000(os, pitch);
+	writeF1000(os, yaw);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -188,7 +198,8 @@ SharedBuffer<u8> create_TOCLIENT_ACCESS_DENIED(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_ACCESS_DENIED);
+	os<<serializeWideString(reason);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());

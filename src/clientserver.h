@@ -332,7 +332,7 @@ enum ToClientCommand
 	/*
 		u16 command
 		u32 length of the next item
-		serialized NodeDefManager
+		zlib-compressed serialized NodeDefManager
 	*/
 	
 	TOCLIENT_CRAFTITEMDEF = 0x3b, // Obsolete
@@ -359,7 +359,7 @@ enum ToClientCommand
 	/*
 		u16 command
 		u32 length of next item
-		serialized ItemDefManager
+		zlib-compressed serialized ItemDefManager
 	*/
 	
 	TOCLIENT_PLAY_SOUND = 0x3f,

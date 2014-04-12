@@ -343,10 +343,9 @@ private:
 	friend class EmergeThread;
 	friend class RemoteClient;
 
-	void SendMovement(u16 peer_id);
-	void SendHP(u16 peer_id, u8 hp);
-	void SendBreath(u16 peer_id, u16 breath);
-	void SendAccessDenied(u16 peer_id,const std::wstring &reason);
+	void SendMovement(u16 peer_id); // TODO: Remove
+	void SendBreath(u16 peer_id, u16 breath); // TODO: Remove
+	void SendAccessDenied(u16 peer_id,const std::wstring &reason); // TODO: Remove
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(u16 peer_id,INodeDefManager *nodedef, u16 protocol_version);
