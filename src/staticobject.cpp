@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "staticobject.h"
 #include "util/serialize.h"
 
-void StaticObject::serialize(std::ostream &os)
+void StaticObject::serialize(std::ostream &os) const
 {
 	char buf[12];
 	// type
@@ -48,7 +48,7 @@ void StaticObject::deSerialize(std::istream &is, u8 version)
 	data = deSerializeString(is);
 }
 
-void StaticObjectList::serialize(std::ostream &os)
+void StaticObjectList::serialize(std::ostream &os) const
 {
 	char buf[12];
 	// version
@@ -58,18 +58,18 @@ void StaticObjectList::serialize(std::ostream &os)
 	u16 count = m_stored.size() + m_active.size();
 	writeU16((u8*)buf, count);
 	os.write(buf, 2);
-	for(std::list<StaticObject>::iterator
+	for(std::list<StaticObject>::const_iterator
 			i = m_stored.begin();
 			i != m_stored.end(); ++i)
 	{
-		StaticObject &s_obj = *i;
+		const StaticObject &s_obj = *i;
 		s_obj.serialize(os);
 	}
-	for(std::map<u16, StaticObject>::iterator
+	for(std::map<u16, StaticObject>::const_iterator
 			i = m_active.begin();
 			i != m_active.end(); ++i)
 	{
-		StaticObject s_obj = i->second;
+		const StaticObject s_obj = i->second;
 		s_obj.serialize(os);
 	}
 }

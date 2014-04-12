@@ -361,7 +361,7 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-void MapBlock::actuallyUpdateDayNightDiff()
+void MapBlock::actuallyUpdateDayNightDiff() const
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 	// Running this function un-expires m_day_night_differs
@@ -546,7 +546,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
+void MapBlock::serialize(std::ostream &os, u8 version, bool disk) const
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -637,7 +637,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 }
 
-void MapBlock::serializeNetworkSpecific(std::ostream &os, u16 net_proto_version)
+void MapBlock::serializeNetworkSpecific(std::ostream &os, u16 net_proto_version) const
 {
 	if(data == NULL)
 	{
