@@ -1922,10 +1922,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 
-		player->local_animations[0] = readV2F1000(is);
-		player->local_animations[1] = readV2F1000(is);
-		player->local_animations[2] = readV2F1000(is);
-		player->local_animations[3] = readV2F1000(is);
+		player->local_animations[0] = readV2S32(is);
+		player->local_animations[1] = readV2S32(is);
+		player->local_animations[2] = readV2S32(is);
+		player->local_animations[3] = readV2S32(is);
 		player->local_animation_speed = readF1000(is);
 	}
 	else if(command == TOCLIENT_EYE_OFFSET)

@@ -75,6 +75,7 @@ v3s16         check_v3s16               (lua_State *L, int index);
 v3f           read_v3f                  (lua_State *L, int index);
 v2f           read_v2f                  (lua_State *L, int index);
 v2s16         read_v2s16                (lua_State *L, int index);
+v2s32         read_v2s32                (lua_State *L, int index);
 video::SColor readARGB8                 (lua_State *L, int index);
 aabb3f        read_aabb3f               (lua_State *L, int index, f32 scale);
 v3s16         read_v3s16                (lua_State *L, int index);

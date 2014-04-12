@@ -534,10 +534,10 @@ enum ToClientCommand
 	TOCLIENT_LOCAL_PLAYER_ANIMATIONS = 0x51,
 	/*
 		u16 command
-		v2f1000 stand/idle
-		v2f1000 walk
-		v2f1000 dig
-		v2f1000 walk+dig
+		v2s32 stand/idle
+		v2s32 walk
+		v2s32 dig
+		v2s32 walk+dig
 		f1000 frame_speed
 	*/
 

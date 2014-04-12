@@ -59,6 +59,19 @@ v2s16 read_v2s16(lua_State *L, int index)
 	return p;
 }
 
+v2s32 read_v2s32(lua_State *L, int index)
+{
+	v2s32 p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
 v2f read_v2f(lua_State *L, int index)
 {
 	v2f p;

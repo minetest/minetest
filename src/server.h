@@ -322,7 +322,7 @@ public:
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
 			
-	bool setLocalPlayerAnimations(Player *player, v2f animation_frames[4], f32 frame_speed);
+	bool setLocalPlayerAnimations(Player *player, v2s32 animation_frames[4], f32 frame_speed);
 	bool setPlayerEyeOffset(Player *player, v3f first, v3f third);
 
 	bool setSky(Player *player, const video::SColor &bgcolor,
@@ -364,7 +364,7 @@ private:
 	void SendPlayerHP(u16 peer_id);
 	void SendPlayerBreath(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
-	void SendLocalPlayerAnimations(u16 peer_id, v2f animation_frames[4], f32 animation_speed);
+	void SendLocalPlayerAnimations(u16 peer_id, v2s32 animation_frames[4], f32 animation_speed);
 	void SendEyeOffset(u16 peer_id, v3f first, v3f third);
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);

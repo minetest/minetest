@@ -415,10 +415,10 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	if (player == NULL)
 		return 0;
 	// Do it
-	v2f frames[4];
+	v2s32 frames[4];
 	for (int i=0;i<4;i++) {
 		if(!lua_isnil(L, 2+1))
-			frames[i] = read_v2f(L, 2+i);
+			frames[i] = read_v2s32(L, 2+i);
 	}
 	float frame_speed = 30;
 	if(!lua_isnil(L, 6))
