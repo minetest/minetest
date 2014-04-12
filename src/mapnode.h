@@ -239,7 +239,7 @@ struct MapNode
 	*/
 
 	static u32 serializedLength(u8 version);
-	void serialize(u8 *dest, u8 version);
+	void serialize(u8 *dest, u8 version) const;
 	void deSerialize(u8 *source, u8 version);
 	
 	// Serializes or deserializes a list of nodes in bulk format (first the
