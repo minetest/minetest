@@ -1914,6 +1914,31 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.override_day_night_ratio.ratio_f     = day_night_ratio_f;
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_LOCAL_PLAYER_ANIMATIONS)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		LocalPlayer *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		player->local_animations[0] = readV2S32(is);
+		player->local_animations[1] = readV2S32(is);
+		player->local_animations[2] = readV2S32(is);
+		player->local_animations[3] = readV2S32(is);
+		player->local_animation_speed = readF1000(is);
+	}
+	else if(command == TOCLIENT_EYE_OFFSET)
+	{
+		std::string datastring((char *)&data[2], datasize - 2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		LocalPlayer *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+
+		player->eye_offset_first = readV3F1000(is);
+		player->eye_offset_third = readV3F1000(is);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

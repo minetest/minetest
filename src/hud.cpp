@@ -384,7 +384,8 @@ void Hud::drawHotbar(v2s32 centerlowerpos, s32 halfheartcount, u16 playeritem, s
 
 
 void Hud::drawCrosshair() {
-	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE))
+	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) ||
+		player->camera_mode == CAMERA_MODE_THIRD_FRONT)
 		return;
 		
 	if (use_crosshair_image) {

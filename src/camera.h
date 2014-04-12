@@ -27,9 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
 
+#include "client.h"
+
 class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
+
+enum CameraModes {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -113,7 +117,8 @@ public:
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, f32 busytime,
-			v2u32 screensize, f32 tool_reload_ratio);
+			v2u32 screensize, f32 tool_reload_ratio,
+			int current_camera_mode, ClientEnvironment &c_env);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in, f32 busytime_in);

@@ -50,7 +50,11 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_need_to_get_new_sneak_node(true),
-	m_can_jump(false)
+	m_can_jump(false),
+	camera_mode(0),
+	last_animation(NO_ANIM),
+	eye_offset_first(v3f(0,0,0)),
+	eye_offset_third(v3f(0,0,0))
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
