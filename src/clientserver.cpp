@@ -3,6 +3,8 @@
 #include "mapblock.h"
 #include "inventory.h"
 #include "activeobject.h"
+#include "nodedef.h"
+#include "serialization.h" // compressZlib
 
 namespace protocol {
 
@@ -249,7 +251,12 @@ SharedBuffer<u8> create_TOCLIENT_NODEDEF(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_NODEDEF);
+	std::ostringstream tmp_os(std::ios::binary);
+	ndef.serialize(tmp_os, net_proto_version);
+	std::ostringstream tmp_os2(std::ios::binary);
+	compressZlib(tmp_os.str(), tmp_os2);
+	os<<serializeLongString(tmp_os2.str());
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -286,13 +293,20 @@ SharedBuffer<u8> create_TOCLIENT_PLAY_SOUND(
 		const std::string &sound_name,
 		float gain,
 		u8 type,
-		v3f pos_nodes,
+		v3f pos,
 		u16 object_id,
 		bool loop
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_PLAY_SOUND);
+	writeS32(os, sound_id);
+	os<<serializeString(sound_name);
+	writeF1000(os, gain);
+	writeU8(os, type);
+	writeV3F1000(os, pos);
+	writeU16(os, object_id);
+	writeU8(os, loop);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());

@@ -938,7 +938,7 @@ namespace protocol
 			const std::string &sound_name,
 			float gain,
 			u8 type,
-			v3f pos_nodes,
+			v3f pos,
 			u16 object_id,
 			bool loop
 	);

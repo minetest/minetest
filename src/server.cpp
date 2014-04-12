@@ -2996,25 +2996,13 @@ void Server::SendNodeDef(u16 peer_id,
 		INodeDefManager *nodedef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
 
-	/*
-		u16 command
-		u32 length of the next item
-		zlib-compressed serialized NodeDefManager
-	*/
-	writeU16(os, TOCLIENT_NODEDEF);
-	std::ostringstream tmp_os(std::ios::binary);
-	nodedef->serialize(tmp_os, protocol_version);
-	std::ostringstream tmp_os2(std::ios::binary);
-	compressZlib(tmp_os.str(), tmp_os2);
-	os<<serializeLongString(tmp_os2.str());
-
-	// Make data buffer
-	std::string s = os.str();
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_NODEDEF(
+			protocol_version,
+			*nodedef
+	);
 	verbosestream<<"Server: Sending node definitions to id("<<peer_id
-			<<"): size="<<s.size()<<std::endl;
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			<<"): size="<<data.getSize()<<std::endl;
 	// Send as reliable
 	m_clients.send(peer_id, 0, data, true);
 }
@@ -3499,18 +3487,16 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			i != dst_clients.end(); i++)
 		psound.clients.insert(*i);
 	// Create packet
-	std::ostringstream os(std::ios_base::binary);
-	writeU16(os, TOCLIENT_PLAY_SOUND);
-	writeS32(os, id);
-	os<<serializeString(spec.name);
-	writeF1000(os, spec.gain * params.gain);
-	writeU8(os, params.type);
-	writeV3F1000(os, pos);
-	writeU16(os, params.object);
-	writeU8(os, params.loop);
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_PLAY_SOUND(
+			0,
+			id,
+			spec.name,
+			spec.gain * params.gain,
+			params.type,
+			pos,
+			params.object,
+			params.loop
+	);
 	// Send
 	for(std::list<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++){
