@@ -1626,16 +1626,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Answer with a TOCLIENT_INIT
 		*/
 		{
-			SharedBuffer<u8> reply(2+1+6+8+4);
-			writeU16(&reply[0], TOCLIENT_INIT);
-			writeU8(&reply[2], deployed);
-			//send dummy pos for legacy reasons only
-			writeV3S16(&reply[2+1], floatToInt(v3f(0,0,0), BS));
-			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
-			writeF1000(&reply[2+1+6+8], g_settings->getFloat("dedicated_server_step"));
-
 			// Send as reliable
-			m_clients.send(peer_id, 0, reply, true);
+			m_clients.send(peer_id, 0, protocol::create_TOCLIENT_INIT(
+					client->net_proto_version,
+					deployed,
+					floatToInt(v3f(0,0,0), BS),
+					m_env->getServerMap().getSeed(),
+					g_settings->getFloat("dedicated_server_step")
+			), true);
 			m_clients.event(peer_id, Init);
 		}
 
@@ -3744,60 +3742,6 @@ void Server::setBlockNotSent(v3s16 p)
 	m_clients.Unlock();
 }
 
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	v3s16 p = block->getPos();
-
-#if 0
-	// Analyze it a bit
-	bool completely_air = true;
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-	{
-		if(block->getNodeNoEx(v3s16(x0,y0,z0)).d != CONTENT_AIR)
-		{
-			completely_air = false;
-			x0 = y0 = z0 = MAP_BLOCKSIZE; // Break out
-		}
-	}
-
-	// Print result
-	infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
-	if(completely_air)
-		infostream<<"[completely air] ";
-	infostream<<std::endl;
-#endif
-
-	/*
-		Create a packet with the block in the right format
-	*/
-
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false);
-	block->serializeNetworkSpecific(os, net_proto_version);
-	std::string s = os.str();
-	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
-
-	u32 replysize = 8 + blockdata.getSize();
-	SharedBuffer<u8> reply(replysize);
-	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
-	memcpy(&reply[8], *blockdata, blockdata.getSize());
-
-	/*infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<":  \tpacket size: "<<replysize<<std::endl;*/
-
-	/*
-		Send packet
-	*/
-	m_clients.send(peer_id, 2, reply, true);
-}
-
 void Server::SendBlocks(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3862,7 +3806,12 @@ void Server::SendBlocks(float dtime)
 		if(!client)
 			continue;
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
+		m_clients.send(q.peer_id, 2, protocol::create_TOCLIENT_BLOCKDATA(
+				client->net_proto_version,
+				block->getPos(),
+				block,
+				client->serialization_version
+		), true);
 
 		client->SentBlock(q.pos);
 		total_sending++;

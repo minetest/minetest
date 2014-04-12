@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
+#include "util/pointer.h"
+#include "irrlichttypes_bloated.h"
+
 /*
 	changes by PROTOCOL_VERSION:
 
@@ -142,6 +145,12 @@ enum ToClientCommand
 	*/
 
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
+	/*
+		u16 command
+		v3s16 position
+		serialized block
+		serialized block network specific part
+	*/
 	TOCLIENT_ADDNODE = 0x21,
 	/*
 		u16 command
@@ -771,5 +780,30 @@ enum ToServerCommand
 	*/
 };
 
-#endif
+class MapBlock;
 
+namespace protocol
+{
+	SharedBuffer<u8> create_TOCLIENT_INIT(
+			u16 net_proto_version, // Always
+			u8 deployed_block_version,
+			const v3s16 &player_pos,
+			const u64 &map_seed,
+			const float recommended_send_interval
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_BLOCKDATA(
+			u16 net_proto_version, // Always
+			v3s16 position,
+			const MapBlock *block,
+			u8 block_format_version
+	);
+
+#if 0
+	SharedBuffer<u8> create_(
+			u16 net_proto_version,
+	);
+#endif
+}
+
+#endif
