@@ -1,6 +1,7 @@
 #include "clientserver.h"
 #include "util/serialize.h"
 #include "mapblock.h"
+#include "inventory.h"
 
 namespace protocol {
 
@@ -32,9 +33,7 @@ SharedBuffer<u8> create_TOCLIENT_BLOCKDATA(
 	std::ostringstream os(std::ios_base::binary);
 
 	writeU16(os, TOCLIENT_BLOCKDATA);
-	writeS16(os, position.X);
-	writeS16(os, position.Y);
-	writeS16(os, position.Z);
+	writeV3S16(os, position);
 	block->serialize(os, block_format_version, false);
 	block->serializeNetworkSpecific(os, net_proto_version);
 
@@ -51,7 +50,11 @@ SharedBuffer<u8> create_TOCLIENT_ADDNODE(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_ADDNODE);
+	writeV3S16(os, p);
+	SharedBuffer<u8> n_data(MapNode::serializedLength(block_format_version));
+	n.serialize(&n_data[0], block_format_version);
+	writeU8(os, keep_metadata);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -63,7 +66,8 @@ SharedBuffer<u8> create_TOCLIENT_REMOVENODE(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_REMOVENODE);
+	writeV3S16(os, p);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -75,7 +79,8 @@ SharedBuffer<u8> create_TOCLIENT_INVENTORY(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_INVENTORY);
+	inventory->serialize(os);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -88,7 +93,9 @@ SharedBuffer<u8> create_TOCLIENT_TIME_OF_DAY(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_TIME_OF_DAY);
+	writeU16(os, time);
+	writeF1000(os, time_speed);
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -100,7 +107,12 @@ SharedBuffer<u8> create_TOCLIENT_CHAT_MESSAGE(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_CHAT_MESSAGE);
+	writeU16(os, message.size());
+	for(u32 i=0; i<message.size(); i++){
+		u16 w = message[i];
+		writeU16(os, w);
+	}
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());
@@ -113,7 +125,20 @@ SharedBuffer<u8> create_TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD(
 ){
 	std::ostringstream os(std::ios_base::binary);
 
-	// TODO
+	writeU16(os, TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD);
+	writeU16(os, removed_objects.size());
+	for(std::set<u16>::iterator
+			i = removed_objects.begin();
+			i != removed_objects.end(); ++i){
+		writeU16(os, *i);
+	}
+	writeU16(os, added_objects.size());
+	for(size_t i=0; i<added_objects.size(); i++){
+		const AddedObject &ao = added_objects[i];
+		writeU16(os, ao.id);
+		writeU8(os, ao.type);
+		os<<serializeLongString(ao.init_data);
+	}
 
 	std::string s = os.str();
 	return SharedBuffer<u8>((u8*)s.c_str(), s.size());

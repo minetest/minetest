@@ -823,6 +823,9 @@ struct SendableMediaAnnouncement
 
 namespace protocol
 {
+	// NOTE: net_proto_version shall be set to 0 if packet is created in a bulk
+	// fashion instead of being directed towards a certain client
+
 	SharedBuffer<u8> create_TOCLIENT_INIT(
 			u16 net_proto_version, // Always
 			u8 deployed_block_version,

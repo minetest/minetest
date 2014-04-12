@@ -775,13 +775,7 @@ void Server::AsyncRunStep(bool initial_step)
 				continue;
 			}
 
-			std::string data_buffer;
-
-			char buf[4];
-
 			// Handle removed objects
-			writeU16((u8*)buf, removed_objects.size());
-			data_buffer.append(buf, 2);
 			for(std::set<u16>::iterator
 					i = removed_objects.begin();
 					i != removed_objects.end(); ++i)
@@ -789,10 +783,6 @@ void Server::AsyncRunStep(bool initial_step)
 				// Get object
 				u16 id = *i;
 				ServerActiveObject* obj = m_env->getActiveObject(id);
-
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
 
 				// Remove from known objects
 				client->m_known_objects.erase(id);
@@ -802,8 +792,7 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 
 			// Handle added objects
-			writeU16((u8*)buf, added_objects.size());
-			data_buffer.append(buf, 2);
+			std::vector<protocol::AddedObject> proto_added_objects;
 			for(std::set<u16>::iterator
 					i = added_objects.begin();
 					i != added_objects.end(); ++i)
@@ -820,17 +809,15 @@ void Server::AsyncRunStep(bool initial_step)
 				else
 					type = obj->getSendType();
 
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
-				writeU8((u8*)buf, type);
-				data_buffer.append(buf, 1);
-
-				if(obj)
-					data_buffer.append(serializeLongString(
-							obj->getClientInitializationData(client->net_proto_version)));
-				else
-					data_buffer.append(serializeLongString(""));
+				// Queue for sending
+				protocol::AddedObject pao;
+				pao.id = id;
+				pao.type = type;
+				if(obj){
+					pao.init_data = obj->getClientInitializationData(
+							client->net_proto_version);
+				}
+				proto_added_objects.push_back(pao);
 
 				// Add to known objects
 				client->m_known_objects.insert(id);
@@ -839,18 +826,17 @@ void Server::AsyncRunStep(bool initial_step)
 					obj->m_known_by_count++;
 			}
 
-			// Send packet
-			SharedBuffer<u8> reply(2 + data_buffer.size());
-			writeU16(&reply[0], TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD);
-			memcpy((char*)&reply[2], data_buffer.c_str(),
-					data_buffer.size());
 			// Send as reliable
-			m_clients.send(client->peer_id, 0, reply, true);
+			m_clients.send(client->peer_id, 0,
+				protocol::create_TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD(
+						client->net_proto_version,
+						removed_objects,
+						proto_added_objects
+			), true);
 
 			verbosestream<<"Server: Sent object remove/add: "
 					<<removed_objects.size()<<" removed, "
-					<<added_objects.size()<<" added, "
-					<<"packet size is "<<reply.getSize()<<std::endl;
+					<<added_objects.size()<<" added"<<std::endl;
 		}
 		m_clients.Unlock();
 #if 0
@@ -3089,49 +3075,22 @@ void Server::SendInventory(u16 peer_id)
 
 	playersao->m_inventory_not_sent = false;
 
-	/*
-		Serialize it
-	*/
-
-	std::ostringstream os;
-	playersao->getInventory()->serialize(os);
-
-	std::string s = os.str();
-
-	SharedBuffer<u8> data(s.size()+2);
-	writeU16(&data[0], TOCLIENT_INVENTORY);
-	memcpy(&data[2], s.c_str(), s.size());
-
 	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
+	m_clients.send(peer_id, 0, protocol::create_TOCLIENT_INVENTORY(
+			0,
+			playersao->getInventory()
+	), true);
 }
 
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-
-	// Write command
-	writeU16(buf, TOCLIENT_CHAT_MESSAGE);
-	os.write((char*)buf, 2);
-
-	// Write length
-	writeU16(buf, message.size());
-	os.write((char*)buf, 2);
-
-	// Write string
-	for(u32 i=0; i<message.size(); i++)
-	{
-		u16 w = message[i];
-		writeU16(buf, w);
-		os.write((char*)buf, 2);
-	}
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Create packet
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_CHAT_MESSAGE(
+			0,
+			message
+	);
 
 	if (peer_id != PEER_ID_INEXISTENT)
 	{
@@ -3415,10 +3374,11 @@ void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 	DSTACK(__FUNCTION_NAME);
 
 	// Make packet
-	SharedBuffer<u8> data(2+2+4);
-	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
-	writeU16(&data[2], time);
-	writeF1000(&data[4], time_speed);
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_TIME_OF_DAY(
+			0,
+			time,
+			time_speed
+	);
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		m_clients.sendToAll(0,data,true);
@@ -3635,12 +3595,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	v3f p_f = intToFloat(p, BS);
 
 	// Create packet
-	u32 replysize = 8;
-	SharedBuffer<u8> reply(replysize);
-	writeU16(&reply[0], TOCLIENT_REMOVENODE);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
+	SharedBuffer<u8> reply = protocol::create_TOCLIENT_REMOVENODE(
+			0,
+			p
+	);
 
 	std::list<u16> clients = m_clients.getClientIDs();
 	for(std::list<u16>::iterator
@@ -3702,16 +3660,13 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if (client != 0)
 		{
 			// Create packet
-			u32 replysize = 9 + MapNode::serializedLength(client->serialization_version);
-			reply = SharedBuffer<u8>(replysize);
-			writeU16(&reply[0], TOCLIENT_ADDNODE);
-			writeS16(&reply[2], p.X);
-			writeS16(&reply[4], p.Y);
-			writeS16(&reply[6], p.Z);
-			n.serialize(&reply[8], client->serialization_version);
-			u32 index = 8 + MapNode::serializedLength(client->serialization_version);
-			writeU8(&reply[index], remove_metadata ? 0 : 1);
-
+			reply = protocol::create_TOCLIENT_ADDNODE(
+					client->net_proto_version,
+					client->serialization_version,
+					p,
+					n,
+					!remove_metadata
+			);
 			if (!remove_metadata) {
 				if (client->net_proto_version <= 21) {
 					// Old clients always clear metadata; fix it
