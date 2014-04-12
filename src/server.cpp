@@ -3808,9 +3808,9 @@ void Server::SendBlocks(float dtime)
 
 		m_clients.send(q.peer_id, 2, protocol::create_TOCLIENT_BLOCKDATA(
 				client->net_proto_version,
+				client->serialization_version,
 				block->getPos(),
-				block,
-				client->serialization_version
+				block
 		), true);
 
 		client->SentBlock(q.pos);
@@ -3915,18 +3915,6 @@ void Server::fillMediaCache()
 	}
 }
 
-struct SendableMediaAnnouncement
-{
-	std::string name;
-	std::string sha1_digest;
-
-	SendableMediaAnnouncement(const std::string &name_="",
-	                          const std::string &sha1_digest_=""):
-		name(name_),
-		sha1_digest(sha1_digest_)
-	{}
-};
-
 void Server::sendMediaAnnouncement(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3975,20 +3963,6 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	// Send as reliable
 	m_clients.send(peer_id, 0, data, true);
 }
-
-struct SendableMedia
-{
-	std::string name;
-	std::string path;
-	std::string data;
-
-	SendableMedia(const std::string &name_="", const std::string &path_="",
-	              const std::string &data_=""):
-		name(name_),
-		path(path_),
-		data(data_)
-	{}
-};
 
 void Server::sendRequestedMedia(u16 peer_id,
 		const std::list<std::string> &tosend)

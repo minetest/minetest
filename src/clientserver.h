@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/pointer.h"
 #include "irrlichttypes_bloated.h"
+#include <set>
+#include <vector>
+#include <list>
+#include <string>
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -159,6 +163,10 @@ enum ToClientCommand
 		u8 keep_metadata // Added in protocol version 22
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
+	/*
+		u16 command
+		v3s16 position
+	*/
 	
 	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
 	/*
@@ -313,7 +321,7 @@ enum ToClientCommand
 		string url
 	*/
 	
-	TOCLIENT_TOOLDEF = 0x39,
+	TOCLIENT_TOOLDEF = 0x39, // Obsolete
 	/*
 		u16 command
 		u32 length of the next item
@@ -327,7 +335,7 @@ enum ToClientCommand
 		serialized NodeDefManager
 	*/
 	
-	TOCLIENT_CRAFTITEMDEF = 0x3b,
+	TOCLIENT_CRAFTITEMDEF = 0x3b, // Obsolete
 	/*
 		u16 command
 		u32 length of the next item
@@ -781,6 +789,37 @@ enum ToServerCommand
 };
 
 class MapBlock;
+class MapNode;
+struct ActiveObjectMessage;
+class INodeDefManager;
+class IItemDefManager;
+class Inventory;
+
+struct SendableMedia
+{
+	std::string name;
+	std::string path;
+	std::string data;
+
+	SendableMedia(const std::string &name_="", const std::string &path_="",
+	              const std::string &data_=""):
+		name(name_),
+		path(path_),
+		data(data_)
+	{}
+};
+
+struct SendableMediaAnnouncement
+{
+	std::string name;
+	std::string sha1_digest;
+
+	SendableMediaAnnouncement(const std::string &name_="",
+	                          const std::string &sha1_digest_=""):
+		name(name_),
+		sha1_digest(sha1_digest_)
+	{}
+};
 
 namespace protocol
 {
@@ -794,12 +833,253 @@ namespace protocol
 
 	SharedBuffer<u8> create_TOCLIENT_BLOCKDATA(
 			u16 net_proto_version, // Always
+			u8 block_format_version,
 			v3s16 position,
-			const MapBlock *block,
-			u8 block_format_version
+			const MapBlock *block
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ADDNODE(
+			u16 net_proto_version,
+			u8 block_format_version,
+			const v3s16 &p,
+			const MapNode &n,
+			bool keep_metadata
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_REMOVENODE(
+			u16 net_proto_version,
+			const v3s16 &p
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_INVENTORY(
+			u16 net_proto_version,
+			const Inventory* inventory
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_TIME_OF_DAY(
+			u16 net_proto_version,
+			u16 time,
+			float time_speed
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_CHAT_MESSAGE(
+			u16 net_proto_version,
+			std::wstring message
+	);
+
+	struct AddedObject {
+		u16 id;
+		u8 type;
+		std::string init_data;
+	};
+	SharedBuffer<u8> create_TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD(
+			u16 net_proto_version,
+			const std::set<u16> &removed_objects,
+			const std::vector<AddedObject> &added_objects
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ACTIVE_OBJECT_MESSAGES(
+			u16 net_proto_version,
+			const std::vector<ActiveObjectMessage> &messages
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HP(
+			u16 net_proto_version,
+			u8 hp
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_MOVE_PLAYER(
+			u16 net_proto_version,
+			v3f p,
+			float pitch,
+			float yaw
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ACCESS_DENIED(
+			u16 net_proto_version,
+			std::wstring reason
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_DEATHSCREEN(
+			u16 net_proto_version,
+			bool set_camera_point_target,
+			v3f camera_point_target
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_MEDIA(
+			u16 net_proto_version,
+			u16 num_bunches,
+			u16 bunch_i,
+			const std::list<SendableMedia> &files,
+			std::string remote_media_url
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_NODEDEF(
+			u16 net_proto_version,
+			INodeDefManager &ndef
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ANNOUNCE_MEDIA(
+			u16 net_proto_version,
+			const std::list<SendableMediaAnnouncement> &announcements
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ITEMDEF(
+			u16 net_proto_version,
+			IItemDefManager &idef
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_PLAY_SOUND(
+			u16 net_proto_version,
+			s32 sound_id,
+			const std::string &sound_name,
+			float gain,
+			u8 type,
+			v3f pos_nodes,
+			u16 object_id,
+			bool loop
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_STOP_SOUND(
+			u16 net_proto_version,
+			s32 sound_id
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_PRIVILEGES(
+			u16 net_proto_version,
+			const std::set<std::string> privileges
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_INVENTORY_FORMSPEC(
+			u16 net_proto_version,
+			const std::string &formspec
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_DETACHED_INVENTORY(
+			u16 net_proto_version,
+			const std::string &name,
+			const Inventory *inventory
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_SHOW_FORMSPEC(
+			u16 net_proto_version,
+			const std::string &formspec,
+			const std::string &formname
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_MOVEMENT(
+			u16 net_proto_version,
+			float movement_acceleration_default,
+			float movement_acceleration_air,
+			float movement_acceleration_fast,
+			float movement_speed_walk,
+			float movement_speed_crouch,
+			float movement_speed_fast,
+			float movement_speed_climb,
+			float movement_speed_jump,
+			float movement_liquid_fluidity,
+			float movement_liquid_fluidity_smooth,
+			float movement_liquid_sink,
+			float movement_gravity
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_SPAWN_PARTICLE(
+			u16 net_proto_version,
+			v3f pos,
+			v3f velocity,
+			v3f acceleration,
+			float expirationtime,
+			float size,
+			bool collision_detection,
+			bool vertical,
+			const std::string &texture
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_ADD_PARTICLESPAWNER(
+			u16 net_proto_version,
+			u16 amount,
+			float spawntime,
+			v3f minpos,
+			v3f maxpos,
+			v3f minvel,
+			v3f maxvel,
+			v3f minacc,
+			v3f maxacc,
+			float minexptime,
+			float maxexptime,
+			float minsize,
+			float maxsize,
+			bool collisiondetection,
+			bool vertical,
+			const std::string &texture,
+			u32 id
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_DELETE_PARTICLESPAWNER(
+			u16 net_proto_version,
+			u32 id
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HUDADD(
+			u16 net_proto_version,
+			u16 command,
+			u32 id,
+			u8 type,
+			v2f pos,
+			const std::string &name,
+			v2f scale,
+			const std::string &text,
+			u32 number,
+			u32 item,
+			u32 dir,
+			v2f align,
+			v2f offset
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HUDRM(
+			u16 net_proto_version,
+			u32 id
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HUDCHANGE(
+			u16 net_proto_version,
+			u32 id,
+			u8 stat,
+			void *value
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HUD_SET_FLAGS(
+			u16 net_proto_version,
+			u32 flags,
+			u32 mask
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_HUD_SET_PARAM(
+			u16 net_proto_version,
+			u16 param,
+			const std::string &value
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_BREATH(
+			u16 net_proto_version,
+			u16 breath
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_SET_SKY(
+			u16 net_proto_version,
+			const video::SColor &color,
+			const std::string &type,
+			const std::vector<std::string> &params
+	);
+
+	SharedBuffer<u8> create_TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO(
+			u16 net_proto_version,
+			bool do_override,
+			u16 day_night_ratio
 	);
 
 #if 0
+
 	SharedBuffer<u8> create_(
 			u16 net_proto_version,
 	);
