@@ -242,6 +242,19 @@ inline u16 readU16(std::istream &is)
 	return readU16((u8*)buf);
 }
 
+inline void writeU64(std::ostream &os, u64 p)
+{
+	char buf[8] = {0};
+	writeU64((u8*)buf, p);
+	os.write(buf, 8);
+}
+inline u64 readU64(std::istream &is)
+{
+	char buf[8] = {0};
+	is.read(buf, 8);
+	return readU64((u8*)buf);
+}
+
 inline void writeU32(std::ostream &os, u32 p)
 {
 	char buf[4] = {0};
