@@ -3,32 +3,41 @@
 playerinfo = {}
 
 --
--- Player icon handler
+-- Player data handler
 --
 
-local playericons = {}
+local playerdata = {}
 
-function playerinfo.set_icon(player, texture)
+function playerinfo.set_data(player, data)
 	local pname = player
 	if type(pname) ~= "string" then
 		pname = player:get_player_name()
 	end
-	local tname = texture
-	if not tname or tname == "" then
-		tname = "logo.png"
+	-- Set defaults if player data doesn't exist
+	if not playerdata[pname] then
+		playerdata[pname] = {icon = "logo.png", description = "No information available."}
 	end
-	playericons[pname] = tname
+	-- Set icon
+	if data and data.icon then
+		playerdata[pname].icon = data.icon
+	end
+	-- Set description
+	if data and data.description then
+		playerdata[pname].description = data.description
+	end
 end
 
-function playerinfo.get_icon(player)
+function playerinfo.get_data(player)
 	local pname = player
 	if type(pname) ~= "string" then
 		pname = player:get_player_name()
 	end
-	if not playericons[pname] then
-		playericons[pname] = "logo.png"
+	-- Set defaults if player data doesn't exist
+	if not playerdata[pname] then
+		playerdata[pname] = {icon = "logo.png", description = "No information available."}
 	end
-	return playericons[pname]
+
+	return playerdata[pname]
 end
 
 --
@@ -77,7 +86,8 @@ local function formspec_string(name, index)
 	if player then
 		local name = player:get_player_name()
 		formspec = formspec.."label[0,0;"..name.."]"
-		formspec = formspec.."image[1,1;2,2;"..playerinfo.get_icon(name).."]"
+		formspec = formspec.."image[1,1;2,2;"..playerinfo.get_data(name).icon.."]"
+		formspec = formspec.."textlist[0,3;4,2;player_list_description;"..playerinfo.get_data(name).description..";0;true]"
 	else
 		-- The player we selected left while the window was open
 		formspec = formspec.."label[0,0;Player disconnected]"
