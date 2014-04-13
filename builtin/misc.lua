@@ -21,6 +21,8 @@ minetest.register_globalstep(function(dtime)
 end)
 
 function minetest.after(time, func, ...)
+	assert(tonumber(time) and type(func) == "function",
+			"Invalid minetest.after invocation")
 	table.insert(minetest.timers_to_add, {time=time, func=func, args={...}})
 end
 
