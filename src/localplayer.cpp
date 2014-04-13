@@ -43,6 +43,10 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
+	camera_mode(0),
+	eye_offset_first(v3f(0,0,0)),
+	eye_offset_third(v3f(0,0,0)),
+	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
 	m_sneak_node(32767,32767,32767),
@@ -50,11 +54,7 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_need_to_get_new_sneak_node(true),
-	m_can_jump(false),
-	camera_mode(0),
-	last_animation(NO_ANIM),
-	eye_offset_first(v3f(0,0,0)),
-	eye_offset_third(v3f(0,0,0))
+	m_can_jump(false)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
