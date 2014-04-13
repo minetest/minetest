@@ -21,6 +21,10 @@ minetest.register_globalstep(function(dtime)
 end)
 
 function minetest.after(time, func, ...)
+	-- Little snippet from sfan5 to help identify problem mods that crash the server when nil is sent through the after function
+	if time == nil or func == nil then 
+		minetest.log("ERROR", "invalid minetest.after call by "..minetest.get_current_modname()) 
+	end
 	table.insert(minetest.timers_to_add, {time=time, func=func, args={...}})
 end
 
