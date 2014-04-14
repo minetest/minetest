@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	See comments in porting.h
 */
 
+#include "porting.h"
+
 #if defined(__APPLE__)
 	#include <mach-o/dyld.h>
 	#include "CoreFoundation/CoreFoundation.h"
@@ -37,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <sys/utsname.h>
 #endif
 
-#include "porting.h"
 #include "config.h"
 #include "debug.h"
 #include "filesys.h"
