@@ -78,7 +78,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
-	bool getCollisionBox(aabb3f *toset);
+	core::aabbox3d<f32>* getCollisionBox();
 	bool collideWithObjects();
 private:
 	std::string getPropertyPacket();
@@ -275,7 +275,7 @@ public:
 		m_is_singleplayer = is_singleplayer;
 	}
 
-	bool getCollisionBox(aabb3f *toset);
+	core::aabbox3d<f32>* getCollisionBox();
 	bool collideWithObjects();
 
 private:

@@ -336,11 +336,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			if (object != NULL)
 			{
-				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox) &&
+				aabb3f *object_collisionbox = object->getCollisionBox();
+				if (object_collisionbox &&
 						object->collideWithObjects())
 				{
-					cboxes.push_back(object_collisionbox);
+					cboxes.push_back(*object_collisionbox);
 					is_unloaded.push_back(false);
 					is_step_up.push_back(false);
 					bouncy_values.push_back(0);

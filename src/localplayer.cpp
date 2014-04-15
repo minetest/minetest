@@ -65,7 +65,7 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::list<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
@@ -360,7 +360,7 @@ void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d,
 		m_can_jump = false;
 }
 
-void LocalPlayer::move(f32 dtime, ClientEnvironment *env, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
 	move(dtime, env, pos_max_d, NULL);
 }

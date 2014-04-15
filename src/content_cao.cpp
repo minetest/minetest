@@ -166,7 +166,7 @@ public:
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
-	void removeFromScene();
+	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
 	void updateNodePos();
@@ -175,7 +175,7 @@ public:
 
 	void processMessage(const std::string &data);
 
-	bool getCollisionBox(aabb3f *toset) { return false; }
+	core::aabbox3d<f32>* getCollisionBox() { return NULL; }
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
@@ -236,7 +236,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateNodePos();
 }
 
-void TestCAO::removeFromScene()
+void TestCAO::removeFromScene(bool permanent)
 {
 	if(m_node == NULL)
 		return;
@@ -310,7 +310,7 @@ public:
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
-	void removeFromScene();
+	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
 	void updateNodePos();
@@ -331,7 +331,7 @@ public:
 	std::string infoText()
 		{return m_infotext;}
 
-	bool getCollisionBox(aabb3f *toset) { return false; }
+	core::aabbox3d<f32>* getCollisionBox() { return NULL; }
 private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
@@ -412,7 +412,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateTexture();
 }
 
-void ItemCAO::removeFromScene()
+void ItemCAO::removeFromScene(bool permanent)
 {
 	if(m_node == NULL)
 		return;
@@ -646,20 +646,20 @@ public:
 			ClientActiveObject::registerType(getType(), create);
 	}
 
-	bool getCollisionBox(aabb3f *toset) {
+	core::aabbox3d<f32>* getCollisionBox() {
 		if (m_prop.physical) {
-			aabb3f retval;
+			aabb3f *retval = new aabb3f();
 			//update collision box
-			toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
-			toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+			retval->MinEdge = m_prop.collisionbox.MinEdge * BS;
+			retval->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
-			toset->MinEdge += m_position;
-			toset->MaxEdge += m_position;
+			retval->MinEdge += m_position;
+			retval->MaxEdge += m_position;
 
-			return true;
+			return retval;
 		}
 
-		return false;
+		return NULL;
 	}
 
 	bool collideWithObjects() {

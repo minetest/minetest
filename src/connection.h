@@ -344,8 +344,6 @@ private:
 	u16 m_oldest_non_answered_ack;
 
 	JMutex m_list_mutex;
-
-	unsigned int writeptr;
 };
 
 /*
@@ -975,7 +973,6 @@ private:
 
 
 	Connection*           m_connection;
-	unsigned int          m_max_packet_size;
 };
 
 class Connection

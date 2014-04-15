@@ -314,7 +314,6 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_map(map),
 	m_script(scriptIface),
 	m_gamedef(gamedef),
-	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
@@ -1097,7 +1096,7 @@ void ServerEnvironment::step(float dtime)
 				continue;
 			
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 		}
 	}
 
@@ -2395,7 +2394,7 @@ void ClientEnvironment::step(float dtime)
 		if(player->isLocal() == false)
 		{
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 
 		}
 		

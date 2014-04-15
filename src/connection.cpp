@@ -212,7 +212,7 @@ SharedBuffer<u8> makeReliablePacket(
 	ReliablePacketBuffer
 */
 
-ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0),writeptr(0) {}
+ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0) {}
 
 void ReliablePacketBuffer::print()
 {
@@ -325,7 +325,6 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 	assert(seqnum != next_expected);
 
 	++m_list_size;
-	assert(m_list_size <= SEQNUM_MAX+1);
 
 	// Find the right place for the packet and insert it there
 	// If list is empty, just add it
@@ -1941,8 +1940,7 @@ void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
 
 ConnectionReceiveThread::ConnectionReceiveThread(Connection* parent,
 												unsigned int max_packet_size) :
-	m_connection(parent),
-	m_max_packet_size(max_packet_size)
+	m_connection(parent)
 {
 }
 

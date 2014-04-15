@@ -41,8 +41,7 @@ GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 		IMenuManager *menumgr,
 		Client* client
 ):
-	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client)
+	GUIModalMenu(env, parent, id, menumgr)
 {
 }
 

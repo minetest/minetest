@@ -2596,6 +2596,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 			// Sector metadata is loaded from disk if not already loaded.
 			ServerMapSector *sector = createSector(sectorpos);
 			assert(sector);
+			(void) sector;
 
 			for(s16 y=blockpos_min.Y-extra_borders.Y;
 					y<=blockpos_max.Y+extra_borders.Y; y++)
@@ -3261,12 +3262,13 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
 		default:
 			assert(false);
+			return "";
 	}
 }
 
 v2s16 ServerMap::getSectorPos(std::string dirname)
 {
-	unsigned int x, y;
+	unsigned int x = 0, y = 0;
 	int r;
 	std::string component;
 	fs::RemoveLastPathComponent(dirname, &component, 1);

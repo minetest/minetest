@@ -125,7 +125,6 @@ private:
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
-	u16 m_star_indices[SKY_STAR_COUNT*4];
 	video::S3DVertex m_star_vertices[SKY_STAR_COUNT*4];
 	LocalPlayer* m_player;
 };
