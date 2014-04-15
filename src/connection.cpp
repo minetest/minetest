@@ -325,6 +325,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 	assert(seqnum != next_expected);
 
 	++m_list_size;
+	assert(m_list_size <= SEQNUM_MAX+1);
 
 	// Find the right place for the packet and insert it there
 	// If list is empty, just add it

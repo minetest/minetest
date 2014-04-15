@@ -339,7 +339,7 @@ private:
 	RPBSearchResult findPacket(u16 seqnum);
 
 	std::list<BufferedPacket> m_list;
-	u16 m_list_size;
+	u32 m_list_size;
 
 	u16 m_oldest_non_answered_ack;
 

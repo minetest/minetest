@@ -141,6 +141,8 @@ namespace con {
 	class Connection;
 }
 
+#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 enum ClientState
 {
 	Invalid,
@@ -431,6 +433,7 @@ public:
 	{ assert(m_env == 0); m_env = env; }
 
 	static std::string state2Name(ClientState state) {
+		assert((int) state < ARRAYSIZE(statenames));
 		return statenames[state];
 	}
 
