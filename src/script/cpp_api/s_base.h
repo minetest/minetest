@@ -82,9 +82,12 @@ protected:
 	void objectrefGet(u16 id);
 
 	JMutex          m_luastackmutex;
+	// Stack index of Lua error handler
+	int             m_errorhandler;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	bool            m_locked;
 #endif
+
 private:
 	lua_State*      m_luastack;
 

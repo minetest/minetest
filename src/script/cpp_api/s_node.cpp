@@ -92,13 +92,10 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_punch"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch"))
 		return false;
 
 	// Call function
@@ -106,9 +103,8 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(puncher);
 	pushPointedThing(pointed);
-	if(lua_pcall(L, 4, 0, errorhandler))
+	if (lua_pcall(L, 4, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 	return true;
 }
 
@@ -117,22 +113,18 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_dig"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig"))
 		return false;
 
 	// Call function
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(digger);
-	if(lua_pcall(L, 3, 0, errorhandler))
+	if (lua_pcall(L, 3, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 	return true;
 }
 
@@ -140,82 +132,66 @@ void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_construct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct"))
 		return;
 
 	// Call function
 	push_v3s16(L, p);
-	if(lua_pcall(L, 1, 0, errorhandler))
+	if (lua_pcall(L, 1, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiNode::node_on_destruct(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct"))
 		return;
 
 	// Call function
 	push_v3s16(L, p);
-	if(lua_pcall(L, 1, 0, errorhandler))
+	if (lua_pcall(L, 1, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "after_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct"))
 		return;
 
 	// Call function
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
-	if(lua_pcall(L, 2, 0, errorhandler))
+	if (lua_pcall(L, 2, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_timer"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer"))
 		return false;
 
 	// Call function
 	push_v3s16(L, p);
 	lua_pushnumber(L,dtime);
-	if(lua_pcall(L, 2, 1, errorhandler))
+	if (lua_pcall(L, 2, 1, m_errorhandler))
 		scriptError();
-	lua_remove(L, errorhandler); // Remove error handler
 	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
 }
 
@@ -226,63 +202,51 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
-	if(node.getContent() == CONTENT_IGNORE)
+	if (node.getContent() == CONTENT_IGNORE)
 		return;
 
 	// Push callback function on stack
-	if(!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields"))
 		return;
 
 	// Call function
 	push_v3s16(L, p);                    // pos
 	lua_pushstring(L, formname.c_str()); // formname
 	lua_newtable(L);                     // fields
-	for(std::map<std::string, std::string>::const_iterator
-			i = fields.begin(); i != fields.end(); i++){
-		const std::string &name = i->first;
-		const std::string &value = i->second;
+	std::map<std::string, std::string>::const_iterator it;
+	for (it = fields.begin(); it != fields.end(); it++){
+		const std::string &name = it->first;
+		const std::string &value = it->second;
 		lua_pushstring(L, name.c_str());
 		lua_pushlstring(L, value.c_str(), value.size());
 		lua_settable(L, -3);
 	}
 	objectrefGetOrCreate(sender);        // player
-	if(lua_pcall(L, 4, 0, errorhandler))
+	if (lua_pcall(L, 4, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiNode::node_falling_update(v3s16 p)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	lua_getglobal(L, "nodeupdate");
 	push_v3s16(L, p);
-	if(lua_pcall(L, 1, 0, errorhandler))
+	if (lua_pcall(L, 1, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiNode::node_falling_update_single(v3s16 p)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	lua_getglobal(L, "nodeupdate_single");
 	push_v3s16(L, p);
-	if(lua_pcall(L, 1, 0, errorhandler))
+	if (lua_pcall(L, 1, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 

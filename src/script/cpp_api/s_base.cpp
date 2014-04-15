@@ -72,6 +72,10 @@ ScriptApiBase::ScriptApiBase()
 	m_luastack = luaL_newstate();
 	assert(m_luastack);
 
+	// Add and save an error handler
+	lua_pushcfunction(m_luastack, script_error_handler);
+	m_errorhandler = lua_gettop(m_luastack);
+
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
 	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
@@ -125,23 +129,18 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 
 	lua_State *L = getStack();
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
-	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, errorhandler);
-	if(ret){
-		errorstream<<"========== ERROR FROM LUA ==========="<<std::endl;
-		errorstream<<"Failed to load and run script from "<<std::endl;
-		errorstream<<scriptpath<<":"<<std::endl;
-		errorstream<<std::endl;
-		errorstream<<lua_tostring(L, -1)<<std::endl;
-		errorstream<<std::endl;
-		errorstream<<"======= END OF ERROR FROM LUA ========"<<std::endl;
+	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, m_errorhandler);
+	if (ret) {
+		errorstream << "========== ERROR FROM LUA ===========" << std::endl;
+		errorstream << "Failed to load and run script from " << std::endl;
+		errorstream << scriptpath << ":" << std::endl;
+		errorstream << std::endl;
+		errorstream << lua_tostring(L, -1) << std::endl;
+		errorstream << std::endl;
+		errorstream << "======= END OF ERROR FROM LUA ========" << std::endl;
 		lua_pop(L, 1); // Pop error message from stack
-		lua_pop(L, 1); // Pop the error handler from stack
 		return false;
 	}
-	lua_pop(L, 1); // Pop the error handler from stack
 	return true;
 }
 

@@ -34,27 +34,24 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	// Push callback function on stack
-	if(!getItemCallback(item.name.c_str(), "on_drop"))
+	if (!getItemCallback(item.name.c_str(), "on_drop"))
 		return false;
 
 	// Call function
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(dropper);
 	pushFloatPos(L, pos);
-	if(lua_pcall(L, 3, 1, errorhandler))
+	if (lua_pcall(L, 3, 1, m_errorhandler))
 		scriptError();
-	if(!lua_isnil(L, -1)) {
+	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 2);  // Pop item and error handler
+	lua_pop(L, 1);  // Pop item
 	return true;
 }
 
@@ -63,27 +60,24 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	// Push callback function on stack
-	if(!getItemCallback(item.name.c_str(), "on_place"))
+	if (!getItemCallback(item.name.c_str(), "on_place"))
 		return false;
 
 	// Call function
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(placer);
 	pushPointedThing(pointed);
-	if(lua_pcall(L, 3, 1, errorhandler))
+	if (lua_pcall(L, 3, 1, m_errorhandler))
 		scriptError();
-	if(!lua_isnil(L, -1)) {
+	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 2);  // Pop item and error handler
+	lua_pop(L, 1);  // Pop item
 	return true;
 }
 
@@ -92,18 +86,15 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	// Push callback function on stack
-	if(!getItemCallback(item.name.c_str(), "on_use"))
+	if (!getItemCallback(item.name.c_str(), "on_use"))
 		return false;
 
 	// Call function
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
 	pushPointedThing(pointed);
-	if(lua_pcall(L, 3, 1, errorhandler))
+	if (lua_pcall(L, 3, 1, m_errorhandler))
 		scriptError();
 	if(!lua_isnil(L, -1)) {
 		try {
@@ -112,7 +103,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 2);  // Pop item and error handler
+	lua_pop(L, 1);  // Pop item
 	return true;
 }
 
@@ -121,31 +112,29 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
 	
-	//Push inventory list
+	// Push inventory list
 	std::vector<ItemStack> items;
-	for(u32 i=0; i<old_craft_grid->getSize(); i++)
+	for (u32 i = 0; i < old_craft_grid->getSize(); i++) {
 		items.push_back(old_craft_grid->getItem(i));
+	}
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	if(lua_pcall(L, 4, 1, errorhandler))
+	if (lua_pcall(L, 4, 1, m_errorhandler))
 		scriptError();
-	if(!lua_isnil(L, -1)) {
+	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 2);  // Pop item and error handler
+	lua_pop(L, 1);  // Pop item
 	return true;
 }
 
@@ -154,9 +143,6 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "craft_predict");
 	LuaItemStack::create(L, item);
@@ -164,21 +150,22 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 
 	//Push inventory list
 	std::vector<ItemStack> items;
-	for(u32 i=0; i<old_craft_grid->getSize(); i++)
+	for (u32 i = 0; i < old_craft_grid->getSize(); i++) {
 		items.push_back(old_craft_grid->getItem(i));
+	}
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	if(lua_pcall(L, 4, 1, errorhandler))
+	if (lua_pcall(L, 4, 1, m_errorhandler))
 		scriptError();
-	if(!lua_isnil(L, -1)) {
+	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 2);  // Pop item and error handler
+	lua_pop(L, 1);  // Pop item
 	return true;
 }
 
@@ -251,5 +238,4 @@ void ScriptApiItem::pushPointedThing(const PointedThing& pointed)
 		lua_setfield(L, -2, "type");
 	}
 }
-
 

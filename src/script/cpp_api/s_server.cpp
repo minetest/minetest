@@ -27,35 +27,31 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	getAuthHandler();
 	lua_getfield(L, -1, "get_auth");
-	if(lua_type(L, -1) != LUA_TFUNCTION)
+	if (lua_type(L, -1) != LUA_TFUNCTION)
 		throw LuaError("Authentication handler missing get_auth");
 	lua_pushstring(L, playername.c_str());
-	if(lua_pcall(L, 1, 1, errorhandler))
+	if (lua_pcall(L, 1, 1, m_errorhandler))
 		scriptError();
 	lua_remove(L, -2); // Remove auth handler
-	lua_remove(L, errorhandler); // Remove error handler
 
 	// nil = login not allowed
-	if(lua_isnil(L, -1))
+	if (lua_isnil(L, -1))
 		return false;
 	luaL_checktype(L, -1, LUA_TTABLE);
 
 	std::string password;
 	bool found = getstringfield(L, -1, "password", password);
-	if(!found)
+	if (!found)
 		throw LuaError("Authentication handler didn't return password");
-	if(dst_password)
+	if (dst_password)
 		*dst_password = password;
 
 	lua_getfield(L, -1, "privileges");
-	if(!lua_istable(L, -1))
+	if (!lua_istable(L, -1))
 		throw LuaError("Authentication handler didn't return privilege table");
-	if(dst_privs)
+	if (dst_privs)
 		readPrivileges(-1, *dst_privs);
 	lua_pop(L, 1);
 
@@ -68,12 +64,12 @@ void ScriptApiServer::getAuthHandler()
 
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_auth_handler");
-	if(lua_isnil(L, -1)){
+	if (lua_isnil(L, -1)){
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "builtin_auth_handler");
 	}
 	lua_remove(L, -2); // Remove minetest
-	if(lua_type(L, -1) != LUA_TTABLE)
+	if (lua_type(L, -1) != LUA_TTABLE)
 		throw LuaError("Authentication handler table not valid");
 }
 
@@ -83,13 +79,13 @@ void ScriptApiServer::readPrivileges(int index, std::set<std::string> &result)
 
 	result.clear();
 	lua_pushnil(L);
-	if(index < 0)
+	if (index < 0)
 		index -= 1;
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
 		std::string key = luaL_checkstring(L, -2);
 		bool value = lua_toboolean(L, -1);
-		if(value)
+		if (value)
 			result.insert(key);
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
@@ -101,19 +97,15 @@ void ScriptApiServer::createAuth(const std::string &playername,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	getAuthHandler();
 	lua_getfield(L, -1, "create_auth");
 	lua_remove(L, -2); // Remove auth handler
-	if(lua_type(L, -1) != LUA_TFUNCTION)
+	if (lua_type(L, -1) != LUA_TFUNCTION)
 		throw LuaError("Authentication handler missing create_auth");
 	lua_pushstring(L, playername.c_str());
 	lua_pushstring(L, password.c_str());
-	if(lua_pcall(L, 2, 0, errorhandler))
+	if (lua_pcall(L, 2, 0, m_errorhandler))
 		scriptError();
-	lua_pop(L, 1); // Pop error handler
 }
 
 bool ScriptApiServer::setPassword(const std::string &playername,
@@ -121,19 +113,15 @@ bool ScriptApiServer::setPassword(const std::string &playername,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
-
 	getAuthHandler();
 	lua_getfield(L, -1, "set_password");
 	lua_remove(L, -2); // Remove auth handler
-	if(lua_type(L, -1) != LUA_TFUNCTION)
+	if (lua_type(L, -1) != LUA_TFUNCTION)
 		throw LuaError("Authentication handler missing set_password");
 	lua_pushstring(L, playername.c_str());
 	lua_pushstring(L, password.c_str());
-	if(lua_pcall(L, 2, 1, errorhandler))
+	if (lua_pcall(L, 2, 1, m_errorhandler))
 		scriptError();
-	lua_remove(L, -2); // Remove error handler
 	return lua_toboolean(L, -1);
 }
 
