@@ -76,7 +76,6 @@ private:
 	video::SMaterial m_material;
 	core::aabbox3d<f32> m_box;
 	float m_cloud_y;
-	float m_brightness;
 	video::SColorf m_color;
 	u32 m_seed;
 	v2f m_camera_pos;

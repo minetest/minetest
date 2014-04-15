@@ -210,8 +210,7 @@ public:
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
 public:
-	MainShaderConstantSetter(IrrlichtDevice *device):
-		m_device(device)
+	MainShaderConstantSetter(IrrlichtDevice *device)
 	{}
 	~MainShaderConstantSetter() {}
 
@@ -255,9 +254,6 @@ public:
 			services->setVertexShaderConstant(world.pointer(), 8, 4);
 
 	}
-
-private:
-	IrrlichtDevice *m_device;
 };
 
 /*

@@ -132,7 +132,7 @@ struct LocalFormspecHandler : public TextDest
 		m_client = client;
 	}
 
-	void gotText(std::string message) {
+	void gotText(std::wstring message) {
 		errorstream << "LocalFormspecHandler::gotText old style message received" << std::endl;
 	}
 

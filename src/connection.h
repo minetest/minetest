@@ -339,13 +339,11 @@ private:
 	RPBSearchResult findPacket(u16 seqnum);
 
 	std::list<BufferedPacket> m_list;
-	u16 m_list_size;
+	u32 m_list_size;
 
 	u16 m_oldest_non_answered_ack;
 
 	JMutex m_list_mutex;
-
-	unsigned int writeptr;
 };
 
 /*
@@ -975,7 +973,6 @@ private:
 
 
 	Connection*           m_connection;
-	unsigned int          m_max_packet_size;
 };
 
 class Connection

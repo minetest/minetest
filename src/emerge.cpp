@@ -465,7 +465,7 @@ void *EmergeThread::Thread() {
 
 	v3s16 last_tried_pos(-32768,-32768,-32768); // For error output
 	v3s16 p;
-	u8 flags;
+	u8 flags = 0;
 
 	map    = (ServerMap *)&(m_server->m_env->getMap());
 	emerge = m_server->m_emerge;
