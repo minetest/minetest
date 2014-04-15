@@ -1,59 +1,45 @@
 local tbl = engine or minetest
 
+local SCRIPTDIR = SCRIPTDIR or tbl.get_scriptdir()
+minetest = tbl
+dofile(SCRIPTDIR .. DIR_DELIM .. "serialize.lua")
+
 tbl.async_jobs = {}
 
-if engine ~= nil then
-	function tbl.async_event_handler(jobid, serialized_retval)
-		local retval = nil
-		if serialized_retval ~= "ERROR" then
-			retval= marshal.decode(serialized_retval)
-		else
-			tbl.log("error","Error fetching async result")
-		end
-
-		assert(type(tbl.async_jobs[jobid]) == "function")
-		tbl.async_jobs[jobid](retval)
-		tbl.async_jobs[jobid] = nil
-	end
-else
-
-	minetest.register_globalstep(
-		function(dtime)
-			local list = tbl.get_finished_jobs()
-
-			for i=1,#list,1 do
-				local retval = marshal.decode(list[i].retval)
-
-				assert(type(tbl.async_jobs[jobid]) == "function")
-				tbl.async_jobs[list[i].jobid](retval)
-				tbl.async_jobs[list[i].jobid] = nil
-			end
-		end)
+local function handle_job(jobid, serialized_retval)
+	local retval = tbl.deserialize(serialized_retval)
+	assert(type(tbl.async_jobs[jobid]) == "function")
+	tbl.async_jobs[jobid](retval)
+	tbl.async_jobs[jobid] = nil
 end
 
-function tbl.handle_async(fct, parameters, callback)
+if engine ~= nil then
+	tbl.async_event_handler = handle_job
+else
+	minetest.register_globalstep(function(dtime)
+		for i, job in ipairs(tbl.get_finished_jobs()) do
+			handle_job(job.jobid, job.retval)
+		end
+	end)
+end
 
-	--serialize fct
-	local serialized_fct = marshal.encode(fct)
+function tbl.handle_async(func, parameter, callback)
+	-- Serialize function
+	local serialized_func = string.dump(func)
 
-	assert(marshal.decode(serialized_fct) ~= nil)
+	assert(serialized_func ~= nil)
 
-	--serialize parameters
-	local serialized_params = marshal.encode(parameters)
+	-- Serialize parameters
+	local serialized_param = tbl.serialize(parameter)
 
-	if serialized_fct == nil or
-		serialized_params == nil or
-		serialized_fct:len() == 0 or
-		serialized_params:len() == 0 then
+	if serialized_param == nil then
 		return false
 	end
 
-	local jobid = tbl.do_async_callback(	serialized_fct,
-											serialized_fct:len(),
-											serialized_params,
-											serialized_params:len())
+	local jobid = tbl.do_async_callback(serialized_func, serialized_param)
 
 	tbl.async_jobs[jobid] = callback
 
 	return true
 end
+

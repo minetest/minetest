@@ -28,9 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern "C" {
 #include "lualib.h"
-	int luaopen_marshal(lua_State *L);
 }
-/******************************************************************************/
+
+#define MAINMENU_ASYNC_THREADS 4
+
+
 MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 {
 	setGuiEngine(guiengine);
@@ -38,9 +40,13 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	//TODO add security
 
 	luaL_openlibs(getStack());
-	luaopen_marshal(getStack());
 
 	SCRIPTAPI_PRECHECKHEADER
+
+	lua_newtable(L);
+	lua_setglobal(L, "engine");
+	lua_getglobal(L, "engine");
+	int top = lua_gettop(L);
 
 	lua_pushstring(L, DIR_DELIM);
 	lua_setglobal(L, "DIR_DELIM");
@@ -48,22 +54,17 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	lua_newtable(L);
 	lua_setglobal(L, "gamedata");
 
-	lua_newtable(L);
-	lua_setglobal(L, "engine");
-
 	// Initialize our lua_api modules
-	lua_getglobal(L, "engine");
-	int top = lua_gettop(L);
 	InitializeModApi(L, top);
 	lua_pop(L, 1);
 
-	infostream << "SCRIPTAPI: initialized mainmenu modules" << std::endl;
+	infostream << "SCRIPTAPI: Initialized main menu modules" << std::endl;
 }
 
 /******************************************************************************/
 void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 {
-	// Initialize mod api modules
+	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 
@@ -76,16 +77,17 @@ void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
-	m_AsyncEngine.Initialize(MAINMENU_NUMBER_OF_ASYNC_THREADS);
+	m_AsyncEngine.Initialize(MAINMENU_ASYNC_THREADS);
 }
 
 /******************************************************************************/
 void MainMenuScripting::Step() {
-	m_AsyncEngine.Step(getStack());
+	m_AsyncEngine.Step(getStack(), m_errorhandler);
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::DoAsync(std::string serialized_fct,
-		std::string serialized_params) {
-	return m_AsyncEngine.doAsyncJob(serialized_fct,serialized_params);
+unsigned int MainMenuScripting::DoAsync(std::string serialized_func,
+		std::string serialized_param) {
+	return m_AsyncEngine.doAsyncJob(serialized_func, serialized_param);
 }
+
