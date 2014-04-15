@@ -291,7 +291,7 @@ void GUIEngine::run()
 		else
 			sleep_ms(25);
 
-		m_script->Step();
+		m_script->step();
 	}
 }
 
@@ -563,7 +563,8 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
-unsigned int GUIEngine::DoAsync(std::string serialized_fct,
+unsigned int GUIEngine::queueAsync(std::string serialized_func,
 		std::string serialized_params) {
-	return m_script->DoAsync(serialized_fct,serialized_params);
+	return m_script->queueAsync(serialized_func, serialized_params);
 }
+

@@ -17,10 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_ASYNC_EVENTS_H_
-#define L_ASYNC_EVENTS_H_
+#ifndef CPP_API_ASYNC_EVENTS_HEADER
+#define CPP_API_ASYNC_EVENTS_HEADER
 
 #include <vector>
+#include <deque>
 #include <map>
 
 #include "jthread/jthread.h"
@@ -45,7 +46,7 @@ struct LuaJobInfo {
 	// Result of function call
 	std::string serializedResult;
 	// JobID used to identify a job and match it to callback
-	unsigned int JobId;
+	unsigned int id;
 
 	bool valid;
 };
@@ -61,13 +62,13 @@ public:
 
 	virtual ~AsyncWorkerThread();
 
-	void* Thread();
+	void *Thread();
 
 private:
-	AsyncEngine* m_JobDispatcher;
+	AsyncEngine *jobDispatcher;
 
 	// Thread number. Used for debug output
-	unsigned int m_threadnum;
+	unsigned int threadnum;
 
 };
 
@@ -89,15 +90,15 @@ public:
 	 * Create async engine tasks and lock function registration
 	 * @param numEngines Number of async threads to be started
 	 */
-	void Initialize(unsigned int numEngines);
+	void initialize(unsigned int numEngines);
 
 	/**
-	 * queue/run a async job
+	 * Queue an async job
 	 * @param func Serialized lua function
 	 * @param params Serialized parameters
 	 * @return jobid The job is queued
 	 */
-	unsigned int doAsyncJob(std::string func, std::string params);
+	unsigned int queueAsyncJob(std::string func, std::string params);
 
 	/**
 	 * Engine step to process finished jobs
@@ -105,13 +106,13 @@ public:
 	 * @param L The Lua stack
 	 * @param errorhandler Stack index of the Lua error handler
 	 */
-	void Step(lua_State *L, int errorhandler);
+	void step(lua_State *L, int errorhandler);
 
 	/**
 	 * Push a list of finished jobs onto the stack
 	 * @param L The Lua stack
 	 */
-	void PushFinishedJobs(lua_State *L);
+	void pushFinishedJobs(lua_State *L);
 
 protected:
 	/**
@@ -134,38 +135,34 @@ protected:
 	 * @param L Lua stack to initialize
 	 * @param top Stack position
 	 */
-	void PrepareEnvironment(lua_State* L, int top);
+	void prepareEnvironment(lua_State* L, int top);
 
 private:
-
-	// Stack index of error handler
-	int m_errorhandler;
-
-	// variable locking the engine against further modification
-	bool m_initDone;
+	// Variable locking the engine against further modification
+	bool initDone;
 
 	// Internal store for registred functions
-	std::map<std::string, lua_CFunction> m_FunctionList;
+	std::map<std::string, lua_CFunction> functionList;
 
 	// Internal counter to create job IDs
-	unsigned int m_JobIdCounter;
+	unsigned int jobIdCounter;
 
 	// Mutex to protect job queue
-	JMutex m_JobQueueMutex;
+	JMutex jobQueueMutex;
 
 	// Job queue
-	std::vector<LuaJobInfo> m_JobQueue;
+	std::deque<LuaJobInfo> jobQueue;
 
 	// Mutex to protect result queue
-	JMutex m_ResultQueueMutex;
+	JMutex resultQueueMutex;
 	// Result queue
-	std::vector<LuaJobInfo> m_ResultQueue;
+	std::deque<LuaJobInfo> resultQueue;
 
 	// List of current worker threads
-	std::vector<AsyncWorkerThread*> m_WorkerThreads;
+	std::vector<AsyncWorkerThread*> workerThreads;
 
 	// Counter semaphore for job dispatching
-	JSemaphore m_JobQueueCounter;
+	JSemaphore jobQueueCounter;
 };
 
-#endif // L_ASYNC_EVENTS_H_
+#endif // CPP_API_ASYNC_EVENTS_HEADER

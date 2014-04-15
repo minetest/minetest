@@ -30,7 +30,7 @@ extern "C" {
 #include "lualib.h"
 }
 
-#define MAINMENU_ASYNC_THREADS 4
+#define MAINMENU_NUM_ASYNC_THREADS 4
 
 
 MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
@@ -55,14 +55,14 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	lua_setglobal(L, "gamedata");
 
 	// Initialize our lua_api modules
-	InitializeModApi(L, top);
+	initializeModApi(L, top);
 	lua_pop(L, 1);
 
 	infostream << "SCRIPTAPI: Initialized main menu modules" << std::endl;
 }
 
 /******************************************************************************/
-void MainMenuScripting::InitializeModApi(lua_State *L, int top)
+void MainMenuScripting::initializeModApi(lua_State *L, int top)
 {
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
@@ -72,22 +72,22 @@ void MainMenuScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 
 	// Register functions to async environment
-	ModApiMainMenu::InitializeAsync(m_AsyncEngine);
-	ModApiUtil::InitializeAsync(m_AsyncEngine);
+	ModApiMainMenu::InitializeAsync(asyncEngine);
+	ModApiUtil::InitializeAsync(asyncEngine);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
-	m_AsyncEngine.Initialize(MAINMENU_ASYNC_THREADS);
+	asyncEngine.initialize(MAINMENU_NUM_ASYNC_THREADS);
 }
 
 /******************************************************************************/
-void MainMenuScripting::Step() {
-	m_AsyncEngine.Step(getStack(), m_errorhandler);
+void MainMenuScripting::step() {
+	asyncEngine.step(getStack(), m_errorhandler);
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::DoAsync(std::string serialized_func,
+unsigned int MainMenuScripting::queueAsync(std::string serialized_func,
 		std::string serialized_param) {
-	return m_AsyncEngine.doAsyncJob(serialized_func, serialized_param);
+	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
 }
 

@@ -167,7 +167,7 @@ public:
 	}
 
 	/** pass async callback to scriptengine **/
-	unsigned int DoAsync(std::string serialized_fct,std::string serialized_params);
+	unsigned int queueAsync(std::string serialized_fct,std::string serialized_params);
 
 private:
 

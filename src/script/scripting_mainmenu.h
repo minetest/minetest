@@ -36,15 +36,15 @@ public:
 	MainMenuScripting(GUIEngine* guiengine);
 
 	// Global step handler to pass back async events
-	void Step();
+	void step();
 
 	// Pass async events from engine to async threads
-	unsigned int DoAsync(std::string serialized_func,
+	unsigned int queueAsync(std::string serialized_func,
 			std::string serialized_params);
 private:
-	void InitializeModApi(lua_State *L, int top);
+	void initializeModApi(lua_State *L, int top);
 
-	AsyncEngine m_AsyncEngine;
+	AsyncEngine asyncEngine;
 };
 
 

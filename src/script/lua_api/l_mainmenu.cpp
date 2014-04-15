@@ -1045,7 +1045,7 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 	std::string serialized_func = std::string(serialized_func_raw, func_length);
 	std::string serialized_param = std::string(serialized_param_raw, param_length);
 
-	lua_pushinteger(L, engine->DoAsync(serialized_func, serialized_param));
+	lua_pushinteger(L, engine->queueAsync(serialized_func, serialized_param));
 
 	return 1;
 }
