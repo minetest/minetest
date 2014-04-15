@@ -44,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		IGameDef *gamedef):
-	m_smgr(smgr),
 	m_playernode(NULL),
 	m_headnode(NULL),
 	m_cameranode(NULL),

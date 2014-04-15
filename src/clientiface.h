@@ -141,6 +141,8 @@ namespace con {
 	class Connection;
 }
 
+#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 enum ClientState
 {
 	Invalid,
@@ -219,7 +221,6 @@ public:
 		m_nearest_unsent_d(0),
 		m_nearest_unsent_reset_timer(0.0),
 		m_excess_gotblocks(0),
-		m_nothing_to_send_counter(0),
 		m_nothing_to_send_pause_timer(0.0),
 		m_name(""),
 		m_version_major(0),
@@ -355,7 +356,6 @@ private:
 	u32 m_excess_gotblocks;
 
 	// CPU usage optimization
-	u32 m_nothing_to_send_counter;
 	float m_nothing_to_send_pause_timer;
 
 	/*
@@ -433,7 +433,7 @@ public:
 	{ assert(m_env == 0); m_env = env; }
 
 	static std::string state2Name(ClientState state) {
-		assert(state < sizeof(statenames));
+		assert((int) state < ARRAYSIZE(statenames));
 		return statenames[state];
 	}
 

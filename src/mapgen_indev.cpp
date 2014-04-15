@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void NoiseIndev::init(NoiseIndevParams *np, int seed, int sx, int sy, int sz) {
-	Noise::init((NoiseParams*)np, seed, sx, sy, sz);
-	this->npindev   = np;
+void NoiseIndev::init(NoiseParams *np, int seed, int sx, int sy, int sz) {
+	Noise::init(np, seed, sx, sy, sz);
+	this->npindev = (NoiseIndevParams*) np;
 }
 
 NoiseIndev::NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy) : Noise(np, seed, sx, sy) {

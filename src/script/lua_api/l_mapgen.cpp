@@ -324,8 +324,8 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	BiomeDefManager *bdef = emerge->biomedef;
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
-				"deco_type", es_DecorationType, -1);
-	if (decotype == -1) {
+				"deco_type", es_DecorationType, 0);
+	if (decotype == 0) {
 		errorstream << "register_decoration: unrecognized "
 			"decoration placement type";
 		return 0;

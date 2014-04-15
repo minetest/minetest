@@ -212,7 +212,7 @@ SharedBuffer<u8> makeReliablePacket(
 	ReliablePacketBuffer
 */
 
-ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0),writeptr(0) {}
+ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0) {}
 
 void ReliablePacketBuffer::print()
 {
@@ -1941,8 +1941,7 @@ void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
 
 ConnectionReceiveThread::ConnectionReceiveThread(Connection* parent,
 												unsigned int max_packet_size) :
-	m_connection(parent),
-	m_max_packet_size(max_packet_size)
+	m_connection(parent)
 {
 }
 

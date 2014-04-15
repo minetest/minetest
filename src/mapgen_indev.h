@@ -61,7 +61,7 @@ public:
 	virtual ~NoiseIndev() {};
 	NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy);
 	NoiseIndev(NoiseIndevParams *np, int seed, int sx, int sy, int sz);
-	void init(NoiseIndevParams *np, int seed, int sx, int sy, int sz);
+	void init(NoiseParams *np, int seed, int sx, int sy, int sz);
 	void transformNoiseMapFarScale(float xx = 0, float yy = 0, float zz = 0);
 };
 
