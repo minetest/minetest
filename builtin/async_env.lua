@@ -1,19 +1,21 @@
-engine.log("info","Initializing Asynchronous environment")
+engine.log("info", "Initializing Asynchronous environment")
+local tbl = engine or minetest
 
+minetest = tbl
+dofile(SCRIPTDIR .. DIR_DELIM .. "serialize.lua")
 dofile(SCRIPTDIR .. DIR_DELIM .. "misc_helpers.lua")
 
-function engine.job_processor(serialized_function, serialized_data)
+function tbl.job_processor(serialized_func, serialized_param)
+	local func = loadstring(serialized_func)
+	local param = tbl.deserialize(serialized_param)
+	local retval = nil
 
-	local fct = marshal.decode(serialized_function)
-	local params = marshal.decode(serialized_data)
-	local retval = marshal.encode(nil)
-
-	if fct ~= nil and type(fct) == "function" then
-		local result = fct(params)
-		retval = marshal.encode(result)
+	if type(func) == "function" then
+		retval = tbl.serialize(func(param))
 	else
-		engine.log("error","ASYNC WORKER: unable to deserialize function")
+		tbl.log("error", "ASYNC WORKER: Unable to deserialize function")
 	end
 
-	return retval,retval:len()
+	return retval or tbl.serialize(nil)
 end
+

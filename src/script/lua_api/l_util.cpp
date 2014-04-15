@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "lua_api/l_async_events.h"
+#include "cpp_api/s_async.h"
 #include "debug.h"
 #include "log.h"
 #include "tool.h"
