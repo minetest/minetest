@@ -32,9 +32,9 @@ static inline s16 unsigned_to_signed(u16 i, u16 max_positive)
 
 s64 Database::getBlockAsInteger(const v3s16 pos) const
 {
-	return (u64) pos.Z * 0x1000000 +
-		(u64) pos.Y * 0x1000 +
-		(u64) pos.X;
+	return (((u64) pos.Z) << 24) +
+		(((u64) pos.Y) << 12) +
+		((u64) pos.X);
 }
 
 v3s16 Database::getIntegerAsBlock(const s64 i) const
