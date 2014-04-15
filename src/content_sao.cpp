@@ -65,8 +65,8 @@ public:
 		infostream<<"DummyLoadSAO step"<<std::endl;
 	}
 
-	core::aabbox3d<f32>* getCollisionBox() {
-		return NULL;
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 	bool collideWithObjects() {
@@ -141,8 +141,8 @@ public:
 		}
 	}
 
-	core::aabbox3d<f32>* getCollisionBox() {
-		return NULL;
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 	bool collideWithObjects() {
@@ -330,8 +330,8 @@ public:
 		return 0;
 	}
 
-	core::aabbox3d<f32>* getCollisionBox() {
-		return NULL;
+	bool getCollisionBox(aabb3f *toset) {
+		return false;
 	}
 
 	bool collideWithObjects() {
@@ -911,21 +911,20 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push_back(aom);
 }
 
-core::aabbox3d<f32>* LuaEntitySAO::getCollisionBox() {
+bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
 	if (m_prop.physical)
 	{
 		//update collision box
-		aabb3f *retval = new aabb3f();
-		retval->MinEdge = m_prop.collisionbox.MinEdge * BS;
-		retval->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+		toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+		toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
-		retval->MinEdge += m_base_position;
-		retval->MaxEdge += m_base_position;
+		toset->MinEdge += m_base_position;
+		toset->MaxEdge += m_base_position;
 
-		return retval;
+		return true;
 	}
 
-	return NULL;
+	return false;
 }
 
 bool LuaEntitySAO::collideWithObjects(){
@@ -1526,14 +1525,14 @@ bool PlayerSAO::checkMovementCheat()
 	return cheated;
 }
 
-core::aabbox3d<f32>* PlayerSAO::getCollisionBox() {
-	aabb3f *retval = new aabb3f(m_player->getCollisionbox());
+bool PlayerSAO::getCollisionBox(aabb3f *toset) {
 	//update collision box
+	*toset = m_player->getCollisionbox();
 
-	retval->MinEdge += m_base_position;
-	retval->MaxEdge += m_base_position;
+	toset->MinEdge += m_base_position;
+	toset->MaxEdge += m_base_position;
 
-	return retval;
+	return true;
 }
 
 bool PlayerSAO::collideWithObjects(){

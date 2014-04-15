@@ -175,7 +175,7 @@ public:
 
 	void processMessage(const std::string &data);
 
-	core::aabbox3d<f32>* getCollisionBox() { return NULL; }
+	bool getCollisionBox(aabb3f *toset) { return false; }
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
@@ -331,7 +331,7 @@ public:
 	std::string infoText()
 		{return m_infotext;}
 
-	core::aabbox3d<f32>* getCollisionBox() { return NULL; }
+	bool getCollisionBox(aabb3f *toset) { return false; }
 private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
@@ -646,20 +646,19 @@ public:
 			ClientActiveObject::registerType(getType(), create);
 	}
 
-	core::aabbox3d<f32>* getCollisionBox() {
+	bool getCollisionBox(aabb3f *toset) {
 		if (m_prop.physical) {
-			aabb3f *retval = new aabb3f();
 			//update collision box
-			retval->MinEdge = m_prop.collisionbox.MinEdge * BS;
-			retval->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+			toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+			toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
-			retval->MinEdge += m_position;
-			retval->MaxEdge += m_position;
+			toset->MinEdge += m_position;
+			toset->MaxEdge += m_position;
 
-			return retval;
+			return true;
 		}
 
-		return NULL;
+		return false;
 	}
 
 	bool collideWithObjects() {
