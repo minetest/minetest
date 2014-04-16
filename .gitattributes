@@ -1,2 +1,4 @@
+*     text=auto
 *.cpp diff=cpp
-*.h diff=cpp
+*.h   diff=cpp
+*.png binary
