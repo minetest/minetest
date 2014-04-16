@@ -4,6 +4,7 @@
 *bak*
 tags
 *.vim
+*.o
 *.orig
 *.rej
 
@@ -62,5 +63,4 @@ cmake_install.cmake
 locale/
 *.cbp
 *.layout
-*.o
 

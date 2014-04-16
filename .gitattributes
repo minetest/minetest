@@ -1,2 +1,16 @@
+# Automatically normalize line endings
+* text=auto
+
+
+# C++ Source Code
 *.cpp diff=cpp
 *.h diff=cpp
+
+# Plain Text files
+*.conf text
+*.example text
+*.txt text
+
+# Textures and Images
+*.ico binary
+*.png binary
