@@ -91,5 +91,5 @@ vec4 base = texture2D(baseTexture, uv).rgba;
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		alpha = mix(alpha, 0.0, d);
 	}
-	gl_FragColor = vec4(color.rgb, alpha);
+	gl_FragColor = vec4(col.rgb, alpha);
 }
