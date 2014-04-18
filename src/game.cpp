@@ -1642,8 +1642,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	Hud hud(driver, smgr, guienv, font, text_height,
 			gamedef, player, &local_inventory);
 
-	bool use_weather = g_settings->getBool("weather");
-
 	core::stringw str = L"Minetest [";
 	str += driver->getName();
 	str += "]";
@@ -3111,8 +3109,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			fog_range = 100000*BS;
 		else {
 			fog_range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
-			if(use_weather)
-				fog_range *= (1.5 - 1.4*(float)client.getEnv().getClientMap().getHumidity(pos_i)/100);
 			fog_range = MYMIN(fog_range, (draw_control.farthest_drawn+20)*BS);
 			fog_range *= 0.9;
 		}
@@ -3262,9 +3258,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				<<", "<<(player_position.Y/BS)
 				<<", "<<(player_position.Z/BS)
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
-				<<") (t="<<client.getEnv().getClientMap().getHeat(pos_i)
-				<<"C, h="<<client.getEnv().getClientMap().getHumidity(pos_i)
-				<<"%) (seed = "<<((u64)client.getMapSeed())
+				<<") (seed = "<<((u64)client.getMapSeed())
 				<<")";
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);

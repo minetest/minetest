@@ -714,9 +714,6 @@ function tabbuilder.handle_settings_buttons(fields)
 	if fields["cb_particles"] then
 		engine.setting_set("enable_particles", fields["cb_particles"])
 	end
-	if fields["cb_finite_liquid"] then
-		engine.setting_set("liquid_finite", fields["cb_finite_liquid"])
-	end
 	if fields["cb_bumpmapping"] then
 		engine.setting_set("enable_bumpmapping", fields["cb_bumpmapping"])
 	end
@@ -997,9 +994,6 @@ function tabbuilder.tab_settings()
 					.. dump(engine.setting_getbool("preload_item_visuals"))	.. "]"..
 			"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 					.. dump(engine.setting_getbool("enable_particles"))	.. "]"..
-			"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
-					.. dump(engine.setting_getbool("liquid_finite")) .. "]"..
-
 			"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 					.. dump(engine.setting_getbool("mip_map")) .. "]"..
 			"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"

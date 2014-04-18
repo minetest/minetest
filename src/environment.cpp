@@ -321,7 +321,6 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_recommended_send_interval(0.1),
 	m_max_lag_estimate(0.1)
 {
-	m_use_weather = g_settings->getBool("weather");
 }
 
 ServerEnvironment::~ServerEnvironment()
