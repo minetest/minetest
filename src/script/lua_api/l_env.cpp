@@ -765,7 +765,6 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	return 1;
 }
 
-
 // minetest.transforming_liquid_add(pos)
 int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 {
@@ -773,28 +772,6 @@ int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 
 	v3s16 p0 = read_v3s16(L, 1);
 	env->getMap().transforming_liquid_add(p0);
-	return 1;
-}
-
-// minetest.get_heat(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_heat(lua_State *L)
-{
-	GET_ENV_PTR;
-
-	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().updateBlockHeat(env, pos));
-	return 1;
-}
-
-// minetest.get_humidity(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_get_humidity(lua_State *L)
-{
-	GET_ENV_PTR;
-
-	v3s16 pos = read_v3s16(L, 1);
-	lua_pushnumber(L, env->getServerMap().updateBlockHumidity(env, pos));
 	return 1;
 }
 
@@ -855,8 +832,6 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_path);
 	API_FCT(line_of_sight);
 	API_FCT(transforming_liquid_add);
-	API_FCT(get_heat);
-	API_FCT(get_humidity);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
 }

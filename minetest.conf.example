@@ -93,24 +93,10 @@
 #enable_fog = true
 # Enable a bit lower water surface; disable for speed (not quite optimized)
 #new_style_water = false
-# Constant volume liquids
-#liquid_finite = false
 # Max liquids processed per step
 #liquid_loop_max = 10000
 # Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
-# Relax flowing blocks to source if level near max and N nearby
-#  source blocks, more realistic, but not true constant.
-#  values: 0,1,2,3,4 : 0 - disable, 1 - most aggresive
-#  (for finite liquids)
-#liquid_relax = 2
-# Optimization: faster cave flood (and not true constant)
-#  (for finite liquids)
-#liquid_fast_flood = 1
-# Underground water and lava springs, its infnity sources if liquid_finite enabled
-#underground_springs = 1
-# Enable weather (cold-hot, water freeze-melt). use only with liquid_finite=1
-#weather = false
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
 # Enable smooth lighting with simple ambient occlusion;
