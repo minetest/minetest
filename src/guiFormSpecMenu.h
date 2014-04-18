@@ -220,6 +220,11 @@ public:
 		m_allowclose = value;
 	}
 
+	void enableKeymap(bool value)
+	{
+		m_handlekeymap = value;
+	}
+
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
@@ -295,6 +300,7 @@ protected:
 
 	bool m_allowclose;
 	bool m_lock;
+	bool m_handlekeymap;
 	v2u32 m_lockscreensize;
 
 	bool m_bgfullscreen;
