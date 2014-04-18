@@ -16,6 +16,8 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+-- TODO improve doc                                                           --
+-- TODO code cleanup                                                          --
 -- Generic implementation of a filter/sortable list                           --
 -- Usage:                                                                     --
 -- Filterlist needs to be initialized on creation. To achieve this you need to --
@@ -61,6 +63,20 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 
 	this.m_processed_list = nil
 	this.m_raw_list = this.m_raw_list_fct(this.m_fetch_param)
+
+	this.add_sort_mechanism = filterlist.add_sort_mechanism
+	this.set_filtercriteria = filterlist.set_filtercriteria
+	this.get_filtercriteria = filterlist.get_filtercriteria
+	this.set_sortmode       = filterlist.set_sortmode
+	this.get_list           = filterlist.get_list
+	this.get_raw_list       = filterlist.get_raw_list
+	this.get_raw_element    = filterlist.get_raw_element
+	this.get_raw_index      = filterlist.get_raw_index
+	this.get_current_index  = filterlist.get_current_index
+	this.size               = filterlist.size
+	this.uid_exists_raw     = filterlist.uid_exists_raw
+	this.raw_index_by_uid   = filterlist.raw_index_by_uid
+	this.refresh            = filterlist.refresh
 
 	filterlist.process(this)
 	

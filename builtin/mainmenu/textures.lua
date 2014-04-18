@@ -20,11 +20,11 @@ mm_texture = {}
 
 --------------------------------------------------------------------------------
 function mm_texture.init()
-	mm_texture.defaulttexturedir = engine.get_texturepath() .. DIR_DELIM .. "base" .. 
+	mm_texture.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 	mm_texture.basetexturedir = mm_texture.defaulttexturedir
 	
-	mm_texture.texturepack = engine.setting_get("texture_path")
+	mm_texture.texturepack = core.setting_get("texture_path")
 	
 	mm_texture.gameid = nil
 end
@@ -55,14 +55,14 @@ function mm_texture.reset()
 	
 	mm_texture.clear("header")
 	mm_texture.clear("footer")
-	engine.set_clouds(false)
+	core.set_clouds(false)
 	
 	mm_texture.set_generic("footer")
 	mm_texture.set_generic("header")
 	
 	if not have_bg and
-		engine.setting_getbool("enable_clouds") then
-			engine.set_clouds(true)
+		core.setting_getbool("menu_clouds") then
+			core.set_clouds(true)
 	end
 end
 
@@ -72,7 +72,7 @@ function mm_texture.update_game(gamedetails)
 		return
 	end
 	
-	local have_bg      = false 
+	local have_bg      = false
 	local have_overlay = mm_texture.set_game("overlay",gamedetails)
 	
 	if not have_overlay then
@@ -81,11 +81,11 @@ function mm_texture.update_game(gamedetails)
 	
 	mm_texture.clear("header")
 	mm_texture.clear("footer")
-	engine.set_clouds(false)
+	core.set_clouds(false)
 	
 	if not have_bg and
-		engine.setting_getbool("enable_clouds") then
-			engine.set_clouds(true)
+		core.setting_getbool("menu_clouds") then
+			core.set_clouds(true)
 	end
 	
 	mm_texture.set_game("footer",gamedetails)
@@ -96,24 +96,24 @@ end
 
 --------------------------------------------------------------------------------
 function mm_texture.clear(identifier)
-	engine.set_background(identifier,"")
+	core.set_background(identifier,"")
 end
 
 --------------------------------------------------------------------------------
 function mm_texture.set_generic(identifier)
 	--try texture pack first
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" .. 
+		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
-		if engine.set_background(identifier,path) then
+		if core.set_background(identifier,path) then
 			return true
 		end
 	end
 	
 	if mm_texture.defaulttexturedir ~= nil then
-		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" .. 
+		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
-		if engine.set_background(identifier,path) then
+		if core.set_background(identifier,path) then
 			return true
 		end
 	end
@@ -131,14 +131,14 @@ function mm_texture.set_game(identifier,gamedetails)
 	if mm_texture.texturepack ~= nil then
 		local path = mm_texture.texturepack .. DIR_DELIM ..
 						gamedetails.id .. "_menu_" .. identifier .. ".png"
-		if engine.set_background(identifier,path) then
+		if core.set_background(identifier,path) then
 			return true
 		end
 	end
 	
-	local path = gamedetails.path .. DIR_DELIM .."menu" .. 
+	local path = gamedetails.path .. DIR_DELIM .."menu" ..
 									 DIR_DELIM .. identifier .. ".png"
-	if engine.set_background(identifier,path) then
+	if core.set_background(identifier,path) then
 		return true
 	end
 	
