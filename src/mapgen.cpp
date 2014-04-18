@@ -977,7 +977,7 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
 
 
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax) {
-	bool isliquid, wasliquid, rare;
+	bool isliquid, wasliquid;
 	v3s16 em  = vm->m_area.getExtent();
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {

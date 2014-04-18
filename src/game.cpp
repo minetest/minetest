@@ -2677,7 +2677,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
-		v3s16 pos_i = floatToInt(player_position, BS);
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
