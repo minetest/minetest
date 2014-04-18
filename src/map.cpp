@@ -2754,7 +2754,6 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 }
 
 void ServerMap::prepareBlock(MapBlock *block) {
-	ServerEnvironment *senv = &((Server *)m_gamedef)->getEnv();
 }
 
 s16 ServerMap::findGroundLevel(v2s16 p2d)
