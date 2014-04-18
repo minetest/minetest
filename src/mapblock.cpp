@@ -43,10 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
-		heat(0),
-		humidity(0),
-		heat_last_update(0),
-		humidity_last_update(0),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),
@@ -647,8 +643,8 @@ void MapBlock::serializeNetworkSpecific(std::ostream &os, u16 net_proto_version)
 	if(net_proto_version >= 21){
 		int version = 1;
 		writeU8(os, version);
-		writeF1000(os, heat);
-		writeF1000(os, humidity);
+		writeF1000(os, 0); // deprecated heat
+		writeF1000(os, 0); // deprecated humidity
 	}
 }
 
@@ -764,8 +760,8 @@ void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 		//if(version != 1)
 		//	throw SerializationError("unsupported MapBlock version");
 		if(version >= 1) {
-			heat = readF1000(is);
-			humidity = readF1000(is);
+			readF1000(is); // deprecated heat
+			readF1000(is); // deprecated humidity
 		}
 	}
 	catch(SerializationError &e)

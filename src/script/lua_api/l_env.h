@@ -148,9 +148,6 @@ private:
 	// minetest.transforming_liquid_add(pos)
 	static int l_transforming_liquid_add(lua_State *L);
 
-	static int l_get_heat(lua_State *L);
-	static int l_get_humidity(lua_State *L);
-	
 	// minetest.forceload_block(blockpos)
 	// forceloads a block
 	static int l_forceload_block(lua_State *L);

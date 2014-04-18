@@ -304,7 +304,6 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 
 	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
-	void transformLiquidsFinite(std::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Node metadata
@@ -350,9 +349,6 @@ public:
 
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
-
-	virtual s16 getHeat(v3s16 p);
-	virtual s16 getHumidity(v3s16 p);
 
 protected:
 	friend class LuaVoxelManip;
@@ -503,9 +499,6 @@ public:
 
 	u64 getSeed();
 	s16 getWaterLevel();
-
-	virtual s16 updateBlockHeat(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
-	virtual s16 updateBlockHumidity(ServerEnvironment *env, v3s16 p, MapBlock *block = NULL);
 
 private:
 	// Emerge manager
