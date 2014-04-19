@@ -1666,6 +1666,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(device->run() == false || kill == true)
 			break;
 
+		g_menumgr.step();
+
 		// Time of frame without fps limit
 		float busytime;
 		u32 busytime_u32;

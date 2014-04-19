@@ -58,7 +58,9 @@ public:
 	}
 	virtual ~GUIModalMenu()
 	{
-		m_menumgr->deletingMenu(this);
+		if (m_menumgr != 0) {
+			m_menumgr->deletingMenu(this);
+		}
 	}
 
 	void allowFocusRemoval(bool allow)
@@ -100,7 +102,7 @@ public:
 		// This removes Environment's grab on us
 		Environment->removeFocus(this);
 		m_menumgr->deletingMenu(this);
-		this->remove();
+		m_menumgr = NULL;
 	}
 
 	void removeChildren()

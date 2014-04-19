@@ -1677,7 +1677,7 @@ int main(int argc, char *argv[])
 					infostream<<"Waited for other menus"<<std::endl;
 
 					GUIEngine* temp = new GUIEngine(device, guiroot, &g_menumgr,smgr,&menudata,kill);
-
+					g_menumgr.step();
 					delete temp;
 					//once finished you'll never end up here
 					smgr->clear();

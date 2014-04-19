@@ -44,6 +44,10 @@ extern gui::IGUIStaticText *guiroot;
 class MainMenuManager : public IMenuManager
 {
 public:
+	virtual ~MainMenuManager() {
+		step();
+	}
+
 	virtual void createdMenu(GUIModalMenu *menu)
 	{
 		for(std::list<GUIModalMenu*>::iterator
@@ -83,6 +87,16 @@ public:
 		
 		if(m_stack.size() != 0)
 			m_stack.back()->setVisible(true);
+
+		m_todel.push_back(menu);
+	}
+
+	virtual void step() {
+		while(m_todel.size() > 0) {
+			GUIModalMenu* deleteme = m_todel.front();
+			m_todel.pop_front();
+			deleteme->remove();
+		}
 	}
 
 	// Returns true to prevent further processing
@@ -111,6 +125,7 @@ public:
 	}
 
 	std::list<GUIModalMenu*> m_stack;
+	std::list<GUIModalMenu*> m_todel;
 };
 
 extern MainMenuManager g_menumgr;
