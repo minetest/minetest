@@ -271,25 +271,51 @@ inline u32 getTime(TimePrecision prec)
 	return 0;
 }
 
-#if (defined(linux) || defined(__linux))
+#if defined(linux) || defined(__linux)
+	#include <sys/prctl.h>
 
-#include <sys/prctl.h>
-
-inline void setThreadName(const char* name) {
-	prctl(PR_SET_NAME,name);
-}
+	inline void setThreadName(const char *name) {
+		/* It would be cleaner to do this with pthread_setname_np,
+		 * which was added to glibc in version 2.12, but some major
+		 * distributions are still runing 2.11 and previous versions.
+		 */
+		prctl(PR_SET_NAME, name);
+	}
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-/* BSD doesn't seem to support thread names. If you know about a way 
- * to add this feature please create a pull request.
- * "setproctitle" doesn't work for threadnames.
- */
-inline void setThreadName(const char* name) {}
+	#include <pthread.h>
+
+	inline void setThreadName(const char *name) {
+		pthread_set_name_np(pthread_self(), name);
+	}
+#elif defined(_MSC_VER)
+	typedef struct tagTHREADNAME_INFO {
+		DWORD dwType; // must be 0x1000
+		LPCSTR szName; // pointer to name (in user addr space)
+		DWORD dwThreadID; // thread ID (-1=caller thread)
+		DWORD dwFlags; // reserved for future use, must be zero
+	} THREADNAME_INFO;
+
+	inline void setThreadName(const char *name) {
+		THREADNAME_INFO info;
+		info.dwType = 0x1000;
+		info.szName = name;
+		info.dwThreadID = -1;
+		info.dwFlags = 0;
+		__try {
+			RaiseException(0x406D1388, 0, sizeof(info) / sizeof(DWORD), (DWORD *) &info);
+		} __except (EXCEPTION_CONTINUE_EXECUTION) {}
+	}
+#elif defined(__APPLE__)
+	#include <pthread.h>
+
+	inline void setThreadName(const char *name) {
+		pthread_setname_np(name);
+	}
 #elif defined(_WIN32)
-// threadnames are not supported on windows
-inline void setThreadName(const char* name) {}
+	inline void setThreadName(const char* name) {}
 #else
-#warning "Unknown platform for setThreadName support, you wont have threadname support."
-inline void setThreadName(const char* name) {}
+	#warning "Unrecognized platform, thread names will not be available."
+	inline void setThreadName(const char* name) {}
 #endif
 
 } // namespace porting
