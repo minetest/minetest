@@ -242,7 +242,13 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
 		fs::CreateAllDirs(path);
 		std::ostringstream ss(std::ios_base::binary);
-		ss<<"gameid = "<<gameid<<"\nbackend = sqlite3\n";
+		ss<<"gameid = "<<gameid<<"\nbackend = "
+			#if USE_LEVELDB
+			"leveldb"
+			#else
+			"sqlite3"
+			#endif
+		"\n";
 		fs::safeWriteToFile(worldmt_path, ss.str());
 	}
 	return true;
