@@ -1337,11 +1337,11 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		*/
 		if(peer->isTimedOut(m_timeout))
 		{
-			LOG(derr_con<<m_connection->getDesc()
+			errorstream<<m_connection->getDesc()
 					<<"RunTimeouts(): Peer "<<peer->id
 					<<" has timed out."
 					<<" (source=peer->timeout_counter)"
-					<<std::endl);
+					<<std::endl;
 			// Add peer to the list
 			timeouted_peers.push_back(peer->id);
 			// Don't bother going through the buffers of this one
