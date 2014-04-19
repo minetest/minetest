@@ -105,6 +105,7 @@ void *JThread::GetReturnValue()
 		val = NULL;
 	} else {
 		val = retval;
+	}
 	return val;
 }
 
