@@ -266,7 +266,6 @@ public:
 			} else {
 				keyIsDown.unset(event.KeyInput);
 			}
-			return true;
 		}
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
@@ -305,7 +304,7 @@ public:
 				}
 			}
 		}
-
+		/* always return false in order to continue processing events */
 		return false;
 	}
 
