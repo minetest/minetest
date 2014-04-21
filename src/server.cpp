@@ -1280,8 +1280,9 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 			SendChatMessage(PEER_ID_INEXISTENT,message);
 		}
 	}
-
-	actionstream<<player->getName() <<" joins game. " << std::endl;
+	Address addr = getPeerAddress(player->peer_id);
+	std::string ip_str = addr.serializeString();
+	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
 	/*
 		Print out action
 	*/
