@@ -995,6 +995,7 @@ static void show_deathscreen(FormspecFormSource* current_formspec,
 	std::string formspec =
 		std::string("") +
 		"size[11,5.5,true]"
+		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;You died.]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
 		;
