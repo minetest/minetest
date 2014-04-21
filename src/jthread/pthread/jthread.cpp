@@ -111,7 +111,11 @@ int JThread::Kill()
 		}
 		return ERR_JTHREAD_NOTRUNNING;
 	}
+#ifdef __ANDROID__
+	pthread_kill(threadid, SIGKILL);
+#else
 	pthread_cancel(threadid);
+#endif
 	if (started) {
 		int pthread_join_retval = pthread_join(threadid,&status);
 		assert(pthread_join_retval == 0);

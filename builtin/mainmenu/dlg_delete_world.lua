@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-local function create_world_formspec(dialogdata)
+local function delete_world_formspec(dialogdata)
 
 	local retval =
 		"size[12,6,true]" ..
@@ -27,7 +27,7 @@ local function create_world_formspec(dialogdata)
 	return retval
 end
 
-local function create_world_buttonhandler(this, fields)
+local function delete_world_buttonhandler(this, fields)
 	if fields["world_delete_confirm"] then
 
 		if this.data.delete_index > 0 and
@@ -53,9 +53,9 @@ function create_delete_world_dlg(name_to_del,index_to_del)
 	assert(name_to_del ~= nil and type(name_to_del) == "string" and name_to_del ~= "")
 	assert(index_to_del ~= nil and type(index_to_del) == "number")
 
-	local retval = dialog_create("sp_create_world",
-					create_world_formspec,
-					create_world_buttonhandler,
+	local retval = dialog_create("delete_world",
+					delete_world_formspec,
+					delete_world_buttonhandler,
 					nil)
 	retval.data.delete_name  = name_to_del
 	retval.data.delete_index = index_to_del

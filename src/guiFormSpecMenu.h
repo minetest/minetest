@@ -151,7 +151,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		{
 		}
 		FieldSpec(const std::wstring &name, const std::wstring &label,
-		          const std::wstring &fdeflt, int id) :
+				const std::wstring &fdeflt, int id) :
 			fname(name),
 			flabel(label),
 			fdefault(fdeflt),
@@ -273,6 +273,10 @@ public:
 
 	static bool parseColor(const std::string &value,
 			video::SColor &color, bool quiet);
+
+#ifdef __ANDROID__
+	bool getAndroidUIInput();
+#endif
 
 protected:
 	v2s32 getBasePos() const
@@ -409,6 +413,14 @@ private:
 	clickpos m_doubleclickdetect[2];
 
 	int m_btn_height;
+
+	std::wstring getLabelByID(s32 id);
+	std::wstring getNameByID(s32 id);
+#ifdef __ANDROID__
+	v2s32 m_down_pos;
+	std::wstring m_JavaDialogFieldName;
+#endif
+
 };
 
 class FormspecFormSource: public IFormSource

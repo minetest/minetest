@@ -46,7 +46,7 @@ HTTPFetchRequest::HTTPFetchRequest()
 	request_id = 0;
 	timeout = g_settings->getS32("curl_timeout");
 	connect_timeout = timeout;
-	
+
 	useragent = std::string("Minetest/") + minetest_version_hash + " (" + porting::get_sysinfo() + ")";
 }
 
@@ -259,6 +259,10 @@ struct HTTPFetchOngoing
 					request.extra_headers[i].c_str());
 			}
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, httpheader);
+
+			if (!g_settings->getBool("curl_verify_cert")) {
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
+			}
 		}
 	}
 
@@ -302,7 +306,7 @@ struct HTTPFetchOngoing
 		}
 
 		if (res != CURLE_OK) {
-			infostream<<request.url<<" not found ("
+			errorstream<<request.url<<" not found ("
 				<<curl_easy_strerror(res)<<")"
 				<<" (response code "<<result.response_code<<")"
 				<<std::endl;

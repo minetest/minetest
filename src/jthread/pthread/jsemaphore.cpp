@@ -51,7 +51,15 @@ JSemaphore::JSemaphore() {
 
 JSemaphore::~JSemaphore() {
 	int sem_destroy_retval = sem_destroy(&m_semaphore);
+#ifdef __ANDROID__
+// WORKAROUND for broken bionic semaphore implementation!
+	assert(
+			(sem_destroy_retval == 0) ||
+			(errno == EBUSY)
+		);
+#else
 	assert(sem_destroy_retval == 0);
+#endif
 	UNUSED(sem_destroy_retval);
 }
 

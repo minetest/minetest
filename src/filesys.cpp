@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <errno.h>
 #include <fstream>
 #include "log.h"
+#include "config.h"
 
 namespace fs
 {
@@ -34,8 +35,8 @@ namespace fs
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <malloc.h>
-#include <tchar.h> 
-#include <wchar.h> 
+#include <tchar.h>
+#include <wchar.h>
 
 #define BUFSIZE MAX_PATH
 
@@ -73,12 +74,12 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	// Find the first file in the directory.
 	hFind = FindFirstFile(DirSpec, &FindFileData);
 
-	if (hFind == INVALID_HANDLE_VALUE) 
+	if (hFind == INVALID_HANDLE_VALUE)
 	{
 		retval = (-1);
 		goto Cleanup;
-	} 
-	else 
+	}
+	else
 	{
 		// NOTE:
 		// Be very sure to not include '..' in the results, it will
@@ -91,7 +92,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 			listing.push_back(node);
 
 		// List all the other files in the directory.
-		while (FindNextFile(hFind, &FindFileData) != 0) 
+		while (FindNextFile(hFind, &FindFileData) != 0)
 		{
 			DirListNode node;
 			node.name = FindFileData.cFileName;
@@ -102,7 +103,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 
 		dwError = GetLastError();
 		FindClose(hFind);
-		if (dwError != ERROR_NO_MORE_FILES) 
+		if (dwError != ERROR_NO_MORE_FILES)
 		{
 			errorstream<<"GetDirListing: FindNextFile error. Error is "
 					<<dwError<<std::endl;
@@ -401,7 +402,11 @@ std::string TempPath()
 		compatible with lua's os.tmpname which under the default
 		configuration hardcodes mkstemp("/tmp/lua_XXXXXX").
 	*/
-	return std::string(DIR_DELIM) + "tmp";
+#ifdef __ANDROID__
+	return DIR_DELIM "sdcard" DIR_DELIM PROJECT_NAME DIR_DELIM "tmp";
+#else
+	return DIR_DELIM "tmp";
+#endif
 }
 
 #endif
