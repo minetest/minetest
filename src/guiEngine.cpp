@@ -166,7 +166,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		rect,false,true,0,-1);
 
 	//create formspecsource
-	m_formspecgui = new FormspecFormSource("",&m_formspecgui);
+	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
 	m_menu =
@@ -176,12 +176,13 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 								m_menumanager,
 								0 /* &client */,
 								0 /* gamedef */,
-								m_texture_source);
+								m_texture_source,
+								m_formspecgui,
+								m_buttonhandler,
+								NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
-	m_menu->setFormSource(m_formspecgui);
-	m_menu->setTextDest(m_buttonhandler);
 
 	// Initialize scripting
 

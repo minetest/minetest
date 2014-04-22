@@ -68,20 +68,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
 		InventoryManager *invmgr, IGameDef *gamedef,
-		ISimpleTextureSource *tsrc) :
+		ISimpleTextureSource *tsrc, IFormSource* fsrc, TextDest* tdst,
+		GUIFormSpecMenu** ext_ptr) :
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
 	m_invmgr(invmgr),
 	m_gamedef(gamedef),
 	m_tsrc(tsrc),
-	m_form_src(NULL),
-	m_text_dst(NULL),
 	m_selected_item(NULL),
 	m_selected_amount(0),
 	m_selected_dragging(false),
 	m_tooltip_element(NULL),
 	m_allowclose(true),
-	m_lock(false)
+	m_lock(false),
+	m_form_src(fsrc),
+	m_text_dst(tdst),
+	m_ext_ptr(ext_ptr)
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
@@ -95,8 +97,18 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	removeChildren();
 
 	delete m_selected_item;
-	delete m_form_src;
-	delete m_text_dst;
+
+	if (m_form_src != NULL) {
+		delete m_form_src;
+	}
+	if (m_text_dst != NULL) {
+		delete m_text_dst;
+	}
+
+	if (m_ext_ptr != NULL) {
+		assert(*m_ext_ptr == this);
+		*m_ext_ptr = NULL;
+	}
 }
 
 void GUIFormSpecMenu::removeChildren()

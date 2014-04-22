@@ -122,13 +122,16 @@ struct TextDestPlayerInventory : public TextDest
 struct LocalFormspecHandler : public TextDest
 {
 	LocalFormspecHandler();
-	LocalFormspecHandler(std::string formname) {
+	LocalFormspecHandler(std::string formname) :
+		m_client(0)
+	{
 		m_formname = formname;
 	}
 
-	LocalFormspecHandler(std::string formname,Client *client) {
+	LocalFormspecHandler(std::string formname, Client *client) :
+		m_client(client)
+	{
 		m_formname = formname;
-		m_client = client;
 	}
 
 	void gotText(std::wstring message) {
@@ -167,22 +170,24 @@ struct LocalFormspecHandler : public TextDest
 			}
 		}
 		if (m_formname == "MT_CHAT_MENU") {
+			assert(m_client != 0);
 			if ((fields.find("btn_send") != fields.end()) ||
 					(fields.find("quit") != fields.end())) {
 				if (fields.find("f_text") != fields.end()) {
-					if (m_client != 0) {
-						m_client->typeChatMessage(narrow_to_wide(fields["f_text"]));
-					}
-					else {
-						errorstream << "LocalFormspecHandler::gotText received chat message but m_client is NULL" << std::endl;
-					}
+					m_client->typeChatMessage(narrow_to_wide(fields["f_text"]));
 				}
 				return;
 			}
 		}
 
 		if (m_formname == "MT_DEATH_SCREEN") {
+			assert(m_client != 0);
 			if ((fields.find("btn_respawn") != fields.end())) {
+				m_client->sendRespawn();
+				return;
+			}
+
+			if (fields.find("quit") != fields.end()) {
 				m_client->sendRespawn();
 				return;
 			}
@@ -963,34 +968,47 @@ bool nodePlacementPrediction(Client &client,
 	return false;
 }
 
-static void show_chat_menu(FormspecFormSource* current_formspec,
-		TextDest* current_textdest, IWritableTextureSource* tsrc,
-		IrrlichtDevice * device, Client* client, std::string text)
+static inline void create_formspec_menu(GUIFormSpecMenu** cur_formspec,
+		InventoryManager *invmgr, IGameDef *gamedef,
+		IWritableTextureSource* tsrc, IrrlichtDevice * device,
+		IFormSource* fs_src, TextDest* txt_dest
+		) {
+
+	if (*cur_formspec == 0) {
+		*cur_formspec = new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr,
+				invmgr, gamedef, tsrc, fs_src, txt_dest, cur_formspec );
+		(*cur_formspec)->doPause = false;
+		(*cur_formspec)->drop();
+	}
+	else {
+		(*cur_formspec)->setFormSource(fs_src);
+		(*cur_formspec)->setTextDest(txt_dest);
+	}
+}
+
+static void show_chat_menu(GUIFormSpecMenu** cur_formspec,
+		InventoryManager *invmgr, IGameDef *gamedef,
+		IWritableTextureSource* tsrc, IrrlichtDevice * device,
+		Client* client, std::string text)
 {
 	std::string formspec =
 		"size[11,5.5,true]"
 		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;"  + wide_to_narrow(wstrgettext("Proceed")) + "]"
+		"button_exit[4,3;3,0.5;btn_send;" + wide_to_narrow(wstrgettext("Proceed")) + "]"
 		;
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler
 	 * are deleted by guiFormSpecMenu                     */
-	current_formspec = new FormspecFormSource(formspec,&current_formspec);
-	current_textdest = new LocalFormspecHandler("MT_CHAT_MENU",client);
-	GUIFormSpecMenu *menu =
-			new GUIFormSpecMenu(device, guiroot, -1,
-					&g_menumgr,
-					NULL, NULL, tsrc);
-	menu->doPause = false;
-	menu->setFormSource(current_formspec);
-	menu->setTextDest(current_textdest);
-	menu->drop();
+	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
+	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_CHAT_MENU", client);
+
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst);
 }
 
-static void show_deathscreen(FormspecFormSource* current_formspec,
-		TextDest* current_textdest, IWritableTextureSource* tsrc,
-		IrrlichtDevice * device, Client* client)
+static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
+		InventoryManager *invmgr, IGameDef *gamedef,
+		IWritableTextureSource* tsrc, IrrlichtDevice * device, Client* client)
 {
 	std::string formspec =
 		std::string("") +
@@ -1003,24 +1021,18 @@ static void show_deathscreen(FormspecFormSource* current_formspec,
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler
 	 * are deleted by guiFormSpecMenu                     */
-	current_formspec = new FormspecFormSource(formspec,&current_formspec);
-	current_textdest = new LocalFormspecHandler("MT_DEATH_SCREEN",client);
-	GUIFormSpecMenu *menu =
-			new GUIFormSpecMenu(device, guiroot, -1,
-					&g_menumgr,
-					NULL, NULL, tsrc);
-	menu->doPause = false;
-	menu->setFormSource(current_formspec);
-	menu->setTextDest(current_textdest);
-	menu->drop();
+	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
+	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
+
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
 }
 
 /******************************************************************************/
-static void show_pause_menu(FormspecFormSource* current_formspec,
-		TextDest* current_textdest, IWritableTextureSource* tsrc,
-		IrrlichtDevice * device, bool singleplayermode)
+static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
+		InventoryManager *invmgr, IGameDef *gamedef,
+		IWritableTextureSource* tsrc, IrrlichtDevice * device,
+		bool singleplayermode)
 {
-
 	std::string control_text = wide_to_narrow(wstrgettext("Default Controls:\n"
 			"- WASD: move\n"
 			"- Space: jump/climb\n"
@@ -1046,7 +1058,7 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 					<< wide_to_narrow(wstrgettext("Change Password")) << "]";
 		}
 
-	os 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
 					<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 					<< wide_to_narrow(wstrgettext("Exit to Menu")) << "]";
@@ -1061,14 +1073,10 @@ static void show_pause_menu(FormspecFormSource* current_formspec,
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
 	 * are deleted by guiFormSpecMenu                     */
-	current_formspec = new FormspecFormSource(os.str(),&current_formspec);
-	current_textdest = new LocalFormspecHandler("MT_PAUSE_MENU");
-	GUIFormSpecMenu *menu =
-		new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr, NULL, NULL, tsrc);
-	menu->doPause = true;
-	menu->setFormSource(current_formspec);
-	menu->setTextDest(current_textdest);
-	menu->drop();
+	FormspecFormSource* fs_src = new FormspecFormSource(os.str());
+	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
+
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
 }
 
 /******************************************************************************/
@@ -1080,8 +1088,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	const SubgameSpec &gamespec /* Used for local game */,
 	bool simple_singleplayer_mode)
 {
-	FormspecFormSource* current_formspec = 0;
-	TextDest* current_textdest = 0;
+	GUIFormSpecMenu* current_formspec = 0;
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -1911,34 +1918,29 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			infostream<<"the_game: "
 					<<"Launching inventory"<<std::endl;
 			
-			GUIFormSpecMenu *menu =
-				new GUIFormSpecMenu(device, guiroot, -1,
-					&g_menumgr,
-					&client, gamedef, tsrc);
+			PlayerInventoryFormSource* fs_src = new PlayerInventoryFormSource(&client);
+			TextDest* txt_dst = new TextDestPlayerInventory(&client);
+
+			create_formspec_menu(&current_formspec, &client, gamedef, tsrc, device, fs_src, txt_dst);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
-
-			PlayerInventoryFormSource *src = new PlayerInventoryFormSource(&client);
-			assert(src);
-			menu->doPause = false;
-			menu->setFormSpec(src->getForm(), inventoryloc);
-			menu->setFormSource(src);
-			menu->setTextDest(new TextDestPlayerInventory(&client));
-			menu->drop();
+			current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 		}
 		else if(input->wasKeyDown(EscapeKey))
 		{
-			show_pause_menu(current_formspec, current_textdest, tsrc, device,
+			show_pause_menu(&current_formspec, &client, gamedef, tsrc, device,
 					simple_singleplayer_mode);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
-			show_chat_menu(current_formspec, current_textdest, tsrc, device, &client,"");
+			show_chat_menu(&current_formspec, &client, gamedef, tsrc, device,
+					&client,"");
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
 		{
-			show_chat_menu(current_formspec, current_textdest, tsrc, device, &client,"/");
+			show_chat_menu(&current_formspec, &client, gamedef, tsrc, device,
+					&client,"/");
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_console")))
 		{
@@ -2396,8 +2398,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				}
 				else if(event.type == CE_DEATHSCREEN)
 				{
-					show_deathscreen(current_formspec, current_textdest,
-							tsrc, device, &client);
+					show_deathscreen(&current_formspec, &client, gamedef, tsrc,
+							device, &client);
 
 					chat_backend.addMessage(L"", L"You died.");
 
@@ -2411,29 +2413,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				}
 				else if (event.type == CE_SHOW_FORMSPEC)
 				{
-					if (current_formspec == 0)
-					{
-						/* Create menu */
-						/* Note: FormspecFormSource and TextDestPlayerInventory
-						 * are deleted by guiFormSpecMenu                     */
-						current_formspec = new FormspecFormSource(*(event.show_formspec.formspec),&current_formspec);
-						current_textdest = new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
-						GUIFormSpecMenu *menu =
-								new GUIFormSpecMenu(device, guiroot, -1,
-										&g_menumgr,
-										&client, gamedef, tsrc);
-						menu->doPause = false;
-						menu->setFormSource(current_formspec);
-						menu->setTextDest(current_textdest);
-						menu->drop();
-					}
-					else
-					{
-						assert(current_textdest != 0);
-						/* update menu */
-						current_textdest->setFormName(*(event.show_formspec.formname));
-						current_formspec->setForm(*(event.show_formspec.formspec));
-					}
+					FormspecFormSource* fs_src =
+							new FormspecFormSource(*(event.show_formspec.formspec));
+					TextDestPlayerInventory* txt_dst =
+							new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
+
+					create_formspec_menu(&current_formspec, &client, gamedef,
+							tsrc, device, fs_src, txt_dst);
+
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
@@ -2986,19 +2973,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					InventoryLocation inventoryloc;
 					inventoryloc.setNodeMeta(nodepos);
 					
-					/* Create menu */
+					NodeMetadataFormSource* fs_src = new NodeMetadataFormSource(
+							&client.getEnv().getClientMap(), nodepos);
+					TextDest* txt_dst = new TextDestNodeMetadata(nodepos, &client);
 
-					GUIFormSpecMenu *menu =
-						new GUIFormSpecMenu(device, guiroot, -1,
-							&g_menumgr,
-							&client, gamedef, tsrc);
-					menu->doPause = false;
-					menu->setFormSpec(meta->getString("formspec"),
-							inventoryloc);
-					menu->setFormSource(new NodeMetadataFormSource(
-							&client.getEnv().getClientMap(), nodepos));
-					menu->setTextDest(new TextDestNodeMetadata(nodepos, &client));
-					menu->drop();
+					create_formspec_menu(&current_formspec, &client, gamedef,
+							tsrc, device, fs_src, txt_dst);
+
+					current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 				}
 				// Otherwise report right click to server
 				else
