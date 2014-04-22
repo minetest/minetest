@@ -81,7 +81,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_selected_dragging(false),
 	m_tooltip_element(NULL),
 	m_allowclose(true),
-	m_lock(false)
+	m_lock(false),
+	m_handlekeymap(true)
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
@@ -2282,8 +2283,11 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
 		KeyPress kp(event.KeyInput);
-		if (kp == EscapeKey || kp == getKeySetting("keymap_inventory")
-				|| event.KeyInput.Key==KEY_RETURN)
+		if (
+				(kp == EscapeKey) ||
+				(m_handlekeymap && (kp == getKeySetting("keymap_inventory"))) ||
+				(event.KeyInput.Key == KEY_RETURN)
+			)
 		{
 			gui::IGUIElement *focused = Environment->getFocus();
 			if (focused && isMyChild(focused) &&
@@ -2316,8 +2320,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
 		KeyPress kp(event.KeyInput);
-		if (event.KeyInput.PressedDown && (kp == EscapeKey ||
-			kp == getKeySetting("keymap_inventory")))
+		if (event.KeyInput.PressedDown && (
+				(kp == EscapeKey) ||
+				(m_handlekeymap && (kp == getKeySetting("keymap_inventory")))
+				)
+			)
 		{
 			if (m_allowclose){
 				doPause = false;

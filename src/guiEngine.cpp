@@ -178,6 +178,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 								0 /* gamedef */,
 								m_texture_source);
 
+	m_menu->enableKeymap(false);
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
 	m_menu->setFormSource(m_formspecgui);
