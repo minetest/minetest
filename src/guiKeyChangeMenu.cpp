@@ -211,7 +211,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		offset += v2s32(0, 35);
 	}
 	{
-		s32 option_x = offset.X + 10;
+		s32 option_x = offset.X;
 		s32 option_y = offset.Y;
 		u32 option_w = 200;
 		{
@@ -224,7 +224,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		offset += v2s32(0, 25);
 	}
 	{
-		s32 option_x = offset.X + 10;
+		s32 option_x = offset.X;
 		s32 option_y = offset.Y;
 		u32 option_w = 200;
 		{
@@ -248,7 +248,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			m_command_add = Environment->addButton(rect, this, GUI_ID_KEY_ALIAS_ADD, text );
 			delete[] text;
 		}
-		option_x += 60;
+		option_x += 50;
 		option_w = 50;
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
@@ -259,7 +259,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 	{
-		s32 option_x = offset.X + 10;
+		s32 option_x = offset.X;
 		s32 option_y = offset.Y;
 		u32 option_w = 200;
 		{
@@ -274,7 +274,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		offset += v2s32(0, 35);
 	}
 	{
-		s32 option_x = offset.X + 10;
+		s32 option_x = offset.X;
 		s32 option_y = offset.Y;
 		u32 option_w = 100;
 		{
@@ -297,7 +297,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		offset += v2s32(0, 35);
 	}
 	{
-		s32 option_x = offset.X + 10;
+		s32 option_x = offset.X;
 		s32 option_y = offset.Y;
 		u32 option_w = 100;
 		{
