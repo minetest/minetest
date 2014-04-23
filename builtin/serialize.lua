@@ -112,6 +112,8 @@ function minetest.serialize(x)
 		elseif t=="number"   then return tostring(x)
 		elseif t=="string"   then return string.format("%q", x)
 		elseif t=="boolean"  then return x and "true" or "false"
+		elseif t=="function" then
+			return "loadstring("..string.format("%q", string.dump(x))..")"
 		elseif t=="table" then
 			local acc        = { }
 			local idx_dumped = { }
@@ -164,17 +166,31 @@ end
 -- http://stackoverflow.com/questions/5958818/loading-serialized-data-into-a-table
 --
 
-local function stringtotable(sdata)
+local env = {
+	loadstring = loadstring,
+}
+
+local function noop() end
+
+local safe_env = {
+	loadstring = noop,
+}
+
+local function stringtotable(sdata, safe)
 	if sdata:byte(1) == 27 then return nil, "binary bytecode prohibited" end
 	local f, message = assert(loadstring(sdata))
 	if not f then return nil, message end
-	setfenv(f, table)
+	if safe then
+		setfenv(f, safe_env)
+	else
+		setfenv(f, env)
+	end
 	return f()
 end
 
-function minetest.deserialize(sdata)
+function minetest.deserialize(sdata, safe)
 	local table = {}
-	local okay,results = pcall(stringtotable, sdata)
+	local okay, results = pcall(stringtotable, sdata, safe)
 	if okay then
 		return results
 	end
