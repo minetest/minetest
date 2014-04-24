@@ -10,12 +10,6 @@ print = minetest.debug
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
 
-local errorfct = error
-error = function(text)
-	print(debug.traceback(""))
-	errorfct(text)
-end
-
 -- Load other files
 local modpath = minetest.get_modpath("__builtin")
 dofile(modpath.."/serialize.lua")

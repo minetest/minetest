@@ -2,12 +2,6 @@ print = engine.debug
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
 
-local errorfct = error
-error = function(text)
-	print(debug.traceback(""))
-	errorfct(text)
-end
-
 local scriptpath = engine.get_scriptdir()
 
 mt_color_grey  = "#AAAAAA"
