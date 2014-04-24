@@ -2290,7 +2290,7 @@ Node definition (register_node)
     post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
     paramtype = "none", -- See "Nodes"
     paramtype2 = "none", -- See "Nodes"
-    is_ground_content = false, -- Currently not used for anything
+    is_ground_content = true, -- If false, cavegen will not carve through this
     sunlight_propagates = false, -- If true, sunlight will go infinitely through this
     walkable = true, -- If true, objects collide with node
     pointable = true, -- If true, can be pointed at
