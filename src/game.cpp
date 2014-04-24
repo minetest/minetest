@@ -1077,6 +1077,10 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
 	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
+	
+	if (singleplayermode) {
+		(*cur_formspec)->doPause = true;
+	}
 }
 
 /******************************************************************************/
