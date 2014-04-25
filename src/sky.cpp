@@ -10,6 +10,7 @@
 #include "util/numeric.h" // MYMIN
 #include <cmath>
 #include "settings.h"
+#include "camera.h" // CameraModes
 
 //! constructor
 Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlayer* player):
@@ -577,8 +578,11 @@ void Sky::update(float time_of_day, float time_brightness,
 	if (m_directional_colored_fog) {
 		if (m_horizon_blend() != 0)
 		{
-			// calculate hemisphere value from yaw
-			f32 pointcolor_blend = wrapDegrees_0_360(m_player->getYaw() + 90);
+			// calculate hemisphere value from yaw, (inverted in third person front view)
+			s8 dir_factor = 1;
+			if (m_player->camera_mode > CAMERA_MODE_THIRD)
+				dir_factor = -1;
+			f32 pointcolor_blend = wrapDegrees_0_360(m_player->getYaw()*dir_factor + 90);
 			if (pointcolor_blend > 180)
 				pointcolor_blend = 360 - pointcolor_blend;
 			pointcolor_blend /= 180;
