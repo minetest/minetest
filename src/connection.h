@@ -515,8 +515,9 @@ public:
 	void UpdatePacketTooLateCounter();
 	void UpdateBytesSent(unsigned int bytes,unsigned int packages=1);
 	void UpdateBytesLost(unsigned int bytes);
+	void UpdateBytesReceived(unsigned int bytes);
 
-	void UpdateTimers(float dtime);
+	void UpdateTimers(float dtime, bool legacy_peer);
 
 	const float getCurrentDownloadRateKB()
 		{ JMutexAutoLock lock(m_internal_mutex); return cur_kbps; };
@@ -528,10 +529,17 @@ public:
 	const float getMaxLossRateKB()
 		{ JMutexAutoLock lock(m_internal_mutex); return max_kbps_lost; };
 
+	const float getCurrentIncomingRateKB()
+		{ JMutexAutoLock lock(m_internal_mutex); return cur_incoming_kbps; };
+	const float getMaxIncomingRateKB()
+		{ JMutexAutoLock lock(m_internal_mutex); return max_incoming_kbps; };
+
 	const float getAvgDownloadRateKB()
 		{ JMutexAutoLock lock(m_internal_mutex); return avg_kbps; };
 	const float getAvgLossRateKB()
 		{ JMutexAutoLock lock(m_internal_mutex); return avg_kbps_lost; };
+	const float getAvgIncomingRateKB()
+		{ JMutexAutoLock lock(m_internal_mutex); return avg_incoming_kbps; };
 
 	const unsigned int getWindowSize() const { return window_size; };
 
@@ -551,14 +559,20 @@ private:
 	float packet_loss_counter;
 
 	unsigned int current_bytes_transfered;
+	unsigned int current_bytes_received;
 	unsigned int current_bytes_lost;
 	float max_kbps;
 	float cur_kbps;
 	float avg_kbps;
+	float max_incoming_kbps;
+	float cur_incoming_kbps;
+	float avg_incoming_kbps;
 	float max_kbps_lost;
 	float cur_kbps_lost;
 	float avg_kbps_lost;
 	float bpm_counter;
+
+	unsigned int rate_samples;
 };
 
 class Peer;
@@ -617,7 +631,7 @@ private:
 
 class Connection;
 
-typedef enum rtt_stat_type {
+typedef enum {
 	MIN_RTT,
 	MAX_RTT,
 	AVG_RTT,
@@ -625,6 +639,15 @@ typedef enum rtt_stat_type {
 	MAX_JITTER,
 	AVG_JITTER
 } rtt_stat_type;
+
+typedef enum {
+	CUR_DL_RATE,
+	AVG_DL_RATE,
+	CUR_INC_RATE,
+	AVG_INC_RATE,
+	CUR_LOSS_RATE,
+	AVG_LOSS_RATE,
+} rate_stat_type;
 
 class Peer {
 	public:
@@ -765,6 +788,7 @@ public:
 	friend class PeerHelper;
 	friend class ConnectionReceiveThread;
 	friend class ConnectionSendThread;
+	friend class Connection;
 
 	UDPPeer(u16 a_id, Address a_address, Connection* connection);
 	virtual ~UDPPeer() {};
@@ -1002,6 +1026,7 @@ public:
 	u16 GetPeerID(){ return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);
 	float getPeerStat(u16 peer_id, rtt_stat_type type);
+	float getLocalStat(rate_stat_type type);
 	const u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(u16 peer_id);

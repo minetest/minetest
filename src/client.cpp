@@ -2698,6 +2698,18 @@ float Client::getRTT(void)
 	return m_con.getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
 }
 
+float Client::getCurRate(void)
+{
+	return ( m_con.getLocalStat(con::CUR_INC_RATE) +
+			m_con.getLocalStat(con::CUR_DL_RATE));
+}
+
+float Client::getAvgRate(void)
+{
+	return ( m_con.getLocalStat(con::AVG_INC_RATE) +
+			m_con.getLocalStat(con::AVG_DL_RATE));
+}
+
 // IGameDef interface
 // Under envlock
 IItemDefManager* Client::getItemDefManager()
