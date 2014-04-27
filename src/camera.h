@@ -33,7 +33,7 @@ class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
 
-enum CameraModes {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -133,7 +133,7 @@ public:
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
 	// Warning: This clears the Z buffer.
-	void drawWieldedTool();
+	void drawWieldedTool(irr::core::matrix4* translation=NULL);
 
 private:
 	// Nodes

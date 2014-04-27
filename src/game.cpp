@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
+#include "drawscene.h"
 
 /*
 	Text input system
@@ -1505,7 +1506,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
-	int current_camera_mode = CAMERA_MODE_FIRST; // start in first-person view
+	CameraMode current_camera_mode = CAMERA_MODE_FIRST; // start in first-person view
 
 	/*
 		Clouds
@@ -1597,7 +1598,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	*/
 	u32 drawtime = 0;
 	u32 beginscenetime = 0;
-	u32 scenetime = 0;
 	u32 endscenetime = 0;
 	
 	float recent_turn_speed = 0.0;
@@ -3401,135 +3401,17 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		/*
 			Drawing begins
 		*/
-
 		TimeTaker tt_draw("mainloop: draw");
-		
 		{
 			TimeTaker timer("beginScene");
-			//driver->beginScene(false, true, bgcolor);
-			//driver->beginScene(true, true, bgcolor);
 			driver->beginScene(true, true, skycolor);
 			beginscenetime = timer.stop(true);
 		}
+
 		
-		//timer3.stop();
-	
-		//infostream<<"smgr->drawAll()"<<std::endl;
-		{
-			TimeTaker timer("smgr");
-			smgr->drawAll();
-			
-			if(g_settings->getBool("anaglyph"))
-			{
-				irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
-				irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
-
-				irr::core::matrix4 startMatrix   = camera.getCameraNode()->getAbsoluteTransformation();
-
-				irr::core::vector3df focusPoint  = (camera.getCameraNode()->getTarget() -
-										 camera.getCameraNode()->getAbsolutePosition()).setLength(1) +
-										 camera.getCameraNode()->getAbsolutePosition() ;
-
-				//Left eye...
-				irr::core::vector3df leftEye;
-				irr::core::matrix4   leftMove;
-
-				leftMove.setTranslation( irr::core::vector3df(-g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
-				leftEye=(startMatrix*leftMove).getTranslation();
-
-				//clear the depth buffer, and color
-				driver->beginScene( true, true, irr::video::SColor(0,200,200,255) );
-
-				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_RED;
-				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
-				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
-															 irr::scene::ESNRP_SOLID +
-															 irr::scene::ESNRP_TRANSPARENT +
-															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
-															 irr::scene::ESNRP_SHADOW;
-
-				camera.getCameraNode()->setPosition( leftEye );
-				camera.getCameraNode()->setTarget( focusPoint );
-
-				smgr->drawAll(); // 'smgr->drawAll();' may go here
-
-				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-				if (show_hud)
-					hud.drawSelectionBoxes(hilightboxes);
-
-
-				//Right eye...
-				irr::core::vector3df rightEye;
-				irr::core::matrix4   rightMove;
-
-				rightMove.setTranslation( irr::core::vector3df(g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
-				rightEye=(startMatrix*rightMove).getTranslation();
-
-				//clear the depth buffer
-				driver->clearZBuffer();
-
-				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_GREEN + irr::video::ECP_BLUE;
-				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
-				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
-															 irr::scene::ESNRP_SOLID +
-															 irr::scene::ESNRP_TRANSPARENT +
-															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
-															 irr::scene::ESNRP_SHADOW;
-
-				camera.getCameraNode()->setPosition( rightEye );
-				camera.getCameraNode()->setTarget( focusPoint );
-
-				smgr->drawAll(); // 'smgr->drawAll();' may go here
-
-				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-				if (show_hud)
-					hud.drawSelectionBoxes(hilightboxes);
-
-
-				//driver->endScene();
-
-				driver->getOverrideMaterial().Material.ColorMask=irr::video::ECP_ALL;
-				driver->getOverrideMaterial().EnableFlags=0;
-				driver->getOverrideMaterial().EnablePasses=0;
-
-				camera.getCameraNode()->setPosition( oldPosition );
-				camera.getCameraNode()->setTarget( oldTarget );
-			}
-
-			scenetime = timer.stop(true);
-		}
-		
-		{
-		//TimeTaker timer9("auxiliary drawings");
-		// 0ms
-		
-		//timer9.stop();
-		//TimeTaker //timer10("//timer10");
-		
-		video::SMaterial m;
-		//m.Thickness = 10;
-		m.Thickness = 3;
-		m.Lighting = false;
-		driver->setMaterial(m);
-
-		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-		if((!g_settings->getBool("anaglyph")) && (show_hud))
-		{
-			hud.drawSelectionBoxes(hilightboxes);
-		}
-
-		/*
-			Wielded tool
-		*/
-		if(show_hud &&
-			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			current_camera_mode < CAMERA_MODE_THIRD)
-		{
-			// Warning: This clears the Z buffer.
-			camera.drawWieldedTool();
-		}
+		draw_scene(camera, show_hud, hud, hilightboxes, driver, smgr,
+				screensize, skycolor, current_camera_mode, player, client,
+				guienv);
 
 		/*
 			Post effects
@@ -3544,27 +3426,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(show_profiler_graph)
 		{
 			graph.draw(10, screensize.Y - 10, driver, font);
-		}
-
-		/*
-			Draw crosshair
-		*/
-		if (show_hud)
-			hud.drawCrosshair();
-			
-		} // timer
-
-		//timer10.stop();
-		//TimeTaker //timer11("//timer11");
-
-
-		/*
-			Draw hotbar
-		*/
-		if (show_hud)
-		{
-			hud.drawHotbar(client.getHP(), client.getPlayerItem(),
-					client.getBreath());
 		}
 
 		/*
@@ -3589,18 +3450,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(player->hurt_tilt_timer < 0)
 				player->hurt_tilt_strength = 0;
 		}
-
-		/*
-			Draw lua hud items
-		*/
-		if (show_hud)
-			hud.drawLuaElements();
-
-		/*
-			Draw gui
-		*/
-		// 0-1ms
-		guienv->drawAll();
 
 		/*
 			End scene
@@ -3713,5 +3562,3 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		<< driver-> getMaterialRendererCount ()
 		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;
 }
-
-

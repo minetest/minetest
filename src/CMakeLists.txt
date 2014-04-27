@@ -460,6 +460,7 @@ set(minetest_SRCS
 	guiEngine.cpp
 	guiFileSelectMenu.cpp
 	convert_json.cpp
+	drawscene.cpp
 	${minetest_SCRIPT_SRCS}
 )
 

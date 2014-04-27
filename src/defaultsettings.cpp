@@ -56,8 +56,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_camera_mode", "KEY_F7");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
-	settings->setDefault("anaglyph", "false");
-	settings->setDefault("anaglyph_strength", "0.1");
+	settings->setDefault("3d_mode", "none");
+	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
