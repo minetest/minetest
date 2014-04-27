@@ -8,7 +8,7 @@ local register_item_raw = minetest.register_item_raw
 minetest.register_item_raw = nil
 
 local register_alias_raw = minetest.register_alias_raw
-minetest.register_item_raw = nil
+minetest.register_alias_raw = nil
 
 --
 -- Item / entity / ABM registration functions
@@ -406,4 +406,5 @@ minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
 minetest.registered_on_crafts, minetest.register_on_craft = make_registration()
 minetest.registered_craft_predicts, minetest.register_craft_predict = make_registration()
 minetest.registered_on_protection_violation, minetest.register_on_protection_violation = make_registration()
+minetest.registered_on_item_eats, minetest.register_on_item_eat = make_registration()
 
