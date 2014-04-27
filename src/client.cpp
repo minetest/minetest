@@ -51,6 +51,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "version.h"
+#include "drawscene.h"
+
+extern gui::IGUIEnvironment* guienv;
 
 /*
 	QueuedMeshUpdate
@@ -2648,10 +2651,6 @@ float Client::mediaReceiveProgress()
 		return 1.0; // downloader only exists when not yet done
 }
 
-void draw_load_screen(const std::wstring &text,
-		IrrlichtDevice* device, gui::IGUIFont* font,
-		float dtime=0 ,int percent=0, bool clouds=true);
-
 void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
@@ -2680,7 +2679,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
 		wchar_t* text = wgettext("Item textures...");
-		draw_load_screen(text,device,font,0,0);
+		draw_load_screen(text, device, guienv, font, 0, 0);
 		std::set<std::string> names = m_itemdef->getAll();
 		size_t size = names.size();
 		size_t count = 0;
@@ -2693,7 +2692,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 			count++;
 			percent = count*100/size;
 			if (count%50 == 0) // only update every 50 item
-				draw_load_screen(text,device,font,0,percent);
+				draw_load_screen(text, device, guienv, font, 0, percent);
 		}
 		delete[] text;
 	}

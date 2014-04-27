@@ -13,7 +13,7 @@
 #include "camera.h" // CameraModes
 
 //! constructor
-Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlayer* player):
+Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
 		scene::ISceneNode(parent, mgr, id),
 		m_visible(true),
 		m_fallback_bg_color(255,255,255,255),
@@ -22,8 +22,7 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlay
 		m_cloud_brightness(0.5),
 		m_bgcolor_bright_f(1,1,1,1),
 		m_skycolor_bright_f(1,1,1,1),
-		m_cloudcolor_bright_f(1,1,1,1),
-		m_player(player)
+		m_cloudcolor_bright_f(1,1,1,1)
 {
 	setAutomaticCulling(scene::EAC_OFF);
 	Box.MaxEdge.set(0,0,0);
@@ -66,14 +65,14 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlay
 		m_materials[3].setTexture(0, m_sun_texture);
 		m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		if (m_sun_tonemap)
-			m_materials[3].Lighting = true;		
+			m_materials[3].Lighting = true;
 	}
 	if (m_moon_texture){
 		m_materials[4] = mat;
 		m_materials[4].setTexture(0, m_moon_texture);
 		m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		if (m_moon_tonemap)
-			m_materials[4].Lighting = true;		
+			m_materials[4].Lighting = true;
 	}
 
 	for(u32 i=0; i<SKY_STAR_COUNT; i++){
@@ -161,20 +160,20 @@ void Sky::render()
 		video::SColor mooncolor2 = mooncolor2_f.toSColor();
 
 		// Calculate offset normalized to the X dimension of a 512x1 px tonemap
-		float offset=(1.0-fabs(sin((m_time_of_day - 0.5)*irr::core::PI)))*511;       
+		float offset=(1.0-fabs(sin((m_time_of_day - 0.5)*irr::core::PI)))*511;
 
 		if (m_sun_tonemap){
 			u8 * texels = (u8 *)m_sun_tonemap->lock();
 			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
 			video::SColor texel_color (255,texel->getRed(),texel->getGreen(), texel->getBlue());
-			m_sun_tonemap->unlock();				
+			m_sun_tonemap->unlock();
 			m_materials[3].EmissiveColor = texel_color;
 		}
 		if (m_moon_tonemap){
 			u8 * texels = (u8 *)m_moon_tonemap->lock();
 			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
 			video::SColor texel_color (255,texel->getRed(),texel->getGreen(), texel->getBlue());
-			m_moon_tonemap->unlock();				
+			m_moon_tonemap->unlock();
 			m_materials[4].EmissiveColor = texel_color;
 		}
 
@@ -263,7 +262,7 @@ void Sky::render()
 		}
 
 		// Draw sun
-		if(wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85){	
+		if(wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85){
 			if (!m_sun_texture){
 				driver->setMaterial(m_materials[1]);
 				float d = sunsize * 1.7;
@@ -411,7 +410,7 @@ void Sky::render()
 					vertices[i].Pos.rotateXZBy(-90);
 					vertices[i].Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
 				}
-				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);		
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 		}
 
@@ -485,7 +484,8 @@ void Sky::render()
 }
 
 void Sky::update(float time_of_day, float time_brightness,
-		float direct_brightness, bool sunlight_seen)
+		float direct_brightness, bool sunlight_seen,
+		CameraMode cam_mode, float yaw, float pitch)
 {
 	// Stabilize initial brightness and color values by flooding updates
 	if(m_first_update){
@@ -496,7 +496,7 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_first_update = false;
 		for(u32 i=0; i<100; i++){
 			update(time_of_day, time_brightness, direct_brightness,
-					sunlight_seen);
+					sunlight_seen, cam_mode, yaw, pitch);
 		}
 		return;
 	}
@@ -580,16 +580,16 @@ void Sky::update(float time_of_day, float time_brightness,
 		{
 			// calculate hemisphere value from yaw, (inverted in third person front view)
 			s8 dir_factor = 1;
-			if (m_player->camera_mode > CAMERA_MODE_THIRD)
+			if (cam_mode > CAMERA_MODE_THIRD)
 				dir_factor = -1;
-			f32 pointcolor_blend = wrapDegrees_0_360(m_player->getYaw()*dir_factor + 90);
+			f32 pointcolor_blend = wrapDegrees_0_360( yaw*dir_factor + 90);
 			if (pointcolor_blend > 180)
 				pointcolor_blend = 360 - pointcolor_blend;
 			pointcolor_blend /= 180;
 			// bound view angle to determine where transition starts and ends
 			pointcolor_blend = rangelim(1 - pointcolor_blend * 1.375, 0, 1 / 1.375) * 1.375;
 			// combine the colors when looking up or down, otherwise turning looks weird
-			pointcolor_blend += (0.5 - pointcolor_blend) * (1 - MYMIN((90 - std::abs(m_player->getPitch())) / 90 * 1.5, 1));
+			pointcolor_blend += (0.5 - pointcolor_blend) * (1 - MYMIN((90 - std::abs(pitch)) / 90 * 1.5, 1));
 			// invert direction to match where the sun and moon are rising
 			if (m_time_of_day > 0.5)
 				pointcolor_blend = 1 - pointcolor_blend;

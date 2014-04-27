@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
+#include "camera.h"
 #include <set>
 #include <map>
 
@@ -126,7 +127,7 @@ public:
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
 			int oldvalue, bool *sunlight_seen_result);
 
-	void renderPostFx();
+	void renderPostFx(CameraMode cam_mode);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);

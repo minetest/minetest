@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include <ISceneNode.h>
-#include "localplayer.h"
+#include "camera.h"
 
 #ifndef SKY_HEADER
 #define SKY_HEADER
@@ -32,7 +32,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id, LocalPlayer* player);
+	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
 
 	virtual void OnRegisterSceneNode();
 
@@ -50,7 +50,8 @@ public:
 	{ return SKY_MATERIAL_COUNT; }
 
 	void update(float m_time_of_day, float time_brightness,
-			float direct_brightness, bool sunlight_seen);
+			float direct_brightness, bool sunlight_seen, CameraMode cam_mode,
+			float yaw, float pitch);
 	
 	float getBrightness(){ return m_brightness; }
 
@@ -126,7 +127,6 @@ private:
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
 	video::S3DVertex m_star_vertices[SKY_STAR_COUNT*4];
-	LocalPlayer* m_player;
 	video::ITexture* m_sun_texture;
 	video::ITexture* m_moon_texture;
 	video::ITexture* m_sun_tonemap;

@@ -84,7 +84,8 @@ void SmoothTranslator::update(v3f vect_new, bool is_end_position, float update_i
 	aim_is_end = is_end_position;
 	vect_old = vect_show;
 	vect_aim = vect_new;
-	if(update_interval > 0){
+	if(update_interval > 0)
+	{
 		anim_time = update_interval;
 	} else {
 		if(anim_time < 0.001 || anim_time > 1.0)
@@ -582,8 +583,10 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		ClientActiveObject::registerType(getType(), create);
 }
 
-bool GenericCAO::getCollisionBox(aabb3f *toset) {
-	if (m_prop.physical) {
+bool GenericCAO::getCollisionBox(aabb3f *toset)
+{
+	if (m_prop.physical)
+	{
 		//update collision box
 		toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
 		toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
@@ -597,7 +600,8 @@ bool GenericCAO::getCollisionBox(aabb3f *toset) {
 	return false;
 }
 
-bool GenericCAO::collideWithObjects() {
+bool GenericCAO::collideWithObjects()
+{
 	return m_prop.collideWithObjects;
 }
 
@@ -635,7 +639,8 @@ void GenericCAO::initialize(const std::string &data)
 		return;
 	}
 
-	for(int i=0; i<num_messages; i++){
+	for(int i=0; i<num_messages; i++)
+	{
 		std::string message = deSerializeLongString(is);
 		processMessage(message);
 	}
@@ -643,10 +648,17 @@ void GenericCAO::initialize(const std::string &data)
 	pos_translator.init(m_position);
 	updateNodePos();
 
-	if(m_is_player){
+	if(m_is_player)
+	{
 		Player *player = m_env->getPlayer(m_name.c_str());
-		if(player && player->isLocal()){
+		if(player && player->isLocal())
+		{
 			m_is_local_player = true;
+			m_is_visible = false;
+			LocalPlayer* localplayer = dynamic_cast<LocalPlayer*>(player);
+
+			assert( localplayer != NULL );
+			localplayer->setCAO(this);
 		}
 		m_env->addPlayerName(m_name.c_str());
 	}
@@ -654,7 +666,8 @@ void GenericCAO::initialize(const std::string &data)
 
 GenericCAO::~GenericCAO()
 {
-	if(m_is_player){
+	if(m_is_player)
+	{
 		m_env->removePlayerName(m_name.c_str());
 	}
 }
@@ -668,7 +681,8 @@ core::aabbox3d<f32>* GenericCAO::getSelectionBox()
 
 v3f GenericCAO::getPosition()
 {
-	if(getParent() != NULL){
+	if(getParent() != NULL)
+	{
 		if(m_meshnode)
 			return m_meshnode->getAbsolutePosition();
 		if(m_animated_meshnode)
@@ -711,9 +725,12 @@ ClientActiveObject* GenericCAO::getParent()
 	ClientActiveObject *obj = NULL;
 	for(std::vector<core::vector2d<int> >::const_iterator cii = m_env->attachment_list.begin(); cii != m_env->attachment_list.end(); cii++)
 	{
-		if(cii->X == getId()){ // This ID is our child
-			if(cii->Y > 0){ // A parent ID exists for our child
-				if(cii->X != cii->Y){ // The parent and child ID are not the same
+		if(cii->X == getId()) // This ID is our child
+		{
+			if(cii->Y > 0) // A parent ID exists for our child
+			{
+				if(cii->X != cii->Y) // The parent and child ID are not the same
+				{
 					obj = m_env->getActiveObject(cii->Y);
 				}
 			}
@@ -730,18 +747,21 @@ void GenericCAO::removeFromScene(bool permanent)
 	if(permanent) // Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 	{
 		// Detach this object's children
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
+				ii != m_env->attachment_list.end(); ii++)
 		{
 			if(ii->Y == getId()) // Is a child of our object
 			{
 				ii->Y = 0;
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+				// Get the object of the child
+				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
 				if(obj)
 					obj->setAttachments();
 			}
 		}
 		// Delete this object from the attachments list
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
+				ii != m_env->attachment_list.end(); ii++)
 		{
 			if(ii->X == getId()) // Is our object
 			{
@@ -751,15 +771,18 @@ void GenericCAO::removeFromScene(bool permanent)
 		}
 	}
 
-	if(m_meshnode){
+	if(m_meshnode)
+	{
 		m_meshnode->remove();
 		m_meshnode = NULL;
 	}
-	if(m_animated_meshnode){
+	if(m_animated_meshnode)
+	{
 		m_animated_meshnode->remove();
 		m_animated_meshnode = NULL;
 	}
-	if(m_spritenode){
+	if(m_spritenode)
+	{
 		m_spritenode->remove();
 		m_spritenode = NULL;
 	}
@@ -781,7 +804,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 	//video::IVideoDriver* driver = smgr->getVideoDriver();
 
-	if(m_prop.visual == "sprite"){
+	if(m_prop.visual == "sprite")
+	{
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(
 				NULL, v2f(1, 1), v3f(0,0,0), -1);
@@ -801,8 +825,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 					txs, tys, 0, 0);
 		}
 	}
-	else if(m_prop.visual == "upright_sprite")
-	{
+	else if(m_prop.visual == "upright_sprite") {
 		scene::SMesh *mesh = new scene::SMesh();
 		double dx = BS*m_prop.visual_size.X/2;
 		double dy = BS*m_prop.visual_size.Y/2;
@@ -856,7 +879,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		// This is needed for changing the texture in the future
 		m_meshnode->setReadOnlyMaterials(true);
 	}
-	else if(m_prop.visual == "cube"){
+	else if(m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
@@ -873,7 +896,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	}
-	else if(m_prop.visual == "mesh"){
+	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
 		scene::IAnimatedMesh *mesh = m_gamedef->getMesh(m_prop.mesh);
 		if(mesh)
@@ -895,7 +918,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	}
-	else if(m_prop.visual == "wielditem"){
+	else if(m_prop.visual == "wielditem") {
 		infostream<<"GenericCAO::addToScene(): node"<<std::endl;
 		infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
 		if(m_prop.textures.size() >= 1){
@@ -949,7 +972,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 void GenericCAO::updateLight(u8 light_at_pos)
 {
 	u8 li = decode_light(light_at_pos);
-	if(li != m_last_light){
+	if(li != m_last_light)
+	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
 		if(m_meshnode)
@@ -972,19 +996,22 @@ void GenericCAO::updateNodePos()
 		return;
 
 	v3s16 camera_offset = m_env->getCameraOffset();
-	if(m_meshnode){
+	if(m_meshnode)
+	{
 		m_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 		v3f rot = m_meshnode->getRotation();
 		rot.Y = -m_yaw;
 		m_meshnode->setRotation(rot);
 	}
-	if(m_animated_meshnode){
+	if(m_animated_meshnode)
+	{
 		m_animated_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 		v3f rot = m_animated_meshnode->getRotation();
 		rot.Y = -m_yaw;
 		m_animated_meshnode->setRotation(rot);
 	}
-	if(m_spritenode){
+	if(m_spritenode)
+	{
 		m_spritenode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
 	}
 }
@@ -992,13 +1019,14 @@ void GenericCAO::updateNodePos()
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
 	// Handel model of local player instantly to prevent lags
-	if(m_is_local_player) {
+	if(m_is_local_player)
+	{
 		LocalPlayer *player = m_env->getLocalPlayer();
 
-		if (player->camera_mode > CAMERA_MODE_FIRST) {
+		if (m_is_visible)
+		{
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
-			m_is_visible = true;
 			m_position = player->getPosition() + v3f(0,BS,0);
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
@@ -1026,7 +1054,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			if(controls.sneak && walking)
 				new_speed /= 2;
 
-			if(walking && (controls.LMB || controls.RMB)) {
+			if(walking && (controls.LMB || controls.RMB))
+			{
 				new_anim = player->local_animations[3];
 				player->last_animation = WD_ANIM;
 			} else if(walking) {
@@ -1039,7 +1068,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Apply animations if input detected and not attached
 			// or set idle animation
-			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached) {
+			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached)
+			{
 				allow_update = true;
 				m_animation_range = new_anim;
 				m_animation_speed = new_speed;
@@ -1047,36 +1077,42 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			} else {
 				player->last_animation = NO_ANIM;
 
-				if (old_anim != NO_ANIM) {
+				if (old_anim != NO_ANIM)
+				{
 					m_animation_range = player->local_animations[0];
 					updateAnimation();
 				}
 			}
 
 			// Update local player animations
-			if ((player->last_animation != old_anim || m_animation_speed != old_anim_speed) &&
+			if ((player->last_animation != old_anim ||
+				m_animation_speed != old_anim_speed) &&
 				player->last_animation != NO_ANIM && allow_update)
 					updateAnimation();
 
-		} else {
-			m_is_visible = false;
 		}
 	}
 
 	if(m_visuals_expired && m_smgr && m_irr){
 		m_visuals_expired = false;
 
-		// Attachments, part 1: All attached objects must be unparented first, or Irrlicht causes a segmentation fault
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+		// Attachments, part 1: All attached objects must be unparented first,
+		// or Irrlicht causes a segmentation fault
+		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
+				ii != m_env->attachment_list.end(); ii++)
 		{
 			if(ii->Y == getId()) // This is a child of our parent
 			{
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+				// Get the object of the child
+				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
 				if(obj)
 				{
-					scene::IMeshSceneNode *m_child_meshnode = obj->getMeshSceneNode();
-					scene::IAnimatedMeshSceneNode *m_child_animated_meshnode = obj->getAnimatedMeshSceneNode();
-					scene::IBillboardSceneNode *m_child_spritenode = obj->getSpriteSceneNode();
+					scene::IMeshSceneNode *m_child_meshnode
+							= obj->getMeshSceneNode();
+					scene::IAnimatedMeshSceneNode *m_child_animated_meshnode
+							= obj->getAnimatedMeshSceneNode();
+					scene::IBillboardSceneNode *m_child_spritenode
+							= obj->getSpriteSceneNode();
 					if(m_child_meshnode)
 						m_child_meshnode->setParent(m_smgr->getRootSceneNode());
 					if(m_child_animated_meshnode)
@@ -1091,11 +1127,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
+				ii != m_env->attachment_list.end(); ii++)
 		{
 			if(ii->Y == getId()) // This is a child of our parent
 			{
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X); // Get the object of the child
+				// Get the object of the child
+				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
 				if(obj)
 					obj->setAttachments();
 			}
@@ -1126,12 +1164,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			player->overridePosition = getParent()->getPosition();
 			m_env->getLocalPlayer()->parent = getParent();
 		}
-	}
-	else
-	{
+	} else {
 		v3f lastpos = pos_translator.vect_show;
 
-		if(m_prop.physical){
+		if(m_prop.physical)
+		{
 			core::aabbox3d<f32> box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
@@ -1156,16 +1193,19 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		} else {
 			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
-			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+			pos_translator.update(m_position, pos_translator.aim_is_end,
+					pos_translator.anim_time);
 			pos_translator.translate(dtime);
 			updateNodePos();
 		}
 
 		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
 		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS){
+		if(m_step_distance_counter > 1.5*BS)
+		{
 			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound){
+			if(!m_is_local_player && m_prop.makes_footstep_sound)
+			{
 				INodeDefManager *ndef = m_gamedef->ndef();
 				v3s16 p = floatToInt(getPosition() + v3f(0,
 						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
@@ -1177,7 +1217,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 
 	m_anim_timer += dtime;
-	if(m_anim_timer >= m_anim_framelength){
+	if(m_anim_timer >= m_anim_framelength)
+	{
 		m_anim_timer -= m_anim_framelength;
 		m_anim_frame++;
 		if(m_anim_frame >= m_anim_num_frames)
@@ -1186,28 +1227,33 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 	updateTexturePos();
 
-	if(m_reset_textures_timer >= 0){
+	if(m_reset_textures_timer >= 0)
+	{
 		m_reset_textures_timer -= dtime;
 		if(m_reset_textures_timer <= 0){
 			m_reset_textures_timer = -1;
 			updateTextures("");
 		}
 	}
-	if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001){
+	if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001)
+	{
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}
 
 	if (getParent() == NULL && m_prop.automatic_face_movement_dir &&
-			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)){
-		m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI + m_prop.automatic_face_movement_dir_offset;
+			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001))
+	{
+		m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI
+				+ m_prop.automatic_face_movement_dir_offset;
 		updateNodePos();
 	}
 }
 
 void GenericCAO::updateTexturePos()
 {
-	if(m_spritenode){
+	if(m_spritenode)
+	{
 		scene::ICameraSceneNode* camera =
 				m_spritenode->getSceneManager()->getActiveCamera();
 		if(!camera)
@@ -1226,7 +1272,8 @@ void GenericCAO::updateTexturePos()
 			else if(cam_to_entity.Y < -0.75)
 				col += 4;
 			else{
-				float mob_dir = atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
+				float mob_dir =
+						atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
 				float dir = mob_dir - m_yaw;
 				dir = wrapDegrees_180(dir);
 				//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
@@ -1291,7 +1338,8 @@ void GenericCAO::updateTextures(const std::string &mod)
 	{
 		if(m_prop.visual == "mesh")
 		{
-			for (u32 i = 0; i < m_prop.textures.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
+			for (u32 i = 0; i < m_prop.textures.size() &&
+					i < m_animated_meshnode->getMaterialCount(); ++i)
 			{
 				std::string texturestring = m_prop.textures[i];
 				if(texturestring == "")
@@ -1310,11 +1358,15 @@ void GenericCAO::updateTextures(const std::string &mod)
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 
-				m_animated_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				m_animated_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				m_animated_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				m_animated_meshnode->getMaterial(i)
+						.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+				m_animated_meshnode->getMaterial(i)
+						.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+				m_animated_meshnode->getMaterial(i)
+						.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
-			for (u32 i = 0; i < m_prop.colors.size() && i < m_animated_meshnode->getMaterialCount(); ++i)
+			for (u32 i = 0; i < m_prop.colors.size() &&
+			i < m_animated_meshnode->getMaterialCount(); ++i)
 			{
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1436,7 +1488,10 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
+	for(std::map<std::string,
+			core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin();
+			ii != m_bone_position.end(); ++ii)
+	{
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
 		v3f bone_rot = (*ii).second.Y;
@@ -1451,8 +1506,14 @@ void GenericCAO::updateBonePosition()
 	
 void GenericCAO::updateAttachments()
 {
-	m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
-	m_is_visible = !m_attached_to_local; // Objects attached to the local player should always be hidden
+
+	// localplayer itself can't be attached to localplayer
+	if (!m_is_local_player)
+	{
+		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+		// Objects attached to the local player should always be hidden
+		m_is_visible = !m_attached_to_local;
+	}
 
 	if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
 	{
@@ -1503,12 +1564,17 @@ void GenericCAO::updateAttachments()
 
 		scene::IBoneSceneNode *parent_bone = NULL;
 		if(parent_animated_mesh && m_attachment_bone != "")
-			parent_bone = parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
-
-		// The spaghetti code below makes sure attaching works if either the parent or child is a spritenode, meshnode, or animatedmeshnode
+		{
+			parent_bone =
+					parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
+		}
+		// The spaghetti code below makes sure attaching works if either the
+		// parent or child is a spritenode, meshnode, or animatedmeshnode
 		// TODO: Perhaps use polymorphism here to save code duplication
-		if(m_meshnode){
-			if(parent_bone){
+		if(m_meshnode)
+		{
+			if(parent_bone)
+			{
 				m_meshnode->setParent(parent_bone);
 				m_meshnode->setPosition(m_attachment_position);
 				m_meshnode->setRotation(m_attachment_rotation);
@@ -1516,19 +1582,20 @@ void GenericCAO::updateAttachments()
 			}
 			else
 			{
-				if(parent_mesh){
+				if(parent_mesh)
+				{
 					m_meshnode->setParent(parent_mesh);
 					m_meshnode->setPosition(m_attachment_position);
 					m_meshnode->setRotation(m_attachment_rotation);
 					m_meshnode->updateAbsolutePosition();
 				}
-				else if(parent_animated_mesh){
+				else if(parent_animated_mesh) {
 					m_meshnode->setParent(parent_animated_mesh);
 					m_meshnode->setPosition(m_attachment_position);
 					m_meshnode->setRotation(m_attachment_rotation);
 					m_meshnode->updateAbsolutePosition();
 				}
-				else if(parent_sprite){
+				else if(parent_sprite) {
 					m_meshnode->setParent(parent_sprite);
 					m_meshnode->setPosition(m_attachment_position);
 					m_meshnode->setRotation(m_attachment_rotation);
@@ -1536,8 +1603,10 @@ void GenericCAO::updateAttachments()
 				}
 			}
 		}
-		if(m_animated_meshnode){
-			if(parent_bone){
+		if(m_animated_meshnode)
+		{
+			if(parent_bone)
+			{
 				m_animated_meshnode->setParent(parent_bone);
 				m_animated_meshnode->setPosition(m_attachment_position);
 				m_animated_meshnode->setRotation(m_attachment_rotation);
@@ -1545,19 +1614,18 @@ void GenericCAO::updateAttachments()
 			}
 			else
 			{
-				if(parent_mesh){
+				if(parent_mesh)
+				{
 					m_animated_meshnode->setParent(parent_mesh);
 					m_animated_meshnode->setPosition(m_attachment_position);
 					m_animated_meshnode->setRotation(m_attachment_rotation);
 					m_animated_meshnode->updateAbsolutePosition();
-				}
-				else if(parent_animated_mesh){
+				} else if(parent_animated_mesh) {
 					m_animated_meshnode->setParent(parent_animated_mesh);
 					m_animated_meshnode->setPosition(m_attachment_position);
 					m_animated_meshnode->setRotation(m_attachment_rotation);
 					m_animated_meshnode->updateAbsolutePosition();
-				}
-				else if(parent_sprite){
+				} else if(parent_sprite) {
 					m_animated_meshnode->setParent(parent_sprite);
 					m_animated_meshnode->setPosition(m_attachment_position);
 					m_animated_meshnode->setRotation(m_attachment_rotation);
@@ -1565,28 +1633,29 @@ void GenericCAO::updateAttachments()
 				}
 			}
 		}
-		if(m_spritenode){
-			if(parent_bone){
+		if(m_spritenode)
+		{
+			if(parent_bone)
+			{
 				m_spritenode->setParent(parent_bone);
 				m_spritenode->setPosition(m_attachment_position);
 				m_spritenode->setRotation(m_attachment_rotation);
 				m_spritenode->updateAbsolutePosition();
-			}
-			else
-			{
-				if(parent_mesh){
+			} else {
+				if(parent_mesh)
+				{
 					m_spritenode->setParent(parent_mesh);
 					m_spritenode->setPosition(m_attachment_position);
 					m_spritenode->setRotation(m_attachment_rotation);
 					m_spritenode->updateAbsolutePosition();
 				}
-				else if(parent_animated_mesh){
+				else if(parent_animated_mesh) {
 					m_spritenode->setParent(parent_animated_mesh);
 					m_spritenode->setPosition(m_attachment_position);
 					m_spritenode->setRotation(m_attachment_rotation);
 					m_spritenode->updateAbsolutePosition();
 				}
-				else if(parent_sprite){
+				else if(parent_sprite) {
 					m_spritenode->setParent(parent_sprite);
 					m_spritenode->setPosition(m_attachment_position);
 					m_spritenode->setRotation(m_attachment_rotation);
@@ -1649,7 +1718,8 @@ void GenericCAO::processMessage(const std::string &data)
 		if(getParent() != NULL) // Just in case
 			return;
 
-		if(do_interpolate){
+		if(do_interpolate)
+		{
 			if(!m_prop.physical)
 				pos_translator.update(m_position, is_end_position, update_interval);
 		} else {
@@ -1657,13 +1727,11 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 		updateNodePos();
 	}
-	else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD)
-	{
+	else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 		updateTextures(mod);
 	}
-	else if(cmd == GENERIC_CMD_SET_SPRITE)
-	{
+	else if(cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
 		int num_frames = readU16(is);
 		float framelength = readF1000(is);
@@ -1676,8 +1744,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateTexturePos();
 	}
-	else if(cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE)
-	{
+	else if(cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
 		float override_speed = readF1000(is);
 		float override_jump = readF1000(is);
 		float override_gravity = readF1000(is);
@@ -1696,8 +1763,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_sneak_glitch = sneak_glitch;
 		}
 	}
-	else if(cmd == GENERIC_CMD_SET_ANIMATION)
-	{
+	else if(cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
 		v2f range = readV2F1000(is);
 		if (!m_is_local_player) {
@@ -1707,7 +1773,8 @@ void GenericCAO::processMessage(const std::string &data)
 			updateAnimation();
 		} else {
 			LocalPlayer *player = m_env->getLocalPlayer();
-			if(player->last_animation == NO_ANIM) {
+			if(player->last_animation == NO_ANIM)
+			{
 				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
 				m_animation_speed = readF1000(is);
 				m_animation_blend = readF1000(is);
@@ -1715,7 +1782,8 @@ void GenericCAO::processMessage(const std::string &data)
 			// update animation only if local animations present
 			// and received animation is unknown (except idle animation)
 			bool is_known = false;
-			for (int i = 1;i<4;i++) {
+			for (int i = 1;i<4;i++)
+			{
 				if(m_animation_range.Y == player->local_animations[i].Y)
 					is_known = true;
 			}
@@ -1726,8 +1794,7 @@ void GenericCAO::processMessage(const std::string &data)
 			}
 		}
 	}
-	else if(cmd == GENERIC_CMD_SET_BONE_POSITION)
-	{
+	else if(cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
 		v3f rotation = readV3F1000(is);
@@ -1735,8 +1802,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateBonePosition();
 	}
-	else if(cmd == GENERIC_CMD_SET_ATTACHMENT)
-	{
+	else if(cmd == GENERIC_CMD_SET_ATTACHMENT) {
 		// If an entry already exists for this object, delete it first to avoid duplicates
 		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
 		{
@@ -1753,8 +1819,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateAttachments();
 	}
-	else if(cmd == GENERIC_CMD_PUNCHED)
-	{
+	else if(cmd == GENERIC_CMD_PUNCHED) {
 		/*s16 damage =*/ readS16(is);
 		s16 result_hp = readS16(is);
 
@@ -1763,8 +1828,10 @@ void GenericCAO::processMessage(const std::string &data)
 
 		m_hp = result_hp;
 
-		if (damage > 0) {
-			if (m_hp <= 0) {
+		if (damage > 0)
+		{
+			if (m_hp <= 0)
+			{
 				// TODO: Execute defined fast response
 				// As there is no definition, make a smoke puff
 				ClientSimpleObject *simple = createSmokePuff(
@@ -1781,11 +1848,11 @@ void GenericCAO::processMessage(const std::string &data)
 			}
 		}
 	}
-	else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS)
-	{
+	else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
 		m_armor_groups.clear();
 		int armor_groups_size = readU16(is);
-		for(int i=0; i<armor_groups_size; i++){
+		for(int i=0; i<armor_groups_size; i++)
+		{
 			std::string name = deSerializeString(is);
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
@@ -1807,7 +1874,8 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 
 	if(result.did_punch && result.damage != 0)
 	{
-		if(result.damage < m_hp){
+		if(result.damage < m_hp)
+		{
 			m_hp -= result.damage;
 		} else {
 			m_hp = 0;
@@ -1835,7 +1903,8 @@ std::string GenericCAO::debugInfoText()
 	os<<"GenericCAO hp="<<m_hp<<"\n";
 	os<<"armor={";
 	for(ItemGroupList::const_iterator i = m_armor_groups.begin();
-			i != m_armor_groups.end(); i++){
+			i != m_armor_groups.end(); i++)
+	{
 		os<<i->first<<"="<<i->second<<", ";
 	}
 	os<<"}";

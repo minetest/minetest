@@ -68,6 +68,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
+#include "drawscene.h"
+#include "content_cao.h"
 
 /*
 	Text input system
@@ -416,59 +418,6 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	} // for coords
 
 	return result;
-}
-
-/*
-	Draws a screen with a single text on it.
-	Text will be removed when the screen is drawn the next time.
-	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
-*/
-/*gui::IGUIStaticText **/
-void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
-		gui::IGUIFont* font, float dtime=0 ,int percent=0, bool clouds=true)
-{
-	video::IVideoDriver* driver = device->getVideoDriver();
-	v2u32 screensize = driver->getScreenSize();
-	const wchar_t *loadingtext = text.c_str();
-	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
-	core::vector2d<s32> textsize(textsize_u.X,textsize_u.Y);
-	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
-	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
-
-	gui::IGUIStaticText *guitext = guienv->addStaticText(
-			loadingtext, textrect, false, false);
-	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
-
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background)
-	{
-		g_menuclouds->step(dtime*3);
-		g_menuclouds->render();
-		driver->beginScene(true, true, video::SColor(255,140,186,250));
-		g_menucloudsmgr->drawAll();
-	}
-	else
-		driver->beginScene(true, true, video::SColor(255,0,0,0));
-	if (percent >= 0 && percent <= 100) // draw progress bar
-	{
-		core::vector2d<s32> barsize(256,32);
-		core::rect<s32> barrect(center-barsize/2, center+barsize/2);
-		driver->draw2DRectangle(video::SColor(255,255,255,255),barrect, NULL); // border
-		driver->draw2DRectangle(video::SColor(255,64,64,64), core::rect<s32> (
-				barrect.UpperLeftCorner+1,
-				barrect.LowerRightCorner-1), NULL); // black inside the bar
-		driver->draw2DRectangle(video::SColor(255,128,128,128), core::rect<s32> (
-				barrect.UpperLeftCorner+1,
-				core::vector2d<s32>(
-					barrect.LowerRightCorner.X-(barsize.X-1)+percent*(barsize.X-2)/100,
-					barrect.LowerRightCorner.Y-1)), NULL); // the actual progress
-	}
-	guienv->drawAll();
-	driver->endScene();
-	
-	guitext->remove();
-	
-	//return guitext;
 }
 
 /* Profiler display */
@@ -1113,7 +1062,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 	{
 		wchar_t* text = wgettext("Loading...");
-		draw_load_screen(text, device, font,0,0);
+		draw_load_screen(text, device, guienv, font, 0, 0);
 		delete[] text;
 	}
 	
@@ -1173,7 +1122,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 	if(address == ""){
 		wchar_t* text = wgettext("Creating server....");
-		draw_load_screen(text, device, font,0,25);
+		draw_load_screen(text, device, guienv, font, 0, 25);
 		delete[] text;
 		infostream<<"Creating server"<<std::endl;
 
@@ -1216,7 +1165,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 	{
 		wchar_t* text = wgettext("Creating client...");
-		draw_load_screen(text, device, font,0,50);
+		draw_load_screen(text, device, guienv, font, 0, 50);
 		delete[] text;
 	}
 	infostream<<"Creating client"<<std::endl;
@@ -1225,7 +1174,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	
 	{
 		wchar_t* text = wgettext("Resolving address...");
-		draw_load_screen(text, device, font,0,75);
+		draw_load_screen(text, device, guienv, font, 0, 75);
 		delete[] text;
 	}
 	Address connect_address(0,0,0,0, port);
@@ -1324,7 +1273,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			// Display status
 			{
 				wchar_t* text = wgettext("Connecting to server...");
-				draw_load_screen(text, device, font, dtime, 100);
+				draw_load_screen(text, device, guienv, font, dtime, 100);
 				delete[] text;
 			}
 			
@@ -1428,14 +1377,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			{
 				wchar_t* text = wgettext("Item definitions...");
 				progress = 0;
-				draw_load_screen(text, device, font, dtime, progress);
+				draw_load_screen(text, device, guienv, font, dtime, progress);
 				delete[] text;
 			}
 			else if (!client.nodedefReceived())
 			{
 				wchar_t* text = wgettext("Node definitions...");
 				progress = 25;
-				draw_load_screen(text, device, font, dtime, progress);
+				draw_load_screen(text, device, guienv, font, dtime, progress);
 				delete[] text;
 			}
 			else
@@ -1457,7 +1406,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					message << " ( " << cur << cur_unit << " )";
 				}
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
-				draw_load_screen(narrow_to_wide(message.str().c_str()), device, font, dtime, progress);
+				draw_load_screen(narrow_to_wide(message.str().c_str()), device,
+						guienv, font, dtime, progress);
 			}
 			
 			// On some computers framerate doesn't seem to be
@@ -1513,8 +1463,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
-	int current_camera_mode = CAMERA_MODE_FIRST; // start in first-person view
-
 	/*
 		Clouds
 	*/
@@ -1530,7 +1478,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	*/
 
 	Sky *sky = NULL;
-	sky = new Sky(smgr->getRootSceneNode(), smgr, -1, client.getEnv().getLocalPlayer());
+	sky = new Sky(smgr->getRootSceneNode(), smgr, -1);
 
 	scene::ISceneNode* skybox = NULL;
 	
@@ -1605,7 +1553,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	*/
 	u32 drawtime = 0;
 	u32 beginscenetime = 0;
-	u32 scenetime = 0;
 	u32 endscenetime = 0;
 	
 	float recent_turn_speed = 0.0;
@@ -2281,7 +2228,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			else{
 				s32 dx = input->getMousePos().X - (driver->getScreenSize().Width/2);
 				s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height/2);
-				if(invert_mouse || player->camera_mode == CAMERA_MODE_THIRD_FRONT) {
+				if(invert_mouse || camera.getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
 					dy = -dy;
 				}
 				//infostream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
@@ -2668,19 +2615,20 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 
 		if(input->wasKeyDown(getKeySetting("keymap_camera_mode"))) {
+			camera.toggleCameraMode();
+			GenericCAO* playercao = player->getCAO();
 
-			if (current_camera_mode == CAMERA_MODE_FIRST)
-				current_camera_mode = CAMERA_MODE_THIRD;
-			else if (current_camera_mode == CAMERA_MODE_THIRD)
-				current_camera_mode = CAMERA_MODE_THIRD_FRONT;
-			else
-				current_camera_mode = CAMERA_MODE_FIRST;
-
+			assert( playercao != NULL );
+			if (camera.getCameraMode() > CAMERA_MODE_FIRST) {
+				playercao->setVisible(true);
+			}
+			else {
+				playercao->setVisible(false);
+			}
 		}
-		player->camera_mode = current_camera_mode;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
 		camera.update(player, dtime, busytime, tool_reload_ratio,
-				current_camera_mode, client.getEnv());
+				client.getEnv());
 		camera.step(dtime);
 
 		v3f player_position = player->getPosition();
@@ -2736,7 +2684,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				camera_position + camera_direction * BS * (d+1));
 
 		// prevent player pointing anything in front-view
-		if (current_camera_mode == CAMERA_MODE_THIRD_FRONT)
+		if (camera.getCameraMode() == CAMERA_MODE_THIRD_FRONT)
 			shootline = core::line3d<f32>(0,0,0,0,0,0);
 
 		ClientActiveObject *selected_object = NULL;
@@ -3148,7 +3096,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					+ time_of_day * todsm;
 			
 		sky->update(time_of_day_smooth, time_brightness, direct_brightness,
-				sunlight_seen);
+				sunlight_seen,camera.getCameraMode(), player->getYaw(),
+				player->getPitch());
 		
 		video::SColor bgcolor = sky->getBgColor();
 		video::SColor skycolor = sky->getSkyColor();
@@ -3417,141 +3366,22 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		/*
 			Drawing begins
 		*/
-
 		TimeTaker tt_draw("mainloop: draw");
-		
 		{
 			TimeTaker timer("beginScene");
-			//driver->beginScene(false, true, bgcolor);
-			//driver->beginScene(true, true, bgcolor);
 			driver->beginScene(true, true, skycolor);
 			beginscenetime = timer.stop(true);
 		}
+
 		
-		//timer3.stop();
-	
-		//infostream<<"smgr->drawAll()"<<std::endl;
-		{
-			TimeTaker timer("smgr");
-			smgr->drawAll();
-			
-			if(g_settings->getBool("anaglyph"))
-			{
-				irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
-				irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
-
-				irr::core::matrix4 startMatrix   = camera.getCameraNode()->getAbsoluteTransformation();
-
-				irr::core::vector3df focusPoint  = (camera.getCameraNode()->getTarget() -
-										 camera.getCameraNode()->getAbsolutePosition()).setLength(1) +
-										 camera.getCameraNode()->getAbsolutePosition() ;
-
-				//Left eye...
-				irr::core::vector3df leftEye;
-				irr::core::matrix4   leftMove;
-
-				leftMove.setTranslation( irr::core::vector3df(-g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
-				leftEye=(startMatrix*leftMove).getTranslation();
-
-				//clear the depth buffer, and color
-				driver->beginScene( true, true, irr::video::SColor(0,200,200,255) );
-
-				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_RED;
-				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
-				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
-															 irr::scene::ESNRP_SOLID +
-															 irr::scene::ESNRP_TRANSPARENT +
-															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
-															 irr::scene::ESNRP_SHADOW;
-
-				camera.getCameraNode()->setPosition( leftEye );
-				camera.getCameraNode()->setTarget( focusPoint );
-
-				smgr->drawAll(); // 'smgr->drawAll();' may go here
-
-				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-				if (show_hud)
-					hud.drawSelectionBoxes(hilightboxes);
-
-
-				//Right eye...
-				irr::core::vector3df rightEye;
-				irr::core::matrix4   rightMove;
-
-				rightMove.setTranslation( irr::core::vector3df(g_settings->getFloat("anaglyph_strength"),0.0f,0.0f) );
-				rightEye=(startMatrix*rightMove).getTranslation();
-
-				//clear the depth buffer
-				driver->clearZBuffer();
-
-				driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_GREEN + irr::video::ECP_BLUE;
-				driver->getOverrideMaterial().EnableFlags  = irr::video::EMF_COLOR_MASK;
-				driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX +
-															 irr::scene::ESNRP_SOLID +
-															 irr::scene::ESNRP_TRANSPARENT +
-															 irr::scene::ESNRP_TRANSPARENT_EFFECT +
-															 irr::scene::ESNRP_SHADOW;
-
-				camera.getCameraNode()->setPosition( rightEye );
-				camera.getCameraNode()->setTarget( focusPoint );
-
-				smgr->drawAll(); // 'smgr->drawAll();' may go here
-
-				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-				if (show_hud)
-					hud.drawSelectionBoxes(hilightboxes);
-
-
-				//driver->endScene();
-
-				driver->getOverrideMaterial().Material.ColorMask=irr::video::ECP_ALL;
-				driver->getOverrideMaterial().EnableFlags=0;
-				driver->getOverrideMaterial().EnablePasses=0;
-
-				camera.getCameraNode()->setPosition( oldPosition );
-				camera.getCameraNode()->setTarget( oldTarget );
-			}
-
-			scenetime = timer.stop(true);
-		}
-		
-		{
-		//TimeTaker timer9("auxiliary drawings");
-		// 0ms
-		
-		//timer9.stop();
-		//TimeTaker //timer10("//timer10");
-		
-		video::SMaterial m;
-		//m.Thickness = 10;
-		m.Thickness = 3;
-		m.Lighting = false;
-		driver->setMaterial(m);
-
-		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-		if((!g_settings->getBool("anaglyph")) && (show_hud))
-		{
-			hud.drawSelectionBoxes(hilightboxes);
-		}
-
-		/*
-			Wielded tool
-		*/
-		if(show_hud &&
-			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			current_camera_mode < CAMERA_MODE_THIRD)
-		{
-			// Warning: This clears the Z buffer.
-			camera.drawWieldedTool();
-		}
+		draw_scene(driver, smgr, camera, client, player, hud, guienv,
+				hilightboxes, screensize, skycolor, show_hud);
 
 		/*
 			Post effects
 		*/
 		{
-			client.getEnv().getClientMap().renderPostFx();
+			client.getEnv().getClientMap().renderPostFx(camera.getCameraMode());
 		}
 
 		/*
@@ -3560,26 +3390,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(show_profiler_graph)
 		{
 			graph.draw(10, screensize.Y - 10, driver, font);
-		}
-
-		/*
-			Draw crosshair
-		*/
-		if (show_hud)
-			hud.drawCrosshair();
-			
-		} // timer
-
-		//timer10.stop();
-		//TimeTaker //timer11("//timer11");
-
-
-		/*
-			Draw hotbar
-		*/
-		if (show_hud)
-		{
-			hud.drawHotbar(client.getPlayerItem());
 		}
 
 		/*
@@ -3604,18 +3414,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(player->hurt_tilt_timer < 0)
 				player->hurt_tilt_strength = 0;
 		}
-
-		/*
-			Draw lua hud items
-		*/
-		if (show_hud)
-			hud.drawLuaElements(camera.getOffset());
-
-		/*
-			Draw gui
-		*/
-		// 0-1ms
-		guienv->drawAll();
 
 		/*
 			End scene
@@ -3659,7 +3457,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	{
 		/*gui::IGUIStaticText *gui_shuttingdowntext = */
 		wchar_t* text = wgettext("Shutting down stuff...");
-		draw_load_screen(text, device, font, 0, -1, false);
+		draw_load_screen(text, device, guienv, font, 0, -1, false);
 		delete[] text;
 		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
@@ -3728,5 +3526,3 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		<< driver-> getMaterialRendererCount ()
 		<< " (note: irrlicht doesn't support removing renderers)"<< std::endl;
 }
-
-

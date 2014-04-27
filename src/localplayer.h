@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 
 class Environment;
-
+class GenericCAO;
 class ClientActiveObject;
 
 enum LocalPlayerAnimations {NO_ANIM, WALK_ANIM, DIG_ANIM, WD_ANIM};  // no local animation, walking, digging, both
@@ -62,7 +62,6 @@ public:
 	unsigned int last_keyPressed;
 
 	float camera_impact;
-	int camera_mode;
 	v3f eye_offset_first;
 	v3f eye_offset_third;
 
@@ -71,6 +70,15 @@ public:
 
 	std::string hotbar_image;
 	std::string hotbar_selected_image;
+
+	GenericCAO* getCAO() const {
+		return m_cao;
+	}
+
+	void setCAO(GenericCAO* toset) {
+		assert( m_cao == NULL );
+		m_cao = toset;
+	}
 
 private:
 	// This is used for determining the sneaking range
@@ -84,6 +92,8 @@ private:
 	// Whether recalculation of the sneak node is needed
 	bool m_need_to_get_new_sneak_node;
 	bool m_can_jump;
+
+	GenericCAO* m_cao;
 };
 
 #endif

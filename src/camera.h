@@ -33,7 +33,7 @@ class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
 
-enum CameraModes {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -117,8 +117,7 @@ public:
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, f32 busytime,
-			f32 tool_reload_ratio,
-			int current_camera_mode, ClientEnvironment &c_env);
+			f32 tool_reload_ratio, ClientEnvironment &c_env);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in, f32 busytime_in);
@@ -133,7 +132,23 @@ public:
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
 	// Warning: This clears the Z buffer.
-	void drawWieldedTool();
+	void drawWieldedTool(irr::core::matrix4* translation=NULL);
+
+	// Toggle the current camera mode
+	void toggleCameraMode() {
+		if (m_camera_mode == CAMERA_MODE_FIRST)
+			m_camera_mode = CAMERA_MODE_THIRD;
+		else if (m_camera_mode == CAMERA_MODE_THIRD)
+			m_camera_mode = CAMERA_MODE_THIRD_FRONT;
+		else
+			m_camera_mode = CAMERA_MODE_FIRST;
+	}
+
+	//read the current camera mode
+	inline CameraMode getCameraMode()
+	{
+		return m_camera_mode;
+	}
 
 private:
 	// Nodes
@@ -196,6 +211,8 @@ private:
 	scene::IMesh *m_wield_mesh_next;
 	u16 m_previous_playeritem;
 	std::string m_previous_itemname;
+
+	CameraMode m_camera_mode;
 };
 
 #endif
