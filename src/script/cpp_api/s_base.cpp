@@ -88,9 +88,9 @@ ScriptApiBase::ScriptApiBase()
 	lua_pop(m_luastack, 1);
 #endif
 
-	m_server = 0;
-	m_environment = 0;
-	m_guiengine = 0;
+	m_server = NULL;
+	m_environment = NULL;
+	m_guiengine = NULL;
 }
 
 ScriptApiBase::~ScriptApiBase()
@@ -103,24 +103,14 @@ bool ScriptApiBase::loadMod(const std::string &scriptpath,
 {
 	ModNameStorer modnamestorer(getStack(), modname);
 
-	if(!string_allowed(modname, MODNAME_ALLOWED_CHARS)){
+	if (!string_allowed(modname, MODNAME_ALLOWED_CHARS)) {
 		errorstream<<"Error loading mod \""<<modname
 				<<"\": modname does not follow naming conventions: "
 				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
 		return false;
 	}
 
-	bool success = false;
-
-	try{
-		success = loadScript(scriptpath);
-	}
-	catch(LuaError &e){
-		errorstream<<"Error loading mod \""<<modname
-				<<"\": "<<e.what()<<std::endl;
-	}
-
-	return success;
+	return loadScript(scriptpath);
 }
 
 bool ScriptApiBase::loadScript(const std::string &scriptpath)

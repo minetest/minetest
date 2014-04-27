@@ -8,7 +8,7 @@ function minetest.spawn_item(pos, item)
 	return obj
 end
 
-minetest.register_entity("__builtin:item", {
+minetest.register_entity(":__builtin:item", {
 	initial_properties = {
 		hp_max = 1,
 		physical = true,

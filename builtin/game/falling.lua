@@ -4,7 +4,7 @@
 -- Falling stuff
 --
 
-minetest.register_entity("__builtin:falling_node", {
+minetest.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = false,

@@ -26,6 +26,7 @@ extern "C" {
 #include "lualib.h"
 }
 
+#include "server.h"
 #include "s_async.h"
 #include "log.h"
 #include "filesys.h"
@@ -233,9 +234,9 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 	lua_pushstring(L, DIR_DELIM);
 	lua_setglobal(L, "DIR_DELIM");
 
-	lua_pushstring(L,
-			(porting::path_share + DIR_DELIM + "builtin").c_str());
-	lua_setglobal(L, "SCRIPTDIR");
+	// Push builtin initialization type
+	lua_pushstring(L, "async");
+	lua_setglobal(L, "INIT");
 
 	jobDispatcher->prepareEnvironment(L, top);
 }
@@ -258,17 +259,16 @@ void* AsyncWorkerThread::Thread()
 
 	porting::setThreadName((std::string("AsyncWorkTh_") + number).c_str());
 
-	std::string asyncscript = porting::path_share + DIR_DELIM + "builtin"
-			+ DIR_DELIM + "async_env.lua";
+	lua_State *L = getStack();
 
-	if (!loadScript(asyncscript)) {
+	std::string script = getServer()->getBuiltinLuaPath() + DIR_DELIM + "init.lua";
+	if (!loadScript(script)) {
 		errorstream
 			<< "AsyncWorkderThread execution of async base environment failed!"
 			<< std::endl;
 		abort();
 	}
 
-	lua_State *L = getStack();
 	// Main loop
 	while (!StopRequested()) {
 		// Wait for job

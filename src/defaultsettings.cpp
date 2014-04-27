@@ -269,9 +269,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
 
-	settings->setDefault("main_menu_script","");
-	settings->setDefault("main_menu_mod_mgr","1");
-	settings->setDefault("main_menu_game_mgr","0");
+	settings->setDefault("main_menu_path", "");
+	settings->setDefault("main_menu_mod_mgr", "1");
+	settings->setDefault("main_menu_game_mgr", "0");
 	settings->setDefault("modstore_download_url", "https://forum.minetest.net/media/");
 	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");
 	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");

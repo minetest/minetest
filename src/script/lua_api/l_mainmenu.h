@@ -107,7 +107,7 @@ private:
 
 	//filesystem
 
-	static int l_get_scriptdir(lua_State *L);
+	static int l_get_mainmenu_path(lua_State *L);
 
 	static int l_get_modpath(lua_State *L);
 

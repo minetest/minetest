@@ -885,7 +885,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_scriptdir(lua_State *L)
+int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	assert(engine != 0);
@@ -1077,7 +1077,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(delete_dir);
 	API_FCT(copy_dir);
 	API_FCT(extract_zip);
-	API_FCT(get_scriptdir);
+	API_FCT(get_mainmenu_path);
 	API_FCT(show_file_open_dialog);
 	API_FCT(get_version);
 	API_FCT(download_file);

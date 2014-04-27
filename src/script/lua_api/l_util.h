@@ -79,6 +79,9 @@ private:
 	// is_yes(arg)
 	static int l_is_yes(lua_State *L);
 
+	// get_scriptdir()
+	static int l_get_builtin_path(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 

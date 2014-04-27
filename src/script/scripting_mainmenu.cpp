@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scripting_mainmenu.h"
+#include "mods.h"
+#include "porting.h"
 #include "log.h"
 #include "filesys.h"
 #include "cpp_api/s_internal.h"
@@ -57,6 +59,10 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 	// Initialize our lua_api modules
 	initializeModApi(L, top);
 	lua_pop(L, 1);
+
+	// Push builtin initialization type
+	lua_pushstring(L, "mainmenu");
+	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized main menu modules" << std::endl;
 }

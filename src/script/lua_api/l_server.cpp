@@ -350,14 +350,8 @@ int ModApiServer::l_get_modpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
-	// Do it
-	if(modname == "__builtin"){
-		std::string path = getServer(L)->getBuiltinLuaPath();
-		lua_pushstring(L, path.c_str());
-		return 1;
-	}
 	const ModSpec *mod = getServer(L)->getModSpec(modname);
-	if(!mod){
+	if (!mod) {
 		lua_pushnil(L);
 		return 1;
 	}
