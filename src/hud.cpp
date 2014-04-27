@@ -127,7 +127,7 @@ void Hud::drawItem(v2s32 upperleftpos, s32 imgsize, s32 itemcount,
 			NULL, hbar_colors, true);
 	}
 
-	for (s32 i = 0; i < itemcount; i++)
+	for (s32 i = 0; i < itemcount && (size_t)i < mainlist->getSize(); i++)
 	{
 		const ItemStack &item = mainlist->getItem(i);
 
