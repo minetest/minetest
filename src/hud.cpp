@@ -415,12 +415,20 @@ void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
 
 
 void Hud::resizeHotbar() {
-	if (screensize.Y <= 800)
-		hotbar_imagesize = 32;
-	else if (screensize.Y <= 1280)
-		hotbar_imagesize = 48;
-	else
-		hotbar_imagesize = 64;
+	float hb_scale = g_settings->getFloat("hotbar_scale");
+	if (hb_scale < 0)
+		hb_scale = 0;
+	else if (hb_scale > 1)
+		hb_scale = 1;
+
+	if (screensize.Y <= 800 && hb_scale == 0)
+		hb_scale = 0.5;
+	else if (screensize.Y <= 1280 && hb_scale == 0)
+		hb_scale = 0.75;
+	else if (screensize.Y > 1280  && hb_scale == 0)
+		hb_scale = 1;
+
+	hotbar_imagesize = 64 * hb_scale;
 }
 
 void drawItemStack(video::IVideoDriver *driver,
