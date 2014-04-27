@@ -49,7 +49,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	
 	m_screensize       = v2u32(0, 0);
 	m_displaycenter    = v2s32(0, 0);
-	m_hotbar_imagesize = HOTBAR_IMAGE_SIZE * porting::getDisplayDensity();
+	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
 	m_padding = m_hotbar_imagesize / 12;
 
 	const video::SColor hbar_color(255, 255, 255, 255);
@@ -436,7 +436,7 @@ void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
 
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {
-		m_hotbar_imagesize = porting::getDisplayDensity() * HOTBAR_IMAGE_SIZE;
+		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
 		m_padding = m_hotbar_imagesize / 12;
 		m_screensize = porting::getWindowSize();
 		m_displaycenter = v2s32(m_screensize.X/2,m_screensize.Y/2);
