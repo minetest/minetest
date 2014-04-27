@@ -119,10 +119,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("selectionbox_color", "(0,0,0)");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
+	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
+	settings->setDefault("hud_hotbar_max_width","1.0");
 
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");

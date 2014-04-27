@@ -116,6 +116,14 @@ engine.file_open_dialog(formname,caption)
 ^     -if dialog was canceled "_cancelled"
 ^        will be added to fieldname value is set to formname itself
 ^ returns nil or selected file/folder
+engine.get_screen_info()
+^ returns {
+	density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
+	display_width   = <width of display>,
+	display_height  = <height of display>,
+	window_width    = <current window width>,
+	window_height   = <current window height>
+	}
 
 Games:
 engine.get_game(index)
@@ -198,7 +206,7 @@ engine.handle_async(async_job,parameters,finished)
 ^ execute a function asynchronously
 ^ async_job is a function receiving one parameter and returning one parameter
 ^ parameters parameter table passed to async_job
-^ finished function to be called once async_job has finished 
+^ finished function to be called once async_job has finished
 ^    the result of async_job is passed to this function
 
 Limitations of Async operations

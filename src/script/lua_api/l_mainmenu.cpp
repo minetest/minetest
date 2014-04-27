@@ -1003,6 +1003,33 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_screen_info(lua_State *L)
+{
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	lua_pushstring(L,"density");
+	lua_pushnumber(L,porting::getDisplayDensity());
+	lua_settable(L, top);
+
+	lua_pushstring(L,"display_width");
+	lua_pushnumber(L,porting::getDisplaySize().X);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"display_height");
+	lua_pushnumber(L,porting::getDisplaySize().Y);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"window_width");
+	lua_pushnumber(L,porting::getWindowSize().X);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"window_height");
+	lua_pushnumber(L,porting::getWindowSize().Y);
+	lua_settable(L, top);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_do_async_callback(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1060,6 +1087,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(gettext);
+	API_FCT(get_screen_info);
 	API_FCT(do_async_callback);
 }
 
