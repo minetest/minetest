@@ -215,6 +215,7 @@ struct ClientEvent
 			v2f *align;
 			v2f *offset;
 			v3f *world_pos;
+			v2s32 * size;
 		} hudadd;
 		struct{
 			u32 id;
@@ -226,6 +227,7 @@ struct ClientEvent
 			std::string *sdata;
 			u32 data;
 			v3f *v3fdata;
+			v2s32 * v2s32data;
 		} hudchange;
 		struct{
 			video::SColor *bgcolor;

@@ -906,6 +906,10 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->scale = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
 	lua_pop(L, 1);
 
+	lua_getfield(L, 2, "size");
+	elem->size = lua_istable(L, -1) ? read_v2s32(L, -1) : v2s32();
+	lua_pop(L, 1);
+
 	elem->name   = getstringfield_default(L, 2, "name", "");
 	elem->text   = getstringfield_default(L, 2, "text", "");
 	elem->number = getintfield_default(L, 2, "number", 0);
@@ -923,6 +927,11 @@ int ObjectRef::l_hud_add(lua_State *L)
 	lua_getfield(L, 2, "world_pos");
 	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
 	lua_pop(L, 1);
+
+	/* check for known deprecated element usage */
+	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32())) {
+		log_deprecated(L,"Deprecated usage of statbar without size!");
+	}
 
 	u32 id = getServer(L)->hudAdd(player, elem);
 	if (id == (u32)-1) {
@@ -1019,6 +1028,10 @@ int ObjectRef::l_hud_change(lua_State *L)
 			e->world_pos = read_v3f(L, 4);
 			value = &e->world_pos;
 			break;
+		case HUD_STAT_SIZE:
+			e->size = read_v2s32(L, 4);
+			value = &e->size;
+			break;
 	}
 
 	getServer(L)->hudChange(player, id, stat, value);
@@ -1098,6 +1111,28 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 		return 0;
 
 	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ObjectRef::l_hud_get_flags(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	lua_newtable(L);
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE);
+	lua_setfield(L, -2, "hotbar");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_HEALTHBAR_VISIBLE);
+	lua_setfield(L, -2, "healthbar");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE);
+	lua_setfield(L, -2, "crosshair");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE);
+	lua_setfield(L, -2, "wielditem");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_BREATHBAR_VISIBLE);
+	lua_setfield(L, -2, "breathbar");
+
 	return 1;
 }
 
@@ -1321,6 +1356,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_set_flags),
+	luamethod(ObjectRef, hud_get_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
 	luamethod(ObjectRef, hud_set_hotbar_image),
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
