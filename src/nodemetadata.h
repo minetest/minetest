@@ -49,28 +49,10 @@ public:
 	void clear();
 
 	// Generic key/value store
-	std::string getString(const std::string &name) const
-	{
-		std::map<std::string, std::string>::const_iterator i;
-		i = m_stringvars.find(name);
-		if(i == m_stringvars.end())
-			return "";
-		return i->second;
-	}
-	void setString(const std::string &name, const std::string &var)
-	{
-		if(var.empty())
-			m_stringvars.erase(name);
-		else
-			m_stringvars[name] = var;
-	}
-	// support variable names in values
-	std::string resolveString(const std::string &str) const
-	{
-		if(str.substr(0,2) == "${" && str[str.length()-1] == '}')
-			return getString(str.substr(2,str.length()-3));
-		return str;
-	}
+	std::string getString(const std::string &name, unsigned short recursion = 0) const;
+	void setString(const std::string &name, const std::string &var);
+	// Support variable names in values
+	std::string resolveString(const std::string &str, unsigned short recursion = 0) const;
 	std::map<std::string, std::string> getStrings() const
 	{
 		return m_stringvars;

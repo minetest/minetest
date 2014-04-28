@@ -191,3 +191,34 @@ void NodeMetadataList::clear()
 	}
 	m_data.clear();
 }
+
+std::string NodeMetadata::getString(const std::string &name, unsigned short recursion) const
+{
+	std::map<std::string, std::string>::const_iterator it;
+	it = m_stringvars.find(name);
+	if (it == m_stringvars.end()) {
+		return "";
+	}
+	return resolveString(it->second, recursion);
+}
+
+void NodeMetadata::setString(const std::string &name, const std::string &var)
+{
+	if (var.empty()) {
+		m_stringvars.erase(name);
+	} else {
+		m_stringvars[name] = var;
+	}
+}
+
+std::string NodeMetadata::resolveString(const std::string &str, unsigned short recursion) const
+{
+	if (recursion > 1) {
+		return str;
+	}
+	if (str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+		return getString(str.substr(2, str.length() - 3), recursion + 1);
+	}
+	return str;
+}
+
