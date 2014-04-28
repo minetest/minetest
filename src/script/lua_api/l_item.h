@@ -85,7 +85,7 @@ private:
 	static int l_is_known(lua_State *L);
 
 	// get_definition(self) -> table
-	// Returns the item definition table from minetest.registered_items,
+	// Returns the item definition table from core.registered_items,
 	// or a fallback one (name="unknown")
 	static int l_get_definition(lua_State *L);
 

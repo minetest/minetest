@@ -1,14 +1,14 @@
 -- Minetest: builtin/item_entity.lua
 
-function minetest.spawn_item(pos, item)
+function core.spawn_item(pos, item)
 	-- Take item in any format
 	local stack = ItemStack(item)
-	local obj = minetest.add_entity(pos, "__builtin:item")
+	local obj = core.add_entity(pos, "__builtin:item")
 	obj:get_luaentity():set_item(stack:to_string())
 	return obj
 end
 
-minetest.register_entity(":__builtin:item", {
+core.register_entity(":__builtin:item", {
 	initial_properties = {
 		hp_max = 1,
 		physical = true,
@@ -35,9 +35,9 @@ minetest.register_entity(":__builtin:item", {
 		end
 		local item_texture = nil
 		local item_type = ""
-		if minetest.registered_items[itemname] then
-			item_texture = minetest.registered_items[itemname].inventory_image
-			item_type = minetest.registered_items[itemname].type
+		if core.registered_items[itemname] then
+			item_texture = core.registered_items[itemname].inventory_image
+			item_type = core.registered_items[itemname].type
 		end
 		prop = {
 			is_visible = true,
@@ -59,7 +59,7 @@ minetest.register_entity(":__builtin:item", {
 
 	get_staticdata = function(self)
 		--return self.itemstring
-		return minetest.serialize({
+		return core.serialize({
 			itemstring = self.itemstring,
 			always_collect = self.always_collect,
 		})
@@ -67,7 +67,7 @@ minetest.register_entity(":__builtin:item", {
 
 	on_activate = function(self, staticdata)
 		if string.sub(staticdata, 1, string.len("return")) == "return" then
-			local data = minetest.deserialize(staticdata)
+			local data = core.deserialize(staticdata)
 			if data and type(data) == "table" then
 				self.itemstring = data.itemstring
 				self.always_collect = data.always_collect
@@ -84,10 +84,10 @@ minetest.register_entity(":__builtin:item", {
 	on_step = function(self, dtime)
 		local p = self.object:getpos()
 		p.y = p.y - 0.3
-		local nn = minetest.get_node(p).name
+		local nn = core.get_node(p).name
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
-		if not minetest.registered_nodes[nn] or minetest.registered_nodes[nn].walkable and v.y == 0 then
+		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
 			if self.physical_state then
 				self.object:setvelocity({x=0,y=0,z=0})
 				self.object:setacceleration({x=0, y=0, z=0})

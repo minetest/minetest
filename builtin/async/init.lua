@@ -1,6 +1,5 @@
-engine.log("info", "Initializing Asynchronous environment")
 
-local core = engine or minetest
+core.log("info", "Initializing Asynchronous environment")
 
 function core.job_processor(serialized_func, serialized_param)
 	local func = loadstring(serialized_func)

@@ -56,24 +56,24 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pushcfunction(L, script_error_handler);
 	int errorhandler = lua_gettop(L);
 
-	// Get minetest.registered_abms
-	lua_getglobal(L, "minetest");
+	// Get registered_abms
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_abms");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_remove(L, -2); // Remove "minetest"
+	lua_remove(L, -2); // Remove core
 
-	// Get minetest.registered_abms[m_id]
+	// Get registered_abms[m_id]
 	lua_pushnumber(L, m_id);
 	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
 		assert(0);
-	lua_remove(L, -2); // Remove "registered_abms"
+	lua_remove(L, -2); // Remove registered_abms
 
 	// Call action
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, "action");
 	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_remove(L, -2); // Remove "registered_abms[m_id]"
+	lua_remove(L, -2); // Remove registered_abms[m_id]
 	push_v3s16(L, p);
 	pushnode(L, n, env->getGameDef()->ndef());
 	lua_pushnumber(L, active_object_count);
@@ -85,7 +85,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 
 // Exported functions
 
-// minetest.set_node(pos, node)
+// set_node(pos, node)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_set_node(lua_State *L)
 {
@@ -106,7 +106,7 @@ int ModApiEnvMod::l_add_node(lua_State *L)
 	return l_set_node(L);
 }
 
-// minetest.remove_node(pos)
+// remove_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_remove_node(lua_State *L)
 {
@@ -120,7 +120,7 @@ int ModApiEnvMod::l_remove_node(lua_State *L)
 	return 1;
 }
 
-// minetest.swap_node(pos, node)
+// swap_node(pos, node)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_swap_node(lua_State *L)
 {
@@ -136,7 +136,7 @@ int ModApiEnvMod::l_swap_node(lua_State *L)
 	return 1;
 }
 
-// minetest.get_node(pos)
+// get_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node(lua_State *L)
 {
@@ -151,7 +151,7 @@ int ModApiEnvMod::l_get_node(lua_State *L)
 	return 1;
 }
 
-// minetest.get_node_or_nil(pos)
+// get_node_or_nil(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 {
@@ -172,7 +172,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 	}
 }
 
-// minetest.get_node_light(pos, timeofday)
+// get_node_light(pos, timeofday)
 // pos = {x=num, y=num, z=num}
 // timeofday: nil = current time, 0 = night, 0.5 = day
 int ModApiEnvMod::l_get_node_light(lua_State *L)
@@ -198,7 +198,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	}
 }
 
-// minetest.place_node(pos, node)
+// place_node(pos, node)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_place_node(lua_State *L)
 {
@@ -232,7 +232,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	return 1;
 }
 
-// minetest.dig_node(pos)
+// dig_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_dig_node(lua_State *L)
 {
@@ -255,7 +255,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	return 1;
 }
 
-// minetest.punch_node(pos)
+// punch_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_punch_node(lua_State *L)
 {
@@ -278,7 +278,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	return 1;
 }
 
-// minetest.get_node_max_level(pos)
+// get_node_max_level(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 {
@@ -290,7 +290,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 	return 1;
 }
 
-// minetest.get_node_level(pos)
+// get_node_level(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_level(lua_State *L)
 {
@@ -302,7 +302,7 @@ int ModApiEnvMod::l_get_node_level(lua_State *L)
 	return 1;
 }
 
-// minetest.set_node_level(pos, level)
+// set_node_level(pos, level)
 // pos = {x=num, y=num, z=num}
 // level: 0..63
 int ModApiEnvMod::l_set_node_level(lua_State *L)
@@ -319,7 +319,7 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 	return 1;
 }
 
-// minetest.add_node_level(pos, level)
+// add_node_level(pos, level)
 // pos = {x=num, y=num, z=num}
 // level: 0..63
 int ModApiEnvMod::l_add_node_level(lua_State *L)
@@ -337,7 +337,7 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 }
 
 
-// minetest.get_meta(pos)
+// get_meta(pos)
 int ModApiEnvMod::l_get_meta(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -348,7 +348,7 @@ int ModApiEnvMod::l_get_meta(lua_State *L)
 	return 1;
 }
 
-// minetest.get_node_timer(pos)
+// get_node_timer(pos)
 int ModApiEnvMod::l_get_node_timer(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -359,7 +359,7 @@ int ModApiEnvMod::l_get_node_timer(lua_State *L)
 	return 1;
 }
 
-// minetest.add_entity(pos, entityname) -> ObjectRef or nil
+// add_entity(pos, entityname) -> ObjectRef or nil
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_add_entity(lua_State *L)
 {
@@ -380,7 +380,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	return 1;
 }
 
-// minetest.add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
+// add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_add_item(lua_State *L)
 {
@@ -396,10 +396,10 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	lua_pushcfunction(L, script_error_handler);
 	int errorhandler = lua_gettop(L);
 
-	// Use minetest.spawn_item to spawn a __builtin:item
-	lua_getglobal(L, "minetest");
+	// Use spawn_item to spawn a __builtin:item
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "spawn_item");
-	lua_remove(L, -2); // Remove minetest
+	lua_remove(L, -2); // Remove core
 	if(lua_isnil(L, -1))
 		return 0;
 	lua_pushvalue(L, 1);
@@ -423,7 +423,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	return 1;*/
 }
 
-// minetest.get_player_by_name(name)
+// get_player_by_name(name)
 int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -445,7 +445,7 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 	return 1;
 }
 
-// minetest.get_objects_inside_radius(pos, radius)
+// get_objects_inside_radius(pos, radius)
 int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -466,7 +466,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	return 1;
 }
 
-// minetest.set_timeofday(val)
+// set_timeofday(val)
 // val = 0...1
 int ModApiEnvMod::l_set_timeofday(lua_State *L)
 {
@@ -484,7 +484,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 	return 0;
 }
 
-// minetest.get_timeofday() -> 0...1
+// get_timeofday() -> 0...1
 int ModApiEnvMod::l_get_timeofday(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -496,7 +496,7 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	return 1;
 }
 
-// minetest.get_gametime()
+// get_gametime()
 int ModApiEnvMod::l_get_gametime(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -507,7 +507,7 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 }
 
 
-// minetest.find_node_near(pos, radius, nodenames) -> pos or nil
+// find_node_near(pos, radius, nodenames) -> pos or nil
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_node_near(lua_State *L)
 {
@@ -547,7 +547,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	return 0;
 }
 
-// minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
+// find_nodes_in_area(minp, maxp, nodenames) -> list of positions
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
@@ -586,7 +586,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	return 1;
 }
 
-// minetest.get_perlin(seeddiff, octaves, persistence, scale)
+// get_perlin(seeddiff, octaves, persistence, scale)
 // returns world-specific PerlinNoise
 int ModApiEnvMod::l_get_perlin(lua_State *L)
 {
@@ -604,7 +604,7 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 	return 1;
 }
 
-// minetest.get_perlin_map(noiseparams, size)
+// get_perlin_map(noiseparams, size)
 // returns world-specific PerlinNoiseMap
 int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 {
@@ -623,7 +623,7 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 	return 1;
 }
 
-// minetest.get_voxel_manip()
+// get_voxel_manip()
 // returns voxel manipulator
 int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 {
@@ -638,7 +638,7 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 	return 1;
 }
 
-// minetest.clear_objects()
+// clear_objects()
 // clear all objects in the environment
 int ModApiEnvMod::l_clear_objects(lua_State *L)
 {
@@ -648,7 +648,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 	return 0;
 }
 
-// minetest.line_of_sight(pos1, pos2, stepsize) -> true/false, pos
+// line_of_sight(pos1, pos2, stepsize) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	float stepsize = 1.0;
 
@@ -673,7 +673,7 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L) {
 	return 1;
 }
 
-// minetest.find_path(pos1, pos2, searchdistance,
+// find_path(pos1, pos2, searchdistance,
 //     max_jump, max_drop, algorithm) -> table containing path
 int ModApiEnvMod::l_find_path(lua_State *L)
 {
@@ -716,7 +716,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	return 0;
 }
 
-// minetest.spawn_tree(pos, treedef)
+// spawn_tree(pos, treedef)
 int ModApiEnvMod::l_spawn_tree(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -765,7 +765,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	return 1;
 }
 
-// minetest.transforming_liquid_add(pos)
+// transforming_liquid_add(pos)
 int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -775,7 +775,7 @@ int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 	return 1;
 }
 
-// minetest.forceload_block(blockpos)
+// forceload_block(blockpos)
 // blockpos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_forceload_block(lua_State *L)
 {
@@ -786,7 +786,7 @@ int ModApiEnvMod::l_forceload_block(lua_State *L)
 	return 0;
 }
 
-// minetest.forceload_free_block(blockpos)
+// forceload_free_block(blockpos)
 // blockpos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 {

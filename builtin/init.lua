@@ -5,13 +5,11 @@
 -- before loading and running any mods.
 --
 
-local core = minetest or engine
-minetest = core
-
 -- Initialize some very basic things
 print = core.debug
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
+minetest = core
 
 -- Load other files
 local scriptdir = core.get_builtin_path()..DIR_DELIM

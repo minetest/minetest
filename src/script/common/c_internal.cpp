@@ -92,8 +92,8 @@ void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 	int errorhandler = lua_gettop(L) - nargs - 1;
 	lua_insert(L, errorhandler);
 
-	// Insert minetest.run_callbacks between error handler and table
-	lua_getglobal(L, "minetest");
+	// Insert run_callbacks between error handler and table
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "run_callbacks");
 	lua_remove(L, -2);
 	lua_insert(L, errorhandler + 1);

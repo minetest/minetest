@@ -1,6 +1,7 @@
 
-local menupath = engine.get_mainmenu_path()..DIR_DELIM
-local commonpath = engine.get_builtin_path()..DIR_DELIM.."common"..DIR_DELIM
+engine = core
+local menupath = core.get_mainmenu_path()..DIR_DELIM
+local commonpath = core.get_builtin_path()..DIR_DELIM.."common"..DIR_DELIM
 
 dofile(menupath.."filterlist.lua")
 dofile(menupath.."modmgr.lua")
@@ -217,7 +218,7 @@ function menu.asyncOnlineFavourites()
 	menu.favorites = {}
 	engine.handle_async(
 		function(param)
-			return engine.get_favorites("online")
+			--return core.get_favorites("online")
 		end,
 		nil,
 		function(result)

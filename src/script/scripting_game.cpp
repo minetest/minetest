@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "scripting_game.h"
 #include "server.h"
-#include "filesys.h"
 #include "log.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
@@ -52,17 +51,9 @@ GameScripting::GameScripting(Server* server)
 
 	//TODO add security
 
-	luaL_openlibs(getStack());
-
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_pushstring(L, DIR_DELIM);
-	lua_setglobal(L, "DIR_DELIM");
-
-	// Create the main minetest table
-	lua_newtable(L);
-	lua_setglobal(L, "minetest");
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
 
 	lua_newtable(L);

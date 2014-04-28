@@ -38,9 +38,9 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get handler function
-	lua_getglobal(L, "engine");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "event_handler");
-	lua_remove(L, -2); // Remove engine
+	lua_remove(L, -2); // Remove core
 	if (lua_isnil(L, -1)) {
 		lua_pop(L, 1); // Pop event_handler
 		return;
@@ -58,9 +58,9 @@ void ScriptApiMainMenu::handleMainMenuButtons(std::map<std::string, std::string>
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get handler function
-	lua_getglobal(L, "engine");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "button_handler");
-	lua_remove(L, -2); // Remove engine
+	lua_remove(L, -2); // Remove core
 	if (lua_isnil(L, -1)) {
 		lua_pop(L, 1); // Pop button handler
 		return;

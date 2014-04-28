@@ -28,9 +28,8 @@ class ModApiUtil : public ModApiBase {
 private:
 	/*
 		NOTE:
-		The functions in this module are available through
-		minetest.<function> in the in-game API as well as
-		engine.<function> in the mainmenu API
+		The functions in this module are available in the in-game API
+		as well as in the mainmenu API.
 
 		All functions that don't require either a Server or
 		GUIEngine instance should be in here.

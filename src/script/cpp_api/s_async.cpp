@@ -146,7 +146,7 @@ void AsyncEngine::putJobResult(LuaJobInfo result)
 /******************************************************************************/
 void AsyncEngine::step(lua_State *L, int errorhandler)
 {
-	lua_getglobal(L, "engine");
+	lua_getglobal(L, "core");
 	resultQueueMutex.Lock();
 	while (!resultQueue.empty()) {
 		LuaJobInfo jobDone = resultQueue.front();
@@ -169,7 +169,7 @@ void AsyncEngine::step(lua_State *L, int errorhandler)
 		}
 	}
 	resultQueueMutex.Unlock();
-	lua_pop(L, 1); // Pop engine
+	lua_pop(L, 1); // Pop core
 }
 
 /******************************************************************************/
@@ -223,16 +223,9 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 {
 	lua_State *L = getStack();
 
-	luaL_openlibs(L);
-
 	// Prepare job lua environment
-	lua_newtable(L);
-	lua_setglobal(L, "engine");
-	lua_getglobal(L, "engine");
+	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
-
-	lua_pushstring(L, DIR_DELIM);
-	lua_setglobal(L, "DIR_DELIM");
 
 	// Push builtin initialization type
 	lua_pushstring(L, "async");
@@ -278,9 +271,9 @@ void* AsyncWorkerThread::Thread()
 			continue;
 		}
 
-		lua_getglobal(L, "engine");
+		lua_getglobal(L, "core");
 		if (lua_isnil(L, -1)) {
-			errorstream << "Unable to find engine within async environment!";
+			errorstream << "Unable to find core within async environment!";
 			abort();
 		}
 
@@ -310,7 +303,7 @@ void* AsyncWorkerThread::Thread()
 			toProcess.serializedResult = std::string(retval, length);
 		}
 
-		// Pop engine, job_processor, and retval
+		// Pop core, job_processor, and retval
 		lua_pop(L, 3);
 
 		// Put job result

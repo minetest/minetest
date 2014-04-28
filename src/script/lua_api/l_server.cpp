@@ -341,7 +341,7 @@ int ModApiServer::l_show_formspec(lua_State *L)
 int ModApiServer::l_get_current_modname(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	lua_getfield(L, LUA_REGISTRYINDEX, "current_modname");
 	return 1;
 }
 

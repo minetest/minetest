@@ -4,30 +4,30 @@
 -- Misc. API functions
 --
 
-minetest.timers_to_add = {}
-minetest.timers = {}
-minetest.register_globalstep(function(dtime)
-	for _, timer in ipairs(minetest.timers_to_add) do
-		table.insert(minetest.timers, timer)
+core.timers_to_add = {}
+core.timers = {}
+core.register_globalstep(function(dtime)
+	for _, timer in ipairs(core.timers_to_add) do
+		table.insert(core.timers, timer)
 	end
-	minetest.timers_to_add = {}
-	for index, timer in ipairs(minetest.timers) do
+	core.timers_to_add = {}
+	for index, timer in ipairs(core.timers) do
 		timer.time = timer.time - dtime
 		if timer.time <= 0 then
 			timer.func(unpack(timer.args or {}))
-			table.remove(minetest.timers,index)
+			table.remove(core.timers,index)
 		end
 	end
 end)
 
-function minetest.after(time, func, ...)
+function core.after(time, func, ...)
 	assert(tonumber(time) and type(func) == "function",
-			"Invalid minetest.after invocation")
-	table.insert(minetest.timers_to_add, {time=time, func=func, args={...}})
+			"Invalid core.after invocation")
+	table.insert(core.timers_to_add, {time=time, func=func, args={...}})
 end
 
-function minetest.check_player_privs(name, privs)
-	local player_privs = minetest.get_player_privs(name)
+function core.check_player_privs(name, privs)
+	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
 	for priv, val in pairs(privs) do
 		if val then
@@ -44,15 +44,15 @@ end
 
 local player_list = {}
 
-minetest.register_on_joinplayer(function(player)
+core.register_on_joinplayer(function(player)
 	player_list[player:get_player_name()] = player
 end)
 
-minetest.register_on_leaveplayer(function(player)
+core.register_on_leaveplayer(function(player)
 	player_list[player:get_player_name()] = nil
 end)
 
-function minetest.get_connected_players()
+function core.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
 		if value:is_player_connected() then
@@ -62,11 +62,11 @@ function minetest.get_connected_players()
 	return temp_table
 end
 
-function minetest.hash_node_position(pos)
+function core.hash_node_position(pos)
 	return (pos.z+32768)*65536*65536 + (pos.y+32768)*65536 + pos.x+32768
 end
 
-function minetest.get_position_from_hash(hash)
+function core.get_position_from_hash(hash)
 	local pos = {}
 	pos.x = (hash%65536) - 32768
 	hash = math.floor(hash/65536)
@@ -76,20 +76,20 @@ function minetest.get_position_from_hash(hash)
 	return pos
 end
 
-function minetest.get_item_group(name, group)
-	if not minetest.registered_items[name] or not
-			minetest.registered_items[name].groups[group] then
+function core.get_item_group(name, group)
+	if not core.registered_items[name] or not
+			core.registered_items[name].groups[group] then
 		return 0
 	end
-	return minetest.registered_items[name].groups[group]
+	return core.registered_items[name].groups[group]
 end
 
-function minetest.get_node_group(name, group)
-	minetest.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
-	return minetest.get_item_group(name, group)
+function core.get_node_group(name, group)
+	core.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
+	return core.get_item_group(name, group)
 end
 
-function minetest.string_to_pos(value)
+function core.string_to_pos(value)
 	local p = {}
 	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 	if p.x and p.y and p.z then
@@ -109,25 +109,25 @@ function minetest.string_to_pos(value)
 	return nil
 end
 
-assert(minetest.string_to_pos("10.0, 5, -2").x == 10)
-assert(minetest.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(minetest.string_to_pos("asd, 5, -2)") == nil)
+assert(core.string_to_pos("10.0, 5, -2").x == 10)
+assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
+assert(core.string_to_pos("asd, 5, -2)") == nil)
 
-function minetest.setting_get_pos(name)
-	local value = minetest.setting_get(name)
+function core.setting_get_pos(name)
+	local value = core.setting_get(name)
 	if not value then
 		return nil
 	end
-	return minetest.string_to_pos(value)
+	return core.string_to_pos(value)
 end
 
 -- To be overriden by protection mods
-function minetest.is_protected(pos, name)
+function core.is_protected(pos, name)
 	return false
 end
 
-function minetest.record_protection_violation(pos, name)
-	for _, func in pairs(minetest.registered_on_protection_violation) do
+function core.record_protection_violation(pos, name)
+	for _, func in pairs(core.registered_on_protection_violation) do
 		func(pos, name)
 	end
 end
