@@ -58,7 +58,7 @@ minetest.register_entity("__builtin:falling_node", {
 		-- Note: walkable is in the node definition, not in item groups
 		if not bcd or
 				(bcd.walkable or
-				(minetest.get_node_group(self.node.name, "float") ~= 0 and
+				(minetest.get_item_group(self.node.name, "float") ~= 0 and
 				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
@@ -71,7 +71,7 @@ minetest.register_entity("__builtin:falling_node", {
 					return
 				end
 			elseif bcd and bcd.buildable_to and
-					(minetest.get_node_group(self.node.name, "float") == 0 or
+					(minetest.get_item_group(self.node.name, "float") == 0 or
 					bcd.liquidtype == "none") then
 				minetest.remove_node(bcp)
 				return
@@ -159,14 +159,14 @@ end
 
 function nodeupdate_single(p, delay)
 	n = minetest.get_node(p)
-	if minetest.get_node_group(n.name, "falling_node") ~= 0 then
+	if minetest.get_item_group(n.name, "falling_node") ~= 0 then
 		p_bottom = {x=p.x, y=p.y-1, z=p.z}
 		n_bottom = minetest.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if minetest.registered_nodes[n_bottom.name] and
-				(minetest.get_node_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
+				(minetest.get_item_group(n.name, "float") == 0 or minetest.registered_nodes[n_bottom.name].liquidtype == "none") and
 				(n.name ~= n_bottom.name or (minetest.registered_nodes[n_bottom.name].leveled and minetest.env:get_node_level(p_bottom) < minetest.env:get_node_max_level(p_bottom))) and
-				(not minetest.registered_nodes[n_bottom.name].walkable or 
+				(not minetest.registered_nodes[n_bottom.name].walkable or
 					minetest.registered_nodes[n_bottom.name].buildable_to) then
 			if delay then
 				minetest.after(0.1, nodeupdate_single, {x=p.x, y=p.y, z=p.z}, false)
@@ -179,7 +179,7 @@ function nodeupdate_single(p, delay)
 		end
 	end
 	
-	if minetest.get_node_group(n.name, "attached_node") ~= 0 then
+	if minetest.get_item_group(n.name, "attached_node") ~= 0 then
 		if not check_attached_node(p, n) then
 			drop_attached_node(p)
 			nodeupdate(p)
