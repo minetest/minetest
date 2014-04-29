@@ -50,4 +50,6 @@ private:
 	void InitializeModApi(lua_State *L, int top);
 };
 
+void log_deprecated(std::string message);
+
 #endif /* SCRIPTING_GAME_H_ */

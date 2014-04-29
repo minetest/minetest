@@ -78,6 +78,11 @@ int ModApiUtil::l_log(lua_State *L)
 			level = LMT_ACTION;
 		else if(levelname == "verbose")
 			level = LMT_VERBOSE;
+		else if (levelname == "deprecated") {
+			log_deprecated(L,text);
+			return 0;
+		}
+
 	}
 	log_printline(level, text);
 	return 0;

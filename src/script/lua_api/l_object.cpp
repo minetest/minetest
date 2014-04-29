@@ -659,6 +659,7 @@ int ObjectRef::l_get_entity_name(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
+	log_deprecated(L,"Deprecated call to \"get_entity_name");
 	if(co == NULL) return 0;
 	// Do it
 	std::string name = co->getName();
