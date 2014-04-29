@@ -85,6 +85,7 @@ function minetest.get_item_group(name, group)
 end
 
 function minetest.get_node_group(name, group)
+	minetest.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
 	return minetest.get_item_group(name, group)
 end
 

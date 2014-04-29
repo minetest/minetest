@@ -285,6 +285,11 @@
 #disable_anticheat = false
 # If true, actions are recorded for rollback
 #enable_rollback_recording = false
+# handling for deprecated lua api calls
+#    "legacy" = (try to) mimic old behaviour (default for release)
+#    "log"    = mimic and log backtrace of deprecated call (default for debug)
+#    "error"  = abort on usage of deprecated call (suggested for mod developers)
+#deprecated_lua_api_handling = legacy
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0

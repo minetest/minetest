@@ -98,3 +98,8 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	ObjectRef::Register(L);
 	LuaSettings::Register(L);
 }
+
+void log_deprecated(std::string message)
+{
+	log_deprecated(NULL,message);
+}
