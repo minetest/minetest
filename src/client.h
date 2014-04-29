@@ -433,6 +433,8 @@ public:
 	void afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font);
 
 	float getRTT(void);
+	float getCurRate(void);
+	float getAvgRate(void);
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();

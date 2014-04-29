@@ -203,6 +203,9 @@
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
 
+# enable usage of remote media server (if provided by server)
+#enable_remote_media_server = true
+
 # Url to the server list displayed in the Multiplayer Tab
 #serverlist_url = servers.minetest.net
 # File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
