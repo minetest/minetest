@@ -890,54 +890,105 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	}
 }
 
-void ClientMap::renderBlockBoundaries()
+void ClientMap::renderDebugBlockBoundaries(bool xray)
 {
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	video::SMaterial mat;
-	mat.Lighting = false;
-	mat.ZWriteEnable = false;
+	mat.Lighting = true;
+	mat.ZWriteEnable = true;
+	mat.FrontfaceCulling = false;
+	mat.BackfaceCulling = false;
 
-	const v3f inset(BS/2);
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+	if (xray)
+		driver->clearZBuffer();
+
+	const float B = 0.005;
 	const v3f blocksize(MAP_BLOCKSIZE);
+	const v3f vertices[32] = {
+		// Boundary cube, 0-7
+		v3f(0,0,0), v3f(0,0,1), v3f(0,1,0), v3f(0,1,1),
+		v3f(1,0,0), v3f(1,0,1), v3f(1,1,0), v3f(1,1,1),
+		// X inset cube, 8-15
+		v3f(0,0+B,0+B), v3f(0,0+B,1-B), v3f(0,1-B,0+B), v3f(0,1-B,1-B),
+		v3f(1,0+B,0+B), v3f(1,0+B,1-B), v3f(1,1-B,0+B), v3f(1,1-B,1-B),
+		// Y inset cube, 16-23
+		v3f(0+B,0,0+B), v3f(0+B,0,1-B), v3f(0+B,1,0+B), v3f(0+B,1,1-B),
+		v3f(1-B,0,0+B), v3f(1-B,0,1-B), v3f(1-B,1,0+B), v3f(1-B,1,1-B),
+		// Z inset cube, 24-31
+		v3f(0+B,0+B,0), v3f(0+B,0+B,1), v3f(0+B,1-B,0), v3f(0+B,1-B,1),
+		v3f(1-B,0+B,0), v3f(1-B,0+B,1), v3f(1-B,1-B,0), v3f(1-B,1-B,1)
+	};
+	const u16 indices[144] = {
+		// -X face
+		 0, 8, 1,   1, 8, 9,   0, 2, 8,   2,10, 8,
+		 1, 9, 3,   3, 9,11,   2,11,10,   3,11, 2,
+		// +X face
+		 4,12, 5,   5,12,13,   4, 6,12,   6,14,12,
+		 5,13, 7,   7,13,15,   6,15,14,   7,15, 6,
+		// -Y face
+		 0,16, 1,   1,16,17,   0, 4,16,   4,20,16,
+		 1,17, 5,   5,17,21,   4,21,20,   5,21, 4,
+		// +Y face
+		 2,18, 3,   3,18,19,   2, 6,18,   6,22,18,
+		 3,19, 7,   7,19,23,   6,23,22,   7,23, 6,
+		// -Z face
+		 0,24, 2,   2,24,26,   2, 6,26,   6,30,26,
+		 4,28, 6,   6,28,30,   2,30,26,   6,30, 2,
+		// +Z face
+		 1,25, 5,   5,25,29,   1, 3,25,   3,27,25,
+		 5,29, 7,   7,29,31,   3,31,27,   7,31, 3
+	};
 
-	for (int pass = 0; pass < 2; ++pass) {
-		video::SColor color_offset(0, 0, 0, 0);
-		if (pass == 0) {
-			mat.Thickness = 1;
-			mat.ZBuffer = video::ECFN_ALWAYS;
-			color_offset.setGreen(64);
+	scene::SMeshBuffer* boundary = new scene::SMeshBuffer();
+	boundary->Vertices.set_used(32);
+	for(int i = 0; i < 32; ++i)
+	{
+		video::S3DVertex& v = boundary->Vertices[i];
+		v.Pos = vertices[i];
+	}
+	boundary->Indices.set_used(144);
+	for(int i = 0; i < 144; ++i)
+	{
+		boundary->Indices[i] = indices[i];
+	}
+	boundary->setDirty();
+	boundary->recalculateBoundingBox();
+
+	const float INSET = 0.01;
+	core::CMatrix4<f32> offset;
+	offset.setScale(BS*MAP_BLOCKSIZE*(1-INSET));
+
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = m_drawlist.begin();
+			i != m_drawlist.end(); ++i)
+	{
+		video::SColor color(255, 0, 0, 0);
+		if (i->second->isDummy()) {
+			color.setRed(255);
 		} else {
-			mat.Thickness = 3;
-			mat.ZBuffer = video::ECFN_LESSEQUAL;
+			color.setBlue(255);
 		}
+		// TODO: Checkerboard pattern to make it easier to see neighbors
+		// TODO: Highlight block player is in
+
+		mat.EmissiveColor = color;
 		driver->setMaterial(mat);
 
-		for(std::map<v3s16, MapBlock*>::iterator
-				i = m_drawlist.begin();
-				i != m_drawlist.end(); ++i)
-		{
-			video::SColor color(255, 0, 0, 0);
-			if (i->second->isDummy()) {
-				color.setRed(255);
-				color.setGreen(128);
-			} else {
-				color.setBlue(255);
-			}
+		v3s16 bpos = i->first;
+		core::aabbox3d<f32> bound;
+		bound.MinEdge = intToFloat(bpos, BS)*blocksize
+			- v3f(BS)*0.5
+			+ v3f(BS*MAP_BLOCKSIZE*(INSET/2));
+		bound.MaxEdge = bound.MinEdge
+			+ blocksize*BS;
 
-			v3s16 bpos = i->first;
-			core::aabbox3d<f32> bound;
-			bound.MinEdge = intToFloat(bpos, BS)*blocksize
-				+ inset
-				- v3f(BS)*0.5;
-			bound.MaxEdge = bound.MinEdge
-				+ blocksize*BS
-				- inset
-				- inset;
-			color = color + color_offset;
-
-			driver->draw3DBox(bound, color);
-		}
+		offset.setTranslation(bound.MinEdge);
+		driver->setTransform(video::ETS_WORLD,offset);
+		driver->drawMeshBuffer(boundary);
 	}
+
+	delete boundary;
 }
 
 void ClientMap::PrintInfo(std::ostream &out)

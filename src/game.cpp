@@ -1591,7 +1591,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	bool disable_camera_update = false;
 	bool show_debug = g_settings->getBool("show_debug");
 	bool show_profiler_graph = false;
-	bool show_block_boundaries = false;
+	u8 show_block_boundaries = 0; // 0: Disabled, 1: Non-xray, 2: Xray
 	u32 show_profiler = 0;
 	u32 show_profiler_max = 3;  // Number of pages
 
@@ -2092,11 +2092,19 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_block_boundaries")))
 		{
-			show_block_boundaries = !show_block_boundaries;
-			if(show_block_boundaries)
-				statustext = L"Block boundaries shown";
-			else
+			show_block_boundaries = (show_block_boundaries+1)%3;
+			if(show_block_boundaries == 0)
+			{
 				statustext = L"Block boundaries hidden";
+			}
+			else if(show_block_boundaries == 1)
+			{
+				statustext = L"Block boundaries shown";
+			}
+			else if(show_block_boundaries == 2)
+			{
+				statustext = L"Block boundaries shown in X-ray mode";
+			}
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_increase_viewing_range_min")))
@@ -3351,8 +3359,9 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		draw_scene(driver, smgr, camera, client, player, hud, guienv,
 				hilightboxes, screensize, skycolor, show_hud);
 
-		if(show_block_boundaries) {
-			client.getEnv().getClientMap().renderBlockBoundaries();
+		if(show_block_boundaries >= 1) {
+			bool xray = show_block_boundaries == 2;
+			client.getEnv().getClientMap().renderDebugBlockBoundaries(xray);
 		}
 
 		/*
