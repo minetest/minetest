@@ -332,19 +332,15 @@ int ModApiServer::l_get_player_sysinfo(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char * name = luaL_checkstring(L, 1);
 	Player *player = getEnv(L)->getPlayer(name);
-	if(player == NULL)
-	{
+	if(player == NULL) {
 		lua_pushnil(L); // no such player
 		return 1;
 	}
-	try
-	{
-		std::string sysinfo = getServer(L)->getPeerSysinfo(getEnv(L)->getPlayer(name)->peer_id);
+	try {
+		std::string sysinfo = getServer(L)->getPeerSysinfo(player->peer_id);
 		lua_pushstring(L, sysinfo.c_str());
 		return 1;
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch(con::PeerNotFoundException) { // unlikely
 		dstream << __FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
