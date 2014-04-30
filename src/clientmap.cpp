@@ -955,7 +955,7 @@ void ClientMap::renderDebugBlockBoundaries(bool xray)
 	boundary->setDirty();
 	boundary->recalculateBoundingBox();
 
-	const float INSET = 0.01;
+	const float INSET = 0.04;
 	core::CMatrix4<f32> offset;
 	offset.setScale(BS*MAP_BLOCKSIZE*(1-INSET));
 
@@ -963,19 +963,22 @@ void ClientMap::renderDebugBlockBoundaries(bool xray)
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
+		v3s16 bpos = i->first;
+
 		video::SColor color(255, 0, 0, 0);
 		if (i->second->isDummy()) {
 			color.setRed(255);
 		} else {
-			color.setBlue(255);
+			color.setBlue(128);
 		}
-		// TODO: Checkerboard pattern to make it easier to see neighbors
+		if (((bpos.X + bpos.Y + bpos.Z) % 2) == 0) {
+			color.setGreen(128);
+		}
 		// TODO: Highlight block player is in
 
 		mat.EmissiveColor = color;
 		driver->setMaterial(mat);
 
-		v3s16 bpos = i->first;
 		core::aabbox3d<f32> bound;
 		bound.MinEdge = intToFloat(bpos, BS)*blocksize
 			- v3f(BS)*0.5
