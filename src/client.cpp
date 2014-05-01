@@ -221,6 +221,11 @@ Client::Client(
 		MtEventManager *event,
 		bool ipv6
 ):
+	m_packetcounter_timer(0.0),
+	m_connection_reinit_timer(0.1),
+	m_avg_rtt_timer(0.0),
+	m_playerpos_send_timer(0.0),
+	m_ignore_damage_timer(0.0),
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -258,13 +263,6 @@ Client::Client(
 	m_removed_sounds_check_timer(0),
 	m_state(LC_Created)
 {
-	m_packetcounter_timer = 0.0;
-	//m_delete_unused_sectors_timer = 0.0;
-	m_connection_reinit_timer = 0.0;
-	m_avg_rtt_timer = 0.0;
-	m_playerpos_send_timer = 0.0;
-	m_ignore_damage_timer = 0.0;
-
 	/*
 		Add local player
 	*/
@@ -332,11 +330,11 @@ void Client::connect(Address address)
 void Client::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
-	
+
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
-	
+
 	if(m_ignore_damage_timer > dtime)
 		m_ignore_damage_timer -= dtime;
 	else
@@ -360,7 +358,8 @@ void Client::step(float dtime)
 		{
 			counter = 20.0;
 			
-			infostream<<"Client packetcounter (20s):"<<std::endl;
+			infostream << "Client packetcounter (" << m_packetcounter_timer
+					<< "):"<<std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -456,8 +455,13 @@ void Client::step(float dtime)
 		}
 	}
 #endif
-
-	if(m_state == LC_Created)
+	// UGLY hack to fix 2 second startup delay caused by non existent
+	// server client startup synchronization in local server or singleplayer mode
+	static bool initial_step = true;
+	if (initial_step) {
+		initial_step = false;
+	}
+	else if(m_state == LC_Created)
 	{
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
@@ -469,7 +473,6 @@ void Client::step(float dtime)
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
-	
 			// Send TOSERVER_INIT
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST_READ
