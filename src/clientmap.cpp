@@ -892,6 +892,11 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 
 void ClientMap::renderDebugBlockBoundaries(bool xray)
 {
+	m_camera_mutex.Lock();
+	v3f camera_position = m_camera_position;
+	m_camera_mutex.Unlock();
+	v3s16 ppos = getNodeBlockPos(floatToInt(camera_position, BS));
+
 	video::SMaterial mat;
 	mat.Lighting = true;
 	mat.ZWriteEnable = true;
@@ -966,15 +971,18 @@ void ClientMap::renderDebugBlockBoundaries(bool xray)
 		v3s16 bpos = i->first;
 
 		video::SColor color(255, 0, 0, 0);
-		if (i->second->isDummy()) {
-			color.setRed(255);
+		if (bpos == ppos) {
+			color.setGreen(255);
 		} else {
-			color.setBlue(128);
+			if (i->second->isDummy()) {
+				color.setRed(255);
+			} else {
+				color.setBlue(128);
+			}
+			if (((bpos.X + bpos.Y + bpos.Z) % 2) == 0) {
+				color.setGreen(128);
+			}
 		}
-		if (((bpos.X + bpos.Y + bpos.Z) % 2) == 0) {
-			color.setGreen(128);
-		}
-		// TODO: Highlight block player is in
 
 		mat.EmissiveColor = color;
 		driver->setMaterial(mat);
