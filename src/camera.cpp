@@ -679,7 +679,7 @@ void Camera::wield(const ItemStack &item, u16 playeritem)
 	}
 }
 
-void Camera::drawWieldedTool()
+void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
 	// Set vertex colors of wield mesh according to light level
 	u8 li = m_wieldlight;
@@ -695,5 +695,16 @@ void Camera::drawWieldedTool()
 	cam->setFOV(72.0*M_PI/180.0);
 	cam->setNearValue(0.1);
 	cam->setFarValue(100);
+	if (translation != NULL) {
+		irr::core::matrix4 startMatrix = cam->getAbsoluteTransformation();
+		irr::core::vector3df focusPoint = (cam->getTarget()
+				- cam->getAbsolutePosition()).setLength(1)
+				+ cam->getAbsolutePosition();
+
+		irr::core::vector3df camera_pos =
+				(startMatrix * *translation).getTranslation();
+		cam->setPosition(camera_pos);
+		cam->setTarget(focusPoint);
+	}
 	m_wieldmgr->drawAll();
 }
