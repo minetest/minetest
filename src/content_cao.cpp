@@ -1101,12 +1101,15 @@ public:
 				v2s32 new_anim = v2s32(0,0);
 				bool allow_update = false;
 
-				if(!player->touching_ground &&
+				// increase speed if using fast or flying fast
+				if((g_settings->getBool("fast_move") &&
+					m_gamedef->checkLocalPrivilege("fast")) &&
+					(controls.aux1 ||
+					(!player->touching_ground &&
 					g_settings->getBool("free_move") &&
-				m_gamedef->checkLocalPrivilege("fly") &&
-					g_settings->getBool("fast_move") &&
-				m_gamedef->checkLocalPrivilege("fast"))
-					new_speed *= 1.5;
+					m_gamedef->checkLocalPrivilege("fly"))))
+						new_speed *= 1.5;
+				// slowdown speed if sneeking
 				if(controls.sneak && walking)
 					new_speed /= 2;
 
@@ -1121,20 +1124,18 @@ public:
 					player->last_animation = DIG_ANIM;
 				}
 
-				if ((new_anim.X + new_anim.Y) > 0) {
+				// Apply animations if input detected and not attached
+				// or set idle animation
+				if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached) {
 					allow_update = true;
 					m_animation_range = new_anim;
 					m_animation_speed = new_speed;
 					player->last_animation_speed = m_animation_speed;
 				} else {
 					player->last_animation = NO_ANIM;
-				}
-				// reset animation when no input detected
-				if (!walking && !controls.LMB && !controls.RMB) {
-					player->last_animation = NO_ANIM;
 					if (old_anim != NO_ANIM) {
 						m_animation_range = player->local_animations[0];
-							updateAnimation();
+						updateAnimation();
 					}
 				}
 
@@ -1798,14 +1799,15 @@ public:
 					m_animation_blend = readF1000(is);
 				}
 				// update animation only if local animations present
-				// and received animation is not unknown
-				int frames = 0;
-				for (int i = 0;i<4;i++) {
-					frames += (int)player->local_animations[i].Y;
+				// and received animation is unknown (except idle animation)
+				bool is_known = false;
+				for (int i = 1;i<4;i++) {
+					if(m_animation_range.Y == player->local_animations[i].Y)
+						is_known = true;
 				}
-				if(frames < 1) {
-					player->last_animation = NO_ANIM;
-					updateAnimation();
+				if(!is_known ||
+					(player->local_animations[1].Y + player->local_animations[2].Y < 1)) {
+						updateAnimation();
 				}
 			}
 		}
