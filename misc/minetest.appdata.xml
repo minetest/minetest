@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com> -->
 <application>
 	<id type="desktop">minetest.desktop</id>
-	<licence>CC0</licence>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>Apache-2.0 and CC-BY-SA-3.0 and LGPL-2.1+ and MIT</project_license>
 	<name>Minetest</name>
-	<summary>Multiplayer infinite-world block sandbox</summary>
+	<summary>Multiplayer infinite-world block sandbox game</summary>
 	<description>
 		<p>Minetest is an infinite-world block sandbox game and game engine.</p>
 		<p>Players can create and destroy various types of blocks in a three-dimensional open world. This allows forming structures in every possible creation, on multiplayer servers or in singleplayer.</p>
