@@ -716,7 +716,7 @@ void Channel::UpdateTimers(float dtime,bool legacy_peer)
 			packet_too_late = current_packet_too_late;
 			packets_successfull = current_packet_successfull;
 
-			if (current_bytes_transfered > (window_size*512/2))
+			if (current_bytes_transfered > (unsigned int) (window_size*512/2))
 			{
 				reasonable_amount_of_data_transmitted = true;
 			}

@@ -546,7 +546,7 @@ public:
 	void setWindowSize(unsigned int size) { window_size = size; };
 private:
 	JMutex m_internal_mutex;
-	unsigned int window_size;
+	int window_size;
 
 	u16 next_incoming_seqnum;
 
