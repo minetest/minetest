@@ -46,7 +46,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	this->gamedef     = gamedef;
 	this->player      = player;
 	this->inventory   = inventory;
-	
+
 	m_screensize       = v2u32(0, 0);
 	m_displaycenter    = v2s32(0, 0);
 	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
@@ -222,7 +222,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 }
 
 
-void Hud::drawLuaElements() {
+void Hud::drawLuaElements(v3s16 camera_offset) {
 	for (size_t i = 0; i != player->hud.size(); i++) {
 		HudElement *e = player->hud[i];
 		if (!e)
@@ -277,6 +277,7 @@ void Hud::drawLuaElements() {
 				v3f w_pos = e->world_pos * BS;
 				float distance = floor(10 * p_pos.getDistanceFrom(e->world_pos)) / 10;
 				scene::ICameraSceneNode* camera = smgr->getActiveCamera();
+				w_pos -= intToFloat(camera_offset, BS);
 				core::matrix4 trans = camera->getProjectionMatrix();
 				trans *= camera->getViewMatrix();
 				f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
