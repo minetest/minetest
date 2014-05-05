@@ -3594,7 +3594,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			Draw lua hud items
 		*/
 		if (show_hud)
-			hud.drawLuaElements();
+			hud.drawLuaElements(camera.getOffset());
 
 		/*
 			Draw gui

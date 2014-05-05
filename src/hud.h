@@ -115,6 +115,7 @@ public:
 	bool use_hotbar_image;
 	std::string hotbar_selected_image;
 	bool use_hotbar_selected_image;
+	v3s16 camera_offset;
 	
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, gui::IGUIFont *font,
@@ -125,7 +126,7 @@ public:
 	void resizeHotbar();
 	void drawCrosshair();
 	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
-	void drawLuaElements();
+	void drawLuaElements(v3s16 camera_offset);
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 					 std::string texture, s32 count, v2s32 offset);
