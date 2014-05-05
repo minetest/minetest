@@ -973,13 +973,19 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			}
 		}
 
-		if(image == NULL)
-		{
-			if(part_of_name != ""){
-				errorstream<<"generateImage(): Could not load image \""
+		if (image == NULL) {
+			if (part_of_name != "") {
+				if (part_of_name.find("_normal.png") == std::string::npos){			
+					errorstream<<"generateImage(): Could not load image \""
 						<<part_of_name<<"\""<<" while building texture"<<std::endl;
-				errorstream<<"generateImage(): Creating a dummy"
+					errorstream<<"generateImage(): Creating a dummy"
 						<<" image for \""<<part_of_name<<"\""<<std::endl;
+				} else {
+					infostream<<"generateImage(): Could not load normal map \""
+						<<part_of_name<<"\""<<std::endl;
+					infostream<<"generateImage(): Creating a dummy"
+						<<" normal map for \""<<part_of_name<<"\""<<std::endl;
+				}
 			}
 
 			// Just create a dummy image
