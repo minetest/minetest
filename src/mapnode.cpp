@@ -459,7 +459,7 @@ u32 MapNode::serializedLength(u8 version)
 	else
 		return 4;
 }
-void MapNode::serialize(u8 *dest, u8 version)
+void MapNode::serialize(u8 *dest, u8 version) const
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");

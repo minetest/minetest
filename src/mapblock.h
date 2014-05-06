@@ -360,14 +360,14 @@ public:
 		Sets m_day_night_differs to appropriate value.
 		These methods don't care about neighboring blocks.
 	*/
-	void actuallyUpdateDayNightDiff();
+	void actuallyUpdateDayNightDiff() const;
 	/*
 		Call this to schedule what the previous function does to be done
 		when the value is actually needed.
 	*/
 	void expireDayNightDiff();
 
-	bool getDayNightDiff()
+	bool getDayNightDiff() const
 	{
 		if(m_day_night_differs_expired)
 			actuallyUpdateDayNightDiff();
@@ -401,7 +401,7 @@ public:
 	{
 		m_timestamp = time;
 	}
-	u32 getTimestamp()
+	u32 getTimestamp() const
 	{
 		return m_timestamp;
 	}
@@ -468,12 +468,12 @@ public:
 	
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
-	void serialize(std::ostream &os, u8 version, bool disk);
+	void serialize(std::ostream &os, u8 version, bool disk) const;
 	// If disk == true: In addition to doing other things, will add
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
-	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version) const;
 	void deSerializeNetworkSpecific(std::istream &is);
 
 private:
@@ -561,8 +561,8 @@ private:
 	bool m_lighting_expired;
 	
 	// Whether day and night lighting differs
-	bool m_day_night_differs;
-	bool m_day_night_differs_expired;
+	mutable bool m_day_night_differs;
+	mutable bool m_day_night_differs_expired;
 
 	bool m_generated;
 	

@@ -775,13 +775,7 @@ void Server::AsyncRunStep(bool initial_step)
 				continue;
 			}
 
-			std::string data_buffer;
-
-			char buf[4];
-
 			// Handle removed objects
-			writeU16((u8*)buf, removed_objects.size());
-			data_buffer.append(buf, 2);
 			for(std::set<u16>::iterator
 					i = removed_objects.begin();
 					i != removed_objects.end(); ++i)
@@ -789,10 +783,6 @@ void Server::AsyncRunStep(bool initial_step)
 				// Get object
 				u16 id = *i;
 				ServerActiveObject* obj = m_env->getActiveObject(id);
-
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
 
 				// Remove from known objects
 				client->m_known_objects.erase(id);
@@ -802,8 +792,7 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 
 			// Handle added objects
-			writeU16((u8*)buf, added_objects.size());
-			data_buffer.append(buf, 2);
+			std::vector<protocol::AddedObject> proto_added_objects;
 			for(std::set<u16>::iterator
 					i = added_objects.begin();
 					i != added_objects.end(); ++i)
@@ -820,17 +809,15 @@ void Server::AsyncRunStep(bool initial_step)
 				else
 					type = obj->getSendType();
 
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
-				writeU8((u8*)buf, type);
-				data_buffer.append(buf, 1);
-
-				if(obj)
-					data_buffer.append(serializeLongString(
-							obj->getClientInitializationData(client->net_proto_version)));
-				else
-					data_buffer.append(serializeLongString(""));
+				// Queue for sending
+				protocol::AddedObject pao;
+				pao.id = id;
+				pao.type = type;
+				if(obj){
+					pao.init_data = obj->getClientInitializationData(
+							client->net_proto_version);
+				}
+				proto_added_objects.push_back(pao);
 
 				// Add to known objects
 				client->m_known_objects.insert(id);
@@ -839,18 +826,17 @@ void Server::AsyncRunStep(bool initial_step)
 					obj->m_known_by_count++;
 			}
 
-			// Send packet
-			SharedBuffer<u8> reply(2 + data_buffer.size());
-			writeU16(&reply[0], TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD);
-			memcpy((char*)&reply[2], data_buffer.c_str(),
-					data_buffer.size());
 			// Send as reliable
-			m_clients.send(client->peer_id, 0, reply, true);
+			m_clients.send(client->peer_id, 0,
+				protocol::create_TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD(
+						client->net_proto_version,
+						removed_objects,
+						proto_added_objects
+			), true);
 
 			verbosestream<<"Server: Sent object remove/add: "
 					<<removed_objects.size()<<" removed, "
-					<<added_objects.size()<<" added, "
-					<<"packet size is "<<reply.getSize()<<std::endl;
+					<<added_objects.size()<<" added"<<std::endl;
 		}
 		m_clients.Unlock();
 #if 0
@@ -922,8 +908,8 @@ void Server::AsyncRunStep(bool initial_step)
 			i != clients.end(); ++i)
 		{
 			RemoteClient *client = i->second;
-			std::string reliable_data;
-			std::string unreliable_data;
+			std::vector<ActiveObjectMessage> reliable_messages;
+			std::vector<ActiveObjectMessage> unreliable_messages;
 			// Go through all objects in message buffer
 			for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
@@ -941,48 +927,37 @@ void Server::AsyncRunStep(bool initial_step)
 				{
 					// Compose the full new data with header
 					ActiveObjectMessage aom = *k;
-					std::string new_data;
-					// Add object id
-					char buf[2];
-					writeU16((u8*)&buf[0], aom.id);
-					new_data.append(buf, 2);
-					// Add data
-					new_data += serializeString(aom.datastring);
-					// Add data to buffer
 					if(aom.reliable)
-						reliable_data += new_data;
+						reliable_messages.push_back(aom);
 					else
-						unreliable_data += new_data;
+						unreliable_messages.push_back(aom);
 				}
 			}
+
 			/*
-				reliable_data and unreliable_data are now ready.
+				reliable_messages and unreliable_messages are now ready.
 				Send them.
 			*/
-			if(reliable_data.size() > 0)
-			{
-				SharedBuffer<u8> reply(2 + reliable_data.size());
-				writeU16(&reply[0], TOCLIENT_ACTIVE_OBJECT_MESSAGES);
-				memcpy((char*)&reply[2], reliable_data.c_str(),
-						reliable_data.size());
-				// Send as reliable
-				m_clients.send(client->peer_id, 0, reply, true);
+			if(!reliable_messages.empty()){
+				m_clients.send(client->peer_id, 0,
+					protocol::create_TOCLIENT_ACTIVE_OBJECT_MESSAGES(
+							client->net_proto_version,
+							reliable_messages
+				), true);
 			}
-			if(unreliable_data.size() > 0)
-			{
-				SharedBuffer<u8> reply(2 + unreliable_data.size());
-				writeU16(&reply[0], TOCLIENT_ACTIVE_OBJECT_MESSAGES);
-				memcpy((char*)&reply[2], unreliable_data.c_str(),
-						unreliable_data.size());
-				// Send as unreliable
-				m_clients.send(client->peer_id, 1, reply, false);
+			if(!unreliable_messages.empty()){
+				m_clients.send(client->peer_id, 0,
+					protocol::create_TOCLIENT_ACTIVE_OBJECT_MESSAGES(
+							client->net_proto_version,
+							reliable_messages
+				), false);
 			}
 
-			/*if(reliable_data.size() > 0 || unreliable_data.size() > 0)
+			/*if(reliable_messages.size() > 0 || unreliable_messages.size() > 0)
 			{
-				infostream<<"Server: Size of object message data: "
-						<<"reliable: "<<reliable_data.size()
-						<<", unreliable: "<<unreliable_data.size()
+				infostream<<"Server: Size of object message messages: "
+						<<"reliable: "<<reliable_messages.size()
+						<<", unreliable: "<<unreliable_messages.size()
 						<<std::endl;
 			}*/
 		}
@@ -1633,16 +1608,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Answer with a TOCLIENT_INIT
 		*/
 		{
-			SharedBuffer<u8> reply(2+1+6+8+4);
-			writeU16(&reply[0], TOCLIENT_INIT);
-			writeU8(&reply[2], deployed);
-			//send dummy pos for legacy reasons only
-			writeV3S16(&reply[2+1], floatToInt(v3f(0,0,0), BS));
-			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
-			writeF1000(&reply[2+1+6+8], g_settings->getFloat("dedicated_server_step"));
-
 			// Send as reliable
-			m_clients.send(peer_id, 0, reply, true);
+			m_clients.send(peer_id, 0, protocol::create_TOCLIENT_INIT(
+					client->net_proto_version,
+					deployed,
+					floatToInt(v3f(0,0,0), BS),
+					m_env->getServerMap().getSeed(),
+					g_settings->getFloat("dedicated_server_step")
+			), true);
 			m_clients.event(peer_id, Init);
 		}
 
@@ -2969,21 +2942,7 @@ void Server::SendMovement(u16 peer_id)
 	m_clients.send(peer_id, 0, data, true);
 }
 
-void Server::SendHP(u16 peer_id, u8 hp)
-{
-	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
-
-	writeU16(os, TOCLIENT_HP);
-	writeU8(os, hp);
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
-}
-
+// TODO: Remove
 void Server::SendBreath(u16 peer_id, u16 breath)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2999,36 +2958,18 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	m_clients.send(peer_id, 0, data, true);
 }
 
-void Server::SendAccessDenied(u16 peer_id,const std::wstring &reason)
-{
-	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
-
-	writeU16(os, TOCLIENT_ACCESS_DENIED);
-	os<<serializeWideString(reason);
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
-}
-
-void Server::SendDeathscreen(u16 peer_id,bool set_camera_point_target,
+void Server::SendDeathscreen(u16 peer_id, bool set_camera_point_target,
 		v3f camera_point_target)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
 
-	writeU16(os, TOCLIENT_DEATHSCREEN);
-	writeU8(os, set_camera_point_target);
-	writeV3F1000(os, camera_point_target);
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
+	m_clients.send(peer_id, 0,
+		protocol::create_TOCLIENT_DEATHSCREEN(
+				0,
+				set_camera_point_target,
+				camera_point_target
+	), true);
 }
 
 void Server::SendItemDef(u16 peer_id,
@@ -3062,25 +3003,13 @@ void Server::SendNodeDef(u16 peer_id,
 		INodeDefManager *nodedef, u16 protocol_version)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
 
-	/*
-		u16 command
-		u32 length of the next item
-		zlib-compressed serialized NodeDefManager
-	*/
-	writeU16(os, TOCLIENT_NODEDEF);
-	std::ostringstream tmp_os(std::ios::binary);
-	nodedef->serialize(tmp_os, protocol_version);
-	std::ostringstream tmp_os2(std::ios::binary);
-	compressZlib(tmp_os.str(), tmp_os2);
-	os<<serializeLongString(tmp_os2.str());
-
-	// Make data buffer
-	std::string s = os.str();
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_NODEDEF(
+			protocol_version,
+			*nodedef
+	);
 	verbosestream<<"Server: Sending node definitions to id("<<peer_id
-			<<"): size="<<s.size()<<std::endl;
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			<<"): size="<<data.getSize()<<std::endl;
 	// Send as reliable
 	m_clients.send(peer_id, 0, data, true);
 }
@@ -3098,49 +3027,22 @@ void Server::SendInventory(u16 peer_id)
 
 	playersao->m_inventory_not_sent = false;
 
-	/*
-		Serialize it
-	*/
-
-	std::ostringstream os;
-	playersao->getInventory()->serialize(os);
-
-	std::string s = os.str();
-
-	SharedBuffer<u8> data(s.size()+2);
-	writeU16(&data[0], TOCLIENT_INVENTORY);
-	memcpy(&data[2], s.c_str(), s.size());
-
 	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
+	m_clients.send(peer_id, 0, protocol::create_TOCLIENT_INVENTORY(
+			0,
+			playersao->getInventory()
+	), true);
 }
 
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-
-	// Write command
-	writeU16(buf, TOCLIENT_CHAT_MESSAGE);
-	os.write((char*)buf, 2);
-
-	// Write length
-	writeU16(buf, message.size());
-	os.write((char*)buf, 2);
-
-	// Write string
-	for(u32 i=0; i<message.size(); i++)
-	{
-		u16 w = message[i];
-		writeU16(buf, w);
-		os.write((char*)buf, 2);
-	}
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Create packet
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_CHAT_MESSAGE(
+			0,
+			message
+	);
 
 	if (peer_id != PEER_ID_INEXISTENT)
 	{
@@ -3424,10 +3326,11 @@ void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 	DSTACK(__FUNCTION_NAME);
 
 	// Make packet
-	SharedBuffer<u8> data(2+2+4);
-	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
-	writeU16(&data[2], time);
-	writeF1000(&data[4], time_speed);
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_TIME_OF_DAY(
+			0,
+			time,
+			time_speed
+	);
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		m_clients.sendToAll(0,data,true);
@@ -3444,7 +3347,11 @@ void Server::SendPlayerHP(u16 peer_id)
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
-	SendHP(peer_id, playersao->getHP());
+
+	m_clients.send(peer_id, 0, protocol::create_TOCLIENT_HP(
+			0,
+			playersao->getHP()
+	), true);
 
 	// Send to other clients
 	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
@@ -3467,28 +3374,23 @@ void Server::SendMovePlayer(u16 peer_id)
 	Player *player = m_env->getPlayer(peer_id);
 	assert(player);
 
-	std::ostringstream os(std::ios_base::binary);
-	writeU16(os, TOCLIENT_MOVE_PLAYER);
-	writeV3F1000(os, player->getPosition());
-	writeF1000(os, player->getPitch());
-	writeF1000(os, player->getYaw());
+	v3f pos = player->getPosition();
+	f32 pitch = player->getPitch();
+	f32 yaw = player->getYaw();
+	verbosestream<<"Server: Sending TOCLIENT_MOVE_PLAYER"
+			<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
+			<<" pitch="<<pitch
+			<<" yaw="<<yaw
+			<<std::endl;
 
-	{
-		v3f pos = player->getPosition();
-		f32 pitch = player->getPitch();
-		f32 yaw = player->getYaw();
-		verbosestream<<"Server: Sending TOCLIENT_MOVE_PLAYER"
-				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
-				<<" pitch="<<pitch
-				<<" yaw="<<yaw
-				<<std::endl;
-	}
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_clients.send(peer_id, 0, data, true);
+	m_clients.send(peer_id, 0,
+		protocol::create_TOCLIENT_MOVE_PLAYER(
+				0,
+				pos,
+				pitch,
+				yaw
+	), true);
 }
 
 void Server::SendLocalPlayerAnimations(u16 peer_id, v2s32 animation_frames[4], f32 animation_speed)
@@ -3624,18 +3526,16 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			i != dst_clients.end(); i++)
 		psound.clients.insert(*i);
 	// Create packet
-	std::ostringstream os(std::ios_base::binary);
-	writeU16(os, TOCLIENT_PLAY_SOUND);
-	writeS32(os, id);
-	os<<serializeString(spec.name);
-	writeF1000(os, spec.gain * params.gain);
-	writeU8(os, params.type);
-	writeV3F1000(os, pos);
-	writeU16(os, params.object);
-	writeU8(os, params.loop);
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	SharedBuffer<u8> data = protocol::create_TOCLIENT_PLAY_SOUND(
+			0,
+			id,
+			spec.name,
+			spec.gain * params.gain,
+			params.type,
+			pos,
+			params.object,
+			params.loop
+	);
 	// Send
 	for(std::list<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++){
@@ -3676,12 +3576,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	v3f p_f = intToFloat(p, BS);
 
 	// Create packet
-	u32 replysize = 8;
-	SharedBuffer<u8> reply(replysize);
-	writeU16(&reply[0], TOCLIENT_REMOVENODE);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
+	SharedBuffer<u8> reply = protocol::create_TOCLIENT_REMOVENODE(
+			0,
+			p
+	);
 
 	std::list<u16> clients = m_clients.getClientIDs();
 	for(std::list<u16>::iterator
@@ -3743,16 +3641,13 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if (client != 0)
 		{
 			// Create packet
-			u32 replysize = 9 + MapNode::serializedLength(client->serialization_version);
-			reply = SharedBuffer<u8>(replysize);
-			writeU16(&reply[0], TOCLIENT_ADDNODE);
-			writeS16(&reply[2], p.X);
-			writeS16(&reply[4], p.Y);
-			writeS16(&reply[6], p.Z);
-			n.serialize(&reply[8], client->serialization_version);
-			u32 index = 8 + MapNode::serializedLength(client->serialization_version);
-			writeU8(&reply[index], remove_metadata ? 0 : 1);
-
+			reply = protocol::create_TOCLIENT_ADDNODE(
+					client->net_proto_version,
+					client->serialization_version,
+					p,
+					n,
+					!remove_metadata
+			);
 			if (!remove_metadata) {
 				if (client->net_proto_version <= 21) {
 					// Old clients always clear metadata; fix it
@@ -3781,60 +3676,6 @@ void Server::setBlockNotSent(v3s16 p)
 		client->SetBlockNotSent(p);
 	}
 	m_clients.Unlock();
-}
-
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	v3s16 p = block->getPos();
-
-#if 0
-	// Analyze it a bit
-	bool completely_air = true;
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-	{
-		if(block->getNodeNoEx(v3s16(x0,y0,z0)).d != CONTENT_AIR)
-		{
-			completely_air = false;
-			x0 = y0 = z0 = MAP_BLOCKSIZE; // Break out
-		}
-	}
-
-	// Print result
-	infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
-	if(completely_air)
-		infostream<<"[completely air] ";
-	infostream<<std::endl;
-#endif
-
-	/*
-		Create a packet with the block in the right format
-	*/
-
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver, false);
-	block->serializeNetworkSpecific(os, net_proto_version);
-	std::string s = os.str();
-	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
-
-	u32 replysize = 8 + blockdata.getSize();
-	SharedBuffer<u8> reply(replysize);
-	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
-	memcpy(&reply[8], *blockdata, blockdata.getSize());
-
-	/*infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<":  \tpacket size: "<<replysize<<std::endl;*/
-
-	/*
-		Send packet
-	*/
-	m_clients.send(peer_id, 2, reply, true);
 }
 
 void Server::SendBlocks(float dtime)
@@ -3901,7 +3742,12 @@ void Server::SendBlocks(float dtime)
 		if(!client)
 			continue;
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
+		m_clients.send(q.peer_id, 2, protocol::create_TOCLIENT_BLOCKDATA(
+				client->net_proto_version,
+				client->serialization_version,
+				block->getPos(),
+				block
+		), true);
 
 		client->SentBlock(q.pos);
 		total_sending++;
@@ -4005,18 +3851,6 @@ void Server::fillMediaCache()
 	}
 }
 
-struct SendableMediaAnnouncement
-{
-	std::string name;
-	std::string sha1_digest;
-
-	SendableMediaAnnouncement(const std::string &name_="",
-	                          const std::string &sha1_digest_=""):
-		name(name_),
-		sha1_digest(sha1_digest_)
-	{}
-};
-
 void Server::sendMediaAnnouncement(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4065,20 +3899,6 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	// Send as reliable
 	m_clients.send(peer_id, 0, data, true);
 }
-
-struct SendableMedia
-{
-	std::string name;
-	std::string path;
-	std::string data;
-
-	SendableMedia(const std::string &name_="", const std::string &path_="",
-	              const std::string &data_=""):
-		name(name_),
-		path(path_),
-		data(data_)
-	{}
-};
 
 void Server::sendRequestedMedia(u16 peer_id,
 		const std::list<std::string> &tosend)
@@ -4158,42 +3978,18 @@ void Server::sendRequestedMedia(u16 peer_id,
 	u32 num_bunches = file_bunches.size();
 	for(u32 i=0; i<num_bunches; i++)
 	{
-		std::ostringstream os(std::ios_base::binary);
-
-		/*
-			u16 command
-			u16 total number of texture bunches
-			u16 index of this bunch
-			u32 number of files in this bunch
-			for each file {
-				u16 length of name
-				string name
-				u32 length of data
-				data
-			}
-		*/
-
-		writeU16(os, TOCLIENT_MEDIA);
-		writeU16(os, num_bunches);
-		writeU16(os, i);
-		writeU32(os, file_bunches[i].size());
-
-		for(std::list<SendableMedia>::iterator
-				j = file_bunches[i].begin();
-				j != file_bunches[i].end(); ++j){
-			os<<serializeString(j->name);
-			os<<serializeLongString(j->data);
-		}
-
-		// Make data buffer
-		std::string s = os.str();
 		verbosestream<<"Server::sendRequestedMedia(): bunch "
 				<<i<<"/"<<num_bunches
-				<<" files="<<file_bunches[i].size()
-				<<" size=" <<s.size()<<std::endl;
-		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+				<<" files="<<file_bunches[i].size()<<std::endl;
+
 		// Send as reliable
-		m_clients.send(peer_id, 2, data, true);
+		m_clients.send(peer_id, 2,
+			protocol::create_TOCLIENT_MEDIA(
+					0,
+					num_bunches,
+					i,
+					file_bunches[i]
+		), true);
 	}
 }
 
@@ -4286,7 +4082,12 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	SendAccessDenied(peer_id, reason);
+	m_clients.send(peer_id, 0,
+		protocol::create_TOCLIENT_ACCESS_DENIED(
+				0,
+				reason
+	), true);
+
 	m_clients.event(peer_id,SetDenied);
 	m_con.DisconnectPeer(peer_id);
 }

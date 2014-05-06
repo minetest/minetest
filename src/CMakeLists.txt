@@ -331,6 +331,7 @@ add_subdirectory(util)
 
 set(common_SRCS
 	version.cpp
+	clientserver.cpp
 	rollback_interface.cpp
 	rollback.cpp
 	genericobject.cpp

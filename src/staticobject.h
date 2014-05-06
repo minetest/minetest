@@ -45,7 +45,7 @@ struct StaticObject
 	{
 	}
 
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is, u8 version);
 };
 
@@ -87,7 +87,7 @@ public:
 		m_active.erase(id);
 	}
 
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 	
 	/*
