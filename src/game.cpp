@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
+#include "gsmapper.h"
 
 /*
 	Text input system
@@ -1592,6 +1593,9 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	guitext_profiler->setVisible(false);
 	guitext_profiler->setWordWrap(true);
 	
+	// create mapper
+	gsMapper mapper(device, &client);
+
 	/*
 		Some statistics are collected in these
 	*/
@@ -1862,6 +1866,23 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 		/* reset infotext */
 		infotext = L"";
+
+		// Update mapper elements
+		u16 w = g_settings->getU16("hud_map_width");
+		struct _gsm_color { u32 red; u32 green; u32 blue; } gsm_color;
+		g_settings->getStruct("hud_map_back", "u32,u32,u32",
+			&gsm_color, sizeof(gsm_color) );
+		mapper.setMapVis(screensize.X-(w+10),10, w,
+			g_settings->getU16("hud_map_height"),
+			g_settings->getFloat("hud_map_scale"),
+			g_settings->getU16("hud_map_alpha"),
+			video::SColor(0, gsm_color.red, gsm_color.green, gsm_color.blue));
+		mapper.setMapType(g_settings->getBool("hud_map_above"),
+			g_settings->getU16("hud_map_scan"),
+			g_settings->getS16("hud_map_surface"),
+			g_settings->getBool("hud_map_tracking"),
+			g_settings->getU16("hud_map_border"));
+
 		/*
 			Profiler
 		*/
@@ -3565,6 +3586,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		{
 			hud.drawHotbar(client.getHP(), client.getPlayerItem(),
 					client.getBreath());
+		}
+
+		/*
+			Draw map
+		*/
+		if ((g_settings->getBool("hud_map")) && show_hud)
+		{
+			mapper.drawMap( floatToInt(player->getPosition(), BS) );
 		}
 
 		/*

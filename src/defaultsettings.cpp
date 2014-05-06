@@ -279,6 +279,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 
 	settings->setDefault("language", "");
+
+	// gsmapper
+	settings->setDefault("hud_map", "false");
+	settings->setDefault("hud_map_back", "0,0,0");
+	settings->setDefault("hud_map_width", "128");
+	settings->setDefault("hud_map_height", "128");
+	settings->setDefault("hud_map_scale", "1.0");
+	settings->setDefault("hud_map_alpha", "192");
+	settings->setDefault("hud_map_above", "true");
+	settings->setDefault("hud_map_scan", "64");
+	settings->setDefault("hud_map_surface", "32");
+	settings->setDefault("hud_map_tracking", "false");
+	settings->setDefault("hud_map_border", "16");
 }
 
 void override_default_settings(Settings *settings, Settings *from)
