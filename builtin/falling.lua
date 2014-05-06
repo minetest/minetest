@@ -83,12 +83,14 @@ minetest.register_entity("__builtin:falling_node", {
 			-- it's drops
 			if n2.name ~= "air" and (not minetest.registered_nodes[n2.name] or
 					minetest.registered_nodes[n2.name].liquidtype == "none") then
-				local drops = minetest.get_node_drops(n2.name, "")
 				minetest.remove_node(np)
-				-- Add dropped items
-				local _, dropped_item
-				for _, dropped_item in ipairs(drops) do
-					minetest.add_item(np, dropped_item)
+				if minetest.registered_nodes[n2.name].buildable_to == false then
+					-- Add dropped items
+					local drops = minetest.get_node_drops(n2.name, "")
+					local _, dropped_item
+					for _, dropped_item in ipairs(drops) do
+						minetest.add_item(np, dropped_item)
+					end
 				end
 				-- Run script hook
 				local _, callback
