@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+v3s16 start_pos;
 
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
@@ -684,19 +685,14 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	unsigned int searchdistance = luaL_checkint(L, 3);
 	unsigned int max_jump       = luaL_checkint(L, 4);
 	unsigned int max_drop       = luaL_checkint(L, 5);
-	algorithm algo              = A_PLAIN_NP;
+	Algorithm algo              = A_STAR;
 	if (!lua_isnil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L,6);
-
-		if (algorithm == "A*")
-			algo = A_PLAIN;
-
-		if (algorithm == "Dijkstra")
-			algo = DIJKSTRA;
 	}
 
 	std::vector<v3s16> path =
-			get_Path(env,pos1,pos2,searchdistance,max_jump,max_drop,algo);
+		getPath(env, pos1, pos2, searchdistance,
+		        max_jump, max_drop, algo, ADJACENCY_4);
 
 	if (path.size() > 0)
 	{

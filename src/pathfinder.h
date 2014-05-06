@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Includes                                                                   */
 /******************************************************************************/
 #include <vector>
+#include <string>
+#include <map>
+#include <cstdlib>
 
 #include "irr_v3d.h"
 
@@ -38,107 +41,50 @@ class ServerEnvironment;
 /* Typedefs and macros                                                        */
 /******************************************************************************/
 
-//#define PATHFINDER_DEBUG
-
-typedef enum {
-	DIR_XP,
-	DIR_XM,
-	DIR_ZP,
-	DIR_ZM
-} path_directions;
-
 /** List of supported algorithms */
-typedef enum {
-	DIJKSTRA,           /**< Dijkstra shortest path algorithm             */
-	A_PLAIN,            /**< A* algorithm using heuristics to find a path */
-	A_PLAIN_NP          /**< A* algorithm without prefetching of map data */
-} algorithm;
+enum Algorithm
+{
+	A_STAR
+};
+
+enum Adjacency
+{
+	ADJACENCY_4,
+	ADJACENCY_8
+};
 
 /******************************************************************************/
 /* declarations                                                               */
 /******************************************************************************/
 
 /** c wrapper function to use from scriptapi */
-std::vector<v3s16> get_Path(ServerEnvironment* env,
-							v3s16 source,
-							v3s16 destination,
-							unsigned int searchdistance,
-							unsigned int max_jump,
-							unsigned int max_drop,
-							algorithm algo);
+std::vector<v3s16> getPath(ServerEnvironment* env,
+                           v3s16 source,
+                           v3s16 destination,
+                           unsigned int searchdistance,
+                           unsigned int max_jump,
+                           unsigned int max_drop,
+                           Algorithm algo,
+                           Adjacency adjacency);
 
-/** representation of cost in specific direction */
-class path_cost {
-public:
+struct OpenElement
+{
+	OpenElement();
+	OpenElement(unsigned int _f_value, unsigned int _distance, v3s16 _pos, v3s16 _prev_pos);
+	OpenElement& operator=(const OpenElement& e);
+	bool operator<(const OpenElement& e) const;
 
-	/** default constructor */
-	path_cost();
-
-	/** copy constructor */
-	path_cost(const path_cost& b);
-
-	/** assignment operator */
-	path_cost& operator= (const path_cost& b);
-
-	bool valid;              /**< movement is possible         */
-	int  value;              /**< cost of movement             */
-	int  direction;          /**< y-direction of movement      */
-	bool updated;            /**< this cost has ben calculated */
-
-};
-
-
-/** representation of a mapnode to be used for pathfinding */
-class path_gridnode {
-
-public:
-	/** default constructor */
-	path_gridnode();
-
-	/** copy constructor */
-	path_gridnode(const path_gridnode& b);
-
-	/**
-	 * assignment operator
-	 * @param b node to copy
-	 */
-	path_gridnode& operator= (const path_gridnode& b);
-
-	/**
-	 * read cost in a specific direction
-	 * @param dir direction of cost to fetch
-	 */
-	path_cost get_cost(v3s16 dir);
-
-	/**
-	 * set cost value for movement
-	 * @param dir direction to set cost for
-	 * @cost cost to set
-	 */
-	void      set_cost(v3s16 dir,path_cost cost);
-
-	bool      valid;               /**< node is on surface                    */
-	bool      target;              /**< node is target position               */
-	bool      source;              /**< node is stating position              */
-	int       totalcost;           /**< cost to move here from starting point */
-	v3s16     sourcedir;           /**< origin of movement for current cost   */
-	int       surfaces;            /**< number of surfaces with same x,z value*/
-	v3s16     pos;                 /**< real position of node                 */
-	path_cost directions[4];       /**< cost in different directions          */
-
-	/* debug values */
-	bool      is_element;          /**< node is element of path detected      */
-	char      type;                /**< type of node                          */
+	unsigned int f_value;
+	unsigned int start_cost;
+	v3s16 pos;
+	v3s16 prev_pos;
 };
 
 /** class doing pathfinding */
-class pathfinder {
-
+class PathFinder
+{
 public:
-	/**
-	 * default constructor
-	 */
-	pathfinder();
+	PathFinder();
 
 	/**
 	 * path evaluation function
@@ -150,16 +96,16 @@ public:
 	 * @param max_drop maximum number of blocks a path may drop
 	 * @param algo algorithm to use for finding a path
 	 */
-	std::vector<v3s16> get_Path(ServerEnvironment* env,
-			v3s16 source,
-			v3s16 destination,
-			unsigned int searchdistance,
-			unsigned int max_jump,
-			unsigned int max_drop,
-			algorithm algo);
+	std::vector<v3s16> getPath(ServerEnvironment* env,
+	                           v3s16 source,
+	                           v3s16 destination,
+	                           unsigned int searchdistance,
+	                           unsigned int max_jump,
+	                           unsigned int max_drop,
+	                           Algorithm algo,
+	                           Adjacency adjacency);
 
 private:
-	/** data struct for storing internal information */
 	struct limits {
 		struct limit {
 			int min;
@@ -171,50 +117,7 @@ private:
 		limit Z;
 	};
 
-	/* helper functions */
-
-	/**
-	 * transform index pos to mappos
-	 * @param ipos a index position
-	 * @return map position
-	 */
-	v3s16          getRealPos(v3s16 ipos);
-
-	/**
-	 * transform mappos to index pos
-	 * @param pos a real pos
-	 * @return index position
-	 */
-	v3s16          getIndexPos(v3s16 pos);
-
-	/**
-	 * get gridnode at a specific index position
-	 * @param ipos index position
-	 * @return gridnode for index
-	 */
-	path_gridnode& getIndexElement(v3s16 ipos);
-
-	/**
-	 * invert a 3d position
-	 * @param pos 3d position
-	 * @return pos *-1
-	 */
-	v3s16          invert(v3s16 pos);
-
-	/**
-	 * check if a index is within current search area
-	 * @param index position to validate
-	 * @return true/false
-	 */
-	bool           valid_index(v3s16 index);
-
-	/**
-	 * translate position to float position
-	 * @param pos integer position
-	 * @return float position
-	 */
-	v3f            tov3f(v3s16 pos);
-
+	unsigned int getDirectionCost(unsigned int id);
 
 	/* algorithm functions */
 
@@ -223,128 +126,48 @@ private:
 	 * @param pos position to calc distance
 	 * @return integer distance
 	 */
-	int           get_manhattandistance(v3s16 pos);
+	inline static unsigned int getManhattanDistance(v3s16 pos1, v3s16 pos2);
 
 	/**
-	 * get best direction based uppon heuristics
-	 * @param directions list of unchecked directions
-	 * @param g_pos mapnode to start from
-	 * @return direction to check
+	 * This method finds closest path to the target
 	 */
-	v3s16         get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode& g_pos);
+
+	bool findPathHeuristic(v3s16 pos, std::vector <v3s16>& adjacencies,
+	                       unsigned int (*heuristicFunction)(v3s16, v3s16));
 
 	/**
-	 * build internal data representation of search area
-	 * @return true/false if costmap creation was successfull
-	 */
-	bool          build_costmap();
-
-	/**
-	 * calculate cost of movement
-	 * @param pos real world position to start movement
-	 * @param dir direction to move to
-	 * @return cost information
-	 */
-	path_cost     calc_cost(v3s16 pos,v3s16 dir);
-
-	/**
-	 * recursive update whole search areas total cost information
-	 * @param ipos position to check next
-	 * @param srcdir positionc checked last time
-	 * @param total_cost cost of moving to ipos
-	 * @param level current recursion depth
-	 * @return true/false path to destination has been found
-	 */
-	bool          update_all_costs(v3s16 ipos,v3s16 srcdir,int total_cost,int level);
-
-	/**
-	 * recursive try to find a patrh to destionation
-	 * @param ipos position to check next
-	 * @param srcdir positionc checked last time
-	 * @param total_cost cost of moving to ipos
-	 * @param level current recursion depth
-	 * @return true/false path to destination has been found
-	 */
-	bool          update_cost_heuristic(v3s16 ipos,v3s16 srcdir,int current_cost,int level);
-
-	/**
-	 * recursive build a vector containing all nodes from source to destination
+	 * Create a vector containing all nodes from source to destination
 	 * @param path vector to add nodes to
 	 * @param pos pos to check next
 	 * @param level recursion depth
 	 */
-	void          build_path(std::vector<v3s16>& path,v3s16 pos, int level);
-
-	/* variables */
-	int m_max_index_x;          /**< max index of search area in x direction  */
-	int m_max_index_y;          /**< max index of search area in y direction  */
-	int m_max_index_z;          /**< max index of search area in z direction  */
-
+	void buildPath(std::vector<v3s16>& path, v3s16 start_pos, v3s16 end_pos);
 
 	int m_searchdistance;       /**< max distance to search in each direction */
 	int m_maxdrop;              /**< maximum number of blocks a path may drop */
 	int m_maxjump;              /**< maximum number of blocks a path may jump */
-	int m_min_target_distance;  /**< current smalest path to target           */
-
-	bool m_prefetch;            /**< prefetch cost data                       */
 
 	v3s16 m_start;              /**< source position                          */
 	v3s16 m_destination;        /**< destination position                     */
 
 	limits m_limits;            /**< position limits in real map coordinates  */
 
-	/** 3d grid containing all map data already collected and analyzed */
-	std::vector<std::vector<std::vector<path_gridnode> > > m_data;
-
 	ServerEnvironment* m_env;   /**< minetest environment pointer             */
 
-#ifdef PATHFINDER_DEBUG
+	Adjacency m_adjacency;
 
-	/**
-	 * print collected cost information
-	 */
-	void print_cost();
+	std::vector <v3s16> m_adjacency_4;
+	std::vector <v3s16> m_adjacency_8;
 
-	/**
-	 * print collected cost information in a specific direction
-	 * @param dir direction to print
-	 */
-	void print_cost(path_directions dir);
+	std::vector <unsigned int> m_adjacency_4_cost;
+	std::vector <unsigned int> m_adjacency_8_cost;
 
-	/**
-	 * print type of node as evaluated
-	 */
-	void print_type();
-
-	/**
-	 * print pathlenght for all nodes in search area
-	 */
-	void print_pathlen();
-
-	/**
-	 * print a path
-	 * @param path path to show
-	 */
-	void print_path(std::vector<v3s16> path);
-
-	/**
-	 * print y direction for all movements
-	 */
-	void print_ydir();
-
-	/**
-	 * print y direction for moving in a specific direction
-	 * @param dir direction to show data
-	 */
-	void print_ydir(path_directions dir);
-
-	/**
-	 * helper function to translate a direction to speaking text
-	 * @param dir direction to translate
-	 * @return textual name of direction
-	 */
-	std::string dir_to_name(path_directions dir);
-#endif
+	std::map <v3s16, std::pair <v3s16, unsigned int> > used;
 };
+
+inline unsigned int PathFinder::getManhattanDistance(v3s16 pos1, v3s16 pos2)
+{
+	return fabs(pos1.X - pos2.X) + fabs(pos1.Z - pos2.Z);
+}
 
 #endif /* PATHFINDER_H_ */
