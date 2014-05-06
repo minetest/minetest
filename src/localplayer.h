@@ -50,7 +50,7 @@ public:
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::list<CollisionInfo> *collision_info);
 
-	void applyControl(float dtime);
+	void applyControl(float dtime, ClientEnvironment *env);
 
 	v3s16 getStandingNodePos();
 

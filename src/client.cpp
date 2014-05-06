@@ -576,7 +576,7 @@ void Client::step(float dtime)
 		// Control local player (0ms)
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
-		player->applyControl(dtime);
+		player->applyControl(dtime, &m_env);
 
 		// Step environment
 		m_env.step(dtime);

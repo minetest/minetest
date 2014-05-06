@@ -87,7 +87,7 @@ minetest.register_entity("__builtin:item", {
 		local nn = minetest.get_node(p).name
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
-		if not minetest.registered_nodes[nn] or minetest.registered_nodes[nn].walkable and v.y == 0 then
+		if not minetest.registered_nodes[nn] or (minetest.registered_nodes[nn].walkable and minetest.get_item_group(nn, "slippery")==0) and v.y == 0 then
 			if self.physical_state then
 				self.object:setvelocity({x=0,y=0,z=0})
 				self.object:setacceleration({x=0, y=0, z=0})
@@ -104,6 +104,17 @@ minetest.register_entity("__builtin:item", {
 				self.object:set_properties({
 					physical = true
 				})
+			elseif minetest.get_item_group(nn, "slippery") ~= 0 then
+				if math.abs(v.x) < .2 and math.abs(v.z) < .2 then
+					self.object:setvelocity({x=0,y=0,z=0})
+					self.object:setacceleration({x=0, y=0, z=0})
+					self.physical_state = false
+					self.object:set_properties({
+						physical = false
+					})
+				else
+					self.object:setacceleration({x=-v.x, y=-10, z=-v.z})
+				end
 			end
 		end
 	end,
