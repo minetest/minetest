@@ -308,6 +308,7 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 	//ASYNC_API_FCT(setting_save);
 
 	ASYNC_API_FCT(parse_json);
+	ASYNC_API_FCT(write_json);
 
 	ASYNC_API_FCT(is_yes);
 }
