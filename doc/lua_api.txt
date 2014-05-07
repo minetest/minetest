@@ -1791,6 +1791,11 @@ Helper functions
       * nil: return all entries,
       * true: return only subdirectory names, or
       * false: return only file names.
+* `minetest.get_version()`: returns a table containing components of the
+   engine version.  Components:
+    * `project`: Name of the project, eg, "Minetest"
+    * `string`: Simple version, eg, "1.2.3-dev"
+    * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
 
 ### Logging
 * `minetest.debug(...)`

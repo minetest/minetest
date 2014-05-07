@@ -956,13 +956,6 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_version(lua_State *L)
-{
-	lua_pushstring(L, g_version_string);
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_sound_play(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1157,7 +1150,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(extract_zip);
 	API_FCT(get_mainmenu_path);
 	API_FCT(show_file_open_dialog);
-	API_FCT(get_version);
 	API_FCT(download_file);
 	API_FCT(get_modstore_details);
 	API_FCT(get_modstore_list);
@@ -1188,7 +1180,6 @@ void ModApiMainMenu::InitializeAsync(AsyncEngine& engine)
 	ASYNC_API_FCT(delete_dir);
 	ASYNC_API_FCT(copy_dir);
 	//ASYNC_API_FCT(extract_zip); //TODO remove dependency to GuiEngine
-	ASYNC_API_FCT(get_version);
 	ASYNC_API_FCT(download_file);
 	ASYNC_API_FCT(get_modstore_details);
 	ASYNC_API_FCT(get_modstore_list);

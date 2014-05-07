@@ -22,7 +22,8 @@ tab_credits = {
 	caption = fgettext("Credits"),
 	cbf_formspec = function (tabview, name, tabdata)
 			local logofile = defaulttexturedir .. "logo.png"
-			return "label[0.5,3.2;Minetest " .. core.get_version() .. "]" ..
+			local version = core.get_version()
+			return "label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
 				"label[0.5,3.5;http://minetest.net]" ..
 				"image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
 				"tablecolumns[color;text]" ..

@@ -32,7 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "util/auth.h"
+#include "config.h"
+#include "version.h"
 #include <algorithm>
+
 
 // log([level,] text)
 // Writes a line to the logger.
@@ -272,12 +275,14 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	return 1;
 }
 
+// get_builtin_path()
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	std::string path = porting::path_share + DIR_DELIM + "builtin";
 	lua_pushstring(L, path.c_str());
+
 	return 1;
 }
 
@@ -401,6 +406,26 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 	return 1;
 }
 
+// get_version()
+int ModApiUtil::l_get_version(lua_State *L)
+{
+	lua_createtable(L, 0, 3);
+	int table = lua_gettop(L);
+
+	lua_pushstring(L, PROJECT_NAME_C);
+	lua_setfield(L, table, "project");
+
+	lua_pushstring(L, g_version_string);
+	lua_setfield(L, table, "string");
+
+	if (strcmp(g_version_string, g_version_hash)) {
+		lua_pushstring(L, g_version_hash);
+		lua_setfield(L, table, "hash");
+	}
+
+	return 1;
+}
+
 
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
@@ -433,6 +458,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_dir_list);
 
 	API_FCT(request_insecure_environment);
+
+	API_FCT(get_version);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -459,5 +486,7 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	ASYNC_API_FCT(mkdir);
 	ASYNC_API_FCT(get_dir_list);
+
+	ASYNC_API_FCT(get_version);
 }
 

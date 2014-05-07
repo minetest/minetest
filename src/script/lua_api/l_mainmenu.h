@@ -79,8 +79,6 @@ private:
 
 	static int l_delete_favorite(lua_State *L);
 
-	static int l_get_version(lua_State *L);
-
 	static int l_sound_play(lua_State *L);
 
 	static int l_sound_stop(lua_State *L);
