@@ -1787,9 +1787,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v2f align        = readV2F1000(is);
 		v2f offset       = readV2F1000(is);
 		v3f world_pos;
+		v2s32 size;
 		try{
 			world_pos    = readV3F1000(is);
 		}catch(SerializationError &e) {};
+		try{
+			size = readV2S32(is);
+		} catch(SerializationError &e) {};
 
 		ClientEvent event;
 		event.type             = CE_HUDADD;
@@ -1805,6 +1809,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudadd.align     = new v2f(align);
 		event.hudadd.offset    = new v2f(offset);
 		event.hudadd.world_pos = new v3f(world_pos);
+		event.hudadd.size      = new v2s32(size);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUDRM)
@@ -1825,6 +1830,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v2f v2fdata;
 		v3f v3fdata;
 		u32 intdata = 0;
+		v2s32 v2s32data;
 		
 		std::string datastring((char *)&data[2], datasize - 2);
 		std::istringstream is(datastring, std::ios_base::binary);
@@ -1839,6 +1845,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			sdata = deSerializeString(is);
 		else if (stat == HUD_STAT_WORLD_POS)
 			v3fdata = readV3F1000(is);
+		else if (stat == HUD_STAT_SIZE )
+			v2s32data = readV2S32(is);
 		else
 			intdata = readU32(is);
 		
@@ -1850,6 +1858,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudchange.v3fdata = new v3f(v3fdata);
 		event.hudchange.sdata   = new std::string(sdata);
 		event.hudchange.data    = intdata;
+		event.hudchange.v2s32data = new v2s32(v2s32data);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUD_SET_FLAGS)

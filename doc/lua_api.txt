@@ -475,6 +475,7 @@ values can be used.
 The offset field specifies a pixel offset from the position. Contrary to position,
 the offset is not scaled to screen size. This allows for some precisely-positioned
 items in the HUD.
+Note offset WILL adapt to screen dpi as well as user defined scaling factor!
 Below are the specific uses for fields in each type; fields not listed for that type are ignored.
 
 Note: Future revisions to the HUD API may be incompatible; the HUD API is still in the experimental stages.
@@ -504,6 +505,7 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
               If odd, will end with a vertically center-split texture.
     - direction
     - offset: offset in pixels from position.
+    - size: If used will force full-image size to this value (override texture pack image size)
 - inventory
     - text: The name of the inventory list to be displayed.
     - number: Number of items in the inventory to be displayed.
@@ -515,7 +517,7 @@ Note: Future revisions to the HUD API may be incompatible; the HUD API is still 
     - text: Distance suffix. Can be blank.
     - number: An integer containing the RGB value of the color used to draw the text.
     - world_pos: World position of the waypoint.
-    
+
 Representations of simple things
 --------------------------------
 Position/vector:
@@ -1212,7 +1214,7 @@ minetest.get_player_information(playername)
 	max_jitter = 0.5,          -- maximum packet time jitter
 	avg_jitter = 0.03,         -- average packet time jitter
 	connection_uptime = 200,   -- seconds since client connected
-	
+
 	-- following information is available on debug build only!!!
 	-- DO NOT USE IN MODS
 	--ser_vers = 26,             -- serialization version used by client
@@ -1375,7 +1377,7 @@ minetest.dig_node(pos)
 ^ Dig node with the same effects that a player would cause
 minetest.punch_node(pos)
 ^ Punch node with the same effects that a player would cause
-  
+
 minetest.get_meta(pos) -- Get a NodeMetaRef at that position
 minetest.get_node_timer(pos) -- Get NodeTimerRef
 
@@ -1750,7 +1752,7 @@ methods:
 - to_table() -> nil or {fields = {...}, inventory = {list1 = {}, ...}}
 - from_table(nil or {})
   ^ See "Node Metadata"
-  
+
 NodeTimerRef: Node Timers - a high resolution persistent per-node timer
 - Can be gotten via minetest.get_node_timer(pos)
 methods:
@@ -1853,12 +1855,18 @@ Player-only: (no-op for other objects)
   ^ flags: (is visible) hotbar, healthbar, crosshair, wielditem
   ^ pass a table containing a true/false value of each flag to be set or unset
   ^ if a flag is nil, the flag is not modified
+- hud_get_flags(): returns a table containing status of hud flags
+  ^ returns { hotbar=true, healthbar=true, crosshair=true, wielditem=true, breathbar=true }
 - hud_set_hotbar_itemcount(count): sets number of items in builtin hotbar
   ^ count: number of items, must be between 1 and 23
 - hud_set_hotbar_image(texturename)
   ^ sets background image for hotbar
 - hud_set_hotbar_selected_image(texturename)
   ^ sets image for selected item of hotbar
+- hud_replace_builtin(name, hud definition)
+  ^ replace definition of a builtin hud element
+  ^ name: "breath" or "health"
+  ^ hud definition: definition to replace builtin definition
 - set_sky(bgcolor, type, {texture names})
   ^ bgcolor: {r=0...255, g=0...255, b=0...255} or nil, defaults to white
   ^ Available types:
@@ -2172,7 +2180,7 @@ Object Properties
 Entity definition (register_entity)
 {
     (Deprecated: Everything in object properties is read directly from here)
-    
+
     initial_properties = <initial object properties>,
 
     on_activate = function(self, staticdata, dtime_s),
@@ -2182,7 +2190,7 @@ Entity definition (register_entity)
     get_staticdata = function(self),
     ^ Called sometimes; the string returned is passed to on_activate when
       the entity is re-activated from static state
-    
+
     # Also you can define arbitrary member variables here
     myvariable = whatever,
 }
@@ -2345,7 +2353,7 @@ Node definition (register_node)
     can_dig = function(pos,player)
     ^ returns true if node can be dug, or false if not
     ^ default: nil
-    
+
     on_punch = func(pos, node, puncher, pointed_thing),
     ^ default: minetest.node_punch
     ^ By default: Calls minetest.register_on_punchnode callbacks
@@ -2354,11 +2362,11 @@ Node definition (register_node)
     ^ if defined, itemstack will hold clicker's wielded item
     ^ Shall return the leftover itemstack
     ^ Note: pointed_thing can be nil, if a mod calls this function
-     
+
     on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node
-    
+
     on_timer = function(pos,elapsed),
     ^ default: nil
     ^ called by NodeTimers, see minetest.get_node_timer and NodeTimerRef
@@ -2374,12 +2382,12 @@ Node definition (register_node)
             to_list, to_index, count, player),
     ^ Called when a player wants to move items inside the inventory
     ^ Return value: number of items allowed to move
-    
+
     allow_metadata_inventory_put = func(pos, listname, index, stack, player),
     ^ Called when a player wants to put something into the inventory
     ^ Return value: number of items allowed to put
     ^ Return value: -1: Allow and don't modify item count in inventory
-  
+
     allow_metadata_inventory_take = func(pos, listname, index, stack, player),
     ^ Called when a player wants to take something out of the inventory
     ^ Return value: number of items allowed to take
@@ -2391,7 +2399,7 @@ Node definition (register_node)
     on_metadata_inventory_take = func(pos, listname, index, stack, player),
     ^ Called after the actual action has happened, according to what was allowed.
     ^ No return value
-    
+
     on_blast = func(pos, intensity),
     ^ intensity: 1.0 = mid range of regular TNT
     ^ If defined, called when an explosion touches the node, instead of
@@ -2543,17 +2551,17 @@ Detached inventory callbacks
     allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     ^ Called when a player wants to move items inside the inventory
     ^ Return value: number of items allowed to move
-    
+
     allow_put = func(inv, listname, index, stack, player),
     ^ Called when a player wants to put something into the inventory
     ^ Return value: number of items allowed to put
     ^ Return value: -1: Allow and don't modify item count in inventory
-   
+
     allow_take = func(inv, listname, index, stack, player),
     ^ Called when a player wants to take something out of the inventory
     ^ Return value: number of items allowed to take
     ^ Return value: -1: Allow and don't modify item count in inventory
-    
+
     on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     on_put = func(inv, listname, index, stack, player),
     on_take = func(inv, listname, index, stack, player),
@@ -2579,6 +2587,8 @@ HUD Definition (hud_add, hud_get)
     ^ See "HUD Element Types"
     offset = {x=0, y=0},
     ^ See "HUD Element Types"
+    size = { x=100, y=100 },
+    ^ Size of element in pixels
 }
 
 Particle definition (add_particle)

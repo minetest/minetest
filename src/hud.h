@@ -66,7 +66,8 @@ enum HudElementStat {
 	HUD_STAT_DIR,
 	HUD_STAT_ALIGN,
 	HUD_STAT_OFFSET,
-	HUD_STAT_WORLD_POS
+	HUD_STAT_WORLD_POS,
+	HUD_STAT_SIZE
 };
 
 struct HudElement {
@@ -81,6 +82,7 @@ struct HudElement {
 	v2f align;
 	v2f offset;
 	v3f world_pos;
+	v2s32 size;
 };
 
 #ifndef SERVER
@@ -122,14 +124,14 @@ public:
 		u32 text_height, IGameDef *gamedef,
 		LocalPlayer *player, Inventory *inventory);
 	
-	void drawHotbar(s32 halfheartcount, u16 playeritem, s32 breath);
+	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
 	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
 	void drawLuaElements(v3s16 camera_offset);
 private:
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
-					 std::string texture, s32 count, v2s32 offset);
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
+			s32 count, v2s32 offset, v2s32 size=v2s32());
 	
 	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
