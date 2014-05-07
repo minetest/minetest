@@ -304,6 +304,11 @@ public:
 				}
 			}
 		}
+		if(event.EventType == irr::EET_LOG_TEXT_EVENT)
+		{
+			dstream<<"Irrlicht log: "<<event.LogEvent.Text<<std::endl;
+			return true;
+		}
 		/* always return false in order to continue processing events */
 		return false;
 	}
@@ -775,6 +780,8 @@ int main(int argc, char *argv[])
 			_("Set world path (implies local game) ('list' lists all)"))));
 	allowed_options.insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
 			_("Set world by name (implies local game)"))));
+	allowed_options.insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
+			_("Print to console errors only"))));
 	allowed_options.insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options.insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
@@ -848,7 +855,12 @@ int main(int argc, char *argv[])
 	/*
 		Low-level initialization
 	*/
-
+	
+	// Quiet mode, print errors only
+	if(cmd_args.getFlag("quiet")){
+		log_remove_output(&main_stderr_log_out);
+		log_add_output_maxlev(&main_stderr_log_out, LMT_ERROR);
+	}
 	// If trace is enabled, enable logging of certain things
 	if(cmd_args.getFlag("trace")){
 		dstream<<_("Enabling trace level debug output")<<std::endl;
@@ -1450,6 +1462,23 @@ int main(int argc, char *argv[])
 	if (device == 0) {
 		return 1; // could not create selected driver.
 	}
+
+	// Map our log level to irrlicht engine one.
+	static const irr::ELOG_LEVEL irr_log_level[5] = {
+		ELL_NONE,
+		ELL_ERROR,
+		ELL_WARNING,
+		ELL_INFORMATION,
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)	
+		ELL_INFORMATION
+#else
+		ELL_DEBUG
+#endif
+	};
+	
+	ILogger* irr_logger = device->getLogger();
+	irr_logger->setLogLevel(irr_log_level[loglevel]);
+	 
 	porting::initIrrlicht(device);
 
 	/*
