@@ -104,6 +104,9 @@ private:
 	// decode_base64(string)
 	static int l_decode_base64(lua_State *L);
 
+	// get_version()
+	static int l_get_version(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 
