@@ -193,7 +193,7 @@ void ScriptApiDetached::detached_inventory_OnTake(
 		scriptError();
 }
 
-// Retrieves minetest.detached_inventories[name][callbackname]
+// Retrieves core.detached_inventories[name][callbackname]
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the
 // function onto the stack
@@ -202,7 +202,7 @@ bool ScriptApiDetached::getDetachedInventoryCallback(
 {
 	lua_State *L = getStack();
 
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "detached_inventories");
 	lua_remove(L, -2);
 	luaL_checktype(L, -1, LUA_TTABLE);

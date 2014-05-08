@@ -112,7 +112,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
@@ -143,7 +143,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "craft_predict");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(user);
@@ -169,19 +169,19 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 	return true;
 }
 
-// Retrieves minetest.registered_items[name][callbackname]
+// Retrieves core.registered_items[name][callbackname]
 // If that is nil or on error, return false and stack is unchanged
 // If that is a function, returns true and pushes the
 // function onto the stack
-// If minetest.registered_items[name] doesn't exist, minetest.nodedef_default
+// If core.registered_items[name] doesn't exist, core.nodedef_default
 // is tried instead so unknown items can still be manipulated to some degree
 bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
 {
 	lua_State* L = getStack();
 
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_items");
-	lua_remove(L, -2); // Remove minetest
+	lua_remove(L, -2); // Remove core
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, name);
 	lua_remove(L, -2); // Remove registered_items
@@ -192,8 +192,8 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
 		errorstream << "Item \"" << name << "\" not defined" << std::endl;
 		lua_pop(L, 1);
 
-		// Try minetest.nodedef_default instead
-		lua_getglobal(L, "minetest");
+		// Try core.nodedef_default instead
+		lua_getglobal(L, "core");
 		lua_getfield(L, -1, "nodedef_default");
 		lua_remove(L, -2);
 		luaL_checktype(L, -1, LUA_TTABLE);

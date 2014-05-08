@@ -3,7 +3,7 @@ Minetest Lua Mainmenu API Reference 0.4.9
 
 Introduction
 -------------
-The main menu is defined as a formspec by Lua in builtin/mainmenu.lua
+The main menu is defined as a formspec by Lua in builtin/mainmenu/
 Description of formspec language to show your menu is in lua_api.txt
 
 Callbacks
@@ -83,7 +83,7 @@ engine.download_file(url,target) (possible in async calls)
 ^ target to store to
 ^ returns true/false
 engine.get_version() (possible in async calls)
-^ returns current minetest version
+^ returns current core version
 engine.sound_play(spec, looped) -> handle
 ^ spec = SimpleSoundSpec (see lua-api.txt)
 ^ looped = bool
@@ -191,14 +191,14 @@ fgettext(string, ...) -> string
 ^ call engine.gettext(string), replace "$1"..."$9" with the given
 ^ extra arguments, call engine.formspec_escape and return the result
 engine.parse_json(string[, nullvalue]) -> something (possible in async calls)
-^ see minetest.parse_json (lua_api.txt)
+^ see core.parse_json (lua_api.txt)
 dump(obj, dumped={})
 ^ Return object serialized as a string
 string:split(separator)
 ^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
-minetest.is_yes(arg) (possible in async calls)
+core.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
 
 Async:

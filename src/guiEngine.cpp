@@ -169,17 +169,16 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
-	m_menu =
-		new GUIFormSpecMenu(	m_device,
-								m_parent,
-								-1,
-								m_menumanager,
-								0 /* &client */,
-								0 /* gamedef */,
-								m_texture_source,
-								m_formspecgui,
-								m_buttonhandler,
-								NULL);
+	m_menu = new GUIFormSpecMenu(m_device,
+			m_parent,
+			-1,
+			m_menumanager,
+			NULL /* &client */,
+			NULL /* gamedef */,
+			m_texture_source,
+			m_formspecgui,
+			m_buttonhandler,
+			NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
@@ -216,43 +215,21 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 /******************************************************************************/
 bool GUIEngine::loadMainMenuScript()
 {
-	// Try custom menu script (main_menu_script)
+	// Try custom menu script (main_menu_path)
 
-	std::string menuscript = g_settings->get("main_menu_script");
-	if(menuscript != "") {
-		m_scriptdir = fs::RemoveLastPathComponent(menuscript);
-
-		if(m_script->loadMod(menuscript, "__custommenu")) {
-			// custom menu script loaded
-			return true;
-		}
-		else {
-			infostream
-				<< "GUIEngine: execution of custom menu: \""
-				<< menuscript << "\" failed!"
-				<< std::endl
-				<< "\tfalling back to builtin menu"
-				<< std::endl;
-		}
+	m_scriptdir = g_settings->get("main_menu_path");
+	if (m_scriptdir.empty()) {
+		m_scriptdir = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "mainmenu";
 	}
 
-	// Try builtin menu script (main_menu_script)
-
-	std::string builtin_menuscript =
-			porting::path_share + DIR_DELIM + "builtin"
-				+ DIR_DELIM + "mainmenu.lua";
-
-	m_scriptdir = fs::RemoveRelativePathComponents(
-			fs::RemoveLastPathComponent(builtin_menuscript));
-
-	if(m_script->loadMod(builtin_menuscript, "__builtinmenu")) {
-		// builtin menu script loaded
+	std::string script = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua";
+	if (m_script->loadScript(script)) {
+		// Menu script loaded
 		return true;
-	}
-	else {
-		errorstream
-			<< "GUIEngine: unable to load builtin menu"
-			<< std::endl;
+	} else {
+		infostream
+			<< "GUIEngine: execution of menu script in: \""
+			<< m_scriptdir << "\" failed!" << std::endl;
 	}
 
 	return false;

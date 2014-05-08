@@ -1,8 +1,8 @@
 -- Minetest: builtin/detached_inventory.lua
 
-minetest.detached_inventories = {}
+core.detached_inventories = {}
 
-function minetest.create_detached_inventory(name, callbacks)
+function core.create_detached_inventory(name, callbacks)
 	local stuff = {}
 	stuff.name = name
 	if callbacks then
@@ -13,7 +13,7 @@ function minetest.create_detached_inventory(name, callbacks)
 		stuff.on_put = callbacks.on_put
 		stuff.on_take = callbacks.on_take
 	end
-	minetest.detached_inventories[name] = stuff
-	return minetest.create_detached_inventory_raw(name)
+	core.detached_inventories[name] = stuff
+	return core.create_detached_inventory_raw(name)
 end
 

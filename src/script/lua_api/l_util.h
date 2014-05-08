@@ -28,9 +28,8 @@ class ModApiUtil : public ModApiBase {
 private:
 	/*
 		NOTE:
-		The functions in this module are available through
-		minetest.<function> in the in-game API as well as
-		engine.<function> in the mainmenu API
+		The functions in this module are available in the in-game API
+		as well as in the mainmenu API.
 
 		All functions that don't require either a Server or
 		GUIEngine instance should be in here.
@@ -78,6 +77,9 @@ private:
 
 	// is_yes(arg)
 	static int l_is_yes(lua_State *L);
+
+	// get_scriptdir()
+	static int l_get_builtin_path(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

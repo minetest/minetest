@@ -14,7 +14,7 @@
 
 local no_identity = { number=1, boolean=1, string=1, ['nil']=1 }
 
-function minetest.serialize(x)
+function core.serialize(x)
 
 	local gensym_max   =  0  -- index of the gensym() symbol generator
 	local seen_once    = { } -- element->true set of elements seen exactly once in the table
@@ -188,13 +188,13 @@ local function stringtotable(sdata, safe)
 	return f()
 end
 
-function minetest.deserialize(sdata, safe)
+function core.deserialize(sdata, safe)
 	local table = {}
 	local okay, results = pcall(stringtotable, sdata, safe)
 	if okay then
 		return results
 	end
-	minetest.log('error', 'minetest.deserialize(): '.. results)
+	core.log('error', 'core.deserialize(): '.. results)
 	return nil
 end
 
@@ -207,14 +207,14 @@ local function unit_test()
 	end
 
 	unittest_input = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
-	unittest_output = minetest.deserialize(minetest.serialize(unittest_input))
+	unittest_output = core.deserialize(core.serialize(unittest_input))
 
 	unitTest("test 1a", unittest_input.cat.sound == unittest_output.cat.sound)
 	unitTest("test 1b", unittest_input.cat.speed == unittest_output.cat.speed)
 	unitTest("test 1c", unittest_input.dog.sound == unittest_output.dog.sound)
 
 	unittest_input = {escapechars="\n\r\t\v\\\"\'", noneuropean="θשׁ٩∂"}
-	unittest_output = minetest.deserialize(minetest.serialize(unittest_input))
+	unittest_output = core.deserialize(core.serialize(unittest_input))
 	unitTest("test 3a", unittest_input.escapechars == unittest_output.escapechars)
 	unitTest("test 3b", unittest_input.noneuropean == unittest_output.noneuropean)
 end

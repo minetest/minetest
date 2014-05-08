@@ -173,8 +173,7 @@ function cleanup_path(temppath)
 	return temppath
 end
 
-local tbl = engine or minetest
-function tbl.formspec_escape(text)
+function core.formspec_escape(text)
 	if text ~= nil then
 		text = string.gsub(text,"\\","\\\\")
 		text = string.gsub(text,"%]","\\]")
@@ -186,7 +185,7 @@ function tbl.formspec_escape(text)
 end
 
 
-function tbl.splittext(text,charlimit)
+function core.splittext(text,charlimit)
 	local retval = {}
 
 	local current_idx = 1
@@ -243,33 +242,33 @@ end
 
 --------------------------------------------------------------------------------
 
-if minetest then
+if INIT == "game" then
 	local dirs1 = {9, 18, 7, 12}
 	local dirs2 = {20, 23, 22, 21}
 
-	function minetest.rotate_and_place(itemstack, placer, pointed_thing,
+	function core.rotate_and_place(itemstack, placer, pointed_thing,
 				infinitestacks, orient_flags)
 		orient_flags = orient_flags or {}
 
-		local unode = minetest.get_node_or_nil(pointed_thing.under)
+		local unode = core.get_node_or_nil(pointed_thing.under)
 		if not unode then
 			return
 		end
-		local undef = minetest.registered_nodes[unode.name]
+		local undef = core.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
 			undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 			return
 		end
 		local pitch = placer:get_look_pitch()
-		local fdir = minetest.dir_to_facedir(placer:get_look_dir())
+		local fdir = core.dir_to_facedir(placer:get_look_dir())
 		local wield_name = itemstack:get_name()
 
 		local above = pointed_thing.above
 		local under = pointed_thing.under
 		local iswall = (above.y == under.y)
 		local isceiling = not iswall and (above.y < under.y)
-		local anode = minetest.get_node_or_nil(above)
+		local anode = core.get_node_or_nil(above)
 		if not anode then
 			return
 		end
@@ -282,13 +281,13 @@ if minetest then
 			iswall = false
 		end
 
-		if minetest.is_protected(pos, placer:get_player_name()) then
-			minetest.record_protection_violation(pos,
+		if core.is_protected(pos, placer:get_player_name()) then
+			core.record_protection_violation(pos,
 					placer:get_player_name())
 			return
 		end
 
-		local ndef = minetest.registered_nodes[node.name]
+		local ndef = core.registered_nodes[node.name]
 		if not ndef or not ndef.buildable_to then
 			return
 		end
@@ -307,22 +306,22 @@ if minetest then
 		end
 
 		if iswall then
-			minetest.set_node(pos, {name = wield_name,
+			core.set_node(pos, {name = wield_name,
 					param2 = dirs1[fdir+1]})
 		elseif isceiling then
 			if orient_flags.force_facedir then
-				minetest.set_node(pos, {name = wield_name,
+				core.set_node(pos, {name = wield_name,
 						param2 = 20})
 			else
-				minetest.set_node(pos, {name = wield_name,
+				core.set_node(pos, {name = wield_name,
 						param2 = dirs2[fdir+1]})
 			end
 		else -- place right side up
 			if orient_flags.force_facedir then
-				minetest.set_node(pos, {name = wield_name,
+				core.set_node(pos, {name = wield_name,
 						param2 = 0})
 			else
-				minetest.set_node(pos, {name = wield_name,
+				core.set_node(pos, {name = wield_name,
 						param2 = fdir})
 			end
 		end
@@ -340,16 +339,16 @@ if minetest then
 --------------------------------------------------------------------------------
 
 
-	minetest.rotate_node = function(itemstack, placer, pointed_thing)
-		minetest.rotate_and_place(itemstack, placer, pointed_thing,
-				minetest.setting_getbool("creative_mode"),
+	core.rotate_node = function(itemstack, placer, pointed_thing)
+		core.rotate_and_place(itemstack, placer, pointed_thing,
+				core.setting_getbool("creative_mode"),
 				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
 end
 
 --------------------------------------------------------------------------------
-function tbl.explode_table_event(evt)
+function core.explode_table_event(evt)
 	if evt ~= nil then
 		local parts = evt:split(":")
 		if #parts == 3 then
@@ -365,7 +364,7 @@ function tbl.explode_table_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function tbl.explode_textlist_event(evt)
+function core.explode_textlist_event(evt)
 	if evt ~= nil then
 		local parts = evt:split(":")
 		if #parts == 2 then
@@ -379,11 +378,15 @@ function tbl.explode_textlist_event(evt)
 	return {type="INV", index=0}
 end
 
+function core.pos_to_string(pos)
+	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+end
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
-if engine ~= nil then
-	engine.get_game = function(index)
+if INIT == "mainmenu" then
+	function core.get_game(index)
 		local games = game.get_games()
 		
 		if index > 0 and index <= #games then
@@ -394,7 +397,7 @@ if engine ~= nil then
 	end
 	
 	function fgettext(text, ...)
-		text = engine.gettext(text)
+		text = core.gettext(text)
 		local arg = {n=select('#', ...), ...}
 		if arg.n >= 1 then
 			-- Insert positional parameters ($1, $2, ...)
@@ -413,16 +416,7 @@ if engine ~= nil then
 			end
 			text = result
 		end
-		return engine.formspec_escape(text)
-	end
-end
---------------------------------------------------------------------------------
--- core only fct
---------------------------------------------------------------------------------
-if minetest ~= nil then
-	--------------------------------------------------------------------------------
-	function minetest.pos_to_string(pos)
-		return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+		return core.formspec_escape(text)
 	end
 end
 

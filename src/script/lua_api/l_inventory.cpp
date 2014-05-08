@@ -361,7 +361,7 @@ int InvRef::l_remove_item(lua_State *L)
 	return 1;
 }
 
-// get_location() -> location (like minetest.get_inventory(location))
+// get_location() -> location (like get_inventory(location))
 int InvRef::l_get_location(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

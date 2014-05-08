@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scripting_game.h"
+#include "server.h"
 #include "log.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
@@ -50,14 +51,9 @@ GameScripting::GameScripting(Server* server)
 
 	//TODO add security
 
-	luaL_openlibs(getStack());
-
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Create the main minetest table
-	lua_newtable(L);
-	lua_setglobal(L, "minetest");
-	lua_getglobal(L, "minetest");
+	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
 
 	lua_newtable(L);
@@ -69,6 +65,10 @@ GameScripting::GameScripting(Server* server)
 	// Initialize our lua_api modules
 	InitializeModApi(L, top);
 	lua_pop(L, 1);
+
+	// Push builtin initialization type
+	lua_pushstring(L, "game");
+	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
 }

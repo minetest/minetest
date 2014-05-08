@@ -193,16 +193,9 @@ function modmgr.identify_modname(modpath,filename)
 		while line~= nil do
 			local modname = nil
 
-			if line:find("minetest.register_tool") then
-				modname = modmgr.parse_register_line(line)
-			end
-
-			if line:find("minetest.register_craftitem") then
-				modname = modmgr.parse_register_line(line)
-			end
-
-
-			if line:find("minetest.register_node") then
+			if line:find("register_tool") or
+			   line:find("register_craftitem") or
+			   line:find("register_node") then
 				modname = modmgr.parse_register_line(line)
 			end
 
@@ -225,7 +218,6 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.tab()
-
 	if modmgr.global_mods == nil then
 		modmgr.refresh_globals()
 	end

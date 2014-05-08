@@ -1,6 +1,6 @@
 -- Minetest: builtin/features.lua
 
-minetest.features = {
+core.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,
 	chat_send_player_param3 = true,
@@ -9,19 +9,19 @@ minetest.features = {
 	no_legacy_abms = true,
 }
 
-function minetest.has_feature(arg)
+function core.has_feature(arg)
 	if type(arg) == "table" then
 		missing_features = {}
 		result = true
 		for ft, _ in pairs(arg) do
-			if not minetest.features[ftr] then
+			if not core.features[ftr] then
 				missing_features[ftr] = true
 				result = false
 			end
 		end
 		return result, missing_features
 	elseif type(arg) == "string" then
-		if not minetest.features[arg] then
+		if not core.features[arg] then
 			return false, {[arg]=true}
 		end
 		return true, {}

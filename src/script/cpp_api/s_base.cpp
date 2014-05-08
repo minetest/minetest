@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_object.h"
 #include "serverobject.h"
 #include "debug.h"
+#include "filesys.h"
 #include "log.h"
 #include "mods.h"
 #include "util/string.h"
@@ -48,13 +49,13 @@ public:
 	{
 		// Store current modname in registry
 		lua_pushstring(L, modname.c_str());
-		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+		lua_setfield(L, LUA_REGISTRYINDEX, "current_modname");
 	}
 	~ModNameStorer()
 	{
 		// Clear current modname in registry
 		lua_pushnil(L);
-		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+		lua_setfield(L, LUA_REGISTRYINDEX, "current_modname");
 	}
 };
 
@@ -72,6 +73,8 @@ ScriptApiBase::ScriptApiBase()
 	m_luastack = luaL_newstate();
 	assert(m_luastack);
 
+	luaL_openlibs(m_luastack);
+
 	// Add and save an error handler
 	lua_pushcfunction(m_luastack, script_error_handler);
 	m_errorhandler = lua_gettop(m_luastack);
@@ -88,9 +91,16 @@ ScriptApiBase::ScriptApiBase()
 	lua_pop(m_luastack, 1);
 #endif
 
-	m_server = 0;
-	m_environment = 0;
-	m_guiengine = 0;
+	// Add basic globals
+	lua_newtable(m_luastack);
+	lua_setglobal(m_luastack, "core");
+
+	lua_pushstring(m_luastack, DIR_DELIM);
+	lua_setglobal(m_luastack, "DIR_DELIM");
+
+	m_server = NULL;
+	m_environment = NULL;
+	m_guiengine = NULL;
 }
 
 ScriptApiBase::~ScriptApiBase()
@@ -103,24 +113,14 @@ bool ScriptApiBase::loadMod(const std::string &scriptpath,
 {
 	ModNameStorer modnamestorer(getStack(), modname);
 
-	if(!string_allowed(modname, MODNAME_ALLOWED_CHARS)){
+	if (!string_allowed(modname, MODNAME_ALLOWED_CHARS)) {
 		errorstream<<"Error loading mod \""<<modname
 				<<"\": modname does not follow naming conventions: "
 				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
 		return false;
 	}
 
-	bool success = false;
-
-	try{
-		success = loadScript(scriptpath);
-	}
-	catch(LuaError &e){
-		errorstream<<"Error loading mod \""<<modname
-				<<"\": "<<e.what()<<std::endl;
-	}
-
-	return success;
+	return loadScript(scriptpath);
 }
 
 bool ScriptApiBase::loadScript(const std::string &scriptpath)
@@ -201,8 +201,8 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
 	int object = lua_gettop(L);
 
-	// Get minetest.object_refs table
-	lua_getglobal(L, "minetest");
+	// Get core.object_refs table
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
@@ -218,8 +218,8 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	SCRIPTAPI_PRECHECKHEADER
 	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
 
-	// Get minetest.object_refs table
-	lua_getglobal(L, "minetest");
+	// Get core.object_refs table
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
@@ -254,12 +254,12 @@ void ScriptApiBase::objectrefGet(u16 id)
 {
 	lua_State *L = getStack();
 
-	// Get minetest.object_refs[i]
-	lua_getglobal(L, "minetest");
+	// Get core.object_refs[i]
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushnumber(L, id);
 	lua_gettable(L, -2);
 	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // minetest
+	lua_remove(L, -2); // core
 }

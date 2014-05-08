@@ -1,8 +1,15 @@
-print = engine.debug
-math.randomseed(os.time())
-os.setlocale("C", "numeric")
 
-local scriptpath = engine.get_scriptdir()
+engine = core
+local menupath = core.get_mainmenu_path()..DIR_DELIM
+local commonpath = core.get_builtin_path()..DIR_DELIM.."common"..DIR_DELIM
+
+dofile(menupath.."filterlist.lua")
+dofile(menupath.."modmgr.lua")
+dofile(menupath.."modstore.lua")
+dofile(menupath.."gamemgr.lua")
+dofile(menupath.."textures.lua")
+dofile(menupath.."menubar.lua")
+dofile(commonpath.."async_event.lua")
 
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#0000DD"
@@ -10,15 +17,6 @@ mt_color_green = "#00DD00"
 mt_color_dark_green = "#003300"
 
 --for all other colors ask sfan5 to complete his worK!
-
-dofile(scriptpath .. DIR_DELIM .. "misc_helpers.lua")
-dofile(scriptpath .. DIR_DELIM .. "filterlist.lua")
-dofile(scriptpath .. DIR_DELIM .. "modmgr.lua")
-dofile(scriptpath .. DIR_DELIM .. "modstore.lua")
-dofile(scriptpath .. DIR_DELIM .. "gamemgr.lua")
-dofile(scriptpath .. DIR_DELIM .. "mm_textures.lua")
-dofile(scriptpath .. DIR_DELIM .. "mm_menubar.lua")
-dofile(scriptpath .. DIR_DELIM .. "async_event.lua")
 
 menu = {}
 local tabbuilder = {}
@@ -220,7 +218,7 @@ function menu.asyncOnlineFavourites()
 	menu.favorites = {}
 	engine.handle_async(
 		function(param)
-			return engine.get_favorites("online")
+			--return core.get_favorites("online")
 		end,
 		nil,
 		function(result)

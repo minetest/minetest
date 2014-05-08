@@ -101,7 +101,7 @@ private:
 	// Returns the items that were actually removed
 	static int l_remove_item(lua_State *L);
 
-	// get_location() -> location (like minetest.get_inventory(location))
+	// get_location() -> location (like get_inventory(location))
 	static int l_get_location(lua_State *L);
 
 public:
