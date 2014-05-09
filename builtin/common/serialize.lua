@@ -113,7 +113,7 @@ function core.serialize(x)
 		elseif t=="string"   then return string.format("%q", x)
 		elseif t=="boolean"  then return x and "true" or "false"
 		elseif t=="function" then
-			return "loadstring("..string.format("%q", string.dump(x))..")"
+			return string.format("loadstring(%q)", string.dump(x))
 		elseif t=="table" then
 			local acc        = { }
 			local idx_dumped = { }

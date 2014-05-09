@@ -1,79 +1,101 @@
 -- Minetest: builtin/misc_helpers.lua
 
 --------------------------------------------------------------------------------
-function basic_dump2(o)
-	if type(o) == "number" then
+function basic_dump(o)
+	local tp = type(o)
+	if tp == "number" then
 		return tostring(o)
-	elseif type(o) == "string" then
+	elseif tp == "string" then
 		return string.format("%q", o)
-	elseif type(o) == "boolean" then
+	elseif tp == "boolean" then
 		return tostring(o)
-	elseif type(o) == "function" then
-		return "<function>"
-	elseif type(o) == "userdata" then
-		return "<userdata>"
-	elseif type(o) == "nil" then
+	elseif tp == "nil" then
 		return "nil"
+	-- Uncomment for full function dumping support.
+	-- Not currently enabled because bytecode isn't very human-readable and
+	-- dump's output is intended for humans.
+	--elseif tp == "function" then
+	--	return string.format("loadstring(%q)", string.dump(o))
 	else
-		error("cannot dump a " .. type(o))
-		return nil
+		return string.format("<%s>", tp)
 	end
 end
 
 --------------------------------------------------------------------------------
+-- Dumps values in a line-per-value format.
+-- For example, {test = {"Testing..."}} becomes:
+--   _["test"] = {}
+--   _["test"][1] = "Testing..."
+-- This handles tables as keys and circular references properly.
+-- It also handles multiple references well, writing the table only once.
+-- The dumped argument is internal-only.
+
 function dump2(o, name, dumped)
 	name = name or "_"
+	-- "dumped" is used to keep track of serialized tables to handle
+	-- multiple references and circular tables properly.
+	-- It only contains tables as keys.  The value is the name that
+	-- the table has in the dump, eg:
+	-- {x = {"y"}} -> dumped[{"y"}] = '_["x"]'
 	dumped = dumped or {}
-	io.write(name, " = ")
-	if type(o) == "number" or type(o) == "string" or type(o) == "boolean"
-			or type(o) == "function" or type(o) == "nil"
-			or type(o) == "userdata" then
-		io.write(basic_dump2(o), "\n")
-	elseif type(o) == "table" then
-		if dumped[o] then
-			io.write(dumped[o], "\n")
-		else
-			dumped[o] = name
-			io.write("{}\n") -- new table
-			for k,v in pairs(o) do
-				local fieldname = string.format("%s[%s]", name, basic_dump2(k))
-				dump2(v, fieldname, dumped)
-			end
-		end
-	else
-		error("cannot dump a " .. type(o))
-		return nil
+	if type(o) ~= "table" then
+		return string.format("%s = %s\n", name, basic_dump(o))
 	end
+	if dumped[o] then
+		return string.format("%s = %s\n", name, dumped[o])
+	end
+	dumped[o] = name
+	-- This contains a list of strings to be concatenated later (because
+	-- Lua is slow at individual concatenation).
+	local t = {}
+	for k, v in pairs(o) do
+		local keyStr
+		if type(k) == "table" then
+			if dumped[k] then
+				keyStr = dumped[k]
+			else
+				-- Key tables don't have a name, so use one of
+				-- the form _G["table: 0xFFFFFFF"]
+				keyStr = string.format("_G[%q]", tostring(k))
+				-- Dump key table
+				table.insert(t, dump2(k, keyStr, dumped))
+			end
+		else
+			keyStr = basic_dump(k)
+		end
+		local vname = string.format("%s[%s]", name, keyStr)
+		table.insert(t, dump2(v, vname, dumped))
+	end
+	return string.format("%s = {}\n%s", name, table.concat(t))
 end
 
 --------------------------------------------------------------------------------
+-- This dumps values in a one-line format, like serialize().
+-- For example, {test = {"Testing..."}} becomes {["test"] = {[1] = "Testing..."}}
+-- This supports tables as keys, but not circular references.
+-- It performs poorly with multiple references as it writes out the full
+-- table each time.
+-- The dumped argument is internal-only.
+
 function dump(o, dumped)
+	-- Same as "dumped" in dump2.  The difference is that here it can only
+	-- contain boolean (and nil) values since multiple references aren't
+	-- handled properly.
 	dumped = dumped or {}
-	if type(o) == "number" then
-		return tostring(o)
-	elseif type(o) == "string" then
-		return string.format("%q", o)
-	elseif type(o) == "table" then
+	if type(o) == "table" then
 		if dumped[o] then
 			return "<circular reference>"
 		end
 		dumped[o] = true
 		local t = {}
-		for k,v in pairs(o) do
-			t[#t+1] = "[" .. dump(k, dumped) .. "] = " .. dump(v, dumped)
+		for k, v in pairs(o) do
+			k = dump(k, dumped)
+			v = dump(v, dumped)
+			table.insert(t, string.format("[%s] = %s", k, v))
 		end
-		return "{" .. table.concat(t, ", ") .. "}"
-	elseif type(o) == "boolean" then
-		return tostring(o)
-	elseif type(o) == "function" then
-		return "<function>"
-	elseif type(o) == "userdata" then
-		return "<userdata>"
-	elseif type(o) == "nil" then
-		return "nil"
+		return string.format("{%s}", table.concat(t, ", "))
 	else
-		error("cannot dump a " .. type(o))
-		return nil
+		return basic_dump(o)
 	end
 end
 
