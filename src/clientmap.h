@@ -157,6 +157,9 @@ private:
 	std::map<v3s16, MapBlock*> m_drawlist;
 	
 	std::set<v2s16> m_last_drawn_sectors;
+
+	JMutex m_boundary_debug_mesh_mutex;
+	scene::IMesh* m_boundary_debug_mesh;
 };
 
 #endif

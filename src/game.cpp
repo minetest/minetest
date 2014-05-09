@@ -2099,11 +2099,11 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			}
 			else if(show_block_boundaries == 1)
 			{
-				statustext = L"Block boundaries shown";
+				statustext = L"Block boundaries shown (normal mode)";
 			}
 			else if(show_block_boundaries == 2)
 			{
-				statustext = L"Block boundaries shown in X-ray mode";
+				statustext = L"Block boundaries shown (X-ray mode)";
 			}
 			statustext_time = 0;
 		}

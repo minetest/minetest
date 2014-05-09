@@ -43,6 +43,12 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 		video::IVideoDriver *driver, v3f scale);
 
 /*
+	Create a new boundary visualization mesh, useful for debugging.
+	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).
+*/
+scene::IMesh* createBoundaryMesh(float thickness, v3f scale);
+
+/*
 	Multiplies each vertex coordinate by the specified scaling factors
 	(componentwise vector multiplication).
 */

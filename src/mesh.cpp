@@ -303,6 +303,72 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 	return mesh;
 }
 
+scene::IMesh* createBoundaryMesh(float t, v3f scale)
+{
+	const v3f vertices[32] = {
+		// Boundary cube, 0-7
+		v3f(-0.5,-0.5,-0.5), v3f(-0.5,-0.5,0.5),
+		v3f(-0.5,0.5,-0.5), v3f(-0.5,0.5,0.5),
+		v3f(0.5,-0.5,-0.5), v3f(0.5,-0.5,0.5),
+		v3f(0.5,0.5,-0.5), v3f(0.5,0.5,0.5),
+		// X inset cube, 8-15
+		v3f(-0.5,-0.5+t,-0.5+t), v3f(-0.5,-0.5+t,0.5-t),
+		v3f(-0.5,0.5-t,-0.5+t), v3f(-0.5,0.5-t,0.5-t),
+		v3f(0.5,-0.5+t,-0.5+t), v3f(0.5,-0.5+t,0.5-t),
+		v3f(0.5,0.5-t,-0.5+t), v3f(0.5,0.5-t,0.5-t),
+		// Y inset cube, 16-23
+		v3f(-0.5+t,-0.5,-0.5+t), v3f(-0.5+t,-0.5,0.5-t),
+		v3f(-0.5+t,0.5,-0.5+t), v3f(-0.5+t,0.5,0.5-t),
+		v3f(0.5-t,-0.5,-0.5+t), v3f(0.5-t,-0.5,0.5-t),
+		v3f(0.5-t,0.5,-0.5+t), v3f(0.5-t,0.5,0.5-t),
+		// Z inset cube, 24-31
+		v3f(-0.5+t,-0.5+t,-0.5), v3f(-0.5+t,-0.5+t,0.5),
+		v3f(-0.5+t,0.5-t,-0.5), v3f(-0.5+t,0.5-t,0.5),
+		v3f(0.5-t,-0.5+t,-0.5), v3f(0.5-t,-0.5+t,0.5),
+		v3f(0.5-t,0.5-t,-0.5), v3f(0.5-t,0.5-t,0.5)
+	};
+	const u16 indices[144] = {
+		// -X face
+		 0, 8, 1,   1, 8, 9,   0, 2, 8,   2,10, 8,
+		 1, 9, 3,   3, 9,11,   2,11,10,   3,11, 2,
+		// +X face
+		 4,12, 5,   5,12,13,   4, 6,12,   6,14,12,
+		 5,13, 7,   7,13,15,   6,15,14,   7,15, 6,
+		// -Y face
+		 0,16, 1,   1,16,17,   0, 4,16,   4,20,16,
+		 1,17, 5,   5,17,21,   4,21,20,   5,21, 4,
+		// +Y face
+		 2,18, 3,   3,18,19,   2, 6,18,   6,22,18,
+		 3,19, 7,   7,19,23,   6,23,22,   7,23, 6,
+		// -Z face
+		 0,24, 2,   2,24,26,   2, 6,26,   6,30,26,
+		 4,28, 6,   6,28,30,   2,30,26,   6,30, 2,
+		// +Z face
+		 1,25, 5,   5,25,29,   1, 3,25,   3,27,25,
+		 5,29, 7,   7,29,31,   3,31,27,   7,31, 3
+	};
+
+	scene::SMesh* mesh = new scene::SMesh();
+	scene::SMeshBuffer* buf = new scene::SMeshBuffer();
+	buf->Vertices.set_used(32);
+	for(int i = 0; i < 32; ++i)
+	{
+		video::S3DVertex& v = buf->Vertices[i];
+		v.Pos = v.Normal = vertices[i];
+		v.Normal.normalize();
+	}
+	buf->Indices.set_used(144);
+	for(int i = 0; i < 144; ++i)
+	{
+		buf->Indices[i] = indices[i];
+	}
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+
+	scaleMesh(mesh, scale);  // also recalculates bounding box
+	return mesh;
+}
+
 void scaleMesh(scene::IMesh *mesh, v3f scale)
 {
 	if(mesh == NULL)

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // dout_client, g_settings
 #include "nodedef.h"
 #include "mapblock.h"
+#include "mesh.h"
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h" // CameraModes
@@ -49,7 +50,8 @@ ClientMap::ClientMap(
 	m_control(control),
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
-	m_camera_fov(M_PI)
+	m_camera_fov(M_PI),
+	m_boundary_debug_mesh(NULL)
 {
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
@@ -57,13 +59,13 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	/*JMutexAutoLock lock(mesh_mutex);
+	JMutexAutoLock lock(m_boundary_debug_mesh_mutex);
 	
-	if(mesh != NULL)
+	if(m_boundary_debug_mesh != NULL)
 	{
-		mesh->drop();
-		mesh = NULL;
-	}*/
+		m_boundary_debug_mesh->drop();
+		m_boundary_debug_mesh = NULL;
+	}
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
@@ -892,10 +894,15 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 
 void ClientMap::renderDebugBlockBoundaries(bool xray)
 {
+	JMutexAutoLock lock(m_boundary_debug_mesh_mutex);
+
+	if (m_boundary_debug_mesh == NULL)
+		m_boundary_debug_mesh = createBoundaryMesh(0.005, v3f(BS*MAP_BLOCKSIZE*0.96));
+
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
 	m_camera_mutex.Unlock();
-	v3s16 ppos = getNodeBlockPos(floatToInt(camera_position, BS));
+	v3s16 player_block_pos = getNodeBlockPos(floatToInt(camera_position, BS));
 
 	video::SMaterial mat;
 	mat.Lighting = true;
@@ -903,75 +910,20 @@ void ClientMap::renderDebugBlockBoundaries(bool xray)
 	mat.FrontfaceCulling = false;
 	mat.BackfaceCulling = false;
 
+	core::CMatrix4<f32> matrix;
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if (xray)
 		driver->clearZBuffer();
 
-	const float B = 0.005;
-	const v3f blocksize(MAP_BLOCKSIZE);
-	const v3f vertices[32] = {
-		// Boundary cube, 0-7
-		v3f(0,0,0), v3f(0,0,1), v3f(0,1,0), v3f(0,1,1),
-		v3f(1,0,0), v3f(1,0,1), v3f(1,1,0), v3f(1,1,1),
-		// X inset cube, 8-15
-		v3f(0,0+B,0+B), v3f(0,0+B,1-B), v3f(0,1-B,0+B), v3f(0,1-B,1-B),
-		v3f(1,0+B,0+B), v3f(1,0+B,1-B), v3f(1,1-B,0+B), v3f(1,1-B,1-B),
-		// Y inset cube, 16-23
-		v3f(0+B,0,0+B), v3f(0+B,0,1-B), v3f(0+B,1,0+B), v3f(0+B,1,1-B),
-		v3f(1-B,0,0+B), v3f(1-B,0,1-B), v3f(1-B,1,0+B), v3f(1-B,1,1-B),
-		// Z inset cube, 24-31
-		v3f(0+B,0+B,0), v3f(0+B,0+B,1), v3f(0+B,1-B,0), v3f(0+B,1-B,1),
-		v3f(1-B,0+B,0), v3f(1-B,0+B,1), v3f(1-B,1-B,0), v3f(1-B,1-B,1)
-	};
-	const u16 indices[144] = {
-		// -X face
-		 0, 8, 1,   1, 8, 9,   0, 2, 8,   2,10, 8,
-		 1, 9, 3,   3, 9,11,   2,11,10,   3,11, 2,
-		// +X face
-		 4,12, 5,   5,12,13,   4, 6,12,   6,14,12,
-		 5,13, 7,   7,13,15,   6,15,14,   7,15, 6,
-		// -Y face
-		 0,16, 1,   1,16,17,   0, 4,16,   4,20,16,
-		 1,17, 5,   5,17,21,   4,21,20,   5,21, 4,
-		// +Y face
-		 2,18, 3,   3,18,19,   2, 6,18,   6,22,18,
-		 3,19, 7,   7,19,23,   6,23,22,   7,23, 6,
-		// -Z face
-		 0,24, 2,   2,24,26,   2, 6,26,   6,30,26,
-		 4,28, 6,   6,28,30,   2,30,26,   6,30, 2,
-		// +Z face
-		 1,25, 5,   5,25,29,   1, 3,25,   3,27,25,
-		 5,29, 7,   7,29,31,   3,31,27,   7,31, 3
-	};
-
-	scene::SMeshBuffer* boundary = new scene::SMeshBuffer();
-	boundary->Vertices.set_used(32);
-	for(int i = 0; i < 32; ++i)
-	{
-		video::S3DVertex& v = boundary->Vertices[i];
-		v.Pos = vertices[i];
-	}
-	boundary->Indices.set_used(144);
-	for(int i = 0; i < 144; ++i)
-	{
-		boundary->Indices[i] = indices[i];
-	}
-	boundary->setDirty();
-	boundary->recalculateBoundingBox();
-
-	const float INSET = 0.04;
-	core::CMatrix4<f32> offset;
-	offset.setScale(BS*MAP_BLOCKSIZE*(1-INSET));
-
 	for(std::map<v3s16, MapBlock*>::iterator
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
-		v3s16 bpos = i->first;
+		v3s16 block_pos = i->first;
 
 		video::SColor color(255, 0, 0, 0);
-		if (bpos == ppos) {
+		if (block_pos == player_block_pos) {
 			color.setGreen(255);
 		} else {
 			if (i->second->isDummy()) {
@@ -979,27 +931,24 @@ void ClientMap::renderDebugBlockBoundaries(bool xray)
 			} else {
 				color.setBlue(128);
 			}
-			if (((bpos.X + bpos.Y + bpos.Z) % 2) == 0) {
-				color.setGreen(128);
+			if (((block_pos.X + block_pos.Y + block_pos.Z) % 2) == 0) {
+				// Checkerboard pattern makes it easier to
+				// distinguish neighbors from each other.
+				color.setGreen(80);
 			}
 		}
 
 		mat.EmissiveColor = color;
 		driver->setMaterial(mat);
 
-		core::aabbox3d<f32> bound;
-		bound.MinEdge = intToFloat(bpos, BS)*blocksize
-			- v3f(BS)*0.5
-			+ v3f(BS*MAP_BLOCKSIZE*(INSET/2));
-		bound.MaxEdge = bound.MinEdge
-			+ blocksize*BS;
-
-		offset.setTranslation(bound.MinEdge);
-		driver->setTransform(video::ETS_WORLD,offset);
-		driver->drawMeshBuffer(boundary);
+		matrix.setTranslation(
+			intToFloat(block_pos, BS)*v3f(MAP_BLOCKSIZE)
+			 - v3f(BS)*0.5
+			 + v3f(BS*MAP_BLOCKSIZE/2)
+		);
+		driver->setTransform(video::ETS_WORLD,matrix);
+		driver->drawMeshBuffer(m_boundary_debug_mesh->getMeshBuffer(0));
 	}
-
-	delete boundary;
 }
 
 void ClientMap::PrintInfo(std::ostream &out)
