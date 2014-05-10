@@ -39,7 +39,8 @@ local function initialize_builtin_statbars(player)
 		hud_ids[name] = {}
 	end
 
-	if player:hud_get_flags().healthbar then
+	if player:hud_get_flags().healthbar and
+			core.is_yes(core.setting_get("enable_damage")) then
 		if hud_ids[name].id_healthbar == nil then
 			health_bar_definition.number = player:get_hp()
 			hud_ids[name].id_healthbar  = player:hud_add(health_bar_definition)
@@ -52,7 +53,8 @@ local function initialize_builtin_statbars(player)
 	end
 
 	if (player:get_breath() < 11) then
-		if player:hud_get_flags().breathbar then
+		if player:hud_get_flags().breathbar and
+			core.is_yes(core.setting_get("enable_damage")) then
 			if hud_ids[name].id_breathbar == nil then
 				hud_ids[name].id_breathbar = player:hud_add(breath_bar_definition)
 			end
