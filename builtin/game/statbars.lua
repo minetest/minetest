@@ -37,6 +37,9 @@ local function initialize_builtin_statbars(player)
 
 	if (hud_ids[name] == nil) then
 		hud_ids[name] = {}
+		-- flags are not transmitted to client on connect, we need to make sure
+		-- our current flags are transmitted by sending them actively
+		player:hud_set_flags(player:hud_get_flags())
 	end
 
 	if player:hud_get_flags().healthbar and
