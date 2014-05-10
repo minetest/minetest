@@ -2894,8 +2894,10 @@ bool Server::getClientInfo(
 	m_clients.Lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,Invalid);
 
-	if (client == NULL)
+	if (client == NULL) {
+		m_clients.Unlock();
 		return false;
+		}
 
 	*uptime = client->uptime();
 	*ser_vers = client->serialization_version;
