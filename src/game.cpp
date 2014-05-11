@@ -193,6 +193,14 @@ struct LocalFormspecHandler : public TextDest
 			}
 		}
 
+		// don't show error message for unhandled cursor keys
+		if ( (fields.find("key_up") != fields.end()) ||
+			(fields.find("key_down") != fields.end()) ||
+			(fields.find("key_left") != fields.end()) ||
+			(fields.find("key_right") != fields.end())) {
+			return;
+		}
+
 		errorstream << "LocalFormspecHandler::gotText unhandled >" << m_formname << "< event" << std::endl;
 		int i = 0;
 		for (std::map<std::string,std::string>::iterator iter = fields.begin();
