@@ -2083,7 +2083,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	// Write length
 	size_t messagesize = message.size();
 	assert(messagesize <= 0xFFFF);
-	writeU16(buf, (u16) (messagesize & 0xFF));
+	writeU16(buf, (u16) (messagesize & 0xFFFF));
 	os.write((char*)buf, 2);
 	
 	// Write string
