@@ -83,17 +83,18 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected) {
 
 	if (selected) {
+			/* draw hihlighting around selected item */
 			if (use_hotbar_selected_image) {
-			core::rect<s32> imgrect2 = rect;
-			imgrect2.UpperLeftCorner.X  -= m_padding;
-			imgrect2.UpperLeftCorner.Y  -= m_padding;
-			imgrect2.LowerRightCorner.X += m_padding;
-			imgrect2.LowerRightCorner.Y += m_padding;
-				video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
-				core::dimension2di imgsize(texture->getOriginalSize());
-			driver->draw2DImage(texture, imgrect2,
-					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-					NULL, hbar_colors, true);
+				core::rect<s32> imgrect2 = rect;
+				imgrect2.UpperLeftCorner.X  -= (m_padding*2);
+				imgrect2.UpperLeftCorner.Y  -= (m_padding*2);
+				imgrect2.LowerRightCorner.X += (m_padding*2);
+				imgrect2.LowerRightCorner.Y += (m_padding*2);
+					video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
+					core::dimension2di imgsize(texture->getOriginalSize());
+				driver->draw2DImage(texture, imgrect2,
+						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+						NULL, hbar_colors, true);
 			} else {
 				video::SColor c_outside(255,255,0,0);
 				//video::SColor c_outside(255,0,0,0);
@@ -185,8 +186,10 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 			use_hotbar_selected_image = false;
 	}
 
+	/* draw customized item background */
 	if (use_hotbar_image) {
-		core::rect<s32> imgrect2(-m_padding/2, -m_padding/2, width+m_padding/2, height+m_padding/2);
+		core::rect<s32> imgrect2(-m_padding/2, -m_padding/2,
+				width+m_padding/2, height+m_padding/2);
 		core::rect<s32> rect2 = imgrect2 + pos;
 		video::ITexture *texture = tsrc->getTexture(hotbar_image);
 		core::dimension2di imgsize(texture->getOriginalSize());
