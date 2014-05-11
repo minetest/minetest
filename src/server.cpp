@@ -3357,6 +3357,10 @@ void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 
 	// Write command
 	writeU16(os, TOCLIENT_HUD_SET_FLAGS);
+
+	//////////////////////////// compatibility code to be removed //////////////
+	flags &= ~(HUD_FLAG_HEALTHBAR_VISIBLE | HUD_FLAG_BREATHBAR_VISIBLE);
+	////////////////////////////////////////////////////////////////////////////
 	writeU32(os, flags);
 	writeU32(os, mask);
 
@@ -4591,6 +4595,7 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 		return false;
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
+	player->hud_flags = flags;
 
 	m_script->player_event(player->getPlayerSAO(),"hud_changed");
 	return true;
