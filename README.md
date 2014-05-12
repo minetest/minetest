@@ -3,7 +3,7 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2014 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
@@ -43,25 +43,13 @@ Default Controls
 - Settable in the configuration file, see the section below.
 
 Paths
-------
-$bin   - Compiled binaries
-$share - Distributed read-only data
-$user  - User-created modifiable data
+------ 
+|  Path  |             Use              | Windows .zip / RUN_IN_PLACE source |         Linux       |                  OSX                   |
+| ------ | ---------------------------- | ---------------------------------- | ------------------- | -------------------------------------- |
+| $bin   | Compiled binaries            | bin                                | /usr/bin            | ?                                      |
+| $share | Distributed read-only data   | .                                  | /usr/share/minetest | ?                                      |
+| $user  | User-created modifiable data | .                                  | ~/.minetest         | ~/Library/Application Support/minetest |
 
-Windows .zip / RUN_IN_PLACE source:
-$bin   = bin
-$share = .
-$user  = .
-
-Linux installed:
-$bin   = /usr/bin
-$share = /usr/share/minetest
-$user  = ~/.minetest
-
-OS X:
-$bin   = ?
-$share = ?
-$user  = ~/Library/Application Support/minetest
 
 World directory
 ----------------
@@ -84,23 +72,27 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
+
+     $ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
-$ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
-$ tar xf master.tar.gz
-$ cd minetest-minetest-286edd4 (or similar)
+
+     $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
+     $ tar xf master.tar.gz
+     $ cd minetest-minetest-286edd4 (or similar)
 
 Download minetest_game (otherwise only the "Minimal development test" game is available)
-$ cd games/
-$ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
-$ tar xf minetest_game.tar.gz
-$ mv minetest-minetest_game-* minetest_game
-$ cd ..
+
+     $ cd games/
+     $ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
+     $ tar xf minetest_game.tar.gz
+     $ mv minetest-minetest_game-* minetest_game
+     $ cd ..
 
 Build a version that runs directly from the source directory:
-$ cmake . -DRUN_IN_PLACE=1
-$ make -j2
+
+     $ cmake . -DRUN_IN_PLACE=1
+     $ make -j2
 
 Run it:
 $ cd bin
