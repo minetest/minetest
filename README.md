@@ -51,13 +51,6 @@ Paths
 | $user  | User-created modifiable data | .                                  | ~/.minetest         | ~/Library/Application Support/minetest |
 
 
-| Path    | $bin             | $share                    | $user                      |
-|---------|------------------|---------------------------|----------------------------|
-| Use     | Compiled binaries| Distributed read-only data|User-created modifiable data|
-|Windows .zip / RUN_IN_PLACE source|bin|.|.|
-|Linus|/usr/bin |/usr/share/minetest|~/.minetest|
-|OSX|?|?|~/Library/Application Support/minetest|
-
 World directory
 ----------------
 - Worlds can be found as separate folders in:
@@ -112,6 +105,7 @@ Run it:
 - You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
   - Debug build is slower, but gives much more useful output in a debugger
 - If you build a bare server, you don't need to have Irrlicht installed. In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
+
 
 CMake options
 -------------
@@ -181,6 +175,7 @@ ZLIB_DLL                        | Only on Windows; path to zlibwapi.dll
 ZLIB_INCLUDE_DIR                | directory where zlib.h is located
 ZLIB_LIBRARY                    | path to libz.a/libz.so/zlibwapi.lib
 
+
 Compiling on Windows:
 ---------------------
 - This section is outdated. In addition to what is described here:
@@ -212,9 +207,10 @@ Compiling on Windows:
 	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
+
 	- You will end up with a directory structure like this (+=dir, -=file):
-	-----------------
-	+ DIR
+	  ``````````
+	  + DIR
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
 		- irrlicht-1.7.1.zip
@@ -240,7 +236,7 @@ Compiling on Windows:
 			+ doc
 			- CMakeLists.txt
 			...
-	-----------------
+	  `````````
 	- Start up the CMake GUI
 	- Select "Browse Source..." and select DIR/minetest
 	- Now, if using MSVC:
@@ -252,22 +248,24 @@ Compiling on Windows:
 	- It will warn about missing stuff, ignore that at this point. (later don't)
 	- Make sure the configuration is as follows
 	  (note that the versions may differ for you):
-	-----------------
-	BUILD_CLIENT             [X]
-	BUILD_SERVER             [ ]
-	CMAKE_BUILD_TYPE         Release
-	CMAKE_INSTALL_PREFIX     DIR/minetest-install
-	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
-	RUN_IN_PLACE             [X]
-	WARN_ALL                 [ ]
-	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
-	ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
-	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
-	GETTEXT_BIN_DIR          DIR/gettext/bin
-	GETTEXT_INCLUDE_DIR      DIR/gettext/include
-	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
-	-----------------
+
+	  ``````````
+	  BUILD_CLIENT             [X]
+	  BUILD_SERVER             [ ]
+	  CMAKE_BUILD_TYPE         Release
+	  CMAKE_INSTALL_PREFIX     DIR/minetest-install
+	  IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+	  RUN_IN_PLACE             [X]
+	  WARN_ALL                 [ ]
+	  ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
+	  ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
+	  ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
+	  GETTEXT_BIN_DIR          DIR/gettext/bin
+	  GETTEXT_INCLUDE_DIR      DIR/gettext/include
+	  GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
+	  GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
+	  ``````````
+	  
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
@@ -294,6 +292,7 @@ Compiling on Windows:
 Windows releases of minetest are built using a bat script like this:
 --------------------------------------------------------------------
 
+`````````
 set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
@@ -317,6 +316,7 @@ exit /b 0
 popd
 echo Failed.
 exit /b 1
+`````````
 
 License of Minetest textures and sounds
 ---------------------------------------
