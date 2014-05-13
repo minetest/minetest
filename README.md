@@ -109,15 +109,19 @@ Run it:
 
 CMake options
 -------------
+
+CMAKE_BUILD_TYPE   | Type of build (Release vs. Debug)
+-------------------|---------------------------------
+Release            | Release build
+Debug              | Debug build
+RelWithDebInfo     | Release build with Debug information
+MinSizeRel         | Release build with -Os passed to compiler to make executable as small as possible
+
+
 General option      | Information 
 --------------------|--------------------------------
 BUILD_CLIENT        | Build Minetest client
 BUILD_SERVER        | Build Minetest server
-CMAKE_BUILD_TYPE    | Type of build (Release vs. Debug)
-    Release         | Release build
-    Debug           | Debug build
-    RelWithDebInfo  | Release build with Debug information
-    MinSizeRel      | Release build with -Os passed to compiler to make executable as small as possible
 ENABLE_CURL         | Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
 ENABLE_FREETYPE     | Build with Freetype2; Allows using TTF fonts
 ENABLE_GETTEXT      | Build with Gettext; Allows using translations
