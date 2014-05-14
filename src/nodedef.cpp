@@ -597,7 +597,8 @@ public:
 			}
 		}
 	}
-	virtual void updateTextures(ITextureSource *tsrc)
+	virtual void updateTextures(ITextureSource *tsrc,
+		IShaderSource *shdsrc)
 	{
 #ifndef SERVER
 		infostream<<"CNodeDefManager::updateTextures(): Updating "
@@ -621,6 +622,8 @@ public:
 			}
 
 			bool is_liquid = false;
+			bool is_water_surface = false;
+
 			u8 material_type;
 			material_type = (f->alpha == 255) ? TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
@@ -676,13 +679,13 @@ public:
 					}
 				}
 				if (f->waving == 1)
-					material_type = TILE_MATERIAL_LEAVES;
+					material_type = TILE_MATERIAL_WAVING_LEAVES;
 				break;
 			case NDT_PLANTLIKE:
 				f->solidness = 0;
 				f->backface_culling = false;
 				if (f->waving == 1)
-					material_type = TILE_MATERIAL_PLANTS;
+					material_type = TILE_MATERIAL_WAVING_PLANTS;
 				break;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
@@ -693,11 +696,22 @@ public:
 				break;
 			}
 
-			if (is_liquid)
+			if (is_liquid){
 				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
+				if (f->name == "default:water_source")
+					is_water_surface = true;
+			}
+			u32 tile_shader[6];
+			for(u16 j=0; j<6; j++)
+				tile_shader[j] = shdsrc->getShader("nodes_shader",material_type, f->drawtype);
+
+			if (is_water_surface)
+				tile_shader[0] = shdsrc->getShader("water_surface_shader",material_type, f->drawtype);
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
+				// Shader
+				f->tiles[j].shader_id = tile_shader[j];
 				// Texture
 				f->tiles[j].texture = tsrc->getTexture(
 						tiledef[j].name,
@@ -740,6 +754,8 @@ public:
 			}
 			// Special tiles (fill in f->special_tiles[])
 			for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
+				// Shader
+				f->special_tiles[j].shader_id = tile_shader[j];
 				// Texture
 				f->special_tiles[j].texture = tsrc->getTexture(
 						f->tiledef_special[j].name,

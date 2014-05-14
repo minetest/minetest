@@ -1106,23 +1106,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	/*
 		Convert MeshCollector to SMesh
 	*/
+	ITextureSource *tsrc = m_gamedef->tsrc();
+	IShaderSource *shdrsrc = m_gamedef->getShaderSource();
+
 	bool enable_shaders     = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
-
-	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
-							shadermat4, shadermat5;
-	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 = 
-		video::EMT_SOLID;
-
-	if (enable_shaders) {
-		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
-		shadermat1 = shdrsrc->getShader("solids_shader").material;
-		shadermat2 = shdrsrc->getShader("liquids_shader").material;
-		shadermat3 = shdrsrc->getShader("alpha_shader").material;
-		shadermat4 = shdrsrc->getShader("leaves_shader").material;
-		shadermat5 = shdrsrc->getShader("plants_shader").material;
-	}
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
@@ -1135,7 +1124,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		// - Cracks
 		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
 		{
-			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			// Find the texture name plus ^[crack:N:
 			std::ostringstream os(std::ios::binary);
 			os<<tsrc->getTextureName(p.tile.texture_id)<<"^[crack";
@@ -1151,7 +1139,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		// - Texture animation
 		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
 		{
-			ITextureSource *tsrc = data->m_gamedef->tsrc();
 			// Add to MapBlockMesh in order to animate these tiles
 			m_animation_tiles[i] = p.tile;
 			m_animation_frames[i] = 0;
@@ -1206,7 +1193,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		material.setTexture(0, p.tile.texture);
 
 		if (enable_shaders) {
-			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			material.MaterialType = shdrsrc->getShaderInfo(p.tile.shader_id).material;
+			p.tile.applyMaterialOptionsWithShaders(material);		
 			material.setTexture(2, tsrc->getTexture("disable_img.png"));
 			if (enable_bumpmapping || enable_parallax_occlusion) {
 				if (tsrc->isKnownSourceImage("override_normal.png")){
@@ -1230,8 +1218,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					}
 				}
 			}
-			p.tile.applyMaterialOptionsWithShaders(material,
-				shadermat1, shadermat2, shadermat3, shadermat4, shadermat5);
 		} else {
 			p.tile.applyMaterialOptions(material);
 		}
@@ -1360,6 +1346,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 		scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 		ITextureSource *tsrc = m_gamedef->getTextureSource();
+		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
 
 		// Create new texture name from original
 		std::ostringstream os(std::ios::binary);
@@ -1367,9 +1354,10 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
 		// Set the texture
 		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
-		buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
-		if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
-			{
+		if (enable_shaders){
+			buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
+			buf->getMaterial().MaterialType = shdrsrc->getShaderInfo(tile.shader_id).material;
+			if (enable_bumpmapping || enable_parallax_occlusion){
 				if (tsrc->isKnownSourceImage("override_normal.png")){
 					buf->getMaterial().setTexture(1, tsrc->getTexture("override_normal.png"));
 					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
@@ -1388,6 +1376,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 					}
 				}
 			}
+		}
 	}
 
 	// Day-night transition

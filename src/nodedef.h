@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
+#include "shader.h"
 #endif
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
@@ -35,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IItemDefManager;
 class ITextureSource;
+class IShaderSource;
 class IGameDef;
 
 typedef std::list<std::pair<content_t, int> > GroupItems;
@@ -323,7 +325,8 @@ public:
 	/*
 		Update tile textures to latest return values of TextueSource.
 	*/
-	virtual void updateTextures(ITextureSource *tsrc)=0;
+	virtual void updateTextures(ITextureSource *tsrc,
+		IShaderSource *shdsrc)=0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 	virtual void deSerialize(std::istream &is)=0;
