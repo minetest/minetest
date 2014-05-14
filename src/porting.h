@@ -336,6 +336,11 @@ v2u32 getDisplaySize();
 v2u32 getWindowSize();
 #endif
 
+#ifdef SERVER
+void daemonize();
+void cleanup_pid();
+#endif
+
 } // namespace porting
 
 #endif // PORTING_HEADER
