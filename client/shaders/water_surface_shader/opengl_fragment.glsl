@@ -14,10 +14,11 @@ varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
 
-bool normalTexturePresent = false;
+bool normalTexturePresent = false; 
 
 const float e = 2.718281828459;
-
+const float BS = 10.0;
+ 
 float intensity (vec3 color){
 	return (color.r + color.g + color.b) / 3.0;
 }
@@ -39,7 +40,7 @@ void main (void)
 	vec4 bump;
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
-
+	
 #ifdef USE_NORMALMAPS
 	if (texture2D(useNormalmap,vec2(1.0,1.0)).r > 0.0){
 		normalTexturePresent = true;
@@ -94,17 +95,34 @@ vec4 base = texture2D(baseTexture, uv).rgba;
 	color = base.rgb;
 #endif
 
-	vec4 col = vec4(color.rgb, base.a);
+#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
+	float alpha = gl_Color.a;
+	vec4 col = vec4(color.rgb, alpha);
+	col *= gl_Color;
 	col = col * col; // SRGB -> Linear
 	col *= 1.8;
 	col.r = 1.0 - exp(1.0 - col.r) / e;
 	col.g = 1.0 - exp(1.0 - col.g) / e;
 	col.b = 1.0 - exp(1.0 - col.b) / e;
 	col = sqrt(col); // Linear -> SRGB
+	if(fogDistance != 0.0){
+		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
+		alpha = mix(alpha, 0.0, d);
+	}
+	gl_FragColor = vec4(col.rgb, alpha);
+#else
+	vec4 col = vec4(color.rgb, base.a);
 	col *= gl_Color;
+	col = col * col; // SRGB -> Linear
+	col *= 1.8;
+	col.r = 1.0 - exp(1.0 - col.r) / e;
+	col.g = 1.0 - exp(1.0 - col.g) / e;
+	col.b = 1.0 - exp(1.0 - col.b) / e;
+	col = sqrt(col); // Linear -> SRGB
 	if(fogDistance != 0.0){
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
-    gl_FragColor = vec4(col.rgb, base.a);
+	gl_FragColor = vec4(col.rgb, base.a);
+#endif
 }

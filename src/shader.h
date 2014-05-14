@@ -46,9 +46,15 @@ std::string getShaderPath(const std::string &name_of_shader,
 struct ShaderInfo
 {
 	std::string name;
+	video::E_MATERIAL_TYPE base_material;
 	video::E_MATERIAL_TYPE material;
+	u8 drawtype;
+	u8 material_type;
+	s32 user_data;
 
-	ShaderInfo(): name(""), material(video::EMT_SOLID) {}
+	ShaderInfo(): name(""), base_material(video::EMT_SOLID),
+		material(video::EMT_SOLID),
+		drawtype(0), material_type(0) {}
 	virtual ~ShaderInfo() {}
 };
 
@@ -77,11 +83,11 @@ class IShaderSource
 public:
 	IShaderSource(){}
 	virtual ~IShaderSource(){}
-	virtual u32 getShaderId(const std::string &name){return 0;}
-	virtual u32 getShaderIdDirect(const std::string &name){return 0;}
-	virtual std::string getShaderName(u32 id){return "";}
-	virtual ShaderInfo getShader(u32 id){return ShaderInfo();}
-	virtual ShaderInfo getShader(const std::string &name){return ShaderInfo();}
+	virtual u32 getShaderIdDirect(const std::string &name,
+		const u8 material_type, const u8 drawtype){return 0;}
+	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
+	virtual u32 getShader(const std::string &name,
+		const u8 material_type, const u8 drawtype){return 0;}
 };
 
 class IWritableShaderSource : public IShaderSource
@@ -89,11 +95,11 @@ class IWritableShaderSource : public IShaderSource
 public:
 	IWritableShaderSource(){}
 	virtual ~IWritableShaderSource(){}
-	virtual u32 getShaderId(const std::string &name){return 0;}
-	virtual u32 getShaderIdDirect(const std::string &name){return 0;}
-	virtual std::string getShaderName(u32 id){return "";}
-	virtual ShaderInfo getShader(u32 id){return ShaderInfo();}
-	virtual ShaderInfo getShader(const std::string &name){return ShaderInfo();}
+	virtual u32 getShaderIdDirect(const std::string &name,
+		const u8 material_type, const u8 drawtype){return 0;}
+	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
+	virtual u32 getShader(const std::string &name,
+		const u8 material_type, const u8 drawtype){return 0;}
 
 	virtual void processQueue()=0;
 	virtual void insertSourceShader(const std::string &name_of_shader,

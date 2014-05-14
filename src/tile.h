@@ -136,8 +136,8 @@ enum MaterialType{
 	TILE_MATERIAL_ALPHA,
 	TILE_MATERIAL_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_LIQUID_OPAQUE,
-	TILE_MATERIAL_LEAVES,
-	TILE_MATERIAL_PLANTS
+	TILE_MATERIAL_WAVING_LEAVES,
+	TILE_MATERIAL_WAVING_PLANTS
 };
 
 // Material flags
@@ -167,6 +167,7 @@ struct TileSpec
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING
 		),
+		shader_id(0),
 		animation_frame_count(1),
 		animation_frame_length_ms(0),
 		rotation(0)
@@ -206,42 +207,18 @@ struct TileSpec
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
 			break;
-		case TILE_MATERIAL_LEAVES:
+		case TILE_MATERIAL_WAVING_LEAVES:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
-		case TILE_MATERIAL_PLANTS:
+		case TILE_MATERIAL_WAVING_PLANTS:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
-	void applyMaterialOptionsWithShaders(video::SMaterial &material,
-			const video::E_MATERIAL_TYPE &basic,
-			const video::E_MATERIAL_TYPE &liquid,
-			const video::E_MATERIAL_TYPE &alpha,
-			const video::E_MATERIAL_TYPE &leaves,
-			const video::E_MATERIAL_TYPE &plants) const
+
+	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
-		switch(material_type){
-		case TILE_MATERIAL_BASIC:
-			material.MaterialType = basic;
-			break;
-		case TILE_MATERIAL_ALPHA:
-			material.MaterialType = alpha;
-			break;
-		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			material.MaterialType = liquid;
-			break;
-		case TILE_MATERIAL_LIQUID_OPAQUE:
-			material.MaterialType = liquid;
-			break;
-		case TILE_MATERIAL_LEAVES:
-			material.MaterialType = leaves;
-			break;
-		case TILE_MATERIAL_PLANTS:
-			material.MaterialType = plants;
-			break;
-		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
 	}
 	
@@ -252,6 +229,7 @@ struct TileSpec
 	// Material parameters
 	u8 material_type;
 	u8 material_flags;
+	u32 shader_id;
 	// Animation parameters
 	u8 animation_frame_count;
 	u16 animation_frame_length_ms;
