@@ -894,9 +894,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 			params.light_radius);
 
 	// Render scene
-	driver->beginScene(true, true, video::SColor(0,0,0,0));
 	smgr->drawAll();
-	driver->endScene();
 
 	// Drop scene manager
 	smgr->drop();
@@ -976,7 +974,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 	std::string last_part_of_name = name.substr(last_separator_pos + 1);
 
-	/* 
+	/*
 		If this name is enclosed in parentheses, generate it
 		and blit it onto the base image
 	*/
