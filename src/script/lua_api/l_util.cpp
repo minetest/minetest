@@ -47,11 +47,12 @@ int ModApiUtil::l_debug(lua_State *L)
 		lua_pushvalue(L, -1);  /* function to be called */
 		lua_pushvalue(L, i);   /* value to print */
 		lua_call(L, 1, 1);
-		const char *s = lua_tostring(L, -1);
-		if (i>1)
+		size_t len;
+		const char *s = lua_tolstring(L, -1, &len);
+		if (i > 1)
 			dstream << "\t";
 		if (s)
-			dstream << s;
+			dstream << std::string(s, len);
 		lua_pop(L, 1);
 	}
 	dstream << std::endl;
