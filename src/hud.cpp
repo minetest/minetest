@@ -435,10 +435,6 @@ void Hud::drawHotbar(u16 playeritem) {
 
 
 void Hud::drawCrosshair() {
-	if (!(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) ||
-			(player->camera_mode == CAMERA_MODE_THIRD_FRONT)) {
-		return;
-	}
 		
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");

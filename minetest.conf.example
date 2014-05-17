@@ -127,9 +127,15 @@
 #view_bobbing_amount = 1.0
 # Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
 #fall_bobbing_amount = 0.0
-# Anaglyph stereo
-#anaglyph = false
-#anaglyph_strength = 0.1
+# 3d support,
+# right now:
+#     "none"       = no 3d output,
+#     "anaglyph"   = cyan/magenta color 3d,
+#     "interlaced" = odd/even line based polarisation screen support,
+#     "topbottom"  = split screen top boton,
+#     "sidebyside" = split screen side by side
+#3d_mode = none
+#3d_paralax_strength = 0.025
 # In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
