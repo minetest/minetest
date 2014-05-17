@@ -118,7 +118,6 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
-		print("create world dialog")
 		local create_world_dlg = create_create_world_dlg(true)
 		create_world_dlg:set_parent(this)
 		create_world_dlg:show()

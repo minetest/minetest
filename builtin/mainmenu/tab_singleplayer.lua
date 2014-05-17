@@ -15,6 +15,13 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local function current_game()
+	local last_game_id = core.setting_get("menu_last_game")
+	local game, index = gamemgr.find_by_gameid(last_game_id)
+	
+	return game
+end
+
 local function singleplayer_refresh_gamebar()
 	
 	local old_bar = ui.find_by_name("game_button_bar")
@@ -137,11 +144,11 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
-		print("create world dialog")
 		local create_world_dlg = create_create_world_dlg(true)
 		create_world_dlg:set_parent(this)
-		create_world_dlg:show()
 		this:hide()
+		create_world_dlg:show()
+		mm_texture.update("singleplayer",current_game())
 		return true
 	end
 
@@ -156,8 +163,9 @@ local function main_button_handler(this, fields, name, tabdata)
 				local index = menudata.worldlist:get_raw_index(selected)
 				local delete_world_dlg = create_delete_world_dlg(world.name,index)
 				delete_world_dlg:set_parent(this)
-				delete_world_dlg:show()
 				this:hide()
+				delete_world_dlg:show()
+				mm_texture.update("singleplayer",current_game())
 			end
 		end
 		
@@ -173,8 +181,9 @@ local function main_button_handler(this, fields, name, tabdata)
 			
 			if (configdialog ~= nil) then
 				configdialog:set_parent(this)
-				configdialog:show()
 				this:hide()
+				configdialog:show()
+				mm_texture.update("singleplayer",current_game())
 			end
 		end
 		
@@ -191,13 +200,12 @@ local function on_change(type, old_tab, new_tab)
 	end
 	
 	if (type == "ENTER") then
-		local last_game_id = core.setting_get("menu_last_game")
-		local game, index = gamemgr.find_by_gameid(last_game_id)
+		local game = current_game()
 		
 		if game then
 			menudata.worldlist:set_filtercriteria(game.id)
 			core.set_topleft_text(game.name)
-			mm_texture.update(new_tab,game)
+			mm_texture.update("singleplayer",game)
 		end
 		buttonbar:show()
 	else
