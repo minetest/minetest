@@ -1760,6 +1760,16 @@ Call these functions only at load time!
      * Called after a new player has been created
 * `minetest.register_on_dieplayer(func(ObjectRef))`
      * Called when a player dies
+* `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
+     * Called when a player is punched
+     * `player` - ObjectRef - Player that was punched
+     * `hitter` - ObjectRef - Player that hit
+     * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be nil)
+     * `tool_capabilities`: capability table of used tool (can be nil)
+     * `dir`: unit vector of direction of punch. Always defined. Points from
+       the puncher to the punched.
+     * `damage` - number that represents the damage calculated by the engine
+     * should return `true` to prevent the default damage mechanism
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
      * Called when player is to be respawned
      * Called _before_ repositioning of player occurs
@@ -2282,7 +2292,6 @@ These functions return the leftover itemstack.
 
 * `minetest.forceload_free_block(pos)`
     * stops forceloading the position `pos`
-
 Please note that forceloaded areas are saved when the server restarts.
 
 minetest.global_exists(name)
