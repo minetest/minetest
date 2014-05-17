@@ -264,6 +264,9 @@
 #max_users = 15
 # Set to true to disallow old clients from connecting
 #strict_protocol_version_checking = false
+# Time in seconds for item entity to live. Default value: 900s
+# Setting it to -1 disables the feature
+#item_entity_ttl = 900
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
 # Enable players getting damage and dying
