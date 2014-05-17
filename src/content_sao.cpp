@@ -1023,15 +1023,15 @@ int PlayerSAO::punch(v3f dir,
 	float time_from_last_punch)
 {
 	// It's best that attachments cannot be punched
-	if(isAttached())
+	if (isAttached())
 		return 0;
 
-	if(!toolcap)
+	if (!toolcap)
 		return 0;
 
 	// No effect if PvP disabled
-	if(g_settings->getBool("enable_pvp") == false){
-		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER){
+	if (g_settings->getBool("enable_pvp") == false) {
+		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
@@ -1045,14 +1045,35 @@ int PlayerSAO::punch(v3f dir,
 
 	std::string punchername = "nil";
 
-	if ( puncher != 0 )
+	if (puncher != 0)
 		punchername = puncher->getDescription();
 
-	actionstream<<"Player "<<m_player->getName()<<" punched by "
-			<<punchername<<", damage "<<hitparams.hp
-			<<" HP"<<std::endl;
+	PlayerSAO *playersao = m_player->getPlayerSAO();
 
-	setHP(getHP() - hitparams.hp);
+	bool damage_handled = m_env->getScriptIface()->on_punchplayer(playersao,
+				puncher, time_from_last_punch, toolcap, dir,
+				hitparams.hp);
+
+	if (!damage_handled) {
+		setHP(getHP() - hitparams.hp);
+	} else { // override client prediction
+		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+			std::string str = gob_cmd_punched(0, getHP());
+			// create message and add to list
+			ActiveObjectMessage aom(getId(), true, str);
+			m_messages_out.push(aom);
+		}
+	}
+
+
+	actionstream << "Player " << m_player->getName() << " punched by "
+			<< punchername;
+	if (!damage_handled) {
+		actionstream << ", damage " << hitparams.hp << " HP";
+	} else {
+		actionstream << ", damage handled by lua";
+	}
+	actionstream << std::endl;
 
 	return hitparams.wear;
 }
