@@ -1737,6 +1737,10 @@ function on_punchnode(p, node)
 end
 minetest.register_on_punchnode(on_punchnode)
 
+function on_punchplayer(player,hitter,tool_capabilities,time_from_last_punch,dir)
+end
+minetest.register_on_punchplayer(on_punchplayer)
+
 --
 -- Test some things
 --

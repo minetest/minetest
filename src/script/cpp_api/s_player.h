@@ -23,7 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #include "cpp_api/s_base.h"
+#include "irr_v3d.h"
 
+struct ToolCapabilities;
+ToolCapabilities   read_tool_capabilities    (lua_State *L,
+                                              int table);
 
 class ScriptApiPlayer
 		: virtual public ScriptApiBase
@@ -38,6 +42,7 @@ public:
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
+	void on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,float time_from_last_punch, const ToolCapabilities *toolcap, v3f dir);
 
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname,

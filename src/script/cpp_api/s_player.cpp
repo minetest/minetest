@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_internal.h"
+#include "common/c_converter.h"
+#include "common/c_content.h"
 #include "util/string.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
@@ -43,6 +45,25 @@ void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player)
 	// Call callbacks
 	objectrefGetOrCreate(player);
 	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
+		ServerActiveObject *hitter,
+		float time_from_last_punch,
+		const ToolCapabilities *toolcap,
+		v3f dir)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	// Get core.registered_on_dieplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_punchplayer");
+	// Call callbacks
+	objectrefGetOrCreate(player);
+	objectrefGetOrCreate(hitter);
+	lua_pushnumber(L, time_from_last_punch);
+	push_tool_capabilities(L, *toolcap);
+	push_v3f(L, dir);
+	script_run_callbacks(L, 5, RUN_CALLBACKS_MODE_LAST);
 }
 
 bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)

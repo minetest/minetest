@@ -52,7 +52,7 @@ public:
 	// And never save to disk
 	bool isStaticAllowed() const
 	{ return false; }
-	
+
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data)
 	{
@@ -98,7 +98,7 @@ public:
 	}
 	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_TEST; }
-	
+
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data)
 	{
@@ -169,7 +169,7 @@ class ItemSAO : public ServerActiveObject
 public:
 	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_ITEM; }
-	
+
 	float getMinimumSavedMovement()
 	{ return 0.1*BS; }
 
@@ -211,7 +211,7 @@ public:
 		if(m_move_interval.step(dtime, interval)==false)
 			return;
 		dtime = interval;
-		
+
 		core::aabbox3d<f32> box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.);
 		collisionMoveResult moveresult;
 		// Apply gravity
@@ -228,7 +228,7 @@ public:
 		moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
 				pos_max_d, box, stepheight, dtime,
 				pos_f, m_speed_f, accel_f);
-		
+
 		if(send_recommended == false)
 			return;
 
@@ -326,7 +326,7 @@ public:
 				m_itemstring_changed = true;
 			}
 		}
-		
+
 		return 0;
 	}
 
@@ -391,7 +391,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 		ServerActiveObject::registerType(getType(), create);
 		return;
 	}
-	
+
 	// Initialize something to armor groups
 	m_armor_groups["fleshy"] = 100;
 }
@@ -406,11 +406,11 @@ LuaEntitySAO::~LuaEntitySAO()
 void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 {
 	ServerActiveObject::addedToEnvironment(dtime_s);
-	
+
 	// Create entity from name
 	m_registered = m_env->getScriptIface()->
 		luaentity_Add(m_id, m_init_name.c_str());
-	
+
 	if(m_registered){
 		// Get properties
 		m_env->getScriptIface()->
@@ -670,10 +670,10 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
-	
+
 	ItemStack *punchitem = NULL;
 	ItemStack punchitem_static;
 	if(puncher){
@@ -686,11 +686,11 @@ int LuaEntitySAO::punch(v3f dir,
 			toolcap,
 			punchitem,
 			time_from_last_punch);
-	
+
 	if(result.did_punch)
 	{
 		setHP(getHP() - result.damage);
-		
+
 
 		std::string punchername = "nil";
 
@@ -700,7 +700,7 @@ int LuaEntitySAO::punch(v3f dir,
 		actionstream<<getDescription()<<" punched by "
 				<<punchername<<", damage "<<result.damage
 				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
-		
+
 		{
 			std::string str = gob_cmd_punched(result.damage, getHP());
 			// create message and add to list
@@ -886,7 +886,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	// If the object is attached client-side, don't waste bandwidth sending its position to clients
 	if(isAttached())
 		return;
-	
+
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(
 			m_last_sent_position);
 	m_last_sent_position_timer = 0;
@@ -1274,7 +1274,7 @@ int PlayerSAO::punch(v3f dir,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
 {
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
 
@@ -1305,6 +1305,11 @@ int PlayerSAO::punch(v3f dir,
 			<<" HP"<<std::endl;
 
 	setHP(getHP() - hitparams.hp);
+
+	PlayerSAO *playersao = m_player->getPlayerSAO();
+
+	m_env->getScriptIface()->on_punchplayer(playersao, puncher,
+				time_from_last_punch, toolcap, dir);
 
 	return hitparams.wear;
 }
