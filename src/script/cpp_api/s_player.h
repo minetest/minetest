@@ -26,8 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 
 struct ToolCapabilities;
-ToolCapabilities   read_tool_capabilities    (lua_State *L,
-                                              int table);
 
 class ScriptApiPlayer
 		: virtual public ScriptApiBase
