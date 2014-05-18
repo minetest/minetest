@@ -74,6 +74,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		if event.type == "CHG" then
 			core.setting_set("mainmenu_last_selected_world",
 				menudata.worldlist:get_raw_index(core.get_textlist_index("srv_worlds")))
+			return true
 		end
 	end
 
@@ -83,14 +84,17 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["cb_creative_mode"] then
 		core.setting_set("creative_mode", fields["cb_creative_mode"])
+		return true
 	end
 
 	if fields["cb_enable_damage"] then
 		core.setting_set("enable_damage", fields["cb_enable_damage"])
+		return true
 	end
 
 	if fields["cb_server_announce"] then
 		core.setting_set("server_announce", fields["cb_server_announce"])
+		return true
 	end
 
 	if fields["start_server"] ~= nil or
@@ -111,9 +115,11 @@ local function main_button_handler(this, fields, name, tabdata)
 
 			--update last game
 			local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
+			
 			local game,index = gamemgr.find_by_gameid(world.gameid)
 			core.setting_set("menu_last_game",game.id)
 			core.start()
+			return true
 		end
 	end
 

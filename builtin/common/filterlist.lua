@@ -37,9 +37,9 @@
 filterlist = {}
 
 --------------------------------------------------------------------------------
-function filterlist.refresh(this)
-	this.m_raw_list = this.m_raw_list_fct(this.m_fetch_param)
-	filterlist.process(this)
+function filterlist.refresh(self)
+	self.m_raw_list = self.m_raw_list_fct(self.m_fetch_param)
+	filterlist.process(self)
 end
 
 --------------------------------------------------------------------------------
@@ -48,105 +48,105 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
 	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
 	
-	local this = {}
+	local self = {}
 	
-	this.m_raw_list_fct  = raw_fct
-	this.m_compare_fct   = compare_fct
-	this.m_filter_fct    = filter_fct
-	this.m_uid_match_fct = uid_match_fct
+	self.m_raw_list_fct  = raw_fct
+	self.m_compare_fct   = compare_fct
+	self.m_filter_fct    = filter_fct
+	self.m_uid_match_fct = uid_match_fct
 	
-	this.m_filtercriteria = nil
-	this.m_fetch_param = fetch_param
+	self.m_filtercriteria = nil
+	self.m_fetch_param = fetch_param
 	
-	this.m_sortmode = "none"
-	this.m_sort_list = {}
+	self.m_sortmode = "none"
+	self.m_sort_list = {}
 
-	this.m_processed_list = nil
-	this.m_raw_list = this.m_raw_list_fct(this.m_fetch_param)
+	self.m_processed_list = nil
+	self.m_raw_list = self.m_raw_list_fct(self.m_fetch_param)
 
-	this.add_sort_mechanism = filterlist.add_sort_mechanism
-	this.set_filtercriteria = filterlist.set_filtercriteria
-	this.get_filtercriteria = filterlist.get_filtercriteria
-	this.set_sortmode       = filterlist.set_sortmode
-	this.get_list           = filterlist.get_list
-	this.get_raw_list       = filterlist.get_raw_list
-	this.get_raw_element    = filterlist.get_raw_element
-	this.get_raw_index      = filterlist.get_raw_index
-	this.get_current_index  = filterlist.get_current_index
-	this.size               = filterlist.size
-	this.uid_exists_raw     = filterlist.uid_exists_raw
-	this.raw_index_by_uid   = filterlist.raw_index_by_uid
-	this.refresh            = filterlist.refresh
+	self.add_sort_mechanism = filterlist.add_sort_mechanism
+	self.set_filtercriteria = filterlist.set_filtercriteria
+	self.get_filtercriteria = filterlist.get_filtercriteria
+	self.set_sortmode       = filterlist.set_sortmode
+	self.get_list           = filterlist.get_list
+	self.get_raw_list       = filterlist.get_raw_list
+	self.get_raw_element    = filterlist.get_raw_element
+	self.get_raw_index      = filterlist.get_raw_index
+	self.get_current_index  = filterlist.get_current_index
+	self.size               = filterlist.size
+	self.uid_exists_raw     = filterlist.uid_exists_raw
+	self.raw_index_by_uid   = filterlist.raw_index_by_uid
+	self.refresh            = filterlist.refresh
 
-	filterlist.process(this)
+	filterlist.process(self)
 	
-	return this
+	return self
 end
 
 --------------------------------------------------------------------------------
-function filterlist.add_sort_mechanism(this,name,fct)
-	this.m_sort_list[name] = fct
+function filterlist.add_sort_mechanism(self,name,fct)
+	self.m_sort_list[name] = fct
 end
 
 --------------------------------------------------------------------------------
-function filterlist.set_filtercriteria(this,criteria)
-	if criteria == this.m_filtercriteria and
+function filterlist.set_filtercriteria(self,criteria)
+	if criteria == self.m_filtercriteria and
 		type(criteria) ~= "table" then
 		return
 	end
-	this.m_filtercriteria = criteria
-	filterlist.process(this)
+	self.m_filtercriteria = criteria
+	filterlist.process(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_filtercriteria(this)
-	return this.m_filtercriteria
+function filterlist.get_filtercriteria(self)
+	return self.m_filtercriteria
 end
 
 --------------------------------------------------------------------------------
 --supported sort mode "alphabetic|none"
-function filterlist.set_sortmode(this,mode)
-	if (mode == this.m_sortmode) then
+function filterlist.set_sortmode(self,mode)
+	if (mode == self.m_sortmode) then
 		return
 	end
-	this.m_sortmode = mode
-	filterlist.process(this)
+	self.m_sortmode = mode
+	filterlist.process(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_list(this)
-	return this.m_processed_list
+function filterlist.get_list(self)
+	return self.m_processed_list
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_list(this)
-	return this.m_raw_list
+function filterlist.get_raw_list(self)
+	return self.m_raw_list
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_element(this,idx)
+function filterlist.get_raw_element(self,idx)
 	if type(idx) ~= "number" then
 		idx = tonumber(idx)
 	end
 	
-	if idx ~= nil and idx > 0 and idx < #this.m_raw_list then
-		return this.m_raw_list[idx]
+	if idx ~= nil and idx > 0 and idx <= #self.m_raw_list then
+		return self.m_raw_list[idx]
 	end
 	
 	return nil
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_index(this,listindex)
-	assert(this.m_processed_list ~= nil)
+function filterlist.get_raw_index(self,listindex)
+	assert(self.m_processed_list ~= nil)
 	
 	if listindex ~= nil and listindex > 0 and
-		listindex <= #this.m_processed_list then
-		local entry = this.m_processed_list[listindex]
+		listindex <= #self.m_processed_list then
+		local entry = self.m_processed_list[listindex]
 		
-		for i,v in ipairs(this.m_raw_list) do
+		for i,v in ipairs(self.m_raw_list) do
 		
-			if this.m_compare_fct(v,entry) then
+			if self.m_compare_fct(v,entry) then
 				return i
 			end
 		end
@@ -156,16 +156,16 @@ function filterlist.get_raw_index(this,listindex)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_current_index(this,listindex)
-	assert(this.m_processed_list ~= nil)
+function filterlist.get_current_index(self,listindex)
+	assert(self.m_processed_list ~= nil)
 	
 	if listindex ~= nil and listindex > 0 and
-		listindex <= #this.m_raw_list then
-		local entry = this.m_raw_list[listindex]
+		listindex <= #self.m_raw_list then
+		local entry = self.m_raw_list[listindex]
 		
-		for i,v in ipairs(this.m_processed_list) do
+		for i,v in ipairs(self.m_processed_list) do
 		
-			if this.m_compare_fct(v,entry) then
+			if self.m_compare_fct(v,entry) then
 				return i
 			end
 		end
@@ -175,48 +175,48 @@ function filterlist.get_current_index(this,listindex)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.process(this)
-	assert(this.m_raw_list ~= nil)
+function filterlist.process(self)
+	assert(self.m_raw_list ~= nil)
 
-	if this.m_sortmode == "none" and
-		this.m_filtercriteria == nil then
-		this.m_processed_list = this.m_raw_list
+	if self.m_sortmode == "none" and
+		self.m_filtercriteria == nil then
+		self.m_processed_list = self.m_raw_list
 		return
 	end
 	
-	this.m_processed_list = {}
+	self.m_processed_list = {}
 	
-	for k,v in pairs(this.m_raw_list) do
-		if this.m_filtercriteria == nil or
-			this.m_filter_fct(v,this.m_filtercriteria) then
-			table.insert(this.m_processed_list,v)
+	for k,v in pairs(self.m_raw_list) do
+		if self.m_filtercriteria == nil or
+			self.m_filter_fct(v,self.m_filtercriteria) then
+			table.insert(self.m_processed_list,v)
 		end
 	end
 	
-	if this.m_sortmode == "none" then
+	if self.m_sortmode == "none" then
 		return
 	end
 	
-	if this.m_sort_list[this.m_sortmode] ~= nil and
-		type(this.m_sort_list[this.m_sortmode]) == "function" then
+	if self.m_sort_list[self.m_sortmode] ~= nil and
+		type(self.m_sort_list[self.m_sortmode]) == "function" then
 		
-		this.m_sort_list[this.m_sortmode](this)
+		self.m_sort_list[self.m_sortmode](self)
 	end
 end
 
 --------------------------------------------------------------------------------
-function filterlist.size(this)
-	if this.m_processed_list == nil then
+function filterlist.size(self)
+	if self.m_processed_list == nil then
 		return 0
 	end
 	
-	return #this.m_processed_list
+	return #self.m_processed_list
 end
 
 --------------------------------------------------------------------------------
-function filterlist.uid_exists_raw(this,uid)
-	for i,v in ipairs(this.m_raw_list) do
-		if this.m_uid_match_fct(v,uid) then
+function filterlist.uid_exists_raw(self,uid)
+	for i,v in ipairs(self.m_raw_list) do
+		if self.m_uid_match_fct(v,uid) then
 			return true
 		end
 	end
@@ -224,11 +224,11 @@ function filterlist.uid_exists_raw(this,uid)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.raw_index_by_uid(this, uid)
+function filterlist.raw_index_by_uid(self, uid)
 	local elementcount = 0
 	local elementidx = 0
-	for i,v in ipairs(this.m_raw_list) do
-		if this.m_uid_match_fct(v,uid) then
+	for i,v in ipairs(self.m_raw_list) do
+		if self.m_uid_match_fct(v,uid) then
 			elementcount = elementcount +1
 			elementidx = i
 		end
@@ -236,7 +236,7 @@ function filterlist.raw_index_by_uid(this, uid)
 	
 	
 	-- If there are more elements than one with same name uid can't decide which
-	-- one is meant. This shouldn't be possible but just for sure.
+	-- one is meant. self shouldn't be possible but just for sure.
 	if elementcount > 1 then
 		elementidx=0
 	end
@@ -267,9 +267,9 @@ function compare_worlds(world1,world2)
 end
 
 --------------------------------------------------------------------------------
-function sort_worlds_alphabetic(this)
+function sort_worlds_alphabetic(self)
 
-	table.sort(this.m_processed_list, function(a, b)
+	table.sort(self.m_processed_list, function(a, b)
 		--fixes issue #857 (crash due to sorting nil in worldlist)
 		if a == nil or b == nil then
 			if a == nil and b ~= nil then return false end
@@ -284,9 +284,9 @@ function sort_worlds_alphabetic(this)
 end
 
 --------------------------------------------------------------------------------
-function sort_mod_list(this)
+function sort_mod_list(self)
 
-	table.sort(this.m_processed_list, function(a, b)
+	table.sort(self.m_processed_list, function(a, b)
 		-- Show game mods at bottom
 		if a.typ ~= b.typ then
 			return b.typ == "game_mod"

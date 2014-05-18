@@ -112,9 +112,8 @@ local function main_button_handler(this, fields, name, tabdata)
 		if event.type == "CHG" then
 			core.setting_set("mainmenu_last_selected_world",
 				menudata.worldlist:get_raw_index(core.get_textlist_index("sp_worlds")))
+			return true
 		end
-		
-		return true
 	end
 
 	if menu_handle_key_up_down(fields,"sp_worlds","mainmenu_last_selected_world") then
@@ -135,9 +134,11 @@ local function main_button_handler(this, fields, name, tabdata)
 		world_doubleclick or
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("sp_worlds")
+		
 		if selected ~= nil then
-			gamedata.selected_world	= menudata.worldlist:get_raw_index(selected)
-			gamedata.singleplayer	= true
+			gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
+			gamedata.singleplayer   = true
+			
 			core.start()
 		end
 		return true
