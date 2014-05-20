@@ -407,4 +407,4 @@ core.registered_on_cheats, core.register_on_cheat = make_registration()
 core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
-
+core.registered_on_punchplayer, core.register_on_punchplayer = make_registration()

@@ -1294,6 +1294,14 @@ minetest.register_on_player_receive_fields(func(player, formname, fields))
 ^ Called when a button is pressed in player's inventory form
 ^ Newest functions are called first
 ^ If function returns true, remaining functions are not called
+minetest.register_on_punchplayer(player, hitter, time_from_last_punch, tool_capabilities, dir)
+^ Called when a player is punched
+^ player - ObjectRef - Player that was punched
+^ hitter - ObjectRef - Player that hit
+^ time_from_last_punch: Meant for disallowing spamming of clicks (can be nil)
+^ tool_capabilities: capability table of used tool (can be nil)
+^ dir: unit vector of direction of punch. Always defined. Points from
+  the puncher to the punched.
 minetest.register_on_mapgen_init(func(MapgenParams))
 ^ Called just before the map generator is initialized but before the environment is initialized
 ^ MapgenParams consists of a table with the fields mgname, seed, water_level, and flags
