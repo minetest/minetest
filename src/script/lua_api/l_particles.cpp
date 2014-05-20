@@ -44,6 +44,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 
 	if (lua_gettop(L) > 1) // deprecated
 	{
+		log_deprecated(L,"Deprecated add_particle call with individual parameters instead of definition");
 		pos = check_v3f(L, 1);
 		vel = check_v3f(L, 2);
 		acc = check_v3f(L, 3);
@@ -128,6 +129,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
+		log_deprecated(L,"Deprecated add_particlespawner call with individual parameters instead of definition");
 		amount = luaL_checknumber(L, 1);
 		time = luaL_checknumber(L, 2);
 		minpos = check_v3f(L, 3);

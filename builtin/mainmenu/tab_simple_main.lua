@@ -1,0 +1,176 @@
+--Minetest
+--Copyright (C) 2013 sapier
+--
+--This program is free software; you can redistribute it and/or modify
+--it under the terms of the GNU Lesser General Public License as published by
+--the Free Software Foundation; either version 2.1 of the License, or
+--(at your option) any later version.
+--
+--This program is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--GNU Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public License along
+--with this program; if not, write to the Free Software Foundation, Inc.,
+--51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+--------------------------------------------------------------------------------
+local function get_formspec(tabview, name, tabdata)
+	local retval = ""
+
+	local render_details = dump(core.setting_getbool("public_serverlist"))
+
+	retval = retval ..
+		"label[0,3.0;".. fgettext("Address/Port") .. "]"..
+		"label[8,0.5;".. fgettext("Name/Password") .. "]" ..
+		"field[0.25,3.25;5.5,0.5;te_address;;" ..core.setting_get("address") .."]" ..
+		"field[5.75,3.25;2.25,0.5;te_port;;" ..core.setting_get("remote_port") .."]" ..
+		"checkbox[8,-0.25;cb_public_serverlist;".. fgettext("Public Serverlist") .. ";" ..
+		render_details .. "]"
+
+	retval = retval ..
+		"button[8,2.5;4,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
+		"field[8.75,1.5;3.5,0.5;te_name;;" ..core.setting_get("name") .."]" ..
+		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
+
+	--favourites
+	retval = retval ..
+		"textlist[-0.05,0.0;7.55,2.75;favourites;"
+
+	if #menudata.favorites > 0 then
+		retval = retval .. render_favorite(menudata.favorites[1],render_details)
+
+		for i=2,#menudata.favorites,1 do
+			retval = retval .. "," .. render_favorite(menudata.favorites[i],render_details)
+		end
+	end
+
+	if tabdata.fav_selected ~= nil then
+		retval = retval .. ";" .. tabdata.fav_selected .. "]"
+	else
+		retval = retval .. ";0]"
+	end
+
+	-- separator
+	retval = retval ..
+		"box[-0.3,3.75;12.4,0.1;#FFFFFF]"
+
+	-- checkboxes
+	retval = retval ..
+		"checkbox[1.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
+		dump(core.setting_getbool("creative_mode")) .. "]"..
+		"checkbox[5.0,3.9;cb_damage;".. fgettext("Enable Damage") .. ";" ..
+		dump(core.setting_getbool("enable_damage")) .. "]" ..
+		"checkbox[8,3.9;cb_fly_mode;".. fgettext("Fly mode") .. ";" ..
+		dump(core.setting_getbool("free_move")) .. "]"
+	-- buttons
+	retval = retval ..
+		"button[3.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]"
+
+	return retval
+end
+
+--------------------------------------------------------------------------------
+
+local function main_button_handler(tabview, fields, name, tabdata)
+	if fields["btn_start_singleplayer"] then
+		gamedata.selected_world	= gamedata.worldindex
+		gamedata.singleplayer	= true
+		core.start()
+	end
+
+	if fields["favourites"] ~= nil then
+		local event = core.explode_textlist_event(fields["favourites"])
+
+		if event.type == "CHG" then
+			if event.index <= #maintab_favorites then
+				local address = maintab_favorites[event.index].address
+				local port = maintab_favorites[event.index].port
+
+				if address ~= nil and
+					port ~= nil then
+					core.setting_set("address",address)
+					core.setting_set("remote_port",port)
+				end
+
+				tabdata.fav_selected = event.index
+			end
+		end
+		return
+	end
+
+	if fields["cb_public_serverlist"] ~= nil then
+		core.setting_set("public_serverlist", fields["cb_public_serverlist"])
+
+		if core.setting_getbool("public_serverlist") then
+			asyncOnlineFavourites()
+		else
+			maintab_favorites = core.get_favorites("local")
+		end
+		return
+	end
+
+	if fields["cb_creative"] then
+		core.setting_set("creative_mode", fields["cb_creative"])
+	end
+
+	if fields["cb_damage"] then
+		core.setting_set("enable_damage", fields["cb_damage"])
+	end
+
+	if fields["cb_fly_mode"] then
+		core.setting_set("free_move", fields["cb_fly_mode"])
+	end
+
+	if fields["btn_mp_connect"] ~= nil or
+		fields["key_enter"] ~= nil then
+
+		gamedata.playername		= fields["te_name"]
+		gamedata.password		= fields["te_pwd"]
+		gamedata.address		= fields["te_address"]
+		gamedata.port			= fields["te_port"]
+
+		local fav_idx = core.get_textlist_index("favourites")
+
+		if fav_idx ~= nil and fav_idx <= #menudata.favorites and
+			menudata.favorites[fav_idx].address == fields["te_address"] and
+			menudata.favorites[fav_idx].port    == fields["te_port"] then
+
+			gamedata.servername			= menudata.favorites[fav_idx].name
+			gamedata.serverdescription	= menudata.favorites[fav_idx].description
+		else
+			gamedata.servername			= ""
+			gamedata.serverdescription	= ""
+		end
+
+		gamedata.selected_world = 0
+
+		core.setting_set("address",fields["te_address"])
+		core.setting_set("remote_port",fields["te_port"])
+
+		core.start()
+		return
+	end
+end
+
+--------------------------------------------------------------------------------
+local function on_activate(type,old_tab,new_tab)
+	if type == "LEAVE" then
+		return
+	end
+	if core.setting_getbool("public_serverlist") then
+		asyncOnlineFavourites()
+	else
+		menudata.favorites = core.get_favorites("local")
+	end
+end
+
+--------------------------------------------------------------------------------
+tab_simple_main = {
+	name = "main",
+	caption = fgettext("Main"),
+	cbf_formspec = get_formspec,
+	cbf_button_handler = main_button_handler,
+	on_change = on_activate
+	}

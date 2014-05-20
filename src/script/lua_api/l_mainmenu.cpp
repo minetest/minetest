@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
-#include "lua_api/l_async_events.h"
+#include "cpp_api/s_async.h"
 #include "guiEngine.h"
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
@@ -885,7 +885,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_scriptdir(lua_State *L)
+int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	assert(engine != 0);
@@ -1003,23 +1003,49 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_screen_info(lua_State *L)
+{
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	lua_pushstring(L,"density");
+	lua_pushnumber(L,porting::getDisplayDensity());
+	lua_settable(L, top);
+
+	lua_pushstring(L,"display_width");
+	lua_pushnumber(L,porting::getDisplaySize().X);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"display_height");
+	lua_pushnumber(L,porting::getDisplaySize().Y);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"window_width");
+	lua_pushnumber(L,porting::getWindowSize().X);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"window_height");
+	lua_pushnumber(L,porting::getWindowSize().Y);
+	lua_settable(L, top);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_do_async_callback(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 
-	const char* serialized_fct_raw = luaL_checkstring(L, 1);
-	unsigned int lenght_fct = luaL_checkint(L, 2);
+	size_t func_length, param_length;
+	const char* serialized_func_raw = luaL_checklstring(L, 1, &func_length);
 
-	const char* serialized_params_raw = luaL_checkstring(L, 3);
-	unsigned int lenght_params = luaL_checkint(L, 4);
+	const char* serialized_param_raw = luaL_checklstring(L, 2, &param_length);
 
-	assert(serialized_fct_raw != 0);
-	assert(serialized_params_raw != 0);
+	assert(serialized_func_raw != NULL);
+	assert(serialized_param_raw != NULL);
 
-	std::string serialized_fct = std::string(serialized_fct_raw,lenght_fct);
-	std::string serialized_params = std::string(serialized_params_raw,lenght_params);
+	std::string serialized_func = std::string(serialized_func_raw, func_length);
+	std::string serialized_param = std::string(serialized_param_raw, param_length);
 
-	lua_pushinteger(L,engine->DoAsync(serialized_fct,serialized_params));
+	lua_pushinteger(L, engine->queueAsync(serialized_func, serialized_param));
 
 	return 1;
 }
@@ -1051,7 +1077,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(delete_dir);
 	API_FCT(copy_dir);
 	API_FCT(extract_zip);
-	API_FCT(get_scriptdir);
+	API_FCT(get_mainmenu_path);
 	API_FCT(show_file_open_dialog);
 	API_FCT(get_version);
 	API_FCT(download_file);
@@ -1060,6 +1086,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(gettext);
+	API_FCT(get_screen_info);
 	API_FCT(do_async_callback);
 }
 

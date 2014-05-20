@@ -44,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
+#include "main.h"
+#include "settings.h"
 #include <list>
 
 namespace porting
@@ -470,8 +472,9 @@ void initializePaths()
 	std::string static_sharedir = STATIC_SHAREDIR;
 	if(static_sharedir != "" && static_sharedir != ".")
 		trylist.push_back(static_sharedir);
-	trylist.push_back(bindir + "/../share/" + PROJECT_NAME);
-	trylist.push_back(bindir + "/..");
+	trylist.push_back(
+			bindir + DIR_DELIM + ".." + DIR_DELIM + "share" + DIR_DELIM + PROJECT_NAME);
+	trylist.push_back(bindir + DIR_DELIM + "..");
 
 	for(std::list<std::string>::const_iterator i = trylist.begin();
 			i != trylist.end(); i++)
@@ -527,6 +530,41 @@ void initializePaths()
 
 #endif // RUN_IN_PLACE
 }
+
+static irr::IrrlichtDevice* device;
+
+void initIrrlicht(irr::IrrlichtDevice * _device) {
+	device = _device;
+}
+
+#ifndef SERVER
+v2u32 getWindowSize() {
+	return device->getVideoDriver()->getScreenSize();
+}
+
+
+float getDisplayDensity() {
+	float gui_scaling = g_settings->getFloat("gui_scaling");
+	// using Y here feels like a bug, this needs to be discussed later!
+	if (getWindowSize().Y <= 800) {
+		return (2.0/3.0) * gui_scaling;
+	}
+	if (getWindowSize().Y <= 1280) {
+		return 1.0 * gui_scaling;
+	}
+
+	return (4.0/3.0) * gui_scaling;
+}
+
+v2u32 getDisplaySize() {
+	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+
+	core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+	nulldevice -> drop();
+
+	return deskres;
+}
+#endif
 
 } //namespace porting
 

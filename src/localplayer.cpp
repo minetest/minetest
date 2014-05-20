@@ -43,7 +43,6 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
-	camera_mode(0),
 	eye_offset_first(v3f(0,0,0)),
 	eye_offset_third(v3f(0,0,0)),
 	last_animation(NO_ANIM),
@@ -54,7 +53,8 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_need_to_get_new_sneak_node(true),
-	m_can_jump(false)
+	m_can_jump(false),
+	m_cao(NULL)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -505,7 +505,7 @@ void LocalPlayer::applyControl(float dtime)
 	if(control.jump)
 	{
 		if(free_move)
-		{			
+		{
 			if(g_settings->getBool("aux1_descends") || g_settings->getBool("always_fly_fast"))
 			{
 				if(fast_move)

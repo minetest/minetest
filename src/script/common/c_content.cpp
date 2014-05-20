@@ -955,14 +955,14 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 /******************************************************************************/
 void luaentity_get(lua_State *L, u16 id)
 {
-	// Get minetest.luaentities[i]
-	lua_getglobal(L, "minetest");
+	// Get luaentities[i]
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushnumber(L, id);
 	lua_gettable(L, -2);
-	lua_remove(L, -2); // luaentities
-	lua_remove(L, -2); // minetest
+	lua_remove(L, -2); // Remove luaentities
+	lua_remove(L, -2); // Remove core
 }
 
 /******************************************************************************/

@@ -856,7 +856,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	return ret;
 }
 
-void ClientMap::renderPostFx()
+void ClientMap::renderPostFx(CameraMode cam_mode)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
@@ -867,8 +867,6 @@ void ClientMap::renderPostFx()
 	v3f camera_position = m_camera_position;
 	m_camera_mutex.Unlock();
 
-	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
-
 	MapNode n = getNodeNoEx(floatToInt(camera_position, BS));
 
 	// - If the player is in a solid node, make everything black.
@@ -876,7 +874,9 @@ void ClientMap::renderPostFx()
 	// - Do not if player is in third person mode
 	const ContentFeatures& features = nodemgr->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") && m_gamedef->checkLocalPrivilege("noclip")) && player->camera_mode == CAMERA_MODE_FIRST)
+	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
+			m_gamedef->checkLocalPrivilege("noclip")) &&
+			cam_mode == CAMERA_MODE_FIRST)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);
 	}

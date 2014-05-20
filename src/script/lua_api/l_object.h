@@ -216,6 +216,9 @@ private:
 	// hud_set_flags(self, flags)
 	static int l_hud_set_flags(lua_State *L);
 
+	// hud_get_flags()
+	static int l_hud_get_flags(lua_State *L);
+
 	// hud_set_hotbar_itemcount(self, hotbar_itemcount)
 	static int l_hud_set_hotbar_itemcount(lua_State *L);
 

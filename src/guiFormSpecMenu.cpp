@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettime.h"
 #include "gettext.h"
+#include "scripting_game.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -1478,7 +1479,13 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
 
-	if ((type == "size") || (type == "invsize")){
+	if (type == "size") {
+		parseSize(data,description);
+		return;
+	}
+
+	if (type == "invsize") {
+		log_deprecated("Deprecated formspec element \"invsize\" is used");
 		parseSize(data,description);
 		return;
 	}

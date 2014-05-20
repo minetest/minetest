@@ -294,9 +294,6 @@ Server::Server(
 		errorstream << std::endl;
 	}
 
-	// Path to builtin.lua
-	std::string builtinpath = getBuiltinLuaPath() + DIR_DELIM + "builtin.lua";
-
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 
@@ -305,16 +302,13 @@ Server::Server(
 
 	m_script = new GameScripting(this);
 
+	std::string scriptpath = getBuiltinLuaPath() + DIR_DELIM "init.lua";
 
-	// Load and run builtin.lua
-	infostream<<"Server: Loading builtin.lua [\""
-			<<builtinpath<<"\"]"<<std::endl;
-	bool success = m_script->loadMod(builtinpath, "__builtin");
-	if(!success){
-		errorstream<<"Server: Failed to load and run "
-				<<builtinpath<<std::endl;
-		throw ModError("Failed to load and run "+builtinpath);
+	if (!m_script->loadScript(scriptpath)) {
+		throw ModError("Failed to load and run " + scriptpath);
 	}
+
+
 	// Print 'em
 	infostream<<"Server: Loading mods: ";
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
@@ -646,7 +640,7 @@ void Server::AsyncRunStep(bool initial_step)
 			/*
 				Send player breath if changed
 			*/
-			if(playersao->m_breath_not_sent){
+			if(playersao->m_breath_not_sent) {
 				SendPlayerBreath(*i);
 			}
 
@@ -2202,6 +2196,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		u16 breath = readU16(is);
 		playersao->setBreath(breath);
+		m_script->player_event(playersao,"breath_changed");
 	}
 	else if(command == TOSERVER_PASSWORD)
 	{
@@ -2899,8 +2894,10 @@ bool Server::getClientInfo(
 	m_clients.Lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,Invalid);
 
-	if (client == NULL)
+	if (client == NULL) {
+		m_clients.Unlock();
 		return false;
+		}
 
 	*uptime = client->uptime();
 	*ser_vers = client->serialization_version;
@@ -3289,6 +3286,7 @@ void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 	writeV2F1000(os, form->align);
 	writeV2F1000(os, form->offset);
 	writeV3F1000(os, form->world_pos);
+	writeV2S32(os,form->size);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3335,6 +3333,9 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 		case HUD_STAT_WORLD_POS:
 			writeV3F1000(os, *(v3f *)value);
 			break;
+		case HUD_STAT_SIZE:
+			writeV2S32(os,*(v2s32 *)value);
+			break;
 		case HUD_STAT_NUMBER:
 		case HUD_STAT_ITEM:
 		case HUD_STAT_DIR:
@@ -3356,6 +3357,10 @@ void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 
 	// Write command
 	writeU16(os, TOCLIENT_HUD_SET_FLAGS);
+
+	//////////////////////////// compatibility code to be removed //////////////
+	flags &= ~(HUD_FLAG_HEALTHBAR_VISIBLE | HUD_FLAG_BREATHBAR_VISIBLE);
+	////////////////////////////////////////////////////////////////////////////
 	writeU32(os, flags);
 	writeU32(os, mask);
 
@@ -3445,6 +3450,7 @@ void Server::SendPlayerHP(u16 peer_id)
 	assert(playersao);
 	playersao->m_hp_not_sent = false;
 	SendHP(peer_id, playersao->getHP());
+	m_script->player_event(playersao,"health_changed");
 
 	// Send to other clients
 	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
@@ -3458,6 +3464,7 @@ void Server::SendPlayerBreath(u16 peer_id)
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 	playersao->m_breath_not_sent = false;
+	m_script->player_event(playersao,"breath_changed");
 	SendBreath(peer_id, playersao->getBreath());
 }
 
@@ -4588,6 +4595,9 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 		return false;
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
+	player->hud_flags = flags;
+
+	m_script->player_event(player->getPlayerSAO(),"hud_changed");
 	return true;
 }
 

@@ -169,36 +169,36 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
-	m_menu =
-		new GUIFormSpecMenu(	m_device,
-								m_parent,
-								-1,
-								m_menumanager,
-								0 /* &client */,
-								0 /* gamedef */,
-								m_texture_source,
-								m_formspecgui,
-								m_buttonhandler,
-								NULL);
+	m_menu = new GUIFormSpecMenu(m_device,
+			m_parent,
+			-1,
+			m_menumanager,
+			NULL /* &client */,
+			NULL /* gamedef */,
+			m_texture_source,
+			m_formspecgui,
+			m_buttonhandler,
+			NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
 
 	// Initialize scripting
 
-	infostream<<"GUIEngine: Initializing Lua"<<std::endl;
+	infostream << "GUIEngine: Initializing Lua" << std::endl;
 
 	m_script = new MainMenuScripting(this);
 
 	try {
-		if (m_data->errormessage != "")
-		{
+		if (m_data->errormessage != "") {
 			m_script->setMainMenuErrorMessage(m_data->errormessage);
 			m_data->errormessage = "";
 		}
 
-		if (!loadMainMenuScript())
-			assert("no future without mainmenu" == 0);
+		if (!loadMainMenuScript()) {
+			errorstream << "No future without mainmenu" << std::endl;
+			abort();
+		}
 
 		run();
 	}
@@ -215,43 +215,21 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 /******************************************************************************/
 bool GUIEngine::loadMainMenuScript()
 {
-	// Try custom menu script (main_menu_script)
+	// Try custom menu script (main_menu_path)
 
-	std::string menuscript = g_settings->get("main_menu_script");
-	if(menuscript != "") {
-		m_scriptdir = fs::RemoveLastPathComponent(menuscript);
-
-		if(m_script->loadMod(menuscript, "__custommenu")) {
-			// custom menu script loaded
-			return true;
-		}
-		else {
-			infostream
-				<< "GUIEngine: execution of custom menu: \""
-				<< menuscript << "\" failed!"
-				<< std::endl
-				<< "\tfalling back to builtin menu"
-				<< std::endl;
-		}
+	m_scriptdir = g_settings->get("main_menu_path");
+	if (m_scriptdir.empty()) {
+		m_scriptdir = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "mainmenu";
 	}
 
-	// Try builtin menu script (main_menu_script)
-
-	std::string builtin_menuscript =
-			porting::path_share + DIR_DELIM + "builtin"
-				+ DIR_DELIM + "mainmenu.lua";
-
-	m_scriptdir = fs::RemoveRelativePathComponents(
-			fs::RemoveLastPathComponent(builtin_menuscript));
-
-	if(m_script->loadMod(builtin_menuscript, "__builtinmenu")) {
-		// builtin menu script loaded
+	std::string script = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua";
+	if (m_script->loadScript(script)) {
+		// Menu script loaded
 		return true;
-	}
-	else {
-		errorstream
-			<< "GUIEngine: unable to load builtin menu"
-			<< std::endl;
+	} else {
+		infostream
+			<< "GUIEngine: execution of menu script in: \""
+			<< m_scriptdir << "\" failed!" << std::endl;
 	}
 
 	return false;
@@ -290,7 +268,7 @@ void GUIEngine::run()
 		else
 			sleep_ms(25);
 
-		m_script->Step();
+		m_script->step();
 	}
 }
 
@@ -512,32 +490,25 @@ bool GUIEngine::setTexture(texture_layer layer,std::string texturepath) {
 /******************************************************************************/
 bool GUIEngine::downloadFile(std::string url,std::string target) {
 #if USE_CURL
-	bool retval = true;
+	std::ofstream targetfile(target.c_str(), std::ios::out | std::ios::binary);
 
-	FILE* targetfile = fopen(target.c_str(),"wb");
-
-	if (targetfile) {
-		HTTPFetchRequest fetchrequest;
-		HTTPFetchResult fetchresult;
-		fetchrequest.url = url;
-		fetchrequest.caller = HTTPFETCH_SYNC;
-		httpfetch_sync(fetchrequest,fetchresult);
-
-		if (fetchresult.succeeded) {
-			if (fwrite(fetchresult.data.c_str(),1,fetchresult.data.size(),targetfile) != fetchresult.data.size()) {
-				retval = false;
-			}
-		}
-		else {
-			retval = false;
-		}
-		fclose(targetfile);
-	}
-	else {
-		retval = false;
+	if (!targetfile.good()) {
+		return false;
 	}
 
-	return retval;
+	HTTPFetchRequest fetchrequest;
+	HTTPFetchResult fetchresult;
+	fetchrequest.url = url;
+	fetchrequest.caller = HTTPFETCH_SYNC;
+	httpfetch_sync(fetchrequest, fetchresult);
+
+	if (fetchresult.succeeded) {
+		targetfile << fetchresult.data;
+	} else {
+		return false;
+	}
+
+	return true;
 #else
 	return false;
 #endif
@@ -569,7 +540,8 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
-unsigned int GUIEngine::DoAsync(std::string serialized_fct,
+unsigned int GUIEngine::queueAsync(std::string serialized_func,
 		std::string serialized_params) {
-	return m_script->DoAsync(serialized_fct,serialized_params);
+	return m_script->queueAsync(serialized_func, serialized_params);
 }
+

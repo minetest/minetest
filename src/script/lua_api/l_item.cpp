@@ -234,7 +234,7 @@ int LuaItemStack::l_is_known(lua_State *L)
 }
 
 // get_definition(self) -> table
-// Returns the item definition table from minetest.registered_items,
+// Returns the item definition table from registered_items,
 // or a fallback one (name="unknown")
 int LuaItemStack::l_get_definition(lua_State *L)
 {
@@ -242,8 +242,8 @@ int LuaItemStack::l_get_definition(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 
-	// Get minetest.registered_items[name]
-	lua_getglobal(L, "minetest");
+	// Get registered_items[name]
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_items");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, item.name.c_str());

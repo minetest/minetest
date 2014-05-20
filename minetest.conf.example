@@ -127,9 +127,15 @@
 #view_bobbing_amount = 1.0
 # Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
 #fall_bobbing_amount = 0.0
-# Anaglyph stereo
-#anaglyph = false
-#anaglyph_strength = 0.1
+# 3d support,
+# right now:
+#     "none"       = no 3d output,
+#     "anaglyph"   = cyan/magenta color 3d,
+#     "interlaced" = odd/even line based polarisation screen support,
+#     "topbottom"  = split screen top boton,
+#     "sidebyside" = split screen side by side
+#3d_mode = none
+#3d_paralax_strength = 0.025
 # In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
@@ -140,6 +146,8 @@
 #crosshair_color = (255,255,255)
 # Cross alpha (opaqueness, between 0 and 255)
 #crosshair_alpha = 255
+# scale gui by a user specified value
+#gui_scaling = 1.0
 # Sensitivity multiplier
 #mouse_sensitivity = 0.2
 # Sound settings
@@ -147,6 +155,9 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# maximum percentage of current window to be used for hotbar
+# (usefull if you've there's something to be displayed right or left of hotbar)
+#hud_hotbar_max_width = 1.0
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
@@ -165,7 +176,7 @@
 #normalmaps_strength = 0.6
 # Strength of generated normalmaps
 #normalmaps_smooth = 1
-# Defines sampling step of texture (0 - 2) 
+# Defines sampling step of texture (0 - 2)
 # Higher the value normal maps will be smoother
 #enable_parallax_occlusion = false
 # Scale of parallax occlusion effect
@@ -197,6 +208,9 @@
 # - Downloads performed by main menu (e.g. mod manager)
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
+
+# enable usage of remote media server (if provided by server)
+#enable_remote_media_server = true
 
 # Url to the server list displayed in the Multiplayer Tab
 #serverlist_url = servers.minetest.net
@@ -277,6 +291,11 @@
 #disable_anticheat = false
 # If true, actions are recorded for rollback
 #enable_rollback_recording = false
+# handling for deprecated lua api calls
+#    "legacy" = (try to) mimic old behaviour (default for release)
+#    "log"    = mimic and log backtrace of deprecated call (default for debug)
+#    "error"  = abort on usage of deprecated call (suggested for mod developers)
+#deprecated_lua_api_handling = legacy
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0

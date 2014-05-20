@@ -110,14 +110,16 @@ void ClientMediaDownloader::addRemoteServer(std::string baseurl)
 
 	#ifdef USE_CURL
 
-	infostream << "Client: Adding remote server \""
-		<< baseurl << "\" for media download" << std::endl;
+	if (g_settings->getBool("enable_remote_media_server")) {
+		infostream << "Client: Adding remote server \""
+			<< baseurl << "\" for media download" << std::endl;
 
-	RemoteServerStatus *remote = new RemoteServerStatus;
-	remote->baseurl = baseurl;
-	remote->active_count = 0;
-	remote->request_by_filename = false;
-	m_remotes.push_back(remote);
+		RemoteServerStatus *remote = new RemoteServerStatus;
+		remote->baseurl = baseurl;
+		remote->active_count = 0;
+		remote->request_by_filename = false;
+		m_remotes.push_back(remote);
+	}
 
 	#else
 

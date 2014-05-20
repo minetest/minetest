@@ -21,8 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "lua_api/l_async_events.h"
+#include "cpp_api/s_async.h"
 #include "debug.h"
+#include "porting.h"
 #include "log.h"
 #include "tool.h"
 #include "settings.h"
@@ -46,11 +47,12 @@ int ModApiUtil::l_debug(lua_State *L)
 		lua_pushvalue(L, -1);  /* function to be called */
 		lua_pushvalue(L, i);   /* value to print */
 		lua_call(L, 1, 1);
-		const char *s = lua_tostring(L, -1);
-		if (i>1)
+		size_t len;
+		const char *s = lua_tolstring(L, -1, &len);
+		if (i > 1)
 			dstream << "\t";
 		if (s)
-			dstream << s;
+			dstream << std::string(s, len);
 		lua_pop(L, 1);
 	}
 	dstream << std::endl;
@@ -78,6 +80,11 @@ int ModApiUtil::l_log(lua_State *L)
 			level = LMT_ACTION;
 		else if(levelname == "verbose")
 			level = LMT_VERBOSE;
+		else if (levelname == "deprecated") {
+			log_deprecated(L,text);
+			return 0;
+		}
+
 	}
 	log_printline(level, text);
 	return 0;
@@ -269,6 +276,14 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	return 1;
 }
 
+int ModApiUtil::l_get_builtin_path(lua_State *L)
+{
+	std::string path = porting::path_share + DIR_DELIM + "builtin";
+	lua_pushstring(L, path.c_str());
+	return 1;
+}
+
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -289,6 +304,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_password_hash);
 
 	API_FCT(is_yes);
+
+	API_FCT(get_builtin_path);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -303,6 +320,10 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 	//ASYNC_API_FCT(setting_save);
 
 	ASYNC_API_FCT(parse_json);
+	ASYNC_API_FCT(write_json);
 
 	ASYNC_API_FCT(is_yes);
+
+	ASYNC_API_FCT(get_builtin_path);
 }
+

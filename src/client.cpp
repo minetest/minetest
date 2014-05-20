@@ -51,6 +51,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "version.h"
+#include "drawscene.h"
+
+extern gui::IGUIEnvironment* guienv;
 
 /*
 	QueuedMeshUpdate
@@ -221,6 +224,11 @@ Client::Client(
 		MtEventManager *event,
 		bool ipv6
 ):
+	m_packetcounter_timer(0.0),
+	m_connection_reinit_timer(0.1),
+	m_avg_rtt_timer(0.0),
+	m_playerpos_send_timer(0.0),
+	m_ignore_damage_timer(0.0),
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -258,13 +266,6 @@ Client::Client(
 	m_removed_sounds_check_timer(0),
 	m_state(LC_Created)
 {
-	m_packetcounter_timer = 0.0;
-	//m_delete_unused_sectors_timer = 0.0;
-	m_connection_reinit_timer = 0.0;
-	m_avg_rtt_timer = 0.0;
-	m_playerpos_send_timer = 0.0;
-	m_ignore_damage_timer = 0.0;
-
 	/*
 		Add local player
 	*/
@@ -332,11 +333,11 @@ void Client::connect(Address address)
 void Client::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
-	
+
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
-	
+
 	if(m_ignore_damage_timer > dtime)
 		m_ignore_damage_timer -= dtime;
 	else
@@ -360,7 +361,8 @@ void Client::step(float dtime)
 		{
 			counter = 20.0;
 			
-			infostream<<"Client packetcounter (20s):"<<std::endl;
+			infostream << "Client packetcounter (" << m_packetcounter_timer
+					<< "):"<<std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -456,8 +458,13 @@ void Client::step(float dtime)
 		}
 	}
 #endif
-
-	if(m_state == LC_Created)
+	// UGLY hack to fix 2 second startup delay caused by non existent
+	// server client startup synchronization in local server or singleplayer mode
+	static bool initial_step = true;
+	if (initial_step) {
+		initial_step = false;
+	}
+	else if(m_state == LC_Created)
 	{
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
@@ -469,7 +476,6 @@ void Client::step(float dtime)
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
-	
 			// Send TOSERVER_INIT
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST_READ
@@ -1784,9 +1790,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v2f align        = readV2F1000(is);
 		v2f offset       = readV2F1000(is);
 		v3f world_pos;
+		v2s32 size;
 		try{
 			world_pos    = readV3F1000(is);
 		}catch(SerializationError &e) {};
+		try{
+			size = readV2S32(is);
+		} catch(SerializationError &e) {};
 
 		ClientEvent event;
 		event.type             = CE_HUDADD;
@@ -1802,6 +1812,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudadd.align     = new v2f(align);
 		event.hudadd.offset    = new v2f(offset);
 		event.hudadd.world_pos = new v3f(world_pos);
+		event.hudadd.size      = new v2s32(size);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUDRM)
@@ -1822,6 +1833,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v2f v2fdata;
 		v3f v3fdata;
 		u32 intdata = 0;
+		v2s32 v2s32data;
 		
 		std::string datastring((char *)&data[2], datasize - 2);
 		std::istringstream is(datastring, std::ios_base::binary);
@@ -1836,6 +1848,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			sdata = deSerializeString(is);
 		else if (stat == HUD_STAT_WORLD_POS)
 			v3fdata = readV3F1000(is);
+		else if (stat == HUD_STAT_SIZE )
+			v2s32data = readV2S32(is);
 		else
 			intdata = readU32(is);
 		
@@ -1847,6 +1861,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.hudchange.v3fdata = new v3f(v3fdata);
 		event.hudchange.sdata   = new std::string(sdata);
 		event.hudchange.data    = intdata;
+		event.hudchange.v2s32data = new v2s32(v2s32data);
 		m_client_event_queue.push_back(event);
 	}
 	else if(command == TOCLIENT_HUD_SET_FLAGS)
@@ -2070,8 +2085,10 @@ void Client::sendChatMessage(const std::wstring &message)
 	
 	// Write length
 	size_t messagesize = message.size();
-	assert(messagesize <= 0xFFFF);
-	writeU16(buf, (u16) (messagesize & 0xFF));
+	if (messagesize > 0xFFFF) {
+		messagesize = 0xFFFF;
+	}
+	writeU16(buf, (u16) messagesize);
 	os.write((char*)buf, 2);
 	
 	// Write string
@@ -2634,10 +2651,6 @@ float Client::mediaReceiveProgress()
 		return 1.0; // downloader only exists when not yet done
 }
 
-void draw_load_screen(const std::wstring &text,
-		IrrlichtDevice* device, gui::IGUIFont* font,
-		float dtime=0 ,int percent=0, bool clouds=true);
-
 void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
@@ -2666,7 +2679,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
 		wchar_t* text = wgettext("Item textures...");
-		draw_load_screen(text,device,font,0,0);
+		draw_load_screen(text, device, guienv, font, 0, 0);
 		std::set<std::string> names = m_itemdef->getAll();
 		size_t size = names.size();
 		size_t count = 0;
@@ -2679,7 +2692,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 			count++;
 			percent = count*100/size;
 			if (count%50 == 0) // only update every 50 item
-				draw_load_screen(text,device,font,0,percent);
+				draw_load_screen(text, device, guienv, font, 0, percent);
 		}
 		delete[] text;
 	}
@@ -2696,6 +2709,18 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 float Client::getRTT(void)
 {
 	return m_con.getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
+}
+
+float Client::getCurRate(void)
+{
+	return ( m_con.getLocalStat(con::CUR_INC_RATE) +
+			m_con.getLocalStat(con::CUR_DL_RATE));
+}
+
+float Client::getAvgRate(void)
+{
+	return ( m_con.getLocalStat(con::AVG_INC_RATE) +
+			m_con.getLocalStat(con::AVG_DL_RATE));
 }
 
 // IGameDef interface
