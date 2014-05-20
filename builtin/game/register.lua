@@ -8,7 +8,7 @@ local register_item_raw = core.register_item_raw
 core.register_item_raw = nil
 
 local register_alias_raw = core.register_alias_raw
-core.register_item_raw = nil
+core.register_alias_raw = nil
 
 --
 -- Item / entity / ABM registration functions
@@ -407,4 +407,5 @@ core.registered_on_cheats, core.register_on_cheat = make_registration()
 core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
+core.registered_on_item_eats, core.register_on_item_eat = make_registration()
 

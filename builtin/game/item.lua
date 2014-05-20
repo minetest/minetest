@@ -353,6 +353,12 @@ end
 
 function core.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
+		for _, callback in pairs(core.registered_on_item_eats) do
+			local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
+			if result then
+				return result
+			end
+		end
 		if itemstack:take_item() ~= nil then
 			user:set_hp(user:get_hp() + hp_change)
 			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional

@@ -1313,6 +1313,9 @@ minetest.register_on_protection_violation(func(pos, name))
 ^ The provided function should check that the position is protected by the mod
   calling this function before it prints a message, if it does, to allow for
   multiple protection mods.
+minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))
+^ Called when an item is eaten, by minetest.item_eat
+^ Return true or itemstack to cancel the default item eat response (ie: hp increase)
 
 Other registration functions:
 minetest.register_chatcommand(cmd, chatcommand definition)
