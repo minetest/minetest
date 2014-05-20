@@ -829,7 +829,7 @@ int main(int argc, char *argv[])
 	/*
 		Low-level initialization
 	*/
-	
+
 	// Quiet mode, print errors only
 	if (cmd_args.getFlag("quiet")) {
 		log_remove_output(&main_stderr_log_out);
@@ -1027,7 +1027,7 @@ int main(int argc, char *argv[])
 				commanded_world.substr(commanded_world.size() - worldmt.size())
 				== worldmt) {
 			dstream << _("Supplied world.mt file - stripping it off.") << std::endl;
-			commanded_world = commanded_world.substr(0, 
+			commanded_world = commanded_world.substr(0,
 				commanded_world.size() - worldmt.size());
 		}
 	}
@@ -1208,7 +1208,7 @@ int main(int argc, char *argv[])
 		if (cmd_args.exists("migrate")) {
 			std::string migrate_to = cmd_args.get("migrate");
 			Settings world_mt;
-			bool success = world_mt.readConfigFile((world_path + DIR_DELIM 
+			bool success = world_mt.readConfigFile((world_path + DIR_DELIM
 				+ "world.mt").c_str());
 			if (!success) {
 				errorstream << "Cannot read world.mt" << std::endl;
@@ -1237,7 +1237,7 @@ int main(int argc, char *argv[])
 				new_db = new Database_Redis(&(ServerMap&)server.getMap(), world_path);
 			#endif
 			else {
-				errorstream << "Migration to " << migrate_to 
+				errorstream << "Migration to " << migrate_to
 					<< " is not supported" << std::endl;
 				return 1;
 			}
@@ -1429,16 +1429,16 @@ int main(int argc, char *argv[])
 		ELL_ERROR,
 		ELL_WARNING,
 		ELL_INFORMATION,
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)	
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		ELL_INFORMATION
 #else
 		ELL_DEBUG
 #endif
 	};
-	
+
 	ILogger* irr_logger = device->getLogger();
 	irr_logger->setLogLevel(irr_log_level[loglevel]);
-	 
+
 	porting::initIrrlicht(device);
 
 	/*
@@ -1633,15 +1633,14 @@ int main(int argc, char *argv[])
 				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
 				// If a world was commanded, append and select it
-				if (commanded_world != "") {
-
-					std::string gameid = getWorldGameId(commanded_world, true);
-					std::string name = _("[--world parameter]");
-					if (gameid == "") {
-						gameid = g_settings->get("default_game");
-						name += " [new]";
+				if(commanded_world != "") {
+					worldspec.gameid = getWorldGameId(commanded_world, true);
+					worldspec.name = _("[--world parameter]");
+					if(worldspec.gameid == "") {
+						worldspec.gameid = g_settings->get("default_game");
+						worldspec.name += " [new]";
 					}
-					//TODO find within worldspecs and set config
+					worldspec.path = commanded_world;
 				}
 
 				if (skip_main_menu == false) {
@@ -1695,11 +1694,6 @@ int main(int argc, char *argv[])
 				// Save settings
 				g_settings->set("name", playername);
 
-				if ((menudata.selected_world >= 0) &&
-						(menudata.selected_world < (int)worldspecs.size()))
-					g_settings->set("selected_world_path",
-							worldspecs[menudata.selected_world].path);
-
 				// Break out of menu-game loop to shut down cleanly
 				if (device->run() == false || kill == true)
 					break;
@@ -1724,22 +1718,35 @@ int main(int argc, char *argv[])
 					ServerList::insert(server);
 				}
 
-				// Set world path to selected one
-				if ((menudata.selected_world >= 0) &&
-					(menudata.selected_world < (int)worldspecs.size())) {
+				if ((!skip_main_menu) &&
+						(menudata.selected_world >= 0) &&
+						(menudata.selected_world < (int)worldspecs.size())) {
+					g_settings->set("selected_world_path",
+							worldspecs[menudata.selected_world].path);
 					worldspec = worldspecs[menudata.selected_world];
-					infostream<<"Selected world: "<<worldspec.name
-							<<" ["<<worldspec.path<<"]"<<std::endl;
+
 				}
+
+				infostream <<"Selected world: " << worldspec.name
+							<< " ["<<worldspec.path<<"]" <<std::endl;
+
 
 				// If local game
 				if (current_address == "") {
-					if (menudata.selected_world == -1) {
+					if (worldspec.path == "") {
 						error_message = wgettext("No world selected and no address "
 								"provided. Nothing to do.");
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
+
+					if (!fs::PathExists(worldspec.path)) {
+						error_message = wgettext("Provided world path doesn't exist: ")
+								+ narrow_to_wide(worldspec.path);
+						errorstream << wide_to_narrow(error_message) << std::endl;
+						continue;
+					}
+
 					// Load gamespec for required game
 					gamespec = findWorldSubgame(worldspec.path);
 					if (!gamespec.isValid() && !commanded_gamespec.isValid()) {
