@@ -56,24 +56,37 @@ core.register_chatcommand("help", {
 		end
 		if param == "" then
 			local msg = ""
-			cmds = {}
+			local cmds = {}
 			for cmd, def in pairs(core.chatcommands) do
 				if core.check_player_privs(name, def.privs) then
 					table.insert(cmds, cmd)
 				end
 			end
+			table.sort(cmds)
 			core.chat_send_player(name, "Available commands: "..table.concat(cmds, " "))
 			core.chat_send_player(name, "Use '/help <cmd>' to get more information, or '/help all' to list everything.")
 		elseif param == "all" then
-			core.chat_send_player(name, "Available commands:")
+			local cmds = {}
 			for cmd, def in pairs(core.chatcommands) do
 				if core.check_player_privs(name, def.privs) then
-					core.chat_send_player(name, format_help_line(cmd, def))
+					table.insert(cmds, cmd)
 				end
 			end
+			table.sort(cmds)
+			core.chat_send_player(name, "Available commands:")
+			for _, cmd in ipairs(cmds) do
+				local def = core.chatcommands[cmd]
+				core.chat_send_player(name, format_help_line(cmd, def))
+			end
 		elseif param == "privs" then
-			core.chat_send_player(name, "Available privileges:")
+			local privs = {}
 			for priv, def in pairs(core.registered_privileges) do
+				table.insert(privs, priv)
+			end
+			table.sort(privs)
+			core.chat_send_player(name, "Available privileges:")
+			for _, priv in ipairs(privs) do
+				local def = core.registered_privileges[priv]
 				core.chat_send_player(name, priv..": "..def.description)
 			end
 		else
