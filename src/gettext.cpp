@@ -202,7 +202,7 @@ void init_gettext(const char *path,std::string configured_language) {
 			}
 #else
 			errorstream << "*******************************************************" << std::endl;
-			errorstream << "Can't apply locale workaround for server!" << std::encl;
+			errorstream << "Can't apply locale workaround for server!" << std::endl;
 			errorstream << "Expect language to be broken!" << std::endl;
 			errorstream << "*******************************************************" << std::endl;
 
