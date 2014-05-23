@@ -116,6 +116,7 @@ void Database_Redis::saveBlock(MapBlock *block)
 		throw FileNotGoodException(std::string("redis command 'HSET %s %s %b' failed: ") + ctx->errstr);
 	if(reply->type == REDIS_REPLY_ERROR)
 		throw FileNotGoodException("Failed to store block in Database");
+	freeReplyObject(reply);
 
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
