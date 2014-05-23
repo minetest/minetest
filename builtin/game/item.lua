@@ -337,18 +337,28 @@ end
 function core.item_drop(itemstack, dropper, pos)
 	if dropper.get_player_name then
 		local v = dropper:get_look_dir()
-		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
-		local obj = core.add_item(p, itemstack)
-		if obj then
-			v.x = v.x*2
-			v.y = v.y*2 + 1
-			v.z = v.z*2
+		local p = {x = pos.x + v.x, y = pos.y + 1.5 + v.y, z = pos.z + v.z}
+		local r
+		if dropper:get_player_control().sneak then
+			r = itemstack
+			itemstack = itemstack:to_table()
+			itemstack.count = 1
+			itemstack = ItemStack(itemstack)
+			r:take_item()
+		else
+			r = ItemStack("")
+		end
+		if core.add_item(p, itemstack) then
+			v.x = v.x * 2
+			v.y = v.y * 2 + 1
+			v.z = v.z * 2
 			obj:setvelocity(v)
 		end
+		return r
 	else
-		core.add_item(pos, itemstack)
+		core.add_item(p, itemstack)
+		return ItemStack("")
 	end
-	return ItemStack("")
 end
 
 function core.item_eat(hp_change, replace_with_item)
