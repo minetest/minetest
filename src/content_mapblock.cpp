@@ -891,58 +891,86 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			break;
 		case NDT_TORCHLIKE:
 		{
-			v3s16 dir = n.getWallMountedDir(nodedef);
-			
-			u8 tileindex = 0;
-			if(dir == v3s16(0,-1,0)){
-				tileindex = 0; // floor
-			} else if(dir == v3s16(0,1,0)){
-				tileindex = 1; // ceiling
-			// For backwards compatibility
-			} else if(dir == v3s16(0,0,0)){
-				tileindex = 0; // floor
-			} else {
-				tileindex = 2; // side
-			}
+			v3s16 dir(0,0,0);
+			dir = n.getWallMountedDir(nodedef);
 
-			TileSpec tile = getNodeTileN(n, p, tileindex, data);
+			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
-			float s = BS/2*f.visual_scale;
-			// Wall at X+ of node
-			video::S3DVertex vertices[4] =
-			{
-				video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
-				video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
-				video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
+			float d = (float)BS/64;
+			f32 HBB = HBS/8;
+			video::S3DVertex vertices[6][4] = {
+				{	// right
+					video::S3DVertex(HBB,HBS-1,-HBS, 1,0,0, c, 0,0),
+					video::S3DVertex(HBB,HBS-1,HBS, 1,0,0, c, 1,0),
+					video::S3DVertex(HBB,-HBS,HBS, 1,0,0, c, 1,1),
+					video::S3DVertex(HBB,-HBS,-HBS, 1,0,0, c, 0,1)
+				},
+				{	// left
+					video::S3DVertex(-HBB,HBS,HBS, -1,0,0, c, 0,0),
+					video::S3DVertex(-HBB,HBS,-HBS, -1,0,0, c, 1,0),
+					video::S3DVertex(-HBB,-HBS,-HBS, -1,0,0, c, 1,1),
+					video::S3DVertex(-HBB,-HBS,HBS, -1,0,0, c, 0,1)
+				},
+				{	// back
+					video::S3DVertex(HBS,HBS-1,HBB, 0,0,0, c, 0,0),
+					video::S3DVertex(-HBS,HBS-1,HBB, 0,0,0, c, 1,0),
+					video::S3DVertex(-HBS,-HBS,HBB, 0,0,0, c, 1,1),
+					video::S3DVertex(HBS,-HBS,HBB, 0,0,0, c, 0,1)
+				},
+				{	// front
+					video::S3DVertex(-HBS,HBS,-HBB, 0,0,0, c, 0,0),
+					video::S3DVertex(HBS,HBS,-HBB, 0,0,0, c, 1,0),
+					video::S3DVertex(HBS,-HBS,-HBB, 0,0,0, c, 1,1),
+					video::S3DVertex(-HBS,-HBS,-HBB, 0,0,0, c, 0,1)
+				},
+				{	// up
+					video::S3DVertex(HBB,HBS-d-2.375,HBB, 0,0,0, c, HBB-0.18,0.18),
+					video::S3DVertex(-HBB,HBS-d-2.375,HBB, 0,0,0, c, HBB-0.06,0.18),
+					video::S3DVertex(-HBB,HBS-d-2.375,-HBB, 0,0,0, c, HBB-0.06,0.305),
+					video::S3DVertex(HBB,HBS-d-2.375,-HBB, 0,0,0, c, HBB-0.18,0.305)
+				},
+				{	// down
+					video::S3DVertex(-HBB,-HBS+d,-HBB, 0,0,0, c, HBB-0.18,0.875),
+					video::S3DVertex(HBB,-HBS+d,-HBB, 0,0,0, c, HBB-0.06,0.875),
+					video::S3DVertex(HBB,-HBS+d,HBB, 0,0,0, c, HBB-0.06,1),
+					video::S3DVertex(-HBB,-HBS+d,HBB, 0,0,0, c, HBB-0.18,1)
+				}
 			};
 
-			for(s32 i=0; i<4; i++)
-			{
-				if(dir == v3s16(1,0,0))
-					vertices[i].Pos.rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
-					vertices[i].Pos.rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
-					vertices[i].Pos.rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
-					vertices[i].Pos.rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
-					vertices[i].Pos.rotateXZBy(45);
-				if(dir == v3s16(0,1,0))
-					vertices[i].Pos.rotateXZBy(-45);
+			for(u16 j=0; j<6; j++) {
+				for(u16 i=0; i<4; i++) {
+					f32 y_offset = 0;
+					if (dir == v3s16(0,1,0)){
+						vertices[j][i].Pos.rotateXYBy(180); // ceiling
+					} else if(dir != v3s16(0,0,0) && dir != v3s16(0,-1,0)) {
+						vertices[j][i].Pos.rotateXYBy(20); // wall
+						y_offset = 1;
+					}
+					if(dir == v3s16(1,0,0))
+						vertices[j][i].Pos.rotateXZBy(0);
+					if(dir == v3s16(-1,0,0))
+						vertices[j][i].Pos.rotateXZBy(180);
+					if(dir == v3s16(0,0,1))
+						vertices[j][i].Pos.rotateXZBy(90);
+					if(dir == v3s16(0,0,-1))
+						vertices[j][i].Pos.rotateXZBy(-90);
+					if(dir == v3s16(0,-1,0))
+						vertices[j][i].Pos.rotateXZBy(0); // old 45
+					if(dir == v3s16(0,1,0))
+						vertices[j][i].Pos.rotateXZBy(0); // old -45
+					vertices[j][i].Pos += intToFloat(p, BS);
+					vertices[j][i].Pos += v3f(3.3*dir.X,y_offset,3.3*dir.Z);
+				}
 
-				vertices[i].Pos += intToFloat(p, BS);
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(tile, vertices[j], 4, indices, 6);
 			}
-
-			u16 indices[] = {0,1,2,2,3,0};
-			// Add to mesh collector
-			collector.append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_SIGNLIKE:
 		{
