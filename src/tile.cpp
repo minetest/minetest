@@ -966,7 +966,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 
 				if ((dim.Height %2 != 0) ||
 						(dim.Width %2 != 0)) {
-					errorstream << "TextureSource::generateImage "
+					infostream << "TextureSource::generateImage "
 							<< part_of_name << " size npot2 x=" << dim.Width
 							<< " y=" << dim.Height << std::endl;
 				}
