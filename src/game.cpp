@@ -3450,19 +3450,20 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		sky->drop();
 	clear_particles();
 	
+	/* cleanup menus */
+	while (g_menumgr.menuCount() > 0)
+	{
+		g_menumgr.m_stack.front()->setVisible(false);
+		g_menumgr.deletingMenu(g_menumgr.m_stack.front());
+	}
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
 		generator and other stuff quits
 	*/
 	{
-		/*gui::IGUIStaticText *gui_shuttingdowntext = */
 		wchar_t* text = wgettext("Shutting down stuff...");
 		draw_load_screen(text, device, guienv, font, 0, -1, false);
 		delete[] text;
-		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
-		guienv->drawAll();
-		driver->endScene();
-		gui_shuttingdowntext->remove();*/
 	}
 
 	chat_backend.addMessage(L"", L"# Disconnected.");
