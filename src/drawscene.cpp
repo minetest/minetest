@@ -464,9 +464,9 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 				hud.drawCrosshair();
 			hud.drawHotbar(client.getPlayerItem());
 			hud.drawLuaElements(camera.getOffset());
-
-			guienv->drawAll();
 		}
+
+		guienv->drawAll();
 
 		scenetime = timer.stop(true);
 	}
