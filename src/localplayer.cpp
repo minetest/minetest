@@ -55,11 +55,7 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	m_need_to_get_new_sneak_node(true),
 	m_can_jump(false),
 	m_cao(NULL)
-{
-	// Initialize hp to 0, so that no hearts will be shown if server
-	// doesn't support health points
-	hp = 0;
-}
+{}
 
 LocalPlayer::~LocalPlayer()
 {

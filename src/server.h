@@ -55,6 +55,7 @@ class GameScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
+struct player_stat;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -347,8 +348,8 @@ private:
 	friend class RemoteClient;
 
 	void SendMovement(u16 peer_id);
-	void SendHP(u16 peer_id, u8 hp);
-	void SendBreath(u16 peer_id, u16 breath);
+	void SendStatUpdate(u16 peer_id, std::string name, s16 value);
+	void SendStatAdd(u16 peer_id, std::string name, std::string ser_stats);
 	void SendAccessDenied(u16 peer_id,const std::wstring &reason);
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);
@@ -361,8 +362,6 @@ private:
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
-	void SendPlayerHP(u16 peer_id);
-	void SendPlayerBreath(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
 	void SendLocalPlayerAnimations(u16 peer_id, v2s32 animation_frames[4], f32 animation_speed);
 	void SendEyeOffset(u16 peer_id, v3f first, v3f third);

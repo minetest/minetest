@@ -1379,7 +1379,7 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 {
 	assert(obj);
 
-	v3f objectpos = obj->getBasePosition();	
+	v3f objectpos = obj->getBasePosition();
 
 	// The block in which the object resides in
 	v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -1591,7 +1591,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			object->m_static_block = blockpos;
 
 			if(set_changed)
-				block->raiseModified(MOD_STATE_WRITE_NEEDED, 
+				block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						"addActiveObjectRaw");
 		} else {
 			v3s16 p = floatToInt(objectpos, BS);
@@ -1828,7 +1828,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	If force_delete is set, active object is deleted nevertheless. It
 	shall only be set so in the destructor of the environment.
 
-	If block wasn't generated (not in memory or on disk), 
+	If block wasn't generated (not in memory or on disk),
 */
 void ServerEnvironment::deactivateFarObjects(bool force_delete)
 {
@@ -1849,7 +1849,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			continue;
 
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();	
+		v3f objectpos = obj->getBasePosition();
 
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -2342,19 +2342,19 @@ void ClientEnvironment::step(float dtime)
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
 		u8 drowning_damage = c.drowning;
-		if(drowning_damage > 0 && lplayer->hp > 0){
-			u16 breath = lplayer->getBreath();
+		if(drowning_damage > 0 && lplayer->getStat(BUILTIN_HEALTH) > 0){
+			u16 breath = lplayer->getStat(BUILTIN_BREATH);
 			if(breath > 10){
 				breath = 11;
 			}
 			if(breath > 0){
 				breath -= 1;
 			}
-			lplayer->setBreath(breath);
+			lplayer->setStat(BUILTIN_BREATH, breath);
 			updateLocalPlayerBreath(breath);
 		}
 
-		if(lplayer->getBreath() == 0 && drowning_damage > 0){
+		if(lplayer->getStat(BUILTIN_BREATH) == 0 && drowning_damage > 0){
 			damageLocalPlayer(drowning_damage, true);
 		}
 	}
@@ -2366,14 +2366,14 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
-		if (!lplayer->hp){
-			lplayer->setBreath(11);
+		if (!lplayer->getStat(BUILTIN_HEALTH)){
+			lplayer->setStat(BUILTIN_BREATH, 11);
 		}
 		else if(c.drowning == 0){
-			u16 breath = lplayer->getBreath();
+			u16 breath = lplayer->getStat(BUILTIN_BREATH);
 			if(breath <= 10){
 				breath += 1;
-				lplayer->setBreath(breath);
+				lplayer->setStat(BUILTIN_BREATH, breath);
 				updateLocalPlayerBreath(breath);
 			}
 		}
@@ -2625,10 +2625,8 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	assert(lplayer);
 	
 	if(handle_hp){
-		if(lplayer->hp > damage)
-			lplayer->hp -= damage;
-		else
-			lplayer->hp = 0;
+		lplayer->setStat(BUILTIN_HEALTH,
+				lplayer->getStat(BUILTIN_HEALTH) - damage);
 	}
 
 	ClientEnvEvent event;

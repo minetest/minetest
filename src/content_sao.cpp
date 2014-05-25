@@ -670,7 +670,7 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
 	
@@ -963,8 +963,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	// public
 	m_moved(false),
 	m_inventory_not_sent(false),
-	m_hp_not_sent(false),
-	m_breath_not_sent(false),
 	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
@@ -1052,7 +1050,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeS16(os, getId()); //id
 		writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 		writeF1000(os, m_player->getYaw());
-		writeS16(os, getHP());
+		writeS16(os, getStat(BUILTIN_BREATH));
 
 		writeU8(os, 5 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
@@ -1073,7 +1071,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeU8(os, 1); // is_player
 		writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 		writeF1000(os, m_player->getYaw());
-		writeS16(os, getHP());
+		writeS16(os, getStat(BUILTIN_HEALTH));
 		writeU8(os, 2); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
@@ -1274,7 +1272,7 @@ int PlayerSAO::punch(v3f dir,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
 {
-	// It's best that attachments cannot be punched 
+	// It's best that attachments cannot be punched
 	if(isAttached())
 		return 0;
 
@@ -1284,7 +1282,7 @@ int PlayerSAO::punch(v3f dir,
 	// No effect if PvP disabled
 	if(g_settings->getBool("enable_pvp") == false){
 		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER){
-			std::string str = gob_cmd_punched(0, getHP());
+			std::string str = gob_cmd_punched(0, getStat(BUILTIN_BREATH));
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
@@ -1304,18 +1302,13 @@ int PlayerSAO::punch(v3f dir,
 			<<punchername<<", damage "<<hitparams.hp
 			<<" HP"<<std::endl;
 
-	setHP(getHP() - hitparams.hp);
+	setStat(BUILTIN_HEALTH,getStat(BUILTIN_HEALTH) - hitparams.hp);
 
 	return hitparams.wear;
 }
 
 void PlayerSAO::rightClick(ServerActiveObject *clicker)
 {
-}
-
-s16 PlayerSAO::getHP() const
-{
-	return m_player->hp;
 }
 
 s16 PlayerSAO::readDamage()
@@ -1325,42 +1318,31 @@ s16 PlayerSAO::readDamage()
 	return damage;
 }
 
-void PlayerSAO::setHP(s16 hp)
+bool PlayerSAO::getStat(std::string name, s16& retval)
 {
-	s16 oldhp = m_player->hp;
-
-	if(hp < 0)
-		hp = 0;
-	else if(hp > PLAYER_MAX_HP)
-		hp = PLAYER_MAX_HP;
-
-	if(hp < oldhp && g_settings->getBool("enable_damage") == false)
+	if (m_player->getStat(name, retval))
 	{
-		m_hp_not_sent = true; // fix wrong prediction on client
-		return;
+		return true;
 	}
-
-	m_player->hp = hp;
-
-	if(hp != oldhp) {
-		m_hp_not_sent = true;
-		if(oldhp > hp)
-			m_damage += oldhp - hp;
-	}
-
-	// Update properties on death
-	if((hp == 0) != (oldhp == 0))
-		m_properties_sent = false;
+	return false;
 }
 
-u16 PlayerSAO::getBreath() const
+void PlayerSAO::setStat(std::string name, s16 value)
 {
-	return m_player->getBreath();
+	m_player->setStat(name,value);
 }
 
-void PlayerSAO::setBreath(u16 breath)
+bool PlayerSAO::isStatSent(std::string name)
 {
-	m_player->setBreath(breath);
+	return m_player->isStatSent(name);
+}
+void PlayerSAO::setStatSent(std::string name)
+{
+	m_player->setStatSent(name);
+}
+std::vector<std::string> PlayerSAO::getStatNames()
+{
+	return m_player->getStatNames();
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)

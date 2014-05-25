@@ -626,22 +626,24 @@ void Server::AsyncRunStep(bool initial_step)
 			if(playersao == NULL)
 				continue;
 
-			/*
-				Handle player HPs (die if hp=0)
-			*/
-			if(playersao->m_hp_not_sent && g_settings->getBool("enable_damage"))
+			std::vector<std::string> names = playersao->getStatNames();
+			for (std::vector<std::string>::iterator sn = names.begin();
+					sn != names.end(); sn++)
 			{
-				if(playersao->getHP() == 0)
-					DiePlayer(*i);
-				else
-					SendPlayerHP(*i);
-			}
+				if (playersao->isStatSent(*sn))
+					continue;
 
-			/*
-				Send player breath if changed
-			*/
-			if(playersao->m_breath_not_sent) {
-				SendPlayerBreath(*i);
+				if (*sn == BUILTIN_HEALTH)
+				{
+					if ((g_settings->getBool("enable_damage")) &&
+							(playersao->getStat(BUILTIN_HEALTH) == 0) &&
+							(!playersao->isStatSent(BUILTIN_HEALTH)))
+						DiePlayer(*i);
+				}
+
+				//send stat update
+				SendStatUpdate(*i, *sn, playersao->getStat(*sn));
+				playersao->setStatSent(*sn);
 			}
 
 			/*
@@ -1229,6 +1231,15 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	}
 
 	/*
+	 * initialize builtin stats
+	 */
+	player->createStat(BUILTIN_HEALTH, PLAYER_MAX_HP, 0, PLAYER_MAX_HP);
+	player->createStat(BUILTIN_BREATH, -1, -1, 20);
+
+	SendStatAdd(peer_id, BUILTIN_HEALTH, player->serializeStat(BUILTIN_HEALTH));
+	SendStatAdd(peer_id, BUILTIN_BREATH, player->serializeStat(BUILTIN_BREATH));
+
+	/*
 		Send complete position information
 	*/
 	SendMovePlayer(peer_id);
@@ -1243,15 +1254,8 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	UpdateCrafting(peer_id);
 	SendInventory(peer_id);
 
-	// Send HP
-	if(g_settings->getBool("enable_damage"))
-		SendPlayerHP(peer_id);
-
-	// Send Breath
-	SendPlayerBreath(peer_id);
-
 	// Show death screen if necessary
-	if(player->hp == 0)
+	if(player->getStat(BUILTIN_HEALTH) == 0)
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 
 	// Note things in chat if not in simple singleplayer mode
@@ -2173,7 +2177,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-		u8 damage = readU8(is);
+		u16 damage = readU8(is);
 
 		if(g_settings->getBool("enable_damage"))
 		{
@@ -2181,13 +2185,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
 					<<std::endl;
 
-			playersao->setHP(playersao->getHP() - damage);
-
-			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
-				DiePlayer(peer_id);
-
-			if(playersao->m_hp_not_sent)
-				SendPlayerHP(peer_id);
+			playersao->setStat(BUILTIN_HEALTH,
+					playersao->getStat(BUILTIN_HEALTH) - damage);
 		}
 	}
 	else if(command == TOSERVER_BREATH)
@@ -2195,7 +2194,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 		u16 breath = readU16(is);
-		playersao->setBreath(breath);
+		playersao->setStat(BUILTIN_BREATH, breath);
 		m_script->player_event(playersao,"breath_changed");
 	}
 	else if(command == TOSERVER_PASSWORD)
@@ -2272,7 +2271,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_RESPAWN)
 	{
-		if(player->hp != 0 || !g_settings->getBool("enable_damage"))
+		if(player->getStat(BUILTIN_HEALTH) != 0 ||
+				!g_settings->getBool("enable_damage"))
 			return;
 
 		RespawnPlayer(peer_id);
@@ -2310,7 +2310,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		verbosestream<<"TOSERVER_INTERACT: action="<<(int)action<<", item="
 				<<item_i<<", pointed="<<pointed.dump()<<std::endl;
 
-		if(player->hp == 0)
+		if(player->getStat(BUILTIN_HEALTH) == 0)
 		{
 			verbosestream<<"TOSERVER_INTERACT: "<<player->getName()
 				<<" tried to interact, but is dead!"<<std::endl;
@@ -2966,13 +2966,14 @@ void Server::SendMovement(u16 peer_id)
 	m_clients.send(peer_id, 0, data, true);
 }
 
-void Server::SendHP(u16 peer_id, u8 hp)
+void Server::SendStatUpdate(u16 peer_id, std::string statname, s16 value)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
 
-	writeU16(os, TOCLIENT_HP);
-	writeU8(os, hp);
+	writeU16(os, TOCLIENT_UPDATE_STAT);
+	os << serializeString(statname);
+	writeS16(os, value);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -2981,13 +2982,14 @@ void Server::SendHP(u16 peer_id, u8 hp)
 	m_clients.send(peer_id, 0, data, true);
 }
 
-void Server::SendBreath(u16 peer_id, u16 breath)
+void Server::SendStatAdd(u16 peer_id, std::string statname, std::string ser_stat)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
 
-	writeU16(os, TOCLIENT_BREATH);
-	writeU16(os, breath);
+	writeU16(os, TOCLIENT_ADD_STAT);
+	os << serializeString(statname);
+	os << ser_stat;
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3441,31 +3443,6 @@ void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 		// Send as reliable
 		m_clients.send(peer_id, 0, data, true);
 	}
-}
-
-void Server::SendPlayerHP(u16 peer_id)
-{
-	DSTACK(__FUNCTION_NAME);
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-	playersao->m_hp_not_sent = false;
-	SendHP(peer_id, playersao->getHP());
-	m_script->player_event(playersao,"health_changed");
-
-	// Send to other clients
-	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
-	ActiveObjectMessage aom(playersao->getId(), true, str);
-	playersao->m_messages_out.push_back(aom);
-}
-
-void Server::SendPlayerBreath(u16 peer_id)
-{
-	DSTACK(__FUNCTION_NAME);
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-	playersao->m_breath_not_sent = false;
-	m_script->player_event(playersao,"breath_changed");
-	SendBreath(peer_id, playersao->getBreath());
 }
 
 void Server::SendMovePlayer(u16 peer_id)
@@ -4260,12 +4237,8 @@ void Server::DiePlayer(u16 peer_id)
 			<<playersao->getPlayer()->getName()
 			<<" dies"<<std::endl;
 
-	playersao->setHP(0);
-
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao);
-
-	SendPlayerHP(peer_id);
 	SendDeathscreen(peer_id, false, v3f(0,0,0));
 }
 
@@ -4280,7 +4253,7 @@ void Server::RespawnPlayer(u16 peer_id)
 			<<playersao->getPlayer()->getName()
 			<<" respawns"<<std::endl;
 
-	playersao->setHP(PLAYER_MAX_HP);
+	playersao->setStat(BUILTIN_HEALTH,PLAYER_MAX_HP);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "content_sao.h"
 #include "util/numeric.h"
+#include "server.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -35,14 +36,12 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	light(0),
 	inventory(gamedef->idef()),
-	hp(PLAYER_MAX_HP),
 	hurt_tilt_timer(0),
 	hurt_tilt_strength(0),
 	peer_id(PEER_ID_INEXISTENT),
 	keyPressed(0),
 // protected
 	m_gamedef(gamedef),
-	m_breath(-1),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -171,6 +170,112 @@ v3s16 Player::getLightPosition() const
 	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
 }
 
+bool Player::getStat(std::string name, s16& result)
+{
+	if (m_stats.find(name) != m_stats.end())
+	{
+		result = m_stats[name].current;
+		return true;
+	}
+	return false;
+}
+
+/*
+ * throws exception of stat doesn't exist
+ */
+s16 Player::getStat(std::string name)
+{
+	if (m_stats.find(name) != m_stats.end())
+		return m_stats[name].current;
+
+	return 0;
+}
+
+void Player::setStat(std::string name, s16 value)
+{
+	if (m_stats.find(name) != m_stats.end())
+	{
+		value = MYMIN(value,m_stats[name].max);
+		value = MYMAX(value,m_stats[name].min);
+		m_stats[name].current = value;
+		m_stats[name].sent = false;
+	} else {
+		m_stats[name].current = value;
+		m_stats[name].sent = false;
+	}
+}
+
+bool Player::createStat(std::string name, s16 initial, s16 min, s16 max)
+{
+	if (m_stats.find(name) != m_stats.end())
+	{
+		return false;
+	}
+
+	if(name.length() > 256)
+	{
+		return false;
+	}
+
+	m_stats[name].current = initial;
+	m_stats[name].max = max;
+	m_stats[name].min = min;
+	m_stats[name].sent = false;
+	return true;
+}
+
+bool Player::isStatSent(std::string name)
+{
+	if (m_stats.find(name) == m_stats.end())
+		return true;
+
+	return m_stats[name].sent;
+}
+
+void Player::setStatSent(std::string name) {
+	if (m_stats.find(name) == m_stats.end())
+		return;
+
+	m_stats[name].sent = true;
+}
+
+std::string Player::serializeStat(std::string name)
+{
+	if (m_stats.find(name) == m_stats.end())
+		return "";
+
+	std::ostringstream os(std::ios_base::binary);
+
+	writeS16(os, m_stats[name].current);
+	writeS16(os, m_stats[name].min);
+	writeS16(os, m_stats[name].max);
+
+	// Make data buffer
+	return os.str();
+}
+
+player_stat Player::deSerializeStat(std::istream &is)
+{
+	player_stat retval;
+	retval.current = readS16(is);
+	retval.min     = readS16(is);
+	retval.max     = readS16(is);
+	return retval;
+}
+
+std::vector<std::string> Player::getStatNames()
+{
+	std::vector<std::string> retval;
+
+	for (std::map<std::string,player_stat>::iterator iter = m_stats.begin();
+			iter != m_stats.end(); iter++)
+	{
+		retval.push_back(iter->first);
+	}
+
+	return retval;
+}
+
 void Player::serialize(std::ostream &os)
 {
 	// Utilize a Settings object for storing values
@@ -181,14 +286,20 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
-	args.setS32("hp", hp);
-	args.setS32("breath", m_breath);
 
 	args.writeLines(os);
 
 	os<<"PlayerArgsEnd\n";
 
 	inventory.serialize(os);
+
+	for (std::map<std::string,player_stat>::iterator iter = m_stats.begin();
+			iter != m_stats.end(); iter++)
+	{
+		os << serializeString(iter->first) << serializeStat(iter->first);
+	}
+
+	os << serializeString("EndPlayerStats");
 }
 
 void Player::deSerialize(std::istream &is, std::string playername)
@@ -214,16 +325,6 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
-	try{
-		hp = args.getS32("hp");
-	}catch(SettingNotFoundException &e){
-		hp = 20;
-	}
-	try{
-		m_breath = args.getS32("breath");
-	}catch(SettingNotFoundException &e){
-		m_breath = 11;
-	}
 
 	inventory.deSerialize(is);
 
@@ -242,6 +343,26 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		}
 	}
 
+	try {
+		std::string statname = deSerializeString(is);
+
+		while((statname != "") && (statname != "EndPlayerStats"))
+		{
+			player_stat toadd = deSerializeStat(is);
+			createStat(name,toadd.current,toadd.min,toadd.max);
+
+			try {
+				name = deSerializeString(is);
+			}
+			catch (SerializationError e)
+			{
+				statname = "";
+			}
+		}
+	}
+	catch (SerializationError e)
+	{}
+
 	// Set m_last_*
 	checkModified();
 }
@@ -249,10 +370,6 @@ void Player::deSerialize(std::istream &is, std::string playername)
 /*
 	RemotePlayer
 */
-
-
-
-
 
 void RemotePlayer::setPosition(const v3f &position)
 {

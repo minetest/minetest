@@ -1351,28 +1351,46 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_HP)
 	{
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-
-		u8 oldhp   = player->hp;
-		u8 hp      = readU8(is);
-		player->hp = hp;
-
-		if(hp < oldhp)
-		{
-			// Add to ClientEvent queue
-			ClientEvent event;
-			event.type = CE_PLAYER_DAMAGE;
-			event.player_damage.amount = oldhp - hp;
-			m_client_event_queue.push_back(event);
-		}
+		// ignored
+		// TODO maybe add compat code
 	}
 	else if(command == TOCLIENT_BREATH)
+	{
+		// ignored
+		// TODO maybe add compat code
+	}
+	else if(command == TOCLIENT_ADD_STAT)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
-		player->setBreath(readU16(is));
+		std::string name = deSerializeString(is);
+		s16 value = readS16(is);
+		s16 min = readS16(is);
+		s16 max = readS16(is);
+		player->createStat(name, value, min, max);
+	}
+	else if(command == TOCLIENT_UPDATE_STAT)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		std::string name = deSerializeString(is);
+		s16 value = readS16(is);
+		s16 oldvalue = player->getStat(name);
+		player->setStat(name, value);
+
+		if (name == BUILTIN_HEALTH)
+		{
+			if(value < oldvalue)
+			{
+				// Add to ClientEvent queue
+				ClientEvent event;
+				event.type = CE_PLAYER_DAMAGE;
+				event.player_damage.amount = oldvalue - value;
+				m_client_event_queue.push_back(event);
+			}
+		}
 	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
@@ -2500,16 +2518,16 @@ u16 Client::getHP()
 {
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-	return player->hp;
+	return player->getStat(BUILTIN_HEALTH);
 }
-
+/*
 u16 Client::getBreath()
 {
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-	return player->getBreath();
+	return player->getStat(BUILTIN_BREATH);
 }
-
+*/
 bool Client::getChatMessage(std::wstring &message)
 {
 	if(m_chat_queue.size() == 0)
