@@ -226,8 +226,8 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 
 
 void Hud::drawLuaElements(v3s16 camera_offset) {
-	for (size_t i = 0; i != player->hud.size(); i++) {
-		HudElement *e = player->hud[i];
+	for (size_t i = 0; i != player->maxHudId(); i++) {
+		HudElement *e = player->getHud(i);
 		if (!e)
 			continue;
 		

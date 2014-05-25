@@ -2333,16 +2333,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 
 		{
 			// Read client events
-			for(;;)
-			{
+			for(;;) {
 				ClientEvent event = client.getClientEvent();
-				if(event.type == CE_NONE)
-				{
+				if(event.type == CE_NONE) {
 					break;
 				}
 				else if(event.type == CE_PLAYER_DAMAGE &&
-						client.getHP() != 0)
-				{
+						client.getHP() != 0) {
 					//u16 damage = event.player_damage.amount;
 					//infostream<<"Player damage: "<<damage<<std::endl;
 
@@ -2356,13 +2353,11 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
 					gamedef->event()->put(e);
 				}
-				else if(event.type == CE_PLAYER_FORCE_MOVE)
-				{
+				else if(event.type == CE_PLAYER_FORCE_MOVE) {
 					camera_yaw = event.player_force_move.yaw;
 					camera_pitch = event.player_force_move.pitch;
 				}
-				else if(event.type == CE_DEATHSCREEN)
-				{
+				else if(event.type == CE_DEATHSCREEN) {
 					show_deathscreen(&current_formspec, &client, gamedef, tsrc,
 							device, &client);
 
@@ -2376,8 +2371,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					player->hurt_tilt_strength = 0;
 
 				}
-				else if (event.type == CE_SHOW_FORMSPEC)
-				{
+				else if (event.type == CE_SHOW_FORMSPEC) {
 					FormspecFormSource* fs_src =
 							new FormspecFormSource(*(event.show_formspec.formspec));
 					TextDestPlayerInventory* txt_dst =
@@ -2389,8 +2383,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
 				}
-				else if(event.type == CE_SPAWN_PARTICLE)
-				{
+				else if(event.type == CE_SPAWN_PARTICLE) {
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
 					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
@@ -2407,8 +2400,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 						 v2f(0.0, 0.0),
 						 v2f(1.0, 1.0));
 				}
-				else if(event.type == CE_ADD_PARTICLESPAWNER)
-				{
+				else if(event.type == CE_ADD_PARTICLESPAWNER) {
 					LocalPlayer* player = client.getEnv().getLocalPlayer();
 					video::ITexture *texture =
 						gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
@@ -2431,15 +2423,15 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 						 texture,
 						 event.add_particlespawner.id);
 				}
-				else if(event.type == CE_DELETE_PARTICLESPAWNER)
-				{
+				else if(event.type == CE_DELETE_PARTICLESPAWNER) {
 					delete_particlespawner (event.delete_particlespawner.id);
 				}
-				else if (event.type == CE_HUDADD)
-				{
+				else if (event.type == CE_HUDADD) {
 					u32 id = event.hudadd.id;
-					size_t nhudelem = player->hud.size();
-					if (id > nhudelem || (id < nhudelem && player->hud[id])) {
+
+					HudElement *e = player->getHud(id);
+
+					if (e != NULL) {
 						delete event.hudadd.pos;
 						delete event.hudadd.name;
 						delete event.hudadd.scale;
@@ -2451,7 +2443,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 						continue;
 					}
 					
-					HudElement *e = new HudElement;
+					e = new HudElement;
 					e->type   = (HudElementType)event.hudadd.type;
 					e->pos    = *event.hudadd.pos;
 					e->name   = *event.hudadd.name;
@@ -2465,10 +2457,9 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					e->world_pos = *event.hudadd.world_pos;
 					e->size = *event.hudadd.size;
 					
-					if (id == nhudelem)
-						player->hud.push_back(e);
-					else
-						player->hud[id] = e;
+					u32 new_id = player->addHud(e);
+					//if this isn't true our huds aren't consistent
+					assert(new_id == id);
 
 					delete event.hudadd.pos;
 					delete event.hudadd.name;
@@ -2479,18 +2470,17 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					delete event.hudadd.world_pos;
 					delete event.hudadd.size;
 				}
-				else if (event.type == CE_HUDRM)
-				{
-					u32 id = event.hudrm.id;
-					if (id < player->hud.size() && player->hud[id]) {
-						delete player->hud[id];
-						player->hud[id] = NULL;
-					}
+				else if (event.type == CE_HUDRM) {
+					HudElement* e = player->removeHud(event.hudrm.id);
+
+					if (e != NULL)
+						delete (e);
 				}
-				else if (event.type == CE_HUDCHANGE)
-				{
+				else if (event.type == CE_HUDCHANGE) {
 					u32 id = event.hudchange.id;
-					if (id >= player->hud.size() || !player->hud[id]) {
+					HudElement* e = player->getHud(id);
+					if (e == NULL)
+					{
 						delete event.hudchange.v3fdata;
 						delete event.hudchange.v2fdata;
 						delete event.hudchange.sdata;
@@ -2498,7 +2488,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 						continue;
 					}
 						
-					HudElement* e = player->hud[id];
 					switch (event.hudchange.stat) {
 						case HUD_STAT_POS:
 							e->pos = *event.hudchange.v2fdata;
@@ -2540,19 +2529,18 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					delete event.hudchange.sdata;
 					delete event.hudchange.v2s32data;
 				}
-				else if (event.type == CE_SET_SKY)
-				{
+				else if (event.type == CE_SET_SKY) {
 					sky->setVisible(false);
 					if(skybox){
 						skybox->drop();
 						skybox = NULL;
 					}
 					// Handle according to type
-					if(*event.set_sky.type == "regular"){
+					if(*event.set_sky.type == "regular") {
 						sky->setVisible(true);
 					}
 					else if(*event.set_sky.type == "skybox" &&
-							event.set_sky.params->size() == 6){
+							event.set_sky.params->size() == 6) {
 						sky->setFallbackBgColor(*event.set_sky.bgcolor);
 						skybox = smgr->addSkyBoxSceneNode(
 								tsrc->getTexture((*event.set_sky.params)[0]),
@@ -2574,8 +2562,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					delete event.set_sky.type;
 					delete event.set_sky.params;
 				}
-				else if (event.type == CE_OVERRIDE_DAY_NIGHT_RATIO)
-				{
+				else if (event.type == CE_OVERRIDE_DAY_NIGHT_RATIO) {
 					bool enable = event.override_day_night_ratio.do_override;
 					u32 value = event.override_day_night_ratio.ratio_f * 1000;
 					client.getEnv().setDayNightRatioOverride(enable, value);

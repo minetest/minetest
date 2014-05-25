@@ -294,10 +294,17 @@ public:
 	
 	u32 keyPressed;
 	
-	std::vector<HudElement *> hud;
+
+	HudElement* getHud(u32 id);
+	u32         addHud(HudElement* hud);
+	HudElement* removeHud(u32 id);
+	void        clearHud();
+	u32         maxHudId() {
+		return hud.size();
+	}
+
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
-
 protected:
 	IGameDef *m_gamedef;
 
@@ -314,6 +321,8 @@ protected:
 	v3f m_last_pos;
 	u16 m_last_hp;
 	Inventory m_last_inventory;
+
+	std::vector<HudElement *> hud;
 };
 
 

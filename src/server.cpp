@@ -4560,24 +4560,25 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 u32 Server::hudAdd(Player *player, HudElement *form) {
 	if (!player)
 		return -1;
-
-	u32 id = player->getFreeHudID();
-	if (id < player->hud.size())
-		player->hud[id] = form;
-	else
-		player->hud.push_back(form);
 	
+	u32 id = player->addHud(form);
+
 	SendHUDAdd(player->peer_id, id, form);
+
 	return id;
 }
 
 bool Server::hudRemove(Player *player, u32 id) {
-	if (!player || id >= player->hud.size() || !player->hud[id])
+	if (!player)
 		return false;
 
-	delete player->hud[id];
-	player->hud[id] = NULL;
+	HudElement* todel = player->removeHud(id);
+
+	if (!todel)
+		return false;
 	
+	delete todel;
+
 	SendHUDRemove(player->peer_id, id);
 	return true;
 }
@@ -5047,7 +5048,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 			isSingleplayer());
 
 	/* Clean up old HUD elements from previous sessions */
-	player->hud.clear();
+	player->clearHud();
 
 	/* Add object to environment */
 	m_env->addActiveObject(playersao);

@@ -216,19 +216,18 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	setPosition(args.getV3F("position"));
 	try{
 		hp = args.getS32("hp");
-	}catch(SettingNotFoundException &e){
+	}catch(SettingNotFoundException &e) {
 		hp = 20;
 	}
 	try{
 		m_breath = args.getS32("breath");
-	}catch(SettingNotFoundException &e){
+	}catch(SettingNotFoundException &e) {
 		m_breath = 11;
 	}
 
 	inventory.deSerialize(is);
 
-	if(inventory.getList("craftpreview") == NULL)
-	{
+	if(inventory.getList("craftpreview") == NULL) {
 		// Convert players without craftpreview
 		inventory.addList("craftpreview", 1);
 
@@ -246,14 +245,47 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	checkModified();
 }
 
+u32 Player::addHud(HudElement *toadd)
+{
+	u32 id = getFreeHudID();
+
+	if (id < hud.size())
+		hud[id] = toadd;
+	else
+		hud.push_back(toadd);
+
+	return id;
+}
+
+HudElement* Player::getHud(u32 id)
+{
+	if (id < hud.size())
+		return hud[id];
+
+	return NULL;
+}
+
+HudElement* Player::removeHud(u32 id)
+{
+	HudElement* retval = NULL;
+	if (id < hud.size()) {
+		retval = hud[id];
+		hud[id] = NULL;
+	}
+	return retval;
+}
+
+void Player::clearHud()
+{
+	while(!hud.empty()) {
+		delete hud.back();
+		hud.pop_back();
+	}
+}
+
 /*
 	RemotePlayer
 */
-
-
-
-
-
 void RemotePlayer::setPosition(const v3f &position)
 {
 	Player::setPosition(position);

@@ -971,7 +971,9 @@ int ObjectRef::l_hud_change(lua_State *L)
 		return 0;
 
 	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
-	if (id >= player->hud.size())
+
+	HudElement *e = player->getHud(id);
+	if (!e)
 		return 0;
 
 	HudElementStat stat = HUD_STAT_NUMBER;
@@ -983,10 +985,6 @@ int ObjectRef::l_hud_change(lua_State *L)
 	}
 
 	void *value = NULL;
-	HudElement *e = player->hud[id];
-	if (!e)
-		return 0;
-
 	switch (stat) {
 		case HUD_STAT_POS:
 			e->pos = read_v2f(L, 4);
@@ -1049,10 +1047,8 @@ int ObjectRef::l_hud_get(lua_State *L)
 		return 0;
 
 	u32 id = lua_tonumber(L, -1);
-	if (id >= player->hud.size())
-		return 0;
 
-	HudElement *e = player->hud[id];
+	HudElement *e = player->getHud(id);
 	if (!e)
 		return 0;
 
