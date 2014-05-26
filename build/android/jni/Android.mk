@@ -261,7 +261,10 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/lua/src/lapi.c                    \
 		jni/src/lua/src/lauxlib.c                 \
 		jni/src/lua/src/lbaselib.c                \
+		jni/src/lua/src/lbitlib.c                 \
 		jni/src/lua/src/lcode.c                   \
+		jni/src/lua/src/lcorolib.c                \
+		jni/src/lua/src/lctype.c                  \
 		jni/src/lua/src/ldblib.c                  \
 		jni/src/lua/src/ldebug.c                  \
 		jni/src/lua/src/ldo.c                     \
@@ -286,8 +289,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/lua/src/ltm.c                     \
 		jni/src/lua/src/lundump.c                 \
 		jni/src/lua/src/lvm.c                     \
-		jni/src/lua/src/lzio.c                    \
-		jni/src/lua/src/print.c
+		jni/src/lua/src/lzio.c
 
 # sqlite
 LOCAL_SRC_FILES += jni/src/sqlite/sqlite3.c

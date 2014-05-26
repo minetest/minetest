@@ -1,5 +1,10 @@
-Lua License
------------
+Lua
+===
+
+This is Lua 5.2.3, released on 11 Nov 2013.
+
+License
+-------
 
 Lua is licensed under the terms of the MIT license reproduced below.
 This means that Lua is free software and can be used for both academic
@@ -7,7 +12,7 @@ and commercial purposes at absolutely no cost.
 
 For details and rationale, see http://www.lua.org/license.html .
 
-===============================================================================
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 Copyright (C) 1994-2008 Lua.org, PUC-Rio.
 
@@ -29,6 +34,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-===============================================================================
-
-(end of COPYRIGHT)
