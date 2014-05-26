@@ -285,11 +285,18 @@ inline u32 getTime(TimePrecision prec)
 		 */
 		prctl(PR_SET_NAME, name);
 	}
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 	#include <pthread.h>
+	#include <pthread_np.h>
 
 	inline void setThreadName(const char *name) {
 		pthread_set_name_np(pthread_self(), name);
+	}
+#elif defined(__NetBSD__)
+	#include <pthread.h>
+
+	inline void setThreadName(const char *name) {
+		pthread_setname_np(pthread_self(), name);
 	}
 #elif defined(_MSC_VER)
 	typedef struct tagTHREADNAME_INFO {
