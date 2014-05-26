@@ -270,7 +270,7 @@ void ScriptApiEnv::on_liquid_transformed(
 
 	// Skip converting list and calling hook if there are
 	// no registered callbacks.
-	if(lua_objlen(L, -1) < 1) return;
+	if(lua_rawlen(L, -1) < 1) return;
 
 	// Convert the list to a pos array and a node array for lua
 	int index = 1;

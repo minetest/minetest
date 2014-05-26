@@ -34,6 +34,16 @@ extern "C" {
 #include "config.h"
 #include "common/c_types.h"
 
+/*
+	Newer versions of Lua rename lua_objlen to lua_rawlen.
+*/
+#if USE_LUAJIT
+	#if LUAJIT_VERSION_NUMBER < 20100
+		#define lua_rawlen(L, idx) lua_objlen(L, idx)
+	#endif
+#elif LUA_VERSION_NUM < 502
+	#define lua_rawlen(L, idx) lua_objlen(L, idx)
+#endif
 
 /*
 	Define our custom indices into the Lua registry table.
