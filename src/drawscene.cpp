@@ -401,6 +401,7 @@ void draw_plain(Camera& camera, bool show_hud, Hud& hud,
 		std::vector<aabb3f> hilightboxes, video::IVideoDriver* driver,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv)
 {
+	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 	draw_selectionbox(driver, hud, hilightboxes, show_hud);
 
