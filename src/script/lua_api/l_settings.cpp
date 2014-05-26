@@ -175,7 +175,7 @@ void LuaSettings::Register(lua_State* L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (Settings(filename))
@@ -200,12 +200,12 @@ LuaSettings* LuaSettings::checkobject(lua_State* L, int narg)
 	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
+	if(!ud) script_type_error(L, narg, className);
 	return *(LuaSettings**)ud;  // unbox pointer
 }
 
 const char LuaSettings::className[] = "Settings";
-const luaL_reg LuaSettings::methods[] = {
+const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, set),

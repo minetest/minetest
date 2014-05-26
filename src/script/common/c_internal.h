@@ -32,6 +32,12 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "config.h"
+#if USE_LUAJIT
+	#define lua_rawlen(L, idx) lua_objlen(L, idx)
+	#define luaL_setfuncs(L, methods, nup) luaL_openlib(L, 0, methods, nup)
+#endif
+
 #include "common/c_types.h"
 
 // What script_run_callbacks does with the return values of callbacks.
@@ -65,6 +71,7 @@ enum RunCallbacksMode
 };
 
 std::string script_get_backtrace(lua_State *L);
+int script_type_error(lua_State *L, int narg, const char *tname);
 int script_error_handler(lua_State *L);
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L);

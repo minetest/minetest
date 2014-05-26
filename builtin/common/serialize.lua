@@ -178,12 +178,8 @@ local safe_env = {
 }
 
 function core.deserialize(str, safe)
-	if str:byte(1) == 0x1B then
-		return nil, "Bytecode prohibited"
-	end
-	local f, err = loadstring(str)
-	if not f then return nil, err end
-	setfenv(f, safe and safe_env or env)
+	local f, err = load(str, "deserialize()", "t", safe and safe_env or env)
+	if not f then return err end
 
 	local good, data = pcall(f)
 	if good then

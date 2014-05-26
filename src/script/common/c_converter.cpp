@@ -24,6 +24,7 @@ extern "C" {
 
 #include "util/numeric.h"
 #include "common/c_converter.h"
+#include "common/c_internal.h"
 #include "constants.h"
 
 void push_v3f(lua_State *L, v3f p)
@@ -203,7 +204,7 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 {
 	std::vector<aabb3f> boxes;
 	if(lua_istable(L, index)){
-		int n = lua_objlen(L, index);
+		int n = lua_rawlen(L, index);
 		// Check if it's a single box or a list of boxes
 		bool possibly_single_box = (n == 6);
 		for(int i = 1; i <= n && possibly_single_box; i++){

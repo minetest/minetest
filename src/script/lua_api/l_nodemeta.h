@@ -35,7 +35,7 @@ private:
 	ServerEnvironment *m_env;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static NodeMetaRef *checkobject(lua_State *L, int narg);
 

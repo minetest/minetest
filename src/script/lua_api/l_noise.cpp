@@ -97,8 +97,8 @@ LuaPerlinNoise* LuaPerlinNoise::checkobject(lua_State *L, int narg)
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaPerlinNoise**)ud;  // unbox pointer
+		script_type_error(L, narg, className);
+	return *(LuaPerlinNoise**) ud;  // unbox pointer
 }
 
 
@@ -123,7 +123,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (PerlinNoise(seed, octaves, persistence)
@@ -132,7 +132,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 
 const char LuaPerlinNoise::className[] = "PerlinNoise";
-const luaL_reg LuaPerlinNoise::methods[] = {
+const luaL_Reg LuaPerlinNoise::methods[] = {
 	luamethod(LuaPerlinNoise, get2d),
 	luamethod(LuaPerlinNoise, get3d),
 	{0,0}
@@ -292,7 +292,7 @@ LuaPerlinNoiseMap *LuaPerlinNoiseMap::checkobject(lua_State *L, int narg)
 
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
-		luaL_typerror(L, narg, className);
+		script_type_error(L, narg, className);
 
 	return *(LuaPerlinNoiseMap **)ud;  // unbox pointer
 }
@@ -319,7 +319,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (PerlinNoiseMap(np, size)
@@ -328,7 +328,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 
 const char LuaPerlinNoiseMap::className[] = "PerlinNoiseMap";
-const luaL_reg LuaPerlinNoiseMap::methods[] = {
+const luaL_Reg LuaPerlinNoiseMap::methods[] = {
 	luamethod(LuaPerlinNoiseMap, get2dMap),
 	luamethod(LuaPerlinNoiseMap, get2dMap_flat),
 	luamethod(LuaPerlinNoiseMap, get3dMap),
@@ -418,8 +418,8 @@ LuaPseudoRandom* LuaPseudoRandom::checkobject(lua_State *L, int narg)
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaPseudoRandom**)ud;  // unbox pointer
+		script_type_error(L, narg, className);
+	return *(LuaPseudoRandom**) ud;  // unbox pointer
 }
 
 
@@ -444,7 +444,7 @@ void LuaPseudoRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (LuaPseudoRandom(seed))
@@ -453,7 +453,7 @@ void LuaPseudoRandom::Register(lua_State *L)
 
 
 const char LuaPseudoRandom::className[] = "PseudoRandom";
-const luaL_reg LuaPseudoRandom::methods[] = {
+const luaL_Reg LuaPseudoRandom::methods[] = {
 	luamethod(LuaPseudoRandom, next),
 	{0,0}
 };

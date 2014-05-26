@@ -37,7 +37,7 @@ private:
 	ServerActiveObject *m_object;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 public:
 	static ObjectRef *checkobject(lua_State *L, int narg);
 

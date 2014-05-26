@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_item.h"
+#include "common/c_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
@@ -32,7 +33,7 @@ InvRef* InvRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
+	if (!ud) script_type_error(L, narg, className);
 	return *(InvRef**)ud;  // unbox pointer
 }
 
@@ -455,7 +456,7 @@ void InvRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Cannot be created from Lua
@@ -463,7 +464,7 @@ void InvRef::Register(lua_State *L)
 }
 
 const char InvRef::className[] = "InvRef";
-const luaL_reg InvRef::methods[] = {
+const luaL_Reg InvRef::methods[] = {
 	luamethod(InvRef, is_empty),
 	luamethod(InvRef, get_size),
 	luamethod(InvRef, set_size),
