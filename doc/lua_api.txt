@@ -1163,8 +1163,10 @@ vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
 vector.multiply(v, x) -> vector
 vector.divide(v, x) -> vector
-vector.resulting({a,b,...,n}) -> vector
+vector.resulting({a, b, ..., n}) -> vector
 ^ Returns a resulting vector based on the vectors given in the table
+vector.average({a, b, ..., n})
+^ Returns a vector based on the average of all single values
 
 Helper functions
 -----------------
