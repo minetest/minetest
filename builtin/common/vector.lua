@@ -145,13 +145,13 @@ function vector.divide(a, b)
 end
 
 function vector.resulting(a)
-	assert_vector(a)
 	local res = {x = 0, y = 0, z = 0}
 	local allX = {}
 	local allY = {}
 	local allZ = {}
 
 	for k, v in pairs(a) do
+		assert_vector(v)
 		table.insert(allX, v.x)
 		table.insert(allY, v.y)
 		table.insert(allZ, v.z)
