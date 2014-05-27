@@ -145,10 +145,18 @@ public:
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void setHP(s16 hp)
-	{}
-	virtual s16 getHP() const
-	{ return 0; }
+
+	virtual bool getStat(std::string name, s16& result)
+		{ return false; }
+
+	/** throws exception of stat doesn't exist */
+	virtual s16 getStat(std::string name)
+		{ return 0; }
+
+	virtual void setStat(std::string name, s16 value)
+		{ return; }
+	virtual bool createStat(std::string name, s16 initial, s16 min, s16 max)
+		{ return false; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}

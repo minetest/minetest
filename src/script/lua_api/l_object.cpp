@@ -228,46 +228,6 @@ int ObjectRef::l_right_click(lua_State *L)
 	return 0;
 }
 
-// set_hp(self, hp)
-// hp = number of hitpoints (2 * number of hearts)
-// returns: nil
-int ObjectRef::l_set_hp(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	luaL_checknumber(L, 2);
-	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
-	int hp = lua_tonumber(L, 2);
-	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
-			<<" hp="<<hp<<std::endl;*/
-	// Do it
-	co->setHP(hp);
-	// Return
-	return 0;
-}
-
-// get_hp(self)
-// returns: number of hitpoints (2 * number of hearts)
-// 0 if not applicable to this type of object
-int ObjectRef::l_get_hp(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *co = getobject(ref);
-	if(co == NULL){
-		// Default hp is 1
-		lua_pushnumber(L, 1);
-		return 1;
-	}
-	int hp = co->getHP();
-	/*infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
-			<<" hp="<<hp<<std::endl;*/
-	// Return
-	lua_pushnumber(L, hp);
-	return 1;
-}
-
 // get_inventory(self)
 int ObjectRef::l_get_inventory(lua_State *L)
 {
@@ -781,30 +741,60 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
-// set_breath(self, breath)
-int ObjectRef::l_set_breath(lua_State *L)
+// set_stat(self, name, value)
+int ObjectRef::l_set_stat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
-	u16 breath = luaL_checknumber(L, 2);
-	// Do it
-	co->setBreath(breath);
-	co->m_breath_not_sent = true;
+
+	std::string name = luaL_checkstring(L,2);
+	s16 value = luaL_checknumber(L, 3);
+
+	co->setStat(name,value);
 	return 0;
 }
 
-// get_breath(self)
-int ObjectRef::l_get_breath(lua_State *L)
+// set_stat(self, name, value, min, max)
+int ObjectRef::l_create_stat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
+
+	std::string name = luaL_checkstring(L,2);
+	s16 value = luaL_checknumber(L, 3);
+	s16 min = luaL_checknumber(L, 4);
+	s16 max = luaL_checknumber(L, 5);
+
+	if (co->createStat(name, value, min, max))
+	{
+		lua_pushboolean(L, true);
+	} else {
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
+// get_stat(self, name)
+int ObjectRef::l_get_stat(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if(co == NULL) return 0;
+
+	std::string name = luaL_checkstring(L,2);
+
 	// Do it
-	u16 breath = co->getBreath();
-	lua_pushinteger (L, breath);
+	s16 retval = 0;
+	if (!co->getStat(name,retval))
+	{
+		return 0;
+	}
+	lua_pushinteger (L, retval);
 	return 1;
 }
 
@@ -1005,6 +995,12 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->text;
 			break;
 		case HUD_STAT_NUMBER:
+			/* STATBAR with name are not supposed to be updated directly */
+			if ((e->type == HUD_ELEM_STATBAR) && (e->name != ""))
+			{
+				lua_pushboolean(L, false);
+				return 1;
+			}
 			e->number = lua_tonumber(L, 4);
 			value = &e->number;
 			break;
@@ -1311,8 +1307,9 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, moveto),
 	luamethod(ObjectRef, punch),
 	luamethod(ObjectRef, right_click),
-	luamethod(ObjectRef, set_hp),
-	luamethod(ObjectRef, get_hp),
+	luamethod(ObjectRef, set_stat),
+	luamethod(ObjectRef, get_stat),
+	luamethod(ObjectRef, create_stat),
 	luamethod(ObjectRef, get_inventory),
 	luamethod(ObjectRef, get_wield_list),
 	luamethod(ObjectRef, get_wield_index),
@@ -1345,8 +1342,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_yaw),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
-	luamethod(ObjectRef, get_breath),
-	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),

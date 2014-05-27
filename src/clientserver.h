@@ -549,6 +549,22 @@ enum ToClientCommand
 		v3f1000 first
 		v3f1000 third
 	*/
+	TOCLIENT_ADD_STAT = 0x53,
+	/*
+	 * u16 command
+	 * u8 len
+	 * u8[len] statname
+	 * s16 value
+	 * s16 min
+	 * s16 max
+	 */
+	TOCLIENT_UPDATE_STAT = 0x54
+	/*
+	 * u16 command
+	 * u8 len
+	 * u8[len] statname
+	 * s16 value
+	 */
 };
 
 enum ToServerCommand

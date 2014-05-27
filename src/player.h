@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 
+#define BUILTIN_HEALTH "health"
+#define BUILTIN_BREATH "breath"
+
 struct PlayerControl
 {
 	PlayerControl()
@@ -84,12 +87,20 @@ struct PlayerControl
 	float yaw;
 };
 
+struct player_stat {
+	s16 current;
+	s16 min;
+	s16 max;
+	bool sent;
+};
+
 class Map;
 class IGameDef;
 struct CollisionInfo;
 class PlayerSAO;
 struct HudElement;
 class Environment;
+class Server;
 
 class Player
 {
@@ -165,16 +176,6 @@ public:
 		return m_yaw;
 	}
 
-	u16 getBreath()
-	{
-		return m_breath;
-	}
-
-	virtual void setBreath(u16 breath)
-	{
-		m_breath = breath;
-	}
-
 	f32 getRadPitch()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
@@ -225,11 +226,11 @@ public:
 
 	bool checkModified()
 	{
-		if(m_last_hp != hp || m_last_pitch != m_pitch ||
+		if(m_last_hp != getStat(BUILTIN_HEALTH) ||m_last_pitch != m_pitch ||
 				m_last_pos != m_position || m_last_yaw != m_yaw ||
 				!(inventory == m_last_inventory))
 		{
-			m_last_hp = hp;
+			m_last_hp = getStat(BUILTIN_HEALTH);
 			m_last_pitch = m_pitch;
 			m_last_pos = m_position;
 			m_last_yaw = m_yaw;
@@ -277,8 +278,6 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	u16 hp;
-
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
@@ -298,11 +297,24 @@ public:
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
 
+	bool getStat(std::string name, s16& result);
+	/** throws exception of stat doesn't exist */
+	s16 getStat(std::string name);
+
+	void setStat(std::string name, s16 value);
+	bool createStat(std::string name, s16 initial, s16 max, s16 min);
+
+	bool isStatSent(std::string name);
+	void setStatSent(std::string name);
+	std::vector<std::string> getStatNames();
+
+	std::string serializeStat(std::string name);
+	player_stat deSerializeStat(std::istream &is);
+
 protected:
 	IGameDef *m_gamedef;
 
 	char m_name[PLAYERNAME_SIZE];
-	u16 m_breath;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;
@@ -314,6 +326,9 @@ protected:
 	v3f m_last_pos;
 	u16 m_last_hp;
 	Inventory m_last_inventory;
+
+private:
+	std::map<std::string, player_stat> m_stats;
 };
 
 

@@ -191,17 +191,30 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
-	s16 getHP() const;
-	void setHP(s16 hp);
 	s16 readDamage();
-	u16 getBreath() const;
-	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
+
+	/*
+	 * Stat handling
+	 */
+	bool getStat(std::string name, s16& retval);
+	s16 getStat(std::string name)
+	{
+		s16 retval = 0xFFFF;
+		bool successfull = getStat(name, retval);
+		assert(successfull);
+		return retval;
+	}
+	void setStat(std::string name, s16 value);
+
+	bool isStatSent(std::string name);
+	void setStatSent(std::string name);
+	std::vector<std::string> getStatNames();
 
 	/*
 		Inventory interface
@@ -323,8 +336,6 @@ public:
 	// Some flags used by Server
 	bool m_moved;
 	bool m_inventory_not_sent;
-	bool m_hp_not_sent;
-	bool m_breath_not_sent;
 	bool m_wielded_item_not_sent;
 
 	float m_physics_override_speed;
