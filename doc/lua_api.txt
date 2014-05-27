@@ -1163,6 +1163,8 @@ vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
 vector.multiply(v, x) -> vector
 vector.divide(v, x) -> vector
+vector.resulting({a,b,...,n}) -> vector
+^ Returns a resulting vector based on the vectors given in the table
 
 Helper functions
 -----------------

@@ -144,3 +144,33 @@ function vector.divide(a, b)
 	end
 end
 
+function vector.resulting(a)
+	assert_vector(a)
+	local res = {x = 0, y = 0, z = 0}
+	local allX = {}
+	local allY = {}
+	local allZ = {}
+
+	for k, v in pairs(a) do
+		table.insert(allX, v.x)
+		table.insert(allY, v.y)
+		table.insert(allZ, v.z)
+	end
+
+	for k, v in pairs(allX) do
+		res.x = res.x + v
+	end
+	res.x = res.x / #allX
+	
+	for k, v in pairs(allY) do
+		res.y = res.y + v
+	end
+	res.y = res.y / #allY
+	
+	for k, v in pairs(allZ) do
+		res.z = res.z + v
+	end
+	res.z = res.z / #allZ
+	
+	return res
+end
