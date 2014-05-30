@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "gettext.h"
 #include "scripting_game.h"
+#include "porting.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -90,6 +91,12 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	current_keys_pending.key_up = false;
 	current_keys_pending.key_enter = false;
 	current_keys_pending.key_escape = false;
+
+	m_doubleclickdetect[0].time = 0;
+	m_doubleclickdetect[1].time = 0;
+
+	m_doubleclickdetect[0].pos = v2s32(0, 0);
+	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 }
 
@@ -1171,9 +1178,9 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 			if (parts[6] == "false")
 				drawborder = false;
 		}
-		
+
 		std::string pressed_image_name = "";
-		
+
 		if ((parts.size() == 8)) {
 			pressed_image_name = parts[7];
 		}
@@ -1265,9 +1272,11 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		geom.X = data->screensize.Y;
 		geom.Y = 30;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
+				pos.Y+geom.Y);
 
-		gui::IGUITabControl *e = Environment->addTabControl(rect,this,show_background,show_border,spec.fid);
+		gui::IGUITabControl *e = Environment->addTabControl(rect, this,
+				show_background, show_border, spec.fid);
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1276,7 +1285,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		e->setNotClipped(true);
 
 		for (unsigned int i=0; i< buttons.size(); i++) {
-			e->addTab(narrow_to_wide(buttons[i]).c_str(),-1);
+			e->addTab(narrow_to_wide(buttons[i]).c_str(), -1);
 		}
 
 		if ((tab_index >= 0) &&
@@ -1287,14 +1296,17 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid TabHeader element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid TabHeader element(" << parts.size() << "): '"
+			<< element << "'"  << std::endl;
 }
 
 void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 {
 
 	if (m_gamedef == 0) {
-		errorstream<<"WARNING: invalid use of item_image_button with m_gamedef==0"<<std::endl;
+		errorstream <<
+				"WARNING: invalid use of item_image_button with m_gamedef==0"
+				<< std::endl;
 		return;
 	}
 
@@ -1414,7 +1426,7 @@ void GUIFormSpecMenu::parseListColors(parserData* data,std::string element)
 	if ((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
 		parseColor(parts[0], m_slotbg_n, false);
 		parseColor(parts[1], m_slotbg_h, false);
-		
+
 		if (parts.size() >= 3) {
 			if (parseColor(parts[2], m_slotbordercolor, false)) {
 				m_slotborder = true;
@@ -1628,9 +1640,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// A proceed button is added if there is no size[] element
 	mydata.bp_set = 0;
 
-	
+
 	/* Convert m_init_draw_spec to m_inventorylists */
-	
+
 	m_inventorylists.clear();
 	m_images.clear();
 	m_backgrounds.clear();
@@ -1710,7 +1722,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
-	
+
 	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
 		const ListDrawSpec &s = m_inventorylists[i];
@@ -1741,7 +1753,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (skin)
 		font = skin->getFont();
-	
+
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	if(!inv){
 		infostream<<"GUIFormSpecMenu::drawList(): WARNING: "
@@ -1758,9 +1770,9 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				<<std::endl;
 		return;
 	}
-	
+
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
-	
+
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		s32 item_i = i + s.start_item_i;
@@ -1855,7 +1867,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (skin)
 		font = skin->getFont();
-	
+
 	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 	assert(inv);
 	InventoryList *list = inv->getList(m_selected_item->listname);
@@ -1886,7 +1898,7 @@ void GUIFormSpecMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	
+
 	v2u32 screenSize = driver->getScreenSize();
 	core::rect<s32> allbg(0, 0, screenSize.X ,	screenSize.Y);
 	if (m_bgfullscreen)
@@ -1930,7 +1942,7 @@ void GUIFormSpecMenu::drawMenu()
 			errorstream << "\t" << spec.name << std::endl;
 		}
 	}
-	
+
 	/*
 		Draw Boxes
 	*/
@@ -1979,7 +1991,7 @@ void GUIFormSpecMenu::drawMenu()
 			errorstream << "\t" << spec.name << std::endl;
 		}
 	}
-	
+
 	/*
 		Draw item images
 	*/
@@ -2004,7 +2016,7 @@ void GUIFormSpecMenu::drawMenu()
 					core::dimension2di(texture->getOriginalSize())),
 			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
-	
+
 	/*
 		Draw items
 		Phase 0: Item slot rectangles
@@ -2021,7 +2033,7 @@ void GUIFormSpecMenu::drawMenu()
 		Call base class
 	*/
 	gui::IGUIElement::draw();
-	
+
 	/*
 		Draw fields/buttons tooltips
 	*/
@@ -2046,7 +2058,7 @@ void GUIFormSpecMenu::drawMenu()
 			}
 		}
 	}
-	
+
 	/*
 		Draw dragged item stack
 	*/
@@ -2276,6 +2288,17 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 	}
 }
 
+static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
+{
+	while(tocheck != NULL) {
+		if (tocheck == parent) {
+			return true;
+		}
+		tocheck = tocheck->getParent();
+	}
+	return false;
+}
+
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
 	// Fix Esc/Return key being eaten by checkboxen and tables
@@ -2306,6 +2329,64 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
+	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(
+				core::position2d<s32>(x, y));
+
+		if (!isChild(hovered,this)) {
+			if (DoubleClickDetection(event)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/******************************************************************************/
+bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
+{
+	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
+		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
+
+		m_doubleclickdetect[1].pos  = m_pointer;
+		m_doubleclickdetect[1].time = getTimeMs();
+	}
+	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+		u32 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, getTimeMs());
+		if (delta > 400) {
+			return false;
+		}
+
+		double squaredistance =
+				m_doubleclickdetect[0].pos
+				.getDistanceFromSQ(m_doubleclickdetect[1].pos);
+
+		if (squaredistance > (30*30)) {
+			return false;
+		}
+
+		SEvent* translated = new SEvent();
+		assert(translated != 0);
+		//translate doubleclick to escape
+		memset(translated, 0, sizeof(SEvent));
+		translated->EventType = irr::EET_KEY_INPUT_EVENT;
+		translated->KeyInput.Key         = KEY_ESCAPE;
+		translated->KeyInput.Control     = false;
+		translated->KeyInput.Shift       = false;
+		translated->KeyInput.PressedDown = true;
+		translated->KeyInput.Char        = 0;
+		OnEvent(*translated);
+
+		// no need to send the key up event as we're already deleted
+		// and no one else did notice this event
+		delete translated;
+		return true;
+	}
 	return false;
 }
 
