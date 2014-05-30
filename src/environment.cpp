@@ -100,6 +100,18 @@ void Environment::removePlayer(u16 peer_id)
 	}
 }
 
+void Environment::removePlayer(const char *name)
+{
+	for (std::list<Player*>::iterator it = m_players.begin();
+			it != m_players.end(); ++it) {
+		if (strcmp((*it)->getName(), name) == 0) {
+			delete *it;
+			m_players.erase(it);
+			return;
+		}
+	}
+}
+
 Player * Environment::getPlayer(u16 peer_id)
 {
 	for(std::list<Player*>::iterator i = m_players.begin();
@@ -332,10 +344,12 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-		GameScripting *scriptIface, IGameDef *gamedef):
+		GameScripting *scriptIface, IGameDef *gamedef,
+		const std::string &path_world) :
 	m_map(map),
 	m_script(scriptIface),
 	m_gamedef(gamedef),
+	m_path_world(path_world),
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
@@ -401,196 +415,85 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 	return true;
 }
 
-void ServerEnvironment::serializePlayers(const std::string &savedir)
+void ServerEnvironment::saveLoadedPlayers()
 {
-	std::string players_path = savedir + "/players";
+	std::string players_path = m_path_world + DIR_DELIM "players";
 	fs::CreateDir(players_path);
 
-	std::set<Player*> saved_players;
+	for (std::list<Player*>::iterator it = m_players.begin();
+			it != m_players.end();
+			++it) {
+		RemotePlayer *player = static_cast<RemotePlayer*>(*it);
+		if (player->checkModified()) {
+			player->save(players_path);
+		}
+	}
+}
+
+void ServerEnvironment::savePlayer(const std::string &playername)
+{
+	std::string players_path = m_path_world + DIR_DELIM "players";
+	fs::CreateDir(players_path);
+
+	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
+	if (player) {
+		player->save(players_path);
+	}
+}
+
+Player *ServerEnvironment::loadPlayer(const std::string &playername)
+{
+	std::string players_path = m_path_world + DIR_DELIM "players";
+
+	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
+	bool newplayer = false;
+	bool foundplayer = false;
+	if (!player) {
+		player = new RemotePlayer(m_gamedef);
+		newplayer = true;
+	}
 
 	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
-	for(u32 i=0; i<player_files.size(); i++)
-	{
-		if(player_files[i].dir || player_files[i].name[0] == '.')
+	for (u32 i = 0; i < player_files.size(); i++) {
+		if (player_files[i].dir)
 			continue;
 		
 		// Full path to this file
 		std::string path = players_path + "/" + player_files[i].name;
 
-		//infostream<<"Checking player file "<<path<<std::endl;
-
 		// Load player to see what is its name
-		RemotePlayer testplayer(m_gamedef);
-		{
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			testplayer.deSerialize(is, player_files[i].name);
+		std::ifstream is(path.c_str(), std::ios_base::binary);
+		if (!is.good()) {
+			infostream << "Failed to read " << path << std::endl;
+			continue;
 		}
+		player->deSerialize(is, player_files[i].name);
 
-		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
-		
-		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
-		if(player == NULL)
-		{
-			infostream<<"Didn't find matching player, ignoring file "<<path<<std::endl;
+		if (!string_allowed(player->getName(), PLAYERNAME_ALLOWED_CHARS)) {
+			infostream << "Not loading player with invalid name: "
+					<< player->getName() << std::endl;
 			continue;
 		}
 
-		//infostream<<"Found matching player, overwriting."<<std::endl;
-
-		// OK, found. Save player there.
-		if(player->checkModified())
-		{
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			player->serialize(ss);
-			if(!fs::safeWriteToFile(path, ss.str()))
-			{
-				infostream<<"Failed to write "<<path<<std::endl;
-				continue;
-			}
-			saved_players.insert(player);
-		} else {
-			saved_players.insert(player);
+		if (player->getName() == playername) {
+			// We found our player
+			foundplayer = true;
+			break;
 		}
+
 	}
-
-	for(std::list<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i)
-	{
-		Player *player = *i;
-		if(saved_players.find(player) != saved_players.end())
-		{
-			/*infostream<<"Player "<<player->getName()
-					<<" was already saved."<<std::endl;*/
-			continue;
-		}
-		std::string playername = player->getName();
-		// Don't save unnamed player
-		if(playername == "")
-		{
-			//infostream<<"Not saving unnamed player."<<std::endl;
-			continue;
-		}
-		/*
-			Find a sane filename
-		*/
-		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false)
-			playername = "player";
-		std::string path = players_path + "/" + playername;
-		bool found = false;
-		for(u32 i=0; i<1000; i++)
-		{
-			if(fs::PathExists(path) == false)
-			{
-				found = true;
-				break;
-			}
-			path = players_path + "/" + playername + itos(i);
-		}
-		if(found == false)
-		{
-			infostream<<"Didn't find free file for player"<<std::endl;
-			continue;
-		}
-
-		{
-			/*infostream<<"Saving player "<<player->getName()<<" to "
-					<<path<<std::endl;*/
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			player->serialize(ss);
-			if(!fs::safeWriteToFile(path, ss.str()))
-			{
-				infostream<<"Failed to write "<<path<<std::endl;
-				continue;
-			}
-			saved_players.insert(player);
-		}
+	if (!foundplayer) {
+		return NULL;
 	}
-
-	//infostream<<"Saved "<<saved_players.size()<<" players."<<std::endl;
+	if (newplayer) {
+		addPlayer(player);
+	}
+	return player;
 }
 
-void ServerEnvironment::deSerializePlayers(const std::string &savedir)
+void ServerEnvironment::saveMeta()
 {
-	std::string players_path = savedir + "/players";
-
-	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
-	for(u32 i=0; i<player_files.size(); i++)
-	{
-		if(player_files[i].dir)
-			continue;
-		
-		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
-
-		//infostream<<"Checking player file "<<path<<std::endl;
-
-		// Load player to see what is its name
-		RemotePlayer testplayer(m_gamedef);
-		{
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			testplayer.deSerialize(is, player_files[i].name);
-		}
-
-		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
-		{
-			infostream<<"Not loading player with invalid name: "
-					<<testplayer.getName()<<std::endl;
-		}
-
-		/*infostream<<"Loaded test player with name "<<testplayer.getName()
-				<<std::endl;*/
-		
-		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
-		bool newplayer = false;
-		if(player == NULL)
-		{
-			//infostream<<"Is a new player"<<std::endl;
-			player = new RemotePlayer(m_gamedef);
-			newplayer = true;
-		}
-
-		// Load player
-		{
-			verbosestream<<"Reading player "<<testplayer.getName()<<" from "
-					<<path<<std::endl;
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			player->deSerialize(is, player_files[i].name);
-		}
-
-		if(newplayer)
-		{
-			addPlayer(player);
-		}
-	}
-}
-
-void ServerEnvironment::saveMeta(const std::string &savedir)
-{
-	std::string path = savedir + "/env_meta.txt";
+	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
@@ -609,9 +512,9 @@ void ServerEnvironment::saveMeta(const std::string &savedir)
 	}
 }
 
-void ServerEnvironment::loadMeta(const std::string &savedir)
+void ServerEnvironment::loadMeta()
 {
-	std::string path = savedir + "/env_meta.txt";
+	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and deserialize
 	std::ifstream is(path.c_str(), std::ios_base::binary);

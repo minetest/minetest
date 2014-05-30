@@ -344,7 +344,7 @@ Server::Server(
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_script, this);
+	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
 	m_clients.setEnv(m_env);
 
@@ -361,19 +361,13 @@ Server::Server(
 	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_path_world+DIR_DELIM+"env_meta.txt"))
+	if(fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
-		m_env->loadMeta(m_path_world);
+		m_env->loadMeta();
 	}
 
-	// Load players
-	infostream<<"Server: Loading players"<<std::endl;
-	m_env->deSerializePlayers(m_path_world);
-
-	/*
-		Add some test ActiveBlockModifiers to environment
-	*/
+	// Add some test ActiveBlockModifiers to environment
 	add_legacy_abms(m_env, m_nodedef);
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
@@ -383,42 +377,23 @@ Server::~Server()
 {
 	infostream<<"Server destructing"<<std::endl;
 
-	/*
-		Send shutdown message
-	*/
-	{
-		std::wstring line = L"*** Server shutting down";
-		SendChatMessage(PEER_ID_INEXISTENT, line);
-	}
+	// Send shutdown message
+	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
 
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 
-		/*
-			Execute script shutdown hooks
-		*/
+		// Execute script shutdown hooks
 		m_script->on_shutdown();
-	}
 
-	{
-		JMutexAutoLock envlock(m_env_mutex);
-
-		/*
-			Save players
-		*/
 		infostream<<"Server: Saving players"<<std::endl;
-		m_env->serializePlayers(m_path_world);
+		m_env->saveLoadedPlayers();
 
-		/*
-			Save environment metadata
-		*/
 		infostream<<"Server: Saving environment metadata"<<std::endl;
-		m_env->saveMeta(m_path_world);
+		m_env->saveMeta();
 	}
 
-	/*
-		Stop threads
-	*/
+	// Stop threads
 	stop();
 	delete m_thread;
 
@@ -444,12 +419,10 @@ Server::~Server()
 	delete m_script;
 
 	// Delete detached inventories
-	{
-		for(std::map<std::string, Inventory*>::iterator
-				i = m_detached_inventories.begin();
-				i != m_detached_inventories.end(); i++){
-			delete i->second;
-		}
+	for (std::map<std::string, Inventory*>::iterator
+			i = m_detached_inventories.begin();
+			i != m_detached_inventories.end(); i++) {
+		delete i->second;
 	}
 }
 
@@ -1141,18 +1114,19 @@ void Server::AsyncRunStep(bool initial_step)
 
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
-			//Ban stuff
-			if(m_banmanager->isModified())
+			// Save ban file
+			if (m_banmanager->isModified()) {
 				m_banmanager->save();
+			}
 
 			// Save changed parts of map
 			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
 
 			// Save players
-			m_env->serializePlayers(m_path_world);
+			m_env->saveLoadedPlayers();
 
 			// Save environment metadata
-			m_env->saveMeta(m_path_world);
+			m_env->saveMeta();
 		}
 	}
 }
@@ -1178,26 +1152,15 @@ void Server::Receive()
 				"SerializationError: what()="
 				<<e.what()<<std::endl;
 	}
-	catch(con::PeerNotFoundException &e)
-	{
-		//NOTE: This is not needed anymore
-
-		// The peer has been disconnected.
-		// Find the associated player and remove it.
-
-		/*JMutexAutoLock envlock(m_env_mutex);
-
-		infostream<<"ServerThread: peer_id="<<peer_id
-				<<" has apparently closed connection. "
-				<<"Removing player."<<std::endl;
-
-		m_env->removePlayer(peer_id);*/
-	}
 	catch(ClientStateError &e)
 	{
 		errorstream << "ProcessData: peer=" << peer_id  << e.what() << std::endl;
 		DenyAccess(peer_id, L"Your client sent something server didn't expect."
 				L"Try reconnecting or updating your client");
+	}
+	catch(con::PeerNotFoundException &e)
+	{
+		// Do nothing
 	}
 }
 
@@ -5032,15 +4995,16 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		return NULL;
 	}
 
-	/*
-		Create a new player if it doesn't exist yet
-	*/
-	if(player == NULL)
-	{
+	// Load player if it isn't already loaded
+	if (!player) {
+		player = static_cast<RemotePlayer*>(m_env->loadPlayer(name));
+	}
+
+	// Create player if it doesn't exist
+	if (!player) {
 		newplayer = true;
 		player = new RemotePlayer(this);
 		player->updateName(name);
-
 		/* Set player position */
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
@@ -5051,9 +5015,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		m_env->addPlayer(player);
 	}
 
-	/*
-		Create a new player active object
-	*/
+	// Create a new player active object
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
 			getPlayerEffectivePrivs(player->getName()),
 			isSingleplayer());
@@ -5065,8 +5027,9 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	m_env->addActiveObject(playersao);
 
 	/* Run scripts */
-	if(newplayer)
+	if (newplayer) {
 		m_script->on_newplayer(playersao);
+	}
 
 	return playersao;
 }

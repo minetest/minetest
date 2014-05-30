@@ -70,6 +70,7 @@ public:
 
 	virtual void addPlayer(Player *player);
 	void removePlayer(u16 peer_id);
+	void removePlayer(const char *name);
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
@@ -199,7 +200,7 @@ class ServerEnvironment : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, GameScripting *scriptIface,
-			IGameDef *gamedef);
+			IGameDef *gamedef, const std::string &path_world);
 	~ServerEnvironment();
 
 	Map & getMap();
@@ -216,17 +217,16 @@ public:
 	float getSendRecommendedInterval()
 		{ return m_recommended_send_interval; }
 
-	/*
-		Save players
-	*/
-	void serializePlayers(const std::string &savedir);
-	void deSerializePlayers(const std::string &savedir);
+	// Save players
+	void saveLoadedPlayers();
+	void savePlayer(const std::string &playername);
+	Player *loadPlayer(const std::string &playername);
 
 	/*
 		Save and load time of day and game timer
 	*/
-	void saveMeta(const std::string &savedir);
-	void loadMeta(const std::string &savedir);
+	void saveMeta();
+	void loadMeta();
 
 	/*
 		External ActiveObject interface
@@ -368,6 +368,8 @@ private:
 	GameScripting* m_script;
 	// Game definition
 	IGameDef *m_gamedef;
+	// World path
+	const std::string m_path_world;
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
