@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 
 local function delete_mod_formspec(dialogdata)
-	
+
 	dialogdata.mod = modmgr.global_mods:get_list()[dialogdata.selected]
 
 	local retval =
@@ -26,7 +26,7 @@ local function delete_mod_formspec(dialogdata)
 		"field[1.75,1;10,3;;" .. fgettext("Are you sure you want to delete \"$1\"?", dialogdata.mod.name) ..  ";]"..
 		"button[4,4.2;1,0.5;dlg_delete_mod_confirm;" .. fgettext("Yes") .. "]" ..
 		"button[6.5,4.2;3,0.5;dlg_delete_mod_cancel;" .. fgettext("No of course not!") .. "]"
-	
+
 	return retval
 end
 
@@ -47,7 +47,7 @@ local function delete_mod_buttonhandler(this, fields)
 		this:delete()
 		return true
 	end
-	
+
 	if fields["dlg_delete_mod_cancel"] then
 		this:delete()
 		return true
@@ -62,7 +62,8 @@ function create_delete_mod_dlg(selected_index)
 	local retval = dialog_create("dlg_delete_mod",
 					delete_mod_formspec,
 					delete_mod_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.data.selected = selected_index
 	return retval
 end

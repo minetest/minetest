@@ -92,7 +92,7 @@ local function init_globals()
 	mm_texture.init()
 
 	--create main tabview
-	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
+	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0}, ui)
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tab_singleplayer)
 	tv_main:add(tab_multiplayer)

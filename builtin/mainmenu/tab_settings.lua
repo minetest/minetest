@@ -69,7 +69,8 @@ local function showconfirm_reset(tabview)
 	local new_dlg = dialog_create("reset_spworld",
 		dlg_confirm_reset_formspec,
 		dlg_confirm_reset_btnhandler,
-		nil)
+		nil,
+		ui)
 	new_dlg:set_parent(tabview)
 	tabview:hide()
 	new_dlg:show()

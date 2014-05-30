@@ -32,13 +32,13 @@ local function create_world_formspec(dialogdata)
 		mglist = mglist .. v .. ","
 	end
 	mglist = mglist:sub(1, -2)
-	
+
 	local gameid = core.setting_get("menu_last_game")
-	
+
 	local game, gameidx = nil , 0
 	if gameid ~= nil then
 		game, gameidx = gamemgr.find_by_gameid(gameid)
-		
+
 		if gameidx == nil then
 			gameidx = 0
 		end
@@ -112,7 +112,7 @@ local function create_world_buttonhandler(this, fields)
 	if fields["games"] then
 		return true
 	end
-	
+
 	if fields["world_create_cancel"] then
 		this:delete()
 		return true
@@ -126,8 +126,9 @@ function create_create_world_dlg(update_worldlistfilter)
 	local retval = dialog_create("sp_create_world",
 					create_world_formspec,
 					create_world_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.update_worldlist_filter = update_worldlistfilter
-	
+
 	return retval
 end

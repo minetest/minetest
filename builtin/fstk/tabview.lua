@@ -27,7 +27,7 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
-local function add_tab(self,tab)
+local function add_tab(self, tab, data)
 	assert(tab.size == nil or (type(tab.size) == table and
 			tab.size.x ~= nil and tab.size.y ~= nil))
 	assert(tab.cbf_formspec ~= nil and type(tab.cbf_formspec) == "function")
@@ -46,6 +46,10 @@ local function add_tab(self,tab)
 		tabdata = {},
 	}
 
+	if data then
+		newtab.tabdata = data
+	end
+
 	table.insert(self.tablist,newtab)
 
 	if self.last_tab_index == #self.tablist then
@@ -61,7 +65,7 @@ local function get_formspec(self)
 	local formspec = ""
 
 	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
-	
+
 		if self.parent == nil then
 			local tsize = self.tablist[self.last_tab_index].tabsize or
 					{width=self.width, height=self.height}
@@ -87,11 +91,11 @@ local function handle_buttons(self,fields)
 	if self.hidden then
 		return false
 	end
-	
+
 	if self:handle_tab_buttons(fields) then
 		return true
 	end
-	
+
 	if self.glb_btn_handler ~= nil and
 		self.glb_btn_handler(self,fields) then
 		return true
@@ -112,16 +116,16 @@ end
 
 --------------------------------------------------------------------------------
 local function handle_events(self,event)
-	
+
 	if self.hidden then
 		return false
 	end
-	
+
 	if self.glb_evt_handler ~= nil and
 		self.glb_evt_handler(self,event) then
 		return true
 	end
-	
+
 	if self.tablist[self.last_tab_index].evt_handler ~= nil then
 		return
 			self.tablist[self.last_tab_index].evt_handler(
@@ -131,7 +135,7 @@ local function handle_events(self,event)
 					self.tablist[self.last_tab_index].tabdata
 					)
 	end
-	
+
 	return false
 end
 
@@ -160,16 +164,16 @@ local function switch_to_tab(self, index)
 		self.tablist[self.last_tab_index].on_change("LEAVE",
 				self.current_tab, self.tablist[index].name)
 	end
-	
+
 	--update tabview data
 	self.last_tab_index = index
 	local old_tab = self.current_tab
 	self.current_tab = self.tablist[index].name
-	
+
 	if (self.autosave_tab) then
 		core.setting_set(self.name .. "_LAST",self.current_tab)
 	end
-	
+
 	-- call for tab to enter
 	if self.tablist[index].on_change ~= nil then
 		self.tablist[index].on_change("ENTER",
@@ -197,15 +201,20 @@ local function set_tab_by_name(self, name)
 			return true
 		end
 	end
-	
+
 	return false
 end
 
 --------------------------------------------------------------------------------
 local function hide_tabview(self)
 	self.hidden=true
-	
-	--call on_change as we're not gonna show self tab any longer
+
+	-- if we don't have a current tab don't try to call on_change
+	if not self.tablist[self.last_tab_index] then
+		return
+	end
+
+	-- call on_change as we're not gonna show self tab any longer
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("LEAVE",
 				self.current_tab, nil)
@@ -215,11 +224,18 @@ end
 --------------------------------------------------------------------------------
 local function show_tabview(self)
 	self.hidden=false
-	
+
 	-- call for tab to enter
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("ENTER",
 				nil,self.current_tab)
+	end
+end
+
+--------------------------------------------------------------------------------
+local function delete(self)
+	if self.parent_ui ~= nil then
+		self.parent_ui:delete(self)
 	end
 end
 
@@ -230,7 +246,7 @@ local tabview_metatable = {
 	get_formspec              = get_formspec,
 	show                      = show_tabview,
 	hide                      = hide_tabview,
-	delete                    = function(self) ui.delete(self) end,
+	delete                    = delete,
 	set_parent                = function(self,parent) self.parent = parent end,
 	set_autosave_tab          =
 			function(self,value) self.autosave_tab = value end,
@@ -248,7 +264,7 @@ local tabview_metatable = {
 tabview_metatable.__index = tabview_metatable
 
 --------------------------------------------------------------------------------
-function tabview_create(name, size, tabheaderpos)
+function tabview_create(name, size, tabheaderpos, parent_ui)
 	local self = {}
 
 	self.name     = name
@@ -265,9 +281,13 @@ function tabview_create(name, size, tabheaderpos)
 	self.current_tab    = nil
 	self.last_tab_index = 1
 	self.tablist        = {}
-	
+	self.parent_ui      = parent_ui
+
 	self.autosave_tab   = false
 
-	ui.add(self)
+	if parent_ui ~= nil then
+		parent_ui:add(self)
+	end
+
 	return self
 end
