@@ -262,6 +262,12 @@ void* AsyncWorkerThread::Thread()
 		abort();
 	}
 
+	lua_getglobal(L, "core");
+	if (lua_isnil(L, -1)) {
+		errorstream << "Unable to find core within async environment!";
+		abort();
+	}
+
 	// Main loop
 	while (!StopRequested()) {
 		// Wait for job
@@ -269,12 +275,6 @@ void* AsyncWorkerThread::Thread()
 
 		if (toProcess.valid == false || StopRequested()) {
 			continue;
-		}
-
-		lua_getglobal(L, "core");
-		if (lua_isnil(L, -1)) {
-			errorstream << "Unable to find core within async environment!";
-			abort();
 		}
 
 		lua_getfield(L, -1, "job_processor");
@@ -303,13 +303,16 @@ void* AsyncWorkerThread::Thread()
 			toProcess.serializedResult = std::string(retval, length);
 		}
 
-		// Pop core, job_processor, and retval
-		lua_pop(L, 3);
+		lua_pop(L, 1);  // Pop retval
 
 		// Put job result
 		jobDispatcher->putJobResult(toProcess);
 	}
+
+	lua_pop(L, 1);  // Pop core
+
 	log_deregister_thread();
+
 	return 0;
 }
 
