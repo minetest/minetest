@@ -62,9 +62,6 @@ end
 --------------------------------------------------------------------------------
 local function update(self)
 	local formspec = ""
-
-	print("Update called for: " ..self.playername .. " " .. self.formname)
-
 	local active_toplevel_ui_elements = 0
 
 	for key,value in pairs(self.childlist) do
