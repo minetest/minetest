@@ -134,7 +134,6 @@ function ui.handle_events(event)
 			local retval = value:handle_events(event)
 
 			if retval then
-				print("event handled by: " .. key)
 				return retval
 			end
 		end
