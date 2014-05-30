@@ -20,26 +20,26 @@ ui.childlist = {}
 ui.default = nil
 
 --------------------------------------------------------------------------------
-function ui.add(child)
+function ui.add(self, child)
 	--TODO check child
-	ui.childlist[child.name] = child
-	
+	self.childlist[child.name] = child
+
 	return child.name
 end
 
 --------------------------------------------------------------------------------
-function ui.delete(child)
+function ui.delete(self, child)
 
-	if ui.childlist[child.name] == nil then
+	if self.childlist[child.name] == nil then
 		return false
 	end
-	
-	ui.childlist[child.name] = nil
+
+	self.childlist[child.name] = nil
 	return true
 end
 
 --------------------------------------------------------------------------------
-function ui.set_default(name)
+function ui.set_default( name)
 	ui.default = name
 end
 

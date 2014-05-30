@@ -44,26 +44,34 @@ local dialog_metatable = {
 			if self.parent ~= nil then
 				self.parent:show()
 			end
-			ui.delete(self)
+
+			if self.parent_ui ~= nil then
+				self.parent_ui:delete(self)
+			end
 		end,
 	set_parent = function(self,parent) self.parent = parent end
 }
 dialog_metatable.__index = dialog_metatable
 
-function dialog_create(name,get_formspec,buttonhandler,eventhandler)
+function dialog_create(name, get_formspec, buttonhandler, eventhandler,
+		parent_ui)
 	local self = {}
 
-	self.name = name
-	self.type = "toplevel"
-	self.hidden = true
-	self.data = {}
+	self.name      = name
+	self.type      = "toplevel"
+	self.hidden    = true
+	self.data      = {}
+	self.parent_ui = parent_ui
 
-	self.formspec      = get_formspec
-	self.buttonhandler = buttonhandler
+	self.formspec           = get_formspec
+	self.buttonhandler      = buttonhandler
 	self.user_eventhandler  = eventhandler
 	
 	setmetatable(self,dialog_metatable)
 
-	ui.add(self)
+	if self.parent_ui ~= nil then
+		self.parent_ui:add(self)
+	end
+
 	return self
 end

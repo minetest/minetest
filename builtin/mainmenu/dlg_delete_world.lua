@@ -56,7 +56,8 @@ function create_delete_world_dlg(name_to_del,index_to_del)
 	local retval = dialog_create("delete_world",
 					delete_world_formspec,
 					delete_world_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.data.delete_name  = name_to_del
 	retval.data.delete_index = index_to_del
 	

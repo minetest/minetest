@@ -1,20 +1,20 @@
-Formspec toolkit api 0.0.3
+Formspec toolkit api 0.0.5
 ==========================
 
 Formspec toolkit is a set of functions to create basic ui elements.
 
 
-File: fst/ui.lua
-----------------
+File: fstk/ui.lua (Mainmenu only!)
+----------------------------------
 
-ui.lua adds base ui interface to add additional components to.
+ui.lua adds base ui interface to add additional components to main menu
 
 ui.add(component) -> returns name of added component
-^ add component to ui
+^ add component to ui ( if not added on creation )
 ^ component: component to add
 
 ui.delete(component) -> true/false if a component was deleted or not
-^ remove a component from ui
+^ remove a component from ui ( if not added on creation )
 ^ component: component to delete
 
 ui.set_default(name)
@@ -25,10 +25,43 @@ ui.find_by_name(name) --> returns component or nil
 ^ find a component within ui
 ^ name: name of component to look for
 
-File: fst/tabview.lua
+File: fstk/ui_mod.lua (Mod API)
+-------------------------------
+
+ui_mod.lua provides basic interface to fstk from within mods.
+
+create_ui(playername, unique_id) -> returns ui object to be used for
+^ playername: player to add a ui for
+^ unique_id: mod specified uniquie id
+
+get_ui_by_unique_id(playername, unique_id) -> returns existing ui element
+^ playername: player to get ui from
+^ unique_id: id of ui to lookup
+
+methods:
+ -add(component)
+  ^ add a component to this ui ( if not added on creation )
+  ^ component: component to add
+
+ -delete(component)
+  ^ remove a component from this ui ( if not added on creation )
+  ^ component: component to remove
+
+ -set_default(name)
+  ^ set component to show if not a single component is set visible
+  ^ name: name of component to set as default
+
+ -find_by_name(name) --> returns component or nil
+  ^ find a component within ui
+  ^ name: name of component to look for
+
+ -hide() -> nil
+  ^ hide all components
+
+File: fstk/tabview.lua
 ---------------------
 
-tabview_create(name, size, tabheaderpos) --> returns tabview component
+tabview_create(name, size, tabheaderpos, parent_ui) --> returns tabview component
 ^ create a new tabview component
 ^ name: name of tabview (has to be unique per ui)
 ^ size: size of tabview
@@ -41,11 +74,12 @@ tabview_create(name, size, tabheaderpos) --> returns tabview component
 		x,
 		y
 	}
+^ parent_ui: ui to add a tabview to, (OPTIONAL)
 
 Class reference tabview:
 
 methods:
-- add_tab(tab)
+- add_tab(tab, data)
   ^ add a tab to this tabview
   ^ tab:
   {
@@ -61,6 +95,7 @@ methods:
 		},                                                            -- special size for this tab (only relevant if no parent for tabview set)
 	on_change          = function(type,old_tab,new_tab)               -- called on tab chang, type is "ENTER" or "LEAVE"
   }
+  ^ data (OPTIONAL): data to use as initial tabdata
 - set_autosave_tab(value)
   ^ tell tabview to automaticaly save current tabname as "tabview_name"_LAST
   ^ value: true/false
@@ -85,8 +120,11 @@ methods:
   ^ delete tabview
 - set_fixed_size(state)
   ^ true/false set to fixed size, variable size
+- get_tabdata(name)
+  ^ get private data from a tab
+  ^ name: name of tab to get data from
 
-File: fst/dialog.lua
+File: fstk/dialog.lua
 ---------------------
 Only one dialog can be shown at a time. If a dialog is closed it's parent is
 gonna be activated and shown again.
@@ -113,17 +151,17 @@ methods:
   ^ hide dialog
 - delete()
   ^ delete dialog from ui
-  
+
 members:
 - data
   ^ variable data attached to this dialog
 - parent
   ^ parent component to return to on exit
-  
-File: fst/buttonbar.lua
+
+File: fstk/buttonbar.lua
 -----------------------
 
-buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
+buttonbar_create(name, cbf_buttonhandler, pos, orientation, size, parent_ui)
 ^ create a buttonbar
 ^ name: name of component (unique per ui)
 ^ cbf_buttonhandler: function to be called on button pressed
@@ -139,6 +177,7 @@ buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
 		width,
 		height
 	}
+^ parent_ui: ui to add a tabview to, (OPTIONAL)
 
 Class reference buttonbar:
 

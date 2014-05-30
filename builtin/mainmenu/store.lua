@@ -78,7 +78,7 @@ function modstore.init(size, unsortedmods, searchmods)
 
 	modstore.current_list = nil
 
-	modstore.tv_store = tabview_create("modstore",size,{x=0,y=0})
+	modstore.tv_store = tabview_create("modstore",size,{x=0,y=0}, ui)
 
 	modstore.tv_store:set_global_event_handler(modstore.handle_events)
 
@@ -142,7 +142,8 @@ function modstore.showdownloading(title)
 			return false
 		end,
 		nil,
-		modstore.tv_store)
+		modstore.tv_store,
+		ui)
 
 	new_dlg.data.title = title
 	new_dlg:show()
@@ -178,7 +179,8 @@ function modstore.successfulldialog()
 			return false
 		end,
 		nil,
-		modstore.tv_store)
+		modstore.tv_store,
+		ui)
 
 	new_dlg.data.title = title
 	new_dlg:show()
