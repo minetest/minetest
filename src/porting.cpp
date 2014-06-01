@@ -33,11 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <sys/sysctl.h>
 #elif defined(_WIN32)
 	#include <algorithm>
-#elif defined(__LINUX)
-	#include <sys/types.h>
 #endif
 #if !defined(_WIN32)
-	#include <sys/stat.h>
 	#include <unistd.h>
 	#include <sys/utsname.h>
 #endif
@@ -140,8 +137,7 @@ void signal_handler_init(void)
 /*
 	Multithreading support
 */
-int getNumberOfProcessors()
-{
+int getNumberOfProcessors() {
 #if defined(_SC_NPROCESSORS_ONLN)
 
 	return sysconf(_SC_NPROCESSORS_ONLN);
@@ -174,8 +170,7 @@ int getNumberOfProcessors()
 }
 
 
-bool threadBindToProcessor(threadid_t tid, int pnumber)
-{
+bool threadBindToProcessor(threadid_t tid, int pnumber) {
 #if defined(_WIN32)
 
 	HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, 0, tid);
@@ -229,8 +224,7 @@ bool threadBindToProcessor(threadid_t tid, int pnumber)
 }
 
 
-bool threadSetPriority(threadid_t tid, int prio)
-{
+bool threadSetPriority(threadid_t tid, int prio) {
 #if defined(_WIN32)
 
 	HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, 0, tid);
@@ -539,20 +533,17 @@ void initializePaths()
 
 static irr::IrrlichtDevice* device;
 
-void initIrrlicht(irr::IrrlichtDevice * _device)
-{
+void initIrrlicht(irr::IrrlichtDevice * _device) {
 	device = _device;
 }
 
 #ifndef SERVER
-v2u32 getWindowSize()
-{
+v2u32 getWindowSize() {
 	return device->getVideoDriver()->getScreenSize();
 }
 
 
-float getDisplayDensity()
-{
+float getDisplayDensity() {
 	float gui_scaling = g_settings->getFloat("gui_scaling");
 	// using Y here feels like a bug, this needs to be discussed later!
 	if (getWindowSize().Y <= 800) {
@@ -565,8 +556,7 @@ float getDisplayDensity()
 	return (4.0/3.0) * gui_scaling;
 }
 
-v2u32 getDisplaySize()
-{
+v2u32 getDisplaySize() {
 	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
 
 	core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
@@ -574,94 +564,6 @@ v2u32 getDisplaySize()
 
 	return deskres;
 }
-#endif
-
-#ifdef SERVER
-#ifdef _WIN32
-void daemonize()
-{
-	errorstream << "daemonize not implemented on windows" << std::endl;
-}
-#else // assume posix like os
-
-static std::string get_pidfile_path()
-{
-	// make it static to make sure it won't change after first call to this fct
-	static std::string path_pidfile = "";
-	static bool initialized = false;
-
-	if (initialized)
-	{
-		return path_pidfile;
-	}
-
-	g_settings->getNoEx("pidfile", path_pidfile);
-
-	if (path_pidfile == "") {
-#ifdef RUN_IN_PLACE
-		path_pidfile = "pidfile.pid";
-#else
-		path_pidfile = "/var/run/minetest.pid";
-#endif
-	}
-	initialized = true;
-	return path_pidfile;
-}
-
-
-void daemonize()
-{
-	std::string path_pidfile = get_pidfile_path();
-
-	FILE* pidfile = fopen(path_pidfile.c_str(),"r");
-
-	if (pidfile) {
-		int pid = 0;
-		if (fscanf(pidfile, "%i", &pid) == 1) {
-			if (kill(pid, 0) == 0) {
-				errorstream <<
-						"Minetestserver is already running with pid: "
-						<< pid << std::endl;
-				exit(-1);
-			}
-		} else {
-			errorstream << "Pidfile \"" << path_pidfile << "\" "
-					"already exists but content is invalid" << std::endl <<
-					"Delete it manually if you're sure minetest isn't running!"
-					<< std::endl;
-			exit(-1);
-		}
-		fclose(pidfile);
-		pidfile = 0;
-	}
-
-	pid_t pid = fork();
-
-	if (pid > 0) {
-		pidfile = fopen(path_pidfile.c_str(),"w+");
-		if (pidfile) {
-			fprintf(pidfile,"%i",pid);
-			fclose(pidfile);
-		} else {
-			errorstream << "Failed to create pidfile: \"" << path_pidfile
-					<< "\""<< std::endl;
-		}
-		exit (0);
-	} else if (pid == 0) {
-		fclose(stdout);
-		fclose(stderr);
-		return;
-	}
-
-	errorstream << "Failed to daemonize minetest, exiting" << std::endl;
-	exit(-1);
-}
-
-void cleanup_pid()
-{
-	unlink(get_pidfile_path().c_str());
-}
-#endif
 #endif
 
 } //namespace porting

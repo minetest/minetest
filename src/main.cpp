@@ -811,9 +811,6 @@ int main(int argc, char *argv[])
 			_("Set password"))));
 	allowed_options.insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
 			_("Disable main menu"))));
-#else
-	allowed_options.insert(std::make_pair("daemon", ValueSpec(VALUETYPE_FLAG,
-			_("Daemonize minetestserver"))));
 #endif
 
 	Settings cmd_args;
@@ -920,12 +917,6 @@ int main(int argc, char *argv[])
 			" "<<_("with")<<" SER_FMT_VER_HIGHEST_READ="<<(int)SER_FMT_VER_HIGHEST_READ
 			<<", "<<minetest_build_info
 			<<std::endl;
-
-#ifdef SERVER
-	if (cmd_args.exists("daemon")) {
-		porting::daemonize();
-	}
-#endif
 
 	/*
 		Basic initialization
@@ -1478,7 +1469,7 @@ int main(int argc, char *argv[])
 		ELL_ERROR,
 		ELL_WARNING,
 		ELL_INFORMATION,
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)	
 		ELL_INFORMATION
 #else
 		ELL_DEBUG
@@ -1928,14 +1919,6 @@ int main(int argc, char *argv[])
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
 	debugstreams_deinit();
-
-
-#ifdef SERVER
-	if (cmd_args.exists("daemon"))
-	{
-		porting::cleanup_pid();
-	}
-#endif
 
 	return retval;
 }
