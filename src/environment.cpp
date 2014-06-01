@@ -443,46 +443,35 @@ void ServerEnvironment::savePlayer(const std::string &playername)
 
 Player *ServerEnvironment::loadPlayer(const std::string &playername)
 {
-	std::string players_path = m_path_world + DIR_DELIM "players";
+	std::string players_path = m_path_world + DIR_DELIM "players" DIR_DELIM;
 
 	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
 	bool newplayer = false;
-	bool foundplayer = false;
+	bool found = false;
 	if (!player) {
 		player = new RemotePlayer(m_gamedef);
 		newplayer = true;
 	}
 
-	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
-	for (u32 i = 0; i < player_files.size(); i++) {
-		if (player_files[i].dir)
-			continue;
-		
-		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
-
-		// Load player to see what is its name
+	RemotePlayer testplayer(m_gamedef);
+	std::string path = players_path + playername;
+	for (u32 i = 0; i < 1000; i++) {
+		// Open file and deserialize
 		std::ifstream is(path.c_str(), std::ios_base::binary);
 		if (!is.good()) {
-			infostream << "Failed to read " << path << std::endl;
-			continue;
+			return NULL;
 		}
-		player->deSerialize(is, player_files[i].name);
-
-		if (!string_allowed(player->getName(), PLAYERNAME_ALLOWED_CHARS)) {
-			infostream << "Not loading player with invalid name: "
-					<< player->getName() << std::endl;
-			continue;
-		}
-
-		if (player->getName() == playername) {
-			// We found our player
-			foundplayer = true;
+		testplayer.deSerialize(is, path);
+		if (testplayer.getName() == playername) {
+			*player = testplayer;
+			found = true;
 			break;
 		}
-
+		path = players_path + playername + itos(i);
 	}
-	if (!foundplayer) {
+	if (!found) {
+		infostream << "Player file for player " << playername
+				<< " not found" << std::endl;
 		return NULL;
 	}
 	if (newplayer) {

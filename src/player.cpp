@@ -284,11 +284,10 @@ void Player::clearHud()
 }
 
 
-void RemotePlayer::save(const std::string &savedir)
+void RemotePlayer::save(std::string savedir)
 {
-	bool newplayer = true;
-
-	/* We have to iterate through all files in the players directory
+	/*
+	 * We have to open all possible player files in the players directory
 	 * and check their player names because some file systems are not
 	 * case-sensitive and player names are case-sensitive.
 	 */
@@ -296,23 +295,25 @@ void RemotePlayer::save(const std::string &savedir)
 	// A player to deserialize files into to check their names
 	RemotePlayer testplayer(m_gamedef);
 
-	std::vector<fs::DirListNode> player_files = fs::GetDirListing(savedir);
-	for(u32 i = 0; i < player_files.size(); i++) {
-		if (player_files[i].dir || player_files[i].name[0] == '.') {
-			continue;
+	savedir += DIR_DELIM;
+	std::string path = savedir + m_name;
+	for (u32 i = 0; i < 1000; i++) {
+		if (!fs::PathExists(path)) {
+			// Open file and serialize
+			std::ostringstream ss(std::ios_base::binary);
+			serialize(ss);
+			if (!fs::safeWriteToFile(path, ss.str())) {
+				infostream << "Failed to write " << path << std::endl;
+			}
+			return;
 		}
-
-		// Full path to this file
-		std::string path = savedir + "/" + player_files[i].name;
-
 		// Open file and deserialize
 		std::ifstream is(path.c_str(), std::ios_base::binary);
 		if (!is.good()) {
-			infostream << "Failed to read " << path << std::endl;
-			continue;
+			infostream << "Failed to open " << path << std::endl;
+			return;
 		}
-		testplayer.deSerialize(is, player_files[i].name);
-
+		testplayer.deSerialize(is, path);
 		if (strcmp(testplayer.getName(), m_name) == 0) {
 			// Open file and serialize
 			std::ostringstream ss(std::ios_base::binary);
@@ -320,33 +321,13 @@ void RemotePlayer::save(const std::string &savedir)
 			if (!fs::safeWriteToFile(path, ss.str())) {
 				infostream << "Failed to write " << path << std::endl;
 			}
-			newplayer = false;
-			break;
-		}
-	}
-
-	if (newplayer) {
-		bool found = false;
-		std::string path = savedir + "/" + m_name;
-		for (u32 i = 0; i < 1000; i++) {
-			if (!fs::PathExists(path)) {
-				found = true;
-				break;
-			}
-			path = savedir + "/" + m_name + itos(i);
-		}
-		if (!found) {
-			infostream << "Didn't find free file for player " << m_name << std::endl;
 			return;
 		}
-
-		// Open file and serialize
-		std::ostringstream ss(std::ios_base::binary);
-		serialize(ss);
-		if (!fs::safeWriteToFile(path, ss.str())) {
-			infostream << "Failed to write " << path << std::endl;
-		}
+		path = savedir + m_name + itos(i);
 	}
+
+	infostream << "Didn't find free file for player " << m_name << std::endl;
+	return;
 }
 
 /*
