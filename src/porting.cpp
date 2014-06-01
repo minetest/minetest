@@ -635,7 +635,6 @@ void daemonize()
 		pidfile = 0;
 	}
 
-	
 	pid_t pid = fork();
 
 	if (pid > 0) {
@@ -649,9 +648,8 @@ void daemonize()
 		}
 		exit (0);
 	} else if (pid == 0) {
-		freopen("/dev/null","w",stdout);
-		freopen("/dev/null","w",stderr);
-		freopen("/dev/null","r",stdout);
+		fclose(stdout);
+		fclose(stderr);
 		return;
 	}
 
