@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2014-05-14 16:37+0100\n"
+"PO-Revision-Date: 2014-06-01 19:05+0100\n"
 "Last-Translator: Enki <sohayl@users.sourceforge.net>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -21,30 +21,36 @@ msgstr ""
 msgid "Game Name"
 msgstr "Nome del gioco"
 
-#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
+#: builtin/gamemgr.lua:25
+#: builtin/mainmenu.lua:310
 msgid "Create"
 msgstr "Creare"
 
-#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
-#: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
+#: builtin/gamemgr.lua:26
+#: builtin/mainmenu.lua:311
+#: builtin/modmgr.lua:331
+#: builtin/modmgr.lua:448
+#: src/guiKeyChangeMenu.cpp:195
+#: src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Annullare"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Gestore del gioco: impossibile copiare la mod \"$1\" nel gioco \"$2\""
+msgstr "Gestore del gioco: impossibile il modulo \"$1\" nel gioco \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
 msgstr "GIOCHI"
 
-#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
+#: builtin/gamemgr.lua:217
+#: builtin/mainmenu.lua:1076
 msgid "Games"
 msgstr "Giochi"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr "Mod:"
+msgstr "Moduli:"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
@@ -60,11 +66,11 @@ msgstr "MODIFICARE IL GIOCO"
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
-msgstr "Rimuovere la mod selezionata"
+msgstr "Rimuovere il modulo selezionato"
 
 #: builtin/gamemgr.lua:272
 msgid "<<-- Add mod"
-msgstr "<<-- Aggiungere la mod"
+msgstr "<<-- Aggiungere il modulo"
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
@@ -80,7 +86,7 @@ msgstr "Seme casuale"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
-msgstr "Gener. mappe"
+msgstr "Generat. mappe"
 
 #: builtin/mainmenu.lua:306
 msgid "Game"
@@ -90,7 +96,8 @@ msgstr "Gioco"
 msgid "Delete World \"$1\"?"
 msgstr "Cancellare il mondo \"$1\"?"
 
-#: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
+#: builtin/mainmenu.lua:320
+#: builtin/modmgr.lua:877
 msgid "Yes"
 msgstr "Sì"
 
@@ -104,9 +111,7 @@ msgstr "Esiste già un mondo chiamato \"$1\""
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr ""
-"Non è stato fornito nessun nome del mondo oppure non è stato selezionato "
-"nessun gioco"
+msgstr "Non è stato fornito nessun nome del mondo oppure non è stato selezionato nessun gioco"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -132,7 +137,9 @@ msgstr "Nome/Password"
 msgid "Public Serverlist"
 msgstr "Elenco dei server pubblici"
 
-#: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
+#: builtin/mainmenu.lua:829
+#: builtin/mainmenu.lua:874
+#: builtin/mainmenu.lua:937
 #: src/keycode.cpp:229
 msgid "Delete"
 msgstr "Cancellare"
@@ -141,11 +148,13 @@ msgstr "Cancellare"
 msgid "Connect"
 msgstr "Connettere"
 
-#: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
+#: builtin/mainmenu.lua:875
+#: builtin/mainmenu.lua:938
 msgid "New"
 msgstr "Nuovo"
 
-#: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
+#: builtin/mainmenu.lua:876
+#: builtin/mainmenu.lua:939
 msgid "Configure"
 msgstr "Configurare"
 
@@ -153,7 +162,8 @@ msgstr "Configurare"
 msgid "Start Game"
 msgstr "Avviare il gioco"
 
-#: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
+#: builtin/mainmenu.lua:878
+#: builtin/mainmenu.lua:941
 msgid "Select World:"
 msgstr "Selezionare il mondo:"
 
@@ -161,11 +171,13 @@ msgstr "Selezionare il mondo:"
 msgid "START SERVER"
 msgstr "AVVIO SERVER"
 
-#: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
+#: builtin/mainmenu.lua:880
+#: builtin/mainmenu.lua:943
 msgid "Creative Mode"
 msgstr "Modalità creativa"
 
-#: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
+#: builtin/mainmenu.lua:882
+#: builtin/mainmenu.lua:945
 msgid "Enable Damage"
 msgstr "Abilitare il danno"
 
@@ -241,13 +253,14 @@ msgstr "Liquido limitato"
 msgid "Change keys"
 msgstr "Cambiare i tasti"
 
-#: builtin/mainmenu.lua:940 src/keycode.cpp:248
+#: builtin/mainmenu.lua:940
+#: src/keycode.cpp:248
 msgid "Play"
 msgstr "Giocare"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
-msgstr "GIOCATORE SIN."
+msgstr "GIOC. SING."
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
@@ -255,7 +268,7 @@ msgstr "Selezionare un pacchetto di immagini:"
 
 #: builtin/mainmenu.lua:956
 msgid "TEXTURE PACKS"
-msgstr "PACCH. IMMAGINI"
+msgstr "PACCH. DI IMM."
 
 #: builtin/mainmenu.lua:976
 msgid "No information available"
@@ -295,7 +308,7 @@ msgstr "Pacch. immagini"
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
-msgstr "Mod"
+msgstr "Moduli"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
@@ -303,15 +316,15 @@ msgstr "Riconoscimenti"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr "MOD"
+msgstr "MODULI"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr "Mod installate:"
+msgstr "Moduli installati:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr "Aggiungere una mod:"
+msgstr "Aggiungere un modulo:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
@@ -323,11 +336,11 @@ msgstr "Archivio in linea"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
-msgstr "Nessuna descrizione disponibile per la mod"
+msgstr "Nessuna descrizione disponibile per il modulo"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr "Informazioni sulla mod:"
+msgstr "Informazioni sul modulo:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -335,17 +348,18 @@ msgstr "Rinominare"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr "Disinstallare il pacchetto mod selezionato"
+msgstr "Disinstallare il pacchetto moduli selezionato"
 
 #: builtin/modmgr.lua:312
 msgid "Uninstall selected mod"
-msgstr "Disinstallare la mod selezionata"
+msgstr "Disinstallare il modulo selezionato"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr "Rinominare il pacchetto mod:"
+msgstr "Rinominare il pacchetto moduli:"
 
-#: builtin/modmgr.lua:329 src/keycode.cpp:227
+#: builtin/modmgr.lua:329
+#: src/keycode.cpp:227
 msgid "Accept"
 msgstr "Accettare"
 
@@ -353,49 +367,53 @@ msgstr "Accettare"
 msgid "World:"
 msgstr "Mondo:"
 
-#: builtin/modmgr.lua:427 builtin/modmgr.lua:429
+#: builtin/modmgr.lua:427
+#: builtin/modmgr.lua:429
 msgid "Hide Game"
 msgstr "Nasc. gioco"
 
-#: builtin/modmgr.lua:433 builtin/modmgr.lua:435
+#: builtin/modmgr.lua:433
+#: builtin/modmgr.lua:435
 msgid "Hide mp content"
 msgstr "Nasc. cont. pacchetti"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
-msgstr "Mod:"
+msgstr "Mod.:"
 
 #: builtin/modmgr.lua:444
 msgid "Depends:"
 msgstr "Dipendenze:"
 
-#: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
+#: builtin/modmgr.lua:447
+#: src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr "Salvare"
 
 #: builtin/modmgr.lua:464
 msgid "Enable MP"
-msgstr "Attivare il contenuto dei pacchetti delle mod"
+msgstr "Att. pacch."
 
 #: builtin/modmgr.lua:466
 msgid "Disable MP"
-msgstr "Disattivare il contenuto dei pacchetti delle mod"
+msgstr "Disatt. pacch."
 
-#: builtin/modmgr.lua:470 builtin/modmgr.lua:472
+#: builtin/modmgr.lua:470
+#: builtin/modmgr.lua:472
 msgid "enabled"
 msgstr "attivata"
 
 #: builtin/modmgr.lua:478
 msgid "Enable all"
-msgstr "Attivarle tutte"
+msgstr "Attivarli tutti"
 
 #: builtin/modmgr.lua:577
 msgid "Select Mod File:"
-msgstr "Selezionare il file mod:"
+msgstr "Selezionare il file modulo:"
 
 #: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
-msgstr "Installare una mod: file: \"$1\""
+msgstr "Installare un modulo: file: \"$1\""
 
 #: builtin/modmgr.lua:617
 msgid ""
@@ -403,7 +421,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
 "\n"
-"Installare una mod: tipo di file non supportato \"$1\""
+"Installare un modulo: tipo di file non supportato \"$1\""
 
 #: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
@@ -411,21 +429,19 @@ msgstr "L'installazione di $1 in $2 è fallita"
 
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
-"Installare una mod: impossibile trovare un nome di cartella appropriato per "
-"il pacchetto mod $1"
+msgstr "Installare un modulo: impossibile trovare un nome di cartella appropriato per il pacchetto moduli $1"
 
 #: builtin/modmgr.lua:661
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Installare una mod: impossibile trovare il vero nome della mod per: $1"
+msgstr "Installare un modulo: impossibile trovare il vero nome del modulo per: $1"
 
 #: builtin/modmgr.lua:855
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Gestore delle mod: la cancellazione di \"$1\" è fallita"
+msgstr "Gestore dei moduli: la cancellazione di \"$1\" è fallita"
 
 #: builtin/modmgr.lua:859
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Gestore delle mod: percorso della mod \"$1\" non valido"
+msgstr "Gestore dei moduli: percorso del modulo \"$1\" non valido"
 
 #: builtin/modmgr.lua:876
 msgid "Are you sure you want to delete \"$1\"?"
@@ -507,16 +523,15 @@ msgstr "Siete morti."
 msgid "Respawn"
 msgstr "Riapparire"
 
-#: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
+#: src/guiFormSpecMenu.cpp:1656
+#: src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
 msgid "Proceed"
 msgstr "Procedere"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
-"Collegamenti dei tasti. (Se questo menù si incasina, rimuovete la roba da "
-"minetest.conf)"
+msgstr "Collegamenti dei tasti. (Se questo menù si incasina, rimuovete la roba da minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
@@ -542,11 +557,13 @@ msgstr "Avanti"
 msgid "Backward"
 msgstr "Indietro"
 
-#: src/guiKeyChangeMenu.cpp:391 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:391
+#: src/keycode.cpp:228
 msgid "Left"
 msgstr "Sinistra"
 
-#: src/guiKeyChangeMenu.cpp:392 src/keycode.cpp:228
+#: src/guiKeyChangeMenu.cpp:392
+#: src/keycode.cpp:228
 msgid "Right"
 msgstr "Destra"
 
@@ -974,9 +991,7 @@ msgstr "Menù principale"
 
 #: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
-"Non è stato selezionato nessun mondo e non è stato fornito nessun indirizzo. "
-"Niente da fare."
+msgstr "Non è stato selezionato nessun mondo e non è stato fornito nessun indirizzo. Niente da fare."
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
