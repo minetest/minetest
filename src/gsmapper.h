@@ -35,8 +35,8 @@ class gsMapper
 	private:
 		IrrlichtDevice* d_device;
 		Client* d_client;
-		video::ITexture* d_texture;
 		video::ITexture* d_pmarker;
+		video::ITexture* d_txqueue[16];
 		ITextureSource *d_tsrc;
 		LocalPlayer* d_player;
 		std::map<v3s16, u8> d_map;
@@ -56,10 +56,11 @@ class gsMapper
 		s16 d_scanX;
 		s16 d_scanZ;
 		u16 d_cooldown;
+		u16 d_cooldown2;
+		u16 d_texindex;
 		bool d_above;
 		bool d_tracking;
 		bool d_valid;
-		bool d_hastex;
 		bool d_hasptex;
 
 	public:

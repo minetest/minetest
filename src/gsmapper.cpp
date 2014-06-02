@@ -70,11 +70,16 @@ gsMapper::gsMapper(IrrlichtDevice *device, Client *client):
 	d_nodeids["default:junglewood"] = 15;
 
 	d_valid = false;
-	d_hastex = false;
 	d_hasptex = false;
 	d_cooldown = 0;
+	d_cooldown2 = 0;
 	d_map.clear();
 	d_radar.clear();
+	for (int i = 0; i < 16; i++)
+	{
+		d_txqueue[i] = 0;
+	}
+	d_texindex = 0;
 
 	d_tsrc = d_client->getTextureSource();
 	d_player = d_client->getEnv().getLocalPlayer();
@@ -83,10 +88,13 @@ gsMapper::gsMapper(IrrlichtDevice *device, Client *client):
 gsMapper::~gsMapper()
 {
 	video::IVideoDriver* driver = d_device->getVideoDriver();
-	if (d_hastex)
+	for (int i = 0; i < 16; i++)
 	{
-		driver->removeTexture(d_texture);
-		d_hastex = false;
+		if (d_txqueue[i] != 0)
+		{
+			driver->removeTexture(d_txqueue[i]);
+			d_txqueue[i] = 0;
+		}
 	}
 	if (d_hasptex)
 	{
@@ -170,8 +178,8 @@ void gsMapper::setMapType(bool bAbove, u16 iScan, s16 iSurface, bool bTracking, 
 	d_tracking = bTracking;
 	d_border = iBorder;
 
-	if (d_cooldown++ < 200) return;
-	d_cooldown = 200;
+	if (d_cooldown++ < 50) return;
+	d_cooldown = 50;
 }
 
 /*
@@ -186,8 +194,8 @@ void gsMapper::setMapType(bool bAbove, u16 iScan, s16 iSurface, bool bTracking, 
 void gsMapper::drawMap(v3s16 position)
 {
 	// I have no idea why this might be necessary, but... whatever
-	if (d_cooldown < 200) return;
-	d_cooldown = 200;
+	if (d_cooldown < 50) return;
+	d_cooldown = 50;
 
 	// width and height in nodes (these don't really need to be exact)
 	s16 nwidth = floor(d_width / d_scale);
@@ -334,7 +342,7 @@ void gsMapper::drawMap(v3s16 position)
 
 	video::IVideoDriver* driver = d_device->getVideoDriver();
 
-	if (hasChanged || !d_hastex)
+	if (hasChanged || d_txqueue[d_texindex] == 0)
 	{
 		// set up the image
 		core::dimension2d<u32> dim(nwidth, nheight);
@@ -366,21 +374,32 @@ void gsMapper::drawMap(v3s16 position)
 		}
 
 		// image -> texture
-		if (d_hastex)
+		if (d_cooldown2 == 0)
 		{
-			driver->removeTexture(d_texture);
-			d_hastex = false;
+			d_texindex++;
+			if (d_texindex >= 16) d_texindex = 0;
+
+			if (d_txqueue[d_texindex] != 0)
+			{
+				driver->removeTexture(d_txqueue[d_texindex]);
+				d_txqueue[d_texindex] = 0;
+			}
+			std::string f = "gsmapper__" + itos(d_device->getTimer()->getRealTime());
+			d_txqueue[d_texindex] = driver->addTexture(f.c_str(), image);
+			assert(d_txqueue[d_texindex]);
+//			d_hastex = true;
+			d_cooldown2 = 5;	// don't generate too many textures all at once
+		} else {
+			d_cooldown2--;
+			if (d_cooldown2 < 0) d_cooldown2 = 0;
 		}
-		std::string f = "gsmapper__" + itos(d_device->getTimer()->getRealTime());
-		d_texture = driver->addTexture(f.c_str(), image);
-		assert(d_texture);
-		d_hastex = true;
+
 		image->drop();
 	} 
 
 	// draw map texture
-	if (d_hastex) {
-		driver->draw2DImage( d_texture,
+	if (d_txqueue[d_texindex] != 0) {
+		driver->draw2DImage( d_txqueue[d_texindex],
 			core::rect<s32>(d_posx, d_posy, d_posx+d_width, d_posy+d_height),
 			core::rect<s32>(0, 0, nwidth, nheight),
 			0, 0, true );
