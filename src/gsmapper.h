@@ -55,8 +55,7 @@ class gsMapper
 		u16 d_border;
 		s16 d_scanX;
 		s16 d_scanZ;
-		u16 d_cooldown;
-		u16 d_cooldown2;
+		s16 d_cooldown2;
 		u16 d_texindex;
 		bool d_above;
 		bool d_tracking;

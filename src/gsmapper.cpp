@@ -71,7 +71,8 @@ gsMapper::gsMapper(IrrlichtDevice *device, Client *client):
 
 	d_valid = false;
 	d_hasptex = false;
-	d_cooldown = 0;
+	d_scanX = 0;
+	d_scanZ = 0;
 	d_cooldown2 = 0;
 	d_map.clear();
 	d_radar.clear();
@@ -177,9 +178,6 @@ void gsMapper::setMapType(bool bAbove, u16 iScan, s16 iSurface, bool bTracking, 
 	d_surface = iSurface;
 	d_tracking = bTracking;
 	d_border = iBorder;
-
-	if (d_cooldown++ < 50) return;
-	d_cooldown = 50;
 }
 
 /*
@@ -193,10 +191,6 @@ void gsMapper::setMapType(bool bAbove, u16 iScan, s16 iSurface, bool bTracking, 
 
 void gsMapper::drawMap(v3s16 position)
 {
-	// I have no idea why this might be necessary, but... whatever
-	if (d_cooldown < 50) return;
-	d_cooldown = 50;
-
 	// width and height in nodes (these don't really need to be exact)
 	s16 nwidth = floor(d_width / d_scale);
 	s16 nheight = floor(d_height / d_scale);
@@ -349,6 +343,7 @@ void gsMapper::drawMap(v3s16 position)
 		video::IImage *image = driver->createImage(video::ECF_A8R8G8B8, dim);
 		assert(image);
 
+		u8 psum = 0;
 		for (z = 0; z < nheight; z++)
 		{
 			for (x = 0; x < nwidth; x++)
@@ -370,11 +365,12 @@ void gsMapper::drawMap(v3s16 position)
 				video::SColor c = d_colorids[i];
 				c.setAlpha(d_alpha);
 				image->setPixel(x, nheight - z - 1, c);
+				if (i != 0) psum = 1;
 			}
 		}
 
 		// image -> texture
-		if (d_cooldown2 == 0)
+		if (psum != 0 && d_cooldown2 == 0)
 		{
 			d_texindex++;
 			if (d_texindex >= 16) d_texindex = 0;
@@ -387,7 +383,6 @@ void gsMapper::drawMap(v3s16 position)
 			std::string f = "gsmapper__" + itos(d_device->getTimer()->getRealTime());
 			d_txqueue[d_texindex] = driver->addTexture(f.c_str(), image);
 			assert(d_txqueue[d_texindex]);
-//			d_hastex = true;
 			d_cooldown2 = 5;	// don't generate too many textures all at once
 		} else {
 			d_cooldown2--;
