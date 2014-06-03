@@ -35,14 +35,14 @@ class gsMapper
 	private:
 		IrrlichtDevice* d_device;
 		Client* d_client;
+		video::ITexture* d_texture;
 		video::ITexture* d_pmarker;
-		video::ITexture* d_txqueue[16];
 		ITextureSource *d_tsrc;
 		LocalPlayer* d_player;
-		std::map<v3s16, u8> d_map;
-		std::map<v3s16, u8> d_radar;
-		std::map<std::string, u8> d_nodeids;
+		std::map<v3s16, u16> d_map;
+		std::map<v3s16, u16> d_radar;
 		std::vector<video::SColor> d_colorids;
+		std::map<u16, u16> d_nodeids;
 		v3s16 d_origin;
 		u16 d_posx;
 		u16 d_posy;
@@ -57,14 +57,17 @@ class gsMapper
 		s16 d_scanZ;
 		s16 d_cooldown2;
 		u16 d_texindex;
+		u16 d_colordefs;
 		bool d_above;
 		bool d_tracking;
 		bool d_valid;
+		bool d_hastex;
 		bool d_hasptex;
 
 	public:
 		gsMapper(IrrlichtDevice *device, Client *client);
 		~gsMapper();
+		video::SColor getColorFromId(u16 id);
 		void setMapVis(u16 x, u16 y, u16 w, u16 h, f32 scale, u32 alpha, video::SColor back);
 		void setMapType(bool bAbove, u16 iScan, s16 iSurface, bool bTracking, u16 iBorder);
 		void drawMap(v3s16 position);
