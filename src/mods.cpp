@@ -111,9 +111,9 @@ std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mod
 				std::map<std::string, ModSpec> content =
 					flattenModTree(mod.modpack_content);
 				result.insert(content.begin(),content.end());
-				result.insert(std::make_pair(mod.name,mod));
+				result.insert(std::make_pair(mod.name, mod));
 			} else { //not a modpack
-				result.insert(std::make_pair(mod.name,mod));
+				result.insert(std::make_pair(mod.name, mod));
 			}
 	}
 	return result;
@@ -128,7 +128,7 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 			if (mod.is_modpack) {
 				std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 				result.reserve(result.size() + content.size());
-				result.insert(result.end(),content.begin(),content.end());
+				result.insert(result.end(), content.begin(), content.end());
 			} else { //not a modpack
 				result.push_back(mod);
 			}

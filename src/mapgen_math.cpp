@@ -183,7 +183,7 @@ MapgenV7(mapgenid, params_, emerge)
 	invert = params["invert"].empty() ? 1 : params["invert"].asBool(); //params["invert"].empty()?1:params["invert"].asBool();
 	size = params["size"].empty() ? 0 : params["size"].asDouble(); // = max_r
 	scale = params["scale"].empty() ? 0 : params["scale"].asDouble(); //(double)1 / size;
-	if(!params["center"].empty())
+	if (!params["center"].empty())
 		center = v3f(params["center"]["x"].asFloat(),
 					params["center"]["y"].asFloat(),
 					params["center"]["z"].asFloat()); //v3f(5, -size - 5, 5);
@@ -221,16 +221,16 @@ MapgenV7(mapgenid, params_, emerge)
 			size = 1000;
 		if (!distance)
 			distance = 0.01;
-		if(params["invert"].empty())
+		if (params["invert"].empty())
 			invert = 0;
 		//center=v3f(2,-size/4,2);
 		//size = 10000;
 		//center=v3f(size/2,-size*0.9,size/2);
-		if(params["center"].empty())
+		if (params["center"].empty())
 			center = v3f(size * 0.3, -size * 0.6, size * 0.5);
 		func = &mandelbox;
 	} else if (params["generator"].asString() == "sphere") {
-		if(params["invert"].empty())
+		if (params["invert"].empty())
 			invert = 0;
 		if (!size)
 			size = 100;
