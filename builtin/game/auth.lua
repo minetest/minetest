@@ -7,7 +7,7 @@
 function core.string_to_privs(str, delim)
 	assert(type(str) == "string")
 	delim = delim or ','
-	privs = {}
+	local privs = {}
 	for _, priv in pairs(string.split(str, delim)) do
 		privs[priv:trim()] = true
 	end
@@ -17,7 +17,7 @@ end
 function core.privs_to_string(privs, delim)
 	assert(type(privs) == "table")
 	delim = delim or ','
-	list = {}
+	local list = {}
 	for priv, bool in pairs(privs) do
 		if bool then
 			table.insert(list, priv)
