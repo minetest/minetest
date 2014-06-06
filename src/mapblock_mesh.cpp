@@ -770,9 +770,13 @@ static void getTileInfo(
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
 	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
+	
+	// Don't even try to get n1 if n0 is already CONTENT_IGNORE
+	if (n0.getContent() == CONTENT_IGNORE ) {
+		makes_face = false;
+		return;
+	}
 	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
-	TileSpec tile0 = getNodeTile(n0, p, face_dir, data);
-	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, data);
 	
 	// This is hackish
 	bool equivalent = false;
@@ -789,14 +793,14 @@ static void getTileInfo(
 	
 	if(mf == 1)
 	{
-		tile = tile0;
+		tile = getNodeTile(n0, p, face_dir, data);
 		p_corrected = p;
 		face_dir_corrected = face_dir;
 		light_source = ndef->get(n0).light_source;
 	}
 	else
 	{
-		tile = tile1;
+		tile = getNodeTile(n1, p + face_dir, -face_dir, data);
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
 		light_source = ndef->get(n1).light_source;
