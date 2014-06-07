@@ -183,11 +183,10 @@ void VoxelManipulator::addArea(VoxelArea area)
 
 	// Allocate and clear new data
 	MapNode *new_data = new MapNode[new_size];
+	assert(new_data);
 	u8 *new_flags = new u8[new_size];
-	for(s32 i=0; i<new_size; i++)
-	{
-		new_flags[i] = VOXELFLAG_NOT_LOADED;
-	}
+	assert(new_flags);
+	memset(new_flags, VOXELFLAG_NOT_LOADED, new_size);
 	
 	// Copy old data
 	
@@ -195,11 +194,13 @@ void VoxelManipulator::addArea(VoxelArea area)
 	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
 	for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
 	{
+		unsigned int old_index = m_area.index(x,y,z);
 		// If loaded, copy data and flags
-		if((m_flags[m_area.index(x,y,z)] & VOXELFLAG_NOT_LOADED) == false)
+		if((m_flags[old_index] & VOXELFLAG_NOT_LOADED) == false)
 		{
-			new_data[new_area.index(x,y,z)] = m_data[m_area.index(x,y,z)];
-			new_flags[new_area.index(x,y,z)] = m_flags[m_area.index(x,y,z)];
+			unsigned int new_index = new_area.index(x,y,z);
+			new_data[new_index]  = m_data[old_index];
+			new_flags[new_index] = m_flags[old_index];
 		}
 	}
 
