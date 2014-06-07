@@ -186,7 +186,7 @@ void VoxelManipulator::addArea(VoxelArea area)
 	assert(new_data);
 	u8 *new_flags = new u8[new_size];
 	assert(new_flags);
-	memset(new_flags, VOXELFLAG_NOT_LOADED, new_size);
+	memset(new_flags, VOXELFLAG_INEXISTENT, new_size);
 	
 	// Copy old data
 	
