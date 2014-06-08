@@ -2532,7 +2532,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				else if (event.type == CE_SET_SKY) {
 					sky->setVisible(false);
 					if(skybox){
-						skybox->drop();
+						skybox->remove();
 						skybox = NULL;
 					}
 					// Handle according to type
