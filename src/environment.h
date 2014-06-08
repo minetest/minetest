@@ -492,7 +492,7 @@ public:
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
-	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+	u16 m_attachements[USHRT_MAX];
 
 	std::list<std::string> getPlayerNames()
 	{ return m_player_names; }
