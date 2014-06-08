@@ -257,6 +257,12 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = data->m_vmanip.getNodeNoEx(p - dirs8[i]);
+
+		if (n.getContent() == CONTENT_IGNORE) {
+			ambient_occlusion++;
+			continue;
+		}
+
 		const ContentFeatures &f = ndef->get(n);
 		if(f.light_source > light_source_max)
 			light_source_max = f.light_source;
@@ -266,10 +272,6 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 		{
 			light += decode_light(n.getLight(bank, ndef));
 			light_count++;
-		}
-		else if(n.getContent() != CONTENT_IGNORE)
-		{
-			ambient_occlusion++;
 		}
 	}
 
@@ -712,7 +714,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		facedir = 0;
 	static const u16 dir_to_tile[24 * 16] =
 	{
-		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation  
+		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
 		   0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
 		   0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
 		   0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
@@ -733,15 +735,15 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
 		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
 
-		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19  
+		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19
 		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
-		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,  
-		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,  
+		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,
+		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,
 
 		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
-		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,  
-		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,  
-		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2   
+		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
+		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
+		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
 
 	};
 	u16 tile_index=facedir*16 + dir_i;
@@ -854,7 +856,7 @@ static void updateFastFaceRow(
 	u16 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	u8 light_source = 0;
-	getTileInfo(data, p, face_dir, 
+	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
 			lights, tile, light_source);
 
@@ -1116,7 +1118,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	video::E_MATERIAL_TYPE  shadermat1, shadermat2, shadermat3,
 							shadermat4, shadermat5;
-	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 = 
+	shadermat1 = shadermat2 = shadermat3 = shadermat4 = shadermat5 =
 		video::EMT_SOLID;
 
 	if (enable_shaders) {
@@ -1223,7 +1225,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
 
 					if (tsrc->isKnownSourceImage(fname_normal)) {
-						// look for image extension and replace it 
+						// look for image extension and replace it
 						size_t i = 0;
 						while ((i = fname_base.find(".", i)) != std::string::npos) {
 							fname_base.replace(i, 4, normal_ext);
