@@ -394,7 +394,12 @@ struct MeshBufListList
 		for(std::list<MeshBufList>::iterator i = lists.begin();
 				i != lists.end(); ++i){
 			MeshBufList &l = *i;
-			if(l.m == buf->getMaterial()){
+			video::SMaterial &m = buf->getMaterial();
+
+			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
+				continue;
+
+			if (l.m == m) {
 				l.bufs.push_back(buf);
 				return;
 			}
