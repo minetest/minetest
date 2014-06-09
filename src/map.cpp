@@ -3551,12 +3551,12 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 			flags |= VMANIP_BLOCK_DATA_INEXIST;
 
 			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-			// Fill with VOXELFLAG_INEXISTENT
+			// Fill with VOXELFLAG_NO_DATA
 			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 			for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 			{
 				s32 i = m_area.index(a.MinEdge.X,y,z);
-				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+				memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
 			}
 		}
 		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
@@ -3601,7 +3601,7 @@ void MapVoxelManipulator::blitBack
 		v3s16 p(x,y,z);
 
 		u8 f = m_flags[m_area.index(p)];
-		if(f & (VOXELFLAG_NOT_LOADED|VOXELFLAG_INEXISTENT))
+		if(f & (VOXELFLAG_NO_DATA))
 			continue;
 
 		MapNode &n = m_data[m_area.index(p)];
@@ -3655,7 +3655,7 @@ ManualMapVoxelManipulator::~ManualMapVoxelManipulator()
 void ManualMapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 {
 	// Just create the area so that it can be pointed to
-	VoxelManipulator::emerge(a, caller_id);
+	VoxelManipulator::addArea(a);
 }
 
 void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
@@ -3726,12 +3726,12 @@ void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
 					Mark area inexistent
 				*/
 				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-				// Fill with VOXELFLAG_INEXISTENT
+				// Fill with VOXELFLAG_NO_DATA
 				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 				{
 					s32 i = m_area.index(a.MinEdge.X,y,z);
-					memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
 				}
 			}
 		}

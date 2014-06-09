@@ -320,10 +320,10 @@ public:
 	v3s16 MaxEdge;
 };
 
-// Hasn't been copied from source (emerged)
-#define VOXELFLAG_NOT_LOADED (1<<0)
-// Checked as being inexistent in source
-#define VOXELFLAG_INEXISTENT (1<<1)
+// unused 
+#define VOXELFLAG_UNUSED   (1<<0)
+// no data about that node
+#define VOXELFLAG_NO_DATA  (1<<1)
 // Algorithm-dependent
 #define VOXELFLAG_CHECKED1 (1<<2)
 // Algorithm-dependent
@@ -356,8 +356,8 @@ public:
 	}
 	bool isValidPosition(v3s16 p)
 	{
-		emerge(p);
-		return !(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT);
+		addArea(p);
+		return !(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA);
 	}*/
 
 	/*
@@ -366,9 +366,9 @@ public:
 	*/
 	MapNode getNode(v3s16 p)
 	{
-		emerge(p);
+		addArea(p);
 
-		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
 		{
 			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -383,9 +383,9 @@ public:
 	}
 	MapNode getNodeNoEx(v3s16 p)
 	{
-		emerge(p);
+		addArea(p);
 
-		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
 		{
 			return MapNode(CONTENT_IGNORE);
 		}
@@ -396,12 +396,12 @@ public:
 	{
 		if(m_area.contains(p) == false)
 			return MapNode(CONTENT_IGNORE);
-		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
 			return MapNode(CONTENT_IGNORE);
 		return m_data[m_area.index(p)];
 	}
 	// Stuff explodes if non-emerged area is touched with this.
-	// Emerge first, and check VOXELFLAG_INEXISTENT if appropriate.
+	// Emerge first, and check VOXELFLAG_NO_DATA if appropriate.
 	MapNode & getNodeRefUnsafe(v3s16 p)
 	{
 		return m_data[m_area.index(p)];
@@ -413,12 +413,12 @@ public:
 	bool exists(v3s16 p)
 	{
 		return m_area.contains(p) &&
-			!(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT);
+			!(getFlagsRefUnsafe(p) & VOXELFLAG_NO_DATA);
 	}
 	MapNode & getNodeRef(v3s16 p)
 	{
-		emerge(p);
-		if(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT)
+		addArea(p);
+		if(getFlagsRefUnsafe(p) & VOXELFLAG_NO_DATA)
 		{
 			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -432,11 +432,10 @@ public:
 	}
 	void setNode(v3s16 p, const MapNode &n)
 	{
-		emerge(p);
+		addArea(p);
 
 		m_data[m_area.index(p)] = n;
-		m_flags[m_area.index(p)] &= ~VOXELFLAG_INEXISTENT;
-		m_flags[m_area.index(p)] &= ~VOXELFLAG_NOT_LOADED;
+		m_flags[m_area.index(p)] &= ~VOXELFLAG_NO_DATA;
 	}
 	// TODO: Should be removed and replaced with setNode
 	void setNodeNoRef(v3s16 p, const MapNode &n)
@@ -446,12 +445,12 @@ public:
 
 	/*void setExists(VoxelArea a)
 	{
-		emerge(a);
+		addArea(a);
 		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
 		{
-			m_flags[m_area.index(x,y,z)] &= ~VOXELFLAG_INEXISTENT;
+			m_flags[m_area.index(x,y,z)] &= ~VOXELFLAG_NO_DATA;
 		}
 	}*/
 
@@ -459,7 +458,7 @@ public:
 	{
 		//dstream<<"operator[] p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
 		if(isValidPosition(p) == false)
-			emerge(VoxelArea(p));
+			addArea(VoxelArea(p));
 
 		return m_data[m_area.index(p)];
 	}*/
@@ -506,11 +505,11 @@ public:
 		Copy data and set flags to 0
 		dst_area.getExtent() <= src_area.getExtent()
 	*/
-	void copyFrom(MapNode *src, VoxelArea src_area,
+	void copyFrom(MapNode *src, const VoxelArea& src_area,
 			v3s16 from_pos, v3s16 to_pos, v3s16 size);
 
 	// Copy data
-	void copyTo(MapNode *dst, VoxelArea dst_area,
+	void copyTo(MapNode *dst, const VoxelArea& dst_area,
 			v3s16 dst_pos, v3s16 from_pos, v3s16 size);
 
 	/*
@@ -534,29 +533,6 @@ public:
 	/*
 		Virtual functions
 	*/
-
-	/*
-		Get the contents of the requested area from somewhere.
-		Shall touch only nodes that have VOXELFLAG_NOT_LOADED
-		Shall reset VOXELFLAG_NOT_LOADED
-
-		If not found from source, add with VOXELFLAG_INEXISTENT
-	*/
-	virtual void emerge(VoxelArea a, s32 caller_id=-1)
-	{
-		//dstream<<"emerge p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
-		addArea(a);
-		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-		{
-			s32 i = m_area.index(x,y,z);
-			// Don't touch nodes that have already been loaded
-			if(!(m_flags[i] & VOXELFLAG_NOT_LOADED))
-				continue;
-			m_flags[i] = VOXELFLAG_INEXISTENT;
-		}
-	}
 
 	/*
 		Member variables
