@@ -523,14 +523,15 @@ private:
 	Database *dbase;
 };
 
+
 #define VMANIP_BLOCK_DATA_INEXIST     1
 #define VMANIP_BLOCK_CONTAINS_CIGNORE 2
 
-class MapVoxelManipulator : public VoxelManipulator
+class ManualMapVoxelManipulator : public VoxelManipulator
 {
 public:
-	MapVoxelManipulator(Map *map);
-	virtual ~MapVoxelManipulator();
+	ManualMapVoxelManipulator(Map *map);
+	virtual ~ManualMapVoxelManipulator();
 
 	virtual void clear()
 	{
@@ -538,29 +539,8 @@ public:
 		m_loaded_blocks.clear();
 	}
 
-	virtual void emerge(VoxelArea a, s32 caller_id=-1);
-
-	void blitBack(std::map<v3s16, MapBlock*> & modified_blocks);
-
-protected:
-	Map *m_map;
-	/*
-		key = blockpos
-		value = flags describing the block
-	*/
-	std::map<v3s16, u8> m_loaded_blocks;
-};
-
-class ManualMapVoxelManipulator : public MapVoxelManipulator
-{
-public:
-	ManualMapVoxelManipulator(Map *map);
-	virtual ~ManualMapVoxelManipulator();
-
 	void setMap(Map *map)
 	{m_map = map;}
-
-	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 						bool load_if_inexistent = true);
@@ -570,6 +550,12 @@ public:
 
 protected:
 	bool m_create_area;
+	Map *m_map;
+	/*
+		key = blockpos
+		value = flags describing the block
+	*/
+	std::map<v3s16, u8> m_loaded_blocks;
 };
 
 #endif
