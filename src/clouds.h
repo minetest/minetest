@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
+#include "constants.h"
 
 class Clouds : public scene::ISceneNode
 {
@@ -70,6 +71,8 @@ public:
 	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;
+		m_box = core::aabbox3d<f32>(-BS * 1000000, m_cloud_y - BS - BS * camera_offset.Y, -BS * 1000000,
+			BS * 1000000, m_cloud_y + BS - BS * camera_offset.Y, BS * 1000000);
 	}
 
 private:
