@@ -77,7 +77,9 @@
 #screenW = 800
 #screenH = 600
 #fullscreen = false
-#fullscreen_bpp = 24
+# Number of bits per pixel when in fullscreen mode. This should be 16 or 32. 
+# This parameter is ignored when running in windowed mode which always uses 16bpp.
+#fullscreen_bpp = 32
 # Experimental option, might cause visible spaces between blocks
 # when set to higher number than 0
 #fsaa = 0
