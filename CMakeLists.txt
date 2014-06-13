@@ -87,6 +87,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(EXAMPLE_CONF_DIR ".")
 		set(MANDIR "unix/man")
 		set(XDG_APPS_DIR "unix/applications")
+		set(APPDATADIR "unix/appdata")
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
