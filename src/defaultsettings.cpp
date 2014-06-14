@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "config.h"
+#include "constants.h"
+#include "porting.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -164,13 +166,11 @@ void set_default_settings(Settings *settings)
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
-	settings->setDefault("font_size", "13");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "128");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
-	settings->setDefault("mono_font_size", "13");
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
-	settings->setDefault("fallback_font_size", "13");
+
 	settings->setDefault("fallback_font_shadow", "1");
 	settings->setDefault("fallback_font_shadow_alpha", "128");
 #else
@@ -234,7 +234,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("emergequeue_limit_diskonly", "32");
 	settings->setDefault("emergequeue_limit_generate", "32");
 	settings->setDefault("num_emerge_threads", "1");
-	
+
 	// physics stuff
 	settings->setDefault("movement_acceleration_default", "3");
 	settings->setDefault("movement_acceleration_air", "2");
@@ -276,6 +276,22 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 
 	settings->setDefault("language", "");
+}
+
+void late_init_default_settings(Settings* settings)
+{
+#ifndef SERVER
+	std::stringstream fontsize;
+	fontsize << floor(
+			DEFAULT_FONT_SIZE *
+			porting::getDisplayDensity() *
+			settings->getFloat("gui_scaling")
+			);
+
+	settings->setDefault("font_size", fontsize.str());
+	settings->setDefault("mono_font_size", fontsize.str());
+	settings->setDefault("fallback_font_size", fontsize.str());
+#endif
 }
 
 void override_default_settings(Settings *settings, Settings *from)

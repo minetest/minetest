@@ -47,6 +47,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "scripting_game.h"
 #include "porting.h"
+#include "main.h"
+#include "settings.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -97,12 +99,14 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_doubleclickdetect[0].pos = v2s32(0, 0);
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
+	m_btn_height = g_settings->getS32("font_size") +2;
+	assert(m_btn_height > 0);
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
 {
 	removeChildren();
-	
+
 	for (u32 i = 0; i < m_tables.size(); ++i) {
 		GUITable *table = m_tables[i].second;
 		table->drop();
@@ -275,6 +279,9 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 			}
 		}
 
+		double cur_scaling = porting::getDisplayDensity() *
+				g_settings->getFloat("gui_scaling");
+
 		if (m_lock) {
 			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
 			v2u32 delta = current_screensize - m_lockscreensize;
@@ -292,17 +299,38 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 			offset = v2s32(delta.X,delta.Y);
 
 			data->screensize = m_lockscreensize;
+
+			// fixed scaling for fixed size gui elements */
+			cur_scaling = LEGACY_SCALING;
 		}
 		else {
 			offset = v2s32(0,0);
 		}
 
-		padding = v2s32(data->screensize.Y/40, data->screensize.Y/40);
-		spacing = v2s32(data->screensize.Y/12, data->screensize.Y/13);
-		imgsize = v2s32(data->screensize.Y/15, data->screensize.Y/15);
+		/* adjust image size to dpi */
+		int y_partition = 15;
+		imgsize = v2s32(data->screensize.Y/y_partition, data->screensize.Y/y_partition);
+		int min_imgsize = DEFAULT_IMGSIZE * cur_scaling;
+		while ((min_imgsize > imgsize.Y) && (y_partition > 1)) {
+			y_partition--;
+			imgsize = v2s32(data->screensize.Y/y_partition, data->screensize.Y/y_partition);
+		}
+		assert(y_partition > 0);
+
+		/* adjust spacing to dpi */
+		spacing = v2s32(imgsize.X+(DEFAULT_XSPACING * cur_scaling),
+				imgsize.Y+(DEFAULT_YSPACING * cur_scaling));
+
+		padding = v2s32(data->screensize.Y/imgsize.Y, data->screensize.Y/imgsize.Y);
+
+		/* adjust padding to dpi */
+		padding = v2s32(
+				(padding.X/(2.0/3.0)) * cur_scaling,
+				(padding.X/(2.0/3.0)) * cur_scaling
+				);
 		data->size = v2s32(
 			padding.X*2+spacing.X*(invsize.X-1.0)+imgsize.X,
-			padding.Y*2+spacing.Y*(invsize.Y-1.0)+imgsize.Y + (data->helptext_h-5)
+			padding.Y*2+spacing.Y*(invsize.Y-1.0)+imgsize.Y + m_btn_height - 5
 		);
 		data->rect = core::rect<s32>(
 				data->screensize.X/2 - data->size.X/2 + offset.X,
@@ -382,10 +410,10 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		std::string name = parts[1];
 		std::string label = parts[2];
 		std::string selected = "";
-		
+
 		if (parts.size() >= 4)
-			selected = parts[3];		
- 
+			selected = parts[3];
+
 		MY_CHECKPOS("checkbox",0);
 
 		v2s32 pos = padding;
@@ -400,9 +428,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
 		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y + ((imgsize.Y/2) - 15),
+				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
 				pos.X + m_font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
-				pos.Y + ((imgsize.Y/2) + 15));
+				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
 				narrow_to_wide(name.c_str()),
@@ -521,7 +549,9 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		geom.X = (stof(v_geom[0]) * (float)spacing.X)-(spacing.X-imgsize.X);
 		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
+		core::rect<s32> rect =
+				core::rect<s32>(pos.X, pos.Y - m_btn_height,
+						pos.X + geom.X, pos.Y + m_btn_height);
 
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
@@ -547,7 +577,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		}
 		if (parts.size() >= 5)
 			spec.tooltip = parts[4];
-		
+
 		m_fields.push_back(spec);
 		return;
 	}
@@ -783,7 +813,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 
 		s32 width = stof(parts[1]) * (float)spacing.Y;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+width, pos.Y+30);
+		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
+				pos.X + width, pos.Y + (m_btn_height * 2));
 
 		std::wstring fname_w = narrow_to_wide(name.c_str());
 
@@ -839,8 +870,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		geom.X = (stof(v_geom[0]) * (float)spacing.X)-(spacing.X-imgsize.X);
 
 		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
-		pos.Y -= 15;
-		geom.Y = 30;
+		pos.Y -= m_btn_height;
+		geom.Y = m_btn_height*2;
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
@@ -864,8 +895,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= 15;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
+			rect.UpperLeftCorner.Y -= m_btn_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 
@@ -914,7 +945,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	pos.Y = ((m_fields.size()+2)*60);
 	v2s32 size = DesiredRect.getSize();
 
-	rect = core::rect<s32>(size.X/2-150, pos.Y, (size.X/2-150)+300, pos.Y+30);
+	rect = core::rect<s32>(size.X / 2 - 150, pos.Y,
+			(size.X / 2 - 150) + 300, pos.Y + (m_btn_height*2));
 
 
 	if(m_form_src)
@@ -958,8 +990,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= 15;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
+			rect.UpperLeftCorner.Y -= m_btn_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 	}
@@ -991,13 +1023,13 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	if (type == "textarea")
 	{
 		geom.Y = (stof(v_geom[1]) * (float)imgsize.Y) - (spacing.Y-imgsize.Y);
-		pos.Y += 15;
+		pos.Y += m_btn_height;
 	}
 	else
 	{
 		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
-		pos.Y -= 15;
-		geom.Y = 30;
+		pos.Y -= m_btn_height;
+		geom.Y = m_btn_height*2;
 	}
 
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
@@ -1054,8 +1086,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= 15;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 15;
+			rect.UpperLeftCorner.Y -= m_btn_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 	}
@@ -1101,9 +1133,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		std::wstring wlabel = narrow_to_wide(text.c_str());
 
 		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y+((imgsize.Y/2)-15),
+				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
 				pos.X + m_font->getDimension(wlabel.c_str()).Width,
-				pos.Y+((imgsize.Y/2)+15));
+				pos.Y+((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
 			L"",
@@ -1133,7 +1165,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
 		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y+((imgsize.Y/2)-15),
+				pos.X, pos.Y+((imgsize.Y/2)- m_btn_height),
 				pos.X+15, pos.Y +
 					(m_font->getKerningHeight() +
 					m_font->getDimension(text.c_str()).Height)
@@ -1190,14 +1222,14 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		bool noclip     = false;
 		bool drawborder = true;
 		std::string pressed_image_name = "";
-		
+
 		if (parts.size() >= 7) {
 			if (parts[5] == "true")
 				noclip = true;
 			if (parts[6] == "false")
 				drawborder = false;
 		}
-		
+
 		if (parts.size() >= 8) {
 			pressed_image_name = parts[7];
 		}
@@ -1284,18 +1316,21 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 
 		spec.ftype = f_TabHeader;
 
-		v2s32 pos = padding;
+		v2s32 pos(0,0);
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
-		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
+		pos.Y += stof(v_pos[1]) * (float)spacing.Y - m_btn_height * 2;
 		v2s32 geom;
 		geom.X = data->screensize.Y;
-		geom.Y = 30;
+		geom.Y = m_btn_height*2;
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
 				pos.Y+geom.Y);
 
 		gui::IGUITabControl *e = Environment->addTabControl(rect, this,
 				show_background, show_border, spec.fid);
+		e->setAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT,
+				irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
+		e->setTabHeight(m_btn_height*2);
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1614,6 +1649,11 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
 
 void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 {
+	/* useless to regenerate without a screensize */
+	if ((screensize.X <= 0) || (screensize.Y <= 0)) {
+		return;
+	}
+
 	parserData mydata;
 
 	//preserve tables
@@ -1647,7 +1687,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	mydata.size= v2s32(100,100);
-	mydata.helptext_h = 15;
 	mydata.screensize = screensize;
 
 	// Base position of contents of form
@@ -1721,7 +1760,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			pos.Y = ((m_fields.size()+2)*60);
 
 			v2s32 size = DesiredRect.getSize();
-			mydata.rect = core::rect<s32>(size.X/2-70, pos.Y, (size.X/2-70)+140, pos.Y+30);
+			mydata.rect =
+					core::rect<s32>(size.X/2-70, pos.Y,
+							(size.X/2-70)+140, pos.Y + (m_btn_height*2));
 			wchar_t* text = wgettext("Proceed");
 			Environment->addButton(mydata.rect, this, 257, text);
 			delete[] text;
@@ -1861,9 +1902,9 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
 				m_tooltip_element->setText(narrow_to_wide(tooltip_text).c_str());
-				s32 tooltip_x = m_pointer.X + 15;
-				s32 tooltip_y = m_pointer.Y + 15;
-				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
+				s32 tooltip_x = m_pointer.X + m_btn_height;
+				s32 tooltip_y = m_pointer.Y + m_btn_height;
+				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
@@ -2057,7 +2098,7 @@ void GUIFormSpecMenu::drawMenu()
 	*/
 	gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
-		
+
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
 		for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
@@ -2066,11 +2107,11 @@ void GUIFormSpecMenu::drawMenu()
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
 				m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
-				s32 tooltip_x = m_pointer.X + 15;
-				s32 tooltip_y = m_pointer.Y + 15;
-				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
+				s32 tooltip_x = m_pointer.X + m_btn_height;
+				s32 tooltip_y = m_pointer.Y + m_btn_height;
+				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 				if (tooltip_x + tooltip_width > (s32)screenSize.X)
-					tooltip_x = (s32)screenSize.X - tooltip_width - 15;
+					tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
 				int lines_count = 1;
 				size_t i = 0;
 				while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {

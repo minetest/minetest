@@ -1440,6 +1440,7 @@ int main(int argc, char *argv[])
 	irr_logger->setLogLevel(irr_log_level[loglevel]);
 
 	porting::initIrrlicht(device);
+	late_init_default_settings(g_settings);
 
 	/*
 		Continue initialization
