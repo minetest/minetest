@@ -212,6 +212,8 @@
 # - Downloads performed by main menu (e.g. mod manager)
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
+# maximum time in ms a file download (e.g. a mod download) may take
+#curl_file_download_timeout = 300000
 
 # enable usage of remote media server (if provided by server)
 #enable_remote_media_server = true
