@@ -231,7 +231,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 		tree_node_placement(vmanip,v3f(position.X,position.Y-1,position.Z+1),dirtnode);
 		tree_node_placement(vmanip,v3f(position.X+1,position.Y-1,position.Z+1),dirtnode);
 	}
-	if (tree_definition.trunk_type == "crossed")
+	else if (tree_definition.trunk_type == "crossed")
 	{
 		tree_node_placement(vmanip,v3f(position.X+1,position.Y-1,position.Z),dirtnode);
 		tree_node_placement(vmanip,v3f(position.X-1,position.Y-1,position.Z),dirtnode);
@@ -289,7 +289,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
 				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z+1),tree_definition);
 			}
-			if (tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches)
+			else if (tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches)
 			{
 				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
 				tree_trunk_placement(vmanip,v3f(position.X-1,position.Y,position.Z),tree_definition);
@@ -309,7 +309,7 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 				tree_trunk_placement(vmanip,v3f(position.X,position.Y,position.Z+1),tree_definition);
 				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z+1),tree_definition);
 			}
-			if ((stack_orientation.empty() && tree_definition.trunk_type == "crossed") ||
+			else if ((stack_orientation.empty() && tree_definition.trunk_type == "crossed") ||
 				(!stack_orientation.empty() && tree_definition.trunk_type == "crossed" && !tree_definition.thin_branches))
 			{
 				tree_trunk_placement(vmanip,v3f(position.X+1,position.Y,position.Z),tree_definition);
