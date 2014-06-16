@@ -373,15 +373,12 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 3) || (parts.size() == 4)) {
+	if (parts.size() == 5) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[1];
 		std::string label = parts[2];
-		std::string selected = "";
-
-		if (parts.size() == 4)
-			selected = parts[3];
-
+		std::string tooltip = parts[4];
+ 
 		MY_CHECKPOS("checkbox",0);
 
 		v2s32 pos = padding;
@@ -392,9 +389,10 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 
 		bool fselected = false;
 
-		if (selected == "true")
+		if (parts[3] == "true")
 			fselected = true;
-
+		else if (parts[3] == "false")
+			fselected = false;
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
 		FieldSpec spec(
@@ -411,7 +409,10 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-
+		rect+=data->basepos-padding;
+		spec.rect=rect;
+		if (tooltip!="")
+			spec.tooltip=tooltip;
 		m_checkboxes.push_back(std::pair<FieldSpec,gui::IGUICheckBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
@@ -496,11 +497,14 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 4) {
+	if (parts.size() == 4 || parts.size() == 5) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
 		std::string label = parts[3];
+		std::string tooltip = "";
+		if (parts.size() == 5)
+			tooltip = parts[5];
 
 		MY_CHECKPOS("button",0);
 		MY_CHECKGEOM("button",1);
@@ -528,6 +532,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 			L"",
 			258+m_fields.size()
 		);
+		
 		spec.ftype = f_Button;
 		if(type == "button_exit")
 			spec.is_exit = true;
@@ -537,7 +542,10 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-
+		rect+=data->basepos-padding;
+		spec.rect=rect;
+		spec.tooltip = tooltip;
+		
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1057,7 +1065,7 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if (parts.size() == 3 || parts.size() == 4) {
 		parseSimpleField(data,parts);
 		return;
 	}
@@ -1151,7 +1159,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 5) || (parts.size() == 7) || (parts.size() == 8)) {
+	if ((parts.size() == 5) || (parts.size() == 9)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string image_name = parts[2];
@@ -1170,21 +1178,23 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 
 		bool noclip = false;
 		bool drawborder = true;
+		std::string pressed_image_name = "";
+		std::string tooltip = "";
 
-		if ((parts.size() >= 7)) {
-			if (parts[5] == "true")
+		if ((parts.size() == 9)) {
+
+			tooltip = parts[5];
+
+			if (parts[6] == "true")
 				noclip = true;
 
-			if (parts[6] == "false")
+			if (parts[7] == "false")
 				drawborder = false;
+
+			pressed_image_name = parts[8];
 		}
 
-		std::string pressed_image_name = "";
-
-		if ((parts.size() == 8)) {
-			pressed_image_name = parts[7];
-		}
-
+		
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		if(data->bp_set != 2)
@@ -1209,7 +1219,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		video::ITexture *texture = 0;
 		video::ITexture *pressed_texture = 0;
 		texture = m_tsrc->getTexture(image_name);
-		if (parts.size() == 8)
+		if (pressed_image_name != "")
 			pressed_texture = m_tsrc->getTexture(pressed_image_name);
 		else
 			pressed_texture = texture;
@@ -1219,6 +1229,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
+		rect+=data->basepos-padding;
+		spec.rect=rect;
+		if (tooltip!="")
+			spec.tooltip=tooltip;
 
 		e->setUseAlphaChannel(true);
 		e->setImage(texture);
@@ -2051,7 +2065,15 @@ void GUIFormSpecMenu::drawMenu()
 				s32 tooltip_x = m_pointer.X + 15;
 				s32 tooltip_y = m_pointer.Y + 15;
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
-				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				if (tooltip_x + tooltip_width > (s32)screenSize.X)
+					tooltip_x = (s32)screenSize.X - tooltip_width - 15;
+				int lines_count = 1;
+				size_t i = 0;
+				while ((i = spec.tooltip.find("\n", i)) != std::string::npos) {
+					lines_count++;
+					i += 2;
+				}
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 				core::position2d<s32>(tooltip_x, tooltip_y),
 				core::dimension2d<s32>(tooltip_width, tooltip_height)));

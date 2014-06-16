@@ -82,31 +82,29 @@ local function formspec(tabview, name, tabdata)
 		"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
 		"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
-				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
+				.. dump(core.setting_getbool("new_style_leaves")) .. ";]"..
 		"checkbox[1,0.5;cb_smooth_lighting;".. fgettext("Smooth Lighting")
-				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
+				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. ";]"..
 		"checkbox[1,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
-				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]"..
+				.. dump(core.setting_getbool("enable_3d_clouds")) .. ";]"..
 		"checkbox[1,1.5;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
-				.. dump(core.setting_getbool("opaque_water")) .. "]"..
+				.. dump(core.setting_getbool("opaque_water")) .. ";]"..
 		"checkbox[1,2.0;cb_pre_ivis;".. fgettext("Preload item visuals") .. ";"
-				.. dump(core.setting_getbool("preload_item_visuals"))	.. "]"..
+				.. dump(core.setting_getbool("preload_item_visuals"))	.. ";]"..
 		"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
-				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
-		"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
-				.. dump(core.setting_getbool("liquid_finite")) .. "]"..
+				.. dump(core.setting_getbool("enable_particles"))	.. ";]"..
 		"box[4.25,0;3.25,2.5;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
-				.. dump(core.setting_getbool("mip_map")) .. "]"..
+				.. dump(core.setting_getbool("mip_map")) .. ";]"..
 		"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
-				.. dump(core.setting_getbool("anisotropic_filter")) .. "]"..
+				.. dump(core.setting_getbool("anisotropic_filter")) .. ";]"..
 		"checkbox[4.5,1.0;cb_bilinear;".. fgettext("Bi-Linear Filtering") .. ";"
-				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
+				.. dump(core.setting_getbool("bilinear_filter")) .. ";]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
-				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+				.. dump(core.setting_getbool("trilinear_filter")) .. ";]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"..
+				.. dump(core.setting_getbool("enable_shaders")) .. ";]"..
 		"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
 	
 	local android = false
@@ -114,7 +112,7 @@ local function formspec(tabview, name, tabdata)
 		tab_string = tab_string ..
 		"box[4.25,2.75;3.25,2.5;#999999]" ..
 		"checkbox[4.5,2.75;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
-				.. dump(core.setting_getbool("touchtarget")) .. "]" ..
+				.. dump(core.setting_getbool("touchtarget")) .. ";]" ..
 		"button[8,4.5;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
 	end
 
@@ -128,17 +126,18 @@ local function formspec(tabview, name, tabdata)
 	if core.setting_getbool("enable_shaders") then
 		tab_string = tab_string ..
 				"checkbox[8,0.5;cb_bumpmapping;".. fgettext("Bumpmapping") .. ";"
-						.. dump(core.setting_getbool("enable_bumpmapping")) .. "]"..
+						.. dump(core.setting_getbool("enable_bumpmapping")) .. ";"
+						.. fgettext("Enables Bumpmapping.\nRequire normalmap files or \nGenererate Normalmaps enabled.") .. "]"..
 				"checkbox[8,1.0;cb_generate_normalmaps;".. fgettext("Generate Normalmaps") .. ";"
-						.. dump(core.setting_getbool("generate_normalmaps")) .. "]"..
+						.. dump(core.setting_getbool("generate_normalmaps")) .. ";]"..
 				"checkbox[8,1.5;cb_parallax;".. fgettext("Parallax Occlusion") .. ";"
-						.. dump(core.setting_getbool("enable_parallax_occlusion")) .. "]"..
+						.. dump(core.setting_getbool("enable_parallax_occlusion")) .. ";]"..
 				"checkbox[8,2.0;cb_waving_water;".. fgettext("Waving Water") .. ";"
-						.. dump(core.setting_getbool("enable_waving_water")) .. "]"..
+						.. dump(core.setting_getbool("enable_waving_water")) .. ";]"..
 				"checkbox[8,2.5;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
-						.. dump(core.setting_getbool("enable_waving_leaves")) .. "]"..
+						.. dump(core.setting_getbool("enable_waving_leaves")) .. ";]"..
 				"checkbox[8,3.0;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
-						.. dump(core.setting_getbool("enable_waving_plants")) .. "]"
+						.. dump(core.setting_getbool("enable_waving_plants")) .. ";]"
 	else
 		tab_string = tab_string ..
 				"textlist[8.33,0.7;4,1;;#888888" .. fgettext("Bumpmapping") .. ";0;true]" ..
@@ -200,10 +199,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_particles"] then
 		core.setting_set("enable_particles", fields["cb_particles"])
-		return true
-	end
-	if fields["cb_finite_liquid"] then
-		core.setting_set("liquid_finite", fields["cb_finite_liquid"])
 		return true
 	end
 	if fields["cb_bumpmapping"] then
