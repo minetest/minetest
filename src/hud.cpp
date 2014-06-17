@@ -197,10 +197,8 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 			core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 			NULL, hbar_colors, true);
 	}
-	s32 j = itemcount;
-	if (j > (s32)mainlist->getSize()) 
-		j = (s32)mainlist->getSize();
-	for (s32 i = offset; i < j; i++)
+
+	for (s32 i = offset; i < itemcount && (size_t)i < mainlist->getSize(); i++)
 	{
 		v2s32 steppos;
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
