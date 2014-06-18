@@ -61,9 +61,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			<< parts[b] << "\"" << std::endl;								\
 			return;															\
 	}
-
-extern gui::IGUIEnvironment* guienv;
-
 /*
 	GUIFormSpecMenu
 */
@@ -87,7 +84,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_ext_ptr(ext_ptr),
-	m_font(guienv->getSkin()->getFont())
+	m_font(dev->getGUIEnvironment()->getSkin()->getFont())
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
@@ -375,15 +372,15 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 3) || (parts.size() == 4)) {
+	if ((parts.size() >= 3) || (parts.size() <= 5)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[1];
 		std::string label = parts[2];
 		std::string selected = "";
-
-		if (parts.size() == 4)
-			selected = parts[3];
-
+		
+		if (parts.size() >= 4)
+			selected = parts[3];		
+ 
 		MY_CHECKPOS("checkbox",0);
 
 		v2s32 pos = padding;
@@ -416,7 +413,8 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-
+		if (parts.size() >= 5)
+			spec.tooltip = parts[4];
 		m_checkboxes.push_back(std::pair<FieldSpec,gui::IGUICheckBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
@@ -501,7 +499,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 4) {
+	if (parts.size() == 4 || parts.size() == 5) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -542,7 +540,9 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-
+		if (parts.size() >= 5)
+			spec.tooltip = parts[4];
+		
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1062,7 +1062,7 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if (parts.size() == 3 || parts.size() == 4) {
 		parseSimpleField(data,parts);
 		return;
 	}
@@ -1165,7 +1165,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 5) || (parts.size() == 7) || (parts.size() == 8)) {
+	if (((parts.size() >= 5) && (parts.size() <= 9)) && (parts.size() != 6)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string image_name = parts[2];
@@ -1182,20 +1182,18 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		geom.X = (stof(v_geom[0]) * (float)spacing.X)-(spacing.X-imgsize.X);
 		geom.Y = (stof(v_geom[1]) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
 
-		bool noclip = false;
+		bool noclip     = false;
 		bool drawborder = true;
-
-		if ((parts.size() >= 7)) {
+		std::string pressed_image_name = "";
+		
+		if (parts.size() >= 7) {
 			if (parts[5] == "true")
 				noclip = true;
-
 			if (parts[6] == "false")
 				drawborder = false;
 		}
-
-		std::string pressed_image_name = "";
-
-		if ((parts.size() == 8)) {
+		
+		if (parts.size() >= 8) {
 			pressed_image_name = parts[7];
 		}
 
@@ -1223,7 +1221,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		video::ITexture *texture = 0;
 		video::ITexture *pressed_texture = 0;
 		texture = m_tsrc->getTexture(image_name);
-		if (parts.size() == 8)
+		if (pressed_image_name != "")
 			pressed_texture = m_tsrc->getTexture(pressed_image_name);
 		else
 			pressed_texture = texture;
@@ -1233,6 +1231,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
+		if (parts.size() >= 9)
+			spec.tooltip = parts[8];
 
 		e->setUseAlphaChannel(true);
 		e->setImage(texture);
@@ -1375,8 +1375,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		spec.ftype = f_Button;
 		rect+=data->basepos-padding;
 		spec.rect=rect;
-		if (tooltip!="")
-			spec.tooltip=tooltip;
+		spec.tooltip = tooltip;
 		m_fields.push_back(spec);
 		return;
 	}
@@ -2051,24 +2050,33 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw fields/buttons tooltips
 	*/
-	for(u32 i=0; i<m_fields.size(); i++)
-	{
-		const FieldSpec &spec = m_fields[i];
-		if (spec.tooltip != "")
-		{
-			core::rect<s32> rect = spec.rect;
-			if (rect.isPointInside(m_pointer))
-			{
+	gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
+		
+	if (hovered != NULL) {
+		s32 id = hovered->getID();
+		for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+					iter != m_fields.end(); iter++) {
+			if ( (iter->fid == id) && (iter->tooltip != "") ) {
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
-				m_tooltip_element->setText(narrow_to_wide(spec.tooltip).c_str());
+				m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
 				s32 tooltip_x = m_pointer.X + 15;
 				s32 tooltip_y = m_pointer.Y + 15;
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
-				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				if (tooltip_x + tooltip_width > (s32)screenSize.X)
+					tooltip_x = (s32)screenSize.X - tooltip_width - 15;
+				int lines_count = 1;
+				size_t i = 0;
+				while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
+					lines_count++;
+					i += 2;
+				}
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 				core::position2d<s32>(tooltip_x, tooltip_y),
 				core::dimension2d<s32>(tooltip_width, tooltip_height)));
+				break;
 			}
 		}
 	}
