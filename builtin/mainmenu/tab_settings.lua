@@ -259,10 +259,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
 		return true
 	end
-	if fields["btn_screen"] then
-		gamedata.errormessage = core.get_screen_info()
-		return true
-	end
 	if fields["cb_fullscreen"] then
 		local screen = core.get_screen_info()
 		if not screen.display_width or not screen.display_height then
