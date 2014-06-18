@@ -312,9 +312,10 @@ protected:
 	video::SColor m_slotbg_h;
 	video::SColor m_slotbordercolor;
 private:
-	IFormSource*      m_form_src;
-	TextDest*         m_text_dst;
-	GUIFormSpecMenu** m_ext_ptr;
+	IFormSource      *m_form_src;
+	TextDest         *m_text_dst;
+	GUIFormSpecMenu **m_ext_ptr;
+	gui::IGUIFont    *m_font;
 
 	typedef struct {
 		v2s32 size;

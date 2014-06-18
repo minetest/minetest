@@ -62,6 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			return;															\
 	}
 
+extern gui::IGUIEnvironment* guienv;
 
 /*
 	GUIFormSpecMenu
@@ -85,7 +86,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_lock(false),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
-	m_ext_ptr(ext_ptr)
+	m_ext_ptr(ext_ptr),
+	m_font(guienv->getSkin()->getFont())
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
@@ -388,14 +390,17 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
-
 		bool fselected = false;
 
 		if (selected == "true")
 			fselected = true;
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
+
+		core::rect<s32> rect = core::rect<s32>(
+				pos.X, pos.Y + ((imgsize.Y/2) - 15),
+				pos.X + m_font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
+				pos.Y + ((imgsize.Y/2) + 15));
 
 		FieldSpec spec(
 				narrow_to_wide(name.c_str()),
@@ -1083,14 +1088,17 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
-
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
 		text = unescape_string(text);
 
 		std::wstring wlabel = narrow_to_wide(text.c_str());
+
+		core::rect<s32> rect = core::rect<s32>(
+				pos.X, pos.Y+((imgsize.Y/2)-15),
+				pos.X + m_font->getDimension(wlabel.c_str()).Width,
+				pos.Y+((imgsize.Y/2)+15));
 
 		FieldSpec spec(
 			L"",
@@ -1119,7 +1127,13 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+15, pos.Y+300);
+		core::rect<s32> rect = core::rect<s32>(
+				pos.X, pos.Y+((imgsize.Y/2)-15),
+				pos.X+15, pos.Y +
+					(m_font->getKerningHeight() +
+					m_font->getDimension(text.c_str()).Height)
+					* (text.length()+1));
+		//actually text.length() would be correct but adding +1 avoids to break all mods
 
 		if(data->bp_set != 2)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
