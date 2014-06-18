@@ -270,8 +270,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		else
 			if core.is_yes(fields["cb_fullscreen"]) then
 				core.setting_setbool("fullscreen", true)
-				core.setting_set("screenW", screen["display_width"])
-				core.setting_set("screenH", screen["display_height"])
+				core.setting_set("screenW", screen.display_width)
+				core.setting_set("screenH", screen.display_height)
 				gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
 			elseif not core.is_yes(screen["cb_fullscreen"]) then
 				core.setting_setbool("fullscreen", false)
