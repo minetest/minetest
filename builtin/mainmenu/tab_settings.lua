@@ -16,6 +16,11 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+local drivers = {
+	opengl = 1,
+	direct3d9 = 2
+}
+
 
 local function dlg_confirm_reset_formspec(data)
 	local retval =
@@ -79,7 +84,7 @@ end
 
 local function formspec(tabview, name, tabdata)
 	local tab_string =
-		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
+		"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
 		"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
 				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
@@ -95,7 +100,7 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
 		"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
 				.. dump(core.setting_getbool("liquid_finite")) .. "]"..
-		"box[4.25,0;3.25,2.5;#999999]" ..
+		"box[4.25,0;3.25,4;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
 		"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
@@ -104,11 +109,16 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"dropdown[4.5,3;2;dd_video_driver;OpenGL,Direct3D9;" ..
+				drivers[minetest.setting_get("video_driver"):lower()] .. "]" ..
+		"button[6.5,2.26;0.75,2.5;btn_vd_ok;" .. fgettext("Ok") .. "]" ..
+		"checkbox[4.5,2;cb_fullscreen;".. fgettext("Enable fullscreen") .. ";"
+				.. dump(core.setting_getbool("fullscreen")) .. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"..
 		"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
-
+	
 	local android = false
 	if android then
 		tab_string = tab_string ..
@@ -241,6 +251,34 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["btn_reset_singleplayer"] then
 		showconfirm_reset(this)
+		return true
+	end
+	if fields["dd_video_driver"] and fields["dd_video_driver"]:lower() ~= minetest.setting_get("video_driver"):lower() then
+		core.setting_set("video_driver", fields["dd_video_driver"]:lower())
+		gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
+		return true
+	end
+	if fields["btn_screen"] then
+		gamedata.errormessage = core.get_screen_info()
+		return true
+	end
+	if fields["cb_fullscreen"] then
+		local screen = core.get_screen_info()
+		if not screen.display_width or not screen.display_height then
+			gamedata.errormessage = fgettext("Could not gather screen information.")
+		else
+			if core.is_yes(fields["cb_fullscreen"]) then
+				core.setting_setbool("fullscreen", true)
+				core.setting_set("screenW", screen["display_width"])
+				core.setting_set("screenH", screen["display_height"])
+				gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
+			elseif not core.is_yes(screen["cb_fullscreen"]) then
+				core.setting_setbool("fullscreen", false)
+				core.setting_set("screenW", "800")
+				core.setting_set("screenH", "600")
+				gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
+			end
+		end
 		return true
 	end
 end
