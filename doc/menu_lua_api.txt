@@ -103,8 +103,11 @@ core.explode_textlist_event(string) -> table
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
 
 GUI:
-core.set_background(type, texturepath)
+core.set_background(type, texturepath,[tile],[minsize])
 ^ type: "background", "overlay", "header" or "footer"
+^ tile: tile the image instead of scaling (background only)
+^ minsize: minimum tile size, images are scaled to at least this size prior
+^   doing tiling (background only)
 core.set_clouds(<true/false>)
 core.set_topleft_text(text)
 core.show_keys_menu()

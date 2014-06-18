@@ -41,6 +41,12 @@ typedef enum {
 	TEX_LAYER_MAX
 } texture_layer;
 
+typedef struct {
+	video::ITexture* texture;
+	bool             tile;
+	unsigned int     minsize;
+} image_definition;
+
 /******************************************************************************/
 /* forward declarations                                                       */
 /******************************************************************************/
@@ -143,11 +149,11 @@ public:
 	 * @param data struct to transfer data to main game handling
 	 */
 	GUIEngine(	irr::IrrlichtDevice* dev,
-				gui::IGUIElement* parent,
-				IMenuManager *menumgr,
-				scene::ISceneManager* smgr,
-				MainMenuData* data,
-				bool& kill);
+			gui::IGUIElement* parent,
+			IMenuManager *menumgr,
+			scene::ISceneManager* smgr,
+			MainMenuData* data,
+			bool& kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
@@ -155,14 +161,16 @@ public:
 	/**
 	 * return MainMenuScripting interface
 	 */
-	MainMenuScripting* getScriptIface() {
+	MainMenuScripting* getScriptIface()
+	{
 		return m_script;
 	}
 
 	/**
 	 * return dir of current menuscript
 	 */
-	std::string getScriptDir() {
+	std::string getScriptDir()
+	{
 		return m_scriptdir;
 	}
 
@@ -181,38 +189,38 @@ private:
 	void limitFrameRate();
 
 	/** device to draw at */
-	irr::IrrlichtDevice*	m_device;
+	irr::IrrlichtDevice*     m_device;
 	/** parent gui element */
-	gui::IGUIElement*		m_parent;
+	gui::IGUIElement*        m_parent;
 	/** manager to add menus to */
-	IMenuManager*			m_menumanager;
+	IMenuManager*            m_menumanager;
 	/** scene manager to add scene elements to */
-	scene::ISceneManager*	m_smgr;
+	scene::ISceneManager*    m_smgr;
 	/** pointer to data beeing transfered back to main game handling */
-	MainMenuData*			m_data;
+	MainMenuData*            m_data;
 	/** pointer to texture source */
-	ISimpleTextureSource*	m_texture_source;
+	ISimpleTextureSource*    m_texture_source;
 	/** pointer to soundmanager*/
-	ISoundManager*			m_sound_manager;
+	ISoundManager*           m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
-	FormspecFormSource*		m_formspecgui;
+	FormspecFormSource*      m_formspecgui;
 	/** formspec input receiver */
-	TextDestGuiEngine*		m_buttonhandler;
+	TextDestGuiEngine*       m_buttonhandler;
 	/** the formspec menu */
-	GUIFormSpecMenu*		m_menu;
+	GUIFormSpecMenu*         m_menu;
 
 	/** reference to kill variable managed by SIGINT handler */
-	bool&					m_kill;
+	bool&                    m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
-	bool					m_startgame;
+	bool                     m_startgame;
 
 	/** scripting interface */
-	MainMenuScripting*		m_script;
+	MainMenuScripting*       m_script;
 
 	/** script basefolder */
-	std::string				m_scriptdir;
+	std::string              m_scriptdir;
 
 	/**
 	 * draw background layer
@@ -240,7 +248,8 @@ private:
 	 * @param layer draw layer to specify texture
 	 * @param texturepath full path of texture to load
 	 */
-	bool setTexture(texture_layer layer,std::string texturepath);
+	bool setTexture(texture_layer layer, std::string texturepath,
+			bool tile_image, unsigned int minsize);
 
 	/**
 	 * download a file using curl
@@ -250,7 +259,7 @@ private:
 	static bool downloadFile(std::string url,std::string target);
 
 	/** array containing pointers to current specified texture layers */
-	video::ITexture*		m_textures[TEX_LAYER_MAX];
+	image_definition m_textures[TEX_LAYER_MAX];
 
 	/** draw version string in topleft corner */
 	void drawVersion();
@@ -274,19 +283,19 @@ private:
 	/** internam data required for drawing clouds */
 	struct clouddata {
 		/** delta time since last cloud processing */
-		f32		dtime;
+		f32     dtime;
 		/** absolute time of last cloud processing */
-		u32		lasttime;
+		u32     lasttime;
 		/** pointer to cloud class */
-		Clouds*	clouds;
+		Clouds* clouds;
 		/** camera required for drawing clouds */
 		scene::ICameraSceneNode* camera;
 	};
 
 	/** is drawing of clouds enabled atm */
-	bool					m_clouds_enabled;
+	bool        m_clouds_enabled;
 	/** data used to draw clouds */
-	clouddata 				m_cloud;
+	clouddata   m_cloud;
 
 	/** start playing a sound and return handle */
 	s32 playSound(SimpleSoundSpec spec, bool looped);

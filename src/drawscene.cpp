@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // for g_settings
 #include "settings.h"
 #include "clouds.h"
+#include "clientmap.h"
 #include "util/timetaker.h"
 
 typedef enum {
@@ -458,6 +459,14 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 			draw_plain(camera, show_hud, hud, hilightboxes, driver,
 					draw_wield_tool, client, guienv);
 		}
+
+		/*
+			Post effects
+		*/
+		{
+			client.getEnv().getClientMap().renderPostFx(camera.getCameraMode());
+		}
+
 		//TODO how to make those 3d too
 		if (show_hud)
 		{

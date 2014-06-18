@@ -146,22 +146,36 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
 
-	bool retval = false;
+	bool tile_image = false;
+	bool retval     = false;
+	unsigned int minsize = 16;
+
+	if (!lua_isnone(L, 3)) {
+		tile_image = lua_toboolean(L, 3);
+	}
+
+	if (!lua_isnone(L, 4)) {
+		minsize = lua_tonumber(L, 4);
+	}
 
 	if (backgroundlevel == "background") {
-		retval |= engine->setTexture(TEX_LAYER_BACKGROUND,texturename);
+		retval |= engine->setTexture(TEX_LAYER_BACKGROUND, texturename,
+				tile_image, minsize);
 	}
 
 	if (backgroundlevel == "overlay") {
-		retval |= engine->setTexture(TEX_LAYER_OVERLAY,texturename);
+		retval |= engine->setTexture(TEX_LAYER_OVERLAY, texturename,
+				tile_image, minsize);
 	}
 
 	if (backgroundlevel == "header") {
-		retval |= engine->setTexture(TEX_LAYER_HEADER,texturename);
+		retval |= engine->setTexture(TEX_LAYER_HEADER,  texturename,
+				tile_image, minsize);
 	}
 
 	if (backgroundlevel == "footer") {
-		retval |= engine->setTexture(TEX_LAYER_FOOTER,texturename);
+		retval |= engine->setTexture(TEX_LAYER_FOOTER, texturename,
+				tile_image, minsize);
 	}
 
 	lua_pushboolean(L,retval);

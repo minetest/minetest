@@ -2255,7 +2255,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 		//TimeTaker timer("initBlockMake() initialEmerge");
 		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max, false);
 	}
-	
+
 	// Ensure none of the blocks to be generated were marked as containing CONTENT_IGNORE
 /*	for (s16 z = blockpos_min.Z; z <= blockpos_max.Z; z++) {
 		for (s16 y = blockpos_min.Y; y <= blockpos_max.Y; y++) {
@@ -2275,7 +2275,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	return true;
 }
 
-MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
+void ServerMap::finishBlockMake(BlockMakeData *data,
 		std::map<v3s16, MapBlock*> &changed_blocks)
 {
 	v3s16 blockpos_min = data->blockpos_min;
@@ -2369,7 +2369,9 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
-			getBlockNoCreateNoEx(p)->setLightingExpired(false);
+			MapBlock * block = getBlockNoCreateNoEx(p);
+			if (block != NULL)
+				block->setLightingExpired(false);
 		}
 
 #if 0
@@ -2385,7 +2387,8 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 			i != changed_blocks.end(); ++i)
 	{
 		MapBlock *block = i->second;
-		assert(block);
+		if (!block)
+			continue;
 		/*
 			Update day/night difference cache of the MapBlocks
 		*/
@@ -2406,7 +2409,8 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	{
 		v3s16 p(x, y, z);
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		assert(block);
+		if (!block)
+			continue;
 		block->setGenerated(true);
 	}
 
@@ -2419,8 +2423,8 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	/*infostream<<"finishBlockMake() done for ("<<blockpos_requested.X
 			<<","<<blockpos_requested.Y<<","
 			<<blockpos_requested.Z<<")"<<std::endl;*/
-			
-	
+
+
 #if 0
 	if(enable_mapgen_debug_info)
 	{
@@ -2444,10 +2448,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	}
 #endif
 
-	MapBlock *block = getBlockNoCreateNoEx(blockpos_requested);
-	assert(block);
-
-	return block;
+	getBlockNoCreateNoEx(blockpos_requested);
 }
 
 ServerMapSector * ServerMap::createSector(v2s16 p2d)
@@ -3068,7 +3069,7 @@ void ServerMap::loadMapMeta()
 			break;
 		params.parseConfigLine(line);
 	}
-	
+
 	m_emerge->loadParamsFromSettings(&params);
 
 	verbosestream<<"ServerMap::loadMapMeta(): seed="
@@ -3710,7 +3711,7 @@ void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
 
 		if(block_data_inexistent)
 		{
-			
+
 			if (load_if_inexistent) {
 				ServerMap *svrmap = (ServerMap *)m_map;
 				block = svrmap->emergeBlock(p, false);
@@ -3720,7 +3721,7 @@ void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
 					block->copyTo(*this);
 			} else {
 				flags |= VMANIP_BLOCK_DATA_INEXIST;
-				
+
 				/*
 					Mark area inexistent
 				*/
@@ -3760,7 +3761,7 @@ void ManualMapVoxelManipulator::blitBackAll(
 		v3s16 p = i->first;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		bool existed = !(i->second & VMANIP_BLOCK_DATA_INEXIST);
-		if(existed == false)
+		if((existed == false) || (block == NULL))
 		{
 			continue;
 		}

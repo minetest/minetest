@@ -444,7 +444,6 @@ set(minetest_SRCS
 	chat.cpp
 	hud.cpp
 	guiKeyChangeMenu.cpp
-	guiTextInputMenu.cpp
 	guiFormSpecMenu.cpp
 	guiTable.cpp
 	guiPasswordChange.cpp
@@ -463,14 +462,6 @@ set(minetest_SRCS
 	drawscene.cpp
 	${minetest_SCRIPT_SRCS}
 )
-
-if(USE_FREETYPE)
-	set(minetest_SRCS
-		${minetest_SRCS}
-		intlGUIEditBox.cpp
-	)
-endif(USE_FREETYPE)
-
 list(SORT minetest_SRCS)
 
 # Server sources

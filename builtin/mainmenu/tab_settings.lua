@@ -79,7 +79,7 @@ end
 
 local function formspec(tabview, name, tabdata)
 	local tab_string =
-		"vertlabel[0,0;" .. fgettext("SETTINGS") .. "]" ..
+		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
 		"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
 				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
@@ -108,7 +108,7 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"..
 		"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
-	
+
 	local android = false
 	if android then
 		tab_string = tab_string ..
