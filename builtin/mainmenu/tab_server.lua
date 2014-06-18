@@ -30,11 +30,11 @@ local function get_formspec(tabview, name, tabdata)
 		"label[4,-0.25;".. fgettext("Select World:") .. "]"..
 		"vertlabel[0,-0.25;".. fgettext("START SERVER") .. "]" ..
 		"checkbox[0.5,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-		dump(core.setting_getbool("creative_mode")) .. "]"..
+		dump(core.setting_getbool("creative_mode")) .. ";]"..
 		"checkbox[0.5,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]"..
+		dump(core.setting_getbool("enable_damage")) .. ";]"..
 		"checkbox[0.5,1.15;cb_server_announce;".. fgettext("Public") .. ";" ..
-		dump(core.setting_getbool("server_announce")) .. "]"..
+		dump(core.setting_getbool("server_announce")) .. ";]"..
 		"field[0.8,3.2;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
 		core.setting_get("name") .. "]" ..
 		"pwdfield[0.8,4.2;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"

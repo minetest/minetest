@@ -57,7 +57,7 @@ local function buttonbar_formspec(self)
 		end
 			
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]",
+			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;;true;%s;]",
 					btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
 					self.buttons[i].image, btn_name, self.buttons[i].caption,
 					borders)
@@ -96,12 +96,12 @@ local function buttonbar_formspec(self)
 		end
 		
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]",
+			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;;true;true;]",
 					btn_dec_pos.x, btn_dec_pos.y, btn_size.x, btn_size.y,
 					self.name, text_dec)
 				
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]",
+			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;;true;true;]",
 					btn_inc_pos.x, btn_inc_pos.y, btn_size.x, btn_size.y,
 					 self.name, text_inc)
 	end

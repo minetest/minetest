@@ -27,15 +27,15 @@ local function get_formspec(data)
 		"label[1.75,-0.25;" .. data.worldspec.name .. "]"
 
 	if data.hide_gamemods then
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true;]"
 	else
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
+		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false;]"
 	end
 
 	if data.hide_modpackcontents then
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true;]"
 	else
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
+		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false;]"
 	end
 
 	if mod == nil then
@@ -71,9 +71,9 @@ local function get_formspec(data)
 			end
 		else
 			if mod.enabled then
-				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";true]"
+				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";true;]"
 			else
-				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
+				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";false;]"
 			end
 		end
 	end
