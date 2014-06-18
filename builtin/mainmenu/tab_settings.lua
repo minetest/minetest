@@ -253,7 +253,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		showconfirm_reset(this)
 		return true
 	end
-	if fields["dd_video_driver"] and fields["dd_video_driver"]:lower() ~= minetest.setting_get("video_driver"):lower() then
+	if fields["dd_video_driver"] and
+			fields["dd_video_driver"]:lower() ~= minetest.setting_get("video_driver"):lower() then
 		core.setting_set("video_driver", fields["dd_video_driver"]:lower())
 		gamedata.errormessage = fgettext("Minetest needs to be restarted to take this change in effect.")
 		return true
