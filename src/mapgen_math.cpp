@@ -35,7 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "mandelbulber/fractal.h"
 //#include "mandelbulber/fractal.cpp"
 
-double mandelbox(double x, double y, double z, double d, int nn = 10) {
+double mandelbox(double x, double y, double z, double d, int nn = 10)
+{
 	int s = 7;
 	x *= s;
 	y *= s;
@@ -94,7 +95,8 @@ double mandelbox(double x, double y, double z, double d, int nn = 10) {
 
 }
 
-double mengersponge(double x, double y, double z, double d, int MI = 10) {
+double mengersponge(double x, double y, double z, double d, int MI = 10)
+{
 
 	double r = x * x + y * y + z * z;
 	double scale = 3;
@@ -140,23 +142,27 @@ double mengersponge(double x, double y, double z, double d, int MI = 10) {
 	return ((sqrt(r)) * pow(scale, (-i)) < d);
 }
 
-double sphere(double x, double y, double z, double d, int ITR = 1) {
+double sphere(double x, double y, double z, double d, int ITR = 1)
+{
 	return v3f(x, y, z).getLength() < d;
 }
 
 
 //////////////////////// Mapgen Math parameter read/write
 
-void MapgenMathParams::readParams(Settings *settings) {
+void MapgenMathParams::readParams(Settings *settings)
+{
 	//params = settings->getJson("mg_math");
 	// can be counfigured from here.
 	std::string value = "{}";
 	Json::Reader reader;
-	if (!reader.parse( value, params ) ) {
-		errorstream  << "Failed to parse json conf var ='" << value << "' : " << reader.getFormattedErrorMessages();
+	if (!reader.parse(value, params)) {
+		errorstream  << "Failed to parse json conf var ='" << value
+			<< "' : " << reader.getFormattedErrorMessages();
 	}
 
-	if (params["generator"].empty()) params["generator"] = settings->get("mgmath_generator");
+	if (params["generator"].empty())
+		params["generator"] = settings->get("mgmath_generator");
 }
 
 
@@ -167,7 +173,9 @@ void MapgenMathParams::writeParams(Settings *settings) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MapgenMath::MapgenMath(int mapgenid, MapgenParams *params_, EmergeManager *emerge) : MapgenV7(mapgenid, params_, emerge) {
+MapgenMath::MapgenMath(int mapgenid, MapgenParams *params_, EmergeManager *emerge) : 
+MapgenV7(mapgenid, params_, emerge)
+{
 	mg_params = (MapgenMathParams *)params_;
 	this->flags &= ~MG_LIGHT;
 
@@ -175,17 +183,24 @@ MapgenMath::MapgenMath(int mapgenid, MapgenParams *params_, EmergeManager *emerg
 	invert = params["invert"].empty() ? 1 : params["invert"].asBool(); //params["invert"].empty()?1:params["invert"].asBool();
 	size = params["size"].empty() ? 0 : params["size"].asDouble(); // = max_r
 	scale = params["scale"].empty() ? 0 : params["scale"].asDouble(); //(double)1 / size;
-	if(!params["center"].empty()) center = v3f(params["center"]["x"].asFloat(), params["center"]["y"].asFloat(), params["center"]["z"].asFloat()); //v3f(5, -size - 5, 5);
+	if (!params["center"].empty())
+		center = v3f(params["center"]["x"].asFloat(),
+					params["center"]["y"].asFloat(),
+					params["center"]["z"].asFloat()); //v3f(5, -size - 5, 5);
 	iterations = params["iterations"].empty() ? 0 : params["iterations"].asInt(); //10;
 	distance = params["distance"].empty() ? 0 : params["distance"].asDouble(); // = 1/size;
 
 	func = &sphere;
 
-	if (params["generator"].empty()) params["generator"] = "mandelbox";
+	if (params["generator"].empty())
+		params["generator"] = "mandelbox";
 	if (params["generator"].asString() == "mengersponge") {
-		if (!size) size = (MAP_GENERATION_LIMIT - 1000) / 2;
-		if (!iterations) iterations = 10;
-		if (!distance) distance = 0.0003;
+		if (!size)
+			size = (MAP_GENERATION_LIMIT - 1000) / 2;
+		if (!iterations)
+			iterations = 10;
+		if (!distance)
+			distance = 0.0003;
 		//if (!scale) scale = (double)0.1 / size;
 		//if (!distance) distance = 0.01; //10/size;//sqrt3 * bd4;
 		//if (!scale) scale = 0.01; //10/size;//sqrt3 * bd4;
@@ -202,29 +217,41 @@ MapgenMath::MapgenMath(int mapgenid, MapgenParams *params_, EmergeManager *emerg
 		*/
 
 		//mandelbox
-		if (!size) size = 1000;
-		if (!distance) distance = 0.01;
-		if(params["invert"].empty()) invert = 0;
+		if (!size)
+			size = 1000;
+		if (!distance)
+			distance = 0.01;
+		if (params["invert"].empty())
+			invert = 0;
 		//center=v3f(2,-size/4,2);
 		//size = 10000;
 		//center=v3f(size/2,-size*0.9,size/2);
-		if(params["center"].empty())center = v3f(size * 0.3, -size * 0.6, size * 0.5);
+		if (params["center"].empty())
+			center = v3f(size * 0.3, -size * 0.6, size * 0.5);
 		func = &mandelbox;
 	} else if (params["generator"].asString() == "sphere") {
-		if(params["invert"].empty()) invert = 0;
-		if (!size) size = 100;
-		if (!distance) distance = size;
+		if (params["invert"].empty())
+			invert = 0;
+		if (!size)
+			size = 100;
+		if (!distance)
+			distance = size;
 		func = &sphere;
 		if (!scale) scale = 1;
 		//sphere
 		//size = 1000;scale = 1;center = v3f(2,-size-2,2);
 	}
 
-	if (!iterations) iterations = 10;
-	if (!size) size = 1000;
-	if (!scale) scale = (double)1 / size;
-	if (!distance)  distance = scale;
-	if (params["center"].empty() && !center.getLength()) center = v3f(3, -size + (-5 - (-invert * 10)), 3);
+	if (!iterations)
+		iterations = 10;
+	if (!size)
+		size = 1000;
+	if (!scale)
+		scale = (double)1 / size;
+	if (!distance)
+		distance = scale;
+	if (params["center"].empty() && !center.getLength())
+		center = v3f(3, -size + (-5 - (-(int)invert * 10)), 3);
 	//size ||= params["size"].empty()?1000:params["size"].asDouble(); // = max_r
 
 }
@@ -298,7 +325,12 @@ int MapgenMath::generateTerrain() {
 	par.mandelbox.doubles.vary4D.wadd = 0;
 	par.doubles.constantFactor = 1.0;
 
-	par.formula = menger_sponge; par.doubles.N = 15; invert = 0; size = 30000; center = v3f(-size / 2, -size + (-2 * -invert), 2);  scale = (double)1 / size; //ok
+	par.formula = menger_sponge;
+	par.doubles.N = 15;
+	invert = 0;
+	size = 30000;
+	center = v3f(-size / 2, -size + (-2 * -(int)invert), 2);
+	scale = (double)1 / size; //ok
 
 	//double tresh = 1.5;
 	//par.formula = mandelbulb2; par.doubles.N = 10; scale = (double)1/size; invert=1; center = v3f(5,-size-5,0); //ok
@@ -328,11 +360,11 @@ int MapgenMath::generateTerrain() {
 	v3f vec0(node_min.X, node_min.Y, node_min.Z);
 	vec0 = (vec0 - center) * scale ;
 	errorstream << " X=" << node_min.X << " Y=" << node_min.Y << " Z=" << node_min.Z
-	            << " N=" << Compute<normal>(CVector3(vec0.X, vec0.Y, vec0.Z), par)
-	            //<<" F="<< Compute<fake_AO>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
-	            //<<" L="<<node_min.getLength()<< " -="<<node_min.getLength() - Compute<normal>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
-	            << " Sc=" << scale
-	            << std::endl;
+		<< " N=" << Compute<normal>(CVector3(vec0.X, vec0.Y, vec0.Z), par)
+		//<<" F="<< Compute<fake_AO>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
+		//<<" L="<<node_min.getLength()<< " -="<<node_min.getLength() - Compute<normal>(CVector3(node_min.X,node_min.Y,node_min.Z), par)
+		<< " Sc=" << scale
+		<< std::endl;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
@@ -346,7 +378,7 @@ int MapgenMath::generateTerrain() {
 				// errorstream << " d=" << d  <<" v="<< vec.getLength()<< " -="<< vec.getLength() - d <<" yad="
 				//<< Compute<normal>(CVector3(x,y,z), par)
 				//<< std::endl;
-				if ((!invert && d > 0) || (invert && d == 0)/*&& vec.getLength() - d > tresh*/ ) {
+				if ((!invert && d > 0) || (invert && d == 0)/*&& vec.getLength() - d > tresh*/) {
 					if (vm->m_data[i].getContent() == CONTENT_IGNORE)
 						vm->m_data[i] = n_stone;
 				} else {
