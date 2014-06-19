@@ -36,10 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
 
-#if USE_CURL
-#include <curl/curl.h>
-#endif
-
 /******************************************************************************/
 /** TextDestGuiEngine                                                         */
 /******************************************************************************/
@@ -297,7 +293,7 @@ GUIEngine::~GUIEngine()
 	}
 
 	delete m_texture_source;
-	
+
 	if (m_cloud.clouds)
 		m_cloud.clouds->drop();
 }

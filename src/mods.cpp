@@ -113,11 +113,11 @@ std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mod
 		ModSpec mod = (*it).second;
 		if(mod.is_modpack)
 		{
-			std::map<std::string, ModSpec> content = 
+			std::map<std::string, ModSpec> content =
 				flattenModTree(mod.modpack_content);
 			result.insert(content.begin(),content.end());
 			result.insert(std::make_pair(mod.name,mod));
-		} 
+		}
 		else //not a modpack
 		{
 			result.insert(std::make_pair(mod.name,mod));
@@ -138,8 +138,8 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 			std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 			result.reserve(result.size() + content.size());
 			result.insert(result.end(),content.begin(),content.end());
-			
-		} 
+
+		}
 		else //not a modpack
 		{
 			result.push_back(mod);
@@ -163,10 +163,10 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> include_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin(); 
+	for(std::vector<std::string>::iterator it = names.begin();
 		it != names.end(); ++it)
-	{	
-		std::string name = *it;  
+	{
+		std::string name = *it;
 		// for backwards compatibility: exclude only mods which are
 		// explicitely excluded. if mod is not mentioned at all, it is
 		// enabled. So by default, all installed mods are enabled.
@@ -234,7 +234,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 		// Add all the mods that come from modpacks
 		// Second iteration:
 		// Add all the mods that didn't come from modpacks
-		
+
 		std::set<std::string> seen_this_iteration;
 
 		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
@@ -325,7 +325,7 @@ void ModConfiguration::resolveDependencies()
 			else{
 				++it;
 			}
-		}	
+		}
 	}
 
 	// Step 4: write back list of unsatisfied mods
@@ -335,7 +335,7 @@ void ModConfiguration::resolveDependencies()
 #if USE_CURL
 Json::Value getModstoreUrl(std::string url)
 {
-	struct curl_slist *chunk = NULL;
+	std::vector<std::string> extra_headers;
 
 	bool special_http_header = true;
 
@@ -345,15 +345,13 @@ Json::Value getModstoreUrl(std::string url)
 	catch(SettingNotFoundException &e) {
 	}
 
-	if (special_http_header)
-		chunk = curl_slist_append(chunk, "Accept: application/vnd.minetest.mmdb-v1+json");
-
-	Json::Value retval = fetchJsonValue(url,chunk);
-
-	if (chunk != NULL)
-		curl_slist_free_all(chunk);
-
-	return retval;
+	if (special_http_header) {
+		extra_headers.push_back("Accept: application/vnd.minetest.mmdb-v1+json");
+		return fetchJsonValue(url, &extra_headers);
+	}
+	else {
+		return fetchJsonValue(url, NULL);
+	}
 }
 
 #endif

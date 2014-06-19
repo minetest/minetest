@@ -70,7 +70,7 @@ std::vector<ServerListSpec> getLocal()
 
 std::vector<ServerListSpec> getOnline()
 {
-	Json::Value root = fetchJsonValue((g_settings->get("serverlist_url")+"/list").c_str(),0);
+	Json::Value root = fetchJsonValue((g_settings->get("serverlist_url")+"/list").c_str(), NULL);
 
 	std::vector<ServerListSpec> serverlist;
 

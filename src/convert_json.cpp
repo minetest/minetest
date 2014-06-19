@@ -32,20 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 Json::Value                 fetchJsonValue(const std::string &url,
-		struct curl_slist *chunk) {
+		std::vector<std::string> *extra_headers) {
 
 	HTTPFetchRequest fetchrequest;
 	HTTPFetchResult fetchresult;
 	fetchrequest.url = url;
 	fetchrequest.caller = HTTPFETCH_SYNC;
 
-#if USE_CURL
-	struct curl_slist* runptr = chunk;
-	while(runptr) {
-		fetchrequest.extra_headers.push_back(runptr->data);
-		runptr = runptr->next;
-	}
-#endif
+	if (extra_headers != NULL)
+		fetchrequest.extra_headers = *extra_headers;
+
 	httpfetch_sync(fetchrequest,fetchresult);
 
 	if (!fetchresult.succeeded) {
