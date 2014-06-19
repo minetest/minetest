@@ -75,29 +75,38 @@ local function showconfirm_reset(tabview)
 	new_dlg:show()
 end
 
-local function gui_scale_index()
+local function gui_scale_to_scrollbar()
 
 	local current_value = tonumber(core.setting_get("gui_scaling"))
 
-	if (current_value == nil) then
+	if (current_value == nil) or current_value < 0.25 then
 		return 0
-	elseif current_value <= 0.5 then
-		return 1
-	elseif current_value <= 0.625 then
-		return 2
-	elseif current_value <= 0.75 then
-		return 3
-	elseif current_value <= 0.875 then
-		return 4
-	elseif current_value <= 1.0 then
-		return 5
-	elseif current_value <= 1.25 then
-		return 6
-	elseif current_value <= 1.5 then
-		return 7
-	else
-		return 8
 	end
+
+	if current_value <= 1.25 then
+		return ((current_value - 0.25)/ 1.0) * 700
+	end
+
+	if current_value <= 6 then
+		return ((current_value -1.25) * 100) + 700
+	end
+
+	return 1000
+end
+
+local function scrollbar_to_gui_scale(value)
+
+	value = tonumber(value)
+
+	if (value <= 700) then
+		return ((value / 700) * 1.0) + 0.25
+	end
+
+	if (value <=1000) then
+		return ((value - 700) / 100) + 1.25
+	end
+
+	return 1
 end
 
 local function formspec(tabview, name, tabdata)
@@ -138,8 +147,11 @@ local function formspec(tabview, name, tabdata)
 	tab_string = tab_string ..
 		"box[0.75,4.25;3.25,1.25;#999999]" ..
 		"label[1,4.25;" .. fgettext("GUI scale factor") .. "]" ..
-		"dropdown[1,4.75;3.0;dd_gui_scaling;0.5,0.625,0.75,0.875,1.0,1.25,1.5,2.0;"
-			.. gui_scale_index() .. "]"
+		"scrollbar[1,4.75;2.75,0.4;sb_gui_scaling;horizontal;" ..
+		 gui_scale_to_scrollbar() .. "]" ..
+		"tooltip[sb_gui_scaling;" ..
+			fgettext("Scaling factor applied to menu elements: ") ..
+			dump(core.setting_get("gui_scaling")) .. "]"
 
 	if ANDROID then
 		tab_string = tab_string ..
@@ -257,6 +269,16 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.show_keys_menu()
 		return true
 	end
+
+	if fields["sb_gui_scaling"] then
+		local event = core.explode_scrollbar_event(fields["sb_gui_scaling"])
+
+		if event.type == "CHG" then
+			local tosave = string.format("%.2f",scrollbar_to_gui_scale(event.value))
+			core.setting_set("gui_scaling",tosave)
+			return true
+		end
+	end
 	if fields["cb_touchscreen_target"] then
 		core.setting_set("touchtarget", fields["cb_touchscreen_target"])
 		return true
@@ -270,10 +292,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local ddhandled = false
 	if fields["dd_touchthreshold"] then
 		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
-		ddhandled = true
-	end
-	if fields["dd_gui_scaling"] then
-		core.setting_set("gui_scaling",fields["dd_gui_scaling"])
 		ddhandled = true
 	end
 	

@@ -40,6 +40,7 @@ typedef enum {
 	f_TabHeader,
 	f_CheckBox,
 	f_DropDown,
+	f_ScrollBar,
 	f_Unknown
 } FormspecFieldType;
 
@@ -306,7 +307,8 @@ protected:
 	std::vector<std::pair<FieldSpec,GUITable*> > m_tables;
 	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
 	std::map<std::wstring, TooltipSpec> m_tooltips;
-	
+	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
+
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
 	bool m_selected_dragging;
@@ -397,6 +399,7 @@ private:
 	void parseListColors(parserData* data,std::string element);
 	void parseTooltip(parserData* data,std::string element);
 	bool parseVersionDirect(std::string data);
+	void parseScrollBar(parserData* data, std::string element);
 
 	/**
 	 * check if event is part of a double click

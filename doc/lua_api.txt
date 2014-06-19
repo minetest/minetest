@@ -1061,6 +1061,9 @@ box[<X>,<Y>;<W>,<H>;<color>]
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
+^ IMPORTANT NOTE: There are two different operation modes:
+^     1) handle directly on change (only changed dropdown is submitted)
+^     2) read the value on pressing a button (all dropdown values are available)
 ^ x and y position of dropdown
 ^ width of dropdown
 ^ fieldname data is transfered to Lua
@@ -1074,6 +1077,18 @@ checkbox[<X>,<Y>;<name>;<label>;<selected>;<tooltip>]
 ^ label to be shown left of checkbox
 ^ selected (optional) true/false
 ^ tooltip (optional)
+
+scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]
+^ show a scrollbar
+^ there are two ways to use it:
+^     1) handle the changed event (only changed scrollbar is available)
+^     2) read the value on pressing a button (all scrollbars are available)
+^ x and y position of trackbar
+^ width and height
+^ orientation vertical/horizontal
+^ fieldname data is transfered to lua
+^ value this trackbar is set to (0-1000)
+^ see also minetest.explode_scrollbar_event (main menu: engine.explode_scrollbar_event)
 
 table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
 ^ show scrollable table using options defined by the previous tableoptions[]
@@ -1472,6 +1487,9 @@ minetest.explode_table_event(string) -> table
 minetest.explode_textlist_event(string) -> table
 ^ returns e.g. {type="CHG", index=1}
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+minetest.explode_scrollbar_event(string) -> table
+^ returns e.g. {type="CHG", value=500}
+^ type: "INV" (something failed), "CHG" (has been changed) or "VAL" (not changed)
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)
