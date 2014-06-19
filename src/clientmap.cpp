@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // dout_client, g_settings
 #include "nodedef.h"
 #include "mapblock.h"
+#include "mesh.h"
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h" // CameraModes
@@ -49,7 +50,8 @@ ClientMap::ClientMap(
 	m_control(control),
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
-	m_camera_fov(M_PI)
+	m_camera_fov(M_PI),
+	m_boundary_debug_mesh(NULL)
 {
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
@@ -57,13 +59,13 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	/*JMutexAutoLock lock(mesh_mutex);
+	JMutexAutoLock lock(m_boundary_debug_mesh_mutex);
 	
-	if(mesh != NULL)
+	if(m_boundary_debug_mesh != NULL)
 	{
-		mesh->drop();
-		mesh = NULL;
-	}*/
+		m_boundary_debug_mesh->drop();
+		m_boundary_debug_mesh = NULL;
+	}
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
@@ -887,6 +889,65 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);
 		driver->draw2DRectangle(post_effect_color, rect);
+	}
+}
+
+void ClientMap::renderDebugBlockBoundaries(bool xray)
+{
+	JMutexAutoLock lock(m_boundary_debug_mesh_mutex);
+
+	if (m_boundary_debug_mesh == NULL)
+		m_boundary_debug_mesh = createBoundaryMesh(0.005, v3f(BS*MAP_BLOCKSIZE*0.96));
+
+	m_camera_mutex.Lock();
+	v3f camera_position = m_camera_position;
+	m_camera_mutex.Unlock();
+	v3s16 player_block_pos = getNodeBlockPos(floatToInt(camera_position, BS));
+
+	video::SMaterial mat;
+	mat.Lighting = true;
+	mat.ZWriteEnable = true;
+	mat.FrontfaceCulling = false;
+	mat.BackfaceCulling = false;
+
+	core::CMatrix4<f32> matrix;
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+	if (xray)
+		driver->clearZBuffer();
+
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = m_drawlist.begin();
+			i != m_drawlist.end(); ++i)
+	{
+		v3s16 block_pos = i->first;
+
+		video::SColor color(255, 0, 0, 0);
+		if (block_pos == player_block_pos) {
+			color.setGreen(255);
+		} else {
+			if (i->second->isDummy()) {
+				color.setRed(255);
+			} else {
+				color.setBlue(128);
+			}
+			if (((block_pos.X + block_pos.Y + block_pos.Z) % 2) == 0) {
+				// Checkerboard pattern makes it easier to
+				// distinguish neighbors from each other.
+				color.setGreen(80);
+			}
+		}
+
+		mat.EmissiveColor = color;
+		driver->setMaterial(mat);
+
+		matrix.setTranslation(
+			intToFloat(block_pos, BS)*v3f(MAP_BLOCKSIZE)
+			 - v3f(BS)*0.5
+			 + v3f(BS*MAP_BLOCKSIZE/2)
+		);
+		driver->setTransform(video::ETS_WORLD,matrix);
+		driver->drawMeshBuffer(m_boundary_debug_mesh->getMeshBuffer(0));
 	}
 }
 

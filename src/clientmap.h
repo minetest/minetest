@@ -129,6 +129,9 @@ public:
 
 	void renderPostFx(CameraMode cam_mode);
 
+	// For debugging the status and position of MapBlocks
+	void renderDebugBlockBoundaries(bool xray);
+
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 	
@@ -154,6 +157,9 @@ private:
 	std::map<v3s16, MapBlock*> m_drawlist;
 	
 	std::set<v2s16> m_last_drawn_sectors;
+
+	JMutex m_boundary_debug_mesh_mutex;
+	scene::IMesh* m_boundary_debug_mesh;
 };
 
 #endif
