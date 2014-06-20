@@ -98,6 +98,8 @@ GUITable::~GUITable()
 
 	if (m_font)
 		m_font->drop();
+	
+	m_scrollbar->remove();
 }
 
 GUITable::Option GUITable::splitOption(const std::string &str)

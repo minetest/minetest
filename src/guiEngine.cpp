@@ -205,8 +205,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	}
 
 	m_menu->quitMenu();
-	m_menu->drop();
-	m_menu = 0;
+	m_menu->remove();
+	delete m_menu;
+	m_menu = NULL;
 }
 
 /******************************************************************************/
@@ -278,8 +279,6 @@ GUIEngine::~GUIEngine()
 		delete m_sound_manager;
 		m_sound_manager = NULL;
 	}
-
-	//TODO: clean up m_menu here
 
 	infostream<<"GUIEngine: Deinitializing scripting"<<std::endl;
 	delete m_script;

@@ -102,6 +102,11 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 GUIFormSpecMenu::~GUIFormSpecMenu()
 {
 	removeChildren();
+	
+	for (u32 i = 0; i < m_tables.size(); ++i) {
+		GUITable *table = m_tables[i].second;
+		table->drop();
+	}
 
 	delete m_selected_item;
 
