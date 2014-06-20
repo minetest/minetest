@@ -676,15 +676,15 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce") == true)
+				g_settings->getBool("server_announce"))
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update",
-										m_clients.getPlayerNames(),
-										m_uptime.get(),
-										m_env->getGameTime(),
-										m_lag,
-										m_gamespec.id,
-										m_mods);
+			ServerList::sendAnnounce(counter ? "update" : "start",
+					m_clients.getPlayerNames(),
+					m_uptime.get(),
+					m_env->getGameTime(),
+					m_lag,
+					m_gamespec.id,
+					m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;
