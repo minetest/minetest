@@ -1111,7 +1111,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 			L"",
 			258+m_fields.size()
 		);
-		Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
+		Environment->addStaticText(spec.flabel.c_str(), rect, false, false, this, spec.fid);
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1157,7 +1157,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 			258+m_fields.size()
 		);
 		gui::IGUIStaticText *t =
-				Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
+				Environment->addStaticText(spec.flabel.c_str(), rect, false, false, this, spec.fid);
 		t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		m_fields.push_back(spec);
 		return;

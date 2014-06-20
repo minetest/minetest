@@ -583,7 +583,7 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 		if (lineBreak)
 		{
 			previousChar = 0;
-			offset.Y += font_metrics.ascender / 64;
+			offset.Y += font_metrics.height / 64;
 			offset.X = position.UpperLeftCorner.X;
 
 			if (hcenter)
