@@ -44,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v7.h"
 #include "mapgen_indev.h"
 #include "mapgen_singlenode.h"
-#include "mapgen_math.h"
 
 
 class EmergeThread : public JThread
@@ -86,7 +85,6 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	registerMapgen("v7",         new MapgenFactoryV7());
 	registerMapgen("indev",      new MapgenFactoryIndev());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
-	registerMapgen("math",       new MapgenFactoryMath());
 
 	this->ndef     = gamedef->getNodeDefManager();
 	this->biomedef = new BiomeDefManager();
