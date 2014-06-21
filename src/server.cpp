@@ -1173,6 +1173,11 @@ void Server::Receive()
 				"InvalidIncomingDataException: what()="
 				<<e.what()<<std::endl;
 	}
+	catch(SerializationError &e) {
+		infostream<<"Server::Receive(): "
+				"SerializationError: what()="
+				<<e.what()<<std::endl;
+	}
 	catch(con::PeerNotFoundException &e)
 	{
 		//NOTE: This is not needed anymore
