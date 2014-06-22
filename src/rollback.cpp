@@ -1091,10 +1091,36 @@ public:
 
 		SQL_databaseCheck();
 	}
+#define FINALIZE_STATEMENT(statement)                                          \
+	if ( statement )                                                           \
+		rc = sqlite3_finalize(statement);                                      \
+	if ( rc != SQLITE_OK )                                                     \
+		errorstream << "RollbackManager::~RollbackManager():"                  \
+			<< "Failed to finalize: " << #statement << ": rc=" << rc << std::endl;
 
 	~RollbackManager() {
 		infostream << "RollbackManager::~RollbackManager()" << std::endl;
 		flush();
+
+		int rc = SQLITE_OK;
+
+		FINALIZE_STATEMENT(dbs_insert)
+		FINALIZE_STATEMENT(dbs_replace)
+		FINALIZE_STATEMENT(dbs_select)
+		FINALIZE_STATEMENT(dbs_select_range)
+		FINALIZE_STATEMENT(dbs_select_withActor)
+		FINALIZE_STATEMENT(dbs_knownActor_select)
+		FINALIZE_STATEMENT(dbs_knownActor_insert)
+		FINALIZE_STATEMENT(dbs_knownNode_select)
+		FINALIZE_STATEMENT(dbs_knownNode_insert)
+
+		if(dbh)
+			rc = sqlite3_close(dbh);
+
+		if (rc != SQLITE_OK) {
+			errorstream << "RollbackManager::~RollbackManager(): "
+					<< "Failed to close database: rc=" << rc << std::endl;
+		}
 	}
 
 	void addAction(const RollbackAction &action) {

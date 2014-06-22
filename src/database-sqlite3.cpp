@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	SQLite format specification:
 	- Initially only replaces sectors/ and sectors2/
-	
+
 	If map.sqlite does not exist in the save dir
 	or the block was not found in the database
 	the map will try to load from sectors folder.
 	In either case, map.sqlite will be created
 	and all future saves will save there.
-	
+
 	Structure of map.sqlite:
 	Tables:
 		blocks
@@ -85,27 +85,27 @@ void Database_SQLite3::createDirs(std::string path)
 void Database_SQLite3::verifyDatabase() {
 	if(m_database)
 		return;
-	
+
 	{
 		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
 		bool needs_create = false;
 		int d;
-		
+
 		/*
 			Open the database connection
 		*/
-	
+
 		createDirs(m_savedir); // ?
-	
+
 		if(!fs::PathExists(dbp))
 			needs_create = true;
-	
+
 		d = sqlite3_open_v2(dbp.c_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: SQLite3 database failed to open: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot open database file");
 		}
-		
+
 		if(needs_create)
 			createDatabase();
 
@@ -123,19 +123,19 @@ void Database_SQLite3::verifyDatabase() {
 			infostream<<"WARNING: SQLite3 database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
-		
+
 		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: SQLite3 database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare write statement");
 		}
-		
+
 		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: SQLite3 database list statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
-		
+
 		infostream<<"ServerMap: SQLite3 database opened"<<std::endl;
 	}
 }
@@ -158,8 +158,8 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
 	v3s16 p3d = block->getPos();
-	
-	
+
+
 #if 0
 	v2s16 p2d(p3d.X, p3d.Z);
 	std::string sectordir = getSectorDir(p2d);
@@ -175,21 +175,21 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 		[0] u8 serialization version
 		[1] data
 	*/
-	
+
 	verifyDatabase();
-	
+
 	std::ostringstream o(std::ios_base::binary);
-	
+
 	o.write((char*)&version, 1);
-	
+
 	// Write basic data
 	block->serialize(o, version, true);
-	
+
 	// Write block to database
-	
+
 	std::string tmp = o.str();
 	const char *bytes = tmp.c_str();
-	
+
 	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
 		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
 	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
@@ -200,7 +200,7 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 		<<sqlite3_errmsg(m_database)<<std::endl;
 	// Make ready for later reuse
 	sqlite3_reset(m_database_write);
-	
+
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
 }
@@ -323,13 +323,13 @@ void Database_SQLite3::createDatabase()
 		throw FileNotGoodException("Could not create sqlite3 database structure");
 	else
 		infostream<<"ServerMap: SQLite3 database structure was created";
-	
+
 }
 
 void Database_SQLite3::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	verifyDatabase();
-	
+
 	while(sqlite3_step(m_database_list) == SQLITE_ROW)
 	{
 		sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
@@ -339,13 +339,28 @@ void Database_SQLite3::listAllLoadableBlocks(std::list<v3s16> &dst)
 	}
 }
 
+
+#define FINALIZE_STATEMENT(statement)                                          \
+	if ( statement )                                                           \
+		rc = sqlite3_finalize(statement);                                      \
+	if ( rc != SQLITE_OK )                                                     \
+		errorstream << "Database_SQLite3::~Database_SQLite3():"                \
+			<< "Failed to finalize: " << #statement << ": rc=" << rc << std::endl;
+
 Database_SQLite3::~Database_SQLite3()
 {
-	if(m_database_read)
-		sqlite3_finalize(m_database_read);
-	if(m_database_write)
-		sqlite3_finalize(m_database_write);
+	int rc = SQLITE_OK;
+
+	FINALIZE_STATEMENT(m_database_read)
+	FINALIZE_STATEMENT(m_database_write)
+	FINALIZE_STATEMENT(m_database_list)
+
 	if(m_database)
-		sqlite3_close(m_database);
+		rc = sqlite3_close(m_database);
+
+	if (rc != SQLITE_OK) {
+		errorstream << "Database_SQLite3::~Database_SQLite3(): "
+				<< "Failed to close database: rc=" << rc << std::endl;
+	}
 }
 
