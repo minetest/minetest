@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "util/serialize.h"
+#include "jthread/jmutexautolock.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -196,12 +197,30 @@ u32 Environment::getDayNightRatio()
 	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 
+void Environment::setTimeOfDaySpeed(float speed)
+{
+	JMutexAutoLock(this->m_lock);
+	m_time_of_day_speed = speed;
+}
+
+float Environment::getTimeOfDaySpeed()
+{
+	JMutexAutoLock(this->m_lock);
+	float retval = m_time_of_day_speed;
+	return retval;
+}
+
 void Environment::stepTimeOfDay(float dtime)
 {
+	float day_speed = 0;
+	{
+		JMutexAutoLock(this->m_lock);
+		day_speed = m_time_of_day_speed;
+	}
+	
 	m_time_counter += dtime;
-	f32 speed = m_time_of_day_speed * 24000./(24.*3600);
+	f32 speed = day_speed * 24000./(24.*3600);
 	u32 units = (u32)(m_time_counter*speed);
-	m_time_counter -= (f32)units / speed;
 	bool sync_f = false;
 	if(units > 0){
 		// Sync at overflow
@@ -211,8 +230,11 @@ void Environment::stepTimeOfDay(float dtime)
 		if(sync_f)
 			m_time_of_day_f = (float)m_time_of_day / 24000.0;
 	}
+	if (speed > 0) {
+		m_time_counter -= (f32)units / speed;
+	}
 	if(!sync_f){
-		m_time_of_day_f += m_time_of_day_speed/24/3600*dtime;
+		m_time_of_day_f += day_speed/24/3600*dtime;
 		if(m_time_of_day_f > 1.0)
 			m_time_of_day_f -= 1.0;
 		if(m_time_of_day_f < 0.0)

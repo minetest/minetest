@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "mapnode.h"
 #include "mapblock.h"
+#include "jthread/jmutex.h"
 
 class ServerEnvironment;
 class ActiveBlockModifier;
@@ -93,11 +94,9 @@ public:
 
 	void stepTimeOfDay(float dtime);
 
-	void setTimeOfDaySpeed(float speed)
-	{ m_time_of_day_speed = speed; }
+	void setTimeOfDaySpeed(float speed);
 	
-	float getTimeOfDaySpeed()
-	{ return m_time_of_day_speed; }
+	float getTimeOfDaySpeed();
 
 	void setDayNightRatioOverride(bool enable, u32 value)
 	{
@@ -121,6 +120,9 @@ protected:
 	// Overriding the day-night ratio is useful for custom sky visuals
 	bool m_enable_day_night_ratio_override;
 	u32 m_day_night_ratio_override;
+	
+private:
+	JMutex m_lock;
 
 };
 
