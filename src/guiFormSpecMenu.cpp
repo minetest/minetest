@@ -1366,12 +1366,13 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 5) {
+	if ((parts.size() == 5) || (parts.size() == 7)){
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string item_name = parts[2];
 		std::string name = parts[3];
 		std::string label = parts[4];
+		std::string tooltip = "";
 
 		MY_CHECKPOS("itemimagebutton",0);
 		MY_CHECKGEOM("itemimagebutton",1);
@@ -1392,7 +1393,11 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		ItemStack item;
 		item.deSerialize(item_name, idef);
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
-		std::string tooltip = item.getDefinition(idef).description;
+
+		if ((parts.size() == 7) && (parts[5] == "true")) 
+			tooltip = parts[6];
+		else
+			tooltip = item.getDefinition(idef).description;
 
 		label = unescape_string(label);
 		FieldSpec spec(
