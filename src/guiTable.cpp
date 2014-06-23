@@ -183,6 +183,16 @@ void GUITable::setTable(const TableOptions &options,
 	// j is always a column index, 0-based
 	// k is another index, for example an option index
 
+	// Handle a stupid error case... (issue #1187)
+	if (columns.empty()) {
+		TableColumn text_column;
+		text_column.type = "text";
+		TableColumns new_columns;
+		new_columns.push_back(text_column);
+		setTable(options, new_columns, content);
+		return;
+	}
+
 	// Handle table options
 	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
