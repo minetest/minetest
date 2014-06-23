@@ -1366,12 +1366,13 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 5) {
+	if ((parts.size() == 5) || (parts.size() == 6)){
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string item_name = parts[2];
 		std::string name = parts[3];
 		std::string label = parts[4];
+		std::string tooltip = "";
 
 		MY_CHECKPOS("itemimagebutton",0);
 		MY_CHECKGEOM("itemimagebutton",1);
@@ -1392,7 +1393,11 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		ItemStack item;
 		item.deSerialize(item_name, idef);
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
-		std::string tooltip = item.getDefinition(idef).description;
+
+		if ((parts.size() == 6) && (parts[5] != "NULL")) 
+			tooltip = parts[5];
+		else
+			tooltip = item.getDefinition(idef).description;
 
 		label = unescape_string(label);
 		FieldSpec spec(
@@ -2101,32 +2106,45 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
-		for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
-					iter != m_fields.end(); iter++) {
-			if ( (iter->fid == id) && (iter->tooltip != "") ) {
-				m_tooltip_element->setVisible(true);
-				this->bringToFront(m_tooltip_element);
-				m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
-				s32 tooltip_x = m_pointer.X + m_btn_height;
-				s32 tooltip_y = m_pointer.Y + m_btn_height;
-				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-				if (tooltip_x + tooltip_width > (s32)screenSize.X)
-					tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
-				int lines_count = 1;
-				size_t i = 0;
-				while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
-					lines_count++;
-					i += 2;
+		if (id == -1) {
+			m_old_tooltip_id = id;
+			m_old_tooltip = "";
+		} else if (id != m_old_tooltip_id) {
+			m_hoovered_time = getTimeMs();
+			m_old_tooltip_id = id;
+		} else if (id == m_old_tooltip_id) {
+			u32 delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
+			if (delta > 400) {
+				for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+						iter != m_fields.end(); iter++) {
+					if ( (iter->fid == id) && (iter->tooltip != "") ) {
+						if (m_old_tooltip != iter->tooltip) {
+							m_old_tooltip = iter->tooltip;
+							m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
+							s32 tooltip_x = m_pointer.X + m_btn_height;
+							s32 tooltip_y = m_pointer.Y + m_btn_height;
+							s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
+							if (tooltip_x + tooltip_width > (s32)screenSize.X)
+								tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
+							int lines_count = 1;
+							size_t i = 0;
+							while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
+								lines_count++;
+								i += 2;
+							}
+							s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
+							m_tooltip_element->setRelativePosition(core::rect<s32>(
+							core::position2d<s32>(tooltip_x, tooltip_y),
+							core::dimension2d<s32>(tooltip_width, tooltip_height)));
+						}
+						m_tooltip_element->setVisible(true);
+						this->bringToFront(m_tooltip_element);
+						break;
+					}
 				}
-				s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
-				m_tooltip_element->setRelativePosition(core::rect<s32>(
-				core::position2d<s32>(tooltip_x, tooltip_y),
-				core::dimension2d<s32>(tooltip_width, tooltip_height)));
-				break;
 			}
 		}
 	}
-
 	/*
 		Draw dragged item stack
 	*/
@@ -2403,7 +2421,9 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+			m_old_tooltip_id = -1;
+		}
 		if (!isChild(hovered,this)) {
 			if (DoubleClickDetection(event)) {
 				return true;
@@ -2504,12 +2524,15 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 	}
+
+	
 	if(event.EventType==EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event != EMIE_MOUSE_MOVED) {
 		// Mouse event other than movement
 
 		// Get selected item and hovered/clicked item (s)
 
+		m_old_tooltip_id = -1;
 		updateSelectedItem();
 		ItemSpec s = getItemAtPos(m_pointer);
 

@@ -300,6 +300,10 @@ protected:
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
 
+	s32 m_hoovered_time;
+	s32 m_old_tooltip_id;
+	std::string m_old_tooltip;
+
 	bool m_allowclose;
 	bool m_lock;
 	v2u32 m_lockscreensize;

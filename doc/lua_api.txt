@@ -1009,11 +1009,13 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>
 ^ pressed texture name is the filename of an image on pressed state
 ^ tooltip is optional
 
-item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
+item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>;<tooltip>]
 ^ x, y, w, h, name and label work as per button
 ^ item name is the registered name of an item/node,
   tooltip will be made out of its descritption
 ^ Position and size units are inventory slots
+^ tooltip - use it to override items description,
+  set it to NULL to disable field (optional)
 
 button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
