@@ -446,7 +446,7 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	if (m_has_tree_column) {
-		// Treeview: convent tree to indent cells on leaf rows
+		// Treeview: convert tree to indent cells on leaf rows
 		for (s32 i = 0; i < rowcount; ++i) {
 			if (i == rowcount-1 || m_rows[i].indent >= m_rows[i+1].indent)
 				for (s32 j = 0; j < m_rows[i].cellcount; ++j)
@@ -798,7 +798,7 @@ bool GUITable::OnEvent(const SEvent &event)
 			}
 
 			// find the selected item, starting at the current selection
-			// dont change selection if the key buffer matches the current item
+			// don't change selection if the key buffer matches the current item
 			s32 old_selected = m_selected;
 			s32 start = MYMAX(m_selected, 0);
 			s32 rowcount = m_visible_rows.size();
