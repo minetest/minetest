@@ -297,7 +297,7 @@ void RemotePlayer::save(std::string savedir)
 
 	savedir += DIR_DELIM;
 	std::string path = savedir + m_name;
-	for (u32 i = 0; i < 1000; i++) {
+	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		if (!fs::PathExists(path)) {
 			// Open file and serialize
 			std::ostringstream ss(std::ios_base::binary);

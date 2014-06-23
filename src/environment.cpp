@@ -455,7 +455,7 @@ Player *ServerEnvironment::loadPlayer(const std::string &playername)
 
 	RemotePlayer testplayer(m_gamedef);
 	std::string path = players_path + playername;
-	for (u32 i = 0; i < 1000; i++) {
+	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		// Open file and deserialize
 		std::ifstream is(path.c_str(), std::ios_base::binary);
 		if (!is.good()) {
