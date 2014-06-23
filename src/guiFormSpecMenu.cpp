@@ -2114,37 +2114,39 @@ void GUIFormSpecMenu::drawMenu()
 			m_old_tooltip_id = id;
 		} else if (id == m_old_tooltip_id) {
 			u32 delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
-			if (delta > 400) {
-				for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
-						iter != m_fields.end(); iter++) {
-					if ( (iter->fid == id) && (iter->tooltip != "") ) {
-						if (m_old_tooltip != iter->tooltip) {
-							m_old_tooltip = iter->tooltip;
-							m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
-							s32 tooltip_x = m_pointer.X + m_btn_height;
-							s32 tooltip_y = m_pointer.Y + m_btn_height;
-							s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-							if (tooltip_x + tooltip_width > (s32)screenSize.X)
-								tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
-							int lines_count = 1;
-							size_t i = 0;
-							while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
-								lines_count++;
-								i += 2;
-							}
-							s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
-							m_tooltip_element->setRelativePosition(core::rect<s32>(
-							core::position2d<s32>(tooltip_x, tooltip_y),
-							core::dimension2d<s32>(tooltip_width, tooltip_height)));
+			if (delta <= 400)
+				goto skip_tooltip;
+			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+					iter != m_fields.end(); iter++) {
+				if ( (iter->fid == id) && (iter->tooltip != "") ) {
+					if (m_old_tooltip != iter->tooltip) {
+						m_old_tooltip = iter->tooltip;
+						m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
+						s32 tooltip_x = m_pointer.X + m_btn_height;
+						s32 tooltip_y = m_pointer.Y + m_btn_height;
+						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
+						if (tooltip_x + tooltip_width > (s32)screenSize.X)
+							tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
+						int lines_count = 1;
+						size_t i = 0;
+						while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
+							lines_count++;
+							i += 2;
 						}
-						m_tooltip_element->setVisible(true);
-						this->bringToFront(m_tooltip_element);
-						break;
+						s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
+						m_tooltip_element->setRelativePosition(core::rect<s32>(
+						core::position2d<s32>(tooltip_x, tooltip_y),
+						core::dimension2d<s32>(tooltip_width, tooltip_height)));
 					}
+					m_tooltip_element->setVisible(true);
+					this->bringToFront(m_tooltip_element);
+					break;
 				}
 			}
 		}
 	}
+
+	skip_tooltip:	
 	/*
 		Draw dragged item stack
 	*/
