@@ -918,8 +918,14 @@ listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<too
 ^ Sets background color of slots in HEX-Color format
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
-^ Sets background color of tooltips
-^ Sets font color of tooltips
+^ Sets default background color of tooltips
+^ Sets default font color of tooltips
+
+tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]
+^ Adds tooltip for an element
+^ <bgcolor> tooltip background color in HEX-Color format (optional)
+^ <fontcolor> tooltip font color in HEX-Color format (optional)
+
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
@@ -986,13 +992,12 @@ vertlabel[<X>,<Y>;<label>]
 ^ label is the text on the label
 ^ Position and size units are inventory slots
 
-button[<X>,<Y>;<W>,<H>;<name>;<label>;<tooltip>]
+button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Clickable button. When clicked, fields will be sent.
 ^ x, y and name work as per field
 ^ w and h are the size of the button
 ^ label is the text on the button
 ^ Position and size units are inventory slots
-^ tooltip is optional
 
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ x, y, w, h, and name work as per button
@@ -1000,19 +1005,18 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ Position and size units are inventory slots
 
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]
-image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>;<tooltip>]
 ^ x, y, w, h, and name work as per button
 ^ texture name is the filename of an image
 ^ Position and size units are inventory slots
 ^ noclip true meand imagebutton doesn't need to be within specified formsize
 ^ drawborder draw button bodrer or not
 ^ pressed texture name is the filename of an image on pressed state
-^ tooltip is optional
 
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
 ^ item name is the registered name of an item/node,
   tooltip will be made out of its descritption
+  to override it use tooltip element
 ^ Position and size units are inventory slots
 
 button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
