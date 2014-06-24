@@ -405,7 +405,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() >= 3) || (parts.size() <= 5)) {
+	if ((parts.size() >= 3) || (parts.size() <= 4)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[1];
 		std::string label = parts[2];
@@ -446,8 +446,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-		if (parts.size() >= 5)
-			spec.tooltip = parts[4];
+
 		m_checkboxes.push_back(std::pair<FieldSpec,gui::IGUICheckBox*>(spec,e));
 		m_fields.push_back(spec);
 		return;
@@ -532,7 +531,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 4 || parts.size() == 5) {
+	if (parts.size() == 4) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -575,8 +574,6 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-		if (parts.size() >= 5)
-			spec.tooltip = parts[4];
 
 		m_fields.push_back(spec);
 		return;
@@ -1202,7 +1199,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (((parts.size() >= 5) && (parts.size() <= 9)) && (parts.size() != 6)) {
+	if (((parts.size() >= 5) && (parts.size() <= 8)) && (parts.size() != 6)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string image_name = parts[2];
@@ -1268,9 +1265,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
-		if (parts.size() >= 9)
-			spec.tooltip = parts[8];
-
+		
 		e->setUseAlphaChannel(true);
 		e->setImage(texture);
 		e->setPressedImage(pressed_texture);
@@ -1392,7 +1387,11 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		ItemStack item;
 		item.deSerialize(item_name, idef);
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
-		std::string tooltip = item.getDefinition(idef).description;
+
+		m_tooltips[narrow_to_wide(name.c_str())] =
+			TooltipSpec (item.getDefinition(idef).description,
+						m_default_tooltip_bgcolor,
+						m_default_tooltip_color);
 
 		label = unescape_string(label);
 		FieldSpec spec(
@@ -1415,7 +1414,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		spec.ftype = f_Button;
 		rect+=data->basepos-padding;
 		spec.rect=rect;
-		spec.tooltip = tooltip;
 		m_fields.push_back(spec);
 		return;
 	}
@@ -1489,13 +1487,31 @@ void GUIFormSpecMenu::parseListColors(parserData* data,std::string element)
 			video::SColor tmp_color;
 
 			if (parseColor(parts[3], tmp_color, false))
-				m_tooltip_element->setBackgroundColor(tmp_color);
+				m_default_tooltip_bgcolor = tmp_color;
 			if (parseColor(parts[4], tmp_color, false))
-				m_tooltip_element->setOverrideColor(tmp_color);
+				m_default_tooltip_color = tmp_color;
 		}
 		return;
 	}
 	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
+{
+	std::vector<std::string> parts = split(element,';');
+	if (parts.size() == 2) {
+		std::string name = parts[0];
+		m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);	
+		return;
+	} else if (parts.size() == 4) {
+		std::string name = parts[0];
+		video::SColor tmp_color1, tmp_color2;
+		if ( parseColor(parts[2], tmp_color1, false) && parseColor(parts[3], tmp_color2, false) ) {	
+			m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
+			return;
+		}
+	}
+	errorstream<< "Invalid tooltip element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
 void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
@@ -1639,6 +1655,11 @@ void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
 		return;
 	}
 
+	if (type == "tooltip") {
+		parseTooltip(data,description);
+		return;
+	}
+
 	// Ignore others
 	infostream
 		<< "Unknown DrawSpec: type="<<type<<", data=\""<<description<<"\""
@@ -1708,7 +1729,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_checkboxes.clear();
 	m_fields.clear();
 	m_boxes.clear();
-
+	m_tooltips.clear();
+	
 	// Set default values (fits old formspec values)
 	m_bgcolor = video::SColor(140,0,0,0);
 	m_bgfullscreen = false;
@@ -1716,6 +1738,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_slotbg_n = video::SColor(255,128,128,128);
 	m_slotbg_h = video::SColor(255,192,192,192);
 
+	m_default_tooltip_bgcolor = video::SColor(255,110,130,60);
+	m_default_tooltip_color = video::SColor(255,255,255,255);
+	
 	m_slotbordercolor = video::SColor(200,0,0,0);
 	m_slotborder = false;
 
@@ -1726,10 +1751,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
 		m_tooltip_element = Environment->addStaticText(L"",core::rect<s32>(0,0,110,18));
 		m_tooltip_element->enableOverrideColor(true);
-		m_tooltip_element->setBackgroundColor(video::SColor(255,110,130,60));
+		m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 		m_tooltip_element->setDrawBackground(true);
 		m_tooltip_element->setDrawBorder(true);
-		m_tooltip_element->setOverrideColor(video::SColor(255,255,255,255));
+		m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		m_tooltip_element->setWordWrap(false);
 		//we're not parent so no autograb for this one!
@@ -1899,6 +1924,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
 			if(tooltip_text != "")
 			{
+				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
+				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
 				m_tooltip_element->setText(narrow_to_wide(tooltip_text).c_str());
@@ -2101,32 +2128,49 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
-		for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+		if (id == -1) {
+			m_old_tooltip_id = id;
+			m_old_tooltip = "";
+		} else if (id != m_old_tooltip_id) {
+			m_hoovered_time = getTimeMs();
+			m_old_tooltip_id = id;
+		} else if (id == m_old_tooltip_id) {
+			u32 delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
+			if (delta <= 400)
+				goto skip_tooltip;
+			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); iter++) {
-			if ( (iter->fid == id) && (iter->tooltip != "") ) {
-				m_tooltip_element->setVisible(true);
-				this->bringToFront(m_tooltip_element);
-				m_tooltip_element->setText(narrow_to_wide(iter->tooltip).c_str());
-				s32 tooltip_x = m_pointer.X + m_btn_height;
-				s32 tooltip_y = m_pointer.Y + m_btn_height;
-				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-				if (tooltip_x + tooltip_width > (s32)screenSize.X)
-					tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
-				int lines_count = 1;
-				size_t i = 0;
-				while ((i = iter->tooltip.find("\n", i)) != std::string::npos) {
-					lines_count++;
-					i += 2;
-				}
-				s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
-				m_tooltip_element->setRelativePosition(core::rect<s32>(
-				core::position2d<s32>(tooltip_x, tooltip_y),
-				core::dimension2d<s32>(tooltip_width, tooltip_height)));
-				break;
+				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != "") ){
+					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
+						m_old_tooltip = m_tooltips[iter->fname].tooltip;
+						m_tooltip_element->setText(narrow_to_wide(m_tooltips[iter->fname].tooltip).c_str());
+						s32 tooltip_x = m_pointer.X + m_btn_height;
+						s32 tooltip_y = m_pointer.Y + m_btn_height;
+						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
+						if (tooltip_x + tooltip_width > (s32)screenSize.X)
+							tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
+						int lines_count = 1;
+						size_t i = 0;
+						while ((i = m_tooltips[iter->fname].tooltip.find("\n", i)) != std::string::npos) {
+							lines_count++;
+							i += 2;
+						}
+						s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
+						m_tooltip_element->setRelativePosition(core::rect<s32>(
+						core::position2d<s32>(tooltip_x, tooltip_y),
+						core::dimension2d<s32>(tooltip_width, tooltip_height)));
+					}
+					m_tooltip_element->setBackgroundColor(m_tooltips[iter->fname].bgcolor);
+					m_tooltip_element->setOverrideColor(m_tooltips[iter->fname].color);
+					m_tooltip_element->setVisible(true);
+					this->bringToFront(m_tooltip_element);
+					break;
+				}		
 			}
 		}
 	}
 
+	skip_tooltip:	
 	/*
 		Draw dragged item stack
 	*/
@@ -2403,7 +2447,10 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+			m_old_tooltip_id = -1;
+			m_old_tooltip = "";
+		}
 		if (!isChild(hovered,this)) {
 			if (DoubleClickDetection(event)) {
 				return true;
@@ -2504,12 +2551,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 	}
+	
 	if(event.EventType==EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event != EMIE_MOUSE_MOVED) {
 		// Mouse event other than movement
 
 		// Get selected item and hovered/clicked item (s)
 
+		m_old_tooltip_id = -1;
 		updateSelectedItem();
 		ItemSpec s = getItemAtPos(m_pointer);
 
