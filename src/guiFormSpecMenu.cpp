@@ -86,7 +86,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_ext_ptr(ext_ptr),
-	m_font(dev->getGUIEnvironment()->getSkin()->getFont())
+	m_font(dev->getGUIEnvironment()->getSkin()->getFont()),
+	m_formspec_version(0)
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
@@ -265,7 +266,9 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,',');
 
-	if ((parts.size() == 2) || parts.size() == 3) {
+	if (((parts.size() == 2) || parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		v2f invsize;
 
 		if (parts[1].find(';') != std::string::npos)
@@ -359,7 +362,9 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 5)) {
+	if (((parts.size() == 4) || (parts.size() == 5)) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::string location = parts[0];
 		std::string listname = parts[1];
 		std::vector<std::string> v_pos  = split(parts[2],',');
@@ -407,7 +412,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() >= 3) || (parts.size() <= 4)) {
+	if (((parts.size() >= 3) || (parts.size() <= 4)) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[1];
 		std::string label = parts[2];
@@ -460,7 +467,9 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if ((parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
@@ -504,7 +513,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if ((parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -533,7 +544,9 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 4) {
+	if ((parts.size() == 4) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -587,7 +600,9 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 3) || (parts.size() == 4)) {
+	if (((parts.size() == 3) || (parts.size() == 4)) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
@@ -655,7 +670,9 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 5)) {
+	if (((parts.size() == 4) || (parts.size() == 5)) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -724,7 +741,9 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 5) || (parts.size() == 6)) {
+	if (((parts.size() == 4) || (parts.size() == 5) || (parts.size() == 6)) ||
+		((parts.size() > 6) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -797,7 +816,9 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 5) {
+	if ((parts.size() == 5) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[2];
 		std::vector<std::string> items = split(parts[3],',');
@@ -852,7 +873,9 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 4) {
+	if ((parts.size() == 4) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
@@ -1103,7 +1126,9 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 		return;
 	}
 
-	if (parts.size() == 5) {
+	if ((parts.size() == 5) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		parseTextArea(data,parts,type);
 		return;
 	}
@@ -1114,7 +1139,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 2) {
+	if ((parts.size() == 2) ||
+		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string text = parts[1];
 
@@ -1153,7 +1180,9 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 2) {
+	if ((parts.size() == 2) ||
+		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::wstring text = narrow_to_wide(unescape_string(parts[1]));
 
@@ -1201,7 +1230,9 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (((parts.size() >= 5) && (parts.size() <= 8)) && (parts.size() != 6)) {
+	if ((((parts.size() >= 5) && (parts.size() <= 8)) && (parts.size() != 6)) ||
+		((parts.size() > 8) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string image_name = parts[2];
@@ -1286,7 +1317,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 6)) {
+	if (((parts.size() == 4) || (parts.size() == 6)) ||
+		((parts.size() > 6) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[1];
 		std::vector<std::string> buttons = split(parts[2],',');
@@ -1363,7 +1396,9 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 5) {
+	if ((parts.size() == 5) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string item_name = parts[2];
@@ -1426,7 +1461,9 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (parts.size() == 3) {
+	if ((parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 
@@ -1460,7 +1497,9 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 1) || (parts.size() == 2)) {
+	if (((parts.size() == 1) || (parts.size() == 2)) ||
+		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		parseColor(parts[0],m_bgcolor,false);
 
 		if (parts.size() == 2) {
@@ -1476,7 +1515,9 @@ void GUIFormSpecMenu::parseListColors(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) {
+	if (((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
 		parseColor(parts[0], m_slotbg_n, false);
 		parseColor(parts[1], m_slotbg_h, false);
 
@@ -1503,12 +1544,12 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);	
+		m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
-		if ( parseColor(parts[2], tmp_color1, false) && parseColor(parts[3], tmp_color2, false) ) {	
+		if ( parseColor(parts[2], tmp_color1, false) && parseColor(parts[3], tmp_color2, false) ) {
 			m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
 			return;
 		}
@@ -1516,7 +1557,31 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	errorstream<< "Invalid tooltip element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseElement(parserData* data,std::string element)
+bool GUIFormSpecMenu::parseVersionDirect(std::string data)
+{
+	//some prechecks
+	if (data == "")
+		return false;
+
+	std::vector<std::string> parts = split(data,'[');
+
+	if (parts.size() < 2) {
+		return false;
+	}
+
+	if (parts[0] != "formspec_version") {
+		return false;
+	}
+
+	if (is_number(parts[1])) {
+		m_formspec_version = mystoi(parts[1]);
+		return true;
+	}
+
+	return false;
+}
+
+void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 {
 	//some prechecks
 	if (element == "")
@@ -1763,10 +1828,18 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_tooltip_element->grab();
 	}
 
-
 	std::vector<std::string> elements = split(m_formspec_string,']');
-	for (unsigned int i=0; i< elements.size(); i++) {
-		parseElement(&mydata,elements[i]);
+	unsigned int i = 0;
+
+	/* try to read version from first element only */
+	if (elements.size() >= 1) {
+		if ( parseVersionDirect(elements[0]) ) {
+			i++;
+		}
+	}
+
+	for (; i< elements.size(); i++) {
+		parseElement(&mydata, elements[i]);
 	}
 
 	// If there's fields, add a Proceed button
@@ -2167,12 +2240,12 @@ void GUIFormSpecMenu::drawMenu()
 					m_tooltip_element->setVisible(true);
 					this->bringToFront(m_tooltip_element);
 					break;
-				}		
+				}
 			}
 		}
 	}
 
-	skip_tooltip:	
+	skip_tooltip:
 	/*
 		Draw dragged item stack
 	*/

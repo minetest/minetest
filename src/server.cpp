@@ -3132,10 +3132,11 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
 
+
 	// Write command
 	writeU16(buf, TOCLIENT_SHOW_FORMSPEC);
 	os.write((char*)buf, 2);
-	os<<serializeLongString(formspec);
+	os<<serializeLongString(FORMSPEC_VERSION_STRING + formspec);
 	os<<serializeString(formname);
 
 	// Make data buffer
@@ -3538,7 +3539,7 @@ void Server::SendPlayerInventoryFormspec(u16 peer_id)
 
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_INVENTORY_FORMSPEC);
-	os<<serializeLongString(player->inventory_formspec);
+	os<<serializeLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
 
 	// Make data buffer
 	std::string s = os.str();

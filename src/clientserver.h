@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
+#include "util/string.h"
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -121,6 +122,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
+
+#define FORMSPEC_API_VERSION 1
+#define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 

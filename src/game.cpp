@@ -948,6 +948,7 @@ static void show_chat_menu(GUIFormSpecMenu** cur_formspec,
 		Client* client, std::string text)
 {
 	std::string formspec =
+			FORMSPEC_VERSION_STRING
 		"size[11,5.5,true]"
 		"field[3,2.35;6,0.5;f_text;;" + text + "]"
 		"button_exit[4,3;3,0.5;btn_send;" + wide_to_narrow(wstrgettext("Proceed")) + "]"
@@ -967,7 +968,7 @@ static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
 		IWritableTextureSource* tsrc, IrrlichtDevice * device, Client* client)
 {
 	std::string formspec =
-		std::string("") +
+		std::string(FORMSPEC_VERSION_STRING) +
 		"size[11,5.5,true]"
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;You died.]"
@@ -1005,7 +1006,7 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 	float ypos = singleplayermode ? 1.0 : 0.5;
 	std::ostringstream os;
 
-	os << "size[11,5.5,true]"
+	os << FORMSPEC_VERSION_STRING << "size[11,5.5,true]"
 			<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 					<< wide_to_narrow(wstrgettext("Continue"))     << "]";
 
