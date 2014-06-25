@@ -99,6 +99,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_doubleclickdetect[0].pos = v2s32(0, 0);
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
+	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
+
 	m_btn_height = g_settings->getS32("font_size") +2;
 	assert(m_btn_height > 0);
 }
@@ -2136,7 +2138,7 @@ void GUIFormSpecMenu::drawMenu()
 			m_old_tooltip_id = id;
 		} else if (id == m_old_tooltip_id) {
 			u32 delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
-			if (delta <= 400)
+			if (delta <= m_tooltip_show_delay)
 				goto skip_tooltip;
 			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); iter++) {
