@@ -36,12 +36,17 @@ LevelDB databases
 #include "settings.h"
 #include "log.h"
 
+#define ENSURE_STATUS_OK(s) \
+	if (!s.ok()) { \
+		throw FileNotGoodException(std::string("LevelDB error: ") + s.ToString()); \
+	}
+
 Database_LevelDB::Database_LevelDB(ServerMap *map, std::string savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "map.db", &m_database);
-	assert(status.ok());
+	ENSURE_STATUS_OK(status);
 	srvmap = map;
 }
 
@@ -81,7 +86,8 @@ void Database_LevelDB::saveBlock(MapBlock *block)
 	// Write block to database
 	std::string tmp = o.str();
 
-	m_database->Put(leveldb::WriteOptions(), i64tos(getBlockAsInteger(p3d)), tmp);
+	leveldb::Status status = m_database->Put(leveldb::WriteOptions(), i64tos(getBlockAsInteger(p3d)), tmp);
+	ENSURE_STATUS_OK(status);
 
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
@@ -92,9 +98,10 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string datastr;
-	leveldb::Status s = m_database->Get(leveldb::ReadOptions(),
+	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
 		i64tos(getBlockAsInteger(blockpos)), &datastr);
-	if (datastr.length() == 0 && s.ok()) {
+	ENSURE_STATUS_OK(status);
+	if (datastr.length() == 0) {
 		errorstream << "Blank block data in database (datastr.length() == 0) ("
 			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
 
@@ -105,9 +112,7 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 			throw SerializationError("Blank block data in database");
 		}
 		return NULL;
-	}
-
-	if (s.ok()) {
+	} else {
 		/*
 			Make sure sector is loaded
 		*/
@@ -176,7 +181,7 @@ void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
 	}
-	assert(it->status().ok());  // Check for any errors found during the scan
+	ENSURE_STATUS_OK(it->status());  // Check for any errors found during the scan
 	delete it;
 }
 
