@@ -368,7 +368,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	if(!ignore_rollback && gamedef->rollback())
 	{
-		IRollbackReportSink *rollback = gamedef->rollback();
+		IRollbackManager *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
 		if(src_can_take_count != -1){
@@ -632,7 +632,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	if(!ignore_src_rollback && gamedef->rollback())
 	{
-		IRollbackReportSink *rollback = gamedef->rollback();
+		IRollbackManager *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
 		if(src_can_take_count != -1){

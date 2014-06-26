@@ -289,7 +289,6 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
-	virtual IRollbackReportSink* getRollbackReportSink();
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
@@ -487,7 +486,6 @@ private:
 
 	// Rollback manager (behind m_env_mutex)
 	IRollbackManager *m_rollback;
-	bool m_rollback_sink_enabled;
 	bool m_enable_rollback_recording; // Updated once in a while
 
 	// Emerge manager
