@@ -1,30 +1,30 @@
 # Package finder for gettext libs and include files
 
 SET(CUSTOM_GETTEXT_PATH "${PROJECT_SOURCE_DIR}/../../gettext"
-	CACHE FILEPATH "/usr/local/opt/gettext")
+	CACHE FILEPATH "path to custom gettext")
 
 # by default
 SET(GETTEXT_FOUND FALSE)
 
 FIND_PATH(GETTEXT_INCLUDE_DIR
 	NAMES libintl.h
-	PATHS "${CUSTOM_GETTEXT_PATH}/include" "/usr/local/opt/gettext/include"
+	PATHS "${CUSTOM_GETTEXT_PATH}/include"
 	DOC "gettext include directory")
 
 FIND_PROGRAM(GETTEXT_MSGFMT
 	NAMES msgfmt
-	PATHS "${CUSTOM_GETTEXT_PATH}/bin" "/usr/local/opt/gettext/bin"
+	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
 	DOC "path to msgfmt")
 
 if(APPLE)
 FIND_LIBRARY(GETTEXT_LIBRARY
 	NAMES libintl.a
-	PATHS "${CUSTOM_GETTEXT_PATH}/lib" "/usr/local/opt/gettext/lib"
+	PATHS "${CUSTOM_GETTEXT_PATH}/lib"
 	DOC "gettext *intl*.lib")
 
 FIND_LIBRARY(ICONV_LIBRARY
 	NAMES libiconv.dylib
-	PATHS "${CUSTOM_GETTEXT_PATH}/lib" "/usr/lib"
+	PATHS "/usr/lib"
 	DOC "iconv lib")
 endif()
 
