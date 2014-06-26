@@ -24,31 +24,84 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "rollback_interface.h"
 #include <list>
+#include <vector>
+#include "sqlite3.h"
 
 class IGameDef;
 
-class IRollbackManager: public IRollbackReportSink
+class ActionRow;
+class Entity;
+
+class RollbackManager: public IRollbackManager
 {
 public:
-	// IRollbackReportManager
-	virtual void reportAction(const RollbackAction &action) = 0;
-	virtual std::string getActor() = 0;
-	virtual bool isActorGuess() = 0;
-	virtual void setActor(const std::string &actor, bool is_guess) = 0;
-	virtual std::string getSuspect(v3s16 p, float nearness_shortcut,
-	                               float min_nearness) = 0;
+	RollbackManager(const std::string & world_path, IGameDef * gamedef);
+	~RollbackManager();
 
-	virtual ~IRollbackManager() {}
-	virtual void flush() = 0;
-	// Get all actors that did something to position p, but not further than
-	// <seconds> in history
-	virtual std::list<RollbackAction> getNodeActors(v3s16 pos, int range,
-	                time_t seconds, int limit) = 0;
-	// Get actions to revert <seconds> of history made by <actor>
-	virtual std::list<RollbackAction> getRevertActions(const std::string &actor,
-	                time_t seconds) = 0;
+	void reportAction(const RollbackAction & action_);
+	std::string getActor();
+	bool isActorGuess();
+	void setActor(const std::string & actor, bool is_guess);
+	std::string getSuspect(v3s16 p, float nearness_shortcut,
+			float min_nearness);
+	void flush();
+
+	void addAction(const RollbackAction & action);
+	std::list<RollbackAction> getEntriesSince(time_t first_time);
+	std::list<RollbackAction> getNodeActors(v3s16 pos, int range,
+			time_t seconds, int limit);
+	std::list<RollbackAction> getRevertActions(
+			const std::string & actor_filter, time_t seconds);
+
+private:
+	void registerNewActor(const int id, const std::string & name);
+	void registerNewNode(const int id, const std::string & name);
+	int getActorId(const std::string & name);
+	int getNodeId(const std::string & name);
+	const char * getActorName(const int id);
+	const char * getNodeName(const int id);
+	bool createTables();
+	void initDatabase();
+	bool registerRow(const ActionRow & row);
+	const std::list<ActionRow> actionRowsFromSelect(sqlite3_stmt * stmt);
+	ActionRow actionRowFromRollbackAction(const RollbackAction & action);
+	const std::list<RollbackAction> rollbackActionsFromActionRows(
+			const std::list<ActionRow> & rows);
+	const std::list<ActionRow> getRowsSince(time_t firstTime,
+			const std::string & actor);
+	const std::list<ActionRow> getRowsSince_range(time_t firstTime, v3s16 p,
+			int range, int limit);
+	const std::list<RollbackAction> getActionsSince_range(time_t firstTime, v3s16 p,
+			int range, int limit);
+	const std::list<RollbackAction> getActionsSince(time_t firstTime,
+			const std::string & actor = "");
+	void migrate(const std::string & filepath);
+	static float getSuspectNearness(bool is_guess, v3s16 suspect_p,
+		time_t suspect_t, v3s16 action_p, time_t action_t);
+
+
+	IGameDef * gamedef;
+
+	std::string current_actor;
+	bool current_actor_is_guess;
+
+	std::list<RollbackAction> action_todisk_buffer;
+	std::list<RollbackAction> action_latest_buffer;
+
+	std::string database_path;
+	sqlite3 * db;
+	sqlite3_stmt * stmt_insert;
+	sqlite3_stmt * stmt_replace;
+	sqlite3_stmt * stmt_select;
+	sqlite3_stmt * stmt_select_range;
+	sqlite3_stmt * stmt_select_withActor;
+	sqlite3_stmt * stmt_knownActor_select;
+	sqlite3_stmt * stmt_knownActor_insert;
+	sqlite3_stmt * stmt_knownNode_select;
+	sqlite3_stmt * stmt_knownNode_insert;
+
+	std::vector<Entity> knownActors;
+	std::vector<Entity> knownNodes;
 };
-
-IRollbackManager *createRollbackManager(const std::string &filepath, IGameDef *gamedef);
 
 #endif

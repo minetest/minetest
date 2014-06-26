@@ -41,7 +41,7 @@ class ServerMapSector;
 class MapBlock;
 class NodeMetadata;
 class IGameDef;
-class IRollbackReportSink;
+class IRollbackManager;
 class EmergeManager;
 class ServerEnvironment;
 struct BlockMakeData;

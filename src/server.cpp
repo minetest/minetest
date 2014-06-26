@@ -181,7 +181,6 @@ Server::Server(
 			this),
 	m_banmanager(NULL),
 	m_rollback(NULL),
-	m_rollback_sink_enabled(true),
 	m_enable_rollback_recording(false),
 	m_emerge(NULL),
 	m_script(NULL),
@@ -241,12 +240,11 @@ Server::Server(
 		throw ServerError("Failed to initialize world");
 
 	// Create ban manager
-	std::string ban_path = m_path_world+DIR_DELIM+"ipban.txt";
+	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
 	// Create rollback manager
-	std::string rollback_path = m_path_world+DIR_DELIM+"rollback.txt";
-	m_rollback = createRollbackManager(rollback_path, this);
+	m_rollback = new RollbackManager(m_path_world, this);
 
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
@@ -4834,8 +4832,6 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 {
 	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
 	ServerMap *map = (ServerMap*)(&m_env->getMap());
-	// Disable rollback report sink while reverting
-	BoolScopeSet rollback_scope_disable(&m_rollback_sink_enabled, false);
 
 	// Fail if no actions to handle
 	if(actions.empty()){
@@ -4914,14 +4910,6 @@ ISoundManager* Server::getSoundManager()
 MtEventManager* Server::getEventManager()
 {
 	return m_event;
-}
-IRollbackReportSink* Server::getRollbackReportSink()
-{
-	if(!m_enable_rollback_recording)
-		return NULL;
-	if(!m_rollback_sink_enabled)
-		return NULL;
-	return m_rollback;
 }
 
 IWritableItemDefManager* Server::getWritableItemDefManager()

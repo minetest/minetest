@@ -183,7 +183,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";
-		name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = materialcount;
 	}
 	else if(name == "MaterialItem2")
@@ -202,7 +203,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";
-		name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = materialcount;
 	}
 	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3"
@@ -223,7 +225,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 			name = fnd.next(" ");
 		}
 		fnd.skip_over(" ");
-		name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = stoi(trim(fnd.next("")));
 		if(count == 0)
 			count = 1;
@@ -252,7 +255,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		count = 1;
 		// Then read wear
 		fnd.skip_over(" ");
-		name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		wear = stoi(trim(fnd.next("")));
 	}
 	else
@@ -262,7 +266,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 			// The real thing
 
 			// Apply item aliases
-			name = itemdef->getAlias(name);
+			if (itemdef)
+				name = itemdef->getAlias(name);
 
 			// Read the count
 			std::string count_str;
@@ -294,9 +299,9 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		} while(false);
 	}
 
-	if(name.empty() || count == 0)
+	if (name.empty() || count == 0)
 		clear();
-	else if(itemdef->get(name).type == ITEM_TOOL)
+	else if (itemdef && itemdef->get(name).type == ITEM_TOOL)
 		count = 1;
 }
 
@@ -308,11 +313,11 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 
 std::string ItemStack::getItemString() const
 {
-	// Get item string
 	std::ostringstream os(std::ios::binary);
 	serialize(os);
 	return os.str();
 }
+
 
 ItemStack ItemStack::addItem(const ItemStack &newitem_,
 		IItemDefManager *itemdef)

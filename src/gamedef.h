@@ -30,7 +30,7 @@ class ITextureSource;
 class ISoundManager;
 class IShaderSource;
 class MtEventManager;
-class IRollbackReportSink;
+class IRollbackManager;
 namespace irr { namespace scene {
 	class IAnimatedMesh;
 	class ISceneManager;
@@ -68,7 +68,7 @@ public:
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
-	virtual IRollbackReportSink* getRollbackReportSink(){return NULL;}
+	virtual IRollbackManager* getRollbackManager(){return NULL;}
 	
 	// Used on the client
 	virtual bool checkLocalPrivilege(const std::string &priv)
@@ -82,7 +82,7 @@ public:
 	ISoundManager* sound(){return getSoundManager();}
 	IShaderSource* shsrc(){return getShaderSource();}
 	MtEventManager* event(){return getEventManager();}
-	IRollbackReportSink* rollback(){return getRollbackReportSink();}
+	IRollbackManager* rollback(){return getRollbackManager();}
 };
 
 #endif
