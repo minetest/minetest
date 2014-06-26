@@ -45,6 +45,8 @@
 #define __BYTE_ORDER 0
 #define __LITTLE_ENDIAN 0
 #define __BIG_ENDIAN 1
+#elif __MACH__
+#include <machine/endian.h>
 #else
 #include <endian.h>
 #endif

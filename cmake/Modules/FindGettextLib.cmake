@@ -16,6 +16,18 @@ FIND_PROGRAM(GETTEXT_MSGFMT
 	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
 	DOC "path to msgfmt")
 
+if(APPLE)
+	FIND_LIBRARY(GETTEXT_LIBRARY
+		NAMES libintl.a
+		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
+		DOC "gettext *intl*.lib")
+
+	FIND_LIBRARY(ICONV_LIBRARY
+		NAMES libiconv.dylib
+		PATHS "/usr/lib"
+		DOC "iconv lib")
+endif(APPLE)
+
 # modern Linux, as well as Mac, seem to not need require special linking
 # they do not because gettext is part of glibc
 # TODO check the requirements on other BSDs and older Linux
