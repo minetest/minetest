@@ -833,7 +833,7 @@ bool GUITable::OnEvent(const SEvent &event)
 
 		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
 			m_scrollbar->setPos(m_scrollbar->getPos() +
-					(event.MouseInput.Wheel < 0 ? -1 : 1) *
+					(event.MouseInput.Wheel < 0 ? -3 : 3) *
 					- (s32) m_rowheight / 2);
 			return true;
 		}
