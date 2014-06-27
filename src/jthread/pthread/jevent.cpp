@@ -33,13 +33,13 @@
 #undef sem_t
 #define sem_t semaphore_t
 #undef sem_init
-#define sem_init(s,p,c) semaphore_create(mach_task_self(),s,0,c)
+#define sem_init(s, p, c) semaphore_create(mach_task_self(), (s), 0, (c))
 #undef sem_wait
-#define sem_wait(s) semaphore_wait(*s)
+#define sem_wait(s) semaphore_wait(*(s))
 #undef sem_post
-#define sem_post(s) semaphore_signal(*s)
+#define sem_post(s) semaphore_signal(*(s))
 #undef sem_destroy
-#define sem_destroy(s) semaphore_destroy(mach_task_self(),*s)
+#define sem_destroy(s) semaphore_destroy(mach_task_self(), *(s))
 #endif
 
 Event::Event() {
