@@ -756,6 +756,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	if(m_animated_meshnode)
 	{
 		m_animated_meshnode->remove();
+		m_animated_meshnode->drop();
 		m_animated_meshnode = NULL;
 	}
 	if(m_spritenode)
@@ -879,6 +880,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		if(mesh)
 		{
 			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
