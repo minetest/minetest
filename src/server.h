@@ -321,6 +321,9 @@ public:
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
+
+	inline std::string getPeerSysinfo(u16 peer_id)
+			{ return m_clients.getClientNoEx(peer_id)->m_sysinfo; }
 			
 	bool setLocalPlayerAnimations(Player *player, v2s32 animation_frames[4], f32 frame_speed);
 	bool setPlayerEyeOffset(Player *player, v3f first, v3f third);

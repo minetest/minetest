@@ -1382,6 +1382,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2)
 			max_net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2]);
 
+		std::string client_sysinfo = "";
+		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2+2)
+		{
+			std::istringstream is(std::string(
+				(const char*) &data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2], 
+				datasize - (2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2+2)), std::ios_base::binary);
+			client_sysinfo = deSerializeString(is);
+		}
+
 		// Start with client's maximum version
 		u16 net_proto_version = max_net_proto_version;
 
@@ -1589,7 +1598,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					L"a minute.");
 		}
 
-		m_clients.setPlayerName(peer_id,playername);
+		m_clients.setPlayerName(peer_id, playername);
+		m_clients.getClientNoEx(peer_id, Created)->m_sysinfo = client_sysinfo;
 
 		/*
 			Answer with a TOCLIENT_INIT

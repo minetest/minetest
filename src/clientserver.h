@@ -563,6 +563,8 @@ enum ToServerCommand
 		[23] u8[28] password (new in some version)
 		[51] u16 minimum supported network protocol version (added sometime)
 		[53] u16 maximum supported network protocol version (added later than the previous one)
+		[55] u16 length of system information
+		[57] u8[len] system information
 	*/
 
 	TOSERVER_INIT2 = 0x11,

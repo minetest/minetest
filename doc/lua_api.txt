@@ -1354,6 +1354,9 @@ minetest.auth_reload()
 minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 ^ A quickhand for checking privileges
 minetest.get_player_ip(name) -> IP address string
+minetest.get_player_sysinfo(name)
+^ Get player's sysinfo
+^ e.g. "Linux/3.12.7 x86_64"
 
 Chat:
 minetest.chat_send_all(text)
