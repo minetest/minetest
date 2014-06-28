@@ -120,9 +120,9 @@ public:
 };
 
 typedef enum MTProtocols {
-	PRIMARY,
-	UDP,
-	MINETEST_RELIABLE_UDP
+	MTP_PRIMARY,
+	MTP_UDP,
+	MTP_MINETEST_RELIABLE_UDP
 } MTProtocols;
 
 #define SEQNUM_MAX 65535

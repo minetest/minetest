@@ -1000,7 +1000,7 @@ UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
 
 bool UDPPeer::getAddress(MTProtocols type,Address& toset)
 {
-	if ((type == UDP) || (type == MINETEST_RELIABLE_UDP) || (type == PRIMARY))
+	if ((type == MTP_UDP) || (type == MTP_MINETEST_RELIABLE_UDP) || (type == MTP_PRIMARY))
 	{
 		toset = address;
 		return true;
@@ -1526,7 +1526,7 @@ bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
 
 		SharedBuffer<u8> reliable = makeReliablePacket(data, seqnum);
 		Address peer_address;
-		peer->getAddress(MINETEST_RELIABLE_UDP,peer_address);
+		peer->getAddress(MTP_MINETEST_RELIABLE_UDP, peer_address);
 
 		// Add base headers and make a packet
 		BufferedPacket p = con::makePacket(peer_address, reliable,
@@ -1556,7 +1556,7 @@ bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
 	{
 		Address peer_address;
 
-		if (peer->getAddress(UDP,peer_address))
+		if (peer->getAddress(MTP_UDP, peer_address))
 		{
 			// Add base headers and make a packet
 			BufferedPacket p = con::makePacket(peer_address, data,
@@ -2165,7 +2165,7 @@ void ConnectionReceiveThread::receive()
 		/* The peer was not found in our lists. Add it. */
 		if(peer_id == PEER_ID_INEXISTENT)
 		{
-			peer_id = m_connection->createPeer(sender,MINETEST_RELIABLE_UDP,0);
+			peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
 		}
 
 		PeerHelper peer = m_connection->getPeerNoEx(peer_id);
@@ -2181,7 +2181,7 @@ void ConnectionReceiveThread::receive()
 
 		Address peer_address;
 
-		if (peer->getAddress(UDP,peer_address)) {
+		if (peer->getAddress(MTP_UDP, peer_address)) {
 			if (peer_address != sender) {
 				LOG(derr_con<<m_connection->getDesc()
 						<<m_connection->getDesc()
@@ -2469,7 +2469,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	{
 		Address peer_address;
 
-		if (peer->getAddress(UDP,peer_address)) {
+		if (peer->getAddress(MTP_UDP, peer_address)) {
 
 			// We have to create a packet again for buffering
 			// This isn't actually too bad an idea.
@@ -2552,7 +2552,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 			Address peer_address;
 
 			// this is a reliable packet so we have a udp address for sure
-			peer->getAddress(MINETEST_RELIABLE_UDP,peer_address);
+			peer->getAddress(MTP_MINETEST_RELIABLE_UDP, peer_address);
 			// This one comes later, buffer it.
 			// Actually we have to make a packet to buffer one.
 			// Well, we have all the ingredients, so just do it.
@@ -2754,10 +2754,10 @@ u16 Connection::lookupPeer(Address& sender)
 
 		Address tocheck;
 
-		if ((peer->getAddress(MINETEST_RELIABLE_UDP,tocheck)) && (tocheck == sender))
+		if ((peer->getAddress(MTP_MINETEST_RELIABLE_UDP, tocheck)) && (tocheck == sender))
 			return peer->id;
 
-		if ((peer->getAddress(UDP,tocheck)) && (tocheck == sender))
+		if ((peer->getAddress(MTP_UDP, tocheck)) && (tocheck == sender))
 			return peer->id;
 	}
 
@@ -2791,7 +2791,7 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 
 	Address peer_address;
 	//any peer has a primary address this never fails!
-	peer->getAddress(PRIMARY,peer_address);
+	peer->getAddress(MTP_PRIMARY, peer_address);
 	// Create event
 	ConnectionEvent e;
 	e.peerRemoved(peer_id, timeout, peer_address);
@@ -2930,7 +2930,7 @@ Address Connection::GetPeerAddress(u16 peer_id)
 	if (!peer)
 		throw PeerNotFoundException("No address for peer found!");
 	Address peer_address;
-	peer->getAddress(PRIMARY,peer_address);
+	peer->getAddress(MTP_PRIMARY, peer_address);
 	return peer_address;
 }
 
