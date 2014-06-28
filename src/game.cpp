@@ -2119,6 +2119,55 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			reset_jump_timer = false;
 			jump_timer = 0.0;
 		}
+		else
+		{
+			static KeyPress mod_key_control = "KEY_CONTROL";
+			static KeyPress mod_key_lcontrol = "KEY_LCONTROL";
+			static KeyPress mod_key_rcontrol = "KEY_RCONTROL";
+			static KeyPress mod_key_shift = "KEY_SHIFT";
+			static KeyPress mod_key_lshift = "KEY_LSHIFT";
+			static KeyPress mod_key_rshift = "KEY_RSHIFT";
+			for (size_t i=0; i<getCommandKeySettingCount(); ++i)
+			{
+				KeyCommand kc = getCommandKeySetting(i);
+				if (input->wasKeyDown(kc.key))
+				{
+					if (kc.modifier_control)
+					{
+						if (!input->wasKeyDown(mod_key_control) &&
+							!input->wasKeyDown(mod_key_lcontrol) &&
+							!input->wasKeyDown(mod_key_rcontrol))
+								continue;
+					}
+					else
+					{
+						if (input->wasKeyDown(mod_key_control) ||
+							input->wasKeyDown(mod_key_lcontrol) ||
+							input->wasKeyDown(mod_key_rcontrol))
+								continue;
+					}
+					if (kc.modifier_shift)
+					{
+						if (!input->wasKeyDown(mod_key_shift) &&
+							!input->wasKeyDown(mod_key_lshift) &&
+							!input->wasKeyDown(mod_key_rshift))
+								continue;
+					}
+					else
+					{
+						if (input->wasKeyDown(mod_key_shift) ||
+							input->wasKeyDown(mod_key_lshift) ||
+							input->wasKeyDown(mod_key_rshift))
+								continue;
+					}
+					client.typeChatMessage(narrow_to_wide("/" + kc.command));
+
+					statustext = narrow_to_wide(
+							"Pressed key " + kc.setting_name + " with command " + kc.command);
+					statustext_time = 0;
+				}
+			}
+		}
 
 		// Handle QuicktuneShortcutter
 		if(input->wasKeyDown(getKeySetting("keymap_quicktune_next")))
