@@ -3,7 +3,7 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2014 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
@@ -43,25 +43,13 @@ Default Controls
 - Settable in the configuration file, see the section below.
 
 Paths
-------
-$bin   - Compiled binaries
-$share - Distributed read-only data
-$user  - User-created modifiable data
+------ 
+|  Path  |             Use              | Windows .zip / RUN_IN_PLACE source |         Linux       |                  OSX                   |
+| ------ | ---------------------------- | ---------------------------------- | ------------------- | -------------------------------------- |
+| $bin   | Compiled binaries            | bin                                | /usr/bin            | ?                                      |
+| $share | Distributed read-only data   | .                                  | /usr/share/minetest | ?                                      |
+| $user  | User-created modifiable data | .                                  | ~/.minetest         | ~/Library/Application Support/minetest |
 
-Windows .zip / RUN_IN_PLACE source:
-$bin   = bin
-$share = .
-$user  = .
-
-Linux installed:
-$bin   = /usr/bin
-$share = /usr/share/minetest
-$user  = ~/.minetest
-
-OS X:
-$bin   = ?
-$share = ?
-$user  = ~/Library/Application Support/minetest
 
 World directory
 ----------------
@@ -84,27 +72,32 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
+
+     $ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
-$ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
-$ tar xf master.tar.gz
-$ cd minetest-minetest-286edd4 (or similar)
+
+     $ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
+     $ tar xf master.tar.gz
+     $ cd minetest-minetest-286edd4 (or similar)
 
 Download minetest_game (otherwise only the "Minimal development test" game is available)
-$ cd games/
-$ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
-$ tar xf minetest_game.tar.gz
-$ mv minetest-minetest_game-* minetest_game
-$ cd ..
+
+     $ cd games/
+     $ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
+     $ tar xf minetest_game.tar.gz
+     $ mv minetest-minetest_game-* minetest_game
+     $ cd ..
 
 Build a version that runs directly from the source directory:
-$ cmake . -DRUN_IN_PLACE=1
-$ make -j2
+
+     $ cmake . -DRUN_IN_PLACE=1
+     $ make -j2
 
 Run it:
-$ cd bin
-$ ./minetest
+
+     $ cd bin
+     $ ./minetest
 
 - Use cmake . -LH to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package), you will want to use -DRUN_IN_PLACE=0
@@ -113,72 +106,79 @@ $ ./minetest
   - Debug build is slower, but gives much more useful output in a debugger
 - If you build a bare server, you don't need to have Irrlicht installed. In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
 
+
 CMake options
 -------------
-General options:
 
-BUILD_CLIENT        - Build Minetest client
-BUILD_SERVER        - Build Minetest server
-CMAKE_BUILD_TYPE    - Type of build (Release vs. Debug)
-    Release         - Release build
-    Debug           - Debug build
-    RelWithDebInfo  - Release build with Debug information
-    MinSizeRel      - Release build with -Os passed to compiler to make executable as small as possible
-ENABLE_CURL         - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
-ENABLE_FREETYPE     - Build with Freetype2; Allows using TTF fonts
-ENABLE_GETTEXT      - Build with Gettext; Allows using translations
-ENABLE_GLES         - Search for Open GLES headers & libraries and use them
-ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
-ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
-DISABLE_LUAJIT      - Do not search for LuaJIT headers & library
-RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
-USE_GPROF           - Enable profiling using GProf
-VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+CMAKE_BUILD_TYPE   | Type of build (Release vs. Debug)
+-------------------|---------------------------------
+Release            | Release build
+Debug              | Debug build
+RelWithDebInfo     | Release build with Debug information
+MinSizeRel         | Release build with -Os passed to compiler to make executable as small as possible
 
-Library specific options:
 
-BZIP2_INCLUDE_DIR               - Linux only; directory where bzlib.h is located
-BZIP2_LIBRARY                   - Linux only; path to libbz2.a/libbz2.so
-CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
-CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
-CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
-EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
-EGL_egl_LIBRARY                 - Only if building with GLES; path to libEGL.a/libEGL.so
-FREETYPE_INCLUDE_DIR_freetype2  - Only if building with Freetype2; directory that contains an freetype directory with files such as ftimage.h in it
-FREETYPE_INCLUDE_DIR_ft2build   - Only if building with Freetype2; directory that contains ft2build.h
-FREETYPE_LIBRARY                - Only if building with Freetype2; path to libfreetype.a/libfreetype.so/freetype.lib
-GETTEXT_DLL                     - Only when building with Gettext on Windows; path to libintl3.dll
-GETTEXT_ICONV_DLL               - Only when building with Gettext on Windows; path to libiconv2.dll
-GETTEXT_INCLUDE_DIR             - Only when building with Gettext; directory that contains iconv.h
-GETTEXT_LIBRARY                 - Only when building with Gettext on Windows; path to libintl.dll.a
-GETTEXT_MSGFMT                  - Only when building with Gettext; path to msgfmt/msgfmt.exe
-IRRLICHT_DLL                    - path to Irrlicht.dll
-IRRLICHT_INCLUDE_DIR            - directory that contains IrrCompileConfig.h
-IRRLICHT_LIBRARY                - path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a
-LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
-LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll
-LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
-LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
-MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
-OGG_DLL                         - Only if building with sound on Windows; path to libogg.dll
-OGG_INCLUDE_DIR                 - Only if building with sound; directory that contains an ogg directory which contains ogg.h
-OGG_LIBRARY                     - Only if building with sound; path to libogg.a/libogg.so/libogg.dll.a
-OPENAL_DLL                      - Only if building with sound on Windows; path to OpenAL32.dll
-OPENAL_INCLUDE_DIR              - Only if building with sound; directory where al.h is located
-OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
-OPENGLES2_INCLUDE_DIR           - Only if building with GLES; directory that contains gl2.h
-OPENGLES2_gl_LIBRARY            - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
-SQLITE3_INCLUDE_DIR             - Only if you want to use SQLite from your OS; directory that contains sqlite3.h
-SQLITE3_LIBRARY                 - Only if you want to use the SQLite from your OS; path to libsqlite3.a/libsqlite3.so
-VORBISFILE_DLL                  - Only if building with sound on Windows; path to libvorbisfile-3.dll
-VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
-VORBIS_DLL                      - Only if building with sound on Windows; path to libvorbis-0.dll
-VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
-VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
-XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
-ZLIB_DLL                        - Only on Windows; path to zlibwapi.dll
-ZLIB_INCLUDE_DIR                - directory where zlib.h is located
-ZLIB_LIBRARY                    - path to libz.a/libz.so/zlibwapi.lib
+General option      | Information 
+--------------------|--------------------------------
+BUILD_CLIENT        | Build Minetest client
+BUILD_SERVER        | Build Minetest server
+ENABLE_CURL         | Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
+ENABLE_FREETYPE     | Build with Freetype2; Allows using TTF fonts
+ENABLE_GETTEXT      | Build with Gettext; Allows using translations
+ENABLE_GLES         | Search for Open GLES headers & libraries and use them
+ENABLE_LEVELDB      | Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
+ENABLE_SOUND        | Build with OpenAL, libogg & libvorbis; in-game Sounds
+DISABLE_LUAJIT      | Do not search for LuaJIT headers & library
+RUN_IN_PLACE        | Create a portable install (worlds, settings etc. in current directory)
+USE_GPROF           | Enable profiling using GProf
+VERSION_EXTRA       | Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+
+
+Library specific option         | Information
+------------------------------- | --------------------------------
+BZIP2_INCLUDE_DIR               | Linux only; directory where bzlib.h is located
+BZIP2_LIBRARY                   | Linux only; path to libbz2.a/libbz2.so
+CURL_DLL                        | Only if building with cURL on Windows; path to libcurl.dll
+CURL_INCLUDE_DIR                | Only if building with cURL; directory where curl.h is located
+CURL_LIBRARY                    | Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
+EGL_INCLUDE_DIR                 | Only if building with GLES; directory that contains egl.h
+EGL_egl_LIBRARY                 | Only if building with GLES; path to libEGL.a/libEGL.so
+FREETYPE_INCLUDE_DIR_freetype2  | Only if building with Freetype2; directory that contains an freetype directory with files such as ftimage.h in it
+FREETYPE_INCLUDE_DIR_ft2build   | Only if building with Freetype2; directory that contains ft2build.h
+FREETYPE_LIBRARY                | Only if building with Freetype2; path to libfreetype.a/libfreetype.so/freetype.lib
+GETTEXT_DLL                     | Only when building with Gettext on Windows; path to libintl3.dll
+GETTEXT_ICONV_DLL               | Only when building with Gettext on Windows; path to libiconv2.dll
+GETTEXT_INCLUDE_DIR             | Only when building with Gettext; directory that contains iconv.h
+GETTEXT_LIBRARY                 | Only when building with Gettext on Windows; path to libintl.dll.a
+GETTEXT_MSGFMT                  | Only when building with Gettext; path to msgfmt/msgfmt.exe
+IRRLICHT_DLL                    | path to Irrlicht.dll
+IRRLICHT_INCLUDE_DIR            | directory that contains IrrCompileConfig.h
+IRRLICHT_LIBRARY                | path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a
+LEVELDB_INCLUDE_DIR             | Only when building with LevelDB; directory that contains db.h
+LEVELDB_LIBRARY                 | Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll
+LUA_INCLUDE_DIR                 | Only if you want to use LuaJIT; directory where luajit.h is located
+LUA_LIBRARY                     | Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
+MINGWM10_DLL                    | Only if compiling with MinGW; path to mingwm10.dll
+OGG_DLL                         | Only if building with sound on Windows; path to libogg.dll
+OGG_INCLUDE_DIR                 | Only if building with sound; directory that contains an ogg directory which contains ogg.h
+OGG_LIBRARY                     | Only if building with sound; path to libogg.a/libogg.so/libogg.dll.a
+OPENAL_DLL                      | Only if building with sound on Windows; path to OpenAL32.dll
+OPENAL_INCLUDE_DIR              | Only if building with sound; directory where al.h is located
+OPENAL_LIBRARY                  | Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
+OPENGLES2_INCLUDE_DIR           | Only if building with GLES; directory that contains gl2.h
+OPENGLES2_gl_LIBRARY            | Only if building with GLES; path to libGLESv2.a/libGLESv2.so
+SQLITE3_INCLUDE_DIR             | Only if you want to use SQLite from your OS; directory that contains sqlite3.h
+SQLITE3_LIBRARY                 | Only if you want to use the SQLite from your OS; path to libsqlite3.a/libsqlite3.so
+VORBISFILE_DLL                  | Only if building with sound on Windows; path to libvorbisfile-3.dll
+VORBISFILE_LIBRARY              | Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
+VORBIS_DLL                      | Only if building with sound on Windows; path to libvorbis-0.dll
+VORBIS_INCLUDE_DIR              | Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
+VORBIS_LIBRARY                  | Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
+XXF86VM_LIBRARY                 | Only on Linux; path to libXXf86vm.a/libXXf86vm.so
+ZLIB_DLL                        | Only on Windows; path to zlibwapi.dll
+ZLIB_INCLUDE_DIR                | directory where zlib.h is located
+ZLIB_LIBRARY                    | path to libz.a/libz.so/zlibwapi.lib
+
 
 Compiling on Windows:
 ---------------------
@@ -211,9 +211,10 @@ Compiling on Windows:
 	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
+
 	- You will end up with a directory structure like this (+=dir, -=file):
-	-----------------
-	+ DIR
+	  ``````````
+	  + DIR
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
 		- irrlicht-1.7.1.zip
@@ -239,7 +240,7 @@ Compiling on Windows:
 			+ doc
 			- CMakeLists.txt
 			...
-	-----------------
+	  `````````
 	- Start up the CMake GUI
 	- Select "Browse Source..." and select DIR/minetest
 	- Now, if using MSVC:
@@ -251,22 +252,24 @@ Compiling on Windows:
 	- It will warn about missing stuff, ignore that at this point. (later don't)
 	- Make sure the configuration is as follows
 	  (note that the versions may differ for you):
-	-----------------
-	BUILD_CLIENT             [X]
-	BUILD_SERVER             [ ]
-	CMAKE_BUILD_TYPE         Release
-	CMAKE_INSTALL_PREFIX     DIR/minetest-install
-	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
-	RUN_IN_PLACE             [X]
-	WARN_ALL                 [ ]
-	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
-	ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
-	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
-	GETTEXT_BIN_DIR          DIR/gettext/bin
-	GETTEXT_INCLUDE_DIR      DIR/gettext/include
-	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
-	-----------------
+
+	  ``````````
+	  BUILD_CLIENT             [X]
+	  BUILD_SERVER             [ ]
+	  CMAKE_BUILD_TYPE         Release
+	  CMAKE_INSTALL_PREFIX     DIR/minetest-install
+	  IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+	  RUN_IN_PLACE             [X]
+	  WARN_ALL                 [ ]
+	  ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
+	  ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
+	  ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
+	  GETTEXT_BIN_DIR          DIR/gettext/bin
+	  GETTEXT_INCLUDE_DIR      DIR/gettext/include
+	  GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
+	  GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
+	  ``````````
+	  
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
@@ -293,6 +296,7 @@ Compiling on Windows:
 Windows releases of minetest are built using a bat script like this:
 --------------------------------------------------------------------
 
+`````````
 set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
@@ -316,6 +320,7 @@ exit /b 0
 popd
 echo Failed.
 exit /b 1
+`````````
 
 License of Minetest textures and sounds
 ---------------------------------------
