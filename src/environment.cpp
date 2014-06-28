@@ -462,6 +462,7 @@ Player *ServerEnvironment::loadPlayer(const std::string &playername)
 			return NULL;
 		}
 		testplayer.deSerialize(is, path);
+		is.close();
 		if (testplayer.getName() == playername) {
 			*player = testplayer;
 			found = true;
