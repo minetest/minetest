@@ -509,7 +509,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
-	set(minetest_linklibs
+	set(minetest_LIBS
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
@@ -529,12 +529,12 @@ if(BUILD_CLIENT)
 	)
 	if(APPLE)
 		target_link_libraries(
-			${minetest_linklibs}
+			${minetest_LIBS}
 			${ICONV_LIBRARY}
 		)
 	else()
 		target_link_libraries(
-			${minetest_linklibs}
+			${minetest_LIBS}
 		)
 	endif()
 	if(USE_CURL)

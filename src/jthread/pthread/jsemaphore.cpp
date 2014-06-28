@@ -37,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define sem_post(s) semaphore_signal(*(s))
 #undef sem_destroy
 #define sem_destroy(s) semaphore_destroy(mach_task_self(), *(s))
+
+pthread_mutex_t semcount_mutex;
 #endif
 
 JSemaphore::JSemaphore() {
@@ -65,7 +67,9 @@ void JSemaphore::Post() {
 	assert(sem_post_retval == 0);
 	UNUSED(sem_post_retval);
 #ifdef __MACH__
+	pthread_mutex_lock(&semcount_mutex);
 	semcount++;
+	pthread_mutex_unlock(&semcount_mutex);
 #endif
 }
 
@@ -74,7 +78,9 @@ void JSemaphore::Wait() {
 	assert(sem_wait_retval == 0);
 	UNUSED(sem_wait_retval);
 #ifdef __MACH__
+	pthread_mutex_lock(&semcount_mutex);
 	semcount--;
+	pthread_mutex_unlock(&semcount_mutex);
 #endif
 }
 
@@ -109,7 +115,9 @@ bool JSemaphore::Wait(unsigned int time_ms) {
 	if (sem_wait_retval == 0)
 	{
 #ifdef __MACH__
+	pthread_mutex_lock(&semcount_mutex);
 		semcount--;
+	pthread_mutex_unlock(&semcount_mutex);
 #endif
 		return true;
 	}
