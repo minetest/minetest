@@ -22,9 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include <string>
+#include <map>
+
 #include "jthread/jmutex.h"
 #include "jthread/jmutexautolock.h"
-#include <map>
 #include "util/timetaker.h"
 #include "util/numeric.h" // paging()
 #include "debug.h" // assert()
@@ -73,7 +74,7 @@ public:
 			else{
 				/* No add shall have been used */
 				assert(n->second != -2);
-				n->second = (std::max)(n->second, 0) + 1;
+				n->second = MYMAX(n->second, 0) + 1;
 			}
 		}
 		{
