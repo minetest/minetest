@@ -1789,18 +1789,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 
 	Player *player = m_env->getPlayer(peer_id);
-	if(player == NULL){
+	if(player == NULL) {
 		errorstream<<"Server::ProcessData(): Cancelling: "
 				"No player for peer_id="<<peer_id
-				<<std::endl;
+				<< " disconnecting peer!" <<std::endl;
+		m_con.DisconnectPeer(peer_id);
 		return;
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if(playersao == NULL){
+	if(playersao == NULL) {
 		errorstream<<"Server::ProcessData(): Cancelling: "
 				"No player object for peer_id="<<peer_id
-				<<std::endl;
+				<< " disconnecting peer!" <<std::endl;
+		m_con.DisconnectPeer(peer_id);
 		return;
 	}
 
