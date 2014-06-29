@@ -129,6 +129,7 @@ ENABLE_FREETYPE     - Build with Freetype2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
 ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
+ENABLE_REDIS        - Build with libhiredis; Enables use of redis map backend
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
 DISABLE_LUAJIT      - Do not search for LuaJIT headers & library
 RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
@@ -157,6 +158,8 @@ IRRLICHT_INCLUDE_DIR            - directory that contains IrrCompileConfig.h
 IRRLICHT_LIBRARY                - path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll
+REDIS_INCLUDE_DIR               - Only when building with redis support; directory that contains hiredis.h
+REDIS_LIBRARY                   - Only when building with redis support; path to libhiredis.a/libhiredis.so
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
 LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
 MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
