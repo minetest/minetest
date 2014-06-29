@@ -169,7 +169,7 @@ install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/mapformat.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
-if(UNIX AND NOT APPLE)
+if(NOT APPLE AND UNIX)
 	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
 	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
 	install(FILES "misc/minetest.appdata.xml" DESTINATION "${APPDATADIR}")
