@@ -162,7 +162,12 @@ else()
 		endif(APPLE)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
-	set(PLATFORM_LIBS -lpthread -lrt ${CMAKE_DL_LIBS})
+	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
+	if(APPLE)
+		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
+	else()
+		set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+	endif(APPLE)
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
@@ -504,7 +509,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
-	target_link_libraries(
+	set(minetest_LIBS
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
@@ -522,6 +527,16 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
+	if(APPLE)
+		target_link_libraries(
+			${minetest_LIBS}
+			${ICONV_LIBRARY}
+		)
+	else()
+		target_link_libraries(
+			${minetest_LIBS}
+		)
+	endif()
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -605,7 +620,9 @@ if(MSVC)
 
 else()
 	# Probably GCC
-
+	if(APPLE)
+		SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
+	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
@@ -623,12 +640,12 @@ else()
 		set(OTHER_FLAGS "-mthreads -fexceptions")
 	endif()
 
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
 	if(APPLE)
-		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
-		set(ARCH i386)
-	endif()
-
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
+	else()
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
+	endif(APPLE)
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)

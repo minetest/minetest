@@ -123,6 +123,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
 
+#if defined(__APPLE__)
+	#include <mach-o/dyld.h>
+	#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 namespace porting
 {
 
@@ -220,9 +225,13 @@ void initIrrlicht(irr::IrrlichtDevice * );
 	}
 	
 #else // Posix
-	#include <sys/time.h>
-	#include <time.h>
-	
+#include <sys/time.h>
+#include <time.h>
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 	inline u32 getTimeS()
 	{
 		struct timeval tv;
@@ -247,7 +256,18 @@ void initIrrlicht(irr::IrrlichtDevice * );
 	inline u32 getTimeNs()
 	{
 		struct timespec ts;
+		// from http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
+#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+		clock_serv_t cclock;
+		mach_timespec_t mts;
+		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+		clock_get_time(cclock, &mts);
+		mach_port_deallocate(mach_task_self(), cclock);
+		ts.tv_sec = mts.tv_sec;
+		ts.tv_nsec = mts.tv_nsec;
+#else
 		clock_gettime(CLOCK_REALTIME, &ts);
+#endif
 		return ts.tv_sec * 1000000000 + ts.tv_nsec;
 	}
 	

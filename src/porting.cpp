@@ -25,10 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 
-#if defined(__APPLE__)
-	#include <mach-o/dyld.h>
-	#include "CoreFoundation/CoreFoundation.h"
-#elif defined(__FreeBSD__)
+#if defined(__FreeBSD__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
 #elif defined(_WIN32)
