@@ -860,7 +860,38 @@ inv:set_size("main", 8*4)
 print(dump(meta:to_table()))
 meta:from_table({
     inventory = {
-        main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "", [5] = "", [6] = "", [7] = "", [8] = "", [9] = "", [10] = "", [11] = "", [12] = "", [13] = "", [14] = "default:cobble", [15] = "", [16] = "", [17] = "", [18] = "", [19] = "", [20] = "default:cobble", [21] = "", [22] = "", [23] = "", [24] = "", [25] = "", [26] = "", [27] = "", [28] = "", [29] = "", [30] = "", [31] = "", [32] = ""}
+        main = {[1] = "default:dirt", 
+        	[2] = "", 
+        	[3] = "", 
+        	[4] = "", 
+        	[5] = "", 
+        	[6] = "", 
+        	[7] = "", 
+        	[8] = "", 
+        	[9] = "", 
+        	[10] = "", 
+        	[11] = "", 
+        	[12] = "", 
+        	[13] = "", 
+        	[14] = "default:cobble", 
+        	[15] = "", 
+        	[16] = "", 
+        	[17] = "", 
+        	[18] = "", 
+        	[19] = "", 
+        	[20] = "default:cobble", 
+        	[21] = "", 
+        	[22] = "", 
+        	[23] = "", 
+        	[24] = "", 
+        	[25] = "", 
+        	[26] = "", 
+        	[27] = "", 
+        	[28] = "", 
+        	[29] = "", 
+        	[30] = "", 
+        	[31] = "", 
+        	[32] = ""}
     },
     fields = {
         formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
@@ -1448,7 +1479,8 @@ minetest.get_node_level(pos)
 minetest.set_node_level(pos, level)
 ^ set level of leveled node, default level = 1, if totallevel > maxlevel returns rest (total-max).
 minetest.add_node_level(pos, level)
-^ increase level of leveled node by level, default level = 1, if totallevel > maxlevel returns rest (total-max). can be negative for decreasing
+^ increase level of leveled node by level, default level = 1, if totallevel > maxlevel returns rest (total-max). 
+^ Can be negative for decreasing
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
@@ -1480,7 +1512,8 @@ minetest.inventorycube(img1, img2, img3)
 minetest.get_pointed_thing_position(pointed_thing, above)
 ^ Get position of a pointed_thing (that you can get from somewhere)
 minetest.dir_to_facedir(dir, is6d)
-^ Convert a vector to a facedir value, used in param2 for paramtype2="facedir"; passing something non-nil/false for the optional second parameter causes it to take the y component into account
+^ Convert a vector to a facedir value, used in param2 for paramtype2="facedir";
+^ Passing something non-nil/false for the optional second parameter causes it to take the y component into account
 minetest.facedir_to_dir(facedir)
 ^ Convert a facedir back into a vector aimed directly out the "back" of a node
 minetest.dir_to_wallmounted(dir)
@@ -1882,12 +1915,12 @@ Player-only: (no-op for other objects)
 - override_day_night_ratio(ratio or nil)
   ^ 0...1: Overrides day-night ratio, controlling sunlight to a specific amount
   ^ nil: Disables override, defaulting to sunlight based on day-night cycle
-- set_local_animation({x=0, y=79}, {x=168, y=187}, {x=189, y=198}, {x=200, y=219}, frame_speed=30): set animation for player model in third person view
-  ^ stand/idle animation key frames
-  ^ walk animation key frames
-  ^ dig animation key frames
-  ^ walk+dig animation key frames
-  ^ animation frame speed
+- set_local_animation({x=0, y=79}, 		< stand/idle animation key frames
+		      {x=168, y=187}, 		< walk animation key frames
+		      {x=189, y=198}, 		< dig animation key frames
+		      {x=200, y=219}, 		< walk+dig animation key frames
+		      frame_speed=30): 		< animation frame speed
+  ^ set animation for player model in third person view
 - set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0}): defines offset value for camera per player
   ^ in first person view
   ^ in third person view (max. values {x=-10/10,y=-10,15,z=-5/5})
@@ -2316,7 +2349,8 @@ Node definition (register_node)
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
     freezemelt = "", -- water for snow/ice, ice/snow for water
-    leveled = 0, -- Block contain level in param2. value - default level, used for snow. Dont forget use "leveled" type nodebox
+    leveled = 0, -- Block contain level in param2. value - default level, used for snow. 
+    ^ Dont forget use "leveled" type nodebox
     liquid_range = 8, -- number of flowing nodes arround source (max. 8)
     drowning = 0, -- Player will take this amount of damage if no bubbles are left
     light_source = 0, -- Amount of light emitted by node
