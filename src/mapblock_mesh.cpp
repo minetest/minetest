@@ -258,8 +258,8 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 	{
 		MapNode n = data->m_vmanip.getNodeNoEx(p - dirs8[i]);
 
+		// if it's CONTENT_IGNORE we can't do any light calculations
 		if (n.getContent() == CONTENT_IGNORE) {
-			ambient_occlusion++;
 			continue;
 		}
 
@@ -272,6 +272,9 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 		{
 			light += decode_light(n.getLight(bank, ndef));
 			light_count++;
+		}
+		else {
+			ambient_occlusion++;
 		}
 	}
 
