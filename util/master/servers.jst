@@ -1,7 +1,7 @@
 {{? !master.no_total}}
 <div class="total">
-	{{it.total_max && it.total_max.clients > 0}}Players: {{=it.total.clients}}/{{=it.total_max.clients}}&nbsp;{{?}}
-	{{it.total_max && it.total_max.servers > 0}}Servers: {{=it.total.servers}}/{{=it.total_max.servers}}{{?}}
+	{{? it.total_max && it.total_max.clients > 0}}Players: {{=it.total.clients}}/{{=it.total_max.clients}}&nbsp;{{?}}
+	{{? it.total_max && it.total_max.servers > 0}}Servers: {{=it.total.servers}}/{{=it.total_max.servers}}{{?}}
 </div>
 {{?}}
 <table>
