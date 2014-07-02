@@ -367,7 +367,16 @@ function core.item_eat(hp_change, replace_with_item)
 		end
 		if itemstack:take_item() ~= nil then
 			user:set_hp(user:get_hp() + hp_change)
-			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
+			local leftover = itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
+			-- Update the inventory now
+			local inv = user:get_inventory()
+			local wield_list = user:get_wield_list()
+			inv:set_stack(wield_list, user:get_wield_index(), itemstack)
+			local leftover2 = inv:add_item(wield_list, leftover)
+			-- Drop the remaining stack
+			if not leftover2:is_empty() then
+				core.item_drop(leftover2, user, user:getpos())
+			end
 		end
 		return itemstack
 	end
