@@ -2350,16 +2350,19 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
+		u32 delta;
 		if (id == -1) {
 			m_old_tooltip_id = id;
 			m_old_tooltip = "";
+			delta = 0;
 		} else if (id != m_old_tooltip_id) {
 			m_hoovered_time = getTimeMs();
 			m_old_tooltip_id = id;
+			delta = 0;
 		} else if (id == m_old_tooltip_id) {
-			u32 delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
-			if (delta <= m_tooltip_show_delay)
-				goto skip_tooltip;
+			delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
+		}
+		if (id != -1 && delta >= m_tooltip_show_delay) {
 			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); iter++) {
 				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != "") ){
@@ -2392,7 +2395,6 @@ void GUIFormSpecMenu::drawMenu()
 		}
 	}
 
-	skip_tooltip:
 	/*
 		Draw dragged item stack
 	*/
