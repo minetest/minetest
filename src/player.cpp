@@ -100,6 +100,7 @@ Player::Player(IGameDef *gamedef):
 
 Player::~Player()
 {
+	clearHud();
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored

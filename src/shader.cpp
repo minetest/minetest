@@ -383,13 +383,16 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 
 ShaderSource::~ShaderSource()
 {
-	//m_shader_callback->drop();
-
 	for (std::vector<IShaderConstantSetter*>::iterator iter = m_global_setters.begin();
 			iter != m_global_setters.end(); iter++) {
 		delete *iter;
 	}
 	m_global_setters.clear();
+
+	if (m_shader_callback) {
+		m_shader_callback->drop();
+		m_shader_callback = NULL;
+	}
 }
 
 u32 ShaderSource::getShader(const std::string &name, 
