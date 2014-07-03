@@ -1049,6 +1049,11 @@ void KeyCache::populate()
 	key[KeyType::FREEMOVE]     = getKeySetting("keymap_freemove");
 	key[KeyType::FASTMOVE]     = getKeySetting("keymap_fastmove");
 	key[KeyType::NOCLIP]       = getKeySetting("keymap_noclip");
+	key[KeyType::HOTBAR_PREV]  = getKeySetting("keymap_hotbar_previous");
+	key[KeyType::HOTBAR_NEXT]  = getKeySetting("keymap_hotbar_next");
+	key[KeyType::MUTE]         = getKeySetting("keymap_mute");
+	key[KeyType::INC_VOLUME]   = getKeySetting("keymap_increase_volume");
+	key[KeyType::DEC_VOLUME]   = getKeySetting("keymap_decrease_volume");
 	key[KeyType::CINEMATIC]    = getKeySetting("keymap_cinematic");
 	key[KeyType::SCREENSHOT]   = getKeySetting("keymap_screenshot");
 	key[KeyType::TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
@@ -2493,6 +2498,30 @@ void Game::processKeyInput()
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
+	} else if (wasKeyDown(KeyType::MUTE)) {
+		float volume = g_settings->getFloat("sound_volume");
+		if (volume < 0.001f) {
+			g_settings->setFloat("sound_volume", 1.0f);
+			m_statustext = narrow_to_wide(gettext("Volume changed to 100%"));
+		} else {
+			g_settings->setFloat("sound_volume", 0.0f);
+			m_statustext = narrow_to_wide(gettext("Volume changed to 0%"));
+		}
+		runData.statustext_time = 0;
+	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
+		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+		char buf[100];
+		g_settings->setFloat("sound_volume", new_volume);
+		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
+		m_statustext = narrow_to_wide(buf);
+		runData.statustext_time = 0;
+	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
+		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+		char buf[100];
+		g_settings->setFloat("sound_volume", new_volume);
+		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
+		m_statustext = narrow_to_wide(buf);
+		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -2560,11 +2589,13 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	s32 dir = wheel;
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_DOWN)) {
+	if (input->joystick.wasKeyDown(KeyType::SCROLL_DOWN) ||
+			wasKeyDown(KeyType::HOTBAR_NEXT)) {
 		dir = -1;
 	}
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_UP)) {
+	if (input->joystick.wasKeyDown(KeyType::SCROLL_UP) ||
+			wasKeyDown(KeyType::HOTBAR_PREV)) {
 		dir = 1;
 	}
 
