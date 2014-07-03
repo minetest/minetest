@@ -65,6 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "event_manager.h"
 #include <iomanip>
 #include <list>
+#include <math.h>
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "drawscene.h"
@@ -2044,6 +2045,37 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				}
 				image->drop();
 			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_mute")))
+		{
+			g_settings->setFloat("sound_volume", 0.0),
+			statustext = narrow_to_wide(
+					"Volume changed to 0%");
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_increase_volume")))
+		{
+			float volume = g_settings->getFloat("sound_volume");
+			float new_volume = volume + 0.1;
+			if(new_volume > 1)
+				new_volume = 1;
+			g_settings->setFloat("sound_volume", new_volume);
+			statustext = narrow_to_wide(
+					"Volume changed to "
+					+ itos((int) round(new_volume*100)) + "%");
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_decrease_volume")))
+		{
+			float volume = g_settings->getFloat("sound_volume");
+			float new_volume = volume - 0.1;
+			if(new_volume < 0)
+				new_volume = 0;
+			g_settings->setFloat("sound_volume", new_volume);
+			statustext = narrow_to_wide(
+					"Volume changed to "
+					+ itos((int) round(new_volume*100)) + "%");
+			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
