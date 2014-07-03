@@ -2199,8 +2199,29 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					new_playeritem = max_item;
 			}
 		}
+		// Item selection with next/previous keys
+		if(input->wasKeyDown(getKeySetting("keymap_hotbar_next")))
+		{
+			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
+				player->hud_hotbar_itemcount-1);
 
-		// Item selection
+			if(new_playeritem < max_item)
+				new_playeritem++;
+			else
+				new_playeritem = 0;
+		}
+		if(input->wasKeyDown(getKeySetting("keymap_hotbar_previous")))
+		{
+			u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
+				player->hud_hotbar_itemcount-1);
+
+			if(new_playeritem > 0)
+				new_playeritem--;
+			else
+				new_playeritem = max_item;
+		}
+
+		// Item selection with number keys
 		for(u16 i=0; i<10; i++)
 		{
 			const KeyPress *kp = NumberKey + (i + 1) % 10;
