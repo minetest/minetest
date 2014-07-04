@@ -233,6 +233,13 @@ function core.register_biome(biome)
 	register_biome_raw(biome)
 end
 
+local register_ore_raw = core.register_ore
+core.registered_ores = {}
+function core.register_ore(oredef)
+	core.registered_ores[#core.registered_ores + 1] = oredef
+	register_ore_raw(oredef)
+end
+
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
 		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
