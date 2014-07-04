@@ -1015,7 +1015,7 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
 ^ item name is the registered name of an item/node,
-  tooltip will be made out of its descritption
+  tooltip will be made out of its description
   to override it use tooltip element
 ^ Position and size units are inventory slots
 
