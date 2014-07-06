@@ -54,10 +54,10 @@ private:
 	HANDLE m_hSemaphore;
 #elif __MACH__
 	semaphore_t m_semaphore;
+	int semcount;
 #else
 	sem_t m_semaphore;
 #endif
-    int semcount;
 };
 
 
