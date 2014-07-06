@@ -100,8 +100,7 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 	std::string datastr;
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
 		i64tos(getBlockAsInteger(blockpos)), &datastr);
-	ENSURE_STATUS_OK(status);
-	if (datastr.length() == 0) {
+	if (datastr.length() == 0 && status.ok()) {
 		errorstream << "Blank block data in database (datastr.length() == 0) ("
 			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
 
@@ -112,7 +111,8 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 			throw SerializationError("Blank block data in database");
 		}
 		return NULL;
-	} else {
+	} 
+	if (status.ok()) {
 		/*
 			Make sure sector is loaded
 		*/
