@@ -125,7 +125,7 @@ std::list<SharedBuffer<u8> > makeSplitPacket(
 {
 	// Chunk packets, containing the TYPE_SPLIT header
 	std::list<SharedBuffer<u8> > chunks;
-	
+
 	u32 chunk_header_size = 7;
 	u32 maximum_data_size = chunksize_max - chunk_header_size;
 	u32 start = 0;
@@ -136,12 +136,12 @@ std::list<SharedBuffer<u8> > makeSplitPacket(
 		end = start + maximum_data_size - 1;
 		if(end > data.getSize() - 1)
 			end = data.getSize() - 1;
-		
+
 		u32 payload_size = end - start + 1;
 		u32 packet_size = chunk_header_size + payload_size;
 
 		SharedBuffer<u8> chunk(packet_size);
-		
+
 		writeU8(&chunk[0], TYPE_SPLIT);
 		writeU16(&chunk[1], seqnum);
 		// [3] u16 chunk_count is written at next stage
@@ -150,7 +150,7 @@ std::list<SharedBuffer<u8> > makeSplitPacket(
 
 		chunks.push_back(chunk);
 		chunk_count++;
-		
+
 		start = end + 1;
 		chunk_num++;
 	}
@@ -465,9 +465,9 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 		sp->reliable = reliable;
 		m_buf[seqnum] = sp;
 	}
-	
+
 	IncomingSplitPacket *sp = m_buf[seqnum];
-	
+
 	// TODO: These errors should be thrown or something? Dunno.
 	if(chunk_count != sp->chunk_count)
 		LOG(derr_con<<"Connection: WARNING: chunk_count="<<chunk_count
@@ -483,15 +483,15 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	// lag and the server re-sends stuff.
 	if(sp->chunks.find(chunk_num) != sp->chunks.end())
 		return SharedBuffer<u8>();
-	
+
 	// Cut chunk data out of packet
 	u32 chunkdatasize = p.data.getSize() - headersize;
 	SharedBuffer<u8> chunkdata(chunkdatasize);
 	memcpy(*chunkdata, &(p.data[headersize]), chunkdatasize);
-	
+
 	// Set chunk data in buffer
 	sp->chunks[chunk_num] = chunkdata;
-	
+
 	// If not all chunks are received, return empty buffer
 	if(sp->allReceived() == false)
 		return SharedBuffer<u8>();
@@ -503,7 +503,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	{
 		totalsize += i->second.getSize();
 	}
-	
+
 	SharedBuffer<u8> fulldata(totalsize);
 
 	// Copy chunks to data buffer
@@ -561,6 +561,7 @@ Channel::Channel() :
 		next_outgoing_split_seqnum(SEQNUM_INITIAL),
 		current_packet_loss(0),
 		current_packet_too_late(0),
+		current_packet_successfull(0),
 		packet_loss_counter(0),
 		current_bytes_transfered(0),
 		current_bytes_received(0),
@@ -2096,7 +2097,7 @@ void ConnectionReceiveThread::receive()
 	// infrastructure
 	unsigned int packet_maxsize = 1500;
 	SharedBuffer<u8> packetdata(packet_maxsize);
-	
+
 	bool packet_queued = true;
 
 	unsigned int loop_count = 0;
@@ -2146,13 +2147,13 @@ void ConnectionReceiveThread::receive()
 
 		u16 peer_id          = readPeerId(*packetdata);
 		u8 channelnum        = readChannel(*packetdata);
-		
+
 		if(channelnum > CHANNEL_COUNT-1){
 			LOG(derr_con<<m_connection->getDesc()
 					<<"Receive(): Invalid channel "<<channelnum<<std::endl);
 			throw InvalidIncomingDataException("Channel doesn't exist");
 		}
-		
+
 		/* preserve original peer_id for later usage */
 		u16 packet_peer_id   = peer_id;
 
@@ -2202,7 +2203,7 @@ void ConnectionReceiveThread::receive()
 			}
 		}
 
-		
+
 		/* mark peer as seen with id */
 		if (!(packet_peer_id == PEER_ID_INEXISTENT))
 			peer->setSentWithID();
@@ -2215,7 +2216,7 @@ void ConnectionReceiveThread::receive()
 		{
 			channel = &(dynamic_cast<UDPPeer*>(&peer)->channels[channelnum]);
 		}
-		
+
 		if (channel != 0) {
 			channel->UpdateBytesReceived(received_size);
 		}
@@ -2226,17 +2227,17 @@ void ConnectionReceiveThread::receive()
 		SharedBuffer<u8> strippeddata(received_size - BASE_HEADER_SIZE);
 		memcpy(*strippeddata, &packetdata[BASE_HEADER_SIZE],
 				strippeddata.getSize());
-		
+
 		try{
 			// Process it (the result is some data with no headers made by us)
 			SharedBuffer<u8> resultdata = processPacket
 					(channel, strippeddata, peer_id, channelnum, false);
-			
+
 			LOG(dout_con<<m_connection->getDesc()
 					<<" ProcessPacket from peer_id: " << peer_id
 					<< ",channel: " << (channelnum & 0xFF) << ", returned "
 					<< resultdata.getSize() << " bytes" <<std::endl);
-			
+
 			ConnectionEvent e;
 			e.dataReceived(peer_id, resultdata);
 			m_connection->putEvent(e);
@@ -2854,11 +2855,11 @@ bool Connection::Connected()
 
 	if(m_peers.size() != 1)
 		return false;
-		
+
 	std::map<u16, Peer*>::iterator node = m_peers.find(PEER_ID_SERVER);
 	if(node == m_peers.end())
 		return false;
-	
+
 	if(m_peer_id == PEER_ID_INEXISTENT)
 		return false;
 
@@ -3114,4 +3115,3 @@ std::list<u16> Connection::getPeerIDs()
 }
 
 } // namespace
-
