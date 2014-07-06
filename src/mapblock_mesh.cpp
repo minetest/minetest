@@ -1293,6 +1293,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+	bool smooth_lighting = g_settings->getBool("smooth_lighting");
 
 	if(!m_has_animation)
 	{
@@ -1406,6 +1407,9 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
+				// If no smooth lighting, shading is already correct
+				if(!smooth_lighting)
+					continue;
 				// Make sides and bottom darker than the top
 				video::SColor &vc = vertices[vertexIndex].Color;
 				if(vertices[vertexIndex].Normal.Y > 0.5) {
