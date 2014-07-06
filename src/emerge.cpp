@@ -156,6 +156,11 @@ EmergeManager::~EmergeManager() {
 	mglist.clear();
 
 	delete biomedef;
+
+	if (params.sparams) {
+		delete params.sparams;
+		params.sparams = NULL;
+	}
 }
 
 
