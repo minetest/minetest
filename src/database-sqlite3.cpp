@@ -187,12 +187,12 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 	const char *bytes = tmp.c_str();
 
 	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
-		infostream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
+		errorstream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
 	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
-		infostream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
+		errorstream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
 	int written = sqlite3_step(m_database_write);
 	if(written != SQLITE_DONE)
-		infostream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
+		errorstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
 		<<sqlite3_errmsg(m_database)<<std::endl;
 	// Make ready for later reuse
 	sqlite3_reset(m_database_write);

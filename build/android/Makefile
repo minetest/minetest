@@ -628,7 +628,7 @@ assets : $(ASSETS_TIMESTAMP)
 clean_assets :
 	@$(RM) -r assets
 	
-apk: $(PATHCFGFILE) assets $(IRRLICHT_LIB) $(CURL_LIB)                   \
+apk: $(PATHCFGFILE) assets $(IRRLICHT_LIB) $(CURL_LIB) $(LEVELDB_LIB)              \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ROOT)/jni/src/android_version.h
 	@export NDEBUG=$$NDEBUG; $(MAKE) -j${PARALLEL} manifest;                   \
 	export PATH=$$PATH:${SDKFOLDER}/platform-tools:${ANDROID_NDK};             \

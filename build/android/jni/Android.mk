@@ -7,10 +7,10 @@ LOCAL_MODULE := Irrlicht
 LOCAL_SRC_FILES := deps/irrlicht/lib/Android/libIrrlicht.a
 include $(PREBUILT_STATIC_LIBRARY)
 
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := LevelDB
-#LOCAL_SRC_FILES := deps/leveldb/libleveldb.a
-#include $(PREBUILT_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+LOCAL_MODULE := LevelDB
+LOCAL_SRC_FILES := deps/leveldb/libleveldb.a
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := curl
@@ -62,6 +62,7 @@ LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_ \
 				-DUSE_CURL=1             \
 				-DUSE_SOUND=1            \
 				-DUSE_FREETYPE=1         \
+				-DUSE_LEVELDB=1          \
 				$(GPROF_DEF)             \
 				-pipe -fstrict-aliasing
 
@@ -93,9 +94,8 @@ LOCAL_C_INCLUDES :=                               \
 		deps/freetype2-android/include            \
 		deps/curl-7.35.0/include                  \
 		deps/openal-soft/jni/OpenAL/include       \
-		deps/libvorbis-libogg-android/jni/include
-		
-#		deps/leveldb/include                      \
+		deps/libvorbis-libogg-android/jni/include \
+		deps/leveldb/include                      \
 
 LOCAL_SRC_FILES :=                                \
 		jni/src/ban.cpp                           \
@@ -205,9 +205,8 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/util/serialize.cpp                \
 		jni/src/util/string.cpp                   \
 		jni/src/util/timetaker.cpp                \
-		jni/src/touchscreengui.cpp
-		
-# 		jni/src/database-leveldb.cpp              \
+		jni/src/touchscreengui.cpp                \
+ 		jni/src/database-leveldb.cpp
 
 # lua api
 LOCAL_SRC_FILES +=                                \
@@ -297,8 +296,7 @@ LOCAL_SRC_FILES +=                                \
 LOCAL_SRC_FILES += jni/src/json/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := openal ogg vorbis ssl crypto
-LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl android_native_app_glue $(PROFILER_LIBS)
-# LevelDB
+LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl LevelDB android_native_app_glue $(PROFILER_LIBS)
 LOCAL_LDLIBS := -lEGL -llog -lGLESv1_CM -lGLESv2 -lz -landroid
 
 include $(BUILD_SHARED_LIBRARY)
