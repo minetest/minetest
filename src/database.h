@@ -24,19 +24,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
 
+#ifndef PP
+	#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+#endif
+
 class MapBlock;
 
 class Database
 {
 public:
-	virtual void beginSave()=0;
-	virtual void endSave()=0;
+	virtual void beginSave() = 0;
+	virtual void endSave() = 0;
 
-	virtual void saveBlock(MapBlock *block)=0;
-	virtual MapBlock* loadBlock(v3s16 blockpos)=0;
+	virtual bool saveBlock(MapBlock *block) = 0;
+	virtual MapBlock *loadBlock(v3s16 blockpos) = 0;
 	s64 getBlockAsInteger(const v3s16 pos) const;
 	v3s16 getIntegerAsBlock(s64 i) const;
-	virtual void listAllLoadableBlocks(std::list<v3s16> &dst)=0;
+	virtual void listAllLoadableBlocks(std::list<v3s16> &dst) = 0;
 	virtual int Initialized(void)=0;
 	virtual ~Database() {};
 };

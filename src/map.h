@@ -270,7 +270,7 @@ public:
 
 	// Server implements this.
 	// Client leaves it as no-op.
-	virtual void saveBlock(MapBlock *block){};
+	virtual bool saveBlock(MapBlock *block){ return false; };
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
@@ -485,7 +485,7 @@ public:
 	// Returns true if sector now resides in memory
 	//bool deFlushSector(v2s16 p2d);
 
-	void saveBlock(MapBlock *block);
+	bool saveBlock(MapBlock *block);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);

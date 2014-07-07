@@ -136,25 +136,24 @@ void Database_SQLite3::verifyDatabase() {
 	infostream<<"ServerMap: SQLite3 database opened"<<std::endl;
 }
 
-void Database_SQLite3::saveBlock(MapBlock *block)
+bool Database_SQLite3::saveBlock(MapBlock *block)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	v3s16 p3d = block->getPos();
+
 	/*
-		Dummy blocks are not written
+		Dummy blocks are not written, but is not a save failure
 	*/
 	if(block->isDummy())
 	{
-		/*v3s16 p = block->getPos();
-		infostream<<"Database_SQLite3::saveBlock(): WARNING: Not writing dummy block "
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		return;
+		errorstream << "WARNING: saveBlock: Not writing dummy block "
+				<< PP(p3d) << std::endl;
+		return true;
 	}
 
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v3s16 p3d = block->getPos();
-
 
 #if 0
 	v2s16 p2d(p3d.X, p3d.Z);
@@ -176,29 +175,39 @@ void Database_SQLite3::saveBlock(MapBlock *block)
 
 	std::ostringstream o(std::ios_base::binary);
 
-	o.write((char*)&version, 1);
+	o.write((char *)&version, 1);
 
 	// Write basic data
 	block->serialize(o, version, true);
 
 	// Write block to database
-
 	std::string tmp = o.str();
-	const char *bytes = tmp.c_str();
 
-	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
-		errorstream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
-		errorstream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
-	int written = sqlite3_step(m_database_write);
-	if(written != SQLITE_DONE)
-		errorstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
-		<<sqlite3_errmsg(m_database)<<std::endl;
-	// Make ready for later reuse
-	sqlite3_reset(m_database_write);
+	if (sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK) {
+		errorstream << "WARNING: saveBlock: Block position failed to bind: "
+			<< PP(p3d) << ": " << sqlite3_errmsg(m_database) << std::endl;
+		sqlite3_reset(m_database_write);
+		return false;
+	}
+
+	if (sqlite3_bind_blob(m_database_write, 2, (void *)tmp.c_str(), tmp.size(), NULL) != SQLITE_OK) {
+		errorstream << "WARNING: saveBlock: Block data failed to bind: "
+			<< PP(p3d) << ": " << sqlite3_errmsg(m_database) << std::endl;
+		sqlite3_reset(m_database_write);
+		return false;
+	}
+
+	if (sqlite3_step(m_database_write) != SQLITE_DONE) {
+		errorstream << "WARNING: saveBlock: Block failed to save "
+			<< PP(p3d) << ": " << sqlite3_errmsg(m_database) << std::endl;
+		sqlite3_reset(m_database_write);
+		return false;
+	}
 
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
+	sqlite3_reset(m_database_write);
+	return true;
 }
 
 MapBlock* Database_SQLite3::loadBlock(v3s16 blockpos)
