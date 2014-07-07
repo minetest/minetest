@@ -7,10 +7,12 @@ LOCAL_MODULE := Irrlicht
 LOCAL_SRC_FILES := deps/irrlicht/lib/Android/libIrrlicht.a
 include $(PREBUILT_STATIC_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := LevelDB
-LOCAL_SRC_FILES := deps/leveldb/libleveldb.a
-include $(PREBUILT_STATIC_LIBRARY)
+ifeq ($(HAVE_LEVELDB), 1)
+	include $(CLEAR_VARS)
+	LOCAL_MODULE := LevelDB
+	LOCAL_SRC_FILES := deps/leveldb/libleveldb.a
+	include $(PREBUILT_STATIC_LIBRARY)
+endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := curl
@@ -57,13 +59,13 @@ ifdef GPROF
 GPROF_DEF=-DGPROF
 endif
 
-LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_ \
-				-DHAVE_TOUCHSCREENGUI    \
-				-DUSE_CURL=1             \
-				-DUSE_SOUND=1            \
-				-DUSE_FREETYPE=1         \
-				-DUSE_LEVELDB=1          \
-				$(GPROF_DEF)             \
+LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
+				-DHAVE_TOUCHSCREENGUI         \
+				-DUSE_CURL=1                  \
+				-DUSE_SOUND=1                 \
+				-DUSE_FREETYPE=1              \
+				-DUSE_LEVELDB=$(HAVE_LEVELDB) \
+				$(GPROF_DEF)                  \
 				-pipe -fstrict-aliasing
 
 ifndef NDEBUG
@@ -294,7 +296,11 @@ LOCAL_SRC_FILES +=                                \
 LOCAL_SRC_FILES += jni/src/json/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := openal ogg vorbis ssl crypto
-LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl LevelDB android_native_app_glue $(PROFILER_LIBS)
+LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl android_native_app_glue $(PROFILER_LIBS)
+
+ifeq ($(HAVE_LEVELDB), 1)
+	LOCAL_STATIC_LIBRARIES += LevelDB
+endif
 LOCAL_LDLIBS := -lEGL -llog -lGLESv1_CM -lGLESv2 -lz -landroid
 
 include $(BUILD_SHARED_LIBRARY)
