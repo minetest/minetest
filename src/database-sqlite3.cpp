@@ -120,12 +120,23 @@ void Database_SQLite3::verifyDatabase() {
 		errorstream<<"SQLite3 read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 		throw FileNotGoodException("Cannot prepare read statement");
 	}
-
-	d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
+#ifdef __ANDROID__
+	d = sqlite3_prepare(m_database, "INSERT INTO `blocks` VALUES(?, ?);", -1, &m_database_write, NULL);
+#else
+	d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?);", -1, &m_database_write, NULL);
+#endif
 	if(d != SQLITE_OK) {
 		errorstream<<"SQLite3 write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 		throw FileNotGoodException("Cannot prepare write statement");
 	}
+
+#ifdef __ANDROID__
+	d = sqlite3_prepare(m_database, "DELETE FROM `blocks` WHERE `pos`=?;", -1, &m_database_delete, NULL);
+	if(d != SQLITE_OK) {
+		infostream<<"WARNING: SQLite3 database delete statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+		throw FileNotGoodException("Cannot prepare delete statement");
+	}
+#endif
 
 	d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
 	if(d != SQLITE_OK) {
@@ -139,6 +150,32 @@ void Database_SQLite3::verifyDatabase() {
 bool Database_SQLite3::saveBlock(v3s16 blockpos, std::string &data)
 {
 	verifyDatabase();
+
+#ifdef __ANDROID__
+	/**
+	 * Note: For some unknown reason sqlite3 fails to REPLACE blocks on android,
+	 * deleting them and inserting first works.
+	 */
+	if (sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK) {
+		infostream << "WARNING: Could not bind block position for load: "
+			<< sqlite3_errmsg(m_database)<<std::endl;
+	}
+
+	if (sqlite3_step(m_database_read) == SQLITE_ROW) {
+		if (sqlite3_bind_int64(m_database_delete, 1, getBlockAsInteger(blockpos)) != SQLITE_OK) {
+			infostream << "WARNING: Could not bind block position for delete: "
+				<< sqlite3_errmsg(m_database)<<std::endl;
+		}
+
+		if (sqlite3_step(m_database_delete) != SQLITE_DONE) {
+			errorstream << "WARNING: saveBlock: Block failed to delete "
+				<< PP(blockpos) << ": " << sqlite3_errmsg(m_database) << std::endl;
+			return false;
+		}
+		sqlite3_reset(m_database_delete);
+	}
+	sqlite3_reset(m_database_read);
+#endif
 
 	if (sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(blockpos)) != SQLITE_OK) {
 		errorstream << "WARNING: saveBlock: Block position failed to bind: "
@@ -162,6 +199,7 @@ bool Database_SQLite3::saveBlock(v3s16 blockpos, std::string &data)
 	}
 
 	sqlite3_reset(m_database_write);
+
 	return true;
 }
 
@@ -203,7 +241,7 @@ void Database_SQLite3::createDatabase()
 			"`data` BLOB"
 		");"
 	, NULL, NULL, NULL);
-	if(e == SQLITE_ABORT)
+	if(e != SQLITE_OK)
 		throw FileNotGoodException("Could not create sqlite3 database structure");
 	else
 		infostream<<"ServerMap: SQLite3 database structure was created";
