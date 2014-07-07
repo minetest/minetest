@@ -543,10 +543,11 @@ public:
 	{m_map = map;}
 
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
-						bool load_if_inexistent = true);
+			bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
-	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks);
+	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
+			bool overwrite_generated = true);
 
 protected:
 	bool m_create_area;
