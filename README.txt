@@ -1,5 +1,5 @@
-Minetest
-============
+﻿Minetest
+========
 
 An InfiniMiner/Minecraft inspired game.
 
@@ -32,14 +32,33 @@ Default Controls
 - WASD: move
 - Space: jump/climb
 - Shift: sneak/go down
-- Q: drop item
+- Q: drop itemstack (+ SHIFT for single item)
 - I: inventory
 - Mouse: turn/look
 - Mouse left: dig/punch
 - Mouse right: place/use
 - Mouse wheel: select item
-- Esc: pause menu
 - T: chat
+- 1-8: select item
+
+- Esc: pause menu (pauses only singleplayer game)
+- R: Enable/Disable full range view
+- +: Increase view range
+- -: Decrease view range
+- K: Enable/Disable fly (needs fly privilege)
+- J: Enable/Disable fast (needs fast privilege)
+- H: Enable/Disable noclip (needs noclip privilege)
+
+- F1:  Hide/Show HUD
+- F2:  Hide/Show Chat
+- F3:  Disable/Enable Fog
+- F4:  Disable/Enable Camera update (Mapblocks are not updated anymore when disabled)
+- F5:  Toogle through debug info screens
+- F6:  Toogle through output data
+- F7:  Toggle through camera modes
+- F10: Show/Hide console
+- F12: Take screenshot
+
 - Settable in the configuration file, see the section below.
 
 Paths
