@@ -3265,7 +3265,38 @@ void ServerMap::endSave()
 
 bool ServerMap::saveBlock(MapBlock *block)
 {
-	return dbase->saveBlock(block);
+	return saveBlock(block, dbase);
+}
+
+bool ServerMap::saveBlock(MapBlock *block, Database *db)
+{
+	v3s16 p3d = block->getPos();
+
+	// Dummy blocks are not written
+	if (block->isDummy()) {
+		errorstream << "WARNING: saveBlock: Not writing dummy block "
+			<< PP(p3d) << std::endl;
+		return true;
+	}
+
+	// Format used for writing
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
+
+	/*
+		[0] u8 serialization version
+		[1] data
+	*/
+	std::ostringstream o(std::ios_base::binary);
+	o.write((char*) &version, 1);
+	block->serialize(o, version, true);
+
+	std::string data = o.str();
+	bool ret = db->saveBlock(p3d, data);
+	if(ret) {
+		// We just wrote it to the disk so clear modified flag
+		block->resetModified();
+	}
+	return ret;
 }
 
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
@@ -3274,7 +3305,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 	DSTACK(__FUNCTION_NAME);
 
 	std::string fullpath = sectordir+DIR_DELIM+blockfile;
-	try{
+	try {
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 		if(is.good() == false)
@@ -3420,10 +3451,13 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
-	MapBlock *ret;
+	std::string ret;
 
 	ret = dbase->loadBlock(blockpos);
-	if (ret) return (ret);
+	if (ret != "") {
+		loadBlock(&ret, blockpos, createSector(p2d), false);
+		return getBlockNoCreateNoEx(blockpos);
+	}
 	// Not found in database, try the files
 
 	// The directory layout we're going to load from.
