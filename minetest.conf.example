@@ -331,8 +331,7 @@
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
 #time_speed = 72
-# Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year. 30 days = 10 real hours
-#year_days = 30
+#Timeout for server to remove unused map data from memory
 #server_unload_unused_data_timeout = 29
 # Maximum number of statically stored objects in a block
 #max_objects_per_block = 49
