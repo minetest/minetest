@@ -1410,6 +1410,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 							(m_max_data_packets_per_iteration/numpeers));
 
 			channel->UpdatePacketLossCounter(timed_outs.size());
+			g_profiler->graphAdd("packets_lost", timed_outs.size());
 
 			m_iteration_packets_avaialble -= timed_outs.size();
 
@@ -1421,6 +1422,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				u16 seqnum  = readU16(&(k->data[BASE_HEADER_SIZE+1]));
 
 				channel->UpdateBytesLost(k->data.getSize());
+				k->resend_count++;
 
 				LOG(derr_con<<m_connection->getDesc()
 						<<"RE-SENDING timed-out RELIABLE to "
@@ -2349,24 +2351,30 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 			try{
 				BufferedPacket p =
 						channel->outgoing_reliables_sent.popSeqnum(seqnum);
-				// Get round trip time
-				unsigned int current_time = porting::getTimeMs();
 
-				if (current_time > p.absolute_send_time)
-				{
-					float rtt = (current_time - p.absolute_send_time) / 1000.0;
+				// only calculate rtt from straight sent packets
+				if (p.resend_count == 0) {
+					// Get round trip time
+					unsigned int current_time = porting::getTimeMs();
 
-					// Let peer calculate stuff according to it
-					// (avg_rtt and resend_timeout)
-					dynamic_cast<UDPPeer*>(&peer)->reportRTT(rtt);
-				}
-				else if (p.totaltime > 0)
-				{
-					float rtt = p.totaltime;
+					// a overflow is quite unlikely but as it'd result in major
+					// rtt miscalculation we handle it here
+					if (current_time > p.absolute_send_time)
+					{
+						float rtt = (current_time - p.absolute_send_time) / 1000.0;
 
-					// Let peer calculate stuff according to it
-					// (avg_rtt and resend_timeout)
-					dynamic_cast<UDPPeer*>(&peer)->reportRTT(rtt);
+						// Let peer calculate stuff according to it
+						// (avg_rtt and resend_timeout)
+						dynamic_cast<UDPPeer*>(&peer)->reportRTT(rtt);
+					}
+					else if (p.totaltime > 0)
+					{
+						float rtt = p.totaltime;
+
+						// Let peer calculate stuff according to it
+						// (avg_rtt and resend_timeout)
+						dynamic_cast<UDPPeer*>(&peer)->reportRTT(rtt);
+					}
 				}
 				//put bytes for max bandwidth calculation
 				channel->UpdateBytesSent(p.data.getSize(),1);
@@ -2542,7 +2550,8 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 				// we already have this packet so this one was on wire at least
 				// the current timeout
-				dynamic_cast<UDPPeer*>(&peer)->reportRTT(dynamic_cast<UDPPeer*>(&peer)->getResendTimeout());
+				// we don't know how long this packet was on wire don't do silly guessing
+				// dynamic_cast<UDPPeer*>(&peer)->reportRTT(dynamic_cast<UDPPeer*>(&peer)->getResendTimeout());
 
 				throw ProcessedSilentlyException("Retransmitting ack for old packet");
 			}

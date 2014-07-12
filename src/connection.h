@@ -162,16 +162,19 @@ inline bool seqnum_in_window(u16 seqnum, u16 next,u16 window_size)
 struct BufferedPacket
 {
 	BufferedPacket(u8 *a_data, u32 a_size):
-		data(a_data, a_size), time(0.0), totaltime(0.0), absolute_send_time(-1)
+		data(a_data, a_size), time(0.0), totaltime(0.0), absolute_send_time(-1),
+		resend_count(0)
 	{}
 	BufferedPacket(u32 a_size):
-		data(a_size), time(0.0), totaltime(0.0), absolute_send_time(-1)
+		data(a_size), time(0.0), totaltime(0.0), absolute_send_time(-1),
+		resend_count(0)
 	{}
 	SharedBuffer<u8> data; // Data of the packet, including headers
 	float time; // Seconds from buffering the packet or re-sending
 	float totaltime; // Seconds from buffering the packet
 	unsigned int absolute_send_time;
 	Address address; // Sender or destination
+	unsigned int resend_count;
 };
 
 // This adds the base headers to the data and makes a packet out of it
