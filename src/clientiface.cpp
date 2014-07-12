@@ -34,6 +34,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "main.h"                      // for g_settings
 
+const char *ClientInterface::statenames[] = {
+	"Invalid",
+	"Disconnecting",
+	"Denied",
+	"Created",
+	"InitSent",
+	"InitDone",
+	"DefinitionsSent",
+	"Active"
+};
+
+
+
+std::string ClientInterface::state2Name(ClientState state)
+{
+	return statenames[state];
+}
+
+
 void RemoteClient::GetNextBlocks(
 		ServerEnvironment *env,
 		EmergeManager * emerge,
@@ -402,50 +421,42 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	std::ostringstream myerror;
 	switch (m_state)
 	{
-	case Invalid:
+	case CS_Invalid:
 		//intentionally do nothing
 		break;
-
-	case Created:
+	case CS_Created:
 		switch(event)
 		{
-		case Init:
-			m_state = InitSent;
+		case CSE_Init:
+			m_state = CS_InitSent;
 			break;
-
-		case Disconnect:
-			m_state = Disconnecting;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
 			break;
-
-		case SetDenied:
-			m_state = Denied;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
 			break;
-
 		/* GotInit2 SetDefinitionsSent SetMediaSent */
 		default:
 			myerror << "Created: Invalid client state transition! " << event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
-
-	case Denied:
+	case CS_Denied:
 		/* don't do anything if in denied state */
 		break;
-
-	case InitSent:
+	case CS_InitSent:
 		switch(event)
 		{
-		case GotInit2:
+		case CSE_GotInit2:
 			confirmSerializationVersion();
-			m_state = InitDone;
+			m_state = CS_InitDone;
 			break;
-
-		case Disconnect:
-			m_state = Disconnecting;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
 			break;
-
-		case SetDenied:
-			m_state = Denied;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
 			break;
 
 		/* Init SetDefinitionsSent SetMediaSent */
@@ -455,19 +466,17 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		}
 		break;
 
-	case InitDone:
+	case CS_InitDone:
 		switch(event)
 		{
-		case SetDefinitionsSent:
-			m_state = DefinitionsSent;
+		case CSE_SetDefinitionsSent:
+			m_state = CS_DefinitionsSent;
 			break;
-
-		case Disconnect:
-			m_state = Disconnecting;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
 			break;
-
-		case SetDenied:
-			m_state = Denied;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
 			break;
 
 		/* Init GotInit2 SetMediaSent */
@@ -476,40 +485,33 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			throw ClientStateError(myerror.str());
 		}
 		break;
-
-	case DefinitionsSent:
+	case CS_DefinitionsSent:
 		switch(event)
 		{
-		case SetClientReady:
-			m_state = Active;
+		case CSE_SetClientReady:
+			m_state = CS_Active;
 			break;
-
-		case Disconnect:
-			m_state = Disconnecting;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
 			break;
-
-		case SetDenied:
-			m_state = Denied;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
 			break;
-
 		/* Init GotInit2 SetDefinitionsSent */
 		default:
 			myerror << "DefinitionsSent: Invalid client state transition! " << event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
-
-	case Active:
+	case CS_Active:
 		switch(event)
 		{
-		case SetDenied:
-			m_state = Denied;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
 			break;
-
-		case Disconnect:
-			m_state = Disconnecting;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
 			break;
-
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
 		default:
 			myerror << "Active: Invalid client state transition! " << event;
@@ -517,8 +519,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		}
 		break;
-
-	case Disconnecting:
+	case CS_Disconnecting:
 		/* we are already disconnecting */
 		break;
 	}
@@ -680,7 +681,7 @@ ClientState ClientInterface::getClientState(u16 peer_id)
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if(n == m_clients.end())
-		return Invalid;
+		return CS_Invalid;
 
 	return n->second->getState();
 }
@@ -762,7 +763,9 @@ void ClientInterface::event(u16 peer_id, ClientStateEvent event)
 		n->second->notifyEvent(event);
 	}
 
-	if ((event == SetClientReady) || (event == Disconnect) || (event == SetDenied))
+	if ((event == CSE_SetClientReady) ||
+		(event == CSE_Disconnect)     ||
+		(event == CSE_SetDenied))
 	{
 		UpdatePlayerList();
 	}

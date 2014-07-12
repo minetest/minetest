@@ -432,8 +432,8 @@ private:
 	void UpdateCrafting(u16 peer_id);
 
 	// When called, connection mutex should be locked
-	RemoteClient* getClient(u16 peer_id,ClientState state_min=Active);
-	RemoteClient* getClientNoEx(u16 peer_id,ClientState state_min=Active);
+	RemoteClient* getClient(u16 peer_id,ClientState state_min=CS_Active);
+	RemoteClient* getClientNoEx(u16 peer_id,ClientState state_min=CS_Active);
 
 	// When called, environment mutex should be locked
 	std::string getPlayerName(u16 peer_id);

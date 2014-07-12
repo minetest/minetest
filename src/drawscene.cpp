@@ -427,6 +427,13 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 		bool draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 				(camera.getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
+#ifdef HAVE_TOUCHSCREENGUI
+		try {
+			draw_crosshair = !g_settings->getBool("touchtarget");
+		}
+		catch(SettingNotFoundException) {}
+#endif
+
 		std::string draw_mode = g_settings->get("3d_mode");
 
 		smgr->drawAll();

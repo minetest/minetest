@@ -36,17 +36,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define POINTS_PER_NODE (16.0)
 
-std::string dbp;
-sqlite3* dbh;
-sqlite3_stmt* dbs_insert;
-sqlite3_stmt* dbs_replace;
-sqlite3_stmt* dbs_select;
-sqlite3_stmt* dbs_select_range;
-sqlite3_stmt* dbs_select_withActor;
-sqlite3_stmt* dbs_knownActor_select;
-sqlite3_stmt* dbs_knownActor_insert;
-sqlite3_stmt* dbs_knownNode_select;
-sqlite3_stmt* dbs_knownNode_insert;
+static std::string dbp;
+static sqlite3* dbh                        = NULL;
+static sqlite3_stmt* dbs_insert            = NULL;
+static sqlite3_stmt* dbs_replace           = NULL;
+static sqlite3_stmt* dbs_select            = NULL;
+static sqlite3_stmt* dbs_select_range      = NULL;
+static sqlite3_stmt* dbs_select_withActor  = NULL;
+static sqlite3_stmt* dbs_knownActor_select = NULL;
+static sqlite3_stmt* dbs_knownActor_insert = NULL;
+static sqlite3_stmt* dbs_knownNode_select  = NULL;
+static sqlite3_stmt* dbs_knownNode_insert  = NULL;
 
 struct Stack {
 	int node;
@@ -1094,6 +1094,7 @@ public:
 #define FINALIZE_STATEMENT(statement)                                          \
 	if ( statement )                                                           \
 		rc = sqlite3_finalize(statement);                                      \
+	statement = NULL;                                                          \
 	if ( rc != SQLITE_OK )                                                     \
 		errorstream << "RollbackManager::~RollbackManager():"                  \
 			<< "Failed to finalize: " << #statement << ": rc=" << rc << std::endl;
@@ -1116,6 +1117,8 @@ public:
 
 		if(dbh)
 			rc = sqlite3_close(dbh);
+
+		dbh = NULL;
 
 		if (rc != SQLITE_OK) {
 			errorstream << "RollbackManager::~RollbackManager(): "

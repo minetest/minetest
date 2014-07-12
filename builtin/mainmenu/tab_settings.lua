@@ -31,7 +31,6 @@ end
 local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 
 	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
-
 		local worldlist = core.get_worlds()
 		local found_singleplayerworld = false
 
@@ -63,19 +62,43 @@ local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 	this.parent:show()
 	this:hide()
 	this:delete()
+	return true
 end
 
 local function showconfirm_reset(tabview)
 	local new_dlg = dialog_create("reset_spworld",
 		dlg_confirm_reset_formspec,
 		dlg_confirm_reset_btnhandler,
-		nil,
-		tabview)
+		nil)
+	new_dlg:set_parent(tabview)
 	tabview:hide()
 	new_dlg:show()
 end
 
+local function gui_scale_index()
 
+	local current_value = tonumber(core.setting_get("gui_scaling"))
+
+	if (current_value == nil) then
+		return 0
+	elseif current_value <= 0.5 then
+		return 1
+	elseif current_value <= 0.625 then
+		return 2
+	elseif current_value <= 0.75 then
+		return 3
+	elseif current_value <= 0.875 then
+		return 4
+	elseif current_value <= 1.0 then
+		return 5
+	elseif current_value <= 1.25 then
+		return 6
+	elseif current_value <= 1.5 then
+		return 7
+	else
+		return 8
+	end
+end
 
 local function formspec(tabview, name, tabdata)
 	local tab_string =
@@ -93,8 +116,6 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("preload_item_visuals"))	.. "]"..
 		"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
-		"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
-				.. dump(core.setting_getbool("liquid_finite")) .. "]"..
 		"box[4.25,0;3.25,2.5;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
@@ -106,16 +127,25 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"..
-		"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
-
-	local android = false
-	if android then
+				.. dump(core.setting_getbool("enable_shaders")) .. "]"
+	if not ANDROID then
 		tab_string = tab_string ..
-		"box[4.25,2.75;3.25,2.5;#999999]" ..
+		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
+	else
+		tab_string = tab_string ..
+		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
+	end
+	tab_string = tab_string ..
+		"box[0.75,4.25;3.25,1.25;#999999]" ..
+		"label[1,4.25;" .. fgettext("GUI scale factor") .. "]" ..
+		"dropdown[1,4.75;3.0;dd_gui_scaling;0.5,0.625,0.75,0.875,1.0,1.25,1.5,2.0;"
+			.. gui_scale_index() .. "]"
+
+	if ANDROID then
+		tab_string = tab_string ..
+		"box[4.25,2.75;3.25,2.15;#999999]" ..
 		"checkbox[4.5,2.75;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
-				.. dump(core.setting_getbool("touchtarget")) .. "]" ..
-		"button[8,4.5;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
+				.. dump(core.setting_getbool("touchtarget")) .. "]"
 	end
 
 	if core.setting_get("touchscreen_threshold") ~= nil then
@@ -202,10 +232,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_particles", fields["cb_particles"])
 		return true
 	end
-	if fields["cb_finite_liquid"] then
-		core.setting_set("liquid_finite", fields["cb_finite_liquid"])
-		return true
-	end
 	if fields["cb_bumpmapping"] then
 		core.setting_set("enable_bumpmapping", fields["cb_bumpmapping"])
 	end
@@ -235,14 +261,23 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("touchtarget", fields["cb_touchscreen_target"])
 		return true
 	end
-	if fields["dd_touchthreshold"] then
-		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
-		return true
-	end
 	if fields["btn_reset_singleplayer"] then
+		print("sp reset")
 		showconfirm_reset(this)
 		return true
 	end
+	--Note dropdowns have to be handled LAST!
+	local ddhandled = false
+	if fields["dd_touchthreshold"] then
+		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
+		ddhandled = true
+	end
+	if fields["dd_gui_scaling"] then
+		core.setting_set("gui_scaling",fields["dd_gui_scaling"])
+		ddhandled = true
+	end
+	
+	return ddhandled
 end
 
 tab_settings = {

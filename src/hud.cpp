@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include <IGUIStaticText.h>
 
+#ifdef HAVE_TOUCHSCREENGUI
+#include "touchscreengui.h"
+#endif
 
 Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, gui::IGUIFont *font,
@@ -160,6 +163,11 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool sele
 void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		InventoryList *mainlist, u16 selectitem, u16 direction)
 {
+#ifdef HAVE_TOUCHSCREENGUI
+	if ( (g_touchscreengui) && (offset == 0))
+		g_touchscreengui->resetHud();
+#endif
+
 	s32 height  = m_hotbar_imagesize + m_padding * 2;
 	s32 width   = (itemcount - offset) * (m_hotbar_imagesize + m_padding * 2);
 
@@ -222,6 +230,11 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		}
 
 		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i +1) == selectitem );
+
+#ifdef HAVE_TOUCHSCREENGUI
+		if (g_touchscreengui)
+			g_touchscreengui->registerHudItem(i, (imgrect + pos + steppos));
+#endif
 	}
 }
 

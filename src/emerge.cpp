@@ -43,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_singlenode.h"
-#include "mapgen_math.h"
 
 
 class EmergeThread : public JThread
@@ -84,7 +83,6 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	registerMapgen("v6",         new MapgenFactoryV6());
 	registerMapgen("v7",         new MapgenFactoryV7());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
-	registerMapgen("math",       new MapgenFactoryMath());
 
 	this->ndef     = gamedef->getNodeDefManager();
 	this->biomedef = new BiomeDefManager();
@@ -154,6 +152,11 @@ EmergeManager::~EmergeManager() {
 	mglist.clear();
 
 	delete biomedef;
+
+	if (params.sparams) {
+		delete params.sparams;
+		params.sparams = NULL;
+	}
 }
 
 

@@ -31,17 +31,19 @@ namespace ServerList
 {
 	std::vector<ServerListSpec> getLocal();
 	std::vector<ServerListSpec> getOnline();
-	bool deleteEntry(ServerListSpec server);
-	bool insert(ServerListSpec server);
-	std::vector<ServerListSpec> deSerialize(std::string liststring);
-	std::string serialize(std::vector<ServerListSpec>);
-	std::vector<ServerListSpec> deSerializeJson(std::string liststring);
-	std::string serializeJson(std::vector<ServerListSpec>);
+	bool deleteEntry(const ServerListSpec &server);
+	bool insert(const ServerListSpec &server);
+	std::vector<ServerListSpec> deSerialize(const std::string &liststring);
+	const std::string serialize(const std::vector<ServerListSpec> &serverlist);
+	std::vector<ServerListSpec> deSerializeJson(const std::string &liststring);
+	const std::string serializeJson(const std::vector<ServerListSpec> &serverlist);
 	#if USE_CURL
-	void sendAnnounce(std::string action = "", const std::vector<std::string> & clients_names = std::vector<std::string>(), 
-				double uptime = 0, u32 game_time = 0, float lag = 0, std::string gameid = "", 
-				std::vector<ModSpec> mods = std::vector<ModSpec>());
+	void sendAnnounce(const std::string &action,
+			const std::vector<std::string> &clients_names = std::vector<std::string>(),
+			const double uptime = 0, const u32 game_time = 0,
+			const float lag = 0, const std::string &gameid = "",
+			const std::vector<ModSpec> &mods = std::vector<ModSpec>());
 	#endif
-} //ServerList namespace
+} // ServerList namespace
 
 #endif

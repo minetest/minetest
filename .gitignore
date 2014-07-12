@@ -64,3 +64,16 @@ locale/
 *.layout
 *.o
 
+#build variants
+build/android/assets
+build/android/bin
+build/android/Debug
+build/android/deps
+build/android/gen
+build/android/jni/src/*
+build/android/libs
+build/android/obj
+timestamp
+
+
+

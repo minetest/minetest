@@ -46,7 +46,8 @@ HTTPFetchRequest::HTTPFetchRequest()
 	request_id = 0;
 	timeout = g_settings->getS32("curl_timeout");
 	connect_timeout = timeout;
-	
+	multipart = false;
+
 	useragent = std::string("Minetest/") + minetest_version_hash + " (" + porting::get_sysinfo() + ")";
 }
 
@@ -184,6 +185,7 @@ struct HTTPFetchOngoing
 	std::ostringstream oss;
 	char *post_fields;
 	struct curl_slist *httpheader;
+	curl_httppost *post;
 
 	HTTPFetchOngoing(HTTPFetchRequest request_, CurlHandlePool *pool_):
 		pool(pool_),
@@ -192,7 +194,8 @@ struct HTTPFetchOngoing
 		request(request_),
 		result(request_),
 		oss(std::ios::binary),
-		httpheader(NULL)
+		httpheader(NULL),
+		post(NULL)
 	{
 		curl = pool->alloc();
 		if (curl != NULL) {
@@ -239,18 +242,52 @@ struct HTTPFetchOngoing
 						httpfetch_writefunction);
 				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
 			}
+
 			// Set POST (or GET) data
 			if (request.post_fields.empty()) {
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-			}
-			else {
-				curl_easy_setopt(curl, CURLOPT_POST, 1);
-				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-						request.post_fields.size());
-				curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
-						request.post_fields.c_str());
+			} else if (request.multipart) {
+				curl_httppost *last = NULL;
+				for (std::map<std::string, std::string>::iterator it =
+							request.post_fields.begin();
+						it != request.post_fields.end();
+						++it) {
+					curl_formadd(&post, &last,
+							CURLFORM_NAMELENGTH, it->first.size(),
+							CURLFORM_PTRNAME, it->first.c_str(),
+							CURLFORM_CONTENTSLENGTH, it->second.size(),
+							CURLFORM_PTRCONTENTS, it->second.c_str(),
+							CURLFORM_END);
+				}
+				curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 				// request.post_fields must now *never* be
-				// modified until CURLOPT_POSTFIELDS is cleared
+				// modified until CURLOPT_HTTPPOST is cleared
+			} else {
+				curl_easy_setopt(curl, CURLOPT_POST, 1);
+				if (request.post_data.empty()) {
+					std::string str;
+					for (std::map<std::string, std::string>::iterator it =
+								request.post_fields.begin();
+							it != request.post_fields.end();
+							++it) {
+						if (str != "")
+							str += "&";
+						str += urlencode(it->first);
+						str += "=";
+						str += urlencode(it->second);
+					}
+					curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+							str.size());
+					curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS,
+							str.c_str());
+				} else {
+					curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+							request.post_data.size());
+					curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
+							request.post_data.c_str());
+					// request.post_data must now *never* be
+					// modified until CURLOPT_POSTFIELDS is cleared
+				}
 			}
 			// Set additional HTTP headers
 			for (size_t i = 0; i < request.extra_headers.size(); ++i) {
@@ -259,6 +296,10 @@ struct HTTPFetchOngoing
 					request.extra_headers[i].c_str());
 			}
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, httpheader);
+
+			if (!g_settings->getBool("curl_verify_cert")) {
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
+			}
 		}
 	}
 
@@ -302,7 +343,7 @@ struct HTTPFetchOngoing
 		}
 
 		if (res != CURLE_OK) {
-			infostream<<request.url<<" not found ("
+			errorstream<<request.url<<" not found ("
 				<<curl_easy_strerror(res)<<")"
 				<<" (response code "<<result.response_code<<")"
 				<<std::endl;
@@ -328,6 +369,10 @@ struct HTTPFetchOngoing
 		if (httpheader != NULL) {
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
 			curl_slist_free_all(httpheader);
+		}
+		if (post != NULL) {
+			curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
+			curl_formfree(post);
 		}
 
 		// Store the cURL handle for reuse

@@ -33,8 +33,8 @@ public:
 	Database_Dummy(ServerMap *map);
 	virtual void beginSave();
 	virtual void endSave();
-        virtual void saveBlock(MapBlock *block);
-        virtual MapBlock* loadBlock(v3s16 blockpos);
+        virtual bool saveBlock(MapBlock *block);
+        virtual MapBlock *loadBlock(v3s16 blockpos);
         virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
         virtual int Initialized(void);
 	~Database_Dummy();

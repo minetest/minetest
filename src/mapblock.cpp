@@ -452,10 +452,16 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 */
 // List relevant id-name pairs for ids in the block using nodedef
 // Renumbers the content IDs (starting at 0 and incrementing
+// use static memory requires about 65535 * sizeof(int) ram in order to be
+// sure we can handle all content ids. But it's absolutely worth it as it's
+// a speedup of 4 for one of the major time consuming functions on storing
+// mapblocks.
+static content_t getBlockNodeIdMapping_mapping[USHRT_MAX];
 static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 		INodeDefManager *nodedef)
 {
-	std::map<content_t, content_t> mapping;
+	memset(getBlockNodeIdMapping_mapping, 0xFF, USHRT_MAX * sizeof(content_t));
+
 	std::set<content_t> unknown_contents;
 	content_t id_counter = 0;
 	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
@@ -464,16 +470,14 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 		content_t id = CONTENT_IGNORE;
 
 		// Try to find an existing mapping
-		std::map<content_t, content_t>::iterator j = mapping.find(global_id);
-		if(j != mapping.end())
-		{
-			id = j->second;
+		if (getBlockNodeIdMapping_mapping[global_id] != 0xFFFF) {
+			id = getBlockNodeIdMapping_mapping[global_id];
 		}
 		else
 		{
 			// We have to assign a new mapping
 			id = id_counter++;
-			mapping.insert(std::make_pair(global_id, id));
+			getBlockNodeIdMapping_mapping[global_id] = id;
 
 			const ContentFeatures &f = nodedef->get(global_id);
 			const std::string &name = f.name;

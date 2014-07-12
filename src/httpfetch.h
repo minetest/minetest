@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <vector>
+#include <map>
 #include "config.h"
 
 // Can be used in place of "caller" in asynchronous transfers to discard result
@@ -47,10 +48,16 @@ struct HTTPFetchRequest
 	// Timeout for the connection phase, in milliseconds
 	long connect_timeout;
 
-	// POST data (should be application/x-www-form-urlencoded
-	// unless a Content-Type header is specified in extra_headers)
+	// Indicates if this is multipart/form-data or
+	// application/x-www-form-urlencoded.  POST-only.
+	bool multipart;
+
+	// POST fields.  Fields are escaped properly.
 	// If this is empty a GET request is done instead.
-	std::string post_fields;
+	std::map<std::string, std::string> post_fields;
+
+	// Raw POST data, overrides post_fields.
+	std::string post_data;
 
 	// If not empty, should contain entries such as "Accept: text/html"
 	std::vector<std::string> extra_headers;

@@ -46,7 +46,7 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 	VoxelArea required_a = a;
 	required_a.pad(v3s16(0,0,0));
 	// Make sure we have access to it
-	v.emerge(a);
+	v.addArea(a);
 
 	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
 	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
@@ -85,7 +85,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 	VoxelArea required_a = a;
 	required_a.pad(v3s16(0,1,0));
 	// Make sure we have access to it
-	v.emerge(a);
+	v.addArea(a);
 
 	s16 max_y = a.MaxEdge.Y;
 	s16 min_y = a.MinEdge.Y;

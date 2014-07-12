@@ -145,35 +145,24 @@ namespace con {
 
 enum ClientState
 {
-	Invalid,
-	Disconnecting,
-	Denied,
-	Created,
-	InitSent,
-	InitDone,
-	DefinitionsSent,
-	Active
-};
-
-static const char* statenames[] = {
-	"Invalid",
-	"Disconnecting",
-	"Denied",
-	"Created",
-	"InitSent",
-	"InitDone",
-	"DefinitionsSent",
-	"Active"
+	CS_Invalid,
+	CS_Disconnecting,
+	CS_Denied,
+	CS_Created,
+	CS_InitSent,
+	CS_InitDone,
+	CS_DefinitionsSent,
+	CS_Active
 };
 
 enum ClientStateEvent
 {
-	Init,
-	GotInit2,
-	SetDenied,
-	SetDefinitionsSent,
-	SetClientReady,
-	Disconnect
+	CSE_Init,
+	CSE_GotInit2,
+	CSE_SetDenied,
+	CSE_SetDefinitionsSent,
+	CSE_SetClientReady,
+	CSE_Disconnect
 };
 
 /*
@@ -217,7 +206,7 @@ public:
 		net_proto_version(0),
 		m_time_from_building(9999),
 		m_pending_serialization_version(SER_FMT_VER_INVALID),
-		m_state(Created),
+		m_state(CS_Created),
 		m_nearest_unsent_d(0),
 		m_nearest_unsent_reset_timer(0.0),
 		m_excess_gotblocks(0),
@@ -390,7 +379,7 @@ public:
 	void step(float dtime);
 
 	/* get list of active client id's */
-	std::list<u16> getClientIDs(ClientState min_state=Active);
+	std::list<u16> getClientIDs(ClientState min_state=CS_Active);
 
 	/* get list of client player names */
 	std::vector<std::string> getPlayerNames();
@@ -408,10 +397,10 @@ public:
 	void CreateClient(u16 peer_id);
 
 	/* get a client by peer_id */
-	RemoteClient* getClientNoEx(u16 peer_id,  ClientState state_min=Active);
+	RemoteClient* getClientNoEx(u16 peer_id,  ClientState state_min=CS_Active);
 
 	/* get client by peer_id (make sure you have list lock before!*/
-	RemoteClient* lockedGetClientNoEx(u16 peer_id,  ClientState state_min=Active);
+	RemoteClient* lockedGetClientNoEx(u16 peer_id,  ClientState state_min=CS_Active);
 
 	/* get state of client by id*/
 	ClientState getClientState(u16 peer_id);
@@ -432,10 +421,7 @@ public:
 	void setEnv(ServerEnvironment* env)
 	{ assert(m_env == 0); m_env = env; }
 
-	static std::string state2Name(ClientState state) {
-		assert((int) state < CI_ARRAYSIZE(statenames));
-		return statenames[state];
-	}
+	static std::string state2Name(ClientState state);
 
 protected:
 	//TODO find way to avoid this functions
@@ -463,6 +449,8 @@ private:
 	JMutex m_env_mutex;
 
 	float m_print_info_timer;
+	
+	static const char *statenames[];
 };
 
 #endif
