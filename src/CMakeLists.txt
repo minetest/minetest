@@ -359,7 +359,6 @@ set(common_SRCS
 	mapgen_v7.cpp
 	mapgen_indev.cpp
 	mapgen_singlenode.cpp
-	mapgen_math.cpp
 	treegen.cpp
 	dungeongen.cpp
 	cavegen.cpp

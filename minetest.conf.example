@@ -441,9 +441,6 @@
 # Float islands starts from height, 0 to disable
 #mgindev_float_islands = 500
 
-# Math mapgen generator: sphere, mandelbox, mengersponge      dont forget to lower water_level = -30000
-#mgmath_generator = mandelbox
-
 # Enable/disable IPv6
 #enable_ipv6 = true
 # Enable/disable running an IPv6 server.  An IPv6 server may be restricted
