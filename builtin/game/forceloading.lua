@@ -53,7 +53,7 @@ local function read_file(filename)
 	local t = f:read("*all")
 	f:close()
 	if t=="" or t==nil then return {} end
-	return core.deserialize(t)
+	return core.deserialize(t) or {}
 end
 
 local function write_file(filename, table)
