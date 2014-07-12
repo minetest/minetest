@@ -22,7 +22,6 @@ local function get_formspec(tabview, name, tabdata)
 	local render_details = dump(core.setting_getbool("public_serverlist"))
 
 	retval = retval ..
-		"label[0,3.0;".. fgettext("Address/Port") .. "]"..
 		"label[8,0.5;".. fgettext("Name/Password") .. "]" ..
 		"field[0.25,3.25;5.5,0.5;te_address;;" ..core.setting_get("address") .."]" ..
 		"field[5.75,3.25;2.25,0.5;te_port;;" ..core.setting_get("remote_port") .."]" ..
@@ -66,7 +65,8 @@ local function get_formspec(tabview, name, tabdata)
 		dump(core.setting_getbool("free_move")) .. "]"
 	-- buttons
 	retval = retval ..
-		"button[3.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]"
+		"button[2.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
+		"button[8.25,4.5;2.5,1.5;btn_config_sp_world;" .. fgettext("Config MODs") .. "]"
 
 	return retval
 end
@@ -74,19 +74,21 @@ end
 --------------------------------------------------------------------------------
 
 local function main_button_handler(tabview, fields, name, tabdata)
+
 	if fields["btn_start_singleplayer"] then
 		gamedata.selected_world	= gamedata.worldindex
 		gamedata.singleplayer	= true
 		core.start()
+		return true
 	end
 
 	if fields["favourites"] ~= nil then
 		local event = core.explode_textlist_event(fields["favourites"])
 
 		if event.type == "CHG" then
-			if event.index <= #maintab_favorites then
-				local address = maintab_favorites[event.index].address
-				local port = maintab_favorites[event.index].port
+			if event.index <= #menudata.favorites then
+				local address = menudata.favorites[event.index].address
+				local port = menudata.favorites[event.index].port
 
 				if address ~= nil and
 					port ~= nil then
@@ -97,7 +99,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				tabdata.fav_selected = event.index
 			end
 		end
-		return
+		return true
 	end
 
 	if fields["cb_public_serverlist"] ~= nil then
@@ -106,21 +108,24 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if core.setting_getbool("public_serverlist") then
 			asyncOnlineFavourites()
 		else
-			maintab_favorites = core.get_favorites("local")
+			menudata.favorites = core.get_favorites("local")
 		end
-		return
+		return true
 	end
 
 	if fields["cb_creative"] then
 		core.setting_set("creative_mode", fields["cb_creative"])
+		return true
 	end
 
 	if fields["cb_damage"] then
 		core.setting_set("enable_damage", fields["cb_damage"])
+		return true
 	end
 
 	if fields["cb_fly_mode"] then
 		core.setting_set("free_move", fields["cb_fly_mode"])
+		return true
 	end
 
 	if fields["btn_mp_connect"] ~= nil or
@@ -150,7 +155,18 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.setting_set("remote_port",fields["te_port"])
 
 		core.start()
-		return
+		return true
+	end
+
+	if fields["btn_config_sp_world"] ~= nil then
+		local configdialog = create_configure_world_dlg(1)
+
+		if (configdialog ~= nil) then
+			configdialog:set_parent(tabview)
+			tabview:hide()
+			configdialog:show()
+		end
+		return true
 	end
 end
 

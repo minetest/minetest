@@ -20,19 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "config.h"
 
-#ifdef USE_CMAKE_CONFIG_H
-
-#include "cmake_config_githash.h"
-
 const char *minetest_version_simple = CMAKE_VERSION_STRING;
 const char *minetest_version_hash = CMAKE_VERSION_GITHASH;
+
+#ifdef USE_CMAKE_CONFIG_H
 const char *minetest_build_info =
 		"VER=" CMAKE_VERSION_GITHASH " " CMAKE_BUILD_INFO;
-
+#elif defined(ANDROID)
+const char *minetest_build_info = "android jni";
 #else
-
-const char *minetest_version_simple = "unknown";
-const char *minetest_version_hash = "unknown";
 const char *minetest_build_info = "non-cmake";
 
 #endif

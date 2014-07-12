@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define KEYCODE_HEADER
 
 #include "irrlichttypes.h"
+#include "Keycodes.h"
 #include <IEventReceiver.h>
 #include <string>
 
@@ -57,6 +58,7 @@ protected:
 };
 
 extern const KeyPress EscapeKey;
+extern const KeyPress CancelKey;
 extern const KeyPress NumberKey[10];
 
 // Key configuration getter
@@ -64,6 +66,8 @@ KeyPress getKeySetting(const char *settingname);
 
 // Clear fast lookup cache
 void clearKeyCache();
+
+irr::EKEY_CODE keyname_to_keycode(const char *name);
 
 #endif
 

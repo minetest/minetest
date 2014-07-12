@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
+#include "porting.h"
 #include "debug.h"
 #include "exceptions.h"
 #include "threads.h"
@@ -27,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "jthread/jmutex.h"
 #include "jthread/jmutexautolock.h"
-
+#include "config.h"
 /*
 	Debug output
 */
@@ -95,6 +96,9 @@ public:
 	}
 	std::streamsize xsputn(const char *s, std::streamsize n)
 	{
+#ifdef __ANDROID__
+		__android_log_print(ANDROID_LOG_VERBOSE, PROJECT_NAME, "%s", s);
+#endif
 		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
 			if(g_debugstreams[i] == stderr && m_disable_stderr)

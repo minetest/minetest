@@ -138,6 +138,12 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		else
 			fav_idx = 1
 		end
+		
+		if menudata.favorites == nil or
+			menudata.favorites[fav_idx] == nil then
+			tabdata.fav_selected = 0
+			return true
+		end
 	
 		local address = menudata.favorites[fav_idx].address
 		local port    = menudata.favorites[fav_idx].port

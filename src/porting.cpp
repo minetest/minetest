@@ -25,10 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 
-#if defined(__APPLE__)
-	#include <mach-o/dyld.h>
-	#include "CoreFoundation/CoreFoundation.h"
-#elif defined(__FreeBSD__)
+#if defined(__FreeBSD__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
 #elif defined(_WIN32)
@@ -170,6 +167,7 @@ int getNumberOfProcessors() {
 }
 
 
+#ifndef __ANDROID__
 bool threadBindToProcessor(threadid_t tid, int pnumber) {
 #if defined(_WIN32)
 
@@ -197,7 +195,7 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 						pnumber, NULL) == 0;
 
 #elif defined(_AIX)
-	
+
 	return bindprocessor(BINDTHREAD, (tid_t)tid, pnumber) == 0;
 
 #elif defined(__hpux) || defined(hpux)
@@ -206,11 +204,11 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 
 	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP,
 									&answer, pnumber, tid) == 0;
-	
+
 #elif defined(__APPLE__)
 
 	struct thread_affinity_policy tapol;
-	
+
 	thread_port_t threadport = pthread_mach_thread_np(tid);
 	tapol.affinity_tag = pnumber + 1;
 	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY,
@@ -222,7 +220,7 @@ bool threadBindToProcessor(threadid_t tid, int pnumber) {
 
 #endif
 }
-
+#endif
 
 bool threadSetPriority(threadid_t tid, int prio) {
 #if defined(_WIN32)
@@ -235,21 +233,21 @@ bool threadSetPriority(threadid_t tid, int prio) {
 
 	CloseHandle(hThread);
 	return success;
-	
+
 #else
 
 	struct sched_param sparam;
 	int policy;
-	
+
 	if (pthread_getschedparam(tid, &policy, &sparam) != 0)
 		return false;
-		
+
 	int min = sched_get_priority_min(policy);
 	int max = sched_get_priority_max(policy);
 
 	sparam.sched_priority = min + prio * (max - min) / THREAD_PRIORITY_HIGHEST;
 	return pthread_setschedparam(tid, policy, &sparam) == 0;
-	
+
 #endif
 }
 
@@ -461,9 +459,15 @@ void initializePaths()
 	{
 		char buf[BUFSIZ];
 		memset(buf, 0, BUFSIZ);
-		assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
-		pathRemoveFile(buf, '/');
-		bindir = buf;
+		if (readlink("/proc/self/exe", buf, BUFSIZ-1) == -1) {
+			errorstream << "Unable to read bindir "<< std::endl;
+#ifndef __ANDROID__
+			assert("Unable to read bindir" == 0);
+#endif
+		} else {
+			pathRemoveFile(buf, '/');
+			bindir = buf;
+		}
 	}
 
 	// Find share directory from these.
@@ -475,6 +479,9 @@ void initializePaths()
 	trylist.push_back(
 			bindir + DIR_DELIM + ".." + DIR_DELIM + "share" + DIR_DELIM + PROJECT_NAME);
 	trylist.push_back(bindir + DIR_DELIM + "..");
+#ifdef __ANDROID__
+	trylist.push_back(DIR_DELIM "sdcard" DIR_DELIM PROJECT_NAME);
+#endif
 
 	for(std::list<std::string>::const_iterator i = trylist.begin();
 			i != trylist.end(); i++)
@@ -493,8 +500,11 @@ void initializePaths()
 		path_share = trypath;
 		break;
 	}
-
+#ifndef __ANDROID__
 	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + PROJECT_NAME;
+#else
+	path_user = std::string(DIR_DELIM "sdcard" DIR_DELIM PROJECT_NAME DIR_DELIM);
+#endif
 
 	/*
 		OS X
@@ -542,6 +552,7 @@ v2u32 getWindowSize() {
 	return device->getVideoDriver()->getScreenSize();
 }
 
+#ifndef __ANDROID__
 
 float getDisplayDensity() {
 	float gui_scaling = g_settings->getFloat("gui_scaling");
@@ -564,6 +575,7 @@ v2u32 getDisplaySize() {
 
 	return deskres;
 }
+#endif
 #endif
 
 } //namespace porting

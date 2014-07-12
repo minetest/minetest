@@ -670,6 +670,7 @@ GenericCAO::~GenericCAO()
 	{
 		m_env->removePlayerName(m_name.c_str());
 	}
+	removeFromScene(true);
 }
 
 core::aabbox3d<f32>* GenericCAO::getSelectionBox()
@@ -723,68 +724,61 @@ void GenericCAO::setAttachments()
 ClientActiveObject* GenericCAO::getParent()
 {
 	ClientActiveObject *obj = NULL;
-	for(std::vector<core::vector2d<int> >::const_iterator cii = m_env->attachment_list.begin(); cii != m_env->attachment_list.end(); cii++)
-	{
-		if(cii->X == getId()) // This ID is our child
-		{
-			if(cii->Y > 0) // A parent ID exists for our child
-			{
-				if(cii->X != cii->Y) // The parent and child ID are not the same
-				{
-					obj = m_env->getActiveObject(cii->Y);
-				}
-			}
-			break;
-		}
+
+	u16 attached_id = m_env->m_attachements[getId()];
+
+	if ((attached_id != 0) &&
+			(attached_id != getId())) {
+		obj = m_env->getActiveObject(attached_id);
 	}
-	if(obj)
-		return obj;
-	return NULL;
+	return obj;
 }
 
 void GenericCAO::removeFromScene(bool permanent)
 {
-	if(permanent) // Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
+	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
+	if((m_env != NULL) && (permanent)) 
 	{
-		// Detach this object's children
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
-				ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<u16>::iterator ci = m_children.begin();
+						ci != m_children.end(); ci++)
 		{
-			if(ii->Y == getId()) // Is a child of our object
-			{
-				ii->Y = 0;
-				// Get the object of the child
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
-				if(obj)
-					obj->setAttachments();
+			if (m_env->m_attachements[*ci] == getId()) {
+				m_env->m_attachements[*ci] = 0;
 			}
 		}
-		// Delete this object from the attachments list
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
-				ii != m_env->attachment_list.end(); ii++)
-		{
-			if(ii->X == getId()) // Is our object
-			{
-				m_env->attachment_list.erase(ii);
-				break;
-			}
+
+		m_env->m_attachements[getId()] = 0;
+		
+		LocalPlayer* player = m_env->getLocalPlayer();
+		if (this == player->parent) {
+			player->parent = NULL;
+			player->isAttached = false;
 		}
 	}
 
 	if(m_meshnode)
 	{
 		m_meshnode->remove();
+		m_meshnode->drop();
 		m_meshnode = NULL;
 	}
 	if(m_animated_meshnode)
 	{
 		m_animated_meshnode->remove();
+		m_animated_meshnode->drop();
 		m_animated_meshnode = NULL;
 	}
 	if(m_spritenode)
 	{
 		m_spritenode->remove();
+		m_spritenode->drop();
 		m_spritenode = NULL;
+	}
+	if (m_textnode)
+	{
+		m_textnode->remove();
+		m_textnode->drop();
+		m_textnode = NULL;
 	}
 }
 
@@ -809,6 +803,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(
 				NULL, v2f(1, 1), v3f(0,0,0), -1);
+		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTexture("unknown_node.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
@@ -874,6 +869,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		buf->drop();
 		}
 		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode->grab();
 		mesh->drop();
 		// Set it to use the materials of the meshbuffers directly.
 		// This is needed for changing the texture in the future
@@ -883,6 +879,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode->grab();
 		mesh->drop();
 		
 		m_meshnode->setScale(v3f(m_prop.visual_size.X,
@@ -902,6 +899,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		if(mesh)
 		{
 			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
@@ -933,6 +931,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			scene::IMesh *mesh = manip->createMeshUniquePrimitives(item_mesh);
 
 			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			m_meshnode->grab();
 			mesh->drop();
 			
 			m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
@@ -960,6 +959,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		std::wstring wname = narrow_to_wide(m_name);
 		m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
 				wname.c_str(), video::SColor(255,255,255,255), node);
+		m_textnode->grab();
 		m_textnode->setPosition(v3f(0, BS*1.1, 0));
 	}
 
@@ -1098,45 +1098,43 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		// Attachments, part 1: All attached objects must be unparented first,
 		// or Irrlicht causes a segmentation fault
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
-				ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<u16>::iterator ci = m_children.begin();
+				ci != m_children.end();)
 		{
-			if(ii->Y == getId()) // This is a child of our parent
-			{
-				// Get the object of the child
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
-				if(obj)
-				{
-					scene::IMeshSceneNode *m_child_meshnode
-							= obj->getMeshSceneNode();
-					scene::IAnimatedMeshSceneNode *m_child_animated_meshnode
-							= obj->getAnimatedMeshSceneNode();
-					scene::IBillboardSceneNode *m_child_spritenode
-							= obj->getSpriteSceneNode();
-					if(m_child_meshnode)
-						m_child_meshnode->setParent(m_smgr->getRootSceneNode());
-					if(m_child_animated_meshnode)
-						m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
-					if(m_child_spritenode)
-						m_child_spritenode->setParent(m_smgr->getRootSceneNode());
-				}
+			if (m_env->m_attachements[*ci] != getId()) {
+				ci = m_children.erase(ci);
+				continue;
 			}
+			ClientActiveObject *obj = m_env->getActiveObject(*ci);
+			if(obj)
+			{
+				scene::IMeshSceneNode *m_child_meshnode
+						= obj->getMeshSceneNode();
+				scene::IAnimatedMeshSceneNode *m_child_animated_meshnode
+						= obj->getAnimatedMeshSceneNode();
+				scene::IBillboardSceneNode *m_child_spritenode
+						= obj->getSpriteSceneNode();
+				if(m_child_meshnode)
+					m_child_meshnode->setParent(m_smgr->getRootSceneNode());
+				if(m_child_animated_meshnode)
+					m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
+				if(m_child_spritenode)
+					m_child_spritenode->setParent(m_smgr->getRootSceneNode());
+			}
+			++ci;
 		}
 
 		removeFromScene(false);
 		addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin();
-				ii != m_env->attachment_list.end(); ii++)
+		for(std::vector<u16>::iterator ci = m_children.begin();
+						ci != m_children.end(); ci++)
 		{
-			if(ii->Y == getId()) // This is a child of our parent
-			{
 				// Get the object of the child
-				ClientActiveObject *obj = m_env->getActiveObject(ii->X);
+				ClientActiveObject *obj = m_env->getActiveObject(*ci);
 				if(obj)
 					obj->setAttachments();
-			}
 		}
 	}
 
@@ -1803,16 +1801,8 @@ void GenericCAO::processMessage(const std::string &data)
 		updateBonePosition();
 	}
 	else if(cmd == GENERIC_CMD_SET_ATTACHMENT) {
-		// If an entry already exists for this object, delete it first to avoid duplicates
-		for(std::vector<core::vector2d<int> >::iterator ii = m_env->attachment_list.begin(); ii != m_env->attachment_list.end(); ii++)
-		{
-			if(ii->X == getId()) // This is the ID of our object
-			{
-				m_env->attachment_list.erase(ii);
-				break;
-			}
-		}
-		m_env->attachment_list.push_back(core::vector2d<int>(getId(), readS16(is)));
+		m_env->m_attachements[getId()] = readS16(is);
+		m_children.push_back(m_env->m_attachements[getId()]);
 		m_attachment_bone = deSerializeString(is);
 		m_attachment_position = readV3F1000(is);
 		m_attachment_rotation = readV3F1000(is);

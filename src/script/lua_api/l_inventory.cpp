@@ -271,19 +271,20 @@ int InvRef::l_set_lists(lua_State *L)
 	if (!inv) {
 		return 0;
 	}
+
+	// Make a temporary inventory in case reading fails
+	Inventory *tempInv(inv);
+	tempInv->clear();
+
+	Server *server = getServer(L);
+
 	lua_pushnil(L);
 	while (lua_next(L, 2)) {
-		const char* listname = lua_tostring(L, -2);
-		InventoryList *list = inv->getList(listname);
-		if (list) {
-			read_inventory_list(L, -1, inv, listname,
-					getServer(L), list->getSize());
-		} else {
-			read_inventory_list(L, -1, inv, listname,
-					getServer(L));
-		}
+		const char *listname = lua_tostring(L, -2);
+		read_inventory_list(L, -1, tempInv, listname, server);
 		lua_pop(L, 1);
 	}
+	inv = tempInv;
 	return 0;
 }
 

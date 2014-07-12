@@ -36,12 +36,17 @@ LevelDB databases
 #include "settings.h"
 #include "log.h"
 
+#define ENSURE_STATUS_OK(s) \
+	if (!(s).ok()) { \
+		throw FileNotGoodException(std::string("LevelDB error: ") + (s).ToString()); \
+	}
+
 Database_LevelDB::Database_LevelDB(ServerMap *map, std::string savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "map.db", &m_database);
-	assert(status.ok());
+	ENSURE_STATUS_OK(status);
 	srvmap = map;
 }
 
@@ -53,27 +58,29 @@ int Database_LevelDB::Initialized(void)
 void Database_LevelDB::beginSave() {}
 void Database_LevelDB::endSave() {}
 
-void Database_LevelDB::saveBlock(MapBlock *block)
+bool Database_LevelDB::saveBlock(MapBlock *block)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	v3s16 p3d = block->getPos();
+
 	/*
 		Dummy blocks are not written
 	*/
 	if(block->isDummy())
 	{
-		return;
+		errorstream << "WARNING: saveBlock: Not writing dummy block "
+				<< PP(p3d) << std::endl;
+		return true;
 	}
 
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v3s16 p3d = block->getPos();
 
 	/*
 		[0] u8 serialization version
 		[1] data
 	*/
-
 	std::ostringstream o(std::ios_base::binary);
 	o.write((char*)&version, 1);
 	// Write basic data
@@ -81,10 +88,17 @@ void Database_LevelDB::saveBlock(MapBlock *block)
 	// Write block to database
 	std::string tmp = o.str();
 
-	m_database->Put(leveldb::WriteOptions(), i64tos(getBlockAsInteger(p3d)), tmp);
+	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
+			i64tos(getBlockAsInteger(p3d)), tmp);
+	if (!status.ok()) {
+		errorstream << "WARNING: saveBlock: LevelDB error saving block "
+			<< PP(p3d) << ": " << status.ToString() << std::endl;
+		return false;
+	}
 
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
+	return true;
 }
 
 MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
@@ -92,9 +106,9 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string datastr;
-	leveldb::Status s = m_database->Get(leveldb::ReadOptions(),
+	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
 		i64tos(getBlockAsInteger(blockpos)), &datastr);
-	if (datastr.length() == 0 && s.ok()) {
+	if (datastr.length() == 0 && status.ok()) {
 		errorstream << "Blank block data in database (datastr.length() == 0) ("
 			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
 
@@ -105,9 +119,8 @@ MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
 			throw SerializationError("Blank block data in database");
 		}
 		return NULL;
-	}
-
-	if (s.ok()) {
+	} 
+	if (status.ok()) {
 		/*
 			Make sure sector is loaded
 		*/
@@ -176,7 +189,7 @@ void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
 	}
-	assert(it->status().ok());  // Check for any errors found during the scan
+	ENSURE_STATUS_OK(it->status());  // Check for any errors found during the scan
 	delete it;
 }
 

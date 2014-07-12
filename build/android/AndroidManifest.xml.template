@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="org.minetest.minetest"
+	android:versionCode="###ANDROID_VERSION###"
+	android:versionName="###BASE_VERSION###.###ANDROID_VERSION###"
+	android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="9"/>
+	<uses-feature android:glEsVersion="0x00010000" android:required="true"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	###DEBUG_BUILD###
+	<application android:icon="@drawable/irr_icon" android:label="Minetest" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" ###DEBUG_FLAG###>
+	<activity android:name=".MtNativeActivity"
+		android:label="Minetest"
+		android:launchMode="singleTask"
+		android:configChanges="orientation|keyboardHidden"
+		android:screenOrientation="landscape"
+		android:clearTaskOnLaunch="true">
+		<intent-filter>
+			<action android:name="android.intent.action.MAIN" />
+			<category android:name="android.intent.category.LAUNCHER" />
+		</intent-filter>
+		<meta-data android:name="android.app.lib_name" android:value="minetest" />
+	</activity>
+	<activity android:name=".MinetestTextEntry"
+		android:theme="@style/Theme.Transparent"
+		android:excludeFromRecents="true">
+	</activity>
+	<activity android:name=".MinetestAssetCopy"
+		android:theme="@style/Theme.Transparent"
+		android:excludeFromRecents="true">
+	</activity>
+	</application>
+</manifest>

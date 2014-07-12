@@ -81,21 +81,24 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-void Database_Redis::saveBlock(MapBlock *block)
+bool Database_Redis::saveBlock(MapBlock *block)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	v3s16 p3d = block->getPos();
+
 	/*
 		Dummy blocks are not written
 	*/
 	if(block->isDummy())
 	{
-		return;
+		errorstream << "WARNING: saveBlock: Not writing dummy block "
+				<< PP(p3d) << std::endl;
+		return true;
 	}
 
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v3s16 p3d = block->getPos();
 
 	/*
 		[0] u8 serialization version
@@ -110,16 +113,26 @@ void Database_Redis::saveBlock(MapBlock *block)
 	std::string tmp1 = o.str();
 	std::string tmp2 = i64tos(getBlockAsInteger(p3d));
 
-	redisReply *reply;
-	reply = (redisReply*) redisCommand(ctx, "HSET %s %s %b", hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
-	if(!reply)
-		throw FileNotGoodException(std::string("redis command 'HSET %s %s %b' failed: ") + ctx->errstr);
-	if(reply->type == REDIS_REPLY_ERROR)
-		throw FileNotGoodException("Failed to store block in Database");
-	freeReplyObject(reply);
+	redisReply *reply = (redisReply *)redisCommand(ctx, "HSET %s %s %b",
+			hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
+	if (!reply) {
+		errorstream << "WARNING: saveBlock: redis command 'HSET' failed on "
+			"block " << PP(p3d) << ": " << ctx->errstr << std::endl;
+		freeReplyObject(reply);
+		return false;
+	}
+
+	if (reply->type == REDIS_REPLY_ERROR) {
+		errorstream << "WARNING: saveBlock: save block " << PP(p3d)
+			<< "failed" << std::endl;
+		freeReplyObject(reply);
+		return false;
+	}
 
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
+	freeReplyObject(reply);
+	return true;
 }
 
 MapBlock* Database_Redis::loadBlock(v3s16 blockpos)

@@ -24,6 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <windows.h>
 #include <assert.h>
 #define MAX_SEMAPHORE_COUNT 1024
+#elif __MACH__
+#include <pthread.h>
+#include <mach/mach.h>
+#include <mach/task.h>
+#include <mach/semaphore.h>
+#include <sys/semaphore.h>
+#include <errno.h>
+#include <time.h>
 #else
 #include <pthread.h>
 #include <semaphore.h>
@@ -44,9 +52,13 @@ public:
 private:
 #if defined(WIN32)
 	HANDLE m_hSemaphore;
+#elif __MACH__
+	semaphore_t m_semaphore;
+	int semcount;
 #else
 	sem_t m_semaphore;
 #endif
 };
+
 
 #endif /* JSEMAPHORE_H_ */

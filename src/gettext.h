@@ -68,12 +68,12 @@ inline wchar_t* chartowchar_t(const char *str)
 		MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) str, -1, (WCHAR *) nstr, nResult );
 	}
 #else
-	size_t l = strlen(str)+1;
-	nstr = new wchar_t[l];
+	size_t l = strlen(str);
+	nstr = new wchar_t[l+1];
 
 	std::wstring intermediate = narrow_to_wide(str);
-	memset(nstr,0,l);
-	memcpy(nstr,intermediate.c_str(),l*sizeof(wchar_t));
+	memset(nstr, 0, (l+1)*sizeof(wchar_t));
+	memcpy(nstr, intermediate.c_str(), l*sizeof(wchar_t));
 #endif
 
 	return nstr;

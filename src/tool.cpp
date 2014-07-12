@@ -166,7 +166,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 	for(std::map<std::string, s16>::const_iterator
 			i = tp->damageGroups.begin(); i != tp->damageGroups.end(); i++){
 		s16 armor = itemgroup_get(armor_groups, i->first);
-		damage += i->second * rangelim(time_from_last_punch * full_punch_interval, 0.0, 1.0)
+		damage += i->second * rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
 				* armor / 100.0;
 	}
 

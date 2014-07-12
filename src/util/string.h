@@ -26,6 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <vector>
 #include <sstream>
+#include <cctype>
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 struct FlagDesc {
 	const char *name;
@@ -314,6 +318,17 @@ inline std::string unescape_string(std::string &s)
 	}
 	
 	return res;
+}
+
+inline bool is_number(const std::string& tocheck)
+{
+	std::string::const_iterator iter = tocheck.begin();
+
+	while (iter != tocheck.end() && std::isdigit(*iter)) {
+		++iter;
+	}
+
+	return ((!tocheck.empty()) && (iter == tocheck.end()));
 }
 
 std::string translatePassword(std::string playername, std::wstring password);

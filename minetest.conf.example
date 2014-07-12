@@ -200,6 +200,8 @@
 #repeat_rightclick_time = 0.25
 # Make fog and sky colors depend on daytime (dawn/sunset) and view direction
 #directional_colored_fog = true
+#tooltip_show_delay = 400
+# Delay showing tooltips, in miliseconds
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL
@@ -210,6 +212,8 @@
 # - Downloads performed by main menu (e.g. mod manager)
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
+# maximum time in ms a file download (e.g. a mod download) may take
+#curl_file_download_timeout = 300000
 
 # enable usage of remote media server (if provided by server)
 #enable_remote_media_server = true
