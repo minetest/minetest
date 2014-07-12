@@ -52,6 +52,13 @@ std::string ClientInterface::state2Name(ClientState state)
 	return statenames[state];
 }
 
+void RemoteClient::ResendBlockIfOnWire(v3s16 p)
+{
+	// if this block is on wire, mark it for sending again as soon as possible
+	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
+		SetBlockNotSent(p);
+	}
+}
 
 void RemoteClient::GetNextBlocks(
 		ServerEnvironment *env,
