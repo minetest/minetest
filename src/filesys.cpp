@@ -701,16 +701,19 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	os << content;
 	os.flush();
 	os.close();
-	if (os.fail())
+	if (os.fail()) {
+		remove(tmp_file.c_str());
 		return false;
+	}
 
 	// Copy file
-#ifdef _WIN32
 	remove(path.c_str());
-	return (rename(tmp_file.c_str(), path.c_str()) == 0);
-#else
-	return (rename(tmp_file.c_str(), path.c_str()) == 0);
-#endif
+	if(rename(tmp_file.c_str(), path.c_str())) {
+		remove(tmp_file.c_str());
+		return false;
+	} else {
+		return true;
+	}
 }
 
 } // namespace fs
