@@ -1060,9 +1060,7 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 
 	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
 
-	if (singleplayermode) {
-		(*cur_formspec)->doPause = true;
-	}
+	(*cur_formspec)->doPause = true;
 }
 
 /******************************************************************************/
