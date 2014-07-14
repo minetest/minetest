@@ -109,6 +109,14 @@ local function init_globals()
 	ui.update()
 
 	core.sound_play("main_menu", true)
+
+	-- Disable shaders if directx is used.
+	if core.is_yes(core.setting_get("enable_shaders")) and
+			(core.setting_get("video_driver") == "direct3d8"
+			or core.setting_get("video_driver") == "direct3d9") then
+		core.setting_set("enable_shaders", "false")
+		engine.log("error", "To enable shaders the OpenGL driver needs to be used.")
+	end
 end
 
 init_globals()
