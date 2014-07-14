@@ -205,7 +205,8 @@ u32 Environment::getDayNightRatio()
 {
 	if(m_enable_day_night_ratio_override)
 		return m_day_night_ratio_override;
-	bool smooth = g_settings->getBool("enable_shaders");
+	bool smooth = g_settings->getBool("enable_shaders") &&
+		(g_settings->get("driver") != "directx9") && (g_settings->get("driver") != "directx8");
 	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 

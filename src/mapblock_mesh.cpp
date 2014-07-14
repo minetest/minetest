@@ -1098,7 +1098,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	ITextureSource *tsrc = m_gamedef->tsrc();
 	IShaderSource *shdrsrc = m_gamedef->getShaderSource();
 
-	bool enable_shaders     = g_settings->getBool("enable_shaders");
+	bool enable_shaders     = g_settings->getBool("enable_shaders") &&
+					(g_settings->get("driver") != "directx9") && (g_settings->get("driver") != "directx8");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 
