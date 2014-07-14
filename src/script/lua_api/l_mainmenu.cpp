@@ -508,25 +508,25 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (servers[i]["password"].asString().size()) {
 			lua_pushstring(L,"password");
-			lua_pushboolean(L,true);
+			lua_pushboolean(L,servers[i]["password"].asBool());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["creative"].asString().size()) {
 			lua_pushstring(L,"creative");
-			lua_pushboolean(L,true);
+			lua_pushboolean(L,servers[i]["creative"].asBool());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["damage"].asString().size()) {
 			lua_pushstring(L,"damage");
-			lua_pushboolean(L,true);
+			lua_pushboolean(L,servers[i]["damage"].asBool());
 			lua_settable(L, top_lvl2);
 		}
 
 		if (servers[i]["pvp"].asString().size()) {
 			lua_pushstring(L,"pvp");
-			lua_pushboolean(L,true);
+			lua_pushboolean(L,servers[i]["pvp"].asBool());
 			lua_settable(L, top_lvl2);
 		}
 
