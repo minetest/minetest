@@ -395,7 +395,9 @@ public:
 				Make a mesh from the node
 			*/
 			bool reenable_shaders = false;
-			if(g_settings->getBool("enable_shaders")){
+			if(g_settings->getBool("enable_shaders") &&
+					(g_settings->get("driver") != "direct3d9") &&
+					(g_settings->get("driver") != "direct3d8")){
 				reenable_shaders = true;
 				g_settings->setBool("enable_shaders",false);
 			}
