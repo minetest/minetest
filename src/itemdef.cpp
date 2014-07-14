@@ -396,8 +396,8 @@ public:
 			*/
 			bool reenable_shaders = false;
 			if(g_settings->getBool("enable_shaders") &&
-					(g_settings->get("driver") != "directx9") &&
-					(g_settings->get("driver") != "directx8")){
+					(g_settings->get("driver") != "direct3d9") &&
+					(g_settings->get("driver") != "direct3d8")){
 				reenable_shaders = true;
 				g_settings->setBool("enable_shaders",false);
 			}

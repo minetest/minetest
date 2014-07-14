@@ -574,7 +574,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	}
 	
 	bool enable_shaders = g_settings->getBool("enable_shaders") &&
-		(g_settings->get("driver") != "directx9") && (g_settings->get("driver") != "directx8");
+		(g_settings->get("driver") != "direct3d9") && (g_settings->get("driver") != "direct3d8");
 	if(!enable_shaders)
 		return shaderinfo;
 
