@@ -473,90 +473,50 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		lua_newtable(L);
 		int top_lvl2 = lua_gettop(L);
-
-		if (servers[i]["clients"].asString().size()) {
-			std::string clients_raw = servers[i]["clients"].asString();
-			char* endptr = 0;
-			int numbervalue = strtol(clients_raw.c_str(),&endptr,10);
-
-			if ((clients_raw != "") && (*endptr == 0)) {
-				lua_pushstring(L,"clients");
-				lua_pushnumber(L,numbervalue);
-				lua_settable(L, top_lvl2);
-			}
-		}
-
-		if (servers[i]["clients_max"].asString().size()) {
-
-			std::string clients_max_raw = servers[i]["clients_max"].asString();
-			char* endptr = 0;
-			int numbervalue = strtol(clients_max_raw.c_str(),&endptr,10);
-
-			if ((clients_max_raw != "") && (*endptr == 0)) {
-				lua_pushstring(L,"clients_max");
-				lua_pushnumber(L,numbervalue);
-				lua_settable(L, top_lvl2);
-			}
-		}
-
-		if (servers[i]["version"].asString().size()) {
-			lua_pushstring(L,"version");
-			std::string topush = servers[i]["version"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["password"].asString().size()) {
-			lua_pushstring(L,"password");
-			lua_pushboolean(L,servers[i]["password"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["creative"].asString().size()) {
-			lua_pushstring(L,"creative");
-			lua_pushboolean(L,servers[i]["creative"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["damage"].asString().size()) {
-			lua_pushstring(L,"damage");
-			lua_pushboolean(L,servers[i]["damage"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["pvp"].asString().size()) {
-			lua_pushstring(L,"pvp");
-			lua_pushboolean(L,servers[i]["pvp"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["description"].asString().size()) {
-			lua_pushstring(L,"description");
-			std::string topush = servers[i]["description"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["name"].asString().size()) {
-			lua_pushstring(L,"name");
-			std::string topush = servers[i]["name"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["address"].asString().size()) {
-			lua_pushstring(L,"address");
-			std::string topush = servers[i]["address"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (servers[i]["port"].asString().size()) {
-			lua_pushstring(L,"port");
-			std::string topush = servers[i]["port"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
+		
+		lua_pushstring(L,"clients");
+		push_json_value(L, servers[i]["clients"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"clients_max");
+		push_json_value(L, servers[i]["clients_max"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"version");
+		push_json_value(L, servers[i]["version"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"password");
+		push_json_value(L, servers[i]["password"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"creative");
+		push_json_value(L, servers[i]["creative"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"damage");
+		push_json_value(L, servers[i]["damage"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"pvp");
+		push_json_value(L, servers[i]["pvp"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"description");
+		push_json_value(L, servers[i]["description"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"name");
+		push_json_value(L, servers[i]["name"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"address");
+		push_json_value(L, servers[i]["address"], index);
+		lua_settable(L, top_lvl2);
+		
+		lua_pushstring(L,"port");
+		push_json_value(L, servers[i]["port"], index);
+		lua_settable(L, top_lvl2);
 
 		lua_settable(L, top);
 		index++;
