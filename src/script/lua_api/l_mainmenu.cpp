@@ -474,50 +474,14 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 		lua_newtable(L);
 		int top_lvl2 = lua_gettop(L);
 		
-		lua_pushstring(L,"clients");
-		push_json_value(L, servers[i]["clients"], index);
-		lua_settable(L, top_lvl2);
+		for (Json::Value::iterator it = servers[i].begin();
+				it != servers[i].end(); ++it) {
+			const char *str = it.memberName();
+			lua_pushstring(L, str ? str : "");
+			push_json_value(L, *it, index);
+			lua_settable(L, top_lvl2);
+		}
 		
-		lua_pushstring(L,"clients_max");
-		push_json_value(L, servers[i]["clients_max"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"version");
-		push_json_value(L, servers[i]["version"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"password");
-		push_json_value(L, servers[i]["password"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"creative");
-		push_json_value(L, servers[i]["creative"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"damage");
-		push_json_value(L, servers[i]["damage"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"pvp");
-		push_json_value(L, servers[i]["pvp"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"description");
-		push_json_value(L, servers[i]["description"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"name");
-		push_json_value(L, servers[i]["name"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"address");
-		push_json_value(L, servers[i]["address"], index);
-		lua_settable(L, top_lvl2);
-		
-		lua_pushstring(L,"port");
-		push_json_value(L, servers[i]["port"], index);
-		lua_settable(L, top_lvl2);
-
 		lua_settable(L, top);
 		index++;
 	}
