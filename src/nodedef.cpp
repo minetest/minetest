@@ -607,6 +607,9 @@ public:
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
 		bool opaque_water = g_settings->getBool("opaque_water");
+		bool enable_shaders = g_settings->getBool("enable_shaders");
+		bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
+		bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 
 		for(u32 i=0; i<m_content_features.size(); i++)
 		{
@@ -716,6 +719,9 @@ public:
 				f->tiles[j].texture = tsrc->getTexture(
 						tiledef[j].name,
 						&f->tiles[j].texture_id);
+				// Normal texture
+				if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
+					f->tiles[j].normal_texture = tsrc->getNormalTexture(tiledef[j].name);
 				// Alpha
 				f->tiles[j].alpha = f->alpha;
 				// Material type
@@ -727,28 +733,32 @@ public:
 				if(tiledef[j].animation.type == TAT_VERTICAL_FRAMES)
 					f->tiles[j].material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
 				// Animation parameters
-				if(f->tiles[j].material_flags &
-						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-				{
+				int frame_count = 1;
+				if(f->tiles[j].material_flags &	MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES) {
 					// Get texture size to determine frame count by
 					// aspect ratio
 					v2u32 size = f->tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
 							(float)tiledef[j].animation.aspect_w *
 							(float)tiledef[j].animation.aspect_h;
-					int frame_count = size.Y / frame_height;
+					frame_count = size.Y / frame_height;
 					int frame_length_ms = 1000.0 *
 							tiledef[j].animation.length / frame_count;
 					f->tiles[j].animation_frame_count = frame_count;
 					f->tiles[j].animation_frame_length_ms = frame_length_ms;
-
-					// If there are no frames for an animation, switch
-					// animation off (so that having specified an animation
-					// for something but not using it in the texture pack
-					// gives no overhead)
-					if(frame_count == 1){
-						f->tiles[j].material_flags &=
-								~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				}
+				if(frame_count == 1) {
+					f->tiles[j].material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				} else {
+					std::ostringstream os(std::ios::binary);
+					for (int i = 0; i < frame_count; i++) {
+						FrameSpec frame;
+						os.str("");
+						os<<tiledef[j].name<<"^[verticalframe:"<<frame_count<<":"<<i;
+						frame.texture = tsrc->getTexture(os.str(), &frame.texture_id);
+						if (f->tiles[j].normal_texture)
+							frame.normal_texture = tsrc->getNormalTexture(os.str());
+						f->tiles[j].frames[i]=frame;
 					}
 				}
 			}
@@ -760,6 +770,9 @@ public:
 				f->special_tiles[j].texture = tsrc->getTexture(
 						f->tiledef_special[j].name,
 						&f->special_tiles[j].texture_id);
+				// Normal texture
+				if (enable_shaders && (enable_bumpmapping || enable_parallax_occlusion))
+					f->special_tiles[j].normal_texture = tsrc->getNormalTexture(f->tiledef_special[j].name);
 				// Alpha
 				f->special_tiles[j].alpha = f->alpha;
 				// Material type
@@ -771,28 +784,32 @@ public:
 				if(f->tiledef_special[j].animation.type == TAT_VERTICAL_FRAMES)
 					f->special_tiles[j].material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
 				// Animation parameters
-				if(f->special_tiles[j].material_flags &
-						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-				{
+				int frame_count = 1;
+				if(f->special_tiles[j].material_flags &	MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES) {
 					// Get texture size to determine frame count by
 					// aspect ratio
 					v2u32 size = f->special_tiles[j].texture->getOriginalSize();
 					int frame_height = (float)size.X /
 							(float)f->tiledef_special[j].animation.aspect_w *
 							(float)f->tiledef_special[j].animation.aspect_h;
-					int frame_count = size.Y / frame_height;
+					frame_count = size.Y / frame_height;
 					int frame_length_ms = 1000.0 *
 							f->tiledef_special[j].animation.length / frame_count;
 					f->special_tiles[j].animation_frame_count = frame_count;
 					f->special_tiles[j].animation_frame_length_ms = frame_length_ms;
-
-					// If there are no frames for an animation, switch
-					// animation off (so that having specified an animation
-					// for something but not using it in the texture pack
-					// gives no overhead)
-					if(frame_count == 1){
-						f->special_tiles[j].material_flags &=
-								~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				}
+				if(frame_count == 1) {
+					f->special_tiles[j].material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				} else {
+					std::ostringstream os(std::ios::binary);
+					for (int i = 0; i < frame_count; i++) {
+						FrameSpec frame;
+						os.str("");
+						os<<f->tiledef_special[j].name<<"^[verticalframe:"<<frame_count<<":"<<i;
+						frame.texture = tsrc->getTexture(os.str(), &frame.texture_id);
+						if (f->special_tiles[j].normal_texture)
+							frame.normal_texture = tsrc->getNormalTexture(os.str());
+						f->special_tiles[j].frames[i]=frame;
 					}
 				}
 			}

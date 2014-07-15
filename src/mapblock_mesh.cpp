@@ -32,14 +32,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
-void applyContrast(video::SColor& color, float Factor)
+static void applyContrast(video::SColor& color, float factor)
 {
-	float r = color.getRed();
-	float g = color.getGreen();
-	float b = color.getBlue();
-	color.setRed(irr::core::clamp((int)sqrt(r * r * Factor), 0, 255));
-	color.setGreen(irr::core::clamp((int)sqrt(g * g * Factor), 0, 255));
-	color.setBlue(irr::core::clamp((int)sqrt(b * b * Factor), 0, 255));
+	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
+	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
+	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
 }
 
 /*
@@ -1099,8 +1096,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	IShaderSource *shdrsrc = m_gamedef->getShaderSource();
 
 	bool enable_shaders     = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
@@ -1141,33 +1136,31 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				m_animation_frame_offsets[i] = 0;
 			}
 			// Replace tile texture with the first animation frame
-			std::ostringstream os(std::ios::binary);
-			os<<tsrc->getTextureName(p.tile.texture_id);
-			os<<"^[verticalframe:"<<(int)p.tile.animation_frame_count<<":0";
-			p.tile.texture = tsrc->getTexture(
-					os.str(),
-					&p.tile.texture_id);
+			FrameSpec animation_frame = p.tile.frames.find(0)->second;
+			p.tile.texture = animation_frame.texture;
 		}
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
+			// Note applyContrast second parameter is precalculated sqrt from original
+			// values for speed improvement
 			video::SColor &vc = p.vertices[j].Color;
 			if(p.vertices[j].Normal.Y > 0.5) {
-				applyContrast (vc, 1.2);
+				applyContrast (vc, 1.095445);
 			} else if (p.vertices[j].Normal.Y < -0.5) {
-				applyContrast (vc, 0.3);
+				applyContrast (vc, 0.547723);
 			} else if (p.vertices[j].Normal.X > 0.5) {
-				applyContrast (vc, 0.5);
+				applyContrast (vc, 0.707107);
 			} else if (p.vertices[j].Normal.X < -0.5) {
-				applyContrast (vc, 0.5);
+				applyContrast (vc, 0.707107);
 			} else if (p.vertices[j].Normal.Z > 0.5) {
-				applyContrast (vc, 0.8);			
+				applyContrast (vc, 0.894427);
 			} else if (p.vertices[j].Normal.Z < -0.5) {
-				applyContrast (vc, 0.8);	
+				applyContrast (vc, 0.894427);
 			}
 			if(!enable_shaders)
 			{
-				// - Classic lighting (shaders handle this by themselves)		
+				// - Classic lighting (shaders handle this by themselves)
 				// Set initial real color and store for later updates
 				u8 day = vc.getRed();
 				u8 night = vc.getGreen();
@@ -1191,34 +1184,17 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		if (enable_shaders) {
 			material.MaterialType = shdrsrc->getShaderInfo(p.tile.shader_id).material;
 			p.tile.applyMaterialOptionsWithShaders(material);
-			material.setTexture(2, tsrc->getTexture("disable_img.png"));
-			if (enable_bumpmapping || enable_parallax_occlusion) {
-				if (tsrc->isKnownSourceImage("override_normal.png")){
-					material.setTexture(1, tsrc->getTexture("override_normal.png"));
-					material.setTexture(2, tsrc->getTexture("enable_img.png"));
-				} else {
-					std::string fname_base = tsrc->getTextureName(p.tile.texture_id);
-					std::string normal_ext = "_normal.png";
-					size_t pos = fname_base.find(".");
-					std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
-
-					if (tsrc->isKnownSourceImage(fname_normal)) {
-						// look for image extension and replace it
-						size_t i = 0;
-						while ((i = fname_base.find(".", i)) != std::string::npos) {
-							fname_base.replace(i, 4, normal_ext);
-							i += normal_ext.length();
-						}
-						material.setTexture(1, tsrc->getTexture(fname_base));
-						material.setTexture(2, tsrc->getTexture("enable_img.png"));
-					}
-				}
+			if (p.tile.normal_texture) {
+				material.setTexture(1, p.tile.normal_texture);
+				material.setTexture(2, tsrc->getTexture("enable_img.png"));
+			} else {
+				material.setTexture(2, tsrc->getTexture("disable_img.png"));
 			}
 		} else {
 			p.tile.applyMaterialOptions(material);
 		}
-		// Create meshbuffer
 
+		// Create meshbuffer
 		// This is a "Standard MeshBuffer",
 		// it's a typedeffed CMeshBuffer<video::S3DVertex>
 		scene::SMeshBuffer *buf = new scene::SMeshBuffer();
@@ -1278,8 +1254,6 @@ MapBlockMesh::~MapBlockMesh()
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
 {
 	bool enable_shaders = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 
 	if(!m_has_animation)
 	{
@@ -1342,35 +1316,15 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 		scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 		ITextureSource *tsrc = m_gamedef->getTextureSource();
-		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
 
-		// Create new texture name from original
-		std::ostringstream os(std::ios::binary);
-		os<<tsrc->getTextureName(tile.texture_id);
-		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-		// Set the texture
-		buf->getMaterial().setTexture(0, tsrc->getTexture(os.str()));
-		if (enable_shaders){
-			buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
-			buf->getMaterial().MaterialType = shdrsrc->getShaderInfo(tile.shader_id).material;
-			if (enable_bumpmapping || enable_parallax_occlusion){
-				if (tsrc->isKnownSourceImage("override_normal.png")){
-					buf->getMaterial().setTexture(1, tsrc->getTexture("override_normal.png"));
-					buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
-				} else {
-					std::string fname_base,fname_normal;
-					fname_base = tsrc->getTextureName(tile.texture_id);
-					unsigned pos;
-					pos = fname_base.find(".");
-					fname_normal = fname_base.substr (0, pos);
-					fname_normal += "_normal.png";
-					if (tsrc->isKnownSourceImage(fname_normal)){
-						os.str("");
-						os<<fname_normal<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
-						buf->getMaterial().setTexture(1, tsrc->getTexture(os.str()));
-						buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
-					}
-				}
+		FrameSpec animation_frame = tile.frames.find(frame)->second;
+		buf->getMaterial().setTexture(0, animation_frame.texture);
+		if (enable_shaders) {
+			if (animation_frame.normal_texture) {
+				buf->getMaterial().setTexture(1, animation_frame.normal_texture);
+				buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+			} else {
+				buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
 			}
 		}
 	}

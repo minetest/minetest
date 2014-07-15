@@ -389,6 +389,7 @@ public:
 	// Shall be called from the main thread.
 	bool generateImage(std::string part_of_name, video::IImage *& baseimg);
 
+	video::ITexture* getNormalTexture(const std::string &name);
 private:
 
 	// The id of the thread that is allowed to use irrlicht directly
@@ -1871,4 +1872,25 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 		video::SColor c = src->getPixel(sx,sy);
 		dst->setPixel(dx,dy,c);
 	}
+}
+
+video::ITexture* TextureSource::getNormalTexture(const std::string &name)
+{
+	u32 id;
+	if (isKnownSourceImage("override_normal.png"))
+		return getTexture("override_normal.png", &id);
+	std::string fname_base = name;
+	std::string normal_ext = "_normal.png";
+	size_t pos = fname_base.find(".");
+	std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
+	if (isKnownSourceImage(fname_normal)) {
+		// look for image extension and replace it
+		size_t i = 0;
+		while ((i = fname_base.find(".", i)) != std::string::npos) {
+			fname_base.replace(i, 4, normal_ext);
+			i += normal_ext.length();
+		}
+		return getTexture(fname_base, &id);
+		}
+	return NULL;
 }
