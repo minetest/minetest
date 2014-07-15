@@ -34,7 +34,6 @@ tab_credits = {
 				"Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
 				"Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
 				"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
-				"proller <proler@gmail.com>,"..
 				"sfan5 <sfan5@live.de>,"..
 				"kahrl <kahrl@gmx.net>,"..
 				"sapier,"..

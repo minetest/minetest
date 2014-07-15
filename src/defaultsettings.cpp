@@ -262,9 +262,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "");
 
-	settings->setDefault("mgmath_generator", "mandelbox");
-
-
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");

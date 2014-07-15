@@ -32,14 +32,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
-float srgb_linear_multiply(float f, float m, float max)
+void applyContrast(video::SColor& color, float Factor)
 {
-	f = f * f; // SRGB -> Linear
-	f *= m;
-	f = sqrt(f); // Linear -> SRGB
-	if(f > max)
-		f = max;
-	return f;
+	float r = color.getRed();
+	float g = color.getGreen();
+	float b = color.getBlue();
+	color.setRed(irr::core::clamp((int)sqrt(r * r * Factor), 0, 255));
+	color.setGreen(irr::core::clamp((int)sqrt(g * g * Factor), 0, 255));
+	color.setBlue(irr::core::clamp((int)sqrt(b * b * Factor), 0, 255));
 }
 
 /*
@@ -203,20 +203,6 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 		//return decode_light(light_source);
 		light = light_source;
 
-	// Make some nice difference to different sides
-
-	// This makes light come from a corner
-	/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
-		light = diminish_light(diminish_light(light));
-	else if(face_dir.X == -1 || face_dir.Z == -1)
-		light = diminish_light(light);*/
-
-	// All neighboring faces have different shade (like in minecraft)
-	if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
-		light = diminish_light(diminish_light(light));
-	else if(face_dir.Z == 1 || face_dir.Z == -1)
-		light = diminish_light(light);
-
 	return decode_light(light);
 }
 
@@ -352,21 +338,15 @@ static void finalColorBlend(video::SColor& result,
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
-	if(b < 0)
-		b = 0;
-	if(b > 255)
-		b = 255;
 	b += emphase_blue_when_dark[b / 8];
+	b = irr::core::clamp (b, 0, 255);
 
 	// Artificial light is yellow-ish
 	static u8 emphase_yellow_when_artificial[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
 	};
 	rg += emphase_yellow_when_artificial[night/16];
-	if(rg < 0)
-		rg = 0;
-	if(rg > 255)
-		rg = 255;
+	rg = irr::core::clamp (rg, 0, 255);
 
 	result.setRed(rg);
 	result.setGreen(rg);
@@ -1168,25 +1148,32 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					os.str(),
 					&p.tile.texture_id);
 		}
-		// - Classic lighting (shaders handle this by themselves)
-		if(!enable_shaders)
+
+		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
-			for(u32 j = 0; j < p.vertices.size(); j++)
+			video::SColor &vc = p.vertices[j].Color;
+			if(p.vertices[j].Normal.Y > 0.5) {
+				applyContrast (vc, 1.2);
+			} else if (p.vertices[j].Normal.Y < -0.5) {
+				applyContrast (vc, 0.3);
+			} else if (p.vertices[j].Normal.X > 0.5) {
+				applyContrast (vc, 0.5);
+			} else if (p.vertices[j].Normal.X < -0.5) {
+				applyContrast (vc, 0.5);
+			} else if (p.vertices[j].Normal.Z > 0.5) {
+				applyContrast (vc, 0.8);			
+			} else if (p.vertices[j].Normal.Z < -0.5) {
+				applyContrast (vc, 0.8);	
+			}
+			if(!enable_shaders)
 			{
-				video::SColor &vc = p.vertices[j].Color;
+				// - Classic lighting (shaders handle this by themselves)		
 				// Set initial real color and store for later updates
 				u8 day = vc.getRed();
 				u8 night = vc.getGreen();
 				finalColorBlend(vc, day, night, 1000);
 				if(day != night)
 					m_daynight_diffs[i][j] = std::make_pair(day, night);
-				// Brighten topside (no shaders)
-				if(p.vertices[j].Normal.Y > 0.5)
-				{
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.3, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.3, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.3, 255.0));
-				}
 			}
 		}
 
@@ -1293,7 +1280,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
-	bool smooth_lighting = g_settings->getBool("smooth_lighting");
 
 	if(!m_has_animation)
 	{
@@ -1407,36 +1393,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u8 night = j->second.second;
 				finalColorBlend(vertices[vertexIndex].Color,
 						day, night, daynight_ratio);
-				// If no smooth lighting, shading is already correct
-				if(!smooth_lighting)
-					continue;
-				// Make sides and bottom darker than the top
-				video::SColor &vc = vertices[vertexIndex].Color;
-				if(vertices[vertexIndex].Normal.Y > 0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   1.2, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 1.2, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  1.2, 255.0));
-				} else if (vertices[vertexIndex].Normal.Y < -0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.3, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.3, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.3, 255.0));
-				} else if (vertices[vertexIndex].Normal.X > 0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.8, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.8, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.8, 255.0));
-				} else if (vertices[vertexIndex].Normal.X < -0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.8, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.8, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.8, 255.0));
-				} else if (vertices[vertexIndex].Normal.Z > 0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.5, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.5, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.5, 255.0));
-				} else if (vertices[vertexIndex].Normal.Z < -0.5) {
-					vc.setRed  (srgb_linear_multiply(vc.getRed(),   0.5, 255.0));
-					vc.setGreen(srgb_linear_multiply(vc.getGreen(), 0.5, 255.0));
-					vc.setBlue (srgb_linear_multiply(vc.getBlue(),  0.5, 255.0));
-				}
 			}
 		}
 		m_last_daynight_ratio = daynight_ratio;

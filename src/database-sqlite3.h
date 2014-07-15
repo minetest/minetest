@@ -33,13 +33,13 @@ class Database_SQLite3 : public Database
 {
 public:
 	Database_SQLite3(ServerMap *map, std::string savedir);
-        virtual void beginSave();
-        virtual void endSave();
+	virtual void beginSave();
+	virtual void endSave();
 
-        virtual bool saveBlock(MapBlock *block);
-        virtual MapBlock *loadBlock(v3s16 blockpos);
-        virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
-        virtual int Initialized(void);
+	virtual bool saveBlock(v3s16 blockpos, std::string &data);
+	virtual std::string loadBlock(v3s16 blockpos);
+	virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
+	virtual int Initialized(void);
 	~Database_SQLite3();
 private:
 	ServerMap *srvmap;
@@ -51,9 +51,9 @@ private:
 
 	// Create the database structure
 	void createDatabase();
-        // Verify we can read/write to the database
-        void verifyDatabase();
-        void createDirs(std::string path);
+	// Verify we can read/write to the database
+	void verifyDatabase();
+	void createDirs(std::string path);
 };
 
 #endif

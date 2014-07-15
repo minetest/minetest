@@ -81,138 +81,44 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-bool Database_Redis::saveBlock(MapBlock *block)
+bool Database_Redis::saveBlock(v3s16 blockpos, std::string &data)
 {
-	DSTACK(__FUNCTION_NAME);
-
-	v3s16 p3d = block->getPos();
-
-	/*
-		Dummy blocks are not written
-	*/
-	if(block->isDummy())
-	{
-		errorstream << "WARNING: saveBlock: Not writing dummy block "
-				<< PP(p3d) << std::endl;
-		return true;
-	}
-
-	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-
-	/*
-		[0] u8 serialization version
-		[1] data
-	*/
-
-	std::ostringstream o(std::ios_base::binary);
-	o.write((char*)&version, 1);
-	// Write basic data
-	block->serialize(o, version, true);
-	// Write block to database
-	std::string tmp1 = o.str();
-	std::string tmp2 = i64tos(getBlockAsInteger(p3d));
+	std::string tmp = i64tos(getBlockAsInteger(blockpos));
 
 	redisReply *reply = (redisReply *)redisCommand(ctx, "HSET %s %s %b",
-			hash.c_str(), tmp2.c_str(), tmp1.c_str(), tmp1.size());
+			hash.c_str(), tmp.c_str(), data.c_str(), data.size());
 	if (!reply) {
 		errorstream << "WARNING: saveBlock: redis command 'HSET' failed on "
-			"block " << PP(p3d) << ": " << ctx->errstr << std::endl;
+			"block " << PP(blockpos) << ": " << ctx->errstr << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
 
 	if (reply->type == REDIS_REPLY_ERROR) {
-		errorstream << "WARNING: saveBlock: save block " << PP(p3d)
+		errorstream << "WARNING: saveBlock: saving block " << PP(blockpos)
 			<< "failed" << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
 
-	// We just wrote it to the disk so clear modified flag
-	block->resetModified();
 	freeReplyObject(reply);
 	return true;
 }
 
-MapBlock* Database_Redis::loadBlock(v3s16 blockpos)
+std::string Database_Redis::loadBlock(v3s16 blockpos)
 {
-	v2s16 p2d(blockpos.X, blockpos.Z);
-
 	std::string tmp = i64tos(getBlockAsInteger(blockpos));
 	redisReply *reply;
 	reply = (redisReply*) redisCommand(ctx, "HGET %s %s", hash.c_str(), tmp.c_str());
+
 	if(!reply)
 		throw FileNotGoodException(std::string("redis command 'HGET %s %s' failed: ") + ctx->errstr);
+	if(reply->type != REDIS_REPLY_STRING)
+		return "";
 
-	if (reply->type == REDIS_REPLY_STRING && reply->len == 0) {
-		freeReplyObject(reply);
-		errorstream << "Blank block data in database (reply->len == 0) ("
-			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
-
-		if (g_settings->getBool("ignore_world_load_errors")) {
-			errorstream << "Ignoring block load error. Duck and cover! "
-				<< "(ignore_world_load_errors)" << std::endl;
-		} else {
-			throw SerializationError("Blank block data in database");
-		}
-		return NULL;
-	}
-
-	if (reply->type == REDIS_REPLY_STRING) {
-		/*
-			Make sure sector is loaded
-		*/
-		MapSector *sector = srvmap->createSector(p2d);
-
-		try {
-			std::istringstream is(std::string(reply->str, reply->len), std::ios_base::binary);
-			freeReplyObject(reply); // std::string copies the memory so we can already do this here
-			u8 version = SER_FMT_VER_INVALID;
-			is.read((char *)&version, 1);
-
-			if (is.fail())
-				throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
-
-			MapBlock *block = NULL;
-			bool created_new = false;
-			block = sector->getBlockNoCreateNoEx(blockpos.Y);
-			if (block == NULL)
-			{
-				block = sector->createBlankBlockNoInsert(blockpos.Y);
-				created_new = true;
-			}
-
-			// Read basic data
-			block->deSerialize(is, version, true);
-
-			// If it's a new block, insert it to the map
-			if (created_new)
-				sector->insertBlock(block);
-
-			// We just loaded it from, so it's up-to-date.
-			block->resetModified();
-		}
-		catch (SerializationError &e)
-		{
-			errorstream << "Invalid block data in database"
-				<< " (" << blockpos.X << "," << blockpos.Y << "," << blockpos.Z
-				<< ") (SerializationError): " << e.what() << std::endl;
-			// TODO: Block should be marked as invalid in memory so that it is
-			// not touched but the game can run
-
-			if (g_settings->getBool("ignore_world_load_errors")) {
-				errorstream << "Ignoring block load error. Duck and cover! "
-					<< "(ignore_world_load_errors)" << std::endl;
-			} else {
-				throw SerializationError("Invalid block data in database");
-			}
-		}
-
-		return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
-	}
-	return NULL;
+	std::string str(reply->str, reply->len);
+	freeReplyObject(reply); // std::string copies the memory so this won't cause any problems
+	return str;
 }
 
 void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)

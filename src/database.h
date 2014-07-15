@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DATABASE_HEADER
 
 #include <list>
+#include <string>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
 
@@ -28,16 +29,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 #endif
 
-class MapBlock;
-
 class Database
 {
 public:
 	virtual void beginSave() = 0;
 	virtual void endSave() = 0;
 
-	virtual bool saveBlock(MapBlock *block) = 0;
-	virtual MapBlock *loadBlock(v3s16 blockpos) = 0;
+	virtual bool saveBlock(v3s16 blockpos, std::string &data) = 0;
+	virtual std::string loadBlock(v3s16 blockpos) = 0;
 	s64 getBlockAsInteger(const v3s16 pos) const;
 	v3s16 getIntegerAsBlock(s64 i) const;
 	virtual void listAllLoadableBlocks(std::list<v3s16> &dst) = 0;
