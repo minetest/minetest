@@ -462,29 +462,16 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 	} else {
 		servers = ServerList::getLocal();
 	}
-
+	
+	lua_pushnil(L);
+	int nullindex = lua_gettop(L);
 	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
 
-	for (unsigned int i = 0; i < servers.size(); i++)
-	{
-		lua_pushnumber(L,index);
-
-		lua_newtable(L);
-		int top_lvl2 = lua_gettop(L);
-		
-		for (Json::Value::iterator it = servers[i].begin();
-				it != servers[i].end(); ++it) {
-			const char *str = it.memberName();
-			lua_pushstring(L, str ? str : "");
-			push_json_value(L, *it, index);
-			lua_settable(L, top_lvl2);
-		}
-		
-		lua_settable(L, top);
-		index++;
+	for (unsigned int i = 0; i < servers.size(); i++) {
+		push_json_value(L, servers[i], nullindex);
+		lua_rawseti(L, -2, i + 1);
 	}
+	lua_remove(L, nullindex);
 	return 1;
 }
 
