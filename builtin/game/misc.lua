@@ -11,11 +11,15 @@ core.register_globalstep(function(dtime)
 		table.insert(core.timers, timer)
 	end
 	core.timers_to_add = {}
-	for index, timer in ipairs(core.timers) do
+	local index = 1
+	while index <= #core.timers do
+		local timer = core.timers[index]
 		timer.time = timer.time - dtime
 		if timer.time <= 0 then
 			timer.func(unpack(timer.args or {}))
 			table.remove(core.timers,index)
+		else
+			index = index + 1
 		end
 	end
 end)
