@@ -218,6 +218,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("trilinear_filter", fields["cb_trilinear"])
 		return true
 	end
+	core.setting_set("screenW", fields["te_screenw"])
+	core.setting_set("screenH", fields["te_screenh"])
 	if fields["cb_shaders"] then
 		if (core.setting_get("video_driver") == "direct3d8" or core.setting_get("video_driver") == "direct3d9") then
 			core.setting_set("enable_shaders", "false")
