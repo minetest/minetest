@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "settings.h"
 #include "main.h" // for g_settings
+#include "EDriverTypes.h"
 
 #include <IFileArchive.h>
 #include <IFileSystem.h>
@@ -1002,6 +1003,36 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_video_drivers(lua_State *L)
+{
+	static const char* drivernames[] = {
+		"NULL Driver",
+		"Software",
+		"Burningsvideo",
+		"Direct3D 8",
+		"Direct3D 9",
+		"OpenGL",
+		"OGLES1",
+		"OGLES2"
+	};
+	unsigned int index = 1;
+	lua_newtable(L);
+	int top = lua_gettop(L);
+
+	for (unsigned int i = irr::video::EDT_SOFTWARE;
+			i < MYMIN(irr::video::EDT_COUNT, (sizeof(drivernames)/sizeof(drivernames[0])));
+			i++) {
+		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE) i)) {
+			lua_pushnumber(L,index++);
+			lua_pushstring(L,drivernames[i]);
+			lua_settable(L, top);
+		}
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_gettext(lua_State *L)
 {
 	std::wstring wtext = wstrgettext((std::string) luaL_checkstring(L, 1));
@@ -1094,6 +1125,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(gettext);
+	API_FCT(get_video_drivers);
 	API_FCT(get_screen_info);
 	API_FCT(do_async_callback);
 }

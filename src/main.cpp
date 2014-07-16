@@ -1365,41 +1365,43 @@ int main(int argc, char *argv[])
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-
-	video::E_DRIVER_TYPE driverType;
-
-	std::string driverstring = g_settings->get("video_driver");
-
-	if (driverstring == "null")
-		driverType = video::EDT_NULL;
-	else if (driverstring == "software")
-		driverType = video::EDT_SOFTWARE;
-	else if (driverstring == "burningsvideo")
-		driverType = video::EDT_BURNINGSVIDEO;
-	else if (driverstring == "direct3d8")
-		driverType = video::EDT_DIRECT3D8;
-	else if (driverstring == "direct3d9")
-		driverType = video::EDT_DIRECT3D9;
-	else if (driverstring == "opengl")
-		driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	static const char* driverids[] = {
+		"null",
+		"software",
+		"burningsvideo",
+		"direct3d8",
+		"direct3d9",
+		"opengl"
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	else if (driverstring == "ogles1")
-		driverType = video::EDT_OGLES1;
+		,"ogles1"
 #endif
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-	else if (driverstring == "ogles2")
-		driverType = video::EDT_OGLES2;
+		,"ogles2"
 #endif
-	else {
-		errorstream << "WARNING: Invalid video_driver specified; defaulting "
-			<< "to opengl" << std::endl;
-		driverType = video::EDT_OPENGL;
+		,"invalid"
+	};
+
+	std::string driverstring = g_settings->get("video_driver");
+	for (unsigned int i = 0;
+			i < (sizeof(driverids)/sizeof(driverids[0]));
+			i++)
+	{
+		if (strcasecmp(driverstring.c_str(), driverids[i]) == 0) {
+			driverType = (video::E_DRIVER_TYPE) i;
+			break;
+		}
+
+		if (strcasecmp("invalid", driverids[i]) == 0) {
+			errorstream << "WARNING: Invalid video_driver specified; defaulting "
+				<< "to opengl" << std::endl;
+			break;
+		}
 	}
 
 	/*
 		List video modes if requested
 	*/
-
 	MyEventReceiver* receiver = new MyEventReceiver();
 
 	if (cmd_args.getFlag("videomodes")) {
