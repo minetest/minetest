@@ -691,7 +691,11 @@ $(ROOT)/jni/src/android_version.h :
 	echo "#define VERSION_PATCH_ORIG $$(cat ${ROOT}/../../CMakeLists.txt |     \
 	grep ^set\(VERSION_PATCH\ | sed 's/)/ /' | awk '{print $$2;}')"            \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
-	echo "#define CMAKE_VERSION_GITHASH \"$$(git rev-parse --short=8 HEAD)\""  \
+	export GITHASH=$$(git rev-parse --short=8 HEAD);                           \
+	if [ "x$$GITHASH" = "x" ] ; then                                           \
+		export GITHASH=gUnknown;                                               \
+	fi;                                                                        \
+	echo "#define CMAKE_VERSION_GITHASH \"$$GITHASH\""                         \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	echo "#define CMAKE_VERSION_STRING STR(VERSION_MAJOR)\".\"STR(VERSION_MINOR)\
 	\".\"STR(VERSION_PATCH)"                                                   \

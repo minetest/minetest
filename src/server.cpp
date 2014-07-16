@@ -1732,14 +1732,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if (playersao == NULL) {
 			errorstream
-				<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer "
+				<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer_id: "
 				<< peer_id << std::endl;
+			m_con.DisconnectPeer(peer_id);
 			return;
 		}
 
 
-		if(datasize < 2+8)
+		if(datasize < 2+8) {
+			errorstream
+				<< "TOSERVER_CLIENT_READY client sent inconsistent data, disconnecting peer_id: "
+				<< peer_id << std::endl;
+			m_con.DisconnectPeer(peer_id);
 			return;
+		}
 
 		m_clients.setClientVersion(
 				peer_id,
