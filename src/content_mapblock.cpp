@@ -1143,16 +1143,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
 			TileSpec tile_nocrack = tile;
 			tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
-			
-			// A hack to put wood the right way around in the posts
-			ITextureSource *tsrc = data->m_gamedef->tsrc();
-			std::string texturestring_rot = tsrc->getTextureName(
-					tile.texture_id) + "^[transformR90";
+
+			// Put wood the right way around in the posts
 			TileSpec tile_rot = tile;
-			tile_rot.texture = tsrc->getTexture(
-					texturestring_rot,
-					&tile_rot.texture_id);
-			
+			tile_rot.rotation = 1;
+
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, decode_light(f.light_source));
 
