@@ -21,6 +21,37 @@ function basic_dump(o)
 	end
 end
 
+local keywords = {
+	["and"] = true,
+	["break"] = true,
+	["do"] = true,
+	["else"] = true,
+	["elseif"] = true,
+	["end"] = true,
+	["false"] = true,
+	["for"] = true,
+	["function"] = true,
+	["goto"] = true,  -- Lua 5.2
+	["if"] = true,
+	["in"] = true,
+	["local"] = true,
+	["nil"] = true,
+	["not"] = true,
+	["or"] = true,
+	["repeat"] = true,
+	["return"] = true,
+	["then"] = true,
+	["true"] = true,
+	["until"] = true,
+	["while"] = true,
+}
+local function is_valid_identifier(str)
+	if not str:find("^[a-zA-Z_][a-zA-Z0-9_]*$") or keywords[str] then
+		return false
+	end
+	return true
+end
+
 --------------------------------------------------------------------------------
 -- Dumps values in a line-per-value format.
 -- For example, {test = {"Testing..."}} becomes:
@@ -70,33 +101,57 @@ function dump2(o, name, dumped)
 end
 
 --------------------------------------------------------------------------------
--- This dumps values in a one-line format, like serialize().
--- For example, {test = {"Testing..."}} becomes {["test"] = {[1] = "Testing..."}}
+-- This dumps values in a one-statement format.
+-- For example, {test = {"Testing..."}} becomes:
+-- [[{
+-- 	test = {
+-- 		"Testing..."
+-- 	}
+-- }]]
 -- This supports tables as keys, but not circular references.
 -- It performs poorly with multiple references as it writes out the full
 -- table each time.
--- The dumped argument is internal-only.
+-- The indent field specifies a indentation string, it defaults to a tab.
+-- Use the empty string to disable indentation.
+-- The dumped and level arguments are internal-only.
 
-function dump(o, dumped)
-	-- Same as "dumped" in dump2.  The difference is that here it can only
-	-- contain boolean (and nil) values since multiple references aren't
-	-- handled properly.
-	dumped = dumped or {}
-	if type(o) == "table" then
-		if dumped[o] then
-			return "<circular reference>"
-		end
-		dumped[o] = true
-		local t = {}
-		for k, v in pairs(o) do
-			k = dump(k, dumped)
-			v = dump(v, dumped)
-			table.insert(t, string.format("[%s] = %s", k, v))
-		end
-		return string.format("{%s}", table.concat(t, ", "))
-	else
+function dump(o, indent, nested, level)
+	if type(o) ~= "table" then
 		return basic_dump(o)
 	end
+	-- Contains table -> true/nil of currently nested tables
+	nested = nested or {}
+	if nested[o] then
+		return "<circular reference>"
+	end
+	nested[o] = true
+	indent = indent or "\t"
+	level = level or 1
+	local t = {}
+	local dumped_indexes = {}
+	for i, v in ipairs(o) do
+		table.insert(t, dump(v, indent, nested, level + 1))
+		dumped_indexes[i] = true
+	end
+	for k, v in pairs(o) do
+		if not dumped_indexes[k] then
+			if type(k) ~= "string" or not is_valid_identifier(k) then
+				k = "["..dump(k, indent, nested, level + 1).."]"
+			end
+			v = dump(v, indent, nested, level + 1)
+			table.insert(t, k.." = "..v)
+		end
+	end
+	nested[o] = nil
+	if indent ~= "" then
+		local indent_str = "\n"..string.rep(indent, level)
+		local end_indent_str = "\n"..string.rep("\t", level - 1)
+		return string.format("{%s%s%s}",
+				indent_str,
+				table.concat(t, ","..indent_str),
+				end_indent_str)
+	end
+	return "{"..table.concat(t, ", ").."}"
 end
 
 --------------------------------------------------------------------------------
