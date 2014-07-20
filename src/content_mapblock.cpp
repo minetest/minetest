@@ -99,9 +99,9 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
-	for(int i = 0; i < tilecount; i++)
+	for(int i = 0; i < 6; i++)
 				{
-				switch (tiles[i].rotation)
+				switch (tiles[MYMIN(i, tilecount-1)].rotation)
 				{
 				case 0:
 					break;
