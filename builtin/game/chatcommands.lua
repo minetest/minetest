@@ -708,3 +708,22 @@ core.register_chatcommand("msg", {
 	end,
 })
 
+local worldpath = core.get_worldpath()
+-- Compatability, for old servers with conflicting players
+core.register_chatcommand("choosecase", {
+	description = "Choose the casing that a player name should have.",
+	params = "<name>",
+	privs = {server=true},
+	func = function(name, params)
+		local lname = params:lower()
+		for iname, data in pairs(core.auth_table) do
+			if iname:lower() == lname and iname ~= params then
+				core.auth_table[iname] = nil
+				assert(not iname:find("[/\\]"))
+				os.remove(worldpath..DIR_DELIM.."players"..DIR_DELIM..iname)
+			end
+		end
+		return true, "Done."
+	end,
+})
+

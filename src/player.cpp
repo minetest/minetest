@@ -285,50 +285,15 @@ void Player::clearHud()
 }
 
 
-void RemotePlayer::save(std::string savedir)
+void RemotePlayer::save(const std::string & savedir)
 {
-	/*
-	 * We have to open all possible player files in the players directory
-	 * and check their player names because some file systems are not
-	 * case-sensitive and player names are case-sensitive.
-	 */
-
-	// A player to deserialize files into to check their names
-	RemotePlayer testplayer(m_gamedef);
-
-	savedir += DIR_DELIM;
-	std::string path = savedir + m_name;
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		if (!fs::PathExists(path)) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			return;
-		}
-		// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			infostream << "Failed to open " << path << std::endl;
-			return;
-		}
-		testplayer.deSerialize(is, path);
-		is.close();
-		if (strcmp(testplayer.getName(), m_name) == 0) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			return;
-		}
-		path = savedir + m_name + itos(i);
+	std::string path = DIR_DELIM + savedir + m_name;
+	// Open file and serialize
+	std::ostringstream ss(std::ios_base::binary);
+	serialize(ss);
+	if (!fs::safeWriteToFile(path, ss.str())) {
+		infostream << "Failed to write " << path << std::endl;
 	}
-
-	infostream << "Didn't find free file for player " << m_name << std::endl;
 	return;
 }
 

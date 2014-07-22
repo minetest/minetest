@@ -185,4 +185,15 @@ function core.auth_reload()
 	return false
 end
 
+core.register_on_prejoinplayer(function(name, ip)
+	local lname = name:lower()
+	for iname, data in pairs(core.auth_table) do
+		if iname:lower() == lname and iname ~= name then
+			return "Sorry, someone else is already using this"
+				.." name.  Please pick another name."
+				.."  Annother posibility is that you used the"
+				.." wrong case for your name."
+		end
+	end
+end)
 

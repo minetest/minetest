@@ -335,7 +335,7 @@ public:
 	RemotePlayer(IGameDef *gamedef): Player(gamedef), m_sao(0) {}
 	virtual ~RemotePlayer() {}
 
-	void save(std::string savedir);
+	void save(const std::string &savedir);
 
 	PlayerSAO *getPlayerSAO()
 	{ return m_sao; }
