@@ -19,11 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "version.h"
 #include "config.h"
-#ifdef __ANDROID__
-	#include "android_version.h"
-#else
-	#include "cmake_config_githash.h"
-#endif
 
 const char *minetest_version_simple = CMAKE_VERSION_STRING;
 const char *minetest_version_hash = CMAKE_VERSION_GITHASH;
