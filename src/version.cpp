@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "version.h"
 #include "config.h"
+#include "cmake_config_githash.h"
 
 const char *minetest_version_simple = CMAKE_VERSION_STRING;
 const char *minetest_version_hash = CMAKE_VERSION_GITHASH;
