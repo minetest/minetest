@@ -74,11 +74,5 @@
 	#define VERSION_EXTRA_STRING CMAKE_VERSION_EXTRA_STRING
 #endif
 
-#ifdef __ANDROID__
-	#include "android_version.h"
-#else
-	#include "cmake_config_githash.h"
-#endif
-
 #endif
 

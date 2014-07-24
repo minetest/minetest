@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "main.h" // for g_settings
 #include "settings.h"
-#include "version.h"
 #include "httpfetch.h"
 #include "porting.h"
 
