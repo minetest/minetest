@@ -1119,12 +1119,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(j == 0)
 				{
 					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(46 + n.param2);
+						vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
 				}
 				else if(j == 1)
 				{
 					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-44 + n.param2);
+						vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
 				}
 
 				for(u16 i=0; i<4; i++)
