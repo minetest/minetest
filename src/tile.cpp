@@ -306,27 +306,12 @@ public:
 
 	/*
 		Gets a texture id from cache or
-		- if main thread, from getTextureIdDirect
-		- if other thread, adds to request queue and waits for main thread
-	*/
-	u32 getTextureId(const std::string &name);
-
-	/*
-		Example names:
-		"stone.png"
-		"stone.png^crack2"
-		"stone.png^mineral_coal.png"
-		"stone.png^mineral_coal.png^crack1"
-
-		- If texture specified by name is found from cache, return the
-		  cached id.
-		- Otherwise generate the texture, add to cache and return id.
-		  Recursion is used to find out the largest found part of the
-		  texture and continue based on it.
+		- if main thread, generates the texture, adds to cache and returns id.
+		- if other thread, adds to request queue and waits for main thread.
 
 		The id 0 points to a NULL texture. It is returned in case of error.
 	*/
-	u32 getTextureIdDirect(const std::string &name);
+	u32 getTextureId(const std::string &name);
 
 	// Finds out the name of a cached texture.
 	std::string getTextureName(u32 id);
@@ -382,12 +367,7 @@ public:
 	// Generates an image from a full string like
 	// "stone.png^mineral_coal.png^[crack:1:0".
 	// Shall be called from the main thread.
-	video::IImage* generateImageFromScratch(std::string name);
-
-	// Generate image based on a string like "stone.png" or "[crack:1:0".
-	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
-	// Shall be called from the main thread.
-	bool generateImage(std::string part_of_name, video::IImage *& baseimg);
+	video::IImage* generateImage(const std::string &name);
 
 	video::ITexture* getNormalTexture(const std::string &name);
 private:
@@ -400,6 +380,13 @@ private:
 	// Cache of source images
 	// This should be only accessed from the main thread
 	SourceImageCache m_sourcecache;
+
+	// Generate a texture
+	u32 generateTexture(const std::string &name);
+
+	// Generate image based on a string like "stone.png" or "[crack:1:0".
+	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
+	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg);
 
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
@@ -501,7 +488,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 	*/
 	if(get_current_thread_id() == m_main_thread)
 	{
-		return getTextureIdDirect(name);
+		return generateTexture(name);
 	}
 	else
 	{
@@ -567,152 +554,51 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
 /*
 	This method generates all the textures
 */
-u32 TextureSource::getTextureIdDirect(const std::string &name)
+u32 TextureSource::generateTexture(const std::string &name)
 {
-	//infostream<<"getTextureIdDirect(): name=\""<<name<<"\""<<std::endl;
+	//infostream << "generateTexture(): name=\"" << name << "\"" << std::endl;
 
 	// Empty name means texture 0
-	if(name == "")
-	{
-		infostream<<"getTextureIdDirect(): name is empty"<<std::endl;
+	if (name == "") {
+		infostream<<"generateTexture(): name is empty"<<std::endl;
 		return 0;
+	}
+
+	{
+		/*
+			See if texture already exists
+		*/
+		JMutexAutoLock lock(m_textureinfo_cache_mutex);
+		std::map<std::string, u32>::iterator n;
+		n = m_name_to_id.find(name);
+		if (n != m_name_to_id.end()) {
+			return n->second;
+		}
 	}
 
 	/*
 		Calling only allowed from main thread
 	*/
-	if(get_current_thread_id() != m_main_thread)
-	{
-		errorstream<<"TextureSource::getTextureIdDirect() "
+	if (get_current_thread_id() != m_main_thread) {
+		errorstream<<"TextureSource::generateTexture() "
 				"called not from main thread"<<std::endl;
 		return 0;
 	}
 
-	/*
-		See if texture already exists
-	*/
-	{
-		JMutexAutoLock lock(m_textureinfo_cache_mutex);
-
-		std::map<std::string, u32>::iterator n;
-		n = m_name_to_id.find(name);
-		if(n != m_name_to_id.end())
-		{
-			/*infostream<<"getTextureIdDirect(): \""<<name
-					<<"\" found in cache"<<std::endl;*/
-			return n->second;
-		}
-	}
-
-	/*infostream<<"getTextureIdDirect(): \""<<name
-			<<"\" NOT found in cache. Creating it."<<std::endl;*/
-
-	/*
-		Get the base image
-	*/
-
-	char separator = '^';
-
-	/*
-		This is set to the id of the base image.
-		If left 0, there is no base image and a completely new image
-		is made.
-	*/
-	u32 base_image_id = 0;
-
-	// Find last meta separator in name
-	s32 last_separator_position = -1;
-	for(s32 i=name.size()-1; i>=0; i--)
-	{
-		if(name[i] == separator)
-		{
-			last_separator_position = i;
-			break;
-		}
-	}
-	/*
-		If separator was found, construct the base name and make the
-		base image using a recursive call
-	*/
-	std::string base_image_name;
-	if(last_separator_position != -1)
-	{
-		// Construct base name
-		base_image_name = name.substr(0, last_separator_position);
-		/*infostream<<"getTextureIdDirect(): Calling itself recursively"
-				" to get base image of \""<<name<<"\" = \""
-                <<base_image_name<<"\""<<std::endl;*/
-		base_image_id = getTextureIdDirect(base_image_name);
-	}
-
-	//infostream<<"base_image_id="<<base_image_id<<std::endl;
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = m_device->getVideoDriver();
 	assert(driver);
 
-	video::ITexture *t = NULL;
+	video::IImage *img = generateImage(name);
 
-	/*
-		An image will be built from files and then converted into a texture.
-	*/
-	video::IImage *baseimg = NULL;
+	video::ITexture *tex = NULL;
 
-	// If a base image was found, copy it to baseimg
-	if(base_image_id != 0)
-	{
-		JMutexAutoLock lock(m_textureinfo_cache_mutex);
-
-		TextureInfo *ti = &m_textureinfo_cache[base_image_id];
-
-		if(ti->texture == NULL)
-		{
-			infostream<<"getTextureIdDirect(): WARNING: NULL Texture in "
-					<<"cache: \""<<base_image_name<<"\""
-					<<std::endl;
-		}
-		else
-		{
-			core::dimension2d<u32> dim = ti->texture->getSize();
-
-			baseimg = driver->createImage(ti->texture,v2s32(0,0), dim);
-
-			/*infostream<<"getTextureIdDirect(): Loaded \""
-					<<base_image_name<<"\" from image cache"
-					<<std::endl;*/
-		}
-	}
-
-	/*
-		Parse out the last part of the name of the image and act
-		according to it
-	*/
-
-	std::string last_part_of_name = name.substr(last_separator_position+1);
-	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
-
-	// Generate image according to part of name
-	if(!generateImage(last_part_of_name, baseimg))
-	{
-		errorstream<<"getTextureIdDirect(): "
-				"failed to generate \""<<last_part_of_name<<"\""
-				<<std::endl;
-	}
-
-	// If no resulting image, print a warning
-	if(baseimg == NULL)
-	{
-		errorstream<<"getTextureIdDirect(): baseimg is NULL (attempted to"
-				" create texture \""<<name<<"\""<<std::endl;
-	}
-
-	if(baseimg != NULL)
-	{
+	if (img != NULL) {
 #ifdef __ANDROID__
-		baseimg = Align2Npot2(baseimg, driver);
+		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
-		t = driver->addTexture(name.c_str(), baseimg);
-		baseimg->drop();
+		tex = driver->addTexture(name.c_str(), img);
+		img->drop();
 	}
 
 	/*
@@ -722,7 +608,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	u32 id = m_textureinfo_cache.size();
-	TextureInfo ti(name, t);
+	TextureInfo ti(name, tex);
 	m_textureinfo_cache.push_back(ti);
 	m_name_to_id[name] = id;
 
@@ -779,7 +665,7 @@ void TextureSource::processQueue()
 				<<"name=\""<<request.key<<"\""
 				<<std::endl;*/
 
-		m_get_texture_queue.pushResult(request,getTextureIdDirect(request.key));
+		m_get_texture_queue.pushResult(request, generateTexture(request.key));
 	}
 }
 
@@ -803,15 +689,15 @@ void TextureSource::rebuildImagesAndTextures()
 	// Recreate textures
 	for(u32 i=0; i<m_textureinfo_cache.size(); i++){
 		TextureInfo *ti = &m_textureinfo_cache[i];
-		video::IImage *img = generateImageFromScratch(ti->name);
+		video::IImage *img = generateImage(ti->name);
 #ifdef __ANDROID__
-		img = Align2Npot2(img,driver);
+		img = Align2Npot2(img, driver);
 		assert(img->getDimension().Height == npot2(img->getDimension().Height));
 		assert(img->getDimension().Width == npot2(img->getDimension().Width));
 #endif
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
-		if(img) {
+		if (img) {
 			t = driver->addTexture(ti->name.c_str(), img);
 			img->drop();
 		}
@@ -819,7 +705,7 @@ void TextureSource::rebuildImagesAndTextures()
 		// Replace texture
 		ti->texture = t;
 
-		if (t_old != 0)
+		if (t_old)
 			m_texture_trash.push_back(t_old);
 	}
 }
@@ -1024,51 +910,103 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	return rtt;
 }
 
-video::IImage* TextureSource::generateImageFromScratch(std::string name)
+video::IImage* TextureSource::generateImage(const std::string &name)
 {
-	/*infostream<<"generateImageFromScratch(): "
-			"\""<<name<<"\""<<std::endl;*/
-
-	video::IVideoDriver *driver = m_device->getVideoDriver();
-	assert(driver);
-
 	/*
 		Get the base image
 	*/
 
+	const char separator = '^';
+	const char paren_open = '(';
+	const char paren_close = ')';
+
+	// Find last separator in the name
+	s32 last_separator_pos = -1;
+	u8 paren_bal = 0;
+	for(s32 i = name.size() - 1; i >= 0; i--) {
+		switch(name[i]) {
+		case separator:
+			if (paren_bal == 0) {
+				last_separator_pos = i;
+				i = -1; // break out of loop
+			}
+			break;
+		case paren_open:
+			if (paren_bal == 0) {
+				errorstream << "generateImage(): unbalanced parentheses"
+						<< "(extranous '(') while generating texture \""
+						<< name << "\"" << std::endl;
+				return NULL;
+			}
+			paren_bal--;
+			break;
+		case paren_close:
+			paren_bal++;
+			break;
+		default:
+			break;
+		}
+	}
+	if (paren_bal > 0) {
+		errorstream << "generateImage(): unbalanced parentheses"
+				<< "(missing matching '(') while generating texture \""
+				<< name << "\"" << std::endl;
+		return NULL;
+	}
+
+
 	video::IImage *baseimg = NULL;
 
-	char separator = '^';
-
-	// Find last meta separator in name
-	s32 last_separator_position = name.find_last_of(separator);
-
 	/*
-		If separator was found, construct the base name and make the
-		base image using a recursive call
+		If separator was found, make the base image
+		using a recursive call.
 	*/
-	std::string base_image_name;
-	if(last_separator_position != -1)
-	{
-		// Construct base name
-		base_image_name = name.substr(0, last_separator_position);
-		baseimg = generateImageFromScratch(base_image_name);
+	if (last_separator_pos != -1) {
+		baseimg = generateImage(name.substr(0, last_separator_pos));
 	}
+
+
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+	assert(driver);
 
 	/*
 		Parse out the last part of the name of the image and act
 		according to it
 	*/
 
-	std::string last_part_of_name = name.substr(last_separator_position+1);
+	std::string last_part_of_name = name.substr(last_separator_pos + 1);
 
-	// Generate image according to part of name
-	if(!generateImage(last_part_of_name, baseimg))
-	{
-		errorstream<<"generateImageFromScratch(): "
-				"failed to generate \""<<last_part_of_name<<"\""
-				<<std::endl;
-		return NULL;
+	/* 
+		If this name is enclosed in parentheses, generate it
+		and blit it onto the base image
+	*/
+	if (last_part_of_name[0] == paren_open
+			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
+		std::string name2 = last_part_of_name.substr(1,
+				last_part_of_name.size() - 2);
+		video::IImage *tmp = generateImage(name2);
+		if (!tmp) {
+			errorstream << "generateImage(): "
+				"Failed to generate \"" << name2 << "\""
+				<< std::endl;
+			return NULL;
+		}
+		core::dimension2d<u32> dim = tmp->getDimension();
+		if (!baseimg)
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+		blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
+		tmp->drop();
+	} else if (!generateImagePart(last_part_of_name, baseimg)) {
+		// Generate image according to part of name
+		errorstream << "generateImage(): "
+				"Failed to generate \"" << last_part_of_name << "\""
+				<< std::endl;
+	}
+
+	// If no resulting image, print a warning
+	if (baseimg == NULL) {
+		errorstream << "generateImage(): baseimg is NULL (attempted to"
+				" create texture \"" << name << "\")" << std::endl;
 	}
 
 	return baseimg;
@@ -1125,7 +1063,8 @@ video::IImage * Align2Npot2(video::IImage * image,
 
 #endif
 
-bool TextureSource::generateImage(std::string part_of_name, video::IImage *& baseimg)
+bool TextureSource::generateImagePart(std::string part_of_name,
+		video::IImage *& baseimg)
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver);
@@ -1135,7 +1074,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 	{
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name, m_device);
 #ifdef __ANDROID__
-		image = Align2Npot2(image,driver);
+		image = Align2Npot2(image, driver);
 #endif
 		if (image == NULL) {
 			if (part_of_name != "") {
@@ -1221,9 +1160,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		if(part_of_name.substr(0,6) == "[crack")
 		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generateImage(): baseimg==NULL "
+			if (baseimg == NULL) {
+				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1263,15 +1201,13 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
-			infostream<<"combined w="<<w0<<" h="<<h0<<std::endl;
+			//infostream<<"combined w="<<w0<<" h="<<h0<<std::endl;
 			core::dimension2d<u32> dim(w0,h0);
-			if(baseimg == NULL)
-			{
+			if (baseimg == NULL) {
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
-			while(sf.atend() == false)
-			{
+			while (sf.atend() == false) {
 				u32 x = stoi(sf.next(","));
 				u32 y = stoi(sf.next("="));
 				std::string filename = sf.next(":");
@@ -1279,8 +1215,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
 				video::IImage *img = m_sourcecache.getOrLoad(filename, m_device);
-				if(img)
-				{
+				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
 					infostream<<"Size "<<dim.Width
 							<<"x"<<dim.Height<<std::endl;
@@ -1295,10 +1230,9 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 							NULL);*/
 					blit_with_alpha(img2, baseimg, v2s32(0,0), pos_base, dim);
 					img2->drop();
-				}
-				else
-				{
-					infostream<<"img==NULL"<<std::endl;
+				} else {
+					errorstream << "generateImagePart(): Failed to load image \""
+						<< filename << "\" for [combine" << std::endl;
 				}
 			}
 		}
@@ -1307,9 +1241,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		else if(part_of_name.substr(0,9) == "[brighten")
 		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generateImage(): baseimg==NULL "
+			if (baseimg == NULL) {
+				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1326,9 +1259,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		else if(part_of_name.substr(0,8) == "[noalpha")
 		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generateImage(): baseimg==NULL "
+			if (baseimg == NULL){
+				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1351,9 +1283,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		else if(part_of_name.substr(0,11) == "[makealpha:")
 		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generateImage(): baseimg==NULL "
+			if (baseimg == NULL) {
+				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1408,9 +1339,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		else if(part_of_name.substr(0,10) == "[transform")
 		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generateImage(): baseimg==NULL "
+			if (baseimg == NULL) {
+				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1436,9 +1366,8 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		*/
 		else if(part_of_name.substr(0,14) == "[inventorycube")
 		{
-			if(baseimg != NULL)
-			{
-				errorstream<<"generateImage(): baseimg!=NULL "
+			if (baseimg != NULL){
+				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1452,13 +1381,18 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			std::string imagename_right = sf.next("{");
 
 			// Generate images for the faces of the cube
-			video::IImage *img_top =
-				generateImageFromScratch(imagename_top);
-			video::IImage *img_left =
-				generateImageFromScratch(imagename_left);
-			video::IImage *img_right =
-				generateImageFromScratch(imagename_right);
-			assert(img_top && img_left && img_right);
+			video::IImage *img_top = generateImage(imagename_top);
+			video::IImage *img_left = generateImage(imagename_left);
+			video::IImage *img_right = generateImage(imagename_right);
+
+			if (img_top == NULL || img_left == NULL || img_right == NULL) {
+				errorstream << "generateImagePart(): Failed to create textures"
+						<< " for inventorycube \"" << part_of_name << "\""
+						<< std::endl;
+				baseimg = generateImage(imagename_top);
+				return true;
+			}
+
 #ifdef __ANDROID__
 			assert(img_top->getDimension().Height == npot2(img_top->getDimension().Height));
 			assert(img_top->getDimension().Width == npot2(img_top->getDimension().Width));
@@ -1469,6 +1403,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			assert(img_right->getDimension().Height == npot2(img_right->getDimension().Height));
 			assert(img_right->getDimension().Width == npot2(img_right->getDimension().Width));
 #endif
+
 			// Create textures from images
 			video::ITexture *texture_top = driver->addTexture(
 					(imagename_top + "__temp__").c_str(), img_top);
@@ -1518,19 +1453,18 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			// Drop mesh
 			cube->drop();
 
-			// Free textures of images
+			// Free textures
 			driver->removeTexture(texture_top);
 			driver->removeTexture(texture_left);
 			driver->removeTexture(texture_right);
 
-			if(rtt == NULL)
-			{
-				baseimg = generateImageFromScratch(imagename_top);
+			if (rtt == NULL) {
+				baseimg = generateImage(imagename_top);
 				return true;
 			}
 
 			// Create image of render target
-			video::IImage *image = driver->createImage(rtt, v2s32(0,0), params.dim);
+			video::IImage *image = driver->createImage(rtt, v2s32(0, 0), params.dim);
 			assert(image);
 
 			// Cleanup texture
@@ -1538,8 +1472,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, params.dim);
 
-			if(image)
-			{
+			if (image) {
 				image->copyTo(baseimg);
 				image->drop();
 			}
@@ -1592,7 +1525,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			u32 frame_index = stoi(sf.next(":"));
 
 			if(baseimg == NULL){
-				errorstream<<"generateImage(): baseimg!=NULL "
+				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1604,7 +1537,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8,
 					frame_size);
 			if(!img){
-				errorstream<<"generateImage(): Could not create image "
+				errorstream<<"generateImagePart(): Could not create image "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1626,7 +1559,7 @@ bool TextureSource::generateImage(std::string part_of_name, video::IImage *& bas
 		}
 		else
 		{
-			errorstream<<"generateImage(): Invalid "
+			errorstream<<"generateImagePart(): Invalid "
 					" modification: \""<<part_of_name<<"\""<<std::endl;
 		}
 	}
