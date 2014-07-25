@@ -195,9 +195,9 @@ void ContentFeatures::reset()
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
 	visual_scale = 1.0;
-	for(u32 i=0; i<6; i++)
+	for(u32 i = 0; i < 6; i++)
 		tiledef[i] = TileDef();
-	for(u16 j=0; j<CF_SPECIAL_COUNT; j++)
+	for(u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		tiledef_special[j] = TileDef();
 	alpha = 255;
 	post_effect_color = video::SColor(0, 0, 0, 0);
@@ -235,12 +235,12 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 {
-	if(protocol_version < 14){
+	if(protocol_version < 24){
 		serializeOld(os, protocol_version);
 		return;
 	}
 
-	writeU8(os, 6); // version
+	writeU8(os, 7); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
 	for(ItemGroupList::const_iterator
@@ -251,10 +251,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, drawtype);
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
-	for(u32 i=0; i<6; i++)
+	for(u32 i = 0; i < 6; i++)
 		tiledef[i].serialize(os, protocol_version);
 	writeU8(os, CF_SPECIAL_COUNT);
-	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
+	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++){
 		tiledef_special[i].serialize(os, protocol_version);
 	}
 	writeU8(os, alpha);
@@ -291,15 +291,15 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, drowning);
 	writeU8(os, leveled);
 	writeU8(os, liquid_range);
+	writeU8(os, waving);
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
-	writeU8(os, waving);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 6){
+	if(version != 7){
 		deSerializeOld(is, version);
 		return;
 	}
@@ -307,7 +307,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	name = deSerializeString(is);
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i=0; i<groups_size; i++){
+	for(u32 i = 0; i < groups_size; i++){
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
@@ -316,11 +316,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
-	for(u32 i=0; i<6; i++)
+	for(u32 i = 0; i < 6; i++)
 		tiledef[i].deSerialize(is);
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
-	for(u32 i=0; i<CF_SPECIAL_COUNT; i++)
+	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 		tiledef_special[i].deSerialize(is);
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
@@ -356,12 +356,12 @@ void ContentFeatures::deSerialize(std::istream &is)
 	drowning = readU8(is);
 	leveled = readU8(is);
 	liquid_range = readU8(is);
+	waving = readU8(is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
-	waving = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -617,7 +617,7 @@ public:
 
 			// Figure out the actual tiles to use
 			TileDef tiledef[6];
-			for(u32 j=0; j<6; j++)
+			for(u32 j = 0; j < 6; j++)
 			{
 				tiledef[j] = f->tiledef[j];
 				if(tiledef[j].name == "")
@@ -712,7 +712,7 @@ public:
 				tile_shader[0] = shdsrc->getShader("water_surface_shader",material_type, f->drawtype);
 
 			// Tiles (fill in f->tiles[])
-			for(u16 j=0; j<6; j++){
+			for(u16 j = 0; j < 6; j++){
 				// Shader
 				f->tiles[j].shader_id = tile_shader[j];
 				// Texture
@@ -821,7 +821,7 @@ public:
 		writeU8(os, 1); // version
 		u16 count = 0;
 		std::ostringstream os2(std::ios::binary);
-		for(u32 i=0; i<m_content_features.size(); i++)
+		for(u32 i = 0; i < m_content_features.size(); i++)
 		{
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR
 					|| i == CONTENT_UNKNOWN)
@@ -851,7 +851,7 @@ public:
 		u16 count = readU16(is);
 		std::istringstream is2(deSerializeLongString(is), std::ios::binary);
 		ContentFeatures f;
-		for(u16 n=0; n<count; n++){
+		for(u16 n = 0; n < count; n++){
 			u16 i = readU16(is2);
 
 			// Read it from the string wrapper
@@ -936,10 +936,11 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 		writeU8(os, drawtype);
 		writeF1000(os, visual_scale);
 		writeU8(os, 6);
-		for(u32 i=0; i<6; i++)
+		for(u32 i = 0; i < 6; i++)
 			tiledef[i].serialize(os, protocol_version);
-		writeU8(os, CF_SPECIAL_COUNT);
-		for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
+		//CF_SPECIAL_COUNT = 2 before cf ver. 7 and protocol ver. 24
+		writeU8(os, 2);
+		for(u32 i = 0; i < 2; i++){
 			tiledef_special[i].serialize(os, protocol_version);
 		}
 		writeU8(os, alpha);
@@ -972,10 +973,61 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 		serializeSimpleSoundSpec(sound_dig, os);
 		serializeSimpleSoundSpec(sound_dug, os);
 	}
-	else
-	{
+	else if (protocol_version > 13 && protocol_version < 24) {
+		writeU8(os, 6); // version
+		os<<serializeString(name);
+		writeU16(os, groups.size());
+		for(ItemGroupList::const_iterator
+			i = groups.begin(); i != groups.end(); i++){
+				os<<serializeString(i->first);
+				writeS16(os, i->second);
+		}
+		writeU8(os, drawtype);
+		writeF1000(os, visual_scale);
+		writeU8(os, 6);
+		for(u32 i = 0; i < 6; i++)
+			tiledef[i].serialize(os, protocol_version);
+		//CF_SPECIAL_COUNT = 2 before cf ver. 7 and protocol ver. 24
+		writeU8(os, 2);
+		for(u32 i = 0; i < 2; i++){
+			tiledef_special[i].serialize(os, protocol_version);
+		}
+		writeU8(os, alpha);
+		writeU8(os, post_effect_color.getAlpha());
+		writeU8(os, post_effect_color.getRed());
+		writeU8(os, post_effect_color.getGreen());
+		writeU8(os, post_effect_color.getBlue());
+		writeU8(os, param_type);
+		writeU8(os, param_type_2);
+		writeU8(os, is_ground_content);
+		writeU8(os, light_propagates);
+		writeU8(os, sunlight_propagates);
+		writeU8(os, walkable);
+		writeU8(os, pointable);
+		writeU8(os, diggable);
+		writeU8(os, climbable);
+		writeU8(os, buildable_to);
+		os<<serializeString(""); // legacy: used to be metadata_name
+		writeU8(os, liquid_type);
+		os<<serializeString(liquid_alternative_flowing);
+		os<<serializeString(liquid_alternative_source);
+		writeU8(os, liquid_viscosity);
+		writeU8(os, liquid_renewable);
+		writeU8(os, light_source);
+		writeU32(os, damage_per_second);
+		node_box.serialize(os, protocol_version);
+		selection_box.serialize(os, protocol_version);
+		writeU8(os, legacy_facedir_simple);
+		writeU8(os, legacy_wallmounted);
+		serializeSimpleSoundSpec(sound_footstep, os);
+		serializeSimpleSoundSpec(sound_dig, os);
+		serializeSimpleSoundSpec(sound_dug, os);
+		writeU8(os, rightclickable);
+		writeU8(os, drowning);
+		writeU8(os, leveled);
+		writeU8(os, liquid_range);
+	} else 
 		throw SerializationError("ContentFeatures::serialize(): Unsupported version requested");
-	}
 }
 
 void ContentFeatures::deSerializeOld(std::istream &is, int version)
@@ -1029,9 +1081,60 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		deSerializeSimpleSoundSpec(sound_footstep, is);
 		deSerializeSimpleSoundSpec(sound_dig, is);
 		deSerializeSimpleSoundSpec(sound_dug, is);
-	}
-	else
-	{
+	} else if (version == 6) {
+		name = deSerializeString(is);
+		groups.clear();
+		u32 groups_size = readU16(is);
+		for(u32 i=0; i<groups_size; i++){
+			std::string name = deSerializeString(is);
+			int	value = readS16(is);
+			groups[name] = value;
+		}
+		drawtype = (enum NodeDrawType)readU8(is);
+		visual_scale = readF1000(is);
+		if(readU8(is) != 6)
+			throw SerializationError("unsupported tile count");
+		for(u32 i=0; i<6; i++)
+			tiledef[i].deSerialize(is);
+		// CF_SPECIAL_COUNT in version 6 = 2
+		if(readU8(is) != 2)
+			throw SerializationError("unsupported CF_SPECIAL_COUNT");
+		for(u32 i=0; i<2; i++)
+			tiledef_special[i].deSerialize(is);
+		alpha = readU8(is);
+		post_effect_color.setAlpha(readU8(is));
+		post_effect_color.setRed(readU8(is));
+		post_effect_color.setGreen(readU8(is));
+		post_effect_color.setBlue(readU8(is));
+		param_type = (enum ContentParamType)readU8(is);
+		param_type_2 = (enum ContentParamType2)readU8(is);
+		is_ground_content = readU8(is);
+		light_propagates = readU8(is);
+		sunlight_propagates = readU8(is);
+		walkable = readU8(is);
+		pointable = readU8(is);
+		diggable = readU8(is);
+		climbable = readU8(is);
+		buildable_to = readU8(is);
+		deSerializeString(is); // legacy: used to be metadata_name
+		liquid_type = (enum LiquidType)readU8(is);
+		liquid_alternative_flowing = deSerializeString(is);
+		liquid_alternative_source = deSerializeString(is);
+		liquid_viscosity = readU8(is);
+		liquid_renewable = readU8(is);
+		light_source = readU8(is);
+		damage_per_second = readU32(is);
+		node_box.deSerialize(is);
+		selection_box.deSerialize(is);
+		legacy_facedir_simple = readU8(is);
+		legacy_wallmounted = readU8(is);
+		deSerializeSimpleSoundSpec(sound_footstep, is);
+		deSerializeSimpleSoundSpec(sound_dig, is);
+		deSerializeSimpleSoundSpec(sound_dug, is);
+		rightclickable = readU8(is);
+		drowning = readU8(is);
+		leveled = readU8(is);
+		liquid_range = readU8(is);
+	} else
 		throw SerializationError("unsupported ContentFeatures version");
-	}
 }
