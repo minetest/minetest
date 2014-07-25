@@ -933,7 +933,9 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 			break;
 		case paren_open:
 			if (paren_bal == 0) {
-				errorstream << "generateImage(): unbalanced parentheses(extranous '(') while generating texture \"" << name << "\"" << std::endl;
+				errorstream << "generateImage(): unbalanced parentheses"
+						<< "(extranous '(') while generating texture \""
+						<< name << "\"" << std::endl;
 				return NULL;
 			}
 			paren_bal--;
@@ -946,7 +948,9 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 		}
 	}
 	if (paren_bal > 0) {
-		errorstream << "generateImage(): unbalanced parentheses(missing matching '(') while generating texture \"" << name << "\"" << std::endl;
+		errorstream << "generateImage(): unbalanced parentheses"
+				<< "(missing matching '(') while generating texture \""
+				<< name << "\"" << std::endl;
 		return NULL;
 	}
 
@@ -972,9 +976,14 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 	std::string last_part_of_name = name.substr(last_separator_pos + 1);
 
-	// If this name is enclosed in parentheses, generate it and blit it onto the base image
-	if (last_part_of_name[0] == paren_open && last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
-		std::string name2 = last_part_of_name.substr(1, last_part_of_name.size() - 2);
+	/* 
+		If this name is enclosed in parentheses, generate it
+		and blit it onto the base image
+	*/
+	if (last_part_of_name[0] == paren_open
+			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
+		std::string name2 = last_part_of_name.substr(1,
+				last_part_of_name.size() - 2);
 		video::IImage *tmp = generateImage(name2);
 		if (!tmp) {
 			errorstream << "generateImage(): "
@@ -982,11 +991,13 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 				<< std::endl;
 			return NULL;
 		}
+		core::dimension2d<u32> dim = tmp->getDimension();
 		if (!baseimg)
-			baseimg = driver->createImage(video::ECF_A8R8G8B8, tmp->getDimension());
-		blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), tmp->getDimension());
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+		blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
 		tmp->drop();
-	} else if (!generateImagePart(last_part_of_name, baseimg)) { // Generate image according to part of name
+	} else if (!generateImagePart(last_part_of_name, baseimg)) {
+		// Generate image according to part of name
 		errorstream << "generateImage(): "
 				"Failed to generate \"" << last_part_of_name << "\""
 				<< std::endl;
@@ -1052,7 +1063,8 @@ video::IImage * Align2Npot2(video::IImage * image,
 
 #endif
 
-bool TextureSource::generateImagePart(std::string part_of_name, video::IImage *& baseimg)
+bool TextureSource::generateImagePart(std::string part_of_name,
+		video::IImage *& baseimg)
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver);
