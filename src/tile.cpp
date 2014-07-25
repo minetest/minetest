@@ -537,6 +537,10 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
+// Apply a mask to an image
+static void apply_mask(video::IImage *mask, video::IImage *dst,
+		v2s32 mask_pos, v2s32 dst_pos, v2u32 size);
+
 // Draw or overlay a crack
 static void draw_crack(video::IImage *crack, video::IImage *dst,
 		bool use_overlay, s32 frame_count, s32 progression,
@@ -1557,6 +1561,31 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			baseimg->drop();
 			baseimg = img;
 		}
+		/*
+			[mask:filename
+			Applies a mask to an image
+		*/
+		else if(part_of_name.substr(0,6) == "[mask:")
+		{
+			if (baseimg == NULL) {
+				errorstream << "generateImage(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string filename = sf.next(":");
+
+			video::IImage *img = m_sourcecache.getOrLoad(filename, m_device);
+			if (img) {
+				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
+						img->getDimension());
+			} else {
+				errorstream << "generateImage(): Failed to load \""
+						<< filename << "\".";
+			}
+		}
 		else
 		{
 			errorstream<<"generateImagePart(): Invalid "
@@ -1610,6 +1639,26 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		if(dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
 		{
 			dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+			dst->setPixel(dst_x, dst_y, dst_c);
+		}
+	}
+}
+
+/*
+	Apply mask to destination
+*/
+static void apply_mask(video::IImage *mask, video::IImage *dst,
+		v2s32 mask_pos, v2s32 dst_pos, v2u32 size)
+{
+	for(u32 y0 = 0; y0 < size.Y; y0++) {
+		for(u32 x0 = 0; x0 < size.X; x0++) {
+			s32 mask_x = x0 + mask_pos.X;
+			s32 mask_y = y0 + mask_pos.Y;
+			s32 dst_x = x0 + dst_pos.X;
+			s32 dst_y = y0 + dst_pos.Y;
+			video::SColor mask_c = mask->getPixel(mask_x, mask_y);
+			video::SColor dst_c = dst->getPixel(dst_x, dst_y);
+			dst_c.color &= mask_c.color;
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}

@@ -258,6 +258,10 @@ Advanced texture modifiers:
     Crops the texture to a frame of a vertical animation.
     Example: default_torch_animated.png^[verticalframe:16:8
 
+  [mask:<file>
+    Apply a mask to the base image.
+    The mask is applied using binary AND.
+
 Sounds
 -------
 Only OGG Vorbis files are supported.
