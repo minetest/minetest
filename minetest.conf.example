@@ -191,6 +191,8 @@
 #water_wave_height = 1.0
 #water_wave_length = 20.0
 #water_wave_speed = 5.0
+# Set to true enables water surface shader. Requires shaders enabled.
+#enable_water_surface_shader = false
 # Set to true enables waving leaves. Requires shaders enabled.
 #enable_waving_leaves = false
 # Set to true enables waving plants. Requires shaders enabled.
