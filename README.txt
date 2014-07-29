@@ -167,6 +167,7 @@ EGL_egl_LIBRARY                 - Only if building with GLES; path to libEGL.a/l
 FREETYPE_INCLUDE_DIR_freetype2  - Only if building with Freetype2; directory that contains an freetype directory with files such as ftimage.h in it
 FREETYPE_INCLUDE_DIR_ft2build   - Only if building with Freetype2; directory that contains ft2build.h
 FREETYPE_LIBRARY                - Only if building with Freetype2; path to libfreetype.a/libfreetype.so/freetype.lib
+FREETYPE_DLL                    - Only if building with Freetype2 on Windows; path to libfreetype.dll
 GETTEXT_DLL                     - Only when building with Gettext on Windows; path to libintl3.dll
 GETTEXT_ICONV_DLL               - Only when building with Gettext on Windows; path to libiconv2.dll
 GETTEXT_INCLUDE_DIR             - Only when building with Gettext; directory that contains iconv.h
@@ -176,7 +177,8 @@ IRRLICHT_DLL                    - path to Irrlicht.dll
 IRRLICHT_INCLUDE_DIR            - directory that contains IrrCompileConfig.h
 IRRLICHT_LIBRARY                - path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
-LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll
+LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
+LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
 REDIS_INCLUDE_DIR               - Only when building with redis support; directory that contains hiredis.h
 REDIS_LIBRARY                   - Only when building with redis support; path to libhiredis.a/libhiredis.so
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
@@ -198,7 +200,8 @@ VORBIS_DLL                      - Only if building with sound on Windows; path t
 VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
 VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
 XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
-ZLIB_DLL                        - Only on Windows; path to zlibwapi.dll
+ZLIB_DLL                        - Only on Windows; path to zlib1.dll
+ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
 ZLIB_INCLUDE_DIR                - directory where zlib.h is located
 ZLIB_LIBRARY                    - path to libz.a/libz.so/zlibwapi.lib
 
