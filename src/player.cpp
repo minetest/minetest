@@ -28,8 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "filesys.h"
 #include "log.h"
+#include "porting.h"  // strlcpy
 
-Player::Player(IGameDef *gamedef):
+
+Player::Player(IGameDef *gamedef, const char *name):
 	touching_ground(false),
 	in_liquid(false),
 	in_liquid_stable(false),
@@ -52,20 +54,16 @@ Player::Player(IGameDef *gamedef):
 	m_speed(0,0,0),
 	m_position(0,0,0),
 	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.75,BS*0.30),
-	m_last_pitch(0),
-	m_last_yaw(0),
-	m_last_pos(0,0,0),
-	m_last_hp(PLAYER_MAX_HP),
-	m_last_inventory(gamedef->idef())
+	m_dirty(false)
 {
-	updateName("<not set>");
+	strlcpy(m_name, name, PLAYERNAME_SIZE);
+
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	InventoryList *craft = inventory.addList("craft", 9);
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
-	m_last_inventory = inventory;
 
 	// Can be redefined via Lua
 	inventory_formspec = "size[8,7.5]"
@@ -207,7 +205,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 
 	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
-	updateName(name.c_str());
+	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
@@ -238,8 +236,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		}
 	}
 
-	// Set m_last_*
-	checkModified();
+	m_dirty = false;
 }
 
 u32 Player::addHud(HudElement *toadd)
@@ -290,7 +287,7 @@ void RemotePlayer::save(std::string savedir)
 	 */
 
 	// A player to deserialize files into to check their names
-	RemotePlayer testplayer(m_gamedef);
+	RemotePlayer testplayer(m_gamedef, "");
 
 	savedir += DIR_DELIM;
 	std::string path = savedir + m_name;
@@ -302,6 +299,7 @@ void RemotePlayer::save(std::string savedir)
 			if (!fs::safeWriteToFile(path, ss.str())) {
 				infostream << "Failed to write " << path << std::endl;
 			}
+			m_dirty = false;
 			return;
 		}
 		// Open file and deserialize
@@ -319,6 +317,7 @@ void RemotePlayer::save(std::string savedir)
 			if (!fs::safeWriteToFile(path, ss.str())) {
 				infostream << "Failed to write " << path << std::endl;
 			}
+			m_dirty = false;
 			return;
 		}
 		path = savedir + m_name + itos(i);

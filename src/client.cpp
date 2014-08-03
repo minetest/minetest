@@ -270,9 +270,7 @@ Client::Client(
 		Add local player
 	*/
 	{
-		Player *player = new LocalPlayer(this);
-
-		player->updateName(playername);
+		Player *player = new LocalPlayer(this, playername);
 
 		m_env.addPlayer(player);
 	}
