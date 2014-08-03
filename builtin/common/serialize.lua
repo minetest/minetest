@@ -1,223 +1,209 @@
--- Minetest: builtin/serialize.lua
-
--- https://github.com/fab13n/metalua/blob/no-dll/src/lib/serialize.lua
--- Copyright (c) 2006-2997 Fabien Fleutot <metalua@gmail.com>
+--- Lua module to serialize values as Lua code.
+-- From: https://github.com/fab13n/metalua/blob/no-dll/src/lib/serialize.lua
 -- License: MIT
---------------------------------------------------------------------------------
--- Serialize an object into a source code string. This string, when passed as
--- an argument to deserialize(), returns an object structurally identical
--- to the original one. The following are currently supported:
--- * strings, numbers, booleans, nil
--- * tables thereof. Tables can have shared part, but can't be recursive yet.
--- Caveat: metatables and environments aren't saved.
+-- @copyright 2006-2997 Fabien Fleutot <metalua@gmail.com>
+-- @author Fabien Fleutot <metalua@gmail.com>
+-- @author ShadowNinja <shadowninja@minetest.net>
 --------------------------------------------------------------------------------
 
-local no_identity = { number=1, boolean=1, string=1, ['nil']=1 }
-
+--- Serialize an object into a source code string. This string, when passed as
+-- an argument to deserialize(), returns an object structurally identical to
+-- the original one.  The following are currently supported:
+--   * Booleans, numbers, strings, and nil.
+--   * Functions; uses interpreter-dependent (and sometimes platform-dependent) bytecode!
+--   * Tables; they can cantain multiple references and can be recursive, but metatables aren't saved.
+-- This works in two phases:
+--   1. Recursively find and record multiple references and recursion.
+--   2. Recursively dump the value into a string.
+-- @param x Value to serialize (nil is allowed).
+-- @return load()able string containing the value.
 function core.serialize(x)
+	local local_index  = 1  -- Top index of the "_" local table in the dump
+	-- table->nil/1/2 set of tables seen.
+	-- nil = not seen, 1 = seen once, 2 = seen multiple times.
+	local seen = {}
 
-	local gensym_max   =  0  -- index of the gensym() symbol generator
-	local seen_once    = { } -- element->true set of elements seen exactly once in the table
-	local multiple     = { } -- element->varname set of elements seen more than once
-	local nested       = { } -- transient, set of elements currently being traversed
-	local nest_points  = { }
-	local nest_patches = { }
-	
-	local function gensym()
-		gensym_max = gensym_max + 1 ;  return gensym_max
-	end
-
-	-----------------------------------------------------------------------------
-	-- nest_points are places where a table appears within itself, directly or not.
-	-- for instance, all of these chunks create nest points in table x:
-	-- "x = { }; x[x] = 1", "x = { }; x[1] = x", "x = { }; x[1] = { y = { x } }".
-	-- To handle those, two tables are created by mark_nest_point:
-	-- * nest_points [parent] associates all keys and values in table parent which
-	--   create a nest_point with boolean `true'
-	-- * nest_patches contain a list of { parent, key, value } tuples creating
-	--   a nest point. They're all dumped after all the other table operations
-	--   have been performed.
+	-- nest_points are places where a table appears within itself, directly
+	-- or not.  For instance, all of these chunks create nest points in
+	-- table x: "x = {}; x[x] = 1", "x = {}; x[1] = x",
+	-- "x = {}; x[1] = {y = {x}}".
+	-- To handle those, two tables are used by mark_nest_point:
+	-- * nested - Transient set of tables being currently traversed.
+	--   Used for detecting nested tables.
+	-- * nest_points - parent->{key=value, ...} table cantaining the nested
+	--   keys and values in the parent.  They're all dumped after all the
+	--   other table operations have been performed.
 	--
-	-- mark_nest_point (p, k, v) fills tables nest_points and nest_patches with
-	-- informations required to remember that key/value (k,v) create a nest point
-	-- in table parent. It also marks `parent' as occuring multiple times, since
-	-- several references to it will be required in order to patch the nest
-	-- points.
-	-----------------------------------------------------------------------------
-	local function mark_nest_point (parent, k, v)
+	-- mark_nest_point(p, k, v) fills nest_points with information required
+	-- to remember that key/value (k, v) creates a nest point  in table
+	-- parent. It also marks "parent" and the nested item(s) as occuring
+	-- multiple times, since several references to it will be required in
+	-- order to patch the nest points.
+	local nest_points  = {}
+	local nested = {}
+	local function mark_nest_point(parent, k, v)
 		local nk, nv = nested[k], nested[v]
-		assert (not nk or seen_once[k] or multiple[k])
-		assert (not nv or seen_once[v] or multiple[v])
-		local mode = (nk and nv and "kv") or (nk and "k") or ("v")
-		local parent_np = nest_points [parent]
-		local pair = { k, v }
-		if not parent_np then parent_np = { }; nest_points [parent] = parent_np end
-		parent_np [k], parent_np [v] = nk, nv
-		table.insert (nest_patches, { parent, k, v })
-		seen_once [parent], multiple [parent]  = nil, true
+		local np = nest_points[parent]
+		if not np then
+			np = {}
+			nest_points[parent] = np
+		end
+		np[k] = v
+		seen[parent] = 2
+		if nk then seen[k] = 2 end
+		if nv then seen[v] = 2 end
 	end
 
-	-----------------------------------------------------------------------------
-	-- First pass, list the tables and functions which appear more than once in x
-	-----------------------------------------------------------------------------
-	local function mark_multiple_occurences (x)
-		if no_identity [type(x)] then return end
-		if     seen_once [x]     then seen_once [x], multiple [x] = nil, true
-		elseif multiple  [x]     then -- pass
-		else   seen_once [x] = true end
-		
-		if type (x) == 'table' then
-			nested [x] = true
-			for k, v in pairs (x) do
-				if nested[k] or nested[v] then mark_nest_point (x, k, v) else
-					mark_multiple_occurences (k)
-					mark_multiple_occurences (v)
+	-- First phase, list the tables and functions which appear more than
+	-- once in x.
+	local function mark_multiple_occurences(x)
+		local tp = type(x)
+		if tp ~= "table" and tp ~= "function" then
+			-- No identity (comparison is done by value, not by instance)
+			return
+		end
+		if seen[x] == 1 then
+			seen[x] = 2
+		elseif seen[x] ~= 2 then
+			seen[x] = 1
+		end
+
+		if tp == "table" then
+			nested[x] = true
+			for k, v in pairs(x) do
+				if nested[k] or nested[v] then
+					mark_nest_point(x, k, v)
+				else
+					mark_multiple_occurences(k)
+					mark_multiple_occurences(v)
 				end
 			end
-			nested [x] = nil
+			nested[x] = nil
 		end
 	end
 
-	local dumped    = { } -- multiply occuring values already dumped in localdefs
-	local localdefs = { } -- already dumped local definitions as source code lines
+	local dumped     = {}  -- object->varname set
+	local local_defs = {}  -- Dumped local definitions as source code lines
 
-	-- mutually recursive functions:
+	-- Mutually recursive local functions:
 	local dump_val, dump_or_ref_val
 
-	--------------------------------------------------------------------
-	-- if x occurs multiple times, dump the local var rather than the
-	-- value. If it's the first time it's dumped, also dump the content
-	-- in localdefs.
-	--------------------------------------------------------------------
-	function dump_or_ref_val (x)
-		if nested[x] then return 'false' end -- placeholder for recursive reference
-		if not multiple[x] then return dump_val (x) end
-		local var = dumped [x]
-		if var then return "_[" .. var .. "]" end -- already referenced
-		local val = dump_val(x) -- first occurence, create and register reference
-		var = gensym()
-		table.insert(localdefs, "_["..var.."]="..val)
-		dumped [x] = var
-		return "_[" .. var .. "]"
+	-- If x occurs multiple times, dump the local variable rather than
+	-- the value. If it's the first time it's dumped, also dump the
+	-- content in local_defs.
+	function dump_or_ref_val(x)
+		if seen[x] ~= 2 then
+			return dump_val(x)
+		end
+		local var = dumped[x]
+		if var then  -- Already referenced
+			return var
+		end
+		-- First occurence, create and register reference
+		local val = dump_val(x)
+		local i = local_index
+		local_index = local_index + 1
+		var = "_["..i.."]"
+		table.insert(local_defs, var.." = "..val)
+		dumped[x] = var
+		return var
 	end
 
-	-----------------------------------------------------------------------------
-	-- Second pass, dump the object; subparts occuring multiple times are dumped
-	-- in local variables which can be referenced multiple times;
-	-- care is taken to dump locla vars in asensible order.
-	-----------------------------------------------------------------------------
+	-- Second phase.  Dump the object; subparts occuring multiple times
+	-- are dumped in local variables which can be referenced multiple
+	-- times.  Care is taken to dump local vars in a sensible order.
 	function dump_val(x)
-		local  t = type(x)
-		if     x==nil        then return 'nil'
-		elseif t=="number"   then return tostring(x)
-		elseif t=="string"   then return string.format("%q", x)
-		elseif t=="boolean"  then return x and "true" or "false"
-		elseif t=="function" then
+		local  tp = type(x)
+		if     x  == nil        then return "nil"
+		elseif tp == "number"   then return tostring(x)
+		elseif tp == "string"   then return string.format("%q", x)
+		elseif tp == "boolean"  then return x and "true" or "false"
+		elseif tp == "function" then
 			return string.format("loadstring(%q)", string.dump(x))
-		elseif t=="table" then
-			local acc        = { }
-			local idx_dumped = { }
-			local np         = nest_points [x]
+		elseif tp == "table" then
+			local vals = {}
+			local idx_dumped = {}
+			local np = nest_points[x]
 			for i, v in ipairs(x) do
-				if np and np[v] then
-					table.insert (acc, 'false') -- placeholder
-				else
-					table.insert (acc, dump_or_ref_val(v))
+				if not np or not np[i] then
+					table.insert(vals, dump_or_ref_val(v))
 				end
 				idx_dumped[i] = true
 			end
 			for k, v in pairs(x) do
-				if np and (np[k] or np[v]) then
-					--check_multiple(k); check_multiple(v) -- force dumps in localdefs
-				elseif not idx_dumped[k] then
-					table.insert (acc, "[" .. dump_or_ref_val(k) .. "] = " .. dump_or_ref_val(v))
+				if (not np or not np[k]) and
+						not idx_dumped[k] then
+					table.insert(vals,
+						"["..dump_or_ref_val(k).."] = "
+						..dump_or_ref_val(v))
 				end
 			end
-			return "{ "..table.concat(acc,", ").." }"
+			return "{"..table.concat(vals, ", ").."}"
 		else
-			error ("Can't serialize data of type "..t)
-		end
-	end
-	
-	local function dump_nest_patches()
-		for _, entry in ipairs(nest_patches) do
-			local p, k, v = unpack (entry)
-			assert (multiple[p])
-			local set = dump_or_ref_val (p) .. "[" .. dump_or_ref_val (k) .. "] = " .. 
-				dump_or_ref_val (v) .. " -- rec "
-			table.insert (localdefs, set)
+			error("Can't serialize data of type "..t)
 		end
 	end
 
-	mark_multiple_occurences (x)
-	local toplevel = dump_or_ref_val (x)
-	dump_nest_patches()
+	local function dump_nest_points()
+		for parent, vals in pairs(nest_points) do
+			for k, v in pairs(vals) do
+				table.insert(local_defs, dump_or_ref_val(parent)
+					.."["..dump_or_ref_val(k).."] = "
+					..dump_or_ref_val(v))
+			end
+		end
+	end
 
-	if next (localdefs) then
-		return "local _={ }\n" ..
-			table.concat (localdefs, "\n") .. 
-			"\nreturn " .. toplevel
+	mark_multiple_occurences(x)
+	local top_level = dump_or_ref_val(x)
+	dump_nest_points()
+
+	if next(local_defs) then
+		return "local _ = {}\n"
+			..table.concat(local_defs, "\n")
+			.."\nreturn "..top_level
 	else
-		return "return " .. toplevel
+		return "return "..top_level
 	end
 end
 
--- Deserialization.
--- http://stackoverflow.com/questions/5958818/loading-serialized-data-into-a-table
---
+-- Deserialization
 
 local env = {
 	loadstring = loadstring,
 }
 
-local function noop() end
-
 local safe_env = {
-	loadstring = noop,
+	loadstring = function() end,
 }
 
-local function stringtotable(sdata, safe)
-	if sdata:byte(1) == 27 then return nil, "binary bytecode prohibited" end
-	local f, message = assert(loadstring(sdata))
-	if not f then return nil, message end
-	if safe then
-		setfenv(f, safe_env)
+function core.deserialize(str, safe)
+	if str:byte(1) == 0x1B then
+		return nil, "Bytecode prohibited"
+	end
+	local f, err = loadstring(str)
+	if not f then return nil, err end
+	setfenv(f, safe and safe_env or env)
+
+	local good, data = pcall(f)
+	if good then
+		return data
 	else
-		setfenv(f, env)
+		return nil, data
 	end
-	return f()
 end
 
-function core.deserialize(sdata, safe)
-	local table = {}
-	local okay, results = pcall(stringtotable, sdata, safe)
-	if okay then
-		return results
-	end
-	core.log('error', 'core.deserialize(): '.. results)
-	return nil
-end
 
--- Run some unit tests
-local function unit_test()
-	function unitTest(name, success)
-		if not success then
-			error(name .. ': failed')
-		end
-	end
+-- Unit tests
+local test_in = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
+local test_out = core.deserialize(core.serialize(test_in))
 
-	unittest_input = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
-	unittest_output = core.deserialize(core.serialize(unittest_input))
+assert(test_in.cat.sound == test_out.cat.sound)
+assert(test_in.cat.speed == test_out.cat.speed)
+assert(test_in.dog.sound == test_out.dog.sound)
 
-	unitTest("test 1a", unittest_input.cat.sound == unittest_output.cat.sound)
-	unitTest("test 1b", unittest_input.cat.speed == unittest_output.cat.speed)
-	unitTest("test 1c", unittest_input.dog.sound == unittest_output.dog.sound)
-
-	unittest_input = {escapechars="\n\r\t\v\\\"\'", noneuropean="θשׁ٩∂"}
-	unittest_output = core.deserialize(core.serialize(unittest_input))
-	unitTest("test 3a", unittest_input.escapechars == unittest_output.escapechars)
-	unitTest("test 3b", unittest_input.noneuropean == unittest_output.noneuropean)
-end
-unit_test() -- Run it
-unit_test = nil -- Hide it
+test_in = {escape_chars="\n\r\t\v\\\"\'", non_european="θשׁ٩∂"}
+test_out = core.deserialize(core.serialize(test_in))
+assert(test_in.escape_chars == test_out.escape_chars)
+assert(test_in.non_european == test_out.non_european)
 
