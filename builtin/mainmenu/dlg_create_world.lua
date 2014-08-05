@@ -54,14 +54,13 @@ local function create_world_formspec(dialogdata)
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.23,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
-		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
-		";" .. gameidx .. ";true]" ..
+		"dropdown[4.23,3;6.3;games;" .. gamemgr.gamelist() .. ";" .. gameidx .. "]" ..
 
-		"button[5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[7.5,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		"button[4.25,5.5;2.8,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[7.45,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"  
 
 	return retval
 
