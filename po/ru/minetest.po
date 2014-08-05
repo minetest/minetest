@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
 "PO-Revision-Date: 2013-12-29 16:58+0200\n"
-"Last-Translator: Сергей Голубев <seria-2@mail.ru>\n"
+"Last-Translator: Антон Бочкарёв <AntonBoch12.44@gmail.com>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
-msgstr "Название"
+msgstr "Название Игры"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
 msgid "Create"
@@ -34,7 +34,7 @@ msgstr "Отменить"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
+msgstr "Gamemgr: Не могу добавить модификацию \"$1\" в игру \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
@@ -46,27 +46,27 @@ msgstr "Игры"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr "Моды:"
+msgstr "Модификации:"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
-msgstr "Редактировать"
+msgstr "Редактировать игру"
 
 #: builtin/gamemgr.lua:238
 msgid "new game"
-msgstr "Создать игру"
+msgstr "Новая игру"
 
 #: builtin/gamemgr.lua:248
 msgid "EDIT GAME"
-msgstr "РЕДАКТИРОВАНИЕ"
+msgstr "РЕДАКТИРОВАНИЕ ИГРЫ"
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
-msgstr "Удалить мод"
+msgstr "Удалить модификацию"
 
 #: builtin/gamemgr.lua:272
 msgid "<<-- Add mod"
-msgstr "<<-- Добавить мод"
+msgstr "<<-- Добавить модификацию"
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
@@ -102,7 +102,7 @@ msgstr "Нет"
 
 #: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
-msgstr "Мир под названием \"$1\" уже существует"
+msgstr "Мир \"$1\" уже существует"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
@@ -110,7 +110,7 @@ msgstr "Не задано имя мира или не выбрана игра"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Для включения шейдеров необходим драйвер OpenGL."
+msgstr "Для включения шейдеров необходимо использовать OpenGL."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -147,7 +147,7 @@ msgstr "Новый"
 
 #: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
 msgid "Configure"
-msgstr "Настроить"
+msgstr "Конфигурация Игры"
 
 #: builtin/mainmenu.lua:877
 msgid "Start Game"
@@ -171,7 +171,7 @@ msgstr "Включить урон"
 
 #: builtin/mainmenu.lua:884
 msgid "Public"
-msgstr "Публичные"
+msgstr "Публичные сервера"
 
 #: builtin/mainmenu.lua:886
 msgid "Name"
@@ -199,7 +199,7 @@ msgstr "Мягкое освещение"
 
 #: builtin/mainmenu.lua:904
 msgid "3D Clouds"
-msgstr "3D облака"
+msgstr "Объёмные облака"
 
 #: builtin/mainmenu.lua:906
 msgid "Opaque Water"
@@ -207,7 +207,7 @@ msgstr "Непрозрачная вода"
 
 #: builtin/mainmenu.lua:909
 msgid "Mip-Mapping"
-msgstr "Mip-текстурирование"
+msgstr "Mip-Разметка"
 
 #: builtin/mainmenu.lua:911
 msgid "Anisotropic Filtering"
@@ -235,7 +235,7 @@ msgstr "Включить частицы"
 
 #: builtin/mainmenu.lua:924
 msgid "Finite Liquid"
-msgstr "Конечные жидкости"
+msgstr "Зааканчивающиеся жидкости"
 
 #: builtin/mainmenu.lua:927
 msgid "Change keys"
@@ -247,7 +247,7 @@ msgstr "Играть"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
-msgstr "ОДИНОЧНАЯ ИГРА"
+msgstr "ОДИНОЧКА"
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
@@ -259,7 +259,7 @@ msgstr "ПАКЕТЫ ТЕКСТУР"
 
 #: builtin/mainmenu.lua:976
 msgid "No information available"
-msgstr "Описание отсутствует"
+msgstr "Нет Информации"
 
 #: builtin/mainmenu.lua:1005
 msgid "Core Developers"
@@ -267,15 +267,15 @@ msgstr "Основные разработчики"
 
 #: builtin/mainmenu.lua:1020
 msgid "Active Contributors"
-msgstr "Активные контрибьюторы"
+msgstr "Активные Помошники"
 
 #: builtin/mainmenu.lua:1028
 msgid "Previous Contributors"
-msgstr "В отставке"
+msgstr "Бывшие Помошники"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr "Одиночная игра"
+msgstr "Одиночка"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
@@ -295,7 +295,7 @@ msgstr "Пакеты текстур"
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
-msgstr "Моды"
+msgstr "Модификации"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
@@ -303,15 +303,15 @@ msgstr "Благодарности"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr "МОДЫ"
+msgstr "МОДИФИКАЦИИ"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr "Установленные моды:"
+msgstr "Установленные модификации:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr "Добавить мод:"
+msgstr "Добавить модификации:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
@@ -319,15 +319,15 @@ msgstr "Локальная установка"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr "Онлайн хранилище модов"
+msgstr "Репозитарий модификаций"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
-msgstr "Описание к моду отсутствует"
+msgstr "У модификации нет описания"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr "Описание мода:"
+msgstr "Описание модификации:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -335,19 +335,19 @@ msgstr "Переименовать"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr "Удалить выбранный мод-пак"
+msgstr "Удалить выбранный пакет модификаций"
 
 #: builtin/modmgr.lua:312
 msgid "Uninstall selected mod"
-msgstr "Удалить выбранный мод"
+msgstr "Удалить выбранную модификацию"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr "Переименовать модпак:"
+msgstr "Переименовать пакет модификаций:"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
 msgid "Accept"
-msgstr "Принять"
+msgstr "Согласится"
 
 #: builtin/modmgr.lua:423
 msgid "World:"
@@ -359,15 +359,15 @@ msgstr "Скрыть игру"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr "Скрыть содержимое модпака"
+msgstr "Скрыть содержимое пакета модификаций"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
-msgstr "Мод:"
+msgstr "Модификация:"
 
 #: builtin/modmgr.lua:444
 msgid "Depends:"
-msgstr "Зависит от:"
+msgstr "Зависимости:"
 
 #: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
@@ -391,11 +391,11 @@ msgstr "Включить всё"
 
 #: builtin/modmgr.lua:577
 msgid "Select Mod File:"
-msgstr "Выберите файл с модом:"
+msgstr "Выберите файл с модификацией:"
 
 #: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
-msgstr "Установка мода: файл \"$1\""
+msgstr "Установка модификации: Путь к файлу модификации \"$1\""
 
 #: builtin/modmgr.lua:617
 msgid ""
@@ -403,7 +403,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
 "\n"
-"Установка мода: неподдерживаемый тип \"$1\""
+"Установка модификации: неподдерживаемый тип файла \"$1\""
 
 #: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
@@ -412,11 +412,11 @@ msgstr "Ошибка при установке $1 в $2"
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Установка мода: невозможно найти подходящее имя директории для модпака $1"
+"Установка модификации: невозможно найти подходящее имя директории для пакета модификаций $1"
 
 #: builtin/modmgr.lua:661
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Установка мода: невозможно определить название мода для $1"
+msgstr "Установка модификации: невозможно определить название мода для $1"
 
 #: builtin/modmgr.lua:855
 msgid "Modmgr: failed to delete \"$1\""
@@ -424,7 +424,7 @@ msgstr "Modmgr: невозможно удалить \"$1\""
 
 #: builtin/modmgr.lua:859
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: неправильный путь \"$1\""
+msgstr "Modmgr: неверный путь к модификации \"$1\""
 
 #: builtin/modmgr.lua:876
 msgid "Are you sure you want to delete \"$1\"?"
@@ -476,11 +476,11 @@ msgstr "Подключение к серверу..."
 
 #: src/game.cpp:1219
 msgid "Item definitions..."
-msgstr "Описания предметов..."
+msgstr "Описание предметов..."
 
 #: src/game.cpp:1226
 msgid "Node definitions..."
-msgstr "Описания нод..."
+msgstr "Описание нодов..."
 
 #: src/game.cpp:1233
 msgid "Media..."
@@ -509,7 +509,7 @@ msgstr "Возродиться"
 #: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
 msgid "Proceed"
-msgstr "Продолжить"
+msgstr "Готово"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -583,15 +583,15 @@ msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Toggle fly"
-msgstr "Полёт"
+msgstr "Переключить режим полёта"
 
 #: src/guiKeyChangeMenu.cpp:402
 msgid "Toggle fast"
-msgstr "Ускорение"
+msgstr "Переключить режим ускорения"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Toggle noclip"
-msgstr "Включить noclip"
+msgstr "Переключить режим призрака"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Range select"
@@ -599,7 +599,7 @@ msgstr "Зона видимости"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Print stacks"
-msgstr "Печать стеков"
+msgstr "Вывод стеков"
 
 #: src/guiPasswordChange.cpp:106
 msgid "Old Password"
@@ -639,7 +639,7 @@ msgstr "Выход в меню"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr "Выход в ОС"
+msgstr "Выйти из программы"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -655,7 +655,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Управление по умолчанию:\n"
+"Стандартное Управление:\n"
 "- WASD: движение\n"
 "- Пробел: прыжок/вверх\n"
 "- Shift: красться/вниз\n"
@@ -749,7 +749,7 @@ msgstr "Конец"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr "Junja"
+msgstr "Юнзя"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
@@ -973,7 +973,7 @@ msgstr "Главное меню"
 
 #: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Не выбран мир и не введен адрес."
+msgstr "Нет выбраного мира и нет введеного адреса. Нечего делать."
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
@@ -985,7 +985,7 @@ msgstr "Неправильная конфигурация игры."
 
 #: src/main.cpp:1790
 msgid "Connection error (timed out?)"
-msgstr "Ошибка соединения (таймаут?)"
+msgstr "Ошибка соединения (Превышено Время Ожидания?)"
 
 #~ msgid ""
 #~ "Warning: Some mods are not configured yet.\n"
