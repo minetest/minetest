@@ -57,8 +57,8 @@ local function create_world_formspec(dialogdata)
 		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
-		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
-		";" .. gameidx .. ";true]" ..
+		"dropdown[4.2,3;6.3;games;" .. gamemgr.gamelist() ..
+		";" .. gameidx .. "]" ..
 
 		"button[5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
 		"button[7.5,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
