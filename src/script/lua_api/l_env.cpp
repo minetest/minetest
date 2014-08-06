@@ -757,7 +757,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 			tree_def.fruitnode=ndef->getId(fruit);
 			getintfield(L, 2, "fruit_chance",tree_def.fruit_chance);
 		}
-		getintfield(L, 2, "seed", tree_def.seed);
+		tree_def.explicit_seed = getintfield(L, 2, "seed", tree_def.seed);
 	}
 	else
 		return 0;

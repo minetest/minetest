@@ -149,8 +149,17 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 		TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
+	int seed;
+	if (tree_definition.explicit_seed)
+	{
+		seed = tree_definition.seed+14002;
+	}
+	else
+	{
+		seed = p0.X*2 + p0.Y*4 + p0.Z;      // use the tree position to seed PRNG
+	}
+	PseudoRandom ps(seed);
 
-	PseudoRandom ps(tree_definition.seed+14002);
 	// chance of inserting abcd rules
 	double prop_a = 9;
 	double prop_b = 8;
