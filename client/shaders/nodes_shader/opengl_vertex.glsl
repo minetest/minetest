@@ -108,7 +108,7 @@ void main(void)
 
 	// Moonlight is blue
 	b += (day - night) / 13.0;
-	rg -= (day - night) / 13.0;
+	rg -= (day - night) / 23.0;
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()

@@ -32,11 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
-static void applyContrast(video::SColor& color, float factor)
+static void applyFacesShading(video::SColor& color, float factor)
 {
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
-	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
 }
 
 /*
@@ -1142,21 +1141,22 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
-			// Note applyContrast second parameter is precalculated sqrt from original
-			// values for speed improvement
+			// Note applyFacesShading second parameter is precalculated sqrt
+			// value for speed improvement
+			// Skip it for lightsources and top faces.
 			video::SColor &vc = p.vertices[j].Color;
-			if(p.vertices[j].Normal.Y > 0.5) {
-				applyContrast (vc, 1.095445);
-			} else if (p.vertices[j].Normal.Y < -0.5) {
-				applyContrast (vc, 0.547723);
-			} else if (p.vertices[j].Normal.X > 0.5) {
-				applyContrast (vc, 0.707107);
-			} else if (p.vertices[j].Normal.X < -0.5) {
-				applyContrast (vc, 0.707107);
-			} else if (p.vertices[j].Normal.Z > 0.5) {
-				applyContrast (vc, 0.894427);
-			} else if (p.vertices[j].Normal.Z < -0.5) {
-				applyContrast (vc, 0.894427);
+			if (!vc.getBlue()) {
+				if (p.vertices[j].Normal.Y < -0.5) {
+					applyFacesShading (vc, 0.447213);
+				} else if (p.vertices[j].Normal.X > 0.5) {
+					applyFacesShading (vc, 0.670820);
+				} else if (p.vertices[j].Normal.X < -0.5) {
+					applyFacesShading (vc, 0.670820);
+				} else if (p.vertices[j].Normal.Z > 0.5) {
+					applyFacesShading (vc, 0.836660);
+				} else if (p.vertices[j].Normal.Z < -0.5) {
+					applyFacesShading (vc, 0.836660);
+				}
 			}
 			if(!enable_shaders)
 			{
