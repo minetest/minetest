@@ -81,6 +81,8 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 
 	route_y_min = 0;
 	// Allow half a diameter + 7 over stone surface
+	if (of.Y  > (max_stone_y + max_tunnel_diameter / 2 + 7))
+		return;
 	route_y_max = -of.Y + max_stone_y + max_tunnel_diameter / 2 + 7;
 
 	// Limit maximum to area
@@ -248,7 +250,7 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 
 				u32 i = vm->m_area.index(p);
 				content_t c = vm->m_data[i].getContent();
-				if (!ndef->get(c).is_ground_content)
+				if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 					continue;
 
 				if (large_cave) {
