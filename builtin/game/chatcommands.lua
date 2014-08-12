@@ -13,6 +13,19 @@ function core.register_chatcommand(cmd, def)
 	core.chatcommands[cmd] = def
 end
 
+if core.setting_getbool("mod_profiling") then
+	local tracefct = profiling_print_log
+	profiling_print_log = nil
+	core.register_chatcommand("save_mod_profile",
+			{
+				params      = "",
+				description = "save mod profiling data to logfile " ..
+						"(depends on default loglevel)",
+				func        = tracefct,
+				privs       = { server=true }
+			})
+end
+
 core.register_on_chat_message(function(name, message)
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not param then

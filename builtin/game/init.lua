@@ -7,6 +7,11 @@ dofile(commonpath.."vector.lua")
 
 dofile(gamepath.."item.lua")
 dofile(gamepath.."register.lua")
+
+if core.setting_getbool("mod_profiling") then
+	dofile(gamepath.."mod_profiling.lua")
+end
+
 dofile(gamepath.."item_entity.lua")
 dofile(gamepath.."deprecated.lua")
 dofile(gamepath.."misc.lua")
