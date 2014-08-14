@@ -50,6 +50,7 @@ namespace treegen {
 		MapNode fruitnode;
 		int fruit_chance;
 		int seed;
+		bool explicit_seed;
 	};
 
 	// Add default tree

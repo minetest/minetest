@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "test.h"
+#include "util/timetaker.h"		// For speed tests
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "map.h"
@@ -1994,7 +1995,7 @@ struct TestConnection: public TestBase
 	tests_failed += x.test_failed ? 1 : 0;\
 }
 
-void run_tests()
+void run_unit_tests()
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -2041,3 +2042,93 @@ void run_tests()
 	}
 }
 
+void run_speed_tests()
+{
+	
+	dstream << "Running speed tests" << std::endl;
+	
+	{
+		infostream << "The following test should take around 20ms." << std::endl;
+		TimeTaker timer("Testing std::string speed");
+		const u32 jj = 10000;
+		std::string tempstring;
+		std::string tempstring2;
+		for(u32 j = 0; j < jj; j++) {
+			tempstring = "";
+			tempstring2 = "";
+			const u32 ii = 10;
+			for(u32 i = 0; i < ii; i++) {
+				tempstring2 += "asd";
+			}
+			for(u32 i = 0; i < ii+1; i++) {
+				tempstring += "asd";
+				if (tempstring == tempstring2)
+					break;
+			}
+		}
+	}
+
+	volatile f32 tempf = 0;
+	
+	infostream << "All of the following tests should take around 100ms each."
+	           << std::endl;
+
+	{
+		TimeTaker timer("Testing floating-point conversion speed");
+		volatile s16 temp16 = 0;
+		tempf = 0.001;
+		for(u32 i = 0; i < 4000000; i++) {
+			temp16 += tempf;
+			tempf += 0.001;
+		}
+	}
+
+	{
+		TimeTaker timer("Testing floating-point vector speed");
+		v3f tempv3f1(1, 2, 3);
+		v3f tempv3f2(4, 5, 6);
+		for(u32 i = 0; i < 10000000; i++) {
+			tempf += tempv3f1.dotProduct(tempv3f2);
+			tempv3f2 += v3f(7, 8, 9);
+		}
+	}
+
+	{
+		TimeTaker timer("Testing std::map speed");
+
+		std::map<v2s16, f32> map1;
+		tempf = -324;
+		const s16 ii = 300;
+		for(s16 y = 0; y < ii; y++) {
+			for(s16 x = 0; x < ii; x++) {
+				map1[v2s16(x, y)] =  tempf;
+				tempf += 1;
+			}
+		}
+		for(s16 y = ii - 1; y >= 0; y--) {
+			for(s16 x = 0; x < ii; x++) {
+				tempf = map1[v2s16(x, y)];
+			}
+		}
+	}
+
+	{
+		infostream << "Around 5000/ms should do well here." << std::endl;
+		TimeTaker timer("Testing mutex speed");
+
+		JMutex m;
+		u32 n = 0;
+		u32 i = 0;
+		do {
+			n += 10000;
+			for(; i < n; i++) {
+				m.Lock();
+				m.Unlock();
+			}
+		} while(timer.getTimerTime() < 10); // Do at least 10ms
+		
+		u32 dtime = timer.stop();
+		u32 per_ms = n / dtime;
+		infostream << "Done. " << dtime << "ms, " << per_ms << "/ms" << std::endl;
+	}	
+}

@@ -747,7 +747,8 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 		}
 		getintfield(L, 2, "angle", tree_def.angle);
 		getintfield(L, 2, "iterations", tree_def.iterations);
-		getintfield(L, 2, "random_level", tree_def.iterations_random_level);
+		if (!getintfield(L, 2, "random_level", tree_def.iterations_random_level))
+			tree_def.iterations_random_level = 0;
 		getstringfield(L, 2, "trunk_type", tree_def.trunk_type);
 		getboolfield(L, 2, "thin_branches", tree_def.thin_branches);
 		tree_def.fruit_chance=0;
@@ -757,7 +758,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 			tree_def.fruitnode=ndef->getId(fruit);
 			getintfield(L, 2, "fruit_chance",tree_def.fruit_chance);
 		}
-		getintfield(L, 2, "seed", tree_def.seed);
+		tree_def.explicit_seed = getintfield(L, 2, "seed", tree_def.seed);
 	}
 	else
 		return 0;
