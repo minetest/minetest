@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TEST_HEADER
 #define TEST_HEADER
 
-void run_tests();
+void run_unit_tests();
+void run_speed_tests();
 
 #endif
 
