@@ -18,26 +18,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #ifdef NDEBUG
-	/*#ifdef _WIN32
-		#pragma message ("Disabling unit tests")
-	#else
-		#warning "Disabling unit tests"
-	#endif*/
-	// Disable unit tests
-	#define ENABLE_TESTS 0
+/*#ifdef _WIN32
+	#pragma message ("Disabling unit tests")
 #else
-	// Enable unit tests
-	#define ENABLE_TESTS 1
+	#warning "Disabling unit tests"
+#endif*/
+// Disable unit tests
+#define ENABLE_TESTS 0
+#else
+// Enable unit tests
+#define ENABLE_TESTS 1
 #endif
 
 #ifdef _MSC_VER
 #ifndef SERVER // Dedicated server isn't linked with Irrlicht
-	#pragma comment(lib, "Irrlicht.lib")
-	// This would get rid of the console window
-	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#pragma comment(lib, "Irrlicht.lib")
+// This would get rid of the console window
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
-	#pragma comment(lib, "zlibwapi.lib")
-	#pragma comment(lib, "Shell32.lib")
+#pragma comment(lib, "zlibwapi.lib")
+#pragma comment(lib, "Shell32.lib")
 #endif
 
 #include "irrlicht.h" // createDevice
@@ -211,7 +211,8 @@ u32 getTimeMs()
 	return g_timegetter->getTime(PRECISION_MILLI);
 }
 
-u32 getTime(TimePrecision prec) {
+u32 getTime(TimePrecision prec)
+{
 	if (g_timegetter == NULL)
 		return 0;
 	return g_timegetter->getTime(prec);
@@ -278,7 +279,7 @@ public:
 #ifdef HAVE_TOUCHSCREENGUI
 		// case of touchscreengui we have to handle different events
 		if ((m_touchscreengui != 0) &&
-				(event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
+		        (event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
 			m_touchscreengui->translateEvent(event);
 			return true;
 		}
@@ -412,8 +413,7 @@ public:
 	{
 		if (m_device->getCursorControl()) {
 			return m_device->getCursorControl()->getPosition();
-		}
-		else {
+		} else {
 			return m_mousepos;
 		}
 	}
@@ -421,8 +421,7 @@ public:
 	{
 		if (m_device->getCursorControl()) {
 			m_device->getCursorControl()->setPosition(x, y);
-		}
-		else {
+		} else {
 			m_mousepos = v2s32(x,y);
 		}
 	}
@@ -681,7 +680,7 @@ void SpeedTests()
 	}
 
 	infostream << "All of the following tests should take around 100ms each."
-		<< std::endl;
+	           << std::endl;
 
 	{
 		TimeTaker timer("Testing floating-point conversion speed");
@@ -758,6 +757,23 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs, std::ostr
 	}
 }
 
+#if 0	// ZENO: REFACTORING
+/*****************************************************************************/
+
+static void set_allowed_options(std::map<std::string, ValueSpec> *allowed_options);
+// TODO check Settings::parseCommandLine for const correctness (argv)
+static bool parse_cmd_line(int argc, char **argv,
+		const std::map<std::string, ValueSpec> &allowed_options);
+
+static bool init_all();
+static bool run_server();
+static bool run_singleplayer();
+static bool gui_mainmenu();
+static void perform_shutdown();
+
+/*****************************************************************************/
+#endif
+
 int main(int argc, char *argv[])
 {
 	int retval = 0;
@@ -773,58 +789,58 @@ int main(int argc, char *argv[])
 	/*
 		Parse command line
 	*/
-
+	
 	// List all allowed options
 	std::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert(std::make_pair("help", ValueSpec(VALUETYPE_FLAG,
-			_("Show allowed options"))));
+	                                      _("Show allowed options"))));
 	allowed_options.insert(std::make_pair("version", ValueSpec(VALUETYPE_FLAG,
-			_("Show version information"))));
+	                                      _("Show version information"))));
 	allowed_options.insert(std::make_pair("config", ValueSpec(VALUETYPE_STRING,
-			_("Load configuration from specified file"))));
+	                                      _("Load configuration from specified file"))));
 	allowed_options.insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
-			_("Set network port (UDP)"))));
+	                                      _("Set network port (UDP)"))));
 	allowed_options.insert(std::make_pair("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Disable unit tests"))));
+	                                      _("Disable unit tests"))));
 	allowed_options.insert(std::make_pair("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Enable unit tests"))));
+	                                      _("Enable unit tests"))));
 	allowed_options.insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
-			_("Same as --world (deprecated)"))));
+	                                      _("Same as --world (deprecated)"))));
 	allowed_options.insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)"))));
+	                                      _("Set world path (implies local game) ('list' lists all)"))));
 	allowed_options.insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)"))));
+	                                      _("Set world by name (implies local game)"))));
 	allowed_options.insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
-			_("Print to console errors only"))));
+	                                      _("Print to console errors only"))));
 	allowed_options.insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
-			_("Print more information to console"))));
+	                                      _("Print more information to console"))));
 	allowed_options.insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
-			_("Print even more information to console"))));
+	                                      _("Print even more information to console"))));
 	allowed_options.insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
-			_("Print enormous amounts of information to log and console"))));
+	                                      _("Print enormous amounts of information to log and console"))));
 	allowed_options.insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
-			_("Set logfile path ('' = no logging)"))));
+	                                      _("Set logfile path ('' = no logging)"))));
 	allowed_options.insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
-			_("Set gameid (\"--gameid list\" prints available ones)"))));
+	                                      _("Set gameid (\"--gameid list\" prints available ones)"))));
 	allowed_options.insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
-			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
+	                                      _("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
 #ifndef SERVER
 	allowed_options.insert(std::make_pair("videomodes", ValueSpec(VALUETYPE_FLAG,
-			_("Show available video modes"))));
+	                                      _("Show available video modes"))));
 	allowed_options.insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests"))));
+	                                      _("Run speed tests"))));
 	allowed_options.insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
-			_("Address to connect to. ('' = local game)"))));
+	                                      _("Address to connect to. ('' = local game)"))));
 	allowed_options.insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
-			_("Enable random user input, for testing"))));
+	                                      _("Enable random user input, for testing"))));
 	allowed_options.insert(std::make_pair("server", ValueSpec(VALUETYPE_FLAG,
-			_("Run dedicated server"))));
+	                                      _("Run dedicated server"))));
 	allowed_options.insert(std::make_pair("name", ValueSpec(VALUETYPE_STRING,
-			_("Set player name"))));
+	                                      _("Set player name"))));
 	allowed_options.insert(std::make_pair("password", ValueSpec(VALUETYPE_STRING,
-			_("Set password"))));
+	                                      _("Set password"))));
 	allowed_options.insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
-			_("Disable main menu"))));
+	                                      _("Disable main menu"))));
 #endif
 
 	Settings cmd_args;
@@ -834,8 +850,8 @@ int main(int argc, char *argv[])
 	if (ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1")) {
 		dstream << _("Allowed options:") << std::endl;
 		for(std::map<std::string, ValueSpec>::iterator
-				i = allowed_options.begin();
-				i != allowed_options.end(); ++i) {
+		        i = allowed_options.begin();
+		        i != allowed_options.end(); ++i) {
 			std::ostringstream os1(std::ios::binary);
 			os1 << "  --"<<i->first;
 			if (i->second.type == VALUETYPE_FLAG) {
@@ -880,7 +896,7 @@ int main(int argc, char *argv[])
 	}
 	// In certain cases, output info level on stderr
 	if (cmd_args.getFlag("info") || cmd_args.getFlag("verbose") ||
-			cmd_args.getFlag("trace") || cmd_args.getFlag("speedtests"))
+	        cmd_args.getFlag("trace") || cmd_args.getFlag("speedtests"))
 		log_add_output(&main_stderr_log_out, LMT_INFO);
 	// In certain cases, output verbose level on stderr
 	if (cmd_args.getFlag("verbose") || cmd_args.getFlag("trace"))
@@ -918,7 +934,7 @@ int main(int argc, char *argv[])
 	if (cmd_args.exists("gameid") && cmd_args.get("gameid") == "list") {
 		std::set<std::string> gameids = getAvailableGameIds();
 		for(std::set<std::string>::const_iterator i = gameids.begin();
-				i != gameids.end(); i++)
+		        i != gameids.end(); i++)
 			dstream<<(*i)<<std::endl;
 		return 0;
 	}
@@ -933,7 +949,7 @@ int main(int argc, char *argv[])
 
 	// Print startup message
 	infostream<<PROJECT_NAME <<	" "<< _("with") << " SER_FMT_VER_HIGHEST_READ="
-		<< (int)SER_FMT_VER_HIGHEST_READ << ", " << minetest_build_info << std::endl;
+	          << (int)SER_FMT_VER_HIGHEST_READ << ", " << minetest_build_info << std::endl;
 
 	/*
 		Basic initialization
@@ -957,22 +973,22 @@ int main(int argc, char *argv[])
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if (r == false) {
 			errorstream << "Could not read configuration from \""
-					<< cmd_args.get("config") << "\"" << std::endl;
+			            << cmd_args.get("config") << "\"" << std::endl;
 			return 1;
 		}
 		g_settings_path = cmd_args.get("config");
 	} else {
 		std::vector<std::string> filenames;
 		filenames.push_back(porting::path_user +
-				DIR_DELIM + "minetest.conf");
+		                    DIR_DELIM + "minetest.conf");
 		// Legacy configuration file location
 		filenames.push_back(porting::path_user +
-				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
+		                    DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #if RUN_IN_PLACE
 		// Try also from a lower level (to aid having the same configuration
 		// for many RUN_IN_PLACE installs)
 		filenames.push_back(porting::path_user +
-				DIR_DELIM + ".." + DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
+		                    DIR_DELIM + ".." + DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
 		for(u32 i = 0; i < filenames.size(); i++) {
@@ -1005,7 +1021,7 @@ int main(int argc, char *argv[])
 		logfile = "";
 	else if (loglevel > 0 && loglevel <= LMT_NUM_VALUES)
 		log_add_output_maxlev(&main_dstream_no_stderr_log_out,
-		(LogMessageLevel)(loglevel - 1));
+		                      (LogMessageLevel)(loglevel - 1));
 
 	if (logfile != "")
 		debugstreams_init(false, logfile.c_str());
@@ -1026,16 +1042,16 @@ int main(int argc, char *argv[])
 		Run unit tests
 	*/
 	if ((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
-			|| cmd_args.getFlag("enable-unittests") == true) {
-				run_tests();
+	        || cmd_args.getFlag("enable-unittests") == true) {
+		run_tests();
 	}
 #endif
 #ifdef _MSC_VER
 	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),
-		g_settings->get("language"), argc, argv);
+	             g_settings->get("language"), argc, argv);
 #else
 	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),
-		g_settings->get("language"));
+	             g_settings->get("language"));
 #endif
 
 	/*
@@ -1071,11 +1087,11 @@ int main(int argc, char *argv[])
 	{
 		std::string worldmt = "world.mt";
 		if (commanded_world.size() > worldmt.size() &&
-				commanded_world.substr(commanded_world.size() - worldmt.size())
-				== worldmt) {
+		        commanded_world.substr(commanded_world.size() - worldmt.size())
+		        == worldmt) {
 			dstream << _("Supplied world.mt file - stripping it off.") << std::endl;
 			commanded_world = commanded_world.substr(0,
-				commanded_world.size() - worldmt.size());
+			                  commanded_world.size() - worldmt.size());
 		}
 	}
 
@@ -1089,7 +1105,7 @@ int main(int argc, char *argv[])
 			if (name == commanded_worldname) {
 				if (commanded_world != "") {
 					dstream << _("--worldname takes precedence over previously "
-							"selected world.") << std::endl;
+					             "selected world.") << std::endl;
 				}
 				commanded_world = worldspecs[i].path;
 				found = true;
@@ -1098,7 +1114,7 @@ int main(int argc, char *argv[])
 		}
 		if (!found) {
 			dstream << _("World") << " '"<<commanded_worldname << _("' not "
-					"available. Available worlds:") << std::endl;
+			        "available. Available worlds:") << std::endl;
 			print_worldspecs(worldspecs, dstream);
 			return 1;
 		}
@@ -1125,8 +1141,7 @@ int main(int argc, char *argv[])
 	bool run_dedicated_server = cmd_args.getFlag("server");
 #endif
 	g_settings->set("server_dedicated", run_dedicated_server ? "true" : "false");
-	if (run_dedicated_server)
-	{
+	if (run_dedicated_server) {
 		DSTACK("Dedicated server branch");
 		// Create time getter if built with Irrlicht
 #ifndef SERVER
@@ -1141,7 +1156,7 @@ int main(int argc, char *argv[])
 		if (commanded_world != "") {
 			world_path = commanded_world;
 			infostream << "Using commanded world path [" << world_path << "]"
-				<< std::endl;
+			           << std::endl;
 		} else { // No world was specified; try to select it automatically
 			// Get information about available worlds
 			std::vector<WorldSpec> worldspecs = getAvailableWorlds();
@@ -1157,7 +1172,7 @@ int main(int argc, char *argv[])
 				}
 				if (world_path == "") {
 					dstream << _("World") << " '" << commanded_worldname << "' " << _("not "
-						"available. Available worlds:") << std::endl;
+					        "available. Available worlds:") << std::endl;
 					print_worldspecs(worldspecs, dstream);
 					return 1;
 				}
@@ -1166,21 +1181,21 @@ int main(int argc, char *argv[])
 			if (worldspecs.size() == 1) {
 				world_path = worldspecs[0].path;
 				dstream <<_("Automatically selecting world at") << " ["
-					<< world_path << "]" << std::endl;
-			// If there are multiple worlds, list them
+				        << world_path << "]" << std::endl;
+				// If there are multiple worlds, list them
 			} else if (worldspecs.size() > 1) {
 				dstream << _("Multiple worlds are available.") << std::endl;
 				dstream << _("Please select one using --worldname <name>"
-						" or --world <path>") << std::endl;
+				             " or --world <path>") << std::endl;
 				print_worldspecs(worldspecs, dstream);
 				return 1;
-			// If there are no worlds, automatically create a new one
+				// If there are no worlds, automatically create a new one
 			} else {
 				// This is the ultimate default world path
 				world_path = porting::path_user + DIR_DELIM + "worlds" +
-						DIR_DELIM + "world";
+				             DIR_DELIM + "world";
 				infostream << "Creating default world at ["
-						<< world_path << "]" << std::endl;
+				           << world_path << "]" << std::endl;
 			}
 		}
 
@@ -1210,8 +1225,8 @@ int main(int argc, char *argv[])
 				gamespec = commanded_gamespec;
 				if (commanded_gamespec.id != world_gameid) {
 					errorstream << "WARNING: Using commanded gameid ["
-							<< gamespec.id << "]" << " instead of world gameid ["
-							<< world_gameid << "]" << std::endl;
+					            << gamespec.id << "]" << " instead of world gameid ["
+					            << world_gameid << "]" << std::endl;
 				}
 			} else {
 				// If world contains an embedded game, use it;
@@ -1222,7 +1237,7 @@ int main(int argc, char *argv[])
 		}
 		if (!gamespec.isValid()) {
 			errorstream << "Subgame [" << gamespec.id << "] could not be found."
-					<< std::endl;
+			            << std::endl;
 			return 1;
 		}
 		verbosestream << _("Using gameid") << " [" << gamespec.id<<"]" << std::endl;
@@ -1239,12 +1254,12 @@ int main(int argc, char *argv[])
 		} catch (ResolveError &e) {
 			infostream << "Resolving bind address \"" << bind_str
 			           << "\" failed: " << e.what()
-		        	   << " -- Listening on all addresses." << std::endl;
+			           << " -- Listening on all addresses." << std::endl;
 		}
 		if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
 			errorstream << "Unable to listen on "
 			            << bind_addr.serializeString()
-				    << L" because IPv6 is disabled" << std::endl;
+			            << L" because IPv6 is disabled" << std::endl;
 			return 1;
 		}
 
@@ -1256,36 +1271,36 @@ int main(int argc, char *argv[])
 			std::string migrate_to = cmd_args.get("migrate");
 			Settings world_mt;
 			bool success = world_mt.readConfigFile((world_path + DIR_DELIM
-				+ "world.mt").c_str());
+			                                        + "world.mt").c_str());
 			if (!success) {
 				errorstream << "Cannot read world.mt" << std::endl;
 				return 1;
 			}
 			if (!world_mt.exists("backend")) {
 				errorstream << "Please specify your current backend in world.mt file:"
-					<< std::endl << "	backend = {sqlite3|leveldb|redis|dummy}" << std::endl;
+				            << std::endl << "	backend = {sqlite3|leveldb|redis|dummy}" << std::endl;
 				return 1;
 			}
 			std::string backend = world_mt.get("backend");
 			Database *new_db;
 			if (backend == migrate_to) {
 				errorstream << "Cannot migrate: new backend is same"
-					<<" as the old one" << std::endl;
+				            <<" as the old one" << std::endl;
 				return 1;
 			}
 			if (migrate_to == "sqlite3")
 				new_db = new Database_SQLite3(&(ServerMap&)server.getMap(), world_path);
-			#if USE_LEVELDB
+#if USE_LEVELDB
 			else if (migrate_to == "leveldb")
 				new_db = new Database_LevelDB(&(ServerMap&)server.getMap(), world_path);
-			#endif
-			#if USE_REDIS
+#endif
+#if USE_REDIS
 			else if (migrate_to == "redis")
 				new_db = new Database_Redis(&(ServerMap&)server.getMap(), world_path);
-			#endif
+#endif
 			else {
 				errorstream << "Migration to " << migrate_to
-					<< " is not supported" << std::endl;
+				            << " is not supported" << std::endl;
 				return 1;
 			}
 
@@ -1306,7 +1321,7 @@ int main(int argc, char *argv[])
 				++count;
 				if (count % 500 == 0)
 					actionstream << "Migrated " << count << " blocks "
-						<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
+					             << (100.0 * count / blocks.size()) << "% completed" << std::endl;
 			}
 			new_db->endSave();
 			delete new_db;
@@ -1391,7 +1406,7 @@ int main(int argc, char *argv[])
 #endif
 	else {
 		errorstream << "WARNING: Invalid video_driver specified; defaulting "
-			<< "to opengl" << std::endl;
+		            << "to opengl" << std::endl;
 		driverType = video::EDT_OPENGL;
 	}
 
@@ -1423,7 +1438,7 @@ int main(int argc, char *argv[])
 		dstream << _("Available video modes (WxHxD):") << std::endl;
 
 		video::IVideoModeList *videomode_list =
-				nulldevice->getVideoModeList();
+		    nulldevice->getVideoModeList();
 
 		if (videomode_list == 0) {
 			nulldevice->drop();
@@ -1437,14 +1452,14 @@ int main(int argc, char *argv[])
 			videomode_res = videomode_list->getVideoModeResolution(i);
 			videomode_depth = videomode_list->getVideoModeDepth(i);
 			dstream<<videomode_res.Width << "x" << videomode_res.Height
-					<< "x" << videomode_depth << std::endl;
+			       << "x" << videomode_depth << std::endl;
 		}
 
 		dstream << _("Active video mode (WxHxD):") << std::endl;
 		videomode_res = videomode_list->getDesktopResolution();
 		videomode_depth = videomode_list->getDesktopDepth();
 		dstream << videomode_res.Width << "x" << videomode_res.Height
-				<< "x" << videomode_depth << std::endl;
+		        << "x" << videomode_depth << std::endl;
 
 		nulldevice->drop();
 
@@ -1468,7 +1483,7 @@ int main(int argc, char *argv[])
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM +
-			"media" + DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
+	                                      "media" + DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
 #endif
 
 	IrrlichtDevice * device = createDeviceEx(params);
@@ -1518,8 +1533,7 @@ int main(int argc, char *argv[])
 	/*
 		Speed tests (done after irrlicht is loaded to get timer)
 	*/
-	if (cmd_args.getFlag("speedtests"))
-	{
+	if (cmd_args.getFlag("speedtests")) {
 		dstream << "Running speed tests" << std::endl;
 		SpeedTests();
 		device->drop();
@@ -1529,7 +1543,7 @@ int main(int argc, char *argv[])
 	device->setResizable(true);
 
 	bool random_input = g_settings->getBool("random_input")
-			|| cmd_args.getFlag("random-input");
+	                    || cmd_args.getFlag("random-input");
 	InputHandler *input = NULL;
 
 	if (random_input) {
@@ -1544,7 +1558,7 @@ int main(int argc, char *argv[])
 	gui::IGUISkin* skin = guienv->getSkin();
 	std::string font_path = g_settings->get("font_path");
 	gui::IGUIFont *font;
-	#if USE_FREETYPE
+#if USE_FREETYPE
 	bool use_freetype = g_settings->getBool("freetype");
 	if (use_freetype) {
 		std::string fallback;
@@ -1555,18 +1569,18 @@ int main(int argc, char *argv[])
 		u32 font_shadow = g_settings->getU16(fallback + "font_shadow");
 		u32 font_shadow_alpha = g_settings->getU16(fallback + "font_shadow_alpha");
 		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size,
-			true, true, font_shadow, font_shadow_alpha);
+		                                     true, true, font_shadow, font_shadow_alpha);
 	} else {
 		font = guienv->getFont(font_path.c_str());
 	}
-	#else
+#else
 	font = guienv->getFont(font_path.c_str());
-	#endif
+#endif
 	if (font)
 		skin->setFont(font);
 	else
 		errorstream << "WARNING: Font file was not found."
-				<< " Using default font." << std::endl;
+		            << " Using default font." << std::endl;
 	// If font was not found, this will get us one
 	font = skin->getFont();
 	assert(font);
@@ -1592,11 +1606,11 @@ int main(int argc, char *argv[])
 		g_menucloudsmgr = smgr->createNewSceneManager();
 	if (!g_menuclouds)
 		g_menuclouds = new Clouds(g_menucloudsmgr->getRootSceneNode(),
-			g_menucloudsmgr, -1, rand(), 100);
+		                          g_menucloudsmgr, -1, rand(), 100);
 	g_menuclouds->update(v2f(0, 0), video::SColor(255, 200, 200, 255));
 	scene::ICameraSceneNode* camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(0,
-				v3f(0, 0, 0), v3f(0, 60, 100));
+	         v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
 
 	/*
@@ -1621,16 +1635,14 @@ int main(int argc, char *argv[])
 		Menu-game loop
 	*/
 	while (device->run() && (kill == false) &&
-			(g_gamecallback->shutdown_requested == false))
-	{
+	        (g_gamecallback->shutdown_requested == false)) {
 		// Set the window caption
 		wchar_t* text = wgettext("Main Menu");
 		device->setWindowCaption((std::wstring(L"Minetest [") + text + L"]").c_str());
 		delete[] text;
 
 		// This is used for catching disconnects
-		try
-		{
+		try {
 
 			/*
 				Clear everything from the GUIEnvironment
@@ -1643,7 +1655,7 @@ int main(int argc, char *argv[])
 				Otherwise they won't be automatically drawn.
 			*/
 			guiroot = guienv->addStaticText(L"",
-				core::rect<s32>(0, 0, 10000, 10000));
+			                                core::rect<s32>(0, 0, 10000, 10000));
 
 			SubgameSpec gamespec;
 			WorldSpec worldspec;
@@ -1669,9 +1681,9 @@ int main(int argc, char *argv[])
 				first_loop = false;
 
 				// Cursor can be non-visible when coming from the game
-				#ifndef ANDROID
+#ifndef ANDROID
 				device->getCursorControl()->setVisible(true);
-				#endif
+#endif
 				// Some stuff are left to scene manager when coming from the game
 				// (map at least?)
 				smgr->clear();
@@ -1711,7 +1723,7 @@ int main(int argc, char *argv[])
 						if (noMenuActive())
 							break;
 						driver->beginScene(true, true,
-								video::SColor(255, 128, 128, 128));
+						                   video::SColor(255, 128, 128, 128));
 						guienv->drawAll();
 						driver->endScene();
 						// On some computers framerate doesn't seem to be
@@ -1778,30 +1790,30 @@ int main(int argc, char *argv[])
 				}
 
 				if ((!skip_main_menu) &&
-						(menudata.selected_world >= 0) &&
-						(menudata.selected_world < (int)worldspecs.size())) {
+				        (menudata.selected_world >= 0) &&
+				        (menudata.selected_world < (int)worldspecs.size())) {
 					g_settings->set("selected_world_path",
-							worldspecs[menudata.selected_world].path);
+					                worldspecs[menudata.selected_world].path);
 					worldspec = worldspecs[menudata.selected_world];
 
 				}
 
 				infostream <<"Selected world: " << worldspec.name
-							<< " ["<<worldspec.path<<"]" <<std::endl;
+				           << " ["<<worldspec.path<<"]" <<std::endl;
 
 
 				// If local game
 				if (current_address == "") {
 					if (worldspec.path == "") {
 						error_message = wgettext("No world selected and no address "
-								"provided. Nothing to do.");
+						                         "provided. Nothing to do.");
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
 
 					if (!fs::PathExists(worldspec.path)) {
 						error_message = wgettext("Provided world path doesn't exist: ")
-								+ narrow_to_wide(worldspec.path);
+						                + narrow_to_wide(worldspec.path);
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
@@ -1810,22 +1822,22 @@ int main(int argc, char *argv[])
 					gamespec = findWorldSubgame(worldspec.path);
 					if (!gamespec.isValid() && !commanded_gamespec.isValid()) {
 						error_message = wgettext("Could not find or load game \"")
-								+ narrow_to_wide(worldspec.gameid) + L"\"";
+						                + narrow_to_wide(worldspec.gameid) + L"\"";
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
 					if (commanded_gamespec.isValid() &&
-							commanded_gamespec.id != worldspec.gameid) {
+					        commanded_gamespec.id != worldspec.gameid) {
 						errorstream<<"WARNING: Overriding gamespec from \""
-								<< worldspec.gameid << "\" to \""
-								<< commanded_gamespec.id << "\"" << std::endl;
+						           << worldspec.gameid << "\" to \""
+						           << commanded_gamespec.id << "\"" << std::endl;
 						gamespec = commanded_gamespec;
 					}
 
 					if (!gamespec.isValid()) {
 						error_message = wgettext("Invalid gamespec.");
 						error_message += L" (world_gameid="
-								+ narrow_to_wide(worldspec.gameid) + L")";
+						                 + narrow_to_wide(worldspec.gameid) + L")";
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
@@ -1847,41 +1859,39 @@ int main(int argc, char *argv[])
 				Run game
 			*/
 #ifdef HAVE_TOUCHSCREENGUI
-	receiver->m_touchscreengui = new TouchScreenGUI(device, receiver);
-	g_touchscreengui = receiver->m_touchscreengui;
+			receiver->m_touchscreengui = new TouchScreenGUI(device, receiver);
+			g_touchscreengui = receiver->m_touchscreengui;
 #endif
 			the_game(
-				kill,
-				random_input,
-				input,
-				device,
-				font,
-				worldspec.path,
-				current_playername,
-				current_password,
-				current_address,
-				current_port,
-				error_message,
-				chat_backend,
-				gamespec,
-				simple_singleplayer_mode
+			    kill,
+			    random_input,
+			    input,
+			    device,
+			    font,
+			    worldspec.path,
+			    current_playername,
+			    current_password,
+			    current_address,
+			    current_port,
+			    error_message,
+			    chat_backend,
+			    gamespec,
+			    simple_singleplayer_mode
 			);
 			smgr->clear();
 #ifdef HAVE_TOUCHSCREENGUI
-	delete g_touchscreengui;
-	g_touchscreengui = NULL;
-	receiver->m_touchscreengui = NULL;
+			delete g_touchscreengui;
+			g_touchscreengui = NULL;
+			receiver->m_touchscreengui = NULL;
 #endif
 
 		} //try
-		catch(con::PeerNotFoundException &e)
-		{
+		catch(con::PeerNotFoundException &e) {
 			error_message = wgettext("Connection error (timed out?)");
 			errorstream << wide_to_narrow(error_message) << std::endl;
 		}
 #ifdef NDEBUG
-		catch(std::exception &e)
-		{
+		catch(std::exception &e) {
 			std::string narrow_message = "Some exception: \"";
 			narrow_message += e.what();
 			narrow_message += "\"";
@@ -1894,7 +1904,7 @@ int main(int argc, char *argv[])
 		if (skip_main_menu) {
 			if (error_message != L"") {
 				verbosestream << "error_message = "
-						<< wide_to_narrow(error_message) << std::endl;
+				              << wide_to_narrow(error_message) << std::endl;
 				retval = 1;
 			}
 			break;
