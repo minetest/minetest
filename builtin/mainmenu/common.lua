@@ -27,7 +27,8 @@ menudata = {}
 function render_favorite(spec,render_details)
 	local text = ""
 
-	if spec.name ~= nil then
+	if spec.name ~= nil and
+			spec.name ~= "" then
 		text = text .. core.formspec_escape(spec.name:trim())
 
 --		if spec.description ~= nil and
