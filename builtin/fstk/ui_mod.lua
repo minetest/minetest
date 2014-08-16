@@ -88,11 +88,6 @@ local function update(self)
 		end
 	end
 
-	if (active_toplevel_ui_elements > 1) then
-		core.log("error","WARNING: ui manager detected more then one active " ..
-				"ui element, self most likely isn't intended")
-	end
-
 	if (active_toplevel_ui_elements == 0) then
 		core.log("WARNING: not a single toplevel ui element active switching " ..
 				"to default")

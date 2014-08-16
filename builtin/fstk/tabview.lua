@@ -162,7 +162,7 @@ local function switch_to_tab(self, index)
 	--first call on_change for tab to leave
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, self.tablist[index].name)
+				self.current_tab, self.tablist[index].name, self)
 	end
 
 	--update tabview data
@@ -177,7 +177,7 @@ local function switch_to_tab(self, index)
 	-- call for tab to enter
 	if self.tablist[index].on_change ~= nil then
 		self.tablist[index].on_change("ENTER",
-				old_tab,self.current_tab)
+				old_tab,self.current_tab, self)
 	end
 end
 
@@ -217,7 +217,7 @@ local function hide_tabview(self)
 	-- call on_change as we're not gonna show self tab any longer
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, nil)
+				self.current_tab, nil, self)
 	end
 end
 
@@ -228,7 +228,7 @@ local function show_tabview(self)
 	-- call for tab to enter
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("ENTER",
-				nil,self.current_tab)
+				nil,self.current_tab, self)
 	end
 end
 
@@ -239,6 +239,29 @@ local function delete(self)
 	end
 end
 
+--------------------------------------------------------------------------------
+local function get_tabdata(self, name)
+	assert(self ~= nil)
+	
+	for i=1, #self.tablist, 1 do
+		if self.tablist[self.last_tab_index].name == name then
+			return self.tablist[self.last_tab_index].tabdata
+		end
+	end
+	return nil
+end
+
+--------------------------------------------------------------------------------
+local function set_parent(self, parent)
+	if parent == nil then
+		self.type = "toplevel"
+	else
+		self.type = "addon"
+	end
+	
+	self.parent = parent
+end
+
 local tabview_metatable = {
 	add                       = add_tab,
 	handle_buttons            = handle_buttons,
@@ -247,10 +270,11 @@ local tabview_metatable = {
 	show                      = show_tabview,
 	hide                      = hide_tabview,
 	delete                    = delete,
-	set_parent                = function(self,parent) self.parent = parent end,
+	set_parent                = set_parent,
 	set_autosave_tab          =
 			function(self,value) self.autosave_tab = value end,
 	set_tab                   = set_tab_by_name,
+	get_tabdata               = get_tabdata,
 	set_global_button_handler =
 			function(self,handler) self.glb_btn_handler = handler end,
 	set_global_event_handler =
