@@ -81,6 +81,7 @@ function modstore.init(size, unsortedmods, searchmods)
 	modstore.tv_store = tabview_create("modstore",size,{x=0,y=0})
 
 	modstore.tv_store:set_global_event_handler(modstore.handle_events)
+	modstore.tv_store:set_fixed_size(false)
 
 	modstore.tv_store:add(
 		{

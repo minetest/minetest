@@ -1287,10 +1287,11 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2)- m_btn_height),
-				pos.X+15, pos.Y +
-					(m_font->getKerningHeight() +
-					m_font->getDimension(text.c_str()).Height)
-					* (text.length()+1));
+				pos.X+15, pos.Y
+					+ (m_font->getKerningHeight()
+					+ m_font->getDimension(text.c_str()).Height)
+					* (text.length()+1)
+					+ ((imgsize.Y/2)- m_btn_height));
 		//actually text.length() would be correct but adding +1 avoids to break all mods
 
 		if(data->bp_set != 2)

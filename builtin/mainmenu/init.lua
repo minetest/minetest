@@ -101,6 +101,7 @@ local function init_globals()
 	tv_main:add(tab_texturepacks)
 	tv_main:add(tab_mods)
 	tv_main:add(tab_credits)
+	tv_main:set_fixed_size(false)
 
 	tv_main:set_global_event_handler(main_event_handler)
 
