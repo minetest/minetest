@@ -233,6 +233,8 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 #define MYMIN(a,b) ((a)<(b)?(a):(b))
 #define MYMAX(a,b) ((a)>(b)?(a):(b))
 
+#define XZScalar(x,z) (sqrt((float)((x*x)+(z*z))))
+
 /*
 	Returns nearest 32-bit integer for given floating point number.
 	<cmath> and <math.h> in VC++ don't provide round().

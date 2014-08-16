@@ -133,7 +133,7 @@ std::string gob_cmd_update_physics_override(float physics_override_speed, float 
 	return os.str();
 }
 
-std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend,float base_velocity)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -142,6 +142,7 @@ std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_
 	writeV2F1000(os, frames);
 	writeF1000(os, frame_speed);
 	writeF1000(os, frame_blend);
+	writeF1000(os, base_velocity);
 	return os.str();
 }
 
@@ -169,4 +170,3 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 	writeV3F1000(os, rotation);
 	return os.str();
 }
-

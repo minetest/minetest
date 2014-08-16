@@ -62,7 +62,7 @@ public:
 	void setHP(s16 hp);
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, float base_velocity);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
@@ -106,6 +106,7 @@ private:
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
+	float m_animation_base_velocity;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position;
@@ -197,7 +198,7 @@ public:
 	u16 getBreath() const;
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, float base_velocity);
 	void setBonePosition(std::string bone, v3f position, v3f rotation);
 	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
@@ -308,6 +309,7 @@ private:
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
+	float m_animation_base_velocity;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name

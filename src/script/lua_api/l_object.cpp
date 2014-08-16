@@ -397,12 +397,15 @@ int ObjectRef::l_set_animation(lua_State *L)
 	if(!lua_isnil(L, 2))
 		frames = read_v2f(L, 2);
 	float frame_speed = 15;
+	float base_velocity = -1;
 	if(!lua_isnil(L, 3))
 		frame_speed = lua_tonumber(L, 3);
 	float frame_blend = 0;
 	if(!lua_isnil(L, 4))
 		frame_blend = lua_tonumber(L, 4);
-	co->setAnimation(frames, frame_speed, frame_blend);
+	if(!lua_isnil(L, 5))
+		base_velocity = lua_tonumber(L, 5);
+	co->setAnimation(frames, frame_speed, frame_blend,base_velocity);
 	return 0;
 }
 
