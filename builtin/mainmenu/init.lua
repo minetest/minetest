@@ -49,6 +49,7 @@ dofile(menupath .. DIR_DELIM .. "tab_server.lua")
 dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 dofile(menupath .. DIR_DELIM .. "tab_singleplayer.lua")
 dofile(menupath .. DIR_DELIM .. "tab_texturepacks.lua")
+dofile(menupath .. DIR_DELIM .. "tab_test.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
 
 --------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ local function init_globals()
 	mm_texture.init()
 
 	--create main tabview
-	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
+	local tv_main = tabview_create("maintab",{x=12,y=5.5},{x=0,y=0})
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tab_singleplayer)
 	tv_main:add(tab_multiplayer)
@@ -101,6 +102,8 @@ local function init_globals()
 	tv_main:add(tab_texturepacks)
 	tv_main:add(tab_mods)
 	tv_main:add(tab_credits)
+	--testtab for testing formspec item alignment
+	tv_main:add(tab_test)
 
 	tv_main:set_global_event_handler(main_event_handler)
 
@@ -109,7 +112,7 @@ local function init_globals()
 	tv_main:show()
 
 	--create modstore ui
-	modstore.init({x=12,y=8},4,3)
+	modstore.init({x=12,y=8.3},4,3)
 
 	ui.update()
 

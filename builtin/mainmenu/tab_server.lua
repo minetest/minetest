@@ -27,7 +27,7 @@ local function get_formspec(tabview, name, tabdata)
 		"button[6.5,4.15;2.8,0.5;world_create;".. fgettext("New") .. "]" ..
 		"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure") .. "]" ..
 		"button[8.5,4.9;3.25,0.5;start_server;".. fgettext("Start Game") .. "]" ..
-		"label[4,-0.25;".. fgettext("Select World:") .. "]"..
+		"label[4,-0.3;".. fgettext("Select World:") .. "]"..
 		"vertlabel[0,-0.25;".. fgettext("START SERVER") .. "]" ..
 		"checkbox[0.5,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]"..
@@ -35,25 +35,25 @@ local function get_formspec(tabview, name, tabdata)
 		dump(core.setting_getbool("enable_damage")) .. "]"..
 		"checkbox[0.5,1.15;cb_server_announce;".. fgettext("Public") .. ";" ..
 		dump(core.setting_getbool("server_announce")) .. "]"..
-		"field[0.8,3.0;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
+		"field[0.5,2.75;3.25,0.5;te_playername;".. fgettext("Name") .. ";" ..
 		core.setting_get("name") .. "]" ..
-		"pwdfield[0.8,4.1;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"
+		"pwdfield[0.5,3.85;3.25,0.5;te_passwd;".. fgettext("Password") .. "]"
 		
 	local bind_addr = core.setting_get("bind_address")
 	if bind_addr ~= nil and bind_addr ~= "" then
 		retval = retval ..
-			"field[0.8,5.2;2.25,0.5;te_serveraddr;".. fgettext("Bind Address") .. ";" ..
+			"field[0.5,5.2;2.25,0.5;te_serveraddr;".. fgettext("Bind Address") .. ";" ..
 			core.setting_get("bind_address") .."]" ..
 			"field[3.05,5.2;1.25,0.5;te_serverport;".. fgettext("Port") .. ";" ..
 			core.setting_get("port") .."]"
 	else
 		retval = retval ..
-			"field[0.8,5.2;3.5,0.5;te_serverport;".. fgettext("Server Port") .. ";" ..
+			"field[0.5,4.95;3.25,0.5;te_serverport;".. fgettext("Server Port") .. ";" ..
 			core.setting_get("port") .."]"
 	end
 	
 	retval = retval ..
-		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
+		"textlist[4,0.25;7.75,3.7;srv_worlds;" ..
 		menu_render_worldlist() ..
 		";" .. index .. "]"
 	
