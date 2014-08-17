@@ -711,49 +711,49 @@ public:
 
 	static void viewBobbingStep(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->playPlayerStep();
 	}
 
 	static void playerRegainGround(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->playPlayerStep();
 	}
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		//SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		//SoundMaker *sm =  static_cast<SoundMaker*>(data);
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		NodeDugEvent *nde = dynamic_cast<NodeDugEvent*>(e);
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
-		SoundMaker *sm =  reinterpret_cast<SoundMaker*>(data);
+		SoundMaker *sm =  static_cast<SoundMaker*>(data);
 		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
 	}
 

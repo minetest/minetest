@@ -28,7 +28,7 @@ class EventManager: public MtEventManager
 {
 	static void receiverReceive(MtEvent *e, void *data)
 	{
-		MtEventReceiver *r = reinterpret_cast<MtEventReceiver*>(data);;
+		MtEventReceiver *r = static_cast<MtEventReceiver*>(data);;
 		r->onEvent(e);
 	}
 	struct FuncSpec{
