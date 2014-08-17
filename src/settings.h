@@ -56,6 +56,9 @@ struct ValueSpec
 	const char *help;
 };
 
+/** function type to register a changed callback */
+typedef void (*setting_changed_callback)();
+
 class Settings
 {
 public:
@@ -423,16 +426,22 @@ public:
 
 	void set(std::string name, std::string value)
 	{
-		JMutexAutoLock lock(m_mutex);
+		{
+			JMutexAutoLock lock(m_mutex);
 
-		m_settings[name] = value;
+			m_settings[name] = value;
+		}
+		doCallbacks(name);
 	}
 
 	void set(std::string name, const char *value)
 	{
-		JMutexAutoLock lock(m_mutex);
+		{
+			JMutexAutoLock lock(m_mutex);
 
-		m_settings[name] = value;
+			m_settings[name] = value;
+		}
+		doCallbacks(name);
 	}
 
 
@@ -848,9 +857,34 @@ public:
 		return *this;
 	}
 
+	void registerChangedCallback(std::string name, setting_changed_callback cbf)
+	{
+		m_callbacks[name].push_back(cbf);
+	}
+
 private:
+
+	void doCallbacks(std::string name)
+	{
+		std::vector<setting_changed_callback> tempvector;
+		{
+			JMutexAutoLock lock(m_mutex);
+			if (m_callbacks.find(name) != m_callbacks.end()) {
+
+				tempvector = m_callbacks[name];
+			}
+		}
+
+		for (std::vector<setting_changed_callback>::iterator iter = tempvector.begin();
+				iter != tempvector.end(); iter ++)
+		{
+			(*iter)();
+		}
+	}
+
 	std::map<std::string, std::string> m_settings;
 	std::map<std::string, std::string> m_defaults;
+	std::map<std::string, std::vector<setting_changed_callback> > m_callbacks;
 	// All methods that access m_settings/m_defaults directly should lock this.
 	JMutex m_mutex;
 };

@@ -69,9 +69,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
-#if USE_FREETYPE
-#include "xCGUITTFont.h"
-#endif
 #include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
@@ -79,6 +76,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "guiEngine.h"
 #include "mapsector.h"
+#include "fontengine.h"
 
 #include "database-sqlite3.h"
 #ifdef USE_LEVELDB
@@ -1495,7 +1493,6 @@ int main(int argc, char *argv[])
 	irr_logger->setLogLevel(irr_log_level[loglevel]);
 
 	porting::initIrrlicht(device);
-	late_init_default_settings(g_settings);
 
 	/*
 		Continue initialization
@@ -1542,37 +1539,9 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
-	std::string font_path = g_settings->get("font_path");
-	gui::IGUIFont *font;
-	#if USE_FREETYPE
-	bool use_freetype = g_settings->getBool("freetype");
-	if (use_freetype) {
-		std::string fallback;
-		if (is_yes(gettext("needs_fallback_font")))
-			fallback = "fallback_";
-		u16 font_size = g_settings->getU16(fallback + "font_size");
-		font_path = g_settings->get(fallback + "font_path");
-		u32 font_shadow = g_settings->getU16(fallback + "font_shadow");
-		u32 font_shadow_alpha = g_settings->getU16(fallback + "font_shadow_alpha");
-		font = gui::CGUITTFont::createTTFont(guienv, font_path.c_str(), font_size,
-			true, true, font_shadow, font_shadow_alpha);
-	} else {
-		font = guienv->getFont(font_path.c_str());
-	}
-	#else
-	font = guienv->getFont(font_path.c_str());
-	#endif
-	if (font)
-		skin->setFont(font);
-	else
-		errorstream << "WARNING: Font file was not found."
-				<< " Using default font." << std::endl;
-	// If font was not found, this will get us one
-	font = skin->getFont();
-	assert(font);
 
-	u32 text_height = font->getDimension(L"Hello, world!").Height;
-	infostream << "text_height=" << text_height << std::endl;
+	fe = new FontEngine(g_settings, guienv);
+	assert(fe != NULL);
 
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 0, 0, 0));
@@ -1855,7 +1824,6 @@ int main(int argc, char *argv[])
 				random_input,
 				input,
 				device,
-				font,
 				worldspec.path,
 				current_playername,
 				current_password,
@@ -1906,16 +1874,13 @@ int main(int argc, char *argv[])
 	g_menucloudsmgr->drop();
 
 	delete input;
+	delete fe;
 
 	/*
 		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
 
-#if USE_FREETYPE
-	if (use_freetype)
-		font->drop();
-#endif
 	delete receiver;
 #endif // !SERVER
 

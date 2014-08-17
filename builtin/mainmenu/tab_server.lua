@@ -35,9 +35,9 @@ local function get_formspec(tabview, name, tabdata)
 		dump(core.setting_getbool("enable_damage")) .. "]"..
 		"checkbox[0.5,1.15;cb_server_announce;".. fgettext("Public") .. ";" ..
 		dump(core.setting_getbool("server_announce")) .. "]"..
-		"field[0.8,3.2;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
+		"field[0.8,3.0;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
 		core.setting_get("name") .. "]" ..
-		"pwdfield[0.8,4.2;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"
+		"pwdfield[0.8,4.1;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"
 		
 	local bind_addr = core.setting_get("bind_address")
 	if bind_addr ~= nil and bind_addr ~= "" then
