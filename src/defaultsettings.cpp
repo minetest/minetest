@@ -185,8 +185,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fallback_font_size", fontsize.str());
 #else
 	settings->setDefault("freetype", "false");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "fontlucida.png"));
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "fontdejavusansmono.png"));
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "lucida_sans"));
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
 
 	std::stringstream fontsize;
 	fontsize << DEFAULT_FONT_SIZE;
