@@ -306,6 +306,11 @@
 #    "error"  = abort on usage of deprecated call (suggested for mod developers)
 #deprecated_lua_api_handling = legacy
 
+# Mod profiler
+#mod_profiling = false
+# Detailed mod profile data
+#detailed_profiling = false
+
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
 #enable_mapgen_debug_info = false
