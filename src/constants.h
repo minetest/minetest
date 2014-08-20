@@ -100,9 +100,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LEGACY_SCALING                                     (2./3.)
 #define TTF_DEFAULT_FONT_SIZE              (13.0 / LEGACY_SCALING)
 #define DEFAULT_FONT_SIZE                                     (14)
-#define DEFAULT_IMGSIZE                                     (48.0)
-#define DEFAULT_XSPACING                    ((15.0 + (1.0 / 3.0)))
-#define DEFAULT_YSPACING                                     (9.0)
 
 #endif
 

@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "client.h"
 #include "util/string.h" // for parseColorString()
+#include "fontengine.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -68,6 +69,44 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	GUIFormSpecMenu
 */
+static unsigned int font_line_height(gui::IGUIFont *font)
+{
+	return font->getDimension(L"Ay").Height + font->getKerningHeight();
+}
+
+static gui::IGUIFont *select_font_by_line_height(double target_line_height)
+{
+	// We don't get to directly select a font according to its
+	// baseline-to-baseline height.  Rather, we select by em size.
+	// The ratio between these varies between fonts.  The font
+	// engine also takes its size parameter not specified in pixels,
+	// as we want, but scaled by display density and gui_scaling,
+	// so invert that scaling here.  Use a binary search among
+	// requested sizes to find the right font.  Our starting bounds
+	// are an em height of 1 (being careful not to request size 0,
+	// which crashes the freetype system) and an em height of the
+	// target baseline-to-baseline height.
+	unsigned int loreq = ceil(1 / porting::getDisplayDensity()
+				/ g_settings->getFloat("gui_scaling"));
+	unsigned int hireq = ceil(target_line_height
+				/ porting::getDisplayDensity()
+				/ g_settings->getFloat("gui_scaling"));
+	unsigned int lohgt = font_line_height(glb_fontengine->getFont(loreq));
+	unsigned int hihgt = font_line_height(glb_fontengine->getFont(hireq));
+	while(hireq - loreq > 1 && lohgt != hihgt) {
+		unsigned int nureq = (loreq + hireq) >> 1;
+		unsigned int nuhgt = font_line_height(glb_fontengine->getFont(nureq));
+		if(nuhgt < target_line_height) {
+			loreq = nureq;
+			lohgt = nuhgt;
+		} else {
+			hireq = nureq;
+			hihgt = nuhgt;
+		}
+	}
+	return glb_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
+}
+
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
 		InventoryManager *invmgr, IGameDef *gamedef,
@@ -89,7 +128,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_lock(false),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
-	m_formspec_version(0)
+	m_formspec_version(0),
+	m_font(NULL)
 #ifdef __ANDROID__
 	,m_JavaDialogFieldName(L"")
 #endif
@@ -266,13 +306,11 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 	if (((parts.size() == 2) || parts.size() == 3) ||
 		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		v2f invsize;
-
 		if (parts[1].find(';') != std::string::npos)
 			parts[1] = parts[1].substr(0,parts[1].find(';'));
 
-		invsize.X = stof(parts[0]);
-		invsize.Y = stof(parts[1]);
+		data->invsize.X = MYMAX(0, stof(parts[0]));
+		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
 		if (parts.size() == 3) {
@@ -281,70 +319,7 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 			}
 		}
 
-		double cur_scaling = porting::getDisplayDensity() *
-				g_settings->getFloat("gui_scaling");
-
-		if (m_lock) {
-			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
-			v2u32 delta = current_screensize - m_lockscreensize;
-
-			if (current_screensize.Y > m_lockscreensize.Y)
-				delta.Y /= 2;
-			else
-				delta.Y = 0;
-
-			if (current_screensize.X > m_lockscreensize.X)
-				delta.X /= 2;
-			else
-				delta.X = 0;
-
-			offset = v2s32(delta.X,delta.Y);
-
-			data->screensize = m_lockscreensize;
-
-			// fixed scaling for fixed size gui elements */
-			cur_scaling = LEGACY_SCALING;
-		}
-		else {
-			offset = v2s32(0,0);
-		}
-
-		/* adjust image size to dpi */
-		int y_partition = 15;
-		imgsize = v2s32(data->screensize.Y/y_partition, data->screensize.Y/y_partition);
-		int min_imgsize = DEFAULT_IMGSIZE * cur_scaling;
-		while ((min_imgsize > imgsize.Y) && (y_partition > 1)) {
-			y_partition--;
-			imgsize = v2s32(data->screensize.Y/y_partition, data->screensize.Y/y_partition);
-		}
-		assert(y_partition > 0);
-
-		/* adjust spacing to dpi */
-		spacing = v2s32(imgsize.X+(DEFAULT_XSPACING * cur_scaling),
-				imgsize.Y+(DEFAULT_YSPACING * cur_scaling));
-
-		padding = v2s32(data->screensize.Y/imgsize.Y, data->screensize.Y/imgsize.Y);
-
-		/* adjust padding to dpi */
-		padding = v2s32(
-				(padding.X/(2.0/3.0)) * cur_scaling,
-				(padding.X/(2.0/3.0)) * cur_scaling
-				);
-		data->size = v2s32(
-			padding.X*2+spacing.X*(invsize.X-1.0)+imgsize.X,
-			padding.Y*2+spacing.Y*(invsize.Y-1.0)+imgsize.Y + m_btn_height - 5
-		);
-		data->rect = core::rect<s32>(
-				data->screensize.X/2 - data->size.X/2 + offset.X,
-				data->screensize.Y/2 - data->size.Y/2 + offset.Y,
-				data->screensize.X/2 + data->size.X/2 + offset.X,
-				data->screensize.Y/2 + data->size.Y/2 + offset.Y
-		);
-
-		DesiredRect = data->rect;
-		recalculateAbsolutePosition(false);
-		data->basepos = getBasePos();
-		data->bp_set = 2;
+		data->explicit_size = true;
 		return;
 	}
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -397,7 +372,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 			return;
 		}
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of list without a size[] element"<<std::endl;
 		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
 		return;
@@ -433,14 +408,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
-		gui::IGUIFont *font = NULL;
-		gui::IGUISkin* skin = Environment->getSkin();
-		if (skin)
-			font = skin->getFont();
-
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
-				pos.X + font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
+				pos.X + m_font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
 				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
@@ -518,35 +488,6 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, std::string element)
 		e->setSmallStep(10);
 		e->setLargeStep(100);
 
-		if (!m_lock) {
-			core::rect<s32> relative_rect = e->getRelativePosition();
-
-			if (!is_horizontal) {
-				s32 original_width = relative_rect.getWidth();
-				s32 width = (original_width/(2.0/3.0))
-						* porting::getDisplayDensity()
-						* g_settings->getFloat("gui_scaling");
-				e->setRelativePosition(core::rect<s32>(
-						relative_rect.UpperLeftCorner.X,
-						relative_rect.UpperLeftCorner.Y,
-						relative_rect.LowerRightCorner.X + (width - original_width),
-						relative_rect.LowerRightCorner.Y
-					));
-			}
-			else  {
-				s32 original_height = relative_rect.getHeight();
-				s32 height = (original_height/(2.0/3.0))
-						* porting::getDisplayDensity()
-						* g_settings->getFloat("gui_scaling");
-				e->setRelativePosition(core::rect<s32>(
-						relative_rect.UpperLeftCorner.X,
-						relative_rect.UpperLeftCorner.Y,
-						relative_rect.LowerRightCorner.X,
-						relative_rect.LowerRightCorner.Y + (height - original_height)
-					));
-			}
-		}
-
 		m_scrollbars.push_back(std::pair<FieldSpec,gui::IGUIScrollBar*>(spec,e));
 		m_fields.push_back(spec);
 		return;
@@ -576,7 +517,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos, geom));
 		return;
@@ -592,7 +533,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos));
 		return;
@@ -622,7 +563,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of item_image without a size[] element"<<std::endl;
 		m_itemimages.push_back(ImageDrawSpec(name, pos, geom));
 		return;
@@ -658,7 +599,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 				core::rect<s32>(pos.X, pos.Y - m_btn_height,
 						pos.X + geom.X, pos.Y + m_btn_height);
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
 
 		label = unescape_string(label);
@@ -717,7 +658,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
 			}
 		}
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
 		m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
 		return;
@@ -1008,8 +949,9 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= m_btn_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
+			int font_height = font_line_height(m_font);
+			rect.UpperLeftCorner.Y -= font_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 
@@ -1038,20 +980,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 	core::rect<s32> rect;
 
-	if(!data->bp_set)
-	{
-		rect = core::rect<s32>(
-			data->screensize.X/2 - 580/2,
-			data->screensize.Y/2 - 300/2,
-			data->screensize.X/2 + 580/2,
-			data->screensize.Y/2 + 300/2
-		);
-		DesiredRect = rect;
-		recalculateAbsolutePosition(false);
-		data->basepos = getBasePos();
-		data->bp_set = 1;
-	}
-	else if(data->bp_set == 2)
+	if(data->explicit_size)
 		errorstream<<"WARNING: invalid use of unpositioned \"field\" in inventory"<<std::endl;
 
 	v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
@@ -1103,8 +1032,9 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= m_btn_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
+			int font_height = font_line_height(m_font);
+			rect.UpperLeftCorner.Y -= font_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 	}
@@ -1147,7 +1077,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-	if(data->bp_set != 2)
+	if(!data->explicit_size)
 		errorstream<<"WARNING: invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
 
 	if(m_form_src)
@@ -1199,8 +1129,9 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			rect.UpperLeftCorner.Y -= m_btn_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + m_btn_height;
+			int font_height = font_line_height(m_font);
+			rect.UpperLeftCorner.Y -= font_height;
+			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
 		}
 	}
@@ -1240,33 +1171,46 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 
 		v2s32 pos = padding;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
-		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
+		pos.Y += (stof(v_pos[1]) + 7.0/30.0) * (float)spacing.Y;
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
+		int font_height = font_line_height(m_font);
+
 		text = unescape_string(text);
+		std::vector<std::string> lines = split(text, '\n');
 
-		std::wstring wlabel = narrow_to_wide(text.c_str());
+		for (unsigned int i = 0; i != lines.size(); i++) {
+			// Lines are spaced at the nominal distance of
+			// 2/5 inventory slot, even if the font doesn't
+			// quite match that.  This provides consistent
+			// form layout, at the expense of sometimes
+			// having sub-optimal spacing for the font.
+			// We multiply by 2 and then divide by 5, rather
+			// than multiply by 0.4, to get exact results
+			// in the integer cases: 0.4 is not exactly
+			// representable in binary floating point.
+			s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
+			std::wstring wlabel = narrow_to_wide(lines[i].c_str());
+			core::rect<s32> rect = core::rect<s32>(
+				pos.X, posy - font_height,
+				pos.X + m_font->getDimension(wlabel.c_str()).Width,
+				posy + font_height);
+			FieldSpec spec(
+				L"",
+				wlabel,
+				L"",
+				258+m_fields.size()
+			);
+			gui::IGUIStaticText *e =
+				Environment->addStaticText(spec.flabel.c_str(),
+					rect, false, false, this, spec.fid);
+			e->setTextAlignment(gui::EGUIA_UPPERLEFT,
+						gui::EGUIA_CENTER);
+			m_fields.push_back(spec);
+		}
 
-		gui::IGUIFont *font = NULL;
-				gui::IGUISkin* skin = Environment->getSkin();
-				if (skin)
-					font = skin->getFont();
-
-		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
-				pos.X + font->getDimension(wlabel.c_str()).Width,
-				pos.Y+((imgsize.Y/2) + m_btn_height));
-
-		FieldSpec spec(
-			L"",
-			wlabel,
-			L"",
-			258+m_fields.size()
-		);
-		Environment->addStaticText(spec.flabel.c_str(), rect, false, false, this, spec.fid);
-		m_fields.push_back(spec);
 		return;
 	}
 	errorstream<< "Invalid label element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1288,21 +1232,15 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
-		gui::IGUIFont *font = NULL;
-				gui::IGUISkin* skin = Environment->getSkin();
-				if (skin)
-					font = skin->getFont();
-
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2)- m_btn_height),
 				pos.X+15, pos.Y +
-					(font->getKerningHeight() +
-					font->getDimension(text.c_str()).Height)
+					font_line_height(m_font)
 					* (text.length()+1)
 					+((imgsize.Y/2)- m_btn_height));
 		//actually text.length() would be correct but adding +1 avoids to break all mods
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
 		std::wstring label = L"";
@@ -1368,7 +1306,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
 
 		image_name = unescape_string(image_name);
@@ -1452,7 +1390,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y - m_btn_height * 2;
 		v2s32 geom;
-		geom.X = data->screensize.Y;
+		geom.X = DesiredRect.getWidth();
 		geom.Y = m_btn_height*2;
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
@@ -1519,7 +1457,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		if(data->bp_set != 2)
+		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;
 
 		IItemDefManager *idef = m_gamedef->idef();
@@ -1683,6 +1621,30 @@ bool GUIFormSpecMenu::parseVersionDirect(std::string data)
 	return false;
 }
 
+bool GUIFormSpecMenu::parseSizeDirect(parserData* data, std::string element)
+{
+	if (element == "")
+		return false;
+
+	std::vector<std::string> parts = split(element,'[');
+
+	if (parts.size() < 2)
+		return false;
+
+	std::string type = trim(parts[0]);
+	std::string description = trim(parts[1]);
+
+	if (type != "size" && type != "invsize")
+		return false;
+
+	if (type == "invsize")
+		log_deprecated("Deprecated formspec element \"invsize\" is used");
+
+	parseSize(data, description);
+
+	return true;
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 {
 	//some prechecks
@@ -1707,17 +1669,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
-
-	if (type == "size") {
-		parseSize(data,description);
-		return;
-	}
-
-	if (type == "invsize") {
-		log_deprecated("Deprecated formspec element \"invsize\" is used");
-		parseSize(data,description);
-		return;
-	}
 
 	if (type == "list") {
 		parseList(data,description);
@@ -1849,14 +1800,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		return;
 	}
 
-	gui::IGUIFont *font = NULL;
-			gui::IGUISkin* skin = Environment->getSkin();
-			if (skin)
-				font = skin->getFont();
-
-	m_btn_height = font->getDimension(L"Some unimportant test String").Height;
-	assert(m_btn_height > 0);
-
 	parserData mydata;
 
 	//preserve tables
@@ -1894,12 +1837,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	// Base position of contents of form
 	mydata.basepos = getBasePos();
-
-	// State of basepos, 0 = not set, 1= set by formspec, 2 = set by size[] element
-	// Used to adjust form size automatically if needed
-	// A proceed button is added if there is no size[] element
-	mydata.bp_set = 0;
-
 
 	/* Convert m_init_draw_spec to m_inventorylists */
 
@@ -1954,13 +1891,132 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	/* we need size first in order to calculate image scale */
+	mydata.explicit_size = false;
+	for (; i< elements.size(); i++) {
+		if (!parseSizeDirect(&mydata, elements[i])) {
+			break;
+		}
+	}
+
+	if (mydata.explicit_size) {
+		// compute scaling for specified form size
+		if (m_lock) {
+			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
+			v2u32 delta = current_screensize - m_lockscreensize;
+
+			if (current_screensize.Y > m_lockscreensize.Y)
+				delta.Y /= 2;
+			else
+				delta.Y = 0;
+
+			if (current_screensize.X > m_lockscreensize.X)
+				delta.X /= 2;
+			else
+				delta.X = 0;
+
+			offset = v2s32(delta.X,delta.Y);
+
+			mydata.screensize = m_lockscreensize;
+		} else {
+			offset = v2s32(0,0);
+		}
+
+		double gui_scaling = g_settings->getFloat("gui_scaling");
+		double screen_dpi = porting::getDisplayDensity() * 96;
+
+		double use_imgsize;
+		if (m_lock) {
+			// In fixed-size mode, inventory image size
+			// is 0.53 inch multiplied by the gui_scaling
+			// config parameter.  This magic size is chosen
+			// to make the main menu (15.5 inventory images
+			// wide, including border) just fit into the
+			// default window (800 pixels wide) at 96 DPI
+			// and default scaling (1.00).
+			use_imgsize = 0.53 * screen_dpi * gui_scaling;
+		} else {
+			// In variable-size mode, we prefer to make the
+			// inventory image size 1/15 of screen height,
+			// multiplied by the gui_scaling config parameter.
+			// If the preferred size won't fit the whole
+			// form on the screen, either horizontally or
+			// vertically, then we scale it down to fit.
+			// (The magic numbers in the computation of what
+			// fits arise from the scaling factors in the
+			// following stanza, including the form border,
+			// help text space, and 0.1 inventory slot spare.)
+			// However, a minimum size is also set, that
+			// the image size can't be less than 0.3 inch
+			// multiplied by gui_scaling, even if this means
+			// the form doesn't fit the screen.
+			double prefer_imgsize = mydata.screensize.Y / 15 *
+							gui_scaling;
+			double fitx_imgsize = mydata.screensize.X /
+				((5.0/4.0) * (0.5 + mydata.invsize.X));
+			double fity_imgsize = mydata.screensize.Y /
+				((15.0/13.0) * (0.85 * mydata.invsize.Y));
+			double screen_dpi = porting::getDisplayDensity() * 96;
+			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
+			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
+				MYMIN(fitx_imgsize, fity_imgsize)));
+		}
+
+		// Everything else is scaled in proportion to the
+		// inventory image size.  The inventory slot spacing
+		// is 5/4 image size horizontally and 15/13 image size
+		// vertically.	The padding around the form (incorporating
+		// the border of the outer inventory slots) is 3/8
+		// image size.	Font height (baseline to baseline)
+		// is 2/5 vertical inventory slot spacing, and button
+		// half-height is 7/8 of font height.
+		imgsize = v2s32(use_imgsize, use_imgsize);
+		spacing = v2s32(use_imgsize*5.0/4, use_imgsize*15.0/13);
+		padding = v2s32(use_imgsize*3.0/8, use_imgsize*3.0/8);
+		double target_font_height = use_imgsize*15.0/13 * 0.4;
+		m_btn_height = use_imgsize*15.0/13 * 0.35;
+
+		m_font = select_font_by_line_height(target_font_height);
+
+		mydata.size = v2s32(
+			padding.X*2+spacing.X*(mydata.invsize.X-1.0)+imgsize.X,
+			padding.Y*2+spacing.Y*(mydata.invsize.Y-1.0)+imgsize.Y + m_btn_height*2.0/3.0
+		);
+		DesiredRect = mydata.rect = core::rect<s32>(
+				mydata.screensize.X/2 - mydata.size.X/2 + offset.X,
+				mydata.screensize.Y/2 - mydata.size.Y/2 + offset.Y,
+				mydata.screensize.X/2 + mydata.size.X/2 + offset.X,
+				mydata.screensize.Y/2 + mydata.size.Y/2 + offset.Y
+		);
+	} else {
+		// Non-size[] form must consist only of text fields and
+		// implicit "Proceed" button.  Use default font, and
+		// temporary form size which will be recalculated below.
+		m_font = glb_fontengine->getFont();
+		m_btn_height = font_line_height(m_font) * 0.875;
+		DesiredRect = core::rect<s32>(
+			mydata.screensize.X/2 - 580/2,
+			mydata.screensize.Y/2 - 300/2,
+			mydata.screensize.X/2 + 580/2,
+			mydata.screensize.Y/2 + 300/2
+		);
+	}
+	recalculateAbsolutePosition(false);
+	mydata.basepos = getBasePos();
+	m_tooltip_element->setOverrideFont(m_font);
+
+	gui::IGUISkin* skin = Environment->getSkin();
+	assert(skin != NULL);
+	gui::IGUIFont *old_font = skin->getFont();
+	skin->setFont(m_font);
+
 	for (; i< elements.size(); i++) {
 		parseElement(&mydata, elements[i]);
 	}
 
-	// If there's fields, add a Proceed button
-	if (m_fields.size() && mydata.bp_set != 2) {
-		// if the size wasn't set by an invsize[] or size[] adjust it now to fit all the fields
+	// If there are fields without explicit size[], add a "Proceed"
+	// button and adjust size to fit all the fields.
+	if (m_fields.size() && !mydata.explicit_size) {
 		mydata.rect = core::rect<s32>(
 				mydata.screensize.X/2 - 580/2,
 				mydata.screensize.Y/2 - 300/2,
@@ -1992,6 +2048,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			|| !isMyChild(focused_element)
 			|| focused_element->getType() == gui::EGUIET_TAB_CONTROL)
 		setInitialFocus();
+
+	skin->setFont(old_font);
 }
 
 #ifdef __ANDROID__
@@ -2067,11 +2125,6 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-
-	gui::IGUIFont *font = NULL;
-	gui::IGUISkin* skin = Environment->getSkin();
-	if (skin)
-		font = skin->getFont();
 
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	if(!inv){
@@ -2149,7 +2202,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 			}
 			if(!item.empty())
 			{
-				drawItemStack(driver, font, item,
+				drawItemStack(driver, m_font, item,
 						rect, &AbsoluteClippingRect, m_gamedef);
 			}
 
@@ -2183,12 +2236,6 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	// Get font
-	gui::IGUIFont *font = NULL;
-	gui::IGUISkin* skin = Environment->getSkin();
-	if (skin)
-		font = skin->getFont();
-
 	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 	assert(inv);
 	InventoryList *list = inv->getList(m_selected_item->listname);
@@ -2198,7 +2245,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
-	drawItemStack(driver, font, stack, rect, NULL, m_gamedef);
+	drawItemStack(driver, m_font, stack, rect, NULL, m_gamedef);
 }
 
 void GUIFormSpecMenu::drawMenu()
@@ -2210,6 +2257,11 @@ void GUIFormSpecMenu::drawMenu()
 			regenerateGui(m_screensize_old);
 		}
 	}
+
+	gui::IGUISkin* skin = Environment->getSkin();
+	assert(skin != NULL);
+	gui::IGUIFont *old_font = skin->getFont();
+	skin->setFont(m_font);
 
 	updateSelectedItem();
 
@@ -2409,6 +2461,8 @@ void GUIFormSpecMenu::drawMenu()
 		Draw dragged item stack
 	*/
 	drawSelectedItem();
+
+	skin->setFont(old_font);
 }
 
 void GUIFormSpecMenu::updateSelectedItem()
@@ -2665,6 +2719,30 @@ static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
+	// The IGUITabControl renders visually using the skin's selected
+	// font, which we override for the duration of form drawing,
+	// but computes tab hotspots based on how it would have rendered
+	// using the font that is selected at the time of button release.
+	// To make these two consistent, temporarily override the skin's
+	// font while the IGUITabControl is processing the event.
+	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
+			event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(
+				core::position2d<s32>(x, y));
+		if (hovered->getType() == gui::EGUIET_TAB_CONTROL) {
+			gui::IGUISkin* skin = Environment->getSkin();
+			assert(skin != NULL);
+			gui::IGUIFont *old_font = skin->getFont();
+			skin->setFont(m_font);
+			bool retval = hovered->OnEvent(event);
+			skin->setFont(old_font);
+			return retval;
+		}
+	}
+
 	// Fix Esc/Return key being eaten by checkboxen and tables
 	if(event.EventType==EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
