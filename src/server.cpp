@@ -4580,8 +4580,13 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
 	player->hud_flags = flags;
+	
+	PlayerSAO* playersao = player->getPlayerSAO();
+	
+	if (playersao == NULL)
+		return false;
 
-	m_script->player_event(player->getPlayerSAO(),"hud_changed");
+	m_script->player_event(playersao, "hud_changed");
 	return true;
 }
 
