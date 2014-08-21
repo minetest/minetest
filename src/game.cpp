@@ -2399,8 +2399,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					damage_flash += 8.0 * event.player_damage.amount;
 
 					player->hurt_tilt_timer = 1.5;
-					player->hurt_tilt_strength = event.player_damage.amount/2;
-					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 2.0, 10.0);
+					player->hurt_tilt_strength = event.player_damage.amount/4;
+					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 1.0, 4.0);
 
 					MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
 					gamedef->event()->put(e);
