@@ -1448,14 +1448,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Set up player
 		*/
-
-		// Get player name
 		char playername[PLAYERNAME_SIZE];
-		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
-		{
-			playername[i] = data[3+i];
+		unsigned int playername_length = 0;
+		for (; playername_length < PLAYERNAME_SIZE; playername_length++ ) {
+			playername[playername_length] = data[3+playername_length];
+			if (data[3+playername_length] == 0)
+				break;
 		}
-		playername[PLAYERNAME_SIZE-1] = 0;
+
+		if (playername_length == PLAYERNAME_SIZE) {
+			actionstream<<"Server: Player with name exceeding max length "
+					<<"tried to connect from "<<addr_s<<std::endl;
+			DenyAccess(peer_id, L"Name to long");
+			return;
+		}
+
 
 		if(playername[0]=='\0')
 		{

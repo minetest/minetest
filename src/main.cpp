@@ -79,6 +79,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "guiEngine.h"
 #include "mapsector.h"
+#include "player.h"
 
 #include "database-sqlite3.h"
 #ifdef USE_LEVELDB
@@ -1841,6 +1842,13 @@ int main(int argc, char *argv[])
 					g_settings->updateConfigFile(g_settings_path.c_str());
 				}
 				break;
+			}
+
+			if (current_playername.length() > PLAYERNAME_SIZE-1) {
+				error_message = wgettext("Player name to long.");
+				playername = current_playername.substr(0,PLAYERNAME_SIZE-1);
+				g_settings->set("name", playername);
+				continue;
 			}
 
 			/*
