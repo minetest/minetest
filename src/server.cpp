@@ -1451,11 +1451,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get player name
 		char playername[PLAYERNAME_SIZE];
-		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
-		{
-			playername[i] = data[3+i];
-		}
-		playername[PLAYERNAME_SIZE-1] = 0;
+		strlcpy(playername, (char *) data + 3, PLAYERNAME_SIZE);
 
 		if(playername[0]=='\0')
 		{
@@ -1499,18 +1495,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get password
 		char given_password[PASSWORD_SIZE];
-		if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
+		if(datasize < 2 + 1 + PLAYERNAME_SIZE + PASSWORD_SIZE)
 		{
 			// old version - assume blank password
 			given_password[0] = 0;
 		}
 		else
 		{
-			for(u32 i=0; i<PASSWORD_SIZE-1; i++)
-			{
-				given_password[i] = data[23+i];
-			}
-			given_password[PASSWORD_SIZE-1] = 0;
+			strlcpy(given_password,
+					(char *) data + 2 + 1 + PLAYERNAME_SIZE,
+					PASSWORD_SIZE);
 		}
 
 		if(!base64_is_valid(given_password)){
@@ -1543,7 +1537,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(!has_auth){
 			if(!isSingleplayer() &&
 					g_settings->getBool("disallow_empty_password") &&
-					std::string(given_password) == ""){
+					given_password[0] == '\0'){
 				actionstream<<"Server: "<<playername
 						<<" supplied empty password"<<std::endl;
 				DenyAccess(peer_id, L"Empty passwords are "

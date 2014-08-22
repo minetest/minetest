@@ -443,39 +443,25 @@ void ServerEnvironment::savePlayer(const std::string &playername)
 
 Player *ServerEnvironment::loadPlayer(const std::string &playername)
 {
-	std::string players_path = m_path_world + DIR_DELIM "players" DIR_DELIM;
-
 	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
-	bool newplayer = false;
-	bool found = false;
+	bool new_player = false;
 	if (!player) {
 		player = new RemotePlayer(m_gamedef);
-		newplayer = true;
+		new_player = true;
 	}
 
-	RemotePlayer testplayer(m_gamedef);
-	std::string path = players_path + playername;
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			return NULL;
-		}
-		testplayer.deSerialize(is, path);
-		is.close();
-		if (testplayer.getName() == playername) {
-			*player = testplayer;
-			found = true;
-			break;
-		}
-		path = players_path + playername + itos(i);
-	}
-	if (!found) {
-		infostream << "Player file for player " << playername
-				<< " not found" << std::endl;
+	std::string path = m_path_world + DIR_DELIM "players" DIR_DELIM
+			+ playername;
+	// Open file and deserialize
+	std::ifstream is(path.c_str(), std::ios_base::binary);
+	if (!is.good()) {
+		infostream << "Unable to open player file for "
+				<< playername << std::endl;
 		return NULL;
 	}
-	if (newplayer) {
+	player->deSerialize(is, path);
+	is.close();
+	if (new_player) {
 		addPlayer(player);
 	}
 	return player;
