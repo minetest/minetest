@@ -130,7 +130,6 @@ void the_game(
 	bool random_input,
 	InputHandler *input,
 	IrrlichtDevice *device,
-	gui::IGUIFont* font,
 	std::string map_dir,
 	std::string playername,
 	std::string password,

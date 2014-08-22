@@ -453,6 +453,7 @@ set(minetest_SRCS
 	client.cpp
 	clientmedia.cpp
 	filecache.cpp
+	fontengine.cpp
 	tile.cpp
 	shader.cpp
 	game.cpp

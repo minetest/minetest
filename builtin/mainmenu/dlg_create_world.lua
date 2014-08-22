@@ -48,20 +48,20 @@ local function create_world_formspec(dialogdata)
 	local retval =
 		"size[12,6,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
+		"field[4.5,0;6,0.5;te_world_name;;]" ..
 
 		"label[2,1;" .. fgettext("Seed") .. "]"..
-		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
+		"field[4.5,1;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.5,2;6;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
-		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
+		"textlist[4.5,3;6,2.3;games;" .. gamemgr.gamelist() ..
 		";" .. gameidx .. ";true]" ..
 
-		"button[5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[7.5,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		"button[4.5,5.5;2.6,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[7.75,5.5;2.8,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 
 	return retval
 

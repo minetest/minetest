@@ -582,7 +582,7 @@ function modstore.getsearchpage(tabview, name, tabdata)
 
 	retval = retval ..
 		"button[9.5,0.2;2.5,0.5;btn_modstore_search;".. fgettext("Search") .. "]" ..
-		"field[0.5,0.5;9,0.5;te_modstore_search;;" .. search .. "]"
+		"field[0.5,0.2;8.75,0.5;te_modstore_search;;" .. search .. "]"
 
 	retval = retval ..
 		modstore.getmodlist(

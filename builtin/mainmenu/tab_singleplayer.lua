@@ -45,7 +45,7 @@ local function singleplayer_refresh_gamebar()
 
 	local btnbar = buttonbar_create("game_button_bar",
 		game_buttonbar_button_handler,
-		{x=-0.3,y=5.65}, "horizontal", {x=12.4,y=1.15})
+		{x=-0.6,y=6}, "horizontal", {x=13,y=1.25})
 
 	for i=1,#gamemgr.games,1 do
 		local btn_name = "game_btnbar_" .. gamemgr.games[i].id
@@ -90,7 +90,7 @@ local function get_formspec(tabview, name, tabdata)
 			dump(core.setting_getbool("creative_mode")) .. "]"..
 			"checkbox[0.5,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
 			dump(core.setting_getbool("enable_damage")) .. "]"..
-			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
+			"textlist[4,0.25;7.75,3.7;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]"
 	return retval

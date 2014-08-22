@@ -28,16 +28,16 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		"vertlabel[0,-0.25;".. fgettext("MODS") .. "]" ..
-		"label[0.8,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0.75,0.25;4.5,4;modlist;" ..
+		"label[0.55,-0.25;".. fgettext("Installed Mods:") .. "]" ..
+		"textlist[0.55,0.25;4.7,4;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) ..
 		";" .. tabdata.selected_mod .. "]"
 
 	retval = retval ..
-		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" ..
+		"label[0.55,4.2;" .. fgettext("Add mod:") .. "]" ..
 --		TODO Disabled due to upcoming release 0.4.8 and irrlicht messing up localization
---		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
-		"button[2.45,4.85;3.05,0.5;btn_modstore;".. fgettext("Online mod repository") .. "]"
+--		"button[0.55,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
+		"button[2.25,4.85;3.05,0.5;btn_modstore;".. fgettext("Online mod repository") .. "]"
 
 	local selected_mod = nil
 
@@ -62,7 +62,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		retval = retval
-				.. "image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]"
+				.. "image[5.5,0;2.5,2;" .. core.formspec_escape(modscreenshot) .. "]"
 				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
 
 		local descriptionlines = nil

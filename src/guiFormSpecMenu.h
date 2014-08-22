@@ -287,7 +287,7 @@ protected:
 
 	v2s32 padding;
 	v2s32 spacing;
-	v2s32 imgsize;
+	v2s32 inventory_imgsize;
 	v2s32 offset;
 
 	irr::IrrlichtDevice* m_device;
@@ -327,6 +327,8 @@ protected:
 	s32 m_old_tooltip_id;
 	std::string m_old_tooltip;
 
+	unsigned int m_current_font_size;
+
 	bool m_allowclose;
 	bool m_lock;
 	v2u32 m_lockscreensize;
@@ -345,7 +347,6 @@ private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
 	GUIFormSpecMenu **m_ext_ptr;
-	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
 
 	typedef struct {
@@ -400,6 +401,8 @@ private:
 	void parseTooltip(parserData* data,std::string element);
 	bool parseVersionDirect(std::string data);
 	void parseScrollBar(parserData* data, std::string element);
+
+	bool parseSizeDirect(parserData* data, std::string element);
 
 	/**
 	 * check if event is part of a double click
