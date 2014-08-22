@@ -63,7 +63,8 @@ function create_rename_modpack_dlg(selected_index)
 	local retval = dialog_create("dlg_delete_mod",
 					rename_modpack_formspec,
 					rename_modpack_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.data.selected = selected_index
 	return retval
 end

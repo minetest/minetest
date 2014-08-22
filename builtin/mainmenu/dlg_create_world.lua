@@ -126,7 +126,8 @@ function create_create_world_dlg(update_worldlistfilter)
 	local retval = dialog_create("sp_create_world",
 					create_world_formspec,
 					create_world_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.update_worldlist_filter = update_worldlistfilter
 	
 	return retval

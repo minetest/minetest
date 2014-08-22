@@ -235,7 +235,8 @@ function create_configure_world_dlg(worldidx)
 	local dlg = dialog_create("sp_config_world",
 					get_formspec,
 					handle_buttons,
-					nil)
+					nil,
+					ui)
 
 	--TODO read from settings
 	dlg.data.hide_gamemods = false

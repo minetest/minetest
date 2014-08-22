@@ -62,7 +62,8 @@ function create_delete_mod_dlg(selected_index)
 	local retval = dialog_create("dlg_delete_mod",
 					delete_mod_formspec,
 					delete_mod_buttonhandler,
-					nil)
+					nil,
+					ui)
 	retval.data.selected = selected_index
 	return retval
 end

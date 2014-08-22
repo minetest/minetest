@@ -137,8 +137,12 @@ local buttonbar_metatable = {
 	
 	hide = function(self) self.hidden = true end,
 	show = function(self) self.hidden = false end,
-
-	delete = function(self) ui.delete(self) end,
+	
+	delete = function(self)
+		if self.parent_ui ~= nil then
+			self.parent_ui:delete(self)
+		end
+	end,
 	
 	add_button = function(self, name, caption, image)
 			if caption == nil then caption = "" end
@@ -171,7 +175,8 @@ local buttonbar_metatable = {
 
 buttonbar_metatable.__index = buttonbar_metatable
 
-function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
+function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size,
+		parent_ui)
 	assert(name ~= nil)
 	assert(cbf_buttonhandler ~= nil)
 	assert(orientation == "vertical" or orientation == "horizontal")
@@ -179,15 +184,16 @@ function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
 	assert(size ~= nil and type(size) == "table")
 
 	local self = {}
-	self.name = name
-	self.type = "addon"
-	self.bgcolor = "#000000"
-	self.pos = pos
-	self.size = size
-	self.orientation = orientation
-	self.startbutton = 1
+	self.name              = name
+	self.type              = "addon"
+	self.bgcolor           = "#000000"
+	self.pos               = pos
+	self.size              = size
+	self.orientation       = orientation
+	self.startbutton       = 1
 	self.have_move_buttons = false
-	self.hidden = false
+	self.hidden            = false
+	self.parent_ui         = parent_ui
 	
 	if self.orientation == "horizontal" then
 			self.btn_size = self.size.y
@@ -203,7 +209,10 @@ function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
 	self.buttons = {}
 	
 	setmetatable(self,buttonbar_metatable)
-
-	ui.add(self)
+	
+	if self.parent_ui ~= nil then
+		self.parent_ui:add(self)
+	end
+	
 	return self
 end
