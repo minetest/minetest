@@ -1064,6 +1064,52 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 }
 
 /******************************************************************************/
+static void updateChat(Client& client, f32 dtime, bool show_debug,
+		const v2u32& screensize, bool show_chat, u32 show_profiler,
+		ChatBackend& chat_backend, gui::IGUIStaticText* guitext_chat,
+		gui::IGUIFont* font)
+{
+	// Add chat log output for errors to be shown in chat
+	static LogOutputBuffer chat_log_error_buf(LMT_ERROR);
+
+	// Get new messages from error log buffer
+	while(!chat_log_error_buf.empty()) {
+		chat_backend.addMessage(L"", narrow_to_wide(chat_log_error_buf.get()));
+	}
+
+	// Get new messages from client
+	std::wstring message;
+	while (client.getChatMessage(message)) {
+		chat_backend.addUnparsedMessage(message);
+	}
+
+	// Remove old messages
+	chat_backend.step(dtime);
+
+	// Display all messages in a static text element
+	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
+	std::wstring recent_chat       = chat_backend.getRecentChat();
+
+	// TODO replace by fontengine fcts
+	unsigned int line_height       = font->getDimension(L"Ay").Height + font->getKerningHeight();
+
+	guitext_chat->setText(recent_chat.c_str());
+
+	// Update gui element size and position
+	s32 chat_y = 5 + line_height;
+	if (show_debug)
+		chat_y += line_height;
+
+	core::rect<s32> rect(10, chat_y, font->getDimension(recent_chat.c_str()).Width +10,
+			chat_y + (recent_chat_count * line_height));
+
+	guitext_chat->setRelativePosition(rect);
+	// Don't show chat if disabled or empty or profiler is enabled
+	guitext_chat->setVisible(
+			show_chat && recent_chat_count != 0 && !show_profiler);
+}
+
+/******************************************************************************/
 void the_game(bool &kill, bool random_input, InputHandler *input,
 	IrrlichtDevice *device, gui::IGUIFont* font, std::string map_dir,
 	std::string playername, std::string password,
@@ -1132,9 +1178,6 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	// Sound maker
 	SoundMaker soundmaker(sound, nodedef);
 	soundmaker.registerReceiver(&eventmgr);
-
-	// Add chat log output for errors to be shown in chat
-	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
 
 	// Create UI for modifying quicktune values
 	QuicktuneShortcutter quicktune;
@@ -1527,24 +1570,24 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
 			L"Minetest",
 			core::rect<s32>(0, 0, 0, 0),
-			false, false);
+			false, false, guiroot);
 	// Second line of debug text
 	gui::IGUIStaticText *guitext2 = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
-			false, false);
+			false, false, guiroot);
 	// At the middle of the screen
 	// Object infos are shown in this
 	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0,0,400,text_height*5+5) + v2s32(100,200),
-			false, true);
+			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	gui::IGUIStaticText *guitext_status = guienv->addStaticText(
 			L"<Status>",
 			core::rect<s32>(0,0,0,0),
-			false, false);
+			false, false, guiroot);
 	guitext_status->setVisible(false);
 
 	std::wstring statustext;
@@ -1555,7 +1598,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			L"",
 			core::rect<s32>(0,0,0,0),
 			//false, false); // Disable word wrap as of now
-			false, true);
+			false, true, guiroot);
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend.clearRecentChat();
 	// Chat backend and console
@@ -1565,7 +1608,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	gui::IGUIStaticText *guitext_profiler = guienv->addStaticText(
 			L"<Profiler>",
 			core::rect<s32>(0,0,0,0),
-			false, false);
+			false, false, guiroot);
 	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
 	guitext_profiler->setWordWrap(true);
@@ -3311,43 +3354,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		/*
 			Get chat messages from client
 		*/
-		{
-			// Get new messages from error log buffer
-			while(!chat_log_error_buf.empty())
-			{
-				chat_backend.addMessage(L"", narrow_to_wide(
-						chat_log_error_buf.get()));
-			}
-			// Get new messages from client
-			std::wstring message;
-			while(client.getChatMessage(message))
-			{
-				chat_backend.addUnparsedMessage(message);
-			}
-			// Remove old messages
-			chat_backend.step(dtime);
-
-			// Display all messages in a static text element
-			u32 recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
-			std::wstring recent_chat = chat_backend.getRecentChat();
-			guitext_chat->setText(recent_chat.c_str());
-
-			// Update gui element size and position
-			s32 chat_y = 5+(text_height+5);
-			if(show_debug)
-				chat_y += (text_height+5);
-			core::rect<s32> rect(
-				10,
-				chat_y,
-				screensize.X - 10,
-				chat_y + guitext_chat->getTextHeight()
-			);
-			guitext_chat->setRelativePosition(rect);
-
-			// Don't show chat if disabled or empty or profiler is enabled
-			guitext_chat->setVisible(show_chat && recent_chat_count != 0
-					&& !show_profiler);
-		}
+		updateChat(client, dtime, show_debug, screensize, show_chat,
+				show_profiler, chat_backend, guitext_chat, font);
 
 		/*
 			Inventory
@@ -3386,6 +3394,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			update_draw_list_timer = 0;
 			client.getEnv().getClientMap().updateDrawList(driver);
 			update_draw_list_last_cam_dir = camera_direction;
+		}
+
+		/*
+			make sure menu is on top
+		*/
+		if ((!noMenuActive()) && (current_formspec)) {
+				guiroot->bringToFront(current_formspec);
 		}
 
 		/*
