@@ -33,11 +33,11 @@ When a menu or inventory is displayed:
 
 Special settings
 ----------------
-There are some settings esspecially usefull for Android users. Minetest's config
+There are some settings especially useful for Android users. Minetest's config
 file can usually be found at /mnt/sdcard/Minetest.
 
 * gui_scaling: this is a user-specified scaling factor for the GUI- In case
-               main menu is to big or small on your device, try changing this
+               main menu is too big or small on your device, try changing this
                value.
 * inventory_image_hack: if your inventory items are messed up, try setting
                this to true
@@ -58,7 +58,7 @@ number of Android's version represents the Android internal version code. This
 version code is strictly incremental. It's incremented for each official
 Minetest Android build.
 
-E.g. pre-release Minetest Android builds have been 0.4.9.3, while the first
+E.g. prerelease Minetest Android builds have been 0.4.9.3, while the first
 official version most likely will be 0.4.10.4
 
 Requirements
@@ -105,7 +105,7 @@ Release build:
 
 * Execute "make release"
 * Enter your keystore as well as your Mintest key password once asked. Be
-  carefull it's shown on console in clear text!
+  careful it's shown on console in clear text!
 * The result can be found at "bin/Minetest-release.apk"
 
 Other things that may be nice to know
