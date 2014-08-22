@@ -1845,7 +1845,7 @@ int main(int argc, char *argv[])
 			}
 
 			if (current_playername.length() > PLAYERNAME_SIZE-1) {
-				error_message = wgettext("Player name to long.");
+				error_message = wgettext("Player name too long.");
 				playername = current_playername.substr(0,PLAYERNAME_SIZE-1);
 				g_settings->set("name", playername);
 				continue;
