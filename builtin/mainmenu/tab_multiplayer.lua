@@ -33,7 +33,6 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval ..
 		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;".. fgettext("Delete") .. "]"
 	end
-
 	retval = retval ..
 		"button[9,4.95;2.5,0.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
 		"field[9.3,3.75;2.5,0.5;te_name;;" ..core.setting_get("name") .."]" ..
@@ -75,7 +74,11 @@ end
 local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields["te_name"] ~= nil then
-		gamedata.playername = fields["te_name"]
+		local playername = fields["te_name"]
+		if string.len(playername) > 18 then
+			playername = string.sub(playername, 1, 18)
+		end
+		gamedata.playername = playername
 		core.setting_set("name", fields["te_name"])
 	end
 
