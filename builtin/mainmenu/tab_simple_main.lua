@@ -131,7 +131,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields["btn_mp_connect"] ~= nil or
 		fields["key_enter"] ~= nil then
 
-		gamedata.playername		= fields["te_name"]
+		local playername = fields["te_name"]
+		if string.len(playername) > 18 then
+			playername = string.sub(playername, 1, 18)
+		end
+		gamedata.playername		= playername
 		gamedata.password		= fields["te_pwd"]
 		gamedata.address		= fields["te_address"]
 		gamedata.port			= fields["te_port"]

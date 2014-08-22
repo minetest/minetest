@@ -102,7 +102,11 @@ local function main_button_handler(this, fields, name, tabdata)
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("srv_worlds")
 		if selected ~= nil then
-			gamedata.playername     = fields["te_playername"]
+			local playername = fields["te_playername"]
+			if string.len (playername > 18) then
+				playername = string.sub(playername, 1, 18)
+			end
+			gamedata.playername     = playername
 			gamedata.password       = fields["te_passwd"]
 			gamedata.port           = fields["te_serverport"]
 			gamedata.address        = ""
