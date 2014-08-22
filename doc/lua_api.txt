@@ -211,7 +211,7 @@ Advanced texture modifiers:
   [combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>
     w = width, h = height, x1/x2 = x position, y1/y1 = y position,
     file1/file2 = texture to combine
-    Create a textue of size <w> x <h> and blit <file1> to (<x1>,<y1>)
+    Create a texture of size <w> x <h> and blit <file1> to (<x1>,<y1>)
     and blit <file2> to (<x2>,<y2>).
     Example: [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
 
@@ -220,7 +220,7 @@ Advanced texture modifiers:
     Example: tnt_tnt_side.png^[brighten
 
   [noalpha
-    Makes the texture completly opaque.
+    Makes the texture completely opaque.
     Example: default_leaves.png^[noalpha
 
   [makealpha:<r>,<g>,<b>
@@ -466,13 +466,13 @@ All default ores are of the uniformly-distributed scatter type.
 - scatter
     Randomly chooses a location and generates a cluster of ore.
     If noise_params is specified, the ore will be placed if the 3d perlin noise at
-    that point is greater than the noise_threshhold, giving the ability to create a non-equal
+    that point is greater than the noise_threshold, giving the ability to create a non-equal
     distribution of ore.
 - sheet
     Creates a sheet of ore in a blob shape according to the 2d perlin noise described by noise_params.
     The relative height of the sheet can be controlled by the same perlin noise as well, by specifying
     a non-zero 'scale' parameter in noise_params.  IMPORTANT: The noise is not transformed by offset or
-    scale when comparing against the noise threshhold, but scale is used to determine relative height.
+    scale when comparing against the noise threshold, but scale is used to determine relative height.
     The height of the blob is randomly scattered, with a maximum height of clust_size.
     clust_scarcity and clust_num_ores are ignored.
     This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
@@ -841,7 +841,7 @@ tool_capabilities = {
     damage_groups = {fleshy=2},
 }
 
-This makes the tool be able to dig nodes that fulfill both of these:
+This makes the tool be able to dig nodes that fulfil both of these:
 - Have the **crumbly** group
 - Have a **level** group less or equal to 2
 
@@ -1119,7 +1119,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
 ^ x and y position the itemlist relative to the top left of the menu
-^ name fieldname data is transfered to Lua
+^ name fieldname data is transferred to Lua
 ^ caption 1... name shown on top of tab
 ^ current_tab index of selected tab 1...
 ^ transparent (optional) show transparent
@@ -1138,14 +1138,14 @@ dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^     2) read the value on pressing a button (all dropdown values are available)
 ^ x and y position of dropdown
 ^ width of dropdown
-^ fieldname data is transfered to Lua
+^ fieldname data is transferred to Lua
 ^ items to be shown in dropdown
 ^ index of currently selected dropdown item
 
 checkbox[<X>,<Y>;<name>;<label>;<selected>;<tooltip>]
 ^ show a checkbox
 ^ x and y position of checkbox
-^ name fieldname data is transfered to Lua
+^ name fieldname data is transferred to Lua
 ^ label to be shown left of checkbox
 ^ selected (optional) true/false
 ^ tooltip (optional)
@@ -1158,7 +1158,7 @@ scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]
 ^ x and y position of trackbar
 ^ width and height
 ^ orientation vertical/horizontal
-^ fieldname data is transfered to lua
+^ fieldname data is transferred to lua
 ^ value this trackbar is set to (0-1000)
 ^ see also minetest.explode_scrollbar_event (main menu: engine.explode_scrollbar_event)
 
@@ -1742,7 +1742,7 @@ minetest.parse_json(string[, nullvalue]) -> something
 minetest.write_json(data[, styled]) -> string or nil and error message
 ^ Convert a Lua table into a JSON string
 ^ styled: Outputs in a human-readable format if this is set, defaults to false
-^ Un-serializable things like functions and userdata are saved as null.
+^ Unserializable things like functions and userdata are saved as null.
 ^ Warning: JSON is more strict than the Lua table format.
     1. You can only use strings and positive integers of at least one as keys.
     2. You can not mix string and integer keys.
@@ -2084,7 +2084,7 @@ methods:
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
   ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - get_light_data(): Gets the light data read into the VoxelManip object
-  ^ Returns an array (indicies 1 to volume) of integers ranging from 0 to 255
+  ^ Returns an array (indices 1 to volume) of integers ranging from 0 to 255
   ^ Each value is the bitwise combination of day and night light values (0..15 each)
   ^ light = day + (night * 16)
 - set_light_data(light_data):  Sets the param1 (light) contents of each node in the VoxelManip
@@ -2566,7 +2566,7 @@ Ore definition (register_ore)
     flags = "",
     ^ Attributes for this ore generation
     noise_threshhold = 0.5,
-    ^ If noise is above this threshhold, ore is placed.  Not needed for a uniform distribution
+    ^ If noise is above this threshold, ore is placed.  Not needed for a uniform distribution
     noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
     ^ NoiseParams structure describing the perlin noise used for ore distribution.
     ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
