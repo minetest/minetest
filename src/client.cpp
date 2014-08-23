@@ -2703,17 +2703,27 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	assert(m_nodedef_received);
 	assert(mediaReceived());
 	
+	wchar_t* text = wgettext("Loading textures...");
+
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
+	draw_load_screen(text,device, guienv, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
+	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
+	text = wgettext("Rebuilding shaders...");
+	draw_load_screen(text, device, guienv, 0, 75);
 	m_shsrc->rebuildShaders();
+	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
+	text = wgettext("Initializing nodes...");
+	draw_load_screen(text, device, guienv, 0, 80);
 	m_nodedef->updateAliases(m_itemdef);
+	delete[] text;
 
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
@@ -2723,21 +2733,21 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	if(g_settings->getBool("preload_item_visuals"))
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
-		wchar_t* text = wgettext("Item textures...");
+		text = wgettext("Item textures...");
 		draw_load_screen(text, device, guienv, 0, 0);
 		std::set<std::string> names = m_itemdef->getAll();
 		size_t size = names.size();
 		size_t count = 0;
 		int percent = 0;
 		for(std::set<std::string>::const_iterator
-				i = names.begin(); i != names.end(); ++i){
+				i = names.begin(); i != names.end(); ++i)
+		{
 			// Asking for these caches the result
 			m_itemdef->getInventoryTexture(*i, this);
 			m_itemdef->getWieldMesh(*i, this);
 			count++;
-			percent = count*100/size;
-			if (count%50 == 0) // only update every 50 item
-				draw_load_screen(text, device, guienv, 0, percent);
+			percent = (count * 100 / size * 0.2) + 80;
+			draw_load_screen(text, device, guienv, 0, percent);
 		}
 		delete[] text;
 	}
@@ -2748,7 +2758,10 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	
 	m_state = LC_Ready;
 	sendReady();
+	text = wgettext("Done!");
+	draw_load_screen(text, device, guienv, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
+	delete[] text;
 }
 
 float Client::getRTT(void)
