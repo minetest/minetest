@@ -309,9 +309,10 @@ local function initialize_profiling()
 			mod_statistics.entity_callbacks[cbid] = prototype.get_staticdata
 			new_get_staticdata = function(self)
 				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self)
+				local retval = mod_statistics.entity_callbacks[cbid](self)
 				local delta = core.get_us_time() -starttime
 				mod_statistics.log_time(cbid, modname, delta)
+				return retval
 			end
 		end
 	
