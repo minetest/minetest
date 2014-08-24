@@ -156,6 +156,9 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"label[1,3.3;" .. fgettext("W/H") .. "]" .. 
+		"field[2.1,3.7;1.2,0.5;te_screenw;;" .. current_width .. "]" .. 
+		"field[3.2,3.7;1.2,0.5;te_screenh;;" .. current_height .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -249,6 +252,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("trilinear_filter", fields["cb_trilinear"])
 		return true
 	end
+	core.setting_set("screenW", fields["te_screenw"])
+	core.setting_set("screenH", fields["te_screenh"])
 	if fields["cb_shaders"] then
 		if (core.setting_get("video_driver") == "direct3d8" or core.setting_get("video_driver") == "direct3d9") then
 			core.setting_set("enable_shaders", "false")
