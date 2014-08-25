@@ -1541,8 +1541,6 @@ minetest.set_node_level(pos, level)
 ^ set level of leveled node, default level = 1, if totallevel > maxlevel returns rest (total-max).
 minetest.add_node_level(pos, level)
 ^ increase level of leveled node by level, default level = 1, if totallevel > maxlevel returns rest (total-max). can be negative for decreasing
-minetest.get_time_us()
-^ get time in microseconds
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
