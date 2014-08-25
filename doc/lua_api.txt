@@ -1276,6 +1276,8 @@ minetest.formspec_escape(string) -> string
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
 minetest.is_yes(arg)
 ^ returns whether arg can be interpreted as yes
+minetest.get_us_time()
+^ returns time with microsecond precision
 
 minetest namespace reference
 -----------------------------
