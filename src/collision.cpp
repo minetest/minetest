@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 #include "main.h" // g_profiler
 #include "profiler.h"
+#include "util/pointer.h"
 
 // float error is 10 - 9.96875 = 0.03125
 //#define COLL_ZERO 0.032 // broken unit tests
@@ -302,7 +303,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		std::list<ActiveObject*> objects;
 #ifndef SERVER
-		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
+		SAFE_DYNCAST(ClientEnvironment*, env, c_env);
 		if (c_env != 0)
 		{
 			f32 distance = speed_f.getLength();
@@ -311,14 +312,15 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			for (size_t i=0; i < clientobjects.size(); i++)
 			{
 				if ((self == 0) || (self != clientobjects[i].obj)) {
-					objects.push_back(dynamic_cast<ActiveObject*>(clientobjects[i].obj));
+					SAFE_DYNCAST(ActiveObject*, clientobjects[i].obj, active_object);
+					objects.push_back(active_object);
 				}
 			}
 		}
 		else
 #endif
 		{
-			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
+			SAFE_DYNCAST(ServerEnvironment*, env, s_env);
 			if (s_env != 0)
 			{
 				f32 distance = speed_f.getLength();
@@ -327,7 +329,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				{
 					ServerActiveObject *current = s_env->getActiveObject(*iter);
 					if ((self == 0) || (self != current)) {
-						objects.push_back(dynamic_cast<ActiveObject*>(current));
+						SAFE_DYNCAST(ActiveObject*, current, active_object);
+						objects.push_back(active_object);
 					}
 				}
 			}

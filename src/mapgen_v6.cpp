@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mg_decoration.h"
 #include "mapgen_v6.h"
+#include "util/pointer.h"
 
 FlagDesc flagdesc_mapgen_v6[] = {
 	{"jungles",    MGV6_JUNGLES},
@@ -56,7 +57,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->ystride = csize.X; //////fix this
 
 	
-	MapgenV6Params *sp = dynamic_cast<MapgenV6Params*>(params->sparams);
+	SAFE_DYNCAST(MapgenV6Params*, params->sparams, sp);
+
 	this->spflags     = sp->spflags;
 	this->freq_desert = sp->freq_desert;
 	this->freq_beach  = sp->freq_beach;

@@ -2536,13 +2536,14 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 #if 0
 	if(loadSectorMeta(p2d) == true)
 	{
-		ServerMapSector *sector = dynamic_cast<ServerMapSector*>(getSectorNoGenerateNoEx(p2d));
+		MapSector* sector = getSectorNoGenerateNoEx(p2d);
 		if(sector == NULL)
 		{
 			infostream<<"ServerMap::createSector(): loadSectorFull didn't make a sector"<<std::endl;
 			throw InvalidPositionException("");
 		}
-		return sector;
+		SAFE_DYNCAST(ServerMapSector*, sector, res_sector);
+		return res_sector;
 	}
 #endif
 	/*
@@ -2715,6 +2716,9 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	ServerMapSector *sector;
 	try{
 		sector = dynamic_cast<ServerMapSector*>(createSector(p2d));
+		if(sector == NULL) {
+			throw BaseException(__FILE__ + std::string(itos(__LINE__)) + ": bad cast");
+		}
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	}
 	catch(InvalidPositionException &e)
@@ -3001,7 +3005,7 @@ void ServerMap::save(ModifiedState save_level)
 
 	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
 		i != m_sectors.end(); ++i) {
-		ServerMapSector *sector = dynamic_cast<ServerMapSector*>(i->second);
+		SAFE_DYNCAST(ServerMapSector*, i->second, sector);
 		assert(sector->getId() == MAPSECTOR_SERVER);
 
 		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN) {
@@ -3669,7 +3673,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		{
 
 			if (load_if_inexistent) {
-				ServerMap *svrmap = dynamic_cast<ServerMap*>(m_map);
+				SAFE_DYNCAST(ServerMap*, m_map, svrmap);
 				block = svrmap->emergeBlock(p, false);
 				if (block == NULL)
 					block = svrmap->createBlock(p);

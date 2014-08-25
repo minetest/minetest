@@ -741,7 +741,7 @@ public:
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm =  static_cast<SoundMaker*>(data);
-		NodeDugEvent *nde = dynamic_cast<NodeDugEvent*>(e);
+		SAFE_DYNCAST(NodeDugEvent*, e, nde);
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 

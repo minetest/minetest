@@ -2042,8 +2042,10 @@ LocalPlayer * ClientEnvironment::getLocalPlayer()
 	for(std::vector<Player*>::iterator i = m_players.begin();
 			i != m_players.end(); ++i) {
 		Player *player = *i;
-		if(player->isLocal())
-			return dynamic_cast<LocalPlayer*>(player);
+		if(player->isLocal()) {
+			SAFE_DYNCAST(LocalPlayer*, player, local_player);
+			return local_player;
+		}
 	}
 	return NULL;
 }
