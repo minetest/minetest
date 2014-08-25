@@ -254,7 +254,7 @@ function create_configure_world_dlg(worldidx)
 		return nil
 	end
 	
-	dlg.data.list = filterlist.create(
+	dlg.data.list = core.create_filterlist(
 			modmgr.preparemodlist, --refresh
 			modmgr.comparemod, --compare
 			function(element,uid) --uid match

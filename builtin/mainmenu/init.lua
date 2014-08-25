@@ -64,7 +64,7 @@ local function init_globals()
 	--init gamedata
 	gamedata.worldindex = 0
 
-	menudata.worldlist = filterlist.create(
+	menudata.worldlist = core.filterlist_create(
 					core.get_worlds,
 					compare_worlds,
 					function(element,uid)

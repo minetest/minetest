@@ -17,7 +17,6 @@
 
 --------------------------------------------------------------------------------
 -- TODO improve doc                                                           --
--- TODO code cleanup                                                          --
 -- Generic implementation of a filter/sortable list                           --
 -- Usage:                                                                     --
 -- Filterlist needs to be initialized on creation. To achieve this you need to --
@@ -34,97 +33,55 @@
 --     parameter passed to raw_fct to aquire correct raw data                 --
 --                                                                            --
 --------------------------------------------------------------------------------
-filterlist = {}
 
 --------------------------------------------------------------------------------
-function filterlist.refresh(self)
+local function refresh(self)
 	self.m_raw_list = self.m_raw_list_fct(self.m_fetch_param)
-	filterlist.process(self)
+	self:process()
 end
 
 --------------------------------------------------------------------------------
-function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_param)
-
-	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
-	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
-	
-	local self = {}
-	
-	self.m_raw_list_fct  = raw_fct
-	self.m_compare_fct   = compare_fct
-	self.m_filter_fct    = filter_fct
-	self.m_uid_match_fct = uid_match_fct
-	
-	self.m_filtercriteria = nil
-	self.m_fetch_param = fetch_param
-	
-	self.m_sortmode = "none"
-	self.m_sort_list = {}
-
-	self.m_processed_list = nil
-	self.m_raw_list = self.m_raw_list_fct(self.m_fetch_param)
-
-	self.add_sort_mechanism = filterlist.add_sort_mechanism
-	self.set_filtercriteria = filterlist.set_filtercriteria
-	self.get_filtercriteria = filterlist.get_filtercriteria
-	self.set_sortmode       = filterlist.set_sortmode
-	self.get_list           = filterlist.get_list
-	self.get_raw_list       = filterlist.get_raw_list
-	self.get_raw_element    = filterlist.get_raw_element
-	self.get_raw_index      = filterlist.get_raw_index
-	self.get_current_index  = filterlist.get_current_index
-	self.size               = filterlist.size
-	self.uid_exists_raw     = filterlist.uid_exists_raw
-	self.raw_index_by_uid   = filterlist.raw_index_by_uid
-	self.refresh            = filterlist.refresh
-
-	filterlist.process(self)
-	
-	return self
-end
-
---------------------------------------------------------------------------------
-function filterlist.add_sort_mechanism(self,name,fct)
+local function add_sort_mechanism(self, name, fct)
 	self.m_sort_list[name] = fct
 end
 
 --------------------------------------------------------------------------------
-function filterlist.set_filtercriteria(self,criteria)
+local function set_filtercriteria(self,criteria)
 	if criteria == self.m_filtercriteria and
 		type(criteria) ~= "table" then
 		return
 	end
 	self.m_filtercriteria = criteria
-	filterlist.process(self)
+	self:process()
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_filtercriteria(self)
+local function get_filtercriteria(self)
 	return self.m_filtercriteria
 end
 
 --------------------------------------------------------------------------------
 --supported sort mode "alphabetic|none"
-function filterlist.set_sortmode(self,mode)
+local function set_sortmode(self, mode)
 	if (mode == self.m_sortmode) then
 		return
 	end
 	self.m_sortmode = mode
-	filterlist.process(self)
+	self:process()
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_list(self)
+local function get_list(self)
 	return self.m_processed_list
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_list(self)
+local function get_raw_list(self)
 	return self.m_raw_list
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_element(self,idx)
+local function get_raw_element(self,idx)
 	if type(idx) ~= "number" then
 		idx = tonumber(idx)
 	end
@@ -137,7 +94,7 @@ function filterlist.get_raw_element(self,idx)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_index(self,listindex)
+local function get_raw_index(self,listindex)
 	assert(self.m_processed_list ~= nil)
 	
 	if listindex ~= nil and listindex > 0 and
@@ -156,7 +113,7 @@ function filterlist.get_raw_index(self,listindex)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_current_index(self,listindex)
+local function get_filtered_index(self,listindex)
 	assert(self.m_processed_list ~= nil)
 	
 	if listindex ~= nil and listindex > 0 and
@@ -175,7 +132,7 @@ function filterlist.get_current_index(self,listindex)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.process(self)
+local function process(self)
 	assert(self.m_raw_list ~= nil)
 
 	if self.m_sortmode == "none" and
@@ -205,7 +162,7 @@ function filterlist.process(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.size(self)
+local function size(self)
 	if self.m_processed_list == nil then
 		return 0
 	end
@@ -214,7 +171,12 @@ function filterlist.size(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.uid_exists_raw(self,uid)
+local function uid_exists_raw(self,uid)
+	
+	if self.m_uid_match_fct == nil then
+		return false
+	end
+
 	for i,v in ipairs(self.m_raw_list) do
 		if self.m_uid_match_fct(v,uid) then
 			return true
@@ -224,7 +186,12 @@ function filterlist.uid_exists_raw(self,uid)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.raw_index_by_uid(self, uid)
+local function raw_index_by_uid(self, uid)
+
+	if self.m_uid_match_fct == nil then
+		return nil
+	end
+
 	local elementcount = 0
 	local elementidx = 0
 	for i,v in ipairs(self.m_raw_list) do
@@ -242,6 +209,53 @@ function filterlist.raw_index_by_uid(self, uid)
 	end
 
 	return elementidx
+end
+--------------------------------------------------------------------------------
+
+local filterlist_metatable = {
+	add_sort_mechanism = add_sort_mechanism,
+	set_filtercriteria = set_filtercriteria,
+	get_filtercriteria = get_filtercriteria,
+	set_sortmode       = set_sortmode,
+	get_list           = get_list,
+	get_raw_list       = get_raw_list,
+	get_raw_element    = get_raw_element,
+	get_raw_index      = get_raw_index,
+	get_filtered_index = get_filtered_index,
+	size               = size,
+	uid_exists_raw     = uid_exists_raw,
+	raw_index_by_uid   = raw_index_by_uid,
+	refresh            = refresh,
+	process            = process,
+}
+
+filterlist_metatable.__index = filterlist_metatable
+
+--------------------------------------------------------------------------------
+function core.filterlist_create(raw_fct, compare_fct, uid_match_fct,
+		filter_fct, fetch_param)
+
+	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
+	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
+	
+	local self = {
+		m_raw_list_fct   = raw_fct,
+		m_compare_fct    = compare_fct,
+		m_filter_fct     = filter_fct,
+		m_uid_match_fct  = uid_match_fct,
+		m_filtercriteria = nil,
+		m_fetch_param    = fetch_param,
+		m_sortmode       = "none",
+		m_sort_list      = {},
+		m_processed_list = nil,
+	}
+	
+	self.m_raw_list       = self.m_raw_list_fct(self.m_fetch_param)
+	
+	setmetatable(self, filterlist_metatable)
+
+	self:process()
+	return self
 end
 
 --------------------------------------------------------------------------------

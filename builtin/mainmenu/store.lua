@@ -34,7 +34,7 @@ function modstore.init(size, unsortedmods, searchmods)
 	modstore.lastmodtitle = ""
 	modstore.last_search = ""
 
-	modstore.searchlist = filterlist.create(
+	modstore.searchlist = core.filterlist_create(
 		function()
 			if modstore.modlist_unsorted ~= nil and
 				modstore.modlist_unsorted.data ~= nil then
@@ -206,12 +206,12 @@ function modstore.handle_buttons(parent, fields, name, data)
 	if fields["btn_modstore_search"] or
 		(fields["key_enter"] and fields["te_modstore_search"] ~= nil) then
 		modstore.last_search = fields["te_modstore_search"]
-		filterlist.set_filtercriteria(modstore.searchlist,fields["te_modstore_search"])
-		filterlist.refresh(modstore.searchlist)
+		modstore.searchlist:set_filtercriteria(fields["te_modstore_search"])
+		modstore.searchlist:refresh()
 		modstore.currentlist = {
 			page = 0,
-			pagecount =  math.ceil(filterlist.size(modstore.searchlist) / modstore.modsperpage),
-			data = filterlist.get_list(modstore.searchlist),
+			pagecount =  math.ceil(modstore.searchlist:size() / modstore.modsperpage),
+			data = modstore.searchlist:get_list(),
 		}
 		return true
 	end
@@ -605,14 +605,14 @@ function modstore.activate_search_tab(type, old_tab, new_tab)
 	if old_tab == new_tab then
 		return
 	end
-	filterlist.set_filtercriteria(modstore.searchlist,modstore.last_search)
-	filterlist.refresh(modstore.searchlist)
+	modstore.searchlist:set_filtercriteria(modstore.last_search)
+	modstore.searchlist:refresh()
 	modstore.modsperpage = modstore.mods_on_search_page
 	modstore.currentlist = {
 		page = 0,
 		pagecount =
-			math.ceil(filterlist.size(modstore.searchlist) / modstore.modsperpage),
-		data = filterlist.get_list(modstore.searchlist),
+			math.ceil(modstore.searchlist:size() / modstore.modsperpage),
+		data = modstore.searchlist:get_list(),
 	}
 end
 
