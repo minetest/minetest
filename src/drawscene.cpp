@@ -275,7 +275,11 @@ void draw_interlaced_3d_mode(Camera& camera, bool show_hud,
 	guienv->drawAll();
 
 	for (unsigned int i = 0; i < screensize.Y; i+=2 ) {
+#if (IRRLICHT_VERSION_MAJOR >= 1) && (IRRLICHT_VERSION_MINOR >= 8)
+		driver->draw2DImage(left_image, irr::core::position2d<s32>(0, i),
+#else
 		driver->draw2DImage(left_image, irr::core::position2d<s32>(0, screensize.Y-i),
+#endif
 				irr::core::rect<s32>(0, i,screensize.X, i+1), 0,
 				irr::video::SColor(255, 255, 255, 255),
 				false);
