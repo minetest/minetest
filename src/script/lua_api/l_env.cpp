@@ -106,6 +106,32 @@ int ModApiEnvMod::l_add_node(lua_State *L)
 	return l_set_node(L);
 }
 
+// set_nodes_in_area(minp, maxp, node) -> true (success) or false
+// node = {name="foo", param1=0, param2=0}
+int ModApiEnvMod::l_set_nodes_in_area(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+
+	bool succeeded = false;
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	MapNode n = readnode(L, 3, ndef);
+
+	for(s16 x = minp.X; x <= maxp.X; x++)
+	for(s16 y = minp.Y; y <= maxp.Y; y++)
+	for(s16 z = minp.Z; z <= maxp.Z; z++) {
+		v3s16 p(x, y, z);
+		succeeded = env->setNode(p, n);
+		if (!succeeded)
+			break;
+	}
+
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
 // remove_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_remove_node(lua_State *L)
@@ -116,6 +142,34 @@ int ModApiEnvMod::l_remove_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
 	bool succeeded = env->removeNode(pos);
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
+// remove_nodes_in_area(minp, maxp) -> true (success) or false
+int ModApiEnvMod::l_remove_nodes_in_area(lua_State *L)
+{
+	/* Functionally equivalent to set_nodes_in_area(minp, maxp, node),
+	 * however this is slightly optimized due to the fact that
+	 * ServerEnvironment::removeNode() is called rather than
+	 * ServerEnvironment::setNode() (see comments for that function)
+	 */
+
+	GET_ENV_PTR;
+
+	bool succeeded = false;
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+
+	for(s16 x = minp.X; x <= maxp.X; x++)
+	for(s16 y = minp.Y; y <= maxp.Y; y++)
+	for(s16 z = minp.Z; z <= maxp.Z; z++) {
+		v3s16 p(x, y, z);
+		succeeded = env->removeNode(p);
+		if (!succeeded)
+			break;
+	}
+
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
@@ -818,9 +872,11 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
 	API_FCT(add_node);
+	API_FCT(set_nodes_in_area);
 	API_FCT(swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
+	API_FCT(find_nodes_in_area);
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_node_light);
@@ -840,7 +896,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_timeofday);
 	API_FCT(get_gametime);
 	API_FCT(find_node_near);
-	API_FCT(find_nodes_in_area);
+	API_FCT(remove_nodes_in_area);
 	API_FCT(get_perlin);
 	API_FCT(get_perlin_map);
 	API_FCT(get_voxel_manip);
