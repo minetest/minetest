@@ -131,18 +131,12 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 void init_texture(video::IVideoDriver* driver, const v2u32& screensize,
 		video::ITexture** texture)
 {
-	static v2u32 last_screensize = v2u32(0,0);
-
-	if (( *texture == NULL ) || (screensize != last_screensize))
+	if (*texture != NULL)
 	{
-		if (*texture != NULL)
-		{
-			driver->removeTexture(*texture);
-		}
-		*texture = driver->addRenderTargetTexture(
-				core::dimension2d<u32>(screensize.X, screensize.Y));
-		last_screensize = screensize;
+		driver->removeTexture(*texture);
 	}
+	*texture = driver->addRenderTargetTexture(
+			core::dimension2d<u32>(screensize.X, screensize.Y));
 }
 
 video::ITexture* draw_image(const v2u32& screensize,
@@ -154,16 +148,16 @@ video::ITexture* draw_image(const v2u32& screensize,
 		video::SColor skycolor )
 {
 	static video::ITexture* images[2] = { NULL, NULL };
+	static v2u32 last_screensize = v2u32(0,0);
 
 	video::ITexture* image = NULL;
 
-	if (psign == RIGHT)
-	{
+	if (screensize != last_screensize) {
 		init_texture(driver, screensize, &images[1]);
 		image = images[1];
-	} else {
 		init_texture(driver, screensize, &images[0]);
 		image = images[0];
+		last_screensize = screensize;
 	}
 
 	driver->setRenderTarget(image, true, true,
