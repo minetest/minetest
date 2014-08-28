@@ -62,7 +62,7 @@ methods:
 	on_change          = function(type,old_tab,new_tab)               -- called on tab chang, type is "ENTER" or "LEAVE"
   }
 - set_autosave_tab(value)
-  ^ tell tabview to automaticaly save current tabname as "tabview_name"_LAST
+  ^ tell tabview to automatically save current tabname as "tabview_name"_LAST
   ^ value: true/false
 - set_tab(name)
   ^ set's tab to tab named "name", returns true/false on success
@@ -160,7 +160,7 @@ Skeleton for any component:
 {
 	name           = "some id",               -- unique id
 	type           = "toplevel",              -- type of component
-	                                          -- toplevel: componant can be show without additional components
+	                                          -- toplevel: component can be show without additional components
 	                                          -- addon:    component is an addon to be shown along toplevel component
 	hide           = function(this) end,      -- called to hide the component
 	show           = function(this) end,      -- called to show the component

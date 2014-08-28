@@ -1448,14 +1448,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Set up player
 		*/
-
-		// Get player name
 		char playername[PLAYERNAME_SIZE];
-		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
-		{
-			playername[i] = data[3+i];
+		unsigned int playername_length = 0;
+		for (; playername_length < PLAYERNAME_SIZE; playername_length++ ) {
+			playername[playername_length] = data[3+playername_length];
+			if (data[3+playername_length] == 0)
+				break;
 		}
-		playername[PLAYERNAME_SIZE-1] = 0;
+
+		if (playername_length == PLAYERNAME_SIZE) {
+			actionstream<<"Server: Player with name exceeding max length "
+					<<"tried to connect from "<<addr_s<<std::endl;
+			DenyAccess(peer_id, L"Name too long");
+			return;
+		}
+
 
 		if(playername[0]=='\0')
 		{
@@ -2545,13 +2552,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(is_valid_dig && n.getContent() != CONTENT_IGNORE)
 					m_script->node_on_dig(p_under, n, playersao);
 
+				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+				RemoteClient *client = getClient(peer_id);
 				// Send unusual result (that is, node not being removed)
 				if(m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
 				{
 					// Re-send block to revert change on client-side
-					RemoteClient *client = getClient(peer_id);
-					v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 					client->SetBlockNotSent(blockpos);
+				}
+				else {
+					client->ResendBlockIfOnWire(blockpos);
 				}
 			}
 		} // action == 2
@@ -2594,13 +2604,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			// If item has node placement prediction, always send the
 			// blocks to make sure the client knows what exactly happened
-			if(item.getDefinition(m_itemdef).node_placement_prediction != ""){
-				RemoteClient *client = getClient(peer_id);
-				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			if(item.getDefinition(m_itemdef).node_placement_prediction != "") {
 				client->SetBlockNotSent(blockpos);
-				v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-				if(blockpos2 != blockpos){
+				if(blockpos2 != blockpos) {
 					client->SetBlockNotSent(blockpos2);
+				}
+			}
+			else {
+				client->ResendBlockIfOnWire(blockpos);
+				if(blockpos2 != blockpos) {
+					client->ResendBlockIfOnWire(blockpos2);
 				}
 			}
 		} // action == 3
@@ -4580,8 +4596,13 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
 	player->hud_flags = flags;
+	
+	PlayerSAO* playersao = player->getPlayerSAO();
+	
+	if (playersao == NULL)
+		return false;
 
-	m_script->player_event(player->getPlayerSAO(),"hud_changed");
+	m_script->player_event(playersao, "hud_changed");
 	return true;
 }
 

@@ -66,7 +66,7 @@ local function get_formspec(tabview, name, tabdata)
 	-- buttons
 	retval = retval ..
 		"button[2.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
-		"button[8.25,4.5;2.5,1.5;btn_config_sp_world;" .. fgettext("Config MODs") .. "]"
+		"button[8.25,4.5;2.5,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
 
 	return retval
 end

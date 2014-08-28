@@ -110,6 +110,24 @@ local function scrollbar_to_gui_scale(value)
 end
 
 local function formspec(tabview, name, tabdata)
+	local video_drivers = core.get_video_drivers()
+	
+	local video_driver_string = ""
+	local current_video_driver_idx = 0
+	local current_video_driver = core.setting_get("video_driver")
+	for i=1, #video_drivers, 1 do
+	
+		if i ~= 1 then
+			video_driver_string = video_driver_string .. ","
+		end
+		video_driver_string = video_driver_string .. video_drivers[i]
+		
+		if current_video_driver:lower() == video_drivers[i]:lower() then
+			current_video_driver_idx = i
+		end
+	end
+	
+	
 	local tab_string =
 		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
@@ -125,6 +143,10 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("preload_item_visuals"))	.. "]"..
 		"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
+		"dropdown[1,3.25;3;dd_video_driver;"
+			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
+		"tooltip[dd_video_driver;" ..
+			fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[4.25,0;3.25,2.5;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
@@ -284,14 +306,18 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["btn_reset_singleplayer"] then
-		print("sp reset")
 		showconfirm_reset(this)
 		return true
 	end
+
 	--Note dropdowns have to be handled LAST!
 	local ddhandled = false
 	if fields["dd_touchthreshold"] then
 		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
+		ddhandled = true
+	end
+	if fields["dd_video_driver"] then
+		core.setting_set("video_driver",fields["dd_video_driver"])
 		ddhandled = true
 	end
 	

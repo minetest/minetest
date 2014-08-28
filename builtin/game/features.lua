@@ -7,6 +7,7 @@ core.features = {
 	get_all_craft_recipes_works = true,
 	use_texture_alpha = true,
 	no_legacy_abms = true,
+	texture_names_parens = true,
 }
 
 function core.has_feature(arg)

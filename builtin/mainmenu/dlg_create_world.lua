@@ -44,6 +44,7 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
+	current_seed = core.formspec_escape(current_seed)
 	local retval =
 		"size[12,6,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..

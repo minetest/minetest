@@ -88,6 +88,9 @@ core.sound_play(spec, looped) -> handle
 ^ spec = SimpleSoundSpec (see lua-api.txt)
 ^ looped = bool
 core.sound_stop(handle)
+core.get_video_drivers()
+^ get list of video drivers supported by engine (not all modes are guaranteed to work)
+^ returns list of available video drivers e.g. { "OpenGL", "Software" }
 
 Formspec:
 core.update_formspec(formspec)

@@ -762,7 +762,16 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	}
 	else
 		return 0;
-	treegen::spawn_ltree (env, p0, ndef, tree_def);
+
+	treegen::error e;
+	if ((e = treegen::spawn_ltree (env, p0, ndef, tree_def)) != treegen::SUCCESS) {
+		if (e == treegen::UNBALANCED_BRACKETS) {
+			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
+		} else {
+			luaL_error(L, "spawn_tree(): unknown error");
+		}
+	}
+
 	return 1;
 }
 
@@ -796,6 +805,13 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	v3s16 blockpos = read_v3s16(L, 1);
 	env->getForceloadedBlocks()->erase(blockpos);
 	return 0;
+}
+
+// get_us_time()
+int ModApiEnvMod::l_get_us_time(lua_State *L)
+{
+	lua_pushnumber(L, porting::getTimeUs());
+	return 1;
 }
 
 void ModApiEnvMod::Initialize(lua_State *L, int top)
@@ -835,4 +851,5 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_us_time);
 }

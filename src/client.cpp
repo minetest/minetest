@@ -2196,8 +2196,8 @@ void Client::sendReady()
 	writeU8(os,VERSION_PATCH_ORIG);
 	writeU8(os,0);
 
-	writeU16(os,strlen(CMAKE_VERSION_GITHASH));
-	os.write(CMAKE_VERSION_GITHASH,strlen(CMAKE_VERSION_GITHASH));
+	writeU16(os,strlen(minetest_version_hash));
+	os.write(minetest_version_hash,strlen(minetest_version_hash));
 
 	// Make data buffer
 	std::string s = os.str();

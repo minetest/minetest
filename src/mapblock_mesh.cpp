@@ -32,11 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/directiontables.h"
 
-static void applyContrast(video::SColor& color, float factor)
+static void applyFacesShading(video::SColor& color, float factor)
 {
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
-	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
 }
 
 /*
@@ -194,10 +193,7 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	// Boost light level for light sources
 	u8 light_source = MYMAX(ndef->get(n).light_source,
 			ndef->get(n2).light_source);
-	//if(light_source >= light)
-		//return decode_light(undiminish_light(light_source));
 	if(light_source > light)
-		//return decode_light(light_source);
 		light = light_source;
 
 	return decode_light(light);
@@ -273,16 +269,12 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 
 	if(ambient_occlusion > 4)
 	{
-		//ambient_occlusion -= 4;
-		//light = (float)light / ((float)ambient_occlusion * 0.5 + 1.0);
-		float light_amount = (8 - ambient_occlusion) / 4.0;
-		float light_f = (float)light / 255.0;
-		light_f = pow(light_f, 2.2f); // gamma -> linear space
-		light_f = light_f * light_amount;
-		light_f = pow(light_f, 1.0f/2.2f); // linear -> gamma space
-		if(light_f > 1.0)
-			light_f = 1.0;
-		light = 255.0 * light_f + 0.5;
+		//calculate table index for gamma space multiplier
+		ambient_occlusion -= 5;
+		//table of precalculated gamma space multiply factors
+		//light^2.2 * factor (0.75, 0.5, 0.25, 0.0), so table holds factor ^ (1 / 2.2)
+		const float light_amount[4] = {0.877424315, 0.729740053, 0.532520545, 0.0};
+		light = core::clamp(core::round32(light*light_amount[ambient_occlusion]), 0, 255);
 	}
 
 	return light;
@@ -915,21 +907,18 @@ static void updateFastFaceRow(
 				// Floating point conversion of the position vector
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
-				v3f sp = pf - ((f32)continuous_tiles_count / 2. - 0.5) * translate_dir_f;
+				v3f sp = pf - ((f32)continuous_tiles_count / 2.0 - 0.5) * translate_dir_f;
 				if(continuous_tiles_count != 1)
 					sp += translate_dir_f;
 				v3f scale(1,1,1);
 
-				if(translate_dir.X != 0)
-				{
+				if(translate_dir.X != 0) {
 					scale.X = continuous_tiles_count;
 				}
-				if(translate_dir.Y != 0)
-				{
+				if(translate_dir.Y != 0) {
 					scale.Y = continuous_tiles_count;
 				}
-				if(translate_dir.Z != 0)
-				{
+				if(translate_dir.Z != 0) {
 					scale.Z = continuous_tiles_count;
 				}
 
@@ -938,7 +927,7 @@ static void updateFastFaceRow(
 						dest);
 
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
-				for(int i=1; i<continuous_tiles_count; i++){
+				for(int i = 1; i < continuous_tiles_count; i++){
 					g_profiler->avg("Meshgen: faces drawn by tiling", 1);
 				}
 			}
@@ -966,8 +955,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get top(y+) faces in rows of x+
 	*/
-	for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-		for(s16 z=0; z<MAP_BLOCKSIZE; z++){
+	for(s16 y = 0; y < MAP_BLOCKSIZE; y++) {
+		for(s16 z = 0; z < MAP_BLOCKSIZE; z++) {
 			updateFastFaceRow(data,
 					v3s16(0,y,z),
 					v3s16(1,0,0), //dir
@@ -981,8 +970,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every x,y and get right(x+) faces in rows of z+
 	*/
-	for(s16 x=0; x<MAP_BLOCKSIZE; x++){
-		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+	for(s16 x = 0; x < MAP_BLOCKSIZE; x++) {
+		for(s16 y = 0; y < MAP_BLOCKSIZE; y++) {
 			updateFastFaceRow(data,
 					v3s16(x,y,0),
 					v3s16(0,0,1), //dir
@@ -996,8 +985,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get back(z+) faces in rows of x+
 	*/
-	for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+	for(s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+		for(s16 y = 0; y < MAP_BLOCKSIZE; y++) {
 			updateFastFaceRow(data,
 					v3s16(0,y,z),
 					v3s16(1,0,0), //dir
@@ -1142,32 +1131,30 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
-			// Note applyContrast second parameter is precalculated sqrt from original
-			// values for speed improvement
+			// Note applyFacesShading second parameter is precalculated sqrt
+			// value for speed improvement
+			// Skip it for lightsources and top faces.
 			video::SColor &vc = p.vertices[j].Color;
-			if(p.vertices[j].Normal.Y > 0.5) {
-				applyContrast (vc, 1.095445);
-			} else if (p.vertices[j].Normal.Y < -0.5) {
-				applyContrast (vc, 0.547723);
-			} else if (p.vertices[j].Normal.X > 0.5) {
-				applyContrast (vc, 0.707107);
-			} else if (p.vertices[j].Normal.X < -0.5) {
-				applyContrast (vc, 0.707107);
-			} else if (p.vertices[j].Normal.Z > 0.5) {
-				applyContrast (vc, 0.894427);
-			} else if (p.vertices[j].Normal.Z < -0.5) {
-				applyContrast (vc, 0.894427);
+			if (!vc.getBlue()) {
+				if (p.vertices[j].Normal.Y < -0.5) {
+					applyFacesShading (vc, 0.447213);
+				} else if (p.vertices[j].Normal.X > 0.5) {
+					applyFacesShading (vc, 0.670820);
+				} else if (p.vertices[j].Normal.X < -0.5) {
+					applyFacesShading (vc, 0.670820);
+				} else if (p.vertices[j].Normal.Z > 0.5) {
+					applyFacesShading (vc, 0.836660);
+				} else if (p.vertices[j].Normal.Z < -0.5) {
+					applyFacesShading (vc, 0.836660);
+				}
 			}
-			if(!enable_shaders)
-			{
-				// - Classic lighting (shaders handle this by themselves)
-				// Set initial real color and store for later updates
-				u8 day = vc.getRed();
-				u8 night = vc.getGreen();
-				finalColorBlend(vc, day, night, 1000);
-				if(day != night)
-					m_daynight_diffs[i][j] = std::make_pair(day, night);
-			}
+			// - Classic lighting
+			// Set initial real color and store for later updates
+			u8 day = vc.getRed();
+			u8 night = vc.getGreen();
+			finalColorBlend(vc, day, night, 1000);
+			if(day != night)
+				m_daynight_diffs[i][j] = std::make_pair(day, night);
 		}
 
 		// Create material

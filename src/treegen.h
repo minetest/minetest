@@ -30,6 +30,11 @@ class ServerEnvironment;
 
 namespace treegen {
 
+	enum error {
+		SUCCESS,
+		UNBALANCED_BRACKETS
+	};
+
 	struct TreeDef {
 		std::string initial_axiom;
 		std::string rules_a;
@@ -61,10 +66,10 @@ namespace treegen {
 		INodeDefManager *ndef, int seed);
 
 	// Add L-Systems tree (used by engine)
-	void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
+	treegen::error make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
-	void spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
+	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 
 	// L-System tree gen helper functions

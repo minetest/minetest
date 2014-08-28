@@ -254,12 +254,19 @@ minetest.register_entity("experimental:dummyball", {
 minetest.register_on_chat_message(function(name, message)
 	local cmd = "/dummyball"
 	if message:sub(0, #cmd) == cmd then
+		count = tonumber(message:sub(#cmd+1)) or 1
 		if not minetest.get_player_privs(name)["give"] then
 			minetest.chat_send_player(name, "you don't have permission to spawn (give)")
 			return true -- Handled chat message
 		end
 		if not minetest.get_player_privs(name)["interact"] then
 			minetest.chat_send_player(name, "you don't have permission to interact")
+			return true -- Handled chat message
+		end
+		if count >= 2 and not minetest.get_player_privs(name)["server"] then
+			minetest.chat_send_player(name, "you don't have " ..
+					"permission to spawn multiple " ..
+					"dummyballs (server)")
 			return true -- Handled chat message
 		end
 		local player = minetest.get_player_by_name(name)
@@ -270,9 +277,11 @@ minetest.register_on_chat_message(function(name, message)
 		local entityname = "experimental:dummyball"
 		local p = player:getpos()
 		p.y = p.y + 1
-		minetest.add_entity(p, entityname)
+		for i = 1,count do
+			minetest.add_entity(p, entityname)
+		end
 		minetest.chat_send_player(name, '"'..entityname
-				..'" spawned.');
+				..'" spawned '..tostring(count)..' time(s).');
 		return true -- Handled chat message
 	end
 end)

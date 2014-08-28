@@ -238,6 +238,14 @@ public:
 	void SetBlockNotSent(v3s16 p);
 	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
 
+	/**
+	 * tell client about this block being modified right now.
+	 * this information is required to requeue the block in case it's "on wire"
+	 * while modification is processed by server
+	 * @param p position of modified block
+	 */
+	void ResendBlockIfOnWire(v3s16 p);
+
 	s32 SendingCount()
 	{
 		return m_blocks_sending.size();
