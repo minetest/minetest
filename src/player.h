@@ -142,19 +142,22 @@ public:
 
 	virtual void setPosition(const v3f &position)
 	{
-		m_dirty = true;
+		if (position != m_position)
+			m_dirty = true;
 		m_position = position;
 	}
 
 	void setPitch(f32 pitch)
 	{
-		m_dirty = true;
+		if (pitch != m_pitch)
+			m_dirty = true;
 		m_pitch = pitch;
 	}
 
 	virtual void setYaw(f32 yaw)
 	{
-		m_dirty = true;
+		if (yaw != m_yaw)
+			m_dirty = true;
 		m_yaw = yaw;
 	}
 
@@ -175,7 +178,8 @@ public:
 
 	virtual void setBreath(u16 breath)
 	{
-		m_dirty = true;
+		if (breath != m_breath)
+			m_dirty = true;
 		m_breath = breath;
 	}
 
