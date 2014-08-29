@@ -1456,10 +1456,14 @@ Environment access:
 minetest.set_node(pos, node)
 minetest.add_node(pos, node): alias set_node(pos, node)
 ^ Set node at position (node = {name="foo", param1=0, param2=0})
+minetest.set_nodes_in_area(minp, maxp, node)
+^ Set nodes in area (node = {name="foo", param1=0, param2=0})
 minetest.swap_node(pos, node)
 ^ Set node at position, but don't remove metadata
 minetest.remove_node(pos)
 ^ Equivalent to set_node(pos, "air")
+minetest.remove_nodes_in_area(minp, maxp)
+^ Replaces all nodes in area with "air"
 minetest.get_node(pos)
 ^ Returns {name="ignore", ...} for unloaded area
 minetest.get_node_or_nil(pos)

@@ -31,10 +31,17 @@ private:
 
 	static int l_add_node(lua_State *L);
 
+	// set_nodes_in_area(minp, maxp, node) -> true (success) or false
+	// node = {name="foo", param1=0, param2=0}
+	static int l_set_nodes_in_area(lua_State *L);
+
 	// remove_node(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_remove_node(lua_State *L);
 	
+	// remove_nodes_in_area(minp, maxp) -> true (success) or false
+	static int l_remove_nodes_in_area(lua_State *L);
+
 	// swap_node(pos, node)
 	// pos = {x=num, y=num, z=num}
 	static int l_swap_node(lua_State *L);
