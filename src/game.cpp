@@ -1370,6 +1370,7 @@ void KeyCache::populate()
 			= getKeySetting("keymap_decrease_viewing_range_min");
 	key[KeyType::RANGESELECT]
 			= getKeySetting("keymap_rangeselect");
+	key[KeyType::AUTOPICKUP]     = getKeySetting("keymap_autopickup");
 	key[KeyType::ZOOM] = getKeySetting("keymap_zoom");
 
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
@@ -1570,6 +1571,7 @@ protected:
 	void toggleMinimap(float *statustext_time, bool *flag, bool show_hud,
 			bool shift_pressed);
 	void toggleFog(float *statustext_time, bool *flag);
+	void autoPickupKey(float *statustext_time);
 	void toggleDebug(float *statustext_time, bool *show_debug,
 			bool *show_profiler_graph);
 	void toggleUpdateCamera(float *statustext_time, bool *flag);
@@ -1691,6 +1693,8 @@ private:
 	Hud *hud;
 	Mapper *mapper;
 
+	u32 m_prev_autopickup_key_time;
+
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
 	   these items (e.g. device)
@@ -1770,7 +1774,8 @@ Game::Game() :
 	sky(NULL),
 	local_inventory(NULL),
 	hud(NULL),
-	mapper(NULL)
+	mapper(NULL),
+	m_prev_autopickup_key_time(0)
 {
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -2799,6 +2804,8 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 		toggleFog(statustext_time, &flags->force_fog_off);
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera(statustext_time, &flags->disable_camera_update);
+	} else if (wasKeyDown(KeyType::AUTOPICKUP)) {
+		autoPickupKey(statustext_time);
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph);
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
@@ -3103,6 +3110,41 @@ void Game::toggleFog(float *statustext_time, bool *flag)
 	*flag = !*flag;
 	*statustext_time = 0;
 	statustext = msg[*flag];
+}
+
+
+void Game::autoPickupKey(float *statustext_time)
+{
+	float toggle_time = g_settings->getFloat("autopickup_key_toggle_time");
+	f32 pickup_range;
+	if (!client->getEnv().autoPickupEnabled()) {
+		bool noclip = client->checkPrivilege("fly")
+			&& g_settings->getBool("free_move")
+			&& client->checkPrivilege("noclip")
+			&& g_settings->getBool("noclip");
+		bool fast = client->checkPrivilege("fly")
+			&& g_settings->getBool("free_move")
+			&& g_settings->getBool("always_fly_fast");
+		client->getEnv().toggleAutoPickup(&pickup_range);
+		statustext = std::wstring(L"Auto pick-up enabled; pick-up range is ")
+			+ utf8_to_wide(ftos(int(2 * pickup_range) / 2.0)) + L" node(s)";
+		if (noclip)
+			statustext = statustext + L" - WARNING: noclip is enabled.";
+		else if (fast)
+			statustext = statustext + L" - WARNING: fast mode is enabled.";
+	} else if (porting::getTimeMs() - m_prev_autopickup_key_time > 1000 * toggle_time) {
+		client->getEnv().toggleAutoPickup();
+		statustext = L"Auto pick-up disabled";
+	} else {
+		pickup_range = client->getEnv().cycleAutoPickupRange();
+		statustext = std::wstring(L"Auto pick-up range set to ")
+			+ utf8_to_wide(ftos(int(2 * pickup_range) / 2.0)) + L" node(s)";
+	}
+	// The fact that getTimeMs() loops after some time can be ignored. It is
+	// very unlikely, and the consequences are not serious at all: the user
+	// will get the incorrect result, and press again, thinking he made a mistake.
+	m_prev_autopickup_key_time = porting::getTimeMs();
+	*statustext_time = 0;
 }
 
 
@@ -3551,6 +3593,13 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			bool enable = event.override_day_night_ratio.do_override;
 			u32 value = event.override_day_night_ratio.ratio_f * 1000;
 			client->getEnv().setDayNightRatioOverride(enable, value);
+		}
+		else if (event.type == CE_OBJECT_PICKUP)
+		{
+			PointedThing pointed;
+			pointed.type = POINTEDTHING_OBJECT;
+			pointed.object_id = event.object_pickup.id;
+			client->interact(0, pointed);
 		}
 	}
 }

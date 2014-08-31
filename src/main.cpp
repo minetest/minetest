@@ -454,6 +454,20 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 
 	if (!read_config_file(cmd_args))
 		return false;
+	// Migrate debug-stacks key setting
+	{
+		// 'P' used to print debug stacks, but is was repurposed for auto pick-up.
+		std::string debug_stacks_key;
+		std::string autopickup_key = "KEY_KEY_P";
+		g_settings->getNoEx("keymap_autopickup", autopickup_key);
+		if (g_settings->getNoEx("keymap_print_debug_stacks", debug_stacks_key)) {
+			if (debug_stacks_key == "KEY_KEY_P" && autopickup_key == "KEY_KEY_P")
+				// This might still conflict with another key :-(
+				// Chances are small... If it does, then the player will
+				// have to resolve the issue.
+				g_settings->set("keymap_print_debug_stacks", "KEY_KEY_O");
+		}
+	}
 
 	init_log_streams(cmd_args);
 

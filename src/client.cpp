@@ -502,6 +502,15 @@ void Client::step(float dtime)
 				u16 breath = event.player_breath.amount;
 				sendBreath(breath);
 		}
+		else if(event.type == CEE_OBJECT_PICKUP)
+		{
+				// Add to ClientEvent queue
+				u32 id = event.object_pickup.id;
+				ClientEvent event;
+				event.type = CE_OBJECT_PICKUP;
+				event.object_pickup.id = id;
+				m_client_event_queue.push(event);
+		}
 	}
 
 	/*

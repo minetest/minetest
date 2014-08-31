@@ -70,6 +70,36 @@ fast_move (Fast movement) bool false
 #    This requires the "noclip" privilege on the server.
 noclip (Noclip) bool false
 
+#    If the player presses the auto-pickup key more than once within
+#    this time (in seconds), then the auto-pickup range is changed.
+#    If more than this time elapsed, auto-pickup is toggled instead.
+autopickup_key_toggle_time (Minimum key press interval for toggling auto-pickup) float 1 0 10
+
+#    The maximum possible distance from the player where dropped
+#    items are picked up.
+#    When setting the distance using the 'P' key, it will cycle back
+#    to 1 when this value has been reached.
+autopickup_max_range (Maximum auto-pickup range) int 3 0 5
+
+#    Interval with which to recheck the player's environment for newly
+#    dropped items while the player is idle (i.e. not moving).
+autopickup_idle_interval (Re-check interval for auto-pickup while the player is idle) int 3 1
+
+#    The minimum movement required before rechecking the enviroment for
+#    newly dropped items.
+autopickup_min_movement (Minimum player movement to re-check for auto-pickup) float 0.271828 0
+
+#    The maximum movement speed at which items are picked up.
+#    The special value '-1' signifies any speed (or more specifically:
+#    1.1 * max(walk, climb, run))
+#    Auto-pickup is always disabled while the player is moving fast, or when noclip is active.
+autopickup_max_speed (Maximum player speed for auto-pickup) float -1 -1
+
+#    The maximum number of objects that may be picked up per second.
+#    Set to 0 to disable rate limiting.
+autopickup_max_rate (Max rate of auto-pickup) float 3 0
+
+
 #    Smooths camera when looking around. Also called look or mouse smoothing.
 #    Useful for recording videos.
 cinematic (Cinematic mode) bool false
@@ -176,6 +206,10 @@ keymap_fastmove (Fast key) key KEY_KEY_J
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_noclip (Noclip key) key KEY_KEY_H
 
+#    Key for toggling auto-pickup and setting the range
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_auto_pickup (Auto-pickup key) key KEY_KEY_P
+
 #    Key for toggling autorun.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_autorun (Autorun key) key
@@ -234,7 +268,7 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 #    Key for printing debug stacks. Used for development.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_print_debug_stacks (Print stacks) key KEY_KEY_P
+keymap_print_debug_stacks (Print stacks) key KEY_KEY_O
 
 [*Network]
 

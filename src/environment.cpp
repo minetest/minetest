@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <fstream>
+#include <algorithm>
 #include "environment.h"
 #include "filesys.h"
 #include "porting.h"
@@ -2250,7 +2251,12 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_gamedef(gamedef),
-	m_irr(irr)
+	m_irr(irr),
+	m_pickup_range(0),
+	m_pickup_enabled(0),
+	m_prev_pickup_position(v3f(0,0,0)),
+	m_prev_pickup_time(0),
+	m_pickup_quota(0)
 {
 	char zero = 0;
 	memset(attachement_parent_ids, zero, sizeof(attachement_parent_ids));
@@ -2529,6 +2535,11 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
+
+	if (m_pickup_enabled) {
+		pickupAnyObjects(lplayer, m_pickup_range, false);
+	}
+
 	// Update lighting on local player (used for wield item)
 	u32 day_night_ratio = getDayNightRatio();
 	{
@@ -2775,6 +2786,14 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	m_client_event_queue.push(event);
 }
 
+void ClientEnvironment::pickupItem(s16 object_id)
+{
+	ClientEnvEvent event;
+	event.type = CEE_OBJECT_PICKUP;
+	event.object_pickup.id = object_id;
+	m_client_event_queue.push(event);
+}
+
 void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
 {
 	ClientEnvEvent event;
@@ -2816,5 +2835,231 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 	}
 	return event;
 }
+
+// Nothing will be picked up if either:
+// - the current state (controls, mode, ...) is to move fast
+// - actually moving fast
+// - noclip is enabled
+// Additionally, in automatic mode, nothing will be picked up if both:
+// - insufficient time has passed since last pickup
+// - insufficient movement has been made since last pickup
+void ClientEnvironment::pickupAnyObjects(LocalPlayer *lplayer, f32 pickup_range, bool manual)
+{
+	// Don't overdo the pickup - require a minimal movement, or a minimal elapsed time between pickups
+	u32 pickup_idle_interval = g_settings->getU16("autopickup_idle_interval");
+	f32 pickup_min_movement = g_settings->getFloat("autopickup_min_movement") * BS;
+	// Maximum pickup rate (per second)
+	float pickup_max_rate = g_settings->getFloat("autopickup_max_rate");
+	float pickup_max_range = g_settings->getFloat("autopickup_max_range");
+
+	// Do not pick up if moving to fast.
+	f32 max_pickup_speed = g_settings->getFloat("autopickup_max_speed") * BS;
+	if (max_pickup_speed < 0) {
+		max_pickup_speed = lplayer->movement_speed_walk;
+		if (lplayer->movement_speed_climb > max_pickup_speed)
+			max_pickup_speed = lplayer->movement_speed_climb;
+		if (lplayer->movement_speed_jump > max_pickup_speed)
+			max_pickup_speed = lplayer->movement_speed_jump;
+		max_pickup_speed = 1.1 * max_pickup_speed;
+	}
+
+	// Don't pick up if currently moving fast, or if noclip is enabled.
+	bool flying = m_gamedef->checkLocalPrivilege("fly") && g_settings->getBool("free_move");
+	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast") && g_settings->getBool("fast_move");
+	bool turbo = lplayer->control.aux1;		// Turbo button
+	bool moving_fast = turbo || (flying && fast_allowed && g_settings->getBool("always_fly_fast"));
+	bool noclip = m_gamedef->checkLocalPrivilege("noclip") && g_settings->getBool("noclip");
+
+	bool speed_fast = lplayer->getSpeed().getLength() > max_pickup_speed;
+	u32 elapsedTime = porting::getTimeS() - m_prev_pickup_time;
+	f32 distanceMoved = (lplayer->getPosition() - m_prev_pickup_position).getLength();
+
+
+	if ((noclip && flying) || moving_fast || speed_fast) {
+		return;
+	}
+
+	// Limit the pick-up rate
+	float prev_quota = m_pickup_quota;
+	float current_quota = prev_quota;
+	if (pickup_max_rate > 0) {
+		if (elapsedTime) {
+			// Grant new quota.
+			// Quota that is not spent as soon as possible is lost.
+			current_quota += elapsedTime * pickup_max_rate;
+			if (prev_quota < 1 && current_quota > 1 && current_quota < 1 + pickup_max_rate) {
+				// OK - could not be spent earlier
+			} else if (pickup_max_rate < 1 && current_quota > 1) {
+				// Lose excess unused quota
+				current_quota = 1;
+			} else if (pickup_max_rate >= 1 && current_quota > pickup_max_rate) {
+				// Lose excess unused quota
+				current_quota = pickup_max_rate;
+			}
+		}
+	} else {
+		// No rate limiting. Both must be at least 1
+		prev_quota = 1;
+		current_quota = 1;
+	}
+
+	// Check items and pick up.
+	if (manual || (
+			(distanceMoved >= pickup_min_movement
+				|| elapsedTime >= pickup_idle_interval
+				|| prev_quota < 1)
+			&& current_quota >= 1))
+	{
+		std::vector<DistanceSortedActiveObject> reachableObjects;
+		getActiveObjects(lplayer->getPosition(), pickup_range * BS, reachableObjects);
+
+		std::map<int, PickupKnownCAO> prev_known_caos(m_pickup_known_caos);
+		m_pickup_known_caos.clear();
+		// Note: getTimeMs returns u32; it wil overflow every 12 days (can be safely ignored)
+		u32 cur_time = porting::getTimeMs();
+
+		std::sort(reachableObjects.begin(), reachableObjects.end());
+
+		for(u32 i = 0; i < reachableObjects.size(); i++) {
+			ClientActiveObject *obj = reachableObjects[i].obj;
+			PickupKnownCAO cao;
+			std::map<int, PickupKnownCAO>::iterator cao_it;
+			if ((cao_it = prev_known_caos.find(obj->getId())) != prev_known_caos.end()) {
+				cao = cao_it->second;
+				cao.seen(cur_time);
+			} else {
+				cao = PickupKnownCAO(obj->getId(), obj->getPosition(), cur_time);
+			}
+			if (obj->isLocalPlayer()) {
+				// (Almost) always present - not interesting
+				continue;
+			} else if (cao.pick_up == -1) {
+				// Previously seen and not interesting
+				cao.pos = obj->getPosition();
+				prev_known_caos.erase(cao.id);
+				m_pickup_known_caos[cao.id] = cao;
+				continue;
+			}
+			if (obj->getType() == ACTIVEOBJECT_TYPE_GENERIC) {
+				if (obj->isPlayer()) {
+					continue;
+				} else if (!obj->isVisible()) {
+					// Invisible - ignore
+					// (does this mean the selection box is also invisible ??)
+					continue;
+				}
+				cao.pos = obj->getPosition();
+				prev_known_caos.erase(cao.id);
+
+				if (cao.pick_up == 0) {
+					if (obj->collectibleIsSet()) {
+						if (obj->collectible())
+							cao.pick_up = 1;
+						else
+							cao.pick_up = -1;
+					} else {
+						ClientActiveObject::Type objType = obj->objectType();
+						if (objType == ClientActiveObject::CAO_ITEMSTACK) {
+							cao.pick_up = 1;
+						} else if (objType == ClientActiveObject::CAO_PROBABLY_ITEMSTACK) {
+							// Don't decide until it has stopped moving
+							if (obj->getVelocity().getLength() < 1e-6)
+								cao.pick_up = 1;
+						} else {
+							cao.pick_up = -1;
+						}
+					}
+				}
+				m_pickup_known_caos[cao.id] = cao;
+				if (cao.pick_up == -1
+						|| cao.picked_up
+						|| (pickup_max_rate && current_quota < 1)) {
+					continue;
+				}
+				// Unfortunately, there seems to be no way to know whether we
+				// just dropped the object that we see, or whether it is another
+				// object. So, no alternative than to pick up.
+				if (cao.pick_up == 1
+						&& obj->getVelocity().getLength() < 1e-6) {
+					pickupItem(obj->getId());
+					m_pickup_known_caos[cao.id].picked_up = true;
+					if (pickup_max_rate) current_quota--;
+				}
+			}
+			else {
+				printf("\n");
+			}
+		}
+
+		// Process list of remembered CAOs that were not seen again
+		for (std::map<int, PickupKnownCAO>::iterator cao_it = prev_known_caos.begin();
+				cao_it != prev_known_caos.end(); cao_it++) {
+			PickupKnownCAO cao = cao_it->second;
+			float distance = (cao.pos - lplayer->getPosition()).getLength()/BS;
+			// This may underflow, but the consequences are not serious.
+			u32 age = cur_time - cao.last_seen_time;
+			bool forget = false;
+			if (cao.pick_up <= 0) {
+				// Remember objects we won't pick up a little longer
+				if (age > 30*1000 || distance > 5 * pickup_max_range)
+					forget = true;
+			} else if (cao.picked_up) {
+				// Forget picked-up objects soon after they disappear
+				if (age > 1*1000 && distance <= pickup_range)
+					forget = true;
+				// If they went out of range instead, remember them a litte longer
+				else if (age > 10*1000 || distance > 2 * pickup_max_range)
+					forget = true;
+			} else {
+				// Remember non-picked-up items that went out of range a litte longer
+				if (age > 10*1000 || distance > 2 * pickup_max_range)
+					forget = true;
+			}
+			if (!forget) {
+				m_pickup_known_caos[cao.id] = cao;
+			}
+		}
+
+		// pickup_quota must be updated together with prev_pickup_time...
+		m_pickup_quota = current_quota;
+		m_prev_pickup_time = porting::getTimeS();
+		m_prev_pickup_position = lplayer->getPosition();
+	}
+}
+
+#define AUTO_PICKUP_FUZZ 0.1		// Must be positive
+bool ClientEnvironment::toggleAutoPickup(f32 *current_range)
+{
+	if (m_pickup_enabled) {
+		m_pickup_enabled = 0;
+	} else {
+		m_pickup_enabled = porting::getTimeMs();
+		if (m_pickup_range <= 0)
+			m_pickup_range = 1 + AUTO_PICKUP_FUZZ;
+	}
+	if (current_range)
+		*current_range = m_pickup_range;
+	return m_pickup_enabled;
+}
+
+f32 ClientEnvironment::cycleAutoPickupRange(bool *enabled)
+{
+	if (m_pickup_enabled)
+		m_pickup_enabled = porting::getTimeMs();
+	if (enabled)
+		*enabled = m_pickup_enabled;
+
+	u32 max_pickup_range = g_settings->getU16("autopickup_max_range");
+
+	if (m_pickup_range <= 0 || m_pickup_range > max_pickup_range)
+		m_pickup_range = 1 + AUTO_PICKUP_FUZZ;
+	else if (m_pickup_range < 2)
+		m_pickup_range += 0.5;
+	else
+		m_pickup_range += 1;
+
+	return m_pickup_range;
+}
+#undef AUTO_PICKUP_FUZZ
 
 #endif // #ifndef SERVER

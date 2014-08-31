@@ -48,6 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_minimap", "KEY_F9");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
+	settings->setDefault("keymap_autopickup", "KEY_KEY_P");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
@@ -76,9 +77,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("zoom_fov", "15");
+	settings->setDefault("autopickup_key_toggle_time", "1");
+	settings->setDefault("autopickup_idle_interval", "3");
+	settings->setDefault("autopickup_min_movement", "0.271828");		// :-)
+	settings->setDefault("autopickup_max_speed", "-1");			// special value '-1' means: 1.1 * max of (walk, climb, jump) speeds
+	settings->setDefault("autopickup_max_range", "3");
+	settings->setDefault("autopickup_max_rate", "3");
 
 	// Some (temporary) keys for debugging
-	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
+	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_O");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");

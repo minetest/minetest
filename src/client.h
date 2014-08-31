@@ -148,6 +148,7 @@ enum ClientEventType
 	CE_HUDCHANGE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
+	CE_OBJECT_PICKUP
 };
 
 struct ClientEvent
@@ -244,6 +245,9 @@ struct ClientEvent
 			bool do_override;
 			float ratio_f;
 		} override_day_night_ratio;
+		struct{
+			u32 id;
+		} object_pickup;
 	};
 };
 

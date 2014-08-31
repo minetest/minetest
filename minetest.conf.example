@@ -38,6 +38,49 @@
 #    type: bool
 # noclip = false
 
+#    If the player presses the auto-pickup key more than once within
+#    this time (in seconds), then the auto-pickup range is changed.
+#    If more than this time elapsed, auto-pickup is toggled instead.
+#    Min = 0
+#    Max = 10
+#    type: float
+# autopickup_key_toggle_time = 1
+
+#    The maximum possible distance from the player where dropped
+#    items are picked up.
+#    When setting the distance using the 'P' key, it will cycle back
+#    to 1 when this value has been reached.
+#    Min = 0
+#    Max = 5
+#    type: int
+# autopickup_max_range = 3
+
+#    Interval with which to recheck the player's environment for newly
+#    dropped items while the player is idle (i.e. not moving).
+#    Min = 1
+#    type: int
+# autopickup_idle_interval = 3
+
+#    The minimum movement required before rechecking the enviroment for
+#    newly dropped items.
+#    Min = 0
+#    type: float
+# autopickup_min_movement = 0.271828
+
+#    The maximum movement speed at which items are picked up.
+#    The special value '-1' signifies any speed (or more specifically:
+#    1.1 * max(walk, climb, run))
+#    Auto-pickup is always disabled while the player is moving fast, or when noclip is active.
+#    Min = -1
+#    type: float
+# autopickup_max_speed = -1
+
+#    The maximum number of objects that may be picked up per second.
+#    Set to 0 to disable rate limiting.
+#    Min = 0
+#    type: float
+# autopickup_max_rate = 3
+
 #    Smooths camera when looking around. Also called look or mouse smoothing.
 #    Useful for recording videos.
 #    type: bool
@@ -173,6 +216,11 @@
 #    type: key
 # keymap_noclip = KEY_KEY_H
 
+#    Key for toggling auto-pickup and setting the range
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_auto_pickup = KEY_KEY_P
+
 #    Key for toggling autorun.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -246,7 +294,7 @@
 #    Key for printing debug stacks. Used for development.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
-# keymap_print_debug_stacks = KEY_KEY_P
+# keymap_print_debug_stacks = KEY_KEY_O
 
 ## Network
 
