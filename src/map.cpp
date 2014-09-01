@@ -2312,7 +2312,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	{
 		// 70ms @cs=8
 		//TimeTaker timer("finishBlockMake() blitBackAll");
-		data->vmanip->blitBackAll(&changed_blocks, false);
+		data->vmanip->blitBackAll(&changed_blocks);
 	}
 
 	EMERGE_DBG_OUT("finishBlockMake: changed_blocks.size()=" << changed_blocks.size());
