@@ -20,12 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_internal.h"
+#include "common/c_content.h"
 #include "common/c_converter.h"
 #include "emerge.h"
 #include "environment.h"
 #include "map.h"
 #include "server.h"
 #include "mapgen.h"
+
+#define GET_ENV_PTR ServerEnvironment* env =                                   \
+				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
+				if (env == NULL) return 0
 
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
@@ -105,13 +110,37 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	return 0;
 }
 
+int LuaVoxelManip::l_get_node_at(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	v3s16 pos        = read_v3s16(L, 2);
+
+	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), env->getGameDef()->ndef());
+	return 1;
+}
+
+int LuaVoxelManip::l_set_node_at(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	v3s16 pos        = read_v3s16(L, 2);
+	MapNode n        = readnode(L, 3, env->getGameDef()->ndef());
+
+	o->vm->setNodeNoEmerge(pos, n);
+
+	return 0;
+}
+
 int LuaVoxelManip::l_update_liquids(lua_State *L)
 {
-	LuaVoxelManip *o = checkobject(L, 1);
+	GET_ENV_PTR;
 
-	Environment *env = getEnv(L);
-	if (!env)
-		return 0;
+	LuaVoxelManip *o = checkobject(L, 1);
 
 	Map *map = &(env->getMap());
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
@@ -399,6 +428,8 @@ const luaL_reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, read_from_map),
 	luamethod(LuaVoxelManip, get_data),
 	luamethod(LuaVoxelManip, set_data),
+	luamethod(LuaVoxelManip, get_node_at),
+	luamethod(LuaVoxelManip, set_node_at),
 	luamethod(LuaVoxelManip, write_to_map),
 	luamethod(LuaVoxelManip, update_map),
 	luamethod(LuaVoxelManip, update_liquids),

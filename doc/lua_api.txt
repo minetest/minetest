@@ -2077,6 +2077,8 @@ methods:
   ^ returns actual emerged pmin, actual emerged pmax
 - write_to_map():  Writes the data loaded from the VoxelManip back to the map.
   ^ important: data must be set using VoxelManip:set_data before calling this
+- get_node_at(pos): Returns a MapNode table of the node currently loaded in the VoxelManip at that position
+- set_node_at(pos, node): Sets a specific MapNode in the VoxelManip at that position
 - get_data():  Gets the data read into the VoxelManip object
   ^ returns raw node data is in the form of an array of node content ids
 - set_data(data):  Sets the data contents of the VoxelManip object

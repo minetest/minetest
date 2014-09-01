@@ -35,10 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "pathfinder.h"
 
-
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
-				if( env == NULL) return 0
+				if (env == NULL) return 0
 
 ///////////////////////////////////////////////////////////////////////////////
 
