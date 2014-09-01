@@ -172,8 +172,9 @@ local function formspec(tabview, name, tabdata)
 		"scrollbar[1,4.75;2.75,0.4;sb_gui_scaling;horizontal;" ..
 		 gui_scale_to_scrollbar() .. "]" ..
 		"tooltip[sb_gui_scaling;" ..
-			fgettext("Scaling factor applied to menu elements: ") ..
-			dump(core.setting_get("gui_scaling")) .. "]"
+			string.format(fgettext("Scaling factor applied to menu elements: %.2f"),
+					core.setting_get("gui_scaling"))
+		.. "]"
 
 	if ANDROID then
 		tab_string = tab_string ..
