@@ -17,7 +17,7 @@
 
 --------------------------------------------------------------------------------
 local function filter_texture_pack_list(list)
-	retval = {"None"}
+	retval = {fgettext("None")}
 	for _,i in ipairs(list) do
 		if i~="base" then
 			table.insert(retval, i)
@@ -97,7 +97,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			local current_index = core.get_textlist_index("TPs")
 			if current_index ~= nil and #list >= current_index then
 				local new_path = core.get_texturepath()..DIR_DELIM..list[current_index]
-				if list[current_index] == "None" then new_path = "" end
+				if list[current_index] == fgettext("None") then new_path = "" end
 
 				core.setting_set("texture_path", new_path)
 			end
