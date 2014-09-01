@@ -778,19 +778,26 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
+
 	// Call destructor
-	if(ndef->get(n_old).has_on_destruct)
+	if (ndef->get(n_old).has_on_destruct)
 		m_script->node_on_destruct(p, n_old);
+
 	// Replace node
-	bool succeeded = m_map->addNodeWithEvent(p, n);
-	if(!succeeded)
+	if (!m_map->addNodeWithEvent(p, n))
 		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
 	// Call post-destructor
-	if(ndef->get(n_old).has_after_destruct)
+	if (ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
+
 	// Call constructor
-	if(ndef->get(n).has_on_construct)
+	if (ndef->get(n).has_on_construct)
 		m_script->node_on_construct(p, n);
+
 	return true;
 }
 
@@ -798,24 +805,36 @@ bool ServerEnvironment::removeNode(v3s16 p)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
+
 	// Call destructor
-	if(ndef->get(n_old).has_on_destruct)
+	if (ndef->get(n_old).has_on_destruct)
 		m_script->node_on_destruct(p, n_old);
+
 	// Replace with air
 	// This is slightly optimized compared to addNodeWithEvent(air)
-	bool succeeded = m_map->removeNodeWithEvent(p);
-	if(!succeeded)
+	if (!m_map->removeNodeWithEvent(p))
 		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
 	// Call post-destructor
-	if(ndef->get(n_old).has_after_destruct)
+	if (ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
+
 	// Air doesn't require constructor
 	return true;
 }
 
 bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 {
-	return m_map->addNodeWithEvent(p, n, false);
+	if (!m_map->addNodeWithEvent(p, n, false))
+		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
+	return true;
 }
 
 std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)

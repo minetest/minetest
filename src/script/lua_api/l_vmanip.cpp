@@ -304,6 +304,18 @@ int LuaVoxelManip::l_update_map(lua_State *L)
 	return 0;
 }
 
+int LuaVoxelManip::l_was_modified(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkobject(L, 1);
+	ManualMapVoxelManipulator *vm = o->vm;
+
+	lua_pushboolean(L, vm->m_is_dirty);
+
+	return 1;
+}
+
 LuaVoxelManip::LuaVoxelManip(ManualMapVoxelManipulator *mmvm, bool is_mg_vm)
 {
 	this->vm           = mmvm;
@@ -396,5 +408,6 @@ const luaL_reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, set_light_data),
 	luamethod(LuaVoxelManip, get_param2_data),
 	luamethod(LuaVoxelManip, set_param2_data),
+	luamethod(LuaVoxelManip, was_modified),
 	{0,0}
 };

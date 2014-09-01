@@ -2099,6 +2099,8 @@ methods:
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
   ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - update_liquids():  Update liquid flow
+- was_modified(): Returns true or false if the data in the voxel manipulator had been modified since
+  the last read from map, due to a call to minetest.set_data() on the loaded area elsewhere
 
 VoxelArea: A helper class for voxel areas
 - Can be created via VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}
