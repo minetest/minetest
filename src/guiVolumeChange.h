@@ -43,8 +43,6 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
-	bool pausesGame() { return true; }
 };
 
 #endif
