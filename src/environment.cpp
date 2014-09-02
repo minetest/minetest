@@ -478,6 +478,7 @@ Player *ServerEnvironment::loadPlayer(const std::string &playername)
 	if (newplayer) {
 		addPlayer(player);
 	}
+	player->setModified(false);
 	return player;
 }
 

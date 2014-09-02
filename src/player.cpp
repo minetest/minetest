@@ -64,6 +64,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
+	inventory.setModified(false);
 
 	// Can be redefined via Lua
 	inventory_formspec = "size[8,7.5]"
@@ -203,6 +204,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 				playername + " not found!");
 	}
 
+	m_dirty = true;
 	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
 	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
@@ -235,8 +237,6 @@ void Player::deSerialize(std::istream &is, std::string playername)
 			inventory.getList("craftresult")->changeItem(0, ItemStack());
 		}
 	}
-
-	m_dirty = false;
 }
 
 u32 Player::addHud(HudElement *toadd)
@@ -299,7 +299,7 @@ void RemotePlayer::save(std::string savedir)
 			if (!fs::safeWriteToFile(path, ss.str())) {
 				infostream << "Failed to write " << path << std::endl;
 			}
-			m_dirty = false;
+			setModified(false);
 			return;
 		}
 		// Open file and deserialize
@@ -317,7 +317,7 @@ void RemotePlayer::save(std::string savedir)
 			if (!fs::safeWriteToFile(path, ss.str())) {
 				infostream << "Failed to write " << path << std::endl;
 			}
-			m_dirty = false;
+			setModified(false);
 			return;
 		}
 		path = savedir + m_name + itos(i);

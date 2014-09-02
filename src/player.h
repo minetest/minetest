@@ -226,9 +226,16 @@ public:
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, std::string playername);
 
-	bool checkModified()
+	bool checkModified() const
 	{
-		return m_dirty;
+		return m_dirty || inventory.checkModified();
+	}
+
+	void setModified(const bool x)
+	{
+		m_dirty = x;
+		if (x == false)
+			inventory.setModified(x);
 	}
 
 	bool touching_ground;
