@@ -86,7 +86,7 @@ void set_default_settings(Settings *settings)
 	// A bit more than the server will send around the player, to make fog blend well
 	settings->setDefault("viewing_range_nodes_max", "240");
 	settings->setDefault("viewing_range_nodes_min", "35");
-	settings->setDefault("screenW", "800");
+	settings->setDefault("screenW", "1024");
 	settings->setDefault("screenH", "600");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("fullscreen_bpp", "24");
