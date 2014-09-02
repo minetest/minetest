@@ -774,9 +774,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 			
 			u8 param2 = n.getParam2();
-			bool H_merge = ! bool(param2 & 128);
-			bool V_merge = ! bool(param2 & 64);
-			param2  = param2 & 63;
+			bool H_merge = ! bool(param2 & 64);
+			bool V_merge = ! bool(param2 & 32);
+			param2  = param2 & 31;
 			
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
@@ -946,12 +946,17 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 
 			if (param2 > 0 && f.special_tiles[0].texture) {
-				// Interior volume level is in range 0 .. 63,
+				// Interior volume level is in range 0 .. 31,
 				// convert it to -0.5 .. 0.5
-				float vlev = (((float)param2 / 63.0 ) * 2.0 - 1.0);
+				float vlev = (((float)param2 / 31.0 ) * 2.0 - 1.0);
 				TileSpec interior_tiles[6];
 				for (i = 0; i < 6; i++)
-					interior_tiles[i] = f.special_tiles[0];
+				{
+					if (f.special_tiles[i].texture)
+						interior_tiles[i] = f.special_tiles[i];
+					else 
+						interior_tiles[i] = f.special_tiles[0];
+				}
 				float offset = 0.003;
 				box = aabb3f(visible_faces[3] ? -b : -a + offset,
 							 visible_faces[1] ? -b : -a + offset,
@@ -1103,9 +1108,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
 
-			float s = BS/2*f.visual_scale;
+			float s = BS / 2 * f.visual_scale;
 
-			for(u32 j=0; j<2; j++)
+			for(u32 j = 0; j < 2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
@@ -1115,18 +1120,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
 
+				float rotation_angle = (n.param2 & 127) * 2.834645669;
 				if(j == 0)
 				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
+					for(u16 i = 0; i < 4; i++)
+						vertices[i].Pos.rotateXZBy(46 + rotation_angle);
 				}
-				else if(j == 1)
+				else 
 				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
+					for(u16 i = 0; i < 4; i++)
+						vertices[i].Pos.rotateXZBy(-44 + rotation_angle);
 				}
 
-				for(u16 i=0; i<4; i++)
+				for(u16 i = 0; i < 4; i++)
 				{
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos += intToFloat(p, BS);
