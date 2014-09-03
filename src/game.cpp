@@ -1999,16 +1999,21 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(g_settings->getBool("free_move"))
 			{
 				g_settings->set("free_move","false");
-				statustext = wgettext("Fly mode disabled.");
+				wchar_t* text = wgettext("Fly mode disabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("free_move","true");
+				wchar_t* text;
 				if(!client.checkPrivilege("fly"))
-					statustext = wgettext("Fly mode enabled (note: no 'fly' privilege).");
+					text = wgettext("Fly mode enabled (note: no 'fly' privilege).");
 				else
-					statustext = wgettext("Fly mode enabled.");
+					text = wgettext("Fly mode enabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
@@ -2019,16 +2024,21 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				if(g_settings->getBool("free_move"))
 				{
 					g_settings->set("free_move","false");
-					statustext = wgettext("Fly mode disabled.");
+					wchar_t* text = wgettext("Fly mode disabled.");
+					statustext = text;
+					delete[] text;
 					statustext_time = 0;
 				}
 				else
 				{
 					g_settings->set("free_move","true");
+					wchar_t* text;
 					if(!client.checkPrivilege("fly"))
-						statustext = wgettext("Fly mode enabled (note: no 'fly' privilege).");
+						text = wgettext("Fly mode enabled (note: no 'fly' privilege).");
 					else
-						statustext = wgettext("Fly mode enabled.");
+						text = wgettext("Fly mode enabled.");
+					statustext = text;
+					delete[] text;
 					statustext_time = 0;
 				}
 			}
@@ -2039,16 +2049,21 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(g_settings->getBool("fast_move"))
 			{
 				g_settings->set("fast_move","false");
-				statustext = wgettext("Fast mode disabled.");
+				wchar_t* text = wgettext("Fast mode disabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("fast_move","true");
+				wchar_t* text;
 				if(!client.checkPrivilege("fast"))
-					statustext = wgettext("Fast mode enabled (note: no 'fast' privilege).");
+					text = wgettext("Fast mode enabled (note: no 'fast' privilege).");
 				else
-					statustext = wgettext("Fast mode enabled.");
+					text = wgettext("Fast mode enabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
@@ -2057,16 +2072,21 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(g_settings->getBool("noclip"))
 			{
 				g_settings->set("noclip","false");
-				statustext = wgettext("Noclip mode disabled.");
+				wchar_t* text = wgettext("Noclip mode disabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("noclip","true");
+				wchar_t* text;
 				if(!client.checkPrivilege("noclip"))
-					statustext = wgettext("Noclip mode enabled (note: no 'noclip' privilege).");
+					text = wgettext("Noclip mode enabled (note: no 'noclip' privilege).");
 				else
-					statustext = wgettext("Noclip mode enabled.");
+					text = wgettext("Noclip mode enabled.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
@@ -2093,37 +2113,49 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
 			show_hud = !show_hud;
+			wchar_t* text;
 			if(show_hud)
-				statustext = wgettext("HUD shown.");
+				text = wgettext("HUD shown.");
 			else
-				statustext = wgettext("HUD hidden.");
+				text = wgettext("HUD hidden.");
+			statustext = text;
+			delete[] text;
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
 		{
 			show_chat = !show_chat;
+			wchar_t* text;
 			if(show_chat)
-				statustext = wgettext("Chat shown.");
+				text = wgettext("Chat shown.");
 			else
-				statustext = wgettext("Chat hidden.");
+				text = wgettext("Chat hidden.");
+			statustext = text;
+			delete[] text;
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
 		{
 			force_fog_off = !force_fog_off;
+			wchar_t* text;
 			if(force_fog_off)
-				statustext = wgettext("Fog disabled.");
+				text = wgettext("Fog disabled.");
 			else
-				statustext = wgettext("Fog enabled.");
+				text = wgettext("Fog enabled.");
+			statustext = text;
+			delete[] text;
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
 		{
 			disable_camera_update = !disable_camera_update;
+			wchar_t* text;
 			if(disable_camera_update)
-				statustext = wgettext("Camera update disabled.");
+				text = wgettext("Camera update disabled.");
 			else
-				statustext = wgettext("Camera update enabled.");
+				text = wgettext("Camera update enabled.");
+			statustext = text;
+			delete[] text;
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_debug")))
@@ -2135,20 +2167,26 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			{
 				show_debug = true;
 				show_profiler_graph = false;
-				statustext = wgettext("Debug info shown.");
+				wchar_t* text = wgettext("Debug info shown.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else if(show_profiler_graph)
 			{
 				show_debug = false;
 				show_profiler_graph = false;
-				statustext = wgettext("Debug info and profiler graph hidden.");
+				wchar_t* text = wgettext("Debug info and profiler graph hidden.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else
 			{
 				show_profiler_graph = true;
-				statustext = wgettext("Profiler graph shown.");
+				wchar_t* text = wgettext("Profiler graph shown.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
@@ -2170,7 +2208,9 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			}
 			else
 			{
-				statustext = wgettext("Profiler hidden.");
+				wchar_t* text = wgettext("Profiler hidden.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
@@ -2268,13 +2308,17 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			if(draw_control.range_all)
 			{
 				infostream<<"Enabled full viewing range"<<std::endl;
-				statustext = wgettext("Enabled full viewing range.");
+				wchar_t* text = wgettext("Enabled full viewing range.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 			else
 			{
 				infostream<<"Disabled full viewing range"<<std::endl;
-				statustext = wgettext("Disabled full viewing range.");
+				wchar_t* text = wgettext("Disabled full viewing range.");
+				statustext = text;
+				delete[] text;
 				statustext_time = 0;
 			}
 		}
