@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-23 17:37+0100\n"
+"POT-Creation-Date: 2014-09-01 23:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: builtin/fstk/ui.lua:67 builtin/mainmenu.lua:158
+msgid "Ok"
+msgstr ""
+
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
 msgstr ""
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
+#: builtin/mainmenu/dlg_create_world.lua:63
 msgid "Create"
 msgstr ""
 
-#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311
+#: builtin/mainmenu/dlg_config_world.lua:52
+#: builtin/mainmenu/dlg_create_world.lua:64
+#: builtin/mainmenu/dlg_rename_modpack.lua:33 builtin/modmgr.lua:331
 #: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
 msgstr ""
@@ -66,124 +74,133 @@ msgstr ""
 msgid "<<-- Add mod"
 msgstr ""
 
-#: builtin/mainmenu.lua:158
-msgid "Ok"
-msgstr ""
-
-#: builtin/mainmenu.lua:297
+#: builtin/mainmenu.lua:297 builtin/mainmenu/dlg_create_world.lua:50
 msgid "World name"
 msgstr ""
 
-#: builtin/mainmenu.lua:300
+#: builtin/mainmenu.lua:300 builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
 msgstr ""
 
-#: builtin/mainmenu.lua:303
+#: builtin/mainmenu.lua:303 builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
 msgstr ""
 
-#: builtin/mainmenu.lua:306
+#: builtin/mainmenu.lua:306 builtin/mainmenu/dlg_create_world.lua:59
 msgid "Game"
 msgstr ""
 
-#: builtin/mainmenu.lua:319
+#: builtin/mainmenu.lua:319 builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
 msgstr ""
 
-#: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
+#: builtin/mainmenu.lua:320 builtin/mainmenu/dlg_delete_mod.lua:27
+#: builtin/mainmenu/dlg_delete_world.lua:25
+#: builtin/mainmenu/tab_settings.lua:25 builtin/modmgr.lua:877
 msgid "Yes"
 msgstr ""
 
-#: builtin/mainmenu.lua:321
+#: builtin/mainmenu.lua:321 builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
 msgstr ""
 
-#: builtin/mainmenu.lua:364
+#: builtin/mainmenu.lua:364 builtin/mainmenu/dlg_create_world.lua:87
 msgid "A world named \"$1\" already exists"
 msgstr ""
 
-#: builtin/mainmenu.lua:381
+#: builtin/mainmenu.lua:381 builtin/mainmenu/dlg_create_world.lua:106
 msgid "No worldname given or no game selected"
 msgstr ""
 
-#: builtin/mainmenu.lua:650
+#: builtin/mainmenu.lua:650 builtin/mainmenu/tab_settings.lua:256
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 
-#: builtin/mainmenu.lua:818
+#: builtin/mainmenu.lua:818 builtin/mainmenu/tab_multiplayer.lua:23
 msgid "CLIENT"
 msgstr ""
 
-#: builtin/mainmenu.lua:819
+#: builtin/mainmenu.lua:819 builtin/mainmenu/tab_multiplayer.lua:24
 msgid "Favorites:"
 msgstr ""
 
-#: builtin/mainmenu.lua:820
+#: builtin/mainmenu.lua:820 builtin/mainmenu/tab_multiplayer.lua:25
 msgid "Address/Port"
 msgstr ""
 
-#: builtin/mainmenu.lua:821
+#: builtin/mainmenu.lua:821 builtin/mainmenu/tab_multiplayer.lua:26
+#: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
 msgstr ""
 
-#: builtin/mainmenu.lua:824
+#: builtin/mainmenu.lua:824 builtin/mainmenu/tab_multiplayer.lua:29
+#: builtin/mainmenu/tab_simple_main.lua:28
 msgid "Public Serverlist"
 msgstr ""
 
 #: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
-#: src/keycode.cpp:229
+#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
+#: builtin/mainmenu/tab_singleplayer.lua:83 src/keycode.cpp:229
 msgid "Delete"
 msgstr ""
 
-#: builtin/mainmenu.lua:833
+#: builtin/mainmenu.lua:833 builtin/mainmenu/tab_multiplayer.lua:38
+#: builtin/mainmenu/tab_simple_main.lua:32
 msgid "Connect"
 msgstr ""
 
 #: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
+#: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:84
 msgid "New"
 msgstr ""
 
 #: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
+#: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:85
 msgid "Configure"
 msgstr ""
 
-#: builtin/mainmenu.lua:877
+#: builtin/mainmenu.lua:877 builtin/mainmenu/tab_server.lua:29
 msgid "Start Game"
 msgstr ""
 
 #: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
+#: builtin/mainmenu/tab_server.lua:30 builtin/mainmenu/tab_singleplayer.lua:87
 msgid "Select World:"
 msgstr ""
 
-#: builtin/mainmenu.lua:879
+#: builtin/mainmenu.lua:879 builtin/mainmenu/tab_server.lua:31
 msgid "START SERVER"
 msgstr ""
 
 #: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
+#: builtin/mainmenu/tab_server.lua:32 builtin/mainmenu/tab_simple_main.lua:60
+#: builtin/mainmenu/tab_singleplayer.lua:89
 msgid "Creative Mode"
 msgstr ""
 
 #: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
+#: builtin/mainmenu/tab_server.lua:34 builtin/mainmenu/tab_simple_main.lua:62
+#: builtin/mainmenu/tab_singleplayer.lua:91
 msgid "Enable Damage"
 msgstr ""
 
-#: builtin/mainmenu.lua:884
+#: builtin/mainmenu.lua:884 builtin/mainmenu/tab_server.lua:36
 msgid "Public"
 msgstr ""
 
-#: builtin/mainmenu.lua:886
+#: builtin/mainmenu.lua:886 builtin/mainmenu/tab_server.lua:38
 msgid "Name"
 msgstr ""
 
-#: builtin/mainmenu.lua:888
+#: builtin/mainmenu.lua:888 builtin/mainmenu/tab_server.lua:40
 msgid "Password"
 msgstr ""
 
-#: builtin/mainmenu.lua:889
+#: builtin/mainmenu.lua:889 builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
 msgstr ""
 
-#: builtin/mainmenu.lua:899
+#: builtin/mainmenu.lua:899 builtin/mainmenu/tab_settings.lua:132
 msgid "SETTINGS"
 msgstr ""
 
@@ -191,43 +208,43 @@ msgstr ""
 msgid "Fancy trees"
 msgstr ""
 
-#: builtin/mainmenu.lua:902
+#: builtin/mainmenu.lua:902 builtin/mainmenu/tab_settings.lua:136
 msgid "Smooth Lighting"
 msgstr ""
 
-#: builtin/mainmenu.lua:904
+#: builtin/mainmenu.lua:904 builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
 msgstr ""
 
-#: builtin/mainmenu.lua:906
+#: builtin/mainmenu.lua:906 builtin/mainmenu/tab_settings.lua:140
 msgid "Opaque Water"
 msgstr ""
 
-#: builtin/mainmenu.lua:909
+#: builtin/mainmenu.lua:909 builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
 msgstr ""
 
-#: builtin/mainmenu.lua:911
+#: builtin/mainmenu.lua:911 builtin/mainmenu/tab_settings.lua:153
 msgid "Anisotropic Filtering"
 msgstr ""
 
-#: builtin/mainmenu.lua:913
+#: builtin/mainmenu.lua:913 builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
 msgstr ""
 
-#: builtin/mainmenu.lua:915
+#: builtin/mainmenu.lua:915 builtin/mainmenu/tab_settings.lua:157
 msgid "Tri-Linear Filtering"
 msgstr ""
 
-#: builtin/mainmenu.lua:918
+#: builtin/mainmenu.lua:918 builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
 msgstr ""
 
-#: builtin/mainmenu.lua:920
+#: builtin/mainmenu.lua:920 builtin/mainmenu/tab_settings.lua:142
 msgid "Preload item visuals"
 msgstr ""
 
-#: builtin/mainmenu.lua:922
+#: builtin/mainmenu.lua:922 builtin/mainmenu/tab_settings.lua:144
 msgid "Enable Particles"
 msgstr ""
 
@@ -235,55 +252,56 @@ msgstr ""
 msgid "Finite Liquid"
 msgstr ""
 
-#: builtin/mainmenu.lua:927
+#: builtin/mainmenu.lua:927 builtin/mainmenu/tab_settings.lua:164
 msgid "Change keys"
 msgstr ""
 
-#: builtin/mainmenu.lua:940 src/keycode.cpp:248
+#: builtin/mainmenu.lua:940 builtin/mainmenu/tab_singleplayer.lua:86
+#: src/keycode.cpp:248
 msgid "Play"
 msgstr ""
 
-#: builtin/mainmenu.lua:942
+#: builtin/mainmenu.lua:942 builtin/mainmenu/tab_singleplayer.lua:88
 msgid "SINGLE PLAYER"
 msgstr ""
 
-#: builtin/mainmenu.lua:955
+#: builtin/mainmenu.lua:955 builtin/mainmenu/tab_texturepacks.lua:47
 msgid "Select texture pack:"
 msgstr ""
 
-#: builtin/mainmenu.lua:956
+#: builtin/mainmenu.lua:956 builtin/mainmenu/tab_texturepacks.lua:48
 msgid "TEXTURE PACKS"
 msgstr ""
 
-#: builtin/mainmenu.lua:976
+#: builtin/mainmenu.lua:976 builtin/mainmenu/tab_texturepacks.lua:68
 msgid "No information available"
 msgstr ""
 
-#: builtin/mainmenu.lua:1005
+#: builtin/mainmenu.lua:1005 builtin/mainmenu/tab_credits.lua:30
 msgid "Core Developers"
 msgstr ""
 
-#: builtin/mainmenu.lua:1020
+#: builtin/mainmenu.lua:1020 builtin/mainmenu/tab_credits.lua:44
 msgid "Active Contributors"
 msgstr ""
 
-#: builtin/mainmenu.lua:1028
+#: builtin/mainmenu.lua:1028 builtin/mainmenu/tab_credits.lua:52
 msgid "Previous Contributors"
 msgstr ""
 
-#: builtin/mainmenu.lua:1069
+#: builtin/mainmenu.lua:1069 builtin/mainmenu/tab_singleplayer.lua:223
 msgid "Singleplayer"
 msgstr ""
 
-#: builtin/mainmenu.lua:1070
+#: builtin/mainmenu.lua:1070 builtin/mainmenu/tab_multiplayer.lua:232
 msgid "Client"
 msgstr ""
 
-#: builtin/mainmenu.lua:1071
+#: builtin/mainmenu.lua:1071 builtin/mainmenu/tab_server.lua:174
 msgid "Server"
 msgstr ""
 
-#: builtin/mainmenu.lua:1072
+#: builtin/mainmenu.lua:1072 builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
 msgstr ""
 
@@ -291,108 +309,297 @@ msgstr ""
 msgid "Texture Packs"
 msgstr ""
 
-#: builtin/mainmenu.lua:1080
+#: builtin/mainmenu.lua:1080 builtin/mainmenu/tab_mods.lua:166
 msgid "Mods"
 msgstr ""
 
-#: builtin/mainmenu.lua:1082
+#: builtin/mainmenu.lua:1082 builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
 msgstr ""
 
-#: builtin/modmgr.lua:236
-msgid "MODS"
-msgstr ""
-
-#: builtin/modmgr.lua:237
-msgid "Installed Mods:"
-msgstr ""
-
-#: builtin/modmgr.lua:243
-msgid "Add mod:"
-msgstr ""
-
-#: builtin/modmgr.lua:244
-msgid "Local install"
-msgstr ""
-
-#: builtin/modmgr.lua:245
-msgid "Online mod repository"
-msgstr ""
-
-#: builtin/modmgr.lua:284
-msgid "No mod description available"
-msgstr ""
-
-#: builtin/modmgr.lua:288
-msgid "Mod information:"
-msgstr ""
-
-#: builtin/modmgr.lua:299
-msgid "Rename"
-msgstr ""
-
-#: builtin/modmgr.lua:301
-msgid "Uninstall selected modpack"
-msgstr ""
-
-#: builtin/modmgr.lua:312
-msgid "Uninstall selected mod"
-msgstr ""
-
-#: builtin/modmgr.lua:324
-msgid "Rename Modpack:"
-msgstr ""
-
-#: builtin/modmgr.lua:329 src/keycode.cpp:227
-msgid "Accept"
-msgstr ""
-
-#: builtin/modmgr.lua:423
+#: builtin/mainmenu/dlg_config_world.lua:26 builtin/modmgr.lua:423
 msgid "World:"
 msgstr ""
 
-#: builtin/modmgr.lua:427 builtin/modmgr.lua:429
+#: builtin/mainmenu/dlg_config_world.lua:30
+#: builtin/mainmenu/dlg_config_world.lua:32 builtin/modmgr.lua:427
+#: builtin/modmgr.lua:429
 msgid "Hide Game"
 msgstr ""
 
-#: builtin/modmgr.lua:433 builtin/modmgr.lua:435
+#: builtin/mainmenu/dlg_config_world.lua:36
+#: builtin/mainmenu/dlg_config_world.lua:38 builtin/modmgr.lua:433
+#: builtin/modmgr.lua:435
 msgid "Hide mp content"
 msgstr ""
 
-#: builtin/modmgr.lua:442
+#: builtin/mainmenu/dlg_config_world.lua:46 builtin/modmgr.lua:442
 msgid "Mod:"
 msgstr ""
 
+#: builtin/mainmenu/dlg_config_world.lua:48 builtin/mainmenu/tab_mods.lua:100
 #: builtin/modmgr.lua:444
 msgid "Depends:"
 msgstr ""
 
-#: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
+#: builtin/mainmenu/dlg_config_world.lua:51 builtin/modmgr.lua:447
+#: src/guiKeyChangeMenu.cpp:187
 msgid "Save"
 msgstr ""
 
-#: builtin/modmgr.lua:464
+#: builtin/mainmenu/dlg_config_world.lua:68 builtin/modmgr.lua:464
 msgid "Enable MP"
 msgstr ""
 
-#: builtin/modmgr.lua:466
+#: builtin/mainmenu/dlg_config_world.lua:70 builtin/modmgr.lua:466
 msgid "Disable MP"
 msgstr ""
 
-#: builtin/modmgr.lua:470 builtin/modmgr.lua:472
+#: builtin/mainmenu/dlg_config_world.lua:74
+#: builtin/mainmenu/dlg_config_world.lua:76 builtin/modmgr.lua:470
+#: builtin/modmgr.lua:472
 msgid "enabled"
 msgstr ""
 
-#: builtin/modmgr.lua:478
+#: builtin/mainmenu/dlg_config_world.lua:82 builtin/modmgr.lua:478
 msgid "Enable all"
 msgstr ""
 
-#: builtin/modmgr.lua:577
+#: builtin/mainmenu/dlg_delete_mod.lua:26 builtin/modmgr.lua:876
+msgid "Are you sure you want to delete \"$1\"?"
+msgstr ""
+
+#: builtin/mainmenu/dlg_delete_mod.lua:28 builtin/modmgr.lua:878
+msgid "No of course not!"
+msgstr ""
+
+#: builtin/mainmenu/dlg_delete_mod.lua:41 builtin/modmgr.lua:855
+msgid "Modmgr: failed to delete \"$1\""
+msgstr ""
+
+#: builtin/mainmenu/dlg_delete_mod.lua:45 builtin/modmgr.lua:859
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr ""
+
+#: builtin/mainmenu/dlg_rename_modpack.lua:26 builtin/modmgr.lua:324
+msgid "Rename Modpack:"
+msgstr ""
+
+#: builtin/mainmenu/dlg_rename_modpack.lua:31 builtin/modmgr.lua:329
+#: src/keycode.cpp:227
+msgid "Accept"
+msgstr ""
+
+#: builtin/mainmenu/modmgr.lua:340 builtin/modmgr.lua:616
+msgid "Install Mod: file: \"$1\""
+msgstr ""
+
+#: builtin/mainmenu/modmgr.lua:341
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\" or broken archive"
+msgstr ""
+
+#: builtin/mainmenu/modmgr.lua:361 builtin/modmgr.lua:638
+msgid "Failed to install $1 to $2"
+msgstr ""
+
+#: builtin/mainmenu/modmgr.lua:364 builtin/modmgr.lua:641
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr ""
+
+#: builtin/mainmenu/modmgr.lua:384 builtin/modmgr.lua:661
+msgid "Install Mod: unable to find real modname for: $1"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:88
+msgid "Unsorted"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
+msgid "Search"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:125
+msgid "Downloading"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:127
+msgid "please wait..."
+msgstr ""
+
+#: builtin/mainmenu/store.lua:159
+msgid "Successfully installed:"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:163
+msgid "Shortname:"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2737
+msgid "ok"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:476 builtin/modstore.lua:243
+msgid "Rating"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:501 builtin/modstore.lua:251
+msgid "re-Install"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:503 builtin/modstore.lua:253
+msgid "Install"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:522
+msgid "Close store"
+msgstr ""
+
+#: builtin/mainmenu/store.lua:530 builtin/modstore.lua:183
+msgid "Page $1 of $2"
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua:25
+msgid "CREDITS"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:30 builtin/modmgr.lua:236
+msgid "MODS"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:31 builtin/modmgr.lua:237
+msgid "Installed Mods:"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:37 builtin/modmgr.lua:243
+msgid "Add mod:"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:40 builtin/modmgr.lua:245
+msgid "Online mod repository"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:79 builtin/modmgr.lua:284
+msgid "No mod description available"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:83 builtin/modmgr.lua:288
+msgid "Mod information:"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:94 builtin/modmgr.lua:299
+msgid "Rename"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:96 builtin/modmgr.lua:301
+msgid "Uninstall selected modpack"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:107 builtin/modmgr.lua:312
+msgid "Uninstall selected mod"
+msgstr ""
+
+#: builtin/mainmenu/tab_mods.lua:122 builtin/modmgr.lua:577
 msgid "Select Mod File:"
 msgstr ""
 
-#: builtin/modmgr.lua:616
-msgid "Install Mod: file: \"$1\""
+#: builtin/mainmenu/tab_server.lua:45
+msgid "Bind Address"
+msgstr ""
+
+#: builtin/mainmenu/tab_server.lua:47
+msgid "Port"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:23
+msgid "Are you sure to reset your singleplayer world?"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:27
+msgid "No!!!"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:134
+msgid "Fancy Trees"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:149
+msgid "Restart minetest for driver change to take effect"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:167
+msgid "Reset singleplayer world"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:171
+msgid "GUI scale factor"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:175
+#, lua-format
+msgid "Scaling factor applied to menu elements: %.2f"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:182
+msgid "Touch free target"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:188
+msgid "Touchthreshold (px)"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
+msgid "Bumpmapping"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
+msgid "Generate Normalmaps"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
+msgid "Parallax Occlusion"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
+msgid "Waving Water"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
+msgid "Waving Leaves"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
+msgid "Waving Plants"
+msgstr ""
+
+#: builtin/mainmenu/tab_simple_main.lua:64
+msgid "Fly mode"
+msgstr ""
+
+#: builtin/mainmenu/tab_simple_main.lua:68
+msgid "Start Singleplayer"
+msgstr ""
+
+#: builtin/mainmenu/tab_simple_main.lua:69
+msgid "Config mods"
+msgstr ""
+
+#: builtin/mainmenu/tab_simple_main.lua:188
+msgid "Main"
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua:20
+#: builtin/mainmenu/tab_texturepacks.lua:100
+msgid "None"
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua:113
+msgid "Texturepacks"
+msgstr ""
+
+#: builtin/modmgr.lua:244
+msgid "Local install"
 msgstr ""
 
 #: builtin/modmgr.lua:617
@@ -401,91 +608,222 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\""
 msgstr ""
 
-#: builtin/modmgr.lua:638
-msgid "Failed to install $1 to $2"
-msgstr ""
-
-#: builtin/modmgr.lua:641
-msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
-
-#: builtin/modmgr.lua:661
-msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
-
-#: builtin/modmgr.lua:855
-msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
-
-#: builtin/modmgr.lua:859
-msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
-
-#: builtin/modmgr.lua:876
-msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
-
-#: builtin/modmgr.lua:878
-msgid "No of course not!"
-msgstr ""
-
-#: builtin/modstore.lua:183
-msgid "Page $1 of $2"
-msgstr ""
-
-#: builtin/modstore.lua:243
-msgid "Rating"
-msgstr ""
-
-#: builtin/modstore.lua:251
-msgid "re-Install"
-msgstr ""
-
-#: builtin/modstore.lua:253
-msgid "Install"
-msgstr ""
-
-#: src/client.cpp:2917
+#: src/client.cpp:2680 src/client.cpp:2917
 msgid "Item textures..."
 msgstr ""
 
-#: src/game.cpp:940
+#: src/game.cpp:940 src/game.cpp:1133
 msgid "Loading..."
 msgstr ""
 
-#: src/game.cpp:1000
+#: src/game.cpp:964 src/guiFormSpecMenu.cpp:1656 src/guiFormSpecMenu.cpp:1965
+#: src/guiMessageMenu.cpp:107 src/guiTextInputMenu.cpp:139
+msgid "Proceed"
+msgstr ""
+
+#: src/game.cpp:985 src/guiDeathScreen.cpp:104
+msgid "Respawn"
+msgstr ""
+
+#: src/game.cpp:1000 src/game.cpp:1190
 msgid "Creating server...."
 msgstr ""
 
-#: src/game.cpp:1016
+#: src/game.cpp:1004
+msgid ""
+"Default Controls:\n"
+"No menu visible:\n"
+"- single tap: button activate\n"
+"- double tap: place/use\n"
+"- slide finger: look around\n"
+"Menu/Inventory visible:\n"
+"- double tap (outside):\n"
+" -->close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+
+#: src/game.cpp:1016 src/game.cpp:1233
 msgid "Creating client..."
 msgstr ""
 
-#: src/game.cpp:1025
+#: src/game.cpp:1018 src/guiPauseMenu.cpp:170
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+
+#: src/game.cpp:1025 src/game.cpp:1242
 msgid "Resolving address..."
 msgstr ""
 
-#: src/game.cpp:1122
+#: src/game.cpp:1036 src/guiPauseMenu.cpp:122
+msgid "Continue"
+msgstr ""
+
+#: src/game.cpp:1040 src/guiPauseMenu.cpp:133
+msgid "Change Password"
+msgstr ""
+
+#: src/game.cpp:1044 src/guiPauseMenu.cpp:143
+msgid "Sound Volume"
+msgstr ""
+
+#: src/game.cpp:1046 src/guiPauseMenu.cpp:152
+msgid "Exit to Menu"
+msgstr ""
+
+#: src/game.cpp:1048 src/guiPauseMenu.cpp:161
+msgid "Exit to OS"
+msgstr ""
+
+#: src/game.cpp:1122 src/game.cpp:1341
 msgid "Connecting to server..."
 msgstr ""
 
-#: src/game.cpp:1219
+#: src/game.cpp:1219 src/game.cpp:1443
 msgid "Item definitions..."
 msgstr ""
 
-#: src/game.cpp:1226
+#: src/game.cpp:1226 src/game.cpp:1450
 msgid "Node definitions..."
 msgstr ""
 
-#: src/game.cpp:1233
+#: src/game.cpp:1233 src/game.cpp:1460
 msgid "Media..."
 msgstr ""
 
-#: src/game.cpp:3409
+#: src/game.cpp:1465
+msgid " KB/s"
+msgstr ""
+
+#: src/game.cpp:1469
+msgid " MB/s"
+msgstr ""
+
+#: src/game.cpp:2002 src/game.cpp:2022
+msgid "Fly mode disabled."
+msgstr ""
+
+#: src/game.cpp:2009 src/game.cpp:2029
+msgid "Fly mode enabled (note: no 'fly' privilege)."
+msgstr ""
+
+#: src/game.cpp:2011 src/game.cpp:2031
+msgid "Fly mode enabled."
+msgstr ""
+
+#: src/game.cpp:2042
+msgid "Fast mode disabled."
+msgstr ""
+
+#: src/game.cpp:2049
+msgid "Fast mode enabled (note: no 'fast' privilege)."
+msgstr ""
+
+#: src/game.cpp:2051
+msgid "Fast mode enabled."
+msgstr ""
+
+#: src/game.cpp:2060
+msgid "Noclip mode disabled."
+msgstr ""
+
+#: src/game.cpp:2067
+msgid "Noclip mode enabled (note: no 'noclip' privilege)."
+msgstr ""
+
+#: src/game.cpp:2069
+msgid "Noclip mode enabled."
+msgstr ""
+
+#: src/game.cpp:2084
+#, c-format
+msgid "Saved screenshot to %s."
+msgstr ""
+
+#: src/game.cpp:2097
+msgid "HUD shown."
+msgstr ""
+
+#: src/game.cpp:2099
+msgid "HUD hidden."
+msgstr ""
+
+#: src/game.cpp:2106
+msgid "Chat shown."
+msgstr ""
+
+#: src/game.cpp:2108
+msgid "Chat hidden."
+msgstr ""
+
+#: src/game.cpp:2115
+msgid "Fog disabled."
+msgstr ""
+
+#: src/game.cpp:2117
+msgid "Fog enabled."
+msgstr ""
+
+#: src/game.cpp:2124
+msgid "Camera update disabled."
+msgstr ""
+
+#: src/game.cpp:2126
+msgid "Camera update enabled."
+msgstr ""
+
+#: src/game.cpp:2138
+msgid "Debug info shown."
+msgstr ""
+
+#: src/game.cpp:2145
+msgid "Debug info and profiler graph hidden."
+msgstr ""
+
+#: src/game.cpp:2151
+msgid "Profiler graph shown."
+msgstr ""
+
+#: src/game.cpp:2166
+#, c-format
+msgid "Profiler shown (page %d of %d)."
+msgstr ""
+
+#: src/game.cpp:2173
+msgid "Profiler hidden."
+msgstr ""
+
+#: src/game.cpp:2183 src/game.cpp:2196
+#, c-format
+msgid "Minimum viewing range changed to %d."
+msgstr ""
+
+#: src/game.cpp:2271
+msgid "Enabled full viewing range."
+msgstr ""
+
+#: src/game.cpp:2277
+msgid "Disabled full viewing range."
+msgstr ""
+
+#: src/game.cpp:3409 src/game.cpp:3501
 msgid "Shutting down stuff..."
 msgstr ""
 
-#: src/game.cpp:3439
+#: src/game.cpp:3439 src/game.cpp:3535
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -495,13 +833,8 @@ msgstr ""
 msgid "You died."
 msgstr ""
 
-#: src/guiDeathScreen.cpp:104
-msgid "Respawn"
-msgstr ""
-
-#: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
-#: src/guiTextInputMenu.cpp:139
-msgid "Proceed"
+#: src/guiFormSpecMenu.cpp:2717
+msgid "Enter "
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:121
@@ -612,46 +945,11 @@ msgstr ""
 msgid "Passwords do not match!"
 msgstr ""
 
-#: src/guiPauseMenu.cpp:122
-msgid "Continue"
-msgstr ""
-
-#: src/guiPauseMenu.cpp:133
-msgid "Change Password"
-msgstr ""
-
-#: src/guiPauseMenu.cpp:143
-msgid "Sound Volume"
-msgstr ""
-
-#: src/guiPauseMenu.cpp:152
-msgid "Exit to Menu"
-msgstr ""
-
-#: src/guiPauseMenu.cpp:161
-msgid "Exit to OS"
-msgstr ""
-
-#: src/guiPauseMenu.cpp:170
-msgid ""
-"Default Controls:\n"
-"- WASD: move\n"
-"- Space: jump/climb\n"
-"- Shift: sneak/go down\n"
-"- Q: drop item\n"
-"- I: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
-"- Mouse wheel: select item\n"
-"- T: chat\n"
-msgstr ""
-
-#: src/guiVolumeChange.cpp:107
+#: src/guiVolumeChange.cpp:106 src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
 msgstr ""
 
-#: src/guiVolumeChange.cpp:121
+#: src/guiVolumeChange.cpp:120 src/guiVolumeChange.cpp:121
 msgid "Exit"
 msgstr ""
 
@@ -943,26 +1241,212 @@ msgstr ""
 msgid "Zoom"
 msgstr ""
 
-#: src/main.cpp:1472
+#: src/main.cpp:781
+msgid "Show allowed options"
+msgstr ""
+
+#: src/main.cpp:783
+msgid "Show version information"
+msgstr ""
+
+#: src/main.cpp:785
+msgid "Load configuration from specified file"
+msgstr ""
+
+#: src/main.cpp:787
+msgid "Set network port (UDP)"
+msgstr ""
+
+#: src/main.cpp:789
+msgid "Disable unit tests"
+msgstr ""
+
+#: src/main.cpp:791
+msgid "Enable unit tests"
+msgstr ""
+
+#: src/main.cpp:793
+msgid "Same as --world (deprecated)"
+msgstr ""
+
+#: src/main.cpp:795
+msgid "Set world path (implies local game) ('list' lists all)"
+msgstr ""
+
+#: src/main.cpp:797
+msgid "Set world by name (implies local game)"
+msgstr ""
+
+#: src/main.cpp:799
+msgid "Print to console errors only"
+msgstr ""
+
+#: src/main.cpp:801
+msgid "Print more information to console"
+msgstr ""
+
+#: src/main.cpp:803
+msgid "Print even more information to console"
+msgstr ""
+
+#: src/main.cpp:805
+msgid "Print enormous amounts of information to log and console"
+msgstr ""
+
+#: src/main.cpp:807
+msgid "Set logfile path ('' = no logging)"
+msgstr ""
+
+#: src/main.cpp:809
+msgid "Set gameid (\"--gameid list\" prints available ones)"
+msgstr ""
+
+#: src/main.cpp:811
+msgid ""
+"Migrate from current map backend to another (Only works when using "
+"minetestserver or with --server)"
+msgstr ""
+
+#: src/main.cpp:814
+msgid "Show available video modes"
+msgstr ""
+
+#: src/main.cpp:816
+msgid "Run speed tests"
+msgstr ""
+
+#: src/main.cpp:818
+msgid "Address to connect to. ('' = local game)"
+msgstr ""
+
+#: src/main.cpp:820
+msgid "Enable random user input, for testing"
+msgstr ""
+
+#: src/main.cpp:822
+msgid "Run dedicated server"
+msgstr ""
+
+#: src/main.cpp:824
+msgid "Set player name"
+msgstr ""
+
+#: src/main.cpp:826
+msgid "Set password"
+msgstr ""
+
+#: src/main.cpp:828
+msgid "Disable main menu"
+msgstr ""
+
+#: src/main.cpp:836
+msgid "Allowed options:"
+msgstr ""
+
+#: src/main.cpp:844
+msgid " <value>"
+msgstr ""
+
+#: src/main.cpp:877
+msgid "Enabling trace level debug output"
+msgstr ""
+
+#: src/main.cpp:929
+msgid "Available worlds:"
+msgstr ""
+
+#: src/main.cpp:936
+msgid "with"
+msgstr ""
+
+#: src/main.cpp:1077
+msgid "Supplied world.mt file - stripping it off."
+msgstr ""
+
+#: src/main.cpp:1092
+msgid "--worldname takes precedence over previously selected world."
+msgstr ""
+
+#: src/main.cpp:1101
+msgid "' not available. Available worlds:"
+msgstr ""
+
+#: src/main.cpp:1101 src/main.cpp:1160
+msgid "World"
+msgstr ""
+
+#: src/main.cpp:1139
+msgid "Determining world path"
+msgstr ""
+
+#: src/main.cpp:1160
+msgid "not available. Available worlds:"
+msgstr ""
+
+#: src/main.cpp:1169
+msgid "Automatically selecting world at"
+msgstr ""
+
+#: src/main.cpp:1173
+msgid "Multiple worlds are available."
+msgstr ""
+
+#: src/main.cpp:1174
+msgid "Please select one using --worldname <name> or --world <path>"
+msgstr ""
+
+#: src/main.cpp:1192
+msgid "Using world path"
+msgstr ""
+
+#: src/main.cpp:1196
+msgid "Determining gameid/gamespec"
+msgstr ""
+
+#: src/main.cpp:1229
+msgid "Using gameid"
+msgstr ""
+
+#: src/main.cpp:1426
+msgid "Available video modes (WxHxD):"
+msgstr ""
+
+#: src/main.cpp:1446
+msgid "Active video mode (WxHxD):"
+msgstr ""
+
+#: src/main.cpp:1472 src/main.cpp:1554
 msgid "needs_fallback_font"
 msgstr ""
 
-#: src/main.cpp:1547
+#: src/main.cpp:1547 src/main.cpp:1630
 msgid "Main Menu"
 msgstr ""
 
-#: src/main.cpp:1723
+#: src/main.cpp:1701
+msgid "[--world parameter]"
+msgstr ""
+
+#: src/main.cpp:1723 src/main.cpp:1799
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
 
-#: src/main.cpp:1731
+#: src/main.cpp:1731 src/main.cpp:1815
 msgid "Could not find or load game \""
 msgstr ""
 
-#: src/main.cpp:1745
+#: src/main.cpp:1745 src/main.cpp:1829
 msgid "Invalid gamespec."
 msgstr ""
 
-#: src/main.cpp:1790
+#: src/main.cpp:1790 src/main.cpp:1889
 msgid "Connection error (timed out?)"
+msgstr ""
+
+#: src/main.cpp:1806
+msgid "Provided world path doesn't exist: "
+msgstr ""
+
+#: src/main.cpp:1850
+msgid "Player name too long."
 msgstr ""
