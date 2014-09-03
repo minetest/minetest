@@ -2068,22 +2068,29 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
-			irr::video::IImage* const image = driver->createScreenShot(video::ECF_R8G8B8);
-			if (image) {
-				irr::c8 filename[256];
-				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png",
+			irr::video::IImage* const raw_image = driver->createScreenShot();
+			if (raw_image) {
+				irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8, 
+					raw_image->getDimension());
+
+				if (image) {
+					raw_image->copyTo(image);
+					irr::c8 filename[256];
+					snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
 						 g_settings->get("screenshot_path").c_str(),
 						 device->getTimer()->getRealTime());
-				if (driver->writeImageToFile(image, filename)) {
-					std::wstringstream sstr;
-					sstr<<"Saved screenshot to '"<<filename<<"'";
-					infostream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
-					statustext = sstr.str();
-					statustext_time = 0;
-				} else{
-					infostream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
+					if (driver->writeImageToFile(image, filename)) {
+						std::wstringstream sstr;
+						sstr << "Saved screenshot to '" << filename << "'";
+						infostream << "Saved screenshot to '" << filename << "'" << std::endl;
+						statustext = sstr.str();
+						statustext_time = 0;
+					} else {
+						infostream << "Failed to save screenshot '" << filename << "'" << std::endl;
+					}
+					image->drop();
 				}
-				image->drop();
+				raw_image->drop();
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
