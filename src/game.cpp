@@ -2068,7 +2068,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
-			irr::video::IImage* const image = driver->createScreenShot();
+			irr::video::IImage* const image = driver->createScreenShot(video::ECF_R8G8B8);
 			if (image) {
 				irr::c8 filename[256];
 				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png",
