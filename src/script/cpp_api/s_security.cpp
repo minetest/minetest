@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
+#include "main.h"
 #include <string>
 
 #define SECURE_LIB_API(lib, name) \
@@ -268,13 +269,20 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		return true;\
 	}
 
+#define DISALLOW_IN_PATH(disallow_path) \
+	str = fs::AbsolutePath(disallow_path);\
+	if (str.empty() ||\
+			fs::PathStartsWith(abs_path, str)) {\
+		return false;\
+	}
+
 bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 {
 	std::string str;  // Transient
 
 	// First remove last component to allow opening non-existing files
 	std::string abs_path = fs::RemoveLastPathComponent(path, &str);
-	// Don't allow modifying minetest.conf
+	// Don't allow modifying minetest.conf (main or of games)
 	if (str == "minetest.conf") {
 		return false;
 	}
@@ -284,6 +292,8 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 	if (abs_path.empty()) {
 		return false;
 	}
+
+	DISALLOW_IN_PATH(g_settings_path);
 
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
@@ -311,16 +321,10 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 	ALLOW_IN_PATH(porting::path_user);
 
 	// Don't allow accessing binaries
-	str = fs::AbsolutePath(porting::path_share + DIR_DELIM "bin");
-	if (str.empty() || fs::PathStartsWith(abs_path, str)) {
-		return false;
-	}
+	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "bin");
 
 	// Don't allow accessing utility scripts
-	str = fs::AbsolutePath(porting::path_share + DIR_DELIM "util");
-	if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
-		return false;
-	}
+	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "util");
 
 	// Allow paths in share path
 	ALLOW_IN_PATH(porting::path_share);
