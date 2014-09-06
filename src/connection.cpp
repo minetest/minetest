@@ -2143,7 +2143,9 @@ void ConnectionReceiveThread::receive()
 			LOG(derr_con<<m_connection->getDesc()
 					<<"Receive(): Invalid incoming packet, "
 					<<"size: " << received_size
-					<<", protocol: " << readU32(&packetdata[0]) <<std::endl);
+					<<", protocol: "
+					<< ((received_size >= 4) ? readU32(&packetdata[0]) : -1)
+					<< std::endl);
 			continue;
 		}
 
