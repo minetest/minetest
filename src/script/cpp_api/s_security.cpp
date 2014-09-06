@@ -115,6 +115,17 @@ void ScriptApiSecurity::initializeSecurity()
 		"getupvalue",
 		"setlocal",
 	};
+	static const char * jit_whitelist[] = {
+		"arch",
+		"flush",
+		"off",
+		"on",
+		"opt",
+		"os",
+		"status",
+		"version",
+		"version_num",
+	};
 
 	m_secure = true;
 
@@ -182,6 +193,15 @@ void ScriptApiSecurity::initializeSecurity()
 	COPY_SAFE(debug_whitelist);
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop backup debug
+
+	// Copy safe jit functions, if they exist
+	lua_getfield(L, -1, "jit");
+	if (!lua_isnil(L, -1)) {
+		lua_newtable(L);
+		COPY_SAFE(jit_whitelist);
+		lua_setglobal(L, "jit");
+	}
+	lua_pop(L, 1);  // Pop backup jit
 
 	lua_pop(L, 1); // Pop globals_backup
 }
