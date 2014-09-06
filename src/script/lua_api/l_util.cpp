@@ -92,7 +92,12 @@ int ModApiUtil::l_log(lua_State *L)
 	return 0;
 }
 
-#define CHECK_SECURE_SETTING() \
+#define SETTING_ALLOWED_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-."
+#define CHECK_SETTING() \
+	if (!string_allowed(name, SETTING_ALLOWED_CHARS)) {\
+		lua_pushliteral(L, "Bad setting name, only [A-Za-z0-9_-.] allowed.");\
+		lua_error(L);\
+	}\
 	if (name.compare(0, 7, "secure_", 7) == 0) {\
 		lua_pushliteral(L, "Attempt to set secure setting.");\
 		lua_error(L);\
@@ -102,9 +107,13 @@ int ModApiUtil::l_log(lua_State *L)
 int ModApiUtil::l_setting_set(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = trim(luaL_checkstring(L, 1));
-	const char *value = luaL_checkstring(L, 2);
-	CHECK_SECURE_SETTING();
+	std::string name = luaL_checkstring(L, 1);
+	std::string value = luaL_checkstring(L, 2);
+	if (value.find_first_of("\r\n") != std::string::npos) {
+		lua_pushliteral(L, "Bad setting value, newlines not allowed.");
+		lua_error(L);
+	}
+	CHECK_SETTING();
 	g_settings->set(name, value);
 	return 0;
 }
@@ -115,7 +124,7 @@ int ModApiUtil::l_setting_get(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	try{
-		std::string value = g_settings->get(trim(name));
+		std::string value = g_settings->get(name);
 		lua_pushstring(L, value.c_str());
 	} catch(SettingNotFoundException &e){
 		lua_pushnil(L);
@@ -127,9 +136,9 @@ int ModApiUtil::l_setting_get(lua_State *L)
 int ModApiUtil::l_setting_setbool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = trim(luaL_checkstring(L, 1));
+	std::string name = luaL_checkstring(L, 1);
 	bool value = lua_toboolean(L, 2);
-	CHECK_SECURE_SETTING();
+	CHECK_SETTING();
 	g_settings->setBool(name, value);
 	return 0;
 }
@@ -140,7 +149,7 @@ int ModApiUtil::l_setting_getbool(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	try{
-		bool value = g_settings->getBool(trim(name));
+		bool value = g_settings->getBool(name);
 		lua_pushboolean(L, value);
 	} catch(SettingNotFoundException &e){
 		lua_pushnil(L);
