@@ -1300,7 +1300,7 @@ void * ConnectionSendThread::Thread()
 		/* send non reliable packets */
 		sendPackets(dtime);
 
-		END_DEBUG_EXCEPTION_HANDLER(derr_con);
+		END_DEBUG_EXCEPTION_HANDLER(errorstream);
 	}
 
 	PROFILE(g_profiler->remove(ThreadIdentifier.str()));
@@ -2085,7 +2085,7 @@ void * ConnectionReceiveThread::Thread()
 			}
 		}
 #endif
-		END_DEBUG_EXCEPTION_HANDLER(derr_con);
+		END_DEBUG_EXCEPTION_HANDLER(errorstream);
 	}
 	PROFILE(g_profiler->remove(ThreadIdentifier.str()));
 	return NULL;
