@@ -662,6 +662,19 @@ std::string RemoveRelativePathComponents(std::string path)
 	return path.substr(0, pos);
 }
 
+std::string AbsolutePath(const std::string &path)
+{
+#ifdef _WIN32
+	char *abs_path = _fullpath(NULL, path.c_str(), MAX_PATH);
+#else
+	char *abs_path = realpath(path.c_str(), NULL);
+#endif
+	if (!abs_path) return "";
+	std::string abs_path_str(abs_path);
+	free(abs_path);
+	return abs_path_str;
+}
+
 const char *GetFilenameFromPath(const char *path)
 {
 	const char *filename = strrchr(path, DIR_DELIM_CHAR);

@@ -68,10 +68,11 @@ Settings & Settings::operator = (const Settings &other)
 
 bool Settings::checkNameValid(const std::string &name)
 {
-	size_t pos = name.find_first_of("\t\n\v\f\r\b =\"{}#");
-	if (pos != std::string::npos) {
-		errorstream << "Invalid character '" << name[pos]
-			<< "' found in setting name" << std::endl;
+	bool valid = name.find_first_of("=\"{}#") == std::string::npos;
+	if (valid) valid = trim(name) == name;
+	if (!valid) {
+		errorstream << "Invalid setting name \"" << name << "\""
+			<< std::endl;
 		return false;
 	}
 	return true;
@@ -83,7 +84,7 @@ bool Settings::checkValueValid(const std::string &value)
 	if (value.substr(0, 3) == "\"\"\"" ||
 		value.find("\n\"\"\"") != std::string::npos) {
 		errorstream << "Invalid character sequence '\"\"\"' found in"
-			" setting value" << std::endl;
+			" setting value!" << std::endl;
 		return false;
 	}
 	return true;
@@ -92,9 +93,9 @@ bool Settings::checkValueValid(const std::string &value)
 
 std::string Settings::sanitizeName(const std::string &name)
 {
-	std::string n(name);
+	std::string n = trim(name);
 
-	for (const char *s = "\t\n\v\f\r\b =\"{}#"; *s; s++)
+	for (const char *s = "=\"{}#"; *s; s++)
 		n.erase(std::remove(n.begin(), n.end(), *s), n.end());
 
 	return n;

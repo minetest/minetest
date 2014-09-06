@@ -569,3 +569,6 @@
 #mgv7_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
 #mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
+#    Prevent mods from doing insecure things like running shell commands.
+#secure.enable_security = false
+

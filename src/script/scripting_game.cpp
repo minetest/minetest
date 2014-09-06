@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_game.h"
 #include "server.h"
 #include "log.h"
+#include "settings.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_craft.h"
@@ -49,9 +50,11 @@ GameScripting::GameScripting(Server* server)
 	// setEnv(env) is called by ScriptApiEnv::initializeEnvironment()
 	// once the environment has been created
 
-	//TODO add security
-
 	SCRIPTAPI_PRECHECKHEADER
+
+	if (g_settings->getBool("secure.enable_security")) {
+		initializeSecurity();
+	}
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);

@@ -1825,8 +1825,12 @@ Call these functions only at load time!
 
 ### Setting-related
 * `minetest.setting_set(name, value)`
+    * Setting names can't contain whitespace or any of `="{}#`.
+    * Setting values can't contain the sequence `\n"""`.
+    * Setting names starting with "secure." can't be set.
 * `minetest.setting_get(name)`: returns string or `nil`
 * `minetest.setting_setbool(name, value)`
+    * See documentation on `setting_set` for restrictions.
 * `minetest.setting_getbool(name)`: returns boolean or `nil`
 * `minetest.setting_get_pos(name)`: returns position or nil
 * `minetest.setting_save()`, returns `nil`, save all settings to config file

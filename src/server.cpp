@@ -295,31 +295,37 @@ Server::Server(
 
 	m_script = new GameScripting(this);
 
-	std::string scriptpath = getBuiltinLuaPath() + DIR_DELIM "init.lua";
+	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
 
-	if (!m_script->loadScript(scriptpath))
-		throw ModError("Failed to load and run " + scriptpath);
-
-	// Print 'em
-	infostream<<"Server: Loading mods: ";
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++){
-		const ModSpec &mod = *i;
-		infostream<<mod.name<<" ";
+	if (!m_script->loadMod(script_path, BUILTIN_MOD_NAME)) {
+		throw ModError("Failed to load and run " + script_path);
 	}
-	infostream<<std::endl;
-	// Load and run "mod" scripts
+
+	// Print mods
+	infostream << "Server: Loading mods: ";
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
-		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
-		infostream<<"  ["<<padStringRight(mod.name, 12)<<"] [\""
-				<<scriptpath<<"\"]"<<std::endl;
-		bool success = m_script->loadMod(scriptpath, mod.name);
-		if(!success){
-			errorstream<<"Server: Failed to load and run "
-					<<scriptpath<<std::endl;
-			throw ModError("Failed to load and run "+scriptpath);
+		infostream << mod.name << " ";
+	}
+	infostream << std::endl;
+	// Load and run "mod" scripts
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
+			i != m_mods.end(); i++) {
+		const ModSpec &mod = *i;
+		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
+			errorstream << "Error loading mod \"" << mod.name
+					<< "\": mod_name does not follow naming conventions: "
+					<< "Only chararacters [a-z0-9_] are allowed." << std::endl;
+			throw ModError("Mod \"" + mod.name + "\" does not follow naming conventions.");
+		}
+		std::string script_path = mod.path + DIR_DELIM "init.lua";
+		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
+				<< script_path << "\"]" << std::endl;
+		if (!m_script->loadMod(script_path, mod.name)) {
+			errorstream << "Server: Failed to load and run "
+					<< script_path << std::endl;
+			throw ModError("Failed to load and run " + script_path);
 		}
 	}
 
@@ -3206,9 +3212,9 @@ IWritableCraftDefManager* Server::getWritableCraftDefManager()
 	return m_craftdef;
 }
 
-const ModSpec* Server::getModSpec(const std::string &modname)
+const ModSpec* Server::getModSpec(const std::string &modname) const
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::const_iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		if(mod.name == modname)

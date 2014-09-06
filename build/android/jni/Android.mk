@@ -262,6 +262,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/script/common/c_converter.cpp     \
 		jni/src/script/common/c_internal.cpp      \
 		jni/src/script/common/c_types.cpp         \
+		jni/src/script/cpp_api/s_async.cpp        \
 		jni/src/script/cpp_api/s_base.cpp         \
 		jni/src/script/cpp_api/s_entity.cpp       \
 		jni/src/script/cpp_api/s_env.cpp          \
@@ -271,8 +272,8 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/script/cpp_api/s_node.cpp         \
 		jni/src/script/cpp_api/s_nodemeta.cpp     \
 		jni/src/script/cpp_api/s_player.cpp       \
+		jni/src/script/cpp_api/s_security.cpp     \
 		jni/src/script/cpp_api/s_server.cpp       \
-		jni/src/script/cpp_api/s_async.cpp        \
 		jni/src/script/lua_api/l_base.cpp         \
 		jni/src/script/lua_api/l_craft.cpp        \
 		jni/src/script/lua_api/l_env.cpp          \

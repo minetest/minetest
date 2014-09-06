@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
+#include "cpp_api/s_security.h"
 #include "settings.h"
 #include "log.h"
 
@@ -188,6 +189,7 @@ int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char* filename = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH_OPTIONAL(L, filename);
 	LuaSettings* o = new LuaSettings(filename);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);

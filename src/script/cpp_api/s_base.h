@@ -35,6 +35,12 @@ extern "C" {
 
 #define SCRIPTAPI_LOCK_DEBUG
 
+#define SCRIPT_MOD_NAME_FIELD "current_mod_name"
+// MUST be an invalid mod name so that mods can't
+// use that name to bypass security!
+#define BUILTIN_MOD_NAME "*builtin*"
+
+
 class Server;
 class Environment;
 class GUIEngine;
@@ -42,16 +48,17 @@ class ServerActiveObject;
 
 class ScriptApiBase {
 public:
-
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
 
-	bool loadMod(const std::string &scriptpath, const std::string &modname);
-	bool loadScript(const std::string &scriptpath);
+	bool loadMod(const std::string &script_path, const std::string &mod_name);
+	bool loadScript(const std::string &script_path);
 
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
+
+	Server* getServer() { return m_server; }
 
 protected:
 	friend class LuaABM;
@@ -69,7 +76,6 @@ protected:
 	void scriptError();
 	void stackDump(std::ostream &o);
 
-	Server* getServer() { return m_server; }
 	void setServer(Server* server) { m_server = server; }
 
 	Environment* getEnv() { return m_environment; }
@@ -84,6 +90,7 @@ protected:
 	JMutex          m_luastackmutex;
 	// Stack index of Lua error handler
 	int             m_errorhandler;
+	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	bool            m_locked;
 #endif
