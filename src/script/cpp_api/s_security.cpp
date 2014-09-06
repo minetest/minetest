@@ -198,6 +198,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		fp = fopen(path, "r");
 		chunk_name = new char[strlen(path) + 2];
 		chunk_name[0] = '@';
+		chunk_name[1] = '\0';
 		strcat(chunk_name, path);
 	}
 
@@ -288,6 +289,18 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 
 	// Allow paths in user path
 	ALLOW_IN_PATH(porting::path_user);
+
+	// Don't allow accessing binaries
+	str = fs::AbsolutePath(porting::path_share + DIR_DELIM "bin");
+	if (str.empty() || fs::PathStartsWith(abs_path, str)) {
+		return false;
+	}
+
+	// Don't allow accessing utility scripts
+	str = fs::AbsolutePath(porting::path_share + DIR_DELIM "util");
+	if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+		return false;
+	}
 
 	// Allow paths in share path
 	ALLOW_IN_PATH(porting::path_share);

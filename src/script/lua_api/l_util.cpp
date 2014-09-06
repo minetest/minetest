@@ -93,8 +93,8 @@ int ModApiUtil::l_log(lua_State *L)
 }
 
 #define CHECK_SECURE_SETTING() \
-	if (name.compare(0, 6, "secure_", 7) == 0) {\
-		lua_pushstring(L, "Attempt to set secure setting.");\
+	if (name.compare(0, 7, "secure_", 7) == 0) {\
+		lua_pushliteral(L, "Attempt to set secure setting.");\
 		lua_error(L);\
 	}
 
