@@ -42,7 +42,6 @@ class ServerActiveObject;
 
 class ScriptApiBase {
 public:
-
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
 
@@ -52,6 +51,8 @@ public:
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
+
+	Server* getServer() { return m_server; }
 
 protected:
 	friend class LuaABM;
@@ -69,7 +70,6 @@ protected:
 	void scriptError();
 	void stackDump(std::ostream &o);
 
-	Server* getServer() { return m_server; }
 	void setServer(Server* server) { m_server = server; }
 
 	Environment* getEnv() { return m_environment; }
@@ -84,6 +84,7 @@ protected:
 	JMutex          m_luastackmutex;
 	// Stack index of Lua error handler
 	int             m_errorhandler;
+	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	bool            m_locked;
 #endif

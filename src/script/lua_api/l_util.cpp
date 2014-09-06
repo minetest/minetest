@@ -92,12 +92,19 @@ int ModApiUtil::l_log(lua_State *L)
 	return 0;
 }
 
+#define CHECK_SECURE_SETTING() \
+	if (name.compare(0, 6, "secure_", 7) == 0) {\
+		lua_pushstring(L, "Attempt to set secure setting.");\
+		lua_error(L);\
+	}
+
 // setting_set(name, value)
 int ModApiUtil::l_setting_set(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
+	std::string name = trim(luaL_checkstring(L, 1));
 	const char *value = luaL_checkstring(L, 2);
+	CHECK_SECURE_SETTING();
 	g_settings->set(name, value);
 	return 0;
 }
@@ -108,7 +115,7 @@ int ModApiUtil::l_setting_get(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	try{
-		std::string value = g_settings->get(name);
+		std::string value = g_settings->get(trim(name));
 		lua_pushstring(L, value.c_str());
 	} catch(SettingNotFoundException &e){
 		lua_pushnil(L);
@@ -120,8 +127,9 @@ int ModApiUtil::l_setting_get(lua_State *L)
 int ModApiUtil::l_setting_setbool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
+	std::string name = trim(luaL_checkstring(L, 1));
 	bool value = lua_toboolean(L, 2);
+	CHECK_SECURE_SETTING();
 	g_settings->setBool(name, value);
 	return 0;
 }
@@ -132,7 +140,7 @@ int ModApiUtil::l_setting_getbool(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	try{
-		bool value = g_settings->getBool(name);
+		bool value = g_settings->getBool(trim(name));
 		lua_pushboolean(L, value);
 	} catch(SettingNotFoundException &e){
 		lua_pushnil(L);

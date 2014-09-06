@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_internal.h"
+#include "cpp_api/s_security.h"
 #include "lua_api/l_object.h"
 #include "serverobject.h"
 #include "debug.h"
@@ -133,8 +134,14 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 
 	lua_State *L = getStack();
 
-	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, m_errorhandler);
-	if (ret) {
+	bool ok;
+	if (m_secure) {
+		ok = ScriptApiSecurity::safeLoadFile(L, scriptpath.c_str());
+	} else {
+		ok = !luaL_loadfile(L, scriptpath.c_str());
+	}
+	ok = ok && !lua_pcall(L, 0, 0, m_errorhandler);
+	if (!ok) {
 		errorstream << "========== ERROR FROM LUA ===========" << std::endl;
 		errorstream << "Failed to load and run script from " << std::endl;
 		errorstream << scriptpath << ":" << std::endl;

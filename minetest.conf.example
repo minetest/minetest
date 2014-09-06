@@ -553,3 +553,7 @@
 #    Noise parameters for biome API temperature and humidity
 #mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
 #mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
+
+#    Prevent mods from doing insecure things like running shell commands
+#secure_mod_api = true
+

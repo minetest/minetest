@@ -4928,9 +4928,9 @@ IWritableCraftDefManager* Server::getWritableCraftDefManager()
 	return m_craftdef;
 }
 
-const ModSpec* Server::getModSpec(const std::string &modname)
+const ModSpec* Server::getModSpec(const std::string &modname) const
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for(std::vector<ModSpec>::const_iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		if(mod.name == modname)

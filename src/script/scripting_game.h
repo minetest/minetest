@@ -27,19 +27,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_node.h"
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_server.h"
+#include "cpp_api/s_security.h"
 
 /*****************************************************************************/
 /* Scripting <-> Game Interface                                              */
 /*****************************************************************************/
 
-class GameScripting
-		: virtual public ScriptApiBase,
-		  public ScriptApiDetached,
-		  public ScriptApiEntity,
-		  public ScriptApiEnv,
-		  public ScriptApiNode,
-		  public ScriptApiPlayer,
-		  public ScriptApiServer
+class GameScripting :
+		virtual public ScriptApiBase,
+		public ScriptApiDetached,
+		public ScriptApiEntity,
+		public ScriptApiEnv,
+		public ScriptApiNode,
+		public ScriptApiPlayer,
+		public ScriptApiServer,
+		public ScriptApiSecurity
 {
 public:
 	GameScripting(Server* server);
