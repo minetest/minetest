@@ -319,14 +319,14 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 		lua_pop(L, 1);
 	}
 
-	// Allow paths in user path
-	ALLOW_IN_PATH(porting::path_user);
-
 	// Don't allow accessing binaries
 	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "bin");
 
 	// Don't allow accessing utility scripts
 	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "util");
+
+	// Allow paths in user path
+	ALLOW_IN_PATH(porting::path_user);
 
 	// Allow paths in share path
 	ALLOW_IN_PATH(porting::path_share);
