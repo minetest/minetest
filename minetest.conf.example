@@ -51,7 +51,7 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Doubletaping the jump key toogles fly mode
+# Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
 # If false aux1 is used to fly fast
 #always_fly_fast = true
@@ -150,6 +150,12 @@
 #crosshair_alpha = 255
 # scale gui by a user specified value
 #gui_scaling = 1.0
+# Enable selection boxes for nodes
+#enable_node_selectionboxes = true
+# Enable highlighting for nodes
+#enable_node_highlighting = true
+# Speed of node highligting effect
+#node_highlighting_speed = 3.0
 # Sensitivity multiplier
 #mouse_sensitivity = 0.2
 # Sound settings

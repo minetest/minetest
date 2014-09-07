@@ -395,6 +395,8 @@ public:
 	int getCrackLevel();
 	void setCrack(int level, v3s16 pos);
 
+	void setHighlighted(v3s16 pos, bool node_highlighted);
+
 	u16 getHP();
 	u16 getBreath();
 
@@ -504,6 +506,8 @@ private:
 	float m_animation_time;
 	int m_crack_level;
 	v3s16 m_crack_pos;
+	bool m_node_highlighted;
+	v3s16 m_highlighted_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;

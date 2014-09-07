@@ -407,14 +407,16 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 				mindistance = distance;
 
 				hilightboxes.clear();
-				for(std::vector<aabb3f>::const_iterator
-						i2 = boxes.begin();
-						i2 != boxes.end(); i2++)
-				{
-					aabb3f box = *i2;
-					box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
-					box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
-					hilightboxes.push_back(box);
+				if (g_settings->getBool("enable_node_selectionboxes")) {
+					for(std::vector<aabb3f>::const_iterator
+							i2 = boxes.begin();
+							i2 != boxes.end(); i2++)
+					{
+						aabb3f box = *i2;
+						box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
+						box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
+						hilightboxes.push_back(box);
+					}
 				}
 			}
 		}
@@ -2796,7 +2798,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(pointed != pointed_old)
 		{
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
-			//dstream<<"Pointing at "<<pointed.dump()<<std::endl;
+			if (g_settings->getBool("enable_node_highlighting"))
+				client.setHighlighted(pointed.node_undersurface, pointed.type == POINTEDTHING_NODE);		
 		}
 
 		/*
