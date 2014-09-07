@@ -280,20 +280,22 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 {
 	std::string str;  // Transient
 
-	// First remove last component to allow opening non-existing files
-	std::string abs_path = fs::RemoveLastPathComponent(path, &str);
-	// Don't allow modifying minetest.conf (main or of games)
-	if (str == "minetest.conf") {
-		return false;
-	}
-
 	// Get absolute path
-	abs_path = fs::AbsolutePath(abs_path);
-	if (abs_path.empty()) {
-		return false;
+	std::string abs_path = fs::AbsolutePath(path);
+	if (!abs_path.empty()) {
+		// Don't allow accessing the settings file
+		str = fs::AbsolutePath(g_settings_path);
+		if (str == abs_path) {
+			return false;
+		}
 	}
 
-	DISALLOW_IN_PATH(g_settings_path);
+	// Remove last component to allow opening non-existing files
+	abs_path = fs::AbsolutePath(fs::RemoveLastPathComponent(path, &str));
+	// Don't allow accessing minetest.conf (main or of games)
+	if (abs_path.empty() || str == "minetest.conf") {
+		return false;
+	}
 
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
