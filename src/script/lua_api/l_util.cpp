@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_async.h"
 #include "serialization.h"
 #include "json/json.h"
+#include "cpp_api/s_security.h"
 #include "debug.h"
 #include "porting.h"
 #include "log.h"
@@ -327,6 +328,17 @@ int ModApiUtil::l_decompress(lua_State *L)
 	return 1;
 }
 
+// mkdir(path)
+int ModApiUtil::l_mkdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH_OPTIONAL(L, path);
+	lua_pushboolean(L, fs::CreateAllDirs(path));
+	return 1;
+}
+
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -352,6 +364,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(compress);
 	API_FCT(decompress);
+
+	API_FCT(mkdir);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -374,5 +388,7 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	ASYNC_API_FCT(compress);
 	ASYNC_API_FCT(decompress);
+
+	ASYNC_API_FCT(mkdir);
 }
 
