@@ -22,6 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 
+#define CHECK_SECURE_PATH(L, path) \
+	if (!ScriptApiSecurity::checkPath(L, path)) {\
+		lua_pushstring(L, (std::string("Attempt to access external file ") +\
+					path + " with mod security on.").c_str());\
+		lua_error(L);\
+	}
+
+
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:

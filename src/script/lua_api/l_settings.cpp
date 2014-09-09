@@ -189,10 +189,8 @@ int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char* filename = luaL_checkstring(L, 1);
-	if (ScriptApiSecurity::isSecure(L) &&
-			!ScriptApiSecurity::checkPath(L, filename)) {
-		lua_pushliteral(L, "Settings path not allowed.");
-		lua_error(L);
+	if (ScriptApiSecurity::isSecure(L)) {
+		CHECK_SECURE_PATH(L, filename);
 	}
 	LuaSettings* o = new LuaSettings(filename);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

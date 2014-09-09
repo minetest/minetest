@@ -38,13 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		lua_setfield(L, -2, list[i]);\
 	}
 
-#define CHECK_PATH(path) \
-	if (!checkPath(L, path)) {\
-		lua_pushstring(L, (std::string("Attempt to access external file ") +\
-					path + " with mod security on.").c_str());\
-		lua_error(L);\
-	}
-
 #define GET_ORIGINAL(lib, func) \
 	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");\
 	lua_getfield(L, -1, lib);\
@@ -311,11 +304,17 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 		}
 	}
 
-	// Remove last component to allow opening non-existing files
-	abs_path = fs::AbsolutePath(fs::RemoveLastPathComponent(path, &str));
+	fs::RemoveLastPathComponent(path, &str);
 	// Don't allow accessing minetest.conf (main or of games)
-	if (abs_path.empty() || str == "minetest.conf") {
+	if (str == "minetest.conf") {
 		return false;
+	}
+	// Remove last components if they don't exist to allow opening
+	// non-existing files/folders.
+	std::string cur_path = path;
+	while (abs_path.empty() && !cur_path.empty()) {
+		cur_path = fs::RemoveLastPathComponent(cur_path);
+		abs_path = fs::AbsolutePath(cur_path);
 	}
 
 	// Get server from registry
@@ -418,7 +417,7 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State * L)
 
 	if (lua_isstring(L, 1)) {
 		path = lua_tostring(L, 1);
-		CHECK_PATH(path);
+		CHECK_SECURE_PATH(L, path);
 	}
 
 	if (!safeLoadFile(L, path)) {
@@ -462,7 +461,7 @@ int ScriptApiSecurity::sl_io_open(lua_State * L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char * path = lua_tostring(L, 1);
-	CHECK_PATH(path);
+	CHECK_SECURE_PATH(L, path);
 
 	GET_ORIGINAL("io", "open");
 	lua_pushvalue(L, 1);
@@ -476,7 +475,7 @@ int ScriptApiSecurity::sl_io_input(lua_State * L)
 {
 	if (lua_isstring(L, 1)) {
 		const char * path = lua_tostring(L, 1);
-		CHECK_PATH(path);
+		CHECK_SECURE_PATH(L, path);
 	}
 
 	GET_ORIGINAL("io", "input");
@@ -490,7 +489,7 @@ int ScriptApiSecurity::sl_io_output(lua_State * L)
 {
 	if (lua_isstring(L, 1)) {
 		const char * path = lua_tostring(L, 1);
-		CHECK_PATH(path);
+		CHECK_SECURE_PATH(L, path);
 	}
 
 	GET_ORIGINAL("io", "output");
@@ -504,11 +503,11 @@ int ScriptApiSecurity::sl_os_rename(lua_State * L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char * path1 = lua_tostring(L, 1);
-	CHECK_PATH(path1);
+	CHECK_SECURE_PATH(L, path1);
 
 	luaL_checktype(L, 2, LUA_TSTRING);
 	const char * path2 = lua_tostring(L, 2);
-	CHECK_PATH(path2);
+	CHECK_SECURE_PATH(L, path2);
 
 	GET_ORIGINAL("os", "rename");
 	lua_pushvalue(L, 1);
@@ -522,7 +521,7 @@ int ScriptApiSecurity::sl_os_remove(lua_State * L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char * path = lua_tostring(L, 1);
-	CHECK_PATH(path);
+	CHECK_SECURE_PATH(L, path);
 
 	GET_ORIGINAL("os", "remove");
 	lua_pushvalue(L, 1);

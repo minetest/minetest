@@ -78,7 +78,7 @@ private:
 	// is_yes(arg)
 	static int l_is_yes(lua_State *L);
 
-	// get_scriptdir()
+	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
 
 	// compress(data, method, ...)
@@ -86,6 +86,9 @@ private:
 
 	// decompress(data, method, ...)
 	static int l_decompress(lua_State *L);
+
+	// mkdir(path)
+	static int l_mkdir(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
