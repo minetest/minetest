@@ -226,6 +226,10 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
 		fp = fopen(path, "r");
+		if (fp == NULL) {
+			lua_pushfstring(L, "%s: %s", path, strerror(errno));
+			return false;
+		}
 		chunk_name = new char[strlen(path) + 2];
 		chunk_name[0] = '@';
 		chunk_name[1] = '\0';
