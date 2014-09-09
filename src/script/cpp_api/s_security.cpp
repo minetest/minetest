@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "server.h"
 #include "main.h"
+#include <cerrno>
 #include <string>
 
 #define SECURE_LIB_API(lib, name) \
@@ -217,6 +218,14 @@ bool ScriptApiSecurity::isSecure(lua_State * L)
 }
 
 
+#define CHECK_FILE_ERR(ret, fp) \
+	if (ret) {\
+		if (fp) std::fclose(fp);\
+		lua_pushfstring(L, "%s: %s", path, strerror(errno));\
+		return false;\
+	}
+
+
 bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 {
 	FILE * fp;
@@ -226,10 +235,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
 		fp = fopen(path, "r");
-		if (fp == NULL) {
-			lua_pushfstring(L, "%s: %s", path, strerror(errno));
-			return false;
-		}
+		CHECK_FILE_ERR(!fp, fp)
 		chunk_name = new char[strlen(path) + 2];
 		chunk_name[0] = '@';
 		chunk_name[1] = '\0';
@@ -251,10 +257,12 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 	}
 
 	// Read the file
-	std::fseek(fp, 0, SEEK_END);
+	int ret = std::fseek(fp, 0, SEEK_END);
+	CHECK_FILE_ERR(ret, fp);
 	size_t size = std::ftell(fp) - start;
 	char * code = new char[size];
-	std::fseek(fp, start, SEEK_SET);
+	ret = std::fseek(fp, start, SEEK_SET);
+	CHECK_FILE_ERR(ret, fp);
 	size_t num_read = std::fread(code, 1, size, fp);
 	if (path) {
 		std::fclose(fp);
