@@ -25,13 +25,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:
+	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
+	// Checks if the Lua state has been secured
+	static bool isSecure(lua_State * L);
+	// Loads a file as Lua code safely (doesn't allow bytecode).
 	static bool safeLoadFile(lua_State * L, const char * path);
-
-private:
 	// Checks if mods are allowed to read and write to the path
 	static bool checkPath(lua_State * L, const char * path);
 
+private:
 	// Syntax: "sl_" <Library name or 'g' (global)> '_' <Function name>
 	// (sl stands for Secure Lua)
 

@@ -208,6 +208,15 @@ void ScriptApiSecurity::initializeSecurity()
 }
 
 
+bool ScriptApiSecurity::isSecure(lua_State * L)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	bool secure = !lua_isnil(L, -1);
+	lua_pop(L, 1);
+	return secure;
+}
+
+
 bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 {
 	FILE * fp;
