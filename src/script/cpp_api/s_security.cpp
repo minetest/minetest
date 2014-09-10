@@ -143,7 +143,7 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_newtable(L);  // Create new environment
 	lua_pushvalue(L, -1);
 	lua_setfield(L, -2, "_G");  // Set _G of new environment
-#if LUA_VERSION_NUM >= 502  // Lua >= 5.2 (untested)
+#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
 	// Set the global environment
 	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
 #else  // Lua <= 5.1
