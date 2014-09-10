@@ -55,6 +55,7 @@ private:
 	static int sl_io_open(lua_State * L);
 	static int sl_io_input(lua_State * L);
 	static int sl_io_output(lua_State * L);
+	static int sl_io_lines(lua_State * L);
 
 	static int sl_os_rename(lua_State * L);
 	static int sl_os_remove(lua_State * L);

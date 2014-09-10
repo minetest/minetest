@@ -79,11 +79,11 @@ void ScriptApiSecurity::initializeSecurity()
 		"math",
 	};
 	static const char * io_whitelist[] = {
-		"read",
-		"write",
-		"flush",
-		"type",
 		"close",
+		"flush",
+		"read",
+		"type",
+		"write",
 	};
 	static const char * os_whitelist[] = {
 		"clock",
@@ -176,6 +176,7 @@ void ScriptApiSecurity::initializeSecurity()
 	SECURE_LIB_API(io, open);
 	SECURE_LIB_API(io, input);
 	SECURE_LIB_API(io, output);
+	SECURE_LIB_API(io, lines);
 	lua_setglobal(L, "io");
 	lua_pop(L, 1);  // Pop backup IO
 
@@ -517,6 +518,23 @@ int ScriptApiSecurity::sl_io_output(lua_State * L)
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 1);
 	return 1;
+}
+
+
+int ScriptApiSecurity::sl_io_lines(lua_State * L)
+{
+	if (lua_isstring(L, 1)) {
+		const char * path = lua_tostring(L, 1);
+		CHECK_SECURE_PATH(L, path);
+	}
+
+	GET_ORIGINAL("io", "lines");
+	lua_pushvalue(L, 1);
+	int top_precall = lua_gettop(L);
+	lua_call(L, 1, LUA_MULTRET);
+	// Return number of arguments returned by the function,
+	// adjusting for the function being poped.
+	return lua_gettop(L) - (top_precall - 1);
 }
 
 
