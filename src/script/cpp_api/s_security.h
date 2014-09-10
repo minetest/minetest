@@ -50,6 +50,7 @@ private:
 	static int sl_g_load(lua_State * L);
 	static int sl_g_loadfile(lua_State * L);
 	static int sl_g_loadstring(lua_State * L);
+	static int sl_g_require(lua_State * L);
 
 	static int sl_io_open(lua_State * L);
 	static int sl_io_input(lua_State * L);

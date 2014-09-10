@@ -110,6 +110,12 @@ void ScriptApiSecurity::initializeSecurity()
 		"getupvalue",
 		"setlocal",
 	};
+	static const char * package_whitelist[] = {
+		"config",
+		"searchpath",
+		"cpath",
+		"path",
+	};
 	static const char * jit_whitelist[] = {
 		"arch",
 		"flush",
@@ -159,6 +165,7 @@ void ScriptApiSecurity::initializeSecurity()
 	SECURE_API(load);
 	SECURE_API(loadfile);
 	SECURE_API(loadstring);
+	SECURE_API(require);
 	lua_pop(L, 1);
 
 	// Copy safe IO functions
@@ -188,6 +195,13 @@ void ScriptApiSecurity::initializeSecurity()
 	COPY_SAFE(debug_whitelist);
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop backup debug
+
+	// Copy safe package fields
+	lua_getfield(L, -1, "package");
+	lua_newtable(L);
+	COPY_SAFE(package_whitelist);
+	lua_setglobal(L, "package");
+	lua_pop(L, 1);  // Pop backup package
 
 	// Copy safe jit functions, if they exist
 	lua_getfield(L, -1, "jit");
@@ -454,6 +468,13 @@ int ScriptApiSecurity::sl_g_loadstring(lua_State * L)
 		return 2;
 	}
 	return 1;
+}
+
+
+int ScriptApiSecurity::sl_g_require(lua_State * L)
+{
+	lua_pushliteral(L, "require() is disabled when mod security is on.");
+	return lua_error(L);
 }
 
 
