@@ -105,7 +105,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"upvalueid",
 		"upvaluejoin",
 		"sethook",
-		"getlocal",
 		"debug",
 		"getupvalue",
 		"setlocal",
