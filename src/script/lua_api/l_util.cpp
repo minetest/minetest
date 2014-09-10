@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "util/auth.h"
+#include <algorithm>
 
 // debug(...)
 // Writes a line to dstream
@@ -316,7 +317,7 @@ int ModApiUtil::l_compress(lua_State *L)
 int ModApiUtil::l_decompress(lua_State *L)
 {
 	size_t size;
-	const char * data = luaL_checklstring(L, 1, &size);
+	const char *data = luaL_checklstring(L, 1, &size);
 
 	std::istringstream is(std::string(data, size));
 	std::ostringstream os;
@@ -335,6 +336,30 @@ int ModApiUtil::l_mkdir(lua_State *L)
 	const char *path = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH_OPTIONAL(L, path);
 	lua_pushboolean(L, fs::CreateAllDirs(path));
+	return 1;
+}
+
+
+int ModApiUtil::l_request_insecure_environment(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	if (!ScriptApiSecurity::isSecure(L)) {
+		lua_getglobal(L, "_G");
+		return 1;
+	}
+	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	if (!lua_isstring(L, -1)) {
+		lua_pushnil(L);
+		return 1;
+	}
+	const char *mod_name = lua_tostring(L, -1);
+	std::string trusted_mods = g_settings->get("secure.trusted_mods");
+	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
+	if (std::find(mod_list.begin(), mod_list.end(), mod_name) == mod_list.end()) {
+		lua_pushnil(L);
+		return 1;
+	}
+	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
 	return 1;
 }
 
@@ -366,6 +391,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+
+	API_FCT(request_insecure_environment);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)

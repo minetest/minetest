@@ -90,6 +90,9 @@ private:
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
 
+	// request_insecure_environment()
+	static int l_request_insecure_environment(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 
@@ -98,3 +101,4 @@ public:
 };
 
 #endif /* L_UTIL_H_ */
+

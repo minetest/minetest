@@ -2290,13 +2290,20 @@ These functions return the leftover itemstack.
 * `minetest.forceload_block(pos)`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
+    * Please note that forceloaded areas are saved when the server restarts.
 
 * `minetest.forceload_free_block(pos)`
     * stops forceloading the position `pos`
-Please note that forceloaded areas are saved when the server restarts.
 
-minetest.global_exists(name)
-^ Checks if a global variable has been set, without triggering a warning.
+* `minetest.request_insecure_environment()`: returns an environment containing
+  insecure functions if the calling mod has been listed as trusted in the
+  `secure.trusted_mods` setting or security is disabled, otherwise returns `nil`.
+    * Only works at init time.
+    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE IT IN
+      A LOCAL VARIABLE!**
+
+* `minetest.global_exists(name)`
+    * Checks if a global variable has been set, without triggering a warning.
 
 ### Global objects
 * `minetest.env`: `EnvRef` of the server environment and world.
