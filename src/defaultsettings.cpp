@@ -264,6 +264,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("emergequeue_limit_generate", "32");
 	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure_mod_api", "true");
+	settings->setDefault("secure_trusted_mods", "");
 
 	// physics stuff
 	settings->setDefault("movement_acceleration_default", "3");

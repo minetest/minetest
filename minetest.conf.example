@@ -556,4 +556,7 @@
 
 #    Prevent mods from doing insecure things like running shell commands
 #secure_mod_api = true
+#    Comma-separated list of trusted mods that are allowed to access insecure
+#    functions even when mod security is on (via request_insecure_environment()).
+#secure_trusted_mods =
 

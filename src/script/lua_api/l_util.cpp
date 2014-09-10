@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "main.h"  //required for g_settings, g_settings_path
+#include <algorithm>
 
 // debug(...)
 // Writes a line to dstream
@@ -351,6 +352,29 @@ int ModApiUtil::l_mkdir(lua_State *L)
 }
 
 
+int ModApiUtil::l_request_insecure_environment(lua_State * L)
+{
+	if (!ScriptApiSecurity::isSecure(L)) {
+		lua_getglobal(L, "_G");
+		return 1;
+	}
+	lua_getfield(L, LUA_REGISTRYINDEX, "current_modname");
+	if (!lua_isstring(L, -1)) {
+		lua_pushnil(L);
+		return 1;
+	}
+	const char * mod_name = lua_tostring(L, -1);
+	std::string trusted_mods = g_settings->get("secure_trusted_mods");
+	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
+	if (std::find(mod_list.begin(), mod_list.end(), mod_name) == mod_list.end()) {
+		lua_pushnil(L);
+		return 1;
+	}
+	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	return 1;
+}
+
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -378,6 +402,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+
+	API_FCT(request_insecure_environment);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
