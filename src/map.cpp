@@ -3065,37 +3065,25 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	/*infostream<<"ServerMap::loadMapMeta(): Loading map metadata"
-			<<std::endl;*/
-
-	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
+	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if(is.good() == false)
-	{
-		infostream<<"ERROR: ServerMap::loadMapMeta(): "
-				<<"could not open"<<fullpath<<std::endl;
+	if (!is.good()) {
+		errorstream << "ServerMap::loadMapMeta(): "
+				<< "could not open" << fullpath << std::endl;
 		throw FileNotGoodException("Cannot open map metadata");
 	}
 
 	Settings params;
 
-	for(;;)
-	{
-		if(is.eof())
-			throw SerializationError
-					("ServerMap::loadMapMeta(): [end_of_params] not found");
-		std::string line;
-		std::getline(is, line);
-		std::string trimmedline = trim(line);
-		if(trimmedline == "[end_of_params]")
-			break;
-		params.parseConfigLine(line);
+	if (!params.parseConfigLines(is, "[end_of_params]")) {
+		throw SerializationError("ServerMap::loadMapMeta(): "
+				"[end_of_params] not found!");
 	}
 
 	m_emerge->loadParamsFromSettings(&params);
 
-	verbosestream<<"ServerMap::loadMapMeta(): seed="
-		<< m_emerge->params.seed<<std::endl;
+	verbosestream << "ServerMap::loadMapMeta(): seed="
+		<< m_emerge->params.seed << std::endl;
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)

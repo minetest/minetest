@@ -97,7 +97,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 
 	// if unspecified, leave a proc for the main thread and one for
 	// some other misc thread
-	int nthreads = 0;
+	s16 nthreads = 0;
 	if (!g_settings->getS16NoEx("num_emerge_threads", nthreads))
 		nthreads = porting::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
@@ -117,8 +117,8 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	if (qlimit_generate < 1)
 		qlimit_generate = 1;
 
-	for (int i = 0; i != nthreads; i++)
-		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
+	for (s16 i = 0; i < nthreads; i++)
+		emergethread.push_back(new EmergeThread((Server *) gamedef, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }

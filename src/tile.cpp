@@ -18,19 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+
+#include <ICameraSceneNode.h>
+#include "util/string.h"
+#include "util/container.h"
+#include "util/thread.h"
+#include "util/numeric.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "main.h" // for g_settings
 #include "filesys.h"
 #include "settings.h"
 #include "mesh.h"
-#include <ICameraSceneNode.h>
 #include "log.h"
 #include "gamedef.h"
-#include "util/string.h"
-#include "util/container.h"
-#include "util/thread.h"
-#include "util/numeric.h"
+#include "strfnd.h"
 
 #ifdef __ANDROID__
 #include <GLES/gl.h>

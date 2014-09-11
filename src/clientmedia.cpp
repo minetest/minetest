@@ -18,10 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientmedia.h"
+#include "util/serialize.h"
+#include "util/string.h"
 #include "httpfetch.h"
 #include "client.h"
 #include "clientserver.h"
 #include "filecache.h"
+#include "filesys.h"
 #include "hex.h"
 #include "sha1.h"
 #include "debug.h"
@@ -29,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 #include "main.h"
-#include "util/serialize.h"
-#include "util/string.h"
 
 static std::string getMediaCacheDir()
 {
