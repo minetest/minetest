@@ -106,9 +106,9 @@ struct MapgenSpecificParams {
 
 struct MapgenParams {
 	std::string mg_name;
-	int chunksize;
+	s16 chunksize;
 	u64 seed;
-	int water_level;
+	s16 water_level;
 	u32 flags;
 
 	MapgenSpecificParams *sparams;

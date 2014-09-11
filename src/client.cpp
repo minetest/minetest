@@ -17,13 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client.h"
 #include <iostream>
 #include <algorithm>
-#include "clientserver.h"
-#include "jthread/jmutexautolock.h"
-#include "main.h"
 #include <sstream>
+#include <IFileSystem.h>
+#include "jthread/jmutexautolock.h"
+#include "util/directiontables.h"
+#include "util/pointedthing.h"
+#include "util/serialize.h"
+#include "util/string.h"
+#include "strfnd.h"
+#include "client.h"
+#include "clientserver.h"
+#include "main.h"
 #include "filesys.h"
 #include "porting.h"
 #include "mapsector.h"
@@ -37,18 +43,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "shader.h"
-#include <IFileSystem.h>
 #include "base64.h"
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "sound.h"
-#include "util/string.h"
 #include "IMeshCache.h"
 #include "serialization.h"
-#include "util/serialize.h"
 #include "config.h"
-#include "util/directiontables.h"
-#include "util/pointedthing.h"
 #include "version.h"
 #include "drawscene.h"
 

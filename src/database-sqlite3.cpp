@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "settings.h"
 #include "log.h"
+#include "filesys.h"
 
 Database_SQLite3::Database_SQLite3(ServerMap *map, std::string savedir)
 {

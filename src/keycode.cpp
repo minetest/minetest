@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "hex.h"
+#include "debug.h"
 
 class UnknownKeycode : public BaseException
 {

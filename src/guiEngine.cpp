@@ -19,7 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
+#include <IGUIStaticText.h>
+#include <ICameraSceneNode.h>
 #include "scripting_mainmenu.h"
+#include "util/numeric.h"
 #include "config.h"
 #include "version.h"
 #include "porting.h"
@@ -31,14 +34,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound_openal.h"
 #include "clouds.h"
 #include "httpfetch.h"
-#include "util/numeric.h"
+#include "log.h"
 #ifdef __ANDROID__
 #include "tile.h"
 #include <GLES/gl.h>
 #endif
 
-#include <IGUIStaticText.h>
-#include <ICameraSceneNode.h>
 
 /******************************************************************************/
 /** TextDestGuiEngine                                                         */
