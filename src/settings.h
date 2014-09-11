@@ -741,9 +741,7 @@ public:
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-
-		m_settings.clear();
-		m_defaults.clear();
+		clearNoLock();
 	}
 
 	void updateValue(const Settings &other, const std::string &name)
@@ -758,8 +756,6 @@ public:
 			m_settings[name] = val;
 		} catch (SettingNotFoundException &e) {
 		}
-
-		return;
 	}
 
 	void update(const Settings &other)
@@ -770,17 +766,14 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		JMutexAutoLock lock2(other.m_mutex);
 
-		m_settings.insert(other.m_settings.begin(), other.m_settings.end());
-		m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
-
-		return;
+		updateNoLock(other);
 	}
 
 	Settings & operator+=(const Settings &other)
 	{
 		update(other);
-		return *this;
 
+		return *this;
 	}
 
 	Settings & operator=(const Settings &other)
@@ -791,14 +784,27 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		JMutexAutoLock lock2(other.m_mutex);
 
-
-		clear();
-		update(other);
+		clearNoLock();
+		updateNoLock(other);
 
 		return *this;
 	}
 
 private:
+
+	void updateNoLock(const Settings &other)
+	{
+		m_settings.insert(other.m_settings.begin(), other.m_settings.end());
+		m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
+	}
+
+	void clearNoLock()
+	{
+		m_settings.clear();
+		m_defaults.clear();
+	}
+
+
 	std::map<std::string, std::string> m_settings;
 	std::map<std::string, std::string> m_defaults;
 	// All methods that access m_settings/m_defaults directly should lock this.
