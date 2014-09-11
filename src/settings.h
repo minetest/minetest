@@ -443,107 +443,62 @@ public:
 		m_defaults[name] = value;
 	}
 
-	bool exists(std::string name)
+	bool exists(std::string name) const
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		return (m_settings.find(name) != m_settings.end() || m_defaults.find(name) != m_defaults.end());
+		return m_settings.find(name) != m_settings.end() 
+				|| m_defaults.find(name) != m_defaults.end();
 	}
 
-	std::string get(std::string name)
+	std::string get(std::string name) const
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		std::map<std::string, std::string>::iterator n;
-		n = m_settings.find(name);
-		if(n == m_settings.end())
-		{
-			n = m_defaults.find(name);
-			if(n == m_defaults.end())
-			{
+		std::map<std::string, std::string>::const_iterator n;
+		if ((n = m_settings.find(name)) == m_settings.end())
+			if ((n = m_defaults.find(name)) == m_defaults.end())
 				throw SettingNotFoundException(("Setting [" + name + "] not found ").c_str());
-			}
-		}
 
 		return n->second;
 	}
 
 	//////////// Get setting
-	bool getBool(std::string name)
+	bool getBool(std::string name) const
 	{
 		return is_yes(get(name));
 	}
 
-	bool getFlag(std::string name)
+	bool getFlag(std::string name) const
 	{
-		try
-		{
+		try {
 			return getBool(name);
-		}
-		catch(SettingNotFoundException &e)
-		{
+		} catch(SettingNotFoundException &e) {
 			return false;
 		}
 	}
 
-	// Asks if empty
-	bool getBoolAsk(std::string name, std::string question, bool def)
-	{
-		// If it is in settings
-		if(exists(name))
-			return getBool(name);
-
-		std::string s;
-		char templine[10];
-		std::cout<<question<<" [y/N]: ";
-		std::cin.getline(templine, 10);
-		s = templine;
-
-		if(s == "")
-			return def;
-
-		return is_yes(s);
-	}
-
-	float getFloat(std::string name)
+	float getFloat(std::string name) const
 	{
 		return stof(get(name));
 	}
 
-	u16 getU16(std::string name)
+	u16 getU16(std::string name) const
 	{
 		return stoi(get(name), 0, 65535);
 	}
 
-	u16 getU16Ask(std::string name, std::string question, u16 def)
-	{
-		// If it is in settings
-		if(exists(name))
-			return getU16(name);
-
-		std::string s;
-		char templine[10];
-		std::cout<<question<<" ["<<def<<"]: ";
-		std::cin.getline(templine, 10);
-		s = templine;
-
-		if(s == "")
-			return def;
-
-		return stoi(s, 0, 65535);
-	}
-
-	s16 getS16(std::string name)
+	s16 getS16(std::string name) const
 	{
 		return stoi(get(name), -32768, 32767);
 	}
 
-	s32 getS32(std::string name)
+	s32 getS32(std::string name) const
 	{
 		return stoi(get(name));
 	}
 
-	v3f getV3F(std::string name)
+	v3f getV3F(std::string name) const
 	{
 		v3f value;
 		Strfnd f(get(name));
@@ -554,7 +509,7 @@ public:
 		return value;
 	}
 
-	v2f getV2F(std::string name)
+	v2f getV2F(std::string name) const
 	{
 		v2f value;
 		Strfnd f(get(name));
@@ -564,25 +519,27 @@ public:
 		return value;
 	}
 
-	u64 getU64(std::string name)
+	u64 getU64(std::string name) const
 	{
 		u64 value = 0;
 		std::string s = get(name);
 		std::istringstream ss(s);
-		ss>>value;
+		ss >> value;
 		return value;
 	}
 
-	u32 getFlagStr(std::string name, FlagDesc *flagdesc, u32 *flagmask)
+	u32 getFlagStr(std::string name, FlagDesc *flagdesc, u32 *flagmask) const
 	{
 		std::string val = get(name);
-		return (std::isdigit(val[0])) ? stoi(val) :
-			readFlagString(val, flagdesc, flagmask);
+		return std::isdigit(val[0])
+			? stoi(val)
+			: readFlagString(val, flagdesc, flagmask);
 	}
 
 	// N.B. if getStruct() is used to read a non-POD aggregate type,
 	// the behavior is undefined.
-	bool getStruct(std::string name, std::string format, void *out, size_t olen)
+	bool getStruct(std::string name, std::string format,
+				   void *out, size_t olen) const
 	{
 		std::string valstr;
 
@@ -599,7 +556,7 @@ public:
 	}
 
 	//////////// Try to get value, no exception thrown
-	bool getNoEx(std::string name, std::string &val)
+	bool getNoEx(std::string name, std::string &val) const
 	{
 		try {
 			val = get(name);
@@ -612,7 +569,7 @@ public:
 	// N.B. getFlagStrNoEx() does not set val, but merely modifies it.  Thus,
 	// val must be initialized before using getFlagStrNoEx().  The intention of
 	// this is to simplify modifying a flags field from a default value.
-	bool getFlagStrNoEx(std::string name, u32 &val, FlagDesc *flagdesc)
+	bool getFlagStrNoEx(std::string name, u32 &val, FlagDesc *flagdesc) const
 	{
 		try {
 			u32 flags, flagmask;
@@ -628,7 +585,7 @@ public:
 		}
 	}
 
-	bool getFloatNoEx(std::string name, float &val)
+	bool getFloatNoEx(std::string name, float &val) const
 	{
 		try {
 			val = getFloat(name);
@@ -638,7 +595,7 @@ public:
 		}
 	}
 
-	bool getU16NoEx(std::string name, int &val)
+	bool getU16NoEx(std::string name, int &val) const
 	{
 		try {
 			val = getU16(name);
@@ -648,7 +605,7 @@ public:
 		}
 	}
 
-	bool getU16NoEx(std::string name, u16 &val)
+	bool getU16NoEx(std::string name, u16 &val) const
 	{
 		try {
 			val = getU16(name);
@@ -658,7 +615,7 @@ public:
 		}
 	}
 
-	bool getS16NoEx(std::string name, int &val)
+	bool getS16NoEx(std::string name, int &val) const
 	{
 		try {
 			val = getU16(name);
@@ -668,7 +625,7 @@ public:
 		}
 	}
 
-	bool getS16NoEx(std::string name, s16 &val)
+	bool getS16NoEx(std::string name, s16 &val) const
 	{
 		try {
 			val = getS16(name);
@@ -678,7 +635,7 @@ public:
 		}
 	}
 
-	bool getS32NoEx(std::string name, s32 &val)
+	bool getS32NoEx(std::string name, s32 &val) const
 	{
 		try {
 			val = getS32(name);
@@ -688,7 +645,7 @@ public:
 		}
 	}
 
-	bool getV3FNoEx(std::string name, v3f &val)
+	bool getV3FNoEx(std::string name, v3f &val) const
 	{
 		try {
 			val = getV3F(name);
@@ -698,7 +655,7 @@ public:
 		}
 	}
 
-	bool getV2FNoEx(std::string name, v2f &val)
+	bool getV2FNoEx(std::string name, v2f &val) const
 	{
 		try {
 			val = getV2F(name);
@@ -708,7 +665,7 @@ public:
 		}
 	}
 
-	bool getU64NoEx(std::string name, u64 &val)
+	bool getU64NoEx(std::string name, u64 &val) const
 	{
 		try {
 			val = getU64(name);
@@ -852,7 +809,7 @@ private:
 	std::map<std::string, std::string> m_settings;
 	std::map<std::string, std::string> m_defaults;
 	// All methods that access m_settings/m_defaults directly should lock this.
-	JMutex m_mutex;
+	mutable JMutex m_mutex;
 };
 
 #endif
