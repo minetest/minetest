@@ -938,7 +938,7 @@ void Inventory::deSerialize(std::istream &is)
 		}
 		else
 		{
-			throw SerializationError("invalid inventory specifier");
+			throw SerializationError("invalid inventory specifier: " + name);
 		}
 	}
 }
