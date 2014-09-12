@@ -18,32 +18,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_security.h"
+
+#include <cerrno>
+#include <string>
+
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
 #include "main.h"
-#include <cerrno>
-#include <string>
 
-#define SECURE_LIB_API(lib, name) \
+
+#define SECURE_API(lib, name) \
 	lua_pushcfunction(L, sl_##lib##_##name);\
 	lua_setfield(L, -2, #name);
 
-#define SECURE_API(name) SECURE_LIB_API(g, name)
-
 // Copies from second-top-most to top-most table
-#define COPY_SAFE(list) \
-	for (unsigned i = 0; i < (sizeof(list) / sizeof(list[0])); i++) {\
-		lua_getfield(L, -2, list[i]);\
-		lua_setfield(L, -2, list[i]);\
+static inline void copy_safe(lua_State * L, const char *list[], unsigned short len)
+{
+	for (unsigned short i = 0; i < (len / sizeof(list[0])); i++) {
+		lua_getfield(L, -2, list[i]);
+		lua_setfield(L, -2, list[i]);
 	}
+}
 
-#define GET_ORIGINAL(lib, func) \
-	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");\
-	lua_getfield(L, -1, lib);\
-	lua_remove(L, -2);  /* Remove globals_backup */\
-	lua_getfield(L, -1, func);\
-	lua_remove(L, -2);  /* Remove lib */
+
+// Pushes the original version of a library function on the stack, from the old version
+static inline void push_original(lua_State * L, const char *lib, const char *func)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_getfield(L, -1, lib);
+	lua_remove(L, -2);  // Remove globals_backup
+	lua_getfield(L, -1, func);
+	lua_remove(L, -2);  // Remove lib
+}
 
 
 void ScriptApiSecurity::initializeSecurity()
@@ -158,48 +165,48 @@ void ScriptApiSecurity::initializeSecurity()
 
 	// Copy safe globals
 	lua_getglobal(L, "_G");
-	COPY_SAFE(whitelist);
+	copy_safe(L, whitelist, sizeof(whitelist));
 	// And replace unsafe ones
-	SECURE_API(dofile);
-	SECURE_API(load);
-	SECURE_API(loadfile);
-	SECURE_API(loadstring);
-	SECURE_API(require);
+	SECURE_API(g, dofile);
+	SECURE_API(g, load);
+	SECURE_API(g, loadfile);
+	SECURE_API(g, loadstring);
+	SECURE_API(g, require);
 	lua_pop(L, 1);
 
 	// Copy safe IO functions
 	lua_getfield(L, -1, "io");
 	lua_newtable(L);
-	COPY_SAFE(io_whitelist);
+	copy_safe(L, io_whitelist, sizeof(io_whitelist));
 	// And replace unsafe ones
-	SECURE_LIB_API(io, open);
-	SECURE_LIB_API(io, input);
-	SECURE_LIB_API(io, output);
-	SECURE_LIB_API(io, lines);
+	SECURE_API(io, open);
+	SECURE_API(io, input);
+	SECURE_API(io, output);
+	SECURE_API(io, lines);
 	lua_setglobal(L, "io");
 	lua_pop(L, 1);  // Pop backup IO
 
 	// Copy safe OS functions
 	lua_getfield(L, -1, "os");
 	lua_newtable(L);
-	COPY_SAFE(os_whitelist);
+	copy_safe(L, os_whitelist, sizeof(os_whitelist));
 	// And replace unsafe ones
-	SECURE_LIB_API(os, remove);
-	SECURE_LIB_API(os, rename);
+	SECURE_API(os, remove);
+	SECURE_API(os, rename);
 	lua_setglobal(L, "os");
 	lua_pop(L, 1);  // Pop backup OS
 
 	// Copy safe debug functions
 	lua_getfield(L, -1, "debug");
 	lua_newtable(L);
-	COPY_SAFE(debug_whitelist);
+	copy_safe(L, debug_whitelist, sizeof(debug_whitelist));
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop backup debug
 
 	// Copy safe package fields
 	lua_getfield(L, -1, "package");
 	lua_newtable(L);
-	COPY_SAFE(package_whitelist);
+	copy_safe(L, package_whitelist, sizeof(package_whitelist));
 	lua_setglobal(L, "package");
 	lua_pop(L, 1);  // Pop backup package
 
@@ -207,7 +214,7 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_getfield(L, -1, "jit");
 	if (!lua_isnil(L, -1)) {
 		lua_newtable(L);
-		COPY_SAFE(jit_whitelist);
+		copy_safe(L, jit_whitelist, sizeof(jit_whitelist));
 		lua_setglobal(L, "jit");
 	}
 	lua_pop(L, 1);  // Pop backup jit
@@ -242,7 +249,10 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
 		fp = fopen(path, "r");
-		CHECK_FILE_ERR(!fp, fp)
+		if (!fp) {
+			lua_pushfstring(L, "%s: %s", path, strerror(errno));
+			return false;
+		}
 		chunk_name = new char[strlen(path) + 2];
 		chunk_name[0] = '@';
 		chunk_name[1] = '\0';
@@ -266,10 +276,20 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 	// Read the file
 	int ret = std::fseek(fp, 0, SEEK_END);
 	CHECK_FILE_ERR(ret, fp);
+	if (ret) {
+		std::fclose(fp);
+		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		return false;
+	}
 	size_t size = std::ftell(fp) - start;
 	char * code = new char[size];
 	ret = std::fseek(fp, start, SEEK_SET);
 	CHECK_FILE_ERR(ret, fp);
+	if (ret) {
+		std::fclose(fp);
+		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		return false;
+	}
 	size_t num_read = std::fread(code, 1, size, fp);
 	if (path) {
 		std::fclose(fp);
@@ -484,7 +504,7 @@ int ScriptApiSecurity::sl_io_open(lua_State * L)
 	const char * path = lua_tostring(L, 1);
 	CHECK_SECURE_PATH(L, path);
 
-	GET_ORIGINAL("io", "open");
+	push_original(L, "io", "open");
 	lua_pushvalue(L, 1);
 	lua_pushvalue(L, 2);
 	lua_call(L, 2, 2);
@@ -499,7 +519,7 @@ int ScriptApiSecurity::sl_io_input(lua_State * L)
 		CHECK_SECURE_PATH(L, path);
 	}
 
-	GET_ORIGINAL("io", "input");
+	push_original(L, "io", "input");
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 1);
 	return 1;
@@ -513,7 +533,7 @@ int ScriptApiSecurity::sl_io_output(lua_State * L)
 		CHECK_SECURE_PATH(L, path);
 	}
 
-	GET_ORIGINAL("io", "output");
+	push_original(L, "io", "output");
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 1);
 	return 1;
@@ -527,7 +547,7 @@ int ScriptApiSecurity::sl_io_lines(lua_State * L)
 		CHECK_SECURE_PATH(L, path);
 	}
 
-	GET_ORIGINAL("io", "lines");
+	push_original(L, "io", "lines");
 	lua_pushvalue(L, 1);
 	int top_precall = lua_gettop(L);
 	lua_call(L, 1, LUA_MULTRET);
@@ -547,7 +567,7 @@ int ScriptApiSecurity::sl_os_rename(lua_State * L)
 	const char * path2 = lua_tostring(L, 2);
 	CHECK_SECURE_PATH(L, path2);
 
-	GET_ORIGINAL("os", "rename");
+	push_original(L, "os", "rename");
 	lua_pushvalue(L, 1);
 	lua_pushvalue(L, 2);
 	lua_call(L, 2, 2);
@@ -561,7 +581,7 @@ int ScriptApiSecurity::sl_os_remove(lua_State * L)
 	const char * path = lua_tostring(L, 1);
 	CHECK_SECURE_PATH(L, path);
 
-	GET_ORIGINAL("os", "remove");
+	push_original(L, "os", "remove");
 	lua_pushvalue(L, 1);
 	lua_call(L, 1, 2);
 	return 2;
