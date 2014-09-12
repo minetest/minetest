@@ -51,7 +51,7 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Doubletaping the jump key toggles fly mode
+# Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
 # If false aux1 is used to fly fast
 #always_fly_fast = true
