@@ -1719,7 +1719,7 @@ minetest.place_schematic(pos, schematic, rotation, replacements, force_placement
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
-^ replacements = {{"oldname", "convert_to"}, ...}
+^ replacements = {["old_name"] = "convert_to", ...}
 ^ force_placement is a boolean indicating whether nodes other than air and
 ^ ignore are replaced by the schematic
 
@@ -2634,7 +2634,7 @@ Decoration definition (register_decoration)
         },
     },
     ^ See 'Schematic specifier' for details.
-    replacements = {{"oldname", "convert_to"}, ...},
+    replacements = {["oldname"] = "convert_to", ...},
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
     rotation = "90" -- rotate schematic 90 degrees on placement
