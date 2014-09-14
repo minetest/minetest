@@ -2475,6 +2475,17 @@ int Client::getCrackLevel()
 	return m_crack_level;
 }
 
+void Client::setHighlighted(v3s16 pos, bool node_highlighted)
+{
+	m_node_highlighted = node_highlighted;
+	if (m_node_highlighted) {
+		v3s16 old_highlighted_pos = m_highlighted_pos;
+		m_highlighted_pos = pos;
+		addUpdateMeshTaskForNode(old_highlighted_pos, false, true);
+	}
+	addUpdateMeshTaskForNode(m_highlighted_pos, false, true);
+}
+
 void Client::setCrack(int level, v3s16 pos)
 {
 	int old_crack_level = m_crack_level;
@@ -2560,6 +2571,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		// Debug: 1-6ms, avg=2ms
 		data->fill(b);
 		data->setCrack(m_crack_level, m_crack_pos);
+		data->setHighlighted(m_highlighted_pos, m_node_highlighted);
 		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
 	}
 	

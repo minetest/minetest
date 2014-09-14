@@ -150,6 +150,12 @@
 #crosshair_alpha = 255
 # scale gui by a user specified value
 #gui_scaling = 1.0
+# Enable selection boxes for nodes
+#enable_node_selectionboxes = true
+# Enable highlighting for nodes
+#enable_node_highlighting = true
+# Speed of node highligting effect
+#node_highlighting_speed = 3.0
 # Sensitivity multiplier
 #mouse_sensitivity = 0.2
 # Sound settings
