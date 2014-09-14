@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
+#include "serialization.h"
 #include "debug.h"
 #include "porting.h"
 #include "log.h"
@@ -283,6 +284,40 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 	return 1;
 }
 
+// compress(data, method, level)
+int ModApiUtil::l_compress(lua_State *L)
+{
+	size_t size;
+	const char *data = luaL_checklstring(L, 1, &size);
+
+	int level = -1;
+	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
+		level = luaL_checknumber(L, 3);
+
+	std::ostringstream os;
+	compressZlib(std::string(data, size), os, level);
+
+	std::string out = os.str();
+
+	lua_pushlstring(L, out.data(), out.size());
+	return 1;
+}
+
+// decompress(data, method)
+int ModApiUtil::l_decompress(lua_State *L)
+{
+	size_t size;
+	const char * data = luaL_checklstring(L, 1, &size);
+
+	std::istringstream is(std::string(data, size));
+	std::ostringstream os;
+	decompressZlib(is, os);
+
+	std::string out = os.str();
+
+	lua_pushlstring(L, out.data(), out.size());
+	return 1;
+}
 
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
@@ -306,6 +341,9 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(is_yes);
 
 	API_FCT(get_builtin_path);
+
+	API_FCT(compress);
+	API_FCT(decompress);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -325,5 +363,8 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 	ASYNC_API_FCT(is_yes);
 
 	ASYNC_API_FCT(get_builtin_path);
+
+	ASYNC_API_FCT(compress);
+	ASYNC_API_FCT(decompress);
 }
 

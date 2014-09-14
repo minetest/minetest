@@ -1763,6 +1763,18 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
+minetest.compress(data, method, ...) -> compressed_data
+^ Compress a string of data.
+^ `method` is a string identifying the compression method to be used.
+^ Supported compression methods:
+^     Deflate (zlib): "deflate"
+^ `...` indicates method-specific arguments.  Currently defined arguments are:
+^     Deflate: `level` - Compression level, 0-9 or nil.
+minetest.decompress(compressed_data, method, ...) -> data
+^ Decompress a string of data (using ZLib).
+^ See documentation on minetest.compress() for supported compression methods.
+^ currently supported.
+^ `...` indicates method-specific arguments.  Currently, no methods use this.
 minetest.is_protected(pos, name) -> bool
 ^ This function should be overridden by protection mods and should be used to
   check if a player can interact at a position.
