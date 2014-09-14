@@ -367,14 +367,14 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 		retval.repository = details["replink"].asString();
 	}
 
-	//value
-	if (details["rating"].asString().size()) {
+	//rating
+	if (details["value"].asString().size()) {
 
-		std::string id_raw = details["rating"].asString();
+		std::string value_raw = details["value"].asString();
 		char* endptr = 0;
-		float numbervalue = strtof(id_raw.c_str(),&endptr);
+		float numbervalue = strtof(value_raw.c_str(),&endptr);
 
-		if ((id_raw != "") && (*endptr == 0)) {
+		if ((value_raw != "") && (*endptr == 0)) {
 			retval.rating = numbervalue;
 		}
 	}
