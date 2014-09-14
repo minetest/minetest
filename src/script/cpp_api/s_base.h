@@ -35,6 +35,10 @@ extern "C" {
 
 #define SCRIPTAPI_LOCK_DEBUG
 
+#define SCRIPT_MOD_NAME_FIELD "current_mod_name"
+#define BUILTIN_MOD_NAME "*builtin*"
+
+
 class Server;
 class Environment;
 class GUIEngine;
@@ -45,8 +49,8 @@ public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
 
-	bool loadMod(const std::string &scriptpath, const std::string &modname);
-	bool loadScript(const std::string &scriptpath);
+	bool loadMod(const std::string &script_path, const std::string &mod_name);
+	bool loadScript(const std::string &script_path);
 
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);

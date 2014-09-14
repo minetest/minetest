@@ -317,13 +317,6 @@ bool ScriptApiSecurity::safeLoadFile(lua_State * L, const char * path)
 		return true;\
 	}
 
-#define DISALLOW_IN_PATH(disallow_path) \
-	str = fs::AbsolutePath(disallow_path);\
-	if (str.empty() ||\
-			fs::PathStartsWith(abs_path, str)) {\
-		return false;\
-	}
-
 bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 {
 	std::string str;  // Transient
@@ -338,11 +331,6 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 		}
 	}
 
-	fs::RemoveLastPathComponent(path, &str);
-	// Don't allow accessing minetest.conf (main or of games)
-	if (str == "minetest.conf") {
-		return false;
-	}
 	// Remove last components if they don't exist to allow opening
 	// non-existing files/folders.
 	std::string cur_path = path;
@@ -353,38 +341,43 @@ bool ScriptApiSecurity::checkPath(lua_State * L, const char * path)
 
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
-	ScriptApiBase *script = (ScriptApiBase*) lua_touserdata(L, -1);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	const Server *server = script->getServer();
 
-	if (server) {
-		// Allow paths in world path
-		ALLOW_IN_PATH(server->getWorldPath());
-
-		// Get modname and allow paths in modpath if possible
-		lua_getfield(L, LUA_REGISTRYINDEX, "current_modname");
-		if (lua_isstring(L, -1)) {
-			std::string modname = lua_tostring(L, -1);
-			const ModSpec *mod = server->getModSpec(modname);
-			if (mod) {
-				ALLOW_IN_PATH(mod->path);
-			}
-		}
-		lua_pop(L, 1);
+	if (!server) {
+		return false;
 	}
 
-	// Don't allow accessing binaries
-	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "bin");
+	// Get mod name
+	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	if (lua_isstring(L, -1)) {
+		std::string mod_name = lua_tostring(L, -1);
 
-	// Don't allow accessing utility scripts
-	DISALLOW_IN_PATH(porting::path_share + DIR_DELIM "util");
+		// Builtin can access anything
+		if (mod_name == BUILTIN_MOD_NAME) {
+			return true;
+		}
 
-	// Allow paths in user path
-	ALLOW_IN_PATH(porting::path_user);
+		// Allow paths in mod path
+		const ModSpec *mod = server->getModSpec(mod_name);
+		if (mod) {
+			ALLOW_IN_PATH(mod->path);
+		}
+	}
+	lua_pop(L, 1);  // Pop mod name
 
-	// Allow paths in share path
-	ALLOW_IN_PATH(porting::path_share);
+	// Don't allow access to world mods
+	str = fs::AbsolutePath(server->getWorldPath() + DIR_DELIM "worldmods");
+	if (!str.empty() &&
+			fs::PathStartsWith(abs_path, str)) {
+		return false;
+	}
 
+	// Allow paths in world path
+	ALLOW_IN_PATH(server->getWorldPath());
+
+	// Default to disallowing
 	return false;
 }
 
