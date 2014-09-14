@@ -365,8 +365,9 @@ core.register_chatcommand("teleport", {
 						.. " at " .. core.pos_to_string(p)
 			end
 		else
-			return false, 'You can't teleport any other player. (missing privilege : bring)'
+			return false, "You can't teleport any other players. (missing privilege: bring)"
 		end
+		
 		return false, 'Invalid parameters ("' .. param
 				.. '") or player not found (see /help teleport)'
 	end,
