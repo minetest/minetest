@@ -221,6 +221,11 @@ HTTPFetchOngoing::HTTPFetchOngoing(HTTPFetchRequest request_, CurlHandlePool *po
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 1);
 
+	std::string bind_address = g_settings->get("bind_address");
+	if (!bind_address.empty()) {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, bind_address.c_str());
+	}
+
 #if LIBCURL_VERSION_NUM >= 0x071304
 	// Restrict protocols so that curl vulnerabilities in
 	// other protocols don't affect us.
