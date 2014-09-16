@@ -96,8 +96,8 @@ private:
 	};
 
 	void initialStep(Client *client);
-	void remoteHashSetReceived(const HTTPFetchResult &fetchresult);
-	void remoteMediaReceived(const HTTPFetchResult &fetchresult,
+	void remoteHashSetReceived(const HTTPFetchResult &fetch_result);
+	void remoteMediaReceived(const HTTPFetchResult &fetch_result,
 			Client *client);
 	s32 selectRemoteServer(FileStatus *filestatus);
 	void startRemoteMediaTransfers();

@@ -528,27 +528,26 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 }
 
 /******************************************************************************/
-bool GUIEngine::downloadFile(std::string url,std::string target)
+bool GUIEngine::downloadFile(std::string url, std::string target)
 {
 #if USE_CURL
-	std::ofstream targetfile(target.c_str(), std::ios::out | std::ios::binary);
+	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
 
-	if (!targetfile.good()) {
+	if (!target_file.good()) {
 		return false;
 	}
 
-	HTTPFetchRequest fetchrequest;
-	HTTPFetchResult fetchresult;
-	fetchrequest.url = url;
-	fetchrequest.caller = HTTPFETCH_SYNC;
-	fetchrequest.timeout = g_settings->getS32("curl_file_download_timeout");
-	httpfetch_sync(fetchrequest, fetchresult);
+	HTTPFetchRequest fetch_request;
+	HTTPFetchResult fetch_result;
+	fetch_request.url = url;
+	fetch_request.caller = HTTPFETCH_SYNC;
+	fetch_request.timeout = g_settings->getS32("curl_file_download_timeout");
+	httpfetch_sync(fetch_request, fetch_result);
 
-	if (fetchresult.succeeded) {
-		targetfile << fetchresult.data;
-	} else {
+	if (!fetch_result.succeeded) {
 		return false;
 	}
+	target_file << fetch_result.data;
 
 	return true;
 #else
