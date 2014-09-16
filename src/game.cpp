@@ -407,14 +407,16 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 				mindistance = distance;
 
 				hilightboxes.clear();
-				for(std::vector<aabb3f>::const_iterator
-						i2 = boxes.begin();
-						i2 != boxes.end(); i2++)
-				{
-					aabb3f box = *i2;
-					box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
-					box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
-					hilightboxes.push_back(box);
+				if (!g_settings->getBool("enable_node_highlighting")) {
+					for(std::vector<aabb3f>::const_iterator
+							i2 = boxes.begin();
+							i2 != boxes.end(); i2++)
+					{
+						aabb3f box = *i2;
+						box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
+						box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
+						hilightboxes.push_back(box);
+					}
 				}
 			}
 		}
@@ -2096,10 +2098,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
 			show_hud = !show_hud;
-			if(show_hud)
+			if(show_hud) {
 				statustext = L"HUD shown";
-			else
+				client.setHighlighted(client.getHighlighted(), true);
+			} else {
 				statustext = L"HUD hidden";
+				client.setHighlighted(client.getHighlighted(), false);
+			}
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
@@ -2796,7 +2801,8 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(pointed != pointed_old)
 		{
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
-			//dstream<<"Pointing at "<<pointed.dump()<<std::endl;
+			if (g_settings->getBool("enable_node_highlighting"))
+				client.setHighlighted(pointed.node_undersurface, show_hud);
 		}
 
 		/*

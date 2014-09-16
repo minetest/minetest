@@ -169,6 +169,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		MeshCollector &collector)
 {
 	INodeDefManager *nodedef = data->m_gamedef->ndef();
+	ITextureSource *tsrc = data->m_gamedef->tsrc();
 
 	// 0ms
 	//TimeTaker timer("mapblock_mesh_generate_special()");
@@ -177,26 +178,72 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		Some settings
 	*/
 	bool new_style_water = g_settings->getBool("new_style_water");
-	
+
 	float node_liquid_level = 1.0;
-	if(new_style_water)
+	if (new_style_water)
 		node_liquid_level = 0.85;
-	
+
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
 
-	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
-	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
-	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
+	// Create selection mesh
+	v3s16 p = data->m_highlighted_pos_relative;
+	if (data->m_show_hud & 
+			(p.X >= 0) & (p.X < MAP_BLOCKSIZE) &
+			(p.Y >= 0) & (p.Y < MAP_BLOCKSIZE) &
+			(p.Z >= 0) & (p.Z < MAP_BLOCKSIZE)) {
+
+		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+		// Get selection mesh light level
+		static const v3s16 dirs[7] = {
+				v3s16( 0, 0, 0),
+				v3s16( 0, 1, 0),
+				v3s16( 0,-1, 0),
+				v3s16( 1, 0, 0),
+				v3s16(-1, 0, 0),
+				v3s16( 0, 0, 1),
+				v3s16( 0, 0,-1)
+		};
+
+		u16 l = 0;
+		u16 l1 = 0;
+		for (u8 i = 0; i < 7; i++) {
+			MapNode n1 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dirs[i]);	
+			l1 = getInteriorLight(n1, -4, nodedef);
+			if (l1 > l) 
+				l = l1;
+		}
+		video::SColor c = MapBlock_LightColor(255, l, 0);
+		data->m_highlight_mesh_color = c;	
+		std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+		TileSpec h_tile;			
+		h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
+		h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
+		v3f pos = intToFloat(p, BS);
+		f32 d = 0.05 * BS;
+		for(std::vector<aabb3f>::iterator
+				i = boxes.begin();
+				i != boxes.end(); i++)
+		{
+			aabb3f box = *i;
+			box.MinEdge += v3f(-d, -d, -d) + pos;
+			box.MaxEdge += v3f(d, d, d) + pos;
+			makeCuboid(&collector, box, &h_tile, 1, c, NULL);
+		}
+	}
+
+	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for(s16 x = 0; x < MAP_BLOCKSIZE; x++)
 	{
 		v3s16 p(x,y,z);
 
-		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes+p);
+		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		const ContentFeatures &f = nodedef->get(n);
 
 		// Only solidness=0 stuff is drawn here
 		if(f.solidness != 0)
 			continue;
-		
+
 		switch(f.drawtype){
 		default:
 			infostream<<"Got "<<f.drawtype<<std::endl;

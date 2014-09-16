@@ -160,6 +160,8 @@
 # maximum percentage of current window to be used for hotbar
 # (usefull if you've there's something to be displayed right or left of hotbar)
 #hud_hotbar_max_width = 1.0
+# Enable highlighting for nodes (disables selectionboxes)
+#enable_node_highlighting = false
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
