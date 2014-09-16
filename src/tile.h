@@ -171,6 +171,7 @@ enum MaterialType{
 // Animation made up by splitting the texture to vertical frames, as
 // defined by extra parameters
 #define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
+#define MATERIAL_FLAG_HIGHLIGHTED 0x10
 
 /*
 	This fully defines the looks of a tile.
