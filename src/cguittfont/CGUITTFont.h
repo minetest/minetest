@@ -33,6 +33,7 @@
 
 #include <irrlicht.h>
 #include <ft2build.h>
+#include <vector>
 #include FT_FREETYPE_H
 
 namespace irr
@@ -257,6 +258,9 @@ namespace gui
 			//! Draws some text and clips it to the specified rectangle if wanted.
 			virtual void draw(const core::stringw& text, const core::rect<s32>& position,
 				video::SColor color, bool hcenter=false, bool vcenter=false,
+				const core::rect<s32>* clip=0);
+			virtual void draw(const core::stringw& text, const core::rect<s32>& position,
+				const std::vector<video::SColor>& color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 
 			//! Returns the dimension of a character produced by this font.

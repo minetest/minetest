@@ -401,6 +401,7 @@ set(common_SRCS
 	convert_json.cpp
 	gettext.cpp
 	httpfetch.cpp
+	ColoredString.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -486,6 +487,13 @@ include_directories(
 	${JSON_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 )
+
+# Don't compile StaticText.cpp when not using Freetype. [Temporary Fix]
+if (USE_FREETYPE)
+    LIST(
+		APPEND minetest_SRCS StaticText.cpp
+	)
+endif (USE_FREETYPE)
 
 if(USE_FREETYPE)
 	include_directories(

@@ -1450,6 +1450,10 @@ minetest.get_player_ip(name) -> IP address string
 Chat:
 minetest.chat_send_all(text)
 minetest.chat_send_player(name, text)
+minetest.colorize(color, text)
+^ color is a six characters string, this will reset color to white after the text
+minetest.color(color)
+^ will output color escape sequence
 
 Environment access:
 
