@@ -270,7 +270,7 @@ public:
 
 	// Server implements this.
 	// Client leaves it as no-op.
-	virtual void saveBlock(MapBlock *block){};
+	virtual bool saveBlock(MapBlock *block) { return false; };
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
@@ -485,12 +485,15 @@ public:
 	// Returns true if sector now resides in memory
 	//bool deFlushSector(v2s16 p2d);
 
-	void saveBlock(MapBlock *block);
+	bool saveBlock(MapBlock *block, Database *db);
+	bool saveBlock(MapBlock *block);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+
+	void updateVManip(v3s16 pos);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
@@ -523,14 +526,15 @@ private:
 	Database *dbase;
 };
 
+
 #define VMANIP_BLOCK_DATA_INEXIST     1
 #define VMANIP_BLOCK_CONTAINS_CIGNORE 2
 
-class MapVoxelManipulator : public VoxelManipulator
+class ManualMapVoxelManipulator : public VoxelManipulator
 {
 public:
-	MapVoxelManipulator(Map *map);
-	virtual ~MapVoxelManipulator();
+	ManualMapVoxelManipulator(Map *map);
+	virtual ~ManualMapVoxelManipulator();
 
 	virtual void clear()
 	{
@@ -538,11 +542,20 @@ public:
 		m_loaded_blocks.clear();
 	}
 
-	virtual void emerge(VoxelArea a, s32 caller_id=-1);
+	void setMap(Map *map)
+	{m_map = map;}
 
-	void blitBack(std::map<v3s16, MapBlock*> & modified_blocks);
+	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
+			bool load_if_inexistent = true);
+
+	// This is much faster with big chunks of generated data
+	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
+			bool overwrite_generated = true);
+
+	bool m_is_dirty;
 
 protected:
+	bool m_create_area;
 	Map *m_map;
 	/*
 		key = blockpos
@@ -551,26 +564,4 @@ protected:
 	std::map<v3s16, u8> m_loaded_blocks;
 };
 
-class ManualMapVoxelManipulator : public MapVoxelManipulator
-{
-public:
-	ManualMapVoxelManipulator(Map *map);
-	virtual ~ManualMapVoxelManipulator();
-
-	void setMap(Map *map)
-	{m_map = map;}
-
-	virtual void emerge(VoxelArea a, s32 caller_id=-1);
-
-	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
-						bool load_if_inexistent = true);
-
-	// This is much faster with big chunks of generated data
-	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks);
-
-protected:
-	bool m_create_area;
-};
-
 #endif
-

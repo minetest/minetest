@@ -151,7 +151,7 @@ enum NodeDrawType
 						  // uses 2 textures, one for frames, second for faces
 };
 
-#define CF_SPECIAL_COUNT 2
+#define CF_SPECIAL_COUNT 6
 
 struct ContentFeatures
 {

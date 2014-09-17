@@ -79,15 +79,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "guiEngine.h"
 #include "mapsector.h"
+#include "player.h"
 
 #include "database-sqlite3.h"
 #ifdef USE_LEVELDB
 #include "database-leveldb.h"
 #endif
+
 #if USE_REDIS
 #include "database-redis.h"
 #endif
 
+#ifdef HAVE_TOUCHSCREENGUI
+#include "touchscreengui.h"
+#endif
 /*
 	Settings.
 	These are loaded from the config file.
@@ -253,6 +258,11 @@ public:
 			React to nothing here if a menu is active
 		*/
 		if (noMenuActive() == false) {
+#ifdef HAVE_TOUCHSCREENGUI
+			if (m_touchscreengui != 0) {
+				m_touchscreengui->Toggle(false);
+			}
+#endif
 			return g_menumgr.preprocessEvent(event);
 		}
 
@@ -266,7 +276,16 @@ public:
 			}
 		}
 
-		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+#ifdef HAVE_TOUCHSCREENGUI
+		// case of touchscreengui we have to handle different events
+		if ((m_touchscreengui != 0) &&
+				(event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
+			m_touchscreengui->translateEvent(event);
+			return true;
+		}
+#endif
+		// handle mouse events
+		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 			if (noMenuActive() == false) {
 				left_active = false;
 				middle_active = false;
@@ -293,8 +312,8 @@ public:
 				}
 			}
 		}
-		if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
-			dstream << "Irrlicht log: " << event.LogEvent.Text << std::endl;
+		if(event.EventType == irr::EET_LOG_TEXT_EVENT) {
+			dstream<< std::string("Irrlicht log: ") + std::string(event.LogEvent.Text)<<std::endl;
 			return true;
 		}
 		/* always return false in order to continue processing events */
@@ -342,6 +361,9 @@ public:
 	MyEventReceiver()
 	{
 		clearInput();
+#ifdef HAVE_TOUCHSCREENGUI
+		m_touchscreengui = NULL;
+#endif
 	}
 
 	bool leftclicked;
@@ -355,8 +377,11 @@ public:
 
 	s32 mouse_wheel;
 
-private:
+#ifdef HAVE_TOUCHSCREENGUI
+	TouchScreenGUI* m_touchscreengui;
+#endif
 
+private:
 	// The current state of keys
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
@@ -372,7 +397,8 @@ class RealInputHandler : public InputHandler
 public:
 	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver):
 		m_device(device),
-		m_receiver(receiver)
+		m_receiver(receiver),
+		m_mousepos(0,0)
 	{
 	}
 	virtual bool isKeyDown(const KeyPress &keyCode)
@@ -385,11 +411,21 @@ public:
 	}
 	virtual v2s32 getMousePos()
 	{
-		return m_device->getCursorControl()->getPosition();
+		if (m_device->getCursorControl()) {
+			return m_device->getCursorControl()->getPosition();
+		}
+		else {
+			return m_mousepos;
+		}
 	}
 	virtual void setMousePos(s32 x, s32 y)
 	{
-		m_device->getCursorControl()->setPosition(x, y);
+		if (m_device->getCursorControl()) {
+			m_device->getCursorControl()->setPosition(x, y);
+		}
+		else {
+			m_mousepos = v2s32(x,y);
+		}
 	}
 
 	virtual bool getLeftState()
@@ -445,8 +481,9 @@ public:
 		m_receiver->clearInput();
 	}
 private:
-	IrrlichtDevice *m_device;
+	IrrlichtDevice  *m_device;
 	MyEventReceiver *m_receiver;
+	v2s32           m_mousepos;
 };
 
 class RandomInputHandler : public InputHandler
@@ -829,7 +866,7 @@ int main(int argc, char *argv[])
 	/*
 		Low-level initialization
 	*/
-	
+
 	// Quiet mode, print errors only
 	if (cmd_args.getFlag("quiet")) {
 		log_remove_output(&main_stderr_log_out);
@@ -855,8 +892,18 @@ int main(int argc, char *argv[])
 
 	porting::initializePaths();
 
+#ifdef __ANDROID__
+	porting::initAndroid();
+
+	porting::setExternalStorageDir(porting::jnienv);
+	if (!fs::PathExists(porting::path_user)) {
+		fs::CreateDir(porting::path_user);
+	}
+	porting::copyAssets();
+#else
 	// Create user data directory
 	fs::CreateDir(porting::path_user);
+#endif
 
 	infostream << "path_share = " << porting::path_share << std::endl;
 	infostream << "path_user  = " << porting::path_user << std::endl;
@@ -975,14 +1022,15 @@ int main(int argc, char *argv[])
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
 
+#ifndef __ANDROID__
 	/*
 		Run unit tests
 	*/
-
 	if ((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
 			|| cmd_args.getFlag("enable-unittests") == true) {
 				run_tests();
 	}
+#endif
 #ifdef _MSC_VER
 	init_gettext((porting::path_share + DIR_DELIM + "locale").c_str(),
 		g_settings->get("language"), argc, argv);
@@ -1027,7 +1075,7 @@ int main(int argc, char *argv[])
 				commanded_world.substr(commanded_world.size() - worldmt.size())
 				== worldmt) {
 			dstream << _("Supplied world.mt file - stripping it off.") << std::endl;
-			commanded_world = commanded_world.substr(0, 
+			commanded_world = commanded_world.substr(0,
 				commanded_world.size() - worldmt.size());
 		}
 	}
@@ -1208,7 +1256,7 @@ int main(int argc, char *argv[])
 		if (cmd_args.exists("migrate")) {
 			std::string migrate_to = cmd_args.get("migrate");
 			Settings world_mt;
-			bool success = world_mt.readConfigFile((world_path + DIR_DELIM 
+			bool success = world_mt.readConfigFile((world_path + DIR_DELIM
 				+ "world.mt").c_str());
 			if (!success) {
 				errorstream << "Cannot read world.mt" << std::endl;
@@ -1237,7 +1285,7 @@ int main(int argc, char *argv[])
 				new_db = new Database_Redis(&(ServerMap&)server.getMap(), world_path);
 			#endif
 			else {
-				errorstream << "Migration to " << migrate_to 
+				errorstream << "Migration to " << migrate_to
 					<< " is not supported" << std::endl;
 				return 1;
 			}
@@ -1249,9 +1297,13 @@ int main(int argc, char *argv[])
 			new_db->beginSave();
 			for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); i++) {
 				MapBlock *block = old_map.loadBlock(*i);
-				new_db->saveBlock(block);
-				MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
-				sector->deleteBlock(block);
+				if (!block) {
+					errorstream << "Failed to load block " << PP(*i) << ", skipping it.";
+				} else {
+					old_map.saveBlock(block, new_db);
+					MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
+					sector->deleteBlock(block);
+				}
 				++count;
 				if (count % 500 == 0)
 					actionstream << "Migrated " << count << " blocks "
@@ -1313,42 +1365,44 @@ int main(int argc, char *argv[])
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-
-	video::E_DRIVER_TYPE driverType;
-
-	std::string driverstring = g_settings->get("video_driver");
-
-	if (driverstring == "null")
-		driverType = video::EDT_NULL;
-	else if (driverstring == "software")
-		driverType = video::EDT_SOFTWARE;
-	else if (driverstring == "burningsvideo")
-		driverType = video::EDT_BURNINGSVIDEO;
-	else if (driverstring == "direct3d8")
-		driverType = video::EDT_DIRECT3D8;
-	else if (driverstring == "direct3d9")
-		driverType = video::EDT_DIRECT3D9;
-	else if (driverstring == "opengl")
-		driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	static const char* driverids[] = {
+		"null",
+		"software",
+		"burningsvideo",
+		"direct3d8",
+		"direct3d9",
+		"opengl"
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	else if (driverstring == "ogles1")
-		driverType = video::EDT_OGLES1;
+		,"ogles1"
 #endif
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-	else if (driverstring == "ogles2")
-		driverType = video::EDT_OGLES2;
+		,"ogles2"
 #endif
-	else {
-		errorstream << "WARNING: Invalid video_driver specified; defaulting "
-			<< "to opengl" << std::endl;
-		driverType = video::EDT_OPENGL;
+		,"invalid"
+	};
+
+	std::string driverstring = g_settings->get("video_driver");
+	for (unsigned int i = 0;
+			i < (sizeof(driverids)/sizeof(driverids[0]));
+			i++)
+	{
+		if (strcasecmp(driverstring.c_str(), driverids[i]) == 0) {
+			driverType = (video::E_DRIVER_TYPE) i;
+			break;
+		}
+
+		if (strcasecmp("invalid", driverids[i]) == 0) {
+			errorstream << "WARNING: Invalid video_driver specified; defaulting "
+				<< "to opengl" << std::endl;
+			break;
+		}
 	}
 
 	/*
 		List video modes if requested
 	*/
-
-	MyEventReceiver receiver;
+	MyEventReceiver* receiver = new MyEventReceiver();
 
 	if (cmd_args.getFlag("videomodes")) {
 		IrrlichtDevice *nulldevice;
@@ -1361,7 +1415,7 @@ int main(int argc, char *argv[])
 		params.Fullscreen    = false;
 		params.Stencilbuffer = false;
 		params.Vsync         = vsync;
-		params.EventReceiver = &receiver;
+		params.EventReceiver = receiver;
 		params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 		nulldevice = createDeviceEx(params);
@@ -1397,15 +1451,13 @@ int main(int argc, char *argv[])
 
 		nulldevice->drop();
 
+		delete receiver;
 		return 0;
 	}
 
 	/*
 		Create device and exit if creation failed
 	*/
-
-	IrrlichtDevice *device;
-
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType    = driverType;
 	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
@@ -1414,12 +1466,18 @@ int main(int argc, char *argv[])
 	params.Fullscreen    = fullscreen;
 	params.Stencilbuffer = false;
 	params.Vsync         = vsync;
-	params.EventReceiver = &receiver;
+	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+#ifdef __ANDROID__
+	params.PrivateData = porting::app_global;
+	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM +
+			"media" + DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
+#endif
 
-	device = createDeviceEx(params);
+	IrrlichtDevice * device = createDeviceEx(params);
 
 	if (device == 0) {
+		delete receiver;
 		return 1; // could not create selected driver.
 	}
 
@@ -1429,17 +1487,18 @@ int main(int argc, char *argv[])
 		ELL_ERROR,
 		ELL_WARNING,
 		ELL_INFORMATION,
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)	
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		ELL_INFORMATION
 #else
 		ELL_DEBUG
 #endif
 	};
-	
+
 	ILogger* irr_logger = device->getLogger();
 	irr_logger->setLogLevel(irr_log_level[loglevel]);
-	 
+
 	porting::initIrrlicht(device);
+	late_init_default_settings(g_settings);
 
 	/*
 		Continue initialization
@@ -1475,10 +1534,11 @@ int main(int argc, char *argv[])
 	bool random_input = g_settings->getBool("random_input")
 			|| cmd_args.getFlag("random-input");
 	InputHandler *input = NULL;
+
 	if (random_input) {
 		input = new RandomInputHandler();
 	} else {
-		input = new RealInputHandler(device, &receiver);
+		input = new RealInputHandler(device,receiver);
 	}
 
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -1563,7 +1623,8 @@ int main(int argc, char *argv[])
 	/*
 		Menu-game loop
 	*/
-	while (device->run() && kill == false)
+	while (device->run() && (kill == false) &&
+			(g_gamecallback->shutdown_requested == false))
 	{
 		// Set the window caption
 		wchar_t* text = wgettext("Main Menu");
@@ -1611,7 +1672,9 @@ int main(int argc, char *argv[])
 				first_loop = false;
 
 				// Cursor can be non-visible when coming from the game
+				#ifndef ANDROID
 				device->getCursorControl()->setVisible(true);
+				#endif
 				// Some stuff are left to scene manager when coming from the game
 				// (map at least?)
 				smgr->clear();
@@ -1633,15 +1696,14 @@ int main(int argc, char *argv[])
 				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
 				// If a world was commanded, append and select it
-				if (commanded_world != "") {
-
-					std::string gameid = getWorldGameId(commanded_world, true);
-					std::string name = _("[--world parameter]");
-					if (gameid == "") {
-						gameid = g_settings->get("default_game");
-						name += " [new]";
+				if(commanded_world != "") {
+					worldspec.gameid = getWorldGameId(commanded_world, true);
+					worldspec.name = _("[--world parameter]");
+					if(worldspec.gameid == "") {
+						worldspec.gameid = g_settings->get("default_game");
+						worldspec.name += " [new]";
 					}
-					//TODO find within worldspecs and set config
+					worldspec.path = commanded_world;
 				}
 
 				if (skip_main_menu == false) {
@@ -1661,10 +1723,9 @@ int main(int argc, char *argv[])
 					}
 					infostream << "Waited for other menus" << std::endl;
 
-					GUIEngine* temp = new GUIEngine(device, guiroot,
-						&g_menumgr, smgr, &menudata, kill);
+					/* show main menu */
+					GUIEngine mymenu(device, guiroot, &g_menumgr,smgr,&menudata,kill);
 
-					delete temp;
 					//once finished you'll never end up here
 					smgr->clear();
 				}
@@ -1695,11 +1756,6 @@ int main(int argc, char *argv[])
 				// Save settings
 				g_settings->set("name", playername);
 
-				if ((menudata.selected_world >= 0) &&
-						(menudata.selected_world < (int)worldspecs.size()))
-					g_settings->set("selected_world_path",
-							worldspecs[menudata.selected_world].path);
-
 				// Break out of menu-game loop to shut down cleanly
 				if (device->run() == false || kill == true)
 					break;
@@ -1724,22 +1780,35 @@ int main(int argc, char *argv[])
 					ServerList::insert(server);
 				}
 
-				// Set world path to selected one
-				if ((menudata.selected_world >= 0) &&
-					(menudata.selected_world < (int)worldspecs.size())) {
+				if ((!skip_main_menu) &&
+						(menudata.selected_world >= 0) &&
+						(menudata.selected_world < (int)worldspecs.size())) {
+					g_settings->set("selected_world_path",
+							worldspecs[menudata.selected_world].path);
 					worldspec = worldspecs[menudata.selected_world];
-					infostream<<"Selected world: "<<worldspec.name
-							<<" ["<<worldspec.path<<"]"<<std::endl;
+
 				}
+
+				infostream <<"Selected world: " << worldspec.name
+							<< " ["<<worldspec.path<<"]" <<std::endl;
+
 
 				// If local game
 				if (current_address == "") {
-					if (menudata.selected_world == -1) {
+					if (worldspec.path == "") {
 						error_message = wgettext("No world selected and no address "
 								"provided. Nothing to do.");
 						errorstream << wide_to_narrow(error_message) << std::endl;
 						continue;
 					}
+
+					if (!fs::PathExists(worldspec.path)) {
+						error_message = wgettext("Provided world path doesn't exist: ")
+								+ narrow_to_wide(worldspec.path);
+						errorstream << wide_to_narrow(error_message) << std::endl;
+						continue;
+					}
+
 					// Load gamespec for required game
 					gamespec = findWorldSubgame(worldspec.path);
 					if (!gamespec.isValid() && !commanded_gamespec.isValid()) {
@@ -1777,9 +1846,20 @@ int main(int argc, char *argv[])
 				break;
 			}
 
+			if (current_playername.length() > PLAYERNAME_SIZE-1) {
+				error_message = wgettext("Player name too long.");
+				playername = current_playername.substr(0,PLAYERNAME_SIZE-1);
+				g_settings->set("name", playername);
+				continue;
+			}
+
 			/*
 				Run game
 			*/
+#ifdef HAVE_TOUCHSCREENGUI
+	receiver->m_touchscreengui = new TouchScreenGUI(device, receiver);
+	g_touchscreengui = receiver->m_touchscreengui;
+#endif
 			the_game(
 				kill,
 				random_input,
@@ -1797,6 +1877,11 @@ int main(int argc, char *argv[])
 				simple_singleplayer_mode
 			);
 			smgr->clear();
+#ifdef HAVE_TOUCHSCREENGUI
+	delete g_touchscreengui;
+	g_touchscreengui = NULL;
+	receiver->m_touchscreengui = NULL;
+#endif
 
 		} //try
 		catch(con::PeerNotFoundException &e)
@@ -1841,7 +1926,7 @@ int main(int argc, char *argv[])
 	if (use_freetype)
 		font->drop();
 #endif
-
+	delete receiver;
 #endif // !SERVER
 
 	// Update configuration file
@@ -1876,4 +1961,3 @@ int main(int argc, char *argv[])
 }
 
 //END
-

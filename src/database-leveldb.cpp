@@ -36,12 +36,17 @@ LevelDB databases
 #include "settings.h"
 #include "log.h"
 
+#define ENSURE_STATUS_OK(s) \
+	if (!(s).ok()) { \
+		throw FileNotGoodException(std::string("LevelDB error: ") + (s).ToString()); \
+	}
+
 Database_LevelDB::Database_LevelDB(ServerMap *map, std::string savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "map.db", &m_database);
-	assert(status.ok());
+	ENSURE_STATUS_OK(status);
 	srvmap = map;
 }
 
@@ -53,121 +58,29 @@ int Database_LevelDB::Initialized(void)
 void Database_LevelDB::beginSave() {}
 void Database_LevelDB::endSave() {}
 
-void Database_LevelDB::saveBlock(MapBlock *block)
+bool Database_LevelDB::saveBlock(v3s16 blockpos, std::string &data)
 {
-	DSTACK(__FUNCTION_NAME);
-	/*
-		Dummy blocks are not written
-	*/
-	if(block->isDummy())
-	{
-		return;
+	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
+			i64tos(getBlockAsInteger(blockpos)), data);
+	if (!status.ok()) {
+		errorstream << "WARNING: saveBlock: LevelDB error saving block "
+			<< PP(blockpos) << ": " << status.ToString() << std::endl;
+		return false;
 	}
 
-	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v3s16 p3d = block->getPos();
-
-	/*
-		[0] u8 serialization version
-		[1] data
-	*/
-
-	std::ostringstream o(std::ios_base::binary);
-	o.write((char*)&version, 1);
-	// Write basic data
-	block->serialize(o, version, true);
-	// Write block to database
-	std::string tmp = o.str();
-
-	m_database->Put(leveldb::WriteOptions(), i64tos(getBlockAsInteger(p3d)), tmp);
-
-	// We just wrote it to the disk so clear modified flag
-	block->resetModified();
+	return true;
 }
 
-MapBlock* Database_LevelDB::loadBlock(v3s16 blockpos)
+std::string Database_LevelDB::loadBlock(v3s16 blockpos)
 {
-	v2s16 p2d(blockpos.X, blockpos.Z);
-
 	std::string datastr;
-	leveldb::Status s = m_database->Get(leveldb::ReadOptions(),
+	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
 		i64tos(getBlockAsInteger(blockpos)), &datastr);
-	if (datastr.length() == 0 && s.ok()) {
-		errorstream << "Blank block data in database (datastr.length() == 0) ("
-			<< blockpos.X << "," << blockpos.Y << "," << blockpos.Z << ")" << std::endl;
 
-		if (g_settings->getBool("ignore_world_load_errors")) {
-			errorstream << "Ignoring block load error. Duck and cover! "
-				<< "(ignore_world_load_errors)" << std::endl;
-		} else {
-			throw SerializationError("Blank block data in database");
-		}
-		return NULL;
-	}
-
-	if (s.ok()) {
-		/*
-			Make sure sector is loaded
-		*/
-		MapSector *sector = srvmap->createSector(p2d);
-
-		try {
-			std::istringstream is(datastr, std::ios_base::binary);
-			u8 version = SER_FMT_VER_INVALID;
-			is.read((char *)&version, 1);
-
-			if (is.fail())
-				throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
-
-			MapBlock *block = NULL;
-			bool created_new = false;
-			block = sector->getBlockNoCreateNoEx(blockpos.Y);
-			if (block == NULL)
-			{
-				block = sector->createBlankBlockNoInsert(blockpos.Y);
-				created_new = true;
-			}
-
-			// Read basic data
-			block->deSerialize(is, version, true);
-
-			// If it's a new block, insert it to the map
-			if (created_new)
-				sector->insertBlock(block);
-
-			/*
-				Save blocks loaded in old format in new format
-			*/
-			//if(version < SER_FMT_VER_HIGHEST || save_after_load)
-			// Only save if asked to; no need to update version
-			//if(save_after_load)
-			//     	saveBlock(block);
-			// We just loaded it from, so it's up-to-date.
-			block->resetModified();
-		}
-		catch (SerializationError &e)
-		{
-			errorstream << "Invalid block data in database"
-				<< " (" << blockpos.X << "," << blockpos.Y << "," << blockpos.Z
-				<< ") (SerializationError): " << e.what() << std::endl;
-			// TODO: Block should be marked as invalid in memory so that it is
-			// not touched but the game can run
-
-			if (g_settings->getBool("ignore_world_load_errors")) {
-				errorstream << "Ignoring block load error. Duck and cover! "
-					<< "(ignore_world_load_errors)" << std::endl;
-			} else {
-				throw SerializationError("Invalid block data in database");
-				//assert(0);
-			}
-		}
-
-		return srvmap->getBlockNoCreateNoEx(blockpos);  // should not be using this here
-	}
-	return NULL;
+	if(status.ok())
+		return datastr;
+	else
+		return "";
 }
 
 void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
@@ -176,7 +89,7 @@ void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
 	}
-	assert(it->status().ok());  // Check for any errors found during the scan
+	ENSURE_STATUS_OK(it->status());  // Check for any errors found during the scan
 	delete it;
 }
 

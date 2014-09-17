@@ -1473,11 +1473,11 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				v3s16 p = block->getPos();
 
 				// Save if modified
-				if(block->getModified() != MOD_STATE_CLEAN
-						&& save_before_unloading)
+				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading)
 				{
 					modprofiler.add(block->getModifiedReason(), 1);
-					saveBlock(block);
+					if (!saveBlock(block))
+						continue;
 					saved_blocks_count++;
 				}
 
@@ -2757,6 +2757,28 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 void ServerMap::prepareBlock(MapBlock *block) {
 }
 
+// N.B.  This requires no synchronization, since data will not be modified unless
+// the VoxelManipulator being updated belongs to the same thread.
+void ServerMap::updateVManip(v3s16 pos)
+{
+	Mapgen *mg = m_emerge->getCurrentMapgen();
+	if (!mg)
+		return;
+
+	ManualMapVoxelManipulator *vm = mg->vm;
+	if (!vm)
+		return;
+
+	if (!vm->m_area.contains(pos))
+		return;
+
+	s32 idx = vm->m_area.index(pos);
+	vm->m_data[idx] = getNodeNoEx(pos);
+	vm->m_flags[idx] &= ~VOXELFLAG_NO_DATA;
+
+	vm->m_is_dirty = true;
+}
+
 s16 ServerMap::findGroundLevel(v2s16 p2d)
 {
 #if 0
@@ -3253,25 +3275,59 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 }
 #endif
 
-void ServerMap::beginSave() {
+void ServerMap::beginSave()
+{
 	dbase->beginSave();
 }
 
-void ServerMap::endSave() {
+void ServerMap::endSave()
+{
 	dbase->endSave();
 }
 
-void ServerMap::saveBlock(MapBlock *block)
+bool ServerMap::saveBlock(MapBlock *block)
 {
-  dbase->saveBlock(block);
+	return saveBlock(block, dbase);
 }
 
-void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load)
+bool ServerMap::saveBlock(MapBlock *block, Database *db)
+{
+	v3s16 p3d = block->getPos();
+
+	// Dummy blocks are not written
+	if (block->isDummy()) {
+		errorstream << "WARNING: saveBlock: Not writing dummy block "
+			<< PP(p3d) << std::endl;
+		return true;
+	}
+
+	// Format used for writing
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
+
+	/*
+		[0] u8 serialization version
+		[1] data
+	*/
+	std::ostringstream o(std::ios_base::binary);
+	o.write((char*) &version, 1);
+	block->serialize(o, version, true);
+
+	std::string data = o.str();
+	bool ret = db->saveBlock(p3d, data);
+	if(ret) {
+		// We just wrote it to the disk so clear modified flag
+		block->resetModified();
+	}
+	return ret;
+}
+
+void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
+		MapSector *sector, bool save_after_load)
 {
 	DSTACK(__FUNCTION_NAME);
 
 	std::string fullpath = sectordir+DIR_DELIM+blockfile;
-	try{
+	try {
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 		if(is.good() == false)
@@ -3417,10 +3473,13 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
-	MapBlock *ret;
+	std::string ret;
 
 	ret = dbase->loadBlock(blockpos);
-	if (ret) return (ret);
+	if (ret != "") {
+		loadBlock(&ret, blockpos, createSector(p2d), false);
+		return getBlockNoCreateNoEx(blockpos);
+	}
 	// Not found in database, try the files
 
 	// The directory layout we're going to load from.
@@ -3484,178 +3543,16 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
-/*
-	MapVoxelManipulator
-*/
-
-MapVoxelManipulator::MapVoxelManipulator(Map *map)
-{
-	m_map = map;
-}
-
-MapVoxelManipulator::~MapVoxelManipulator()
-{
-	/*infostream<<"MapVoxelManipulator: blocks: "<<m_loaded_blocks.size()
-			<<std::endl;*/
-}
-
-void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
-{
-	TimeTaker timer1("emerge", &emerge_time);
-
-	// Units of these are MapBlocks
-	v3s16 p_min = getNodeBlockPos(a.MinEdge);
-	v3s16 p_max = getNodeBlockPos(a.MaxEdge);
-
-	VoxelArea block_area_nodes
-			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-
-	addArea(block_area_nodes);
-
-	for(s32 z=p_min.Z; z<=p_max.Z; z++)
-	for(s32 y=p_min.Y; y<=p_max.Y; y++)
-	for(s32 x=p_min.X; x<=p_max.X; x++)
-	{
-		u8 flags = 0;
-		MapBlock *block;
-		v3s16 p(x,y,z);
-		std::map<v3s16, u8>::iterator n;
-		n = m_loaded_blocks.find(p);
-		if(n != m_loaded_blocks.end())
-			continue;
-
-		bool block_data_inexistent = false;
-		try
-		{
-			TimeTaker timer1("emerge load", &emerge_load_time);
-
-			/*infostream<<"Loading block (caller_id="<<caller_id<<")"
-					<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<" wanted area: ";
-			a.print(infostream);
-			infostream<<std::endl;*/
-
-			block = m_map->getBlockNoCreate(p);
-			if(block->isDummy())
-				block_data_inexistent = true;
-			else
-				block->copyTo(*this);
-		}
-		catch(InvalidPositionException &e)
-		{
-			block_data_inexistent = true;
-		}
-
-		if(block_data_inexistent)
-		{
-			flags |= VMANIP_BLOCK_DATA_INEXIST;
-
-			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-			// Fill with VOXELFLAG_INEXISTENT
-			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-			for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-			{
-				s32 i = m_area.index(a.MinEdge.X,y,z);
-				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
-			}
-		}
-		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
-		{
-			// Mark that block was loaded as blank
-			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
-		}*/
-
-		m_loaded_blocks[p] = flags;
-	}
-
-	//infostream<<"emerge done"<<std::endl;
-}
-
-/*
-	SUGG: Add an option to only update eg. water and air nodes.
-	      This will make it interfere less with important stuff if
-		  run on background.
-*/
-void MapVoxelManipulator::blitBack
-		(std::map<v3s16, MapBlock*> & modified_blocks)
-{
-	if(m_area.getExtent() == v3s16(0,0,0))
-		return;
-
-	//TimeTaker timer1("blitBack");
-
-	/*infostream<<"blitBack(): m_loaded_blocks.size()="
-			<<m_loaded_blocks.size()<<std::endl;*/
-
-	/*
-		Initialize block cache
-	*/
-	v3s16 blockpos_last;
-	MapBlock *block = NULL;
-	bool block_checked_in_modified = false;
-
-	for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
-	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
-	for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
-	{
-		v3s16 p(x,y,z);
-
-		u8 f = m_flags[m_area.index(p)];
-		if(f & (VOXELFLAG_NOT_LOADED|VOXELFLAG_INEXISTENT))
-			continue;
-
-		MapNode &n = m_data[m_area.index(p)];
-
-		v3s16 blockpos = getNodeBlockPos(p);
-
-		try
-		{
-			// Get block
-			if(block == NULL || blockpos != blockpos_last){
-				block = m_map->getBlockNoCreate(blockpos);
-				blockpos_last = blockpos;
-				block_checked_in_modified = false;
-			}
-
-			// Calculate relative position in block
-			v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
-
-			// Don't continue if nothing has changed here
-			if(block->getNode(relpos) == n)
-				continue;
-
-			//m_map->setNode(m_area.MinEdge + p, n);
-			block->setNode(relpos, n);
-
-			/*
-				Make sure block is in modified_blocks
-			*/
-			if(block_checked_in_modified == false)
-			{
-				modified_blocks[blockpos] = block;
-				block_checked_in_modified = true;
-			}
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-	}
-}
-
 ManualMapVoxelManipulator::ManualMapVoxelManipulator(Map *map):
-		MapVoxelManipulator(map),
-		m_create_area(false)
+		VoxelManipulator(),
+		m_is_dirty(false),
+		m_create_area(false),
+		m_map(map)
 {
 }
 
 ManualMapVoxelManipulator::~ManualMapVoxelManipulator()
 {
-}
-
-void ManualMapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
-{
-	// Just create the area so that it can be pointed to
-	VoxelManipulator::emerge(a, caller_id);
 }
 
 void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
@@ -3726,12 +3623,12 @@ void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
 					Mark area inexistent
 				*/
 				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-				// Fill with VOXELFLAG_INEXISTENT
+				// Fill with VOXELFLAG_NO_DATA
 				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 				{
 					s32 i = m_area.index(a.MinEdge.X,y,z);
-					memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
 				}
 			}
 		}
@@ -3743,10 +3640,13 @@ void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
 
 		m_loaded_blocks[p] = flags;
 	}
+
+	m_is_dirty = false;
 }
 
 void ManualMapVoxelManipulator::blitBackAll(
-		std::map<v3s16, MapBlock*> * modified_blocks)
+		std::map<v3s16, MapBlock*> *modified_blocks,
+		bool overwrite_generated)
 {
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
@@ -3761,10 +3661,9 @@ void ManualMapVoxelManipulator::blitBackAll(
 		v3s16 p = i->first;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		bool existed = !(i->second & VMANIP_BLOCK_DATA_INEXIST);
-		if((existed == false) || (block == NULL))
-		{
+		if ((existed == false) || (block == NULL) ||
+			(overwrite_generated == false && block->isGenerated() == true))
 			continue;
-		}
 
 		block->copyFrom(*this);
 

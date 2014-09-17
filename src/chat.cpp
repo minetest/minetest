@@ -151,7 +151,7 @@ void ChatBuffer::reformat(u32 cols, u32 rows)
 	}
 	else if (cols != m_cols || rows != m_rows)
 	{
-		// TODO: Avoid reformatting ALL lines (even inivisble ones)
+		// TODO: Avoid reformatting ALL lines (even invisible ones)
 		// each time the console size changes.
 
 		// Find out the scroll position in *unformatted* lines

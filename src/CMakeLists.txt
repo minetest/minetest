@@ -133,8 +133,6 @@ if(WIN32)
 		set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
 				CACHE FILEPATH "Path to freetype247.lib")
 	endif(USE_FREETYPE)
-	set(MINGWM10_DLL ""
-			CACHE FILEPATH "Path to mingwm10.dll (for installation)")
 	if(ENABLE_SOUND)
 		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
 		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
@@ -162,7 +160,12 @@ else()
 		endif(APPLE)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
-	set(PLATFORM_LIBS -lpthread -lrt ${CMAKE_DL_LIBS})
+	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
+	if(APPLE)
+		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
+	else()
+		set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+	endif(APPLE)
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
@@ -352,9 +355,7 @@ set(common_SRCS
 	mapgen.cpp
 	mapgen_v6.cpp
 	mapgen_v7.cpp
-	mapgen_indev.cpp
 	mapgen_singlenode.cpp
-	mapgen_math.cpp
 	treegen.cpp
 	dungeongen.cpp
 	cavegen.cpp
@@ -504,7 +505,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
-	target_link_libraries(
+	set(minetest_LIBS
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
@@ -522,6 +523,16 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
+	if(APPLE)
+		target_link_libraries(
+			${minetest_LIBS}
+			${ICONV_LIBRARY}
+		)
+	else()
+		target_link_libraries(
+			${minetest_LIBS}
+		)
+	endif()
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -605,7 +616,9 @@ if(MSVC)
 
 else()
 	# Probably GCC
-
+	if(APPLE)
+		SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
+	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
@@ -623,12 +636,12 @@ else()
 		set(OTHER_FLAGS "-mthreads -fexceptions")
 	endif()
 
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
 	if(APPLE)
-		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
-		set(ARCH i386)
-	endif()
-
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
+	else()
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
+	endif(APPLE)
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
@@ -649,12 +662,6 @@ endif()
 # Installation
 #
 if(WIN32)
-	if(MINGWM10_DLL)
-		install(FILES ${MINGWM10_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(DEFINED ZLIB_DLL)
-		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
-	endif()
 	if(USE_SOUND)
 		if(OPENAL_DLL)
 			install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
@@ -671,6 +678,18 @@ if(WIN32)
 	endif()
 	if(CURL_DLL)
 		install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(ZLIB_DLL)
+		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(ZLIBWAPI_DLL)
+		install(FILES ${ZLIBWAPI_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(FREETYPE_DLL)
+		install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(LEVELDB_DLL)
+		install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

@@ -118,14 +118,19 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 }
 
 // L-System tree LUA spawner
-void spawn_ltree(ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition)
+treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDef tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
 	ManualMapVoxelManipulator vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
+	treegen::error e;
+
 	vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,3,1));
-	make_ltree (vmanip, p0, ndef, tree_definition);
+	e = make_ltree (vmanip, p0, ndef, tree_definition);
+	if (e != SUCCESS)
+		return e;
+
 	vmanip.blitBackAll(&modified_blocks);
 
 	// update lighting
@@ -142,15 +147,25 @@ void spawn_ltree(ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef, TreeDe
 		event.modified_blocks.insert(i->first);
 	}
 	map->dispatchEvent(&event);
+	return SUCCESS;
 }
 
 //L-System tree generator
-void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
+treegen::error make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
+	int seed;
+	if (tree_definition.explicit_seed)
+	{
+		seed = tree_definition.seed+14002;
+	}
+	else
+	{
+		seed = p0.X*2 + p0.Y*4 + p0.Z;      // use the tree position to seed PRNG
+	}
+	PseudoRandom ps(seed);
 
-	PseudoRandom ps(tree_definition.seed+14002);
 	// chance of inserting abcd rules
 	double prop_a = 9;
 	double prop_b = 8;
@@ -354,6 +369,8 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 			stack_position.push(position);
 			break;
 		case ']':
+			if (stack_orientation.empty())
+				return UNBALANCED_BRACKETS;
 			rotation=stack_orientation.top();
 			stack_orientation.pop();
 			position=stack_position.top();
@@ -393,6 +410,8 @@ void make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *nd
 			break;
 		}
 	}
+
+	return SUCCESS;
 }
 
 void tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,

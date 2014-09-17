@@ -8,7 +8,10 @@
 
 #define PROJECT_NAME "Minetest"
 #define RUN_IN_PLACE 0
+#define STATIC_SHAREDIR ""
+
 #define USE_GETTEXT 0
+
 #ifndef USE_SOUND
 	#define USE_SOUND 0
 #endif
@@ -17,8 +20,9 @@
 	#define USE_CURL 0
 #endif
 
-#define USE_FREETYPE 0
-#define STATIC_SHAREDIR ""
+#ifndef USE_FREETYPE
+	#define USE_FREETYPE 0
+#endif
 
 #ifndef USE_LEVELDB
 	#define USE_LEVELDB 0

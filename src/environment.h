@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "mapnode.h"
 #include "mapblock.h"
+#include "jthread/jmutex.h"
 
 class ServerEnvironment;
 class ActiveBlockModifier;
@@ -69,6 +70,7 @@ public:
 
 	virtual void addPlayer(Player *player);
 	void removePlayer(u16 peer_id);
+	void removePlayer(const char *name);
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
@@ -93,11 +95,9 @@ public:
 
 	void stepTimeOfDay(float dtime);
 
-	void setTimeOfDaySpeed(float speed)
-	{ m_time_of_day_speed = speed; }
+	void setTimeOfDaySpeed(float speed);
 	
-	float getTimeOfDaySpeed()
-	{ return m_time_of_day_speed; }
+	float getTimeOfDaySpeed();
 
 	void setDayNightRatioOverride(bool enable, u32 value)
 	{
@@ -121,6 +121,9 @@ protected:
 	// Overriding the day-night ratio is useful for custom sky visuals
 	bool m_enable_day_night_ratio_override;
 	u32 m_day_night_ratio_override;
+	
+private:
+	JMutex m_lock;
 
 };
 
@@ -197,7 +200,7 @@ class ServerEnvironment : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, GameScripting *scriptIface,
-			IGameDef *gamedef);
+			IGameDef *gamedef, const std::string &path_world);
 	~ServerEnvironment();
 
 	Map & getMap();
@@ -214,17 +217,16 @@ public:
 	float getSendRecommendedInterval()
 		{ return m_recommended_send_interval; }
 
-	/*
-		Save players
-	*/
-	void serializePlayers(const std::string &savedir);
-	void deSerializePlayers(const std::string &savedir);
+	// Save players
+	void saveLoadedPlayers();
+	void savePlayer(const std::string &playername);
+	Player *loadPlayer(const std::string &playername);
 
 	/*
 		Save and load time of day and game timer
 	*/
-	void saveMeta(const std::string &savedir);
-	void loadMeta(const std::string &savedir);
+	void saveMeta();
+	void loadMeta();
 
 	/*
 		External ActiveObject interface
@@ -366,6 +368,8 @@ private:
 	GameScripting* m_script;
 	// Game definition
 	IGameDef *m_gamedef;
+	// World path
+	const std::string m_path_world;
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
@@ -492,7 +496,7 @@ public:
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
-	std::vector<core::vector2d<int> > attachment_list; // X is child ID, Y is parent ID
+	u16 m_attachements[USHRT_MAX];
 
 	std::list<std::string> getPlayerNames()
 	{ return m_player_names; }

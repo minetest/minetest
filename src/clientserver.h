@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
+#include "util/string.h"
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -104,9 +105,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		add swap_node
 	PROTOCOL_VERSION 23:
 		TOSERVER_CLIENT_READY
+	PROTOCOL_VERSION 24:
+		ContentFeatures version 7
+		ContentFeatures: change number of special tiles to 6 (CF_SPECIAL_COUNT)
 */
 
-#define LATEST_PROTOCOL_VERSION 23
+#define LATEST_PROTOCOL_VERSION 24
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -121,6 +125,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
+
+#define FORMSPEC_API_VERSION 1
+#define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 

@@ -51,7 +51,7 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Doubletaping the jump key toogles fly mode
+# Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
 # If false aux1 is used to fly fast
 #always_fly_fast = false
@@ -160,6 +160,8 @@
 # maximum percentage of current window to be used for hotbar
 # (usefull if you've there's something to be displayed right or left of hotbar)
 #hud_hotbar_max_width = 1.0
+# Enable highlighting for nodes (disables selectionboxes)
+#enable_node_highlighting = false
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
@@ -200,6 +202,8 @@
 #repeat_rightclick_time = 0.25
 # Make fog and sky colors depend on daytime (dawn/sunset) and view direction
 #directional_colored_fog = true
+#tooltip_show_delay = 400
+# Delay showing tooltips, in miliseconds
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL
@@ -210,6 +214,8 @@
 # - Downloads performed by main menu (e.g. mod manager)
 # Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
+# maximum time in ms a file download (e.g. a mod download) may take
+#curl_file_download_timeout = 300000
 
 # enable usage of remote media server (if provided by server)
 #enable_remote_media_server = true
@@ -302,6 +308,11 @@
 #    "error"  = abort on usage of deprecated call (suggested for mod developers)
 #deprecated_lua_api_handling = legacy
 
+# Mod profiler
+#mod_profiling = false
+# Detailed mod profile data
+#detailed_profiling = false
+
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
 #enable_mapgen_debug_info = false
@@ -389,7 +400,7 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently supported: v6, v7, indev, singlenode, math
+# Name of map generator to be used.  Currently supported: v6, v7, singlenode
 #mg_name = v6
 # Water level of map.
 #water_level = 1
@@ -423,22 +434,6 @@
 #mgv7_np_bgroup = 0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6
 #mgv7_np_heat = 25, 50, (500, 500, 500), 35293, 1, 0
 #mgv7_np_humidity = 50, 31.25, (750, 750, 750), 12094, 2, 0.6
-
-# Offset, scale, spread factor, seed offset, number of octaves, persistence, farscale, farspread
-#mgindev_np_terrain_base   = -4,   20,  (250, 250, 250), 82341, 5, 0.6,  10,  10
-#mgindev_np_terrain_higher = 20,   16,  (500, 500, 500), 85039, 5, 0.6,  10,  10
-#mgindev_np_steepness      = 0.85, 0.5, (125, 125, 125), -932,  5, 0.7,  2,   10
-#mgindev_np_mud            = 4,    2,   (200, 200, 200), 91013, 3, 0.55, 1,   1
-#mgindev_np_float_islands1 = 0,    1,   (64,  64,  64 ), 3683,  5, 0.5,  1,   1.5
-#mgindev_np_float_islands2 = 0,    1,   (8,   8,   8  ), 9292,  2, 0.5,  1,   1.5
-#mgindev_np_float_islands3 = 0,    1,   (256, 256, 256), 6412,  2, 0.5,  1,   0.5
-#mgindev_np_biome          = 0,    1,   (250, 250, 250), 9130,  3, 0.50, 1,   10
-
-# Float islands starts from height, 0 to disable
-#mgindev_float_islands = 500
-
-# Math mapgen generator: sphere, mandelbox, mengersponge      dont forget to lower water_level = -30000
-#mgmath_generator = mandelbox
 
 # Enable/disable IPv6
 #enable_ipv6 = true

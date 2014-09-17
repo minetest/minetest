@@ -140,58 +140,58 @@ end
 --------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
-	
+
 	if count == nil then
 		return parts[#parts]
 	end
-	
+
 	local retval = ""
 	for i=1,count,1 do
 		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
 	end
-	
+
 	return retval
 end
 
 --------------------------------------------------------------------------------
 function cleanup_path(temppath)
-	
+
 	local parts = temppath:split("-")
-	temppath = ""	
+	temppath = ""
 	for i=1,#parts,1 do
 		if temppath ~= "" then
 			temppath = temppath .. "_"
 		end
 		temppath = temppath .. parts[i]
 	end
-	
+
 	parts = temppath:split(".")
-	temppath = ""	
+	temppath = ""
 	for i=1,#parts,1 do
 		if temppath ~= "" then
 			temppath = temppath .. "_"
 		end
 		temppath = temppath .. parts[i]
 	end
-	
+
 	parts = temppath:split("'")
-	temppath = ""	
+	temppath = ""
 	for i=1,#parts,1 do
 		if temppath ~= "" then
 			temppath = temppath .. ""
 		end
 		temppath = temppath .. parts[i]
 	end
-	
+
 	parts = temppath:split(" ")
-	temppath = ""	
+	temppath = ""
 	for i=1,#parts,1 do
 		if temppath ~= "" then
 			temppath = temppath
 		end
 		temppath = temppath .. parts[i]
 	end
-	
+
 	return temppath
 end
 
@@ -211,7 +211,7 @@ function core.splittext(text,charlimit)
 	local retval = {}
 
 	local current_idx = 1
-	
+
 	local start,stop = string.find(text," ",current_idx)
 	local nl_start,nl_stop = string.find(text,"\n",current_idx)
 	local gotnewline = false
@@ -226,30 +226,30 @@ function core.splittext(text,charlimit)
 			table.insert(retval,last_line)
 			last_line = ""
 		end
-		
+
 		if last_line ~= "" then
 			last_line = last_line .. " "
 		end
-		
+
 		last_line = last_line .. string.sub(text,current_idx,stop -1)
-		
+
 		if gotnewline then
 			table.insert(retval,last_line)
 			last_line = ""
 			gotnewline = false
 		end
 		current_idx = stop+1
-		
+
 		start,stop = string.find(text," ",current_idx)
 		nl_start,nl_stop = string.find(text,"\n",current_idx)
-	
+
 		if nl_start ~= nil and (start == nil or nl_start < start) then
 			start = nl_start
 			stop = nl_stop
 			gotnewline = true
 		end
 	end
-	
+
 	--add last part of text
 	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
 			table.insert(retval,last_line)
@@ -258,7 +258,7 @@ function core.splittext(text,charlimit)
 		last_line = last_line .. " " .. string.sub(text,current_idx)
 		table.insert(retval,last_line)
 	end
-	
+
 	return retval
 end
 
@@ -400,6 +400,17 @@ function core.explode_textlist_event(evt)
 	return {type="INV", index=0}
 end
 
+--------------------------------------------------------------------------------
+function core.explode_scrollbar_event(evt)
+	local retval = core.explode_textlist_event(evt)
+
+	retval.value = retval.index
+	retval.index = nil
+
+	return retval
+end
+
+--------------------------------------------------------------------------------
 function core.pos_to_string(pos)
 	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 end
@@ -410,14 +421,14 @@ end
 if INIT == "mainmenu" then
 	function core.get_game(index)
 		local games = game.get_games()
-		
+
 		if index > 0 and index <= #games then
 			return games[index]
 		end
-		
+
 		return nil
 	end
-	
+
 	function fgettext(text, ...)
 		text = core.gettext(text)
 		local arg = {n=select('#', ...), ...}

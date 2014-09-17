@@ -29,6 +29,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../hex.h"
 #include "../porting.h"
 
+#ifdef __ANDROID__
+const wchar_t* wide_chars = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+int wctomb(char *s, wchar_t wc)
+{
+	for (unsigned int j = 0; j < (sizeof(wide_chars)/sizeof(wchar_t));j++) {
+		if (wc == wide_chars[j]) {
+			*s = (char) (j+32);
+			return 1;
+		}
+		else if (wc == L'\n') {
+			*s = '\n';
+			return 1;
+		}
+	}
+	return -1;
+}
+
+int mbtowc(wchar_t *pwc, const char *s, size_t n)
+{
+	std::wstring intermediate = narrow_to_wide(s);
+
+	if (intermediate.length() > 0) {
+		*pwc = intermediate[0];
+		return 1;
+	}
+	else {
+		return -1;
+	}
+}
+
+std::wstring narrow_to_wide(const std::string& mbs) {
+	size_t wcl = mbs.size();
+
+	std::wstring retval = L"";
+
+	for (unsigned int i = 0; i < wcl; i++) {
+		if (((unsigned char) mbs[i] >31) &&
+		 ((unsigned char) mbs[i] < 127)) {
+
+			retval += wide_chars[(unsigned char) mbs[i] -32];
+		}
+		//handle newline
+		else if (mbs[i] == '\n') {
+			retval += L'\n';
+		}
+	}
+
+	return retval;
+}
+#else
+
 std::wstring narrow_to_wide(const std::string& mbs)
 {
 	size_t wcl = mbs.size();
@@ -40,6 +92,35 @@ std::wstring narrow_to_wide(const std::string& mbs)
 	return *wcs;
 }
 
+#endif
+
+#ifdef __ANDROID__
+std::string wide_to_narrow(const std::wstring& wcs) {
+	size_t mbl = wcs.size()*4;
+
+	std::string retval = "";
+	for (unsigned int i = 0; i < wcs.size(); i++) {
+		wchar_t char1 = (wchar_t) wcs[i];
+
+		if (char1 == L'\n') {
+			retval += '\n';
+			continue;
+		}
+
+		for (unsigned int j = 0; j < wcslen(wide_chars);j++) {
+			wchar_t char2 = (wchar_t) wide_chars[j];
+
+			if (char1 == char2) {
+				char toadd = (j+32);
+				retval += toadd;
+				break;
+			}
+		}
+	}
+
+	return retval;
+}
+#else
 std::string wide_to_narrow(const std::wstring& wcs)
 {
 	size_t mbl = wcs.size()*4;
@@ -52,6 +133,8 @@ std::string wide_to_narrow(const std::wstring& wcs)
 		mbs[l] = 0;
 	return *mbs;
 }
+
+#endif
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as

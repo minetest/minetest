@@ -83,11 +83,16 @@ local function init_globals()
 
 	menudata.worldlist:add_sort_mechanism("alphabetic",sort_worlds_alphabetic)
 	menudata.worldlist:set_sortmode("alphabetic")
-	
+
+	if not core.setting_get("menu_last_game") then
+		local default_game = core.setting_get("default_game") or "minetest"
+		core.setting_set("menu_last_game", default_game )
+	end
+
 	mm_texture.init()
-	
+
 	--create main tabview
-	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=-0.3,y=-0.99})
+	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tab_singleplayer)
 	tv_main:add(tab_multiplayer)
@@ -96,9 +101,9 @@ local function init_globals()
 	tv_main:add(tab_texturepacks)
 	tv_main:add(tab_mods)
 	tv_main:add(tab_credits)
-	
+
 	tv_main:set_global_event_handler(main_event_handler)
-	
+
 	tv_main:set_tab(core.setting_get("maintab_LAST"))
 	ui.set_default("maintab")
 	tv_main:show()
@@ -107,7 +112,7 @@ local function init_globals()
 	modstore.init({x=12,y=8},4,3)
 
 	ui.update()
-	
+
 	core.sound_play("main_menu", true)
 end
 

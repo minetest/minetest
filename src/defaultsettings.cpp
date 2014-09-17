@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "config.h"
+#include "constants.h"
+#include "porting.h"
 
 void set_default_settings(Settings *settings)
 {
@@ -62,6 +64,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "false");
 	settings->setDefault("directional_colored_fog", "true");
+	settings->setDefault("tooltip_show_delay", "400");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
@@ -117,6 +120,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("selectionbox_color", "(0,0,0)");
+	settings->setDefault("enable_node_highlighting", "false");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
 	settings->setDefault("gui_scaling", "1.0");
@@ -150,6 +154,8 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("curl_timeout", "4000");
 	settings->setDefault("curl_parallel_limit", "8");
+	settings->setDefault("curl_file_download_timeout", "300000");
+	settings->setDefault("curl_verify_cert", "true");
 
 	settings->setDefault("enable_remote_media_server", "true");
 
@@ -164,13 +170,11 @@ void set_default_settings(Settings *settings)
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
-	settings->setDefault("font_size", "13");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "128");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
-	settings->setDefault("mono_font_size", "13");
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
-	settings->setDefault("fallback_font_size", "13");
+
 	settings->setDefault("fallback_font_shadow", "1");
 	settings->setDefault("fallback_font_shadow_alpha", "128");
 #else
@@ -234,7 +238,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("emergequeue_limit_diskonly", "32");
 	settings->setDefault("emergequeue_limit_generate", "32");
 	settings->setDefault("num_emerge_threads", "1");
-	
+
 	// physics stuff
 	settings->setDefault("movement_acceleration_default", "3");
 	settings->setDefault("movement_acceleration_air", "2");
@@ -259,9 +263,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "");
 
-	settings->setDefault("mgmath_generator", "mandelbox");
-
-
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
@@ -276,6 +277,55 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 
 	settings->setDefault("language", "");
+
+#ifdef __ANDROID__
+	settings->setDefault("screenW", "0");
+	settings->setDefault("screenH", "0");
+	settings->setDefault("enable_shaders", "false");
+	settings->setDefault("fullscreen", "true");
+	settings->setDefault("enable_particles", "false");
+	settings->setDefault("video_driver", "ogles1");
+	settings->setDefault("touchtarget", "true");
+	settings->setDefault("main_menu_script","/sdcard/Minetest/builtin/mainmenu/init_android.lua");
+	settings->setDefault("TMPFolder","/sdcard/Minetest/tmp/");
+	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("smooth_lighting", "false");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
+	settings->setDefault("emergequeue_limit_diskonly", "8");
+	settings->setDefault("emergequeue_limit_generate", "8");
+	settings->setDefault("preload_item_visuals", "false");
+
+	settings->setDefault("viewing_range_nodes_max", "50");
+	settings->setDefault("viewing_range_nodes_min", "20");
+	settings->setDefault("inventory_image_hack", "false");
+
+	//check for device with small screen
+	float x_inches = ((double) porting::getDisplaySize().X /
+			(160 * porting::getDisplayDensity()));
+	if (x_inches  < 3.5) {
+		settings->setDefault("gui_scaling", "0.6");
+	}
+	else if (x_inches < 4.5) {
+		settings->setDefault("gui_scaling", "0.7");
+	}
+	settings->setDefault("curl_verify_cert","false");
+#endif
+}
+
+void late_init_default_settings(Settings* settings)
+{
+#ifndef SERVER
+	std::stringstream fontsize;
+	fontsize << floor(
+			DEFAULT_FONT_SIZE *
+			porting::getDisplayDensity() *
+			settings->getFloat("gui_scaling")
+			);
+
+	settings->setDefault("font_size", fontsize.str());
+	settings->setDefault("mono_font_size", fontsize.str());
+	settings->setDefault("fallback_font_size", fontsize.str());
+#endif
 }
 
 void override_default_settings(Settings *settings, Settings *from)

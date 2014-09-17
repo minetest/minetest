@@ -40,10 +40,11 @@ local function get_formspec(tabview, name, tabdata)
 		"pwdfield[9.3,4.5;2.5,0.5;te_pwd;]" ..
 		"textarea[9.3,0.25;2.5,2.75;;"
 		
-	if menudata.fav_selected ~= nil and
-		menudata.favorites[menu.fav_selected].description ~= nil then
+	if tabdata.fav_selected ~= nil and
+		menudata.favorites[tabdata.fav_selected] ~= nil and
+		menudata.favorites[tabdata.fav_selected].description ~= nil then
 		retval = retval ..
-			core.formspec_escape(menu.favorites[menu.fav_selected].description,true)
+			core.formspec_escape(menudata.favorites[tabdata.fav_selected].description,true)
 	end
 
 	retval = retval ..
@@ -136,6 +137,12 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			end end
 		else
 			fav_idx = 1
+		end
+		
+		if menudata.favorites == nil or
+			menudata.favorites[fav_idx] == nil then
+			tabdata.fav_selected = 0
+			return true
 		end
 	
 		local address = menudata.favorites[fav_idx].address

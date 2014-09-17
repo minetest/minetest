@@ -131,18 +131,12 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 void init_texture(video::IVideoDriver* driver, const v2u32& screensize,
 		video::ITexture** texture)
 {
-	static v2u32 last_screensize = v2u32(0,0);
-
-	if (( *texture == NULL ) || (screensize != last_screensize))
+	if (*texture != NULL)
 	{
-		if (*texture != NULL)
-		{
-			driver->removeTexture(*texture);
-		}
-		*texture = driver->addRenderTargetTexture(
-				core::dimension2d<u32>(screensize.X, screensize.Y));
-		last_screensize = screensize;
+		driver->removeTexture(*texture);
 	}
+	*texture = driver->addRenderTargetTexture(
+			core::dimension2d<u32>(screensize.X, screensize.Y));
 }
 
 video::ITexture* draw_image(const v2u32& screensize,
@@ -154,16 +148,16 @@ video::ITexture* draw_image(const v2u32& screensize,
 		video::SColor skycolor )
 {
 	static video::ITexture* images[2] = { NULL, NULL };
+	static v2u32 last_screensize = v2u32(0,0);
 
 	video::ITexture* image = NULL;
 
-	if (psign == RIGHT)
-	{
+	if (screensize != last_screensize) {
 		init_texture(driver, screensize, &images[1]);
 		image = images[1];
-	} else {
 		init_texture(driver, screensize, &images[0]);
 		image = images[0];
+		last_screensize = screensize;
 	}
 
 	driver->setRenderTarget(image, true, true,
@@ -275,7 +269,11 @@ void draw_interlaced_3d_mode(Camera& camera, bool show_hud,
 	guienv->drawAll();
 
 	for (unsigned int i = 0; i < screensize.Y; i+=2 ) {
+#if (IRRLICHT_VERSION_MAJOR >= 1) && (IRRLICHT_VERSION_MINOR >= 8)
+		driver->draw2DImage(left_image, irr::core::position2d<s32>(0, i),
+#else
 		driver->draw2DImage(left_image, irr::core::position2d<s32>(0, screensize.Y-i),
+#endif
 				irr::core::rect<s32>(0, i,screensize.X, i+1), 0,
 				irr::video::SColor(255, 255, 255, 255),
 				false);
@@ -426,6 +424,13 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 
 		bool draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 				(camera.getCameraMode() != CAMERA_MODE_THIRD_FRONT));
+
+#ifdef HAVE_TOUCHSCREENGUI
+		try {
+			draw_crosshair = !g_settings->getBool("touchtarget");
+		}
+		catch(SettingNotFoundException) {}
+#endif
 
 		std::string draw_mode = g_settings->get("3d_mode");
 

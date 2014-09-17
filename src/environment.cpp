@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "util/serialize.h"
+#include "jthread/jmutexautolock.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -95,6 +96,18 @@ void Environment::removePlayer(u16 peer_id)
 			i = m_players.erase(i);
 		} else {
 			++i;
+		}
+	}
+}
+
+void Environment::removePlayer(const char *name)
+{
+	for (std::list<Player*>::iterator it = m_players.begin();
+			it != m_players.end(); ++it) {
+		if (strcmp((*it)->getName(), name) == 0) {
+			delete *it;
+			m_players.erase(it);
+			return;
 		}
 	}
 }
@@ -196,12 +209,30 @@ u32 Environment::getDayNightRatio()
 	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 
+void Environment::setTimeOfDaySpeed(float speed)
+{
+	JMutexAutoLock(this->m_lock);
+	m_time_of_day_speed = speed;
+}
+
+float Environment::getTimeOfDaySpeed()
+{
+	JMutexAutoLock(this->m_lock);
+	float retval = m_time_of_day_speed;
+	return retval;
+}
+
 void Environment::stepTimeOfDay(float dtime)
 {
+	float day_speed = 0;
+	{
+		JMutexAutoLock(this->m_lock);
+		day_speed = m_time_of_day_speed;
+	}
+	
 	m_time_counter += dtime;
-	f32 speed = m_time_of_day_speed * 24000./(24.*3600);
+	f32 speed = day_speed * 24000./(24.*3600);
 	u32 units = (u32)(m_time_counter*speed);
-	m_time_counter -= (f32)units / speed;
 	bool sync_f = false;
 	if(units > 0){
 		// Sync at overflow
@@ -211,8 +242,11 @@ void Environment::stepTimeOfDay(float dtime)
 		if(sync_f)
 			m_time_of_day_f = (float)m_time_of_day / 24000.0;
 	}
+	if (speed > 0) {
+		m_time_counter -= (f32)units / speed;
+	}
 	if(!sync_f){
-		m_time_of_day_f += m_time_of_day_speed/24/3600*dtime;
+		m_time_of_day_f += day_speed/24/3600*dtime;
 		if(m_time_of_day_f > 1.0)
 			m_time_of_day_f -= 1.0;
 		if(m_time_of_day_f < 0.0)
@@ -310,10 +344,12 @@ void ActiveBlockList::update(std::list<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-		GameScripting *scriptIface, IGameDef *gamedef):
+		GameScripting *scriptIface, IGameDef *gamedef,
+		const std::string &path_world) :
 	m_map(map),
 	m_script(scriptIface),
 	m_gamedef(gamedef),
+	m_path_world(path_world),
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
@@ -379,196 +415,75 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 	return true;
 }
 
-void ServerEnvironment::serializePlayers(const std::string &savedir)
+void ServerEnvironment::saveLoadedPlayers()
 {
-	std::string players_path = savedir + "/players";
+	std::string players_path = m_path_world + DIR_DELIM "players";
 	fs::CreateDir(players_path);
 
-	std::set<Player*> saved_players;
-
-	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
-	for(u32 i=0; i<player_files.size(); i++)
-	{
-		if(player_files[i].dir || player_files[i].name[0] == '.')
-			continue;
-		
-		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
-
-		//infostream<<"Checking player file "<<path<<std::endl;
-
-		// Load player to see what is its name
-		RemotePlayer testplayer(m_gamedef);
-		{
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			testplayer.deSerialize(is, player_files[i].name);
-		}
-
-		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
-		
-		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
-		if(player == NULL)
-		{
-			infostream<<"Didn't find matching player, ignoring file "<<path<<std::endl;
-			continue;
-		}
-
-		//infostream<<"Found matching player, overwriting."<<std::endl;
-
-		// OK, found. Save player there.
-		if(player->checkModified())
-		{
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			player->serialize(ss);
-			if(!fs::safeWriteToFile(path, ss.str()))
-			{
-				infostream<<"Failed to write "<<path<<std::endl;
-				continue;
-			}
-			saved_players.insert(player);
-		} else {
-			saved_players.insert(player);
-		}
-	}
-
-	for(std::list<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i)
-	{
-		Player *player = *i;
-		if(saved_players.find(player) != saved_players.end())
-		{
-			/*infostream<<"Player "<<player->getName()
-					<<" was already saved."<<std::endl;*/
-			continue;
-		}
-		std::string playername = player->getName();
-		// Don't save unnamed player
-		if(playername == "")
-		{
-			//infostream<<"Not saving unnamed player."<<std::endl;
-			continue;
-		}
-		/*
-			Find a sane filename
-		*/
-		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false)
-			playername = "player";
-		std::string path = players_path + "/" + playername;
-		bool found = false;
-		for(u32 i=0; i<1000; i++)
-		{
-			if(fs::PathExists(path) == false)
-			{
-				found = true;
-				break;
-			}
-			path = players_path + "/" + playername + itos(i);
-		}
-		if(found == false)
-		{
-			infostream<<"Didn't find free file for player"<<std::endl;
-			continue;
-		}
-
-		{
-			/*infostream<<"Saving player "<<player->getName()<<" to "
-					<<path<<std::endl;*/
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			player->serialize(ss);
-			if(!fs::safeWriteToFile(path, ss.str()))
-			{
-				infostream<<"Failed to write "<<path<<std::endl;
-				continue;
-			}
-			saved_players.insert(player);
-		}
-	}
-
-	//infostream<<"Saved "<<saved_players.size()<<" players."<<std::endl;
-}
-
-void ServerEnvironment::deSerializePlayers(const std::string &savedir)
-{
-	std::string players_path = savedir + "/players";
-
-	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
-	for(u32 i=0; i<player_files.size(); i++)
-	{
-		if(player_files[i].dir)
-			continue;
-		
-		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
-
-		//infostream<<"Checking player file "<<path<<std::endl;
-
-		// Load player to see what is its name
-		RemotePlayer testplayer(m_gamedef);
-		{
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			testplayer.deSerialize(is, player_files[i].name);
-		}
-
-		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
-		{
-			infostream<<"Not loading player with invalid name: "
-					<<testplayer.getName()<<std::endl;
-		}
-
-		/*infostream<<"Loaded test player with name "<<testplayer.getName()
-				<<std::endl;*/
-		
-		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
-		bool newplayer = false;
-		if(player == NULL)
-		{
-			//infostream<<"Is a new player"<<std::endl;
-			player = new RemotePlayer(m_gamedef);
-			newplayer = true;
-		}
-
-		// Load player
-		{
-			verbosestream<<"Reading player "<<testplayer.getName()<<" from "
-					<<path<<std::endl;
-			// Open file and deserialize
-			std::ifstream is(path.c_str(), std::ios_base::binary);
-			if(is.good() == false)
-			{
-				infostream<<"Failed to read "<<path<<std::endl;
-				continue;
-			}
-			player->deSerialize(is, player_files[i].name);
-		}
-
-		if(newplayer)
-		{
-			addPlayer(player);
+	for (std::list<Player*>::iterator it = m_players.begin();
+			it != m_players.end();
+			++it) {
+		RemotePlayer *player = static_cast<RemotePlayer*>(*it);
+		if (player->checkModified()) {
+			player->save(players_path);
 		}
 	}
 }
 
-void ServerEnvironment::saveMeta(const std::string &savedir)
+void ServerEnvironment::savePlayer(const std::string &playername)
 {
-	std::string path = savedir + "/env_meta.txt";
+	std::string players_path = m_path_world + DIR_DELIM "players";
+	fs::CreateDir(players_path);
+
+	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
+	if (player) {
+		player->save(players_path);
+	}
+}
+
+Player *ServerEnvironment::loadPlayer(const std::string &playername)
+{
+	std::string players_path = m_path_world + DIR_DELIM "players" DIR_DELIM;
+
+	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
+	bool newplayer = false;
+	bool found = false;
+	if (!player) {
+		player = new RemotePlayer(m_gamedef);
+		newplayer = true;
+	}
+
+	RemotePlayer testplayer(m_gamedef);
+	std::string path = players_path + playername;
+	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
+		// Open file and deserialize
+		std::ifstream is(path.c_str(), std::ios_base::binary);
+		if (!is.good()) {
+			return NULL;
+		}
+		testplayer.deSerialize(is, path);
+		is.close();
+		if (testplayer.getName() == playername) {
+			*player = testplayer;
+			found = true;
+			break;
+		}
+		path = players_path + playername + itos(i);
+	}
+	if (!found) {
+		infostream << "Player file for player " << playername
+				<< " not found" << std::endl;
+		return NULL;
+	}
+	if (newplayer) {
+		addPlayer(player);
+	}
+	return player;
+}
+
+void ServerEnvironment::saveMeta()
+{
+	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
@@ -587,9 +502,9 @@ void ServerEnvironment::saveMeta(const std::string &savedir)
 	}
 }
 
-void ServerEnvironment::loadMeta(const std::string &savedir)
+void ServerEnvironment::loadMeta()
 {
-	std::string path = savedir + "/env_meta.txt";
+	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and deserialize
 	std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -863,19 +778,26 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
+
 	// Call destructor
-	if(ndef->get(n_old).has_on_destruct)
+	if (ndef->get(n_old).has_on_destruct)
 		m_script->node_on_destruct(p, n_old);
+
 	// Replace node
-	bool succeeded = m_map->addNodeWithEvent(p, n);
-	if(!succeeded)
+	if (!m_map->addNodeWithEvent(p, n))
 		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
 	// Call post-destructor
-	if(ndef->get(n_old).has_after_destruct)
+	if (ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
+
 	// Call constructor
-	if(ndef->get(n).has_on_construct)
+	if (ndef->get(n).has_on_construct)
 		m_script->node_on_construct(p, n);
+
 	return true;
 }
 
@@ -883,24 +805,36 @@ bool ServerEnvironment::removeNode(v3s16 p)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
+
 	// Call destructor
-	if(ndef->get(n_old).has_on_destruct)
+	if (ndef->get(n_old).has_on_destruct)
 		m_script->node_on_destruct(p, n_old);
+
 	// Replace with air
 	// This is slightly optimized compared to addNodeWithEvent(air)
-	bool succeeded = m_map->removeNodeWithEvent(p);
-	if(!succeeded)
+	if (!m_map->removeNodeWithEvent(p))
 		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
 	// Call post-destructor
-	if(ndef->get(n_old).has_after_destruct)
+	if (ndef->get(n_old).has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
+
 	// Air doesn't require constructor
 	return true;
 }
 
 bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 {
-	return m_map->addNodeWithEvent(p, n, false);
+	if (!m_map->addNodeWithEvent(p, n, false))
+		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
+	return true;
 }
 
 std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)
@@ -1379,7 +1313,7 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 {
 	assert(obj);
 
-	v3f objectpos = obj->getBasePosition();	
+	v3f objectpos = obj->getBasePosition();
 
 	// The block in which the object resides in
 	v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -1591,7 +1525,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			object->m_static_block = blockpos;
 
 			if(set_changed)
-				block->raiseModified(MOD_STATE_WRITE_NEEDED, 
+				block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						"addActiveObjectRaw");
 		} else {
 			v3s16 p = floatToInt(objectpos, BS);
@@ -1828,7 +1762,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	If force_delete is set, active object is deleted nevertheless. It
 	shall only be set so in the destructor of the environment.
 
-	If block wasn't generated (not in memory or on disk), 
+	If block wasn't generated (not in memory or on disk),
 */
 void ServerEnvironment::deactivateFarObjects(bool force_delete)
 {
@@ -1849,7 +1783,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			continue;
 
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();	
+		v3f objectpos = obj->getBasePosition();
 
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -2078,6 +2012,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	m_gamedef(gamedef),
 	m_irr(irr)
 {
+	char zero = 0;
+	memset(m_attachements, zero, sizeof(m_attachements));
 }
 
 ClientEnvironment::~ClientEnvironment()

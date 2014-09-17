@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local function create_world_formspec(dialogdata)
-	local mapgens = {"v6", "v7", "indev", "singlenode", "math"}
+	local mapgens = {"v6", "v7", "singlenode"}
 
 	local current_seed = core.setting_get("fixed_map_seed") or ""
 	local current_mg   = core.setting_get("mg_name")
@@ -44,6 +44,7 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
+	current_seed = core.formspec_escape(current_seed)
 	local retval =
 		"size[12,6,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..

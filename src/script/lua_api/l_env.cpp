@@ -35,10 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "pathfinder.h"
 
-
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
 				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
-				if( env == NULL) return 0
+				if (env == NULL) return 0
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -747,7 +746,8 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 		}
 		getintfield(L, 2, "angle", tree_def.angle);
 		getintfield(L, 2, "iterations", tree_def.iterations);
-		getintfield(L, 2, "random_level", tree_def.iterations_random_level);
+		if (!getintfield(L, 2, "random_level", tree_def.iterations_random_level))
+			tree_def.iterations_random_level = 0;
 		getstringfield(L, 2, "trunk_type", tree_def.trunk_type);
 		getboolfield(L, 2, "thin_branches", tree_def.thin_branches);
 		tree_def.fruit_chance=0;
@@ -757,11 +757,20 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 			tree_def.fruitnode=ndef->getId(fruit);
 			getintfield(L, 2, "fruit_chance",tree_def.fruit_chance);
 		}
-		getintfield(L, 2, "seed", tree_def.seed);
+		tree_def.explicit_seed = getintfield(L, 2, "seed", tree_def.seed);
 	}
 	else
 		return 0;
-	treegen::spawn_ltree (env, p0, ndef, tree_def);
+
+	treegen::error e;
+	if ((e = treegen::spawn_ltree (env, p0, ndef, tree_def)) != treegen::SUCCESS) {
+		if (e == treegen::UNBALANCED_BRACKETS) {
+			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
+		} else {
+			luaL_error(L, "spawn_tree(): unknown error");
+		}
+	}
+
 	return 1;
 }
 
@@ -795,6 +804,13 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	v3s16 blockpos = read_v3s16(L, 1);
 	env->getForceloadedBlocks()->erase(blockpos);
 	return 0;
+}
+
+// get_us_time()
+int ModApiEnvMod::l_get_us_time(lua_State *L)
+{
+	lua_pushnumber(L, porting::getTimeUs());
+	return 1;
 }
 
 void ModApiEnvMod::Initialize(lua_State *L, int top)
@@ -834,4 +850,5 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_us_time);
 }

@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/numeric.h"
 #include "guiFormSpecMenu.h" // for parseColor()
+#include "main.h"
+#include "settings.h" // for settings
+#include "porting.h" // for dpi
 
 /*
 	GUITable
@@ -89,6 +92,14 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
+
+	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
+	s32 width = (relative_rect.getWidth()/(2.0/3.0)) * porting::getDisplayDensity() *
+			g_settings->getFloat("gui_scaling");
+	m_scrollbar->setRelativePosition(core::rect<s32>(
+			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
+			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y
+			));
 }
 
 GUITable::~GUITable()
@@ -98,6 +109,8 @@ GUITable::~GUITable()
 
 	if (m_font)
 		m_font->drop();
+	
+	m_scrollbar->remove();
 }
 
 GUITable::Option GUITable::splitOption(const std::string &str)
@@ -180,6 +193,16 @@ void GUITable::setTable(const TableOptions &options,
 	// i is always a row index, 0-based
 	// j is always a column index, 0-based
 	// k is another index, for example an option index
+
+	// Handle a stupid error case... (issue #1187)
+	if (columns.empty()) {
+		TableColumn text_column;
+		text_column.type = "text";
+		TableColumns new_columns;
+		new_columns.push_back(text_column);
+		setTable(options, new_columns, content);
+		return;
+	}
 
 	// Handle table options
 	video::SColor default_color(255, 255, 255, 255);
@@ -444,7 +467,7 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	if (m_has_tree_column) {
-		// Treeview: convent tree to indent cells on leaf rows
+		// Treeview: convert tree to indent cells on leaf rows
 		for (s32 i = 0; i < rowcount; ++i) {
 			if (i == rowcount-1 || m_rows[i].indent >= m_rows[i+1].indent)
 				for (s32 j = 0; j < m_rows[i].cellcount; ++j)
@@ -796,7 +819,7 @@ bool GUITable::OnEvent(const SEvent &event)
 			}
 
 			// find the selected item, starting at the current selection
-			// dont change selection if the key buffer matches the current item
+			// don't change selection if the key buffer matches the current item
 			s32 old_selected = m_selected;
 			s32 start = MYMAX(m_selected, 0);
 			s32 rowcount = m_visible_rows.size();
@@ -821,7 +844,7 @@ bool GUITable::OnEvent(const SEvent &event)
 
 		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
 			m_scrollbar->setPos(m_scrollbar->getPos() +
-					(event.MouseInput.Wheel < 0 ? -1 : 1) *
+					(event.MouseInput.Wheel < 0 ? -3 : 3) *
 					- (s32) m_rowheight / 2);
 			return true;
 		}

@@ -31,7 +31,6 @@ end
 local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 
 	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
-
 		local worldlist = core.get_worlds()
 		local found_singleplayerworld = false
 
@@ -63,21 +62,72 @@ local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 	this.parent:show()
 	this:hide()
 	this:delete()
+	return true
 end
 
 local function showconfirm_reset(tabview)
 	local new_dlg = dialog_create("reset_spworld",
 		dlg_confirm_reset_formspec,
 		dlg_confirm_reset_btnhandler,
-		nil,
-		tabview)
+		nil)
+	new_dlg:set_parent(tabview)
 	tabview:hide()
 	new_dlg:show()
 end
 
+local function gui_scale_to_scrollbar()
 
+	local current_value = tonumber(core.setting_get("gui_scaling"))
+
+	if (current_value == nil) or current_value < 0.25 then
+		return 0
+	end
+
+	if current_value <= 1.25 then
+		return ((current_value - 0.25)/ 1.0) * 700
+	end
+
+	if current_value <= 6 then
+		return ((current_value -1.25) * 100) + 700
+	end
+
+	return 1000
+end
+
+local function scrollbar_to_gui_scale(value)
+
+	value = tonumber(value)
+
+	if (value <= 700) then
+		return ((value / 700) * 1.0) + 0.25
+	end
+
+	if (value <=1000) then
+		return ((value - 700) / 100) + 1.25
+	end
+
+	return 1
+end
 
 local function formspec(tabview, name, tabdata)
+	local video_drivers = core.get_video_drivers()
+	
+	local video_driver_string = ""
+	local current_video_driver_idx = 0
+	local current_video_driver = core.setting_get("video_driver")
+	for i=1, #video_drivers, 1 do
+	
+		if i ~= 1 then
+			video_driver_string = video_driver_string .. ","
+		end
+		video_driver_string = video_driver_string .. video_drivers[i]
+		
+		if current_video_driver:lower() == video_drivers[i]:lower() then
+			current_video_driver_idx = i
+		end
+	end
+	
+	
 	local tab_string =
 		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
@@ -93,8 +143,10 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("preload_item_visuals"))	.. "]"..
 		"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
-		"checkbox[1,3.0;cb_finite_liquid;".. fgettext("Finite Liquid") .. ";"
-				.. dump(core.setting_getbool("liquid_finite")) .. "]"..
+		"dropdown[1,3.25;3;dd_video_driver;"
+			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
+		"tooltip[dd_video_driver;" ..
+			fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[4.25,0;3.25,2.5;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
@@ -106,16 +158,28 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"..
-		"button[1,4.5;2.25,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
-
-	local android = false
-	if android then
+				.. dump(core.setting_getbool("enable_shaders")) .. "]"
+	if not ANDROID then
 		tab_string = tab_string ..
-		"box[4.25,2.75;3.25,2.5;#999999]" ..
+		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
+	else
+		tab_string = tab_string ..
+		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
+	end
+	tab_string = tab_string ..
+		"box[0.75,4.25;3.25,1.25;#999999]" ..
+		"label[1,4.25;" .. fgettext("GUI scale factor") .. "]" ..
+		"scrollbar[1,4.75;2.75,0.4;sb_gui_scaling;horizontal;" ..
+		 gui_scale_to_scrollbar() .. "]" ..
+		"tooltip[sb_gui_scaling;" ..
+			fgettext("Scaling factor applied to menu elements: ") ..
+			dump(core.setting_get("gui_scaling")) .. "]"
+
+	if ANDROID then
+		tab_string = tab_string ..
+		"box[4.25,2.75;3.25,2.15;#999999]" ..
 		"checkbox[4.5,2.75;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
-				.. dump(core.setting_getbool("touchtarget")) .. "]" ..
-		"button[8,4.5;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
+				.. dump(core.setting_getbool("touchtarget")) .. "]"
 	end
 
 	if core.setting_get("touchscreen_threshold") ~= nil then
@@ -202,10 +266,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_particles", fields["cb_particles"])
 		return true
 	end
-	if fields["cb_finite_liquid"] then
-		core.setting_set("liquid_finite", fields["cb_finite_liquid"])
-		return true
-	end
 	if fields["cb_bumpmapping"] then
 		core.setting_set("enable_bumpmapping", fields["cb_bumpmapping"])
 	end
@@ -231,18 +291,37 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.show_keys_menu()
 		return true
 	end
+
+	if fields["sb_gui_scaling"] then
+		local event = core.explode_scrollbar_event(fields["sb_gui_scaling"])
+
+		if event.type == "CHG" then
+			local tosave = string.format("%.2f",scrollbar_to_gui_scale(event.value))
+			core.setting_set("gui_scaling",tosave)
+			return true
+		end
+	end
 	if fields["cb_touchscreen_target"] then
 		core.setting_set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
-	if fields["dd_touchthreshold"] then
-		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
 		return true
 	end
 	if fields["btn_reset_singleplayer"] then
 		showconfirm_reset(this)
 		return true
 	end
+
+	--Note dropdowns have to be handled LAST!
+	local ddhandled = false
+	if fields["dd_touchthreshold"] then
+		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
+		ddhandled = true
+	end
+	if fields["dd_video_driver"] then
+		core.setting_set("video_driver",fields["dd_video_driver"])
+		ddhandled = true
+	end
+	
+	return ddhandled
 end
 
 tab_settings = {

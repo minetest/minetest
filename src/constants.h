@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CONNECTION_TIMEOUT 30
 
-#define RESEND_TIMEOUT_MIN 0.333
+#define RESEND_TIMEOUT_MIN 0.1
 #define RESEND_TIMEOUT_MAX 3.0
 // resend_timeout = avg_rtt * this
 #define RESEND_TIMEOUT_FACTOR 4
@@ -88,6 +88,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Maximum hit points of a player
 #define PLAYER_MAX_HP 20
+
+// Number of different files to try to save a player to if the first fails
+// (because of a case-insensitive filesystem)
+// TODO: Use case-insensitive player names instead of this hack.
+#define PLAYER_FILE_ALTERNATE_TRIES 1000
+
+/*
+ *    GUI related things
+ */
+#define LEGACY_SCALING                                     (2./3.)
+#define DEFAULT_FONT_SIZE                  (13.0 / LEGACY_SCALING)
+#define DEFAULT_IMGSIZE                                     (48.0)
+#define DEFAULT_XSPACING                    ((15.0 + (1.0 / 3.0)))
+#define DEFAULT_YSPACING                                     (9.0)
 
 #endif
 

@@ -78,8 +78,8 @@ function modstore.init(size, unsortedmods, searchmods)
 
 	modstore.current_list = nil
 
-	modstore.tv_store = tabview_create("modstore",size,{x=-0.3,y=-0.99})
-	
+	modstore.tv_store = tabview_create("modstore",size,{x=0,y=0})
+
 	modstore.tv_store:set_global_event_handler(modstore.handle_events)
 
 	modstore.tv_store:add(
@@ -307,7 +307,7 @@ function modstore.handle_buttons(parent, fields, name, data)
 			return true
 		end
 	end
-	
+
 	return false
 end
 

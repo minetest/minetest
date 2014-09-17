@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 #include "threads.h"
 #include <string>
+#include <map>
 
 class IGameDef;
 
@@ -97,7 +98,6 @@ public:
 	ITextureSource(){}
 	virtual ~ITextureSource(){}
 	virtual u32 getTextureId(const std::string &name)=0;
-	virtual u32 getTextureIdDirect(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
 	virtual video::ITexture* getTexture(u32 id)=0;
 	virtual video::ITexture* getTexture(
@@ -106,6 +106,7 @@ public:
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
+	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -114,7 +115,6 @@ public:
 	IWritableTextureSource(){}
 	virtual ~IWritableTextureSource(){}
 	virtual u32 getTextureId(const std::string &name)=0;
-	virtual u32 getTextureIdDirect(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
 	virtual video::ITexture* getTexture(u32 id)=0;
 	virtual video::ITexture* getTexture(
@@ -127,9 +127,29 @@ public:
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
+	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
+
+#ifdef __ANDROID__
+/**
+ * @param size get next npot2 value
+ * @return npot2 value
+ */
+inline unsigned int npot2(unsigned int size)
+{
+	if (size == 0) return 0;
+	unsigned int npot = 1;
+
+	while ((size >>= 1) > 0) {
+		npot <<= 1;
+	}
+	return npot;
+}
+
+video::IImage * Align2Npot2(video::IImage * image, video::IVideoDriver* driver);
+#endif
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
@@ -151,16 +171,31 @@ enum MaterialType{
 // Animation made up by splitting the texture to vertical frames, as
 // defined by extra parameters
 #define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
+#define MATERIAL_FLAG_HIGHLIGHTED 0x10
 
 /*
 	This fully defines the looks of a tile.
 	The SMaterial of a tile is constructed according to this.
 */
+struct FrameSpec
+{
+	FrameSpec():
+		texture_id(0),
+		texture(NULL),
+		normal_texture(NULL)
+	{
+	}
+	u32 texture_id;
+	video::ITexture *texture;
+	video::ITexture *normal_texture;
+};
+
 struct TileSpec
 {
 	TileSpec():
 		texture_id(0),
 		texture(NULL),
+		normal_texture(NULL),
 		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
@@ -224,6 +259,8 @@ struct TileSpec
 	
 	u32 texture_id;
 	video::ITexture *texture;
+	video::ITexture *normal_texture;
+	
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
 	// Material parameters
@@ -233,6 +270,8 @@ struct TileSpec
 	// Animation parameters
 	u8 animation_frame_count;
 	u16 animation_frame_length_ms;
+	std::map<u32, FrameSpec> frames;
+
 	u8 rotation;
 };
 

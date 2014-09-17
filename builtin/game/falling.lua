@@ -79,17 +79,24 @@ core.register_entity(":__builtin:falling_node", {
 			local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 			-- Check what's here
 			local n2 = core.get_node(np)
-			-- remove node and replace it with it's drops
-			local drops = core.get_node_drops(n2.name, "")
-			core.remove_node(np)
-			local _, dropped_item
-			for _, dropped_item in ipairs(drops) do
-				core.add_item(np, dropped_item)
-			end
-			-- Run script hook
-			local _, callback
-			for _, callback in ipairs(core.registered_on_dignodes) do
-				callback(np, n2, nil)
+			-- If it's not air or liquid, remove node and replace it with
+			-- it's drops
+			if n2.name ~= "air" and (not core.registered_nodes[n2.name] or
+					core.registered_nodes[n2.name].liquidtype == "none") then
+				core.remove_node(np)
+				if core.registered_nodes[n2.name].buildable_to == false then
+					-- Add dropped items
+					local drops = core.get_node_drops(n2.name, "")
+					local _, dropped_item
+					for _, dropped_item in ipairs(drops) do
+						core.add_item(np, dropped_item)
+					end
+				end
+				-- Run script hook
+				local _, callback
+				for _, callback in ipairs(core.registered_on_dignodes) do
+					callback(np, n2, nil)
+				end
 			end
 			-- Create node and remove entity
 			core.add_node(np, self.node)

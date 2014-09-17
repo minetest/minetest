@@ -61,6 +61,9 @@ void ScriptApiEnv::environment_Step(float dtime)
 void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 {
 	SCRIPTAPI_PRECHECKHEADER
+	
+	if (player == NULL)
+		return;
 
 	// Get minetest.registered_playerevents
 	lua_getglobal(L, "minetest");

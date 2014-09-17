@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.9
+Minetest Lua Modding API Reference 0.4.10
 ========================================
 More information at http://www.minetest.net/
 Developer Wiki: http://dev.minetest.net/
@@ -51,7 +51,7 @@ where gameid is unique to each game.
 
 The game directory contains the file game.conf, which contains these fields:
   name = <Human-readable full name of the game>
-eg.
+e.g.
   name = Minetest
 
 The game directory can contain the file minetest.conf, which will be used
@@ -66,14 +66,14 @@ Generic:
   $path_user/mods/ <-- User-installed mods
   $worldpath/worldmods/
 
-In a run-in-place version (eg. the distributed windows version):
+In a run-in-place version (e.g. the distributed windows version):
   minetest-0.4.x/games/gameid/mods/
-  minetest-0.4.x/mods/gameid/ <-- User-installed mods
+  minetest-0.4.x/mods/ <-- User-installed mods
   minetest-0.4.x/worlds/worldname/worldmods/
 
-On an installed version on linux:
+On an installed version on Linux:
   /usr/share/minetest/games/gameid/mods/
-  ~/.minetest/mods/gameid/ <-- User-installed mods
+  ~/.minetest/mods/ <-- User-installed mods
   ~/.minetest/worlds/worldname/worldmods
 
 Mod load path for world-specific games
@@ -81,7 +81,7 @@ Mod load path for world-specific games
 It is possible to include a game in a world; in this case, no mods or
 games are loaded or checked from anywhere else.
 
-This is useful for eg. adventure worlds.
+This is useful for e.g. adventure worlds.
 
 This happens if the following directory exists:
   $world/game/
@@ -127,7 +127,7 @@ screenshot.png:
   A screenshot shown in modmanager within mainmenu.
 
 description.txt:
-  File containing desctiption to be shown within mainmenu.
+  File containing description to be shown within mainmenu.
 
 init.lua:
   The main Lua script. Running this script should register everything it
@@ -170,30 +170,106 @@ convert_to.
 
 This can be used for maintaining backwards compatibility.
 
-This can be also used for setting quick access names for things, eg. if
+This can be also used for setting quick access names for things, e.g. if
 you have an item called epiclylongmodname:stuff, you could do
   minetest.register_alias("stuff", "epiclylongmodname:stuff")
 and be able to use "/giveme stuff".
 
 Textures
 --------
-Mods should generally prefix their textures with modname_, eg. given
+Mods should generally prefix their textures with modname_, e.g. given
 the mod name "foomod", a texture could be called
   "foomod_foothing.png"
 
 Textures are referred to by their complete name, or alternatively by
 stripping out the file extension:
-  eg. foomod_foothing.png
-  eg. foomod_foothing
+  e.g. foomod_foothing.png
+  e.g. foomod_foothing
+
+Texture modifiers
+-----------------
+There are various texture modifiers that can be used
+to generate textures on-the-fly.
+
+Texture overlaying:
+  Textures can be overlaid by putting a ^ between them.
+  Example: default_dirt.png^default_grass_side.png
+    default_grass_side.png is overlayed over default_dirt.png
+
+Texture grouping:
+  Textures can be grouped together by enclosing them in ( and ).
+  Example: cobble.png^(thing1.png^thing2.png)
+    A texture for 'thing1.png^thing2.png' is created and the resulting
+    texture is overlaid over cobble.png.
+
+Advanced texture modifiers:
+  [crack:<n>:<p>
+    n = animation frame count, p = current animation frame
+    Draw a step of the crack animation on the texture.
+    Example: default_cobble.png^[crack:10:1
+
+  [combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>
+    w = width, h = height, x1/x2 = x position, y1/y1 = y position,
+    file1/file2 = texture to combine
+    Create a texture of size <w> x <h> and blit <file1> to (<x1>,<y1>)
+    and blit <file2> to (<x2>,<y2>).
+    Example: [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
+
+  [brighten
+    Brightens the texture.
+    Example: tnt_tnt_side.png^[brighten
+
+  [noalpha
+    Makes the texture completely opaque.
+    Example: default_leaves.png^[noalpha
+
+  [makealpha:<r>,<g>,<b>
+    Convert one color to transparency.
+    Example: default_cobble.png^[makealpha:128,128,128
+
+  [transform<t>
+    t = transformation(s) to apply
+    Rotates and/or flips the image.
+    <t> can be a number (between 0 and 7) or a transform name.
+	Rotations are counter-clockwise.
+     0  I      identity
+     1  R90    rotate by 90 degrees
+     2  R180   rotate by 180 degrees
+     3  R270   rotate by 270 degrees
+     4  FX     flip X
+     5  FXR90  flip X then rotate by 90 degrees
+     6  FY     flip Y
+     7  FYR90  flip Y then rotate by 90 degrees
+    Example: default_stone.png^[transformFXR90
+
+  [inventorycube{<top>{<left>{<right>
+     '^' is replaced by '&' in texture names
+    Create an inventory cube texture using the side textures.
+    Example: [inventorycube{grass.png{dirt.png&grass_side.png{dirt.png&grass_side.png
+     Creates an inventorycube with 'grass.png', 'dirt.png^grass_side.png' and
+     'dirt.png^grass_side.png' textures
+
+  [lowpart:<percent>:<file>
+    Blit the lower <percent>% part of <file> on the texture:
+    Example: base.png^[lowpart:25:overlay.png
+
+  [verticalframe:<t>:<n>
+    t = animation frame count, n = current animation frame
+    Crops the texture to a frame of a vertical animation.
+    Example: default_torch_animated.png^[verticalframe:16:8
+
+  [mask:<file>
+    Apply a mask to the base image.
+    The mask is applied using binary AND.
 
 Sounds
 -------
-Only OGG files are supported.
+Only OGG Vorbis files are supported.
 
 For positional playing of sounds, only single-channel (mono) files are
 supported. Otherwise OpenAL will play them non-positionally.
 
-Mods should generally prefix their sounds with modname_, eg. given
+Mods should generally prefix their sounds with modname_, e.g. given
 the mod name "foomod", a sound could be called
   "foomod_foosound.ogg"
 
@@ -210,11 +286,11 @@ from the available ones of the following files:
   foomod_foosound.9.ogg
 
 Examples of sound parameter tables:
--- Play locationless on all clients
+-- Play location-less on all clients
 {
     gain = 1.0, -- default
 }
--- Play locationless to a player
+-- Play location-less to a player
 {
     to_player = name,
     gain = 1.0, -- default
@@ -234,11 +310,11 @@ Examples of sound parameter tables:
 }
 
 SimpleSoundSpec:
-eg. ""
-eg. "default_place_node"
-eg. {}
-eg. {name="default_place_node"}
-eg. {name="default_place_node", gain=1.0}
+e.g. ""
+e.g. "default_place_node"
+e.g. {}
+e.g. {name="default_place_node"}
+e.g. {name="default_place_node", gain=1.0}
 
 Registered definitions of stuff
 --------------------------------
@@ -259,7 +335,7 @@ minetest.register_craftitem(name, item definition)
  -> minetest.registered_items[name]
 
 Note that in some cases you will stumble upon things that are not contained
-in these tables (eg. when a mod has been removed). Always check for
+in these tables (e.g. when a mod has been removed). Always check for
 existence before trying to access the fields.
 
 Example: If you want to check the drawtype of a node, you could do:
@@ -384,7 +460,7 @@ A box is defined as:
 A box of a regular node would look like:
   {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
-type = "leveled" is same as "fixed", but y2 will be automaticaly setted to level from param2
+type = "leveled" is same as "fixed", but y2 will be automatically set to level from param2
 
 Ore types
 ---------------
@@ -394,13 +470,13 @@ All default ores are of the uniformly-distributed scatter type.
 - scatter
     Randomly chooses a location and generates a cluster of ore.
     If noise_params is specified, the ore will be placed if the 3d perlin noise at
-    that point is greater than the noise_threshhold, giving the ability to create a non-equal
+    that point is greater than the noise_threshold, giving the ability to create a non-equal
     distribution of ore.
 - sheet
     Creates a sheet of ore in a blob shape according to the 2d perlin noise described by noise_params.
     The relative height of the sheet can be controlled by the same perlin noise as well, by specifying
     a non-zero 'scale' parameter in noise_params.  IMPORTANT: The noise is not transformed by offset or
-    scale when comparing against the noise threshhold, but scale is used to determine relative height.
+    scale when comparing against the noise threshold, but scale is used to determine relative height.
     The height of the blob is randomly scattered, with a maximum height of clust_size.
     clust_scarcity and clust_num_ores are ignored.
     This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
@@ -561,16 +637,16 @@ Craftitem (register_craftitem):
 Items and item stacks can exist in three formats:
 
 Serialized; This is called stackstring or itemstring:
-eg. 'default:dirt 5'
-eg. 'default:pick_wood 21323'
-eg. 'default:apple'
+e.g. 'default:dirt 5'
+e.g. 'default:pick_wood 21323'
+e.g. 'default:apple'
 
 Table format:
-eg. {name="default:dirt", count=5, wear=0, metadata=""}
+e.g. {name="default:dirt", count=5, wear=0, metadata=""}
     ^ 5 dirt nodes
-eg. {name="default:pick_wood", count=1, wear=21323, metadata=""}
-    ^ a wooden pick about 1/3 weared out
-eg. {name="default:apple", count=1, wear=0, metadata=""}
+e.g. {name="default:pick_wood", count=1, wear=21323, metadata=""}
+    ^ a wooden pick about 1/3 worn out
+e.g. {name="default:apple", count=1, wear=0, metadata=""}
     ^ an apple.
 
 ItemStack:
@@ -604,7 +680,7 @@ You can read the rating of a group for an item or a node by using
 
 Groups of items
 ----------------
-Groups of items can define what kind of an item it is (eg. wool).
+Groups of items can define what kind of an item it is (e.g. wool).
 
 Groups of nodes
 ----------------
@@ -617,7 +693,7 @@ For entities, groups are, as of now, used only for calculating damage.
 The rating is the percentage of damage caused by tools with this damage group.
 See "Entity damage mechanism".
 
-object.get_armor_groups() -> a group-rating table (eg. {fleshy=100})
+object.get_armor_groups() -> a group-rating table (e.g. {fleshy=100})
 object.set_armor_groups({fleshy=30, cracky=80})
 
 Groups of tools
@@ -648,8 +724,8 @@ Special groups
 ---------------
 - immortal: Disables the group damage system for an entity
 - level: Can be used to give an additional sense of progression in the game.
-  - A larger level will cause eg. a weapon of a lower level make much less
-    damage, and get weared out much faster, or not be able to get drops
+  - A larger level will cause e.g. a weapon of a lower level make much less
+    damage, and get worn out much faster, or not be able to get drops
     from destroyed nodes.
   - 0 is something that is directly accessible at the start of gameplay
   - There is no upper limit
@@ -672,9 +748,9 @@ Known damage and digging time defining groups
 ----------------------------------------------
 - crumbly: dirt, sand
 - cracky: tough but crackable stuff like stone.
-- snappy: something that can be cut using fine tools; eg. leaves, small
+- snappy: something that can be cut using fine tools; e.g. leaves, small
           plants, wire, sheets of metal
-- choppy: something that can be cut using force; eg. trees, wooden planks
+- choppy: something that can be cut using force; e.g. trees, wooden planks
 - fleshy: Living things like animals and the player. This could imply
           some blood effects when hitting.
 - explody: Especially prone to explosions
@@ -693,7 +769,7 @@ Item groups are often used for defining, well, //groups of items//.
 - eatable: anything that can be eaten. Rating might define HP gain in half
   hearts.
 - flammable: can be set on fire. Rating might define the intensity of the
-  fire, affecting eg. the speed of the spreading of an open fire.
+  fire, affecting e.g. the speed of the spreading of an open fire.
 - wool: any wool (any origin, any color)
 - metal: any metal
 - weapon: any weapon
@@ -726,12 +802,12 @@ groups to enable interaction with tools.
 
 **Full punch interval**:
 When used as a weapon, the tool will do full damage if this time is spent
-between punches. If eg. half the time is spent, the tool will do half
+between punches. If e.g. half the time is spent, the tool will do half
 damage.
 
 **Maximum drop level**
 Suggests the maximum level of node, when dug with the tool, that will drop
-it's useful item. (eg. iron ore to drop a lump of iron).
+it's useful item. (e.g. iron ore to drop a lump of iron).
 - This is not automated; it is the responsibility of the node definition
   to implement this
 
@@ -750,7 +826,7 @@ be able to dig.
 **Digging times**
 List of digging times for different ratings of the group, for nodes of the
 maximum level.
-  * For example, as a lua table, ''times={2=2.00, 3=0.70}''. This would
+  * For example, as a Lua table, ''times={2=2.00, 3=0.70}''. This would
     result in the tool to be able to dig nodes that have a rating of 2 or 3
     for this group, and unable to dig the rating 1, which is the toughest.
     Unless there is a matching group that enables digging otherwise.
@@ -769,7 +845,7 @@ tool_capabilities = {
     damage_groups = {fleshy=2},
 }
 
-This makes the tool be able to dig nodes that fullfill both of these:
+This makes the tool be able to dig nodes that fulfil both of these:
 - Have the **crumbly** group
 - Have a **level** group less or equal to 2
 
@@ -801,12 +877,12 @@ damage = 0
 foreach group in cap.damage_groups:
     damage += cap.damage_groups[group] * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
         * (object.armor_groups[group] / 100.0)
-        -- Where object.armor_groups[group] is 0 for inexisting values
+        -- Where object.armor_groups[group] is 0 for inexistent values
 return damage
 
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
-pre-defined somehow (eg. by defining a sprite animation) (not implemented;
+pre-defined somehow (e.g. by defining a sprite animation) (not implemented;
 TODO).
 - Currently a smoke puff will appear when an entity dies.
 
@@ -918,8 +994,14 @@ listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<too
 ^ Sets background color of slots in HEX-Color format
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
-^ Sets background color of tooltips
-^ Sets font color of tooltips
+^ Sets default background color of tooltips
+^ Sets default font color of tooltips
+
+tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]
+^ Adds tooltip for an element
+^ <bgcolor> tooltip background color in HEX-Color format (optional)
+^ <fontcolor> tooltip font color in HEX-Color format (optional)
+
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
@@ -981,7 +1063,7 @@ label[<X>,<Y>;<label>]
 ^ Position and size units are inventory slots
 
 vertlabel[<X>,<Y>;<label>]
-^ Textual label drawn verticaly
+^ Textual label drawn vertically
 ^ x and y work as per field
 ^ label is the text on the label
 ^ Position and size units are inventory slots
@@ -998,25 +1080,19 @@ image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ texture name is the filename of an image
 ^ Position and size units are inventory slots
 
-image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>]
-^ x, y, w, h, and name work as per button
-^ texture name is the filename of an image
-^ Position and size units are inventory slots
-^ noclip true meand imagebutton doesn't need to be within specified formsize
-^ drawborder draw button bodrer or not
-
 image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]
 ^ x, y, w, h, and name work as per button
 ^ texture name is the filename of an image
 ^ Position and size units are inventory slots
-^ noclip true meand imagebutton doesn't need to be within specified formsize
-^ drawborder draw button bodrer or not
+^ noclip=true means imagebutton doesn't need to be within specified formsize
+^ drawborder draw button border or not
 ^ pressed texture name is the filename of an image on pressed state
 
 item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]
 ^ x, y, w, h, name and label work as per button
 ^ item name is the registered name of an item/node,
-  tooltip will be made out of its descritption
+  tooltip will be made out of its description
+  to override it use tooltip element
 ^ Position and size units are inventory slots
 
 button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]
@@ -1026,7 +1102,7 @@ image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
 ^ When clicked, fields will be sent and the form will quit.
 
 textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
-^Scrollabel itemlist showing arbitrary text elements
+^ Scrollable item list showing arbitrary text elements
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
@@ -1034,7 +1110,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]
 ^    if you want a listelement to start with # write ##
 
 textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
-^Scrollabel itemlist showing arbitrary text elements
+^ Scrollable itemlist showing arbitrary text elements
 ^ x and y position the itemlist relative to the top left of the menu
 ^ w and h are the size of the itemlist
 ^ name fieldname sent to server on doubleclick value is current selected element
@@ -1047,7 +1123,7 @@ textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<sele
 tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]
 ^ show a tabHEADER at specific position (ignores formsize)
 ^ x and y position the itemlist relative to the top left of the menu
-^ name fieldname data is transfered to lua
+^ name fieldname data is transferred to Lua
 ^ caption 1... name shown on top of tab
 ^ current_tab index of selected tab 1...
 ^ transparent (optional) show transparent
@@ -1061,19 +1137,34 @@ box[<X>,<Y>;<W>,<H>;<color>]
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
+^ IMPORTANT NOTE: There are two different operation modes:
+^     1) handle directly on change (only changed dropdown is submitted)
+^     2) read the value on pressing a button (all dropdown values are available)
 ^ x and y position of dropdown
 ^ width of dropdown
-^ fieldname data is transfered to lua
+^ fieldname data is transferred to Lua
 ^ items to be shown in dropdown
 ^ index of currently selected dropdown item
-^ color in hexadecimal format RRGGBB (only)
 
-checkbox[<X>,<Y>;<name>;<label>;<selected>]
+checkbox[<X>,<Y>;<name>;<label>;<selected>;<tooltip>]
 ^ show a checkbox
 ^ x and y position of checkbox
-^ name fieldname data is transfered to lua
+^ name fieldname data is transferred to Lua
 ^ label to be shown left of checkbox
 ^ selected (optional) true/false
+^ tooltip (optional)
+
+scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]
+^ show a scrollbar
+^ there are two ways to use it:
+^     1) handle the changed event (only changed scrollbar is available)
+^     2) read the value on pressing a button (all scrollbars are available)
+^ x and y position of trackbar
+^ width and height
+^ orientation vertical/horizontal
+^ fieldname data is transferred to lua
+^ value this trackbar is set to (0-1000)
+^ see also minetest.explode_scrollbar_event (main menu: engine.explode_scrollbar_event)
 
 table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
 ^ show scrollable table using options defined by the previous tableoptions[]
@@ -1158,7 +1249,7 @@ vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
 vector.equals(v1, v2) -> bool
-For the folowing x can be either a vector or a number.
+For the following functions x can be either a vector or a number.
 vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
 vector.multiply(v, x) -> vector
@@ -1172,11 +1263,11 @@ dump(obj, dumped={})
 ^ Return object serialized as a string
 math.hypot(x, y)
 ^ Get the hypotenuse of a triangle with legs x and y.
-  Usefull for distance calculation.
+  Useful for distance calculation.
 string:split(separator)
-^ eg. string:split("a,b", ",") == {"a","b"}
+^ e.g. string:split("a,b", ",") == {"a","b"}
 string:trim()
-^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
+^ e.g. string.trim("\n \t\tfoo bar\t ") == "foo bar"
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
 minetest.string_to_pos(string) -> position
@@ -1185,16 +1276,18 @@ minetest.formspec_escape(string) -> string
 ^ escapes characters [ ] \ , ;  that can not be used in formspecs
 minetest.is_yes(arg)
 ^ returns whether arg can be interpreted as yes
+minetest.get_us_time()
+^ returns time with microsecond precision
 
 minetest namespace reference
 -----------------------------
 Utilities:
 minetest.get_current_modname() -> string
-minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
+minetest.get_modpath(modname) -> e.g. "/home/user/.minetest/usermods/modname"
 ^ Useful for loading additional .lua modules or static data from mod
 minetest.get_modnames() -> list of installed mods
 ^ Return a list of installed mods, sorted alphabetically
-minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
+minetest.get_worldpath() -> e.g. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 minetest.is_singleplayer()
 minetest.features
@@ -1205,7 +1298,7 @@ minetest.has_feature(arg) -> bool, missing_features
 minetest.get_player_information(playername)
 ^ table containing information about player peer:
 {
-	address = "127.0.0.1",     -- ip address of client
+	address = "127.0.0.1",     -- IP address of client
 	ip_version = 4,            -- IPv4 / IPv6
 	min_rtt = 0.01,            -- minimum round trip time
 	max_rtt = 0.2,             -- maximum round trip time
@@ -1394,9 +1487,9 @@ minetest.set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 minetest.get_timeofday()
 minetest.get_gametime(): returns the time, in seconds, since the world was created
 minetest.find_node_near(pos, radius, nodenames) -> pos or nil
-^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+^ nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
 minetest.find_nodes_in_area(minp, maxp, nodenames) -> list of positions
-^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+^ nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
 minetest.get_perlin(seeddiff, octaves, persistence, scale)
 ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 minetest.get_voxel_manip()
@@ -1451,7 +1544,7 @@ minetest.add_node_level(pos, level)
 
 Inventory:
 minetest.get_inventory(location) -> InvRef
-^ location = eg. {type="player", name="celeron55"}
+^ location = e.g. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
                  {type="detached", name="creative"}
 minetest.create_detached_inventory(name, callbacks) -> InvRef
@@ -1472,6 +1565,9 @@ minetest.explode_table_event(string) -> table
 minetest.explode_textlist_event(string) -> table
 ^ returns e.g. {type="CHG", index=1}
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+minetest.explode_scrollbar_event(string) -> table
+^ returns e.g. {type="CHG", value=500}
+^ type: "INV" (something failed), "CHG" (has been changed) or "VAL" (not changed)
 
 Item handling:
 minetest.inventorycube(img1, img2, img3)
@@ -1524,7 +1620,7 @@ minetest.handle_node_drops(pos, drops, digger)
 ^ drops: list of itemstrings
 ^ Handles drops from nodes after digging: Default action is to put them into
   digger's inventory
-^ Can be overridden to get different functionality (eg. dropping items on
+^ Can be overridden to get different functionality (e.g. dropping items on
   ground)
 
 Rollback:
@@ -1611,7 +1707,7 @@ minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)
    ^ probability_list is an array of tables containing two fields, pos and prob.
    ^ pos is the 3d vector specifying the absolute coordinates of the node being modified,
    ^ and prob is the integer value from 0 to 255 of the probability (see: Schematic specifier).
-   ^ If there are two or more entries with the same pos value, the last occuring in the array is used.
+   ^ If there are two or more entries with the same pos value, the last entry is used.
    ^ If pos is not inside the box formed by p1 and p2, it is ignored.
    ^ If probability_list is nil, no probabilities are applied.
    ^ Slice probability works in the same manner, except takes a field called ypos instead which indicates
@@ -1623,16 +1719,16 @@ minetest.place_schematic(pos, schematic, rotation, replacements, force_placement
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
-^ replacements = {{"oldname", "convert_to"}, ...}
+^ replacements = {["old_name"] = "convert_to", ...}
 ^ force_placement is a boolean indicating whether nodes other than air and
 ^ ignore are replaced by the schematic
 
-Random:
+Misc.:
 minetest.get_connected_players() -> list of ObjectRefs
 minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
 ^ Gives a unique hash number for a node position (16+16+16=48bit)
-minetest.get_position_from_hash(hash) -> postion
-^ Inverse transform of minetest.hash_node_postion
+minetest.get_position_from_hash(hash) -> position
+^ Inverse transform of minetest.hash_node_position
 minetest.get_item_group(name, group) -> rating
 ^ Get rating of a group of an item. (0 = not in group)
 minetest.get_node_group(name, group) -> rating
@@ -1650,11 +1746,11 @@ minetest.parse_json(string[, nullvalue]) -> something
 minetest.write_json(data[, styled]) -> string or nil and error message
 ^ Convert a Lua table into a JSON string
 ^ styled: Outputs in a human-readable format if this is set, defaults to false
-^ Un-serializable things like functions and userdata are saved as null.
+^ Unserializable things like functions and userdata are saved as null.
 ^ Warning: JSON is more strict than the Lua table format.
     1. You can only use strings and positive integers of at least one as keys.
     2. You can not mix string and integer keys.
-    This is due to the fact that Javascript has two distinct array and object values.
+    This is due to the fact that JSON has two distinct array and object values.
 ^ Example: write_json({10, {a = false}}) -> "[10, {\"a\": false}]"
 minetest.serialize(table) -> string
 ^ Convert a table containing tables, strings, numbers, booleans and nils
@@ -1668,7 +1764,7 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
 minetest.is_protected(pos, name) -> bool
-^ This function should be overriden by protection mods and should be used to
+^ This function should be overridden by protection mods and should be used to
   check if a player can interact at a position.
 ^ This function should call the old version of itself if the position is not
   protected by the mod.
@@ -1698,7 +1794,7 @@ minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orie
   The above four options are mutually-exclusive; the last in the list takes
   precedence over the first.
 
-  force_facedir:	if true, forcably reset the facedir to north when placing on
+  force_facedir:	if true, forcefully reset the facedir to north when placing on
 					the floor or ceiling
 
 minetest.rotate_node(itemstack, placer, pointed_thing)
@@ -1737,7 +1833,7 @@ minetest.registered_entities
 minetest.object_refs
 ^ List of object references, indexed by active object id
 minetest.luaentities
-^ List of lua entities, indexed by active object id
+^ List of Lua entities, indexed by active object id
 
 Class reference
 ----------------
@@ -1766,7 +1862,7 @@ methods:
   ^ will trigger the node's on_timer function after timeout-elapsed seconds
 - start(timeout)
   ^ start a timer
-  ^ equivelent to set(timeout,0)
+  ^ equivalent to set(timeout,0)
 - stop()
   ^ stops the timer
 - get_timeout() -> current timeout in seconds
@@ -1981,6 +2077,8 @@ methods:
   ^ returns actual emerged pmin, actual emerged pmax
 - write_to_map():  Writes the data loaded from the VoxelManip back to the map.
   ^ important: data must be set using VoxelManip:set_data before calling this
+- get_node_at(pos): Returns a MapNode table of the node currently loaded in the VoxelManip at that position
+- set_node_at(pos, node): Sets a specific MapNode in the VoxelManip at that position
 - get_data():  Gets the data read into the VoxelManip object
   ^ returns raw node data is in the form of an array of node content ids
 - set_data(data):  Sets the data contents of the VoxelManip object
@@ -1992,7 +2090,7 @@ methods:
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
   ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - get_light_data(): Gets the light data read into the VoxelManip object
-  ^ Returns an array (indicies 1 to volume) of integers ranging from 0 to 255
+  ^ Returns an array (indices 1 to volume) of integers ranging from 0 to 255
   ^ Each value is the bitwise combination of day and night light values (0..15 each)
   ^ light = day + (night * 16)
 - set_light_data(light_data):  Sets the param1 (light) contents of each node in the VoxelManip
@@ -2003,6 +2101,8 @@ methods:
   ^ To be used only by a VoxelManip object from minetest.get_mapgen_object
   ^ (p1, p2) is the area in which lighting is set; defaults to the whole area if left out
 - update_liquids():  Update liquid flow
+- was_modified(): Returns true or false if the data in the voxel manipulator had been modified since
+  the last read from map, due to a call to minetest.set_data() on the loaded area elsewhere
 
 VoxelArea: A helper class for voxel areas
 - Can be created via VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}
@@ -2112,7 +2212,7 @@ treedef={
   thin_branches, - boolean true -> use thin (1 node) branches
   fruit,         - string  fruit node name
   fruit_chance,  - num     chance (0-100) to replace leaves with fruit node
-  seed,          - num     random seed
+  seed,          - num     random seed; if no seed is provided, the engine will create one
   }
 
 Key for Special L-System Symbols used in Axioms
@@ -2214,7 +2314,7 @@ Item definition (register_node, register_craftitem, register_tool)
     description = "Steel Axe",
     groups = {}, -- key=name, value=rating; rating=1..3.
                     if rating not applicable, use 1.
-                    eg. {wool=1, fluffy=3}
+                    e.g. {wool=1, fluffy=3}
                         {soil=2, outerspace=1, crumbly=1}
                         {bendy=2, snappy=1},
                         {hard=1, metal=1, spikes=1}
@@ -2255,7 +2355,7 @@ Item definition (register_node, register_craftitem, register_tool)
     ^  default: nil
     ^ Function must return either nil if no item shall be removed from
       inventory, or an itemstack to replace the original itemstack.
-        eg. itemstack:take_item(); return itemstack
+        e.g. itemstack:take_item(); return itemstack
     ^ Otherwise, the function is free to do what it wants.
     ^ The default functions handle regular use cases.
     after_use = func(itemstack, user, node, digparams),
@@ -2301,7 +2401,7 @@ Node definition (register_node)
     post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
     paramtype = "none", -- See "Nodes"
     paramtype2 = "none", -- See "Nodes"
-    is_ground_content = true, -- If false, cavegen will not carve through this
+    is_ground_content = true, -- If false, the cave generator will not carve through this
     sunlight_propagates = false, -- If true, sunlight will go infinitely through this
     walkable = true, -- If true, objects collide with node
     pointable = true, -- If true, can be pointed at
@@ -2315,8 +2415,8 @@ Node definition (register_node)
     liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
     liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
     freezemelt = "", -- water for snow/ice, ice/snow for water
-    leveled = 0, -- Block contain level in param2. value - default level, used for snow. Dont forget use "leveled" type nodebox
-    liquid_range = 8, -- number of flowing nodes arround source (max. 8)
+    leveled = 0, -- Block contain level in param2. value - default level, used for snow. Don't forget use "leveled" type nodebox
+    liquid_range = 8, -- number of flowing nodes around source (max. 8)
     drowning = 0, -- Player will take this amount of damage if no bubbles are left
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
@@ -2378,7 +2478,7 @@ Node definition (register_node)
 
     on_receive_fields = func(pos, formname, fields, sender),
     ^ fields = {name1 = value1, name2 = value2, ...}
-    ^ Called when an UI form (eg. sign text input) returns data
+    ^ Called when an UI form (e.g. sign text input) returns data
     ^ default: nil
 
     allow_metadata_inventory_move = func(pos, from_list, from_index,
@@ -2415,7 +2515,7 @@ Recipe for register_craft: (shaped)
     recipe = {
         {'default:cobble', 'default:cobble', 'default:cobble'},
         {'', 'default:stick', ''},
-        {'', 'default:stick', ''}, -- Also groups; eg. 'group:crumbly'
+        {'', 'default:stick', ''}, -- Also groups; e.g. 'group:crumbly'
     },
     replacements = <optional list of item pairs,
                     replace one input item with another item on crafting>
@@ -2474,7 +2574,7 @@ Ore definition (register_ore)
     flags = "",
     ^ Attributes for this ore generation
     noise_threshhold = 0.5,
-    ^ If noise is above this threshhold, ore is placed.  Not needed for a uniform distribution
+    ^ If noise is above this threshold, ore is placed.  Not needed for a uniform distribution
     noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
     ^ NoiseParams structure describing the perlin noise used for ore distribution.
     ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
@@ -2534,10 +2634,10 @@ Decoration definition (register_decoration)
         },
     },
     ^ See 'Schematic specifier' for details.
-    replacements = {{"oldname", "convert_to"}, ...},
+    replacements = {["oldname"] = "convert_to", ...},
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
-    rotation = "90" --rotate schematic 90 degrees on placement
+    rotation = "90" -- rotate schematic 90 degrees on placement
     ^ Rotation can be "0", "90", "180", "270", or "random".
 }
 
@@ -2611,10 +2711,10 @@ Particle definition (add_particle)
     texture = "image.png",
     ^ Uses texture (string)
     playername = "singleplayer"
-    ^ Playername is optional, if specified spawns particle only on the player's client
+    ^ optional, if specified spawns particle only on the player's client
 }
 
-Particlespawner definition (add_particlespawner)
+ParticleSpawner definition (add_particlespawner)
 {
     amount = 1,
     time = 1,
@@ -2629,11 +2729,11 @@ Particlespawner definition (add_particlespawner)
     maxexptime = 1,
     minsize = 1,
     maxsize = 1,
-    ^ The particle's properties are random values in between the boundings:
+    ^ The particle's properties are random values in between the bounds:
     ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
     ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
     collisiondetection = false,
-    ^ collisiondetection: if true uses collisiondetection
+    ^ collisiondetection: if true uses collision detection
     vertical = false,
     ^ vertical: if true faces player using y axis only
     texture = "image.png",

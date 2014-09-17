@@ -192,7 +192,7 @@ that part. So, this is where it has come.
 
 So here goes
 -------------
-map.sqlite is an sqlite3 database, containg a single table, called
+map.sqlite is an sqlite3 database, containing a single table, called
 "blocks". It looks like this:
 
   CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY,`data` BLOB);

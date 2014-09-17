@@ -344,7 +344,7 @@ Server::Server(
 
 	// Initialize Environment
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
-	m_env = new ServerEnvironment(servermap, m_script, this);
+	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
 	m_clients.setEnv(m_env);
 
@@ -361,19 +361,13 @@ Server::Server(
 	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_path_world+DIR_DELIM+"env_meta.txt"))
+	if(fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
-		m_env->loadMeta(m_path_world);
+		m_env->loadMeta();
 	}
 
-	// Load players
-	infostream<<"Server: Loading players"<<std::endl;
-	m_env->deSerializePlayers(m_path_world);
-
-	/*
-		Add some test ActiveBlockModifiers to environment
-	*/
+	// Add some test ActiveBlockModifiers to environment
 	add_legacy_abms(m_env, m_nodedef);
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
@@ -383,42 +377,23 @@ Server::~Server()
 {
 	infostream<<"Server destructing"<<std::endl;
 
-	/*
-		Send shutdown message
-	*/
-	{
-		std::wstring line = L"*** Server shutting down";
-		SendChatMessage(PEER_ID_INEXISTENT, line);
-	}
+	// Send shutdown message
+	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
 
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 
-		/*
-			Execute script shutdown hooks
-		*/
+		// Execute script shutdown hooks
 		m_script->on_shutdown();
-	}
 
-	{
-		JMutexAutoLock envlock(m_env_mutex);
-
-		/*
-			Save players
-		*/
 		infostream<<"Server: Saving players"<<std::endl;
-		m_env->serializePlayers(m_path_world);
+		m_env->saveLoadedPlayers();
 
-		/*
-			Save environment metadata
-		*/
 		infostream<<"Server: Saving environment metadata"<<std::endl;
-		m_env->saveMeta(m_path_world);
+		m_env->saveMeta();
 	}
 
-	/*
-		Stop threads
-	*/
+	// Stop threads
 	stop();
 	delete m_thread;
 
@@ -444,12 +419,10 @@ Server::~Server()
 	delete m_script;
 
 	// Delete detached inventories
-	{
-		for(std::map<std::string, Inventory*>::iterator
-				i = m_detached_inventories.begin();
-				i != m_detached_inventories.end(); i++){
-			delete i->second;
-		}
+	for (std::map<std::string, Inventory*>::iterator
+			i = m_detached_inventories.begin();
+			i != m_detached_inventories.end(); i++) {
+		delete i->second;
 	}
 }
 
@@ -703,15 +676,15 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_masterserver_timer;
 		if(!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce") == true)
+				g_settings->getBool("server_announce"))
 		{
-			ServerList::sendAnnounce(!counter ? "start" : "update",
-										m_clients.getPlayerNames(),
-										m_uptime.get(),
-										m_env->getGameTime(),
-										m_lag,
-										m_gamespec.id,
-										m_mods);
+			ServerList::sendAnnounce(counter ? "update" : "start",
+					m_clients.getPlayerNames(),
+					m_uptime.get(),
+					m_env->getGameTime(),
+					m_lag,
+					m_gamespec.id,
+					m_mods);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -741,7 +714,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 			// If definitions and textures have not been sent, don't
 			// send objects either
-			if (client->getState() < DefinitionsSent)
+			if (client->getState() < CS_DefinitionsSent)
 				continue;
 
 			Player *player = m_env->getPlayer(client->peer_id);
@@ -1141,18 +1114,19 @@ void Server::AsyncRunStep(bool initial_step)
 
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
-			//Ban stuff
-			if(m_banmanager->isModified())
+			// Save ban file
+			if (m_banmanager->isModified()) {
 				m_banmanager->save();
+			}
 
 			// Save changed parts of map
 			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
 
 			// Save players
-			m_env->serializePlayers(m_path_world);
+			m_env->saveLoadedPlayers();
 
 			// Save environment metadata
-			m_env->saveMeta(m_path_world);
+			m_env->saveMeta();
 		}
 	}
 }
@@ -1173,26 +1147,20 @@ void Server::Receive()
 				"InvalidIncomingDataException: what()="
 				<<e.what()<<std::endl;
 	}
-	catch(con::PeerNotFoundException &e)
-	{
-		//NOTE: This is not needed anymore
-
-		// The peer has been disconnected.
-		// Find the associated player and remove it.
-
-		/*JMutexAutoLock envlock(m_env_mutex);
-
-		infostream<<"ServerThread: peer_id="<<peer_id
-				<<" has apparently closed connection. "
-				<<"Removing player."<<std::endl;
-
-		m_env->removePlayer(peer_id);*/
+	catch(SerializationError &e) {
+		infostream<<"Server::Receive(): "
+				"SerializationError: what()="
+				<<e.what()<<std::endl;
 	}
 	catch(ClientStateError &e)
 	{
 		errorstream << "ProcessData: peer=" << peer_id  << e.what() << std::endl;
 		DenyAccess(peer_id, L"Your client sent something server didn't expect."
 				L"Try reconnecting or updating your client");
+	}
+	catch(con::PeerNotFoundException &e)
+	{
+		// Do nothing
 	}
 }
 
@@ -1201,7 +1169,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	std::string playername = "";
 	PlayerSAO *playersao = NULL;
 	m_clients.Lock();
-	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,InitDone);
+	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 	if (client != NULL) {
 		playername = client->getName();
 		playersao = emergePlayer(playername.c_str(), peer_id);
@@ -1352,10 +1320,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		RemoteClient* client = getClient(peer_id,Created);
+		RemoteClient* client = getClient(peer_id, CS_Created);
 
 		// If net_proto_version is set, this client has already been handled
-		if(client->getState() > Created)
+		if(client->getState() > CS_Created)
 		{
 			verbosestream<<"Server: Ignoring multiple TOSERVER_INITs from "
 					<<addr_s<<" (peer_id="<<peer_id<<")"<<std::endl;
@@ -1480,14 +1448,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Set up player
 		*/
-
-		// Get player name
 		char playername[PLAYERNAME_SIZE];
-		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
-		{
-			playername[i] = data[3+i];
+		unsigned int playername_length = 0;
+		for (; playername_length < PLAYERNAME_SIZE; playername_length++ ) {
+			playername[playername_length] = data[3+playername_length];
+			if (data[3+playername_length] == 0)
+				break;
 		}
-		playername[PLAYERNAME_SIZE-1] = 0;
+
+		if (playername_length == PLAYERNAME_SIZE) {
+			actionstream<<"Server: Player with name exceeding max length "
+					<<"tried to connect from "<<addr_s<<std::endl;
+			DenyAccess(peer_id, L"Name too long");
+			return;
+		}
+
 
 		if(playername[0]=='\0')
 		{
@@ -1554,7 +1529,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Enforce user limit.
 		// Don't enforce for users that have some admin right
-		if(m_clients.getClientIDs(Created).size() >= g_settings->getU16("max_users") &&
+		if(m_clients.getClientIDs(CS_Created).size() >= g_settings->getU16("max_users") &&
 				!checkPriv(playername, "server") &&
 				!checkPriv(playername, "ban") &&
 				!checkPriv(playername, "privs") &&
@@ -1637,7 +1612,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			// Send as reliable
 			m_clients.send(peer_id, 0, reply, true);
-			m_clients.event(peer_id, Init);
+			m_clients.event(peer_id, CSE_Init);
 		}
 
 		return;
@@ -1649,7 +1624,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		verbosestream<<"Server: Got TOSERVER_INIT2 from "
 				<<peer_id<<std::endl;
 
-		m_clients.event(peer_id, GotInit2);
+		m_clients.event(peer_id, CSE_GotInit2);
 		u16 protocol_version = m_clients.getProtocolVersion(peer_id);
 
 
@@ -1683,7 +1658,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send node definitions
 		SendNodeDef(peer_id, m_nodedef, protocol_version);
 
-		m_clients.event(peer_id, SetDefinitionsSent);
+		m_clients.event(peer_id, CSE_SetDefinitionsSent);
 
 		// Send media announcement
 		sendMediaAnnouncement(peer_id);
@@ -1698,7 +1673,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		///// begin compatibility code
 		if (protocol_version <= 22) {
-			m_clients.event(peer_id, SetClientReady);
+			m_clients.event(peer_id, CSE_SetClientReady);
 			m_script->on_joinplayer(playersao);
 		}
 		///// end compatibility code
@@ -1713,8 +1688,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 
-	u8 peer_ser_ver = getClient(peer_id,InitDone)->serialization_version;
-	u16 peer_proto_ver = getClient(peer_id,InitDone)->net_proto_version;
+	u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
+	u16 peer_proto_ver = getClient(peer_id, CS_InitDone)->net_proto_version;
 
 	if(peer_ser_ver == SER_FMT_VER_INVALID)
 	{
@@ -1752,27 +1727,39 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	else if(command == TOSERVER_CLIENT_READY) {
 		// clients <= protocol version 22 did not send ready message,
 		// they're already initialized
-		assert(peer_proto_ver > 22);
+		if (peer_proto_ver <= 22) {
+			infostream << "Client sent message not expected by a "
+				<< "client using protocol version <= 22,"
+				<< "disconnecing peer_id: " << peer_id << std::endl;
+			m_con.DisconnectPeer(peer_id);
+			return;
+		}
 
 		PlayerSAO* playersao = StageTwoClientInit(peer_id);
 
 		if (playersao == NULL) {
 			errorstream
-				<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer "
+				<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer_id: "
 				<< peer_id << std::endl;
+			m_con.DisconnectPeer(peer_id);
 			return;
 		}
 
 
-		if(datasize < 2+8)
+		if(datasize < 2+8) {
+			errorstream
+				<< "TOSERVER_CLIENT_READY client sent inconsistent data, disconnecting peer_id: "
+				<< peer_id << std::endl;
+			m_con.DisconnectPeer(peer_id);
 			return;
+		}
 
 		m_clients.setClientVersion(
 				peer_id,
 				data[2], data[3], data[4],
 				std::string((char*) &data[8],(u16) data[6]));
 
-		m_clients.event(peer_id, SetClientReady);
+		m_clients.event(peer_id, CSE_SetClientReady);
 		m_script->on_joinplayer(playersao);
 
 	}
@@ -1804,7 +1791,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 
-	if (m_clients.getClientState(peer_id) < Active)
+	if (m_clients.getClientState(peer_id) < CS_Active)
 	{
 		if (command == TOSERVER_PLAYERPOS) return;
 
@@ -1815,18 +1802,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 
 	Player *player = m_env->getPlayer(peer_id);
-	if(player == NULL){
+	if(player == NULL) {
 		errorstream<<"Server::ProcessData(): Cancelling: "
 				"No player for peer_id="<<peer_id
-				<<std::endl;
+				<< " disconnecting peer!" <<std::endl;
+		m_con.DisconnectPeer(peer_id);
 		return;
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if(playersao == NULL){
+	if(playersao == NULL) {
 		errorstream<<"Server::ProcessData(): Cancelling: "
 				"No player object for peer_id="<<peer_id
-				<<std::endl;
+				<< " disconnecting peer!" <<std::endl;
+		m_con.DisconnectPeer(peer_id);
 		return;
 	}
 
@@ -2563,13 +2552,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(is_valid_dig && n.getContent() != CONTENT_IGNORE)
 					m_script->node_on_dig(p_under, n, playersao);
 
+				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+				RemoteClient *client = getClient(peer_id);
 				// Send unusual result (that is, node not being removed)
 				if(m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
 				{
 					// Re-send block to revert change on client-side
-					RemoteClient *client = getClient(peer_id);
-					v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 					client->SetBlockNotSent(blockpos);
+				}
+				else {
+					client->ResendBlockIfOnWire(blockpos);
 				}
 			}
 		} // action == 2
@@ -2612,13 +2604,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			// If item has node placement prediction, always send the
 			// blocks to make sure the client knows what exactly happened
-			if(item.getDefinition(m_itemdef).node_placement_prediction != ""){
-				RemoteClient *client = getClient(peer_id);
-				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			if(item.getDefinition(m_itemdef).node_placement_prediction != "") {
 				client->SetBlockNotSent(blockpos);
-				v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-				if(blockpos2 != blockpos){
+				if(blockpos2 != blockpos) {
 					client->SetBlockNotSent(blockpos2);
+				}
+			}
+			else {
+				client->ResendBlockIfOnWire(blockpos);
+				if(blockpos2 != blockpos) {
+					client->ResendBlockIfOnWire(blockpos2);
 				}
 			}
 		} // action == 3
@@ -2863,7 +2861,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	verbosestream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 
-	m_clients.event(peer->id,Disconnect);
+	m_clients.event(peer->id, CSE_Disconnect);
 	con::PeerChange c;
 	c.type = con::PEER_REMOVED;
 	c.peer_id = peer->id;
@@ -2892,12 +2890,12 @@ bool Server::getClientInfo(
 {
 	*state = m_clients.getClientState(peer_id);
 	m_clients.Lock();
-	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id,Invalid);
+	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
 	if (client == NULL) {
 		m_clients.Unlock();
 		return false;
-		}
+	}
 
 	*uptime = client->uptime();
 	*ser_vers = client->serialization_version;
@@ -3158,10 +3156,11 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
 
+
 	// Write command
 	writeU16(buf, TOCLIENT_SHOW_FORMSPEC);
 	os.write((char*)buf, 2);
-	os<<serializeLongString(formspec);
+	os<<serializeLongString(FORMSPEC_VERSION_STRING + formspec);
 	os<<serializeString(formname);
 
 	// Make data buffer
@@ -3564,7 +3563,7 @@ void Server::SendPlayerInventoryFormspec(u16 peer_id)
 
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_INVENTORY_FORMSPEC);
-	os<<serializeLongString(player->inventory_formspec);
+	os<<serializeLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3867,7 +3866,7 @@ void Server::SendBlocks(float dtime)
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
-			RemoteClient *client = m_clients.lockedGetClientNoEx(*i,Active);
+			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
 
 			if (client == NULL)
 				return;
@@ -3903,7 +3902,7 @@ void Server::SendBlocks(float dtime)
 			continue;
 		}
 
-		RemoteClient *client = m_clients.lockedGetClientNoEx(q.peer_id,Active);
+		RemoteClient *client = m_clients.lockedGetClientNoEx(q.peer_id, CS_Active);
 
 		if(!client)
 			continue;
@@ -4294,7 +4293,7 @@ void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
 	DSTACK(__FUNCTION_NAME);
 
 	SendAccessDenied(peer_id, reason);
-	m_clients.event(peer_id,SetDenied);
+	m_clients.event(peer_id, CSE_SetDenied);
 	m_con.DisconnectPeer(peer_id);
 }
 
@@ -4597,8 +4596,13 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
 	player->hud_flags = flags;
+	
+	PlayerSAO* playersao = player->getPlayerSAO();
+	
+	if (playersao == NULL)
+		return false;
 
-	m_script->player_event(player->getPlayerSAO(),"hud_changed");
+	m_script->player_event(playersao, "hud_changed");
 	return true;
 }
 
@@ -5021,15 +5025,16 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		return NULL;
 	}
 
-	/*
-		Create a new player if it doesn't exist yet
-	*/
-	if(player == NULL)
-	{
+	// Load player if it isn't already loaded
+	if (!player) {
+		player = static_cast<RemotePlayer*>(m_env->loadPlayer(name));
+	}
+
+	// Create player if it doesn't exist
+	if (!player) {
 		newplayer = true;
 		player = new RemotePlayer(this);
 		player->updateName(name);
-
 		/* Set player position */
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
@@ -5040,9 +5045,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		m_env->addPlayer(player);
 	}
 
-	/*
-		Create a new player active object
-	*/
+	// Create a new player active object
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
 			getPlayerEffectivePrivs(player->getName()),
 			isSingleplayer());
@@ -5054,8 +5057,9 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	m_env->addActiveObject(playersao);
 
 	/* Run scripts */
-	if(newplayer)
+	if (newplayer) {
 		m_script->on_newplayer(playersao);
+	}
 
 	return playersao;
 }
