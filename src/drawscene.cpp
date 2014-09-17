@@ -30,17 +30,14 @@ typedef enum {
 	EYECOUNT = 2
 } paralax_sign;
 
-static s16 selectionbox_width;
 
 void draw_selectionbox(video::IVideoDriver* driver, Hud& hud,
 		std::vector<aabb3f>& hilightboxes, bool show_hud)
 {
+	static const s16 selectionbox_width = rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
+	
 	if (!show_hud)
 		return;
-
-	if(!selectionbox_width) {
-		 selectionbox_width = rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
-	}
 
 	video::SMaterial oldmaterial = driver->getMaterial2D();
 	video::SMaterial m;
