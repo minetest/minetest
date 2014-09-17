@@ -300,7 +300,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 		if(selected_object != NULL)
 		{
-			if(selected_object->doShowSelectionBox())
+			if(g_settings->getBool("entity_selectionbox") && selected_object->doShowSelectionBox())
 			{
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
@@ -321,7 +321,6 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	}
 
 	// That didn't work, try to find a pointed at node
-
 
 	v3s16 pos_i = floatToInt(player_position, BS);
 

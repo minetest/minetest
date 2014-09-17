@@ -162,8 +162,8 @@
 #selectionbox_width = 2
 # maximum percentage of current window to be used for hotbar
 #hud_hotbar_max_width = 1.0
-# Enable highlighting for nodes (disables selectionboxes)
-#enable_node_highlighting = false
+# Display a selectionbox over entities
+#entity_selectionbox = false
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
