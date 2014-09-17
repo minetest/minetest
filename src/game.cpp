@@ -283,7 +283,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		std::vector<aabb3f> &hilightboxes, ClientActiveObject *&selected_object)
 {
 	PointedThing result;
-
+	static const bool draw_entity_selectionbox = g_settings->getBool("entity_selectionbox");
+	
 	hilightboxes.clear();
 	selected_object = NULL;
 
@@ -300,7 +301,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 		if(selected_object != NULL)
 		{
-			if(g_settings->getBool("entity_selectionbox") && selected_object->doShowSelectionBox())
+			if(draw_entity_selectionbox && selected_object->doShowSelectionBox())
 			{
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
