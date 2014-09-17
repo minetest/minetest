@@ -241,6 +241,9 @@ send_pre_v25_init (Support older servers) bool true
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
 
+#    Show entity selection boxes
+show_entity_selectionbox (Show entity selection boxes) bool true
+
 #    Enable usage of remote media server (if provided by server).
 #    Remote servers offer a significantly faster way to download media (e.g. textures)
 #    when connecting to the server.
