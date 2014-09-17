@@ -38,7 +38,7 @@ void draw_selectionbox(video::IVideoDriver* driver, Hud& hud,
 
 	video::SMaterial oldmaterial = driver->getMaterial2D();
 	video::SMaterial m;
-	m.Thickness = 3;
+	m.Thickness = rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 	m.Lighting = false;
 	driver->setMaterial(m);
 	hud.drawSelectionBoxes(hilightboxes);
