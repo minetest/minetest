@@ -2475,6 +2475,15 @@ int Client::getCrackLevel()
 	return m_crack_level;
 }
 
+void Client::setHighlighted(v3s16 pos, bool show_hud)
+{
+	m_show_hud = show_hud;
+	v3s16 old_highlighted_pos = m_highlighted_pos;
+	m_highlighted_pos = pos;
+	addUpdateMeshTaskForNode(old_highlighted_pos, false, true);
+	addUpdateMeshTaskForNode(m_highlighted_pos, false, true);
+}
+
 void Client::setCrack(int level, v3s16 pos)
 {
 	int old_crack_level = m_crack_level;
@@ -2547,22 +2556,23 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
 	if(b == NULL)
 		return;
-	
+
 	/*
 		Create a task to update the mesh of the block
 	*/
-	
+
 	MeshMakeData *data = new MeshMakeData(this);
-	
+
 	{
 		//TimeTaker timer("data fill");
 		// Release: ~0ms
 		// Debug: 1-6ms, avg=2ms
 		data->fill(b);
 		data->setCrack(m_crack_level, m_crack_pos);
+		data->setHighlighted(m_highlighted_pos, m_show_hud);
 		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
 	}
-	
+
 	// Add task to queue
 	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server, urgent);
 }
