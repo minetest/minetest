@@ -34,6 +34,18 @@ local function singleplayer_refresh_gamebar()
 		for key,value in pairs(fields) do
 			for j=1,#gamemgr.games,1 do
 				if ("game_btnbar_" .. gamemgr.games[j].id == key) then
+					if music_handle and music_id and music_id ~= gamemgr.games[j].id then
+						if gamemgr.games[j].menumusic_path ~= "" then 
+							core.sound_stop(music_handle)
+							music_handle = core.sound_play(gamemgr.games[j].menumusic_path, true)
+							music_id = gamemgr.games[j].id
+							end
+					else
+						if gamemgr.games[j].menumusic_path ~= "" then
+							music_handle = core.sound_play(gamemgr.games[j].menumusic_path, true)
+							music_id = gamemgr.games[j].id
+						end
+					end
 					mm_texture.update("singleplayer", gamemgr.games[j])
 					core.setting_set("menu_last_game",gamemgr.games[j].id)
 					menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
@@ -49,15 +61,15 @@ local function singleplayer_refresh_gamebar()
 
 	for i=1,#gamemgr.games,1 do
 		local btn_name = "game_btnbar_" .. gamemgr.games[i].id
-		
+
 		local image = nil
 		local text = nil
-		
+
 		if gamemgr.games[i].menuicon_path ~= nil and
 			gamemgr.games[i].menuicon_path ~= "" then
 			image = core.formspec_escape(gamemgr.games[i].menuicon_path)
 		else
-		
+
 			local part1 = gamemgr.games[i].id:sub(1,5)
 			local part2 = gamemgr.games[i].id:sub(6,10)
 			local part3 = gamemgr.games[i].id:sub(11)
