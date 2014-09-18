@@ -193,41 +193,43 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			(p.Z >= 0) & (p.Z < MAP_BLOCKSIZE)) {
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		// Get selection mesh light level
-		static const v3s16 dirs[7] = {
-				v3s16( 0, 0, 0),
-				v3s16( 0, 1, 0),
-				v3s16( 0,-1, 0),
-				v3s16( 1, 0, 0),
-				v3s16(-1, 0, 0),
-				v3s16( 0, 0, 1),
-				v3s16( 0, 0,-1)
-		};
+		if(n.getContent() != CONTENT_AIR) {
+			// Get selection mesh light level
+			static const v3s16 dirs[7] = {
+					v3s16( 0, 0, 0),
+					v3s16( 0, 1, 0),
+					v3s16( 0,-1, 0),
+					v3s16( 1, 0, 0),
+					v3s16(-1, 0, 0),
+					v3s16( 0, 0, 1),
+					v3s16( 0, 0,-1)
+			};
 
-		u16 l = 0;
-		u16 l1 = 0;
-		for (u8 i = 0; i < 7; i++) {
-			MapNode n1 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dirs[i]);	
-			l1 = getInteriorLight(n1, -4, nodedef);
-			if (l1 > l) 
-				l = l1;
-		}
-		video::SColor c = MapBlock_LightColor(255, l, 0);
-		data->m_highlight_mesh_color = c;	
-		std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
-		TileSpec h_tile;			
-		h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
-		h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
-		v3f pos = intToFloat(p, BS);
-		f32 d = 0.05 * BS;
-		for(std::vector<aabb3f>::iterator
-				i = boxes.begin();
-				i != boxes.end(); i++)
-		{
-			aabb3f box = *i;
-			box.MinEdge += v3f(-d, -d, -d) + pos;
-			box.MaxEdge += v3f(d, d, d) + pos;
-			makeCuboid(&collector, box, &h_tile, 1, c, NULL);
+			u16 l = 0;
+			u16 l1 = 0;
+			for (u8 i = 0; i < 7; i++) {
+				MapNode n1 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dirs[i]);	
+				l1 = getInteriorLight(n1, -4, nodedef);
+				if (l1 > l) 
+					l = l1;
+			}
+			video::SColor c = MapBlock_LightColor(255, l, 0);
+			data->m_highlight_mesh_color = c;	
+			std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+			TileSpec h_tile;			
+			h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
+			h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
+			v3f pos = intToFloat(p, BS);
+			f32 d = 0.05 * BS;
+			for(std::vector<aabb3f>::iterator
+					i = boxes.begin();
+					i != boxes.end(); i++)
+			{
+				aabb3f box = *i;
+				box.MinEdge += v3f(-d, -d, -d) + pos;
+				box.MaxEdge += v3f(d, d, d) + pos;
+				makeCuboid(&collector, box, &h_tile, 1, c, NULL);
+			}
 		}
 	}
 
