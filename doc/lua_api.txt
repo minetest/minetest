@@ -422,6 +422,7 @@ Look for examples in games/minimal or games/minetest_game.
 - torchlike
 - signlike
 - plantlike
+- firelike
 - fencelike
 - raillike
 - nodebox -- See below. EXPERIMENTAL

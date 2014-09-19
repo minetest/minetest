@@ -691,6 +691,8 @@ public:
 				if (f->waving == 1)
 					material_type = TILE_MATERIAL_WAVING_PLANTS;
 				break;
+			case NDT_FIRELIKE:
+				f->backface_culling = false;
 			case NDT_TORCHLIKE:
 			case NDT_SIGNLIKE:
 			case NDT_FENCELIKE:
