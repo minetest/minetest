@@ -157,8 +157,10 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# (useful if you've there's something to be displayed right or left of hotbar)
+# Width of the selectionbox's lines (Between 1 and 5)
+#selectionbox_width = 2
 # maximum percentage of current window to be used for hotbar
-# (usefull if you've there's something to be displayed right or left of hotbar)
 #hud_hotbar_max_width = 1.0
 # Enable highlighting for nodes (disables selectionboxes)
 #enable_node_highlighting = false
