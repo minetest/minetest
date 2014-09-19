@@ -356,18 +356,10 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	}
 
 	//value
-	if (details["rating"].asString().size()) {
-
-		std::string id_raw = details["rating"].asString();
-		char* endptr = 0;
-		float numbervalue = strtof(id_raw.c_str(),&endptr);
-
-		if ((id_raw != "") && (*endptr == 0)) {
-			retval.rating = numbervalue;
-		}
-	}
-	else {
-		retval.rating = 0.0;
+	if (details["value"].isInt()) {
+		retval.rating = details["value"].asInt();
+	} else {
+		retval.rating = 0;
 	}
 
 	//depends
