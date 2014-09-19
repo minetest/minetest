@@ -142,8 +142,9 @@ public:
 	ChatPrompt(std::wstring prompt, u32 history_limit);
 	~ChatPrompt();
 
-	// Input character
+	// Input character or string
 	void input(wchar_t ch);
+	void input(const std::wstring &str);
 
 	// Submit, clear and return current line
 	std::wstring submit();
