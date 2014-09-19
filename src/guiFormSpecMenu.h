@@ -301,6 +301,7 @@ protected:
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
 
+
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
@@ -323,6 +324,7 @@ protected:
 	InventoryLocation m_selected_content_guess_inventory;
 
 	v2s32 m_pointer;
+	v2s32 m_old_pointer;  // Mouse position after previous mouse event
 	gui::IGUIStaticText *m_tooltip_element;
 
 	u32 m_tooltip_show_delay;
