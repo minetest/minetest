@@ -407,6 +407,15 @@ void ChatPrompt::input(wchar_t ch)
 	m_nick_completion_end = 0;
 }
 
+void ChatPrompt::input(const std::wstring &str)
+{
+	m_line.insert(m_cursor, str);
+	m_cursor += str.size();
+	clampView();
+	m_nick_completion_start = 0;
+	m_nick_completion_end = 0;
+}
+
 std::wstring ChatPrompt::submit()
 {
 	std::wstring line = m_line;

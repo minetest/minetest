@@ -507,6 +507,19 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
+		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
+		{
+			// Ctrl-V pressed
+			// paste text from clipboard
+			IOSOperator *os_operator = Environment->getOSOperator();
+			const c8 *text = os_operator->getTextFromClipboard();
+			if (text)
+			{
+				std::wstring wtext = narrow_to_wide(text);
+				m_chat_backend->getPrompt().input(wtext);
+			}
+			return true;
+		}
 		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)
 		{
 			// Ctrl-U pressed
