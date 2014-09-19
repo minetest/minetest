@@ -298,6 +298,9 @@ protected:
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
 
+	v2s32 m_last_pointer;//mouse position after previous mouse event
+	bool m_rmb_down;//determined by catching rmb pressed/released button (TODO: maybe there's cleaner way to do it?)
+
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
