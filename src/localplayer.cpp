@@ -326,7 +326,6 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		touching_ground = false;
 		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 		m_gamedef->event()->put(e);
-        cout << "Jumped because " << m_jumptime << " is less than " << env->getTimeOfDay() << "\n";
 	}
 
 	if(!touching_ground_was && touching_ground){
@@ -558,7 +557,6 @@ void LocalPlayer::applyControl(float dtime)
 				speedV.Y = movement_speed_climb;
 		}
 	}
-
 	// The speed of the player (Y is ignored)
 	if(superspeed || (is_climbing && fast_climb) || ((in_liquid || in_liquid_stable) && fast_climb))
 		speedH = speedH.normalize() * movement_speed_fast;

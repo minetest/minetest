@@ -53,7 +53,6 @@ Player::Player(IGameDef *gamedef):
 	m_last_pos(0,0,0),
 	m_last_hp(PLAYER_MAX_HP),
 	m_last_inventory(gamedef->idef())
-    m_jumping_dir(0,0,0);
 {
 	updateName("<not set>");
 	inventory.clear();
