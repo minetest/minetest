@@ -298,8 +298,6 @@ protected:
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
 
-	v2s32 m_last_pointer;//mouse position after previous mouse event
-	bool m_rmb_down;//determined by catching rmb pressed/released button (TODO: maybe there's cleaner way to do it?)
 
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ImageDrawSpec> m_backgrounds;
@@ -323,6 +321,7 @@ protected:
 	InventoryLocation m_selected_content_guess_inventory;
 
 	v2s32 m_pointer;
+	v2s32 m_old_pointer;//mouse position after previous mouse event
 	gui::IGUIStaticText *m_tooltip_element;
 
 	u32 m_tooltip_show_delay;
