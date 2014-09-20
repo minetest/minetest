@@ -49,7 +49,7 @@ msgstr "Mods :"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
-msgstr "modifier le jeu"
+msgstr "éditer le jeu"
 
 #: builtin/gamemgr.lua:238
 msgid "new game"
@@ -57,7 +57,7 @@ msgstr "nouveau jeu"
 
 #: builtin/gamemgr.lua:248
 msgid "EDIT GAME"
-msgstr "MODIFIER LE JEU"
+msgstr "ÉDITER LE JEU"
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
@@ -101,11 +101,11 @@ msgstr "Non"
 
 #: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
-msgstr "Un monde s'appelant \"$1\" existe déjà"
+msgstr "Le monde \"$1\" existe déjà"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr "Nom du monde inconnu ou aucun jeu sélectionné"
+msgstr "Nom du monde manquant ou aucun jeu sélectionné"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -125,7 +125,7 @@ msgstr "Adresse / Port"
 
 #: builtin/mainmenu.lua:821
 msgid "Name/Password"
-msgstr "Nom / Mot de Passe"
+msgstr "Nom / Mot de passe"
 
 #: builtin/mainmenu.lua:824
 msgid "Public Serverlist"
@@ -182,7 +182,7 @@ msgstr "Mot de passe"
 
 #: builtin/mainmenu.lua:889
 msgid "Server Port"
-msgstr "Port du Serveur"
+msgstr "Port"
 
 #: builtin/mainmenu.lua:899
 msgid "SETTINGS"
@@ -234,11 +234,11 @@ msgstr "Activer les particules"
 
 #: builtin/mainmenu.lua:924
 msgid "Finite Liquid"
-msgstr "Volume de Liquides limités"
+msgstr "Liquides limités"
 
 #: builtin/mainmenu.lua:927
 msgid "Change keys"
-msgstr "Configurer les touches"
+msgstr "Changer les touches"
 
 #: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
@@ -274,7 +274,7 @@ msgstr "Anciens contributeurs"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr "Joueur Solo"
+msgstr "Solo"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
@@ -318,7 +318,7 @@ msgstr "Installation locale"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr "Dépôt des mods en ligne"
+msgstr "Dépôt de mods en ligne"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
@@ -326,7 +326,7 @@ msgstr "Pas de description disponible"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr "Information sur le mod :"
+msgstr "Information du mod :"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
@@ -358,7 +358,7 @@ msgstr "Cacher le jeu"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr "Cacher le contenu du packs de mods"
+msgstr "Cacher le contenu de packs de mods"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
@@ -428,7 +428,7 @@ msgstr "Modmgr : chemin de mod invalide \"$1\""
 
 #: builtin/modmgr.lua:876
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Êtes-vous sûr de vouloir supprimer \"$1\" ?"
+msgstr "Êtes-vous sûr de supprimer \"$1\" ?"
 
 #: builtin/modmgr.lua:878
 msgid "No of course not!"
@@ -488,7 +488,7 @@ msgstr "Média..."
 
 #: src/game.cpp:3409
 msgid "Shutting down stuff..."
-msgstr "Arret du jeu en cours..."
+msgstr "Quitter le jeu..."
 
 #: src/game.cpp:3439
 msgid ""
@@ -496,7 +496,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Lire debug.txt pour plus d'information."
+"Voir debug.txt pour plus d'information."
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
@@ -504,12 +504,12 @@ msgstr "Vous êtes mort."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Renaitre"
+msgstr "Réapparaître"
 
 #: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
 msgid "Proceed"
-msgstr "Exécuter"
+msgstr "OK"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -585,11 +585,11 @@ msgstr "Voler"
 
 #: src/guiKeyChangeMenu.cpp:402
 msgid "Toggle fast"
-msgstr "Vitesse rapide"
+msgstr "Mode rapide"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Toggle noclip"
-msgstr "Mode passe muraille"
+msgstr "Mode noclip"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Range select"
@@ -633,11 +633,11 @@ msgstr "Volume du son"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr "Retour au menu"
+msgstr "Quitter vers le menu"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr "Arréter le jeu"
+msgstr "Quitter le jeu"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -660,8 +660,8 @@ msgstr ""
 "- A : lâcher l'objet en main\n"
 "- I : inventaire\n"
 "- Souris : tourner/regarder\n"
-"- Souris bouton gauche : creuser/attaquer\n"
-"- Souris bouton droit : placer/utiliser\n"
+"- Souris gauche : creuser/attaquer\n"
+"- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
 "- T : discuter\n"
 
@@ -831,7 +831,7 @@ msgstr "Pavé num. 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr "Touche Windows droite"
+msgstr "Windows droite"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
@@ -990,7 +990,7 @@ msgstr "Erreur de connexion (perte de connexion ?)"
 #~ "They will be enabled by default when you save the configuration.  "
 #~ msgstr ""
 #~ "Attention : certains mods ne sont pas encore configurés.\n"
-#~ "Ils seront activés automatiquement quand vous enregistrerez la configuration. "
+#~ "Ils seront activés par défaut quand vous enregistrerez la configuration. "
 
 #~ msgid ""
 #~ "Warning: Some configured mods are missing.\n"
@@ -1031,7 +1031,7 @@ msgstr "Erreur de connexion (perte de connexion ?)"
 #~ msgstr "Tous les fichiers du monde n'ont pu être supprimés"
 
 #~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Impossible de configurer un monde : aucune sélection active"
+#~ msgstr "Impossible de configurer ce monde : aucune sélection active"
 
 #~ msgid "Cannot create world: No games found"
 #~ msgstr "Impossible de créer le monde : aucun jeu n'est présent"
