@@ -53,6 +53,7 @@ Player::Player(IGameDef *gamedef):
 	m_last_pos(0,0,0),
 	m_last_hp(PLAYER_MAX_HP),
 	m_last_inventory(gamedef->idef())
+    m_jumping_dir(0,0,0);
 {
 	updateName("<not set>");
 	inventory.clear();
@@ -83,6 +84,7 @@ Player::Player(IGameDef *gamedef):
 	movement_liquid_fluidity_smooth = 0.5  * BS;
 	movement_liquid_sink            = 10   * BS;
 	movement_gravity                = 9.81 * BS;
+	movement_jump_dealy             = 0.3 * BS;
 
 	// Movement overrides are multipliers and must be 1 by default
 	physics_override_speed        = 1;
@@ -114,7 +116,7 @@ void Player::accelerateHorizontal(v3f target_speed, f32 max_increase)
 	f32 dl = d_wanted.getLength();
 	if(dl > max_increase)
 		dl = max_increase;
-	
+
 	v3f d = d_wanted.normalize() * dl;
 
 	m_speed.X += d.X;
@@ -195,7 +197,7 @@ void Player::serialize(std::ostream &os)
 void Player::deSerialize(std::istream &is, std::string playername)
 {
 	Settings args;
-	
+
 	for(;;)
 	{
 		if(is.eof())

@@ -39,13 +39,13 @@ public:
 	{
 		return true;
 	}
-	
+
 	ClientActiveObject *parent;
 
 	bool isAttached;
 
 	v3f overridePosition;
-	
+
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::list<CollisionInfo> *collision_info);
@@ -91,6 +91,7 @@ private:
 	std::string m_old_node_below_type;
 	// Whether recalculation of the sneak node is needed
 	bool m_need_to_get_new_sneak_node;
+	f32 m_jumptime;
 	bool m_can_jump;
 
 	GenericCAO* m_cao;
