@@ -29,12 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/numeric.h"
 
-//<dev>
-#include <stdio.h>
-
-using namespace std;
-//</dev>
-
 
 /*
 	LocalPlayer
@@ -369,7 +363,6 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
     if(!touching_ground){
         m_jumptime = env->getTimeOfDay()+movement_jump_dealy;
     }
-    //cout << m_jumptime << ":" << (env->getTimeOfDay()) << ":" << m_can_jump << "\n";
 
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
@@ -492,7 +485,7 @@ void LocalPlayer::applyControl(float dtime)
 					speedV.Y = -movement_speed_climb;
 			}
 		}
-}
+    }
     if(continuous_forward)
         speedH += move_direction;
 
