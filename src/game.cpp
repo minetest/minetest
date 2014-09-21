@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
+#include "guiKeyChangeMenu.h"
 #include "guiFormSpecMenu.h"
 #include "tool.h"
 #include "guiChatConsole.h"
@@ -148,6 +149,11 @@ struct LocalFormspecHandler : public TextDest
 		if (m_formname == "MT_PAUSE_MENU") {
 			if (fields.find("btn_sound") != fields.end()) {
 				g_gamecallback->changeVolume();
+				return;
+			}
+
+			if (fields.find("btn_key_config") != fields.end()) {
+				g_gamecallback->keyConfig();
 				return;
 			}
 
@@ -1044,6 +1050,8 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
 					<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
+					<< wide_to_narrow(wstrgettext("Change Keys"))  << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 					<< wide_to_narrow(wstrgettext("Exit to Menu")) << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
@@ -1876,6 +1884,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				&g_menumgr, &client))->drop();
 			g_gamecallback->changevolume_requested = false;
 		}
+
+		if(g_gamecallback->keyconfig_requested)
+		{
+			(new GUIKeyChangeMenu(guienv, guiroot, -1,
+				&g_menumgr))->drop();
+			g_gamecallback->keyconfig_requested = false;
+		}
+
 
 		/* Process TextureSource's queue */
 		tsrc->processQueue();
