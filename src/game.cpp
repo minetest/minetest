@@ -3308,6 +3308,17 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				<<") (yaw="<<(wrapDegrees_0_360(camera_yaw))
 				<<") (seed = "<<((u64)client.getMapSeed())
 				<<")";
+
+			if (pointed.type == POINTEDTHING_NODE) {
+				ClientMap &map = client.getEnv().getClientMap();
+				MapNode n = map.getNode(pointed.node_undersurface);
+				if (nodedef->get(n).name != "unknown") {
+					const ContentFeatures &features =
+							client.getNodeDefManager()->get(n);
+					os << " (pointing_at = " << nodedef->get(n).name << " - " << features.tiledef[0].name.c_str() << ")";
+				}
+			}
+
 			guitext2->setText(narrow_to_wide(os.str()).c_str());
 			guitext2->setVisible(true);
 
