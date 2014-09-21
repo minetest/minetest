@@ -114,7 +114,7 @@
 # Continuous forward movement (for testing)
 #continuous_forward = false
 # Fast movement (keymap_special1)
-#fast_move = false
+#fast_move = true
 # Invert mouse
 #invert_mouse = false
 # Enable/disable clouds
@@ -291,7 +291,7 @@
 #default_password =
 # Available privileges: interact, shout, teleport, settime, privs, ...
 # See /privs in game for a full list on your server and mod configuration.
-#default_privs = interact, shout
+#default_privs = interact, shout, fast
 # Whether players are shown to clients without any range limit
 #unlimited_player_transfer_distance = true
 # Whether to enable players killing each other
@@ -389,7 +389,7 @@
 #movement_acceleration_fast = 10
 #movement_speed_walk = 4
 #movement_speed_crouch = 1.35
-#movement_speed_fast = 20
+#movement_speed_fast = 8
 #movement_speed_climb = 2
 #movement_speed_jump = 6.5
 #movement_speed_descend = 6

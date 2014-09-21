@@ -107,7 +107,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("free_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("continuous_forward", "false");
-	settings->setDefault("fast_move", "false");
+	settings->setDefault("fast_move", "true");
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
@@ -200,7 +200,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
-	settings->setDefault("default_privs", "interact, shout");
+	settings->setDefault("default_privs", "interact, shout, fast");
 	settings->setDefault("unlimited_player_transfer_distance", "true");
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("disallow_empty_password", "false");
@@ -246,7 +246,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_acceleration_fast", "10");
 	settings->setDefault("movement_speed_walk", "4");
 	settings->setDefault("movement_speed_crouch", "1.35");
-	settings->setDefault("movement_speed_fast", "20");
+	settings->setDefault("movement_speed_fast", "8");
 	settings->setDefault("movement_speed_climb", "2");
 	settings->setDefault("movement_speed_jump", "6.5");
 	settings->setDefault("movement_liquid_fluidity", "1");
