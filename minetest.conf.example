@@ -170,7 +170,7 @@
 #bilinear_filter = false
 #trilinear_filter = false
 # Set to true to pre-generate all item visuals
-#preload_item_visuals = true
+#preload_item_visuals = false
 # Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
 #enable_shaders = true
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
