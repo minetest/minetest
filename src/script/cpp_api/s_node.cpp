@@ -40,6 +40,7 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_TORCHLIKE, "torchlike"},
 		{NDT_SIGNLIKE, "signlike"},
 		{NDT_PLANTLIKE, "plantlike"},
+		{NDT_FIRELIKE, "firelike"},
 		{NDT_FENCELIKE, "fencelike"},
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
