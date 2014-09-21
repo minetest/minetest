@@ -122,7 +122,8 @@ local function formspec(tabview, name, tabdata)
 		end
 		video_driver_string = video_driver_string .. video_drivers[i]
 		
-		if current_video_driver:lower() == video_drivers[i]:lower() then
+		local video_driver = string.gsub(video_drivers[i], " ", "")
+		if current_video_driver:lower() == video_driver:lower() then
 			current_video_driver_idx = i
 		end
 	end
@@ -317,7 +318,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		ddhandled = true
 	end
 	if fields["dd_video_driver"] then
-		core.setting_set("video_driver",fields["dd_video_driver"])
+		local video_driver = string.gsub(fields["dd_video_driver"], " ", "")
+		core.setting_set("video_driver",string.lower(video_driver))
 		ddhandled = true
 	end
 	

@@ -18,15 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_mapblock.h"
-
+#include "util/numeric.h"
+#include "util/directiontables.h"
 #include "main.h" // For g_settings
 #include "mapblock_mesh.h" // For MapBlock_LightColor() and MeshCollector
 #include "settings.h"
 #include "nodedef.h"
 #include "tile.h"
 #include "gamedef.h"
-#include "util/numeric.h"
-#include "util/directiontables.h"
+#include "log.h"
+
 
 // Create a cuboid.
 //  collector - the MeshCollector for the resulting polygons
@@ -1176,6 +1177,168 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos *= f.visual_scale;
+					vertices[i].Pos += intToFloat(p, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(tile, vertices, 4, indices, 6);
+			}
+		break;}
+		case NDT_FIRELIKE:
+		{
+			TileSpec tile = getNodeTileN(n, p, 0, data);
+			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+
+			u16 l = getInteriorLight(n, 1, nodedef);
+			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
+
+			float s = BS/2*f.visual_scale;
+
+			content_t current = n.getContent();
+			content_t n2c;
+			MapNode n2;
+			v3s16 n2p;
+
+			static const v3s16 dirs[6] = {
+				v3s16( 0, 1, 0),
+				v3s16( 0,-1, 0),
+				v3s16( 1, 0, 0),
+				v3s16(-1, 0, 0),
+				v3s16( 0, 0, 1),
+				v3s16( 0, 0,-1)
+			};
+
+			int doDraw[6] = {0,0,0,0,0,0};
+
+			bool drawAllFaces = true;
+
+			bool drawBottomFacesOnly = false; // Currently unused
+
+			// Check for adjacent nodes
+			for(int i = 0; i < 6; i++)
+			{
+				n2p = blockpos_nodes + p + dirs[i];
+				n2 = data->m_vmanip.getNodeNoEx(n2p);
+				n2c = n2.getContent();
+				if (n2c != CONTENT_IGNORE && n2c != CONTENT_AIR && n2c != current) {
+					doDraw[i] = 1;
+					if(drawAllFaces)
+						drawAllFaces = false;
+
+				}
+			}
+
+			for(int j = 0; j < 6; j++)
+			{
+				int vOffset = 0; // Vertical offset of faces after rotation
+				int hOffset = 4; // Horizontal offset of faces to reach the edge
+
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-s,-BS/2,      0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-BS/2,      0, 0,0,0, c, 1,1),
+					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
+				};
+
+				// Calculate which faces should be drawn, (top or sides)
+				if(j == 0 && (drawAllFaces || (doDraw[3] == 1 || doDraw[1] == 1)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateXZBy(90 + n.param2 * 2);
+						vertices[i].Pos.rotateXYBy(-10);
+						vertices[i].Pos.Y -= vOffset;
+						vertices[i].Pos.X -= hOffset;
+					}
+				}
+				else if(j == 1 && (drawAllFaces || (doDraw[5] == 1 || doDraw[1] == 1)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateXZBy(180 + n.param2 * 2);
+						vertices[i].Pos.rotateYZBy(10);
+						vertices[i].Pos.Y -= vOffset;
+						vertices[i].Pos.Z -= hOffset;
+					}
+				}
+				else if(j == 2 && (drawAllFaces || (doDraw[2] == 1 || doDraw[1] == 1)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateXZBy(270 + n.param2 * 2);
+						vertices[i].Pos.rotateXYBy(10);
+						vertices[i].Pos.Y -= vOffset;
+						vertices[i].Pos.X += hOffset;
+					}
+				}
+				else if(j == 3 && (drawAllFaces || (doDraw[4] == 1 || doDraw[1] == 1)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateYZBy(-10);
+						vertices[i].Pos.Y -= vOffset;
+						vertices[i].Pos.Z += hOffset;
+					}
+				}
+
+				// Center cross-flames
+				else if(j == 4 && (drawAllFaces || doDraw[1] == 1))
+				{
+					for(int i=0; i<4; i++) {
+						vertices[i].Pos.rotateXZBy(45 + n.param2 * 2);
+						vertices[i].Pos.Y -= vOffset;
+					}
+				}
+				else if(j == 5 && (drawAllFaces || doDraw[1] == 1))
+				{
+					for(int i=0; i<4; i++) {
+						vertices[i].Pos.rotateXZBy(-45 + n.param2 * 2);
+						vertices[i].Pos.Y -= vOffset;
+					}
+				}
+
+				// Render flames on bottom
+				else if(j == 0 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateYZBy(70);
+						vertices[i].Pos.rotateXZBy(90 + n.param2 * 2);
+						vertices[i].Pos.Y += 4.84;
+						vertices[i].Pos.X -= hOffset+0.7;
+					}
+				}
+				else if(j == 1 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateYZBy(70);
+						vertices[i].Pos.rotateXZBy(180 + n.param2 * 2);
+						vertices[i].Pos.Y += 4.84;
+						vertices[i].Pos.Z -= hOffset+0.7;
+					}
+				}
+				else if(j == 2 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateYZBy(70);
+						vertices[i].Pos.rotateXZBy(270 + n.param2 * 2);
+						vertices[i].Pos.Y += 4.84;
+						vertices[i].Pos.X += hOffset+0.7;
+					}
+				}
+				else if(j == 3 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
+				{
+					for(int i = 0; i < 4; i++) {
+						vertices[i].Pos.rotateYZBy(70);
+						vertices[i].Pos.Y += 4.84;
+						vertices[i].Pos.Z += hOffset+0.7;
+					}
+				}
+				else {
+					// Skip faces that aren't adjacent to a node
+					continue;
+				}
+
+				for(int i=0; i<4; i++)
 				{
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos += intToFloat(p, BS);

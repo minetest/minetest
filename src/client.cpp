@@ -17,13 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client.h"
 #include <iostream>
 #include <algorithm>
-#include "clientserver.h"
-#include "jthread/jmutexautolock.h"
-#include "main.h"
 #include <sstream>
+#include <IFileSystem.h>
+#include "jthread/jmutexautolock.h"
+#include "util/directiontables.h"
+#include "util/pointedthing.h"
+#include "util/serialize.h"
+#include "util/string.h"
+#include "strfnd.h"
+#include "client.h"
+#include "clientserver.h"
+#include "main.h"
 #include "filesys.h"
 #include "porting.h"
 #include "mapsector.h"
@@ -37,18 +43,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "shader.h"
-#include <IFileSystem.h>
 #include "base64.h"
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "sound.h"
-#include "util/string.h"
 #include "IMeshCache.h"
 #include "serialization.h"
-#include "util/serialize.h"
 #include "config.h"
-#include "util/directiontables.h"
-#include "util/pointedthing.h"
 #include "version.h"
 #include "drawscene.h"
 
@@ -2538,16 +2539,14 @@ void Client::typeChatMessage(const std::wstring &message)
 	// Show locally
 	if (message[0] == L'/')
 	{
-		m_chat_queue.push_back(
-				(std::wstring)L"issued command: "+message);
+		m_chat_queue.push_back((std::wstring)L"issued command: " + message);
 	}
 	else
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push_back(
-				(std::wstring)L"<"+name+L"> "+message);
+		m_chat_queue.push_back((std::wstring)L"<" + name + L"> " + message);
 	}
 }
 
@@ -2730,6 +2729,34 @@ float Client::getAvgRate(void)
 {
 	return ( m_con.getLocalStat(con::AVG_INC_RATE) +
 			m_con.getLocalStat(con::AVG_DL_RATE));
+}
+
+void Client::makeScreenshot(IrrlichtDevice *device)
+{
+	irr::video::IVideoDriver *driver = device->getVideoDriver();
+	irr::video::IImage* const raw_image = driver->createScreenShot();
+	if (raw_image) {
+		irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8, 
+			raw_image->getDimension());
+
+		if (image) {
+			raw_image->copyTo(image);
+			irr::c8 filename[256];
+			snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
+				 g_settings->get("screenshot_path").c_str(),
+				 device->getTimer()->getRealTime());
+			std::stringstream sstr;
+			if (driver->writeImageToFile(image, filename)) {
+				sstr << "Saved screenshot to '" << filename << "'";
+			} else {
+				sstr << "Failed to save screenshot '" << filename << "'";
+			}
+			m_chat_queue.push_back(narrow_to_wide(sstr.str()));
+			infostream << sstr << std::endl;
+			image->drop();
+		}
+		raw_image->drop();
+	}
 }
 
 // IGameDef interface

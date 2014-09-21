@@ -23,13 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
 #include "serialization.h"
+#include "json/json.h"
 #include "debug.h"
 #include "porting.h"
 #include "log.h"
 #include "tool.h"
+#include "filesys.h"
 #include "settings.h"
 #include "main.h"  //required for g_settings, g_settings_path
-#include "json/json.h"
 
 // debug(...)
 // Writes a line to dstream

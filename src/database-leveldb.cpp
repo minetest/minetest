@@ -20,10 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 #if USE_LEVELDB
-/*
-LevelDB databases
-*/
-
 
 #include "database-leveldb.h"
 #include "leveldb/db.h"
@@ -35,6 +31,7 @@ LevelDB databases
 #include "main.h"
 #include "settings.h"
 #include "log.h"
+#include "filesys.h"
 
 #define ENSURE_STATUS_OK(s) \
 	if (!(s).ok()) { \

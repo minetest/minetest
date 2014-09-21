@@ -18,12 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "player.h"
+
+#include <fstream>
+#include "util/numeric.h"
 #include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "settings.h"
 #include "content_sao.h"
-#include "util/numeric.h"
+#include "filesys.h"
+#include "log.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -195,18 +199,10 @@ void Player::serialize(std::ostream &os)
 void Player::deSerialize(std::istream &is, std::string playername)
 {
 	Settings args;
-	
-	for(;;)
-	{
-		if(is.eof())
-			throw SerializationError
-					(("Player::deSerialize(): PlayerArgsEnd of player \"" + playername + "\" not found").c_str());
-		std::string line;
-		std::getline(is, line);
-		std::string trimmedline = trim(line);
-		if(trimmedline == "PlayerArgsEnd")
-			break;
-		args.parseConfigLine(line);
+
+	if (!args.parseConfigLines(is, "PlayerArgsEnd")) {
+		throw SerializationError("PlayerArgsEnd of player " +
+				playername + " not found!");
 	}
 
 	//args.getS32("version"); // Version field value not used

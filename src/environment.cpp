@@ -508,38 +508,29 @@ void ServerEnvironment::loadMeta()
 
 	// Open file and deserialize
 	std::ifstream is(path.c_str(), std::ios_base::binary);
-	if(is.good() == false)
-	{
-		infostream<<"ServerEnvironment::loadMeta(): Failed to open "
-				<<path<<std::endl;
+	if (!is.good()) {
+		infostream << "ServerEnvironment::loadMeta(): Failed to open "
+				<< path << std::endl;
 		throw SerializationError("Couldn't load env meta");
 	}
 
 	Settings args;
-	
-	for(;;)
-	{
-		if(is.eof())
-			throw SerializationError
-					("ServerEnvironment::loadMeta(): EnvArgsEnd not found");
-		std::string line;
-		std::getline(is, line);
-		std::string trimmedline = trim(line);
-		if(trimmedline == "EnvArgsEnd")
-			break;
-		args.parseConfigLine(line);
+
+	if (!args.parseConfigLines(is, "EnvArgsEnd")) {
+		throw SerializationError("ServerEnvironment::loadMeta(): "
+				"EnvArgsEnd not found!");
 	}
-	
-	try{
+
+	try {
 		m_game_time = args.getU64("game_time");
-	}catch(SettingNotFoundException &e){
+	} catch (SettingNotFoundException &e) {
 		// Getting this is crucial, otherwise timestamps are useless
 		throw SerializationError("Couldn't load env meta game_time");
 	}
 
-	try{
+	try {
 		m_time_of_day = args.getU64("time_of_day");
-	}catch(SettingNotFoundException &e){
+	} catch (SettingNotFoundException &e) {
 		// This is not as important
 		m_time_of_day = 9000;
 	}

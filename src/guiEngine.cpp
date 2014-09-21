@@ -19,7 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
+#include <IGUIStaticText.h>
+#include <ICameraSceneNode.h>
 #include "scripting_mainmenu.h"
+#include "util/numeric.h"
 #include "config.h"
 #include "version.h"
 #include "porting.h"
@@ -31,14 +34,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound_openal.h"
 #include "clouds.h"
 #include "httpfetch.h"
-#include "util/numeric.h"
+#include "log.h"
 #ifdef __ANDROID__
 #include "tile.h"
 #include <GLES/gl.h>
 #endif
 
-#include <IGUIStaticText.h>
-#include <ICameraSceneNode.h>
 
 /******************************************************************************/
 /** TextDestGuiEngine                                                         */
@@ -189,7 +190,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
-			NULL);
+			NULL, NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));

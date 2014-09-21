@@ -939,12 +939,12 @@ bool nodePlacementPrediction(Client &client,
 static inline void create_formspec_menu(GUIFormSpecMenu** cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource* tsrc, IrrlichtDevice * device,
-		IFormSource* fs_src, TextDest* txt_dest
+		IFormSource* fs_src, TextDest* txt_dest, Client* client
 		) {
 
 	if (*cur_formspec == 0) {
 		*cur_formspec = new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr,
-				invmgr, gamedef, tsrc, fs_src, txt_dest, cur_formspec );
+				invmgr, gamedef, tsrc, fs_src, txt_dest, cur_formspec, client);
 		(*cur_formspec)->doPause = false;
 		(*cur_formspec)->drop();
 	}
@@ -978,7 +978,7 @@ static void show_chat_menu(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_CHAT_MENU", client);
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst, NULL);
 }
 
 static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
@@ -999,7 +999,7 @@ static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst, NULL);
 }
 
 /******************************************************************************/
@@ -1068,7 +1068,7 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst, NULL);
 
 	(*cur_formspec)->doPause = true;
 }
@@ -1982,7 +1982,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			PlayerInventoryFormSource* fs_src = new PlayerInventoryFormSource(&client);
 			TextDest* txt_dst = new TextDestPlayerInventory(&client);
 
-			create_formspec_menu(&current_formspec, &client, gamedef, tsrc, device, fs_src, txt_dst);
+			create_formspec_menu(&current_formspec, &client, gamedef, tsrc, device, fs_src, txt_dst, &client);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
@@ -2086,30 +2086,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
-			irr::video::IImage* const raw_image = driver->createScreenShot();
-			if (raw_image) {
-				irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8, 
-					raw_image->getDimension());
-
-				if (image) {
-					raw_image->copyTo(image);
-					irr::c8 filename[256];
-					snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
-						 g_settings->get("screenshot_path").c_str(),
-						 device->getTimer()->getRealTime());
-					if (driver->writeImageToFile(image, filename)) {
-						std::wstringstream sstr;
-						sstr << "Saved screenshot to '" << filename << "'";
-						infostream << "Saved screenshot to '" << filename << "'" << std::endl;
-						statustext = sstr.str();
-						statustext_time = 0;
-					} else {
-						infostream << "Failed to save screenshot '" << filename << "'" << std::endl;
-					}
-					image->drop();
-				}
-				raw_image->drop();
-			}
+			client.makeScreenshot(device);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
@@ -2499,7 +2476,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 							new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 
 					create_formspec_menu(&current_formspec, &client, gamedef,
-							tsrc, device, fs_src, txt_dst);
+							tsrc, device, fs_src, txt_dst, &client);
 
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
@@ -3049,7 +3026,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					TextDest* txt_dst = new TextDestNodeMetadata(nodepos, &client);
 
 					create_formspec_menu(&current_formspec, &client, gamedef,
-							tsrc, device, fs_src, txt_dst);
+							tsrc, device, fs_src, txt_dst, &client);
 
 					current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 				}

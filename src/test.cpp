@@ -390,12 +390,14 @@ struct TestSettings: public TestBase
 	{
 		Settings s;
 		// Test reading of settings
-		s.parseConfigLine("leet = 1337");
-		s.parseConfigLine("leetleet = 13371337");
-		s.parseConfigLine("leetleet_neg = -13371337");
-		s.parseConfigLine("floaty_thing = 1.1");
-		s.parseConfigLine("stringy_thing = asd /( ¤%&(/\" BLÖÄRP");
-		s.parseConfigLine("coord = (1, 2, 4.5)");
+		std::istringstream is(
+			"leet = 1337\n"
+			"leetleet = 13371337\n"
+			"leetleet_neg = -13371337\n"
+			"floaty_thing = 1.1\n"
+			"stringy_thing = asd /( ¤%&(/\" BLÖÄRP\n"
+			"coord = (1, 2, 4.5)");
+		s.parseConfigLines(is);
 		UASSERT(s.getS32("leet") == 1337);
 		UASSERT(s.getS16("leetleet") == 32767);
 		UASSERT(s.getS16("leetleet_neg") == -32768);
