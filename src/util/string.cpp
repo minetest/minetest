@@ -300,3 +300,97 @@ u64 read_seed(const char *str)
 		
 	return num;
 }
+
+bool parseColor(const std::string &value, video::SColor &color)
+{
+	const char *hexpattern = NULL;
+	if (value[0] == '#') {
+		if (value.size() == 9)
+			hexpattern = "#RRGGBBAA";
+		else if (value.size() == 7)
+			hexpattern = "#RRGGBB";
+		else if (value.size() == 5)
+			hexpattern = "#RGBA";
+		else if (value.size() == 4)
+			hexpattern = "#RGB";
+	}
+
+	if (hexpattern) {
+		assert(strlen(hexpattern) == value.size());
+		video::SColor outcolor(255, 255, 255, 255);
+		for (size_t pos = 0; pos < value.size(); ++pos) {
+			// '#' in the pattern means skip that character
+			if (hexpattern[pos] == '#')
+				continue;
+
+			// Else assume hexpattern[pos] is one of 'R' 'G' 'B' 'A'
+			// Read one or two digits, depending on hexpattern
+			unsigned char c1, c2;
+			if (hexpattern[pos+1] == hexpattern[pos]) {
+				// Two digits, e.g. hexpattern == "#RRGGBB"
+				if (!hex_digit_decode(value[pos], c1) ||
+				    !hex_digit_decode(value[pos+1], c2))
+					return false;
+				++pos;
+			}
+			else {
+				// One digit, e.g. hexpattern == "#RGB"
+				if (!hex_digit_decode(value[pos], c1))
+					return false;
+				c2 = c1;
+			}
+			u32 colorpart = ((c1 & 0x0f) << 4) | (c2 & 0x0f);
+
+			// Update outcolor with newly read color part
+			if (hexpattern[pos] == 'R')
+				outcolor.setRed(colorpart);
+			else if (hexpattern[pos] == 'G')
+				outcolor.setGreen(colorpart);
+			else if (hexpattern[pos] == 'B')
+				outcolor.setBlue(colorpart);
+			else if (hexpattern[pos] == 'A')
+				outcolor.setAlpha(colorpart);
+		}
+
+		color = outcolor;
+		return true;
+	}
+
+	return false;
+}
+
+
+std::wstring colorizeText(const std::wstring &s, std::vector<video::SColor> &colors, const video::SColor &initial_color) {
+	std::wstring output;
+	colors.clear();
+	size_t i = 0;
+	video::SColor color = initial_color;
+	while (i < s.length()) {
+		if (s[i] == L'\v' && i + 6 < s.length()) {
+			parseColor("#" + wide_to_narrow(s.substr(i + 1, 6)), color);
+			i += 7;
+			continue;
+		}
+		output += s[i];
+		colors.push_back(color);
+
+		++i;
+	}
+
+	return output;
+}
+
+// removes escape sequences
+std::wstring sanitizeChatString(const std::wstring &s) {
+	std::wstring output;
+	size_t i = 0;
+	while (i < s.length()) {
+		if (s[i] == L'\v') {
+			i += 7;
+			continue;
+		}
+		output += s[i];
+		++i;
+	}
+	return output;
+}

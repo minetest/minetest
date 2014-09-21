@@ -70,8 +70,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "drawscene.h"
 #include "content_cao.h"
 
+#if USE_FREETYPE
+	#include "StaticText.h"
+#endif
+
 #ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
+	#include "touchscreengui.h"
 #endif
 
 /*
@@ -1596,11 +1600,23 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	float statustext_time = 0;
 
 	// Chat text
+
+#if USE_FREETYPE
+	//Colored chat support when using FreeType
+	gui::StaticText *guitext_chat = new gui::StaticText(L"", false, guienv, guiroot, -1, core::rect<s32>(0, 0, 0, 0), false);
+	guitext_chat->setWordWrap(true);
+	guitext_chat->drop();
+#else
+	//Standard chat when FreeType is disabled
 	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
-			L"",
-			core::rect<s32>(0,0,0,0),
-			//false, false); // Disable word wrap as of now
-			false, true, guiroot);
+		L"",
+		core::rect<s32>(0,0,0,0),
+		//false, false); // Disable word wrap as of now
+		false, true, guiroot);
+#endif
+
+	
+	
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend.clearRecentChat();
 	// Chat backend and console
