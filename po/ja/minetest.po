@@ -21,7 +21,7 @@ msgstr ""
 #: builtin/gamemgr.lua:23
 #, fuzzy
 msgid "Game Name"
-msgstr "ゲーム"
+msgstr "ゲーム名"
 
 #: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
 msgid "Create"
@@ -34,7 +34,7 @@ msgstr "キャンセル"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr ""
+msgstr "Gamemgr:\"$1\"のModを\"$2\"にｺﾋﾟｰできません"
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
@@ -47,7 +47,7 @@ msgstr "ゲーム"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr ""
+msgstr "Mod"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
@@ -63,7 +63,7 @@ msgstr ""
 
 #: builtin/gamemgr.lua:269
 msgid "Remove selected mod"
-msgstr ""
+msgstr "選択したModを削除"
 
 #: builtin/gamemgr.lua:272
 msgid "<<-- Add mod"
@@ -71,7 +71,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
-msgstr ""
+msgstr "決定"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
@@ -79,11 +79,11 @@ msgstr "ワールド名"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr ""
+msgstr "シード値"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
-msgstr ""
+msgstr "マップ生成"
 
 #: builtin/mainmenu.lua:306
 msgid "Game"
@@ -92,7 +92,7 @@ msgstr "ゲーム"
 #: builtin/mainmenu.lua:319
 #, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "ワールド削除"
+msgstr "\"$1\"のﾜｰﾙﾄﾞを削除しますか？"
 
 #: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
 msgid "Yes"
@@ -105,15 +105,15 @@ msgstr "いいえ"
 #: builtin/mainmenu.lua:364
 #, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "ワールドを作成できません: 同名のワールドが既に存在しています"
+msgstr "\"$1\"という名前のﾜｰﾙﾄﾞを作成できません。同名のﾜｰﾙﾄﾞが存在しています"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "ｼｪｰﾀﾞｰを有効にするには、OpenGLのﾄﾞﾗｲﾊﾞが必要です"
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -122,7 +122,7 @@ msgstr ""
 #: builtin/mainmenu.lua:819
 #, fuzzy
 msgid "Favorites:"
-msgstr "お気に入りを見せる"
+msgstr "お気に入り:"
 
 #: builtin/mainmenu.lua:820
 msgid "Address/Port"
@@ -134,7 +134,7 @@ msgstr "名前/パスワード"
 
 #: builtin/mainmenu.lua:824
 msgid "Public Serverlist"
-msgstr ""
+msgstr "公開されているｻｰﾊﾞｰﾘｽﾄ"
 
 #: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
 #: src/keycode.cpp:229
@@ -147,7 +147,7 @@ msgstr "接続"
 
 #: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
 msgid "New"
-msgstr "新規作成"
+msgstr "作成"
 
 #: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
 msgid "Configure"
@@ -168,29 +168,29 @@ msgstr ""
 
 #: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
 msgid "Creative Mode"
-msgstr "クリエイティブモード"
+msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
 
 #: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
 msgid "Enable Damage"
-msgstr "ダメージ有効"
+msgstr "ﾀﾞﾒｰｼﾞ有効"
 
 #: builtin/mainmenu.lua:884
 #, fuzzy
 msgid "Public"
-msgstr "公共を見せる"
+msgstr "公開する"
 
 #: builtin/mainmenu.lua:886
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #: builtin/mainmenu.lua:888
 #, fuzzy
 msgid "Password"
-msgstr "古いパスワード"
+msgstr "パスワード"
 
 #: builtin/mainmenu.lua:889
 msgid "Server Port"
-msgstr ""
+msgstr "ポート"
 
 #: builtin/mainmenu.lua:899
 msgid "SETTINGS"
@@ -207,7 +207,7 @@ msgstr "自然な光表現"
 
 #: builtin/mainmenu.lua:904
 msgid "3D Clouds"
-msgstr "3Dの雲"
+msgstr "立体な雲"
 
 #: builtin/mainmenu.lua:906
 #, fuzzy
@@ -216,35 +216,35 @@ msgstr "不透明な水面"
 
 #: builtin/mainmenu.lua:909
 msgid "Mip-Mapping"
-msgstr "ミップマップ"
+msgstr "ﾐｯﾌﾟﾏｯﾌﾟ"
 
 #: builtin/mainmenu.lua:911
 msgid "Anisotropic Filtering"
-msgstr "異方性フィルタリング"
+msgstr "異方性ﾌｨﾙﾀﾘﾝｸﾞ"
 
 #: builtin/mainmenu.lua:913
 msgid "Bi-Linear Filtering"
-msgstr "バイリニアフィルタリング"
+msgstr "ﾊﾞｲﾘﾆｱﾌｨﾙﾀﾘﾝｸﾞ"
 
 #: builtin/mainmenu.lua:915
 msgid "Tri-Linear Filtering"
-msgstr "トリリニアフィルタリング"
+msgstr "ﾄﾘﾘﾆｱﾌｨﾙﾀﾘﾝｸﾞ"
 
 #: builtin/mainmenu.lua:918
 msgid "Shaders"
-msgstr "シェーダー"
+msgstr "ｼｪｰﾀﾞｰ"
 
 #: builtin/mainmenu.lua:920
 msgid "Preload item visuals"
-msgstr "アイテム外観のプリロード"
+msgstr "ｱｲﾃﾑの外観をﾌﾟﾘﾛｰﾄﾞ"
 
 #: builtin/mainmenu.lua:922
 msgid "Enable Particles"
-msgstr "破片表現の有効化"
+msgstr "破片を表示"
 
 #: builtin/mainmenu.lua:924
 msgid "Finite Liquid"
-msgstr ""
+msgstr "液体の制限"
 
 #: builtin/mainmenu.lua:927
 msgid "Change keys"
@@ -252,7 +252,7 @@ msgstr "キー割当て変更"
 
 #: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
-msgstr "選択した世界に入る"
+msgstr "ﾌﾟﾚｲ"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
@@ -260,7 +260,7 @@ msgstr ""
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
-msgstr ""
+msgstr "テクスチャパックを選択:"
 
 #: builtin/mainmenu.lua:956
 msgid "TEXTURE PACKS"
@@ -268,31 +268,31 @@ msgstr ""
 
 #: builtin/mainmenu.lua:976
 msgid "No information available"
-msgstr ""
+msgstr "情報がありません"
 
 #: builtin/mainmenu.lua:1005
 msgid "Core Developers"
-msgstr ""
+msgstr "開発者"
 
 #: builtin/mainmenu.lua:1020
 msgid "Active Contributors"
-msgstr ""
+msgstr "貢献者"
 
 #: builtin/mainmenu.lua:1028
 msgid "Previous Contributors"
-msgstr ""
+msgstr "以前の貢献者"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr "シングルプレイヤー"
+msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰ"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
-msgstr ""
+msgstr "ｸﾗｲｱﾝﾄ"
 
 #: builtin/mainmenu.lua:1071
 msgid "Server"
-msgstr ""
+msgstr "ｻｰﾊﾞｰ"
 
 #: builtin/mainmenu.lua:1072
 msgid "Settings"
@@ -300,15 +300,15 @@ msgstr "設定"
 
 #: builtin/mainmenu.lua:1073
 msgid "Texture Packs"
-msgstr ""
+msgstr "ﾃｸｽﾁｬﾊﾟｯｸ"
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
-msgstr ""
+msgstr "Mod"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
-msgstr "クレジット"
+msgstr "ｸﾚｼﾞｯﾄ"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
@@ -316,71 +316,71 @@ msgstr ""
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
-msgstr ""
+msgstr "インストール済みのMod:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr ""
+msgstr "Modを追加:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
-msgstr ""
+msgstr "ローカルからインストール"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "オンラインで検索"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
-msgstr ""
+msgstr "Modの説明がありません"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr ""
+msgstr "Modの情報:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
-msgstr ""
+msgstr "名前を変更"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "選択したModパックを削除"
 
 #: builtin/modmgr.lua:312
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "選択したModを削除"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Modパックの名前を変更"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
 #, fuzzy
 msgid "Accept"
-msgstr "Accept"
+msgstr "了承"
 
 #: builtin/modmgr.lua:423
 #, fuzzy
 msgid "World:"
-msgstr "ワールド選択:"
+msgstr "ワールド:"
 
 #: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 #, fuzzy
 msgid "Hide Game"
-msgstr "ゲーム"
+msgstr "内部Modを非表示"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr ""
+msgstr "Modパックを簡略表示"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/modmgr.lua:444
 #, fuzzy
 msgid "Depends:"
-msgstr "この改造ファイルが必要です："
+msgstr "依存Mod:"
 
 #: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
@@ -389,26 +389,26 @@ msgstr "保存"
 #: builtin/modmgr.lua:464
 #, fuzzy
 msgid "Enable MP"
-msgstr "全部を有効にしました"
+msgstr "Modパックを有効化"
 
 #: builtin/modmgr.lua:466
 #, fuzzy
 msgid "Disable MP"
-msgstr "全部を無効にしました"
+msgstr "Modパックを無効化"
 
 #: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
-msgstr "有効にしました"
+msgstr "有効化"
 
 #: builtin/modmgr.lua:478
 #, fuzzy
 msgid "Enable all"
-msgstr "全部を有効にしました"
+msgstr "全て有効化"
 
 #: builtin/modmgr.lua:577
 #, fuzzy
 msgid "Select Mod File:"
-msgstr "ワールド選択:"
+msgstr "Modファイル選択:"
 
 #: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
@@ -423,7 +423,7 @@ msgstr ""
 #: builtin/modmgr.lua:638
 #, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "ワールドの初期化に失敗"
+msgstr ""
 
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -513,11 +513,11 @@ msgstr ""
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "死亡しました。"
+msgstr "死にました"
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "リスポーン"
+msgstr "ﾘｽﾎﾟｰﾝ"
 
 #: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
 #: src/guiTextInputMenu.cpp:139
@@ -594,19 +594,19 @@ msgstr "コンソール"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Toggle fly"
-msgstr "飛べるモードをトグル"
+msgstr "飛行"
 
 #: src/guiKeyChangeMenu.cpp:402
 msgid "Toggle fast"
-msgstr "ファストモードをトグル"
+msgstr "高速移動"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Toggle noclip"
-msgstr "ノクリップモードをトグル"
+msgstr "すり抜け"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Range select"
-msgstr "範囲選択"
+msgstr "視野切り替え"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Print stacks"
@@ -630,7 +630,7 @@ msgstr "変更"
 
 #: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
-msgstr "新しいパスワードが一致しません!"
+msgstr "パスワードが一致しません!"
 
 #: src/guiPauseMenu.cpp:122
 msgid "Continue"
@@ -642,11 +642,11 @@ msgstr "パスワードの変更"
 
 #: src/guiPauseMenu.cpp:143
 msgid "Sound Volume"
-msgstr ""
+msgstr "音量"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr "メニューへ戻る"
+msgstr "タイトル"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
@@ -666,14 +666,25 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Default Controls:\n"
+"WASD:移動\n"
+"ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ/登る\n"
+"ｼﾌﾄ:忍び歩き/降りる\n"
+"Q:ｱｲﾃﾑを落とす\n"
+"I:インベントリ\n"
+"ﾏｳｽ:見回す\n"
+"左ｸﾘｯｸ:掘る/ﾊﾟﾝﾁ\n"
+"右ｸﾘｯｸ:使う\n"
+"ﾏｳｽﾎｲｰﾙ:ｱｲﾃﾑ選択\n"
+"T:ﾁｬｯﾄ\n"
 
 #: src/guiVolumeChange.cpp:107
 msgid "Sound Volume: "
-msgstr ""
+msgstr "音量"
 
 #: src/guiVolumeChange.cpp:121
 msgid "Exit"
-msgstr ""
+msgstr "戻る"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -693,7 +704,7 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Back Space"
+msgstr "Back"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -1012,7 +1023,7 @@ msgstr ""
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
-msgstr "ゲームをロードか見つかるのに失敗"
+msgstr "ゲームの読み込みか、見つけるのに失敗"
 
 #: src/main.cpp:1745
 msgid "Invalid gamespec."
@@ -1020,7 +1031,7 @@ msgstr ""
 
 #: src/main.cpp:1790
 msgid "Connection error (timed out?)"
-msgstr "接続エラー (タイムアウトか?)"
+msgstr "接続エラー (タイムアウト)"
 
 #~ msgid ""
 #~ "Warning: Some mods are not configured yet.\n"
