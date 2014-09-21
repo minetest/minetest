@@ -189,7 +189,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
-			NULL);
+			NULL, NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
