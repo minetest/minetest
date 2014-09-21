@@ -78,6 +78,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_invmgr(invmgr),
 	m_gamedef(gamedef),
 	m_tsrc(tsrc),
+	m_client(client),
 	m_selected_item(NULL),
 	m_selected_amount(0),
 	m_selected_dragging(false),
@@ -89,8 +90,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_text_dst(tdst),
 	m_ext_ptr(ext_ptr),
 	m_font(dev->getGUIEnvironment()->getSkin()->getFont()),
-	m_formspec_version(0),
-	m_client(client)
+	m_formspec_version(0)
 #ifdef __ANDROID__
 	,m_JavaDialogFieldName(L"")
 #endif
