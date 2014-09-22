@@ -64,7 +64,7 @@ bool Settings::parseConfigLines(std::istream &is,
 	bool end_found = false;
 
 	while (is.good() && !end_found) {
-		if (parseConfigObject(is, name, value, end, end_found)) {
+		if (parseConfigObject(is, name, value, end, &end_found)) {
 			m_settings[name] = value;
 		}
 	}
@@ -620,61 +620,134 @@ void Settings::update(const Settings &other)
 }
 
 
-inline bool Settings::parseConfigObject(std::istream &is,
-		std::string &name, std::string &value)
-{
-	bool end_found = false;
-	return parseConfigObject(is, name, value, "", end_found);
-}
-
-
 // NOTE: This function might be expanded to allow multi-line settings.
 bool Settings::parseConfigObject(std::istream &is,
 		std::string &name, std::string &value,
-		const std::string &end, bool &end_found)
+		const std::string &end, bool *end_found) const
 {
-	std::string line;
-	std::getline(is, line);
-	std::string trimmed_line = trim(line);
+	name.clear();
+	value.clear();
+	std::string *str = &name;
 
-	// Ignore empty lines and comments
-	if (trimmed_line.empty() || trimmed_line[0] == '#') {
-		value = trimmed_line;
+	bool got_name = false;
+	// Used to allow whitespace in values without escaping,
+	// while still trimming whitespace from the ends.
+	bool in_name_or_value = false;
+
+	// Used for tracking if we've found the ending
+	bool first_run = true;
+	std::string::size_type end_pos = 0;
+
+	char c;
+	while (c = is.get(), is.good()) {
+		if (first_run) {
+			first_run = false;
+			if (!end.empty() && c == end[0]) {
+				end_pos = 1;
+			}
+		} else if (end_pos > 0) {
+			if (end.size() == end_pos && c == '\n') {
+				*end_found = true;
+				return false;
+			}
+			if (c != end[end_pos++]) {
+				end_pos = 0;
+			}
+		}
+		if (c == '#' && !got_name && !in_name_or_value) {
+			is.unget();
+			std::getline(is, value);
+			return false;
+		} else if (c == '\\') {
+			char c2 = is.get();
+			if (!is.good())
+				return false;
+			in_name_or_value = true;
+			switch (c2) {
+				case 'n': *str += '\n'; break;
+				case 'r': *str += '\r'; break;
+				case 't': *str += '\t'; break;
+				case 's': *str += ' ' ; break;
+				case '=':
+					*str += c2;
+					break;
+				// By default ignore escaped characters,
+				// including newlines.
+				default: continue;
+			}
+		} else if (c == '=' && !got_name) {
+			in_name_or_value = false;
+			got_name = true;
+			str = &value;
+		} else if (c == '\n' && got_name == in_name_or_value) {
+			return got_name;
+		} else if (c == ' ' || c == '\t') {
+			if (got_name && in_name_or_value) {
+				*str += c;
+			}
+		} else {
+			in_name_or_value = true;
+			*str += c;
+		}
+	}
+	if (end_pos > 0 && end.size() == end_pos) {
+		*end_found = true;
 		return false;
 	}
-	if (trimmed_line == end) {
-		end_found = true;
-		return false;
+	if (got_name && in_name_or_value) {
+		return true;
 	}
 
-	Strfnd sf(trimmed_line);
+	return false;
+}
 
-	name = trim(sf.next("="));
-	if (name.empty()) {
-		value = trimmed_line;
-		return false;
+
+std::string Settings::escape(const std::string &str) const
+{
+	std::string escaped;
+	// Used to determine if we have to escape whitespace
+	bool found_nonwhite = false;
+	for (std::string::size_type i = 0; i < str.size(); i++) {
+		char c = str[i];
+		bool only_whitespace_following =
+			str.find_first_not_of(" \t", i) == std::string::npos;
+		if (only_whitespace_following || (!found_nonwhite &&
+				(c == ' ' || c == '\t' || c == '#'))) {
+			escaped += '\\';
+			escaped += (c == ' ') ? 's' :
+				c == '\t' ? 't' :
+				c;
+		}
+		switch (c) {
+		case '\n': escaped += "\\n"; break;
+		case '\r': escaped += "\\r"; break;
+		case '=':
+		case '\\':
+			(escaped += '\\') += c;
+			break;
+		default:
+			escaped += c;
+		}
 	}
-
-	value = trim(sf.next("\n"));
-
-	return true;
+	return escaped;
 }
 
 
 void Settings::getUpdatedConfigObject(std::istream &is,
 		std::list<std::string> &dst,
 		std::set<std::string> &updated,
-		bool &changed)
+		bool &changed) const
 {
 	std::string name, value;
-
-	if (!parseConfigObject(is, name, value)) {
-		dst.push_back(value + (is.eof() ? "" : "\n"));
+	if (!parseConfigObject(is, name, value) && is.good()) {
+		dst.push_back(value + '\n');
 		return;
 	}
 
-	if (m_settings.find(name) != m_settings.end()) {
-		std::string new_value = m_settings[name];
+	const std::map<std::string, std::string>::const_iterator it =
+			m_settings.find(name);
+	if (it != m_settings.end()) {
+		const std::string &new_value = it->second;
 
 		if (new_value != value) {
 			changed = true;
