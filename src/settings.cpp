@@ -215,7 +215,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 						<< name << "\": missing value" << std::endl;
 				return false;
 			}
-			value = argv[i++];
+			value = argv[++i];
 		}
 
 		set(name, value);
