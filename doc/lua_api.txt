@@ -266,6 +266,11 @@ Advanced texture modifiers:
     Colorize the textures with given color
     <color> as ColorString
 
+  [sheet:<w>x<h>:<x>,<y>
+    Retrieves a tile at position x,y from the base image
+    which it assumes to be a tilesheet with dimensions w,h.
+    
+
 Sounds
 -------
 Only OGG Vorbis files are supported.
