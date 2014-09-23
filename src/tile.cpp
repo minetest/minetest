@@ -1589,7 +1589,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
-			[sheet:W:H:X:Y
+			[sheet:WxH:X,Y
 			Retrieves a tile at position X,Y (in tiles)
 			from the base image it assumes to be a
 			tilesheet with dimensions W,H (in tiles).
@@ -1605,9 +1605,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			u32 w0 = stoi(sf.next(":"));
+			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
-			u32 x0 = stoi(sf.next(":"));
+			u32 x0 = stoi(sf.next(","));
 			u32 y0 = stoi(sf.next(":"));
 
 			core::dimension2d<u32> img_dim = baseimg->getDimension();

@@ -262,6 +262,10 @@ Advanced texture modifiers:
     Apply a mask to the base image.
     The mask is applied using binary AND.
 
+  [sheet:<w>x<h>:<x>,<y>
+    Retrieves a tile at position x,y from the base image
+    which it assumes to be a tilesheet with dimensions w,h.
+
 Sounds
 -------
 Only OGG Vorbis files are supported.
