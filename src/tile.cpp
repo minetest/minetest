@@ -1590,7 +1590,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
-<<<<<<< HEAD
 			[colorize:color
 			Overlays image with given color
 			color = color as ColorString
