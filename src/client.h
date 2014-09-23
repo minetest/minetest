@@ -508,6 +508,7 @@ private:
 	bool m_show_hud;
 	// Block mesh animation parameters
 	float m_animation_time;
+	bool m_enable_crack_animations;
 	int m_crack_level;
 	v3s16 m_crack_pos;
 	v3s16 m_highlighted_pos;

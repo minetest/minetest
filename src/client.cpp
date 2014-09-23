@@ -266,6 +266,8 @@ Client::Client(
 	m_removed_sounds_check_timer(0),
 	m_state(LC_Created)
 {
+	m_enable_crack_animations = g_settings->getBool("enable_crack_animations");
+
 	/*
 		Add local player
 	*/
@@ -2492,16 +2494,17 @@ void Client::setCrack(int level, v3s16 pos)
 
 	m_crack_level = level;
 	m_crack_pos = pos;
-
-	if(old_crack_level >= 0 && (level < 0 || pos != old_crack_pos))
-	{
-		// remove old crack
-		addUpdateMeshTaskForNode(old_crack_pos, false, true);
-	}
-	if(level >= 0 && (old_crack_level < 0 || pos != old_crack_pos))
-	{
-		// add new crack
-		addUpdateMeshTaskForNode(pos, false, true);
+	if (m_enable_crack_animations) {
+		if(old_crack_level >= 0 && (level < 0 || pos != old_crack_pos))
+		{
+			// remove old crack
+			addUpdateMeshTaskForNode(old_crack_pos, false, true);
+		}
+		if(level >= 0 && (old_crack_level < 0 || pos != old_crack_pos))
+		{
+			// add new crack
+			addUpdateMeshTaskForNode(pos, false, true);
+		}
 	}
 }
 

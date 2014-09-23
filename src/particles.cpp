@@ -253,7 +253,8 @@ void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
 		LocalPlayer *player, ClientEnvironment &env,
 		v3s16 pos, const TileSpec tiles[])
 {
-	addNodeParticle(gamedef, smgr, player, env, pos, tiles);
+	for (u16 i = 0; i < 4; i++)
+		addNodeParticle(gamedef, smgr, player, env, pos, tiles);
 }
 
 // add a particle of a node

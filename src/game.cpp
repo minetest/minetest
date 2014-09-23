@@ -1557,12 +1557,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 	/*
 		Find out size of crack animation
 	*/
-	int crack_animation_length = 5;
-	{
-		video::ITexture *t = tsrc->getTexture("crack_anylength.png");
-		v2u32 size = t->getOriginalSize();
-		crack_animation_length = size.Y / size.X;
-	}
+	int crack_animation_length = 16;
 
 	/*
 		Add some gui stuff
@@ -2945,7 +2940,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 				{
 					infostream<<"Digging completed"<<std::endl;
 					client.interact(2, pointed);
-					client.setCrack(-1, v3s16(0,0,0));
+					client.setCrack(16, v3s16(-1,-1,-1));
 					MapNode wasnode = map.getNode(nodepos);
 					client.removeNode(nodepos);
 
