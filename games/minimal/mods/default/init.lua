@@ -1135,8 +1135,9 @@ minetest.register_node("default:sign_wall", {
 
 minetest.register_node("default:chest", {
 	description = "Chest",
-	tiles ={"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
-		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
+	tiles ={"default_chest.png^[sheet:2:2:0:0", "default_chest.png^[sheet:2:2:0:0",
+		"default_chest.png^[sheet:2:2:1:0", "default_chest.png^[sheet:2:2:1:0",
+		"default_chest.png^[sheet:2:2:1:0", "default_chest.png^[sheet:2:2:0:1"},
 	paramtype2 = "facedir",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
@@ -1168,8 +1169,9 @@ end
 
 minetest.register_node("default:chest_locked", {
 	description = "Locked Chest",
-	tiles ={"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
-		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
+	tiles ={"default_chest.png^[sheet:2:2:0:0", "default_chest.png^[sheet:2:2:0:0",
+		"default_chest.png^[sheet:2:2:1:0", "default_chest.png^[sheet:2:2:1:0",
+		"default_chest.png^[sheet:2:2:1:0", "default_chest.png^[sheet:2:2:1:1"},
 	paramtype2 = "facedir",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
