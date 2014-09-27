@@ -35,6 +35,7 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_FLOWINGLIQUID, "flowingliquid"},
 		{NDT_GLASSLIKE, "glasslike"},
 		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_ALLFACES, "allfaces"},
 		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 		{NDT_TORCHLIKE, "torchlike"},

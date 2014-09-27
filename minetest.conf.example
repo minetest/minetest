@@ -101,6 +101,8 @@
 #liquid_update = 1.0
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
+# Connects glass if supported by node
+#connected_glass = false
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true

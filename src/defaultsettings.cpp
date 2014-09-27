@@ -100,6 +100,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "true");
+	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");

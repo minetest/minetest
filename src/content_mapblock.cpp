@@ -794,6 +794,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				collector.append(tile, vertices, 4, indices, 6);
 			}
 		break;}
+		case NDT_GLASSLIKE_FRAMED_OPTIONAL:
+			// This is always pre-converted to something else
+			assert(0);
+			break;
 		case NDT_GLASSLIKE_FRAMED:
 		{
 			static const v3s16 dirs[6] = {

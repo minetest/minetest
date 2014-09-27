@@ -607,6 +607,7 @@ public:
 
 		bool new_style_water = g_settings->getBool("new_style_water");
 		bool new_style_leaves = g_settings->getBool("new_style_leaves");
+		bool connected_glass = g_settings->getBool("connected_glass");
 		bool opaque_water = g_settings->getBool("opaque_water");
 		bool enable_shaders = g_settings->getBool("enable_shaders");
 		bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
@@ -665,6 +666,15 @@ public:
 			case NDT_GLASSLIKE_FRAMED:
 				f->solidness = 0;
 				f->visual_solidness = 1;
+				break;
+			case NDT_GLASSLIKE_FRAMED_OPTIONAL:
+				f->solidness = 0;
+				f->visual_solidness = 1;
+				if (connected_glass) {
+					f->drawtype = NDT_GLASSLIKE_FRAMED;
+				} else {
+					f->drawtype = NDT_GLASSLIKE;
+				}
 				break;
 			case NDT_ALLFACES:
 				f->solidness = 0;
