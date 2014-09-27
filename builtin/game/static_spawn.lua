@@ -31,3 +31,16 @@ core.register_on_respawnplayer(function(obj)
 	return put_player_in_spawn(obj)
 end)
 
+if core.setting_get("static_spawnpoint") then
+	core.register_chatcommand("spawn", {
+		description = "Teleports you to the spawn",
+		func = function(name, param)
+			local player = core.get_player_by_name(name)
+			local done = put_player_in_spawn(player)
+			if done then
+				return true, "Teleporting to spawn"
+			end
+			return false, "Teleporting to spawn failed"
+		end,
+	})
+end
