@@ -113,6 +113,16 @@ inline std::vector<std::wstring> str_split(const std::wstring &str, wchar_t deli
 	return parts;
 }
 
+inline std::vector<std::string> str_split(const std::string &str, char delimiter) {
+
+	std::vector<std::string> parts;
+	std::stringstream sstr(str);
+	std::string part;
+	while(std::getline(sstr, part, delimiter))
+		parts.push_back(part);
+	return parts;
+}
+
 inline std::string lowercase(const std::string &s)
 {
 	std::string s2;

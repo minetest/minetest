@@ -2144,7 +2144,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 			if (hovering && !m_selected_item)
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
 			if (tooltip_text != "") {
-				std::vector<std::string> tt_rows = split(tooltip_text,'\n');
+				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
@@ -2376,13 +2376,8 @@ void GUIFormSpecMenu::drawMenu()
 						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 						if (tooltip_x + tooltip_width > (s32)screenSize.X)
 							tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
-						int lines_count = 1;
-						size_t i = 0;
-						while ((i = m_tooltips[iter->fname].tooltip.find("\n", i)) != std::string::npos) {
-							lines_count++;
-							i += 2;
-						}
-						s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
+						std::vector<std::string> tt_rows = str_split(m_tooltips[iter->fname].tooltip, '\n');
+						s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 						m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
