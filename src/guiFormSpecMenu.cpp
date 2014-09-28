@@ -2141,10 +2141,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 			// Draw tooltip
 			std::string tooltip_text = "";
-			if(hovering && !m_selected_item)
+			if (hovering && !m_selected_item)
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
-			if(tooltip_text != "")
-			{
+			if (tooltip_text != "") {
+				std::vector<std::string> tt_rows = split(tooltip_text,'\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
@@ -2153,7 +2153,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				s32 tooltip_x = m_pointer.X + m_btn_height;
 				s32 tooltip_y = m_pointer.Y + m_btn_height;
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
