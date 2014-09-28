@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 
 #if USE_FREETYPE
-#include "xCGUITTFont.h"
+#include "CGUITTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)

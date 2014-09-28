@@ -70,7 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mods.h"
 #if USE_FREETYPE
-#include "xCGUITTFont.h"
+#include "CGUITTFont.h"
 #endif
 #include "util/string.h"
 #include "subgame.h"
