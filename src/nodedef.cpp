@@ -612,11 +612,17 @@ public:
 		bool enable_shaders = g_settings->getBool("enable_shaders");
 		bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
 		bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+		bool enable_water_surface_shader = g_settings->getBool("enable_water_surface_shader");
+		content_t water_source;
+		content_t water_flowing;
+		getId("water_source", water_source);
+		getId("water_flowing", water_flowing);
 
 		for(u32 i=0; i<m_content_features.size(); i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-
+			content_t id;
+			getId(f->name, id);
 			// Figure out the actual tiles to use
 			TileDef tiledef[6];
 			for(u32 j = 0; j < 6; j++)
@@ -714,15 +720,13 @@ public:
 
 			if (is_liquid){
 				material_type = (f->alpha == 255) ? TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-				if (f->name == "default:water_source")
+				if (id == water_source or id == water_flowing)
 					is_water_surface = true;
 			}
-			u32 tile_shader[6];
-			for(u16 j=0; j<6; j++)
-				tile_shader[j] = shdsrc->getShader("nodes_shader",material_type, f->drawtype);
 
-			if (is_water_surface)
-				tile_shader[0] = shdsrc->getShader("water_surface_shader",material_type, f->drawtype);
+			u32 tile_shader[6];
+			for(u16 j = 0; j < 6; j++)
+				tile_shader[j] = shdsrc->getShader("nodes_shader",material_type, f->drawtype);
 
 			// Tiles (fill in f->tiles[])
 			for(u16 j = 0; j < 6; j++){
@@ -775,8 +779,9 @@ public:
 					}
 				}
 			}
+
 			// Special tiles (fill in f->special_tiles[])
-			for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
+			for(u16 j = 0; j < CF_SPECIAL_COUNT; j++){
 				// Shader
 				f->special_tiles[j].shader_id = tile_shader[j];
 				// Texture
@@ -823,6 +828,40 @@ public:
 						if (f->special_tiles[j].normal_texture)
 							frame.normal_texture = tsrc->getNormalTexture(os.str());
 						f->special_tiles[j].frames[i]=frame;
+					}
+				}
+			}
+
+			// Replace water node tiles if water surface shader is enabled,
+			// turn off all the animations.
+			if (is_water_surface && enable_shaders && enable_water_surface_shader) {
+				u32 temp_id;
+				video::ITexture* normal_texture =
+					tsrc->getTexture("water_surface_normal.png", &temp_id);
+				u32 shader_id =
+					shdsrc->getShader("water_surface_shader",material_type, f->drawtype);
+				for(u16 j = 0; j < 6; j++) {
+					f->tiles[j].shader_id = shader_id;
+					f->tiles[j].normal_texture = normal_texture;
+					if (f->tiles[j].animation_frame_count > 1) {
+						f->tiles[j].animation_frame_count = 1;
+						f->tiles[j].material_flags &=
+							~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+						FrameSpec animation_frame = f->tiles[j].frames.find(0)->second;
+						f->tiles[j].texture = animation_frame.texture;
+						f->tiles[j].texture_id = animation_frame.texture_id;
+						}
+				}
+				for(u16 j = 0; j < CF_SPECIAL_COUNT; j++){
+					f->special_tiles[j].shader_id = shader_id;
+					f->special_tiles[j].normal_texture = normal_texture;
+					if (f->special_tiles[j].animation_frame_count > 1) {
+						f->special_tiles[j].animation_frame_count = 1;
+						f->special_tiles[j].material_flags &=
+							~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+						FrameSpec animation_frame = f->special_tiles[j].frames.find(0)->second;
+						f->special_tiles[j].texture = animation_frame.texture;
+						f->special_tiles[j].texture_id = animation_frame.texture_id;
 					}
 				}
 			}

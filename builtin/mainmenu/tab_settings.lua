@@ -157,7 +157,7 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
-		"box[7.75,0;4,4;#999999]" ..
+		"box[7.75,0;4,4.5;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
 	if not ANDROID then
@@ -203,7 +203,9 @@ local function formspec(tabview, name, tabdata)
 				"checkbox[8,2.5;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
 						.. dump(core.setting_getbool("enable_waving_leaves")) .. "]"..
 				"checkbox[8,3.0;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
-						.. dump(core.setting_getbool("enable_waving_plants")) .. "]"
+						.. dump(core.setting_getbool("enable_waving_plants")) .. "]"..
+				"checkbox[8,3.5;cb_water_surface_shader;".. fgettext("Water Surface Shader") .. ";"
+						.. dump(core.setting_getbool("enable_water_surface_shader")) .. "]"
 	else
 		tab_string = tab_string ..
 				"textlist[8.33,0.7;4,1;;#888888" .. fgettext("Bumpmapping") .. ";0;true]" ..
@@ -211,7 +213,8 @@ local function formspec(tabview, name, tabdata)
 				"textlist[8.33,1.7;4,1;;#888888" .. fgettext("Parallax Occlusion") .. ";0;true]" ..
 				"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Water") .. ";0;true]" ..
 				"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
-				"textlist[8.33,3.2;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
+				"textlist[8.33,3.2;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]" ..
+				"textlist[8.33,3.7;4,1;;#888888" .. fgettext("Water Surface Shader") .. ";0;true]"
 		end
 	return tab_string
 end
@@ -281,7 +284,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_waving_water", fields["cb_waving_water"])
 		return true
 	end
-	if fields["cb_waving_leaves"] then
+	if fields["cb_water_surface_shader"] then
+		core.setting_set("enable_water_surface_shader", fields["cb_water_surface_shader"])
+		return true
+	end	if fields["cb_waving_leaves"] then
 		core.setting_set("enable_waving_leaves", fields["cb_waving_leaves"])
 	end
 	if fields["cb_waving_plants"] then

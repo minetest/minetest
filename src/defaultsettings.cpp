@@ -145,6 +145,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("parallax_occlusion_scale", "0.06");
 	settings->setDefault("parallax_occlusion_bias", "0.03");
 	settings->setDefault("enable_waving_water", "false");
+	settings->setDefault("enable_water_surface_shader", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");
 	settings->setDefault("water_wave_speed", "5.0");
