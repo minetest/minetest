@@ -2423,7 +2423,6 @@ Node definition (register_node)
     diggable = true, -- If false, can never be dug
     climbable = false, -- If true, can be climbed on (ladder)
     buildable_to = false, -- If true, placed nodes can replace this node
-    drop = "", -- alternatively drop = { max_items = ..., items = { ... } }
     liquidtype = "none", -- "none"/"source"/"flowing"
     liquid_alternative_flowing = "", -- Flowing version of source liquid
     liquid_alternative_source = "", -- Source version of flowing liquid
@@ -2445,6 +2444,17 @@ Node definition (register_node)
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
         place = <SimpleSoundSpec>,
+    },
+    drop = "",  -- Name of dropped node when dug. Default is the node itself.
+    -- Alternatively:
+    drop = {
+        max_items = 1,  -- Maximum number of items to drop.
+        items = { -- Choose max_items randomly from this list.
+            {
+                items = {"foo:bar", "baz:frob"},  -- Choose one item randomly from this list.
+                rarity = 1,  -- Probability of getting is 1 / rarity.
+            },
+        },
     },
 
     on_construct = func(pos),
