@@ -47,7 +47,7 @@ int ScriptApiDetached::detached_inventory_AllowMove(
 	lua_pushstring(L, to_list.c_str());   // to_list
 	lua_pushinteger(L, to_index + 1);     // to_index
 	lua_pushinteger(L, count);            // count
-	objectrefGetOrCreate(player);         // player
+	objectrefGetOrCreate(L, player);      // player
 	if (lua_pcall(L, 7, 1, m_errorhandler))
 		scriptError();
 	if(!lua_isnumber(L, -1))
@@ -76,7 +76,7 @@ int ScriptApiDetached::detached_inventory_AllowPut(
 	lua_pushstring(L, listname.c_str()); // listname
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
-	objectrefGetOrCreate(player);        // player
+	objectrefGetOrCreate(L, player);     // player
 	if (lua_pcall(L, 5, 1, m_errorhandler))
 		scriptError();
 	if (!lua_isnumber(L, -1))
@@ -105,7 +105,7 @@ int ScriptApiDetached::detached_inventory_AllowTake(
 	lua_pushstring(L, listname.c_str()); // listname
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
-	objectrefGetOrCreate(player);        // player
+	objectrefGetOrCreate(L, player);     // player
 	if (lua_pcall(L, 5, 1, m_errorhandler))
 		scriptError();
 	if (!lua_isnumber(L, -1))
@@ -138,7 +138,7 @@ void ScriptApiDetached::detached_inventory_OnMove(
 	lua_pushstring(L, to_list.c_str());   // to_list
 	lua_pushinteger(L, to_index + 1);     // to_index
 	lua_pushinteger(L, count);            // count
-	objectrefGetOrCreate(player);         // player
+	objectrefGetOrCreate(L, player);      // player
 	if (lua_pcall(L, 7, 0, m_errorhandler))
 		scriptError();
 }
@@ -163,7 +163,7 @@ void ScriptApiDetached::detached_inventory_OnPut(
 	lua_pushstring(L, listname.c_str()); // listname
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
-	objectrefGetOrCreate(player);        // player
+	objectrefGetOrCreate(L, player);     // player
 	if (lua_pcall(L, 5, 0, m_errorhandler))
 		scriptError();
 }
@@ -188,7 +188,7 @@ void ScriptApiDetached::detached_inventory_OnTake(
 	lua_pushstring(L, listname.c_str()); // listname
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
-	objectrefGetOrCreate(player);        // player
+	objectrefGetOrCreate(L, player);     // player
 	if (lua_pcall(L, 5, 0, m_errorhandler))
 		scriptError();
 }

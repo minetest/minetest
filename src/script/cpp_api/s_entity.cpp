@@ -56,7 +56,7 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 
 	// Add object reference
 	// This should be userdata with metatable ObjectRef
-	objectrefGet(id);
+	objectrefGet(L, id);
 	luaL_checktype(L, -1, LUA_TUSERDATA);
 	if (!luaL_checkudata(L, -1, "ObjectRef"))
 		luaL_typerror(L, -1, "ObjectRef");
@@ -236,8 +236,8 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 		return;
 	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_pushvalue(L, object);                // self
-	objectrefGetOrCreate(puncher);           // Clicker reference
+	lua_pushvalue(L, object);  // self
+	objectrefGetOrCreate(L, puncher);  // Clicker reference
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
@@ -267,7 +267,7 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
-	objectrefGetOrCreate(clicker); // Clicker reference
+	objectrefGetOrCreate(L, clicker); // Clicker reference
 	// Call with 2 arguments, 0 results
 	if (lua_pcall(L, 2, 0, m_errorhandler))
 		scriptError();

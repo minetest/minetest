@@ -70,7 +70,7 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 	lua_getfield(L, -1, "registered_playerevents");
 
 	// Call callbacks
-	objectrefGetOrCreate(player);   // player
+	objectrefGetOrCreate(L, player);   // player
 	lua_pushstring(L,type.c_str()); // event type
 	try {
 		script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_FIRST);

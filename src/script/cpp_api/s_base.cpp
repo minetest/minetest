@@ -238,22 +238,18 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 }
 
 // Creates a new anonymous reference if cobj=NULL or id=0
-void ScriptApiBase::objectrefGetOrCreate(
+void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ServerActiveObject *cobj)
 {
-	lua_State *L = getStack();
-
 	if(cobj == NULL || cobj->getId() == 0){
 		ObjectRef::create(L, cobj);
 	} else {
-		objectrefGet(cobj->getId());
+		objectrefGet(L, cobj->getId());
 	}
 }
 
-void ScriptApiBase::objectrefGet(u16 id)
+void ScriptApiBase::objectrefGet(lua_State *L, u16 id)
 {
-	lua_State *L = getStack();
-
 	// Get core.object_refs[i]
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
@@ -263,3 +259,4 @@ void ScriptApiBase::objectrefGet(u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
+
