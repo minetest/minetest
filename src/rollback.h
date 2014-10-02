@@ -30,29 +30,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 
 
-struct Stack {
-	int node;
-	int quantity;
+class ItemStackRow : public ItemStack {
+public:
+	ItemStackRow & operator = (const ItemStack & other) {
+		*static_cast<ItemStack *>(this) = other;
+		return *this;
+	}
+
+	int id;
 };
 
-
 struct ActionRow {
-	int         id;
-	int         actor;
-	time_t      timestamp;
-	int         type;
-	std::string location, list;
-	int         index, add;
-	Stack       stack;
-	int         nodeMeta;
-	int         x, y, z;
-	int         oldNode;
-	int         oldParam1, oldParam2;
-	std::string oldMeta;
-	int         newNode;
-	int         newParam1, newParam2;
-	std::string newMeta;
-	int         guessed;
+	int          id;
+	int          actor;
+	time_t       timestamp;
+	int          type;
+	std::string  location, list;
+	int          index, add;
+	ItemStackRow stack;
+	int          nodeMeta;
+	int          x, y, z;
+	int          oldNode;
+	int          oldParam1, oldParam2;
+	std::string  oldMeta;
+	int          newNode;
+	int          newParam1, newParam2;
+	std::string  newMeta;
+	int          guessed;
 };
 
 
@@ -90,8 +94,6 @@ private:
 	int getNodeId(const std::string & name);
 	const char * getActorName(const int id);
 	const char * getNodeName(const int id);
-	Stack getStackFromString(const std::string & text);
-	std::string getStringFromStack(const Stack & stack);
 	bool createTables();
 	void initDatabase();
 	bool registerRow(const ActionRow & row);
@@ -135,6 +137,5 @@ private:
 	std::vector<Entity> knownActors;
 	std::vector<Entity> knownNodes;
 };
-
 
 #endif

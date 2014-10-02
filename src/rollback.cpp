@@ -35,11 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define POINTS_PER_NODE (16.0)
 
 #define SQLRES(f, good) \
-	if (f != good) {\
-		errorstream << "RollbackManager: execution of SQLite function"\
-			" failed (at " __FILE__ ":" TOSTRING(__LINE__) "): "\
-			<< sqlite3_errmsg(db) << std::endl;\
-		throw FileNotGoodException(sqlite3_errmsg(db));\
+	if ((f) != (good)) {\
+		throw FileNotGoodException(std::string("RollbackManager: " \
+			"SQLite3 error (" __FILE__ ":" TOSTRING(__LINE__) \
+			"): ") + sqlite3_errmsg(db)); \
 	}
 #define SQLOK(f) SQLRES(f, SQLITE_OK)
 
@@ -49,22 +48,21 @@ RollbackManager::RollbackManager(const std::string & world_path,
 	gamedef(gamedef_),
 	current_actor_is_guess(false)
 {
-	verbosestream
-		<< "RollbackManager::RollbackManager(" << world_path << ")"
-		<< std::endl;
+	verbosestream << "RollbackManager::RollbackManager(" << world_path
+		<< ")" << std::endl;
 
-	std::string filenameTXT	= world_path + DIR_DELIM "rollback.txt";
-	std::string migratingFlag = filenameTXT + ".migrating";
-
+	std::string txt_filename = world_path + DIR_DELIM "rollback.txt";
+	std::string migrating_flag = txt_filename + ".migrating";
 	database_path = world_path + DIR_DELIM "rollback.sqlite";
 
 	initDatabase();
 
-	if (fs::PathExists(filenameTXT) && (fs::PathExists(migratingFlag) ||
+	if (fs::PathExists(txt_filename) && (fs::PathExists(migrating_flag) ||
 			!fs::PathExists(database_path))) {
-		std::ofstream of(migratingFlag.c_str());
-		migrate(filenameTXT);
-		fs::DeleteSingleFileOrEmptyDirectory(migratingFlag);
+		std::ofstream of(migrating_flag.c_str());
+		of.close();
+		migrate(txt_filename);
+		fs::DeleteSingleFileOrEmptyDirectory(migrating_flag);
 	}
 }
 
@@ -108,12 +106,11 @@ int RollbackManager::getActorId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownActor_insert, 1, name.c_str(), -1, NULL));
+	SQLOK(sqlite3_bind_text(stmt_knownActor_insert, 1, name.c_str(), name.size(), NULL));
 	SQLRES(sqlite3_step(stmt_knownActor_insert), SQLITE_DONE);
 	SQLOK(sqlite3_reset(stmt_knownActor_insert));
 
 	int id = sqlite3_last_insert_rowid(db);
-
 	registerNewActor(id, name);
 
 	return id;
@@ -129,12 +126,11 @@ int RollbackManager::getNodeId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownNode_insert, 1, name.c_str(), -1, NULL));
+	SQLOK(sqlite3_bind_text(stmt_knownNode_insert, 1, name.c_str(), name.size(), NULL));
 	SQLRES(sqlite3_step(stmt_knownNode_insert), SQLITE_DONE);
 	SQLOK(sqlite3_reset(stmt_knownNode_insert));
 
 	int id = sqlite3_last_insert_rowid(db);
-
 	registerNewNode(id, name);
 
 	return id;
@@ -167,66 +163,47 @@ const char * RollbackManager::getNodeName(const int id)
 }
 
 
-Stack RollbackManager::getStackFromString(const std::string &text)
-{
-	Stack stack;
-
-	size_t off = text.find_last_of(" ");
-
-	stack.node     = getNodeId(text.substr(0, off));
-	stack.quantity = atoi(text.substr(off + 1).c_str());
-
-	return stack;
-}
-
-
-std::string RollbackManager::getStringFromStack(const Stack &stack)
-{
-	std::string text = getNodeName(stack.node);
-	text += ' ';
-	text += itos(stack.quantity);
-
-	return text;
-}
-
-
 bool RollbackManager::createTables()
 {
 	SQLOK(sqlite3_exec(db,
-		"CREATE TABLE IF NOT EXISTS `actor` ("
-			"`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			"`name` TEXT NOT NULL);"
-			"CREATE TABLE IF NOT EXISTS `node` ("
-			"`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			"`name` TEXT NOT NULL);"
-		"CREATE TABLE IF NOT EXISTS `action` ("
-			"`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
-			"`actor` INTEGER NOT NULL,"
-			"`timestamp` TIMESTAMP NOT NULL,"
-			"`type` INTEGER NOT NULL,"
-			"`list` TEXT,"
-			"`index` INTEGER,"
-			"`add` INTEGER,"
-			"`stackNode` INTEGER,"
-			"`stackQuantity` INTEGER,"
-			"`nodeMeta` INTEGER,"
-			"`x` INT,"
-			"`y` INT,"
-			"`z` INT,"
-			"`oldNode` INTEGER,"
-			"`oldParam1` INTEGER,"
-			"`oldParam2` INTEGER,"
-			"`oldMeta` TEXT,"
-			"`newNode` INTEGER,"
-			"`newParam1` INTEGER,"
-			"`newParam2` INTEGER,"
-			"`newMeta` TEXT,"
-			"`guessedActor` INTEGER,"
-			"FOREIGN KEY (`actor`)   REFERENCES `actor`(`id`),"
-			"FOREIGN KEY (`oldNode`) REFERENCES `node`(`id`),"
-			"FOREIGN KEY (`newNode`) REFERENCES `node`(`id`));"
-		"CREATE INDEX IF NOT EXISTS `actionActor` ON `action`(`actor`);"
-		"CREATE INDEX IF NOT EXISTS `actionTimestamp` ON `action`(`timestamp`);",
+		"CREATE TABLE IF NOT EXISTS `actor` (\n"
+		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
+		"	`name` TEXT NOT NULL\n"
+		");\n"
+		"CREATE TABLE IF NOT EXISTS `node` (\n"
+		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
+		"	`name` TEXT NOT NULL\n"
+		");\n"
+		"CREATE TABLE IF NOT EXISTS `action` (\n"
+		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+		"	`actor` INTEGER NOT NULL,\n"
+		"	`timestamp` TIMESTAMP NOT NULL,\n"
+		"	`type` INTEGER NOT NULL,\n"
+		"	`list` TEXT,\n"
+		"	`index` INTEGER,\n"
+		"	`add` INTEGER,\n"
+		"	`stackNode` INTEGER,\n"
+		"	`stackQuantity` INTEGER,\n"
+		"	`nodeMeta` INTEGER,\n"
+		"	`x` INT,\n"
+		"	`y` INT,\n"
+		"	`z` INT,\n"
+		"	`oldNode` INTEGER,\n"
+		"	`oldParam1` INTEGER,\n"
+		"	`oldParam2` INTEGER,\n"
+		"	`oldMeta` TEXT,\n"
+		"	`newNode` INTEGER,\n"
+		"	`newParam1` INTEGER,\n"
+		"	`newParam2` INTEGER,\n"
+		"	`newMeta` TEXT,\n"
+		"	`guessedActor` INTEGER,\n"
+		"	FOREIGN KEY (`actor`) REFERENCES `actor`(`id`),\n"
+		"	FOREIGN KEY (`stackNode`) REFERENCES `node`(`id`),\n"
+		"	FOREIGN KEY (`oldNode`)   REFERENCES `node`(`id`),\n"
+		"	FOREIGN KEY (`newNode`)   REFERENCES `node`(`id`)\n"
+		");\n"
+		"CREATE INDEX IF NOT EXISTS `actionActor` ON `action`(`actor`);\n"
+		"CREATE INDEX IF NOT EXISTS `actionTimestamp` ON `action`(`timestamp`);\n",
 		NULL, NULL, NULL));
 	verbosestream << "SQL Rollback: SQLite3 database structure was created" << std::endl;
 
@@ -290,8 +267,8 @@ void RollbackManager::initDatabase()
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		" FROM	`action`\n"
-		" WHERE	`timestamp` >= ?\n"
+		" FROM `action`\n"
+		" WHERE `timestamp` >= ?\n"
 		" ORDER BY `timestamp` DESC, `id` DESC",
 		-1, &stmt_select, NULL));
 
@@ -303,14 +280,14 @@ void RollbackManager::initDatabase()
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		"FROM	`action`\n"
-		"WHERE	`timestamp` >= ?\n"
-		"AND   `x` IS NOT NULL\n"
-		"AND   `y` IS NOT NULL\n"
-		"AND   `z` IS NOT NULL\n"
-		"AND   ABS(`x` - ?) <= ?\n"
-		"AND   ABS(`y` - ?) <= ?\n"
-		"AND   ABS(`z` - ?) <= ?\n"
+		"FROM `action`\n"
+		"WHERE `timestamp` >= ?\n"
+		"	AND `x` IS NOT NULL\n"
+		"	AND `y` IS NOT NULL\n"
+		"	AND `z` IS NOT NULL\n"
+		"	AND `x` BETWEEN ? AND ?\n"
+		"	AND `y` BETWEEN ? AND ?\n"
+		"	AND `z` BETWEEN ? AND ?\n"
 		"ORDER BY `timestamp` DESC, `id` DESC\n"
 		"LIMIT 0,?",
 		-1, &stmt_select_range, NULL));
@@ -323,10 +300,10 @@ void RollbackManager::initDatabase()
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		" FROM	`action`\n"
-		" WHERE	`timestamp` >= ?\n"
-		" AND   `actor` = ?\n"
-		" ORDER BY `timestamp` DESC, `id` DESC\n",
+		"FROM `action`\n"
+		"WHERE `timestamp` >= ?\n"
+		"	AND `actor` = ?\n"
+		"ORDER BY `timestamp` DESC, `id` DESC\n",
 		-1, &stmt_select_withActor, NULL));
 
 	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `actor`",
@@ -358,8 +335,6 @@ void RollbackManager::initDatabase()
 		);
 	}
 	SQLOK(sqlite3_reset(stmt_knownNode_select));
-
-	return;
 }
 
 
@@ -369,31 +344,30 @@ bool RollbackManager::registerRow(const ActionRow & row)
 
 	bool nodeMeta = false;
 
-	SQLOK(sqlite3_bind_int(stmt_do, 1, row.actor));
+	SQLOK(sqlite3_bind_int  (stmt_do, 1, row.actor));
 	SQLOK(sqlite3_bind_int64(stmt_do, 2, row.timestamp));
-	SQLOK(sqlite3_bind_int(stmt_do, 3, row.type));
+	SQLOK(sqlite3_bind_int  (stmt_do, 3, row.type));
 
 	if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
 		const std::string & loc = row.location;
-		nodeMeta = (loc.substr(0, loc.find(':')) == "nodemeta");
+		nodeMeta = (loc.substr(0, 9) == "nodemeta:");
 
 		SQLOK(sqlite3_bind_text(stmt_do, 4, row.list.c_str(), row.list.size(), NULL));
-		SQLOK(sqlite3_bind_int(stmt_do, 5, row.index));
-		SQLOK(sqlite3_bind_int(stmt_do, 6, row.add));
-		SQLOK(sqlite3_bind_int(stmt_do, 7, row.stack.node));
-		SQLOK(sqlite3_bind_int(stmt_do, 8, row.stack.quantity));
-		SQLOK(sqlite3_bind_int(stmt_do, 9, (int) nodeMeta));
+		SQLOK(sqlite3_bind_int (stmt_do, 5, row.index));
+		SQLOK(sqlite3_bind_int (stmt_do, 6, row.add));
+		SQLOK(sqlite3_bind_int (stmt_do, 7, row.stack.id));
+		SQLOK(sqlite3_bind_int (stmt_do, 8, row.stack.count));
+		SQLOK(sqlite3_bind_int (stmt_do, 9, (int) nodeMeta));
 
 		if (nodeMeta) {
-			std::string x, y, z;
-			int l, r;
-			l = loc.find(':') + 1;
-			r = loc.find(',');
-			x = loc.substr(l, r - l);
-			l = r + 1;
-			r = loc.find(',', l);
-			y = loc.substr(l, r - l);
-			z = loc.substr(r + 1);
+			std::string::size_type p1, p2;
+			p1 = loc.find(':') + 1;
+			p2 = loc.find(',');
+			std::string x = loc.substr(p1, p2 - p1);
+			p1 = p2 + 1;
+			p2 = loc.find(',', p1);
+			std::string y = loc.substr(p1, p2 - p1);
+			std::string z = loc.substr(p2 + 1);
 			SQLOK(sqlite3_bind_int(stmt_do, 10, atoi(x.c_str())));
 			SQLOK(sqlite3_bind_int(stmt_do, 11, atoi(y.c_str())));
 			SQLOK(sqlite3_bind_int(stmt_do, 12, atoi(z.c_str())));
@@ -408,18 +382,18 @@ bool RollbackManager::registerRow(const ActionRow & row)
 	}
 
 	if (row.type == RollbackAction::TYPE_SET_NODE) {
-		SQLOK(sqlite3_bind_int(stmt_do, 10, row.x));
-		SQLOK(sqlite3_bind_int(stmt_do, 11, row.y));
-		SQLOK(sqlite3_bind_int(stmt_do, 12, row.z));
-		SQLOK(sqlite3_bind_int(stmt_do, 13, row.oldNode));
-		SQLOK(sqlite3_bind_int(stmt_do, 14, row.oldParam1));
-		SQLOK(sqlite3_bind_int(stmt_do, 15, row.oldParam2));
+		SQLOK(sqlite3_bind_int (stmt_do, 10, row.x));
+		SQLOK(sqlite3_bind_int (stmt_do, 11, row.y));
+		SQLOK(sqlite3_bind_int (stmt_do, 12, row.z));
+		SQLOK(sqlite3_bind_int (stmt_do, 13, row.oldNode));
+		SQLOK(sqlite3_bind_int (stmt_do, 14, row.oldParam1));
+		SQLOK(sqlite3_bind_int (stmt_do, 15, row.oldParam2));
 		SQLOK(sqlite3_bind_text(stmt_do, 16, row.oldMeta.c_str(), row.oldMeta.size(), NULL));
-		SQLOK(sqlite3_bind_int(stmt_do, 17, row.newNode));
-		SQLOK(sqlite3_bind_int(stmt_do, 18, row.newParam1));
-		SQLOK(sqlite3_bind_int(stmt_do, 19, row.newParam2));
+		SQLOK(sqlite3_bind_int (stmt_do, 17, row.newNode));
+		SQLOK(sqlite3_bind_int (stmt_do, 18, row.newParam1));
+		SQLOK(sqlite3_bind_int (stmt_do, 19, row.newParam2));
 		SQLOK(sqlite3_bind_text(stmt_do, 20, row.newMeta.c_str(), row.newMeta.size(), NULL));
-		SQLOK(sqlite3_bind_int(stmt_do, 21, row.guessed ? 1 : 0));
+		SQLOK(sqlite3_bind_int (stmt_do, 21, row.guessed ? 1 : 0));
 	} else {
 		if (!nodeMeta) {
 			SQLOK(sqlite3_bind_null(stmt_do, 10));
@@ -458,19 +432,19 @@ const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt* s
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
 		ActionRow row;
 
-		row.actor     = sqlite3_column_int(stmt, 0);
+		row.actor     = sqlite3_column_int  (stmt, 0);
 		row.timestamp = sqlite3_column_int64(stmt, 1);
-		row.type      = sqlite3_column_int(stmt, 2);
+		row.type      = sqlite3_column_int  (stmt, 2);
 
 		if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
-			text               = sqlite3_column_text(stmt, 3);
-			size               = sqlite3_column_bytes(stmt, 3);
-			row.list           = std::string(reinterpret_cast<const char*>(text), size);
-			row.index          = sqlite3_column_int(stmt, 4);
-			row.add            = sqlite3_column_int(stmt, 5);
-			row.stack.node     = sqlite3_column_int(stmt, 6);
-			row.stack.quantity = sqlite3_column_int(stmt, 7);
-			row.nodeMeta       = sqlite3_column_int(stmt, 8);
+			text = sqlite3_column_text (stmt, 3);
+			size = sqlite3_column_bytes(stmt, 3);
+			row.list        = std::string(reinterpret_cast<const char*>(text), size);
+			row.index       = sqlite3_column_int(stmt, 4);
+			row.add         = sqlite3_column_int(stmt, 5);
+			row.stack.id    = sqlite3_column_int(stmt, 6);
+			row.stack.count = sqlite3_column_int(stmt, 7);
+			row.nodeMeta    = sqlite3_column_int(stmt, 8);
 		}
 
 		if (row.type == RollbackAction::TYPE_SET_NODE || row.nodeMeta) {
@@ -480,29 +454,30 @@ const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt* s
 		}
 
 		if (row.type == RollbackAction::TYPE_SET_NODE) {
-			row.oldNode		= sqlite3_column_int(stmt, 12);
+			row.oldNode   = sqlite3_column_int(stmt, 12);
 			row.oldParam1 = sqlite3_column_int(stmt, 13);
 			row.oldParam2 = sqlite3_column_int(stmt, 14);
-			text          = sqlite3_column_text(stmt, 15);
-			size          = sqlite3_column_bytes(stmt, 15);
+			text = sqlite3_column_text (stmt, 15);
+			size = sqlite3_column_bytes(stmt, 15);
 			row.oldMeta   = std::string(reinterpret_cast<const char*>(text), size);
 			row.newNode   = sqlite3_column_int(stmt, 16);
 			row.newParam1 = sqlite3_column_int(stmt, 17);
 			row.newParam2 = sqlite3_column_int(stmt, 18);
-			text          = sqlite3_column_text(stmt, 19);
-			size          = sqlite3_column_bytes(stmt, 19);
+			text = sqlite3_column_text(stmt, 19);
+			size = sqlite3_column_bytes(stmt, 19);
 			row.newMeta   = std::string(reinterpret_cast<const char*>(text), size);
 			row.guessed   = sqlite3_column_int(stmt, 20);
 		}
 
-		row.location = row.nodeMeta ? "nodemeta:" : getActorName(row.actor);
-
 		if (row.nodeMeta) {
-			row.location.append(itos(row.x));
-			row.location.append(",");
-			row.location.append(itos(row.y));
-			row.location.append(",");
-			row.location.append(itos(row.z));
+			row.location = "nodemeta:";
+			row.location += itos(row.x);
+			row.location += ',';
+			row.location += itos(row.y);
+			row.location += ',';
+			row.location += itos(row.z);
+		} else {
+			row.location = getActorName(row.actor);
 		}
 
 		rows.push_back(row);
@@ -528,7 +503,8 @@ ActionRow RollbackManager::actionRowFromRollbackAction(const RollbackAction & ac
 		row.list     = action.inventory_list;
 		row.index    = action.inventory_index;
 		row.add      = action.inventory_add;
-		row.stack    = getStackFromString(action.inventory_stack);
+		row.stack    = action.inventory_stack;
+		row.stack.id = getNodeId(row.stack.name);
 	} else {
 		row.x         = action.p.X;
 		row.y         = action.p.Y;
@@ -566,7 +542,10 @@ const std::list<RollbackAction> RollbackManager::rollbackActionsFromActionRows(
 			action.inventory_list     = it->list;
 			action.inventory_index    = it->index;
 			action.inventory_add      = it->add;
-			action.inventory_stack    = getStringFromStack(it->stack);
+			action.inventory_stack    = it->stack;
+			if (action.inventory_stack.name.empty()) {
+				action.inventory_stack.name = getNodeName(it->stack.id);
+			}
 			break;
 
 		case RollbackAction::TYPE_SET_NODE:
@@ -595,10 +574,10 @@ const std::list<RollbackAction> RollbackManager::rollbackActionsFromActionRows(
 
 const std::list<ActionRow> RollbackManager::getRowsSince(time_t firstTime, const std::string & actor)
 {
-	sqlite3_stmt *stmt_stmt = (!actor.length()) ? stmt_select : stmt_select_withActor;
+	sqlite3_stmt *stmt_stmt = actor.empty() ? stmt_select : stmt_select_withActor;
 	sqlite3_bind_int64(stmt_stmt, 1, firstTime);
 
-	if (actor.length()) {
+	if (!actor.empty()) {
 		sqlite3_bind_int(stmt_stmt, 2, getActorId(actor));
 	}
 
@@ -609,18 +588,18 @@ const std::list<ActionRow> RollbackManager::getRowsSince(time_t firstTime, const
 }
 
 
-const std::list<ActionRow> RollbackManager::getRowsSince_range(time_t firstTime, v3s16 p, int range,
-                int limit)
+const std::list<ActionRow> RollbackManager::getRowsSince_range(
+		time_t start_time, v3s16 p, int range, int limit)
 {
 
-	sqlite3_bind_int64(stmt_select_range, 1, firstTime);
-	sqlite3_bind_int(stmt_select_range, 2, (int) p.X);
-	sqlite3_bind_int(stmt_select_range, 3, range);
-	sqlite3_bind_int(stmt_select_range, 4, (int) p.Y);
-	sqlite3_bind_int(stmt_select_range, 5, range);
-	sqlite3_bind_int(stmt_select_range, 6, (int) p.Z);
-	sqlite3_bind_int(stmt_select_range, 7, range);
-	sqlite3_bind_int(stmt_select_range, 8, limit);
+	sqlite3_bind_int64(stmt_select_range, 1, start_time);
+	sqlite3_bind_int  (stmt_select_range, 2, static_cast<int>(p.X - range));
+	sqlite3_bind_int  (stmt_select_range, 3, static_cast<int>(p.X + range));
+	sqlite3_bind_int  (stmt_select_range, 4, static_cast<int>(p.Y - range));
+	sqlite3_bind_int  (stmt_select_range, 5, static_cast<int>(p.Y + range));
+	sqlite3_bind_int  (stmt_select_range, 6, static_cast<int>(p.Z - range));
+	sqlite3_bind_int  (stmt_select_range, 7, static_cast<int>(p.Z + range));
+	sqlite3_bind_int  (stmt_select_range, 8, limit);
 
 	const std::list<ActionRow> & rows = actionRowsFromSelect(stmt_select_range);
 	sqlite3_reset(stmt_select_range);
@@ -629,134 +608,129 @@ const std::list<ActionRow> RollbackManager::getRowsSince_range(time_t firstTime,
 }
 
 
-const std::list<RollbackAction> RollbackManager::getActionsSince_range(time_t firstTime, v3s16 p, int range,
-                int limit)
+const std::list<RollbackAction> RollbackManager::getActionsSince_range(
+		time_t start_time, v3s16 p, int range, int limit)
 {
-	return rollbackActionsFromActionRows(getRowsSince_range(firstTime, p, range, limit));
+	return rollbackActionsFromActionRows(getRowsSince_range(start_time, p, range, limit));
 }
 
 
-const std::list<RollbackAction> RollbackManager::getActionsSince(time_t firstTime, const std::string & actor)
+const std::list<RollbackAction> RollbackManager::getActionsSince(
+		time_t start_time, const std::string & actor)
 {
-	std::list<ActionRow> rows = getRowsSince(firstTime, actor);
-	return rollbackActionsFromActionRows(rows);
+	return rollbackActionsFromActionRows(getRowsSince(start_time, actor));
 }
 
 
-void RollbackManager::migrate(const std::string & filepath)
+void RollbackManager::migrate(const std::string & file_path)
 {
-	std::cout << "Migrating from rollback.txt to rollback.sqlite" << std::endl;
+	std::cout << "Migrating from rollback.txt to rollback.sqlite." << std::endl;
 
-	std::ifstream fh(filepath.c_str(), std::ios::in | std::ios::ate);
+	std::ifstream fh(file_path.c_str(), std::ios::in | std::ios::ate);
 	if (!fh.good()) {
 		throw FileNotGoodException("Unable to open rollback.txt");
 	}
 
-	std::streampos filesize = fh.tellg();
+	std::streampos file_size = fh.tellg();
 
-	if (filesize > 10) {
-		fh.seekg(0);
-
-		std::string bit;
-		int i   = 0;
-		int id  = 1;
-		time_t t   = 0;
-		do {
-			ActionRow row;
-
-			row.id = id;
-
-			// Get the timestamp
-			std::getline(fh, bit, ' ');
-			bit = trim(bit);
-			if (!atoi(trim(bit).c_str())) {
-				std::getline(fh, bit);
-				continue;
-			}
-			row.timestamp = atoi(bit.c_str());
-
-			// Get the actor
-			row.actor = getActorId(trim(deSerializeJsonString(fh)));
-
-			// Get the action type
-			std::getline(fh, bit, '[');
-			std::getline(fh, bit, ' ');
-
-			if (bit == "modify_inventory_stack") {
-				row.type = RollbackAction::TYPE_MODIFY_INVENTORY_STACK;
-			}
-
-			if (bit == "set_node") {
-				row.type = RollbackAction::TYPE_SET_NODE;
-			}
-
-			if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
-				row.location = trim(deSerializeJsonString(fh));
-				std::getline(fh, bit, ' ');
-				row.list     = trim(deSerializeJsonString(fh));
-				std::getline(fh, bit, ' ');
-				std::getline(fh, bit, ' ');
-				row.index    = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ' ');
-				row.add      = (int)(trim(bit) == "add");
-				row.stack    = getStackFromString(trim(deSerializeJsonString(fh)));
-				std::getline(fh, bit);
-			} else if (row.type == RollbackAction::TYPE_SET_NODE) {
-				std::getline(fh, bit, '(');
-				std::getline(fh, bit, ',');
-				row.x       = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ',');
-				row.y       = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ')');
-				row.z       = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ' ');
-				row.oldNode = getNodeId(trim(deSerializeJsonString(fh)));
-				std::getline(fh, bit, ' ');
-				std::getline(fh, bit, ' ');
-				row.oldParam1 = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ' ');
-				row.oldParam2 = atoi(trim(bit).c_str());
-				row.oldMeta   = trim(deSerializeJsonString(fh));
-				std::getline(fh, bit, ' ');
-				row.newNode   = getNodeId(trim(deSerializeJsonString(fh)));
-				std::getline(fh, bit, ' ');
-				std::getline(fh, bit, ' ');
-				row.newParam1 = atoi(trim(bit).c_str());
-				std::getline(fh, bit, ' ');
-				row.newParam2 = atoi(trim(bit).c_str());
-				row.newMeta   = trim(deSerializeJsonString(fh));
-				std::getline(fh, bit, ' ');
-				std::getline(fh, bit, ' ');
-				std::getline(fh, bit);
-				row.guessed = (int)(trim(bit) == "actor_is_guess");
-			}
-
-			if (i == 0) {
-				t = time(0);
-				sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
-			}
-
-			registerRow(row);
-			++i;
-
-			if (time(0) - t) {
-				sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
-				t = time(0) - t;
-				std::cout
-				                << " Done: " << (int)(((float) fh.tellg() / (float) filesize) * 100) << "%"
-				                << " Speed: " << i / t << "/second     \r" << std::flush;
-				i = 0;
-			}
-
-			++id;
-		} while (!fh.eof() && fh.good());
-	} else {
-		errorstream << "Empty rollback log" << std::endl;
+	if (file_size > 10) {
+		errorstream << "Empty rollback log." << std::endl;
+		return;
 	}
 
+	fh.seekg(0);
+
+	std::string bit;
+	int i = 0;
+	int id = 1;
+	time_t start = time(0);
+	time_t t = start;
+	sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
+	do {
+		ActionRow row;
+
+		row.id = id;
+
+		// Get the timestamp
+		std::getline(fh, bit, ' ');
+		bit = trim(bit);
+		if (!atoi(bit.c_str())) {
+			std::getline(fh, bit);
+			continue;
+		}
+		row.timestamp = atoi(bit.c_str());
+
+		// Get the actor
+		row.actor = getActorId(deSerializeJsonString(fh));
+
+		// Get the action type
+		std::getline(fh, bit, '[');
+		std::getline(fh, bit, ' ');
+
+		if (bit == "modify_inventory_stack") {
+			row.type = RollbackAction::TYPE_MODIFY_INVENTORY_STACK;
+			row.location = trim(deSerializeJsonString(fh));
+			std::getline(fh, bit, ' ');
+			row.list     = trim(deSerializeJsonString(fh));
+			std::getline(fh, bit, ' ');
+			std::getline(fh, bit, ' ');
+			row.index    = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ' ');
+			row.add      = (int)(trim(bit) == "add");
+			row.stack.deSerialize(deSerializeJsonString(fh));
+			row.stack.id = getNodeId(row.stack.name);
+			std::getline(fh, bit);
+		} else if (bit == "set_node") {
+			row.type = RollbackAction::TYPE_SET_NODE;
+			std::getline(fh, bit, '(');
+			std::getline(fh, bit, ',');
+			row.x       = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ',');
+			row.y       = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ')');
+			row.z       = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ' ');
+			row.oldNode = getNodeId(trim(deSerializeJsonString(fh)));
+			std::getline(fh, bit, ' ');
+			std::getline(fh, bit, ' ');
+			row.oldParam1 = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ' ');
+			row.oldParam2 = atoi(trim(bit).c_str());
+			row.oldMeta   = trim(deSerializeJsonString(fh));
+			std::getline(fh, bit, ' ');
+			row.newNode   = getNodeId(trim(deSerializeJsonString(fh)));
+			std::getline(fh, bit, ' ');
+			std::getline(fh, bit, ' ');
+			row.newParam1 = atoi(trim(bit).c_str());
+			std::getline(fh, bit, ' ');
+			row.newParam2 = atoi(trim(bit).c_str());
+			row.newMeta   = trim(deSerializeJsonString(fh));
+			std::getline(fh, bit, ' ');
+			std::getline(fh, bit, ' ');
+			std::getline(fh, bit);
+			row.guessed = (int)(trim(bit) == "actor_is_guess");
+		} else {
+			errorstream << "Unrecognized rollback action type \""
+				<< bit << "\"!" << std::endl;
+			continue;
+		}
+
+		registerRow(row);
+		++i;
+
+		if (time(0) - t >= 1) {
+			sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+			t = time(0);
+			std::cout
+				<< " Done: " << static_cast<int>((static_cast<float>(fh.tellg()) / static_cast<float>(file_size)) * 100) << "%"
+				<< " Speed: " << i / (t - start) << "/second     \r" << std::flush;
+			sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
+		}
+	} while (fh.good());
+
 	std::cout
-	                << " Done: 100%                                   " << std::endl
-	                << " Now you can delete the old rollback.txt file." << std::endl;
+		<< " Done: 100%                                   " << std::endl
+		<< "Now you can delete the old rollback.txt file." << std::endl;
 }
 
 

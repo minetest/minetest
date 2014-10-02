@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef INVENTORY_HEADER
 #define INVENTORY_HEADER
 
-#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "irrlichttypes.h"
@@ -39,11 +39,16 @@ struct ItemStack
 
 	// Serialization
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IItemDefManager *itemdef);
-	void deSerialize(const std::string &s, IItemDefManager *itemdef);
+	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
+	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
-	std::string getItemString() const;
+	std::string getItemString() const
+	{
+		std::ostringstream os(std::ios::binary);
+		serialize(os);
+		return os.str();
+	}
 
 	/*
 		Quantity methods
