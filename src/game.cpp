@@ -2786,8 +2786,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(pointed != pointed_old)
 		{
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
-			if (g_settings->getBool("enable_node_highlighting"))
-				client.setHighlighted(pointed.node_undersurface, show_hud);
+			if (g_settings->getBool("enable_node_highlighting")) {
+				if (pointed.type == POINTEDTHING_NODE) {
+					client.setHighlighted(pointed.node_undersurface, show_hud);
+				} else {
+					client.setHighlighted(pointed.node_undersurface, false);
+				}
+			}
 		}
 
 		/*
