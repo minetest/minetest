@@ -229,7 +229,7 @@ struct TileSpec
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
-		switch(material_type){
+		switch (material_type) {
 		case TILE_MATERIAL_BASIC:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
@@ -247,14 +247,16 @@ struct TileSpec
 			break;
 		case TILE_MATERIAL_WAVING_PLANTS:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		break;
+			break;
 		}
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
+			? true : false;
 	}
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
+			? true : false;
 	}
 	
 	u32 texture_id;

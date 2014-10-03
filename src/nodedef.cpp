@@ -536,8 +536,8 @@ content_t CNodeDefManager::getId(const std::string &name) const
 }
 
 
-void CNodeDefManager::getIds(const std::string &name, std::set<content_t> &result)
-		const
+void CNodeDefManager::getIds(const std::string &name,
+		std::set<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0,6) != "group:") {
@@ -768,6 +768,8 @@ void CNodeDefManager::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			break;
 		case NDT_FIRELIKE:
 			f->backface_culling = false;
+			f->solidness = 0;
+			break;
 		case NDT_TORCHLIKE:
 		case NDT_SIGNLIKE:
 		case NDT_FENCELIKE:

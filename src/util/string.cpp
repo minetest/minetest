@@ -30,7 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../porting.h"
 
 #ifdef __ANDROID__
-const wchar_t* wide_chars = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+const wchar_t* wide_chars =
+	L" !\"#$%&'()*+,-./0123456789:;<=>?@"
+	L"ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
+	L"abcdefghijklmnopqrstuvwxyz{|}~";
 
 int wctomb(char *s, wchar_t wc)
 {
