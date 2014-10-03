@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "util/string.h"
 #include "util/numeric.h"
-#include "guiFormSpecMenu.h" // for parseColor()
+#include "util/string.h" // for parseColorString()
 #include "main.h"
 #include "settings.h" // for settings
 #include "porting.h" // for dpi
@@ -164,7 +164,7 @@ void GUITable::setTextList(const std::vector<std::string> &content,
 			cell->content_index = allocString(s.substr(2));
 		}
 		else if (s[0] == '#' && s.size() >= 7 &&
-				GUIFormSpecMenu::parseColor(
+				parseColorString(
 					s.substr(0,7), cell->color, false)) {
 			// single # for color
 			cell->color_defined = true;
@@ -211,15 +211,15 @@ void GUITable::setTable(const TableOptions &options,
 		const std::string &name = options[k].name;
 		const std::string &value = options[k].value;
 		if (name == "color")
-			GUIFormSpecMenu::parseColor(value, m_color, false);
+			parseColorString(value, m_color, false);
 		else if (name == "background")
-			GUIFormSpecMenu::parseColor(value, m_background, false);
+			parseColorString(value, m_background, false);
 		else if (name == "border")
 			m_border = is_yes(value);
 		else if (name == "highlight")
-			GUIFormSpecMenu::parseColor(value, m_highlight, false);
+			parseColorString(value, m_highlight, false);
 		else if (name == "highlight_text")
-			GUIFormSpecMenu::parseColor(value, m_highlight_text, false);
+			parseColorString(value, m_highlight_text, false);
 		else if (name == "opendepth")
 			opendepth = stoi(value);
 		else
@@ -416,7 +416,7 @@ void GUITable::setTable(const TableOptions &options,
 		else if (columntype == COLUMN_TYPE_COLOR) {
 			for (s32 i = 0; i < rowcount; ++i) {
 				video::SColor cellcolor(255, 255, 255, 255);
-				if (GUIFormSpecMenu::parseColor(content[i * colcount + j], cellcolor, true))
+				if (parseColorString(content[i * colcount + j], cellcolor, true))
 					rows[i].colors.push_back(std::make_pair(cellcolor, j+span));
 			}
 		}

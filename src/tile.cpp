@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "strfnd.h"
+#include "util/string.h" // for parseColorString()
 
 #ifdef __ANDROID__
 #include <GLES/gl.h>
@@ -1588,10 +1589,46 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						<< filename << "\".";
 			}
 		}
+		/*
+			[colorize:color
+			Overlays image with given color
+			color = color as ColorString
+		*/
+		else if (part_of_name.substr(0,10) == "[colorize:") {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string color_str = sf.next(":");
+
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			video::SColor color;
+			if (!parseColorString(color_str, color, false))
+				return false;
+			
+			core::dimension2d<u32> dim = baseimg->getDimension();
+			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
+
+			if (!img) {
+				errorstream << "generateImagePart(): Could not create image "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			img->fill(video::SColor(color));
+			// Overlay the colored image
+			blit_with_alpha_overlay(img, baseimg, v2s32(0,0), v2s32(0,0), dim);
+			img->drop();
+		}
 		else
 		{
-			errorstream<<"generateImagePart(): Invalid "
-					" modification: \""<<part_of_name<<"\""<<std::endl;
+			errorstream << "generateImagePart(): Invalid "
+					" modification: \"" << part_of_name << "\"" << std::endl;
 		}
 	}
 

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "string.h"
 #include "pointer.h"
 #include "numeric.h"
+#include "log.h"
 
 #include <sstream>
 #include <iomanip>
@@ -302,4 +303,66 @@ u64 read_seed(const char *str)
 		num = murmur_hash_64_ua(str, (int)strlen(str), 0x1337);
 		
 	return num;
+}
+
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet)
+{
+	const char *hexpattern = NULL;
+	video::SColor outcolor(255, 255, 255, 255);
+
+	if (value[0] == '#') {
+		if (value.size() == 9)
+			hexpattern = "#RRGGBBAA";
+		else if (value.size() == 7)
+			hexpattern = "#RRGGBB";
+		else if (value.size() == 5)
+			hexpattern = "#RGBA";
+		else if (value.size() == 4)
+			hexpattern = "#RGB";
+	}
+
+	if (!hexpattern)
+		goto fail;
+
+	assert(strlen(hexpattern) == value.size());
+	for (size_t pos = 0; pos < value.size(); ++pos) {
+		// '#' in the pattern means skip that character
+		if (hexpattern[pos] == '#')
+			continue;
+
+		// Else assume hexpattern[pos] is one of 'R' 'G' 'B' 'A'
+		// Read one or two digits, depending on hexpattern
+		unsigned char c1, c2;
+		if (hexpattern[pos+1] == hexpattern[pos]) {
+			// Two digits, e.g. hexpattern == "#RRGGBB"
+			if (!hex_digit_decode(value[pos], c1) ||
+				   !hex_digit_decode(value[pos+1], c2))
+				goto fail;
+			++pos;
+		} else {
+			// One digit, e.g. hexpattern == "#RGB"
+			if (!hex_digit_decode(value[pos], c1))
+				goto fail;
+			c2 = c1;
+		}
+		u32 colorpart = ((c1 & 0x0f) << 4) | (c2 & 0x0f);
+
+		// Update outcolor with newly read color part
+		if (hexpattern[pos] == 'R')
+			outcolor.setRed(colorpart);
+		else if (hexpattern[pos] == 'G')
+			outcolor.setGreen(colorpart);
+		else if (hexpattern[pos] == 'B')
+			outcolor.setBlue(colorpart);
+		else if (hexpattern[pos] == 'A')
+			outcolor.setAlpha(colorpart);
+	}
+
+	color = outcolor;
+	return true;
+
+fail:
+	if (!quiet)
+		errorstream << "Invalid color: \"" << value << "\"" << std::endl;
+	return false;
 }

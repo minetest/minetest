@@ -262,6 +262,10 @@ Advanced texture modifiers:
     Apply a mask to the base image.
     The mask is applied using binary AND.
 
+  [colorize:<color>
+    Colorize the textures with given color
+    <color> as ColorString
+
 Sounds
 -------
 Only OGG Vorbis files are supported.
@@ -985,16 +989,16 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 ^ Sets default background color of tooltips
@@ -1002,8 +1006,8 @@ listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<too
 
 tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]
 ^ Adds tooltip for an element
-^ <bgcolor> tooltip background color in HEX-Color format (optional)
-^ <fontcolor> tooltip font color in HEX-Color format (optional)
+^ <bgcolor> tooltip background color as ColorString (optional)
+^ <fontcolor> tooltip font color as ColorString (optional)
 
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1015,7 +1019,7 @@ item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Position and size units are inventory slots
 
 bgcolor[<color>;<fullscreen>]
-^ Sets background color of formspec in HEX-Color format
+^ Sets background color of formspec as ColorString
 ^ If true the background color is drawn fullscreen (does not effect the size of the formspec)
 
 background[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1136,7 +1140,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ color in HEX-Color format
+^ color as ColorString
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1182,15 +1186,15 @@ table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
 tableoptions[<opt 1>;<opt 2>;...]
 ^ sets options for table[]:
 ^ color=#RRGGBB
-^^ default text color (HEX-Color), defaults to #FFFFFF
+^^ default text color (ColorString), defaults to #FFFFFF
 ^ background=#RRGGBB
-^^ table background color (HEX-Color), defaults to #000000
+^^ table background color (ColorString), defaults to #000000
 ^ border=<true/false>
 ^^ should the table be drawn with a border? (default true)
 ^ highlight=#RRGGBB
-^^ highlight background color (HEX-Color), defaults to #466432
+^^ highlight background color (ColorString), defaults to #466432
 ^ highlight_text=#RRGGBB
-^^ highlight text color (HEX-Color), defaults to #FFFFFF
+^^ highlight text color (ColorString), defaults to #FFFFFF
 ^ opendepth=<value>
 ^^ all subtrees up to depth < value are open (default value = 0)
 ^^ only useful when there is a column of type "tree"
@@ -1200,7 +1204,7 @@ tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]
 ^ types: text, image, color, indent, tree
 ^^ text:   show cell contents as text
 ^^ image:  cell contents are an image index, use column options to define images
-^^ color:  cell contents are a HEX-Color and define color of following cell
+^^ color:  cell contents are a ColorString and define color of following cell
 ^^ indent: cell contents are a number and define indentation of following cell
 ^^ tree:   same as indent, but user can open and close subtrees (treeview-like)
 ^ column options:
@@ -1231,8 +1235,8 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
-HEX-Color
----------
+ColorString
+-----------
 #RGB
 ^ defines a color in hexadecimal format
 #RGBA
