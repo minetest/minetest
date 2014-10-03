@@ -394,7 +394,8 @@ private:
 	void addNameIdMapping(content_t i, std::string name);
 #ifndef SERVER
 	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
-		u32 shader_id, bool use_normal_texture, u8 alpha, u8 material_type);
+		u32 shader_id, bool use_normal_texture, u8 alpha, u8 material_type, 
+		bool backface_culling);
 #endif
 
 	// Features indexed by id
@@ -800,13 +801,13 @@ void CNodeDefManager::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		// Tiles (fill in f->tiles[])
 		for (u16 j = 0; j < 6; j++) {
 			fillTileAttribs(tsrc, &f->tiles[j], &tiledef[j], tile_shader[j],
-				use_normal_texture, f->alpha, material_type);
+				use_normal_texture, f->alpha, material_type, f->backface_culling);
 		}
 
 		// Special tiles (fill in f->special_tiles[])
 		for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 			fillTileAttribs(tsrc, &f->special_tiles[j], &f->tiledef_special[j],
-				tile_shader[j], use_normal_texture, f->alpha, material_type);
+				tile_shader[j], use_normal_texture, f->alpha, material_type, f->backface_culling);
 		}
 	}
 #endif
@@ -816,7 +817,7 @@ void CNodeDefManager::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 #ifndef SERVER
 void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
-		u8 alpha, u8 material_type)
+		u8 alpha, u8 material_type, bool backface_culling)
 {
 	tile->shader_id     = shader_id;
 	tile->texture       = tsrc->getTexture(tiledef->name, &tile->texture_id);
@@ -829,7 +830,7 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 
 	// Material flags
 	tile->material_flags = 0;
-	if (tiledef->backface_culling)
+	if (backface_culling)
 		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
 		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
