@@ -1310,6 +1310,8 @@ minetest.is_yes(arg)
 ^ returns whether arg can be interpreted as yes
 minetest.get_us_time()
 ^ returns time with microsecond precision
+table.copy(table) -> table
+^ returns a deep copy of a table
 
 minetest namespace reference
 -----------------------------

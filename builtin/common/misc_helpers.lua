@@ -491,6 +491,18 @@ function core.pos_to_string(pos)
 end
 
 --------------------------------------------------------------------------------
+function table.copy(t, seen)
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		n[type(k) ~= "table" and k or seen[k] or table.copy(k, seen)] =
+			type(v) ~= "table" and v or seen[v] or table.copy(v, seen)
+	end
+	return n
+end
+
+--------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
 if INIT == "mainmenu" then
