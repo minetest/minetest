@@ -379,6 +379,8 @@ bool parseNamedColor(const std::string &value, video::SColor &color, bool quiet)
 		outcolor = video::SColor(255, 255, 255, 255);
 	} else if (value == "black") {
 		outcolor = video::SColor(255, 0, 0, 0);
+	} else {
+		goto fail;
 	}
 	
 	color = outcolor;
