@@ -364,8 +364,10 @@ core.register_chatcommand("teleport", {
 						.. " to " .. target_name
 						.. " at " .. core.pos_to_string(p)
 			end
-		end
-
+		else
+			return false, "You don't have permission to run this command (missing privileges: bring)"
+		end 
+		
 		return false, 'Invalid parameters ("' .. param
 				.. '") or player not found (see /help teleport)'
 	end,
