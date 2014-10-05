@@ -365,8 +365,7 @@ core.register_chatcommand("teleport", {
 						.. " at " .. core.pos_to_string(p)
 			end
 		else
-			minetest.chat_send_player(name, "You cannot teleport any other player (missing privilege : bring).", true)
-			return false
+			return false, "You don't have permission to run this command (missing privileges: bring)"
 		end 
 		
 		return false, 'Invalid parameters ("' .. param
