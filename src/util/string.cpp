@@ -305,7 +305,7 @@ u64 read_seed(const char *str)
 	return num;
 }
 
-bool parseColorString(const std::string &value, video::SColor &color, bool quiet)
+bool parseHexColor(const std::string &value, video::SColor &color, bool quiet)
 {
 	const char *hexpattern = NULL;
 	video::SColor outcolor(255, 255, 255, 255);
@@ -319,9 +319,7 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 			hexpattern = "#RGBA";
 		else if (value.size() == 4)
 			hexpattern = "#RGB";
-	}
-
-	if (!hexpattern)
+	} else
 		goto fail;
 
 	assert(strlen(hexpattern) == value.size());
@@ -365,4 +363,40 @@ fail:
 	if (!quiet)
 		errorstream << "Invalid color: \"" << value << "\"" << std::endl;
 	return false;
+}
+
+bool parseNamedColor(const std::string &value, video::SColor &color, bool quiet)
+{
+	video::SColor outcolor(255, 255, 255, 255);
+
+	if (value == "red") {
+		outcolor = video::SColor(255, 255, 0, 0);
+	} else if (value == "green") {
+		outcolor = video::SColor(255, 0, 255, 0);
+	} else if (value == "blue") {
+		outcolor = video::SColor(255, 0, 0, 255);
+	} else if (value == "white") {
+		outcolor = video::SColor(255, 255, 255, 255);
+	} else if (value == "black") {
+		outcolor = video::SColor(255, 0, 0, 0);
+	}
+	
+	color = outcolor;
+	return true;
+
+fail:
+	if (!quiet)
+		errorstream << "Invalid color: \"" << value << "\"" << std::endl;
+	return false;
+}
+
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet)
+{
+	bool sucess = false;
+	if (value[0] == '#')
+		sucess = parseHexColor(value, color, quiet);
+	else
+		sucess = parseNamedColor(value, color, quiet);
+
+	return sucess;
 }
