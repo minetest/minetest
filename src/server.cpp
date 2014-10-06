@@ -5038,15 +5038,17 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	// Create player if it doesn't exist
 	if (!player) {
 		newplayer = true;
-		player = new RemotePlayer(this);
-		player->updateName(name);
-		/* Set player position */
+		player = new RemotePlayer(this, name);
+		// Set player position
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
 		v3f pos = findSpawnPos(m_env->getServerMap());
 		player->setPosition(pos);
 
-		/* Add player to environment */
+		// Make sure the player is saved
+		player->setModified(true);
+
+		// Add player to environment
 		m_env->addPlayer(player);
 	}
 

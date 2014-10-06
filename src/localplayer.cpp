@@ -33,8 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(IGameDef *gamedef):
-	Player(gamedef),
+LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
+	Player(gamedef, name),
 	parent(0),
 	isAttached(false),
 	overridePosition(v3f(0,0,0)),

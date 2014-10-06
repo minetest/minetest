@@ -449,11 +449,11 @@ Player *ServerEnvironment::loadPlayer(const std::string &playername)
 	bool newplayer = false;
 	bool found = false;
 	if (!player) {
-		player = new RemotePlayer(m_gamedef);
+		player = new RemotePlayer(m_gamedef, playername.c_str());
 		newplayer = true;
 	}
 
-	RemotePlayer testplayer(m_gamedef);
+	RemotePlayer testplayer(m_gamedef, "");
 	std::string path = players_path + playername;
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		// Open file and deserialize
@@ -478,6 +478,7 @@ Player *ServerEnvironment::loadPlayer(const std::string &playername)
 	if (newplayer) {
 		addPlayer(player);
 	}
+	player->setModified(false);
 	return player;
 }
 

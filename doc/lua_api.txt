@@ -266,6 +266,11 @@ Advanced texture modifiers:
     Retrieves a tile at position x,y from the base image
     which it assumes to be a tilesheet with dimensions w,h.
 
+  [colorize:<color>
+    Colorize the textures with given color
+    <color> as ColorString
+
+
 Sounds
 -------
 Only OGG Vorbis files are supported.
@@ -410,8 +415,7 @@ Nodes can also contain extra data. See "Node Metadata".
 
 Node drawtypes
 ---------------
-There are a bunch of different looking node types. These are mostly just
-copied from Minetest 0.3; more may be made in the future.
+There are a bunch of different looking node types.
 
 Look for examples in games/minimal or games/minetest_game.
 
@@ -421,6 +425,7 @@ Look for examples in games/minimal or games/minetest_game.
 - flowingliquid
 - glasslike
 - glasslike_framed
+- glasslike_framed_optional
 - allfaces
 - allfaces_optional
 - torchlike
@@ -430,6 +435,8 @@ Look for examples in games/minimal or games/minetest_game.
 - fencelike
 - raillike
 - nodebox -- See below. EXPERIMENTAL
+
+*_optional drawtypes need less rendering time if deactivated (always client side)
 
 Node boxes
 -----------
@@ -987,16 +994,16 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 ^ Sets default background color of tooltips
@@ -1004,8 +1011,8 @@ listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<too
 
 tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]
 ^ Adds tooltip for an element
-^ <bgcolor> tooltip background color in HEX-Color format (optional)
-^ <fontcolor> tooltip font color in HEX-Color format (optional)
+^ <bgcolor> tooltip background color as ColorString (optional)
+^ <fontcolor> tooltip font color as ColorString (optional)
 
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1017,7 +1024,7 @@ item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Position and size units are inventory slots
 
 bgcolor[<color>;<fullscreen>]
-^ Sets background color of formspec in HEX-Color format
+^ Sets background color of formspec as ColorString
 ^ If true the background color is drawn fullscreen (does not effect the size of the formspec)
 
 background[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1138,7 +1145,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ color in HEX-Color format
+^ color as ColorString
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1184,15 +1191,15 @@ table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
 tableoptions[<opt 1>;<opt 2>;...]
 ^ sets options for table[]:
 ^ color=#RRGGBB
-^^ default text color (HEX-Color), defaults to #FFFFFF
+^^ default text color (ColorString), defaults to #FFFFFF
 ^ background=#RRGGBB
-^^ table background color (HEX-Color), defaults to #000000
+^^ table background color (ColorString), defaults to #000000
 ^ border=<true/false>
 ^^ should the table be drawn with a border? (default true)
 ^ highlight=#RRGGBB
-^^ highlight background color (HEX-Color), defaults to #466432
+^^ highlight background color (ColorString), defaults to #466432
 ^ highlight_text=#RRGGBB
-^^ highlight text color (HEX-Color), defaults to #FFFFFF
+^^ highlight text color (ColorString), defaults to #FFFFFF
 ^ opendepth=<value>
 ^^ all subtrees up to depth < value are open (default value = 0)
 ^^ only useful when there is a column of type "tree"
@@ -1202,7 +1209,7 @@ tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]
 ^ types: text, image, color, indent, tree
 ^^ text:   show cell contents as text
 ^^ image:  cell contents are an image index, use column options to define images
-^^ color:  cell contents are a HEX-Color and define color of following cell
+^^ color:  cell contents are a ColorString and define color of following cell
 ^^ indent: cell contents are a number and define indentation of following cell
 ^^ tree:   same as indent, but user can open and close subtrees (treeview-like)
 ^ column options:
@@ -1233,8 +1240,8 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
-HEX-Color
----------
+ColorString
+-----------
 #RGB
 ^ defines a color in hexadecimal format
 #RGBA
@@ -2425,7 +2432,6 @@ Node definition (register_node)
     diggable = true, -- If false, can never be dug
     climbable = false, -- If true, can be climbed on (ladder)
     buildable_to = false, -- If true, placed nodes can replace this node
-    drop = "", -- alternatively drop = { max_items = ..., items = { ... } }
     liquidtype = "none", -- "none"/"source"/"flowing"
     liquid_alternative_flowing = "", -- Flowing version of source liquid
     liquid_alternative_source = "", -- Source version of flowing liquid
@@ -2447,6 +2453,17 @@ Node definition (register_node)
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
         place = <SimpleSoundSpec>,
+    },
+    drop = "",  -- Name of dropped node when dug. Default is the node itself.
+    -- Alternatively:
+    drop = {
+        max_items = 1,  -- Maximum number of items to drop.
+        items = { -- Choose max_items randomly from this list.
+            {
+                items = {"foo:bar", "baz:frob"},  -- Choose one item randomly from this list.
+                rarity = 1,  -- Probability of getting is 1 / rarity.
+            },
+        },
     },
 
     on_construct = func(pos),

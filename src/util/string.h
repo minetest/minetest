@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_STRING_HEADER
 #define UTIL_STRING_HEADER
 
-#include "../irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include <stdlib.h>
 #include <string>
 #include <cstring>
@@ -108,6 +108,16 @@ inline std::vector<std::wstring> str_split(const std::wstring &str, wchar_t deli
 	std::vector<std::wstring> parts;
 	std::wstringstream sstr(str);
 	std::wstring part;
+	while(std::getline(sstr, part, delimiter))
+		parts.push_back(part);
+	return parts;
+}
+
+inline std::vector<std::string> str_split(const std::string &str, char delimiter) {
+
+	std::vector<std::string> parts;
+	std::stringstream sstr(str);
+	std::string part;
 	while(std::getline(sstr, part, delimiter))
 		parts.push_back(part);
 	return parts;
@@ -339,6 +349,7 @@ std::string writeFlagString(u32 flags, const FlagDesc *flagdesc, u32 flagmask);
 size_t mystrlcpy(char *dst, const char *src, size_t size);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
 u64 read_seed(const char *str);
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet);
 
 #endif
 

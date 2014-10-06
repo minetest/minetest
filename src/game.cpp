@@ -1102,8 +1102,16 @@ static void updateChat(Client& client, f32 dtime, bool show_debug,
 	if (show_debug)
 		chat_y += line_height;
 
-	core::rect<s32> rect(10, chat_y, font->getDimension(recent_chat.c_str()).Width +10,
-			chat_y + (recent_chat_count * line_height));
+	// first pass to calculate height of text to be set
+	s32 width = std::min(font->getDimension(recent_chat.c_str()).Width + 10,
+			porting::getWindowSize().X - 20);
+	core::rect<s32> rect(10, chat_y, width, chat_y + porting::getWindowSize().Y);
+	guitext_chat->setRelativePosition(rect);
+
+	//now use real height of text and adjust rect according to this size	
+	rect = core::rect<s32>(10, chat_y, width,
+			chat_y + guitext_chat->getTextHeight());
+
 
 	guitext_chat->setRelativePosition(rect);
 	// Don't show chat if disabled or empty or profiler is enabled
@@ -2778,8 +2786,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(pointed != pointed_old)
 		{
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
-			if (g_settings->getBool("enable_node_highlighting"))
-				client.setHighlighted(pointed.node_undersurface, show_hud);
+			if (g_settings->getBool("enable_node_highlighting")) {
+				if (pointed.type == POINTEDTHING_NODE) {
+					client.setHighlighted(pointed.node_undersurface, show_hud);
+				} else {
+					client.setHighlighted(pointed.node_undersurface, false);
+				}
+			}
 		}
 
 		/*

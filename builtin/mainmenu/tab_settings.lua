@@ -132,18 +132,18 @@ local function formspec(tabview, name, tabdata)
 	local tab_string =
 		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
-		"checkbox[1,0;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
-				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
-		"checkbox[1,0.5;cb_smooth_lighting;".. fgettext("Smooth Lighting")
+		"checkbox[1,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
+		"checkbox[1,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
+				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
 		"checkbox[1,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]"..
-		"checkbox[1,1.5;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
+		"checkbox[1,1.5;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
+				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
+		"checkbox[1,2.0;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
-		"checkbox[1,2.0;cb_pre_ivis;".. fgettext("Preload item visuals") .. ";"
-				.. dump(core.setting_getbool("preload_item_visuals"))	.. "]"..
-		"checkbox[1,2.5;cb_particles;".. fgettext("Enable Particles") .. ";"
-				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
+		"checkbox[1,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
+				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
 		"dropdown[1,3.25;3;dd_video_driver;"
 			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
@@ -259,8 +259,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		end
 		return true
 	end
-	if fields["cb_pre_ivis"] then
-		core.setting_set("preload_item_visuals", fields["cb_pre_ivis"])
+	if fields["cb_connected_glass"] then
+		core.setting_set("connected_glass", fields["cb_connected_glass"])
 		return true
 	end
 	if fields["cb_particles"] then

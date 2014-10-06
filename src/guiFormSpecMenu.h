@@ -274,9 +274,6 @@ public:
 
 	GUITable* getTable(std::wstring tablename);
 
-	static bool parseColor(const std::string &value,
-			video::SColor &color, bool quiet);
-
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
 #endif

@@ -95,7 +95,7 @@ class Player
 {
 public:
 
-	Player(IGameDef *gamedef);
+	Player(IGameDef *gamedef, const char *name);
 	virtual ~Player() = 0;
 
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
@@ -142,16 +142,22 @@ public:
 
 	virtual void setPosition(const v3f &position)
 	{
+		if (position != m_position)
+			m_dirty = true;
 		m_position = position;
 	}
 
 	void setPitch(f32 pitch)
 	{
+		if (pitch != m_pitch)
+			m_dirty = true;
 		m_pitch = pitch;
 	}
 
 	virtual void setYaw(f32 yaw)
 	{
+		if (yaw != m_yaw)
+			m_dirty = true;
 		m_yaw = yaw;
 	}
 
@@ -172,6 +178,8 @@ public:
 
 	virtual void setBreath(u16 breath)
 	{
+		if (breath != m_breath)
+			m_dirty = true;
 		m_breath = breath;
 	}
 
@@ -183,11 +191,6 @@ public:
 	f32 getRadYaw()
 	{
 		return (m_yaw + 90.) * core::DEGTORAD;
-	}
-
-	void updateName(const char *name)
-	{
-		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
 	}
 
 	const char * getName() const
@@ -223,21 +226,16 @@ public:
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, std::string playername);
 
-	bool checkModified()
+	bool checkModified() const
 	{
-		if(m_last_hp != hp || m_last_pitch != m_pitch ||
-				m_last_pos != m_position || m_last_yaw != m_yaw ||
-				!(inventory == m_last_inventory))
-		{
-			m_last_hp = hp;
-			m_last_pitch = m_pitch;
-			m_last_pos = m_position;
-			m_last_yaw = m_yaw;
-			m_last_inventory = inventory;
-			return true;
-		} else {
-			return false;
-		}
+		return m_dirty || inventory.checkModified();
+	}
+
+	void setModified(const bool x)
+	{
+		m_dirty = x;
+		if (x == false)
+			inventory.setModified(x);
 	}
 
 	bool touching_ground;
@@ -316,11 +314,7 @@ protected:
 	v3f m_position;
 	core::aabbox3d<f32> m_collisionbox;
 
-	f32 m_last_pitch;
-	f32 m_last_yaw;
-	v3f m_last_pos;
-	u16 m_last_hp;
-	Inventory m_last_inventory;
+	bool m_dirty;
 
 	std::vector<HudElement *> hud;
 };
@@ -332,7 +326,10 @@ protected:
 class RemotePlayer : public Player
 {
 public:
-	RemotePlayer(IGameDef *gamedef): Player(gamedef), m_sao(0) {}
+	RemotePlayer(IGameDef *gamedef, const char *name):
+		Player(gamedef, name),
+		m_sao(NULL)
+	{}
 	virtual ~RemotePlayer() {}
 
 	void save(std::string savedir);

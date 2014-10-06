@@ -279,18 +279,30 @@ public:
 	// A shorthand for adding items. Returns leftover item (possibly empty).
 	ItemStack addItem(const std::string &listname, const ItemStack &newitem)
 	{
+		m_dirty = true;
 		InventoryList *list = getList(listname);
 		if(list == NULL)
 			return newitem;
 		return list->addItem(newitem);
 	}
-	
+
+	bool checkModified() const
+	{
+		return m_dirty;
+	}
+
+	void setModified(const bool x)
+	{
+		m_dirty = x;
+	}
+
 private:
 	// -1 if not found
 	const s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;
+	bool m_dirty;
 };
 
 #endif

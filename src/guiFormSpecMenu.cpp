@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "settings.h"
 #include "client.h"
+#include "util/string.h" // for parseColorString()
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -1575,7 +1576,7 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element)
 
 		video::SColor tmp_color;
 
-		if (parseColor(parts[2], tmp_color, false)) {
+		if (parseColorString(parts[2], tmp_color, false)) {
 			BoxDrawSpec spec(pos, geom, tmp_color);
 
 			m_boxes.push_back(spec);
@@ -1595,7 +1596,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data,std::string element)
 	if (((parts.size() == 1) || (parts.size() == 2)) ||
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		parseColor(parts[0],m_bgcolor,false);
+		parseColorString(parts[0],m_bgcolor,false);
 
 		if (parts.size() == 2) {
 			std::string fullscreen = parts[1];
@@ -1613,20 +1614,20 @@ void GUIFormSpecMenu::parseListColors(parserData* data,std::string element)
 	if (((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) ||
 		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		parseColor(parts[0], m_slotbg_n, false);
-		parseColor(parts[1], m_slotbg_h, false);
+		parseColorString(parts[0], m_slotbg_n, false);
+		parseColorString(parts[1], m_slotbg_h, false);
 
 		if (parts.size() >= 3) {
-			if (parseColor(parts[2], m_slotbordercolor, false)) {
+			if (parseColorString(parts[2], m_slotbordercolor, false)) {
 				m_slotborder = true;
 			}
 		}
 		if (parts.size() == 5) {
 			video::SColor tmp_color;
 
-			if (parseColor(parts[3], tmp_color, false))
+			if (parseColorString(parts[3], tmp_color, false))
 				m_default_tooltip_bgcolor = tmp_color;
-			if (parseColor(parts[4], tmp_color, false))
+			if (parseColorString(parts[4], tmp_color, false))
 				m_default_tooltip_color = tmp_color;
 		}
 		return;
@@ -1644,7 +1645,7 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
-		if ( parseColor(parts[2], tmp_color1, false) && parseColor(parts[3], tmp_color2, false) ) {
+		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
 			m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
 			return;
 		}
@@ -2141,10 +2142,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 			// Draw tooltip
 			std::string tooltip_text = "";
-			if(hovering && !m_selected_item)
+			if (hovering && !m_selected_item)
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
-			if(tooltip_text != "")
-			{
+			if (tooltip_text != "") {
+				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
@@ -2153,7 +2154,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				s32 tooltip_x = m_pointer.X + m_btn_height;
 				s32 tooltip_y = m_pointer.Y + m_btn_height;
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
@@ -2376,13 +2377,8 @@ void GUIFormSpecMenu::drawMenu()
 						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 						if (tooltip_x + tooltip_width > (s32)screenSize.X)
 							tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
-						int lines_count = 1;
-						size_t i = 0;
-						while ((i = m_tooltips[iter->fname].tooltip.find("\n", i)) != std::string::npos) {
-							lines_count++;
-							i += 2;
-						}
-						s32 tooltip_height = m_tooltip_element->getTextHeight() * lines_count + 5;
+						std::vector<std::string> tt_rows = str_split(m_tooltips[iter->fname].tooltip, '\n');
+						s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 						m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
@@ -3392,68 +3388,4 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 		}
 	}
 	return L"";
-}
-
-bool GUIFormSpecMenu::parseColor(const std::string &value, video::SColor &color,
-		bool quiet)
-{
-	const char *hexpattern = NULL;
-	if (value[0] == '#') {
-		if (value.size() == 9)
-			hexpattern = "#RRGGBBAA";
-		else if (value.size() == 7)
-			hexpattern = "#RRGGBB";
-		else if (value.size() == 5)
-			hexpattern = "#RGBA";
-		else if (value.size() == 4)
-			hexpattern = "#RGB";
-	}
-
-	if (hexpattern) {
-		assert(strlen(hexpattern) == value.size());
-		video::SColor outcolor(255, 255, 255, 255);
-		for (size_t pos = 0; pos < value.size(); ++pos) {
-			// '#' in the pattern means skip that character
-			if (hexpattern[pos] == '#')
-				continue;
-
-			// Else assume hexpattern[pos] is one of 'R' 'G' 'B' 'A'
-			// Read one or two digits, depending on hexpattern
-			unsigned char c1, c2;
-			if (hexpattern[pos+1] == hexpattern[pos]) {
-				// Two digits, e.g. hexpattern == "#RRGGBB"
-				if (!hex_digit_decode(value[pos], c1) ||
-				    !hex_digit_decode(value[pos+1], c2))
-					goto fail;
-				++pos;
-			}
-			else {
-				// One digit, e.g. hexpattern == "#RGB"
-				if (!hex_digit_decode(value[pos], c1))
-					goto fail;
-				c2 = c1;
-			}
-			u32 colorpart = ((c1 & 0x0f) << 4) | (c2 & 0x0f);
-
-			// Update outcolor with newly read color part
-			if (hexpattern[pos] == 'R')
-				outcolor.setRed(colorpart);
-			else if (hexpattern[pos] == 'G')
-				outcolor.setGreen(colorpart);
-			else if (hexpattern[pos] == 'B')
-				outcolor.setBlue(colorpart);
-			else if (hexpattern[pos] == 'A')
-				outcolor.setAlpha(colorpart);
-		}
-
-		color = outcolor;
-		return true;
-	}
-
-	// Optionally, named colors could be implemented here
-
-fail:
-	if (!quiet)
-		errorstream<<"Invalid color: \""<<value<<"\""<<std::endl;
-	return false;
 }
