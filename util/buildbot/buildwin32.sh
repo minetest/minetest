@@ -16,7 +16,7 @@ toolchain_file=$dir/toolchain_mingw.cmake
 irrlicht_version=1.8.1
 ogg_version=1.2.1
 vorbis_version=1.3.3
-curl_version=7.18.0
+curl_version=7.38.0
 gettext_version=0.14.4
 freetype_version=2.3.5
 luajit_version=2.0.1
@@ -41,8 +41,8 @@ cd $builddir
 	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z
 [ -e $packagedir/libvorbis-$vorbis_version-dll.7z ] || wget http://sfan5.pf-control.de/libvorbis-$vorbis_version-dll.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z
-[ -e $packagedir/libcurl-$curl_version-win32-msvc.zip ] || wget http://curl.haxx.se/download/libcurl-$curl_version-win32-msvc.zip \
-	-c -O $packagedir/libcurl-$curl_version-win32-msvc.zip
+[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://sfan5.pf-control.de/libcurl-$curl_version-win32.zip \
+	-c -O $packagedir/libcurl-$curl_version.zip
 [ -e $packagedir/gettext-$gettext_version.zip ] || wget http://sfan5.pf-control.de/gettext-$gettext_version.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
 [ -e $packagedir/libfreetype-$freetype_version.zip ] || wget http://sfan5.pf-control.de/libfreetype-$freetype_version-win32.zip \
@@ -62,7 +62,7 @@ cd $libdir
 [ -d libogg/bin ] || 7z x -y -olibogg $packagedir/libogg-$ogg_version-dll.7z
 [ -d libvorbis/include ] || 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z
 [ -d libvorbis/bin ] || 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z
-[ -d libcurl ] || unzip -o $packagedir/libcurl-$curl_version-win32-msvc.zip -d libcurl
+[ -d libcurl ] || unzip -o $packagedir/libcurl-$curl_version.zip -d libcurl
 [ -d gettext ] || unzip -o $packagedir/gettext-$gettext_version.zip -d gettext
 [ -d freetype ] || unzip -o $packagedir/libfreetype-$freetype_version.zip -d freetype
 [ -d openal_stripped ] || unzip -o $packagedir/openal_stripped.zip
@@ -123,9 +123,9 @@ cmake .. \
 	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/libOpenAL32.dll.a \
 	-DOPENAL_DLL=$libdir/openal_stripped/bin/OpenAL32.dll \
 	\
-	-DCURL_DLL=$libdir/libcurl/libcurl.dll \
+	-DCURL_DLL=$libdir/libcurl/bin/libcurl-4.dll \
 	-DCURL_INCLUDE_DIR=$libdir/libcurl/include \
-	-DCURL_LIBRARY=$libdir/libcurl/libcurl.lib \
+	-DCURL_LIBRARY=$libdir/libcurl/lib/libcurl.dll.a \
 	\
 	-DCUSTOM_GETTEXT_PATH=$libdir/gettext \
 	-DGETTEXT_MSGFMT=`which msgfmt` \
