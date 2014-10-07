@@ -250,6 +250,7 @@ Client::Client(
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
 	m_inventory_from_server_age(0.0),
+	m_show_hud(true),
 	m_animation_time(0),
 	m_crack_level(-1),
 	m_crack_pos(0,0,0),

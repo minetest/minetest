@@ -573,6 +573,20 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_clouds_visible = false;
 	}
 
+	video::SColor bgcolor_bright = m_bgcolor_bright_f.toSColor();
+	m_bgcolor = video::SColor(
+		255,
+		bgcolor_bright.getRed() * m_brightness,
+		bgcolor_bright.getGreen() * m_brightness,
+		bgcolor_bright.getBlue() * m_brightness);
+
+	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
+	m_skycolor = video::SColor(
+		255,
+		skycolor_bright.getRed() * m_brightness,
+		skycolor_bright.getGreen() * m_brightness,
+		skycolor_bright.getBlue() * m_brightness);
+
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
 	video::SColor pointcolor = video::SColor(255, 255, 255, m_bgcolor.getAlpha());
 	if (m_directional_colored_fog) {
@@ -606,25 +620,7 @@ void Sky::update(float time_of_day, float time_brightness,
 			// calculate the blend color
 			pointcolor = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 		}
-	}
-
-	video::SColor bgcolor_bright = m_bgcolor_bright_f.toSColor();
-	m_bgcolor = video::SColor(
-		255,
-		bgcolor_bright.getRed() * m_brightness,
-		bgcolor_bright.getGreen() * m_brightness,
-		bgcolor_bright.getBlue() * m_brightness);
-	if (m_directional_colored_fog) {
 		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
-	}
-
-	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
-	m_skycolor = video::SColor(
-		255,
-		skycolor_bright.getRed() * m_brightness,
-		skycolor_bright.getGreen() * m_brightness,
-		skycolor_bright.getBlue() * m_brightness);
-	if (m_directional_colored_fog) {
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
 	}
 
