@@ -43,6 +43,7 @@ struct MeshMakeData
 	bool m_smooth_lighting;
 	bool m_show_hud;
 	video::SColor m_highlight_mesh_color;
+	bool m_highlight_mesh_color_ok;
 
 	IGameDef *m_gamedef;
 
@@ -125,6 +126,7 @@ private:
 
 	bool m_enable_shaders;
 	bool m_enable_highlighting;
+	bool m_highlight_mesh_color_ok;
 
 	video::SColor m_highlight_mesh_color;
 	

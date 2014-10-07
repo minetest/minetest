@@ -79,7 +79,8 @@ private:
 	{
 		if (!m_sunlight_seen)
 			return 0;
-		float x; m_time_of_day >= 0.5 ? x = (1 - m_time_of_day) * 2 : x = m_time_of_day * 2;
+		float x = m_time_of_day >= 0.5 ? (1 - m_time_of_day) * 2 : m_time_of_day * 2;
+
 		if (x <= 0.3)
 			return 0;
 		if (x <= 0.4) // when the sun and moon are aligned
