@@ -155,12 +155,32 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
-function string:split(sep)
-	local sep, fields = sep or ",", {}
-	local pattern = string.format("([^%s]+)", sep)
-	self:gsub(pattern, function(c) fields[#fields+1] = c end)
+function string.split(str, delim, include_empty, max_splits)
+	delim = delim or ","
+	max_splits = max_splits or 0
+	local fields = {}
+	local num_splits = 0
+	local last_pos = 0
+	for part, pos in str:gmatch("(.-)[" .. delim .. "]()") do
+		last_pos = pos
+		if include_empty or part ~= "" then
+			num_splits = num_splits + 1
+			fields[num_splits] = part
+			if max_splits > 0 and num_splits + 1 >= max_splits then
+				break
+			end
+		end
+	end
+	-- Handle the last field
+	if max_splits <= 0 or num_splits <= max_splits then
+		local last_part = str:sub(last_pos)
+		if include_empty or last_part ~= "" then
+			fields[num_splits + 1] = last_part
+		end
+	end
 	return fields
 end
+
 
 --------------------------------------------------------------------------------
 function file_exists(filename)

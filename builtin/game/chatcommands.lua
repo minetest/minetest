@@ -723,3 +723,20 @@ core.register_chatcommand("msg", {
 	end,
 })
 
+core.register_chatcommand("last-login", {
+	params = "[name]",
+	description = "Get the last login time of a player",
+	func = function(name, param)
+		if param == "" then
+			param = name
+		end
+		local pauth = core.get_auth_handler().get_auth(param)
+		if pauth and pauth.last_login then
+			-- Time in UTC, ISO 8601 format
+			return true, "Last login time was " ..
+				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
+		end
+		return false, "Last login time is unknown"
+	end,
+})
+
