@@ -41,12 +41,12 @@ local function read_auth_file()
 	end
 	for line in file:lines() do
 		if line ~= "" then
-			local name, password, privilegestring = string.match(line, "([^:]*):([^:]*):([^:]*)")
-			if not name or not password or not privilegestring then
+			local name, password, privilegestring, lastlogin = string.match(line, "([^:]*):([^:]*):([^:]*):([^:]*)")
+			if not name or not password or not privilegestring or not lastlogin then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
 			local privileges = core.string_to_privs(privilegestring)
-			newtable[name] = {password=password, privileges=privileges}
+			newtable[name] = {password=password, privileges=privileges, lastlogin=lastlogin}
 		end
 	end
 	io.close(file)
@@ -63,6 +63,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
+		assert(type(stuff.lastlogin) == "string")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -70,7 +71,7 @@ local function save_auth_file()
 	end
 	for name, stuff in pairs(core.auth_table) do
 		local privstring = core.privs_to_string(stuff.privileges)
-		file:write(name..":"..stuff.password..":"..privstring..'\n')
+		file:write(name..":"..stuff.password..":"..privstring..":"..stuff.lastlogin..'\n')
 	end
 	io.close(file)
 end
